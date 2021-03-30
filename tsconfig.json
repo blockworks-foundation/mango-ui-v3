@@ -12,7 +12,16 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve"
+    "jsx": "preserve",
+    "jsxImportSource": "@emotion/react",
+    "plugins": [
+      {
+        "name": "typescript-xwind-plugin",
+        "config": ".../User/.../tailwind.config.js", //Absolute filepath to tailwind config
+        "ignoreErrors": null, //regex pattern string or null
+        "tags": ["tw", "xw"] //tags that trigger xwind plugin
+      }
+    ]
   },
   "exclude": ["node_modules", ".next", "out"],
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "**/*.js"]
