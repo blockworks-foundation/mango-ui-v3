@@ -1,8 +1,8 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect } from 'react'
 import Wallet from '@project-serum/sol-wallet-adapter'
 // import { notify } from './notifications'
 import useLocalStorageState from './useLocalStorageState'
-import useStore from './useStore'
+import useSolanaStore from '../stores/useSolanaStore'
 
 export const WALLET_PROVIDERS = [
   { name: 'sollet.io', url: 'https://www.sollet.io' },
@@ -10,32 +10,34 @@ export const WALLET_PROVIDERS = [
 
 const ENDPOINT = process.env.CLUSTER ? process.env.CLUSTER : 'mainnet-beta'
 
-export function useWallet() {
-  const walletStore = useStore((state) => state.wallet)
+export default function useWallet() {
+  const setSolanaStore = useSolanaStore((state) => state.set)
+  const { current: wallet, connected } = useSolanaStore((state) => state.wallet)
+  const endpoint = useSolanaStore((state) => state.connection.endpoint)
   const [savedProviderUrl] = useLocalStorageState(
     'walletProvider',
     'https://www.sollet.io'
   )
-
-  let providerUrl
-  if (!savedProviderUrl) {
-    providerUrl = 'https://www.sollet.io'
-  } else {
-    providerUrl = savedProviderUrl
-  }
-
-  const wallet =
-    typeof window !== 'undefined'
-      ? useMemo(() => new Wallet(providerUrl, ENDPOINT), [
-          providerUrl,
-          ENDPOINT,
-        ])
-      : {}
+  const providerUrl = savedProviderUrl
+    ? savedProviderUrl
+    : 'https://www.sollet.io'
 
   useEffect(() => {
+    console.log('creating wallet', endpoint)
+
+    const newWallet = new Wallet(providerUrl, ENDPOINT)
+    setSolanaStore((state) => {
+      state.wallet.current = newWallet
+    })
+  }, [endpoint])
+
+  useEffect(() => {
+    if (!wallet) return
     wallet.on('connect', () => {
-      walletStore.setConnected(true)
-      console.log('connected!!!!')
+      setSolanaStore((state) => {
+        state.wallet.connected = true
+      })
+      console.log('connected!')
 
       // const walletPublicKey = wallet.publicKey.toBase58()
       // const keyToDisplay =
@@ -51,7 +53,9 @@ export function useWallet() {
       // })
     })
     wallet.on('disconnect', () => {
-      walletStore.setConnected(false)
+      setSolanaStore((state) => {
+        state.wallet.connected = false
+      })
       // notify({
       //   message: 'Wallet update',
       //   description: 'Disconnected from wallet',
@@ -60,9 +64,11 @@ export function useWallet() {
     })
     return () => {
       wallet.disconnect()
-      walletStore.setConnected(false)
+      setSolanaStore((state) => {
+        state.wallet.connected = false
+      })
     }
   }, [wallet])
 
-  return wallet
+  return { wallet, connected }
 }

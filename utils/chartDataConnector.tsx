@@ -1,10 +1,7 @@
-import { BonfidaTrade } from '../@types/types'
+import { ChartType } from '../@types/types'
 
 const baseUrl = 'https://serum-history.herokuapp.com'
-//const baseUrl = "http://85.214.116.56:5000";
-//const baseUrl = "http://localhost:5000";
-
-export default class BonfidaApi {
+export default class ChartApi {
   static URL = `${baseUrl}/`
 
   static async get(path: string) {
@@ -15,16 +12,16 @@ export default class BonfidaApi {
         return responseJson.success ? responseJson.data : null
       }
     } catch (err) {
-      console.log(`Error fetching from Bonfida API ${path}: ${err}`)
+      console.log(`Error fetching from Chart API ${path}: ${err}`)
     }
     return null
   }
 
   static async getRecentTrades(
     marketAddress: string
-  ): Promise<BonfidaTrade[] | null> {
-    return BonfidaApi.get(`trades/address/${marketAddress}`)
+  ): Promise<ChartType[] | null> {
+    return ChartApi.get(`trades/address/${marketAddress}`)
   }
 }
 
-export const BONFIDA_DATA_FEED = `${baseUrl}/tv`
+export const CHART_DATA_FEED = `${baseUrl}/tv`

@@ -1,33 +1,27 @@
 import { useEffect, useMemo } from 'react'
 import { Account, Connection } from '@solana/web3.js'
 import { IDS } from '@blockworks-foundation/mango-client'
-import { EndpointInfo } from '../@types/types'
-import useStore from './useStore'
-
-export const ENDPOINTS: EndpointInfo[] = [
-  {
-    name: 'mainnet-beta',
-    endpoint: 'https://solana-api.projectserum.com',
-    custom: false,
-  },
-  {
-    name: 'devnet',
-    endpoint: 'https://devnet.solana.com',
-    custom: false,
-  },
-]
-
-const cluster = 'mainnet-beta'
+import useSolanaStore from '../stores/useSolanaStore'
 
 const useConnection = () => {
-  const setConnection = useStore((state) => state.connection.setConnection)
-  const { endpoint } = ENDPOINTS.find((e) => e.name === cluster)
-  const connection = useMemo(() => new Connection(endpoint, 'recent'), [
+  const { cluster, current: connection, endpoint } = useSolanaStore(
+    (s) => s.connection
+  )
+  const setSolanaStore = useSolanaStore((s) => s.set)
+
+  const sendConnection = useMemo(() => new Connection(endpoint, 'recent'), [
     endpoint,
   ])
 
   useEffect(() => {
-    setConnection(connection)
+    // @ts-ignore
+    if (connection && endpoint === connection._rpcEndpoint) return
+    console.log('setting new connection')
+
+    const newConnection = new Connection(endpoint, 'recent')
+    setSolanaStore((state) => {
+      state.connection.current = newConnection
+    })
   }, [endpoint])
 
   useEffect(() => {
@@ -47,7 +41,7 @@ const useConnection = () => {
   const programId = IDS[cluster].mango_program_id
   const dexProgramId = IDS[cluster]?.dex_program_id
 
-  return { connection, dexProgramId, cluster, programId }
+  return { connection, dexProgramId, cluster, programId, sendConnection }
 }
 
 export default useConnection

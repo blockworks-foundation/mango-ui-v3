@@ -1,7 +1,9 @@
 import Head from 'next/head'
 import { Global } from '@emotion/react'
 import xw from 'xwind'
-import './index.css'
+import '../node_modules/react-grid-layout/css/styles.css'
+import '../node_modules/react-resizable/css/styles.css'
+import '../styles/index.css'
 
 function App({ Component, pageProps }) {
   return (

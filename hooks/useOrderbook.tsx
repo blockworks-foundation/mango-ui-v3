@@ -1,75 +1,61 @@
-import { useEffect, useRef } from 'react'
-import tuple from 'immutable-tuple'
+import { useEffect } from 'react'
 import { PublicKey, AccountInfo } from '@solana/web3.js'
 import { Orderbook } from '@project-serum/serum'
-import useMarkets from './useMarket'
+import useMarkets from './useMarkets'
+import useInterval from './useInterval'
+import useMangoStore from '../stores/useMangoStore'
+import useSolanaStore from '../stores/useSolanaStore'
 import useConnection from './useConnection'
-import { setCache, useAsyncData } from '../utils/fetch-loop'
 
-const accountListenerCount = new Map()
-
-export function useAccountInfo(
-  publicKey: PublicKey | undefined | null
-): [AccountInfo<Buffer> | null | undefined, boolean] {
+function useAccountInfo(account: PublicKey) {
+  const setSolanaStore = useSolanaStore((s) => s.set)
   const { connection } = useConnection()
-  const cacheKey = tuple(connection, publicKey?.toBase58())
-  const [accountInfo, loaded] = useAsyncData<AccountInfo<Buffer> | null>(
-    async () => (publicKey ? connection.getAccountInfo(publicKey) : null),
-    cacheKey,
-    { refreshInterval: 60_000 }
-  )
+  const accountPkAsString = account ? account.toString() : null
+
+  useInterval(async () => {
+    if (!account) return
+
+    const info = await connection.getAccountInfo(account)
+    console.log('fetching account info on interval', accountPkAsString)
+
+    setSolanaStore((state) => {
+      state.accountInfos[accountPkAsString] = info
+    })
+  }, 60000)
+
   useEffect(() => {
-    if (!publicKey) {
-      return
-    }
-    if (accountListenerCount.has(cacheKey)) {
-      const currentItem = accountListenerCount.get(cacheKey)
-      ++currentItem.count
-    } else {
-      let previousInfo: AccountInfo<Buffer> | null = null
-      const subscriptionId = connection.onAccountChange(publicKey, (info) => {
-        if (
-          !previousInfo ||
-          !previousInfo.data.equals(info.data) ||
-          previousInfo.lamports !== info.lamports
-        ) {
-          previousInfo = info
-          setCache(cacheKey, info)
-        }
-      })
-      accountListenerCount.set(cacheKey, { count: 1, subscriptionId })
-    }
-    return () => {
-      const currentItem = accountListenerCount.get(cacheKey)
-      const nextCount = currentItem.count - 1
-      if (nextCount <= 0) {
-        connection.removeAccountChangeListener(currentItem.subscriptionId)
-        accountListenerCount.delete(cacheKey)
-      } else {
-        --currentItem.count
+    if (!account) return
+    let previousInfo: AccountInfo<Buffer> | null = null
+
+    const subscriptionId = connection.onAccountChange(account, (info) => {
+      if (
+        !previousInfo ||
+        !previousInfo.data.equals(info.data) ||
+        previousInfo.lamports !== info.lamports
+      ) {
+        previousInfo = info
+        setSolanaStore((state) => {
+          state.accountInfos[accountPkAsString] = previousInfo
+        })
       }
+    })
+
+    return () => {
+      connection.removeAccountChangeListener(subscriptionId)
     }
-    // eslint-disable-next-line
-  }, [cacheKey])
-  const previousInfoRef = useRef<AccountInfo<Buffer> | null | undefined>(null)
-  if (
-    !accountInfo ||
-    !previousInfoRef.current ||
-    !previousInfoRef.current.data.equals(accountInfo.data) ||
-    previousInfoRef.current.lamports !== accountInfo.lamports
-  ) {
-    previousInfoRef.current = accountInfo
-  }
-  return [previousInfoRef.current, loaded]
+  }, [account, connection])
 }
 
 export function useAccountData(publicKey) {
-  const [accountInfo] = useAccountInfo(publicKey)
-  return accountInfo && accountInfo.data
+  useAccountInfo(publicKey)
+
+  const account = publicKey ? publicKey.toString() : null
+  const accountInfo = useSolanaStore((s) => s.accountInfos[account])
+  return accountInfo && Buffer.from(accountInfo.data)
 }
 
 export function useOrderbookAccounts() {
-  const { market } = useMarkets()
+  const market = useMangoStore((s) => s.market.current)
   // @ts-ignore
   const bidData = useAccountData(market && market._decoded.bids)
   // @ts-ignore
@@ -85,6 +71,9 @@ export default function useOrderbook(
 ): [{ bids: number[][]; asks: number[][] }, boolean] {
   const { bidOrderbook, askOrderbook } = useOrderbookAccounts()
   const { market } = useMarkets()
+
+  const setMangoStore = useMangoStore((s) => s.set)
+
   const bids =
     !bidOrderbook || !market
       ? []
@@ -93,5 +82,15 @@ export default function useOrderbook(
     !askOrderbook || !market
       ? []
       : askOrderbook.getL2(depth).map(([price, size]) => [price, size])
-  return [{ bids, asks }, !!bids || !!asks]
+
+  const orderBook: [{ bids: number[][]; asks: number[][] }, boolean] = [
+    { bids, asks },
+    !!bids || !!asks,
+  ]
+
+  setMangoStore((state) => {
+    state.market.orderBook = orderBook
+  })
+
+  return orderBook
 }

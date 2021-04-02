@@ -1,0 +1,19 @@
+.TVChartContainer {
+  height: 100%;
+  width: 100%;
+}
+
+.tradingview-chart {
+  display: contents;
+}
+
+.react-grid-item.react-grid-placeholder {
+  background: #332f46;
+  transition-duration: 100ms;
+  z-index: 2;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}

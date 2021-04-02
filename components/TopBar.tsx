@@ -1,16 +1,17 @@
 import { useState } from 'react'
 import xw from 'xwind'
 import MenuItem from './MenuItem'
-import useStore from '../hooks/useStore'
-import { useWallet } from '../hooks/useWallet'
+import useWallet from '../hooks/useWallet'
 
 const TopBar = () => {
-  const connected = useStore((state) => state.wallet.connected)
-  const wallet = useWallet()
+  console.log('load topbar')
+
+  const { connected, wallet } = useWallet()
   const [showMenu, setShowMenu] = useState(false)
 
-  const handleConnectDisconnect = () =>
+  const handleConnectDisconnect = () => {
     connected ? wallet.disconnect() : wallet.connect()
+  }
 
   return (
     <nav css={xw`bg-mango-dark`}>

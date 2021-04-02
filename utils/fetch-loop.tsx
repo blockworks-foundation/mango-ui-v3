@@ -203,7 +203,6 @@ export function useAsyncData<T = any>(
 
   useEffect(() => {
     if (!cacheKey) {
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
       return () => {}
     }
     const listener = new FetchLoopListener<T>(
@@ -216,7 +215,7 @@ export function useAsyncData<T = any>(
     )
     globalLoops.addListener(listener)
     return () => globalLoops.removeListener(listener)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line
   }, [cacheKey, refreshInterval])
 
   if (!cacheKey) {

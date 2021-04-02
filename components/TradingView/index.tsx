@@ -6,7 +6,7 @@ import {
   ResolutionString,
 } from '../charting_library' // Make sure to follow step 1 of the README
 // import { useMarket } from '../../utils/markets';
-import { BONFIDA_DATA_FEED } from '../../utils/bonfidaConnector'
+import { CHART_DATA_FEED } from '../../utils/chartDataConnector'
 
 // This is a basic example of how to create a TV widget
 // You can add more feature such as storing charts in localStorage
@@ -36,7 +36,7 @@ const TVChartContainer = () => {
     interval: '60' as ResolutionString,
     theme: 'Dark',
     containerId: 'tv_chart_container',
-    datafeedUrl: BONFIDA_DATA_FEED,
+    datafeedUrl: CHART_DATA_FEED,
     libraryPath: '/charting_library/',
     fullscreen: false,
     autosize: true,

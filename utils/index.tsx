@@ -112,3 +112,25 @@ export function groupBy(list, keyGetter) {
 export function isDefined<T>(argument: T | undefined): argument is T {
   return argument !== undefined
 }
+
+export const calculateMarketPrice = (
+  orderBook: Array<any>,
+  size: number,
+  side: string
+) => {
+  let acc = 0
+  let selectedOrder
+  for (const order of orderBook) {
+    acc += order[1]
+    if (acc >= size) {
+      selectedOrder = order
+      break
+    }
+  }
+
+  if (side === 'buy') {
+    return selectedOrder[0] * 1.05
+  } else {
+    return selectedOrder[0] * 0.95
+  }
+}

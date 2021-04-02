@@ -4,8 +4,10 @@ import xw from 'xwind'
 import useInterval from '../hooks/useInterval'
 import usePrevious from '../hooks/usePrevious'
 import { isEqual, getDecimalCount } from '../utils/'
-// import { useMarket, useOrderbook, useMarkPrice } from '../utils/markets'
-// import { ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons'
+import { ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/solid'
+import useMarkPrice from '../hooks/useMarkPrice'
+import useOrderbook from '../hooks/useOrderbook'
+import useMarkets from '../hooks/useMarkets'
 
 const Title = styled.div`
   color: rgba(255, 255, 255, 1);
@@ -14,11 +16,6 @@ const Title = styled.div`
 const SizeTitle = styled.div`
   padding: 4px 0 4px 0px;
   color: #434a59;
-`
-
-const MarkPriceTitle = styled.div`
-  padding: 4px 0 4px;
-  font-weight: 700;
 `
 
 const Line = styled.div<any>`
@@ -41,7 +38,7 @@ export default function Orderbook({ depth = 7 }) {
   const smallScreen = false
   const markPrice = useMarkPrice()
   const [orderbook] = useOrderbook()
-  const { baseCurrency, quoteCurrency } = useMarket()
+  const { baseCurrency, quoteCurrency } = useMarkets()
 
   const currentOrderbookData = useRef(null)
   const lastOrderbookData = useRef(null)
@@ -99,116 +96,108 @@ export default function Orderbook({ depth = 7 }) {
     return cumulative
   }
 
-  return null
-
-  // return (
-  //   <>
-  //     <div>
-  //       <Title>Orderbook</Title>
-  //     </div>
-  //     {smallScreen ? (
-  //       <>
-  //         <MarkPriceComponent markPrice={markPrice} />
-  //         <div css={xw`flex`}>
-  //           <div css={xw`flex`} flex={1}>
-  //             <SizeTitle>
-  //               <div css={xw`text-left`}>
-  //                 Size
-  //                 <div style={{ marginTop: -5 }}>({baseCurrency})</div>
-  //               </div>
-  //               <div css={xw`text-right pr-4`}>
-  //                 Price
-  //                 <div style={{ marginTop: -5 }}>({quoteCurrency})</div>
-  //               </div>
-  //             </SizeTitle>
-  //             {orderbookData?.bids.map(({ price, size, sizePercent }) => (
-  //               <OrderbookRow
-  //                 key={price + ''}
-  //                 price={price}
-  //                 size={size}
-  //                 side={'buy'}
-  //                 sizePercent={sizePercent}
-  //                 // onPriceClick={() => onPrice(price)}
-  //                 // onSizeClick={() => onSize(size)}
-  //               />
-  //             ))}
-  //           </div>
-  //           <Col flex={1} style={{ paddingLeft: 2 }}>
-  //             <SizeTitle>
-  //               <Col span={12} style={{ textAlign: 'left' }}>
-  //                 Price
-  //                 <div style={{ marginTop: -5 }}>({quoteCurrency})</div>
-  //               </Col>
-  //               <Col span={12} style={{ textAlign: 'right ' }}>
-  //                 Size
-  //                 <div style={{ marginTop: -5 }}>({baseCurrency})</div>
-  //               </Col>
-  //             </SizeTitle>
-  //             {orderbookData?.asks
-  //               .slice(0)
-  //               .reverse()
-  //               .map(({ price, size, sizePercent }) => (
-  //                 <OrderbookRow
-  //                   invert={true}
-  //                   key={price + ''}
-  //                   price={price}
-  //                   size={size}
-  //                   side={'sell'}
-  //                   sizePercent={sizePercent}
-  //                   onPriceClick={() => onPrice(price)}
-  //                   onSizeClick={() => onSize(size)}
-  //                 />
-  //               ))}
-  //           </Col>
-  //         </div>
-  //       </>
-  //     ) : (
-  //       <>
-  //         <SizeTitle>
-  //           <Col span={12} style={{ textAlign: 'left' }}>
-  //             Size ({baseCurrency})
-  //           </Col>
-  //           <Col span={12} style={{ textAlign: 'right' }}>
-  //             Price ({quoteCurrency})
-  //           </Col>
-  //         </SizeTitle>
-  //         {orderbookData?.asks.map(({ price, size, sizePercent }) => (
-  //           <OrderbookRow
-  //             key={price + ''}
-  //             price={price}
-  //             size={size}
-  //             side={'sell'}
-  //             sizePercent={sizePercent}
-  //             onPriceClick={() => onPrice(price)}
-  //             onSizeClick={() => onSize(size)}
-  //           />
-  //         ))}
-  //         <MarkPriceComponent markPrice={markPrice} />
-  //         {orderbookData?.bids.map(({ price, size, sizePercent }) => (
-  //           <OrderbookRow
-  //             key={price + ''}
-  //             price={price}
-  //             size={size}
-  //             side={'buy'}
-  //             sizePercent={sizePercent}
-  //             onPriceClick={() => onPrice(price)}
-  //             onSizeClick={() => onSize(size)}
-  //           />
-  //         ))}
-  //       </>
-  //     )}
-  //   </>
-  // )
+  return (
+    <>
+      <div>
+        <Title>Orderbook</Title>
+      </div>
+      {smallScreen ? (
+        <>
+          <MarkPriceComponent markPrice={markPrice} />
+          <div css={xw`flex`}>
+            <div css={xw`flex`}>
+              <SizeTitle>
+                <div css={xw`text-left`}>
+                  Size
+                  <div style={{ marginTop: -5 }}>({baseCurrency})</div>
+                </div>
+                <div css={xw`text-right pr-4`}>
+                  Price
+                  <div style={{ marginTop: -5 }}>({quoteCurrency})</div>
+                </div>
+              </SizeTitle>
+              {orderbookData?.bids.map(({ price, size, sizePercent }) => (
+                <OrderbookRow
+                  key={price + ''}
+                  price={price}
+                  size={size}
+                  side={'buy'}
+                  sizePercent={sizePercent}
+                  // onPriceClick={() => onPrice(price)}
+                  // onSizeClick={() => onSize(size)}
+                />
+              ))}
+            </div>
+            <div css={xw`flex pl-1`}>
+              <SizeTitle>
+                <div css={xw`text-left`}>
+                  Price
+                  <div style={{ marginTop: -5 }}>({quoteCurrency})</div>
+                </div>
+                <div css={xw`text-right`}>
+                  Size
+                  <div style={{ marginTop: -5 }}>({baseCurrency})</div>
+                </div>
+              </SizeTitle>
+              {orderbookData?.asks
+                .slice(0)
+                .reverse()
+                .map(({ price, size, sizePercent }) => (
+                  <OrderbookRow
+                    invert
+                    key={price + ''}
+                    price={price}
+                    size={size}
+                    side={'sell'}
+                    sizePercent={sizePercent}
+                    onPriceClick={() => alert(`price ${price}`)}
+                    onSizeClick={() => alert(`size ${size}`)}
+                  />
+                ))}
+            </div>
+          </div>
+        </>
+      ) : (
+        <>
+          <SizeTitle>
+            <div style={{ textAlign: 'left' }}>Size ({baseCurrency})</div>
+            <div style={{ textAlign: 'right' }}>Price ({quoteCurrency})</div>
+          </SizeTitle>
+          {orderbookData?.asks.map(({ price, size, sizePercent }) => (
+            <OrderbookRow
+              key={price + ''}
+              price={price}
+              size={size}
+              side={'sell'}
+              sizePercent={sizePercent}
+              onPriceClick={() => alert(`price ${price}`)}
+              onSizeClick={() => alert(`size ${size}`)}
+            />
+          ))}
+          <MarkPriceComponent markPrice={markPrice} />
+          {orderbookData?.bids.map(({ price, size, sizePercent }) => (
+            <OrderbookRow
+              key={price + ''}
+              price={price}
+              size={size}
+              side={'buy'}
+              sizePercent={sizePercent}
+              onPriceClick={() => alert(`price ${price}`)}
+              onSizeClick={() => alert(`size ${size}`)}
+            />
+          ))}
+        </>
+      )}
+    </>
+  )
 }
 
-const OrderbookRow = React.memo(
+const OrderbookRow = React.memo<any>(
   ({ side, price, size, sizePercent, onSizeClick, onPriceClick, invert }) => {
-    const element = useRef()
-
-    const { market } = useMarket()
+    const element = useRef(null)
+    const { market } = useMarkets()
 
     useEffect(() => {
-      // eslint-disable-next-line
       !element.current?.classList.contains('flash') &&
         element.current?.classList.add('flash')
       const id = setTimeout(
@@ -257,10 +246,8 @@ const OrderbookRow = React.memo(
           </>
         ) : (
           <>
-            <Col span={12} style={{ textAlign: 'left' }}>
-              {formattedSize}
-            </Col>
-            <Col span={12} style={{ textAlign: 'right' }}>
+            <div css={xw`text-left`}>{formattedSize}</div>
+            <div css={xw`text-right`}>
               <Line
                 data-width={sizePercent + '%'}
                 data-bgcolor={side === 'buy' ? '#5b6b16' : '#E54033'}
@@ -271,7 +258,7 @@ const OrderbookRow = React.memo(
               >
                 {formattedPrice}
               </Price>
-            </Col>
+            </div>
           </>
         )}
       </div>
@@ -281,10 +268,10 @@ const OrderbookRow = React.memo(
     isEqual(prevProps, nextProps, ['price', 'size', 'sizePercent'])
 )
 
-const MarkPriceComponent = React.memo(
+const MarkPriceComponent = React.memo<{ markPrice: number }>(
   ({ markPrice }) => {
-    const { market } = useMarket()
-    const previousMarkPrice = usePrevious(markPrice)
+    const { market } = useMarkets()
+    const previousMarkPrice: number = usePrevious(markPrice)
 
     const markPriceColor =
       markPrice > previousMarkPrice
@@ -299,17 +286,18 @@ const MarkPriceComponent = React.memo(
       markPrice.toFixed(getDecimalCount(market.tickSize))
 
     return (
-      <MarkPriceTitle justify="center">
-        <div style={{ color: markPriceColor }}>
-          {markPrice > previousMarkPrice && (
-            <ArrowUpOutlined style={{ marginRight: 5 }} />
-          )}
-          {markPrice < previousMarkPrice && (
-            <ArrowDownOutlined style={{ marginRight: 5 }} />
-          )}
-          {formattedMarkPrice || '----'}
-        </div>
-      </MarkPriceTitle>
+      <div
+        css={xw`flex justify-center items-center font-bold p-1`}
+        style={{ color: markPriceColor }}
+      >
+        {markPrice > previousMarkPrice && (
+          <ArrowUpIcon css={xw`h-5 w-5 mr-1`} />
+        )}
+        {markPrice < previousMarkPrice && (
+          <ArrowDownIcon css={xw`h-5 w-5 mr-1`} />
+        )}
+        {formattedMarkPrice || '----'}
+      </div>
     )
   },
   (prevProps, nextProps) => isEqual(prevProps, nextProps, ['markPrice'])
