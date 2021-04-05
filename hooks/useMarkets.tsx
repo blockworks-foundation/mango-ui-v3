@@ -19,6 +19,10 @@ const useMarkets = () => {
   const mangoGroupName = useMangoStore((state) => state.selectedMangoGroup.name)
   const market = useMangoStore((state) => state.market.current)
   const { connection, cluster, programId, dexProgramId } = useConnection()
+  const marketAddress = useMemo(
+    () => (market ? market.publicKey.toString() : null),
+    [market]
+  )
 
   const spotMarkets = useMemo(
     () => IDS[cluster]?.mango_groups[mangoGroupName]?.spot_market_symbols || {},
@@ -89,7 +93,14 @@ const useMarkets = () => {
     [market, TOKEN_MINTS]
   )
 
-  return { market, programId, marketList, baseCurrency, quoteCurrency }
+  return {
+    market,
+    marketAddress,
+    programId,
+    marketList,
+    baseCurrency,
+    quoteCurrency,
+  }
 }
 
 export default useMarkets

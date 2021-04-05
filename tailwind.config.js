@@ -5,6 +5,9 @@ module.exports = {
   darkMode: 'class',
   theme: {
     extend: {
+      cursor: {
+        help: 'help',
+      },
       fontFamily: {
         sans: ['Lato', ...defaultTheme.fontFamily.sans],
       },

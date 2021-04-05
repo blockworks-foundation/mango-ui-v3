@@ -154,30 +154,17 @@ export default function MarginInfo() {
   return (
     <FloatingElement>
       <React.Fragment>
-        {mAccountInfo ? (
-          mAccountInfo.map((entry, i) => (
-            <Row key={i} justify="space-between" style={{ padding: '4px' }}>
-              <Popover content={entry.desc} placement="topLeft" trigger="hover">
-                <div>
-                  <Text ellipsis={true} style={{ cursor: 'help' }}>
-                    {entry.label}
-                  </Text>
-                </div>
-              </Popover>
-              <div>
-                <Text strong>
-                  {entry.currency + entry.value}
-                  {entry.unit}
-                </Text>
-              </div>
-            </Row>
-          ))
-        ) : (
-          <div css={xw`flex align-middle justify-center`}>
-            {/* <BalanceCol></BalanceCol> */}
-            Connect Wallet
+        {mAccountInfo.map((entry, i) => (
+          <div css={xw`flex justify-between pt-2 pb-3`} key={i}>
+            <Popover content={entry.desc} placement="topLeft" trigger="hover">
+              <div css={xw`cursor-help text-gray-300`}>{entry.label}</div>
+            </Popover>
+            <div css={xw`text-gray-300 font-light`}>
+              {entry.currency + entry.value}
+              {entry.unit}
+            </div>
           </div>
-        )}
+        ))}
       </React.Fragment>
     </FloatingElement>
   )

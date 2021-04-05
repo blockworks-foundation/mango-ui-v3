@@ -8,9 +8,7 @@ const Wrapper = styled.div`
 
 export default function FloatingElement({ css = undefined, children }) {
   return (
-    <Wrapper
-      css={xw`m-1 px-2 py-4 h-full bg-mango-dark rounded-lg overflow-auto`}
-    >
+    <Wrapper css={xw`m-1 p-4 h-full bg-mango-dark rounded-lg overflow-auto`}>
       {children}
     </Wrapper>
   )

@@ -8,6 +8,7 @@ import { ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/solid'
 import useMarkPrice from '../hooks/useMarkPrice'
 import useOrderbook from '../hooks/useOrderbook'
 import useMarkets from '../hooks/useMarkets'
+import { ElementTitle } from './styles'
 
 const Line = styled.div<any>`
   text-align: ${(props) => (props.invert ? 'left' : 'right')};
@@ -18,15 +19,7 @@ const Line = styled.div<any>`
     props['data-bgcolor'] && `background-color: ${props['data-bgcolor']};`}
 `
 
-// const Price = styled.div<any>`
-//   position: absolute;
-//   ${(props) => (props.invert ? `left: 5px;` : `right: 15px;`)}
-//   ${(props) => props['data-color'] && `color: ${props['data-color']};`}
-// `
-
 export default function Orderbook({ depth = 7 }) {
-  // TODO remove smallScreen
-  const smallScreen = false
   const markPrice = useMarkPrice()
   const [orderbook] = useOrderbook()
   const { baseCurrency, quoteCurrency } = useMarkets()
@@ -89,36 +82,34 @@ export default function Orderbook({ depth = 7 }) {
 
   return (
     <>
-      <div css={xw`flex justify-center pb-1 text-lg font-light`}>Orderbook</div>
-      <>
-        <div css={xw`text-gray-500 flex justify-between mb-4`}>
-          <div css={xw`text-left`}>Size ({baseCurrency})</div>
-          <div css={xw`text-right`}>Price ({quoteCurrency})</div>
-        </div>
-        {orderbookData?.asks.map(({ price, size, sizePercent }) => (
-          <OrderbookRow
-            key={price + ''}
-            price={price}
-            size={size}
-            side={'sell'}
-            sizePercent={sizePercent}
-            onPriceClick={() => alert(`price ${price}`)}
-            onSizeClick={() => alert(`size ${size}`)}
-          />
-        ))}
-        <MarkPriceComponent markPrice={markPrice} />
-        {orderbookData?.bids.map(({ price, size, sizePercent }) => (
-          <OrderbookRow
-            key={price + ''}
-            price={price}
-            size={size}
-            side={'buy'}
-            sizePercent={sizePercent}
-            onPriceClick={() => alert(`price ${price}`)}
-            onSizeClick={() => alert(`size ${size}`)}
-          />
-        ))}
-      </>
+      <ElementTitle>Orderbook</ElementTitle>
+      <div css={xw`text-gray-500 flex justify-between mb-2`}>
+        <div css={xw`text-left`}>Size ({baseCurrency})</div>
+        <div css={xw`text-right`}>Price ({quoteCurrency})</div>
+      </div>
+      {orderbookData?.asks.map(({ price, size, sizePercent }) => (
+        <OrderbookRow
+          key={price + ''}
+          price={price}
+          size={size}
+          side={'sell'}
+          sizePercent={sizePercent}
+          onPriceClick={() => alert(`price ${price}`)}
+          onSizeClick={() => alert(`size ${size}`)}
+        />
+      ))}
+      <MarkPriceComponent markPrice={markPrice} />
+      {orderbookData?.bids.map(({ price, size, sizePercent }) => (
+        <OrderbookRow
+          key={price + ''}
+          price={price}
+          size={size}
+          side={'buy'}
+          sizePercent={sizePercent}
+          onPriceClick={() => alert(`price ${price}`)}
+          onSizeClick={() => alert(`size ${size}`)}
+        />
+      ))}
     </>
   )
 }
@@ -152,7 +143,7 @@ const OrderbookRow = React.memo<any>(
 
     return (
       <div
-        css={xw`flex justify-between font-light`}
+        css={xw`flex mb-0.5 justify-between font-light`}
         ref={element}
         onClick={onSizeClick}
       >
@@ -176,7 +167,7 @@ const OrderbookRow = React.memo<any>(
           </>
         ) : (
           <>
-            <div css={xw`text-left flex-1`}>{formattedSize}</div>
+            <div css={xw`text-left flex-1 text-gray-200`}>{formattedSize}</div>
             <div css={xw`text-right relative flex-1`}>
               <Line
                 css={xw`absolute inset-y-0 right-0`}
@@ -184,7 +175,7 @@ const OrderbookRow = React.memo<any>(
                 data-bgcolor={side === 'buy' ? '#5b6b16' : '#E54033'}
               />
               <div
-                css={xw`z-30 relative`}
+                css={xw`z-30 relative text-gray-200`}
                 data-color={side === 'buy' ? '#ffffff' : 'white'}
                 onClick={onPriceClick}
               >

@@ -1,4 +1,4 @@
-import { ChartType } from '../@types/types'
+import { ChartTradeType } from '../@types/types'
 
 const baseUrl = 'https://serum-history.herokuapp.com'
 export default class ChartApi {
@@ -19,7 +19,7 @@ export default class ChartApi {
 
   static async getRecentTrades(
     marketAddress: string
-  ): Promise<ChartType[] | null> {
+  ): Promise<ChartTradeType[] | null> {
     return ChartApi.get(`trades/address/${marketAddress}`)
   }
 }

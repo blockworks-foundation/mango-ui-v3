@@ -135,7 +135,7 @@ export interface SelectedTokenAccounts {
   [tokenMint: string]: string
 }
 
-export interface ChartType {
+export interface ChartTradeType {
   market: string
   size: number
   price: number
