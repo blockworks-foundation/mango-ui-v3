@@ -1,4 +1,4 @@
-import { Row, Popover, Typography } from 'antd'
+import { Popover } from 'antd'
 import React, { useEffect, useState } from 'react'
 import xw from 'xwind'
 import { nativeToUi } from '@blockworks-foundation/mango-client/lib/utils'
@@ -7,8 +7,6 @@ import useTradeHistory from '../hooks/useTradeHistory'
 import useConnection from '../hooks/useConnection'
 import FloatingElement from './FloatingElement'
 import useMarginAccount from '../hooks/useMarginAcccount'
-
-const { Text } = Typography
 
 const calculatePNL = (tradeHistory, prices, mangoGroup) => {
   if (!tradeHistory.length) return '0.00'
@@ -150,21 +148,28 @@ export default function MarginInfo() {
         ])
       })
     }
+    // eslint-disable-next-line
   }, [marginAccount, mangoGroup])
   return (
     <FloatingElement>
       <React.Fragment>
-        {mAccountInfo.map((entry, i) => (
-          <div css={xw`flex justify-between pt-2 pb-3`} key={i}>
-            <Popover content={entry.desc} placement="topLeft" trigger="hover">
-              <div css={xw`cursor-help text-gray-300`}>{entry.label}</div>
-            </Popover>
-            <div css={xw`text-gray-300 font-light`}>
-              {entry.currency + entry.value}
-              {entry.unit}
-            </div>
-          </div>
-        ))}
+        {mAccountInfo
+          ? mAccountInfo.map((entry, i) => (
+              <div css={xw`flex justify-between pt-2 pb-3`} key={i}>
+                <Popover
+                  content={entry.desc}
+                  placement="topLeft"
+                  trigger="hover"
+                >
+                  <div css={xw`cursor-help text-gray-300`}>{entry.label}</div>
+                </Popover>
+                <div css={xw`text-gray-300 font-light`}>
+                  {entry.currency + entry.value}
+                  {entry.unit}
+                </div>
+              </div>
+            ))
+          : null}
       </React.Fragment>
     </FloatingElement>
   )
