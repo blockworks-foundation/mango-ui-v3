@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import useMangoStore from '../stores/useMangoStore'
 import useInterval from './useInterval'
 import useSerumStore from '../stores/useSerumStore'

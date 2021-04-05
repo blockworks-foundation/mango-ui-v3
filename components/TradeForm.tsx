@@ -1,10 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
-import { Button, Input, Radio, Switch, Select } from 'antd'
+import { Input, Radio, Switch, Select } from 'antd'
+import xw from 'xwind'
 import styled from '@emotion/styled'
 import useMarkets from '../hooks/useMarkets'
 import useWallet from '../hooks/useWallet'
-import useMarkPrice from '../hooks/useMarkPrice'
-import useOrderbook from '../hooks/useOrderbook'
 import useIpAddress from '../hooks/useIpAddress'
 import useConnection from '../hooks/useConnection'
 import { PublicKey } from '@solana/web3.js'
@@ -17,13 +16,13 @@ import { roundToDecimal } from '../utils/index'
 import useMarginAccount from '../hooks/useMarginAcccount'
 import useMangoStore from '../stores/useMangoStore'
 
-const SellButton = styled(Button)`
+const SellButton = styled.button`
   margin: 20px 0px 0px 0px;
   background: #e54033;
   border-color: #e54033;
 `
 
-const BuyButton = styled(Button)`
+const BuyButton = styled.button`
   margin: 20px 0px 0px 0px;
   color: #141026;
   background: #9bd104;
@@ -37,14 +36,16 @@ export default function TradeForm({
     ref: ({ size, price }: { size?: number; price?: number }) => void
   ) => void
 }) {
+  console.log('reloading trade form')
+
   const [side, setSide] = useState<'buy' | 'sell'>('buy')
   const { baseCurrency, quoteCurrency, market } = useMarkets()
   const address = market?.publicKey
   const { wallet, connected } = useWallet()
 
   const { connection, cluster } = useConnection()
-  const { marginAccount, mangoGroup, tradeForm } = useMarginAccount()
-  console.log('margin accoun hook', { marginAccount, mangoGroup, tradeForm })
+  const { marginAccount, mangoGroup } = useMarginAccount()
+  const tradeForm = useMangoStore((s) => s.tradeForm)
 
   const orderBookRef = useRef(useMangoStore.getState().market.orderBook)
   const orderbook = orderBookRef.current[0]
@@ -203,6 +204,8 @@ export default function TradeForm({
         connection,
         new PublicKey(IDS[cluster].mango_program_id),
         mangoGroup,
+        // TODO:
+        // @ts-ignore
         marginAccount,
         market,
         wallet,
@@ -360,45 +363,35 @@ export default function TradeForm({
           </div>
         ) : null}
       </div>
-      {ipAllowed ? (
-        side === 'buy' ? (
-          <BuyButton
-            disabled={
-              (!price && tradeType === 'Limit') || !baseSize || !connected
-            }
-            onClick={onSubmit}
-            block
-            type="primary"
-            size="large"
-            loading={submitting}
-          >
-            {connected ? `Buy ${baseCurrency}` : 'CONNECT WALLET TO TRADE'}
-          </BuyButton>
+      <div css={xw`flex`}>
+        {ipAllowed ? (
+          side === 'buy' ? (
+            <BuyButton
+              disabled={
+                (!price && tradeType === 'Limit') || !baseSize || !connected
+              }
+              onClick={onSubmit}
+              loading={submitting}
+            >
+              {connected ? `Buy ${baseCurrency}` : 'CONNECT WALLET TO TRADE'}
+            </BuyButton>
+          ) : (
+            <SellButton
+              disabled={
+                (!price && tradeType === 'Limit') || !baseSize || !connected
+              }
+              onClick={onSubmit}
+              loading={submitting}
+            >
+              {connected ? `Sell ${baseCurrency}` : 'CONNECT WALLET TO TRADE'}
+            </SellButton>
+          )
         ) : (
-          <SellButton
-            disabled={
-              (!price && tradeType === 'Limit') || !baseSize || !connected
-            }
-            onClick={onSubmit}
-            block
-            type="primary"
-            size="large"
-            loading={submitting}
-          >
-            {connected ? `Sell ${baseCurrency}` : 'CONNECT WALLET TO TRADE'}
-          </SellButton>
-        )
-      ) : (
-        <Button
-          size="large"
-          style={{
-            margin: '20px 0px 0px 0px',
-          }}
-          disabled
-        >
-          Country Not Allowed
-        </Button>
-      )}
+          <button css={xw`flex-grow border`} disabled>
+            <div css={xw`text-lg font-light p-2`}>Country Not Allowed</div>
+          </button>
+        )}
+      </div>
     </FloatingElement>
   )
 }

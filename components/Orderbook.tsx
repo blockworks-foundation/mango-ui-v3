@@ -9,10 +9,6 @@ import useMarkPrice from '../hooks/useMarkPrice'
 import useOrderbook from '../hooks/useOrderbook'
 import useMarkets from '../hooks/useMarkets'
 
-const Title = styled.div`
-  color: rgba(255, 255, 255, 1);
-`
-
 const SizeTitle = styled.div`
   padding: 4px 0 4px 0px;
   color: #434a59;
@@ -29,7 +25,7 @@ const Line = styled.div<any>`
 
 const Price = styled.div<any>`
   position: absolute;
-  ${(props) => (props.invert ? `left: 5px;` : `right: 5px;`)}
+  ${(props) => (props.invert ? `left: 5px;` : `right: 15px;`)}
   ${(props) => props['data-color'] && `color: ${props['data-color']};`}
 `
 
@@ -98,9 +94,7 @@ export default function Orderbook({ depth = 7 }) {
 
   return (
     <>
-      <div>
-        <Title>Orderbook</Title>
-      </div>
+      <div css={xw`flex justify-center pb-1 text-lg font-light`}>Orderbook</div>
       {smallScreen ? (
         <>
           <MarkPriceComponent markPrice={markPrice} />
@@ -160,8 +154,8 @@ export default function Orderbook({ depth = 7 }) {
       ) : (
         <>
           <SizeTitle>
-            <div style={{ textAlign: 'left' }}>Size ({baseCurrency})</div>
-            <div style={{ textAlign: 'right' }}>Price ({quoteCurrency})</div>
+            <div css={xw`text-left`}>Size ({baseCurrency})</div>
+            <div css={xw`text-right`}>Price ({quoteCurrency})</div>
           </SizeTitle>
           {orderbookData?.asks.map(({ price, size, sizePercent }) => (
             <OrderbookRow

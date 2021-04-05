@@ -1,11 +1,16 @@
 import { useState } from 'react'
 import xw from 'xwind'
+import styled from '@emotion/styled'
 import MenuItem from './MenuItem'
 import useWallet from '../hooks/useWallet'
 
-const TopBar = () => {
-  console.log('load topbar')
+const Code = styled.code`
+  border: 1px solid hsla(0, 0%, 39.2%, 0.2);
+  border-radius: 3px;
+  background: hsla(0, 0%, 58.8%, 0.1);
+`
 
+const TopBar = () => {
   const { connected, wallet } = useWallet()
   const [showMenu, setShowMenu] = useState(false)
 
@@ -38,9 +43,20 @@ const TopBar = () => {
                 onClick={handleConnectDisconnect}
                 css={xw`bg-mango-dark-light hover:bg-mango-dark-lighter text-mango-yellow rounded-md px-4 py-2 focus:outline-none`}
               >
-                <span css={xw`text-lg font-light`}>
-                  {connected ? 'Disconnect' : 'Connect Wallet'}
-                </span>
+                <div css={xw`text-base font-light`}>
+                  {connected ? (
+                    <div onClick={wallet.disconnect}>
+                      <span>Disconnect: </span>
+                      <Code css={xw`text-xs p-1 text-white font-extralight`}>
+                        {wallet.publicKey.toString().substr(0, 4) +
+                          '...' +
+                          wallet.publicKey.toString().substr(-4)}
+                      </Code>
+                    </div>
+                  ) : (
+                    'Connect Wallet'
+                  )}
+                </div>
               </button>
             </div>
           </div>

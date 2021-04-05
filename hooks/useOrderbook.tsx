@@ -1,14 +1,13 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { PublicKey, AccountInfo } from '@solana/web3.js'
 import { Orderbook } from '@project-serum/serum'
 import useMarkets from './useMarkets'
 import useInterval from './useInterval'
 import useMangoStore from '../stores/useMangoStore'
-import useSolanaStore from '../stores/useSolanaStore'
 import useConnection from './useConnection'
 
 function useAccountInfo(account: PublicKey) {
-  const setSolanaStore = useSolanaStore((s) => s.set)
+  const setSolanaStore = useMangoStore((s) => s.set)
   const { connection } = useConnection()
   const accountPkAsString = account ? account.toString() : null
 
@@ -50,7 +49,7 @@ export function useAccountData(publicKey) {
   useAccountInfo(publicKey)
 
   const account = publicKey ? publicKey.toString() : null
-  const accountInfo = useSolanaStore((s) => s.accountInfos[account])
+  const accountInfo = useMangoStore((s) => s.accountInfos[account])
   return accountInfo && Buffer.from(accountInfo.data)
 }
 
@@ -74,23 +73,27 @@ export default function useOrderbook(
 
   const setMangoStore = useMangoStore((s) => s.set)
 
-  const bids =
-    !bidOrderbook || !market
-      ? []
-      : bidOrderbook.getL2(depth).map(([price, size]) => [price, size])
-  const asks =
-    !askOrderbook || !market
-      ? []
-      : askOrderbook.getL2(depth).map(([price, size]) => [price, size])
+  const bids = useMemo(
+    () =>
+      !bidOrderbook || !market
+        ? []
+        : bidOrderbook.getL2(depth).map(([price, size]) => [price, size]),
+    [bidOrderbook, depth, market]
+  )
 
-  const orderBook: [{ bids: number[][]; asks: number[][] }, boolean] = [
-    { bids, asks },
-    !!bids || !!asks,
-  ]
+  const asks = useMemo(
+    () =>
+      !askOrderbook || !market
+        ? []
+        : askOrderbook.getL2(depth).map(([price, size]) => [price, size]),
+    [askOrderbook, depth, market]
+  )
 
-  setMangoStore((state) => {
-    state.market.orderBook = orderBook
-  })
+  useEffect(() => {
+    setMangoStore((state) => {
+      state.market.orderBook = [{ bids, asks }, !!bids || !!asks]
+    })
+  }, [bids, asks])
 
-  return orderBook
+  return [{ bids, asks }, !!bids || !!asks]
 }

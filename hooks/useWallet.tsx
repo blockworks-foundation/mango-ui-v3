@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import Wallet from '@project-serum/sol-wallet-adapter'
 // import { notify } from './notifications'
 import useLocalStorageState from './useLocalStorageState'
-import useSolanaStore from '../stores/useSolanaStore'
+import useMangoStore from '../stores/useMangoStore'
 
 export const WALLET_PROVIDERS = [
   { name: 'sollet.io', url: 'https://www.sollet.io' },
@@ -11,9 +11,9 @@ export const WALLET_PROVIDERS = [
 const ENDPOINT = process.env.CLUSTER ? process.env.CLUSTER : 'mainnet-beta'
 
 export default function useWallet() {
-  const setSolanaStore = useSolanaStore((state) => state.set)
-  const { current: wallet, connected } = useSolanaStore((state) => state.wallet)
-  const endpoint = useSolanaStore((state) => state.connection.endpoint)
+  const setMangoStore = useMangoStore((state) => state.set)
+  const { current: wallet, connected } = useMangoStore((state) => state.wallet)
+  const endpoint = useMangoStore((state) => state.connection.endpoint)
   const [savedProviderUrl] = useLocalStorageState(
     'walletProvider',
     'https://www.sollet.io'
@@ -23,10 +23,11 @@ export default function useWallet() {
     : 'https://www.sollet.io'
 
   useEffect(() => {
+    if (wallet) return
     console.log('creating wallet', endpoint)
 
     const newWallet = new Wallet(providerUrl, ENDPOINT)
-    setSolanaStore((state) => {
+    setMangoStore((state) => {
       state.wallet.current = newWallet
     })
   }, [endpoint])
@@ -34,11 +35,10 @@ export default function useWallet() {
   useEffect(() => {
     if (!wallet) return
     wallet.on('connect', () => {
-      setSolanaStore((state) => {
+      setMangoStore((state) => {
         state.wallet.connected = true
       })
       console.log('connected!')
-
       // const walletPublicKey = wallet.publicKey.toBase58()
       // const keyToDisplay =
       //   walletPublicKey.length > 20
@@ -53,8 +53,10 @@ export default function useWallet() {
       // })
     })
     wallet.on('disconnect', () => {
-      setSolanaStore((state) => {
+      setMangoStore((state) => {
         state.wallet.connected = false
+        state.marginAccounts = []
+        state.selectedMarginAccount.current = null
       })
       // notify({
       //   message: 'Wallet update',
@@ -64,7 +66,7 @@ export default function useWallet() {
     })
     return () => {
       wallet.disconnect()
-      setSolanaStore((state) => {
+      setMangoStore((state) => {
         state.wallet.connected = false
       })
     }

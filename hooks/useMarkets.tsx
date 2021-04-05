@@ -16,12 +16,14 @@ const formatTokenMints = (symbols: { [name: string]: string }) => {
 
 const useMarkets = () => {
   const setMangoStore = useMangoStore((state) => state.set)
-  const selectedMangoGroup = useMangoStore((state) => state.selectedMangoGroup)
+  const mangoGroupName = useMangoStore((state) => state.selectedMangoGroup.name)
   const market = useMangoStore((state) => state.market.current)
   const { connection, cluster, programId, dexProgramId } = useConnection()
 
-  const spotMarkets =
-    IDS[cluster]?.mango_groups[selectedMangoGroup]?.spot_market_symbols || {}
+  const spotMarkets = useMemo(
+    () => IDS[cluster]?.mango_groups[mangoGroupName]?.spot_market_symbols || {},
+    [cluster, mangoGroupName]
+  )
 
   const marketList = useMemo(
     () =>
@@ -38,11 +40,16 @@ const useMarkets = () => {
 
   useEffect(() => {
     if (market) return
+
     console.log('loading market', connection)
     Market.load(connection, marketList[0].address, {}, marketList[0].programId)
       .then((market) => {
         setMangoStore((state) => {
           state.market.current = market
+          // @ts-ignore
+          state.accountInfos[market._decoded.bids.toString()] = null
+          // @ts-ignore
+          state.accountInfos[market._decoded.asks.toString()] = null
         })
       })
       .catch(
@@ -56,7 +63,7 @@ const useMarkets = () => {
         //   type: 'error',
         // }),
       )
-  }, [connection])
+  }, [])
 
   const TOKEN_MINTS = useMemo(() => formatTokenMints(IDS[cluster].symbols), [
     cluster,
@@ -69,7 +76,7 @@ const useMarkets = () => {
           token.address.equals(market.baseMintAddress)
         )?.name) ||
       'UNKNOWN',
-    [market]
+    [market, TOKEN_MINTS]
   )
 
   const quoteCurrency = useMemo(
@@ -79,7 +86,7 @@ const useMarkets = () => {
           token.address.equals(market.quoteMintAddress)
         )?.name) ||
       'UNKNOWN',
-    [market]
+    [market, TOKEN_MINTS]
   )
 
   return { market, programId, marketList, baseCurrency, quoteCurrency }

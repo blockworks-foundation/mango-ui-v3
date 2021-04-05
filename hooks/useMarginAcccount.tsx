@@ -3,25 +3,27 @@ import { PublicKey } from '@solana/web3.js'
 import { IDS } from '@blockworks-foundation/mango-client'
 import useMangoStore from '../stores/useMangoStore'
 import useConnection from './useConnection'
-import useInterval from './useInterval'
-import useSolanaStore from '../stores/useSolanaStore'
+// import useInterval from './useInterval'
+import useWallet from './useWallet'
 
 const useMarginAccount = () => {
   const mangoClient = useMangoStore((s) => s.mangoClient)
-  const tradeForm = useMangoStore((s) => s.tradeForm)
-  const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup)
-  const selectedMarginAccount = useMangoStore((s) => s.selectedMarginAccount)
-  const mangoGroup = useMangoStore((s) => s.mangoGroup)
+  const mangoGroupName = useMangoStore((s) => s.selectedMangoGroup.name)
+  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  const selectedMarginAccount = useMangoStore(
+    (s) => s.selectedMarginAccount.current
+  )
   const setMangoStore = useMangoStore((s) => s.set)
 
-  const { current: wallet } = useSolanaStore((s) => s.wallet)
+  const { current: wallet } = useMangoStore((s) => s.wallet)
+  const { connected } = useWallet()
 
   const { cluster, connection } = useConnection()
   const clusterIds = useMemo(() => IDS[cluster], [cluster])
-  const mangoGroupIds = useMemo(
-    () => clusterIds.mango_groups[selectedMangoGroup],
-    [clusterIds, selectedMangoGroup]
-  )
+  const mangoGroupIds = useMemo(() => clusterIds.mango_groups[mangoGroupName], [
+    clusterIds,
+    mangoGroupName,
+  ])
 
   const fetchMangoGroup = useCallback(() => {
     if (!mangoClient) return
@@ -34,7 +36,7 @@ const useMarginAccount = () => {
       .then((mangoGroup) => {
         // Set the mango group
         setMangoStore((state) => {
-          state.mangoGroup = mangoGroup
+          state.selectedMangoGroup.current = mangoGroup
         })
       })
       .catch((err) => {
@@ -43,7 +45,8 @@ const useMarginAccount = () => {
   }, [connection, mangoClient, mangoGroupIds, setMangoStore])
 
   const fetchMarginAccounts = useCallback(() => {
-    if (!mangoClient || !wallet || !mangoGroup) return
+    if (!mangoClient || !mangoGroup || !connected || !wallet.publicKey) return
+    console.log('fetching margin accounts from: ', wallet.publicKey.toString())
 
     mangoClient
       .getMarginAccountsForOwner(
@@ -53,21 +56,29 @@ const useMarginAccount = () => {
         wallet
       )
       .then((marginAccounts) => {
+        console.log('margin Accounts: ', marginAccounts)
+
         if (marginAccounts.length > 0) {
           setMangoStore((state) => {
             state.marginAcccounts = marginAccounts
-            state.selectedMarginAccount = marginAccounts[0]
+            state.selectedMarginAccount.current = marginAccounts[0]
           })
         }
       })
       .catch((err) => {
         console.error('Could not get margin accounts for user in effect ', err)
       })
-  }, [mangoClient, connection, mangoGroup, wallet])
+  }, [mangoClient, connection, connected, mangoGroup, wallet])
 
-  // useEffect(() => {
-  //   fetchMangoGroup()
-  // }, [fetchMangoGroup])
+  useEffect(() => {
+    fetchMangoGroup()
+    fetchMarginAccounts()
+  }, [fetchMangoGroup])
+
+  useEffect(() => {
+    if (!connected) return
+    fetchMarginAccounts()
+  }, [connected, fetchMarginAccounts])
 
   // useInterval(() => {
   //   fetchMarginAccounts()
@@ -77,7 +88,6 @@ const useMarginAccount = () => {
   return {
     mangoClient,
     setMangoStore,
-    tradeForm,
     mangoGroup,
     marginAccount: selectedMarginAccount,
   }

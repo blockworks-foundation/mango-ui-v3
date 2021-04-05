@@ -1,13 +1,13 @@
 import { useEffect, useMemo } from 'react'
 import { Account, Connection } from '@solana/web3.js'
 import { IDS } from '@blockworks-foundation/mango-client'
-import useSolanaStore from '../stores/useSolanaStore'
+import useMangoStore from '../stores/useMangoStore'
 
 const useConnection = () => {
-  const { cluster, current: connection, endpoint } = useSolanaStore(
+  const { cluster, current: connection, endpoint } = useMangoStore(
     (s) => s.connection
   )
-  const setSolanaStore = useSolanaStore((s) => s.set)
+  const setSolanaStore = useMangoStore((s) => s.set)
 
   const sendConnection = useMemo(() => new Connection(endpoint, 'recent'), [
     endpoint,
