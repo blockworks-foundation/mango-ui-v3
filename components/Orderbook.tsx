@@ -9,11 +9,6 @@ import useMarkPrice from '../hooks/useMarkPrice'
 import useOrderbook from '../hooks/useOrderbook'
 import useMarkets from '../hooks/useMarkets'
 
-const SizeTitle = styled.div`
-  padding: 4px 0 4px 0px;
-  color: #434a59;
-`
-
 const Line = styled.div<any>`
   text-align: ${(props) => (props.invert ? 'left' : 'right')};
   float: ${(props) => (props.invert ? 'left' : 'right')};
@@ -23,11 +18,11 @@ const Line = styled.div<any>`
     props['data-bgcolor'] && `background-color: ${props['data-bgcolor']};`}
 `
 
-const Price = styled.div<any>`
-  position: absolute;
-  ${(props) => (props.invert ? `left: 5px;` : `right: 15px;`)}
-  ${(props) => props['data-color'] && `color: ${props['data-color']};`}
-`
+// const Price = styled.div<any>`
+//   position: absolute;
+//   ${(props) => (props.invert ? `left: 5px;` : `right: 15px;`)}
+//   ${(props) => props['data-color'] && `color: ${props['data-color']};`}
+// `
 
 export default function Orderbook({ depth = 7 }) {
   // TODO remove smallScreen
@@ -95,93 +90,35 @@ export default function Orderbook({ depth = 7 }) {
   return (
     <>
       <div css={xw`flex justify-center pb-1 text-lg font-light`}>Orderbook</div>
-      {smallScreen ? (
-        <>
-          <MarkPriceComponent markPrice={markPrice} />
-          <div css={xw`flex`}>
-            <div css={xw`flex`}>
-              <SizeTitle>
-                <div css={xw`text-left`}>
-                  Size
-                  <div style={{ marginTop: -5 }}>({baseCurrency})</div>
-                </div>
-                <div css={xw`text-right pr-4`}>
-                  Price
-                  <div style={{ marginTop: -5 }}>({quoteCurrency})</div>
-                </div>
-              </SizeTitle>
-              {orderbookData?.bids.map(({ price, size, sizePercent }) => (
-                <OrderbookRow
-                  key={price + ''}
-                  price={price}
-                  size={size}
-                  side={'buy'}
-                  sizePercent={sizePercent}
-                  // onPriceClick={() => onPrice(price)}
-                  // onSizeClick={() => onSize(size)}
-                />
-              ))}
-            </div>
-            <div css={xw`flex pl-1`}>
-              <SizeTitle>
-                <div css={xw`text-left`}>
-                  Price
-                  <div style={{ marginTop: -5 }}>({quoteCurrency})</div>
-                </div>
-                <div css={xw`text-right`}>
-                  Size
-                  <div style={{ marginTop: -5 }}>({baseCurrency})</div>
-                </div>
-              </SizeTitle>
-              {orderbookData?.asks
-                .slice(0)
-                .reverse()
-                .map(({ price, size, sizePercent }) => (
-                  <OrderbookRow
-                    invert
-                    key={price + ''}
-                    price={price}
-                    size={size}
-                    side={'sell'}
-                    sizePercent={sizePercent}
-                    onPriceClick={() => alert(`price ${price}`)}
-                    onSizeClick={() => alert(`size ${size}`)}
-                  />
-                ))}
-            </div>
-          </div>
-        </>
-      ) : (
-        <>
-          <SizeTitle>
-            <div css={xw`text-left`}>Size ({baseCurrency})</div>
-            <div css={xw`text-right`}>Price ({quoteCurrency})</div>
-          </SizeTitle>
-          {orderbookData?.asks.map(({ price, size, sizePercent }) => (
-            <OrderbookRow
-              key={price + ''}
-              price={price}
-              size={size}
-              side={'sell'}
-              sizePercent={sizePercent}
-              onPriceClick={() => alert(`price ${price}`)}
-              onSizeClick={() => alert(`size ${size}`)}
-            />
-          ))}
-          <MarkPriceComponent markPrice={markPrice} />
-          {orderbookData?.bids.map(({ price, size, sizePercent }) => (
-            <OrderbookRow
-              key={price + ''}
-              price={price}
-              size={size}
-              side={'buy'}
-              sizePercent={sizePercent}
-              onPriceClick={() => alert(`price ${price}`)}
-              onSizeClick={() => alert(`size ${size}`)}
-            />
-          ))}
-        </>
-      )}
+      <>
+        <div css={xw`text-gray-500 flex justify-between mb-4`}>
+          <div css={xw`text-left`}>Size ({baseCurrency})</div>
+          <div css={xw`text-right`}>Price ({quoteCurrency})</div>
+        </div>
+        {orderbookData?.asks.map(({ price, size, sizePercent }) => (
+          <OrderbookRow
+            key={price + ''}
+            price={price}
+            size={size}
+            side={'sell'}
+            sizePercent={sizePercent}
+            onPriceClick={() => alert(`price ${price}`)}
+            onSizeClick={() => alert(`size ${size}`)}
+          />
+        ))}
+        <MarkPriceComponent markPrice={markPrice} />
+        {orderbookData?.bids.map(({ price, size, sizePercent }) => (
+          <OrderbookRow
+            key={price + ''}
+            price={price}
+            size={size}
+            side={'buy'}
+            sizePercent={sizePercent}
+            onPriceClick={() => alert(`price ${price}`)}
+            onSizeClick={() => alert(`size ${size}`)}
+          />
+        ))}
+      </>
     </>
   )
 }
@@ -215,9 +152,8 @@ const OrderbookRow = React.memo<any>(
 
     return (
       <div
-        css={xw`flex mb-1`}
+        css={xw`flex justify-between font-light`}
         ref={element}
-        style={{ marginBottom: 1 }}
         onClick={onSizeClick}
       >
         {invert ? (
@@ -228,30 +164,32 @@ const OrderbookRow = React.memo<any>(
                 data-width={sizePercent + '%'}
                 data-bgcolor={side === 'buy' ? '#5b6b16' : '#E54033'}
               />
-              <Price
-                invert
+              <div
+                css={xw``}
                 data-color={side === 'buy' ? '#ffffff' : 'white'}
                 onClick={onPriceClick}
               >
                 {formattedPrice}
-              </Price>
+              </div>
             </div>
             <div css={xw`text-right`}>{formattedSize}</div>
           </>
         ) : (
           <>
-            <div css={xw`text-left`}>{formattedSize}</div>
-            <div css={xw`text-right`}>
+            <div css={xw`text-left flex-1`}>{formattedSize}</div>
+            <div css={xw`text-right relative flex-1`}>
               <Line
+                css={xw`absolute inset-y-0 right-0`}
                 data-width={sizePercent + '%'}
                 data-bgcolor={side === 'buy' ? '#5b6b16' : '#E54033'}
               />
-              <Price
+              <div
+                css={xw`z-30 relative`}
                 data-color={side === 'buy' ? '#ffffff' : 'white'}
                 onClick={onPriceClick}
               >
                 {formattedPrice}
-              </Price>
+              </div>
             </div>
           </>
         )}
