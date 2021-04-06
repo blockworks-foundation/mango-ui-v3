@@ -3,7 +3,7 @@ import xw from 'xwind'
 import { TrashIcon } from '@heroicons/react/solid'
 
 const OpenOrdersTable = () => {
-  const [openOrders, setOpenOrders] = useState(['test'])
+  const [openOrders] = useState(['test'])
 
   return (
     <div css={xw`flex flex-col py-6`}>
@@ -79,7 +79,7 @@ const OpenOrdersTable = () => {
                       0.00
                     </td>
                     <td
-                      css={xw`px-6 py-4 whitespace-nowrap text-right text-sm font-medium`}
+                      css={xw`px-6 py-4 opacity-75 whitespace-nowrap text-right text-sm font-medium`}
                     >
                       <button
                         css={xw`flex items-center ml-auto text-mango-red border border-mango-red hover:text-red-700 hover:border-red-700 py-1 px-4`}

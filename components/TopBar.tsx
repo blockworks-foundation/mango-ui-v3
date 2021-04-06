@@ -43,7 +43,7 @@ const TopBar = () => {
                 onClick={handleConnectDisconnect}
                 css={xw`bg-mango-dark-light hover:bg-mango-dark-lighter text-mango-yellow rounded-md px-4 py-2 focus:outline-none`}
               >
-                <div css={xw`text-base font-light`}>
+                <div css={xw`text-lg font-light`}>
                   {connected ? (
                     <div onClick={wallet.disconnect}>
                       <span>Disconnect: </span>

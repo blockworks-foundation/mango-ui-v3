@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Input, Radio, Switch, Select } from 'antd'
 import xw from 'xwind'
 import styled from '@emotion/styled'
-import useMarkets from '../hooks/useMarkets'
+import useMarket from '../hooks/useMarket'
 import useWallet from '../hooks/useWallet'
 import useIpAddress from '../hooks/useIpAddress'
 import useConnection from '../hooks/useConnection'
@@ -36,10 +36,10 @@ export default function TradeForm({
     ref: ({ size, price }: { size?: number; price?: number }) => void
   ) => void
 }) {
-  console.log('reloading trade form')
+  // console.log('reloading trade form')
 
   const [side, setSide] = useState<'buy' | 'sell'>('buy')
-  const { baseCurrency, quoteCurrency, market } = useMarkets()
+  const { baseCurrency, quoteCurrency, market } = useMarket()
   const address = market?.publicKey
   const { wallet, connected } = useWallet()
 
@@ -368,20 +368,24 @@ export default function TradeForm({
           side === 'buy' ? (
             <BuyButton
               disabled={
-                (!price && tradeType === 'Limit') || !baseSize || !connected
+                (!price && tradeType === 'Limit') ||
+                !baseSize ||
+                !connected ||
+                submitting
               }
               onClick={onSubmit}
-              loading={submitting}
             >
               {connected ? `Buy ${baseCurrency}` : 'CONNECT WALLET TO TRADE'}
             </BuyButton>
           ) : (
             <SellButton
               disabled={
-                (!price && tradeType === 'Limit') || !baseSize || !connected
+                (!price && tradeType === 'Limit') ||
+                !baseSize ||
+                !connected ||
+                submitting
               }
               onClick={onSubmit}
-              loading={submitting}
             >
               {connected ? `Sell ${baseCurrency}` : 'CONNECT WALLET TO TRADE'}
             </SellButton>

@@ -73,9 +73,8 @@ export default function MarginInfo() {
   >(null)
   const { tradeHistory } = useTradeHistory()
 
-  // Settle bororows
   useEffect(() => {
-    console.log('HERE mangoGroup: ', mangoGroup)
+    console.log('marginInfo useEffect')
 
     if (mangoGroup) {
       mangoGroup.getPrices(connection).then((prices) => {

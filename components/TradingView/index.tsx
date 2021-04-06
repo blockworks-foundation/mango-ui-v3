@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { useEffect, useRef } from 'react'
 import {
   widget,
   ChartingLibraryWidgetOptions,
@@ -7,6 +7,7 @@ import {
 } from '../charting_library' // Make sure to follow step 1 of the README
 // import { useMarket } from '../../utils/markets';
 import { CHART_DATA_FEED } from '../../utils/chartDataConnector'
+import useMangoStore from '../../stores/useMangoStore'
 
 // This is a basic example of how to create a TV widget
 // You can add more feature such as storing charts in localStorage
@@ -30,9 +31,10 @@ export interface ChartContainerProps {
 // export interface ChartContainerState {}
 
 const TVChartContainer = () => {
+  const selectedMarketName = useMangoStore((s) => s.selectedMarket.name)
   // @ts-ignore
   const defaultProps: ChartContainerProps = {
-    symbol: 'BTC/USDT',
+    symbol: selectedMarketName,
     interval: '60' as ResolutionString,
     theme: 'Dark',
     containerId: 'tv_chart_container',
@@ -46,25 +48,13 @@ const TVChartContainer = () => {
     },
   }
 
-  const tvWidgetRef = React.useRef<IChartingLibraryWidget | null>(null)
+  const tvWidgetRef = useRef<IChartingLibraryWidget | null>(null)
   // TODO: fetch market from store and wire up to chart
   // const { market, marketName } = useMarket()
 
-  const parsedMarketName = 'BTC/USDT'
-  // switch (marketName) {
-  //   case 'BTC/WUSDT':
-  //     parsedMarketName = 'BTC/USDT'
-  //     break
-  //   case 'ETH/WUSDT':
-  //     parsedMarketName = 'ETH/USDT'
-  //     break
-  //   default:
-  //     parsedMarketName = marketName
-  // }
-
-  React.useEffect(() => {
+  useEffect(() => {
     const widgetOptions: ChartingLibraryWidgetOptions = {
-      symbol: parsedMarketName,
+      symbol: selectedMarketName,
       // BEWARE: no trailing slash is expected in feed URL
       // tslint:disable-next-line:no-any
       datafeed: new (window as any).Datafeeds.UDFCompatibleDatafeed(
@@ -138,7 +128,7 @@ const TVChartContainer = () => {
       })
     })
     //eslint-disable-next-line
-  }, [])
+  }, [selectedMarketName])
 
   // TODO: add market back to dep array
   // }, [market])

@@ -29,6 +29,7 @@
     "@blockworks-foundation/mango-client": "^0.1.10",
     "@emotion/react": "^11.1.5",
     "@emotion/styled": "^11.1.5",
+    "@headlessui/react": "^0.3.2",
     "@heroicons/react": "^1.0.0",
     "@project-serum/serum": "^0.13.31",
     "@project-serum/sol-wallet-adapter": "^0.1.8",

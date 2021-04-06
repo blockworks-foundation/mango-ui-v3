@@ -7,7 +7,7 @@ import { isEqual, getDecimalCount } from '../utils/'
 import { ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/solid'
 import useMarkPrice from '../hooks/useMarkPrice'
 import useOrderbook from '../hooks/useOrderbook'
-import useMarkets from '../hooks/useMarkets'
+import useMarket from '../hooks/useMarket'
 import { ElementTitle } from './styles'
 
 const Line = styled.div<any>`
@@ -22,7 +22,7 @@ const Line = styled.div<any>`
 export default function Orderbook({ depth = 7 }) {
   const markPrice = useMarkPrice()
   const [orderbook] = useOrderbook()
-  const { baseCurrency, quoteCurrency } = useMarkets()
+  const { baseCurrency, quoteCurrency } = useMarket()
 
   const currentOrderbookData = useRef(null)
   const lastOrderbookData = useRef(null)
@@ -117,7 +117,7 @@ export default function Orderbook({ depth = 7 }) {
 const OrderbookRow = React.memo<any>(
   ({ side, price, size, sizePercent, onSizeClick, onPriceClick, invert }) => {
     const element = useRef(null)
-    const { market } = useMarkets()
+    const { market } = useMarket()
 
     useEffect(() => {
       !element.current?.classList.contains('flash') &&
@@ -193,7 +193,7 @@ const OrderbookRow = React.memo<any>(
 
 const MarkPriceComponent = React.memo<{ markPrice: number }>(
   ({ markPrice }) => {
-    const { market } = useMarkets()
+    const { market } = useMarket()
     const previousMarkPrice: number = usePrevious(markPrice)
 
     const markPriceColor =

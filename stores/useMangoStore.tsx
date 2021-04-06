@@ -3,6 +3,7 @@ import { devtools } from 'zustand/middleware'
 import produce from 'immer'
 import { Market } from '@project-serum/serum'
 import {
+  IDS,
   MangoClient,
   MangoGroup,
   MarginAccount,
@@ -27,6 +28,7 @@ export const ENDPOINTS: EndpointInfo[] = [
 const CLUSTER = 'mainnet-beta'
 const ENDPOINT_URL = ENDPOINTS.find((e) => e.name === CLUSTER).endpoint
 const DEFAULT_CONNECTION = new Connection(ENDPOINT_URL, 'recent')
+const DEFAULT_MANGO_GROUP = 'BTC_ETH_USDT'
 
 interface AccountInfoList {
   [key: string]: AccountInfo<Buffer>
@@ -40,10 +42,14 @@ interface MangoStore extends State {
     endpoint: string
   }
   market: {
-    programId: number | null
     current: Market | null
+    mangoProgramId: number | null
     markPrice: number
     orderBook: any[]
+  }
+  selectedMarket: {
+    name: string
+    address: string
   }
   mangoClient: MangoClient
   mangoGroups: Array<MangoGroup>
@@ -74,17 +80,24 @@ const useMangoStore = create<MangoStore>(
       endpoint: ENDPOINT_URL,
     },
     selectedMangoGroup: {
-      name: 'BTC_ETH_USDT',
+      name: DEFAULT_MANGO_GROUP,
       current: null,
     },
+    selectedMarket: {
+      name: Object.entries(
+        IDS[CLUSTER].mango_groups[DEFAULT_MANGO_GROUP].spot_market_symbols
+      )[0][0],
+      address: Object.entries(
+        IDS[CLUSTER].mango_groups[DEFAULT_MANGO_GROUP].spot_market_symbols
+      )[0][1],
+    },
     market: {
-      programId: null,
       current: null,
+      mangoProgramId: null,
       markPrice: 0,
       orderBook: [],
     },
     mangoClient: new MangoClient(),
-    mangoGroup: null,
     mangoGroups: [],
     marginAccounts: [],
     selectedMarginAccount: {

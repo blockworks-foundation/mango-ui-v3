@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react'
 import { PublicKey, AccountInfo } from '@solana/web3.js'
 import { Orderbook } from '@project-serum/serum'
-import useMarkets from './useMarkets'
+import useMarket from './useMarket'
 import useInterval from './useInterval'
 import useMangoStore from '../stores/useMangoStore'
 import useConnection from './useConnection'
@@ -69,7 +69,7 @@ export default function useOrderbook(
   depth = 20
 ): [{ bids: number[][]; asks: number[][] }, boolean] {
   const { bidOrderbook, askOrderbook } = useOrderbookAccounts()
-  const { market } = useMarkets()
+  const { market } = useMarket()
 
   const setMangoStore = useMangoStore((s) => s.set)
 

@@ -4,13 +4,13 @@ import xw from 'xwind'
 import { getDecimalCount } from '../utils'
 import { ChartTradeType } from '../@types/types'
 import FloatingElement from './FloatingElement'
-import useMarkets from '../hooks/useMarkets'
+import useMarket from '../hooks/useMarket'
 import useInterval from '../hooks/useInterval'
 import ChartApi from '../utils/chartDataConnector'
 import { ElementTitle } from './styles'
 
 export default function PublicTrades() {
-  const { baseCurrency, quoteCurrency, market, marketAddress } = useMarkets()
+  const { baseCurrency, quoteCurrency, market, marketAddress } = useMarket()
   const [trades, setTrades] = useState([])
 
   useInterval(async () => {
