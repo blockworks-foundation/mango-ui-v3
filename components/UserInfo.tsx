@@ -1,13 +1,15 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import xw from 'xwind'
 import FloatingElement from './FloatingElement'
 import OpenOrdersTable from './OpenOrdersTable'
+import BalancesTable from './BalancesTable'
+import FeeDiscountsTable from './FeeDiscountsTable'
+import TradeHistoryTable from './TradeHistoryTable'
 
 const TABS = ['Open Orders', 'Balances', 'Fee Discounts', 'Trade History']
 
 const UserInfoTabs = ({ activeTab, setActiveTab }) => {
   const handleTabChange = (tabName) => {
-    console.log('handle tab change', tabName)
     setActiveTab(tabName)
   }
 
@@ -20,7 +22,7 @@ const UserInfoTabs = ({ activeTab, setActiveTab }) => {
         <select
           id="tabs"
           name="tabs"
-          css={xw`block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md`}
+          css={xw`block w-full pl-3 pr-10 py-2 text-base bg-mango-dark border border-mango-med-dark focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md`}
           onChange={(e) => handleTabChange(e.target.value)}
         >
           {TABS.map((tabName) => (
@@ -31,7 +33,7 @@ const UserInfoTabs = ({ activeTab, setActiveTab }) => {
         </select>
       </div>
       <div css={xw`hidden sm:block`}>
-        <div css={xw`border-b border-gray-700`}>
+        <div css={xw`border-b border-mango-dark-lighter`}>
           <nav css={xw`-mb-px flex space-x-8`} aria-label="Tabs">
             {TABS.map((tabName) => (
               <a
@@ -61,16 +63,28 @@ const UserInfoTabs = ({ activeTab, setActiveTab }) => {
   )
 }
 
+const TabContent = ({ activeTab }) => {
+  switch (activeTab) {
+    case 'Orders':
+      return <OpenOrdersTable />
+    case 'Balances':
+      return <BalancesTable />
+    case 'Fee Discounts':
+      return <FeeDiscountsTable />
+    case 'Trade History':
+      return <TradeHistoryTable />
+    default:
+      return <OpenOrdersTable />
+  }
+}
+
 const UserInfo = () => {
   const [activeTab, setActiveTab] = useState(TABS[0])
-  useEffect(() => {
-    console.log('user info')
-  })
 
   return (
     <FloatingElement>
       <UserInfoTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-      <OpenOrdersTable />
+      <TabContent activeTab={activeTab} />
     </FloatingElement>
   )
 }

@@ -13,6 +13,11 @@ const useMarketList = () => {
     [cluster, mangoGroupName]
   )
 
+  const symbols = useMemo(
+    () => IDS[cluster]?.mango_groups[mangoGroupName]?.symbols || {},
+    [cluster, mangoGroupName]
+  )
+
   const marketList = useMemo(
     () =>
       Object.entries(spotMarkets).map(([name, address]) => {
@@ -30,6 +35,7 @@ const useMarketList = () => {
     programId,
     marketList,
     spotMarkets,
+    symbols,
   }
 }
 

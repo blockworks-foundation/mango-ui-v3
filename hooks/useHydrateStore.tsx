@@ -101,9 +101,15 @@ const useHydrateStore = () => {
         markets.forEach((market) => {
           state.selectedMangoGroup.markets[market.publicKey.toString()] = market
           // @ts-ignore
-          state.accountInfos[market._decoded.bids.toString()] = null
+          const bidAcctAddress = market._decoded.bids.toString()
+          if (!(bidAcctAddress in state.accountInfos)) {
+            state.accountInfos[bidAcctAddress] = null
+          }
           // @ts-ignore
-          state.accountInfos[market._decoded.asks.toString()] = null
+          const askAcctAddress = market._decoded.asks.toString()
+          if (!(askAcctAddress in state.accountInfos)) {
+            state.accountInfos[askAcctAddress] = null
+          }
         })
       })
     })
@@ -146,7 +152,7 @@ const useHydrateStore = () => {
                 previousAskInfo = info
                 setMangoStore((state) => {
                   // @ts-ignore
-                  const pkString = market._decoded.bids.toString()
+                  const pkString = market._decoded.asks.toString()
                   state.accountInfos[pkString] = previousAskInfo
                 })
               }

@@ -38,7 +38,6 @@ export const usePrevious = (value) => {
 export const useTradeHistory = () => {
   const eventQueueFills = useSerumStore((s) => s.fills)
   const [tradeHistory, setTradeHistory] = useState<any[]>([])
-  const [loadingHistory, setloadingHistory] = useState(false)
   const [allTrades, setAllTrades] = useState<any[]>([])
   const marginAccount = useMangoStore((s) => s.selectedMarginAccount.current)
 
@@ -46,7 +45,6 @@ export const useTradeHistory = () => {
     if (!marginAccount) return
     if (marginAccount.openOrdersAccounts.length === 0) return
 
-    setloadingHistory(true)
     const openOrdersAccounts = marginAccount.openOrdersAccounts.filter(
       isDefined
     )
@@ -64,7 +62,6 @@ export const useTradeHistory = () => {
 
     setTradeHistory(formatTradeHistory(results))
     setAllTrades(formatTradeHistory(results))
-    setloadingHistory(false)
   }, [marginAccount, eventQueueFills])
 
   useEffect(() => {
@@ -88,7 +85,7 @@ export const useTradeHistory = () => {
     }
   }, [tradeHistory, eventQueueFills])
 
-  return { tradeHistory: allTrades, loadingHistory, fetchTradeHistory }
+  return { tradeHistory: allTrades }
 }
 
 export default useTradeHistory

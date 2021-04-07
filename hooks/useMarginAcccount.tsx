@@ -4,7 +4,6 @@ import { IDS } from '@blockworks-foundation/mango-client'
 import useMangoStore from '../stores/useMangoStore'
 import useConnection from './useConnection'
 import useInterval from './useInterval'
-import useWallet from './useWallet'
 
 const useMarginAccount = () => {
   const mangoClient = useMangoStore((s) => s.mangoClient)
@@ -16,7 +15,7 @@ const useMarginAccount = () => {
   const setMangoStore = useMangoStore((s) => s.set)
 
   const { current: wallet } = useMangoStore((s) => s.wallet)
-  const { connected } = useWallet()
+  const connected = useMangoStore((s) => s.wallet.connected)
 
   const { cluster, connection } = useConnection()
   const clusterIds = useMemo(() => IDS[cluster], [cluster])
@@ -33,10 +32,14 @@ const useMarginAccount = () => {
 
     mangoClient
       .getMangoGroup(connection, mangoGroupPk, srmVaultPk)
-      .then((mangoGroup) => {
+      .then(async (mangoGroup) => {
+        const srmAccountInfo = await connection.getAccountInfo(
+          mangoGroup.srmVault
+        )
         // Set the mango group
         setMangoStore((state) => {
           state.selectedMangoGroup.current = mangoGroup
+          state.selectedMangoGroup.srmAccount = srmAccountInfo
         })
       })
       .catch((err) => {
@@ -55,8 +58,6 @@ const useMarginAccount = () => {
         wallet
       )
       .then((marginAccounts) => {
-        console.log('margin Accounts: ', marginAccounts)
-
         if (marginAccounts.length > 0) {
           setMangoStore((state) => {
             state.marginAcccounts = marginAccounts
@@ -71,7 +72,6 @@ const useMarginAccount = () => {
 
   useEffect(() => {
     fetchMangoGroup()
-    fetchMarginAccounts()
   }, [fetchMangoGroup])
 
   useEffect(() => {
@@ -82,7 +82,7 @@ const useMarginAccount = () => {
   useInterval(() => {
     fetchMarginAccounts()
     // fetchMangoGroup()
-  }, 2000)
+  }, 5000)
 
   return {
     mangoClient,

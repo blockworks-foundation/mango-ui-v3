@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react'
-import { Orderbook } from '@project-serum/serum'
+import { Orderbook, Market } from '@project-serum/serum'
 import useMarket from './useMarket'
 import useMangoStore from '../stores/useMangoStore'
 
@@ -9,8 +9,7 @@ export function useAccountData(publicKey) {
   return accountInfo && Buffer.from(accountInfo.data)
 }
 
-export function useOrderbookAccounts() {
-  const market = useMangoStore((s) => s.market.current)
+export function useOrderbookAccounts(market: Market) {
   // @ts-ignore
   const bidData = useAccountData(market && market._decoded.bids)
   // @ts-ignore
@@ -24,10 +23,9 @@ export function useOrderbookAccounts() {
 export default function useOrderbook(
   depth = 20
 ): [{ bids: number[][]; asks: number[][] }, boolean] {
-  const { bidOrderbook, askOrderbook } = useOrderbookAccounts()
-  const { market } = useMarket()
-
   const setMangoStore = useMangoStore((s) => s.set)
+  const { market } = useMarket()
+  const { bidOrderbook, askOrderbook } = useOrderbookAccounts(market)
 
   const bids = useMemo(
     () =>

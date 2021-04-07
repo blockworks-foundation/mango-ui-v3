@@ -54,8 +54,6 @@ const calculatePNL = (tradeHistory, prices, mangoGroup) => {
 }
 
 export default function MarginInfo() {
-  console.log('loading margin info')
-
   const { connection } = useConnection()
   const { marginAccount, mangoGroup } = useMarginAccount()
   const [mAccountInfo, setMAccountInfo] = useState<

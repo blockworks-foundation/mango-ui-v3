@@ -7,8 +7,6 @@ const DropdownExample = () => {
   const { spotMarkets } = useMarketList()
   const { marketName } = useMarket()
 
-  console.log('spot markets', spotMarkets)
-
   // const handleChange = (e) => {
   //   console.log('new market selected', e)
   // }

@@ -36,12 +36,10 @@ export default function TradeForm({
     ref: ({ size, price }: { size?: number; price?: number }) => void
   ) => void
 }) {
-  console.log('reloading trade form')
-
   const [side, setSide] = useState<'buy' | 'sell'>('buy')
   const { baseCurrency, quoteCurrency, market } = useMarket()
   const address = market?.publicKey
-  const { wallet, connected } = useWallet()
+  const { current: wallet, connected } = useMangoStore((s) => s.wallet)
 
   const { connection, cluster } = useConnection()
   const { marginAccount, mangoGroup } = useMarginAccount()

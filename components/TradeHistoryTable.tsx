@@ -1,8 +1,7 @@
 import xw from 'xwind'
-import { TrashIcon } from '@heroicons/react/solid'
 import { useOpenOrders } from '../hooks/useOpenOrders'
 
-const OpenOrdersTable = () => {
+const TradeHistoryTable = () => {
   const openOrders = useOpenOrders()
 
   return (
@@ -20,28 +19,43 @@ const OpenOrdersTable = () => {
                       scope="col"
                       css={xw`px-6 py-3 text-left text-base font-medium text-gray-300 tracking-wider`}
                     >
-                      Market
+                      Coin
                     </th>
                     <th
                       scope="col"
                       css={xw`px-6 py-3 text-left text-base font-medium text-gray-300 tracking-wider`}
                     >
-                      Side
+                      Wallet Balance
                     </th>
                     <th
                       scope="col"
                       css={xw`px-6 py-3 text-left text-base font-medium text-gray-300 tracking-wider`}
                     >
-                      Size
+                      Deposits
                     </th>
                     <th
                       scope="col"
                       css={xw`px-6 py-3 text-left text-base font-medium text-gray-300 tracking-wider`}
                     >
-                      Price
+                      Borrows
                     </th>
-                    <th scope="col" css={xw`relative px-6 py-3`}>
-                      <span css={xw`sr-only`}>Edit</span>
+                    <th
+                      scope="col"
+                      css={xw`px-6 py-3 text-left text-base font-medium text-gray-300 tracking-wider`}
+                    >
+                      In Orders
+                    </th>
+                    <th
+                      scope="col"
+                      css={xw`px-6 py-3 text-left text-base font-medium text-gray-300 tracking-wider`}
+                    >
+                      Unsettled
+                    </th>
+                    <th
+                      scope="col"
+                      css={xw`px-6 py-3 text-left text-base font-medium text-gray-300 tracking-wider`}
+                    >
+                      Net
                     </th>
                   </tr>
                 </thead>
@@ -80,15 +94,19 @@ const OpenOrdersTable = () => {
                         {order.price}
                       </td>
                       <td
-                        css={xw`px-6 py-4 opacity-75 whitespace-nowrap text-right text-sm font-medium`}
+                        css={xw`px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-light`}
                       >
-                        <button
-                          onClick={() => alert('cancel order')}
-                          css={xw`flex items-center ml-auto text-mango-red border border-mango-red hover:text-red-700 hover:border-red-700 py-1 px-4`}
-                        >
-                          <TrashIcon css={xw`h-5 w-5 mr-1`} />
-                          <span>Cancel Order</span>
-                        </button>
+                        {order.price}
+                      </td>
+                      <td
+                        css={xw`px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-light`}
+                      >
+                        {order.price}
+                      </td>
+                      <td
+                        css={xw`px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-light`}
+                      >
+                        {order.price}
                       </td>
                     </tr>
                   ))}
@@ -108,4 +126,4 @@ const OpenOrdersTable = () => {
   )
 }
 
-export default OpenOrdersTable
+export default TradeHistoryTable

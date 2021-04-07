@@ -15,8 +15,6 @@ export default function PublicTrades() {
 
   const fetchTrades = useCallback(async () => {
     const trades = await ChartApi.getRecentTrades(marketAddress)
-    console.log('trades in interval', trades)
-
     setSerumStore((state) => {
       state.chartApiTrades = trades
     })
