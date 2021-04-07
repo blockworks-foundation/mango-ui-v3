@@ -42,8 +42,10 @@
     "next": "latest",
     "next-plugin-antd-less": "^0.3.0",
     "react": "^17.0.1",
+    "react-cool-dimensions": "^2.0.1",
     "react-dom": "^17.0.1",
     "react-grid-layout": "^1.2.4",
+    "recharts": "^2.0.9",
     "zustand": "^3.3.3"
   },
   "devDependencies": {

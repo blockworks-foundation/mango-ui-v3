@@ -63,7 +63,7 @@ const TopBar = () => {
           <div css={xw`-mr-2 flex items-center sm:hidden`}>
             <button
               type="button"
-              css={xw`inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-mango-yellow`}
+              css={xw`inline-flex items-center justify-center p-2 rounded-md text-mango-med-light hover:bg-mango-dark-light focus:outline-none focus:ring-2 focus:ring-inset focus:ring-mango-yellow`}
               aria-controls="mobile-menu"
               aria-expanded="false"
               onClick={() => setShowMenu((showMenu) => !showMenu)}
