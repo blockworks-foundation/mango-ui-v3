@@ -54,13 +54,10 @@ const calculatePNL = (tradeHistory, prices, mangoGroup) => {
 }
 
 export default function MarginInfo() {
-  // Connection hook
+  console.log('loading margin info')
+
   const { connection } = useConnection()
-  // Wallet hook
-  // Get our account info
   const { marginAccount, mangoGroup } = useMarginAccount()
-  // Working state
-  // Hold the margin account info
   const [mAccountInfo, setMAccountInfo] = useState<
     | {
         label: string
@@ -74,8 +71,6 @@ export default function MarginInfo() {
   const { tradeHistory } = useTradeHistory()
 
   useEffect(() => {
-    console.log('marginInfo useEffect')
-
     if (mangoGroup) {
       mangoGroup.getPrices(connection).then((prices) => {
         const collateralRatio = marginAccount

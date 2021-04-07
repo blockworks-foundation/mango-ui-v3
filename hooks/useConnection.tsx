@@ -4,10 +4,12 @@ import { IDS } from '@blockworks-foundation/mango-client'
 import useMangoStore from '../stores/useMangoStore'
 
 const useConnection = () => {
+  // console.log('loading useConnection')
+
+  const setSolanaStore = useMangoStore((s) => s.set)
   const { cluster, current: connection, endpoint } = useMangoStore(
     (s) => s.connection
   )
-  const setSolanaStore = useMangoStore((s) => s.set)
 
   const sendConnection = useMemo(() => new Connection(endpoint, 'recent'), [
     endpoint,
@@ -29,17 +31,17 @@ const useConnection = () => {
     return () => {
       connection.removeAccountChangeListener(id)
     }
-  }, [connection])
+  }, [endpoint])
 
   useEffect(() => {
     const id = connection.onSlotChange(() => null)
     return () => {
       connection.removeSlotChangeListener(id)
     }
-  }, [connection])
+  }, [endpoint])
 
-  const programId = IDS[cluster].mango_program_id
-  const dexProgramId = IDS[cluster]?.dex_program_id
+  const programId = useMemo(() => IDS[cluster].mango_program_id, [cluster])
+  const dexProgramId = useMemo(() => IDS[cluster]?.dex_program_id, [cluster])
 
   return { connection, dexProgramId, cluster, programId, sendConnection }
 }

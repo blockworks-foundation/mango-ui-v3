@@ -9,6 +9,7 @@ interface SerumStore extends State {
     asks: any[]
   }
   fills: any[]
+  chartApiTrades: any[]
   set: (x: any) => void
 }
 
@@ -18,6 +19,7 @@ const useSerumStore = create<SerumStore>((set) => ({
     asks: [],
   },
   fills: [],
+  chartApiTrades: [], // TODO remove transient updates
   set: (fn) => set(produce(fn)),
 }))
 

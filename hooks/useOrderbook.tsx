@@ -1,53 +1,9 @@
 import { useEffect, useMemo } from 'react'
-import { PublicKey, AccountInfo } from '@solana/web3.js'
 import { Orderbook } from '@project-serum/serum'
 import useMarket from './useMarket'
-import useInterval from './useInterval'
 import useMangoStore from '../stores/useMangoStore'
-import useConnection from './useConnection'
-
-function useAccountInfo(account: PublicKey) {
-  const setSolanaStore = useMangoStore((s) => s.set)
-  const { connection } = useConnection()
-  const accountPkAsString = account ? account.toString() : null
-
-  useInterval(async () => {
-    if (!account) return
-
-    const info = await connection.getAccountInfo(account)
-    console.log('fetching account info on interval', accountPkAsString)
-
-    setSolanaStore((state) => {
-      state.accountInfos[accountPkAsString] = info
-    })
-  }, 60000)
-
-  useEffect(() => {
-    if (!account) return
-    let previousInfo: AccountInfo<Buffer> | null = null
-
-    const subscriptionId = connection.onAccountChange(account, (info) => {
-      if (
-        !previousInfo ||
-        !previousInfo.data.equals(info.data) ||
-        previousInfo.lamports !== info.lamports
-      ) {
-        previousInfo = info
-        setSolanaStore((state) => {
-          state.accountInfos[accountPkAsString] = previousInfo
-        })
-      }
-    })
-
-    return () => {
-      connection.removeAccountChangeListener(subscriptionId)
-    }
-  }, [account, connection])
-}
 
 export function useAccountData(publicKey) {
-  useAccountInfo(publicKey)
-
   const account = publicKey ? publicKey.toString() : null
   const accountInfo = useMangoStore((s) => s.accountInfos[account])
   return accountInfo && Buffer.from(accountInfo.data)

@@ -19,6 +19,30 @@ const Line = styled.div<any>`
     props['data-bgcolor'] && `background-color: ${props['data-bgcolor']};`}
 `
 
+function getCumulativeOrderbookSide(
+  orders,
+  totalSize,
+  depth,
+  backwards = false
+) {
+  let cumulative = orders
+    .slice(0, depth)
+    .reduce((cumulative, [price, size], i) => {
+      const cumulativeSize = (cumulative[i - 1]?.cumulativeSize || 0) + size
+      cumulative.push({
+        price,
+        size,
+        cumulativeSize,
+        sizePercent: Math.round((cumulativeSize / (totalSize || 1)) * 100),
+      })
+      return cumulative
+    }, [])
+  if (backwards) {
+    cumulative = cumulative.reverse()
+  }
+  return cumulative
+}
+
 export default function Orderbook({ depth = 7 }) {
   const markPrice = useMarkPrice()
   const [orderbook] = useOrderbook()
@@ -42,8 +66,18 @@ export default function Orderbook({ depth = 7 }) {
         index < depth ? total + size : total
       const totalSize = bids.reduce(sum, 0) + asks.reduce(sum, 0)
 
-      const bidsToDisplay = getCumulativeOrderbookSide(bids, totalSize, false)
-      const asksToDisplay = getCumulativeOrderbookSide(asks, totalSize, true)
+      const bidsToDisplay = getCumulativeOrderbookSide(
+        bids,
+        totalSize,
+        depth,
+        false
+      )
+      const asksToDisplay = getCumulativeOrderbookSide(
+        asks,
+        totalSize,
+        depth,
+        true
+      )
 
       currentOrderbookData.current = {
         bids: orderbook?.bids,
@@ -60,25 +94,6 @@ export default function Orderbook({ depth = 7 }) {
       asks: orderbook?.asks,
     }
   }, [orderbook])
-
-  function getCumulativeOrderbookSide(orders, totalSize, backwards = false) {
-    let cumulative = orders
-      .slice(0, depth)
-      .reduce((cumulative, [price, size], i) => {
-        const cumulativeSize = (cumulative[i - 1]?.cumulativeSize || 0) + size
-        cumulative.push({
-          price,
-          size,
-          cumulativeSize,
-          sizePercent: Math.round((cumulativeSize / (totalSize || 1)) * 100),
-        })
-        return cumulative
-      }, [])
-    if (backwards) {
-      cumulative = cumulative.reverse()
-    }
-    return cumulative
-  }
 
   return (
     <>

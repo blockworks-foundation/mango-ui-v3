@@ -3,7 +3,7 @@ import { PublicKey } from '@solana/web3.js'
 import { IDS } from '@blockworks-foundation/mango-client'
 import useMangoStore from '../stores/useMangoStore'
 import useConnection from './useConnection'
-// import useInterval from './useInterval'
+import useInterval from './useInterval'
 import useWallet from './useWallet'
 
 const useMarginAccount = () => {
@@ -46,7 +46,6 @@ const useMarginAccount = () => {
 
   const fetchMarginAccounts = useCallback(() => {
     if (!mangoClient || !mangoGroup || !connected || !wallet.publicKey) return
-    console.log('fetching margin accounts from: ', wallet.publicKey.toString())
 
     mangoClient
       .getMarginAccountsForOwner(
@@ -80,10 +79,10 @@ const useMarginAccount = () => {
     fetchMarginAccounts()
   }, [connected, fetchMarginAccounts])
 
-  // useInterval(() => {
-  //   fetchMarginAccounts()
-  //   fetchMangoGroup()
-  // }, 20000)
+  useInterval(() => {
+    fetchMarginAccounts()
+    // fetchMangoGroup()
+  }, 2000)
 
   return {
     mangoClient,

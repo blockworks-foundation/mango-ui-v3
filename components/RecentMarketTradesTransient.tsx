@@ -1,5 +1,4 @@
-import { useState } from 'react'
-// import styled from '@emotion/styled'
+import { useCallback, useEffect, useRef } from 'react'
 import xw from 'xwind'
 import { getDecimalCount } from '../utils'
 import { ChartTradeType } from '../@types/types'
@@ -8,20 +7,41 @@ import useMarket from '../hooks/useMarket'
 import useInterval from '../hooks/useInterval'
 import ChartApi from '../utils/chartDataConnector'
 import { ElementTitle } from './styles'
-import { isEqual } from '../utils/index'
+import useSerumStore from '../stores/useSerumStore'
 
 export default function PublicTrades() {
   const { baseCurrency, quoteCurrency, market, marketAddress } = useMarket()
-  const [trades, setTrades] = useState([])
+  const setSerumStore = useSerumStore((s) => s.set)
 
+  const fetchTrades = useCallback(async () => {
+    const trades = await ChartApi.getRecentTrades(marketAddress)
+    console.log('trades in interval', trades)
+
+    setSerumStore((state) => {
+      state.chartApiTrades = trades
+    })
+  }, [marketAddress])
+
+  // fetch trades on load
+  useEffect(() => {
+    fetchTrades()
+  }, [])
+
+  // refresh trades on interval
   useInterval(async () => {
-    const newTrades = await ChartApi.getRecentTrades(marketAddress)
-    if (trades.length === 0) {
-      setTrades(newTrades)
-    } else if (!isEqual(newTrades[0], trades[0], Object.keys(newTrades[0]))) {
-      setTrades(newTrades)
-    }
+    fetchTrades()
   }, 5000)
+
+  const tradesRef = useRef(useSerumStore.getState().chartApiTrades)
+  const trades = tradesRef.current
+  useEffect(
+    () =>
+      useSerumStore.subscribe(
+        (trades) => (tradesRef.current = trades as any[]),
+        (state) => state.chartApiTrades
+      ),
+    []
+  )
 
   return (
     <FloatingElement>

@@ -56,6 +56,9 @@ interface MangoStore extends State {
   selectedMangoGroup: {
     name: string
     current: MangoGroup | null
+    markets: {
+      [key: string]: Market
+    }
   }
   selectedMarginAccount: {
     current: MarginAccount | null
@@ -82,6 +85,7 @@ const useMangoStore = create<MangoStore>(
     selectedMangoGroup: {
       name: DEFAULT_MANGO_GROUP,
       current: null,
+      markets: {},
     },
     selectedMarket: {
       name: Object.entries(

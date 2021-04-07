@@ -36,7 +36,7 @@ export default function TradeForm({
     ref: ({ size, price }: { size?: number; price?: number }) => void
   ) => void
 }) {
-  // console.log('reloading trade form')
+  console.log('reloading trade form')
 
   const [side, setSide] = useState<'buy' | 'sell'>('buy')
   const { baseCurrency, quoteCurrency, market } = useMarket()
