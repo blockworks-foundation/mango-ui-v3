@@ -134,3 +134,12 @@ export const calculateMarketPrice = (
     return selectedOrder[0] * 0.95
   }
 }
+
+// Precision for our mango group token
+export const tokenPrecision = {
+  BTC: 4,
+  ETH: 3,
+  USDC: 2,
+  USDT: 2,
+  WUSDT: 2,
+}

@@ -1,5 +1,5 @@
 import { Popover } from 'antd'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import xw from 'xwind'
 import { nativeToUi } from '@blockworks-foundation/mango-client/lib/utils'
 import { groupBy } from '../utils'
@@ -53,7 +53,7 @@ const calculatePNL = (tradeHistory, prices, mangoGroup) => {
   return total.toFixed(2)
 }
 
-export default function MarginInfo() {
+export default function MarginStats() {
   const { connection } = useConnection()
   const { marginAccount, mangoGroup } = useMarginAccount()
   const [mAccountInfo, setMAccountInfo] = useState<
@@ -144,10 +144,10 @@ export default function MarginInfo() {
   }, [marginAccount, mangoGroup])
   return (
     <FloatingElement>
-      <React.Fragment>
+      <>
         {mAccountInfo
           ? mAccountInfo.map((entry, i) => (
-              <div css={xw`flex justify-between pt-2 pb-3`} key={i}>
+              <div css={xw`flex justify-between pt-2 pb-2`} key={i}>
                 <Popover
                   content={entry.desc}
                   placement="topLeft"
@@ -162,7 +162,7 @@ export default function MarginInfo() {
               </div>
             ))
           : null}
-      </React.Fragment>
+      </>
     </FloatingElement>
   )
 }

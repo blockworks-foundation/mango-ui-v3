@@ -45,6 +45,7 @@
     "react-cool-dimensions": "^2.0.1",
     "react-dom": "^17.0.1",
     "react-grid-layout": "^1.2.4",
+    "react-portal": "^4.2.1",
     "recharts": "^2.0.9",
     "zustand": "^3.3.3"
   },
