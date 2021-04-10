@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Input, Radio, Switch, Select } from 'antd'
 import xw from 'xwind'
-import styled from '@emotion/styled'
 import useMarket from '../hooks/useMarket'
 import useIpAddress from '../hooks/useIpAddress'
 import useConnection from '../hooks/useConnection'
@@ -12,9 +11,9 @@ import { placeAndSettle } from '../utils/mango'
 import { calculateMarketPrice, getDecimalCount } from '../utils'
 import FloatingElement from './FloatingElement'
 import { roundToDecimal } from '../utils/index'
-import useMarginAccount from '../hooks/useMarginAcccount'
 import useMangoStore from '../stores/useMangoStore'
 import Button from './Button'
+// import TradeType from './TradeType'
 
 export default function TradeForm({
   setChangeOrderRef,
@@ -24,12 +23,10 @@ export default function TradeForm({
   ) => void
 }) {
   const [side, setSide] = useState<'buy' | 'sell'>('buy')
-  const { baseCurrency, quoteCurrency, market } = useMarket()
-  const address = market?.publicKey
-  const { current: wallet, connected } = useMangoStore((s) => s.wallet)
+  const { baseCurrency, quoteCurrency, market, marketAddress } = useMarket()
+  const { connected } = useMangoStore((s) => s.wallet)
 
   const { connection, cluster } = useConnection()
-  const { marginAccount, mangoGroup } = useMarginAccount()
   const tradeForm = useMangoStore((s) => s.tradeForm)
 
   const orderBookRef = useRef(useMangoStore.getState().market.orderBook)
@@ -166,14 +163,12 @@ export default function TradeForm({
       })
       return
     }
-    console.log('checking if we can call place order', {
-      mangoGroup,
-      address,
-      marginAccount,
-      market,
-    })
 
-    if (!mangoGroup || !address || !marginAccount || !market) return
+    const marginAccount = useMangoStore.getState().selectedMarginAccount.current
+    const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
+    const wallet = useMangoStore.getState().wallet.current
+
+    if (!mangoGroup || !marketAddress || !marginAccount || !market) return
     setSubmitting(true)
 
     try {
@@ -189,8 +184,6 @@ export default function TradeForm({
         connection,
         new PublicKey(IDS[cluster].mango_program_id),
         mangoGroup,
-        // TODO:
-        // @ts-ignore
         marginAccount,
         market,
         wallet,
@@ -199,17 +192,17 @@ export default function TradeForm({
         baseSize,
         ioc ? 'ioc' : postOnly ? 'postOnly' : 'limit'
       )
+      console.log('Successfully placed trade!')
 
-      // refreshCache(tuple('getTokenAccounts', wallet, connected))
       setPrice(undefined)
       onSetBaseSize(undefined)
     } catch (e) {
-      console.warn(e)
-      notify({
-        message: 'Error placing order',
-        description: e.message,
-        type: 'error',
-      })
+      console.warn('Error placing trade:', e)
+      // notify({
+      //   message: 'Error placing order',
+      //   description: e.message,
+      //   type: 'error',
+      // })
     } finally {
       setSubmitting(false)
     }
@@ -272,11 +265,7 @@ export default function TradeForm({
               textAlign: 'right',
               paddingBottom: 8,
             }}
-            addonBefore={
-              <div style={{ width: '30px' }} css={xw`bg-mango-dark-light`}>
-                Price
-              </div>
-            }
+            addonBefore={<div style={{ width: '30px' }}>Price</div>}
             suffix={
               <span style={{ fontSize: 10, opacity: 0.5 }}>
                 {quoteCurrency}
@@ -288,6 +277,7 @@ export default function TradeForm({
             onChange={(e) => setPrice(parseFloat(e.target.value))}
             disabled={tradeType === 'Market'}
           />
+          {/* <TradeType onChange={handleTradeTypeChange} value={tradeType} /> */}
           <Select
             style={{ width: 'calc(50% - 30px)' }}
             onChange={handleTradeTypeChange}
@@ -350,8 +340,11 @@ export default function TradeForm({
                 !connected ||
                 submitting
               }
+              grow={true}
               onClick={onSubmit}
-              css={[xw`bg-mango-green flex-grow text-mango-dark`]}
+              css={[
+                xw`text-lg font-light bg-mango-green text-mango-dark hover:bg-mango-yellow flex-grow`,
+              ]}
             >
               {connected ? `Buy ${baseCurrency}` : 'CONNECT WALLET TO TRADE'}
             </Button>
@@ -363,8 +356,11 @@ export default function TradeForm({
                 !connected ||
                 submitting
               }
+              grow={true}
               onClick={onSubmit}
-              css={[xw`bg-mango-red flex-grow text-white`]}
+              css={[
+                xw`text-lg font-light bg-mango-red text-white hover:bg-mango-yellow flex-grow`,
+              ]}
             >
               {connected ? `Sell ${baseCurrency}` : 'CONNECT WALLET TO TRADE'}
             </Button>

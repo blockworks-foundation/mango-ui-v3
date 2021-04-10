@@ -7,7 +7,12 @@ import { nativeToUi } from '@blockworks-foundation/mango-client/lib/utils'
 import useMangoStore from '../stores/useMangoStore'
 import { tokenPrecision } from '../utils/index'
 
-const AccountSelect = ({ accounts, selectedAccount, onSelectAccount }) => {
+const AccountSelect = ({
+  accounts,
+  selectedAccount,
+  onSelectAccount,
+  hideBalance = false,
+}) => {
   const { getTokenIndex } = useMarketList()
   const mintDecimals = useMangoStore((s) => s.selectedMangoGroup.mintDecimals)
   const handleChange = (value) => {
@@ -51,9 +56,11 @@ const AccountSelect = ({ accounts, selectedAccount, onSelectAccount }) => {
                     css={xw`mr-4`}
                   />
                   {abbreviateAddress(selectedAccount?.publicKey)}
-                  <div css={xw`ml-4 text-sm text-right flex-grow`}>
-                    ({getBalanceForAccount(selectedAccount)})
-                  </div>
+                  {!hideBalance ? (
+                    <div css={xw`ml-4 text-sm text-right flex-grow`}>
+                      ({getBalanceForAccount(selectedAccount)})
+                    </div>
+                  ) : null}
                 </div>
                 {open ? (
                   <ChevronUpIcon css={xw`h-5 w-5 ml-2`} />
@@ -107,8 +114,10 @@ const AccountSelect = ({ accounts, selectedAccount, onSelectAccount }) => {
                               {abbreviateAddress(account?.publicKey)}
                             </div>
                             <div css={xw`text-sm`}>
-                              {getBalanceForAccount(account)} (
-                              {symbolForAccount})
+                              {!hideBalance
+                                ? getBalanceForAccount(account)
+                                : null}{' '}
+                              ({symbolForAccount})
                             </div>
                           </div>
                         </div>

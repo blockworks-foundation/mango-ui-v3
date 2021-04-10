@@ -31,6 +31,9 @@ const ENDPOINT_URL = ENDPOINTS.find((e) => e.name === CLUSTER).endpoint
 const DEFAULT_CONNECTION = new Connection(ENDPOINT_URL, 'recent')
 const DEFAULT_MANGO_GROUP_NAME = 'BTC_ETH_USDT'
 
+// an object with keys of Solana account addresses that we are
+// subscribing to with connection.onAccountChange() in the
+// useHydrateStore hook
 interface AccountInfoList {
   [key: string]: AccountInfo<Buffer>
 }

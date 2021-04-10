@@ -1,24 +1,22 @@
 import React, { useMemo, useState } from 'react'
 import xw from 'xwind'
-import { nativeToUi } from '@blockworks-foundation/mango-client/lib/utils'
+// import { nativeToUi } from '@blockworks-foundation/mango-client/lib/utils'
 import Modal from './Modal'
 import AccountSelect from './AccountSelect'
 import useMangoStore from '../stores/useMangoStore'
 import useMarketList from '../hooks/useMarketList'
 import { getSymbolForTokenMintAddress, tokenPrecision } from '../utils/index'
 import useConnection from '../hooks/useConnection'
-import { deposit, initMarginAccountAndDeposit } from '../utils/mango'
-import { PublicKey } from '@solana/web3.js'
+import { withdraw } from '../utils/mango'
 import Loading from './Loading'
 import Button from './Button'
 
-const DepositModal = ({ isOpen, onClose }) => {
+const WithdrawModal = ({ isOpen, onClose }) => {
   const [inputAmount, setInputAmount] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const { symbols } = useMarketList()
   const { getTokenIndex } = useMarketList()
   const { connection, programId } = useConnection()
-  const mintDecimals = useMangoStore((s) => s.selectedMangoGroup.mintDecimals)
   const walletAccounts = useMangoStore((s) => s.wallet.balances)
   const actions = useMangoStore((s) => s.actions)
   const depositAccounts = useMemo(
@@ -30,52 +28,28 @@ const DepositModal = ({ isOpen, onClose }) => {
   )
   const [selectedAccount, setSelectedAccount] = useState(depositAccounts[0])
 
-  // TODO: remove duplication in AccountSelect
-  const getBalanceForAccount = (account) => {
-    const mintAddress = account?.account.mint.toString()
-    const balance = nativeToUi(
-      account?.account?.amount,
-      mintDecimals[getTokenIndex(mintAddress)]
-    )
-    const symbol = getSymbolForTokenMintAddress(mintAddress)
-
-    return balance.toFixed(tokenPrecision[symbol])
-  }
+  const withdrawDisabled = Number(inputAmount) <= 0
 
   const setMaxForSelectedAccount = () => {
-    const max = getBalanceForAccount(selectedAccount)
-    setInputAmount(max)
+    const marginAccount = useMangoStore.getState().selectedMarginAccount.current
+    const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
+    const mintAddress = selectedAccount?.account.mint.toString()
+    const tokenIndex = getTokenIndex(mintAddress)
+    const symbol = getSymbolForTokenMintAddress(mintAddress)
+    const max = marginAccount.getUiDeposit(mangoGroup, tokenIndex)
+
+    setInputAmount(max.toFixed(tokenPrecision[symbol]))
   }
 
-  const handleDeposit = () => {
+  const handleWithdraw = () => {
     setSubmitting(true)
     const marginAccount = useMangoStore.getState().selectedMarginAccount.current
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
     const wallet = useMangoStore.getState().wallet.current
-    if (!marginAccount && mangoGroup) {
-      initMarginAccountAndDeposit(
-        connection,
-        new PublicKey(programId),
-        mangoGroup,
-        wallet,
-        selectedAccount.account.mint,
-        selectedAccount.publicKey,
-        Number(inputAmount)
-      )
-        .then((response: Array<any>) => {
-          actions.fetchWalletBalances()
-          setSubmitting(false)
-          console.log('success', response)
-          onClose()
-        })
-        .catch((err) => {
-          setSubmitting(false)
-          console.error(err)
-          alert('error depositing')
-          onClose()
-        })
-    } else {
-      deposit(
+    if (marginAccount && mangoGroup) {
+      console.log('withdrawing')
+
+      withdraw(
         connection,
         programId,
         mangoGroup,
@@ -85,16 +59,15 @@ const DepositModal = ({ isOpen, onClose }) => {
         selectedAccount.publicKey,
         Number(inputAmount)
       )
-        .then((response: string) => {
+        .then((transSig: string) => {
           actions.fetchWalletBalances()
           setSubmitting(false)
-          console.log('success', response)
+          console.log('Successfull withrawal:', transSig)
           onClose()
         })
         .catch((err) => {
           setSubmitting(false)
-          console.error(err)
-          alert('error depositing')
+          console.warn('Error withdrawing:', err)
           onClose()
         })
     }
@@ -110,6 +83,7 @@ const DepositModal = ({ isOpen, onClose }) => {
           <div css={xw`flex-initial`}>Select: </div>
           <div css={xw`ml-4 flex-grow`}>
             <AccountSelect
+              hideBalance
               accounts={depositAccounts}
               selectedAccount={selectedAccount}
               onSelectAccount={setSelectedAccount}
@@ -161,10 +135,10 @@ const DepositModal = ({ isOpen, onClose }) => {
           </div>
         </div>
         <div css={xw`mt-5 sm:mt-6 flex justify-center`}>
-          <Button onClick={handleDeposit}>
+          <Button onClick={handleWithdraw} disabled={withdrawDisabled}>
             <div css={xw`flex items-center`}>
               {submitting && <Loading />}
-              Deposit
+              Withdraw
             </div>
           </Button>
         </div>
@@ -173,4 +147,4 @@ const DepositModal = ({ isOpen, onClose }) => {
   )
 }
 
-export default React.memo(DepositModal)
+export default React.memo(WithdrawModal)

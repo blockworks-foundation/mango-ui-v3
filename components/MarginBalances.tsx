@@ -11,6 +11,7 @@ import useMangoStore from '../stores/useMangoStore'
 import useMarketList from '../hooks/useMarketList'
 import { tokenPrecision } from '../utils/index'
 import DepositModal from './DepositModal'
+import WithdrawModal from './WithdrawModal'
 import Button from './Button'
 
 export default function MarginStats() {
@@ -68,7 +69,7 @@ export default function MarginStats() {
                   Borrows
                 </th>
                 <th scope="col" css={xw`flex-auto`}>
-                  Interest
+                  Interest (APY)
                 </th>
               </tr>
             </thead>
@@ -144,7 +145,7 @@ export default function MarginStats() {
         <DepositModal isOpen={showDepositModal} onClose={handleCloseDeposit} />
       )}
       {showWithdrawModal && (
-        <DepositModal
+        <WithdrawModal
           isOpen={showWithdrawModal}
           onClose={handleCloseWithdraw}
         />
