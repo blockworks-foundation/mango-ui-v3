@@ -2,7 +2,6 @@ import React, { useMemo, useState } from 'react'
 import xw from 'xwind'
 import { nativeToUi } from '@blockworks-foundation/mango-client/lib/utils'
 import Modal from './Modal'
-import { Button } from './styles'
 import AccountSelect from './AccountSelect'
 import useMangoStore from '../stores/useMangoStore'
 import useMarketList from '../hooks/useMarketList'
@@ -11,6 +10,7 @@ import useConnection from '../hooks/useConnection'
 import { deposit, initMarginAccountAndDeposit } from '../utils/mango'
 import { PublicKey } from '@solana/web3.js'
 import Loading from './Loading'
+import Button from './Button'
 
 const DepositModal = ({ isOpen, onClose }) => {
   const [inputAmount, setInputAmount] = useState('')
@@ -152,7 +152,6 @@ const DepositModal = ({ isOpen, onClose }) => {
               onChange={(e) => setInputAmount(e.target.value)}
             ></input>
             <Button
-              type="button"
               onClick={setMaxForSelectedAccount}
               css={xw`m-2 rounded py-1`}
             >
@@ -161,7 +160,7 @@ const DepositModal = ({ isOpen, onClose }) => {
           </div>
         </div>
         <div css={xw`mt-5 sm:mt-6 flex justify-center`}>
-          <Button type="button" onClick={handleDeposit}>
+          <Button onClick={handleDeposit}>
             <div css={xw`flex items-center`}>
               {submitting && <Loading />}
               Deposit

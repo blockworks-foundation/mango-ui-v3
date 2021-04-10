@@ -6,17 +6,19 @@ import {
   InformationCircleIcon,
 } from '@heroicons/react/outline'
 import FloatingElement from './FloatingElement'
-import { Button, ElementTitle } from './styles'
+import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
 import useMarketList from '../hooks/useMarketList'
 import { tokenPrecision } from '../utils/index'
 import DepositModal from './DepositModal'
+import Button from './Button'
 
 export default function MarginStats() {
   const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const selectedMarginAccount = useMangoStore(
     (s) => s.selectedMarginAccount.current
   )
+  const connected = useMangoStore((s) => s.wallet.connected)
   const { symbols } = useMarketList()
 
   const [showDepositModal, setShowDepositModal] = useState(false)
@@ -117,12 +119,19 @@ export default function MarginStats() {
         ) : null}
         <div css={xw`flex justify-around items-center mt-4`}>
           <div>
-            <Button onClick={() => setShowDepositModal(true)}>
+            <Button
+              onClick={() => setShowDepositModal(true)}
+              disabled={!connected}
+            >
               <span>Deposit</span>
             </Button>
           </div>
           <div>
-            <Button onClick={() => setShowWithdrawModal(true)} css={xw`ml-4`}>
+            <Button
+              onClick={() => setShowWithdrawModal(true)}
+              className="ml-4"
+              disabled={!connected}
+            >
               <span>Withdraw</span>
             </Button>
           </div>

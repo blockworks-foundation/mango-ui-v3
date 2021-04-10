@@ -26,6 +26,10 @@
   background-color: #5b5868 !important;
 }
 
-.ant-switch-handle {
+.ant-switch-checked {
+  background-color: #f2c94c !important;
+}
+
+.ant-switch-handle::before {
   background-color: #ffffff !important;
 }

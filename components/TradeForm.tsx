@@ -14,24 +14,7 @@ import FloatingElement from './FloatingElement'
 import { roundToDecimal } from '../utils/index'
 import useMarginAccount from '../hooks/useMarginAcccount'
 import useMangoStore from '../stores/useMangoStore'
-
-const BuyButton = styled.button(xw`
-  w-full
-  py-2.5 mt-4
-  border border-mango-dark-lighter
-  bg-mango-dark-light
-  font-light text-mango-med
-  cursor-not-allowed
-`)
-
-const SellButton = styled.button(xw`
-  w-full
-  py-2.5 mt-4
-  border border-mango-dark-lighter
-  bg-mango-dark-light
-  font-light text-mango-med
-  cursor-not-allowed
-`)
+import Button from './Button'
 
 export default function TradeForm({
   setChangeOrderRef,
@@ -357,10 +340,10 @@ export default function TradeForm({
           </div>
         ) : null}
       </div>
-      <div css={xw`flex`}>
+      <div css={xw`flex mt-4`}>
         {ipAllowed ? (
           side === 'buy' ? (
-            <BuyButton
+            <Button
               disabled={
                 (!price && tradeType === 'Limit') ||
                 !baseSize ||
@@ -368,11 +351,12 @@ export default function TradeForm({
                 submitting
               }
               onClick={onSubmit}
+              css={[xw`bg-mango-green flex-grow text-mango-dark`]}
             >
               {connected ? `Buy ${baseCurrency}` : 'CONNECT WALLET TO TRADE'}
-            </BuyButton>
+            </Button>
           ) : (
-            <SellButton
+            <Button
               disabled={
                 (!price && tradeType === 'Limit') ||
                 !baseSize ||
@@ -380,9 +364,10 @@ export default function TradeForm({
                 submitting
               }
               onClick={onSubmit}
+              css={[xw`bg-mango-red flex-grow text-white`]}
             >
               {connected ? `Sell ${baseCurrency}` : 'CONNECT WALLET TO TRADE'}
-            </SellButton>
+            </Button>
           )
         ) : (
           <button css={xw`flex-grow border`} disabled>

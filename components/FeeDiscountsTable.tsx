@@ -2,7 +2,7 @@ import xw from 'xwind'
 import { percentFormat } from '../utils/index'
 import useSrmAccount from '../hooks/useSrmAccount'
 import useMangoStore from '../stores/useMangoStore'
-import { Button } from './styles'
+import Button from './Button'
 
 const FeeDiscountsTable = () => {
   const { totalSrm, rates } = useSrmAccount()
