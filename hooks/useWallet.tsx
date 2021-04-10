@@ -32,7 +32,7 @@ export default function useWallet() {
     setMangoStore((state) => {
       state.wallet.current = newWallet
     })
-  // eslint-disable-next-line
+    // eslint-disable-next-line
   }, [endpoint])
 
   useEffect(() => {

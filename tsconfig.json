@@ -23,7 +23,7 @@
       }
     ]
   },
-  "exclude": ["node_modules", ".next", "out", "public/datafeeds/udf/src"],
+  "exclude": ["node_modules", ".next", "out", "public/datafeeds"],
   "include": [
     "next-env.d.ts",
     "**/*.ts",
