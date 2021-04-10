@@ -17,3 +17,15 @@
   -o-user-select: none;
   user-select: none;
 }
+
+.ant-input-group-addon {
+  background-color: transparent !important;
+}
+
+.ant-switch {
+  background-color: #5b5868 !important;
+}
+
+.ant-switch-handle {
+  background-color: #ffffff !important;
+}

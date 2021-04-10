@@ -15,18 +15,23 @@ import { roundToDecimal } from '../utils/index'
 import useMarginAccount from '../hooks/useMarginAcccount'
 import useMangoStore from '../stores/useMangoStore'
 
-const SellButton = styled.button`
-  margin: 20px 0px 0px 0px;
-  background: #e54033;
-  border-color: #e54033;
-`
+const BuyButton = styled.button(xw`
+  w-full
+  py-2.5 mt-4
+  border border-mango-dark-lighter
+  bg-mango-dark-light
+  font-light text-mango-med
+  cursor-not-allowed
+`)
 
-const BuyButton = styled.button`
-  margin: 20px 0px 0px 0px;
-  color: #141026;
-  background: #9bd104;
-  border-color: #9bd104;
-`
+const SellButton = styled.button(xw`
+  w-full
+  py-2.5 mt-4
+  border border-mango-dark-lighter
+  bg-mango-dark-light
+  font-light text-mango-med
+  cursor-not-allowed
+`)
 
 export default function TradeForm({
   setChangeOrderRef,
@@ -284,7 +289,11 @@ export default function TradeForm({
               textAlign: 'right',
               paddingBottom: 8,
             }}
-            addonBefore={<div style={{ width: '30px' }}>Price</div>}
+            addonBefore={
+              <div style={{ width: '30px' }} css={xw`bg-mango-dark-light`}>
+                Price
+              </div>
+            }
             suffix={
               <span style={{ fontSize: 10, opacity: 0.5 }}>
                 {quoteCurrency}
@@ -330,18 +339,6 @@ export default function TradeForm({
             onChange={(e) => onSetQuoteSize(parseFloat(e.target.value))}
           />
         </Input.Group>
-        {/* {connected && marginInfo.prices.length ? (
-          <StyledSlider
-            value={sizeFraction}
-            onChange={onSliderChange}
-            min={getSliderMin()}
-            max={getSliderMax()}
-            step={getSliderStep()}
-            tooltipVisible={false}
-            renderTrack={Track}
-            renderThumb={Thumb}
-          />
-        ) : null} */}
         {tradeType !== 'Market' ? (
           <div style={{ paddingTop: 18 }}>
             {'POST '}
