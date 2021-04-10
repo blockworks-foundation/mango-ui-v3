@@ -1,3 +1,4 @@
+import { TOKEN_MINTS } from '@project-serum/serum'
 import { PublicKey } from '@solana/web3.js'
 import BN from 'bn.js'
 
@@ -76,7 +77,7 @@ export function getTokenMultiplierFromDecimals(decimals: number): BN {
   return new BN(10).pow(new BN(decimals))
 }
 
-export function abbreviateAddress(address: PublicKey, size = 4) {
+export function abbreviateAddress(address: PublicKey, size = 5) {
   const base58 = address.toBase58()
   return base58.slice(0, size) + '…' + base58.slice(-size)
 }
@@ -142,4 +143,8 @@ export const tokenPrecision = {
   USDC: 2,
   USDT: 2,
   WUSDT: 2,
+}
+
+export const getSymbolForTokenMintAddress = (address: string): string => {
+  return TOKEN_MINTS.find((m) => m.address.toString() === address).name
 }

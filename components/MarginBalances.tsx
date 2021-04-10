@@ -1,23 +1,18 @@
 import { Popover } from 'antd'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import xw from 'xwind'
-// import { nativeToUi } from '@blockworks-foundation/mango-client/lib/utils'
 import {
   ExternalLinkIcon,
   InformationCircleIcon,
 } from '@heroicons/react/outline'
-// import useConnection from '../hooks/useConnection'
-// import useMarginAccount from '../hooks/useMarginAcccount'
 import FloatingElement from './FloatingElement'
 import { Button, ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
 import useMarketList from '../hooks/useMarketList'
 import { tokenPrecision } from '../utils/index'
-import Modal from './Modal'
+import DepositModal from './DepositModal'
 
 export default function MarginStats() {
-  // const { connection } = useConnection()
-  // const { marginAccount, mangoGroup } = useMarginAccount()
   const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const selectedMarginAccount = useMangoStore(
     (s) => s.selectedMarginAccount.current
@@ -27,13 +22,13 @@ export default function MarginStats() {
   const [showDepositModal, setShowDepositModal] = useState(false)
   const [showWithdrawModal, setShowWithdrawModal] = useState(false)
 
-  const handleDeposit = () => {
-    setShowDepositModal(true)
-  }
+  const handleCloseDeposit = useCallback(() => {
+    setShowDepositModal(false)
+  }, [])
 
-  const handleWithdraw = () => {
-    setShowWithdrawModal(true)
-  }
+  const handleCloseWithdraw = useCallback(() => {
+    setShowWithdrawModal(false)
+  }, [])
 
   return (
     <>
@@ -50,9 +45,11 @@ export default function MarginStats() {
             placement="topLeft"
             trigger="hover"
           >
-            <InformationCircleIcon
-              css={xw`h-5 w-5 ml-2 text-mango-yellow cursor-help`}
-            />
+            <div>
+              <InformationCircleIcon
+                css={xw`h-5 w-5 ml-2 text-mango-yellow cursor-help`}
+              />
+            </div>
           </Popover>
         </ElementTitle>
         {selectedMangoGroup ? (
@@ -120,12 +117,12 @@ export default function MarginStats() {
         ) : null}
         <div css={xw`flex justify-around items-center mt-4`}>
           <div>
-            <Button onClick={handleDeposit}>
+            <Button onClick={() => setShowDepositModal(true)}>
               <span>Deposit</span>
             </Button>
           </div>
           <div>
-            <Button onClick={handleWithdraw} css={xw`ml-4`}>
+            <Button onClick={() => setShowWithdrawModal(true)} css={xw`ml-4`}>
               <span>Withdraw</span>
             </Button>
           </div>
@@ -135,15 +132,12 @@ export default function MarginStats() {
         </div>
       </FloatingElement>
       {showDepositModal && (
-        <Modal
-          isOpen={showDepositModal}
-          onClose={() => setShowDepositModal(false)}
-        />
+        <DepositModal isOpen={showDepositModal} onClose={handleCloseDeposit} />
       )}
       {showWithdrawModal && (
-        <Modal
+        <DepositModal
           isOpen={showWithdrawModal}
-          onClose={() => setShowWithdrawModal(false)}
+          onClose={handleCloseWithdraw}
         />
       )}
     </>

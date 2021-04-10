@@ -1,13 +1,7 @@
-// import { useState } from 'react'
 import xw from 'xwind'
 import { Portal } from 'react-portal'
-import { Button } from './styles'
 
-const Modal = ({ isOpen, onClose }) => {
-  const handleClick = () => {
-    onClose()
-  }
-
+const Modal = ({ isOpen, onClose, children }) => {
   return (
     <Portal>
       <div
@@ -21,7 +15,7 @@ const Modal = ({ isOpen, onClose }) => {
         >
           {isOpen ? (
             <div
-              css={xw`fixed inset-0 bg-black bg-opacity-40 transition-opacity`}
+              css={xw`fixed inset-0 bg-black bg-opacity-20 transition-opacity`}
               aria-hidden="true"
               onClick={onClose}
             ></div>
@@ -36,28 +30,9 @@ const Modal = ({ isOpen, onClose }) => {
 
           {isOpen ? (
             <div
-              css={xw`inline-block align-bottom bg-mango-dark rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full`}
+              css={xw`inline-block align-bottom bg-mango-dark border border-mango-dark-light rounded-lg text-left overflow-hidden shadow-lg transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full`}
             >
-              <div css={xw`pb-6 px-8`}>
-                <div css={xw`mt-3 text-center sm:mt-5`}>
-                  <div css={xw`mt-6 bg-mango-dark-light rounded-md`}>
-                    <label htmlFor=""></label>
-                    <input
-                      type="text"
-                      css={xw`outline-none bg-mango-dark-light w-full py-4 mx-3 text-2xl text-gray-300`}
-                      placeholder="0.00"
-                    ></input>
-                  </div>
-                </div>
-                <div css={xw`mt-5 sm:mt-6 flex justify-center space-x-4`}>
-                  <Button type="button" onClick={handleClick}>
-                    Max
-                  </Button>
-                  <Button type="button" onClick={handleClick}>
-                    Deposit
-                  </Button>
-                </div>
-              </div>
+              {children}
             </div>
           ) : null}
         </div>
@@ -68,7 +43,7 @@ const Modal = ({ isOpen, onClose }) => {
 
 const Header = ({ children }) => {
   return (
-    <div css={xw`flex items-center bg-mango-dark-light py-4 px-8`}>
+    <div css={xw`flex items-center bg-mango-dark-light py-4 px-4`}>
       {children}
     </div>
   )

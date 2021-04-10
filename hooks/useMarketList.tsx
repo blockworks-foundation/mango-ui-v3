@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useCallback } from 'react'
 import useConnection from './useConnection'
 import { PublicKey } from '@solana/web3.js'
 import useMangoStore from '../stores/useMangoStore'
@@ -13,7 +13,7 @@ const useMarketList = () => {
     [cluster, mangoGroupName]
   )
 
-  const symbols = useMemo(
+  const symbolsForMangoGroup = useMemo(
     () => IDS[cluster]?.mango_groups[mangoGroupName]?.symbols || {},
     [cluster, mangoGroupName]
   )
@@ -31,11 +31,18 @@ const useMarketList = () => {
     [spotMarkets, dexProgramId]
   )
 
+  const getTokenIndex = useCallback(
+    (address) =>
+      Object.entries(symbolsForMangoGroup).findIndex((x) => x[1] === address),
+    [symbolsForMangoGroup]
+  )
+
   return {
     programId,
     marketList,
     spotMarkets,
-    symbols,
+    symbols: symbolsForMangoGroup,
+    getTokenIndex,
   }
 }
 

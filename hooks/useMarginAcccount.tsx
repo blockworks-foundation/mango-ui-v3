@@ -40,6 +40,7 @@ const useMarginAccount = () => {
         setMangoStore((state) => {
           state.selectedMangoGroup.current = mangoGroup
           state.selectedMangoGroup.srmAccount = srmAccountInfo
+          state.selectedMangoGroup.mintDecimals = mangoGroup.mintDecimals
         })
       })
       .catch((err) => {

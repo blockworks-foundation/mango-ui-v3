@@ -8,9 +8,10 @@ import {
   MangoGroup,
   MarginAccount,
 } from '@blockworks-foundation/mango-client'
-import { AccountInfo, Connection } from '@solana/web3.js'
+import { AccountInfo, Connection, PublicKey } from '@solana/web3.js'
 import { Wallet } from '@project-serum/sol-wallet-adapter'
 import { EndpointInfo } from '../@types/types'
+import { getOwnedTokenAccounts } from '../utils/tokens'
 
 export const ENDPOINTS: EndpointInfo[] = [
   {
@@ -28,7 +29,7 @@ export const ENDPOINTS: EndpointInfo[] = [
 const CLUSTER = 'mainnet-beta'
 const ENDPOINT_URL = ENDPOINTS.find((e) => e.name === CLUSTER).endpoint
 const DEFAULT_CONNECTION = new Connection(ENDPOINT_URL, 'recent')
-const DEFAULT_MANGO_GROUP = 'BTC_ETH_USDT'
+const DEFAULT_MANGO_GROUP_NAME = 'BTC_ETH_USDT'
 
 interface AccountInfoList {
   [key: string]: AccountInfo<Buffer>
@@ -60,6 +61,7 @@ interface MangoStore extends State {
     markets: {
       [key: string]: Market
     }
+    mintDecimals: number[]
   }
   selectedMarginAccount: {
     current: MarginAccount | null
@@ -72,12 +74,14 @@ interface MangoStore extends State {
   wallet: {
     connected: boolean
     current: Wallet
+    balances: Array<{ account: any; publicKey: PublicKey }>
   }
   set: (x: any) => void
+  actions: any
 }
 
 const useMangoStore = create<MangoStore>(
-  devtools((set) => ({
+  devtools((set, get) => ({
     accountInfos: {},
     connection: {
       cluster: CLUSTER,
@@ -85,17 +89,18 @@ const useMangoStore = create<MangoStore>(
       endpoint: ENDPOINT_URL,
     },
     selectedMangoGroup: {
-      name: DEFAULT_MANGO_GROUP,
+      name: DEFAULT_MANGO_GROUP_NAME,
       current: null,
       markets: {},
       srmAccount: null,
+      mintDecimals: [],
     },
     selectedMarket: {
       name: Object.entries(
-        IDS[CLUSTER].mango_groups[DEFAULT_MANGO_GROUP].spot_market_symbols
+        IDS[CLUSTER].mango_groups[DEFAULT_MANGO_GROUP_NAME].spot_market_symbols
       )[0][0],
       address: Object.entries(
-        IDS[CLUSTER].mango_groups[DEFAULT_MANGO_GROUP].spot_market_symbols
+        IDS[CLUSTER].mango_groups[DEFAULT_MANGO_GROUP_NAME].spot_market_symbols
       )[0][1],
     },
     market: {
@@ -118,8 +123,32 @@ const useMangoStore = create<MangoStore>(
     wallet: {
       connected: false,
       current: null,
+      balances: [],
     },
     set: (fn) => set(produce(fn)),
+    actions: {
+      async fetchWalletBalances() {
+        const connection = get().connection.current
+        const wallet = get().wallet.current
+        const connected = get().wallet.connected
+        const set = get().set
+        console.log('fetchingWalletBalances', connected, wallet)
+        if (wallet && connected) {
+          const ownerAddress = wallet.publicKey
+          const ownedTokenAccounts = await getOwnedTokenAccounts(
+            connection,
+            ownerAddress
+          )
+          set((state) => {
+            state.wallet.balances = ownedTokenAccounts
+          })
+        } else {
+          set((state) => {
+            state.wallet.balances = []
+          })
+        }
+      },
+    },
   }))
 )
 
