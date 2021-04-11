@@ -1,3 +1,17 @@
+/* @tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  button {
+    @apply underline;
+  }
+} */
+
+button {
+  transition: all 0.25s ease;
+}
+
 .TVChartContainer {
   height: 100%;
   width: 100%;

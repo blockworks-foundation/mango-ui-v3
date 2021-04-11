@@ -1,4 +1,5 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { useTheme } from 'next-themes'
 import {
   widget,
   ChartingLibraryWidgetOptions,
@@ -32,6 +33,15 @@ export interface ChartContainerProps {
 
 const TVChartContainer = () => {
   const selectedMarketName = useMangoStore((s) => s.selectedMarket.name)
+  const { theme } = useTheme()
+  const [currentTheme, setCurrentTheme] = useState(theme)
+
+  console.log(currentTheme)
+
+  useEffect(() => {
+    setCurrentTheme(theme)
+  }, [theme])
+
   // @ts-ignore
   const defaultProps: ChartContainerProps = {
     symbol: selectedMarketName,
@@ -92,9 +102,9 @@ const TVChartContainer = () => {
       fullscreen: defaultProps.fullscreen,
       autosize: defaultProps.autosize,
       studies_overrides: defaultProps.studiesOverrides,
-      theme: 'Dark',
+      theme: theme === 'dark' ? 'Dark' : 'Light',
       overrides: {
-        'paneProperties.background': '#141026',
+        'paneProperties.background': theme === 'dark' ? '#092e34' : '#fff',
         'mainSeriesProperties.candleStyle.upColor': '#AFD803',
         'mainSeriesProperties.candleStyle.downColor': '#E54033',
         'mainSeriesProperties.candleStyle.drawWick': true,
@@ -128,7 +138,7 @@ const TVChartContainer = () => {
       })
     })
     //eslint-disable-next-line
-  }, [selectedMarketName])
+  }, [selectedMarketName, theme])
 
   // TODO: add market back to dep array
   // }, [market])

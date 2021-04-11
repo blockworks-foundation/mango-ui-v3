@@ -1,9 +1,14 @@
 import xw from 'xwind'
+import styled from '@emotion/styled'
 import { Listbox, Transition } from '@headlessui/react'
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid'
 import useMarketList from '../hooks/useMarketList'
 // import useMarket from '../hooks/useMarket'
 import useMangoStore from '../stores/useMangoStore'
+
+const StyledDiv = styled.div`
+  cursor: pointer;
+`
 
 const MarketSelect = () => {
   const { spotMarkets } = useMarketList()
@@ -16,9 +21,27 @@ const MarketSelect = () => {
     })
   }
 
+  console.log(selectedMarket)
+
   return (
-    <div css={xw`ml-4 relative inline-block -mb-1`}>
-      <Listbox value={selectedMarket.name} onChange={handleChange}>
+    <div
+      css={xw`relative flex items-center py-2 px-3 sm:px-6 divide-x divide-mango-grey-light dark:divide-mango-grey-dark bg-mango-grey-lighter dark:bg-mango-grey-darkest`}
+    >
+      {/*<div css={xw`opacity-50 p-2`}>Markets</div>*/}
+      {Object.entries(spotMarkets).map(([name, address]) => (
+        <StyledDiv
+          css={
+            selectedMarket.name === name
+              ? xw`px-3 py-1 text-mango-orange text-xs font-normal`
+              : xw`px-3 py-1 text-gray-400 hover:text-gray-600 dark:hover:text-white text-xs font-normal`
+          }
+          onClick={() => handleChange(name)}
+          key={address}
+        >
+          {name}
+        </StyledDiv>
+      ))}
+      {/*<Listbox value={selectedMarket.name} onChange={handleChange}>
         {({ open }) => (
           <>
             <Listbox.Button
@@ -68,7 +91,7 @@ const MarketSelect = () => {
             </Transition>
           </>
         )}
-      </Listbox>
+                      </Listbox>*/}
     </div>
   )
 }
