@@ -14,30 +14,32 @@ const FeeDiscountsTable = () => {
       <div
         className={`flex flex-col sm:flex-row justify-between m-auto text-th-fgd-4 text-base font-light text-center`}
       >
-        <div className={`px-4`}>
+        <div className="px-4">
           <div>Total SRM in Mango</div>
-          <div className={`text-th-fgd-1 text-lg font-semibold`}>
+          <div className="text-th-fgd-1 text-lg font-semibold">
             {totalSrm.toFixed(0)}
           </div>
         </div>
-        <div className={`px-4 mt-4 sm:mt-0`}>
+        <div className="px-4 mt-4 sm:mt-0">
           <div>Maker Fee</div>
-          <div className={`text-th-fgd-1 text-lg font-semibold`}>
+          <div className="text-th-fgd-1 text-lg font-semibold">
             {rates ? percentFormat.format(rates.maker) : null}
           </div>
         </div>
-        <div className={`px-4 mt-4 sm:mt-0`}>
+        <div className="px-4 mt-4 sm:mt-0">
           <div>Taker Fee</div>
-          <div className={`text-th-fgd-1 text-lg font-semibold`}>
+          <div className="text-th-fgd-1 text-lg font-semibold">
             {rates ? percentFormat.format(rates.taker) : null}
           </div>
         </div>
       </div>
-      <div className={`mt-6`}>
+      <div className="mt-6">
         {connected ? (
-          <div className={`bg-mango-dark p-6`}>
-            <div className={`text-gray-500`}>Your contributed SRM: 0</div>
-            <div className={`flex space-x-4 mt-8`}>
+          <div className="bg-th-bkg-2 p-6">
+            <div className="text-th-fgd-4 text-center">
+              Your contributed SRM: 0
+            </div>
+            <div className="flex space-x-4 mt-8">
               <Button>Deposit</Button>
               <Button>Withdraw</Button>
             </div>
