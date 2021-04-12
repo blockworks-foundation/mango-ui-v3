@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react'
-import { Switch } from 'antd'
 import useMarket from '../hooks/useMarket'
 import useIpAddress from '../hooks/useIpAddress'
 import useConnection from '../hooks/useConnection'
@@ -14,6 +13,7 @@ import useMangoStore from '../stores/useMangoStore'
 import Button from './Button'
 import TradeType from './TradeType'
 import NewInput from './Input'
+import NewSwitch from './Switch'
 
 export default function TradeForm({
   setChangeOrderRef,
@@ -293,15 +293,15 @@ export default function TradeForm({
           />
         </NewInput.Group>
         {tradeType !== 'Market' ? (
-          <div style={{ paddingTop: 18 }}>
-            {'POST '}
-            <Switch
-              checked={postOnly}
-              onChange={postOnChange}
-              style={{ marginRight: 40 }}
-            />
-            {'IOC '}
-            <Switch checked={ioc} onChange={iocOnChange} />
+          <div className="flex items-center mt-4">
+            <NewSwitch checked={postOnly} onChange={postOnChange}>
+              POST
+            </NewSwitch>
+            <div className="ml-4">
+              <NewSwitch checked={ioc} onChange={iocOnChange}>
+                IOC
+              </NewSwitch>
+            </div>
           </div>
         ) : null}
       </div>
@@ -315,9 +315,8 @@ export default function TradeForm({
                 !connected ||
                 submitting
               }
-              grow={true}
               onClick={onSubmit}
-              className={`rounded text-lg font-light bg-th-green text-th-bkg-1 hover:bg-th-primary flex-grow`}
+              className="rounded text-lg bg-th-green text-th-bkg-1 hover:bg-th-primary flex-grow"
             >
               {connected ? `Buy ${baseCurrency}` : 'CONNECT WALLET TO TRADE'}
             </Button>
@@ -329,16 +328,15 @@ export default function TradeForm({
                 !connected ||
                 submitting
               }
-              grow={true}
               onClick={onSubmit}
-              className={`rounded text-lg font-light bg-th-red text-white hover:bg-th-primary flex-grow`}
+              className="rounded text-lg bg-th-red text-white hover:bg-th-primary flex-grow"
             >
               {connected ? `Sell ${baseCurrency}` : 'CONNECT WALLET TO TRADE'}
             </Button>
           )
         ) : (
-          <Button disabled grow>
-            <span className={`text-lg font-light`}>Country Not Allowed</span>
+          <Button disabled className="flex-grow">
+            <span className="text-lg font-light">Country Not Allowed</span>
           </Button>
         )}
       </div>

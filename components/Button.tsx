@@ -4,7 +4,6 @@ interface ButtonProps {
   onClick?: (x?) => void
   disabled?: boolean
   className?: string
-  grow?: boolean
 }
 
 const Button: FunctionComponent<ButtonProps> = ({
@@ -12,35 +11,15 @@ const Button: FunctionComponent<ButtonProps> = ({
   onClick,
   disabled = false,
   className,
-  grow = false,
   ...props
 }) => {
-  if (disabled) {
-    return (
-      <button
-        className={`px-8 py-2 border border-th-fgd-4 bg-th-bkg-2 
-          rounded-md focus:outline-none
-          ${grow && `flex-grow`}
-          ${disabled && `cursor-not-allowed text-th-fgd-4`},
-        `}
-        disabled={disabled}
-      >
-        {children}
-      </button>
-    )
-  }
-
   return (
     <button
       onClick={onClick}
-      className={`px-8 py-2 border border-mango-dark-lighter bg-mango-dark-light 
-          focus:outline-none
-        ${
-          disabled
-            ? `cursor-not-allowed text-mango-med`
-            : `active:border-mango-yellow text-mango-yellow hover:bg-mango-dark-lighter`
-        }
-      ${className}`}
+      disabled={disabled}
+      className={`${className} px-8 py-2 border border-th-fgd-4 bg-th-bkg-2 rounded-md 
+      active:border-mango-yellow hover:bg-th-bkg-3 focus:outline-none disabled:bg-th-bkg-2 
+      disabled:text-th-fgd-4 disabled:cursor-not-allowed`}
       {...props}
     >
       {children}

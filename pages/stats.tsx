@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import styled from '@emotion/styled'
-import { Col, Row, Button, Divider, Select } from 'antd'
+import { Button, Select } from 'antd'
 import { LineChart, Line, ReferenceLine, XAxis, YAxis, Tooltip } from 'recharts'
 import useDimensions from 'react-cool-dimensions'
 import { IDS, MangoClient } from '@blockworks-foundation/mango-client'
@@ -31,14 +31,6 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   padding: 16px 16px;
-  .borderNone .ant-select-selector {
-    border: none !important;
-  }
-`
-
-const SizeTitle = styled(Row)`
-  padding: 20px 0 14px;
-  color: #525a6a;
 `
 
 const ChartLayover = styled.div`
@@ -205,115 +197,103 @@ export default function StatsPage() {
   return (
     <Wrapper>
       <TopBar />
-      <Row justify="center">
-        <Col lg={24} xl={18} xxl={12}>
-          <FloatingElement shrink>
-            <React.Fragment>
-              <Divider>
-                <span className={`text-white`}>Mango Stats</span>
-              </Divider>
-              <SizeTitle>
-                <Col span={1}></Col>
-                <Col span={3}>Asset</Col>
-                <Col span={4}>Total Deposits</Col>
-                <Col span={4}>Total Borrows</Col>
-                <Col span={4}>Deposit Interest</Col>
-                <Col span={4}>Borrow Interest</Col>
-                <Col span={4}>Utilization</Col>
-              </SizeTitle>
+      <div className="px-48">
+        <FloatingElement>
+          <>
+            <div className="text-center">
+              <h1 className={`text-white text-lg`}>Mango Stats</h1>
+            </div>
+            <div className="flex justify-between divide">
+              <div>Asset</div>
+              <div>Total Deposits</div>
+              <div>Total Borrows</div>
+              <div>Deposit Interest</div>
+              <div>Borrow Interest</div>
+              <div>Utilization</div>
+            </div>
+            <div className="divide-y divide-gray-600">
               {latestStats.map((stat) => (
-                <div key={stat.symbol}>
-                  <Divider />
-                  <Row>
-                    <Col span={1}>
-                      <img src={icons[stat.symbol]} alt={icons[stat.symbol]} />
-                    </Col>
-                    <Col span={3}>
-                      <Button
-                        type="link"
-                        onClick={() => setSelectedAsset(stat.symbol)}
-                      >
-                        <div style={{ width: '100%' }}>{stat.symbol}</div>
-                      </Button>
-                    </Col>
-                    <Col span={4}>
-                      {stat.totalDeposits.toFixed(DECIMALS[stat.symbol])}
-                    </Col>
-                    <Col span={4}>
-                      {stat.totalBorrows.toFixed(DECIMALS[stat.symbol])}
-                    </Col>
-                    <Col span={4}>{stat.depositInterest.toFixed(2)}%</Col>
-                    <Col span={4}>{stat.borrowInterest.toFixed(2)}%</Col>
-                    <Col span={4}>
-                      {(parseFloat(stat.utilization) * 100).toFixed(2)}%
-                    </Col>
-                  </Row>
+                <div key={stat.symbol} className="flex justify-between py-4">
+                  <div className="flex items-center">
+                    <img src={icons[stat.symbol]} alt={icons[stat.symbol]} />
+                    <button
+                      onClick={() => setSelectedAsset(stat.symbol)}
+                      className="text-th-primary cursor-pointer ml-2"
+                    >
+                      <div style={{ width: '100%' }}>{stat.symbol}</div>
+                    </button>
+                  </div>
+                  <div>{stat.totalDeposits.toFixed(DECIMALS[stat.symbol])}</div>
+                  <div>{stat.totalBorrows.toFixed(DECIMALS[stat.symbol])}</div>
+                  <div>{stat.depositInterest.toFixed(2)}%</div>
+                  <div>{stat.borrowInterest.toFixed(2)}%</div>
+                  <div>{(parseFloat(stat.utilization) * 100).toFixed(2)}%</div>
                 </div>
               ))}
-            </React.Fragment>
-          </FloatingElement>
-          {selectedAsset ? (
-            <FloatingElement shrink>
-              <Divider>
-                <span className={`text-white`}>Historical</span>
-                <Select
-                  style={{ margin: '0px 8px', fontSize: 16 }}
-                  value={selectedAsset}
-                  onChange={(val) => setSelectedAsset(val)}
-                >
-                  {latestStats.map(({ symbol }) => (
-                    <Select.Option key={symbol} value={symbol}>
-                      {symbol}
-                    </Select.Option>
-                  ))}
-                </Select>
-                <span className={`text-white`}>Stats</span>
-              </Divider>
+            </div>
+          </>
+        </FloatingElement>
+        {selectedAsset ? (
+          <FloatingElement shrink>
+            <div className="flex justify-center text-lg">
+              <span className={`text-white`}>Historical</span>
+              <Select
+                style={{ margin: '0px 8px', fontSize: 16 }}
+                value={selectedAsset}
+                onChange={(val) => setSelectedAsset(val)}
+              >
+                {latestStats.map(({ symbol }) => (
+                  <Select.Option key={symbol} value={symbol}>
+                    {symbol}
+                  </Select.Option>
+                ))}
+              </Select>
+              <span className={`text-white`}>Stats</span>
+            </div>
 
-              <Row>
-                <Col span={12} style={{ height: '300px' }}>
-                  <StatsChart
-                    title="Total Deposits"
-                    xAxis="time"
-                    yAxis="totalDeposits"
-                    data={selectedStatsData}
-                    labelFormat={(x) => x.toFixed(DECIMALS[selectedAsset])}
-                  />
-                </Col>
-                <Col span={12} style={{ height: '300px' }}>
-                  <StatsChart
-                    title="Total Borrows"
-                    xAxis="time"
-                    yAxis="totalBorrows"
-                    data={selectedStatsData}
-                    labelFormat={(x) => x.toFixed(DECIMALS[selectedAsset])}
-                  />
-                </Col>
-              </Row>
-              <Row style={{ margin: '50px 0' }}>
-                <Col span={12} style={{ height: '300px' }}>
-                  <StatsChart
-                    title="Deposit Interest"
-                    xAxis="time"
-                    yAxis="depositInterest"
-                    data={selectedStatsData}
-                    labelFormat={(x) => `${(x * 100).toFixed(5)}%`}
-                  />
-                </Col>
-                <Col span={12} style={{ height: '300px' }}>
-                  <StatsChart
-                    title="Borrow Interest"
-                    xAxis="time"
-                    yAxis="borrowInterest"
-                    data={selectedStatsData}
-                    labelFormat={(x) => `${(x * 100).toFixed(5)}%`}
-                  />
-                </Col>
-              </Row>
-            </FloatingElement>
-          ) : null}
-        </Col>
-      </Row>
+            <div className="flex flex-row mt-2">
+              <div className="relative w-1/2" style={{ height: '300px' }}>
+                <StatsChart
+                  title="Total Deposits"
+                  xAxis="time"
+                  yAxis="totalDeposits"
+                  data={selectedStatsData}
+                  labelFormat={(x) => x.toFixed(DECIMALS[selectedAsset])}
+                />
+              </div>
+              <div className="relative w-1/2" style={{ height: '300px' }}>
+                <StatsChart
+                  title="Total Borrows"
+                  xAxis="time"
+                  yAxis="totalBorrows"
+                  data={selectedStatsData}
+                  labelFormat={(x) => x.toFixed(DECIMALS[selectedAsset])}
+                />
+              </div>
+            </div>
+            <div className="flex flex-row" style={{ margin: '50px 0' }}>
+              <div className="relative w-1/2" style={{ height: '300px' }}>
+                <StatsChart
+                  title="Deposit Interest"
+                  xAxis="time"
+                  yAxis="depositInterest"
+                  data={selectedStatsData}
+                  labelFormat={(x) => `${(x * 100).toFixed(5)}%`}
+                />
+              </div>
+              <div className="relative w-1/2" style={{ height: '300px' }}>
+                <StatsChart
+                  title="Borrow Interest"
+                  xAxis="time"
+                  yAxis="borrowInterest"
+                  data={selectedStatsData}
+                  labelFormat={(x) => `${(x * 100).toFixed(5)}%`}
+                />
+              </div>
+            </div>
+          </FloatingElement>
+        ) : null}
+      </div>
     </Wrapper>
   )
 }

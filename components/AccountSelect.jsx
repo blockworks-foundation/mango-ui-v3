@@ -39,7 +39,7 @@ const AccountSelect = ({
         {({ open }) => (
           <>
             <Listbox.Button
-              className={`border border-mango-dark-lighter focus:outline-none focus:ring-1 focus:ring-mango-yellow p-2 w-full`}
+              className={`border border-th-fgd-4 focus:outline-none focus:ring-1 focus:ring-mango-yellow p-2 w-full`}
             >
               <div
                 className={`flex items-center text-base justify-between font-light`}
@@ -80,7 +80,7 @@ const AccountSelect = ({
             >
               <Listbox.Options
                 static
-                className={`z-20 p-1 absolute left-0 w-full mt-1 bg-mango-dark-light origin-top-left divide-y divide-mango-dark-lighter shadow-lg outline-none border border-mango-dark-lighter`}
+                className={`z-20 p-1 absolute left-0 w-full mt-1 bg-th-bkg-3 origin-top-left divide-y divide-th-fgd-4 shadow-lg outline-none border border-th-fgd-4`}
               >
                 <div className={`opacity-50 p-2`}>
                   Your Connected Wallet Token Accounts
@@ -97,9 +97,8 @@ const AccountSelect = ({
                     >
                       {({ selected }) => (
                         <div
-                          className={`p-2 text-sm hover:bg-mango-dark-lighter hover:cursor-pointer tracking-wider font-light ${
-                            selected &&
-                            'text-mango-yellow bg-mango-dark-lighter'
+                          className={`p-2 text-sm hover:bg-th-fgd-4 hover:cursor-pointer tracking-wider font-light ${
+                            selected && 'text-mango-yellow bg-th-fgd-4'
                           }`}
                         >
                           <div className={`flex items-center space-x-2`}>

@@ -115,7 +115,7 @@ const DepositModal = ({ isOpen, onClose }) => {
             />
           </div>
         </div>
-        <div className={`text-mango-med-light flex-shrink ml-6 mr-2 text-lg`}>
+        <div className={`text-th-fgd-4 flex-shrink ml-6 mr-2 text-lg`}>
           <button onClick={onClose} className={`hover:text-mango-yellow`}>
             <svg
               viewBox="64 64 896 896"
@@ -133,9 +133,7 @@ const DepositModal = ({ isOpen, onClose }) => {
       </Modal.Header>
       <div className={`pb-6 px-8`}>
         <div className={`mt-3 text-center sm:mt-5`}>
-          <div
-            className={`mt-6 bg-mango-dark-light rounded-md flex items-center`}
-          >
+          <div className={`mt-6 bg-th-bkg-3 rounded-md flex items-center`}>
             <img
               alt=""
               width="20"
@@ -148,7 +146,7 @@ const DepositModal = ({ isOpen, onClose }) => {
             <input
               type="number"
               min="0"
-              className={`outline-none bg-mango-dark-light w-full py-4 mx-3 text-2xl text-gray-300 flex-grow`}
+              className={`outline-none bg-th-bkg-3 w-full py-4 mx-3 text-2xl text-th-fgd-4 flex-grow`}
               placeholder="0.00"
               value={inputAmount}
               onChange={(e) => setInputAmount(e.target.value)}

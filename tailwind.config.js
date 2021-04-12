@@ -97,7 +97,10 @@ module.exports = {
   },
   variants: {
     extend: {
-      cursor: ['hover', 'focus'],
+      cursor: ['hover', 'focus', 'disabled'],
+      opacity: ['disabled'],
+      backgroundColor: ['disabled'],
+      textColor: ['disabled'],
     },
   },
   plugins: [],
