@@ -149,7 +149,7 @@ const BalancesTable = () => {
             </div>
           ) : (
             <div
-              css={xw`w-full text-center py-6 text-lg bg-mango-dark-light font-light text-mango-med`}
+              css={xw`w-full text-center py-6 text-base bg-th-bkg-1 font-light text-th-fgd-4 rounded-md`}
             >
               No balances
             </div>

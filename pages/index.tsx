@@ -9,10 +9,10 @@ const Index = () => {
   useHydrateStore()
 
   return (
-    <div css={xw`bg-mango-dark text-white`}>
+    <div css={xw`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
       <TopBar />
+      <MarketSelect />
       <div css={xw`min-h-screen p-1 sm:p-2 md:p-6 md:pt-4`}>
-        <MarketSelect />
         <TradePageGrid />
       </div>
       <Notifications />

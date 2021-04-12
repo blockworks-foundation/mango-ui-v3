@@ -153,9 +153,9 @@ export default function MarginStats() {
                   placement="topLeft"
                   trigger="hover"
                 >
-                  <div css={xw`cursor-help text-gray-300`}>{entry.label}</div>
+                  <div css={xw`cursor-help text-th-fgd-4`}>{entry.label}</div>
                 </Popover>
-                <div css={xw`text-gray-300 font-light`}>
+                <div css={xw`text-th-fgd-1 font-light`}>
                   {entry.currency + entry.value}
                   {entry.unit}
                 </div>

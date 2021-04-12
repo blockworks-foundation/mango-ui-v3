@@ -20,10 +20,10 @@ const Button: FunctionComponent<ButtonProps> = ({
     return (
       <button
         css={[
-          xw`px-8 py-2 border border-mango-dark-lighter bg-mango-dark-light 
-          focus:outline-none`,
+          xw`px-8 py-2 border border-th-fgd-4 bg-th-bkg-2 
+          rounded-md focus:outline-none`,
           grow && xw`flex-grow`,
-          disabled && xw`cursor-not-allowed text-mango-med`,
+          disabled && xw`cursor-not-allowed text-th-fgd-4`,
         ]}
         disabled={disabled}
       >

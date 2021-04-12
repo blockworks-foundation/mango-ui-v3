@@ -14,9 +14,9 @@ const Line = styled.div<any>`
   text-align: ${(props) => (props.invert ? 'left' : 'right')};
   float: ${(props) => (props.invert ? 'left' : 'right')};
   height: 100%;
+  filter: opacity(70%);
   ${(props) => props['data-width'] && `width: ${props['data-width']};`}
-  ${(props) =>
-    props['data-bgcolor'] && `background-color: ${props['data-bgcolor']};`}
+  ${(props) => (props.side === 'buy' ? xw`bg-th-green` : xw`bg-th-red`)};
 `
 
 function getCumulativeOrderbookSide(
@@ -98,7 +98,7 @@ export default function Orderbook({ depth = 7 }) {
   return (
     <>
       <ElementTitle>Orderbook</ElementTitle>
-      <div css={xw`text-gray-500 flex justify-between mb-2`}>
+      <div css={xw`text-th-fgd-4 flex justify-between mb-2`}>
         <div css={xw`text-left`}>Size ({baseCurrency})</div>
         <div css={xw`text-right`}>Price ({quoteCurrency})</div>
       </div>
@@ -165,35 +165,21 @@ const OrderbookRow = React.memo<any>(
         {invert ? (
           <>
             <div css={xw`text-left`}>
-              <Line
-                invert
-                data-width={sizePercent + '%'}
-                data-bgcolor={side === 'buy' ? '#5b6b16' : '#E54033'}
-              />
-              <div
-                css={xw``}
-                data-color={side === 'buy' ? '#ffffff' : 'white'}
-                onClick={onPriceClick}
-              >
-                {formattedPrice}
-              </div>
+              <Line invert data-width={sizePercent + '%'} side={side} />
+              <div onClick={onPriceClick}>{formattedPrice}</div>
             </div>
             <div css={xw`text-right`}>{formattedSize}</div>
           </>
         ) : (
           <>
-            <div css={xw`text-left flex-1 text-gray-200`}>{formattedSize}</div>
+            <div css={xw`text-left flex-1 text-th-fgd-1`}>{formattedSize}</div>
             <div css={xw`text-right relative flex-1`}>
               <Line
                 css={xw`absolute inset-y-0 right-0`}
                 data-width={sizePercent + '%'}
-                data-bgcolor={side === 'buy' ? '#5b6b16' : '#E54033'}
+                side={side}
               />
-              <div
-                css={xw`z-30 relative text-gray-200`}
-                data-color={side === 'buy' ? '#ffffff' : 'white'}
-                onClick={onPriceClick}
-              >
+              <div css={xw`z-30 relative text-th-fgd-1`} onClick={onPriceClick}>
                 {formattedPrice}
               </div>
             </div>
@@ -211,13 +197,6 @@ const MarkPriceComponent = React.memo<{ markPrice: number }>(
     const { market } = useMarket()
     const previousMarkPrice: number = usePrevious(markPrice)
 
-    const markPriceColor =
-      markPrice > previousMarkPrice
-        ? '#afd803'
-        : markPrice < previousMarkPrice
-        ? '#E54033'
-        : 'white'
-
     const formattedMarkPrice =
       markPrice &&
       market?.tickSize &&
@@ -225,14 +204,19 @@ const MarkPriceComponent = React.memo<{ markPrice: number }>(
 
     return (
       <div
-        css={xw`flex justify-center items-center font-bold p-1`}
-        style={{ color: markPriceColor }}
+        css={
+          markPrice > previousMarkPrice
+            ? xw`text-th-green flex justify-center items-center font-bold p-1`
+            : markPrice < previousMarkPrice
+            ? xw`text-th-red flex justify-center items-center font-bold p-1`
+            : xw`text-th-fgd-1 flex justify-center items-center font-bold p-1`
+        }
       >
         {markPrice > previousMarkPrice && (
-          <ArrowUpIcon css={xw`h-5 w-5 mr-1`} />
+          <ArrowUpIcon css={xw`h-5 w-5 mr-1 text-th-green`} />
         )}
         {markPrice < previousMarkPrice && (
-          <ArrowDownIcon css={xw`h-5 w-5 mr-1`} />
+          <ArrowDownIcon css={xw`h-5 w-5 mr-1 text-th-red`} />
         )}
         {formattedMarkPrice || '----'}
       </div>

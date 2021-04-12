@@ -1,3 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: theme('colors.light-theme.orange');
+  --red: theme('colors.light-theme.red');
+  --green: theme('colors.light-theme.green');
+  --bkg-1: theme('colors.light-theme["bkg-1"]');
+  --bkg-2: theme('colors.light-theme["bkg-2"]');
+  --bkg-3: theme('colors.light-theme["bkg-3"]');
+  --fgd-1: theme('colors.light-theme["fgd-1"]');
+  --fgd-2: theme('colors.light-theme["fgd-2"]');
+  --fgd-3: theme('colors.light-theme["fgd-3"]');
+  --fgd-4: theme('colors.light-theme["fgd-4"]');
+}
+
+[data-theme='dark'] {
+  --primary: theme('colors.dark-theme.orange');
+  --red: theme('colors.dark-theme.red');
+  --green: theme('colors.dark-theme.green');
+  --bkg-1: theme('colors.dark-theme["bkg-1"]');
+  --bkg-2: theme('colors.dark-theme["bkg-2"]');
+  --bkg-3: theme('colors.dark-theme["bkg-3"]');
+  --fgd-1: theme('colors.dark-theme["fgd-1"]');
+  --fgd-2: theme('colors.dark-theme["fgd-2"]');
+  --fgd-3: theme('colors.dark-theme["fgd-3"]');
+  --fgd-4: theme('colors.dark-theme["fgd-4"]');
+}
+
+[data-theme='mango'] {
+  --primary: theme('colors.mango-theme.yellow');
+  --red: theme('colors.mango-theme.red');
+  --green: theme('colors.mango-theme.green');
+  --bkg-1: theme('colors.mango-theme["bkg-1"]');
+  --bkg-2: theme('colors.mango-theme["bkg-2"]');
+  --bkg-3: theme('colors.mango-theme["bkg-3"]');
+  --fgd-1: theme('colors.mango-theme["fgd-1"]');
+  --fgd-2: theme('colors.mango-theme["fgd-2"]');
+  --fgd-3: theme('colors.mango-theme["fgd-3"]');
+  --fgd-4: theme('colors.mango-theme["fgd-4"]');
+}
+
+button {
+  transition: all 0.25s ease;
+}
+
 .TVChartContainer {
   height: 100%;
   width: 100%;

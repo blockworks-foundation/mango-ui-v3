@@ -9,40 +9,41 @@ const FeeDiscountsTable = () => {
   const connected = useMangoStore((s) => s.wallet.connected)
 
   return (
-    <div css={xw`flex bg-mango-dark-light py-6 mt-4`}>
+    <div css={xw`flex flex-col items-center bg-th-bkg-1 py-6 mt-4 rounded-md`}>
       <div
-        css={xw`flex flex-col justify-center m-auto text-gray-300 text-base font-light text-center`}
+        css={xw`flex flex-col sm:flex-row justify-between m-auto text-th-fgd-4 text-base font-light text-center`}
       >
-        <div>
-          <span css={xw`font-bold mr-2`}>Total SRM deposits in Mango:</span>{' '}
-          {totalSrm}
+        <div css={xw`px-4`}>
+          <div>Total SRM in Mango</div>
+          <div css={xw`text-th-fgd-1 text-lg font-semibold`}>
+            {totalSrm.toFixed(0)}
+          </div>
         </div>
-        <div css={xw`mt-2`}>
-          <span css={xw`mr-2`}>Maker Fee:</span>{' '}
-          {rates ? percentFormat.format(rates.maker) : null}%
+        <div css={xw`px-4 mt-4 sm:mt-0`}>
+          <div>Maker Fee</div>
+          <div css={xw`text-th-fgd-1 text-lg font-semibold`}>
+            {rates ? percentFormat.format(rates.maker) : null}
+          </div>
         </div>
-        <div>
-          <span css={xw`mr-2`}>Taker Fee:</span>{' '}
-          {rates ? percentFormat.format(rates.taker) : null}%
+        <div css={xw`px-4 mt-4 sm:mt-0`}>
+          <div>Taker Fee</div>
+          <div css={xw`text-th-fgd-1 text-lg font-semibold`}>
+            {rates ? percentFormat.format(rates.taker) : null}
+          </div>
         </div>
-        <div css={xw`mt-6`}>
-          {connected ? (
-            <div css={xw`bg-mango-dark p-6`}>
-              <div css={xw`text-gray-500`}>Your contributed SRM: 0</div>
-              <div css={xw`flex space-x-4 mt-8`}>
-                <Button>Deposit</Button>
-                <Button>Withdraw</Button>
-              </div>
+      </div>
+      <div css={xw`mt-6`}>
+        {connected ? (
+          <div css={xw`bg-mango-dark p-6`}>
+            <div css={xw`text-gray-500`}>Your contributed SRM: 0</div>
+            <div css={xw`flex space-x-4 mt-8`}>
+              <Button>Deposit</Button>
+              <Button>Withdraw</Button>
             </div>
-          ) : (
-            <button
-              disabled
-              css={xw`px-8 cursor-default font-light py-2.5 bg-mango-dark text-mango-med-dark text-lg`}
-            >
-              Connect a wallet to deposit SRM
-            </button>
-          )}
-        </div>
+          </div>
+        ) : (
+          <Button disabled>Connect wallet to deposit SRM</Button>
+        )}
       </div>
     </div>
   )
