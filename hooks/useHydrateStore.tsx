@@ -4,45 +4,7 @@ import { PublicKey, AccountInfo } from '@solana/web3.js'
 import useConnection from './useConnection'
 import useMangoStore from '../stores/useMangoStore'
 import useMarketList from './useMarketList'
-
-// function useOrderBookSubscribe(market) {
-//   const setMangoStore = useMangoStore((s) => s.set)
-//   const { connection } = useConnection()
-//   const accountPkAsString = account ? account.toString() : null
-
-//   useInterval(async () => {
-//     if (!account) return
-
-//     const info = await connection.getAccountInfo(account)
-//     console.log('fetching account info on interval', accountPkAsString)
-
-//     setMangoStore((state) => {
-//       state.accountInfos[accountPkAsString] = info
-//     })
-//   }, 60000)
-
-//   useEffect(() => {
-//     if (!account) return
-//     let previousInfo: AccountInfo<Buffer> | null = null
-
-//     const subscriptionId = connection.onAccountChange(account, (info) => {
-//       if (
-//         !previousInfo ||
-//         !previousInfo.data.equals(info.data) ||
-//         previousInfo.lamports !== info.lamports
-//       ) {
-//         previousInfo = info
-//         setMangoStore((state) => {
-//           state.accountInfos[accountPkAsString] = previousInfo
-//         })
-//       }
-//     })
-
-//     return () => {
-//       connection.removeAccountChangeListener(subscriptionId)
-//     }
-//   }, [account, connection])
-// }
+import { notify } from '../utils/notifications'
 
 const marketAddressSelector = (s) => s.selectedMarket.address
 const mangoGroupMarketsSelector = (s) => s.selectedMangoGroup.markets
@@ -76,16 +38,13 @@ const useHydrateStore = () => {
           state.accountInfos[bidAcccount.toString()] = bidInfo
         })
       })
-      .catch(
-        (e) => {
-          console.error('failed to load market', e)
-        }
-        // notify({
-        //   message: 'Error loading market',
-        //   description: e.message,
-        //   type: 'error',
-        // }),
-      )
+      .catch((e) => {
+        notify({
+          message: 'Error loading market',
+          description: e.message,
+          type: 'error',
+        })
+      })
   }, [selectedMarketAddress])
 
   // load all markets for mangoGroup

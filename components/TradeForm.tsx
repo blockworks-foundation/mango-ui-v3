@@ -197,12 +197,11 @@ export default function TradeForm({
       setPrice(undefined)
       onSetBaseSize(undefined)
     } catch (e) {
-      console.warn('Error placing trade:', e)
-      // notify({
-      //   message: 'Error placing order',
-      //   description: e.message,
-      //   type: 'error',
-      // })
+      notify({
+        message: 'Error placing order',
+        description: e.message,
+        type: 'error',
+      })
     } finally {
       setSubmitting(false)
     }

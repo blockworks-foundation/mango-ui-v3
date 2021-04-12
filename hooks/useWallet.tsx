@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import Wallet from '@project-serum/sol-wallet-adapter'
 import useLocalStorageState from './useLocalStorageState'
 import useMangoStore from '../stores/useMangoStore'
+import { notify } from '../utils/notifications'
 
 export const WALLET_PROVIDERS = [
   { name: 'sollet.io', url: 'https://www.sollet.io' },
@@ -41,7 +42,14 @@ export default function useWallet() {
       setMangoStore((state) => {
         state.wallet.connected = true
       })
-      console.log('connected!')
+      notify({
+        message: 'Wallet connected',
+        description:
+          'Connected to wallet ' +
+          wallet.publicKey.toString().substr(0, 5) +
+          '...' +
+          wallet.publicKey.toString().substr(-5),
+      })
     })
     wallet.on('disconnect', () => {
       setMangoStore((state) => {
@@ -49,7 +57,10 @@ export default function useWallet() {
         state.marginAccounts = []
         state.selectedMarginAccount.current = null
       })
-      console.log('wallet disconnected')
+      notify({
+        type: 'info',
+        message: 'Disconnected from wallet',
+      })
     })
     return () => {
       wallet.disconnect()

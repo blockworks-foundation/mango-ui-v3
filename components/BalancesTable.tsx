@@ -4,6 +4,7 @@ import useMangoStore from '../stores/useMangoStore'
 import { settleAll } from '../utils/mango'
 import useConnection from '../hooks/useConnection'
 import Button from '../components/Button'
+import { notify } from '../utils/notifications'
 
 const BalancesTable = () => {
   const balances = useBalances()
@@ -26,23 +27,23 @@ const BalancesTable = () => {
         markets,
         wallet
       )
-      // notify({
-      //   message: 'Successfully settled funds',
-      //   type: 'info',
-      // });
+      notify({
+        message: 'Successfully settled funds',
+        type: 'info',
+      })
     } catch (e) {
       console.warn('Error settling all:', e)
       if (e.message === 'No unsettled funds') {
-        //   notify({
-        //     message: 'There are no unsettled funds',
-        //     type: 'error',
-        //   });
+        notify({
+          message: 'There are no unsettled funds',
+          type: 'error',
+        })
       } else {
-        // notify({
-        //   message: 'Error settling funds',
-        //   description: e.message,
-        //   type: 'error',
-        // });
+        notify({
+          message: 'Error settling funds',
+          description: e.message,
+          type: 'error',
+        })
       }
     }
   }

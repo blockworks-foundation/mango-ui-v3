@@ -15,12 +15,7 @@ const Index = () => {
         <MarketSelect />
         <TradePageGrid />
       </div>
-      <Notifications
-        notifications={[
-          { title: 'test', message: 'ok' },
-          { title: 'test2', message: 'ok2' },
-        ]}
-      />
+      <Notifications />
     </div>
   )
 }

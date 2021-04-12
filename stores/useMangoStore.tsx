@@ -39,6 +39,12 @@ interface AccountInfoList {
 }
 
 interface MangoStore extends State {
+  notifications: Array<{
+    type: string
+    message: string
+    description?: string
+    txid?: string
+  }>
   accountInfos: AccountInfoList
   connection: {
     cluster: string
@@ -85,6 +91,7 @@ interface MangoStore extends State {
 
 const useMangoStore = create<MangoStore>(
   devtools((set, get) => ({
+    notifications: [],
     accountInfos: {},
     connection: {
       cluster: CLUSTER,

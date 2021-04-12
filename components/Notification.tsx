@@ -1,8 +1,31 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import xw from 'xwind'
-import useInterval from '../hooks/useInterval'
+import {
+  CheckCircleIcon,
+  InformationCircleIcon,
+  XCircleIcon,
+} from '@heroicons/react/outline'
+import useMangoStore from '../stores/useMangoStore'
 
-const NotificationList = ({ notifications }) => {
+const NotificationList = () => {
+  const setMangoStore = useMangoStore((s) => s.set)
+  const notifications = useMangoStore((s) => s.notifications)
+  console.log('notifications', notifications)
+
+  useEffect(() => {
+    if (notifications.length > 0) {
+      const id = setInterval(() => {
+        setMangoStore((state) => {
+          state.notifications = notifications.slice(1, notifications.length)
+        })
+      }, 6000)
+
+      return () => {
+        clearInterval(id)
+      }
+    }
+  }, [notifications, setMangoStore])
+
   return (
     <div
       css={xw`fixed inset-0 flex items-end px-4 py-6 pointer-events-none sm:p-6`}
@@ -10,9 +33,11 @@ const NotificationList = ({ notifications }) => {
       <div css={xw`flex flex-col w-full`}>
         {notifications.map((n, idx) => (
           <Notification
-            key={`${n.title}${idx}`}
-            title={n.title}
+            key={`${n.message}${idx}`}
+            type={n.type}
             message={n.message}
+            description={n.description}
+            txid={n.txid}
           />
         ))}
       </div>
@@ -20,12 +45,8 @@ const NotificationList = ({ notifications }) => {
   )
 }
 
-const Notification = ({ title, message }) => {
+const Notification = ({ type, message, description, txid }) => {
   const [showNotification, setShowNotification] = useState(true)
-
-  useInterval(() => {
-    setShowNotification(false)
-  }, 6000)
 
   if (!showNotification) return null
 
@@ -36,25 +57,20 @@ const Notification = ({ title, message }) => {
       <div css={xw`p-4`}>
         <div css={xw`flex items-start`}>
           <div css={xw`flex-shrink-0`}>
-            <svg
-              css={xw`h-6 w-6 text-green-400`}
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
+            {type === 'success' ? (
+              <CheckCircleIcon css={xw`text-green-400 h-9 w-9 mr-1`} />
+            ) : null}
+            {type === 'info' && (
+              <XCircleIcon css={xw`text-yellow-400 h-9 w-9 mr-1`} />
+            )}
+            {type === 'error' && (
+              <InformationCircleIcon css={xw`text-red-400 h-9 w-9 mr-1`} />
+            )}
           </div>
-          <div css={xw`ml-3 w-0 flex-1 pt-0.5`}>
-            <p css={xw`text-sm font-medium text-gray-900`}>{title}</p>
-            <p css={xw`mt-1 text-sm text-gray-500`}>{message}</p>
+          <div css={xw`ml-2 w-0 flex-1`}>
+            <p css={xw`text-lg font-medium text-gray-900`}>{message}</p>
+            <p css={xw`mt-0.5 text-base text-gray-500`}>{description}</p>
+            {txid ? <p css={xw`mt-0.5 text-sm text-gray-500`}>{txid}</p> : null}
           </div>
           <div css={xw`ml-4 flex-shrink-0 flex`}>
             <button
