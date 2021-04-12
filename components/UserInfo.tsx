@@ -22,7 +22,7 @@ const UserInfoTabs = ({ activeTab, setActiveTab }) => {
         <select
           id="tabs"
           name="tabs"
-          css={xw`block w-full pl-3 pr-10 py-2 text-base bg-mango-dark border border-mango-med-dark focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md`}
+          css={xw`block w-full pl-3 pr-10 py-2 text-base bg-th-bkg-2 border border-th-fgd-4 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md`}
           onChange={(e) => handleTabChange(e.target.value)}
         >
           {TABS.map((tabName) => (
@@ -33,7 +33,7 @@ const UserInfoTabs = ({ activeTab, setActiveTab }) => {
         </select>
       </div>
       <div css={xw`hidden sm:block`}>
-        <div css={xw`border-b border-mango-dark-lighter`}>
+        <div css={xw`border-b border-th-fgd-4`}>
           <nav css={xw`-mb-px flex space-x-8`} aria-label="Tabs">
             {TABS.map((tabName) => (
               <a
@@ -41,9 +41,9 @@ const UserInfoTabs = ({ activeTab, setActiveTab }) => {
                 onClick={() => handleTabChange(tabName)}
                 css={[
                   activeTab === tabName
-                    ? xw`border-mango-yellow text-mango-yellow`
-                    : xw`border-transparent text-gray-300 hover:text-mango-yellow`,
-                  xw`whitespace-nowrap py-4 px-1 border-b-2 font-normal text-base tracking-tight`,
+                    ? xw`border-th-primary text-th-primary hover:text-th-fgd-2`
+                    : xw`border-transparent text-th-fgd-4 hover:text-th-fgd-2`,
+                  xw`whitespace-nowrap py-4 px-1 border-b-2 font-normal text-base`,
                 ]}
               >
                 {tabName}

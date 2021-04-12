@@ -44,6 +44,7 @@
     "next": "latest",
     "next-plugin-antd-less": "^0.3.0",
     "next-themes": "^0.0.14",
+    "postcss-preset-env": "^6.7.0",
     "react": "^17.0.1",
     "react-cool-dimensions": "^2.0.1",
     "react-dom": "^17.0.1",

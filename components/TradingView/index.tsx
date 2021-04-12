@@ -102,9 +102,10 @@ const TVChartContainer = () => {
       fullscreen: defaultProps.fullscreen,
       autosize: defaultProps.autosize,
       studies_overrides: defaultProps.studiesOverrides,
-      theme: theme === 'dark' ? 'Dark' : 'Light',
+      theme: theme === 'light' ? 'Light' : 'Dark',
       overrides: {
-        'paneProperties.background': theme === 'dark' ? '#092e34' : '#fff',
+        'paneProperties.background':
+          theme === 'dark' ? '#0F282D' : theme === 'light' ? '#fff' : '#1D1832',
         'mainSeriesProperties.candleStyle.upColor': '#AFD803',
         'mainSeriesProperties.candleStyle.downColor': '#E54033',
         'mainSeriesProperties.candleStyle.drawWick': true,

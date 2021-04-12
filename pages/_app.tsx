@@ -24,7 +24,7 @@ function App({ Component, pageProps }) {
         //tailwind base styles + keyframes + ring and shadow classes variables  ... to global styles
         styles={xw`XWIND_BASE XWIND_GLOBAL`}
       />
-      <ThemeProvider attribute="class">
+      <ThemeProvider>
         <Component {...pageProps} />
       </ThemeProvider>
     </>

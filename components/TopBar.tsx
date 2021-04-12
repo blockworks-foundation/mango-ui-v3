@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import xw from 'xwind'
 import styled from '@emotion/styled'
-import { useTheme } from 'next-themes'
+// import { useTheme } from 'next-themes'
 import { SunIcon, MoonIcon, MenuIcon, XIcon } from '@heroicons/react/outline'
 import MenuItem from './MenuItem'
 import useWallet from '../hooks/useWallet'
+import ThemeSwitch from './ThemeSwitch'
 
 const Code = styled.code`
   border: 1px solid hsla(0, 0%, 39.2%, 0.2);
@@ -15,14 +16,14 @@ const Code = styled.code`
 const TopBar = () => {
   const { connected, wallet } = useWallet()
   const [showMenu, setShowMenu] = useState(false)
-  const { theme, setTheme } = useTheme()
+  // const { theme, setTheme } = useTheme()
 
   const handleConnectDisconnect = () => {
     connected ? wallet.disconnect() : wallet.connect()
   }
 
   return (
-    <nav css={xw`bg-white dark:bg-mango-grey-darker`}>
+    <nav css={xw`bg-th-bkg-1`}>
       <div css={xw`px-4 sm:px-6 lg:px-8`}>
         <div css={xw`flex justify-between h-16`}>
           <div css={xw`flex`}>
@@ -41,7 +42,8 @@ const TopBar = () => {
           </div>
           <div css={xw`flex`}>
             <div css={xw`flex items-center pr-1`}>
-              <button
+              <ThemeSwitch />
+              {/*<button
                 type="button"
                 css={xw`inline-flex items-center justify-center p-2 rounded-md text-black dark:text-white hover:text-gray-400 focus:outline-none`}
                 onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
@@ -51,17 +53,19 @@ const TopBar = () => {
                 ) : (
                   <SunIcon css={xw`h-5 w-5`} />
                 )}
-              </button>
+                </button>*/}
               <div css={xw`hidden sm:ml-4 sm:flex sm:items-center`}>
                 <button
                   onClick={handleConnectDisconnect}
-                  css={xw`bg-mango-orange hover:bg-mango-orange-dark text-white rounded-md px-4 py-2 focus:outline-none`}
+                  css={xw`border border-th-primary hover:bg-th-primary rounded-md px-4 py-2 focus:outline-none text-base text-th-primary hover:text-th-fgd-1 font-semibold`}
                 >
-                  <div css={xw`text-base font-semibold`}>
+                  <div>
                     {connected ? (
                       <div onClick={wallet.disconnect}>
                         <span>Disconnect: </span>
-                        <Code css={xw`text-xs p-1 text-white font-extralight`}>
+                        <Code
+                          css={xw`text-xs p-1 text-th-fgd-1 font-extralight`}
+                        >
                           {wallet.publicKey.toString().substr(0, 4) +
                             '...' +
                             wallet.publicKey.toString().substr(-4)}

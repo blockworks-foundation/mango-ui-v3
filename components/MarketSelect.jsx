@@ -21,19 +21,17 @@ const MarketSelect = () => {
     })
   }
 
-  console.log(selectedMarket)
-
   return (
     <div
-      css={xw`relative flex items-center py-2 px-3 sm:px-6 divide-x divide-mango-grey-light dark:divide-mango-grey-dark bg-mango-grey-lighter dark:bg-mango-grey-darkest`}
+      css={xw`relative flex items-center py-2 px-3 sm:px-6 divide-x divide-th-fgd-4 bg-th-bkg-3`}
     >
       {/*<div css={xw`opacity-50 p-2`}>Markets</div>*/}
       {Object.entries(spotMarkets).map(([name, address]) => (
         <StyledDiv
           css={
             selectedMarket.name === name
-              ? xw`px-3 py-1 text-mango-orange text-xs font-normal`
-              : xw`px-3 py-1 text-gray-400 hover:text-gray-600 dark:hover:text-white text-xs font-normal`
+              ? xw`px-3 py-1 text-th-primary text-xs font-normal`
+              : xw`px-3 py-1 text-th-fgd-3 hover:text-th-fgd-1 text-xs font-normal`
           }
           onClick={() => handleChange(name)}
           key={address}

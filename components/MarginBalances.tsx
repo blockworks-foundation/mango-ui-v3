@@ -58,27 +58,24 @@ export default function MarginStats() {
         {selectedMangoGroup ? (
           <table css={xw`min-w-full`}>
             <thead>
-              <tr css={xw`text-center text-mango-med-dark mb-2`}>
-                <th scope="col" css={xw`flex-auto`}>
+              <tr css={xw`text-center text-th-fgd-4 mb-2`}>
+                <th scope="col" css={xw`flex-auto font-light`}>
                   Assets
                 </th>
-                <th scope="col" css={xw`flex-auto`}>
+                <th scope="col" css={xw`flex-auto font-light`}>
                   Deposits
                 </th>
-                <th scope="col" css={xw`flex-auto`}>
+                <th scope="col" css={xw`flex-auto font-light`}>
                   Borrows
                 </th>
-                <th scope="col" css={xw`flex-auto`}>
+                <th scope="col" css={xw`flex-auto font-light`}>
                   Interest (APY)
                 </th>
               </tr>
             </thead>
             <tbody>
               {Object.entries(symbols).map(([name], i) => (
-                <tr
-                  key={name}
-                  css={xw`text-mango-med-dark text-gray-300 tracking-wide`}
-                >
+                <tr key={name} css={xw`text-th-fgd-1 tracking-wide`}>
                   <td css={xw`flex items-center py-2`}>
                     <img
                       alt=""
@@ -104,12 +101,12 @@ export default function MarginStats() {
                       : (0).toFixed(tokenPrecision[name])}
                   </td>
                   <td css={xw`text-center`}>
-                    <span css={xw`text-mango-green`}>
+                    <span css={xw`text-th-green`}>
                       +{(selectedMangoGroup.getDepositRate(i) * 100).toFixed(2)}
                       %
                     </span>
                     <span>{'  /  '}</span>
-                    <span css={xw`text-mango-red`}>
+                    <span css={xw`text-th-red`}>
                       -{(selectedMangoGroup.getBorrowRate(i) * 100).toFixed(2)}%
                     </span>
                   </td>
@@ -137,7 +134,7 @@ export default function MarginStats() {
             </Button>
           </div>
         </div>
-        <div css={xw`text-center mt-4 text-mango-med tracking-wider`}>
+        <div css={xw`text-center mt-4 text-th-fgd-4 tracking-wider`}>
           Settle funds in the Balances tab
         </div>
       </FloatingElement>
