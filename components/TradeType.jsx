@@ -1,19 +1,21 @@
-import { Listbox, Transition } from '@headlessui/react'
+import { Listbox } from '@headlessui/react'
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid'
 
-const TradeType = ({ value, onChange }) => {
+const TRADE_TYPES = ['Limit', 'Market']
+
+const TradeType = ({ value, onChange, className = '' }) => {
   return (
-    <div className={`ml-4 relative inline-block -mb-1`}>
+    <div className={`relative ${className}`}>
       <Listbox value={value} onChange={onChange}>
         {({ open }) => (
           <>
             <Listbox.Button
-              className={`border border-mango-dark-lighter focus:outline-none focus:ring-1 focus:ring-mango-yellow p-2 w-56`}
+              className={`h-full w-full border-l border-th-fgd-4 focus:outline-none focus:ring-1 focus:ring-th-primary`}
             >
               <div
-                className={`flex items-center text-lg justify-between font-light`}
+                className={`flex items-center justify-between space-x-4 font-light pl-2`}
               >
-                {value}
+                <span>{value}</span>
                 {open ? (
                   <ChevronUpIcon className={`h-5 w-5 mr-1`} />
                 ) : (
@@ -21,35 +23,26 @@ const TradeType = ({ value, onChange }) => {
                 )}
               </div>
             </Listbox.Button>
-            <Transition
-              show={open}
-              enter="transition duration-100 ease-out"
-              enterFrom="transform scale-95 opacity-0"
-              enterTo="transform scale-100 opacity-100"
-              leave="transition duration-75 ease-out"
-              leaveFrom="transform scale-100 opacity-100"
-              leaveTo="transform scale-95 opacity-0"
-            >
+            {open ? (
               <Listbox.Options
                 static
-                className={`z-20 p-1 absolute left-0 w-56 mt-1 bg-mango-dark-light origin-top-left divide-y divide-mango-dark-lighter shadow-lg outline-none`}
+                className={`z-20 w-full p-1 absolute left-0 mt-1 bg-th-bkg-3 origin-top-left divide-y divide-th-fgd-4 shadow-lg outline-none`}
               >
-                <div className={`opacity-50 p-2`}>Markets</div>
-                {['Limit', 'Market'].map((type) => (
-                  <Listbox.Option key={type} value={name}>
+                {TRADE_TYPES.map((type) => (
+                  <Listbox.Option key={type} value={type}>
                     {({ selected }) => (
                       <div
-                        className={`p-2 text-base hover:bg-mango-dark-lighter hover:cursor-pointer tracking-wider font-light ${
-                          selected && 'text-mango-yellow bg-mango-dark-lighter'
+                        className={`p-2 text-base hover:bg-th-fgd-4 hover:cursor-pointer tracking-wider font-light ${
+                          selected && `text-th-primary`
                         }`}
                       >
-                        {name}
+                        {type}
                       </div>
                     )}
                   </Listbox.Option>
                 ))}
               </Listbox.Options>
-            </Transition>
+            ) : null}
           </>
         )}
       </Listbox>

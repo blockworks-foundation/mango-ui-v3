@@ -39,6 +39,8 @@ export default function useWallet() {
   useEffect(() => {
     if (!wallet) return
     wallet.on('connect', () => {
+      console.log('connected')
+
       setMangoStore((state) => {
         state.wallet.connected = true
       })

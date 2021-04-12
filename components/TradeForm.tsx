@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Input, Radio, Switch, Select } from 'antd'
+import { Switch } from 'antd'
 import useMarket from '../hooks/useMarket'
 import useIpAddress from '../hooks/useIpAddress'
 import useConnection from '../hooks/useConnection'
@@ -12,7 +12,8 @@ import FloatingElement from './FloatingElement'
 import { roundToDecimal } from '../utils/index'
 import useMangoStore from '../stores/useMangoStore'
 import Button from './Button'
-// import TradeType from './TradeType'
+import TradeType from './TradeType'
+import NewInput from './Input'
 
 export default function TradeForm({
   setChangeOrderRef,
@@ -21,12 +22,17 @@ export default function TradeForm({
     ref: ({ size, price }: { size?: number; price?: number }) => void
   ) => void
 }) {
-  const [side, setSide] = useState<'buy' | 'sell'>('buy')
   const { baseCurrency, quoteCurrency, market, marketAddress } = useMarket()
+  const set = useMangoStore((s) => s.set)
   const { connected } = useMangoStore((s) => s.wallet)
-
   const { connection, cluster } = useConnection()
-  const tradeForm = useMangoStore((s) => s.tradeForm)
+  const { side, baseSize, quoteSize, price, tradeType } = useMangoStore(
+    (s) => s.tradeForm
+  )
+  const { ipAllowed } = useIpAddress()
+  const [postOnly, setPostOnly] = useState(false)
+  const [ioc, setIoc] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
 
   const orderBookRef = useRef(useMangoStore.getState().market.orderBook)
   const orderbook = orderBookRef.current[0]
@@ -39,6 +45,31 @@ export default function TradeForm({
     []
   )
 
+  const setSide = (side) =>
+    set((s) => {
+      s.tradeForm.side = side
+    })
+
+  const setBaseSize = (baseSize) =>
+    set((s) => {
+      s.tradeForm.baseSize = parseFloat(baseSize)
+    })
+
+  const setQuoteSize = (quoteSize) =>
+    set((s) => {
+      s.tradeForm.quoteSize = parseFloat(quoteSize)
+    })
+
+  const setPrice = (price) =>
+    set((s) => {
+      s.tradeForm.price = parseFloat(price)
+    })
+
+  const setTradeType = (type) =>
+    set((s) => {
+      s.tradeForm.tradeType = type
+    })
+
   const markPriceRef = useRef(useMangoStore.getState().market.markPrice)
   const markPrice = markPriceRef.current
   useEffect(
@@ -50,16 +81,6 @@ export default function TradeForm({
     []
   )
 
-  const { ipAllowed } = useIpAddress()
-
-  const [postOnly, setPostOnly] = useState(false)
-  const [ioc, setIoc] = useState(false)
-  const [baseSize, setBaseSize] = useState<number | undefined>(undefined)
-  const [quoteSize, setQuoteSize] = useState<number | undefined>(undefined)
-  const [price, setPrice] = useState<number | undefined>(undefined)
-  const [submitting, setSubmitting] = useState(false)
-  const [tradeType, setTradeType] = useState('Limit')
-
   const sizeDecimalCount =
     market?.minOrderSize && getDecimalCount(market.minOrderSize)
   const priceDecimalCount = market?.tickSize && getDecimalCount(market.tickSize)
@@ -68,25 +89,6 @@ export default function TradeForm({
     setChangeOrderRef && setChangeOrderRef(doChangeOrder)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setChangeOrderRef])
-
-  useEffect(() => {
-    if (!price && markPrice && tradeType !== 'Market') {
-      setPrice(markPrice)
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [price, baseSize, quoteSize])
-
-  // Set the price from the balance comp
-  useEffect(() => {
-    if (tradeForm.currency) {
-      if (tradeForm.currency === baseCurrency) {
-        // onSetBaseSize(size.size);
-      } else {
-        // onSetQuoteSize(size.size);
-      }
-    }
-  }, [tradeForm])
 
   const onSetBaseSize = (baseSize: number | undefined) => {
     setBaseSize(baseSize)
@@ -175,8 +177,8 @@ export default function TradeForm({
       if (tradeType === 'Market') {
         calculatedPrice =
           side === 'buy'
-            ? calculateMarketPrice(orderbook.asks, tradeForm.size, side)
-            : calculateMarketPrice(orderbook.bids, tradeForm.size, side)
+            ? calculateMarketPrice(orderbook.asks, baseSize, side)
+            : calculateMarketPrice(orderbook.bids, baseSize, side)
       }
 
       await placeAndSettle(
@@ -210,7 +212,7 @@ export default function TradeForm({
     setTradeType(tradeType)
     if (tradeType === 'Market') {
       setIoc(true)
-      setPrice(undefined)
+      setPrice('')
     } else {
       const limitPrice =
         side === 'buy' ? orderbook.asks[0][0] : orderbook.bids[0][0]
@@ -222,94 +224,74 @@ export default function TradeForm({
   return (
     <FloatingElement>
       <div>
-        <Radio.Group
-          onChange={(e) => setSide(e.target.value)}
-          value={side}
-          buttonStyle="solid"
-          style={{
-            marginBottom: 8,
-            width: '100%',
-          }}
-        >
-          <Radio.Button
-            value="buy"
-            style={{
-              width: '50%',
-              textAlign: 'center',
-              color: side === 'buy' ? '#141026' : '',
-              background: side === 'buy' ? '#AFD803' : '',
-              borderColor: side === 'buy' ? '#AFD803' : '',
-            }}
+        <div className={`flex text-base text-th-fgd-4`}>
+          <button
+            onClick={() => setSide('buy')}
+            className={`flex-1 outline-none focus:outline-none`}
           >
-            BUY
-          </Radio.Button>
-          <Radio.Button
-            className="sell-button"
-            value="sell"
-            style={{
-              width: '50%',
-              textAlign: 'center',
-              background: side === 'sell' ? '#E54033' : '',
-              borderColor: side === 'sell' ? '#E54033' : '',
-            }}
+            <div
+              className={`hover:text-th-primary pb-1
+                ${
+                  side === 'buy' &&
+                  `text-th-green hover:text-th-green border-b-2 border-th-green`
+                }`}
+            >
+              Buy
+            </div>
+          </button>
+          <button
+            onClick={() => setSide('sell')}
+            className={`flex-1 outline-none focus:outline-none`}
           >
-            SELL
-          </Radio.Button>
-        </Radio.Group>
-        <Input.Group compact style={{ paddingBottom: 8 }}>
-          <Input
-            style={{
-              width: 'calc(50% + 30px)',
-              textAlign: 'right',
-              paddingBottom: 8,
-            }}
-            addonBefore={<div style={{ width: '30px' }}>Price</div>}
-            suffix={
-              <span style={{ fontSize: 10, opacity: 0.5 }}>
-                {quoteCurrency}
-              </span>
-            }
-            value={price}
+            <div
+              className={`hover:text-th-primary pb-1
+                ${
+                  side === 'sell' &&
+                  `text-th-red hover:text-th-red border-b-2 border-th-red`
+                }
+              `}
+            >
+              Sell
+            </div>
+          </button>
+        </div>
+        <NewInput.Group className="mt-4">
+          <NewInput
             type="number"
             step={market?.tickSize || 1}
             onChange={(e) => setPrice(parseFloat(e.target.value))}
+            value={price}
             disabled={tradeType === 'Market'}
+            prefix={'Price'}
+            suffix={quoteCurrency}
+            className="w-3/5"
           />
-          {/* <TradeType onChange={handleTradeTypeChange} value={tradeType} /> */}
-          <Select
-            style={{ width: 'calc(50% - 30px)' }}
+          <TradeType
             onChange={handleTradeTypeChange}
             value={tradeType}
-          >
-            <Select.Option value="Limit">Limit</Select.Option>
-            <Select.Option value="Market">Market</Select.Option>
-          </Select>
-        </Input.Group>
-        <Input.Group compact style={{ paddingBottom: 8 }}>
-          <Input
-            style={{ width: 'calc(50% + 30px)', textAlign: 'right' }}
-            addonBefore={<div style={{ width: '30px' }}>Size</div>}
-            suffix={
-              <span style={{ fontSize: 10, opacity: 0.5 }}>{baseCurrency}</span>
-            }
-            value={baseSize}
+            className="w-2/5"
+          />
+        </NewInput.Group>
+
+        <NewInput.Group className="mt-4">
+          <NewInput
             type="number"
             step={market?.minOrderSize || 1}
             onChange={(e) => onSetBaseSize(parseFloat(e.target.value))}
+            value={baseSize}
+            className="text-right flex-grow w-3/5"
+            prefix={'Size'}
+            suffix={baseCurrency}
           />
-          <Input
-            style={{ width: 'calc(50% - 30px)', textAlign: 'right' }}
-            suffix={
-              <span style={{ fontSize: 10, opacity: 0.5 }}>
-                {quoteCurrency}
-              </span>
-            }
-            value={quoteSize}
+          <NewInput
             type="number"
             step={market?.minOrderSize || 1}
             onChange={(e) => onSetQuoteSize(parseFloat(e.target.value))}
+            value={quoteSize}
+            className="text-right border-l border-th-fgd-4 rounded-l-none w-2/5"
+            suffix={quoteCurrency}
           />
-        </Input.Group>
+        </NewInput.Group>
         {tradeType !== 'Market' ? (
           <div style={{ paddingTop: 18 }}>
             {'POST '}
@@ -317,14 +299,9 @@ export default function TradeForm({
               checked={postOnly}
               onChange={postOnChange}
               style={{ marginRight: 40 }}
-              disabled={tradeType === 'Market'}
             />
             {'IOC '}
-            <Switch
-              checked={ioc}
-              onChange={iocOnChange}
-              disabled={tradeType === 'Market'}
-            />
+            <Switch checked={ioc} onChange={iocOnChange} />
           </div>
         ) : null}
       </div>
@@ -340,7 +317,7 @@ export default function TradeForm({
               }
               grow={true}
               onClick={onSubmit}
-              className={`text-lg font-light bg-mango-green text-mango-dark hover:bg-mango-yellow flex-grow`}
+              className={`rounded text-lg font-light bg-th-green text-th-bkg-1 hover:bg-th-primary flex-grow`}
             >
               {connected ? `Buy ${baseCurrency}` : 'CONNECT WALLET TO TRADE'}
             </Button>
@@ -354,7 +331,7 @@ export default function TradeForm({
               }
               grow={true}
               onClick={onSubmit}
-              className={`text-lg font-light bg-mango-red text-white hover:bg-mango-yellow flex-grow`}
+              className={`rounded text-lg font-light bg-th-red text-white hover:bg-th-primary flex-grow`}
             >
               {connected ? `Sell ${baseCurrency}` : 'CONNECT WALLET TO TRADE'}
             </Button>

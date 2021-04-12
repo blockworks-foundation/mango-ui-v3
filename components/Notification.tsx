@@ -9,7 +9,6 @@ import useMangoStore from '../stores/useMangoStore'
 const NotificationList = () => {
   const setMangoStore = useMangoStore((s) => s.set)
   const notifications = useMangoStore((s) => s.notifications)
-  console.log('notifications', notifications)
 
   useEffect(() => {
     if (notifications.length > 0) {
@@ -70,7 +69,13 @@ const Notification = ({ type, message, description, txid }) => {
             <p className={`text-lg font-medium text-gray-900`}>{message}</p>
             <p className={`mt-0.5 text-base text-gray-500`}>{description}</p>
             {txid ? (
-              <p className={`mt-0.5 text-sm text-gray-500`}>{txid}</p>
+              <a
+                href={'https://explorer.solana.com/tx/' + txid}
+                className="text-th-blue-400"
+              >
+                View transaction {txid.slice(0, 8)}...
+                {txid.slice(txid.length - 8)}
+              </a>
             ) : null}
           </div>
           <div className={`ml-4 flex-shrink-0 flex`}>

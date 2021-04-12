@@ -5,13 +5,9 @@ import useSerumStore from '../stores/useSerumStore'
 import useOrderbook from './useOrderbook'
 import useConnection from './useConnection'
 
-// const _VERY_SLOW_REFRESH_INTERVAL = 5000 * 1000;
-
-// For things that don't really change
-const _SLOW_REFRESH_INTERVAL = 5 * 1000
-
-// For things that change frequently
 // const _FAST_REFRESH_INTERVAL = 1000;
+const _SLOW_REFRESH_INTERVAL = 5 * 1000
+// const _VERY_SLOW_REFRESH_INTERVAL = 5000 * 1000;
 
 export function _useUnfilteredTrades(limit = 10000) {
   console.log('fetching unfiltered trades')

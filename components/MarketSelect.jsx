@@ -22,11 +22,11 @@ const MarketSelect = () => {
       >
         {Object.entries(spotMarkets).map(([name, address]) => (
           <div
-            className={`cursor-pointer
+            className={`px-3 py-1 cursor-pointer text-sm font-normal
               ${
                 selectedMarket.name === name
-                  ? `px-3 py-1 text-th-primary text-xs font-normal`
-                  : `px-3 py-1 text-th-fgd-3 hover:text-th-fgd-1 text-xs font-normal`
+                  ? `text-th-primary`
+                  : `text-th-fgd-3 hover:text-th-fgd-1`
               }
             `}
             onClick={() => handleChange(name)}

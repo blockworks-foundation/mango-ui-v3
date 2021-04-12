@@ -76,9 +76,11 @@ interface MangoStore extends State {
     current: MarginAccount | null
   }
   tradeForm: {
-    side: string
-    currency: string
-    size: number
+    side: 'buy' | 'sell'
+    price: number | ''
+    baseSize: number | ''
+    quoteSize: number | ''
+    tradeType: 'Market' | 'Limit'
   }
   wallet: {
     connected: boolean
@@ -127,8 +129,10 @@ const useMangoStore = create<MangoStore>(
     },
     tradeForm: {
       side: 'buy',
-      size: 0,
-      currency: 'BTC',
+      baseSize: '',
+      quoteSize: '',
+      tradeType: 'Limit',
+      price: '',
     },
     wallet: {
       connected: false,

@@ -11,7 +11,7 @@ const Index = () => {
     <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
       <TopBar />
       <MarketSelect />
-      <div className={`min-h-screen p-1 sm:p-2 md:p-6 md:pt-4`}>
+      <div className={`min-h-screen p-1 sm:px-2 sm:py-1 md:px-6 md:py-1`}>
         <TradePageGrid />
       </div>
       <Notifications />
