@@ -366,9 +366,9 @@ export default function TradeForm({
             </Button>
           )
         ) : (
-          <button css={xw`flex-grow border`} disabled>
-            <div css={xw`text-lg font-light p-2`}>Country Not Allowed</div>
-          </button>
+          <Button disabled grow>
+            <span css={xw`text-lg font-light`}>Country Not Allowed</span>
+          </Button>
         )}
       </div>
     </FloatingElement>

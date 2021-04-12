@@ -13,12 +13,17 @@ const FeeDiscountsTable = () => {
       <div
         css={xw`flex flex-col justify-center m-auto text-gray-300 text-base font-light text-center`}
       >
-        <div>Total SRM in Mango: {totalSrm}</div>
+        <div>
+          <span css={xw`font-bold mr-2`}>Total SRM deposits in Mango:</span>{' '}
+          {totalSrm}
+        </div>
         <div css={xw`mt-2`}>
-          Maker Fee: {rates ? percentFormat.format(rates.maker) : null}%
+          <span css={xw`mr-2`}>Maker Fee:</span>{' '}
+          {rates ? percentFormat.format(rates.maker) : null}%
         </div>
         <div>
-          Taker Fee: {rates ? percentFormat.format(rates.taker) : null}%
+          <span css={xw`mr-2`}>Taker Fee:</span>{' '}
+          {rates ? percentFormat.format(rates.taker) : null}%
         </div>
         <div css={xw`mt-6`}>
           {connected ? (

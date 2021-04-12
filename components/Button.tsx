@@ -17,7 +17,6 @@ const Button: FunctionComponent<ButtonProps> = ({
   ...props
 }) => {
   if (disabled) {
-    console.log('grow', grow)
     return (
       <button
         css={[
