@@ -1,6 +1,5 @@
 import { Popover } from 'antd'
 import { useCallback, useState } from 'react'
-import xw from 'xwind'
 import {
   ExternalLinkIcon,
   InformationCircleIcon,
@@ -50,63 +49,63 @@ export default function MarginStats() {
           >
             <div>
               <InformationCircleIcon
-                css={xw`h-5 w-5 ml-2 text-mango-yellow cursor-help`}
+                className={`h-5 w-5 ml-2 text-mango-yellow cursor-help`}
               />
             </div>
           </Popover>
         </ElementTitle>
         {selectedMangoGroup ? (
-          <table css={xw`min-w-full`}>
+          <table className={`min-w-full`}>
             <thead>
-              <tr css={xw`text-center text-th-fgd-4 mb-2`}>
-                <th scope="col" css={xw`flex-auto font-light`}>
+              <tr className={`text-center text-th-fgd-4 mb-2`}>
+                <th scope="col" className={`flex-auto font-light`}>
                   Assets
                 </th>
-                <th scope="col" css={xw`flex-auto font-light`}>
+                <th scope="col" className={`flex-auto font-light`}>
                   Deposits
                 </th>
-                <th scope="col" css={xw`flex-auto font-light`}>
+                <th scope="col" className={`flex-auto font-light`}>
                   Borrows
                 </th>
-                <th scope="col" css={xw`flex-auto font-light`}>
+                <th scope="col" className={`flex-auto font-light`}>
                   Interest (APY)
                 </th>
               </tr>
             </thead>
             <tbody>
               {Object.entries(symbols).map(([name], i) => (
-                <tr key={name} css={xw`text-th-fgd-1 tracking-wide`}>
-                  <td css={xw`flex items-center py-2`}>
+                <tr key={name} className={`text-th-fgd-1 tracking-wide`}>
+                  <td className={`flex items-center py-2`}>
                     <img
                       alt=""
                       width="20"
                       height="20"
                       src={`/assets/icons/${name.toLowerCase()}.svg`}
-                      css={xw`mr-4`}
+                      className={`mr-4`}
                     />
                     <span>{name}</span>
                   </td>
-                  <td css={xw`text-center`}>
+                  <td className={`text-center`}>
                     {selectedMarginAccount
                       ? selectedMarginAccount
                           .getUiDeposit(selectedMangoGroup, i)
                           .toFixed(tokenPrecision[name])
                       : (0).toFixed(tokenPrecision[name])}
                   </td>
-                  <td css={xw`text-center`}>
+                  <td className={`text-center`}>
                     {selectedMarginAccount
                       ? selectedMarginAccount
                           .getUiDeposit(selectedMangoGroup, i)
                           .toFixed(tokenPrecision[name])
                       : (0).toFixed(tokenPrecision[name])}
                   </td>
-                  <td css={xw`text-center`}>
-                    <span css={xw`text-th-green`}>
+                  <td className={`text-center`}>
+                    <span className={`text-th-green`}>
                       +{(selectedMangoGroup.getDepositRate(i) * 100).toFixed(2)}
                       %
                     </span>
                     <span>{'  /  '}</span>
-                    <span css={xw`text-th-red`}>
+                    <span className={`text-th-red`}>
                       -{(selectedMangoGroup.getBorrowRate(i) * 100).toFixed(2)}%
                     </span>
                   </td>
@@ -115,7 +114,7 @@ export default function MarginStats() {
             </tbody>
           </table>
         ) : null}
-        <div css={xw`flex justify-around items-center mt-4`}>
+        <div className={`flex justify-around items-center mt-4`}>
           <div>
             <Button
               onClick={() => setShowDepositModal(true)}
@@ -134,7 +133,7 @@ export default function MarginStats() {
             </Button>
           </div>
         </div>
-        <div css={xw`text-center mt-4 text-th-fgd-4 tracking-wider`}>
+        <div className={`text-center mt-4 text-th-fgd-4 tracking-wider`}>
           Settle funds in the Balances tab
         </div>
       </FloatingElement>
@@ -162,31 +161,35 @@ const AddressTooltip = ({
     <>
       {owner && marginAccount ? (
         <>
-          <div css={xw`flex`}>
+          <div className={`flex`}>
             Margin Account:
             <a
               href={'https://explorer.solana.com/address/' + marginAccount}
               target="_blank"
               rel="noopener noreferrer"
             >
-              <div css={xw`ml-4 flex`}>
-                <ExternalLinkIcon css={xw`h-5 w-5 mr-1 text-mango-yellow`} />
-                <span css={xw`text-mango-yellow hover:opacity-50`}>
+              <div className={`ml-4 flex`}>
+                <ExternalLinkIcon
+                  className={`h-5 w-5 mr-1 text-mango-yellow`}
+                />
+                <span className={`text-mango-yellow hover:opacity-50`}>
                   {marginAccount}
                 </span>
               </div>
             </a>
           </div>
-          <div css={xw`flex mt-2`}>
+          <div className={`flex mt-2`}>
             Account Owner:
             <a
               href={'https://explorer.solana.com/address/' + owner}
               target="_blank"
               rel="noopener noreferrer"
             >
-              <div css={xw`ml-4 flex`}>
-                <ExternalLinkIcon css={xw`h-5 w-5 mr-1 text-mango-yellow`} />
-                <span css={xw`text-mango-yellow hover:opacity-50`}>
+              <div className={`ml-4 flex`}>
+                <ExternalLinkIcon
+                  className={`h-5 w-5 mr-1 text-mango-yellow`}
+                />
+                <span className={`text-mango-yellow hover:opacity-50`}>
                   {owner}
                 </span>
               </div>

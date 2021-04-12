@@ -1,6 +1,5 @@
 import { Popover } from 'antd'
 import { useEffect, useState } from 'react'
-import xw from 'xwind'
 import { nativeToUi } from '@blockworks-foundation/mango-client/lib/utils'
 import { groupBy } from '../utils'
 import useTradeHistory from '../hooks/useTradeHistory'
@@ -147,15 +146,17 @@ export default function MarginStats() {
       <>
         {mAccountInfo
           ? mAccountInfo.map((entry, i) => (
-              <div css={xw`flex justify-between pt-2 pb-2`} key={i}>
+              <div className={`flex justify-between pt-2 pb-2`} key={i}>
                 <Popover
                   content={entry.desc}
                   placement="topLeft"
                   trigger="hover"
                 >
-                  <div css={xw`cursor-help text-th-fgd-4`}>{entry.label}</div>
+                  <div className={`cursor-help text-th-fgd-4`}>
+                    {entry.label}
+                  </div>
                 </Popover>
-                <div css={xw`text-th-fgd-1 font-light`}>
+                <div className={`text-th-fgd-1 font-light`}>
                   {entry.currency + entry.value}
                   {entry.unit}
                 </div>

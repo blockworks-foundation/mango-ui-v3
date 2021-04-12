@@ -1,4 +1,3 @@
-import xw from 'xwind'
 import { Listbox, Transition } from '@headlessui/react'
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid'
 import { abbreviateAddress, getSymbolForTokenMintAddress } from '../utils'
@@ -32,7 +31,7 @@ const AccountSelect = ({
   }
 
   return (
-    <div css={xw`relative inline-block w-full`}>
+    <div className={`relative inline-block w-full`}>
       <Listbox
         value={selectedAccount?.publicKey.toString()}
         onChange={handleChange}
@@ -40,12 +39,12 @@ const AccountSelect = ({
         {({ open }) => (
           <>
             <Listbox.Button
-              css={xw`border border-mango-dark-lighter focus:outline-none focus:ring-1 focus:ring-mango-yellow p-2 w-full`}
+              className={`border border-mango-dark-lighter focus:outline-none focus:ring-1 focus:ring-mango-yellow p-2 w-full`}
             >
               <div
-                css={xw`flex items-center text-base justify-between font-light`}
+                className={`flex items-center text-base justify-between font-light`}
               >
-                <div css={xw`flex items-center flex-grow`}>
+                <div className={`flex items-center flex-grow`}>
                   <img
                     alt=""
                     width="20"
@@ -53,19 +52,19 @@ const AccountSelect = ({
                     src={`/assets/icons/${getSymbolForTokenMintAddress(
                       selectedAccount?.account?.mint.toString()
                     ).toLowerCase()}.svg`}
-                    css={xw`mr-4`}
+                    className={`mr-4`}
                   />
                   {abbreviateAddress(selectedAccount?.publicKey)}
                   {!hideBalance ? (
-                    <div css={xw`ml-4 text-sm text-right flex-grow`}>
+                    <div className={`ml-4 text-sm text-right flex-grow`}>
                       ({getBalanceForAccount(selectedAccount)})
                     </div>
                   ) : null}
                 </div>
                 {open ? (
-                  <ChevronUpIcon css={xw`h-5 w-5 ml-2`} />
+                  <ChevronUpIcon className={`h-5 w-5 ml-2`} />
                 ) : (
-                  <ChevronDownIcon css={xw`h-5 w-5 ml-2`} />
+                  <ChevronDownIcon className={`h-5 w-5 ml-2`} />
                 )}
               </div>
             </Listbox.Button>
@@ -80,9 +79,9 @@ const AccountSelect = ({
             >
               <Listbox.Options
                 static
-                css={xw`z-20 p-1 absolute left-0 w-full mt-1 bg-mango-dark-light origin-top-left divide-y divide-mango-dark-lighter shadow-lg outline-none border border-mango-dark-lighter`}
+                className={`z-20 p-1 absolute left-0 w-full mt-1 bg-mango-dark-light origin-top-left divide-y divide-mango-dark-lighter shadow-lg outline-none border border-mango-dark-lighter`}
               >
-                <div css={xw`opacity-50 p-2`}>
+                <div className={`opacity-50 p-2`}>
                   Your Connected Wallet Token Accounts
                 </div>
                 {accounts.map((account) => {
@@ -97,23 +96,22 @@ const AccountSelect = ({
                     >
                       {({ selected }) => (
                         <div
-                          css={[
-                            xw`p-2 text-sm hover:bg-mango-dark-lighter hover:cursor-pointer tracking-wider font-light`,
+                          className={`p-2 text-sm hover:bg-mango-dark-lighter hover:cursor-pointer tracking-wider font-light ${
                             selected &&
-                              xw`text-mango-yellow bg-mango-dark-lighter`,
-                          ]}
+                            'text-mango-yellow bg-mango-dark-lighter'
+                          }`}
                         >
-                          <div css={xw`flex items-center space-x-2`}>
+                          <div className={`flex items-center space-x-2`}>
                             <img
                               alt=""
                               width="20"
                               height="20"
                               src={`/assets/icons/${symbolForAccount.toLowerCase()}.svg`}
                             />
-                            <div css={xw`flex-grow text-left`}>
+                            <div className={`flex-grow text-left`}>
                               {abbreviateAddress(account?.publicKey)}
                             </div>
-                            <div css={xw`text-sm`}>
+                            <div className={`text-sm`}>
                               {!hideBalance
                                 ? getBalanceForAccount(account)
                                 : null}{' '}

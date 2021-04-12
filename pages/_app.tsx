@@ -1,6 +1,4 @@
 import Head from 'next/head'
-import { Global } from '@emotion/react'
-import xw from 'xwind'
 import { ThemeProvider } from 'next-themes'
 import '../node_modules/react-grid-layout/css/styles.css'
 import '../node_modules/react-resizable/css/styles.css'
@@ -20,10 +18,6 @@ function App({ Component, pageProps }) {
         <script src="/datafeeds/udf/dist/polyfills.js"></script>
         <script src="/datafeeds/udf/dist/bundle.js"></script>
       </Head>
-      <Global
-        //tailwind base styles + keyframes + ring and shadow classes variables  ... to global styles
-        styles={xw`XWIND_BASE XWIND_GLOBAL`}
-      />
       <ThemeProvider>
         <Component {...pageProps} />
       </ThemeProvider>

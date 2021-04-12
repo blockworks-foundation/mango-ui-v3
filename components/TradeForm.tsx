@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
 import { Input, Radio, Switch, Select } from 'antd'
-import xw from 'xwind'
 import useMarket from '../hooks/useMarket'
 import useIpAddress from '../hooks/useIpAddress'
 import useConnection from '../hooks/useConnection'
@@ -329,7 +328,7 @@ export default function TradeForm({
           </div>
         ) : null}
       </div>
-      <div css={xw`flex mt-4`}>
+      <div className={`flex mt-4`}>
         {ipAllowed ? (
           side === 'buy' ? (
             <Button
@@ -341,9 +340,7 @@ export default function TradeForm({
               }
               grow={true}
               onClick={onSubmit}
-              css={[
-                xw`text-lg font-light bg-mango-green text-mango-dark hover:bg-mango-yellow flex-grow`,
-              ]}
+              className={`text-lg font-light bg-mango-green text-mango-dark hover:bg-mango-yellow flex-grow`}
             >
               {connected ? `Buy ${baseCurrency}` : 'CONNECT WALLET TO TRADE'}
             </Button>
@@ -357,16 +354,14 @@ export default function TradeForm({
               }
               grow={true}
               onClick={onSubmit}
-              css={[
-                xw`text-lg font-light bg-mango-red text-white hover:bg-mango-yellow flex-grow`,
-              ]}
+              className={`text-lg font-light bg-mango-red text-white hover:bg-mango-yellow flex-grow`}
             >
               {connected ? `Sell ${baseCurrency}` : 'CONNECT WALLET TO TRADE'}
             </Button>
           )
         ) : (
           <Button disabled grow>
-            <span css={xw`text-lg font-light`}>Country Not Allowed</span>
+            <span className={`text-lg font-light`}>Country Not Allowed</span>
           </Button>
         )}
       </div>

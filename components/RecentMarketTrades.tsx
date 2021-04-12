@@ -1,6 +1,5 @@
 import { useState } from 'react'
 // import styled from '@emotion/styled'
-import xw from 'xwind'
 import { getDecimalCount } from '../utils'
 import { ChartTradeType } from '../@types/types'
 import FloatingElement from './FloatingElement'
@@ -26,15 +25,15 @@ export default function PublicTrades() {
   return (
     <FloatingElement>
       <ElementTitle>Recent Market Trades</ElementTitle>
-      <div css={xw`grid grid-cols-3 text-th-fgd-4 mb-2`}>
+      <div className={`grid grid-cols-3 text-th-fgd-4 mb-2`}>
         <div>Price ({quoteCurrency}) </div>
-        <div css={xw`text-right`}>Size ({baseCurrency})</div>
-        <div css={xw`text-right`}>Time</div>
+        <div className={`text-right`}>Size ({baseCurrency})</div>
+        <div className={`text-right`}>Time</div>
       </div>
       {!!trades.length && (
         <div>
           {trades.map((trade: ChartTradeType, i: number) => (
-            <div key={i} css={xw`mb-2 font-light grid grid-cols-3`}>
+            <div key={i} className={`mb-2 font-light grid grid-cols-3`}>
               <div
                 style={{
                   color: trade.side === 'buy' ? '#AFD803' : '#E54033',
@@ -46,14 +45,14 @@ export default function PublicTrades() {
                     )
                   : trade.price}
               </div>
-              <div css={xw`text-right`}>
+              <div className={`text-right`}>
                 {market?.minOrderSize && !isNaN(trade.size)
                   ? Number(trade.size).toFixed(
                       getDecimalCount(market.minOrderSize)
                     )
                   : trade.size}
               </div>
-              <div css={xw`text-right text-gray-500`}>
+              <div className={`text-right text-gray-500`}>
                 {trade.time && new Date(trade.time).toLocaleTimeString()}
               </div>
             </div>

@@ -13,15 +13,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "jsxImportSource": "@emotion/react",
-    "plugins": [
-      {
-        "name": "typescript-xwind-plugin",
-        "config": ".../User/.../tailwind.config.js", //Absolute filepath to tailwind config
-        "ignoreErrors": null, //regex pattern string or null
-        "tags": ["tw", "xw"] //tags that trigger xwind plugin
-      }
-    ]
+    "jsxImportSource": "@emotion/react"
   },
   "exclude": ["node_modules", ".next", "out", "public/datafeeds"],
   "include": [

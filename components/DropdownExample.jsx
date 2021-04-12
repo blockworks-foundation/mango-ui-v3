@@ -1,4 +1,3 @@
-import xw from 'xwind'
 import { Menu, Transition } from '@headlessui/react'
 import useMarketList from '../hooks/useMarketList'
 import useMarket from '../hooks/useMarket'
@@ -12,7 +11,7 @@ const DropdownExample = () => {
   // }
 
   return (
-    <div css={xw`ml-4`}>
+    <div className={`ml-4`}>
       <Menu>
         {({ open }) => (
           <>

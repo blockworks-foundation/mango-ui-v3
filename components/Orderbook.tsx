@@ -1,6 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react'
 import styled from '@emotion/styled'
-import xw from 'xwind'
 import useInterval from '../hooks/useInterval'
 import usePrevious from '../hooks/usePrevious'
 import { isEqual, getDecimalCount } from '../utils/'
@@ -16,7 +15,6 @@ const Line = styled.div<any>`
   height: 100%;
   filter: opacity(70%);
   ${(props) => props['data-width'] && `width: ${props['data-width']};`}
-  ${(props) => (props.side === 'buy' ? xw`bg-th-green` : xw`bg-th-red`)};
 `
 
 function getCumulativeOrderbookSide(
@@ -98,9 +96,9 @@ export default function Orderbook({ depth = 7 }) {
   return (
     <>
       <ElementTitle>Orderbook</ElementTitle>
-      <div css={xw`text-th-fgd-4 flex justify-between mb-2`}>
-        <div css={xw`text-left`}>Size ({baseCurrency})</div>
-        <div css={xw`text-right`}>Price ({quoteCurrency})</div>
+      <div className={`text-th-fgd-4 flex justify-between mb-2`}>
+        <div className={`text-left`}>Size ({baseCurrency})</div>
+        <div className={`text-right`}>Price ({quoteCurrency})</div>
       </div>
       {orderbookData?.asks.map(({ price, size, sizePercent }) => (
         <OrderbookRow
@@ -158,28 +156,40 @@ const OrderbookRow = React.memo<any>(
 
     return (
       <div
-        css={xw`flex mb-0.5 justify-between font-light`}
+        className={`flex mb-0.5 justify-between font-light`}
         ref={element}
         onClick={onSizeClick}
       >
         {invert ? (
           <>
-            <div css={xw`text-left`}>
-              <Line invert data-width={sizePercent + '%'} side={side} />
+            <div className={`text-left`}>
+              <Line
+                invert
+                data-width={sizePercent + '%'}
+                side={side}
+                className={`${side === 'buy' ? `bg-th-green` : `bg-th-red`}`}
+              />
               <div onClick={onPriceClick}>{formattedPrice}</div>
             </div>
-            <div css={xw`text-right`}>{formattedSize}</div>
+            <div className={`text-right`}>{formattedSize}</div>
           </>
         ) : (
           <>
-            <div css={xw`text-left flex-1 text-th-fgd-1`}>{formattedSize}</div>
-            <div css={xw`text-right relative flex-1`}>
+            <div className={`text-left flex-1 text-th-fgd-1`}>
+              {formattedSize}
+            </div>
+            <div className={`text-right relative flex-1`}>
               <Line
-                css={xw`absolute inset-y-0 right-0`}
+                className={`absolute inset-y-0 right-0 ${
+                  side === 'buy' ? `bg-th-green` : `bg-th-red`
+                }`}
                 data-width={sizePercent + '%'}
                 side={side}
               />
-              <div css={xw`z-30 relative text-th-fgd-1`} onClick={onPriceClick}>
+              <div
+                className={`z-30 relative text-th-fgd-1`}
+                onClick={onPriceClick}
+              >
                 {formattedPrice}
               </div>
             </div>
@@ -204,19 +214,19 @@ const MarkPriceComponent = React.memo<{ markPrice: number }>(
 
     return (
       <div
-        css={
+        className={`flex justify-center items-center font-bold p-1 ${
           markPrice > previousMarkPrice
-            ? xw`text-th-green flex justify-center items-center font-bold p-1`
+            ? `text-th-green`
             : markPrice < previousMarkPrice
-            ? xw`text-th-red flex justify-center items-center font-bold p-1`
-            : xw`text-th-fgd-1 flex justify-center items-center font-bold p-1`
-        }
+            ? `text-th-red`
+            : `text-th-fgd-1`
+        }`}
       >
         {markPrice > previousMarkPrice && (
-          <ArrowUpIcon css={xw`h-5 w-5 mr-1 text-th-green`} />
+          <ArrowUpIcon className={`h-5 w-5 mr-1 text-th-green`} />
         )}
         {markPrice < previousMarkPrice && (
-          <ArrowDownIcon css={xw`h-5 w-5 mr-1 text-th-red`} />
+          <ArrowDownIcon className={`h-5 w-5 mr-1 text-th-red`} />
         )}
         {formattedMarkPrice || '----'}
       </div>

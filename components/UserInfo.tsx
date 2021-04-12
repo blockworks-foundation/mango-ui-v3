@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import xw from 'xwind'
 import FloatingElement from './FloatingElement'
 import OpenOrdersTable from './OpenOrdersTable'
 import BalancesTable from './BalancesTable'
@@ -15,14 +14,14 @@ const UserInfoTabs = ({ activeTab, setActiveTab }) => {
 
   return (
     <div>
-      <div css={xw`sm:hidden`}>
-        <label htmlFor="tabs" css={xw`sr-only`}>
+      <div className={`sm:hidden`}>
+        <label htmlFor="tabs" className={`sr-only`}>
           Select a tab
         </label>
         <select
           id="tabs"
           name="tabs"
-          css={xw`block w-full pl-3 pr-10 py-2 text-base bg-th-bkg-2 border border-th-fgd-4 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md`}
+          className={`block w-full pl-3 pr-10 py-2 text-base bg-th-bkg-2 border border-th-fgd-4 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md`}
           onChange={(e) => handleTabChange(e.target.value)}
         >
           {TABS.map((tabName) => (
@@ -32,25 +31,26 @@ const UserInfoTabs = ({ activeTab, setActiveTab }) => {
           ))}
         </select>
       </div>
-      <div css={xw`hidden sm:block`}>
-        <div css={xw`border-b border-th-fgd-4`}>
-          <nav css={xw`-mb-px flex space-x-8`} aria-label="Tabs">
+      <div className={`hidden sm:block`}>
+        <div className={`border-b border-th-fgd-4`}>
+          <nav className={`-mb-px flex space-x-8`} aria-label="Tabs">
             {TABS.map((tabName) => (
               <a
                 key={tabName}
                 onClick={() => handleTabChange(tabName)}
-                css={[
-                  activeTab === tabName
-                    ? xw`border-th-primary text-th-primary hover:text-th-fgd-2`
-                    : xw`border-transparent text-th-fgd-4 hover:text-th-fgd-2`,
-                  xw`whitespace-nowrap py-4 px-1 border-b-2 font-normal text-base`,
-                ]}
+                className={`whitespace-nowrap py-4 px-1 border-b-2 font-normal text-base
+                  ${
+                    activeTab === tabName
+                      ? `border-th-primary text-th-primary hover:text-th-fgd-2`
+                      : `border-transparent text-th-fgd-4 hover:text-th-fgd-2`
+                  }
+                `}
               >
                 {tabName}
                 {/* TODO: add indicator for number in tab */}
                 {/* <!-- Current: "bg-indigo-100 text-indigo-600", Default: "bg-gray-100 text-gray-900" -->
               <span
-                css={xw`bg-gray-100 text-gray-900 hidden ml-2 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block`}
+                className={`bg-gray-100 text-gray-900 hidden ml-2 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block`}
               >
                 52
               </span> */}

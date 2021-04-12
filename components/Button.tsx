@@ -1,5 +1,4 @@
 import { FunctionComponent } from 'react'
-import xw, { cx } from 'xwind'
 
 interface ButtonProps {
   onClick?: (x?) => void
@@ -19,12 +18,11 @@ const Button: FunctionComponent<ButtonProps> = ({
   if (disabled) {
     return (
       <button
-        css={[
-          xw`px-8 py-2 border border-th-fgd-4 bg-th-bkg-2 
-          rounded-md focus:outline-none`,
-          grow && xw`flex-grow`,
-          disabled && xw`cursor-not-allowed text-th-fgd-4`,
-        ]}
+        className={`px-8 py-2 border border-th-fgd-4 bg-th-bkg-2 
+          rounded-md focus:outline-none
+          ${grow && `flex-grow`}
+          ${disabled && `cursor-not-allowed text-th-fgd-4`},
+        `}
         disabled={disabled}
       >
         {children}
@@ -35,14 +33,14 @@ const Button: FunctionComponent<ButtonProps> = ({
   return (
     <button
       onClick={onClick}
-      css={[
-        xw`px-8 py-2 border border-mango-dark-lighter bg-mango-dark-light 
-          focus:outline-none`,
-        disabled
-          ? xw`cursor-not-allowed text-mango-med`
-          : xw`active:border-mango-yellow text-mango-yellow hover:bg-mango-dark-lighter`,
-      ]}
-      className={cx('group', className)}
+      className={`px-8 py-2 border border-mango-dark-lighter bg-mango-dark-light 
+          focus:outline-none
+        ${
+          disabled
+            ? `cursor-not-allowed text-mango-med`
+            : `active:border-mango-yellow text-mango-yellow hover:bg-mango-dark-lighter`
+        }
+      ${className}`}
       {...props}
     >
       {children}

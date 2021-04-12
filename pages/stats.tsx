@@ -1,4 +1,3 @@
-import xw from 'xwind'
 import React, { useEffect, useState } from 'react'
 import styled from '@emotion/styled'
 import { Col, Row, Button, Divider, Select } from 'antd'
@@ -211,7 +210,7 @@ export default function StatsPage() {
           <FloatingElement shrink>
             <React.Fragment>
               <Divider>
-                <span css={xw`text-white`}>Mango Stats</span>
+                <span className={`text-white`}>Mango Stats</span>
               </Divider>
               <SizeTitle>
                 <Col span={1}></Col>
@@ -256,7 +255,7 @@ export default function StatsPage() {
           {selectedAsset ? (
             <FloatingElement shrink>
               <Divider>
-                <span css={xw`text-white`}>Historical</span>
+                <span className={`text-white`}>Historical</span>
                 <Select
                   style={{ margin: '0px 8px', fontSize: 16 }}
                   value={selectedAsset}
@@ -268,7 +267,7 @@ export default function StatsPage() {
                     </Select.Option>
                   ))}
                 </Select>
-                <span css={xw`text-white`}>Stats</span>
+                <span className={`text-white`}>Stats</span>
               </Divider>
 
               <Row>

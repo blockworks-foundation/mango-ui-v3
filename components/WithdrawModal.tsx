@@ -1,6 +1,4 @@
 import React, { useMemo, useState } from 'react'
-import xw from 'xwind'
-// import { nativeToUi } from '@blockworks-foundation/mango-client/lib/utils'
 import Modal from './Modal'
 import AccountSelect from './AccountSelect'
 import useMangoStore from '../stores/useMangoStore'
@@ -76,12 +74,12 @@ const WithdrawModal = ({ isOpen, onClose }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <Modal.Header>
-        <div css={xw`text-mango-med-light flex-shrink invisible`}>X</div>
+        <div className={`text-mango-med-light flex-shrink invisible`}>X</div>
         <div
-          css={xw`text-mango-med-light flex-grow text-center flex items-center justify-center`}
+          className={`text-mango-med-light flex-grow text-center flex items-center justify-center`}
         >
-          <div css={xw`flex-initial`}>Select: </div>
-          <div css={xw`ml-4 flex-grow`}>
+          <div className={`flex-initial`}>Select: </div>
+          <div className={`ml-4 flex-grow`}>
             <AccountSelect
               hideBalance
               accounts={depositAccounts}
@@ -90,8 +88,8 @@ const WithdrawModal = ({ isOpen, onClose }) => {
             />
           </div>
         </div>
-        <div css={xw`text-mango-med-light flex-shrink ml-6 mr-2 text-lg`}>
-          <button onClick={onClose} css={xw`hover:text-mango-yellow`}>
+        <div className={`text-mango-med-light flex-shrink ml-6 mr-2 text-lg`}>
+          <button onClick={onClose} className={`hover:text-mango-yellow`}>
             <svg
               viewBox="64 64 896 896"
               focusable="false"
@@ -106,9 +104,11 @@ const WithdrawModal = ({ isOpen, onClose }) => {
           </button>
         </div>
       </Modal.Header>
-      <div css={xw`pb-6 px-8`}>
-        <div css={xw`mt-3 text-center sm:mt-5`}>
-          <div css={xw`mt-6 bg-mango-dark-light rounded-md flex items-center`}>
+      <div className={`pb-6 px-8`}>
+        <div className={`mt-3 text-center sm:mt-5`}>
+          <div
+            className={`mt-6 bg-mango-dark-light rounded-md flex items-center`}
+          >
             <img
               alt=""
               width="20"
@@ -116,27 +116,27 @@ const WithdrawModal = ({ isOpen, onClose }) => {
               src={`/assets/icons/${getSymbolForTokenMintAddress(
                 selectedAccount?.account?.mint.toString()
               ).toLowerCase()}.svg`}
-              css={xw`ml-3`}
+              className={`ml-3`}
             />
             <input
               type="number"
               min="0"
-              css={xw`outline-none bg-mango-dark-light w-full py-4 mx-3 text-2xl text-gray-300 flex-grow`}
+              className={`outline-none bg-mango-dark-light w-full py-4 mx-3 text-2xl text-gray-300 flex-grow`}
               placeholder="0.00"
               value={inputAmount}
               onChange={(e) => setInputAmount(e.target.value)}
             ></input>
             <Button
               onClick={setMaxForSelectedAccount}
-              css={xw`m-2 rounded py-1`}
+              className={`m-2 rounded py-1`}
             >
               Max
             </Button>
           </div>
         </div>
-        <div css={xw`mt-5 sm:mt-6 flex justify-center`}>
+        <div className={`mt-5 sm:mt-6 flex justify-center`}>
           <Button onClick={handleWithdraw} disabled={withdrawDisabled}>
-            <div css={xw`flex items-center`}>
+            <div className={`flex items-center`}>
               {submitting && <Loading />}
               Withdraw
             </div>

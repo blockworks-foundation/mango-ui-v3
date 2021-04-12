@@ -1,9 +1,6 @@
-import xw from 'xwind'
-import styled from '@emotion/styled'
-import { Listbox, Transition } from '@headlessui/react'
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid'
+// import { Listbox, Transition } from '@headlessui/react'
+// import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid'
 import useMarketList from '../hooks/useMarketList'
-// import useMarket from '../hooks/useMarket'
 import useMangoStore from '../stores/useMangoStore'
 
 const MarketSelect = () => {
@@ -18,19 +15,20 @@ const MarketSelect = () => {
   }
 
   return (
-    <div css={xw`bg-th-bkg-3`}>
-      {/*<div css={xw`opacity-50 p-2`}>Markets</div>*/}
+    <div className={`bg-th-bkg-3`}>
+      {/*<div className={`opacity-50 p-2`}>Markets</div>*/}
       <div
-        css={xw`flex items-center py-2 px-3 sm:px-8 divide-x divide-th-fgd-4 `}
+        className={`flex items-center py-2 px-3 sm:px-8 divide-x divide-th-fgd-4 `}
       >
         {Object.entries(spotMarkets).map(([name, address]) => (
           <div
-            css={[
-              xw`cursor-pointer`,
-              selectedMarket.name === name
-                ? xw`px-3 py-1 text-th-primary text-xs font-normal`
-                : xw`px-3 py-1 text-th-fgd-3 hover:text-th-fgd-1 text-xs font-normal`,
-            ]}
+            className={`cursor-pointer
+              ${
+                selectedMarket.name === name
+                  ? `px-3 py-1 text-th-primary text-xs font-normal`
+                  : `px-3 py-1 text-th-fgd-3 hover:text-th-fgd-1 text-xs font-normal`
+              }
+            `}
             onClick={() => handleChange(name)}
             key={address}
           >
@@ -42,16 +40,16 @@ const MarketSelect = () => {
         {({ open }) => (
           <>
             <Listbox.Button
-              css={xw`border border-mango-dark-lighter focus:outline-none focus:ring-1 focus:ring-mango-yellow p-2 w-56`}
+              className={`border border-mango-dark-lighter focus:outline-none focus:ring-1 focus:ring-mango-yellow p-2 w-56`}
             >
               <div
-                css={xw`flex items-center text-lg justify-between font-light`}
+                className={`flex items-center text-lg justify-between font-light`}
               >
                 {selectedMarket.name}
                 {open ? (
-                  <ChevronUpIcon css={xw`h-5 w-5 mr-1`} />
+                  <ChevronUpIcon className={`h-5 w-5 mr-1`} />
                 ) : (
-                  <ChevronDownIcon css={xw`h-5 w-5 mr-1`} />
+                  <ChevronDownIcon className={`h-5 w-5 mr-1`} />
                 )}
               </div>
             </Listbox.Button>
@@ -66,18 +64,16 @@ const MarketSelect = () => {
             >
               <Listbox.Options
                 static
-                css={xw`z-20 p-1 absolute left-0 w-56 mt-1 bg-mango-dark-light origin-top-left divide-y divide-mango-dark-lighter shadow-lg outline-none`}
+                className={`z-20 p-1 absolute left-0 w-56 mt-1 bg-mango-dark-light origin-top-left divide-y divide-mango-dark-lighter shadow-lg outline-none`}
               >
-                <div css={xw`opacity-50 p-2`}>Markets</div>
+                <div className={`opacity-50 p-2`}>Markets</div>
                 {Object.entries(spotMarkets).map(([name, address]) => (
                   <Listbox.Option key={address} value={name}>
                     {({ selected }) => (
                       <div
-                        css={[
-                          xw`p-2 text-base hover:bg-mango-dark-lighter hover:cursor-pointer tracking-wider font-light`,
-                          selected &&
-                            xw`text-mango-yellow bg-mango-dark-lighter`,
-                        ]}
+                        className={`p-2 text-base hover:bg-mango-dark-lighter hover:cursor-pointer tracking-wider font-light
+                          ${selected && `text-mango-yellow bg-mango-dark-lighter`}
+                        `}
                       >
                         {name}
                       </div>

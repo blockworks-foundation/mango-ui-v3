@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import xw from 'xwind'
 import { useTheme } from 'next-themes'
 
 const THEMES = [
@@ -21,7 +20,7 @@ const ThemeChanger = () => {
     <select
       name="theme"
       id="theme-select"
-      css={xw`px-3 py-1 text-sm bg-th-bkg-1 border border-th-fgd-4 focus:outline-none focus:ring-th-primary focus:border-th-primary rounded-md`}
+      className={`px-3 py-1 text-sm bg-th-bkg-1 border border-th-fgd-4 focus:outline-none focus:ring-th-primary focus:border-th-primary rounded-md`}
       onChange={(e) => setTheme(e.currentTarget.value)}
       value={theme}
     >
