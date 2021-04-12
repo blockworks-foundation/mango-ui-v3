@@ -2,7 +2,11 @@ import { useEffect, useState } from 'react'
 import xw from 'xwind'
 import { useTheme } from 'next-themes'
 
-const themes = [{ name: 'light' }, { name: 'dark' }, { name: 'mango' }]
+const THEMES = [
+  { name: 'light', display: 'Light' },
+  { name: 'dark', display: 'Dark' },
+  { name: 'mango', display: 'Mango' },
+]
 
 const ThemeChanger = () => {
   const [mounted, setMounted] = useState(false)
@@ -17,14 +21,14 @@ const ThemeChanger = () => {
     <select
       name="theme"
       id="theme-select"
-      css={xw`px-3 py-1 text-sm bg-th-bkg-1 border border-th-fgd-4 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md`}
+      css={xw`px-3 py-1 text-sm bg-th-bkg-1 border border-th-fgd-4 focus:outline-none focus:ring-th-primary focus:border-th-primary rounded-md`}
       onChange={(e) => setTheme(e.currentTarget.value)}
       value={theme}
     >
       <option value="">Select Theme</option>
-      {themes.map((t) => (
+      {THEMES.map((t) => (
         <option key={t.name.toLowerCase()} value={t.name.toLowerCase()}>
-          {t.name}
+          {t.display}
         </option>
       ))}
     </select>

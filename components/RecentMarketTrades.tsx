@@ -26,7 +26,7 @@ export default function PublicTrades() {
   return (
     <FloatingElement>
       <ElementTitle>Recent Market Trades</ElementTitle>
-      <div css={xw`grid grid-cols-3 text-gray-500 mb-2`}>
+      <div css={xw`grid grid-cols-3 text-th-fgd-4 mb-2`}>
         <div>Price ({quoteCurrency}) </div>
         <div css={xw`text-right`}>Size ({baseCurrency})</div>
         <div css={xw`text-right`}>Time</div>

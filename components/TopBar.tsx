@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import xw from 'xwind'
 import styled from '@emotion/styled'
-// import { useTheme } from 'next-themes'
-import { SunIcon, MoonIcon, MenuIcon, XIcon } from '@heroicons/react/outline'
+import { MenuIcon, XIcon } from '@heroicons/react/outline'
 import MenuItem from './MenuItem'
 import useWallet from '../hooks/useWallet'
 import ThemeSwitch from './ThemeSwitch'
@@ -16,7 +15,6 @@ const Code = styled.code`
 const TopBar = () => {
   const { connected, wallet } = useWallet()
   const [showMenu, setShowMenu] = useState(false)
-  // const { theme, setTheme } = useTheme()
 
   const handleConnectDisconnect = () => {
     connected ? wallet.disconnect() : wallet.connect()
@@ -27,14 +25,14 @@ const TopBar = () => {
       <div css={xw`px-4 sm:px-6 lg:px-8`}>
         <div css={xw`flex justify-between h-16`}>
           <div css={xw`flex`}>
-            <div css={xw`flex-shrink-0 flex items-center`}>
+            <div css={xw`flex-shrink-0 flex items-center ml-2`}>
               <img
                 css={xw`h-8 w-auto`}
                 src="/assets/icons/logo.svg"
                 alt="next"
               />
             </div>
-            <div css={xw`hidden sm:flex sm:space-x-8 sm:ml-4`}>
+            <div css={xw`hidden sm:flex sm:space-x-8 sm:ml-4 py-2`}>
               <MenuItem href="/">Trade</MenuItem>
               <MenuItem href="/stats">Stats</MenuItem>
               <MenuItem href="https://docs.mango.markets/">Learn</MenuItem>
@@ -88,9 +86,9 @@ const TopBar = () => {
               >
                 <span css={xw`sr-only`}>Open main menu</span>
                 {showMenu ? (
-                  <XIcon css={xw`h-5 w-5`} />
+                  <XIcon css={xw`h-5 w-5 text-th-primary`} />
                 ) : (
-                  <MenuIcon css={xw`h-5 w-5`} />
+                  <MenuIcon css={xw`h-5 w-5 text-th-primary`} />
                 )}
               </button>
             </div>
@@ -101,7 +99,7 @@ const TopBar = () => {
         css={[showMenu ? xw`visible` : xw`hidden`, xw`sm:hidden`]}
         id="mobile-menu"
       >
-        <div css={xw`bg-mango-grey-dark pt-2 pb-3 space-y-1`}>
+        <div css={xw`bg-th-bkg-3 pt-2 pb-3 space-y-1 border-b border-th-fgd-4`}>
           <MenuItem href="/">Trade</MenuItem>
           <MenuItem href="/stats">Stats</MenuItem>
           <MenuItem href="https://docs.mango.markets/">Learn</MenuItem>

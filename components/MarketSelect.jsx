@@ -6,10 +6,6 @@ import useMarketList from '../hooks/useMarketList'
 // import useMarket from '../hooks/useMarket'
 import useMangoStore from '../stores/useMangoStore'
 
-const StyledDiv = styled.div`
-  cursor: pointer;
-`
-
 const MarketSelect = () => {
   const { spotMarkets } = useMarketList()
   const selectedMarket = useMangoStore((s) => s.selectedMarket)
@@ -22,23 +18,26 @@ const MarketSelect = () => {
   }
 
   return (
-    <div
-      css={xw`relative flex items-center py-2 px-3 sm:px-6 divide-x divide-th-fgd-4 bg-th-bkg-3`}
-    >
+    <div css={xw`bg-th-bkg-3`}>
       {/*<div css={xw`opacity-50 p-2`}>Markets</div>*/}
-      {Object.entries(spotMarkets).map(([name, address]) => (
-        <StyledDiv
-          css={
-            selectedMarket.name === name
-              ? xw`px-3 py-1 text-th-primary text-xs font-normal`
-              : xw`px-3 py-1 text-th-fgd-3 hover:text-th-fgd-1 text-xs font-normal`
-          }
-          onClick={() => handleChange(name)}
-          key={address}
-        >
-          {name}
-        </StyledDiv>
-      ))}
+      <div
+        css={xw`flex items-center py-2 px-3 sm:px-8 divide-x divide-th-fgd-4 `}
+      >
+        {Object.entries(spotMarkets).map(([name, address]) => (
+          <div
+            css={[
+              xw`cursor-pointer`,
+              selectedMarket.name === name
+                ? xw`px-3 py-1 text-th-primary text-xs font-normal`
+                : xw`px-3 py-1 text-th-fgd-3 hover:text-th-fgd-1 text-xs font-normal`,
+            ]}
+            onClick={() => handleChange(name)}
+            key={address}
+          >
+            {name}
+          </div>
+        ))}
+      </div>
       {/*<Listbox value={selectedMarket.name} onChange={handleChange}>
         {({ open }) => (
           <>
