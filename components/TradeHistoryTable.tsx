@@ -2,7 +2,6 @@ import useTradeHistory from '../hooks/useTradeHistory'
 
 const TradeHistoryTable = () => {
   const { tradeHistory } = useTradeHistory()
-  console.log('trade history', tradeHistory)
 
   return (
     <div className={`flex flex-col py-6`}>

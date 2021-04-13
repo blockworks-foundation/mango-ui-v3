@@ -84,6 +84,12 @@ export const useTradeHistory = () => {
     setAllTrades(formatTradeHistory(results))
   }, [marginAccount])
 
+  useEffect(() => {
+    if (marginAccount) {
+      fetchTradeHistory()
+    }
+  }, [])
+
   useInterval(() => {
     if (marginAccount && tradeHistory.length === 0) {
       fetchTradeHistory()
