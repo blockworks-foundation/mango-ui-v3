@@ -61,25 +61,25 @@ const OpenOrdersTable = () => {
                   <tr>
                     <th
                       scope="col"
-                      className={`px-6 py-3 text-left text-base font-medium text-th-fgd-4 tracking-wider`}
+                      className={`px-6 py-3 text-left text-base font-medium text-th-fgd-2 tracking-wider`}
                     >
                       Market
                     </th>
                     <th
                       scope="col"
-                      className={`px-6 py-3 text-left text-base font-medium text-th-fgd-4 tracking-wider`}
+                      className={`px-6 py-3 text-left text-base font-medium text-th-fgd-2 tracking-wider`}
                     >
                       Side
                     </th>
                     <th
                       scope="col"
-                      className={`px-6 py-3 text-left text-base font-medium text-th-fgd-4 tracking-wider`}
+                      className={`px-6 py-3 text-left text-base font-medium text-th-fgd-2 tracking-wider`}
                     >
                       Size
                     </th>
                     <th
                       scope="col"
-                      className={`px-6 py-3 text-left text-base font-medium text-th-fgd-4 tracking-wider`}
+                      className={`px-6 py-3 text-left text-base font-medium text-th-fgd-2 tracking-wider`}
                     >
                       Price
                     </th>
@@ -97,12 +97,12 @@ const OpenOrdersTable = () => {
                       `}
                     >
                       <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-4 font-light`}
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2 font-light`}
                       >
                         {order.marketName}
                       </td>
                       <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-4 font-light`}
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2 font-light`}
                       >
                         <div
                           className={`rounded inline-block bg-mango-green px-2 py-1 text-mango-dark font-bold`}
@@ -111,12 +111,12 @@ const OpenOrdersTable = () => {
                         </div>
                       </td>
                       <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-4 font-light`}
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2 font-light`}
                       >
                         {order.size}
                       </td>
                       <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-4 font-light`}
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2 font-light`}
                       >
                         {order.price}
                       </td>
@@ -142,7 +142,7 @@ const OpenOrdersTable = () => {
             </div>
           ) : (
             <div
-              className={`w-full text-center py-6 text-base bg-th-bkg-1 font-light text-th-fgd-4 rounded-md`}
+              className={`w-full text-center py-6 text-base bg-th-bkg-1 font-light text-th-fgd-2 rounded-md`}
             >
               No open orders
             </div>

@@ -49,11 +49,11 @@ const FeeDiscountsTable = () => {
       </div>
       <div className="mt-6">
         {connected ? (
-          <div className="bg-th-bkg-2 p-6">
-            <div className="text-th-fgd-4 text-center">
+          <div className="bg-th-bkg-2 p-6 rounded">
+            <div className="text-th-fgd-4 text-center text-lg">
               Your contributed SRM: {contributedSrm}
             </div>
-            <div className="flex space-x-4 mt-8">
+            <div className="flex space-x-4 mt-4">
               <Button onClick={() => setShowDeposit(true)}>Deposit</Button>
               <Button onClick={() => setShowWithdraw(true)}>Withdraw</Button>
             </div>

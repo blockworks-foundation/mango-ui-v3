@@ -3,14 +3,19 @@ import { Market } from '@project-serum/serum'
 import { PublicKey, AccountInfo } from '@solana/web3.js'
 import useConnection from './useConnection'
 import useMangoStore from '../stores/useMangoStore'
+import useSerumStore from '../stores/useSerumStore'
 import useMarketList from './useMarketList'
 import { notify } from '../utils/notifications'
+import useInterval from './useInterval'
+
+const _SLOW_REFRESH_INTERVAL = 5 * 1000
 
 const marketAddressSelector = (s) => s.selectedMarket.address
 const mangoGroupMarketsSelector = (s) => s.selectedMangoGroup.markets
 
 const useHydrateStore = () => {
   const setMangoStore = useMangoStore((s) => s.set)
+  const setSerumStore = useSerumStore((s) => s.set)
   const selectedMarketAddress = useMangoStore(marketAddressSelector)
   const marketsForSelectedMangoGroup = useMangoStore(mangoGroupMarketsSelector)
   const { connection, dexProgramId } = useConnection()
@@ -128,6 +133,22 @@ const useHydrateStore = () => {
       }
     }
   }, [marketsForSelectedMangoGroup])
+
+  useInterval(() => {
+    async function fetchFills() {
+      const market = useMangoStore.getState().market.current
+      if (!market || !connection) {
+        return null
+      }
+      const loadedFills = await market.loadFills(connection, 10000)
+
+      setSerumStore((state) => {
+        state.fills = loadedFills
+      })
+    }
+
+    fetchFills()
+  }, _SLOW_REFRESH_INTERVAL)
 }
 
 export default useHydrateStore

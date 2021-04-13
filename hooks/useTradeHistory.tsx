@@ -2,6 +2,8 @@ import { useCallback, useState, useEffect, useRef } from 'react'
 import { isDefined } from '../utils'
 import useMangoStore from '../stores/useMangoStore'
 import useSerumStore from '../stores/useSerumStore'
+import useMarket from './useMarket'
+import useInterval from './useInterval'
 
 const byTimestamp = (a, b) => {
   return (
@@ -35,13 +37,30 @@ export const usePrevious = (value) => {
   return ref.current
 }
 
+const useFills = () => {
+  const fills = useSerumStore((s) => s.fills)
+  const { market, marketName } = useMarket()
+  const marginAccount = useMangoStore((s) => s.selectedMarginAccount.current)
+  const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+
+  if (!marginAccount || !selectedMangoGroup) return null
+
+  const marketIndex = selectedMangoGroup.getMarketIndex(market)
+  const openOrdersAccount = marginAccount.openOrdersAccounts[marketIndex]
+  return fills
+    .filter((fill) => fill.openOrders.equals(openOrdersAccount.publicKey))
+    .map((fill) => ({ ...fill, marketName }))
+}
+
 export const useTradeHistory = () => {
-  const eventQueueFills = useSerumStore((s) => s.fills)
+  const eventQueueFills = useFills()
   const [tradeHistory, setTradeHistory] = useState<any[]>([])
   const [allTrades, setAllTrades] = useState<any[]>([])
   const marginAccount = useMangoStore((s) => s.selectedMarginAccount.current)
 
   const fetchTradeHistory = useCallback(async () => {
+    console.log('fetching history')
+
     if (!marginAccount) return
     if (marginAccount.openOrdersAccounts.length === 0) return
 
@@ -59,16 +78,18 @@ export const useTradeHistory = () => {
         return parsedResponse?.data ? parsedResponse.data : []
       })
     )
+    console.log('results', results)
 
     setTradeHistory(formatTradeHistory(results))
     setAllTrades(formatTradeHistory(results))
-  }, [marginAccount, eventQueueFills])
+  }, [marginAccount])
 
-  useEffect(() => {
+  useInterval(() => {
+    console.log('interval', allTrades, tradeHistory)
     if (marginAccount && tradeHistory.length === 0) {
       fetchTradeHistory()
     }
-  }, [marginAccount])
+  }, 10000)
 
   useEffect(() => {
     if (eventQueueFills && eventQueueFills.length > 0) {

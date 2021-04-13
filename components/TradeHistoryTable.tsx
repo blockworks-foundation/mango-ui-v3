@@ -1,113 +1,103 @@
-import { useOpenOrders } from '../hooks/useOpenOrders'
+import useTradeHistory from '../hooks/useTradeHistory'
 
 const TradeHistoryTable = () => {
-  const openOrders = useOpenOrders()
+  const { tradeHistory } = useTradeHistory()
 
   return (
     <div className={`flex flex-col py-6`}>
       <div className={`-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8`}>
         <div className={`align-middle inline-block min-w-full sm:px-6 lg:px-8`}>
-          {openOrders ? (
+          {tradeHistory ? (
             <div
-              className={`shadow overflow-hidden border-b border-mango-dark-light sm:rounded-md`}
+              className={`shadow overflow-hidden border-b border-th-bkg-2 sm:rounded-md`}
             >
-              <table className={`min-w-full divide-y divide-mango-dark-light`}>
+              <table className={`min-w-full divide-y divide-th-bkg-2`}>
                 <thead>
                   <tr>
                     <th
                       scope="col"
-                      className={`px-6 py-3 text-left text-base font-medium text-gray-300 tracking-wider`}
+                      className={`px-6 py-3 text-left text-base font-medium text-th-fgd-2 tracking-wider`}
                     >
-                      Coin
+                      Market
                     </th>
                     <th
                       scope="col"
-                      className={`px-6 py-3 text-left text-base font-medium text-gray-300 tracking-wider`}
+                      className={`px-6 py-3 text-left text-base font-medium text-th-fgd-2 tracking-wider`}
                     >
-                      Wallet Balance
+                      Side
                     </th>
                     <th
                       scope="col"
-                      className={`px-6 py-3 text-left text-base font-medium text-gray-300 tracking-wider`}
+                      className={`px-6 py-3 text-left text-base font-medium text-th-fgd-2 tracking-wider`}
                     >
-                      Deposits
+                      Size
                     </th>
                     <th
                       scope="col"
-                      className={`px-6 py-3 text-left text-base font-medium text-gray-300 tracking-wider`}
+                      className={`px-6 py-3 text-left text-base font-medium text-th-fgd-2 tracking-wider`}
                     >
-                      Borrows
+                      Price
                     </th>
                     <th
                       scope="col"
-                      className={`px-6 py-3 text-left text-base font-medium text-gray-300 tracking-wider`}
+                      className={`px-6 py-3 text-left text-base font-medium text-th-fgd-2 tracking-wider`}
                     >
-                      In Orders
+                      Liquidity
                     </th>
                     <th
                       scope="col"
-                      className={`px-6 py-3 text-left text-base font-medium text-gray-300 tracking-wider`}
+                      className={`px-6 py-3 text-left text-base font-medium text-th-fgd-2 tracking-wider`}
                     >
-                      Unsettled
-                    </th>
-                    <th
-                      scope="col"
-                      className={`px-6 py-3 text-left text-base font-medium text-gray-300 tracking-wider`}
-                    >
-                      Net
+                      Fees
                     </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {openOrders.map((order, index) => (
+                  {tradeHistory.map((trade, index) => (
                     <tr
-                      key={`${order.orderId}${order.side}`}
+                      key={`${trade.orderId}${trade.side}`}
                       className={`
-                        ${
-                          index % 2 === 0
-                            ? `bg-mango-dark-light`
-                            : `bg-mango-dark-lighter`
-                        }
+                        ${index % 2 === 0 ? `bg-th-bkg-2` : `bg-th-bkg-3`}
                       `}
                     >
                       <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-light`}
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2 font-light`}
                       >
-                        {order.marketName}
+                        {trade.marketName}
                       </td>
                       <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-light`}
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2 font-light`}
                       >
                         <div
-                          className={`rounded inline-block bg-mango-green px-2 py-1 text-mango-dark font-bold`}
+                          className={`rounded inline-block ${
+                            trade.side === 'buy'
+                              ? 'bg-th-green text-th-bkg-1'
+                              : 'bg-th-red text-white'
+                          }
+                           px-2 py-1  font-bold`}
                         >
-                          {order.side.toUpperCase()}
+                          {trade.side.toUpperCase()}
                         </div>
                       </td>
                       <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-light`}
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2 font-light`}
                       >
-                        {order.size}
+                        {trade.size}
                       </td>
                       <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-light`}
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2 font-light`}
                       >
-                        {order.price}
+                        {trade.price}
                       </td>
                       <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-light`}
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2 font-light`}
                       >
-                        {order.price}
+                        {trade.liquidity}
                       </td>
                       <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-light`}
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2 font-light`}
                       >
-                        {order.price}
-                      </td>
-                      <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-light`}
-                      >
-                        {order.price}
+                        {trade.feeCost}
                       </td>
                     </tr>
                   ))}
