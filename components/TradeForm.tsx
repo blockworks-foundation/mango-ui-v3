@@ -213,7 +213,7 @@ export default function TradeForm() {
             className={`flex-1 outline-none focus:outline-none`}
           >
             <div
-              className={`hover:text-th-primary pb-1
+              className={`hover:text-th-fgd-1 pb-1 transition-colors duration-500
                 ${
                   side === 'buy' &&
                   `text-th-green hover:text-th-green border-b-2 border-th-green`
@@ -227,7 +227,7 @@ export default function TradeForm() {
             className={`flex-1 outline-none focus:outline-none`}
           >
             <div
-              className={`hover:text-th-primary pb-1
+              className={`hover:text-th-fgd-1 pb-1 transition-colors duration-500
                 ${
                   side === 'sell' &&
                   `text-th-red hover:text-th-red border-b-2 border-th-red`
@@ -247,7 +247,7 @@ export default function TradeForm() {
             disabled={tradeType === 'Market'}
             prefix={'Price'}
             suffix={quoteCurrency}
-            className="w-3/5"
+            className="w-3/5 rounded-r-none"
           />
           <TradeType
             onChange={handleTradeTypeChange}
@@ -262,7 +262,7 @@ export default function TradeForm() {
             step={market?.minOrderSize || 1}
             onChange={(e) => onSetBaseSize(parseFloat(e.target.value))}
             value={baseSize}
-            className="text-right flex-grow w-3/5"
+            className="text-right flex-grow w-3/5 rounded-r-none"
             prefix={'Size'}
             suffix={baseCurrency}
           />
@@ -301,7 +301,7 @@ export default function TradeForm() {
               onClick={onSubmit}
               className="rounded text-lg bg-th-green text-th-bkg-1 hover:bg-th-primary flex-grow"
             >
-              {connected ? `Buy ${baseCurrency}` : 'Connect Wallet To Trade'}
+              {connected ? `Buy ${baseCurrency}` : 'Connect Wallet'}
             </Button>
           ) : (
             <Button
@@ -314,7 +314,7 @@ export default function TradeForm() {
               onClick={onSubmit}
               className="rounded text-lg bg-th-red text-white hover:bg-th-primary flex-grow"
             >
-              {connected ? `Sell ${baseCurrency}` : 'Connect Wallet To Trade'}
+              {connected ? `Sell ${baseCurrency}` : 'Connect Wallet'}
             </Button>
           )
         ) : (

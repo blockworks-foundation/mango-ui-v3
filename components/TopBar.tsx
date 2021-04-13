@@ -54,7 +54,7 @@ const TopBar = () => {
               <div className={`hidden sm:ml-4 sm:flex sm:items-center`}>
                 <button
                   onClick={handleConnectDisconnect}
-                  className={`border border-th-primary hover:bg-th-primary rounded-md px-4 py-2 focus:outline-none text-base text-th-primary hover:text-th-fgd-1 font-semibold`}
+                  className={`border border-th-primary hover:bg-th-primary rounded-md px-4 py-2 focus:outline-none text-th-primary hover:text-th-fgd-1 font-semibold text-base`}
                 >
                   <div>
                     {connected ? (

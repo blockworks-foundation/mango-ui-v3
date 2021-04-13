@@ -8,7 +8,7 @@ const Index = () => {
   useHydrateStore()
 
   return (
-    <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
+    <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all `}>
       <TopBar />
       <MarketSelect />
       <div className={`min-h-screen p-1 sm:px-2 sm:py-1 md:px-6 md:py-1`}>

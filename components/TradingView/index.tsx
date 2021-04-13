@@ -34,13 +34,6 @@ export interface ChartContainerProps {
 const TVChartContainer = () => {
   const selectedMarketName = useMangoStore((s) => s.selectedMarket.name)
   const { theme } = useTheme()
-  const [currentTheme, setCurrentTheme] = useState(theme)
-
-  console.log(currentTheme)
-
-  useEffect(() => {
-    setCurrentTheme(theme)
-  }, [theme])
 
   // @ts-ignore
   const defaultProps: ChartContainerProps = {
@@ -53,8 +46,8 @@ const TVChartContainer = () => {
     fullscreen: false,
     autosize: true,
     studiesOverrides: {
-      'volume.volume.color.0': '#E54033',
-      'volume.volume.color.1': '#AFD803',
+      'volume.volume.color.0': theme === 'Mango' ? '#E54033' : '#CC2929',
+      'volume.volume.color.1': theme === 'Mango' ? '#AFD803' : '#5EBF4D',
     },
   }
 
@@ -102,19 +95,26 @@ const TVChartContainer = () => {
       fullscreen: defaultProps.fullscreen,
       autosize: defaultProps.autosize,
       studies_overrides: defaultProps.studiesOverrides,
-      theme: theme === 'light' ? 'Light' : 'Dark',
+      theme: theme === 'Light' ? 'Light' : 'Dark',
       overrides: {
         'paneProperties.background':
-          theme === 'dark' ? '#0F282D' : theme === 'light' ? '#fff' : '#1D1832',
-        'mainSeriesProperties.candleStyle.upColor': '#AFD803',
-        'mainSeriesProperties.candleStyle.downColor': '#E54033',
+          theme === 'Dark' ? '#2B2B2B' : theme === 'Light' ? '#fff' : '#1D1832',
+        'mainSeriesProperties.candleStyle.upColor':
+          theme === 'Mango' ? '#AFD803' : '#5EBF4D',
+        'mainSeriesProperties.candleStyle.downColor':
+          theme === 'Mango' ? '#E54033' : '#CC2929',
         'mainSeriesProperties.candleStyle.drawWick': true,
         'mainSeriesProperties.candleStyle.drawBorder': true,
-        'mainSeriesProperties.candleStyle.borderColor': '#AFD803',
-        'mainSeriesProperties.candleStyle.borderUpColor': '#AFD803',
-        'mainSeriesProperties.candleStyle.borderDownColor': '#E54033',
-        'mainSeriesProperties.candleStyle.wickUpColor': '#AFD803',
-        'mainSeriesProperties.candleStyle.wickDownColor': '#E54033',
+        'mainSeriesProperties.candleStyle.borderColor':
+          theme === 'Mango' ? '#AFD803' : '#5EBF4D',
+        'mainSeriesProperties.candleStyle.borderUpColor':
+          theme === 'Mango' ? '#AFD803' : '#5EBF4D',
+        'mainSeriesProperties.candleStyle.borderDownColor':
+          theme === 'Mango' ? '#E54033' : '#CC2929',
+        'mainSeriesProperties.candleStyle.wickUpColor':
+          theme === 'Mango' ? '#AFD803' : '#5EBF4D',
+        'mainSeriesProperties.candleStyle.wickDownColor':
+          theme === 'Mango' ? '#E54033' : '#CC2929',
       },
     }
 

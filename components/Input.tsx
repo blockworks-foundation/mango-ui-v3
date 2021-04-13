@@ -24,7 +24,7 @@ const Input = ({
       } ${className}`}
     >
       {prefix ? (
-        <div className="border-r border-th-fgd-4 bg-th-bkg-2 p-2 rounded rounded-r-none">
+        <div className="border-r border-th-fgd-4 bg-th-bkg-2 p-2 rounded rounded-r-none w-14 text-right">
           {prefix}
         </div>
       ) : null}
@@ -33,7 +33,7 @@ const Input = ({
           type={type}
           value={value}
           onChange={onChange}
-          className={`bg-transparent w-full font-light focus:outline-none ${
+          className={`bg-transparent w-full focus:outline-none ${
             disabled && 'opacity-20 cursor-not-allowed'
           } ${type === 'number' ? 'text-right' : ''}`}
           disabled={disabled}

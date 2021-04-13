@@ -156,7 +156,7 @@ export default function MarginStats() {
                     {entry.label}
                   </div>
                 </Popover>
-                <div className={`text-th-fgd-1 font-light`}>
+                <div className={`text-th-fgd-1`}>
                   {entry.currency + entry.value}
                   {entry.unit}
                 </div>
