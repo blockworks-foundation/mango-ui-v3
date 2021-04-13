@@ -3,7 +3,6 @@ import { nativeToUi } from '@blockworks-foundation/mango-client/lib/utils'
 import Modal from './Modal'
 import AccountSelect from './AccountSelect'
 import useMangoStore from '../stores/useMangoStore'
-import { getSymbolForTokenMintAddress } from '../utils/index'
 import useConnection from '../hooks/useConnection'
 import { depositSrm } from '../utils/mango'
 import { PublicKey } from '@solana/web3.js'
@@ -20,9 +19,7 @@ const DepositSrmModal = ({ isOpen, onClose }) => {
   const walletAccounts = useMangoStore((s) => s.wallet.balances)
   const actions = useMangoStore((s) => s.actions)
   const srmMintAddress = useMangoStore((s) => s.connection.srmMint)
-  const mangoSrmAccountsForOwner = useMangoStore(
-    (s) => s.selectedMangoGroup.srmAccountsForOwner
-  )
+  const mangoSrmAccountsForOwner = useMangoStore((s) => s.wallet.srmAccountsForOwner)
   const depositAccounts = useMemo(
     () =>
       walletAccounts.filter(
@@ -116,9 +113,7 @@ const DepositSrmModal = ({ isOpen, onClose }) => {
               alt=""
               width="20"
               height="20"
-              src={`/assets/icons/${getSymbolForTokenMintAddress(
-                selectedAccount?.account?.mint.toString()
-              ).toLowerCase()}.svg`}
+              src={`/assets/icons/SRM.svg`}
               className={`ml-3`}
             />
             <input

@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import Wallet from '@project-serum/sol-wallet-adapter'
 import useLocalStorageState from './useLocalStorageState'
-import useMangoStore from '../stores/useMangoStore'
+import useMangoStore, { INITIAL_STATE } from '../stores/useMangoStore'
 import { notify } from '../utils/notifications'
 
 export const WALLET_PROVIDERS = [
@@ -33,8 +33,7 @@ export default function useWallet() {
     setMangoStore((state) => {
       state.wallet.current = newWallet
     })
-    // eslint-disable-next-line
-  }, [endpoint])
+  }, [endpoint, connected])
 
   useEffect(() => {
     if (!wallet) return
@@ -55,7 +54,7 @@ export default function useWallet() {
     })
     wallet.on('disconnect', () => {
       setMangoStore((state) => {
-        state.wallet.connected = false
+        state.wallet = INITIAL_STATE.WALLET
         state.marginAccounts = []
         state.selectedMarginAccount.current = null
       })
@@ -67,7 +66,7 @@ export default function useWallet() {
     return () => {
       wallet.disconnect()
       setMangoStore((state) => {
-        state.wallet.connected = false
+        state.wallet = INITIAL_STATE.WALLET
       })
     }
   }, [wallet])

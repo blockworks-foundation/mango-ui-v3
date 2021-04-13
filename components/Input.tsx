@@ -7,6 +7,14 @@ interface InputProps {
   [x: string]: any
 }
 
+const Group = ({ children, className }) => {
+  return (
+    <div className={`flex border border-th-fgd-4 rounded ${className}`}>
+      {children}
+    </div>
+  )
+}
+
 const Input = ({
   type,
   value,
@@ -28,31 +36,23 @@ const Input = ({
           {prefix}
         </div>
       ) : null}
-      <div className="flex h-full">
+      <div className="flex items-center h-full border border-transparent hover:border-th-primary">
         <input
           type={type}
           value={value}
           onChange={onChange}
-          className={`bg-transparent w-full focus:outline-none ${
+          className={`bg-transparent font-light tracking-wider w-full focus:outline-none ${
             disabled && 'opacity-20 cursor-not-allowed'
           } ${type === 'number' ? 'text-right' : ''}`}
           disabled={disabled}
           {...props}
         />
+        {suffix ? (
+          <span className="text-xs px-2 bg-transparent text-th-fgd-4">
+            {suffix}
+          </span>
+        ) : null}
       </div>
-      {suffix ? (
-        <span className="text-xs px-2 bg-transparent text-th-fgd-4">
-          {suffix}
-        </span>
-      ) : null}
-    </div>
-  )
-}
-
-const Group = ({ children, className }) => {
-  return (
-    <div className={`flex border border-th-fgd-4 rounded ${className}`}>
-      {children}
     </div>
   )
 }

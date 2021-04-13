@@ -27,7 +27,7 @@ const WithdrawModal = ({ isOpen, onClose }) => {
   )
   const [selectedAccount, setSelectedAccount] = useState(withdrawAccounts[0])
   const mintAddress = useMemo(() => selectedAccount?.account.mint.toString(), [
-    selectedAccount.account.mint,
+    selectedAccount,
   ])
   const tokenIndex = useMemo(() => getTokenIndex(mintAddress), [
     mintAddress,
@@ -85,6 +85,8 @@ const WithdrawModal = ({ isOpen, onClose }) => {
         })
     }
   }
+
+  if (!selectedAccount) return null
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>

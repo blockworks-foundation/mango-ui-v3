@@ -110,32 +110,32 @@ const BalancesTable = () => {
                       `}
                     >
                       <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2 font-light`}
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2`}
                       >
                         {balance.coin}
                       </td>
                       <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2 font-light`}
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2`}
                       >
                         {balance.marginDeposits}
                       </td>
                       <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2 font-light`}
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2`}
                       >
                         {balance.borrows}
                       </td>
                       <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2 font-light`}
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2`}
                       >
                         {balance.orders}
                       </td>
                       <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2 font-light`}
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2`}
                       >
                         {balance.unsettled}
                       </td>
                       <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2 font-light`}
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2`}
                       >
                         {balance.net}
                       </td>
@@ -146,7 +146,7 @@ const BalancesTable = () => {
             </div>
           ) : (
             <div
-              className={`w-full text-center py-6 text-base bg-th-bkg-1 font-light text-th-fgd-2 rounded-md`}
+              className={`w-full text-center py-6 text-base bg-th-bkg-1 text-th-fgd-2 rounded-md`}
             >
               No balances
             </div>

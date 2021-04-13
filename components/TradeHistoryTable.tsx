@@ -50,6 +50,12 @@ const TradeHistoryTable = () => {
                     >
                       Fees
                     </th>
+                    <th
+                      scope="col"
+                      className={`px-6 py-3 text-left text-base font-medium text-th-fgd-2 tracking-wider`}
+                    >
+                      Date
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -57,16 +63,16 @@ const TradeHistoryTable = () => {
                     <tr
                       key={`${trade.orderId}${trade.side}`}
                       className={`
-                        ${index % 2 === 0 ? `bg-th-bkg-2` : `bg-th-bkg-3`}
+                        ${index % 2 === 0 ? `bg-th-bkg-3` : `bg-th-bkg-2`}
                       `}
                     >
                       <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2 font-light`}
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2`}
                       >
                         {trade.marketName}
                       </td>
                       <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2 font-light`}
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2`}
                       >
                         <div
                           className={`rounded inline-block ${
@@ -80,24 +86,31 @@ const TradeHistoryTable = () => {
                         </div>
                       </td>
                       <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2 font-light`}
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2`}
                       >
                         {trade.size}
                       </td>
                       <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2 font-light`}
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2`}
                       >
                         {trade.price}
                       </td>
                       <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2 font-light`}
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2`}
                       >
                         {trade.liquidity}
                       </td>
                       <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2 font-light`}
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2`}
                       >
                         {trade.feeCost}
+                      </td>
+                      <td
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2`}
+                      >
+                        {trade.loadTimestamp
+                          ? new Date(trade.loadTimestamp).toLocaleDateString()
+                          : 'Recent'}
                       </td>
                     </tr>
                   ))}
@@ -106,7 +119,7 @@ const TradeHistoryTable = () => {
             </div>
           ) : (
             <div
-              className={`w-full text-center py-6 text-base bg-th-bkg-1 font-light text-th-fgd-4 rounded-md`}
+              className={`w-full text-center py-6 text-base bg-th-bkg-1 text-th-fgd-2 rounded-md`}
             >
               No trade history
             </div>

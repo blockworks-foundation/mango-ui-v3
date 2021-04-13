@@ -11,9 +11,7 @@ const FeeDiscountsTable = () => {
   const [showWithdraw, setShowWithdraw] = useState(false)
   const { totalSrm, rates } = useSrmAccount()
   const connected = useMangoStore((s) => s.wallet.connected)
-  const contributedSrm = useMangoStore(
-    (s) => s.selectedMangoGroup.contributedSrm
-  )
+  const contributedSrm = useMangoStore((s) => s.wallet.contributedSrm)
 
   const handleCloseDeposit = useCallback(() => {
     setShowDeposit(false)
@@ -55,7 +53,12 @@ const FeeDiscountsTable = () => {
             </div>
             <div className="flex space-x-4 mt-4">
               <Button onClick={() => setShowDeposit(true)}>Deposit</Button>
-              <Button onClick={() => setShowWithdraw(true)}>Withdraw</Button>
+              <Button
+                onClick={() => setShowWithdraw(true)}
+                disabled={!(contributedSrm > 0)}
+              >
+                Withdraw
+              </Button>
             </div>
           </div>
         ) : (

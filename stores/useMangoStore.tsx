@@ -32,6 +32,16 @@ const ENDPOINT_URL = ENDPOINTS.find((e) => e.name === CLUSTER).endpoint
 const DEFAULT_CONNECTION = new Connection(ENDPOINT_URL, 'recent')
 const DEFAULT_MANGO_GROUP_NAME = 'BTC_ETH_USDT'
 
+export const INITIAL_STATE = {
+  WALLET: {
+    connected: false,
+    current: null,
+    balances: [],
+    srmAccountsForOwner: [],
+    contributedSrm: 0,
+  },
+}
+
 // an object with keys of Solana account addresses that we are
 // subscribing to with connection.onAccountChange() in the
 // useHydrateStore hook
@@ -73,8 +83,6 @@ interface MangoStore extends State {
       [key: string]: Market
     }
     mintDecimals: number[]
-    srmAccountsForOwner: any[]
-    contributedSrm: number
   }
   selectedMarginAccount: {
     current: MarginAccount | null
@@ -90,6 +98,8 @@ interface MangoStore extends State {
     connected: boolean
     current: Wallet
     balances: Array<{ account: any; publicKey: PublicKey }>
+    srmAccountsForOwner: any[]
+    contributedSrm: number
   }
   settings: {
     uiLocked: boolean
@@ -113,8 +123,6 @@ const useMangoStore = create<MangoStore>((set, get) => ({
     markets: {},
     srmAccount: null,
     mintDecimals: [],
-    srmAccountsForOwner: [],
-    contributedSrm: 0,
   },
   selectedMarket: {
     name: Object.entries(
@@ -143,11 +151,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
     tradeType: 'Limit',
     price: '',
   },
-  wallet: {
-    connected: false,
-    current: null,
-    balances: [],
-  },
+  wallet: INITIAL_STATE.WALLET,
   settings: {
     uiLocked: true,
   },
@@ -214,7 +218,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
       const programId = IDS[cluster].mango_program_id
       const set = get().set
 
-      if (!wallet.publicKey) return
+      if (!wallet || !wallet.publicKey) return
 
       mangoClient
         .getMarginAccountsForOwner(

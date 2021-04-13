@@ -40,16 +40,16 @@ const TopBar = () => {
               <MenuItem href="https://docs.mango.markets/">Learn</MenuItem>
             </div>
           </div>
-          <div className={`flex`}>
-            <div className={`flex items-center pr-1`}>
+          <div className="flex">
+            <div className="flex items-center pr-1">
               {asPath === '/' ? <UiLock className="mr-4" /> : null}
               <ThemeSwitch />
-              <div className={`hidden sm:ml-4 sm:flex sm:items-center`}>
-                <button
-                  onClick={handleConnectDisconnect}
-                  className={`border border-th-primary hover:bg-th-primary rounded-md px-4 py-2 focus:outline-none text-th-primary hover:text-th-fgd-1 font-semibold text-base`}
-                >
-                  <div>
+              <div className="hidden sm:ml-4 sm:flex sm:items-center">
+                <div className="border border-th-primary hover:bg-th-primary rounded-md ">
+                  <button
+                    onClick={handleConnectDisconnect}
+                    className="px-4 py-2 focus:outline-none text-th-primary hover:text-th-fgd-1 font-semibold text-bas"
+                  >
                     {connected ? (
                       <div onClick={wallet.disconnect}>
                         <span>Disconnect: </span>
@@ -64,8 +64,8 @@ const TopBar = () => {
                     ) : (
                       'Connect Wallet'
                     )}
-                  </div>
-                </button>
+                  </button>
+                </div>
               </div>
             </div>
             <div className={`-mr-2 flex items-center sm:hidden`}>

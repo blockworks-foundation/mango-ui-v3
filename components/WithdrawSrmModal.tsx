@@ -18,11 +18,9 @@ const WithdrawModal = ({ isOpen, onClose }) => {
   const walletAccounts = useMangoStore((s) => s.wallet.balances)
   const actions = useMangoStore((s) => s.actions)
   const srmMintAddress = useMangoStore((s) => s.connection.srmMint)
-  const contributedSrm = useMangoStore(
-    (s) => s.selectedMangoGroup.contributedSrm
-  )
+  const contributedSrm = useMangoStore((s) => s.wallet.contributedSrm)
   const mangoSrmAccountsForOwner = useMangoStore(
-    (s) => s.selectedMangoGroup.srmAccountsForOwner
+    (s) => s.wallet.srmAccountsForOwner
   )
   const walletSrmAccount = useMemo(
     () =>

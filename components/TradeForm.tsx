@@ -12,8 +12,8 @@ import { roundToDecimal } from '../utils/index'
 import useMangoStore from '../stores/useMangoStore'
 import Button from './Button'
 import TradeType from './TradeType'
-import NewInput from './Input'
-import NewSwitch from './Switch'
+import Input from './Input'
+import Switch from './Switch'
 
 export default function TradeForm() {
   const { baseCurrency, quoteCurrency, market, marketAddress } = useMarket()
@@ -238,8 +238,8 @@ export default function TradeForm() {
             </div>
           </button>
         </div>
-        <NewInput.Group className="mt-4">
-          <NewInput
+        <Input.Group className="mt-4">
+          <Input
             type="number"
             step={market?.tickSize || 1}
             onChange={(e) => setPrice(parseFloat(e.target.value))}
@@ -252,38 +252,38 @@ export default function TradeForm() {
           <TradeType
             onChange={handleTradeTypeChange}
             value={tradeType}
-            className="w-2/5"
+            className="w-2/5 hover:border-th-primary"
           />
-        </NewInput.Group>
+        </Input.Group>
 
-        <NewInput.Group className="mt-4">
-          <NewInput
+        <Input.Group className="mt-4">
+          <Input
             type="number"
             step={market?.minOrderSize || 1}
             onChange={(e) => onSetBaseSize(parseFloat(e.target.value))}
             value={baseSize}
-            className="text-right flex-grow w-3/5 rounded-r-none"
+            className="flex-grow w-3/5 rounded-r-none"
             prefix={'Size'}
             suffix={baseCurrency}
           />
-          <NewInput
+          <Input
             type="number"
             step={market?.minOrderSize || 1}
             onChange={(e) => onSetQuoteSize(parseFloat(e.target.value))}
             value={quoteSize}
-            className="text-right border-l border-th-fgd-4 rounded-l-none w-2/5"
+            className="border-l border-th-fgd-4 rounded-l-none w-2/5"
             suffix={quoteCurrency}
           />
-        </NewInput.Group>
+        </Input.Group>
         {tradeType !== 'Market' ? (
           <div className="flex items-center mt-4">
-            <NewSwitch checked={postOnly} onChange={postOnChange}>
+            <Switch checked={postOnly} onChange={postOnChange}>
               POST
-            </NewSwitch>
+            </Switch>
             <div className="ml-4">
-              <NewSwitch checked={ioc} onChange={iocOnChange}>
+              <Switch checked={ioc} onChange={iocOnChange}>
                 IOC
-              </NewSwitch>
+              </Switch>
             </div>
           </div>
         ) : null}

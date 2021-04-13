@@ -193,7 +193,7 @@ export default function StatsPage() {
       <div className="min-h-screen w-full lg:w-2/3 mx-auto p-1 sm:px-2 sm:py-1 md:px-6 md:py-1">
         <FloatingElement>
           <div className="text-center">
-            <h1 className={`text-white text-3xl`}>Mango Stats</h1>
+            <h1 className={`text-th-fgd-1 text-3xl`}>Mango Stats</h1>
           </div>
           <div className="hidden md:flex md:flex-col min-w-full">
             <table className="min-w-full">

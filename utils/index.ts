@@ -146,5 +146,9 @@ export const tokenPrecision = {
 }
 
 export const getSymbolForTokenMintAddress = (address: string): string => {
-  return TOKEN_MINTS.find((m) => m.address.toString() === address).name
+  if (address && address.length) {
+    return TOKEN_MINTS.find((m) => m.address.toString() === address).name
+  } else {
+    return ''
+  }
 }

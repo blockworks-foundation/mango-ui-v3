@@ -47,23 +47,27 @@ const AccountSelect = ({
               <div
                 className={`flex items-center text-base justify-between font-light`}
               >
-                <div className={`flex items-center flex-grow`}>
-                  <img
-                    alt=""
-                    width="20"
-                    height="20"
-                    src={`/assets/icons/${getSymbolForTokenMintAddress(
-                      selectedAccount?.account?.mint.toString()
-                    ).toLowerCase()}.svg`}
-                    className={`mr-4`}
-                  />
-                  {abbreviateAddress(selectedAccount?.publicKey)}
-                  {!hideBalance ? (
-                    <div className={`ml-4 text-sm text-right flex-grow`}>
-                      ({getBalanceForAccount(selectedAccount)})
-                    </div>
-                  ) : null}
-                </div>
+                {selectedAccount ? (
+                  <div className={`flex items-center flex-grow`}>
+                    <img
+                      alt=""
+                      width="20"
+                      height="20"
+                      src={`/assets/icons/${getSymbolForTokenMintAddress(
+                        selectedAccount?.account?.mint.toString()
+                      ).toLowerCase()}.svg`}
+                      className={`mr-4`}
+                    />
+                    {abbreviateAddress(selectedAccount?.publicKey)}
+                    {!hideBalance ? (
+                      <div className={`ml-4 text-sm text-right flex-grow`}>
+                        ({getBalanceForAccount(selectedAccount)})
+                      </div>
+                    ) : null}
+                  </div>
+                ) : (
+                  'No wallet addresses found'
+                )}
                 {open ? (
                   <ChevronUpIcon className={`h-5 w-5 ml-2`} />
                 ) : (
@@ -86,7 +90,7 @@ const AccountSelect = ({
                 className={`z-20 p-1 absolute left-0 w-full mt-1 bg-th-bkg-3 origin-top-left divide-y divide-th-fgd-4 shadow-lg outline-none border border-th-fgd-4`}
               >
                 <div className={`opacity-50 p-2`}>
-                  Your Connected Wallet Token Accounts
+                  Your Connected Wallet Token Accounts:
                 </div>
                 {accounts.map((account) => {
                   const symbolForAccount = getSymbolForTokenMintAddress(

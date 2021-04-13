@@ -17,13 +17,16 @@ const useMarginAccount = () => {
   }, [actions])
 
   useEffect(() => {
-    if (!connected) return
-    actions.fetchMarginAcccount()
-    actions.fetchMangoSrmAccounts()
+    if (connected) {
+      actions.fetchMarginAcccount()
+      actions.fetchMangoSrmAccounts()
+    }
   }, [connected, actions])
 
   useInterval(() => {
-    actions.fetchMarginAcccount()
+    if (connected) {
+      actions.fetchMarginAcccount()
+    }
     // fetchMangoGroup()
   }, 9000)
 

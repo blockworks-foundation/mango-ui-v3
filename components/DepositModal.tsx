@@ -140,15 +140,17 @@ const DepositModal = ({ isOpen, onClose }) => {
       <div className={`pb-6 px-8`}>
         <div className={`mt-3 text-center sm:mt-5`}>
           <div className={`mt-6 bg-th-bkg-3 rounded-md flex items-center`}>
-            <img
-              alt=""
-              width="20"
-              height="20"
-              src={`/assets/icons/${getSymbolForTokenMintAddress(
-                selectedAccount?.account?.mint.toString()
-              ).toLowerCase()}.svg`}
-              className={`ml-3`}
-            />
+            {selectedAccount ? (
+              <img
+                alt=""
+                width="20"
+                height="20"
+                src={`/assets/icons/${getSymbolForTokenMintAddress(
+                  selectedAccount?.account?.mint.toString()
+                ).toLowerCase()}.svg`}
+                className={`ml-3`}
+              />
+            ) : null}
             <input
               type="number"
               min="0"

@@ -8,6 +8,7 @@ import useMarkPrice from '../hooks/useMarkPrice'
 import useOrderbook from '../hooks/useOrderbook'
 import useMarket from '../hooks/useMarket'
 import { ElementTitle } from './styles'
+import useMangoStore from '../stores/useMangoStore'
 
 const Line = styled.div<any>`
   text-align: ${(props) => (props.invert ? 'left' : 'right')};
@@ -45,6 +46,7 @@ export default function Orderbook({ depth = 7 }) {
   const markPrice = useMarkPrice()
   const [orderbook] = useOrderbook()
   const { baseCurrency, quoteCurrency } = useMarket()
+  const setMangoStore = useMangoStore((s) => s.set)
 
   const currentOrderbookData = useRef(null)
   const lastOrderbookData = useRef(null)
@@ -93,6 +95,18 @@ export default function Orderbook({ depth = 7 }) {
     }
   }, [orderbook])
 
+  const handlePriceClick = (price) => {
+    setMangoStore((state) => {
+      state.tradeForm.price = price
+    })
+  }
+
+  const handleSizeClick = (size) => {
+    setMangoStore((state) => {
+      state.tradeForm.baseSize = size
+    })
+  }
+
   return (
     <>
       <ElementTitle>Orderbook</ElementTitle>
@@ -107,8 +121,8 @@ export default function Orderbook({ depth = 7 }) {
           size={size}
           side={'sell'}
           sizePercent={sizePercent}
-          onPriceClick={() => alert(`price ${price}`)}
-          onSizeClick={() => alert(`size ${size}`)}
+          onPriceClick={() => handlePriceClick(price)}
+          onSizeClick={() => handleSizeClick(size)}
         />
       ))}
       <MarkPriceComponent markPrice={markPrice} />
@@ -119,8 +133,8 @@ export default function Orderbook({ depth = 7 }) {
           size={size}
           side={'buy'}
           sizePercent={sizePercent}
-          onPriceClick={() => alert(`price ${price}`)}
-          onSizeClick={() => alert(`size ${size}`)}
+          onPriceClick={() => handlePriceClick(price)}
+          onSizeClick={() => handleSizeClick(size)}
         />
       ))}
     </>

@@ -125,7 +125,7 @@ export default function MarginStats() {
           <Button
             onClick={() => setShowWithdrawModal(true)}
             className="ml-4 w-1/2"
-            disabled={!connected}
+            disabled={!connected || !selectedMarginAccount}
           >
             <span>Withdraw</span>
           </Button>
