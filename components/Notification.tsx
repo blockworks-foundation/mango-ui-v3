@@ -52,10 +52,10 @@ const Notification = ({ type, message, description, txid }) => {
 
   return (
     <div
-      className={`max-w-sm w-full bg-white opacity-80 shadow-lg rounded-lg mt-2 pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden`}
+      className={`max-w-sm w-full bg-white shadow-lg rounded-lg mt-2 pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden`}
     >
-      <div className={`px-4 py-2`}>
-        <div className={`flex items-start`}>
+      <div className={`p-4`}>
+        <div className={`flex items-center`}>
           <div className={`flex-shrink-0`}>
             {type === 'success' ? (
               <CheckCircleIcon className={`text-green-400 h-9 w-9 mr-1`} />
@@ -68,21 +68,23 @@ const Notification = ({ type, message, description, txid }) => {
             )}
           </div>
           <div className={`ml-2 w-0 flex-1`}>
-            <div className={`text-lg font-medium text-gray-900`}>{message}</div>
+            <div className={`text-lg font-medium text-gray-900 leading-snug`}>
+              {message}
+            </div>
             {description ? (
               <p className={`mt-0.5 text-base text-gray-500`}>{description}</p>
             ) : null}
             {txid ? (
               <a
                 href={'https://explorer.solana.com/tx/' + txid}
-                className="text-th-blue-400"
+                className="text-blue-400"
               >
                 View transaction {txid.slice(0, 8)}...
                 {txid.slice(txid.length - 8)}
               </a>
             ) : null}
           </div>
-          <div className={`ml-4 flex-shrink-0 flex`}>
+          <div className={`ml-4 flex-shrink-0 self-start flex`}>
             <button
               onClick={() => setShowNotification(false)}
               className={`bg-white rounded-md inline-flex text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-mango-yellow`}
