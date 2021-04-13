@@ -59,7 +59,7 @@ const FeeDiscountsTable = () => {
             </div>
           </div>
         ) : (
-          <Button disabled>Connect wallet to deposit SRM</Button>
+          <Button disabled>Connect Wallet</Button>
         )}
       </div>
       {showDeposit && (

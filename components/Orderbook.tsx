@@ -13,7 +13,7 @@ const Line = styled.div<any>`
   text-align: ${(props) => (props.invert ? 'left' : 'right')};
   float: ${(props) => (props.invert ? 'left' : 'right')};
   height: 100%;
-  filter: opacity(70%);
+  filter: opacity(80%);
   ${(props) => props['data-width'] && `width: ${props['data-width']};`}
 `
 
@@ -156,7 +156,7 @@ const OrderbookRow = React.memo<any>(
 
     return (
       <div
-        className={`flex mb-0.5 justify-between font-light`}
+        className={`flex mb-0.5 justify-between`}
         ref={element}
         onClick={onSizeClick}
       >

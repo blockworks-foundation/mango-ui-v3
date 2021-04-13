@@ -58,16 +58,16 @@ export default function MarginStats() {
           <table className={`min-w-full`}>
             <thead>
               <tr className={`text-center text-th-fgd-4 mb-2`}>
-                <th scope="col" className={`flex-auto font-light`}>
+                <th scope="col" className={`flex-auto font-normal`}>
                   Assets
                 </th>
-                <th scope="col" className={`flex-auto font-light`}>
+                <th scope="col" className={`flex-auto font-normal`}>
                   Deposits
                 </th>
-                <th scope="col" className={`flex-auto font-light`}>
+                <th scope="col" className={`flex-auto font-normal`}>
                   Borrows
                 </th>
-                <th scope="col" className={`flex-auto font-light`}>
+                <th scope="col" className={`flex-auto font-normal`}>
                   Interest (APY)
                 </th>
               </tr>
@@ -104,7 +104,7 @@ export default function MarginStats() {
                       +{(selectedMangoGroup.getDepositRate(i) * 100).toFixed(2)}
                       %
                     </span>
-                    <span>{'  /  '}</span>
+                    <span className={`text-th-fgd-4`}>{'  /  '}</span>
                     <span className={`text-th-red`}>
                       -{(selectedMangoGroup.getBorrowRate(i) * 100).toFixed(2)}%
                     </span>
@@ -114,24 +114,21 @@ export default function MarginStats() {
             </tbody>
           </table>
         ) : null}
-        <div className={`flex justify-around items-center mt-4`}>
-          <div>
-            <Button
-              onClick={() => setShowDepositModal(true)}
-              disabled={!connected}
-            >
-              <span>Deposit</span>
-            </Button>
-          </div>
-          <div>
-            <Button
-              onClick={() => setShowWithdrawModal(true)}
-              className="ml-4"
-              disabled={!connected}
-            >
-              <span>Withdraw</span>
-            </Button>
-          </div>
+        <div className={`flex justify-center items-center mt-4`}>
+          <Button
+            onClick={() => setShowDepositModal(true)}
+            className="w-1/2"
+            disabled={!connected}
+          >
+            <span>Deposit</span>
+          </Button>
+          <Button
+            onClick={() => setShowWithdrawModal(true)}
+            className="ml-4 w-1/2"
+            disabled={!connected}
+          >
+            <span>Withdraw</span>
+          </Button>
         </div>
         <div className={`text-center mt-4 text-th-fgd-4 tracking-wider`}>
           Settle funds in the Balances tab

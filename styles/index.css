@@ -15,7 +15,7 @@
   --fgd-4: theme('colors.light-theme["fgd-4"]');
 }
 
-[data-theme='dark'] {
+[data-theme='Dark'] {
   --primary: theme('colors.dark-theme.orange');
   --red: theme('colors.dark-theme.red');
   --green: theme('colors.dark-theme.green');
@@ -28,7 +28,7 @@
   --fgd-4: theme('colors.dark-theme["fgd-4"]');
 }
 
-[data-theme='mango'] {
+[data-theme='Mango'] {
   --primary: theme('colors.mango-theme.yellow');
   --red: theme('colors.mango-theme.red');
   --green: theme('colors.mango-theme.green');

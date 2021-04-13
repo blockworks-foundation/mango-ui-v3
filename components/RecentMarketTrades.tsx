@@ -34,7 +34,7 @@ export default function PublicTrades() {
 
   return (
     <FloatingElement>
-      <ElementTitle>Recent Market Trades</ElementTitle>
+      <ElementTitle>Recent Trades</ElementTitle>
       <div className={`grid grid-cols-3 text-th-fgd-4 mb-2`}>
         <div>Price ({quoteCurrency}) </div>
         <div className={`text-right`}>Size ({baseCurrency})</div>
@@ -43,11 +43,11 @@ export default function PublicTrades() {
       {!!trades.length && (
         <div>
           {trades.map((trade: ChartTradeType, i: number) => (
-            <div key={i} className={`mb-2 font-light grid grid-cols-3`}>
+            <div key={i} className={`mb-2 grid grid-cols-3`}>
               <div
-                style={{
-                  color: trade.side === 'buy' ? '#AFD803' : '#E54033',
-                }}
+                className={`${
+                  trade.side === 'buy' ? `text-th-green` : `text-th-red`
+                }`}
               >
                 {market?.tickSize && !isNaN(trade.price)
                   ? Number(trade.price).toFixed(
