@@ -255,7 +255,7 @@ export default function StatsPage() {
         {selectedAsset ? (
           <FloatingElement shrink>
             <div className="flex justify-center text-2xl">
-              <span className={`text-white`}>Historical</span>
+              <span className={`text-th-fgd-1`}>Historical</span>
               <Select
                 className="mx-4 text-lg"
                 value={selectedAsset}
@@ -267,7 +267,7 @@ export default function StatsPage() {
                   </Select.Option>
                 ))}
               </Select>
-              <span className={`text-white`}>Stats</span>
+              <span className={`text-th-fgd-1`}>Stats</span>
             </div>
 
             <div className="flex flex-col md:flex-row mt-2">
