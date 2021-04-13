@@ -1,50 +1,44 @@
 import React, { useMemo, useState } from 'react'
 import Modal from './Modal'
-import AccountSelect from './AccountSelect'
+import MangoSrmAccountSelector from './MangoSrmAccountSelector'
 import useMangoStore from '../stores/useMangoStore'
-import useMarketList from '../hooks/useMarketList'
-import { getSymbolForTokenMintAddress, tokenPrecision } from '../utils/index'
 import useConnection from '../hooks/useConnection'
-import { withdraw } from '../utils/mango'
+import { withdrawSrm } from '../utils/mango'
 import Loading from './Loading'
 import Button from './Button'
 import { notify } from '../utils/notifications'
+import { SRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
+import { PublicKey } from '@solana/web3.js'
 import { XIcon } from '@heroicons/react/outline'
 
 const WithdrawModal = ({ isOpen, onClose }) => {
   const [inputAmount, setInputAmount] = useState('')
   const [submitting, setSubmitting] = useState(false)
-  const { getTokenIndex, symbols } = useMarketList()
   const { connection, programId } = useConnection()
   const walletAccounts = useMangoStore((s) => s.wallet.balances)
   const actions = useMangoStore((s) => s.actions)
-  const withdrawAccounts = useMemo(
-    () =>
-      walletAccounts.filter((acc) =>
-        Object.values(symbols).includes(acc.account.mint.toString())
-      ),
-    [symbols, walletAccounts]
+  const srmMintAddress = useMangoStore((s) => s.connection.srmMint)
+  const contributedSrm = useMangoStore(
+    (s) => s.selectedMangoGroup.contributedSrm
   )
-  const [selectedAccount, setSelectedAccount] = useState(withdrawAccounts[0])
-  const mintAddress = useMemo(() => selectedAccount?.account.mint.toString(), [
-    selectedAccount.account.mint,
-  ])
-  const tokenIndex = useMemo(() => getTokenIndex(mintAddress), [
-    mintAddress,
-    getTokenIndex,
-  ])
-  const symbol = useMemo(() => getSymbolForTokenMintAddress(mintAddress), [
-    mintAddress,
-  ])
+  const mangoSrmAccountsForOwner = useMangoStore(
+    (s) => s.selectedMangoGroup.srmAccountsForOwner
+  )
+  const walletSrmAccount = useMemo(
+    () =>
+      walletAccounts.find(
+        (acc) => srmMintAddress === acc.account.mint.toString()
+      ),
+    [walletAccounts, srmMintAddress]
+  )
+  const [selectedAccount, setSelectedAccount] = useState(
+    mangoSrmAccountsForOwner[0]
+  )
 
   const withdrawDisabled = Number(inputAmount) <= 0
 
   const setMaxForSelectedAccount = () => {
-    const marginAccount = useMangoStore.getState().selectedMarginAccount.current
-    const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
-    const max = marginAccount.getUiDeposit(mangoGroup, tokenIndex)
-
-    setInputAmount(max.toFixed(tokenPrecision[symbol]))
+    setInputAmount(contributedSrm.toFixed(SRM_DECIMALS))
   }
 
   const handleWithdraw = () => {
@@ -53,32 +47,33 @@ const WithdrawModal = ({ isOpen, onClose }) => {
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
     const wallet = useMangoStore.getState().wallet.current
     if (marginAccount && mangoGroup) {
-      withdraw(
+      withdrawSrm(
         connection,
-        programId,
+        new PublicKey(programId),
         mangoGroup,
-        marginAccount,
+        selectedAccount,
         wallet,
-        selectedAccount.account.mint,
-        selectedAccount.publicKey,
+        walletSrmAccount.publicKey,
         Number(inputAmount)
       )
         .then((transSig: string) => {
-          actions.fetchWalletBalances()
           setSubmitting(false)
           notify({
-            message: `Withdrew ${inputAmount} ${symbol} into your account`,
+            message: `Withdrew ${inputAmount} SRM into your account`,
             description: `Hash of transaction is ${transSig}`,
             type: 'info',
           })
           onClose()
+          actions.fetchWalletBalances()
+          actions.fetchMangoSrmAccounts()
+          actions.fetchMangoGroup()
         })
         .catch((err) => {
           setSubmitting(false)
           console.warn('Error withdrawing:', err)
           notify({
             message: 'Could not perform withdraw operation',
-            description: err,
+            description: `${err}`,
             type: 'error',
           })
           onClose()
@@ -89,15 +84,14 @@ const WithdrawModal = ({ isOpen, onClose }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <Modal.Header>
-        <div className={`text-th-fgd-3 flex-shrink invisible`}>X</div>
+        <div className={`text-th-fgd-4 flex-shrink invisible`}>X</div>
         <div
-          className={`text-th-fgd-3 flex-grow text-center flex items-center justify-center`}
+          className={`text-th-fgd-4 flex-grow text-center flex items-center justify-center`}
         >
           <div className={`flex-initial`}>Select: </div>
           <div className={`ml-4 flex-grow`}>
-            <AccountSelect
-              hideBalance
-              accounts={withdrawAccounts}
+            <MangoSrmAccountSelector
+              accounts={mangoSrmAccountsForOwner}
               selectedAccount={selectedAccount}
               onSelectAccount={setSelectedAccount}
             />
@@ -117,9 +111,7 @@ const WithdrawModal = ({ isOpen, onClose }) => {
               alt=""
               width="20"
               height="20"
-              src={`/assets/icons/${getSymbolForTokenMintAddress(
-                selectedAccount?.account?.mint.toString()
-              ).toLowerCase()}.svg`}
+              src={`/assets/icons/SRM.svg`}
               className={`ml-3`}
             />
             <input

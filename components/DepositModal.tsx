@@ -10,12 +10,13 @@ import { deposit, initMarginAccountAndDeposit } from '../utils/mango'
 import { PublicKey } from '@solana/web3.js'
 import Loading from './Loading'
 import Button from './Button'
+import { notify } from '../utils/notifications'
+import { XIcon } from '@heroicons/react/outline'
 
 const DepositModal = ({ isOpen, onClose }) => {
   const [inputAmount, setInputAmount] = useState('')
   const [submitting, setSubmitting] = useState(false)
-  const { symbols } = useMarketList()
-  const { getTokenIndex } = useMarketList()
+  const { getTokenIndex, symbols } = useMarketList()
   const { connection, programId } = useConnection()
   const mintDecimals = useMangoStore((s) => s.selectedMangoGroup.mintDecimals)
   const walletAccounts = useMangoStore((s) => s.wallet.balances)
@@ -64,13 +65,20 @@ const DepositModal = ({ isOpen, onClose }) => {
         .then((response: Array<any>) => {
           actions.fetchWalletBalances()
           setSubmitting(false)
-          console.log('success', response)
+          notify({
+            message: `Deposited ${inputAmount} into your account`,
+            description: `Hash of transaction is ${response[1]}`,
+          })
           onClose()
         })
         .catch((err) => {
           setSubmitting(false)
           console.error(err)
-          alert('error depositing')
+          notify({
+            message:
+              'Could not perform init margin account and deposit operation',
+            type: 'error',
+          })
           onClose()
         })
     } else {
@@ -87,13 +95,19 @@ const DepositModal = ({ isOpen, onClose }) => {
         .then((response: string) => {
           actions.fetchWalletBalances()
           setSubmitting(false)
-          console.log('success', response)
+          notify({
+            message: `Deposited ${inputAmount} into your account`,
+            description: `Hash of transaction is ${response}`,
+          })
           onClose()
         })
         .catch((err) => {
           setSubmitting(false)
           console.error(err)
-          alert('error depositing')
+          notify({
+            message: 'Could not perform deposit operation',
+            type: 'error',
+          })
           onClose()
         })
     }
@@ -102,9 +116,9 @@ const DepositModal = ({ isOpen, onClose }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <Modal.Header>
-        <div className={`text-mango-med-light flex-shrink invisible`}>X</div>
+        <div className={`text-th-fgd-3 flex-shrink invisible`}>X</div>
         <div
-          className={`text-mango-med-light flex-grow text-center flex items-center justify-center`}
+          className={`text-th-fgd-3 flex-grow text-center flex items-center justify-center`}
         >
           <div className={`flex-initial`}>Select: </div>
           <div className={`ml-4 flex-grow`}>
@@ -115,21 +129,13 @@ const DepositModal = ({ isOpen, onClose }) => {
             />
           </div>
         </div>
-        <div className={`text-th-fgd-4 flex-shrink ml-6 mr-2 text-lg`}>
-          <button onClick={onClose} className={`hover:text-mango-yellow`}>
-            <svg
-              viewBox="64 64 896 896"
-              focusable="false"
-              data-icon="close"
-              width="1em"
-              height="1em"
-              fill="currentColor"
-              aria-hidden="true"
-            >
-              <path d="M563.8 512l262.5-312.9c4.4-5.2.7-13.1-6.1-13.1h-79.8c-4.7 0-9.2 2.1-12.3 5.7L511.6 449.8 295.1 191.7c-3-3.6-7.5-5.7-12.3-5.7H203c-6.8 0-10.5 7.9-6.1 13.1L459.4 512 196.9 824.9A7.95 7.95 0 00203 838h79.8c4.7 0 9.2-2.1 12.3-5.7l216.5-258.1 216.5 258.1c3 3.6 7.5 5.7 12.3 5.7h79.8c6.8 0 10.5-7.9 6.1-13.1L563.8 512z"></path>
-            </svg>
-          </button>
-        </div>
+
+        <button
+          onClick={onClose}
+          className={`text-th-fgd-3 mr-2 ml-4 hover:text-th-primary`}
+        >
+          <XIcon className={`h-6 w-6`} />
+        </button>
       </Modal.Header>
       <div className={`pb-6 px-8`}>
         <div className={`mt-3 text-center sm:mt-5`}>
@@ -146,7 +152,7 @@ const DepositModal = ({ isOpen, onClose }) => {
             <input
               type="number"
               min="0"
-              className={`outline-none bg-th-bkg-3 w-full py-4 mx-3 text-2xl text-th-fgd-4 flex-grow`}
+              className={`outline-none bg-th-bkg-3 w-full py-4 mx-3 text-2xl text-th-fgd-2 flex-grow`}
               placeholder="0.00"
               value={inputAmount}
               onChange={(e) => setInputAmount(e.target.value)}

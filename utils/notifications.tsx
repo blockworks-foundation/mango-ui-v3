@@ -10,8 +10,6 @@ export function notify(newNotification: {
   const notifications = useMangoStore.getState().notifications
 
   setMangoStore((state) => {
-    console.log('original', state.notifications)
-
     state.notifications = [
       ...notifications,
       { type: 'success', ...newNotification },

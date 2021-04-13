@@ -24,12 +24,14 @@ const NotificationList = () => {
     }
   }, [notifications, setMangoStore])
 
+  const reversedNotifications = [...notifications].reverse()
+
   return (
     <div
       className={`fixed inset-0 flex items-end px-4 py-6 pointer-events-none sm:p-6`}
     >
       <div className={`flex flex-col w-full`}>
-        {notifications.map((n, idx) => (
+        {reversedNotifications.map((n, idx) => (
           <Notification
             key={`${n.message}${idx}`}
             type={n.type}
@@ -50,9 +52,9 @@ const Notification = ({ type, message, description, txid }) => {
 
   return (
     <div
-      className={`max-w-sm w-full bg-white shadow-lg rounded-lg mt-2 pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden`}
+      className={`max-w-sm w-full bg-white opacity-80 shadow-lg rounded-lg mt-2 pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden`}
     >
-      <div className={`p-4`}>
+      <div className={`px-4 py-2`}>
         <div className={`flex items-start`}>
           <div className={`flex-shrink-0`}>
             {type === 'success' ? (
@@ -66,8 +68,10 @@ const Notification = ({ type, message, description, txid }) => {
             )}
           </div>
           <div className={`ml-2 w-0 flex-1`}>
-            <p className={`text-lg font-medium text-gray-900`}>{message}</p>
-            <p className={`mt-0.5 text-base text-gray-500`}>{description}</p>
+            <div className={`text-lg font-medium text-gray-900`}>{message}</div>
+            {description ? (
+              <p className={`mt-0.5 text-base text-gray-500`}>{description}</p>
+            ) : null}
             {txid ? (
               <a
                 href={'https://explorer.solana.com/tx/' + txid}

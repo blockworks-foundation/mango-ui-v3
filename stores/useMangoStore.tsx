@@ -1,5 +1,4 @@
 import create, { State } from 'zustand'
-import { devtools } from 'zustand/middleware'
 import produce from 'immer'
 import { Market } from '@project-serum/serum'
 import {
@@ -7,7 +6,9 @@ import {
   MangoClient,
   MangoGroup,
   MarginAccount,
+  nativeToUi,
 } from '@blockworks-foundation/mango-client'
+import { SRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
 import { AccountInfo, Connection, PublicKey } from '@solana/web3.js'
 import { Wallet } from '@project-serum/sol-wallet-adapter'
 import { EndpointInfo } from '../@types/types'
@@ -50,6 +51,7 @@ interface MangoStore extends State {
     cluster: string
     current: Connection
     endpoint: string
+    srmMint: string
   }
   market: {
     current: Market | null
@@ -71,6 +73,8 @@ interface MangoStore extends State {
       [key: string]: Market
     }
     mintDecimals: number[]
+    srmAccountsForOwner: any[]
+    contributedSrm: number
   }
   selectedMarginAccount: {
     current: MarginAccount | null
@@ -91,79 +95,173 @@ interface MangoStore extends State {
   actions: any
 }
 
-const useMangoStore = create<MangoStore>(
-  devtools((set, get) => ({
-    notifications: [],
-    accountInfos: {},
-    connection: {
-      cluster: CLUSTER,
-      current: DEFAULT_CONNECTION,
-      endpoint: ENDPOINT_URL,
+const useMangoStore = create<MangoStore>((set, get) => ({
+  notifications: [],
+  accountInfos: {},
+  connection: {
+    cluster: CLUSTER,
+    current: DEFAULT_CONNECTION,
+    endpoint: ENDPOINT_URL,
+    srmMint: IDS[CLUSTER].symbols['SRM'],
+  },
+  selectedMangoGroup: {
+    name: DEFAULT_MANGO_GROUP_NAME,
+    current: null,
+    markets: {},
+    srmAccount: null,
+    mintDecimals: [],
+    srmAccountsForOwner: [],
+    contributedSrm: 0,
+  },
+  selectedMarket: {
+    name: Object.entries(
+      IDS[CLUSTER].mango_groups[DEFAULT_MANGO_GROUP_NAME].spot_market_symbols
+    )[0][0],
+    address: Object.entries(
+      IDS[CLUSTER].mango_groups[DEFAULT_MANGO_GROUP_NAME].spot_market_symbols
+    )[0][1],
+  },
+  market: {
+    current: null,
+    mangoProgramId: null,
+    markPrice: 0,
+    orderBook: [],
+  },
+  mangoClient: new MangoClient(),
+  mangoGroups: [],
+  marginAccounts: [],
+  selectedMarginAccount: {
+    current: null,
+  },
+  tradeForm: {
+    side: 'buy',
+    baseSize: '',
+    quoteSize: '',
+    tradeType: 'Limit',
+    price: '',
+  },
+  wallet: {
+    connected: false,
+    current: null,
+    balances: [],
+  },
+  set: (fn) => set(produce(fn)),
+  actions: {
+    async fetchWalletBalances() {
+      const connection = get().connection.current
+      const wallet = get().wallet.current
+      const connected = get().wallet.connected
+      const set = get().set
+      console.log('fetchingWalletBalances', connected, wallet)
+      if (wallet && connected) {
+        const ownerAddress = wallet.publicKey
+        const ownedTokenAccounts = await getOwnedTokenAccounts(
+          connection,
+          ownerAddress
+        )
+        set((state) => {
+          state.wallet.balances = ownedTokenAccounts
+        })
+      } else {
+        set((state) => {
+          state.wallet.balances = []
+        })
+      }
     },
-    selectedMangoGroup: {
-      name: DEFAULT_MANGO_GROUP_NAME,
-      current: null,
-      markets: {},
-      srmAccount: null,
-      mintDecimals: [],
-    },
-    selectedMarket: {
-      name: Object.entries(
-        IDS[CLUSTER].mango_groups[DEFAULT_MANGO_GROUP_NAME].spot_market_symbols
-      )[0][0],
-      address: Object.entries(
-        IDS[CLUSTER].mango_groups[DEFAULT_MANGO_GROUP_NAME].spot_market_symbols
-      )[0][1],
-    },
-    market: {
-      current: null,
-      mangoProgramId: null,
-      markPrice: 0,
-      orderBook: [],
-    },
-    mangoClient: new MangoClient(),
-    mangoGroups: [],
-    marginAccounts: [],
-    selectedMarginAccount: {
-      current: null,
-    },
-    tradeForm: {
-      side: 'buy',
-      baseSize: '',
-      quoteSize: '',
-      tradeType: 'Limit',
-      price: '',
-    },
-    wallet: {
-      connected: false,
-      current: null,
-      balances: [],
-    },
-    set: (fn) => set(produce(fn)),
-    actions: {
-      async fetchWalletBalances() {
-        const connection = get().connection.current
-        const wallet = get().wallet.current
-        const connected = get().wallet.connected
-        const set = get().set
-        console.log('fetchingWalletBalances', connected, wallet)
-        if (wallet && connected) {
-          const ownerAddress = wallet.publicKey
-          const ownedTokenAccounts = await getOwnedTokenAccounts(
-            connection,
-            ownerAddress
-          )
+    async fetchMangoSrmAccounts() {
+      const connection = get().connection.current
+      const wallet = get().wallet.current
+      const connected = get().wallet.connected
+      const selectedMangoGroup = get().selectedMangoGroup.current
+      const cluster = get().connection.cluster
+      const mangoClient = get().mangoClient
+      const set = get().set
+
+      if (wallet && connected) {
+        const usersMangoSrmAccounts = await mangoClient.getMangoSrmAccountsForOwner(
+          connection,
+          new PublicKey(IDS[cluster].mango_program_id),
+          selectedMangoGroup,
+          wallet
+        )
+        if (usersMangoSrmAccounts.length) {
           set((state) => {
-            state.wallet.balances = ownedTokenAccounts
-          })
-        } else {
-          set((state) => {
-            state.wallet.balances = []
+            state.selectedMangoGroup.srmAccountsForOwner = usersMangoSrmAccounts
+            const totalSrmDeposits = usersMangoSrmAccounts.reduce(
+              (prev, cur) => prev + cur.amount,
+              0
+            )
+            state.selectedMangoGroup.contributedSrm = nativeToUi(
+              totalSrmDeposits,
+              SRM_DECIMALS
+            )
           })
         }
-      },
+      }
     },
-  }))
-)
+    async fetchMarginAcccount() {
+      const connection = get().connection.current
+      const mangoGroup = get().selectedMangoGroup.current
+      const wallet = get().wallet.current
+      const cluster = get().connection.cluster
+      const mangoClient = get().mangoClient
+      const programId = IDS[cluster].mango_program_id
+      const set = get().set
+
+      if (!wallet.publicKey) return
+
+      mangoClient
+        .getMarginAccountsForOwner(
+          connection,
+          new PublicKey(programId),
+          mangoGroup,
+          wallet
+        )
+        .then((marginAccounts) => {
+          if (marginAccounts.length > 0) {
+            set((state) => {
+              state.marginAcccounts = marginAccounts
+              state.selectedMarginAccount.current = marginAccounts[0]
+            })
+          }
+        })
+        .catch((err) => {
+          console.error(
+            'Could not get margin accounts for user in effect ',
+            err
+          )
+        })
+    },
+    async fetchMangoGroup() {
+      const connection = get().connection.current
+      const mangoGroupName = get().selectedMangoGroup.name
+      const cluster = get().connection.cluster
+      const mangoClient = get().mangoClient
+      const set = get().set
+      const mangoGroupIds = IDS[cluster].mango_groups[mangoGroupName]
+      if (!mangoClient) return
+
+      const mangoGroupPk = new PublicKey(mangoGroupIds.mango_group_pk)
+      const srmVaultPk = new PublicKey(mangoGroupIds.srm_vault_pk)
+
+      mangoClient
+        .getMangoGroup(connection, mangoGroupPk, srmVaultPk)
+        .then(async (mangoGroup) => {
+          const srmAccountInfo = await connection.getAccountInfo(
+            mangoGroup.srmVault
+          )
+          // Set the mango group
+          set((state) => {
+            state.selectedMangoGroup.current = mangoGroup
+            state.selectedMangoGroup.srmAccount = srmAccountInfo
+            state.selectedMangoGroup.mintDecimals = mangoGroup.mintDecimals
+          })
+        })
+        .catch((err) => {
+          console.error('Could not get mango group: ', err)
+        })
+    },
+  },
+}))
 
 export default useMangoStore

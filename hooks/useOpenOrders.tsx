@@ -23,14 +23,14 @@ export function useOpenOrders() {
   const markets = useMangoStore((s) => s.selectedMangoGroup.markets)
   const marginAccount = useMangoStore((s) => s.selectedMarginAccount.current)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  const accountInfos = useMangoStore((s) => s.accountInfos)
   const { marketList } = useMarketList()
 
-  if (!mangoGroup || !marginAccount) return null
+  if (!mangoGroup || !marginAccount || !accountInfos) return null
 
   const openOrders = Object.entries(markets).map(([address, market]) => {
     const marketIndex = mangoGroup.getMarketIndex(market)
     const openOrdersAccount = marginAccount.openOrdersAccounts[marketIndex]
-    const accountInfos = useMangoStore.getState().accountInfos
     const marketName = marketList.find(
       (mkt) => mkt.address.toString() === address
     ).name

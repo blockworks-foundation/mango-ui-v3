@@ -1,5 +1,4 @@
-import { useState } from 'react'
-// import styled from '@emotion/styled'
+import { useCallback, useEffect, useState } from 'react'
 import { getDecimalCount } from '../utils'
 import { ChartTradeType } from '../@types/types'
 import FloatingElement from './FloatingElement'
@@ -13,13 +12,24 @@ export default function PublicTrades() {
   const { baseCurrency, quoteCurrency, market, marketAddress } = useMarket()
   const [trades, setTrades] = useState([])
 
-  useInterval(async () => {
+  const fetchTradesForChart = useCallback(async () => {
     const newTrades = await ChartApi.getRecentTrades(marketAddress)
     if (trades.length === 0) {
       setTrades(newTrades)
-    } else if (!isEqual(newTrades[0], trades[0], Object.keys(newTrades[0]))) {
+    } else if (
+      newTrades &&
+      !isEqual(newTrades[0], trades[0], Object.keys(newTrades[0]))
+    ) {
       setTrades(newTrades)
     }
+  }, [marketAddress, trades])
+
+  useEffect(() => {
+    fetchTradesForChart()
+  }, [fetchTradesForChart])
+
+  useInterval(async () => {
+    fetchTradesForChart
   }, 5000)
 
   return (

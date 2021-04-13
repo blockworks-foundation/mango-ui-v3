@@ -15,16 +15,11 @@ import TradeType from './TradeType'
 import NewInput from './Input'
 import NewSwitch from './Switch'
 
-export default function TradeForm({
-  setChangeOrderRef,
-}: {
-  setChangeOrderRef?: (
-    ref: ({ size, price }: { size?: number; price?: number }) => void
-  ) => void
-}) {
+export default function TradeForm() {
   const { baseCurrency, quoteCurrency, market, marketAddress } = useMarket()
   const set = useMangoStore((s) => s.set)
   const { connected } = useMangoStore((s) => s.wallet)
+  const actions = useMangoStore((s) => s.actions)
   const { connection, cluster } = useConnection()
   const { side, baseSize, quoteSize, price, tradeType } = useMangoStore(
     (s) => s.tradeForm
@@ -83,22 +78,21 @@ export default function TradeForm({
 
   const sizeDecimalCount =
     market?.minOrderSize && getDecimalCount(market.minOrderSize)
-  const priceDecimalCount = market?.tickSize && getDecimalCount(market.tickSize)
+  // const priceDecimalCount = market?.tickSize && getDecimalCount(market.tickSize)
 
   useEffect(() => {
-    setChangeOrderRef && setChangeOrderRef(doChangeOrder)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [setChangeOrderRef])
+    onSetBaseSize(baseSize)
+  }, [price, baseSize])
 
-  const onSetBaseSize = (baseSize: number | undefined) => {
+  const onSetBaseSize = (baseSize: number | '') => {
     setBaseSize(baseSize)
     if (!baseSize) {
-      setQuoteSize(undefined)
+      setQuoteSize('')
       return
     }
-    const usePrice = price || markPrice
+    const usePrice = Number(price) || markPrice
     if (!usePrice) {
-      setQuoteSize(undefined)
+      setQuoteSize('')
       return
     }
     const rawQuoteSize = baseSize * usePrice
@@ -106,33 +100,21 @@ export default function TradeForm({
     setQuoteSize(quoteSize)
   }
 
-  const onSetQuoteSize = (quoteSize: number | undefined) => {
+  const onSetQuoteSize = (quoteSize: number | '') => {
     setQuoteSize(quoteSize)
     if (!quoteSize) {
-      setBaseSize(undefined)
+      setBaseSize('')
       return
     }
-    const usePrice = price || markPrice
+    const usePrice = Number(price) || markPrice
+
     if (!usePrice) {
-      setBaseSize(undefined)
+      setBaseSize('')
       return
     }
     const rawBaseSize = quoteSize / usePrice
     const baseSize = quoteSize && roundToDecimal(rawBaseSize, sizeDecimalCount)
     setBaseSize(baseSize)
-  }
-
-  const doChangeOrder = ({
-    size,
-    price,
-  }: {
-    size?: number
-    price?: number
-  }) => {
-    const formattedSize = size && roundToDecimal(size, sizeDecimalCount)
-    const formattedPrice = price && roundToDecimal(price, priceDecimalCount)
-    formattedSize && onSetBaseSize(formattedSize)
-    formattedPrice && setPrice(formattedPrice)
   }
 
   const postOnChange = (checked) => {
@@ -195,8 +177,9 @@ export default function TradeForm({
       )
       console.log('Successfully placed trade!')
 
-      setPrice(undefined)
-      onSetBaseSize(undefined)
+      setPrice('')
+      onSetBaseSize('')
+      actions.fetchMarginAcccount()
     } catch (e) {
       notify({
         message: 'Error placing order',
@@ -318,7 +301,7 @@ export default function TradeForm({
               onClick={onSubmit}
               className="rounded text-lg bg-th-green text-th-bkg-1 hover:bg-th-primary flex-grow"
             >
-              {connected ? `Buy ${baseCurrency}` : 'CONNECT WALLET TO TRADE'}
+              {connected ? `Buy ${baseCurrency}` : 'Connect Wallet To Trade'}
             </Button>
           ) : (
             <Button
@@ -331,7 +314,7 @@ export default function TradeForm({
               onClick={onSubmit}
               className="rounded text-lg bg-th-red text-white hover:bg-th-primary flex-grow"
             >
-              {connected ? `Sell ${baseCurrency}` : 'CONNECT WALLET TO TRADE'}
+              {connected ? `Sell ${baseCurrency}` : 'Connect Wallet To Trade'}
             </Button>
           )
         ) : (

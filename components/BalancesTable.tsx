@@ -58,44 +58,44 @@ const BalancesTable = () => {
           ) : null}
           {balances.length ? (
             <div
-              className={`shadow overflow-hidden border-b border-mango-dark-light sm:rounded-md`}
+              className={`overflow-hidden border-b border-th-bkg-2 sm:rounded-md`}
             >
-              <table className={`min-w-full divide-y divide-mango-dark-light`}>
+              <table className={`min-w-full divide-y divide-th-bkg-2`}>
                 <thead>
                   <tr>
                     <th
                       scope="col"
-                      className={`px-6 py-3 text-left text-base font-medium text-gray-300 tracking-wider`}
+                      className={`px-6 py-3 text-left text-base font-medium text-th-fgd-4 tracking-wider`}
                     >
                       Coin
                     </th>
                     <th
                       scope="col"
-                      className={`px-6 py-3 text-left text-base font-medium text-gray-300 tracking-wider`}
+                      className={`px-6 py-3 text-left text-base font-medium text-th-fgd-4 tracking-wider`}
                     >
                       Deposits
                     </th>
                     <th
                       scope="col"
-                      className={`px-6 py-3 text-left text-base font-medium text-gray-300 tracking-wider`}
+                      className={`px-6 py-3 text-left text-base font-medium text-th-fgd-4 tracking-wider`}
                     >
                       Borrows
                     </th>
                     <th
                       scope="col"
-                      className={`px-6 py-3 text-left text-base font-medium text-gray-300 tracking-wider`}
+                      className={`px-6 py-3 text-left text-base font-medium text-th-fgd-4 tracking-wider`}
                     >
                       In Orders
                     </th>
                     <th
                       scope="col"
-                      className={`px-6 py-3 text-left text-base font-medium text-gray-300 tracking-wider`}
+                      className={`px-6 py-3 text-left text-base font-medium text-th-fgd-4 tracking-wider`}
                     >
                       Unsettled
                     </th>
                     <th
                       scope="col"
-                      className={`px-6 py-3 text-left text-base font-medium text-gray-300 tracking-wider`}
+                      className={`px-6 py-3 text-left text-base font-medium text-th-fgd-4 tracking-wider`}
                     >
                       Net
                     </th>
@@ -106,40 +106,36 @@ const BalancesTable = () => {
                     <tr
                       key={`${index}`}
                       className={`
-                        ${
-                          index % 2 === 0
-                            ? `bg-mango-dark-light`
-                            : `bg-mango-dark-lighter`
-                        }
+                        ${index % 2 === 0 ? `bg-th-bkg-1` : `bg-th-bkg-3`}
                       `}
                     >
                       <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-light`}
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-4 font-light`}
                       >
                         {balance.coin}
                       </td>
                       <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-light`}
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-4 font-light`}
                       >
                         {balance.marginDeposits}
                       </td>
                       <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-light`}
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-4 font-light`}
                       >
                         {balance.borrows}
                       </td>
                       <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-light`}
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-4 font-light`}
                       >
                         {balance.orders}
                       </td>
                       <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-light`}
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-4 font-light`}
                       >
                         {balance.unsettled}
                       </td>
                       <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-light`}
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-4 font-light`}
                       >
                         {balance.net}
                       </td>

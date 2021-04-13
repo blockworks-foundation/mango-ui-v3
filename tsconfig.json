@@ -21,6 +21,7 @@
     "**/*.ts",
     "**/*.tsx",
     "**/*.js",
-    "components/AccountSelect.jsx"
+    "components/AccountSelect.jsx",
+    "components/MangoSrmAccountSelector.jsx"
   ]
 }

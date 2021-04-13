@@ -7,8 +7,12 @@ import { parseTokenAccountData } from '../utils/tokens'
 const useSrmAccount = () => {
   const srmAccount = useMangoStore((s) => s.selectedMangoGroup.srmAccount)
 
-  const accountData = parseTokenAccountData(srmAccount.data)
-  const totalSrm = nativeToUi(accountData.amount, SRM_DECIMALS)
+  const accountData = srmAccount
+    ? parseTokenAccountData(srmAccount?.data)
+    : null
+  const totalSrm = accountData
+    ? nativeToUi(accountData.amount, SRM_DECIMALS)
+    : 0
   const feeTier = getFeeTier(0, totalSrm)
   const rates = getFeeRates(feeTier)
 

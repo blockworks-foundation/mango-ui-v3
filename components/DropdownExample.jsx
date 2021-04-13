@@ -6,10 +6,6 @@ const DropdownExample = () => {
   const { spotMarkets } = useMarketList()
   const { marketName } = useMarket()
 
-  // const handleChange = (e) => {
-  //   console.log('new market selected', e)
-  // }
-
   return (
     <div className={`ml-4`}>
       <Menu>

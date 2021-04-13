@@ -84,7 +84,7 @@ export async function initMarginAccount(
   const signers = [accInstr.account]
 
   const functionName = 'InitMarginAccount'
-  const sendingMessage = `sending ${functionName} instruction...`
+  const sendingMessage = `Sending ${functionName} instruction...`
   const sentMessage = `${functionName} instruction sent`
   const successMessage = `${functionName} instruction success`
 
@@ -142,7 +142,7 @@ export async function deposit(
   const signers = []
 
   const functionName = 'Deposit'
-  const sendingMessage = `sending ${functionName} instruction...`
+  const sendingMessage = `Sending ${functionName} instruction...`
   const sentMessage = `${functionName} instruction sent`
   const successMessage = `${functionName} instruction success`
   return await sendTransaction({
@@ -228,7 +228,7 @@ export async function initMarginAccountAndDeposit(
   // Specify signers in addition to the wallet
   const signers = [accInstr.account]
   const functionName = 'InitMarginAccount'
-  const sendingMessage = `sending ${functionName} instruction...`
+  const sendingMessage = `Sending ${functionName} instruction...`
   const sentMessage = `${functionName} instruction sent`
   const successMessage = `${functionName} instruction success`
 
@@ -293,7 +293,7 @@ export async function withdraw(
   transaction.add(instruction)
   const signers = []
   const functionName = 'Withdraw'
-  const sendingMessage = `sending ${functionName} instruction...`
+  const sendingMessage = `Sending ${functionName} instruction...`
   const sentMessage = `${functionName} instruction sent`
   const successMessage = `${functionName} instruction success`
   return await sendTransaction({
@@ -349,7 +349,7 @@ export async function borrow(
   transaction.add(instruction)
   const signers = []
   const functionName = 'Borrow'
-  const sendingMessage = `sending ${functionName} instruction...`
+  const sendingMessage = `Sending ${functionName} instruction...`
   const sentMessage = `${functionName} instruction sent`
   const successMessage = `${functionName} instruction success`
   return await sendTransaction({
@@ -439,7 +439,7 @@ export async function settleAllBorrows(
     transaction.add(instruction)
   })
   const functionName = 'SettleBorrows'
-  const sendingMessage = `sending ${functionName} instruction...`
+  const sendingMessage = `Sending ${functionName} instruction...`
   const sentMessage = `${functionName} instruction sent`
   const successMessage = `${functionName} instruction success`
 
@@ -1062,7 +1062,7 @@ export async function settleFunds(
 
   const signers = []
   const functionName = 'SettleFunds'
-  const sendingMessage = `sending ${functionName} instruction...`
+  const sendingMessage = `Sending ${functionName} instruction...`
   const sentMessage = `${functionName} instruction sent`
   const successMessage = `${functionName} instruction success`
   return await sendTransaction({
@@ -1306,7 +1306,7 @@ async function packageAndSend(
   signers: Account[],
   functionName: string
 ): Promise<TransactionSignature> {
-  const sendingMessage = `sending ${functionName} instruction...`
+  const sendingMessage = `Sending ${functionName} instruction...`
   const sentMessage = `${functionName} instruction sent`
   const successMessage = `${functionName} instruction success`
   return await sendTransaction({
