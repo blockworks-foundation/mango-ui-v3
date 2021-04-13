@@ -12,8 +12,7 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
-    "jsxImportSource": "@emotion/react"
+    "jsx": "preserve"
   },
   "exclude": ["node_modules", ".next", "out", "public/datafeeds"],
   "include": [

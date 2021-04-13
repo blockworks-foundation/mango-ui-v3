@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import styled from '@emotion/styled'
-import { Select } from 'antd'
 import { LineChart, Line, ReferenceLine, XAxis, YAxis, Tooltip } from 'recharts'
 import useDimensions from 'react-cool-dimensions'
 import { IDS, MangoClient } from '@blockworks-foundation/mango-client'
@@ -9,6 +8,7 @@ import { DEFAULT_MANGO_GROUP } from '../utils/mango'
 import FloatingElement from '../components/FloatingElement'
 import useConnection from '../hooks/useConnection'
 import TopBar from '../components/TopBar'
+import Select from '../components/Select'
 
 const DECIMALS = {
   BTC: 4,
@@ -25,13 +25,6 @@ const icons = {
   USDC: '/assets/icons/usdc.svg',
   WUSDT: '/assets/icons/usdt.svg',
 }
-
-const Wrapper = styled.div`
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  padding: 16px 16px;
-`
 
 const ChartLayover = styled.div`
   position: absolute;
@@ -195,50 +188,76 @@ export default function StatsPage() {
   )
 
   return (
-    <Wrapper>
+    <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all `}>
       <TopBar />
-      <div className="w-2/3 mx-auto">
+      <div className="min-h-screen w-full lg:w-2/3 mx-auto p-1 sm:px-2 sm:py-1 md:px-6 md:py-1">
         <FloatingElement>
-          <>
-            <div className="text-center">
-              <h1 className={`text-white text-lg`}>Mango Stats</h1>
-            </div>
-            <div className="flex justify-between divide">
-              <div>Asset</div>
-              <div>Total Deposits</div>
-              <div>Total Borrows</div>
-              <div>Deposit Interest</div>
-              <div>Borrow Interest</div>
-              <div>Utilization</div>
-            </div>
-            <div className="divide-y divide-gray-600">
-              {latestStats.map((stat) => (
-                <div key={stat.symbol} className="flex justify-between py-4">
-                  <div className="flex items-center">
-                    <img src={icons[stat.symbol]} alt={icons[stat.symbol]} />
-                    <button
-                      onClick={() => setSelectedAsset(stat.symbol)}
-                      className="text-th-primary cursor-pointer ml-2"
-                    >
-                      <div style={{ width: '100%' }}>{stat.symbol}</div>
-                    </button>
-                  </div>
-                  <div>{stat.totalDeposits.toFixed(DECIMALS[stat.symbol])}</div>
-                  <div>{stat.totalBorrows.toFixed(DECIMALS[stat.symbol])}</div>
-                  <div>{stat.depositInterest.toFixed(2)}%</div>
-                  <div>{stat.borrowInterest.toFixed(2)}%</div>
-                  <div>{(parseFloat(stat.utilization) * 100).toFixed(2)}%</div>
-                </div>
-              ))}
-            </div>
-          </>
+          <div className="text-center">
+            <h1 className={`text-white text-3xl`}>Mango Stats</h1>
+          </div>
+          <div className="hidden md:flex md:flex-col min-w-full">
+            <table className="min-w-full">
+              <thead className="">
+                <tr>
+                  <th scope="col" className="text-left py-4">
+                    Asset
+                  </th>
+                  <th scope="col" className="text-left py-4">
+                    Total Deposits
+                  </th>
+                  <th scope="col" className="text-left py-4">
+                    Total Borrows
+                  </th>
+                  <th scope="col" className="text-left py-4">
+                    Deposit Interest
+                  </th>
+                  <th scope="col" className="text-left py-4">
+                    Borrow Interest
+                  </th>
+                  <th scope="col" className="text-left py-4">
+                    Utilization
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-600">
+                {latestStats.map((stat) => (
+                  <tr key={stat.symbol}>
+                    <td className="flex items-center text-left py-4">
+                      <img src={icons[stat.symbol]} alt={icons[stat.symbol]} />
+                      <button
+                        onClick={() => setSelectedAsset(stat.symbol)}
+                        className="text-th-primary cursor-pointer ml-2"
+                      >
+                        <div style={{ width: '100%' }}>{stat.symbol}</div>
+                      </button>
+                    </td>
+                    <td className="text-left py-4">
+                      {stat.totalDeposits.toFixed(DECIMALS[stat.symbol])}
+                    </td>
+                    <td className="text-left py-4">
+                      {stat.totalBorrows.toFixed(DECIMALS[stat.symbol])}
+                    </td>
+                    <td className="text-left py-4">
+                      {stat.depositInterest.toFixed(2)}%
+                    </td>
+                    <td className="text-left py-4">
+                      {stat.borrowInterest.toFixed(2)}%
+                    </td>
+                    <td className="text-left py-4">
+                      {(parseFloat(stat.utilization) * 100).toFixed(2)}%
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </FloatingElement>
         {selectedAsset ? (
           <FloatingElement shrink>
-            <div className="flex justify-center text-lg">
+            <div className="flex justify-center text-2xl">
               <span className={`text-white`}>Historical</span>
               <Select
-                style={{ margin: '0px 8px', fontSize: 16 }}
+                className="mx-4 text-lg"
                 value={selectedAsset}
                 onChange={(val) => setSelectedAsset(val)}
               >
@@ -251,8 +270,11 @@ export default function StatsPage() {
               <span className={`text-white`}>Stats</span>
             </div>
 
-            <div className="flex flex-row mt-2">
-              <div className="relative w-1/2" style={{ height: '300px' }}>
+            <div className="flex flex-col md:flex-row mt-2">
+              <div
+                className="relative my-2 md:w-1/2"
+                style={{ height: '300px' }}
+              >
                 <StatsChart
                   title="Total Deposits"
                   xAxis="time"
@@ -261,7 +283,10 @@ export default function StatsPage() {
                   labelFormat={(x) => x.toFixed(DECIMALS[selectedAsset])}
                 />
               </div>
-              <div className="relative w-1/2" style={{ height: '300px' }}>
+              <div
+                className="relative my-2 md:w-1/2"
+                style={{ height: '300px' }}
+              >
                 <StatsChart
                   title="Total Borrows"
                   xAxis="time"
@@ -271,8 +296,11 @@ export default function StatsPage() {
                 />
               </div>
             </div>
-            <div className="flex flex-row" style={{ margin: '50px 0' }}>
-              <div className="relative w-1/2" style={{ height: '300px' }}>
+            <div className="flex flex-col md:flex-row">
+              <div
+                className="relative my-2 md:w-1/2"
+                style={{ height: '300px' }}
+              >
                 <StatsChart
                   title="Deposit Interest"
                   xAxis="time"
@@ -281,7 +309,10 @@ export default function StatsPage() {
                   labelFormat={(x) => `${(x * 100).toFixed(5)}%`}
                 />
               </div>
-              <div className="relative w-1/2" style={{ height: '300px' }}>
+              <div
+                className="relative my-2 md:w-1/2"
+                style={{ height: '300px' }}
+              >
                 <StatsChart
                   title="Borrow Interest"
                   xAxis="time"
@@ -294,6 +325,6 @@ export default function StatsPage() {
           </FloatingElement>
         ) : null}
       </div>
-    </Wrapper>
+    </div>
   )
 }

@@ -12,6 +12,7 @@ import MarginBalances from './MarginBalances'
 import TradeForm from './TradeForm'
 import UserInfo from './UserInfo'
 import RecentMarketTrades from './RecentMarketTrades'
+import useMangoStore from '../stores/useMangoStore'
 
 const ResponsiveGridLayout = WidthProvider(Responsive)
 
@@ -37,6 +38,8 @@ const layouts = {
 }
 
 const TradePageGrid = () => {
+  const { uiLocked } = useMangoStore((s) => s.settings)
+
   return (
     <ResponsiveGridLayout
       className="layout"
@@ -44,7 +47,8 @@ const TradePageGrid = () => {
       breakpoints={{ xl: 1600, lg: 1200, md: 996, sm: 768, xs: 0 }}
       cols={{ xl: 5, lg: 3, md: 3, sm: 2, xs: 1 }}
       rowHeight={15}
-      isDraggable={false}
+      isDraggable={!uiLocked}
+      isResizable={!uiLocked}
     >
       <div key="tvChart">
         <FloatingElement>

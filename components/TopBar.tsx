@@ -4,6 +4,8 @@ import { MenuIcon, XIcon } from '@heroicons/react/outline'
 import MenuItem from './MenuItem'
 import useWallet from '../hooks/useWallet'
 import ThemeSwitch from './ThemeSwitch'
+import UiLock from './UiLock'
+import { useRouter } from 'next/router'
 
 const Code = styled.code`
   border: 1px solid hsla(0, 0%, 39.2%, 0.2);
@@ -12,6 +14,9 @@ const Code = styled.code`
 `
 
 const TopBar = () => {
+  const { asPath } = useRouter()
+  console.log('asPath', asPath)
+
   const { connected, wallet } = useWallet()
   const [showMenu, setShowMenu] = useState(false)
 
@@ -39,18 +44,8 @@ const TopBar = () => {
           </div>
           <div className={`flex`}>
             <div className={`flex items-center pr-1`}>
+              {asPath === '/' ? <UiLock className="mr-4" /> : null}
               <ThemeSwitch />
-              {/*<button
-                type="button"
-                className={`inline-flex items-center justify-center p-2 rounded-md text-black dark:text-white hover:text-gray-400 focus:outline-none`}
-                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              >
-                {theme === 'light' ? (
-                  <MoonIcon className={`h-5 w-5`} />
-                ) : (
-                  <SunIcon className={`h-5 w-5`} />
-                )}
-                </button>*/}
               <div className={`hidden sm:ml-4 sm:flex sm:items-center`}>
                 <button
                   onClick={handleConnectDisconnect}

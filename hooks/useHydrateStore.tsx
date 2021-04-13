@@ -146,8 +146,11 @@ const useHydrateStore = () => {
         state.fills = loadedFills
       })
     }
-
-    fetchFills()
+    try {
+      fetchFills()
+    } catch (err) {
+      console.error('Error fetching fills:', err)
+    }
   }, _SLOW_REFRESH_INTERVAL)
 }
 

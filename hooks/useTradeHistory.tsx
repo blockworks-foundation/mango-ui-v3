@@ -85,7 +85,6 @@ export const useTradeHistory = () => {
   }, [marginAccount])
 
   useInterval(() => {
-    console.log('interval', allTrades, tradeHistory)
     if (marginAccount && tradeHistory.length === 0) {
       fetchTradeHistory()
     }

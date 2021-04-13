@@ -91,6 +91,9 @@ interface MangoStore extends State {
     current: Wallet
     balances: Array<{ account: any; publicKey: PublicKey }>
   }
+  settings: {
+    uiLocked: boolean
+  }
   set: (x: any) => void
   actions: any
 }
@@ -144,6 +147,9 @@ const useMangoStore = create<MangoStore>((set, get) => ({
     connected: false,
     current: null,
     balances: [],
+  },
+  settings: {
+    uiLocked: true,
   },
   set: (fn) => set(produce(fn)),
   actions: {
