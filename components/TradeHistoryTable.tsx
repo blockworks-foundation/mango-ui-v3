@@ -2,12 +2,13 @@ import useTradeHistory from '../hooks/useTradeHistory'
 
 const TradeHistoryTable = () => {
   const { tradeHistory } = useTradeHistory()
+  console.log('trade history', tradeHistory)
 
   return (
     <div className={`flex flex-col py-6`}>
       <div className={`-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8`}>
         <div className={`align-middle inline-block min-w-full sm:px-6 lg:px-8`}>
-          {tradeHistory ? (
+          {tradeHistory && tradeHistory.length ? (
             <div
               className={`shadow overflow-hidden border-b border-th-bkg-2 sm:rounded-md`}
             >
