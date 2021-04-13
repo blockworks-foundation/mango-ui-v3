@@ -15,8 +15,6 @@ const Code = styled.code`
 
 const TopBar = () => {
   const { asPath } = useRouter()
-  console.log('asPath', asPath)
-
   const { connected, wallet } = useWallet()
   const [showMenu, setShowMenu] = useState(false)
 
