@@ -18,7 +18,7 @@ function App({ Component, pageProps }) {
         <script src="/datafeeds/udf/dist/polyfills.js"></script>
         <script src="/datafeeds/udf/dist/bundle.js"></script>
       </Head>
-      <ThemeProvider>
+      <ThemeProvider defaultTheme="Mango">
         <Component {...pageProps} />
       </ThemeProvider>
     </>
