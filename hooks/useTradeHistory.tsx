@@ -97,7 +97,12 @@ export const useTradeHistory = () => {
   }, 10000)
 
   useEffect(() => {
-    if (eventQueueFills && eventQueueFills.length > 0) {
+    if (
+      eventQueueFills &&
+      tradeHistory &&
+      tradeHistory.length > 0 &&
+      eventQueueFills.length > 0
+    ) {
       const newFills = eventQueueFills.filter(
         (fill) =>
           !tradeHistory.find((t) => t.orderId === fill.orderId.toString())
