@@ -23,7 +23,7 @@ const ThemeSwitch = () => {
     <DropMenu
       button={
         <div className="w-5 h-5">
-          {THEMES.filter((t) => t.name === theme).map((th) => th.icon)}
+          {THEMES.find((t) => t.name === theme).icon}
         </div>
       }
       buttonClassName="w-10 h-10 flex items-center justify-center hover:text-th-primary rounded-md"

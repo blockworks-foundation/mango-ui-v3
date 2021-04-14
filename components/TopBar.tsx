@@ -7,13 +7,13 @@ import {
   XIcon,
 } from '@heroicons/react/outline'
 import MenuItem from './MenuItem'
-import useWallet from '../hooks/useWallet'
 import ThemeSwitch from './ThemeSwitch'
 import WalletIcon from './WalletIcon'
 import UiLock from './UiLock'
 import DropMenu from './DropMenu'
 import { useRouter } from 'next/router'
 import WalletSelect from './WalletSelect'
+import useMangoStore from '../stores/useMangoStore'
 
 const Code = styled.code`
   border: 1px solid hsla(0, 0%, 39.2%, 0.2);
@@ -23,7 +23,8 @@ const Code = styled.code`
 
 const TopBar = () => {
   const { asPath } = useRouter()
-  const { connected, wallet } = useWallet()
+  const connected = useMangoStore((s) => s.wallet.connected)
+  const wallet = useMangoStore((s) => s.wallet.current)
   const [showMenu, setShowMenu] = useState(false)
   const [isCopied, setIsCopied] = useState(false)
 
@@ -82,7 +83,7 @@ const TopBar = () => {
               {asPath === '/' ? <UiLock className="mr-1" /> : null}
               <ThemeSwitch />
               <div className="hidden sm:ml-4 sm:block">
-                {connected ? (
+                {connected && wallet?.publicKey ? (
                   <DropMenu
                     options={WALLET_OPTIONS}
                     onChange={(option) => handleWalletMenu(option)}

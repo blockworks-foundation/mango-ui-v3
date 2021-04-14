@@ -1,11 +1,15 @@
 import { Menu, Transition } from '@headlessui/react'
 import { DotsHorizontalIcon, CheckCircleIcon } from '@heroicons/react/outline'
 import useMangoStore from '../stores/useMangoStore'
-import { WALLET_PROVIDERS } from '../hooks/useWallet'
+import { WALLET_PROVIDERS, DEFAULT_PROVIDER } from '../hooks/useWallet'
+import useLocalStorageState from '../hooks/useLocalStorageState'
 
 export default function WalletSelect() {
   const setMangoStore = useMangoStore((s) => s.set)
-  const { providerUrl } = useMangoStore((s) => s.wallet)
+  const [savedProviderUrl] = useLocalStorageState(
+    'walletProvider',
+    DEFAULT_PROVIDER.url
+  )
 
   const handleSelectProvider = (url) => {
     setMangoStore((state) => {
@@ -39,7 +43,7 @@ export default function WalletSelect() {
                     className="p-4 w-full text-left flex items-center hover:text-th-primary"
                     onClick={() => handleSelectProvider(url)}
                   >
-                    {providerUrl === url ? (
+                    {savedProviderUrl === url ? (
                       <CheckCircleIcon className="h-4 w-4 mr-2" />
                     ) : null}{' '}
                     {name}

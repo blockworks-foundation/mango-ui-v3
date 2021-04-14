@@ -179,7 +179,7 @@ export default function TradeForm() {
 
       setPrice('')
       onSetBaseSize('')
-      actions.fetchMarginAcccount()
+      actions.fetchMarginAccounts()
     } catch (e) {
       notify({
         message: 'Error placing order',

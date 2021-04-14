@@ -5,7 +5,7 @@ import { groupBy } from '../utils'
 import useTradeHistory from '../hooks/useTradeHistory'
 import useConnection from '../hooks/useConnection'
 import FloatingElement from './FloatingElement'
-import useMarginAccount from '../hooks/useMarginAcccount'
+import useMarginAccount from '../hooks/useMarginAccount'
 
 const calculatePNL = (tradeHistory, prices, mangoGroup) => {
   if (!tradeHistory.length) return '0.00'

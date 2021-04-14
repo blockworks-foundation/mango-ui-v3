@@ -12,11 +12,12 @@ import { SRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
 import { AccountInfo, Connection, PublicKey } from '@solana/web3.js'
 import { EndpointInfo, WalletAdapter } from '../@types/types'
 import { getOwnedTokenAccounts } from '../utils/tokens'
+import { isDefined } from '../utils/index'
 
 export const ENDPOINTS: EndpointInfo[] = [
   {
     name: 'mainnet-beta',
-    endpoint: 'https://solana-api.projectserum.com',
+    endpoint: 'https://api.mainnet-beta.solana.com/',
     custom: false,
   },
   {
@@ -105,6 +106,7 @@ interface MangoStore extends State {
   settings: {
     uiLocked: boolean
   }
+  tradeHistory: any[]
   set: (x: any) => void
   actions: any
 }
@@ -156,6 +158,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
   settings: {
     uiLocked: true,
   },
+  tradeHistory: [],
   set: (fn) => set(produce(fn)),
   actions: {
     async fetchWalletBalances() {
@@ -163,8 +166,9 @@ const useMangoStore = create<MangoStore>((set, get) => ({
       const wallet = get().wallet.current
       const connected = get().wallet.connected
       const set = get().set
-      console.log('fetchingWalletBalances', connected, wallet)
-      if (wallet && connected) {
+      console.log('fetching wallet balances')
+
+      if (wallet?.publicKey && connected) {
         const ownerAddress = wallet.publicKey
         const ownedTokenAccounts = await getOwnedTokenAccounts(
           connection,
@@ -188,7 +192,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
       const mangoClient = get().mangoClient
       const set = get().set
 
-      if (wallet && connected) {
+      if (wallet?.publicKey && connected) {
         const usersMangoSrmAccounts = await mangoClient.getMangoSrmAccountsForOwner(
           connection,
           new PublicKey(IDS[cluster].mango_program_id),
@@ -210,7 +214,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
         }
       }
     },
-    async fetchMarginAcccount() {
+    async fetchMarginAccounts() {
       const connection = get().connection.current
       const mangoGroup = get().selectedMangoGroup.current
       const wallet = get().wallet.current
@@ -219,7 +223,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
       const programId = IDS[cluster].mango_program_id
       const set = get().set
 
-      if (!wallet || !wallet.publicKey) return
+      if (!wallet?.publicKey || !wallet.publicKey) return
 
       mangoClient
         .getMarginAccountsForOwner(
@@ -231,7 +235,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
         .then((marginAccounts) => {
           if (marginAccounts.length > 0) {
             set((state) => {
-              state.marginAcccounts = marginAccounts
+              state.marginAccounts = marginAccounts
               state.selectedMarginAccount.current = marginAccounts[0]
             })
           }
@@ -271,6 +275,33 @@ const useMangoStore = create<MangoStore>((set, get) => ({
         .catch((err) => {
           console.error('Could not get mango group: ', err)
         })
+    },
+    async fetchTradeHistory() {
+      const selectedMarginAccount = get().selectedMarginAccount.current
+      const set = get().set
+
+      if (!selectedMarginAccount) return
+      if (selectedMarginAccount.openOrdersAccounts.length === 0) return
+
+      const openOrdersAccounts = selectedMarginAccount.openOrdersAccounts.filter(
+        isDefined
+      )
+      const publicKeys = openOrdersAccounts.map((act) =>
+        act.publicKey.toString()
+      )
+      const results = await Promise.all(
+        publicKeys.map(async (pk) => {
+          const response = await fetch(
+            `https://stark-fjord-45757.herokuapp.com/trades/open_orders/${pk.toString()}`
+          )
+
+          const parsedResponse = await response.json()
+          return parsedResponse?.data ? parsedResponse.data : []
+        })
+      )
+      set((state) => {
+        state.tradeHistory = results
+      })
     },
   },
 }))

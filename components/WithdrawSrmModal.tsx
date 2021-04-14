@@ -58,7 +58,7 @@ const WithdrawModal = ({ isOpen, onClose }) => {
           setSubmitting(false)
           notify({
             message: `Withdrew ${inputAmount} SRM into your account`,
-            description: `Hash of transaction is ${transSig}`,
+            txid: `${transSig}`,
             type: 'info',
           })
           onClose()

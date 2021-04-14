@@ -52,6 +52,8 @@ const DepositModal = ({ isOpen, onClose }) => {
     const marginAccount = useMangoStore.getState().selectedMarginAccount.current
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
     const wallet = useMangoStore.getState().wallet.current
+    console.log('handleDeposit', wallet, walletAccounts)
+
     if (!marginAccount && mangoGroup) {
       initMarginAccountAndDeposit(
         connection,
@@ -64,10 +66,12 @@ const DepositModal = ({ isOpen, onClose }) => {
       )
         .then((response: Array<any>) => {
           actions.fetchWalletBalances()
+          actions.fetchMangoGroup()
+          actions.fetchMarginAccounts()
           setSubmitting(false)
           notify({
             message: `Deposited ${inputAmount} into your account`,
-            description: `Hash of transaction is ${response[1]}`,
+            txid: response[1],
           })
           onClose()
         })
@@ -94,10 +98,12 @@ const DepositModal = ({ isOpen, onClose }) => {
       )
         .then((response: string) => {
           actions.fetchWalletBalances()
+          actions.fetchMangoGroup()
+          actions.fetchMarginAccounts()
           setSubmitting(false)
           notify({
             message: `Deposited ${inputAmount} into your account`,
-            description: `Hash of transaction is ${response}`,
+            txid: `${response}`,
           })
           onClose()
         })

@@ -1,12 +1,13 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import Wallet from '@project-serum/sol-wallet-adapter'
 import useLocalStorageState from './useLocalStorageState'
-import useMangoStore, { INITIAL_STATE } from '../stores/useMangoStore'
+import useMangoStore from '../stores/useMangoStore'
 import { notify } from '../utils/notifications'
 import {
   PhantomWalletAdapter,
   SolletExtensionAdapter,
 } from '../utils/wallet-adapters'
+import { WalletAdapter } from '../@types/types'
 
 const ASSET_URL =
   'https://cdn.jsdelivr.net/gh/solana-labs/oyster@main/assets/wallets'
@@ -31,39 +32,60 @@ export const WALLET_PROVIDERS = [
   },
 ]
 
+export const DEFAULT_PROVIDER = WALLET_PROVIDERS[0]
+
 export default function useWallet() {
   const setMangoStore = useMangoStore((state) => state.set)
-  const { current: wallet, connected, providerUrl } = useMangoStore(
-    (state) => state.wallet
-  )
+  const {
+    current: wallet,
+    connected,
+    providerUrl: selectedProviderUrl,
+  } = useMangoStore((state) => state.wallet)
   const endpoint = useMangoStore((state) => state.connection.endpoint)
-  const fetchWalletBalances = useMangoStore(
-    (s) => s.actions.fetchWalletBalances
-  )
+  const actions = useMangoStore((s) => s.actions)
   const [savedProviderUrl, setSavedProviderUrl] = useLocalStorageState(
     'walletProvider',
-    'https://www.sollet.io'
+    DEFAULT_PROVIDER.url
+  )
+  const provider = useMemo(
+    () => WALLET_PROVIDERS.find(({ url }) => url === savedProviderUrl),
+    [savedProviderUrl]
   )
 
   useEffect(() => {
-    if (providerUrl !== savedProviderUrl) {
-      setSavedProviderUrl(providerUrl || savedProviderUrl)
-      setMangoStore((state) => {
-        state.wallet.providerUrl = providerUrl || savedProviderUrl
-      })
+    console.log('provider url changed', selectedProviderUrl)
+    if (selectedProviderUrl) {
+      setSavedProviderUrl(selectedProviderUrl)
     }
-  }, [providerUrl, savedProviderUrl, setSavedProviderUrl])
+  }, [selectedProviderUrl])
 
   useEffect(() => {
-    if (!providerUrl) return
-    const provider = WALLET_PROVIDERS.find(({ url }) => url === providerUrl)
-    const newWallet = new (provider?.adapter || Wallet)(providerUrl, endpoint)
-    console.log('wallet', newWallet)
+    if (provider) {
+      const updateWallet = () => {
+        // hack to also update wallet synchronously in case it disconnects
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        const wallet = new (provider.adapter || Wallet)(
+          savedProviderUrl,
+          endpoint
+        ) as WalletAdapter
+        setMangoStore((state) => {
+          state.wallet.current = wallet
+        })
+      }
 
-    setMangoStore((state) => {
-      state.wallet.current = newWallet
-    })
-  }, [endpoint, providerUrl, setMangoStore])
+      if (document.readyState !== 'complete') {
+        // wait to ensure that browser extensions are loaded
+        const listener = () => {
+          updateWallet()
+          window.removeEventListener('load', listener)
+        }
+        window.addEventListener('load', listener)
+        return () => window.removeEventListener('load', listener)
+      } else {
+        updateWallet()
+      }
+    }
+  }, [provider, savedProviderUrl, endpoint])
 
   useEffect(() => {
     if (!wallet) return
@@ -81,12 +103,19 @@ export default function useWallet() {
           '...' +
           wallet.publicKey.toString().substr(-5),
       })
+      actions.fetchWalletBalances()
+      actions.fetchMangoSrmAccounts()
+      actions.fetchMarginAccounts()
+      actions.fetchMangoGroup()
     })
     wallet.on('disconnect', () => {
+      console.log('on disconnect')
+
       setMangoStore((state) => {
-        state.wallet = INITIAL_STATE.WALLET
+        state.wallet.connected = false
         state.marginAccounts = []
         state.selectedMarginAccount.current = null
+        state.tradeHistory = []
       })
       notify({
         type: 'info',
@@ -100,14 +129,10 @@ export default function useWallet() {
         wallet.disconnect()
       }
       setMangoStore((state) => {
-        state.wallet = INITIAL_STATE.WALLET
+        state.wallet.connected = false
       })
     }
   }, [wallet, setMangoStore])
-
-  useEffect(() => {
-    fetchWalletBalances()
-  }, [connected, fetchWalletBalances])
 
   return { connected, wallet }
 }

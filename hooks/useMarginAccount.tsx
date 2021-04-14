@@ -18,14 +18,20 @@ const useMarginAccount = () => {
 
   useEffect(() => {
     if (connected) {
-      actions.fetchMarginAcccount()
+      actions.fetchMarginAccounts()
       actions.fetchMangoSrmAccounts()
     }
   }, [connected, actions])
 
+  useEffect(() => {
+    if (selectedMarginAccount) {
+      actions.fetchTradeHistory()
+    }
+  }, [selectedMarginAccount])
+
   useInterval(() => {
     if (connected) {
-      actions.fetchMarginAcccount()
+      actions.fetchMarginAccounts()
     }
     // fetchMangoGroup()
   }, 9000)

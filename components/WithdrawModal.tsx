@@ -64,11 +64,12 @@ const WithdrawModal = ({ isOpen, onClose }) => {
         Number(inputAmount)
       )
         .then((transSig: string) => {
-          actions.fetchWalletBalances()
           setSubmitting(false)
+          actions.fetchMangoGroup()
+          actions.fetchMarginAccounts()
           notify({
             message: `Withdrew ${inputAmount} ${symbol} into your account`,
-            description: `Hash of transaction is ${transSig}`,
+            txid: `${transSig}`,
             type: 'info',
           })
           onClose()
@@ -78,7 +79,7 @@ const WithdrawModal = ({ isOpen, onClose }) => {
           console.warn('Error withdrawing:', err)
           notify({
             message: 'Could not perform withdraw operation',
-            description: err,
+            description: `${err}`,
             type: 'error',
           })
           onClose()

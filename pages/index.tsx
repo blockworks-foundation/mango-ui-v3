@@ -3,9 +3,11 @@ import Notifications from '../components/Notification'
 import TradePageGrid from '../components/TradePageGrid'
 import MarketSelect from '../components/MarketSelect'
 import useHydrateStore from '../hooks/useHydrateStore'
+import useWallet from '../hooks/useWallet'
 
 const Index = () => {
   useHydrateStore()
+  useWallet()
 
   return (
     <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all `}>

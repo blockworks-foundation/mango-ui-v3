@@ -23,7 +23,6 @@ const useHydrateStore = () => {
 
   // load selected market
   useEffect(() => {
-    console.log('useEffect loading market', selectedMarketAddress, dexProgramId)
     Market.load(
       connection,
       new PublicKey(selectedMarketAddress),
@@ -32,15 +31,15 @@ const useHydrateStore = () => {
     )
       .then(async (market) => {
         // @ts-ignore
-        const bidAcccount = market._decoded.bids
-        const bidInfo = await connection.getAccountInfo(bidAcccount)
+        const bidAccount = market._decoded.bids
+        const bidInfo = await connection.getAccountInfo(bidAccount)
         // @ts-ignore
         const askAccount = market._decoded.asks
         const askInfo = await connection.getAccountInfo(askAccount)
         setMangoStore((state) => {
           state.market.current = market
           state.accountInfos[askAccount.toString()] = askInfo
-          state.accountInfos[bidAcccount.toString()] = bidInfo
+          state.accountInfos[bidAccount.toString()] = bidInfo
         })
       })
       .catch((e) => {
@@ -54,8 +53,6 @@ const useHydrateStore = () => {
 
   // load all markets for mangoGroup
   useEffect(() => {
-    console.log('loading all markets for mangoGroup')
-
     Promise.all(
       marketList.map((mkt) => {
         return Market.load(connection, mkt.address, {}, mkt.programId)
