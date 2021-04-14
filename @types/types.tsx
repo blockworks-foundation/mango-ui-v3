@@ -1,4 +1,9 @@
-import { AccountInfo, Connection, PublicKey } from '@solana/web3.js'
+import {
+  AccountInfo,
+  Connection,
+  PublicKey,
+  Transaction,
+} from '@solana/web3.js'
 import Wallet from '@project-serum/sol-wallet-adapter'
 import { Market, OpenOrders } from '@project-serum/serum'
 import { Event } from '@project-serum/serum/lib/queue'
@@ -186,7 +191,6 @@ export interface MarginAccountContextValues {
 }
 
 // Type declaration for the margin accounts for the mango group
-
 export type mangoTokenAccounts = {
   mango_group: string
   accounts: TokenAccount[]
@@ -198,4 +202,19 @@ export interface KnownToken {
   tokenName: string
   icon?: string
   mintAddress: string
+}
+
+export const DEFAULT_PUBLIC_KEY = new PublicKey(
+  '11111111111111111111111111111111'
+)
+
+export interface WalletAdapter {
+  publicKey: PublicKey
+  autoApprove: boolean
+  connected: boolean
+  signTransaction: (transaction: Transaction) => Promise<Transaction>
+  signAllTransactions: (transaction: Transaction[]) => Promise<Transaction[]>
+  connect: () => any
+  disconnect: () => any
+  on<T>(event: string, fn: () => void): this
 }

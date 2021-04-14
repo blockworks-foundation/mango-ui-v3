@@ -18,7 +18,7 @@ import Switch from './Switch'
 export default function TradeForm() {
   const { baseCurrency, quoteCurrency, market, marketAddress } = useMarket()
   const set = useMangoStore((s) => s.set)
-  const { connected } = useMangoStore((s) => s.wallet)
+  const connected = useMangoStore((s) => s.wallet.connected)
   const actions = useMangoStore((s) => s.actions)
   const { connection, cluster } = useConnection()
   const { side, baseSize, quoteSize, price, tradeType } = useMangoStore(

@@ -6,6 +6,7 @@ import useWallet from '../hooks/useWallet'
 import ThemeSwitch from './ThemeSwitch'
 import UiLock from './UiLock'
 import { useRouter } from 'next/router'
+import WalletSelect from './WalletSelect'
 
 const Code = styled.code`
   border: 1px solid hsla(0, 0%, 39.2%, 0.2);
@@ -44,14 +45,14 @@ const TopBar = () => {
             <div className="flex items-center pr-1">
               {asPath === '/' ? <UiLock className="mr-4" /> : null}
               <ThemeSwitch />
-              <div className="hidden sm:ml-4 sm:flex sm:items-center">
-                <div className="border border-th-primary hover:bg-th-primary rounded-md ">
+              <div className="hidden sm:ml-4 sm:flex">
+                <div className="flex items-center border border-th-primary rounded-md">
                   <button
                     onClick={handleConnectDisconnect}
-                    className="px-4 py-2 focus:outline-none text-th-primary hover:text-th-fgd-1 font-semibold text-bas"
+                    className="p-2 focus:outline-none text-th-primary hover:text-th-fgd-1 hover:bg-th-primary font-semibold"
                   >
                     {connected ? (
-                      <div onClick={wallet.disconnect}>
+                      <div>
                         <span>Disconnect: </span>
                         <Code
                           className={`text-xs p-1 text-th-fgd-1 font-extralight`}
@@ -65,6 +66,11 @@ const TopBar = () => {
                       'Connect Wallet'
                     )}
                   </button>
+                  {!connected && (
+                    <div className="relative h-full">
+                      <WalletSelect />
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -76,11 +82,11 @@ const TopBar = () => {
                 aria-expanded="false"
                 onClick={() => setShowMenu((showMenu) => !showMenu)}
               >
-                <span className={`sr-only`}>Open main menu</span>
+                <span className="sr-only">Open main menu</span>
                 {showMenu ? (
-                  <XIcon className={`h-5 w-5 text-th-primary`} />
+                  <XIcon className="h-5 w-5 text-th-primary" />
                 ) : (
-                  <MenuIcon className={`h-5 w-5 text-th-primary`} />
+                  <MenuIcon className="h-5 w-5 text-th-primary" />
                 )}
               </button>
             </div>

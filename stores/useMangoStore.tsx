@@ -10,8 +10,7 @@ import {
 } from '@blockworks-foundation/mango-client'
 import { SRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
 import { AccountInfo, Connection, PublicKey } from '@solana/web3.js'
-import { Wallet } from '@project-serum/sol-wallet-adapter'
-import { EndpointInfo } from '../@types/types'
+import { EndpointInfo, WalletAdapter } from '../@types/types'
 import { getOwnedTokenAccounts } from '../utils/tokens'
 
 export const ENDPOINTS: EndpointInfo[] = [
@@ -34,6 +33,7 @@ const DEFAULT_MANGO_GROUP_NAME = 'BTC_ETH_USDT'
 
 export const INITIAL_STATE = {
   WALLET: {
+    providerUrl: null,
     connected: false,
     current: null,
     balances: [],
@@ -95,8 +95,9 @@ interface MangoStore extends State {
     tradeType: 'Market' | 'Limit'
   }
   wallet: {
+    providerUrl: string
     connected: boolean
-    current: Wallet
+    current: WalletAdapter | undefined
     balances: Array<{ account: any; publicKey: PublicKey }>
     srmAccountsForOwner: any[]
     contributedSrm: number
