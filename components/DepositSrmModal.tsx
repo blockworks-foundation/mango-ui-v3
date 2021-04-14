@@ -19,7 +19,9 @@ const DepositSrmModal = ({ isOpen, onClose }) => {
   const walletAccounts = useMangoStore((s) => s.wallet.balances)
   const actions = useMangoStore((s) => s.actions)
   const srmMintAddress = useMangoStore((s) => s.connection.srmMint)
-  const mangoSrmAccountsForOwner = useMangoStore((s) => s.wallet.srmAccountsForOwner)
+  const mangoSrmAccountsForOwner = useMangoStore(
+    (s) => s.wallet.srmAccountsForOwner
+  )
   const depositAccounts = useMemo(
     () =>
       walletAccounts.filter(

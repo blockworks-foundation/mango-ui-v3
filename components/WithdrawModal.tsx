@@ -18,9 +18,13 @@ const WithdrawModal = ({ isOpen, onClose }) => {
   const { connection, programId } = useConnection()
   const walletAccounts = useMangoStore((s) => s.wallet.balances)
   const actions = useMangoStore((s) => s.actions)
-  const withdrawAccounts = useMemo(() => walletAccounts.filter((acc) =>
+  const withdrawAccounts = useMemo(
+    () =>
+      walletAccounts.filter((acc) =>
         Object.values(symbols).includes(acc.account.mint.toString())
-      ),[symbols, walletAccounts])
+      ),
+    [symbols, walletAccounts]
+  )
   const [selectedAccount, setSelectedAccount] = useState(withdrawAccounts[0])
   const mintAddress = useMemo(() => selectedAccount?.account.mint.toString(), [
     selectedAccount,
