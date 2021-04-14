@@ -9,13 +9,13 @@
     "start": "next start",
     "type-check": "tsc --pretty --noEmit",
     "format": "prettier --write .",
-    "lint": "eslint . --ext ts --ext tsx --ext js",
+    "lint": "eslint . --ext ts --ext tsx --ext js --quiet",
     "test": "jest",
     "test-all": "yarn lint && yarn type-check && yarn test"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "",
+      "pre-commit": "yarn format",
       "pre-push": ""
     }
   },

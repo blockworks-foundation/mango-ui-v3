@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect } from 'react'
 import Wallet from '@project-serum/sol-wallet-adapter'
 import useLocalStorageState from './useLocalStorageState'
 import useMangoStore, { INITIAL_STATE } from '../stores/useMangoStore'

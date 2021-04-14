@@ -95,7 +95,7 @@ export default function MarginStats() {
                   <td className={`text-center`}>
                     {selectedMarginAccount
                       ? selectedMarginAccount
-                          .getUiDeposit(selectedMangoGroup, i)
+                          .getUiBorrow(selectedMangoGroup, i)
                           .toFixed(tokenPrecision[name])
                       : (0).toFixed(tokenPrecision[name])}
                   </td>
