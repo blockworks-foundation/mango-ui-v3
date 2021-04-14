@@ -62,7 +62,7 @@ export default function PublicTrades() {
                     )
                   : trade.size}
               </div>
-              <div className={`text-right text-gray-500`}>
+              <div className={`text-right text-th-fgd-4`}>
                 {trade.time && new Date(trade.time).toLocaleTimeString()}
               </div>
             </div>

@@ -1,10 +1,17 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import styled from '@emotion/styled'
-import { MenuIcon, XIcon } from '@heroicons/react/outline'
+import {
+  DuplicateIcon,
+  LogoutIcon,
+  MenuIcon,
+  XIcon,
+} from '@heroicons/react/outline'
 import MenuItem from './MenuItem'
 import useWallet from '../hooks/useWallet'
 import ThemeSwitch from './ThemeSwitch'
+import WalletIcon from './WalletIcon'
 import UiLock from './UiLock'
+import DropMenu from './DropMenu'
 import { useRouter } from 'next/router'
 
 const Code = styled.code`
@@ -17,13 +24,42 @@ const TopBar = () => {
   const { asPath } = useRouter()
   const { connected, wallet } = useWallet()
   const [showMenu, setShowMenu] = useState(false)
+  const [isCopied, setIsCopied] = useState(false)
+
+  useEffect(() => {
+    if (isCopied) {
+      const timer = setTimeout(() => {
+        setIsCopied(false)
+      }, 2000)
+      return () => clearTimeout(timer)
+    }
+  }, [isCopied])
+
+  const handleWalletMenu = (option) => {
+    if (option === 'Copy address') {
+      const el = document.createElement('textarea')
+      el.value = wallet.publicKey.toString()
+      document.body.appendChild(el)
+      el.select()
+      document.execCommand('copy')
+      document.body.removeChild(el)
+      setIsCopied(true)
+    } else {
+      wallet.disconnect()
+    }
+  }
 
   const handleConnectDisconnect = () => {
     connected ? wallet.disconnect() : wallet.connect()
   }
 
+  const WALLET_OPTIONS = [
+    { name: 'Copy address', icon: <DuplicateIcon /> },
+    { name: 'Disconnect', icon: <LogoutIcon /> },
+  ]
+
   return (
-    <nav className={`bg-th-bkg-1`}>
+    <nav className={`bg-th-bkg-1 border-b border-th-bkg-3`}>
       <div className={`px-4 sm:px-6 lg:px-8`}>
         <div className={`flex justify-between h-16`}>
           <div className={`flex`}>
@@ -42,30 +78,41 @@ const TopBar = () => {
           </div>
           <div className="flex">
             <div className="flex items-center pr-1">
-              {asPath === '/' ? <UiLock className="mr-4" /> : null}
+              {asPath === '/' ? <UiLock className="mr-1" /> : null}
               <ThemeSwitch />
-              <div className="hidden sm:ml-4 sm:flex sm:items-center">
-                <div className="border border-th-primary hover:bg-th-primary rounded-md ">
-                  <button
-                    onClick={handleConnectDisconnect}
-                    className="px-4 py-2 focus:outline-none text-th-primary hover:text-th-fgd-1 font-semibold text-bas"
-                  >
-                    {connected ? (
-                      <div onClick={wallet.disconnect}>
-                        <span>Disconnect: </span>
+              <div className="hidden sm:ml-4 sm:block">
+                {connected ? (
+                  <DropMenu
+                    options={WALLET_OPTIONS}
+                    onChange={(option) => handleWalletMenu(option)}
+                    value={''}
+                    button={
+                      <div className="flex flex-row items-center justify-center">
+                        <WalletIcon className="w-5 h-5 mr-2 fill-current" />
                         <Code
                           className={`text-xs p-1 text-th-fgd-1 font-extralight`}
                         >
-                          {wallet.publicKey.toString().substr(0, 4) +
-                            '...' +
-                            wallet.publicKey.toString().substr(-4)}
+                          {isCopied
+                            ? 'Copied!'
+                            : wallet.publicKey.toString().substr(0, 5) +
+                              '...' +
+                              wallet.publicKey.toString().substr(-5)}
                         </Code>
                       </div>
-                    ) : (
-                      'Connect Wallet'
-                    )}
+                    }
+                    buttonClassName="w-44 h-10 border border-th-primary hover:border-th-fgd-1 rounded-md text-th-primary hover:text-th-fgd-1"
+                  />
+                ) : (
+                  <button
+                    onClick={handleConnectDisconnect}
+                    className="border border-th-primary hover:border-th-fgd-1 rounded-md py-2 w-44  text-th-primary hover:text-th-fgd-1 font-semibold text-bas"
+                  >
+                    <div className="flex flex-row items-center justify-center">
+                      <WalletIcon className="w-5 h-5 mr-2 fill-current" />
+                      Connect Wallet
+                    </div>
                   </button>
-                </div>
+                )}
               </div>
             </div>
             <div className={`-mr-2 flex items-center sm:hidden`}>
