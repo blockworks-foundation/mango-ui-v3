@@ -47,6 +47,7 @@ const useFills = () => {
 
   const marketIndex = selectedMangoGroup.getMarketIndex(market)
   const openOrdersAccount = marginAccount.openOrdersAccounts[marketIndex]
+  if (!openOrdersAccount) return []
   return fills
     .filter((fill) => fill.openOrders.equals(openOrdersAccount.publicKey))
     .map((fill) => ({ ...fill, marketName }))
@@ -97,12 +98,7 @@ export const useTradeHistory = () => {
   }, 10000)
 
   useEffect(() => {
-    if (
-      eventQueueFills &&
-      tradeHistory &&
-      tradeHistory.length > 0 &&
-      eventQueueFills.length > 0
-    ) {
+    if (eventQueueFills && eventQueueFills.length > 0) {
       const newFills = eventQueueFills.filter(
         (fill) =>
           !tradeHistory.find((t) => t.orderId === fill.orderId.toString())
