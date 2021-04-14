@@ -1027,7 +1027,6 @@
 "@headlessui/react@^0.3.2-d950146":
   version "0.3.2-d950146"
   resolved "https://registry.yarnpkg.com/@headlessui/react/-/react-0.3.2-d950146.tgz#00cad543d2803654a9361be2add89f2b663b4c8d"
-  integrity sha512-MblPc6jWSTdWiIe7VLBXbpGwhMOoA3ubUdDTqavQ978WNCI70lOBs2k1oi4mU5znRvmEPc9YNAiHIibyxq+4nQ==
 
 "@heroicons/react@^1.0.0":
   version "1.0.0"
