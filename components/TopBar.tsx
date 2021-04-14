@@ -14,6 +14,8 @@ import UiLock from './UiLock'
 import DropMenu from './DropMenu'
 import { useRouter } from 'next/router'
 import WalletSelect from './WalletSelect'
+import useMangoStore from '../stores/useMangoStore'
+import { WALLET_PROVIDERS } from '../hooks/useWallet'
 
 const Code = styled.code`
   border: 1px solid hsla(0, 0%, 39.2%, 0.2);
@@ -26,6 +28,9 @@ const TopBar = () => {
   const { connected, wallet } = useWallet()
   const [showMenu, setShowMenu] = useState(false)
   const [isCopied, setIsCopied] = useState(false)
+  const { providerUrl } = useMangoStore((s) => s.wallet)
+
+  console.log('provider', providerUrl)
 
   useEffect(() => {
     if (isCopied) {
@@ -104,18 +109,25 @@ const TopBar = () => {
                     buttonClassName="w-44 h-10 border border-th-primary hover:border-th-fgd-1 rounded-md text-th-primary hover:text-th-fgd-1"
                   />
                 ) : (
-                  <div className="flex">
+                  <div className="flex border border-th-primary rounded-md h-11">
                     <button
                       onClick={handleConnectDisconnect}
-                      className="border border-th-primary hover:border-th-fgd-1 rounded-md py-2 w-44  text-th-primary hover:text-th-fgd-1 font-semibold text-bas"
+                      className="text-th-primary hover:text-th-fgd-1 font-semibold"
                     >
-                      <div className="flex flex-row items-center justify-center">
-                        <WalletIcon className="w-5 h-5 mr-2 fill-current" />
-                        Connect Wallet
+                      <div className="flex flex-row items-center justify-center px-3 h-full rounded-l hover:bg-th-primary hover:text-th-fgd-1">
+                        <WalletIcon className="w-5 h-5 mr-3 fill-current" />
+                        <div>
+                          Connect Wallet
+                          <div className="text-xxs font-normal text-th-fgd-1 text-left leading-3">
+                            {WALLET_PROVIDERS.filter(
+                              (p) => p.url === providerUrl
+                            ).map(({ name }) => name)}
+                          </div>
+                        </div>
                       </div>
                     </button>
                     {!connected && (
-                      <div className="relative h-full ml-2">
+                      <div className="relative h-full">
                         <WalletSelect />
                       </div>
                     )}
