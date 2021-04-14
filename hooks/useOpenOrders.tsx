@@ -4,18 +4,14 @@ import useMangoStore from '../stores/useMangoStore'
 import useMarketList from './useMarketList'
 
 const getOrderBookAccounts = (market, accountInfos) => {
-  const bidBuffer = Buffer.from(
-    accountInfos[market._decoded.bids.toString()].data
-  )
-  const askBuffer = Buffer.from(
-    accountInfos[market._decoded.asks.toString()].data
-  )
+  const bidData = accountInfos[market._decoded.bids.toString()]?.data
+  const askData = accountInfos[market._decoded.asks.toString()]?.data
 
   return {
     bidOrderBook:
-      market && bidBuffer ? Orderbook.decode(market, bidBuffer) : null,
+      market && bidData ? Orderbook.decode(market, Buffer.from(bidData)) : null,
     askOrderBook:
-      market && askBuffer ? Orderbook.decode(market, askBuffer) : null,
+      market && askData ? Orderbook.decode(market, Buffer.from(askData)) : null,
   }
 }
 
