@@ -17,8 +17,8 @@ export default function WalletSelect() {
     <Menu>
       {({ open }) => (
         <>
-          <Menu.Button className="p-2 h-full border-l border-th-primary focus:outline-none text-th-primary hover:text-th-fgd-1 hover:bg-th-primary cursor-pointer">
-            <DotsHorizontalIcon className="h-5 w-5 text-th-primary" />
+          <Menu.Button className="p-2 h-full rounded focus:outline-none text-th-primary hover:text-th-fgd-1 hover:bg-th-primary cursor-pointer">
+            <DotsHorizontalIcon className="h-5 w-5" />
           </Menu.Button>
           <Transition
             show={open}

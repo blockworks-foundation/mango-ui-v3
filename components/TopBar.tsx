@@ -104,15 +104,22 @@ const TopBar = () => {
                     buttonClassName="w-44 h-10 border border-th-primary hover:border-th-fgd-1 rounded-md text-th-primary hover:text-th-fgd-1"
                   />
                 ) : (
-                  <button
-                    onClick={handleConnectDisconnect}
-                    className="border border-th-primary hover:border-th-fgd-1 rounded-md py-2 w-44  text-th-primary hover:text-th-fgd-1 font-semibold text-bas"
-                  >
-                    <div className="flex flex-row items-center justify-center">
-                      <WalletIcon className="w-5 h-5 mr-2 fill-current" />
-                      Connect Wallet
-                    </div>
-                  </button>
+                  <div className="flex">
+                    <button
+                      onClick={handleConnectDisconnect}
+                      className="border border-th-primary hover:border-th-fgd-1 rounded-md py-2 w-44  text-th-primary hover:text-th-fgd-1 font-semibold text-bas"
+                    >
+                      <div className="flex flex-row items-center justify-center">
+                        <WalletIcon className="w-5 h-5 mr-2 fill-current" />
+                        Connect Wallet
+                      </div>
+                    </button>
+                    {!connected && (
+                      <div className="relative h-full ml-2">
+                        <WalletSelect />
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
             </div>
