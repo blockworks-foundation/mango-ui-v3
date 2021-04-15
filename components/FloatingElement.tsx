@@ -45,5 +45,3 @@ export default function FloatingElement({ shrink = false, children }) {
     </div>
   )
 }
-
-export default FloatingElement
