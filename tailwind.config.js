@@ -13,9 +13,6 @@ module.exports = {
       cursor: {
         help: 'help',
       },
-      fontFamily: {
-        sans: ['Nunito'],
-      },
       colors: {
         'mango-orange': {
           DEFAULT: '#DFAB01',

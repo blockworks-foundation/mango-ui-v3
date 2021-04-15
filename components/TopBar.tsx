@@ -11,7 +11,7 @@ import {
 } from '@heroicons/react/outline'
 import MenuItem from './MenuItem'
 import ThemeSwitch from './ThemeSwitch'
-import WalletIcon from './WalletIcon'
+import { WalletIcon } from './icons'
 import UiLock from './UiLock'
 import { useRouter } from 'next/router'
 import WalletSelect from './WalletSelect'

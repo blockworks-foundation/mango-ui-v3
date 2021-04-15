@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useTheme } from 'next-themes'
 import { MoonIcon, SunIcon } from '@heroicons/react/outline'
 import DropMenu from './DropMenu'
-import MangoIcon from './MangoIcon'
+import { MangoIcon } from './icons'
 
 const THEMES = [
   { name: 'Light', icon: <SunIcon /> },
