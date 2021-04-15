@@ -97,10 +97,10 @@ const TopBar = () => {
                   <Menu>
                     {({ open }) => (
                       <div className="relative">
-                        <Menu.Button className="w-48 h-11 pl-2 pr-2.5 border border-th-primary hover:border-th-fgd-1 focus:outline-none rounded-md text-th-primary hover:text-th-fgd-1">
+                        <Menu.Button className="w-48 h-11 pl-2 pr-2.5 border border-th-green hover:border-th-fgd-1 focus:outline-none rounded-md text-th-fgd-4 hover:text-th-fgd-1">
                           <div className="flex flex-row items-center justify-between">
                             <div className="flex items-center">
-                              <WalletIcon className="w-5 h-5 mr-2 fill-current" />
+                              <WalletIcon className="w-5 h-5 mr-2 fill-current text-th-green" />
                               <Code className="p-1 text-th-fgd-3 font-light">
                                 {isCopied
                                   ? 'Copied!'
