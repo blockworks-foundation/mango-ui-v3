@@ -65,11 +65,6 @@ const DepositSrmModal = ({ isOpen, onClose }) => {
           actions.fetchMangoSrmAccounts()
           actions.fetchWalletBalances()
           actions.fetchMangoGroup()
-          notify({
-            message: `Deposited ${inputAmount} SRM into your account`,
-            description: ``,
-            type: 'info',
-          })
           onClose()
         })
         .catch((err) => {

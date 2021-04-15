@@ -16,7 +16,7 @@ const NotificationList = () => {
         setMangoStore((state) => {
           state.notifications = notifications.slice(1, notifications.length)
         })
-      }, 6000)
+      }, 5000)
 
       return () => {
         clearInterval(id)

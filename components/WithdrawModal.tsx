@@ -63,15 +63,10 @@ const WithdrawModal = ({ isOpen, onClose }) => {
         selectedAccount.publicKey,
         Number(inputAmount)
       )
-        .then((transSig: string) => {
+        .then((_transSig: string) => {
           setSubmitting(false)
           actions.fetchMangoGroup()
           actions.fetchMarginAccounts()
-          notify({
-            message: `Withdrew ${inputAmount} ${symbol} into your account`,
-            txid: `${transSig}`,
-            type: 'info',
-          })
           onClose()
         })
         .catch((err) => {

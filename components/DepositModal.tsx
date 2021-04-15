@@ -64,15 +64,11 @@ const DepositModal = ({ isOpen, onClose }) => {
         selectedAccount.publicKey,
         Number(inputAmount)
       )
-        .then((response: Array<any>) => {
+        .then((_response: Array<any>) => {
           actions.fetchWalletBalances()
           actions.fetchMangoGroup()
           actions.fetchMarginAccounts()
           setSubmitting(false)
-          notify({
-            message: `Deposited ${inputAmount} into your account`,
-            txid: response[1],
-          })
           onClose()
         })
         .catch((err) => {
@@ -96,15 +92,11 @@ const DepositModal = ({ isOpen, onClose }) => {
         selectedAccount.publicKey,
         Number(inputAmount)
       )
-        .then((response: string) => {
+        .then((_response: string) => {
           actions.fetchWalletBalances()
           actions.fetchMangoGroup()
           actions.fetchMarginAccounts()
           setSubmitting(false)
-          notify({
-            message: `Deposited ${inputAmount} into your account`,
-            txid: `${response}`,
-          })
           onClose()
         })
         .catch((err) => {

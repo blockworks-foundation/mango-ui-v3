@@ -54,13 +54,8 @@ const WithdrawModal = ({ isOpen, onClose }) => {
         walletSrmAccount.publicKey,
         Number(inputAmount)
       )
-        .then((transSig: string) => {
+        .then((_transSig: string) => {
           setSubmitting(false)
-          notify({
-            message: `Withdrew ${inputAmount} SRM into your account`,
-            txid: `${transSig}`,
-            type: 'info',
-          })
           onClose()
           actions.fetchWalletBalances()
           actions.fetchMangoSrmAccounts()
