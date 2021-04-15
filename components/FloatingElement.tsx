@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { FunctionComponent } from 'react'
 import styled from '@emotion/styled'
 import useMangoStore from '../stores/useMangoStore'
 import { MoveIcon } from './icons'
@@ -24,13 +24,18 @@ const StyledDragWrapper = styled.div`
   }
 `
 
-export default function FloatingElement({ shrink = false, children }) {
+interface FloatingElementProps {
+  className?: string
+}
+
+const FloatingElement: FunctionComponent<FloatingElementProps> = ({
+  className,
+  children,
+}) => {
   const { uiLocked } = useMangoStore((s) => s.settings)
   return (
     <div
-      className={`m-1 p-4 bg-th-bkg-2 rounded-lg overflow-auto relative ${
-        shrink ? null : `h-full`
-      }`}
+      className={`m-1 p-4 bg-th-bkg-2 rounded-lg overflow-auto relative h-full ${className}`}
     >
       {!uiLocked ? (
         <StyledDragWrapper className="absolute top-0 left-0 w-full h-full cursor-move z-50">
@@ -45,3 +50,5 @@ export default function FloatingElement({ shrink = false, children }) {
     </div>
   )
 }
+
+export default FloatingElement
