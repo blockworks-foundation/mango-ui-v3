@@ -67,78 +67,37 @@ button {
 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
-  /* display: none; <- Crashes Chrome on hover */
   -webkit-appearance: none;
-  margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+  margin: 0;
 }
 
 input[type='number'] {
-  -moz-appearance: textfield; /* Firefox */
+  -moz-appearance: textfield;
 }
 
-/* TODO: remove. styling for old ant components below */
-
-.ant-input-group-addon {
-  background-color: transparent !important;
+.thin-scroll {
+  overflow: hidden !important;
 }
 
-.ant-switch {
-  background-color: #5b5868 !important;
+.thin-scroll:hover {
+  overflow: auto !important;
 }
 
-.ant-switch-checked {
-  background-color: #f2c94c !important;
+.thin-scroll::-webkit-scrollbar {
+  width: 4px;
+  height: 8px;
+  background-color: var(--bkg-2);
 }
 
-.ant-switch-handle::before {
-  background-color: #ffffff !important;
+.thin-scroll::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: var(--bkg-3);
 }
 
-.ant-input-affix-wrapper-disabled {
-  background-color: #262337 !important;
-  color: #ffffff !important;
+.thin-scroll::-webkit-scrollbar-track {
+  background-color: inherit;
 }
 
-.ant-select-arrow {
-  color: #817f8a !important;
-}
-
-.ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
-  color: #f2c94c !important;
-  font-weight: 600 !important;
-  background-color: #141026 !important;
-}
-
-.ant-select-item-option-active:not(.ant-select-item-option-disabled) {
-  background-color: #584f81 !important;
-}
-
-.ant-input-group::after {
-  border-style: none !important;
-}
-
-.ant-input-group::before {
-  border-style: none !important;
-}
-
-.ant-input-group-wrapper {
-  border-style: none !important;
-}
-
-.ant-input-group:first-child .ant-input-affix-wrapper:not(:first-child) {
-  border-top-right-radius: 0 !important;
-  border-bottom-right-radius: 0 !important;
-}
-
-.ant-input-group.ant-input-group-compact > *:last-child,
-.ant-input-group.ant-input-group-compact
-  > .ant-select:last-child
-  > .ant-select-selector,
-.ant-input-group.ant-input-group-compact
-  > .ant-cascader-picker:last-child
-  .ant-input,
-.ant-input-group.ant-input-group-compact
-  > .ant-cascader-picker-focused:last-child
-  .ant-input {
-  border-color: #524a79 !important;
+.thin-scroll::-webkit-scrollbar-corner {
+  background-color: var(--bkg-3);
 }

@@ -191,7 +191,7 @@ export default function StatsPage() {
     <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all `}>
       <TopBar />
       <div className="min-h-screen w-full lg:w-2/3 mx-auto p-1 sm:px-2 sm:py-1 md:px-6 md:py-1">
-        <FloatingElement>
+        <FloatingElement className="h-auto">
           <div className="text-center">
             <h1 className={`text-th-fgd-1 text-3xl`}>Mango Stats</h1>
           </div>
@@ -253,7 +253,7 @@ export default function StatsPage() {
           </div>
         </FloatingElement>
         {selectedAsset ? (
-          <FloatingElement shrink>
+          <FloatingElement className="h-auto">
             <div className="flex justify-center text-2xl">
               <span className={`text-th-fgd-1`}>Historical</span>
               <Select

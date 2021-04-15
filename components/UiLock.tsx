@@ -15,12 +15,12 @@ const UiLock = ({ className = '' }) => {
     <div className={`flex relative ${className}`}>
       <button
         onClick={handleClick}
-        className="w-10 h-10 flex items-center justify-center hover:text-th-primary rounded-mdbg-transparent rounded hover:text-th-primary focus:outline-none"
+        className="w-10 h-10 flex items-center justify-center bg-transparent rounded hover:text-th-primary focus:outline-none"
       >
         {uiLocked ? (
           <LockClosedIcon className="w-5 h-5" />
         ) : (
-          <LockOpenIcon className="w-5 h-5" />
+          <LockOpenIcon className="w-5 h-5 animate-bounce" />
         )}
       </button>
     </div>

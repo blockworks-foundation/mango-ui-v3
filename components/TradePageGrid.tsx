@@ -7,7 +7,7 @@ const TVChartContainer = dynamic(
 )
 import FloatingElement from '../components/FloatingElement'
 import Orderbook from '../components/Orderbook'
-import MarginStats from './MarginStats'
+import MarginInfo from './MarginInfo'
 import MarginBalances from './MarginBalances'
 import TradeForm from './TradeForm'
 import UserInfo from './UserInfo'
@@ -21,7 +21,7 @@ const layouts = {
     { i: 'tvChart', x: 0, y: 0, w: 3, h: 30 },
     { i: 'orderbook', x: 3, y: 0, w: 1, h: 17 },
     { i: 'tradeForm', x: 4, y: 0, w: 1, h: 17 },
-    { i: 'marginStats', x: 4, y: 2, w: 1, h: 12 },
+    { i: 'marginInfo', x: 4, y: 2, w: 1, h: 12 },
     { i: 'marketTrades', x: 3, y: 1, w: 1, h: 13 },
     { i: 'userInfo', x: 0, y: 2, w: 4, h: 17 },
     { i: 'balanceInfo', x: 4, y: 1, w: 1, h: 13 },
@@ -29,7 +29,7 @@ const layouts = {
   lg: [
     { i: 'tvChart', x: 0, y: 0, w: 2, h: 24 },
     { i: 'balanceInfo', x: 2, y: 0, w: 1, h: 13 },
-    { i: 'marginStats', x: 2, y: 1, w: 1, h: 11 },
+    { i: 'marginInfo', x: 2, y: 1, w: 1, h: 11 },
     { i: 'orderbook', x: 0, y: 2, w: 1, h: 17 },
     { i: 'tradeForm', x: 1, y: 2, w: 1, h: 17 },
     { i: 'marketTrades', x: 2, y: 2, w: 1, h: 17 },
@@ -63,8 +63,8 @@ const TradePageGrid = () => {
       <div key="tradeForm">
         <TradeForm />
       </div>
-      <div key="marginStats">
-        <MarginStats />
+      <div key="marginInfo">
+        <MarginInfo />
       </div>
       <div key="userInfo">
         <UserInfo />

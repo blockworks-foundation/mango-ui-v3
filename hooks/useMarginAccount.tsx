@@ -23,12 +23,6 @@ const useMarginAccount = () => {
     }
   }, [connected, actions])
 
-  useEffect(() => {
-    if (selectedMarginAccount) {
-      actions.fetchTradeHistory()
-    }
-  }, [selectedMarginAccount])
-
   useInterval(() => {
     if (connected) {
       actions.fetchMarginAccounts()

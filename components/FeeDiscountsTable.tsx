@@ -61,9 +61,7 @@ const FeeDiscountsTable = () => {
               </Button>
             </div>
           </div>
-        ) : (
-          <Button disabled>Connect Wallet</Button>
-        )}
+        ) : null}
       </div>
       {showDeposit && (
         <DepositSrmModal isOpen={showDeposit} onClose={handleCloseDeposit} />

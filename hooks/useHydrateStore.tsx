@@ -18,8 +18,13 @@ const useHydrateStore = () => {
   const setSerumStore = useSerumStore((s) => s.set)
   const selectedMarketAddress = useMangoStore(marketAddressSelector)
   const marketsForSelectedMangoGroup = useMangoStore(mangoGroupMarketsSelector)
+  const actions = useMangoStore((s) => s.actions)
   const { connection, dexProgramId } = useConnection()
   const { marketList } = useMarketList()
+
+  useEffect(() => {
+    actions.fetchMangoGroup()
+  }, [actions])
 
   // load selected market
   useEffect(() => {
@@ -76,7 +81,7 @@ const useHydrateStore = () => {
     })
   }, [marketList])
 
-  // hydrate orderbook for all markets in mango group
+  // hydrate orderbook with all markets in mango group
   useEffect(() => {
     const subscriptionIds = Object.entries(marketsForSelectedMangoGroup).map(
       ([, market]) => {
@@ -131,6 +136,7 @@ const useHydrateStore = () => {
     }
   }, [marketsForSelectedMangoGroup])
 
+  // fetch filled trades for selected market
   useInterval(() => {
     async function fetchFills() {
       const market = useMangoStore.getState().market.current

@@ -4,9 +4,7 @@ import { IDS } from '@blockworks-foundation/mango-client'
 import useMangoStore from '../stores/useMangoStore'
 
 const useConnection = () => {
-  // console.log('loading useConnection')
-
-  const setSolanaStore = useMangoStore((s) => s.set)
+  const setMangoStore = useMangoStore((s) => s.set)
   const { cluster, current: connection, endpoint } = useMangoStore(
     (s) => s.connection
   )
@@ -16,17 +14,17 @@ const useConnection = () => {
   ])
 
   useEffect(() => {
-    // @ts-ignore
-    if (connection && endpoint === connection._rpcEndpoint) return
+    if (connection && endpoint === connection['_rpcEndpoint']) return
     console.log('setting new connection')
 
     const newConnection = new Connection(endpoint, 'recent')
-    setSolanaStore((state) => {
+    setMangoStore((state) => {
       state.connection.current = newConnection
     })
   }, [endpoint])
 
   useEffect(() => {
+    if (connection && endpoint === connection['_rpcEndpoint']) return
     const id = connection.onAccountChange(new Account().publicKey, () => {})
     return () => {
       connection.removeAccountChangeListener(id)
@@ -34,6 +32,7 @@ const useConnection = () => {
   }, [endpoint])
 
   useEffect(() => {
+    if (connection && endpoint === connection['_rpcEndpoint']) return
     const id = connection.onSlotChange(() => null)
     return () => {
       connection.removeSlotChangeListener(id)

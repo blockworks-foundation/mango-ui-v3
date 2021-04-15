@@ -1,13 +1,20 @@
-import React from 'react'
+import React, { FunctionComponent } from 'react'
 
-export default function FloatingElement({ shrink = false, children }) {
+type FloatingElementProps = {
+  className?: string
+}
+
+const FloatingElement: FunctionComponent<FloatingElementProps> = ({
+  className,
+  children,
+}) => {
   return (
     <div
-      className={`m-1 p-4 bg-th-bkg-2 rounded-lg overflow-auto ${
-        shrink ? null : `h-full`
-      }`}
+      className={`p-2 h-full bg-th-bkg-2 rounded-lg overflow-hidden ${className}`}
     >
-      {children}
+      <div className="h-full overflow-auto thin-scroll p-2">{children}</div>
     </div>
   )
 }
+
+export default FloatingElement

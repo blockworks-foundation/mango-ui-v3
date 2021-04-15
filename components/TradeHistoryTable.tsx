@@ -1,7 +1,7 @@
 import useTradeHistory from '../hooks/useTradeHistory'
 
 const TradeHistoryTable = () => {
-  const { tradeHistory } = useTradeHistory()
+  const tradeHistory = useTradeHistory()
 
   return (
     <div className={`flex flex-col py-6`}>
@@ -61,7 +61,7 @@ const TradeHistoryTable = () => {
                 <tbody>
                   {tradeHistory.map((trade, index) => (
                     <tr
-                      key={`${trade.orderId}${trade.side}`}
+                      key={`${trade.orderId}${trade.side}${trade.uuid}`}
                       className={`
                         ${index % 2 === 0 ? `bg-th-bkg-3` : `bg-th-bkg-2`}
                       `}
