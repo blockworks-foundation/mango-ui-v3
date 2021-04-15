@@ -13,6 +13,7 @@ const OpenOrdersTable = () => {
   const openOrders = useOpenOrders()
   const [cancelId, setCancelId] = useState(null)
   const { connection, programId } = useConnection()
+  const actions = useMangoStore((s) => s.actions)
 
   const handleCancelOrder = async (order) => {
     const wallet = useMangoStore.getState().wallet.current
@@ -32,10 +33,7 @@ const OpenOrdersTable = () => {
         order.market,
         order
       )
-      notify({
-        message: 'Order cancelled',
-        type: 'success',
-      })
+      actions.fetchMarginAccounts()
     } catch (e) {
       notify({
         message: 'Error cancelling order',

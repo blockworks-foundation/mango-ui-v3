@@ -221,6 +221,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
       const cluster = get().connection.cluster
       const mangoClient = get().mangoClient
       const programId = IDS[cluster].mango_program_id
+      const actions = get().actions
       const set = get().set
 
       if (!wallet?.publicKey || !wallet.publicKey) return
@@ -238,6 +239,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
               state.marginAccounts = marginAccounts
               state.selectedMarginAccount.current = marginAccounts[0]
             })
+            actions.fetchTradeHistory(marginAccounts[0])
           }
         })
         .catch((err) => {
@@ -276,8 +278,9 @@ const useMangoStore = create<MangoStore>((set, get) => ({
           console.error('Could not get mango group: ', err)
         })
     },
-    async fetchTradeHistory() {
-      const selectedMarginAccount = get().selectedMarginAccount.current
+    async fetchTradeHistory(marginAccount = null) {
+      const selectedMarginAccount =
+        marginAccount || get().selectedMarginAccount.current
       const set = get().set
 
       if (!selectedMarginAccount) return

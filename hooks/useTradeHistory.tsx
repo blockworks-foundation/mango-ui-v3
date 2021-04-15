@@ -62,7 +62,7 @@ export const useTradeHistory = () => {
     if (marginAccount) {
       actions.fetchTradeHistory()
     }
-  }, 12000)
+  }, 60000)
 
   const allTrades = []
   if (eventQueueFills && eventQueueFills.length > 0) {
