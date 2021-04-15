@@ -4,8 +4,11 @@ import TradePageGrid from '../components/TradePageGrid'
 import MarketSelect from '../components/MarketSelect'
 import useHydrateStore from '../hooks/useHydrateStore'
 import useWallet from '../hooks/useWallet'
+import AlphaModal from '../components/AlphaModal'
+import useLocalStorageState from '../hooks/useLocalStorageState'
 
 const Index = () => {
+  const [alphaAccepted] = useLocalStorageState('mangoAlphaAccepted', false)
   useHydrateStore()
   useWallet()
 
@@ -17,6 +20,9 @@ const Index = () => {
         <TradePageGrid />
       </div>
       <Notifications />
+      {!alphaAccepted && (
+        <AlphaModal isOpen={!alphaAccepted} onClose={() => {}} />
+      )}
     </div>
   )
 }
