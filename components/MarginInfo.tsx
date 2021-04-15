@@ -1,5 +1,5 @@
+import { useEffect, useState, useMemo } from 'react'
 import { Popover } from 'antd'
-import { useEffect, useState } from 'react'
 import { nativeToUi } from '@blockworks-foundation/mango-client/lib/utils'
 import { groupBy } from '../utils'
 import useTradeHistory from '../hooks/useTradeHistory'
@@ -7,6 +7,8 @@ import useMangoStore from '../stores/useMangoStore'
 import FloatingElement from './FloatingElement'
 
 const calculatePNL = (tradeHistory, prices, mangoGroup) => {
+  console.log('calculate pnl, trade history:', tradeHistory)
+
   if (!tradeHistory.length) return '0.00'
   const profitAndLoss = {}
   const groupedTrades = groupBy(tradeHistory, (trade) => trade.marketName)
@@ -68,6 +70,7 @@ export default function MarginInfo() {
     | null
   >(null)
   const tradeHistory = useTradeHistory()
+  const tradeHistoryLength = useMemo(() => tradeHistory.length, [tradeHistory])
 
   useEffect(() => {
     if (selectedMangoGroup) {
@@ -145,8 +148,8 @@ export default function MarginInfo() {
         ])
       })
     }
-    // eslint-disable-next-line
-  }, [selectedMarginAccount, selectedMangoGroup])
+  }, [selectedMarginAccount, selectedMangoGroup, tradeHistoryLength])
+
   return (
     <FloatingElement>
       <>

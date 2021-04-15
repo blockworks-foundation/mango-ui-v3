@@ -143,17 +143,17 @@ const useHydrateStore = () => {
       if (!market || !connection) {
         return null
       }
-      const loadedFills = await market.loadFills(connection, 10000)
+      try {
+        const loadedFills = await market.loadFills(connection, 10000)
+        setSerumStore((state) => {
+          state.fills = loadedFills
+        })
+      } catch (err) {
+        console.log('Error fetching fills:', err)
+      }
+    }
 
-      setSerumStore((state) => {
-        state.fills = loadedFills
-      })
-    }
-    try {
-      fetchFills()
-    } catch (err) {
-      console.error('Error fetching fills:', err)
-    }
+    fetchFills()
   }, _SLOW_REFRESH_INTERVAL)
 }
 
