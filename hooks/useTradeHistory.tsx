@@ -76,7 +76,7 @@ export const useTradeHistory = () => {
     }
   }
 
-  return tradeHistory.flat()
+  return formatTradeHistory(tradeHistory)
 }
 
 export default useTradeHistory

@@ -1,7 +1,10 @@
 import useTradeHistory from '../hooks/useTradeHistory'
+import useMangoStore from '../stores/useMangoStore'
+import Loading from './Loading'
 
 const TradeHistoryTable = () => {
   const tradeHistory = useTradeHistory()
+  const connected = useMangoStore((s) => s.wallet.connected)
 
   return (
     <div className={`flex flex-col py-6`}>
@@ -121,7 +124,7 @@ const TradeHistoryTable = () => {
             <div
               className={`w-full text-center py-6 text-base bg-th-bkg-1 text-th-fgd-2 rounded-md`}
             >
-              No trade history
+              {connected ? <Loading /> : 'No trade history'}
             </div>
           )}
         </div>
