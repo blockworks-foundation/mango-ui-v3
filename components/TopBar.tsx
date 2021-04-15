@@ -11,7 +11,7 @@ import {
 } from '@heroicons/react/outline'
 import MenuItem from './MenuItem'
 import ThemeSwitch from './ThemeSwitch'
-import WalletIcon from './WalletIcon'
+import { WalletIcon } from './icons'
 import UiLock from './UiLock'
 import { useRouter } from 'next/router'
 import WalletSelect from './WalletSelect'
@@ -24,6 +24,10 @@ const Code = styled.code`
   border-radius: 3px;
   background: hsla(0, 0%, 58.8%, 0.1);
   font-size: 13px;
+`
+
+const StyledWalletTypeLabel = styled.div`
+  font-size: 0.6rem;
 `
 
 const TopBar = () => {
@@ -70,7 +74,7 @@ const TopBar = () => {
   ]
 
   return (
-    <nav className={`bg-th-bkg-1 border-b border-th-bkg-3`}>
+    <nav className={`bg-th-bkg-2`}>
       <div className={`px-4 sm:px-6 lg:px-8`}>
         <div className={`flex justify-between h-16`}>
           <div className={`flex`}>
@@ -143,11 +147,11 @@ const TopBar = () => {
                         <WalletIcon className="w-5 h-5 mr-3 fill-current" />
                         <div>
                           Connect Wallet
-                          <div className="text-xxs font-normal text-th-fgd-1 text-left leading-3">
+                          <StyledWalletTypeLabel className="font-normal text-th-fgd-1 text-left leading-3">
                             {WALLET_PROVIDERS.filter(
                               (p) => p.url === savedProviderUrl
                             ).map(({ name }) => name)}
-                          </div>
+                          </StyledWalletTypeLabel>
                         </div>
                       </div>
                     </button>

@@ -55,7 +55,9 @@ button {
 }
 
 .react-grid-item.react-grid-placeholder {
-  background: #332f46;
+  background: var(--bkg-3);
+  opacity: 90%;
+  border-radius: 8px;
   transition-duration: 100ms;
   z-index: 2;
   -webkit-user-select: none;
@@ -63,6 +65,28 @@ button {
   -ms-user-select: none;
   -o-user-select: none;
   user-select: none;
+}
+
+.react-resizable-handle {
+  background-image: none;
+  z-index: 100;
+}
+
+.react-grid-item > .react-resizable-handle {
+  width: 24px;
+  height: 24px;
+}
+
+.react-grid-item > .react-resizable-handle::after {
+  content: '';
+  position: absolute;
+  right: 8px;
+  bottom: 0;
+  width: 8px;
+  height: 8px;
+  border-right: 3px solid var(--primary);
+  border-bottom: 3px solid var(--primary);
+  border-radius: 1px;
 }
 
 input::-webkit-outer-spin-button,

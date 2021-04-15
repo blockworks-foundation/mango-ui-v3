@@ -13,9 +13,6 @@ module.exports = {
       cursor: {
         help: 'help',
       },
-      fontFamily: {
-        sans: ['Nunito'],
-      },
       fontSize: {
         xxs: '.6rem',
       },
