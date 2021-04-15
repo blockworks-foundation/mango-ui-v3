@@ -3,8 +3,13 @@ import { ThemeProvider } from 'next-themes'
 import '../node_modules/react-grid-layout/css/styles.css'
 import '../node_modules/react-resizable/css/styles.css'
 import '../styles/index.css'
+import useWallet from '../hooks/useWallet'
+import useHydrateStore from '../hooks/useHydrateStore'
 
 function App({ Component, pageProps }) {
+  useHydrateStore()
+  useWallet()
+
   return (
     <>
       <Head>
