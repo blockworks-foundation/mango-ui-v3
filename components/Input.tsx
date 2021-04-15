@@ -41,14 +41,16 @@ const Input = ({
           type={type}
           value={value}
           onChange={onChange}
-          className={`bg-transparent font-light tracking-wider w-full focus:outline-none ${
-            disabled && 'opacity-20 cursor-not-allowed'
-          } ${type === 'number' ? 'text-right' : ''}`}
+          className={`bg-transparent font-light tracking-wider w-full h-full focus:outline-none ${
+            disabled ? 'opacity-20 cursor-not-allowed' : ''
+          } ${type === 'number' ? 'text-right' : ''} ${
+            value.toString().length > 9 ? 'text-xs' : ''
+          }`}
           disabled={disabled}
           {...props}
         />
         {suffix ? (
-          <span className="text-xs px-2 bg-transparent text-th-fgd-4">
+          <span className="text-xs pl-0.5 pr-1 bg-transparent text-th-fgd-4">
             {suffix}
           </span>
         ) : null}

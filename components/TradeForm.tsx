@@ -80,9 +80,13 @@ export default function TradeForm() {
     market?.minOrderSize && getDecimalCount(market.minOrderSize)
   // const priceDecimalCount = market?.tickSize && getDecimalCount(market.tickSize)
 
-  useEffect(() => {
-    onSetBaseSize(baseSize)
-  }, [price, baseSize])
+  const onSetPrice = (price: number | '') => {
+    setPrice(price)
+    if (!price) return
+    if (baseSize) {
+      onSetBaseSize(baseSize)
+    }
+  }
 
   const onSetBaseSize = (baseSize: number | '') => {
     setBaseSize(baseSize)
@@ -106,12 +110,12 @@ export default function TradeForm() {
       setBaseSize('')
       return
     }
-    const usePrice = Number(price) || markPrice
 
-    if (!usePrice) {
+    if (!Number(price) && tradeType === 'Limit') {
       setBaseSize('')
       return
     }
+    const usePrice = Number(price) || markPrice
     const rawBaseSize = quoteSize / usePrice
     const baseSize = quoteSize && roundToDecimal(rawBaseSize, sizeDecimalCount)
     setBaseSize(baseSize)
@@ -242,7 +246,7 @@ export default function TradeForm() {
           <Input
             type="number"
             step={market?.tickSize || 1}
-            onChange={(e) => setPrice(parseFloat(e.target.value))}
+            onChange={(e) => onSetPrice(parseFloat(e.target.value))}
             value={price}
             disabled={tradeType === 'Market'}
             prefix={'Price'}

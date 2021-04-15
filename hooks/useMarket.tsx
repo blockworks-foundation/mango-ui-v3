@@ -33,7 +33,7 @@ const useMarket = () => {
         TOKEN_MINTS.find((token) =>
           token.address.equals(market.baseMintAddress)
         )?.name) ||
-      'UNKNOWN',
+      '...',
     [market, TOKEN_MINTS]
   )
 
@@ -43,7 +43,7 @@ const useMarket = () => {
         TOKEN_MINTS.find((token) =>
           token.address.equals(market.quoteMintAddress)
         )?.name) ||
-      'UNKNOWN',
+      '...',
     [market, TOKEN_MINTS]
   )
 
