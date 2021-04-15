@@ -13,7 +13,7 @@ const DropMenu = ({ button, buttonClassName, value, onChange, options }) => {
             </Listbox.Button>
             {open ? (
               <Listbox.Options
-                className={`z-20 p-1 absolute right-0 top-11 bg-th-bkg-1 divide-y divide-th-bkg-3 shadow-lg outline-none rounded-md w-44`}
+                className={`z-20 p-1 absolute right-0 top-11 bg-th-bkg-1 divide-y divide-th-bkg-3 shadow-lg outline-none rounded-md`}
               >
                 {options.map((option) => (
                   <Listbox.Option key={option.name} value={option.name}>

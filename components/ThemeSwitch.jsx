@@ -26,7 +26,7 @@ const ThemeSwitch = () => {
           {THEMES.find((t) => t.name === theme).icon}
         </div>
       }
-      buttonClassName="w-10 h-10 flex items-center justify-center hover:text-th-primary rounded-md"
+      buttonClassName="w-10 h-10 flex items-center justify-center hover:text-th-primary rounded-md focus:outline-none"
       value={theme}
       onChange={(theme) => setTheme(theme)}
       options={THEMES}

@@ -45,10 +45,6 @@ button {
   transition: all 0.25s ease;
 }
 
-button:focus {
-  outline: none;
-}
-
 .TVChartContainer {
   height: 100%;
   width: 100%;
