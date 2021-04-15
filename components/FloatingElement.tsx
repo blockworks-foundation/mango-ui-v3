@@ -35,7 +35,7 @@ const FloatingElement: FunctionComponent<FloatingElementProps> = ({
   const { uiLocked } = useMangoStore((s) => s.settings)
   return (
     <div
-      className={`m-1 p-4 bg-th-bkg-2 rounded-lg overflow-auto relative h-full ${className}`}
+      className={`thin-scroll m-1 p-4 bg-th-bkg-2 rounded-lg overflow-auto relative h-full ${className}`}
     >
       {!uiLocked ? (
         <StyledDragWrapper className="absolute top-0 left-0 w-full h-full cursor-move z-50">
