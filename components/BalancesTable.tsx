@@ -26,10 +26,6 @@ const BalancesTable = () => {
         markets,
         wallet
       )
-      notify({
-        message: 'Successfully settled funds',
-        type: 'info',
-      })
     } catch (e) {
       console.warn('Error settling all:', e)
       if (e.message === 'No unsettled funds') {
