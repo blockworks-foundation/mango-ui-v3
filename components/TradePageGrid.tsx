@@ -13,10 +13,11 @@ import TradeForm from './TradeForm'
 import UserInfo from './UserInfo'
 import RecentMarketTrades from './RecentMarketTrades'
 import useMangoStore from '../stores/useMangoStore'
+import useLocalStorageState from '../hooks/useLocalStorageState'
 
 const ResponsiveGridLayout = WidthProvider(Responsive)
 
-const layouts = {
+const defaultLayouts = {
   xl: [
     { i: 'tvChart', x: 0, y: 0, w: 3, h: 30 },
     { i: 'orderbook', x: 3, y: 0, w: 1, h: 17 },
@@ -39,16 +40,25 @@ const layouts = {
 
 const TradePageGrid = () => {
   const { uiLocked } = useMangoStore((s) => s.settings)
+  const [savedLayouts, setSavedLayouts] = useLocalStorageState(
+    'savedLayouts',
+    defaultLayouts
+  )
+
+  const onLayoutChange = (layout, layouts) => {
+    setSavedLayouts(layouts)
+  }
 
   return (
     <ResponsiveGridLayout
       className="layout"
-      layouts={layouts}
+      layouts={savedLayouts || defaultLayouts}
       breakpoints={{ xl: 1600, lg: 1200, md: 996, sm: 768, xs: 0 }}
       cols={{ xl: 5, lg: 3, md: 3, sm: 2, xs: 1 }}
       rowHeight={15}
       isDraggable={!uiLocked}
       isResizable={!uiLocked}
+      onLayoutChange={(layout, layouts) => onLayoutChange(layout, layouts)}
     >
       <div key="tvChart">
         <FloatingElement>
