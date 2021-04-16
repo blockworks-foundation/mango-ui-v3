@@ -45,7 +45,7 @@ const TradePageGrid = () => {
     defaultLayouts
   )
 
-  const onLayoutChange = (layout, layouts) => {
+  const onLayoutChange = (layouts) => {
     if (layouts) {
       setSavedLayouts(layouts)
     }
@@ -60,7 +60,7 @@ const TradePageGrid = () => {
       rowHeight={15}
       isDraggable={!uiLocked}
       isResizable={!uiLocked}
-      onLayoutChange={(layouts) => onLayoutChange(layouts)}
+      onLayoutChange={(layout, layouts) => onLayoutChange(layouts)}
     >
       <div key="tvChart">
         <FloatingElement>
