@@ -42,7 +42,7 @@ const UserInfoTabs = ({ activeTab, setActiveTab }) => {
                   ${
                     activeTab === tabName
                       ? `border-th-primary text-th-primary`
-                      : `border-transparent text-th-fgd-4 hover:text-th-fgd-2`
+                      : `border-transparent text-th-fgd-4 hover:text-th-primary`
                   }
                 `}
               >
