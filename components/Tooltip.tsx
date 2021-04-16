@@ -10,7 +10,7 @@ const Tooltip: FunctionComponent<TooltipProps> = ({ children, content }) => {
   return (
     <Tippy
       animation="scale"
-      appendTo={document.body}
+      appendTo={() => document.body}
       maxWidth="none"
       interactive
       content={
