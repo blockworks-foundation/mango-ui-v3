@@ -1,32 +1,12 @@
-import React, {
-  FunctionComponent,
-  ReactNode,
-  useState,
-  useEffect,
-  useRef,
-} from 'react'
+import React, { FunctionComponent, ReactNode } from 'react'
 import Tippy from '@tippyjs/react'
 import 'tippy.js/animations/scale.css'
 
 type TooltipProps = {
   content: ReactNode
-  selector?: string
 }
 
-const Tooltip: FunctionComponent<TooltipProps> = ({
-  children,
-  content,
-  selector = '#tooltip',
-}) => {
-  const ref = useRef()
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    ref.current = document.querySelector(selector)
-    setMounted(true)
-  }, [selector])
-  console.log('selector', selector, mounted)
-
+const Tooltip: FunctionComponent<TooltipProps> = ({ children, content }) => {
   return (
     <Tippy
       animation="scale"

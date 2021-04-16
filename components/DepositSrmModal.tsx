@@ -130,7 +130,7 @@ const DepositSrmModal = ({ isOpen, onClose }) => {
           </div>
         </div>
         <div className={`mt-5 sm:mt-6 flex justify-center`}>
-          <Button onClick={handleDeposit}>
+          <Button onClick={handleDeposit} disabled={Number(inputAmount) <= 0}>
             <div className={`flex items-center`}>
               {submitting && <Loading />}
               Deposit
