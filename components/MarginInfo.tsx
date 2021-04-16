@@ -4,6 +4,7 @@ import { groupBy } from '../utils'
 import useTradeHistory from '../hooks/useTradeHistory'
 import useMangoStore from '../stores/useMangoStore'
 import FloatingElement from './FloatingElement'
+import Tooltip from './Tooltip'
 
 const calculatePNL = (tradeHistory, prices, mangoGroup) => {
   console.log('calculate pnl, trade history:', tradeHistory)
@@ -155,13 +156,11 @@ export default function MarginInfo() {
         {mAccountInfo
           ? mAccountInfo.map((entry, i) => (
               <div className={`flex justify-between pt-2 pb-2`} key={i}>
-                {/* <Popover
-                  content={entry.desc}
-                  placement="topLeft"
-                  trigger="hover"
-                > */}
-                <div className={`cursor-help text-th-fgd-4`}>{entry.label}</div>
-                {/* </Popover> */}
+                <Tooltip content={entry.desc}>
+                  <div className={`cursor-help text-th-fgd-4`}>
+                    {entry.label}
+                  </div>
+                </Tooltip>
                 <div className={`text-th-fgd-1`}>
                   {entry.currency + entry.value}
                   {entry.unit}

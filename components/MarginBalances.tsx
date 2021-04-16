@@ -1,5 +1,8 @@
 import { useCallback, useState } from 'react'
-import { InformationCircleIcon } from '@heroicons/react/outline'
+import {
+  ExternalLinkIcon,
+  InformationCircleIcon,
+} from '@heroicons/react/outline'
 import FloatingElement from './FloatingElement'
 import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
@@ -8,6 +11,7 @@ import { tokenPrecision } from '../utils/index'
 import DepositModal from './DepositModal'
 import WithdrawModal from './WithdrawModal'
 import Button from './Button'
+import Tooltip from './Tooltip'
 
 export default function MarginBalances() {
   const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
@@ -33,22 +37,20 @@ export default function MarginBalances() {
       <FloatingElement>
         <ElementTitle>
           Margin Account
-          {/* <Popover
+          <Tooltip
             content={
               <AddressTooltip
                 owner={selectedMarginAccount?.owner.toString()}
                 marginAccount={selectedMarginAccount?.publicKey.toString()}
               />
             }
-            placement="topLeft"
-            trigger="hover"
-          > */}
-          <div>
-            <InformationCircleIcon
-              className={`h-5 w-5 ml-2 text-th-primary cursor-help`}
-            />
-          </div>
-          {/* </Popover> */}
+          >
+            <div>
+              <InformationCircleIcon
+                className={`h-5 w-5 ml-2 text-th-primary cursor-help`}
+              />
+            </div>
+          </Tooltip>
         </ElementTitle>
         {selectedMangoGroup ? (
           <table className={`min-w-full`}>
@@ -143,55 +145,55 @@ export default function MarginBalances() {
   )
 }
 
-// const AddressTooltip = ({
-//   owner,
-//   marginAccount,
-// }: {
-//   owner?: string
-//   marginAccount?: string
-// }) => {
-//   return (
-//     <>
-//       {owner && marginAccount ? (
-//         <>
-//           <div className={`flex`}>
-//             Margin Account:
-//             <a
-//               href={'https://explorer.solana.com/address/' + marginAccount}
-//               target="_blank"
-//               rel="noopener noreferrer"
-//             >
-//               <div className={`ml-4 flex`}>
-//                 <ExternalLinkIcon
-//                   className={`h-5 w-5 mr-1 text-mango-yellow`}
-//                 />
-//                 <span className={`text-mango-yellow hover:opacity-50`}>
-//                   {marginAccount}
-//                 </span>
-//               </div>
-//             </a>
-//           </div>
-//           <div className={`flex mt-2`}>
-//             Account Owner:
-//             <a
-//               href={'https://explorer.solana.com/address/' + owner}
-//               target="_blank"
-//               rel="noopener noreferrer"
-//             >
-//               <div className={`ml-4 flex`}>
-//                 <ExternalLinkIcon
-//                   className={`h-5 w-5 mr-1 text-mango-yellow`}
-//                 />
-//                 <span className={`text-mango-yellow hover:opacity-50`}>
-//                   {owner}
-//                 </span>
-//               </div>
-//             </a>
-//           </div>
-//         </>
-//       ) : (
-//         'Connect a wallet and deposit funds to start trading'
-//       )}
-//     </>
-//   )
-// }
+const AddressTooltip = ({
+  owner,
+  marginAccount,
+}: {
+  owner?: string
+  marginAccount?: string
+}) => {
+  return (
+    <>
+      {owner && marginAccount ? (
+        <>
+          <div className={`flex flex-nowrap`}>
+            Margin Account:
+            <a
+              href={'https://explorer.solana.com/address/' + marginAccount}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <div className={`ml-4 flex`}>
+                <ExternalLinkIcon
+                  className={`h-5 w-5 mr-1 text-mango-yellow`}
+                />
+                <span className={`text-mango-yellow hover:opacity-50`}>
+                  {marginAccount}
+                </span>
+              </div>
+            </a>
+          </div>
+          <div className={`flex mt-2`}>
+            Account Owner:
+            <a
+              href={'https://explorer.solana.com/address/' + owner}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <div className={`ml-4 flex`}>
+                <ExternalLinkIcon
+                  className={`h-5 w-5 mr-1 text-mango-yellow`}
+                />
+                <span className={`text-mango-yellow hover:opacity-50`}>
+                  {owner}
+                </span>
+              </div>
+            </a>
+          </div>
+        </>
+      ) : (
+        'Connect a wallet and deposit funds to start trading'
+      )}
+    </>
+  )
+}
