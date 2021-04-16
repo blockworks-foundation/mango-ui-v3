@@ -14,7 +14,7 @@ const Line = styled.div<any>`
   text-align: ${(props) => (props.invert ? 'left' : 'right')};
   float: ${(props) => (props.invert ? 'left' : 'right')};
   height: 100%;
-  filter: opacity(80%);
+  filter: opacity(70%);
   ${(props) => props['data-width'] && `width: ${props['data-width']};`}
 `
 
@@ -173,7 +173,7 @@ const OrderbookRow = React.memo<any>(
         : price
 
     return (
-      <div className={`flex mb-0.5 justify-between`} ref={element}>
+      <div className={`flex text-sm leading-7 justify-between`} ref={element}>
         {invert ? (
           <>
             <div className={`text-left`}>

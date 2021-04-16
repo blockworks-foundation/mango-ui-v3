@@ -25,8 +25,29 @@ const FeeDiscountsTable = () => {
     <div
       className={`flex flex-col items-center bg-th-bkg-1 py-6 mt-4 rounded-md`}
     >
+      {connected ? (
+        <div className="mb-6">
+          <div className="bg-th-bkg-2 p-6 rounded">
+            <div className="text-th-fgd-4 text-center">
+              Your SRM contribution
+              <div className="text-2xl font-semibold text-th-fgd-1">
+                {contributedSrm}
+              </div>
+            </div>
+            <div className="flex space-x-4 mt-4">
+              <Button onClick={() => setShowDeposit(true)}>Deposit</Button>
+              <Button
+                onClick={() => setShowWithdraw(true)}
+                disabled={!(contributedSrm > 0)}
+              >
+                Withdraw
+              </Button>
+            </div>
+          </div>
+        </div>
+      ) : null}
       <div
-        className={`flex flex-col sm:flex-row justify-between m-auto text-th-fgd-4 text-base font-light text-center`}
+        className={`flex flex-col sm:flex-row justify-between text-th-fgd-4 text-center`}
       >
         <div className="px-4">
           <div>Total SRM in Mango</div>
@@ -44,24 +65,6 @@ const FeeDiscountsTable = () => {
             {rates ? percentFormat.format(rates.taker) : null}
           </div>
         </div>
-      </div>
-      <div className="mt-6">
-        {connected ? (
-          <div className="bg-th-bkg-2 p-6 rounded">
-            <div className="text-th-fgd-4 text-center text-lg">
-              Your contributed SRM: {contributedSrm}
-            </div>
-            <div className="flex space-x-4 mt-4">
-              <Button onClick={() => setShowDeposit(true)}>Deposit</Button>
-              <Button
-                onClick={() => setShowWithdraw(true)}
-                disabled={!(contributedSrm > 0)}
-              >
-                Withdraw
-              </Button>
-            </div>
-          </div>
-        ) : null}
       </div>
       {showDeposit && (
         <DepositSrmModal isOpen={showDeposit} onClose={handleCloseDeposit} />

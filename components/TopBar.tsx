@@ -123,13 +123,11 @@ const TopBar = () => {
                           {WALLET_OPTIONS.map(({ name, icon }) => (
                             <Menu.Item key={name}>
                               <button
-                                className="flex flex-row items-center justify-between w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer tracking-wider"
+                                className="flex flex-row items-center w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer font-normal"
                                 onClick={() => handleWalletMenu(name)}
                               >
-                                <div className="flex">
-                                  <div className="w-5 h-5 mr-2">{icon}</div>
-                                  {name}
-                                </div>
+                                <div className="w-5 h-5 mr-2">{icon}</div>
+                                {name}
                               </button>
                             </Menu.Item>
                           ))}
@@ -138,7 +136,7 @@ const TopBar = () => {
                     )}
                   </Menu>
                 ) : (
-                  <div className="flex justify-between border border-th-primary rounded-md h-11 w-52">
+                  <div className="flex justify-between border border-th-primary rounded-md h-11 w-48">
                     <button
                       onClick={handleConnectDisconnect}
                       className="text-th-primary hover:text-th-fgd-1 focus:outline-none font-semibold"

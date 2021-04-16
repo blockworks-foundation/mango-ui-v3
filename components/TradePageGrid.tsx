@@ -23,7 +23,7 @@ const layouts = {
     { i: 'tradeForm', x: 4, y: 0, w: 1, h: 17 },
     { i: 'marginInfo', x: 4, y: 2, w: 1, h: 12 },
     { i: 'marketTrades', x: 3, y: 1, w: 1, h: 13 },
-    { i: 'userInfo', x: 0, y: 2, w: 4, h: 17 },
+    { i: 'userInfo', x: 0, y: 2, w: 3, h: 17 },
     { i: 'balanceInfo', x: 4, y: 1, w: 1, h: 13 },
   ],
   lg: [

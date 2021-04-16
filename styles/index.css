@@ -41,8 +41,13 @@
   --fgd-4: theme('colors.mango-theme["fgd-4"]');
 }
 
+body {
+  @apply text-sm font-body tracking-wide;
+}
+
 button {
   transition: all 0.25s ease;
+  @apply font-semibold;
 }
 
 .TVChartContainer {
@@ -100,11 +105,13 @@ input[type='number'] {
 }
 
 .thin-scroll {
-  overflow: hidden !important;
+  overflow: auto !important;
+  overflow-x: hidden !important;
 }
 
 .thin-scroll:hover {
   overflow: auto !important;
+  overflow-x: hidden !important;
 }
 
 .thin-scroll::-webkit-scrollbar {

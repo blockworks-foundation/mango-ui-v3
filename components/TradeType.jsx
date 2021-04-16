@@ -10,7 +10,7 @@ const TradeType = ({ value, onChange, className = '' }) => {
         {({ open }) => (
           <>
             <Listbox.Button
-              className={`h-full w-full bg-th-bkg-1 border-l border-th-fgd-4 rounded rounded-l-none focus:outline-none focus:ring-1 focus:ring-th-primary`}
+              className={`font-normal h-full w-full bg-th-bkg-1 border-l border-th-fgd-4 rounded rounded-l-none focus:outline-none focus:ring-1 focus:ring-th-primary`}
             >
               <div
                 className={`flex items-center justify-between space-x-4 pl-2 pr-1`}

@@ -27,12 +27,12 @@ const Input = ({
 }: InputProps) => {
   return (
     <div
-      className={`flex items-center rounded ${
+      className={`flex items-center h-10 rounded ${
         disabled ? 'bg-th-bkg-3' : 'bg-th-bkg-1'
       } ${className}`}
     >
       {prefix ? (
-        <div className="border-r border-th-fgd-4 bg-th-bkg-2 p-2 rounded rounded-r-none w-14 text-right">
+        <div className="flex items-center justify-end border-r border-th-fgd-4 bg-th-bkg-2 p-2 h-full text-sm rounded rounded-r-none w-14 text-right">
           {prefix}
         </div>
       ) : null}
