@@ -9,9 +9,9 @@ const getOrderBookAccounts = (market, accountInfos) => {
 
   return {
     bidOrderBook:
-      market && bidData ? Orderbook.decode(market, Buffer.from(bidData)) : null,
+      market && bidData ? Orderbook.decode(market, Buffer.from(bidData)) : [],
     askOrderBook:
-      market && askData ? Orderbook.decode(market, Buffer.from(askData)) : null,
+      market && askData ? Orderbook.decode(market, Buffer.from(askData)) : [],
   }
 }
 

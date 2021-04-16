@@ -64,7 +64,7 @@ export function divideBnToNumber(numerator: BN, denominator: BN): number {
 }
 
 export const formatBalanceDisplay = (balance, fixedDecimals) => {
-  // Get the deciamal part
+  // Get the decimal part
   const dPart = balance - Math.trunc(balance)
   return (
     Math.trunc(balance) +

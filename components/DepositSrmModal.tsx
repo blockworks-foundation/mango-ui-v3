@@ -11,6 +11,7 @@ import Button from './Button'
 import { notify } from '../utils/notifications'
 import { SRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
 import { XIcon } from '@heroicons/react/outline'
+import { floorToDecimal } from '../utils'
 
 const DepositSrmModal = ({ isOpen, onClose }) => {
   const [inputAmount, setInputAmount] = useState('')
@@ -35,7 +36,7 @@ const DepositSrmModal = ({ isOpen, onClose }) => {
   const getBalanceForAccount = (account) => {
     const balance = nativeToUi(account?.account?.amount, SRM_DECIMALS)
 
-    return balance.toFixed(SRM_DECIMALS)
+    return floorToDecimal(balance, SRM_DECIMALS).toString()
   }
 
   const setMaxForSelectedAccount = () => {

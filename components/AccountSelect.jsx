@@ -1,6 +1,10 @@
 import { Listbox, Transition } from '@headlessui/react'
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid'
-import { abbreviateAddress, getSymbolForTokenMintAddress } from '../utils'
+import {
+  abbreviateAddress,
+  floorToDecimal,
+  getSymbolForTokenMintAddress,
+} from '../utils'
 import useMarketList from '../hooks/useMarketList'
 import { nativeToUi } from '@blockworks-foundation/mango-client/lib/utils'
 import useMangoStore from '../stores/useMangoStore'
@@ -28,9 +32,10 @@ const AccountSelect = ({
       symbol !== 'SRM' ? mintDecimals[getTokenIndex(mintAddress)] : SRM_DECIMALS
     )
 
-    return balance.toFixed(
+    return floorToDecimal(
+      balance,
       symbol !== 'SRM' ? tokenPrecision[symbol] : SRM_DECIMALS
-    )
+    ).toString()
   }
 
   return (

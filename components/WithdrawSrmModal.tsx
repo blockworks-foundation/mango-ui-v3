@@ -77,9 +77,9 @@ const WithdrawModal = ({ isOpen, onClose }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <Modal.Header>
-        <div className={`text-th-fgd-4 flex-shrink invisible`}>X</div>
+        <div className={`flex-shrink invisible`}>X</div>
         <div
-          className={`text-th-fgd-4 flex-grow text-center flex items-center justify-center`}
+          className={`flex-grow text-th-fgd-3 flex items-center justify-center`}
         >
           <div className={`flex-initial`}>Select: </div>
           <div className={`ml-4 flex-grow`}>

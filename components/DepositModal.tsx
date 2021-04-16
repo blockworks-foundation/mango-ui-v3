@@ -4,7 +4,11 @@ import Modal from './Modal'
 import AccountSelect from './AccountSelect'
 import useMangoStore from '../stores/useMangoStore'
 import useMarketList from '../hooks/useMarketList'
-import { getSymbolForTokenMintAddress, tokenPrecision } from '../utils/index'
+import {
+  floorToDecimal,
+  getSymbolForTokenMintAddress,
+  tokenPrecision,
+} from '../utils/index'
 import useConnection from '../hooks/useConnection'
 import { deposit, initMarginAccountAndDeposit } from '../utils/mango'
 import { PublicKey } from '@solana/web3.js'
@@ -39,7 +43,7 @@ const DepositModal = ({ isOpen, onClose }) => {
     )
     const symbol = getSymbolForTokenMintAddress(mintAddress)
 
-    return balance.toFixed(tokenPrecision[symbol])
+    return floorToDecimal(balance, tokenPrecision[symbol]).toString()
   }
 
   const setMaxForSelectedAccount = () => {

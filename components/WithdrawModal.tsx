@@ -3,7 +3,7 @@ import Modal from './Modal'
 import AccountSelect from './AccountSelect'
 import useMangoStore from '../stores/useMangoStore'
 import useMarketList from '../hooks/useMarketList'
-import { getSymbolForTokenMintAddress, tokenPrecision } from '../utils/index'
+import { getSymbolForTokenMintAddress } from '../utils/index'
 import useConnection from '../hooks/useConnection'
 import { withdraw } from '../utils/mango'
 import Loading from './Loading'
@@ -33,18 +33,17 @@ const WithdrawModal = ({ isOpen, onClose }) => {
     mintAddress,
     getTokenIndex,
   ])
-  const symbol = useMemo(() => getSymbolForTokenMintAddress(mintAddress), [
-    mintAddress,
-  ])
 
   const withdrawDisabled = Number(inputAmount) <= 0
 
-  const setMaxForSelectedAccount = () => {
+  const getMaxForSelectedAccount = () => {
     const marginAccount = useMangoStore.getState().selectedMarginAccount.current
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
-    const max = marginAccount.getUiDeposit(mangoGroup, tokenIndex)
+    return marginAccount.getUiDeposit(mangoGroup, tokenIndex)
+  }
 
-    setInputAmount(max.toFixed(tokenPrecision[symbol]))
+  const setMaxForSelectedAccount = () => {
+    setInputAmount(getMaxForSelectedAccount().toString())
   }
 
   const handleWithdraw = () => {
@@ -109,8 +108,11 @@ const WithdrawModal = ({ isOpen, onClose }) => {
         </button>
       </Modal.Header>
       <div className={`pb-6 px-8`}>
-        <div className={`mt-3 text-center sm:mt-5`}>
-          <div className={`mt-6 bg-th-bkg-3 rounded-md flex items-center`}>
+        <div className={`mt-3 sm:mt-5`}>
+          <div className="text-right text-th-fgd-2">
+            Balance: {getMaxForSelectedAccount()}
+          </div>
+          <div className={`mt-1 bg-th-bkg-3 rounded-md flex items-center`}>
             <img
               alt=""
               width="20"
