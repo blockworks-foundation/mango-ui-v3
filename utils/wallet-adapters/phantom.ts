@@ -81,7 +81,7 @@ export class PhantomWalletAdapter
       window.open('https://phantom.app/', '_blank')
       notify({
         message: 'Connection Error',
-        description: 'Please install Phantom wallet',
+        description: 'Please install Phantom wallet and then reload this page.',
       })
       return
     }

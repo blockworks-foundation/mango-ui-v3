@@ -12,7 +12,8 @@ export function SolletExtensionAdapter(_, network) {
     connect: () => {
       notify({
         message: 'Sollet Extension Error',
-        description: 'Please install the Sollet Extension for Chrome',
+        description:
+          'Please install the Sollet Extension for Chrome and then reload this page.',
       })
     },
   }
