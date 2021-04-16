@@ -4,8 +4,10 @@
 
 :root {
   --primary: theme('colors.light-theme.orange');
-  --red: theme('colors.light-theme.red');
-  --green: theme('colors.light-theme.green');
+  --red: theme('colors.light-theme.red.DEFAULT');
+  --red-dark: theme('colors.light-theme.red.dark');
+  --green: theme('colors.light-theme.green.DEFAULT');
+  --green-dark: theme('colors.light-theme.green.dark');
   --bkg-1: theme('colors.light-theme["bkg-1"]');
   --bkg-2: theme('colors.light-theme["bkg-2"]');
   --bkg-3: theme('colors.light-theme["bkg-3"]');
@@ -17,8 +19,10 @@
 
 [data-theme='Dark'] {
   --primary: theme('colors.dark-theme.orange');
-  --red: theme('colors.dark-theme.red');
-  --green: theme('colors.dark-theme.green');
+  --red: theme('colors.dark-theme.red.DEFAULT');
+  --red-dark: theme('colors.dark-theme.red.dark');
+  --green: theme('colors.dark-theme.green.DEFAULT');
+  --green-dark: theme('colors.dark-theme.green.dark');
   --bkg-1: theme('colors.dark-theme["bkg-1"]');
   --bkg-2: theme('colors.dark-theme["bkg-2"]');
   --bkg-3: theme('colors.dark-theme["bkg-3"]');
@@ -30,8 +34,10 @@
 
 [data-theme='Mango'] {
   --primary: theme('colors.mango-theme.yellow');
-  --red: theme('colors.mango-theme.red');
-  --green: theme('colors.mango-theme.green');
+  --red: theme('colors.mango-theme.red.DEFAULT');
+  --red-dark: theme('colors.mango-theme.red.dark');
+  --green: theme('colors.mango-theme.green.DEFAULT');
+  --green-dark: theme('colors.mango-theme.green.dark');
   --bkg-1: theme('colors.mango-theme["bkg-1"]');
   --bkg-2: theme('colors.mango-theme["bkg-2"]');
   --bkg-3: theme('colors.mango-theme["bkg-3"]');

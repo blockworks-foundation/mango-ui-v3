@@ -41,9 +41,9 @@ const Input = ({
           type={type}
           value={value}
           onChange={onChange}
-          className={`bg-transparent font-light tracking-wider w-full h-full focus:outline-none ${
+          className={`bg-transparent tracking-wider w-full focus:outline-none ${
             disabled ? 'opacity-20 cursor-not-allowed' : ''
-          } ${type === 'number' ? 'text-right' : ''} ${
+          } ${type === 'number' ? 'text-right mr-1' : ''} ${
             value.toString().length > 9 ? 'text-xs' : ''
           }`}
           disabled={disabled}
