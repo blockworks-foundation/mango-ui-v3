@@ -1,8 +1,5 @@
-const withAntdLess = require('next-plugin-antd-less')
-
-module.exports = withAntdLess({
+module.exports = {
   target: 'serverless',
-  lessVarsFilePath: './styles/theme.less',
   webpack(config) {
     config.module.rules.push({
       test: /\.svg$/,
@@ -11,4 +8,4 @@ module.exports = withAntdLess({
 
     return config
   },
-})
+}

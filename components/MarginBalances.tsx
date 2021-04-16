@@ -1,9 +1,5 @@
-import { Popover } from 'antd'
 import { useCallback, useState } from 'react'
-import {
-  ExternalLinkIcon,
-  InformationCircleIcon,
-} from '@heroicons/react/outline'
+import { InformationCircleIcon } from '@heroicons/react/outline'
 import FloatingElement from './FloatingElement'
 import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
@@ -37,7 +33,7 @@ export default function MarginBalances() {
       <FloatingElement>
         <ElementTitle>
           Margin Account
-          <Popover
+          {/* <Popover
             content={
               <AddressTooltip
                 owner={selectedMarginAccount?.owner.toString()}
@@ -46,13 +42,13 @@ export default function MarginBalances() {
             }
             placement="topLeft"
             trigger="hover"
-          >
-            <div>
-              <InformationCircleIcon
-                className={`h-5 w-5 ml-2 text-mango-yellow cursor-help`}
-              />
-            </div>
-          </Popover>
+          > */}
+          <div>
+            <InformationCircleIcon
+              className={`h-5 w-5 ml-2 text-mango-yellow cursor-help`}
+            />
+          </div>
+          {/* </Popover> */}
         </ElementTitle>
         {selectedMangoGroup ? (
           <table className={`min-w-full`}>
@@ -147,55 +143,55 @@ export default function MarginBalances() {
   )
 }
 
-const AddressTooltip = ({
-  owner,
-  marginAccount,
-}: {
-  owner?: string
-  marginAccount?: string
-}) => {
-  return (
-    <>
-      {owner && marginAccount ? (
-        <>
-          <div className={`flex`}>
-            Margin Account:
-            <a
-              href={'https://explorer.solana.com/address/' + marginAccount}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <div className={`ml-4 flex`}>
-                <ExternalLinkIcon
-                  className={`h-5 w-5 mr-1 text-mango-yellow`}
-                />
-                <span className={`text-mango-yellow hover:opacity-50`}>
-                  {marginAccount}
-                </span>
-              </div>
-            </a>
-          </div>
-          <div className={`flex mt-2`}>
-            Account Owner:
-            <a
-              href={'https://explorer.solana.com/address/' + owner}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <div className={`ml-4 flex`}>
-                <ExternalLinkIcon
-                  className={`h-5 w-5 mr-1 text-mango-yellow`}
-                />
-                <span className={`text-mango-yellow hover:opacity-50`}>
-                  {owner}
-                </span>
-              </div>
-            </a>
-          </div>
-        </>
-      ) : (
-        'Connect a wallet and deposit funds to start trading'
-      )}
-    </>
-  )
-}
+// const AddressTooltip = ({
+//   owner,
+//   marginAccount,
+// }: {
+//   owner?: string
+//   marginAccount?: string
+// }) => {
+//   return (
+//     <>
+//       {owner && marginAccount ? (
+//         <>
+//           <div className={`flex`}>
+//             Margin Account:
+//             <a
+//               href={'https://explorer.solana.com/address/' + marginAccount}
+//               target="_blank"
+//               rel="noopener noreferrer"
+//             >
+//               <div className={`ml-4 flex`}>
+//                 <ExternalLinkIcon
+//                   className={`h-5 w-5 mr-1 text-mango-yellow`}
+//                 />
+//                 <span className={`text-mango-yellow hover:opacity-50`}>
+//                   {marginAccount}
+//                 </span>
+//               </div>
+//             </a>
+//           </div>
+//           <div className={`flex mt-2`}>
+//             Account Owner:
+//             <a
+//               href={'https://explorer.solana.com/address/' + owner}
+//               target="_blank"
+//               rel="noopener noreferrer"
+//             >
+//               <div className={`ml-4 flex`}>
+//                 <ExternalLinkIcon
+//                   className={`h-5 w-5 mr-1 text-mango-yellow`}
+//                 />
+//                 <span className={`text-mango-yellow hover:opacity-50`}>
+//                   {owner}
+//                 </span>
+//               </div>
+//             </a>
+//           </div>
+//         </>
+//       ) : (
+//         'Connect a wallet and deposit funds to start trading'
+//       )}
+//     </>
+//   )
+// }

@@ -9,6 +9,10 @@ module.exports = {
   },
   darkMode: false,
   theme: {
+    fontFamily: {
+      display: ['Lato'],
+      body: ['Lato'],
+    },
     extend: {
       cursor: {
         help: 'help',

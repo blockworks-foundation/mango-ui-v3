@@ -10,14 +10,5 @@
       }
     ]
   ],
-  "plugins": [
-    "@emotion/babel-plugin",
-    [
-      "import",
-      {
-        "libraryName": "antd",
-        "style": true
-      }
-    ]
-  ]
+  "plugins": ["@emotion/babel-plugin"]
 }

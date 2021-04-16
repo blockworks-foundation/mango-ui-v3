@@ -138,7 +138,7 @@ const TopBar = () => {
                     )}
                   </Menu>
                 ) : (
-                  <div className="flex justify-between border border-th-primary rounded-md h-11 w-48">
+                  <div className="flex justify-between border border-th-primary rounded-md h-11 w-52">
                     <button
                       onClick={handleConnectDisconnect}
                       className="text-th-primary hover:text-th-fgd-1 focus:outline-none font-semibold"

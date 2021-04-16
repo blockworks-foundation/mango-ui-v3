@@ -1,5 +1,4 @@
 import { useEffect, useState, useMemo } from 'react'
-import { Popover } from 'antd'
 import { nativeToUi } from '@blockworks-foundation/mango-client/lib/utils'
 import { groupBy } from '../utils'
 import useTradeHistory from '../hooks/useTradeHistory'
@@ -156,15 +155,13 @@ export default function MarginInfo() {
         {mAccountInfo
           ? mAccountInfo.map((entry, i) => (
               <div className={`flex justify-between pt-2 pb-2`} key={i}>
-                <Popover
+                {/* <Popover
                   content={entry.desc}
                   placement="topLeft"
                   trigger="hover"
-                >
-                  <div className={`cursor-help text-th-fgd-4`}>
-                    {entry.label}
-                  </div>
-                </Popover>
+                > */}
+                <div className={`cursor-help text-th-fgd-4`}>{entry.label}</div>
+                {/* </Popover> */}
                 <div className={`text-th-fgd-1`}>
                   {entry.currency + entry.value}
                   {entry.unit}
