@@ -10,15 +10,12 @@ module.exports = {
   darkMode: false,
   theme: {
     fontFamily: {
-      display: ['Lato'],
-      body: ['Lato'],
+      display: ['Lato, sans-serif'],
+      body: ['Lato, sans-serif'],
     },
     extend: {
       cursor: {
         help: 'help',
-      },
-      fontSize: {
-        xxs: '.6rem',
       },
       colors: {
         'mango-orange': {

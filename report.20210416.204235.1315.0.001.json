@@ -1,0 +1,646 @@
+
+{
+  "header": {
+    "reportVersion": 1,
+    "event": "Allocation failed - JavaScript heap out of memory",
+    "trigger": "FatalError",
+    "filename": "report.20210416.204235.1315.0.001.json",
+    "dumpEventTime": "2021-04-16T20:42:35Z",
+    "dumpEventTimeStamp": "1618569756000",
+    "processId": 1315,
+    "cwd": "/Users/samluke/Desktop/Projects/mango/v3/mango-ui-v2",
+    "commandLine": [
+      "node",
+      "/Users/samluke/Desktop/Projects/mango/v3/mango-ui-v2/node_modules/.bin/next",
+      "dev"
+    ],
+    "nodejsVersion": "v12.14.0",
+    "wordSize": 64,
+    "arch": "x64",
+    "platform": "darwin",
+    "componentVersions": {
+      "node": "12.14.0",
+      "v8": "7.7.299.13-node.16",
+      "uv": "1.33.1",
+      "zlib": "1.2.11",
+      "brotli": "1.0.7",
+      "ares": "1.15.0",
+      "modules": "72",
+      "nghttp2": "1.39.2",
+      "napi": "5",
+      "llhttp": "1.1.4",
+      "http_parser": "2.8.0",
+      "openssl": "1.1.1d",
+      "cldr": "35.1",
+      "icu": "64.2",
+      "tz": "2019c",
+      "unicode": "12.1"
+    },
+    "release": {
+      "name": "node",
+      "lts": "Erbium",
+      "headersUrl": "https://nodejs.org/download/release/v12.14.0/node-v12.14.0-headers.tar.gz",
+      "sourceUrl": "https://nodejs.org/download/release/v12.14.0/node-v12.14.0.tar.gz"
+    },
+    "osName": "Darwin",
+    "osRelease": "16.4.0",
+    "osVersion": "Darwin Kernel Version 16.4.0: Thu Dec 22 22:53:21 PST 2016; root:xnu-3789.41.3~3/RELEASE_X86_64",
+    "osMachine": "x86_64",
+    "cpus": [
+      {
+        "model": "Intel(R) Core(TM) i5-5257U CPU @ 2.70GHz",
+        "speed": 2700,
+        "user": 1692460,
+        "nice": 0,
+        "sys": 1007380,
+        "idle": 6372320,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Core(TM) i5-5257U CPU @ 2.70GHz",
+        "speed": 2700,
+        "user": 1058980,
+        "nice": 0,
+        "sys": 317840,
+        "idle": 7694500,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Core(TM) i5-5257U CPU @ 2.70GHz",
+        "speed": 2700,
+        "user": 1696710,
+        "nice": 0,
+        "sys": 679690,
+        "idle": 6694920,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Core(TM) i5-5257U CPU @ 2.70GHz",
+        "speed": 2700,
+        "user": 1085400,
+        "nice": 0,
+        "sys": 321010,
+        "idle": 7664900,
+        "irq": 0
+      }
+    ],
+    "networkInterfaces": [
+      {
+        "name": "lo0",
+        "internal": true,
+        "mac": "00:00:00:00:00:00",
+        "address": "127.0.0.1",
+        "netmask": "255.0.0.0",
+        "family": "IPv4"
+      },
+      {
+        "name": "lo0",
+        "internal": true,
+        "mac": "00:00:00:00:00:00",
+        "address": "::1",
+        "netmask": "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff",
+        "family": "IPv6",
+        "scopeid": 0
+      },
+      {
+        "name": "lo0",
+        "internal": true,
+        "mac": "00:00:00:00:00:00",
+        "address": "fe80::1",
+        "netmask": "ffff:ffff:ffff:ffff::",
+        "family": "IPv6",
+        "scopeid": 1
+      },
+      {
+        "name": "en0",
+        "internal": false,
+        "mac": "d0:a6:37:ec:7f:ad",
+        "address": "fe80::1446:7289:8508:4290",
+        "netmask": "ffff:ffff:ffff:ffff::",
+        "family": "IPv6",
+        "scopeid": 4
+      },
+      {
+        "name": "en0",
+        "internal": false,
+        "mac": "d0:a6:37:ec:7f:ad",
+        "address": "192.168.1.103",
+        "netmask": "255.255.255.0",
+        "family": "IPv4"
+      },
+      {
+        "name": "awdl0",
+        "internal": false,
+        "mac": "ea:0c:6c:60:96:f6",
+        "address": "fe80::e80c:6cff:fe60:96f6",
+        "netmask": "ffff:ffff:ffff:ffff::",
+        "family": "IPv6",
+        "scopeid": 8
+      },
+      {
+        "name": "utun0",
+        "internal": false,
+        "mac": "00:00:00:00:00:00",
+        "address": "fe80::6d9e:69bf:8c8b:8cfa",
+        "netmask": "ffff:ffff:ffff:ffff::",
+        "family": "IPv6",
+        "scopeid": 10
+      }
+    ],
+    "host": "Sams-MacBook-Pro.local"
+  },
+  "javascriptStack": {
+    "message": "No stack.",
+    "stack": [
+      "Unavailable."
+    ]
+  },
+  "nativeStack": [
+    {
+      "pc": "0x000000010014db86",
+      "symbol": "report::TriggerNodeReport(v8::Isolate*, node::Environment*, char const*, char const*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&, v8::Local<v8::String>) [/Users/samluke/.nvm/versions/node/v12.14.0/bin/node]"
+    },
+    {
+      "pc": "0x000000010007eb13",
+      "symbol": "node::OnFatalError(char const*, char const*) [/Users/samluke/.nvm/versions/node/v12.14.0/bin/node]"
+    },
+    {
+      "pc": "0x0000000100176337",
+      "symbol": "v8::Utils::ReportOOMFailure(v8::internal::Isolate*, char const*, bool) [/Users/samluke/.nvm/versions/node/v12.14.0/bin/node]"
+    },
+    {
+      "pc": "0x00000001001762d3",
+      "symbol": "v8::internal::V8::FatalProcessOutOfMemory(v8::internal::Isolate*, char const*, bool) [/Users/samluke/.nvm/versions/node/v12.14.0/bin/node]"
+    },
+    {
+      "pc": "0x00000001002fa485",
+      "symbol": "v8::internal::Heap::FatalProcessOutOfMemory(char const*) [/Users/samluke/.nvm/versions/node/v12.14.0/bin/node]"
+    },
+    {
+      "pc": "0x00000001002fbb54",
+      "symbol": "v8::internal::Heap::RecomputeLimits(v8::internal::GarbageCollector) [/Users/samluke/.nvm/versions/node/v12.14.0/bin/node]"
+    },
+    {
+      "pc": "0x00000001002f8a27",
+      "symbol": "v8::internal::Heap::PerformGarbageCollection(v8::internal::GarbageCollector, v8::GCCallbackFlags) [/Users/samluke/.nvm/versions/node/v12.14.0/bin/node]"
+    },
+    {
+      "pc": "0x00000001002f6a0d",
+      "symbol": "v8::internal::Heap::CollectGarbage(v8::internal::AllocationSpace, v8::internal::GarbageCollectionReason, v8::GCCallbackFlags) [/Users/samluke/.nvm/versions/node/v12.14.0/bin/node]"
+    },
+    {
+      "pc": "0x0000000100302124",
+      "symbol": "v8::internal::Heap::AllocateRawWithLightRetry(int, v8::internal::AllocationType, v8::internal::AllocationAlignment) [/Users/samluke/.nvm/versions/node/v12.14.0/bin/node]"
+    },
+    {
+      "pc": "0x000000010030219f",
+      "symbol": "v8::internal::Heap::AllocateRawWithRetryOrFail(int, v8::internal::AllocationType, v8::internal::AllocationAlignment) [/Users/samluke/.nvm/versions/node/v12.14.0/bin/node]"
+    },
+    {
+      "pc": "0x00000001002ced97",
+      "symbol": "v8::internal::Factory::NewFillerObject(int, bool, v8::internal::AllocationType) [/Users/samluke/.nvm/versions/node/v12.14.0/bin/node]"
+    },
+    {
+      "pc": "0x00000001005f884d",
+      "symbol": "v8::internal::Runtime_AllocateInOldGeneration(int, unsigned long*, v8::internal::Isolate*) [/Users/samluke/.nvm/versions/node/v12.14.0/bin/node]"
+    },
+    {
+      "pc": "0x0000000100930c99",
+      "symbol": "Builtins_CEntry_Return1_DontSaveFPRegs_ArgvOnStack_NoBuiltinExit [/Users/samluke/.nvm/versions/node/v12.14.0/bin/node]"
+    },
+    {
+      "pc": "0x00002566de1da236",
+      "symbol": ""
+    },
+    {
+      "pc": "0x00002566de1d5c6d",
+      "symbol": ""
+    },
+    {
+      "pc": "0x00000001008b12e4",
+      "symbol": "Builtins_InterpreterEntryTrampoline [/Users/samluke/.nvm/versions/node/v12.14.0/bin/node]"
+    },
+    {
+      "pc": "0x00000001008b12e4",
+      "symbol": "Builtins_InterpreterEntryTrampoline [/Users/samluke/.nvm/versions/node/v12.14.0/bin/node]"
+    },
+    {
+      "pc": "0x00000001008acb80",
+      "symbol": "Builtins_JSConstructStubGeneric [/Users/samluke/.nvm/versions/node/v12.14.0/bin/node]"
+    },
+    {
+      "pc": "0x0000000100991400",
+      "symbol": "Builtins_ConstructHandler [/Users/samluke/.nvm/versions/node/v12.14.0/bin/node]"
+    }
+  ],
+  "javascriptHeap": {
+    "totalMemory": 2176778240,
+    "totalCommittedMemory": 2158737440,
+    "usedMemory": 2138213224,
+    "availableMemory": 45913800,
+    "memoryLimit": 2197815296,
+    "heapSpaces": {
+      "read_only_space": {
+        "memorySize": 262144,
+        "committedMemory": 32568,
+        "capacity": 261872,
+        "used": 32296,
+        "available": 229576
+      },
+      "new_space": {
+        "memorySize": 22020096,
+        "committedMemory": 4579280,
+        "capacity": 10998624,
+        "used": 683576,
+        "available": 10315048
+      },
+      "old_space": {
+        "memorySize": 1294577664,
+        "committedMemory": 1294465272,
+        "capacity": 1284358352,
+        "used": 1281024856,
+        "available": 3333496
+      },
+      "code_space": {
+        "memorySize": 3047424,
+        "committedMemory": 2923072,
+        "capacity": 2677184,
+        "used": 2677184,
+        "available": 0
+      },
+      "map_space": {
+        "memorySize": 6557696,
+        "committedMemory": 6424032,
+        "capacity": 3838320,
+        "used": 3838320,
+        "available": 0
+      },
+      "large_object_space": {
+        "memorySize": 849117184,
+        "committedMemory": 849117184,
+        "capacity": 848859232,
+        "used": 848859232,
+        "available": 0
+      },
+      "code_large_object_space": {
+        "memorySize": 1196032,
+        "committedMemory": 1196032,
+        "capacity": 1097760,
+        "used": 1097760,
+        "available": 0
+      },
+      "new_large_object_space": {
+        "memorySize": 0,
+        "committedMemory": 0,
+        "capacity": 10998624,
+        "used": 0,
+        "available": 10998624
+      }
+    }
+  },
+  "resourceUsage": {
+    "userCpuSeconds": 486.209,
+    "kernelCpuSeconds": 44.9244,
+    "cpuConsumptionPercent": 6.56774,
+    "maxRss": 2024116584448,
+    "pageFaults": {
+      "IORequired": 39,
+      "IONotRequired": 6663331
+    },
+    "fsActivity": {
+      "reads": 4105,
+      "writes": 1209
+    }
+  },
+  "libuv": [
+  ],
+  "environmentVariables": {
+    "npm_package_devDependencies_lint_staged": "^10.0.10",
+    "npm_package_devDependencies_identity_obj_proxy": "^3.0.0",
+    "npm_package_devDependencies_prettier": "^2.0.2",
+    "TERM_PROGRAM": "Apple_Terminal",
+    "NODE": "/Users/samluke/.nvm/versions/node/v12.14.0/bin/node",
+    "npm_config_version_git_tag": "true",
+    "npm_package_devDependencies_typescript": "^4.1.3",
+    "NVM_CD_FLAGS": "",
+    "npm_package_dependencies_react_grid_layout": "^1.2.4",
+    "npm_package_devDependencies_jest": "^26.6.3",
+    "SHELL": "/bin/bash",
+    "TERM": "xterm-256color",
+    "npm_package_dependencies__emotion_styled": "^11.1.5",
+    "npm_package_dependencies__project_serum_serum": "^0.13.20",
+    "TMPDIR": "/var/folders/4s/95t514691qd938qmf1cxcj8m0000gn/T/",
+    "npm_config_init_license": "MIT",
+    "npm_package_scripts_lint": "eslint . --ext ts --ext tsx --ext js --quiet",
+    "CONDA_SHLVL": "1",
+    "Apple_PubSub_Socket_Render": "/private/tmp/com.apple.launchd.tAoaG7EG3S/Render",
+    "CONDA_PROMPT_MODIFIER": "(base) ",
+    "TERM_PROGRAM_VERSION": "388",
+    "npm_package_scripts_dev": "next dev",
+    "npm_package_husky_hooks_pre_push": "",
+    "TERM_SESSION_ID": "DC2550B6-7F01-4BE8-B540-87BAA015E047",
+    "npm_config_registry": "https://registry.yarnpkg.com",
+    "npm_package_dependencies__headlessui_react": "^0.3.2-d950146",
+    "npm_package_dependencies__project_serum_sol_wallet_adapter": "^0.1.8",
+    "npm_package_dependencies_react_dom": "^17.0.1",
+    "npm_package_lint_staged_____ts_tsx__1": "yarn format",
+    "npm_package_readmeFilename": "README.md",
+    "npm_config_python": "/usr/bin/python",
+    "npm_package_lint_staged_____ts_tsx__0": "yarn lint",
+    "npm_package_devDependencies__testing_library_react": "^11.2.5",
+    "npm_package_description": "Uses:",
+    "NVM_DIR": "/Users/samluke/.nvm",
+    "USER": "samluke",
+    "npm_package_license": "MIT",
+    "npm_package_devDependencies__types_react": "^17.0.1",
+    "npm_package_dependencies_bs58": "^4.0.1",
+    "npm_package_devDependencies__emotion_babel_plugin": "^11.2.0",
+    "npm_package_dependencies__solana_web3_js": "^0.90.5",
+    "CONDA_EXE": "/opt/anaconda3/bin/conda",
+    "npm_package_devDependencies__babel_core": "^7.13.10",
+    "npm_package_devDependencies_babel_jest": "^26.6.3",
+    "npm_package_dependencies_zustand": "^3.3.3",
+    "SSH_AUTH_SOCK": "/private/tmp/com.apple.launchd.LwVL7sR6hT/Listeners",
+    "npm_package_devDependencies__types_jest": "^26.0.20",
+    "npm_package_devDependencies_eslint": "^7.19.0",
+    "npm_package_devDependencies_postcss": "^8.2.8",
+    "__CF_USER_TEXT_ENCODING": "0x1F5:0x0:0xF",
+    "npm_package_husky_hooks_pre_commit": "lint-staged",
+    "npm_package_dependencies_buffer_layout": "^1.2.0",
+    "npm_package_devDependencies__typescript_eslint_eslint_plugin": "^4.14.2",
+    "npm_execpath": "/usr/local/Cellar/yarn/1.6.0/libexec/bin/yarn.js",
+    "npm_package_author_name": "@erikdstock",
+    "npm_package_dependencies_react_cool_dimensions": "^2.0.1",
+    "npm_package_scripts_type_check": "tsc --pretty --noEmit",
+    "npm_package_devDependencies__svgr_webpack": "^5.5.0",
+    "_CE_CONDA": "",
+    "npm_package_dependencies__blockworks_foundation_mango_client": "^0.1.10",
+    "npm_package_devDependencies__typescript_eslint_parser": "^4.14.2",
+    "npm_package_dependencies_immer": "^9.0.1",
+    "npm_config_argv": "{\"remain\":[],\"cooked\":[\"run\",\"dev\"],\"original\":[\"dev\"]}",
+    "PATH": "/Users/samluke/Desktop/Projects/mango/v3/mango-ui-v2/node_modules/.bin:/Users/samluke/.config/yarn/link/node_modules/.bin:/Users/samluke/Desktop/Projects/mango/v3/mango-ui-v2/node_modules/.bin:/Users/samluke/.config/yarn/link/node_modules/.bin:/Users/samluke/.nvm/versions/node/v12.14.0/libexec/lib/node_modules/npm/bin/node-gyp-bin:/Users/samluke/.nvm/versions/node/v12.14.0/lib/node_modules/npm/bin/node-gyp-bin:/Users/samluke/.nvm/versions/node/v12.14.0/bin/node_modules/npm/bin/node-gyp-bin:/opt/anaconda3/bin:/opt/anaconda3/condabin:/Library/Frameworks/Python.framework/Versions/3.9/bin:/Users/samluke/mongodb-macos-x86_64-4.2.3/bin:/Users/samluke/.nvm/versions/node/v12.14.0/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+    "_": "/Users/samluke/Desktop/Projects/mango/v3/mango-ui-v2/node_modules/.bin/next",
+    "CONDA_PREFIX": "/opt/anaconda3",
+    "npm_package_devDependencies_tailwindcss": "^2.0.4",
+    "PWD": "/Users/samluke/desktop/projects/mango/v3/mango-ui-v2",
+    "npm_package_devDependencies_eslint_plugin_react_hooks": "^4.2.0",
+    "npm_lifecycle_event": "dev",
+    "npm_package_name": "with-typescript-eslint-jest",
+    "npm_package_dependencies_immutable_tuple": "^0.4.10",
+    "LANG": "en_AU.UTF-8",
+    "npm_package_scripts_build": "next build",
+    "npm_package_scripts_start": "next start",
+    "XPC_FLAGS": "0x0",
+    "npm_package_dependencies_next": "latest",
+    "npm_package_devDependencies_eslint_config_prettier": "^7.2.0",
+    "npm_package_version": "1.0.0",
+    "npm_package_dependencies__emotion_react": "^11.1.5",
+    "_CE_M": "",
+    "XPC_SERVICE_NAME": "0",
+    "npm_package_devDependencies_autoprefixer": "^10.2.5",
+    "SHLVL": "2",
+    "HOME": "/Users/samluke",
+    "npm_package_scripts_test": "jest",
+    "npm_package_dependencies_postcss_preset_env": "^6.7.0",
+    "npm_config_strict_ssl": "true",
+    "npm_config_save_prefix": "^",
+    "npm_config_version_git_message": "v%s",
+    "npm_package_devDependencies_husky": "^4.2.3",
+    "npm_package_dependencies_bn_js": "^5.2.0",
+    "NPM_CONFIG_PYTHON": "/usr/bin/python",
+    "npm_package_dependencies__heroicons_react": "^1.0.0",
+    "npm_package_scripts_format": "prettier --check .",
+    "YARN_WRAP_OUTPUT": "false",
+    "CONDA_PYTHON_EXE": "/opt/anaconda3/bin/python",
+    "LOGNAME": "samluke",
+    "npm_lifecycle_script": "next dev",
+    "PREFIX": "/usr/local",
+    "npm_package_dependencies_react": "^17.0.1",
+    "CONDA_DEFAULT_ENV": "base",
+    "NVM_BIN": "/Users/samluke/.nvm/versions/node/v12.14.0/bin",
+    "npm_config_user_agent": "yarn/1.6.0 npm/? node/v12.14.0 darwin x64",
+    "npm_config_ignore_scripts": "",
+    "npm_config_version_git_sign": "",
+    "npm_package_devDependencies_jest_watch_typeahead": "^0.6.1",
+    "npm_package_dependencies_babel_plugin_import": "^1.13.3",
+    "npm_package_dependencies_recharts": "^2.0.9",
+    "npm_package_devDependencies__types_node": "^14.14.25",
+    "npm_config_ignore_optional": "",
+    "npm_config_init_version": "1.0.0",
+    "npm_package_scripts_test_all": "yarn lint && yarn type-check && yarn test",
+    "npm_config_version_tag_prefix": "v",
+    "npm_package_dependencies_next_themes": "^0.0.14",
+    "npm_package_dependencies_react_portal": "^4.2.1",
+    "npm_package_devDependencies_eslint_plugin_react": "^7.19.0",
+    "npm_node_execpath": "/Users/samluke/.nvm/versions/node/v12.14.0/bin/node",
+    "NODE_ENV": "development",
+    "TRACE_ID": "0386b0e35676a1a5"
+  },
+  "userLimits": {
+    "core_file_size_blocks": {
+      "soft": 0,
+      "hard": "unlimited"
+    },
+    "data_seg_size_kbytes": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    },
+    "file_size_blocks": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    },
+    "max_locked_memory_bytes": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    },
+    "max_memory_size_kbytes": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    },
+    "open_files": {
+      "soft": 10240,
+      "hard": "unlimited"
+    },
+    "stack_size_bytes": {
+      "soft": 8388608,
+      "hard": 67104768
+    },
+    "cpu_time_seconds": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    },
+    "max_user_processes": {
+      "soft": 709,
+      "hard": 1064
+    },
+    "virtual_memory_kbytes": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    }
+  },
+  "sharedObjects": [
+    "/Users/samluke/.nvm/versions/node/v12.14.0/bin/node",
+    "/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation",
+    "/usr/lib/libSystem.B.dylib",
+    "/usr/lib/libc++.1.dylib",
+    "/usr/lib/libDiagnosticMessagesClient.dylib",
+    "/usr/lib/libicucore.A.dylib",
+    "/usr/lib/libobjc.A.dylib",
+    "/usr/lib/libz.1.dylib",
+    "/usr/lib/system/libcache.dylib",
+    "/usr/lib/system/libcommonCrypto.dylib",
+    "/usr/lib/system/libcompiler_rt.dylib",
+    "/usr/lib/system/libcopyfile.dylib",
+    "/usr/lib/system/libcorecrypto.dylib",
+    "/usr/lib/system/libdispatch.dylib",
+    "/usr/lib/system/libdyld.dylib",
+    "/usr/lib/system/libkeymgr.dylib",
+    "/usr/lib/system/liblaunch.dylib",
+    "/usr/lib/system/libmacho.dylib",
+    "/usr/lib/system/libquarantine.dylib",
+    "/usr/lib/system/libremovefile.dylib",
+    "/usr/lib/system/libsystem_asl.dylib",
+    "/usr/lib/system/libsystem_blocks.dylib",
+    "/usr/lib/system/libsystem_c.dylib",
+    "/usr/lib/system/libsystem_configuration.dylib",
+    "/usr/lib/system/libsystem_coreservices.dylib",
+    "/usr/lib/system/libsystem_coretls.dylib",
+    "/usr/lib/system/libsystem_dnssd.dylib",
+    "/usr/lib/system/libsystem_info.dylib",
+    "/usr/lib/system/libsystem_kernel.dylib",
+    "/usr/lib/system/libsystem_m.dylib",
+    "/usr/lib/system/libsystem_malloc.dylib",
+    "/usr/lib/system/libsystem_network.dylib",
+    "/usr/lib/system/libsystem_networkextension.dylib",
+    "/usr/lib/system/libsystem_notify.dylib",
+    "/usr/lib/system/libsystem_platform.dylib",
+    "/usr/lib/system/libsystem_pthread.dylib",
+    "/usr/lib/system/libsystem_sandbox.dylib",
+    "/usr/lib/system/libsystem_secinit.dylib",
+    "/usr/lib/system/libsystem_symptoms.dylib",
+    "/usr/lib/system/libsystem_trace.dylib",
+    "/usr/lib/system/libunwind.dylib",
+    "/usr/lib/system/libxpc.dylib",
+    "/usr/lib/libauto.dylib",
+    "/usr/lib/libc++abi.dylib",
+    "/System/Library/Frameworks/ApplicationServices.framework/Versions/A/ApplicationServices",
+    "/System/Library/Frameworks/CoreGraphics.framework/Versions/A/CoreGraphics",
+    "/System/Library/Frameworks/CoreText.framework/Versions/A/CoreText",
+    "/System/Library/Frameworks/ImageIO.framework/Versions/A/ImageIO",
+    "/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/ATS",
+    "/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ColorSync.framework/Versions/A/ColorSync",
+    "/System/Library/Frameworks/CoreServices.framework/Versions/A/CoreServices",
+    "/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/HIServices",
+    "/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/LangAnalysis.framework/Versions/A/LangAnalysis",
+    "/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/PrintCore.framework/Versions/A/PrintCore",
+    "/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/QD",
+    "/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/SpeechSynthesis.framework/Versions/A/SpeechSynthesis",
+    "/System/Library/Frameworks/CFNetwork.framework/Versions/A/CFNetwork",
+    "/System/Library/Frameworks/IOKit.framework/Versions/A/IOKit",
+    "/System/Library/Frameworks/Accelerate.framework/Versions/A/Accelerate",
+    "/System/Library/Frameworks/Foundation.framework/Versions/C/Foundation",
+    "/usr/lib/libbsm.0.dylib",
+    "/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/SystemConfiguration",
+    "/System/Library/Frameworks/Security.framework/Versions/A/Security",
+    "/usr/lib/libsqlite3.dylib",
+    "/usr/lib/libxml2.2.dylib",
+    "/usr/lib/libnetwork.dylib",
+    "/usr/lib/libenergytrace.dylib",
+    "/usr/lib/system/libkxld.dylib",
+    "/usr/lib/libpcap.A.dylib",
+    "/usr/lib/libcoretls.dylib",
+    "/usr/lib/libcoretls_cfhelpers.dylib",
+    "/usr/lib/libxar.1.dylib",
+    "/usr/lib/libpam.2.dylib",
+    "/usr/lib/libOpenScriptingUtil.dylib",
+    "/usr/lib/libbz2.1.0.dylib",
+    "/usr/lib/liblzma.5.dylib",
+    "/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vImage.framework/Versions/A/vImage",
+    "/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/vecLib",
+    "/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/libvDSP.dylib",
+    "/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/libBNNS.dylib",
+    "/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/libQuadrature.dylib",
+    "/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/libvMisc.dylib",
+    "/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/libLAPACK.dylib",
+    "/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/libBLAS.dylib",
+    "/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/libLinearAlgebra.dylib",
+    "/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/libSparseBLAS.dylib",
+    "/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/FSEvents.framework/Versions/A/FSEvents",
+    "/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/CarbonCore.framework/Versions/A/CarbonCore",
+    "/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/Metadata.framework/Versions/A/Metadata",
+    "/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/OSServices.framework/Versions/A/OSServices",
+    "/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/SearchKit.framework/Versions/A/SearchKit",
+    "/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/AE.framework/Versions/A/AE",
+    "/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/LaunchServices.framework/Versions/A/LaunchServices",
+    "/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/DictionaryServices.framework/Versions/A/DictionaryServices",
+    "/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/SharedFileList.framework/Versions/A/SharedFileList",
+    "/System/Library/Frameworks/DiskArbitration.framework/Versions/A/DiskArbitration",
+    "/System/Library/Frameworks/NetFS.framework/Versions/A/NetFS",
+    "/System/Library/PrivateFrameworks/NetAuth.framework/Versions/A/NetAuth",
+    "/System/Library/PrivateFrameworks/login.framework/Versions/A/Frameworks/loginsupport.framework/Versions/A/loginsupport",
+    "/usr/lib/libarchive.2.dylib",
+    "/usr/lib/liblangid.dylib",
+    "/usr/lib/libCRFSuite.dylib",
+    "/System/Library/PrivateFrameworks/TCC.framework/Versions/A/TCC",
+    "/usr/lib/libmecabra.dylib",
+    "/System/Library/PrivateFrameworks/LanguageModeling.framework/Versions/A/LanguageModeling",
+    "/usr/lib/libmarisa.dylib",
+    "/usr/lib/libChineseTokenizer.dylib",
+    "/usr/lib/libcmph.dylib",
+    "/usr/lib/libiconv.2.dylib",
+    "/System/Library/Frameworks/CoreData.framework/Versions/A/CoreData",
+    "/System/Library/PrivateFrameworks/CoreEmoji.framework/Versions/A/CoreEmoji",
+    "/usr/lib/libcompression.dylib",
+    "/System/Library/Frameworks/OpenDirectory.framework/Versions/A/Frameworks/CFOpenDirectory.framework/Versions/A/CFOpenDirectory",
+    "/System/Library/Frameworks/ServiceManagement.framework/Versions/A/ServiceManagement",
+    "/usr/lib/libxslt.1.dylib",
+    "/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Resources/libFontParser.dylib",
+    "/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Resources/libFontRegistry.dylib",
+    "/System/Library/Frameworks/ImageIO.framework/Versions/A/Resources/libJPEG.dylib",
+    "/System/Library/Frameworks/ImageIO.framework/Versions/A/Resources/libTIFF.dylib",
+    "/System/Library/Frameworks/ImageIO.framework/Versions/A/Resources/libPng.dylib",
+    "/System/Library/Frameworks/ImageIO.framework/Versions/A/Resources/libGIF.dylib",
+    "/System/Library/Frameworks/ImageIO.framework/Versions/A/Resources/libJP2.dylib",
+    "/System/Library/Frameworks/ImageIO.framework/Versions/A/Resources/libRadiance.dylib",
+    "/System/Library/PrivateFrameworks/AppleJPEG.framework/Versions/A/AppleJPEG",
+    "/System/Library/Frameworks/IOSurface.framework/Versions/A/IOSurface",
+    "/System/Library/PrivateFrameworks/MultitouchSupport.framework/Versions/A/MultitouchSupport",
+    "/usr/lib/libcups.2.dylib",
+    "/System/Library/Frameworks/Kerberos.framework/Versions/A/Kerberos",
+    "/System/Library/Frameworks/GSS.framework/Versions/A/GSS",
+    "/usr/lib/libresolv.9.dylib",
+    "/System/Library/PrivateFrameworks/Heimdal.framework/Versions/A/Heimdal",
+    "/usr/lib/libheimdal-asn1.dylib",
+    "/System/Library/Frameworks/OpenDirectory.framework/Versions/A/OpenDirectory",
+    "/System/Library/PrivateFrameworks/CommonAuth.framework/Versions/A/CommonAuth",
+    "/System/Library/Frameworks/SecurityFoundation.framework/Versions/A/SecurityFoundation",
+    "/System/Library/Frameworks/CoreAudio.framework/Versions/A/CoreAudio",
+    "/System/Library/Frameworks/AudioToolbox.framework/Versions/A/AudioToolbox",
+    "/System/Library/PrivateFrameworks/SkyLight.framework/Versions/A/SkyLight",
+    "/System/Library/Frameworks/Metal.framework/Versions/A/Metal",
+    "/System/Library/Frameworks/CoreDisplay.framework/Versions/A/CoreDisplay",
+    "/System/Library/Frameworks/QuartzCore.framework/Versions/A/QuartzCore",
+    "/System/Library/PrivateFrameworks/GPUCompiler.framework/libmetal_timestamp.dylib",
+    "/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libCoreFSCache.dylib",
+    "/System/Library/PrivateFrameworks/IOAccelerator.framework/Versions/A/IOAccelerator",
+    "/System/Library/PrivateFrameworks/IOPresentment.framework/Versions/A/IOPresentment",
+    "/System/Library/Frameworks/CoreImage.framework/Versions/A/CoreImage",
+    "/System/Library/Frameworks/CoreVideo.framework/Versions/A/CoreVideo",
+    "/System/Library/Frameworks/OpenGL.framework/Versions/A/OpenGL",
+    "/usr/lib/libFosl_dynamic.dylib",
+    "/System/Library/PrivateFrameworks/MetalPerformanceShaders.framework/Versions/A/MetalPerformanceShaders",
+    "/System/Library/PrivateFrameworks/FaceCore.framework/Versions/A/FaceCore",
+    "/System/Library/Frameworks/OpenCL.framework/Versions/A/OpenCL",
+    "/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGLU.dylib",
+    "/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGFXShared.dylib",
+    "/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib",
+    "/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGLImage.dylib",
+    "/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libCVMSPluginSupport.dylib",
+    "/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libCoreVMClient.dylib",
+    "/Users/samluke/Desktop/Projects/mango/v3/mango-ui-v2/node_modules/fsevents/fsevents.node",
+    "/Users/samluke/Desktop/Projects/mango/v3/mango-ui-v2/node_modules/bufferutil/prebuilds/darwin-x64/node.napi.node",
+    "/Users/samluke/Desktop/Projects/mango/v3/mango-ui-v2/node_modules/utf-8-validate/prebuilds/darwin-x64/node.napi.node",
+    "/Users/samluke/Desktop/Projects/mango/v3/mango-ui-v2/node_modules/secp256k1/prebuilds/darwin-x64/node.napi.node",
+    "/Users/samluke/Desktop/Projects/mango/v3/mango-ui-v2/node_modules/keccak/prebuilds/darwin-x64/node.napi.node"
+  ]
+}

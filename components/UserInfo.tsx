@@ -21,7 +21,7 @@ const UserInfoTabs = ({ activeTab, setActiveTab }) => {
         <select
           id="tabs"
           name="tabs"
-          className={`block w-full pl-3 pr-10 py-2 text-base bg-th-bkg-2 border border-th-fgd-4 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md`}
+          className={`block w-full pl-3 pr-10 py-2 bg-th-bkg-2 border border-th-fgd-4 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md`}
           onChange={(e) => handleTabChange(e.target.value)}
         >
           {TABS.map((tabName) => (
@@ -38,10 +38,10 @@ const UserInfoTabs = ({ activeTab, setActiveTab }) => {
               <a
                 key={tabName}
                 onClick={() => handleTabChange(tabName)}
-                className={`whitespace-nowrap py-4 px-1 border-b-2 font-normal text-base
+                className={`whitespace-nowrap py-4 px-1 border-b-2 font-semibold text-base cursor-pointer transition-all duration-500
                   ${
                     activeTab === tabName
-                      ? `border-th-primary text-th-primary hover:text-th-fgd-2`
+                      ? `border-th-primary text-th-primary`
                       : `border-transparent text-th-fgd-4 hover:text-th-fgd-2`
                   }
                 `}

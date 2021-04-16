@@ -45,7 +45,7 @@ export default function MarginBalances() {
           > */}
           <div>
             <InformationCircleIcon
-              className={`h-5 w-5 ml-2 text-mango-yellow cursor-help`}
+              className={`h-5 w-5 ml-2 text-th-primary cursor-help`}
             />
           </div>
           {/* </Popover> */}
@@ -70,14 +70,14 @@ export default function MarginBalances() {
             </thead>
             <tbody>
               {Object.entries(symbols).map(([name], i) => (
-                <tr key={name} className={`text-th-fgd-1 tracking-wide`}>
+                <tr key={name} className={`text-th-fgd-1`}>
                   <td className={`flex items-center py-2`}>
                     <img
                       alt=""
                       width="20"
                       height="20"
                       src={`/assets/icons/${name.toLowerCase()}.svg`}
-                      className={`mr-4`}
+                      className={`mr-2.5`}
                     />
                     <span>{name}</span>
                   </td>
@@ -126,7 +126,7 @@ export default function MarginBalances() {
             <span>Withdraw</span>
           </Button>
         </div>
-        <div className={`text-center mt-4 text-th-fgd-4 tracking-wider`}>
+        <div className={`text-center mt-5 text-th-fgd-4 text-sm`}>
           Settle funds in the Balances tab
         </div>
       </FloatingElement>

@@ -16,9 +16,13 @@ function App({ Component, pageProps }) {
         <title>Mango Markets</title>
         <link rel="preconnect" href="https://fonts.gstatic.com" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap"
           rel="stylesheet"
         />
+        {/* <link
+          href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap"
+          rel="stylesheet"
+        /> */}
         <link rel="icon" href="/favicon.ico" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta

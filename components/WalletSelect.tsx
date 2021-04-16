@@ -25,7 +25,7 @@ export default function WalletSelect() {
     <Menu>
       {({ open }) => (
         <>
-          <Menu.Button className="px-2.5 flex justify-center items-center h-full rounded-r focus:outline-none text-th-primary hover:text-th-fgd-1 hover:bg-th-primary cursor-pointer">
+          <Menu.Button className="px-3 flex justify-center items-center h-full rounded-r focus:outline-none text-th-primary hover:text-th-fgd-1 hover:bg-th-primary cursor-pointer">
             {open ? (
               <ChevronUpIcon className="h-5 w-5" />
             ) : (
@@ -36,7 +36,7 @@ export default function WalletSelect() {
             {WALLET_PROVIDERS.map(({ name, url, icon }) => (
               <Menu.Item key={name}>
                 <button
-                  className="flex flex-row items-center justify-between w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer tracking-wider"
+                  className="flex flex-row items-center justify-between w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer font-normal focus:outline-none"
                   onClick={() => handleSelectProvider(url)}
                 >
                   <div className="flex">

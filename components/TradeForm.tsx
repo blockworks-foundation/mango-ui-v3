@@ -280,7 +280,7 @@ export default function TradeForm() {
           />
         </Input.Group>
         {tradeType !== 'Market' ? (
-          <div className="flex items-center mt-4">
+          <div className="flex items-center mt-4 text-sm">
             <Switch checked={postOnly} onChange={postOnChange}>
               POST
             </Switch>
