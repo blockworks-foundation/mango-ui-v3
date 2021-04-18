@@ -1,9 +1,10 @@
 import React from 'react'
 import Modal from './Modal'
 import Button from './Button'
+import { ElementTitle } from './styles'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 
-const WithdrawModal = ({
+const AlphaModal = ({
   isOpen,
   onClose,
 }: {
@@ -13,20 +14,21 @@ const WithdrawModal = ({
   const [, setAlphaAccepted] = useLocalStorageState('mangoAlphaAccepted', false)
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose} hideClose>
       <Modal.Header>
-        <div
-          className={`text-th-fgd-2 flex-grow text-center flex items-center justify-center`}
-        >
-          <span className="text-2xl">Mango Markets UI V2</span>
+        <div className="flex flex-col items-center">
+          <img
+            className={`h-8 w-auto mb-2`}
+            src="/assets/icons/logo.svg"
+            alt="next"
+          />
+          <ElementTitle noMarignBottom>Mango Markets UI V2</ElementTitle>
         </div>
       </Modal.Header>
-      <div className={`pb-4 px-6 text-th-fgd-3`}>
-        <div className={`mt-3 sm:mt-5 text-lg font-light`}>
-          This is an unaudited alpha release of Mango Markets. The software is
-          provided &apos;AS IS&apos; without warranty of any kind.
-        </div>
-        <div className={`mt-4 sm:mt-5 flex justify-end`}>
+      <div className={`pb-4 px-6 text-th-fgd-2 text-center`}>
+        This is an unaudited alpha release of Mango Markets. The software is
+        provided &apos;AS IS&apos; without warranty of any kind.
+        <div className={`mt-4 flex justify-center`}>
           <Button onClick={() => setAlphaAccepted(true)}>
             <div className={`flex items-center`}>Accept</div>
           </Button>
@@ -36,4 +38,4 @@ const WithdrawModal = ({
   )
 }
 
-export default React.memo(WithdrawModal)
+export default React.memo(AlphaModal)

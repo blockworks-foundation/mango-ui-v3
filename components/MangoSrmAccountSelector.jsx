@@ -28,10 +28,10 @@ const MangoSrmAccountSelector = ({
         {({ open }) => (
           <>
             <Listbox.Button
-              className={`border border-th-fgd-4 focus:outline-none focus:ring-1 focus:ring-mango-yellow p-2 w-full`}
+              className={`border border-th-fgd-4 bg-th-bkg-1 rounded-md default-transition hover:border-th-primary focus:outline-none focus:border-th-primary p-2 h-10 w-full font-normal`}
             >
               <div
-                className={`flex items-center text-base justify-between font-light`}
+                className={`flex items-center text-th-fgd-1 justify-between`}
               >
                 <div className={`flex items-center flex-grow`}>
                   <img
@@ -39,11 +39,11 @@ const MangoSrmAccountSelector = ({
                     width="20"
                     height="20"
                     src={`/assets/icons/SRM.svg`}
-                    className={`mr-4`}
+                    className={`mr-2`}
                   />
                   {abbreviateAddress(selectedAccount?.publicKey)}
-                  <div className={`ml-4 text-sm text-right flex-grow`}>
-                    ({getBalanceForAccount(selectedAccount)})
+                  <div className={`ml-4 text-right flex-grow`}>
+                    {getBalanceForAccount(selectedAccount)}
                   </div>
                 </div>
                 {open ? (
@@ -56,9 +56,9 @@ const MangoSrmAccountSelector = ({
             {open ? (
               <Listbox.Options
                 static
-                className={`z-20 p-1 absolute left-0 w-full mt-1 bg-th-bkg-3 origin-top-left divide-y divide-th-fgd-4 shadow-lg outline-none border border-th-fgd-4`}
+                className={`z-20 p-1 absolute right-0 top-11 bg-th-bkg-1 divide-y divide-th-bkg-3 shadow-lg outline-none rounded-md w-full`}
               >
-                <div className={`opacity-50 p-2`}>Your Mango SRM Accounts</div>
+                <div className={`text-th-fgd-4 p-2`}>SRM Accounts</div>
                 {accounts.map((account) => {
                   return (
                     <Listbox.Option
@@ -67,22 +67,23 @@ const MangoSrmAccountSelector = ({
                     >
                       {({ selected }) => (
                         <div
-                          className={`p-2 text-sm hover:bg-th-fgd-4 hover:cursor-pointer tracking-wider font-light ${
-                            selected && 'text-mango-yellow bg-th-fgd-4'
+                          className={`p-2 hover:bg-th-bkg-2 hover:cursor-pointer ${
+                            selected && `text-th-primary`
                           }`}
                         >
-                          <div className={`flex items-center space-x-2`}>
+                          <div className={`flex items-center text-th-fgd-1`}>
                             <img
                               alt=""
                               width="20"
                               height="20"
                               src={`/assets/icons/SRM.svg`}
+                              className="mr-2"
                             />
                             <div className={`flex-grow text-left`}>
                               {abbreviateAddress(account?.publicKey)}
                             </div>
                             <div className={`text-sm`}>
-                              {getBalanceForAccount(account)} (SRM)
+                              {getBalanceForAccount(account)} SRM
                             </div>
                           </div>
                         </div>

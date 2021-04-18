@@ -16,6 +16,7 @@ const AccountSelect = ({
   selectedAccount,
   onSelectAccount,
   hideBalance = false,
+  getMaxForSelectedAccount,
 }) => {
   const { getTokenIndex } = useMarketList()
   const mintDecimals = useMangoStore((s) => s.selectedMangoGroup.mintDecimals)
@@ -47,7 +48,7 @@ const AccountSelect = ({
         {({ open }) => (
           <>
             <Listbox.Button
-              className={`border border-th-fgd-4 bg-th-bkg-1 rounded-md default-transition hover:border-th-primary focus:outline-none focus:ring-1 focus:ring-th-primary p-2 h-10 w-full font-normal`}
+              className={`border border-th-fgd-4 bg-th-bkg-1 rounded-md default-transition hover:border-th-primary focus:outline-none focus:border-th-primary p-2 h-10 w-full font-normal`}
             >
               <div
                 className={`flex items-center text-th-fgd-1 justify-between`}
@@ -63,15 +64,12 @@ const AccountSelect = ({
                       ).toLowerCase()}.svg`}
                       className={`mr-2`}
                     />
-                    {getSymbolForTokenMintAddress(
-                      selectedAccount?.account.mint.toString()
-                    )}
-                    {/* abbreviateAddress(selectedAccount?.publicKey) */}
-                    {!hideBalance ? (
-                      <div className={`ml-4 text-right flex-grow`}>
-                        Bal: {getBalanceForAccount(selectedAccount)}
-                      </div>
-                    ) : null}
+                    {abbreviateAddress(selectedAccount?.publicKey)}
+                    <div className={`ml-4 text-right flex-grow`}>
+                      {!hideBalance
+                        ? getBalanceForAccount(selectedAccount)
+                        : getMaxForSelectedAccount(selectedAccount)}
+                    </div>
                   </div>
                 ) : (
                   'No wallet addresses found'
@@ -83,7 +81,7 @@ const AccountSelect = ({
                 )}
               </div>
             </Listbox.Button>
-            <Transition
+            {/* <Transition
               show={open}
               appear={true}
               enter="transition duration-100 ease-out"
@@ -92,54 +90,55 @@ const AccountSelect = ({
               leave="transition duration-75 ease-out"
               leaveFrom="transform scale-100 opacity-100"
               leaveTo="transform scale-95 opacity-0"
+            > */}
+            <Listbox.Options
+              className={`z-20 p-1 absolute right-0 top-11 bg-th-bkg-1 divide-y divide-th-bkg-3 shadow-lg outline-none rounded-md w-full`}
             >
-              <Listbox.Options
-                static
-                className={`z-20 p-1 absolute left-0 w-full mt-1 bg-th-bkg-3 origin-top-left divide-y divide-th-fgd-4 shadow-lg outline-none border border-th-fgd-4`}
-              >
-                <div className={`opacity-50 p-2`}>
-                  Your Connected Wallet Token Accounts:
-                </div>
-                {accounts.map((account) => {
-                  const symbolForAccount = getSymbolForTokenMintAddress(
-                    account?.account?.mint.toString()
-                  )
+              <div className="flex justify-between">
+                <div className={`text-th-fgd-4 p-2`}>Accounts</div>
+                <div className={`text-th-fgd-4 p-2`}>Balance</div>
+              </div>
+              {accounts.map((account) => {
+                const symbolForAccount = getSymbolForTokenMintAddress(
+                  account?.account?.mint.toString()
+                )
 
-                  return (
-                    <Listbox.Option
-                      key={account?.publicKey.toString()}
-                      value={account?.publicKey.toString()}
-                    >
-                      {({ selected }) => (
-                        <div
-                          className={`p-2 text-sm hover:bg-th-fgd-4 hover:cursor-pointer tracking-wider font-light ${
-                            selected && 'text-mango-yellow bg-th-fgd-4'
-                          }`}
-                        >
-                          <div className={`flex items-center space-x-2`}>
-                            <img
-                              alt=""
-                              width="20"
-                              height="20"
-                              src={`/assets/icons/${symbolForAccount.toLowerCase()}.svg`}
-                            />
-                            <div className={`flex-grow text-left`}>
-                              {abbreviateAddress(account?.publicKey)}
-                            </div>
-                            <div className={`text-sm`}>
-                              {!hideBalance
-                                ? getBalanceForAccount(account)
-                                : null}{' '}
-                              ({symbolForAccount})
-                            </div>
+                return (
+                  <Listbox.Option
+                    key={account?.publicKey.toString()}
+                    value={account?.publicKey.toString()}
+                  >
+                    {({ selected }) => (
+                      <div
+                        className={`p-2 hover:bg-th-bkg-2 hover:cursor-pointer ${
+                          selected && `text-th-primary`
+                        }`}
+                      >
+                        <div className={`flex items-center text-th-fgd-1`}>
+                          <img
+                            alt=""
+                            width="20"
+                            height="20"
+                            src={`/assets/icons/${symbolForAccount.toLowerCase()}.svg`}
+                            className="mr-2"
+                          />
+                          <div className={`flex-grow text-left`}>
+                            {abbreviateAddress(selectedAccount?.publicKey)}
+                          </div>
+                          <div className={`text-sm`}>
+                            {!hideBalance
+                              ? getBalanceForAccount(account)
+                              : getMaxForSelectedAccount(account)}{' '}
+                            {symbolForAccount}
                           </div>
                         </div>
-                      )}
-                    </Listbox.Option>
-                  )
-                })}
-              </Listbox.Options>
-            </Transition>
+                      </div>
+                    )}
+                  </Listbox.Option>
+                )
+              })}
+            </Listbox.Options>
+            {/* </Transition> */}
           </>
         )}
       </Listbox>

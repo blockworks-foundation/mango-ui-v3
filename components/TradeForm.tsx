@@ -213,6 +213,9 @@ export default function TradeForm() {
     }
   }
 
+  const disabled =
+    (!price && tradeType === 'Limit') || !baseSize || !connected || submitting
+
   return (
     <FloatingElement>
       <div>
@@ -222,7 +225,7 @@ export default function TradeForm() {
             className={`flex-1 outline-none focus:outline-none`}
           >
             <div
-              className={`hover:text-th-fgd-1 pb-1 transition-colors duration-500
+              className={`hover:text-th-green pb-1 transition-colors duration-500
                 ${
                   side === 'buy' &&
                   `text-th-green hover:text-th-green border-b-2 border-th-green`
@@ -236,7 +239,7 @@ export default function TradeForm() {
             className={`flex-1 outline-none focus:outline-none`}
           >
             <div
-              className={`hover:text-th-fgd-1 pb-1 transition-colors duration-500
+              className={`hover:text-th-red pb-1 transition-colors duration-500
                 ${
                   side === 'sell' &&
                   `text-th-red hover:text-th-red border-b-2 border-th-red`
@@ -304,29 +307,27 @@ export default function TradeForm() {
         {ipAllowed ? (
           side === 'buy' ? (
             <Button
-              disabled={
-                (!price && tradeType === 'Limit') ||
-                !baseSize ||
-                !connected ||
-                submitting
-              }
+              disabled={disabled}
               onClick={onSubmit}
-              className="rounded text-lg bg-th-green text-th-bkg-1 hover:bg-th-primary flex-grow"
+              className={`rounded text-lg ${
+                !disabled && 'border-th-green hover:border-th-red-green'
+              } text-th-green hover:text-th-fgd-1 hover:bg-th-green-dark hover:border-th-green-dark flex-grow`}
             >
-              {connected ? `Buy ${baseCurrency}` : 'Connect Wallet'}
+              {connected
+                ? `Buy ${baseSize > 0 ? baseSize : ''} ${baseCurrency}`
+                : 'Connect Wallet'}
             </Button>
           ) : (
             <Button
-              disabled={
-                (!price && tradeType === 'Limit') ||
-                !baseSize ||
-                !connected ||
-                submitting
-              }
+              disabled={disabled}
               onClick={onSubmit}
-              className="rounded text-lg bg-th-red text-white hover:bg-th-primary flex-grow"
+              className={`rounded text-lg ${
+                !disabled && 'border-th-red hover:border-th-red-dark'
+              } text-th-red hover:text-th-fgd-1 hover:bg-th-red-dark flex-grow`}
             >
-              {connected ? `Sell ${baseCurrency}` : 'Connect Wallet'}
+              {connected
+                ? `Sell ${baseSize > 0 ? baseSize : ''} ${baseCurrency}`
+                : 'Connect Wallet'}
             </Button>
           )
         ) : (
