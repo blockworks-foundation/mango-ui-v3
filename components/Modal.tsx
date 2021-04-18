@@ -12,7 +12,7 @@ const Modal = ({ isOpen, onClose, children }) => {
         <div className="flex items-end min-h-screen px-4 pb-20 text-center sm:block sm:p-0">
           {isOpen ? (
             <div
-              className="fixed inset-0 bg-black bg-opacity-40 transition-opacity"
+              className="fixed inset-0 bg-black bg-opacity-70 transition-opacity"
               aria-hidden="true"
               onClick={onClose}
             ></div>
@@ -27,9 +27,9 @@ const Modal = ({ isOpen, onClose, children }) => {
 
           {isOpen ? (
             <div
-              className="inline-block align-bottom bg-th-bkg-1 border border-th-bkg-3 
+              className="inline-block align-bottom bg-th-bkg-2 
               rounded-lg text-left overflow-hidden shadow-lg transform transition-all 
-              sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+              sm:my-8 sm:align-middle sm:max-w-md sm:w-full"
             >
               {children}
             </div>
@@ -42,7 +42,9 @@ const Modal = ({ isOpen, onClose, children }) => {
 
 const Header = ({ children }) => {
   return (
-    <div className={`flex items-center bg-th-bkg-3 py-4 px-4`}>{children}</div>
+    <div className={`flex items-center justify-between bg-th-bkg-2 py-4 px-4`}>
+      {children}
+    </div>
   )
 }
 

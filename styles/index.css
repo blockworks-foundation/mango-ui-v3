@@ -56,6 +56,10 @@ button {
   @apply font-semibold;
 }
 
+.default-transition {
+  @apply transition-all duration-300;
+}
+
 .TVChartContainer {
   height: 100%;
   width: 100%;

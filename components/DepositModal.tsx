@@ -1,7 +1,9 @@
 import React, { useMemo, useState } from 'react'
 import { nativeToUi } from '@blockworks-foundation/mango-client/lib/utils'
 import Modal from './Modal'
+import Input from './Input'
 import AccountSelect from './AccountSelect'
+import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
 import useMarketList from '../hooks/useMarketList'
 import {
@@ -118,56 +120,52 @@ const DepositModal = ({ isOpen, onClose }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <Modal.Header>
-        <div className={`text-th-fgd-3 flex-shrink invisible`}>X</div>
-        <div
-          className={`text-th-fgd-3 flex-grow text-center flex items-center justify-center`}
-        >
-          <div className={`flex-initial`}>Select: </div>
-          <div className={`ml-4 flex-grow`}>
-            <AccountSelect
-              accounts={depositAccounts}
-              selectedAccount={selectedAccount}
-              onSelectAccount={setSelectedAccount}
-            />
-          </div>
-        </div>
-
+        {/* not sure what the below div os for? */}
+        <div className={`text-th-fgd-3 flex-shrink invisible w-5`}>X</div>
+        <ElementTitle noMarignBottom>Deposit</ElementTitle>
         <button
           onClick={onClose}
-          className={`text-th-fgd-3 mr-2 ml-4 hover:text-th-primary`}
+          className={`text-th-fgd-1 hover:text-th-primary`}
         >
-          <XIcon className={`h-6 w-6`} />
+          <XIcon className={`h-5 w-5`} />
         </button>
       </Modal.Header>
       <div className={`pb-6 px-8`}>
-        <div className={`mt-3 text-center sm:mt-5`}>
-          <div className={`mt-6 bg-th-bkg-3 rounded-md flex items-center`}>
-            {selectedAccount ? (
-              <img
-                alt=""
-                width="20"
-                height="20"
-                src={`/assets/icons/${getSymbolForTokenMintAddress(
-                  selectedAccount?.account?.mint.toString()
-                ).toLowerCase()}.svg`}
-                className={`ml-3`}
-              />
-            ) : null}
-            <input
-              type="number"
-              min="0"
-              className={`outline-none bg-th-bkg-3 w-full py-4 mx-3 text-2xl text-th-fgd-2 flex-grow`}
-              placeholder="0.00"
-              value={inputAmount}
-              onChange={(e) => setInputAmount(e.target.value)}
-            ></input>
-            <Button
-              onClick={setMaxForSelectedAccount}
-              className={`m-2 rounded py-1`}
-            >
-              Max
-            </Button>
+        <div className={`text-th-fgd-1 pb-2`}>Token</div>
+        <AccountSelect
+          accounts={depositAccounts}
+          selectedAccount={selectedAccount}
+          onSelectAccount={setSelectedAccount}
+        />
+        <div className="flex justify-between pb-2 pt-4">
+          <div className={`text-th-fgd-1`}>Amount</div>
+          <div
+            className="text-th-fgd-1 underline cursor-pointer default-transition hover:text-th-primary hover:no-underline"
+            onClick={setMaxForSelectedAccount}
+          >
+            Max
           </div>
+        </div>
+        <div className="flex items-center">
+          {/* {selectedAccount ? (
+            <img
+              alt=""
+              width="20"
+              height="20"
+              src={`/assets/icons/${getSymbolForTokenMintAddress(
+                selectedAccount?.account?.mint.toString()
+              ).toLowerCase()}.svg`}
+              className={`absolute ml-2`}
+            />
+          ) : null} */}
+          <Input
+            type="number"
+            min="0"
+            className={`border border-th-fgd-4 flex-grow`}
+            placeholder="0.00"
+            value={inputAmount}
+            onChange={(e) => setInputAmount(e.target.value)}
+          />
         </div>
         <div className={`mt-5 sm:mt-6 flex justify-center`}>
           <Button onClick={handleDeposit}>

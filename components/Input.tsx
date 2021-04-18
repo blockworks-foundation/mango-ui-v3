@@ -1,3 +1,9 @@
+import styled from '@emotion/styled'
+
+const StyledInput = styled.input`
+  padding-bottom: 1px;
+`
+
 interface InputProps {
   type: string
   value: any
@@ -8,11 +14,7 @@ interface InputProps {
 }
 
 const Group = ({ children, className }) => {
-  return (
-    <div className={`flex border border-th-fgd-4 rounded ${className}`}>
-      {children}
-    </div>
-  )
+  return <div className={`flex ${className}`}>{children}</div>
 }
 
 const Input = ({
@@ -20,41 +22,34 @@ const Input = ({
   value,
   onChange,
   className,
+  wrapperClassName = 'w-full',
   disabled,
   prefix,
   suffix,
   ...props
 }: InputProps) => {
   return (
-    <div
-      className={`flex items-center h-10 rounded ${
-        disabled ? 'bg-th-bkg-3' : 'bg-th-bkg-1'
-      } ${className}`}
-    >
+    <div className={`flex relative ${wrapperClassName}`}>
       {prefix ? (
-        <div className="flex items-center justify-end border-r border-th-fgd-4 bg-th-bkg-2 p-2 h-full text-sm rounded rounded-r-none w-14 text-right">
+        <div className="flex items-center justify-end p-2 border border-r-0 border-th-fgd-4 bg-th-bkg-2 h-full text-xs rounded rounded-r-none w-14 text-right">
           {prefix}
         </div>
       ) : null}
-      <div className="flex items-center h-full border border-transparent hover:border-th-primary">
-        <input
-          type={type}
-          value={value}
-          onChange={onChange}
-          className={`bg-transparent tracking-wider w-full focus:outline-none ${
-            disabled ? 'opacity-20 cursor-not-allowed' : ''
-          } ${type === 'number' ? 'text-right mr-1' : ''} ${
-            value.toString().length > 9 ? 'text-xs' : ''
-          }`}
-          disabled={disabled}
-          {...props}
-        />
-        {suffix ? (
-          <span className="text-xs pl-0.5 pr-1 bg-transparent text-th-fgd-4">
-            {suffix}
-          </span>
-        ) : null}
-      </div>
+      <StyledInput
+        type={type}
+        value={value}
+        onChange={onChange}
+        className={`${className} px-2 w-full bg-th-bkg-1 rounded h-10 text-th-fgd-1 border border-th-fgd-4 default-transition hover:border-th-primary focus:border-th-primary focus:outline-none ${
+          disabled ? 'bg-th-bkg-3 cursor-not-allowed hover:border-th-fgd-4' : ''
+        } ${value.toString().length > 9 ? 'text-xs' : ''}`}
+        disabled={disabled}
+        {...props}
+      />
+      {suffix ? (
+        <span className="absolute right-0 text-xs flex items-center pr-2 h-full bg-transparent text-th-fgd-4">
+          {suffix}
+        </span>
+      ) : null}
     </div>
   )
 }

@@ -47,10 +47,10 @@ const AccountSelect = ({
         {({ open }) => (
           <>
             <Listbox.Button
-              className={`border border-th-fgd-4 focus:outline-none focus:ring-1 focus:ring-mango-yellow p-2 w-full`}
+              className={`border border-th-fgd-4 bg-th-bkg-1 rounded-md default-transition hover:border-th-primary focus:outline-none focus:ring-1 focus:ring-th-primary p-2 h-10 w-full font-normal`}
             >
               <div
-                className={`flex items-center text-base justify-between font-light`}
+                className={`flex items-center text-th-fgd-1 justify-between`}
               >
                 {selectedAccount ? (
                   <div className={`flex items-center flex-grow`}>
@@ -61,12 +61,15 @@ const AccountSelect = ({
                       src={`/assets/icons/${getSymbolForTokenMintAddress(
                         selectedAccount?.account?.mint.toString()
                       ).toLowerCase()}.svg`}
-                      className={`mr-4`}
+                      className={`mr-2`}
                     />
-                    {abbreviateAddress(selectedAccount?.publicKey)}
+                    {getSymbolForTokenMintAddress(
+                      selectedAccount?.account.mint.toString()
+                    )}
+                    {/* abbreviateAddress(selectedAccount?.publicKey) */}
                     {!hideBalance ? (
-                      <div className={`ml-4 text-sm text-right flex-grow`}>
-                        ({getBalanceForAccount(selectedAccount)})
+                      <div className={`ml-4 text-right flex-grow`}>
+                        Bal: {getBalanceForAccount(selectedAccount)}
                       </div>
                     ) : null}
                   </div>
@@ -74,9 +77,9 @@ const AccountSelect = ({
                   'No wallet addresses found'
                 )}
                 {open ? (
-                  <ChevronUpIcon className={`h-5 w-5 ml-2`} />
+                  <ChevronUpIcon className={`h-5 w-5 ml-2 text-th-primary`} />
                 ) : (
-                  <ChevronDownIcon className={`h-5 w-5 ml-2`} />
+                  <ChevronDownIcon className={`h-5 w-5 ml-2 text-th-primary`} />
                 )}
               </div>
             </Listbox.Button>
