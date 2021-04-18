@@ -30,6 +30,9 @@ export function useLocalStorageStringState(
 
   const setState = useCallback<(newState: string | null) => void>(
     (newState) => {
+      if (!localStorageListeners[key]) {
+        localStorageListeners[key] = []
+      }
       const changed = state !== newState
       if (!changed) {
         return

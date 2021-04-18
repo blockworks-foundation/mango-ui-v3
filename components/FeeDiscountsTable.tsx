@@ -5,6 +5,7 @@ import useMangoStore from '../stores/useMangoStore'
 import Button from './Button'
 import DepositSrmModal from './DepositSrmModal'
 import WithdrawSrmModal from './WithdrawSrmModal'
+import { SRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
 
 const FeeDiscountsTable = () => {
   const [showDeposit, setShowDeposit] = useState(false)
@@ -51,7 +52,11 @@ const FeeDiscountsTable = () => {
       >
         <div className="px-4">
           <div>Total SRM in Mango</div>
-          <div className="text-th-fgd-1 text-lg font-semibold">{totalSrm}</div>
+          <div className="text-th-fgd-1 text-lg font-semibold">
+            {totalSrm.toLocaleString(undefined, {
+              maximumFractionDigits: SRM_DECIMALS,
+            })}
+          </div>
         </div>
         <div className="px-4 mt-4 sm:mt-0">
           <div>Maker Fee</div>
