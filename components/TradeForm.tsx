@@ -25,6 +25,7 @@ export default function TradeForm() {
   const set = useMangoStore((s) => s.set)
   const connected = useMangoStore((s) => s.wallet.connected)
   const actions = useMangoStore((s) => s.actions)
+  const wallet = useMangoStore((s) => s.wallet.current)
   const { connection, cluster } = useConnection()
   const { side, baseSize, quoteSize, price, tradeType } = useMangoStore(
     (s) => s.tradeForm
@@ -213,7 +214,7 @@ export default function TradeForm() {
     }
   }
 
-  const disabled =
+  const disabledTradeButton =
     (!price && tradeType === 'Limit') || !baseSize || !connected || submitting
 
   return (
@@ -305,29 +306,36 @@ export default function TradeForm() {
       </div>
       <div className={`flex mt-4`}>
         {ipAllowed ? (
-          side === 'buy' ? (
-            <Button
-              disabled={disabled}
-              onClick={onSubmit}
-              className={`rounded text-lg ${
-                !disabled && 'border-th-green hover:border-th-red-green'
-              } text-th-green hover:text-th-fgd-1 hover:bg-th-green-dark hover:border-th-green-dark flex-grow`}
-            >
-              {connected
-                ? `Buy ${baseSize > 0 ? baseSize : ''} ${baseCurrency}`
-                : 'Connect Wallet'}
-            </Button>
+          connected ? (
+            side === 'buy' ? (
+              <Button
+                disabled={disabledTradeButton}
+                onClick={onsubmit}
+                className={`rounded text-lg ${
+                  !disabledTradeButton &&
+                  'border-th-green hover:border-th-green-dark'
+                } text-th-green hover:text-th-fgd-1 hover:bg-th-green-dark flex-grow`}
+              >
+                {`Buy ${baseSize > 0 ? baseSize : ''} ${baseCurrency}`}
+              </Button>
+            ) : (
+              <Button
+                disabled={disabledTradeButton}
+                onClick={onSubmit}
+                className={`rounded text-lg ${
+                  !disabledTradeButton &&
+                  'border-th-red hover:border-th-red-dark'
+                } text-th-red hover:text-th-fgd-1 hover:bg-th-red-dark flex-grow`}
+              >
+                {`Sell ${baseSize > 0 ? baseSize : ''} ${baseCurrency}`}
+              </Button>
+            )
           ) : (
             <Button
-              disabled={disabled}
-              onClick={onSubmit}
-              className={`rounded text-lg ${
-                !disabled && 'border-th-red hover:border-th-red-dark'
-              } text-th-red hover:text-th-fgd-1 hover:bg-th-red-dark flex-grow`}
+              onClick={() => wallet.connect()}
+              className={`rounded text-lg flex-grow`}
             >
-              {connected
-                ? `Sell ${baseSize > 0 ? baseSize : ''} ${baseCurrency}`
-                : 'Connect Wallet'}
+              Connect Wallet
             </Button>
           )
         ) : (

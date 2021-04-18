@@ -52,7 +52,7 @@ body {
 }
 
 button {
-  transition: all 0.25s ease;
+  transition: all 0.3s ease;
   @apply font-semibold;
 }
 

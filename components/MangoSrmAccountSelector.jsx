@@ -47,9 +47,9 @@ const MangoSrmAccountSelector = ({
                   </div>
                 </div>
                 {open ? (
-                  <ChevronUpIcon className={`h-5 w-5 ml-2`} />
+                  <ChevronUpIcon className={`h-5 w-5 ml-2 text-th-primary`} />
                 ) : (
-                  <ChevronDownIcon className={`h-5 w-5 ml-2`} />
+                  <ChevronDownIcon className={`h-5 w-5 ml-2 text-th-primary`} />
                 )}
               </div>
             </Listbox.Button>

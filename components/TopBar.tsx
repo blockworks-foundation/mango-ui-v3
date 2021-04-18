@@ -64,10 +64,6 @@ const TopBar = () => {
     }
   }
 
-  const handleConnectDisconnect = () => {
-    connected ? wallet.disconnect() : wallet.connect()
-  }
-
   const WALLET_OPTIONS = [
     { name: 'Copy address', icon: <DuplicateIcon /> },
     { name: 'Disconnect', icon: <LogoutIcon /> },
@@ -138,10 +134,10 @@ const TopBar = () => {
                 ) : (
                   <div className="flex justify-between border border-th-primary rounded-md h-11 w-48">
                     <button
-                      onClick={handleConnectDisconnect}
+                      onClick={() => wallet.connect()}
                       className="text-th-primary hover:text-th-fgd-1 focus:outline-none font-semibold"
                     >
-                      <div className="flex flex-row items-center px-2 justify-center h-full rounded-l hover:bg-th-primary hover:text-th-fgd-1">
+                      <div className="flex flex-row items-center px-2 justify-center h-full rounded-l default-transition hover:bg-th-primary hover:text-th-fgd-1">
                         <WalletIcon className="w-5 h-5 mr-3 fill-current" />
                         <div>
                           <span className="whitespace-nowrap">
