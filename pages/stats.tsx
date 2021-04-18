@@ -9,6 +9,7 @@ import FloatingElement from '../components/FloatingElement'
 import useConnection from '../hooks/useConnection'
 import TopBar from '../components/TopBar'
 import Select from '../components/Select'
+import { formatBalanceDisplay } from '../utils/index'
 
 const DECIMALS = {
   BTC: 4,
@@ -232,10 +233,20 @@ export default function StatsPage() {
                       </button>
                     </td>
                     <td className="text-left py-4">
-                      {stat.totalDeposits.toFixed(DECIMALS[stat.symbol])}
+                      {formatBalanceDisplay(
+                        stat.totalDeposits,
+                        DECIMALS[stat.symbol]
+                      ).toLocaleString(undefined, {
+                        maximumFractionDigits: DECIMALS[stat.symbol],
+                      })}
                     </td>
                     <td className="text-left py-4">
-                      {stat.totalBorrows.toFixed(DECIMALS[stat.symbol])}
+                      {formatBalanceDisplay(
+                        stat.totalBorrows,
+                        DECIMALS[stat.symbol]
+                      ).toLocaleString(undefined, {
+                        maximumFractionDigits: DECIMALS[stat.symbol],
+                      })}
                     </td>
                     <td className="text-left py-4">
                       {stat.depositInterest.toFixed(2)}%
