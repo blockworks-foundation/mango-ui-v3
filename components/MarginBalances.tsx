@@ -128,7 +128,7 @@ export default function MarginBalances() {
             <span>Withdraw</span>
           </Button>
         </div>
-        <div className={`text-center mt-5 text-th-fgd-4 text-sm`}>
+        <div className={`text-center mt-4 text-th-fgd-4 text-sm`}>
           Settle funds in the Balances tab
         </div>
       </FloatingElement>

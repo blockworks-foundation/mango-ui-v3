@@ -6,9 +6,7 @@ const DropMenu = ({ button, buttonClassName, value, onChange, options }) => {
       <Listbox value={value} onChange={onChange}>
         {({ open }) => (
           <>
-            <Listbox.Button
-              className={`${buttonClassName} transition-all duration-500`}
-            >
+            <Listbox.Button className={`${buttonClassName} default-transition`}>
               {button}
             </Listbox.Button>
             {open ? (

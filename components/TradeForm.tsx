@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import styled from '@emotion/styled'
 import useMarket from '../hooks/useMarket'
 import useIpAddress from '../hooks/useIpAddress'
 import useConnection from '../hooks/useConnection'
@@ -14,6 +15,10 @@ import Button from './Button'
 import TradeType from './TradeType'
 import Input from './Input'
 import Switch from './Switch'
+
+const StyledRightInput = styled(Input)`
+  border-left: 1px solid transparent;
+`
 
 export default function TradeForm() {
   const { baseCurrency, quoteCurrency, market, marketAddress } = useMarket()
@@ -208,7 +213,7 @@ export default function TradeForm() {
     }
   }
 
-  const disabled =
+  const disabledTradeButton =
     (!price && tradeType === 'Limit') || !baseSize || !connected || submitting
 
   return (
@@ -254,12 +259,13 @@ export default function TradeForm() {
             disabled={tradeType === 'Market'}
             prefix={'Price'}
             suffix={quoteCurrency}
-            className="w-3/5 rounded-r-none"
+            className="rounded-none"
+            wrapperClassName="w-3/5"
           />
           <TradeType
             onChange={handleTradeTypeChange}
             value={tradeType}
-            className="w-2/5 hover:border-th-primary"
+            className="hover:border-th-primary flex-grow"
           />
         </Input.Group>
 
@@ -269,21 +275,23 @@ export default function TradeForm() {
             step={market?.minOrderSize || 1}
             onChange={(e) => onSetBaseSize(parseFloat(e.target.value))}
             value={baseSize}
-            className="flex-grow w-3/5 rounded-r-none"
+            className="rounded-none"
+            wrapperClassName="w-3/5"
             prefix={'Size'}
             suffix={baseCurrency}
           />
-          <Input
+          <StyledRightInput
             type="number"
             step={market?.minOrderSize || 1}
             onChange={(e) => onSetQuoteSize(parseFloat(e.target.value))}
             value={quoteSize}
-            className="border-l border-th-fgd-4 rounded-l-none w-2/5"
+            className="rounded-l-none"
+            wrapperClassName="w-2/5"
             suffix={quoteCurrency}
           />
         </Input.Group>
         {tradeType !== 'Market' ? (
-          <div className="flex items-center mt-4 text-sm">
+          <div className="flex items-center mt-4">
             <Switch checked={postOnly} onChange={postOnChange}>
               POST
             </Switch>
@@ -295,32 +303,47 @@ export default function TradeForm() {
           </div>
         ) : null}
       </div>
-      <div className={`flex mt-4`}>
+      <div className={`flex pt-6`}>
         {ipAllowed ? (
-          side === 'buy' ? (
-            <Button
-              disabled={disabled}
-              onClick={onSubmit}
-              className={`rounded text-lg ${
-                !disabled && 'border-th-green hover:border-th-red-green'
-              } text-th-green hover:text-th-fgd-1 hover:bg-th-green-dark hover:border-th-green-dark flex-grow`}
-            >
-              {connected
-                ? `Buy ${baseSize > 0 ? baseSize : ''} ${baseCurrency}`
-                : 'Connect Wallet'}
-            </Button>
+          connected ? (
+            side === 'buy' ? (
+              <Button
+                disabled={disabledTradeButton}
+                onClick={onsubmit}
+                className={`rounded ${
+                  !disabledTradeButton &&
+                  'border-th-green hover:border-th-green-dark'
+                } text-th-green hover:text-th-fgd-1 hover:bg-th-green-dark flex-grow`}
+              >
+                {`Buy ${baseSize > 0 ? baseSize : ''} ${baseCurrency}`}
+              </Button>
+            ) : (
+              <Button
+                disabled={disabledTradeButton}
+                onClick={onSubmit}
+                className={`rounded ${
+                  !disabledTradeButton &&
+                  'border-th-red hover:border-th-red-dark'
+                } text-th-red hover:text-th-fgd-1 hover:bg-th-red-dark flex-grow`}
+              >
+                {`Sell ${baseSize > 0 ? baseSize : ''} ${baseCurrency}`}
+              </Button>
+            )
           ) : (
-            <Button
-              disabled={disabled}
-              onClick={onSubmit}
-              className={`rounded text-lg ${
-                !disabled && 'border-th-red hover:border-th-red-dark'
-              } text-th-red hover:text-th-fgd-1 hover:bg-th-red-dark flex-grow`}
-            >
-              {connected
-                ? `Sell ${baseSize > 0 ? baseSize : ''} ${baseCurrency}`
-                : 'Connect Wallet'}
-            </Button>
+            <>
+              {/* <div className="flex justify-between border border-th-fgd-4 rounded-md w-full">
+                <Button
+                  onClick={() => wallet.connect()}
+                  className={`rounded-r-none flex flex-grow items-center justify-center border-none`}
+                >
+                  <WalletIcon className="fill-current h-4 w-4 mr-2" />
+                  Connect Wallet
+                </Button>
+                <div className="relative h-full">
+                  <WalletSelect />
+                </div>
+              </div> */}
+            </>
           )
         ) : (
           <Button disabled className="flex-grow">

@@ -9,15 +9,13 @@ import {
   MenuIcon,
   XIcon,
 } from '@heroicons/react/outline'
+import UiLock from './UiLock'
+import { useRouter } from 'next/router'
 import MenuItem from './MenuItem'
 import ThemeSwitch from './ThemeSwitch'
 import { WalletIcon } from './icons'
-import UiLock from './UiLock'
-import { useRouter } from 'next/router'
-import WalletSelect from './WalletSelect'
 import useMangoStore from '../stores/useMangoStore'
-import { WALLET_PROVIDERS, DEFAULT_PROVIDER } from '../hooks/useWallet'
-import useLocalStorageState from '../hooks/useLocalStorageState'
+import ConnectWalletButton from './ConnectWalletButton'
 
 const Code = styled.code`
   border: 1px solid hsla(0, 0%, 39.2%, 0.2);
@@ -26,20 +24,12 @@ const Code = styled.code`
   font-size: 13px;
 `
 
-const StyledWalletTypeLabel = styled.div`
-  font-size: 0.6rem;
-`
-
 const TopBar = () => {
   const { asPath } = useRouter()
   const connected = useMangoStore((s) => s.wallet.connected)
   const wallet = useMangoStore((s) => s.wallet.current)
   const [showMenu, setShowMenu] = useState(false)
   const [isCopied, setIsCopied] = useState(false)
-  const [savedProviderUrl] = useLocalStorageState(
-    'walletProvider',
-    DEFAULT_PROVIDER.url
-  )
 
   useEffect(() => {
     if (isCopied) {
@@ -64,10 +54,6 @@ const TopBar = () => {
     }
   }
 
-  const handleConnectDisconnect = () => {
-    connected ? wallet.disconnect() : wallet.connect()
-  }
-
   const WALLET_OPTIONS = [
     { name: 'Copy address', icon: <DuplicateIcon /> },
     { name: 'Disconnect', icon: <LogoutIcon /> },
@@ -78,7 +64,7 @@ const TopBar = () => {
       <div className={`px-4 sm:px-6 lg:px-8`}>
         <div className={`flex justify-between h-16`}>
           <div className={`flex`}>
-            <div className={`flex-shrink-0 flex items-center ml-2`}>
+            <div className={`flex-shrink-0 flex items-center`}>
               <img
                 className={`h-8 w-auto`}
                 src="/assets/icons/logo.svg"
@@ -92,9 +78,15 @@ const TopBar = () => {
             </div>
           </div>
           <div className="flex">
-            <div className="flex items-center pr-1">
-              {asPath === '/' ? <UiLock className="mr-1" /> : null}
-              <ThemeSwitch />
+            <div className="flex items-center">
+              {asPath === '/' ? (
+                <div className="flex items-center justify-center rounded-full bg-th-bkg-3 w-8 h-8 mr-4">
+                  <UiLock />
+                </div>
+              ) : null}
+              <div className="flex items-center justify-center rounded-full bg-th-bkg-3 w-8 h-8 mr-2">
+                <ThemeSwitch />
+              </div>
               <div className="hidden sm:ml-4 sm:block">
                 {connected && wallet?.publicKey ? (
                   <Menu>
@@ -136,31 +128,7 @@ const TopBar = () => {
                     )}
                   </Menu>
                 ) : (
-                  <div className="flex justify-between border border-th-primary rounded-md h-11 w-48">
-                    <button
-                      onClick={handleConnectDisconnect}
-                      className="text-th-primary hover:text-th-fgd-1 focus:outline-none font-semibold"
-                    >
-                      <div className="flex flex-row items-center px-2 justify-center h-full rounded-l hover:bg-th-primary hover:text-th-fgd-1">
-                        <WalletIcon className="w-5 h-5 mr-3 fill-current" />
-                        <div>
-                          <span className="whitespace-nowrap">
-                            Connect Wallet
-                          </span>
-                          <StyledWalletTypeLabel className="font-normal text-th-fgd-1 text-left leading-3">
-                            {WALLET_PROVIDERS.filter(
-                              (p) => p.url === savedProviderUrl
-                            ).map(({ name }) => name)}
-                          </StyledWalletTypeLabel>
-                        </div>
-                      </div>
-                    </button>
-                    {!connected && (
-                      <div className="relative h-full">
-                        <WalletSelect />
-                      </div>
-                    )}
-                  </div>
+                  <ConnectWalletButton />
                 )}
               </div>
             </div>

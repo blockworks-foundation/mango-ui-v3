@@ -1,6 +1,7 @@
 import { Portal } from 'react-portal'
+import { XIcon } from '@heroicons/react/outline'
 
-const Modal = ({ isOpen, onClose, children }) => {
+const Modal = ({ isOpen, onClose, children, hideClose = false }) => {
   return (
     <Portal>
       <div
@@ -9,10 +10,10 @@ const Modal = ({ isOpen, onClose, children }) => {
         role="dialog"
         aria-modal="true"
       >
-        <div className="flex items-end min-h-screen px-4 pb-20 text-center sm:block sm:p-0">
+        <div className="flex items-center min-h-screen px-4 pb-20 text-center sm:block sm:p-0">
           {isOpen ? (
             <div
-              className="fixed inset-0 bg-black bg-opacity-40 transition-opacity"
+              className="fixed inset-0 bg-black bg-opacity-70 transition-opacity"
               aria-hidden="true"
               onClick={onClose}
             ></div>
@@ -27,10 +28,22 @@ const Modal = ({ isOpen, onClose, children }) => {
 
           {isOpen ? (
             <div
-              className="inline-block align-bottom bg-th-bkg-1 border border-th-bkg-3 
-              rounded-lg text-left overflow-hidden shadow-lg transform transition-all 
-              sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+              className="inline-block bg-th-bkg-2 
+              rounded-lg text-left shadow-lg transform transition-all 
+              sm:my-8 align-middle sm:max-w-md w-full"
             >
+              {!hideClose ? (
+                <div className="w-full flex justify-end p-2 pb-0">
+                  <button
+                    onClick={onClose}
+                    className={`text-th-fgd-1 hover:text-th-primary focus:outline-none`}
+                  >
+                    <XIcon className={`h-5 w-5`} />
+                  </button>
+                </div>
+              ) : (
+                <div className="w-full pt-4" />
+              )}
               {children}
             </div>
           ) : null}
@@ -42,7 +55,7 @@ const Modal = ({ isOpen, onClose, children }) => {
 
 const Header = ({ children }) => {
   return (
-    <div className={`flex items-center bg-th-bkg-3 py-4 px-4`}>{children}</div>
+    <div className={`flex justify-center bg-th-bkg-2 p-4 pt-0`}>{children}</div>
   )
 }
 

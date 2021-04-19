@@ -1,0 +1,159 @@
+import { Listbox } from '@headlessui/react'
+import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid'
+import {
+  abbreviateAddress,
+  floorToDecimal,
+  getSymbolForTokenMintAddress,
+} from '../utils'
+import useMarketList from '../hooks/useMarketList'
+import { nativeToUi } from '@blockworks-foundation/mango-client/lib/utils'
+import useMangoStore from '../stores/useMangoStore'
+import { tokenPrecision } from '../utils/index'
+import { SRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
+
+type AccountSelectProps = {
+  accounts: any[]
+  selectedAccount: any
+  onSelectAccount: (x) => any
+  getBalance?: (x) => any
+  hideAddress?: boolean
+}
+
+const AccountSelect = ({
+  accounts,
+  selectedAccount,
+  onSelectAccount,
+  getBalance,
+  hideAddress = false,
+}: AccountSelectProps) => {
+  const { getTokenIndex } = useMarketList()
+  const mintDecimals = useMangoStore((s) => s.selectedMangoGroup.mintDecimals)
+  const handleChange = (value) => {
+    const newAccount = accounts.find((a) => a.publicKey.toString() === value)
+    onSelectAccount(newAccount)
+  }
+
+  const getBalanceForAccount = (account) => {
+    const mintAddress = account?.account.mint.toString()
+    const symbol = getSymbolForTokenMintAddress(mintAddress)
+    const balance = nativeToUi(
+      account?.account?.amount,
+      symbol !== 'SRM' ? mintDecimals[getTokenIndex(mintAddress)] : SRM_DECIMALS
+    )
+
+    return floorToDecimal(
+      balance,
+      symbol !== 'SRM' ? tokenPrecision[symbol] : SRM_DECIMALS
+    ).toString()
+  }
+
+  return (
+    <div className={`relative inline-block w-full`}>
+      <Listbox
+        value={selectedAccount?.publicKey.toString()}
+        onChange={handleChange}
+      >
+        {({ open }) => (
+          <>
+            <Listbox.Button
+              className={`border border-th-fgd-4 bg-th-bkg-1 rounded-md default-transition hover:border-th-primary focus:outline-none focus:border-th-primary p-2 w-full font-normal`}
+            >
+              <div
+                className={`flex items-center text-th-fgd-1 justify-between`}
+              >
+                {selectedAccount ? (
+                  <div className={`flex items-center flex-grow`}>
+                    <img
+                      alt=""
+                      width="20"
+                      height="20"
+                      src={`/assets/icons/${getSymbolForTokenMintAddress(
+                        selectedAccount?.account?.mint.toString()
+                      ).toLowerCase()}.svg`}
+                      className={`mr-2`}
+                    />
+                    <div className="text-left">
+                      {getSymbolForTokenMintAddress(
+                        selectedAccount?.account?.mint.toString()
+                      )}
+                      {!hideAddress ? (
+                        <div className="text-xs text-th-fgd-4">
+                          {abbreviateAddress(selectedAccount?.publicKey)}
+                        </div>
+                      ) : null}
+                    </div>
+                    <div className={`ml-4 text-right flex-grow`}>
+                      {hideAddress
+                        ? getBalance(selectedAccount)
+                        : getBalanceForAccount(selectedAccount)}
+                    </div>
+                  </div>
+                ) : (
+                  'No wallet addresses found'
+                )}
+                {open ? (
+                  <ChevronUpIcon className={`h-5 w-5 ml-2 text-th-primary`} />
+                ) : (
+                  <ChevronDownIcon className={`h-5 w-5 ml-2 text-th-primary`} />
+                )}
+              </div>
+            </Listbox.Button>
+            <Listbox.Options
+              className={`z-20 p-1 absolute right-0 top-13 bg-th-bkg-1 divide-y divide-th-bkg-3 shadow-lg outline-none rounded-md w-full max-h-60 overflow-auto`}
+            >
+              <div className="flex justify-between">
+                <div className={`text-th-fgd-4 p-2`}>Accounts</div>
+                <div className={`text-th-fgd-4 p-2`}>Balance</div>
+              </div>
+              {accounts.map((account) => {
+                const symbolForAccount = getSymbolForTokenMintAddress(
+                  account?.account?.mint.toString()
+                )
+
+                return (
+                  <Listbox.Option
+                    key={account?.publicKey.toString()}
+                    value={account?.publicKey.toString()}
+                  >
+                    {({ selected }) => (
+                      <div
+                        className={`p-2 hover:bg-th-bkg-2 hover:cursor-pointer ${
+                          selected && `text-th-primary`
+                        }`}
+                      >
+                        <div className={`flex items-center text-th-fgd-1`}>
+                          <img
+                            alt=""
+                            width="20"
+                            height="20"
+                            src={`/assets/icons/${symbolForAccount.toLowerCase()}.svg`}
+                            className="mr-2"
+                          />
+                          <div className={`flex-grow text-left`}>
+                            {symbolForAccount}
+                            {!hideAddress ? (
+                              <div className="text-xs text-th-fgd-4">
+                                {abbreviateAddress(selectedAccount?.publicKey)}
+                              </div>
+                            ) : null}
+                          </div>
+                          {!hideAddress ? (
+                            <div className={`text-sm`}>
+                              {getBalanceForAccount(account)} {symbolForAccount}
+                            </div>
+                          ) : null}
+                        </div>
+                      </div>
+                    )}
+                  </Listbox.Option>
+                )
+              })}
+            </Listbox.Options>
+          </>
+        )}
+      </Listbox>
+    </div>
+  )
+}
+
+export default AccountSelect

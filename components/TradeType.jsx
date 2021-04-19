@@ -1,5 +1,10 @@
 import { Listbox } from '@headlessui/react'
+import styled from '@emotion/styled'
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid'
+
+const StyledListbox = styled(Listbox.Button)`
+  border-left: 1px solid transparent;
+`
 
 const TRADE_TYPES = ['Limit', 'Market']
 
@@ -9,8 +14,8 @@ const TradeType = ({ value, onChange, className = '' }) => {
       <Listbox value={value} onChange={onChange}>
         {({ open }) => (
           <>
-            <Listbox.Button
-              className={`font-normal h-full w-full bg-th-bkg-1 border-l border-th-fgd-4 rounded rounded-l-none focus:outline-none focus:ring-1 focus:ring-th-primary`}
+            <StyledListbox
+              className={`font-normal h-full w-full bg-th-bkg-1 border border-th-fgd-4 hover:border-th-primary rounded rounded-l-none focus:outline-none focus:border-th-primary`}
             >
               <div
                 className={`flex items-center justify-between space-x-4 pl-2 pr-1`}
@@ -22,7 +27,7 @@ const TradeType = ({ value, onChange, className = '' }) => {
                   <ChevronDownIcon className={`h-5 w-5 mr-1 text-th-primary`} />
                 )}
               </div>
-            </Listbox.Button>
+            </StyledListbox>
             {open ? (
               <Listbox.Options
                 static
