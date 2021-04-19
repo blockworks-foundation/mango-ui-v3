@@ -26,9 +26,9 @@ const MarketSelect = () => {
               }
             `}
             onClick={() => handleChange(name)}
-            key={address}
+            key={address as string}
           >
-            {name.split('/')[0]}
+            {name}
           </div>
         ))}
       </div>

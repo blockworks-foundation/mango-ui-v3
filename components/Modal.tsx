@@ -1,7 +1,7 @@
 import { Portal } from 'react-portal'
 import { XIcon } from '@heroicons/react/outline'
 
-const Modal = ({ isOpen, onClose, children, hideClose }) => {
+const Modal = ({ isOpen, onClose, children, hideClose = false }) => {
   return (
     <Portal>
       <div

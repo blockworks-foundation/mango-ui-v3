@@ -15,8 +15,6 @@ import Button from './Button'
 import TradeType from './TradeType'
 import Input from './Input'
 import Switch from './Switch'
-import { WalletIcon } from './icons'
-import WalletSelect from './WalletSelect'
 
 const StyledRightInput = styled(Input)`
   border-left: 1px solid transparent;
@@ -27,7 +25,6 @@ export default function TradeForm() {
   const set = useMangoStore((s) => s.set)
   const connected = useMangoStore((s) => s.wallet.connected)
   const actions = useMangoStore((s) => s.actions)
-  const wallet = useMangoStore((s) => s.wallet.current)
   const { connection, cluster } = useConnection()
   const { side, baseSize, quoteSize, price, tradeType } = useMangoStore(
     (s) => s.tradeForm
@@ -333,18 +330,20 @@ export default function TradeForm() {
               </Button>
             )
           ) : (
-            <div className="flex justify-between border border-th-fgd-4 rounded-md w-full">
-              <Button
-                onClick={() => wallet.connect()}
-                className={`rounded-r-none flex flex-grow items-center justify-center border-none`}
-              >
-                <WalletIcon className="fill-current h-4 w-4 mr-2" />
-                Connect Wallet
-              </Button>
-              <div className="relative h-full">
-                <WalletSelect />
-              </div>
-            </div>
+            <>
+              {/* <div className="flex justify-between border border-th-fgd-4 rounded-md w-full">
+                <Button
+                  onClick={() => wallet.connect()}
+                  className={`rounded-r-none flex flex-grow items-center justify-center border-none`}
+                >
+                  <WalletIcon className="fill-current h-4 w-4 mr-2" />
+                  Connect Wallet
+                </Button>
+                <div className="relative h-full">
+                  <WalletSelect />
+                </div>
+              </div> */}
+            </>
           )
         ) : (
           <Button disabled className="flex-grow">

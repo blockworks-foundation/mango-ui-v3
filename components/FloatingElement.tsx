@@ -36,7 +36,7 @@ const FloatingElement: FunctionComponent<FloatingElementProps> = ({
   return (
     <div className="m-1 p-1 bg-th-bkg-2 rounded-lg h-full">
       <div
-        className={`thin-scroll p-3 overflow-auto overflow-x-hidden relative h-full ${className}`}
+        className={`thin-scroll p-2.5 overflow-auto overflow-x-hidden relative h-full ${className}`}
       >
         {!uiLocked ? (
           <StyledDragWrapper className="absolute top-0 left-0 w-full h-full cursor-move z-50">

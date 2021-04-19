@@ -1,4 +1,4 @@
-import { Listbox, Transition } from '@headlessui/react'
+import { Listbox } from '@headlessui/react'
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid'
 import {
   abbreviateAddress,
@@ -11,13 +11,21 @@ import useMangoStore from '../stores/useMangoStore'
 import { tokenPrecision } from '../utils/index'
 import { SRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
 
+type AccountSelectProps = {
+  accounts: any[]
+  selectedAccount: any
+  onSelectAccount: (x) => any
+  getBalance?: (x) => any
+  hideAddress?: boolean
+}
+
 const AccountSelect = ({
   accounts,
   selectedAccount,
   onSelectAccount,
-  hideBalance = false,
-  getMaxForSelectedAccount,
-}) => {
+  getBalance,
+  hideAddress = false,
+}: AccountSelectProps) => {
   const { getTokenIndex } = useMarketList()
   const mintDecimals = useMangoStore((s) => s.selectedMangoGroup.mintDecimals)
   const handleChange = (value) => {
@@ -68,14 +76,16 @@ const AccountSelect = ({
                       {getSymbolForTokenMintAddress(
                         selectedAccount?.account?.mint.toString()
                       )}
-                      <div className="text-xs text-th-fgd-4">
-                        {abbreviateAddress(selectedAccount?.publicKey)}
-                      </div>
+                      {!hideAddress ? (
+                        <div className="text-xs text-th-fgd-4">
+                          {abbreviateAddress(selectedAccount?.publicKey)}
+                        </div>
+                      ) : null}
                     </div>
                     <div className={`ml-4 text-right flex-grow`}>
-                      {!hideBalance
-                        ? getBalanceForAccount(selectedAccount)
-                        : getMaxForSelectedAccount(selectedAccount)}
+                      {hideAddress
+                        ? getBalance(selectedAccount)
+                        : getBalanceForAccount(selectedAccount)}
                     </div>
                   </div>
                 ) : (
@@ -88,16 +98,6 @@ const AccountSelect = ({
                 )}
               </div>
             </Listbox.Button>
-            {/* <Transition
-              show={open}
-              appear={true}
-              enter="transition duration-100 ease-out"
-              enterFrom="transform scale-95 opacity-0"
-              enterTo="transform scale-100 opacity-100"
-              leave="transition duration-75 ease-out"
-              leaveFrom="transform scale-100 opacity-100"
-              leaveTo="transform scale-95 opacity-0"
-            > */}
             <Listbox.Options
               className={`z-20 p-1 absolute right-0 top-13 bg-th-bkg-1 divide-y divide-th-bkg-3 shadow-lg outline-none rounded-md w-full max-h-60 overflow-auto`}
             >
@@ -131,15 +131,17 @@ const AccountSelect = ({
                           />
                           <div className={`flex-grow text-left`}>
                             {symbolForAccount}
-                            <div className="text-xs text-th-fgd-4">
-                              {abbreviateAddress(selectedAccount?.publicKey)}
+                            {!hideAddress ? (
+                              <div className="text-xs text-th-fgd-4">
+                                {abbreviateAddress(selectedAccount?.publicKey)}
+                              </div>
+                            ) : null}
+                          </div>
+                          {!hideAddress ? (
+                            <div className={`text-sm`}>
+                              {getBalanceForAccount(account)} {symbolForAccount}
                             </div>
-                          </div>
-                          <div className={`text-sm`}>
-                            {!hideBalance
-                              ? getBalanceForAccount(account)
-                              : getMaxForSelectedAccount(account)}{' '}
-                          </div>
+                          ) : null}
                         </div>
                       </div>
                     )}
@@ -147,7 +149,6 @@ const AccountSelect = ({
                 )
               })}
             </Listbox.Options>
-            {/* </Transition> */}
           </>
         )}
       </Listbox>

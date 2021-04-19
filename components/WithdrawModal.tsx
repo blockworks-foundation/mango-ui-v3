@@ -87,18 +87,16 @@ const WithdrawModal = ({ isOpen, onClose }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <Modal.Header>
-        {/* not sure what the below div os for? */}
-        <div className={`text-th-fgd-3 flex-shrink invisible w-5`}>X</div>
         <ElementTitle noMarignBottom>Withdraw Funds</ElementTitle>
       </Modal.Header>
       <div className={`pb-6 px-8`}>
         <div className={`text-th-fgd-1 pb-2`}>Token Account</div>
         <AccountSelect
-          hideBalance
+          hideAddress
           accounts={withdrawAccounts}
           selectedAccount={selectedAccount}
           onSelectAccount={setSelectedAccount}
-          getMaxForSelectedAccount={getMaxForSelectedAccount}
+          getBalance={getMaxForSelectedAccount}
         />
         <div className="flex justify-between pb-2 pt-4">
           <div className={`text-th-fgd-1`}>Amount</div>
