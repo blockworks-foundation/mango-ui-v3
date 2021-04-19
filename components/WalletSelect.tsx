@@ -8,7 +8,7 @@ import useMangoStore from '../stores/useMangoStore'
 import { WALLET_PROVIDERS, DEFAULT_PROVIDER } from '../hooks/useWallet'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 
-export default function WalletSelect() {
+export default function WalletSelect({ isPrimary }) {
   const setMangoStore = useMangoStore((s) => s.set)
   const [savedProviderUrl] = useLocalStorageState(
     'walletProvider',
@@ -25,7 +25,13 @@ export default function WalletSelect() {
     <Menu>
       {({ open }) => (
         <>
-          <Menu.Button className="px-3 flex justify-center items-center h-full rounded-r focus:outline-none text-th-primary hover:text-th-fgd-1 hover:bg-th-primary cursor-pointer">
+          <Menu.Button
+            className={`flex justify-center items-center h-full rounded-r focus:outline-none text-th-primary hover:text-th-fgd-1 ${
+              isPrimary
+                ? 'px-3 hover:bg-th-primary'
+                : 'px-2 hover:bg-th-bkg-3 border-l border-th-fgd-4'
+            } cursor-pointer`}
+          >
             {open ? (
               <ChevronUpIcon className="h-5 w-5" />
             ) : (

@@ -15,6 +15,8 @@ import Button from './Button'
 import TradeType from './TradeType'
 import Input from './Input'
 import Switch from './Switch'
+import { WalletIcon } from './icons'
+import WalletSelect from './WalletSelect'
 
 const StyledRightInput = styled(Input)`
   border-left: 1px solid transparent;
@@ -304,14 +306,14 @@ export default function TradeForm() {
           </div>
         ) : null}
       </div>
-      <div className={`flex mt-4`}>
+      <div className={`flex pt-6`}>
         {ipAllowed ? (
           connected ? (
             side === 'buy' ? (
               <Button
                 disabled={disabledTradeButton}
                 onClick={onsubmit}
-                className={`rounded text-lg ${
+                className={`rounded ${
                   !disabledTradeButton &&
                   'border-th-green hover:border-th-green-dark'
                 } text-th-green hover:text-th-fgd-1 hover:bg-th-green-dark flex-grow`}
@@ -322,7 +324,7 @@ export default function TradeForm() {
               <Button
                 disabled={disabledTradeButton}
                 onClick={onSubmit}
-                className={`rounded text-lg ${
+                className={`rounded ${
                   !disabledTradeButton &&
                   'border-th-red hover:border-th-red-dark'
                 } text-th-red hover:text-th-fgd-1 hover:bg-th-red-dark flex-grow`}
@@ -331,12 +333,18 @@ export default function TradeForm() {
               </Button>
             )
           ) : (
-            <Button
-              onClick={() => wallet.connect()}
-              className={`rounded text-lg flex-grow`}
-            >
-              Connect Wallet
-            </Button>
+            <div className="flex justify-between border border-th-fgd-4 rounded-md w-full">
+              <Button
+                onClick={() => wallet.connect()}
+                className={`rounded-r-none flex flex-grow items-center justify-center border-none`}
+              >
+                <WalletIcon className="fill-current h-4 w-4 mr-2" />
+                Connect Wallet
+              </Button>
+              <div className="relative h-full">
+                <WalletSelect />
+              </div>
+            </div>
           )
         ) : (
           <Button disabled className="flex-grow">
