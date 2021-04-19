@@ -242,10 +242,10 @@ const MarkPriceComponent = React.memo<{ markPrice: number }>(
         }`}
       >
         {markPrice > previousMarkPrice && (
-          <ArrowUpIcon className={`h-5 w-5 mr-1 text-th-green`} />
+          <ArrowUpIcon className={`h-4 w-4 mr-1 text-th-green`} />
         )}
         {markPrice < previousMarkPrice && (
-          <ArrowDownIcon className={`h-5 w-5 mr-1 text-th-red`} />
+          <ArrowDownIcon className={`h-4 w-4 mr-1 text-th-red`} />
         )}
         {formattedMarkPrice || '----'}
       </div>

@@ -12,8 +12,6 @@ import {
 import MenuItem from './MenuItem'
 import ThemeSwitch from './ThemeSwitch'
 import { WalletIcon } from './icons'
-import UiLock from './UiLock'
-import { useRouter } from 'next/router'
 import useMangoStore from '../stores/useMangoStore'
 import ConnectWalletButton from './ConnectWalletButton'
 
@@ -25,7 +23,6 @@ const Code = styled.code`
 `
 
 const TopBar = () => {
-  const { asPath } = useRouter()
   const connected = useMangoStore((s) => s.wallet.connected)
   const wallet = useMangoStore((s) => s.wallet.current)
   const [showMenu, setShowMenu] = useState(false)
@@ -64,7 +61,7 @@ const TopBar = () => {
       <div className={`px-4 sm:px-6 lg:px-8`}>
         <div className={`flex justify-between h-16`}>
           <div className={`flex`}>
-            <div className={`flex-shrink-0 flex items-center ml-2`}>
+            <div className={`flex-shrink-0 flex items-center`}>
               <img
                 className={`h-8 w-auto`}
                 src="/assets/icons/logo.svg"
@@ -78,9 +75,10 @@ const TopBar = () => {
             </div>
           </div>
           <div className="flex">
-            <div className="flex items-center pr-1">
-              {asPath === '/' ? <UiLock className="mr-1" /> : null}
-              <ThemeSwitch />
+            <div className="flex items-center">
+              <div className="flex items-center justify-center rounded-full bg-th-bkg-3 w-8 h-8 mr-2">
+                <ThemeSwitch />
+              </div>
               <div className="hidden sm:ml-4 sm:block">
                 {connected && wallet?.publicKey ? (
                   <Menu>

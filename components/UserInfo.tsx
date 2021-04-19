@@ -38,7 +38,7 @@ const UserInfoTabs = ({ activeTab, setActiveTab }) => {
               <a
                 key={tabName}
                 onClick={() => handleTabChange(tabName)}
-                className={`whitespace-nowrap py-4 px-1 border-b-2 font-semibold text-base cursor-pointer transition-all duration-500
+                className={`whitespace-nowrap py-4 px-1 border-b-2 font-semibold cursor-pointer transition-all duration-500
                   ${
                     activeTab === tabName
                       ? `border-th-primary text-th-primary`
