@@ -75,6 +75,8 @@ export default function MarginInfo() {
   useEffect(() => {
     if (selectedMangoGroup) {
       selectedMangoGroup.getPrices(connection).then((prices) => {
+        console.log('pricessss', prices)
+
         const collateralRatio = selectedMarginAccount
           ? selectedMarginAccount.getCollateralRatio(selectedMangoGroup, prices)
           : 200

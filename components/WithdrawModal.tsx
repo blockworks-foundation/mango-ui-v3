@@ -18,6 +18,10 @@ const WithdrawModal = ({ isOpen, onClose }) => {
   const { getTokenIndex, symbols } = useMarketList()
   const { connection, programId } = useConnection()
   const walletAccounts = useMangoStore((s) => s.wallet.balances)
+  const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  const selectedMarginAccount = useMangoStore(
+    (s) => s.selectedMarginAccount.current
+  )
   const actions = useMangoStore((s) => s.actions)
   const withdrawAccounts = useMemo(
     () =>
@@ -45,6 +49,25 @@ const WithdrawModal = ({ isOpen, onClose }) => {
 
   const setMaxForSelectedAccount = () => {
     setInputAmount(getMaxForSelectedAccount().toString())
+  }
+
+  const setMaxBorrowForSelectedAccount = async () => {
+    const prices = await selectedMangoGroup.getPrices(connection)
+    console.log('prices', prices)
+
+    const assetsVal = selectedMarginAccount.getAssetsVal(
+      selectedMangoGroup,
+      prices
+    )
+    const currentLiabs = selectedMarginAccount.getLiabsVal(
+      selectedMangoGroup,
+      prices
+    )
+    const liabsAvail = 0.99 * (assetsVal / 1.2 - currentLiabs)
+    console.log('assetsVal', assetsVal)
+
+    console.log('currentLiabs', currentLiabs)
+    console.log('liabsAvail', liabsAvail)
   }
 
   const handleWithdraw = () => {
@@ -100,11 +123,19 @@ const WithdrawModal = ({ isOpen, onClose }) => {
         />
         <div className="flex justify-between pb-2 pt-4">
           <div className={`text-th-fgd-1`}>Amount</div>
-          <div
-            className="text-th-fgd-1 underline cursor-pointer default-transition hover:text-th-primary hover:no-underline"
-            onClick={setMaxForSelectedAccount}
-          >
-            Max
+          <div>
+            <div
+              className="text-th-fgd-1 underline cursor-pointer default-transition hover:text-th-primary hover:no-underline"
+              onClick={setMaxForSelectedAccount}
+            >
+              Max
+            </div>
+            <div
+              className="text-th-fgd-1 underline cursor-pointer default-transition hover:text-th-primary hover:no-underline"
+              onClick={setMaxBorrowForSelectedAccount}
+            >
+              Max With Borrow
+            </div>
           </div>
         </div>
         <div className="flex items-center">
