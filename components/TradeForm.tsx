@@ -309,7 +309,7 @@ export default function TradeForm() {
             side === 'buy' ? (
               <Button
                 disabled={disabledTradeButton}
-                onClick={onsubmit}
+                onClick={onSubmit}
                 className={`rounded ${
                   !disabledTradeButton &&
                   'border-th-green hover:border-th-green-dark'
