@@ -29,7 +29,7 @@ const Modal = ({ isOpen, onClose, children, hideClose }) => {
           {isOpen ? (
             <div
               className="inline-block bg-th-bkg-2 
-              rounded-lg text-left overflow-hidden shadow-lg transform transition-all 
+              rounded-lg text-left shadow-lg transform transition-all 
               sm:my-8 align-middle sm:max-w-md w-full"
             >
               {!hideClose ? (

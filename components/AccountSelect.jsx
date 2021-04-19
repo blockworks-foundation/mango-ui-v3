@@ -48,7 +48,7 @@ const AccountSelect = ({
         {({ open }) => (
           <>
             <Listbox.Button
-              className={`border border-th-fgd-4 bg-th-bkg-1 rounded-md default-transition hover:border-th-primary focus:outline-none focus:border-th-primary p-2 h-10 w-full font-normal`}
+              className={`border border-th-fgd-4 bg-th-bkg-1 rounded-md default-transition hover:border-th-primary focus:outline-none focus:border-th-primary p-2 w-full font-normal`}
             >
               <div
                 className={`flex items-center text-th-fgd-1 justify-between`}
@@ -64,7 +64,14 @@ const AccountSelect = ({
                       ).toLowerCase()}.svg`}
                       className={`mr-2`}
                     />
-                    {abbreviateAddress(selectedAccount?.publicKey)}
+                    <div className="text-left">
+                      {getSymbolForTokenMintAddress(
+                        selectedAccount?.account?.mint.toString()
+                      )}
+                      <div className="text-xs text-th-fgd-4">
+                        {abbreviateAddress(selectedAccount?.publicKey)}
+                      </div>
+                    </div>
                     <div className={`ml-4 text-right flex-grow`}>
                       {!hideBalance
                         ? getBalanceForAccount(selectedAccount)
@@ -92,7 +99,7 @@ const AccountSelect = ({
               leaveTo="transform scale-95 opacity-0"
             > */}
             <Listbox.Options
-              className={`z-20 p-1 absolute right-0 top-11 bg-th-bkg-1 divide-y divide-th-bkg-3 shadow-lg outline-none rounded-md w-full`}
+              className={`z-20 p-1 absolute right-0 top-13 bg-th-bkg-1 divide-y divide-th-bkg-3 shadow-lg outline-none rounded-md w-full max-h-60 overflow-auto`}
             >
               <div className="flex justify-between">
                 <div className={`text-th-fgd-4 p-2`}>Accounts</div>
@@ -123,13 +130,15 @@ const AccountSelect = ({
                             className="mr-2"
                           />
                           <div className={`flex-grow text-left`}>
-                            {abbreviateAddress(selectedAccount?.publicKey)}
+                            {symbolForAccount}
+                            <div className="text-xs text-th-fgd-4">
+                              {abbreviateAddress(selectedAccount?.publicKey)}
+                            </div>
                           </div>
                           <div className={`text-sm`}>
                             {!hideBalance
                               ? getBalanceForAccount(account)
                               : getMaxForSelectedAccount(account)}{' '}
-                            {symbolForAccount}
                           </div>
                         </div>
                       </div>
