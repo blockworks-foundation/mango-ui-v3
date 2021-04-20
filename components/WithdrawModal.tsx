@@ -5,9 +5,12 @@ import AccountSelect from './AccountSelect'
 import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
 import useMarketList from '../hooks/useMarketList'
-import { getSymbolForTokenMintAddress } from '../utils/index'
+import {
+  getSymbolForTokenMintAddress,
+  formatBalanceDisplay,
+} from '../utils/index'
 import useConnection from '../hooks/useConnection'
-import { withdraw } from '../utils/mango'
+import { borrowAndWithdraw, withdraw } from '../utils/mango'
 import Loading from './Loading'
 import Button from './Button'
 import { notify } from '../utils/notifications'
@@ -19,6 +22,7 @@ const WithdrawModal = ({ isOpen, onClose }) => {
   const { connection, programId } = useConnection()
   const walletAccounts = useMangoStore((s) => s.wallet.balances)
   const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  const mintDecimals = useMangoStore((s) => s.selectedMangoGroup.mintDecimals)
   const selectedMarginAccount = useMangoStore(
     (s) => s.selectedMarginAccount.current
   )
@@ -39,6 +43,11 @@ const WithdrawModal = ({ isOpen, onClose }) => {
     getTokenIndex,
   ])
 
+  const handleSetSelectedAccount = (val) => {
+    setInputAmount('')
+    setSelectedAccount(val)
+  }
+
   const withdrawDisabled = Number(inputAmount) <= 0
 
   const getMaxForSelectedAccount = () => {
@@ -53,21 +62,27 @@ const WithdrawModal = ({ isOpen, onClose }) => {
 
   const setMaxBorrowForSelectedAccount = async () => {
     const prices = await selectedMangoGroup.getPrices(connection)
-    console.log('prices', prices)
-
-    const assetsVal = selectedMarginAccount.getAssetsVal(
+    const assetsValBeforeTokenBal = selectedMarginAccount.getAssetsVal(
       selectedMangoGroup,
       prices
     )
+    const assetsVal = assetsValBeforeTokenBal - getMaxForSelectedAccount()
     const currentLiabs = selectedMarginAccount.getLiabsVal(
       selectedMangoGroup,
       prices
     )
-    const liabsAvail = 0.99 * (assetsVal / 1.2 - currentLiabs)
-    console.log('assetsVal', assetsVal)
+    const liabsAvail = (assetsVal / 1.2 - currentLiabs) * 0.99 - 0.01
 
+    console.log('selected token deposits', getMaxForSelectedAccount())
+    console.log('prices', prices)
+    console.log('assetsVal', assetsVal)
     console.log('currentLiabs', currentLiabs)
     console.log('liabsAvail', liabsAvail)
+
+    const amountToWithdraw =
+      liabsAvail / prices[tokenIndex] + getMaxForSelectedAccount()
+    const decimals = mintDecimals[getTokenIndex(mintAddress)]
+    setInputAmount(formatBalanceDisplay(amountToWithdraw, decimals).toString())
   }
 
   const handleWithdraw = () => {
@@ -75,7 +90,11 @@ const WithdrawModal = ({ isOpen, onClose }) => {
     const marginAccount = useMangoStore.getState().selectedMarginAccount.current
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
     const wallet = useMangoStore.getState().wallet.current
-    if (marginAccount && mangoGroup) {
+    if (!marginAccount || !mangoGroup) return
+
+    if (Number(inputAmount) <= getMaxForSelectedAccount()) {
+      console.log('=withdraw without borrow=')
+
       withdraw(
         connection,
         programId,
@@ -90,13 +109,44 @@ const WithdrawModal = ({ isOpen, onClose }) => {
           setSubmitting(false)
           actions.fetchMangoGroup()
           actions.fetchMarginAccounts()
+          actions.fetchWalletBalances()
           onClose()
         })
         .catch((err) => {
           setSubmitting(false)
           console.warn('Error withdrawing:', err)
           notify({
-            message: 'Could not perform withdraw operation',
+            message: 'Could not perform withdraw',
+            description: `${err}`,
+            type: 'error',
+          })
+          onClose()
+        })
+    } else {
+      console.log('-withdraw with borrow-')
+
+      borrowAndWithdraw(
+        connection,
+        programId,
+        mangoGroup,
+        marginAccount,
+        wallet,
+        selectedAccount.account.mint,
+        selectedAccount.publicKey,
+        Number(inputAmount)
+      )
+        .then((_transSig: string) => {
+          setSubmitting(false)
+          actions.fetchMangoGroup()
+          actions.fetchMarginAccounts()
+          actions.fetchWalletBalances()
+          onClose()
+        })
+        .catch((err) => {
+          setSubmitting(false)
+          console.warn('Error borrowing and withdrawing:', err)
+          notify({
+            message: 'Could not perform borrow and withdraw',
             description: `${err}`,
             type: 'error',
           })
@@ -112,18 +162,18 @@ const WithdrawModal = ({ isOpen, onClose }) => {
       <Modal.Header>
         <ElementTitle noMarignBottom>Withdraw Funds</ElementTitle>
       </Modal.Header>
-      <div className={`pb-6 px-8`}>
-        <div className={`text-th-fgd-1 pb-2`}>Token Account</div>
+      <div className="pb-6 px-8">
+        <div className="text-th-fgd-1 pb-2">Token Account</div>
         <AccountSelect
           hideAddress
           accounts={withdrawAccounts}
           selectedAccount={selectedAccount}
-          onSelectAccount={setSelectedAccount}
+          onSelectAccount={handleSetSelectedAccount}
           getBalance={getMaxForSelectedAccount}
         />
         <div className="flex justify-between pb-2 pt-4">
-          <div className={`text-th-fgd-1`}>Amount</div>
-          <div>
+          <div className="text-th-fgd-1">Amount</div>
+          <div className="flex space-x-4">
             <div
               className="text-th-fgd-1 underline cursor-pointer default-transition hover:text-th-primary hover:no-underline"
               onClick={setMaxForSelectedAccount}

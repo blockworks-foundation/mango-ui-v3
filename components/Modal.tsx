@@ -55,7 +55,7 @@ const Modal = ({ isOpen, onClose, children, hideClose = false }) => {
 
 const Header = ({ children }) => {
   return (
-    <div className={`flex justify-center bg-th-bkg-2 p-4 pt-0`}>{children}</div>
+    <div className={`flex justify-center bg-th-bkg-2 p-2 pt-0`}>{children}</div>
   )
 }
 

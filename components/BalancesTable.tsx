@@ -8,6 +8,7 @@ import { notify } from '../utils/notifications'
 const BalancesTable = () => {
   const balances = useBalances()
   const { programId, connection } = useConnection()
+  const actions = useMangoStore((s) => s.actions)
 
   async function handleSettleAll() {
     const markets = Object.values(
@@ -26,6 +27,7 @@ const BalancesTable = () => {
         markets,
         wallet
       )
+      actions.fetchMarginAccounts()
     } catch (e) {
       console.warn('Error settling all:', e)
       if (e.message === 'No unsettled funds') {

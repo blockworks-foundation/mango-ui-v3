@@ -2,7 +2,6 @@ import { useEffect, useRef } from 'react'
 import useMangoStore from '../stores/useMangoStore'
 import useSerumStore from '../stores/useSerumStore'
 import useMarket from './useMarket'
-import useInterval from './useInterval'
 
 const byTimestamp = (a, b) => {
   return (
@@ -55,14 +54,6 @@ const useFills = () => {
 export const useTradeHistory = () => {
   const eventQueueFills = useFills()
   const tradeHistory = useMangoStore((s) => s.tradeHistory)
-  const marginAccount = useMangoStore((s) => s.selectedMarginAccount.current)
-  const actions = useMangoStore((s) => s.actions)
-
-  useInterval(() => {
-    if (marginAccount) {
-      actions.fetchTradeHistory()
-    }
-  }, 60000)
 
   const allTrades = []
   if (eventQueueFills && eventQueueFills.length > 0) {

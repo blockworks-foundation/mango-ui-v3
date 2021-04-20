@@ -318,9 +318,12 @@ export async function borrow(
   quantity: number
 ): Promise<TransactionSignature> {
   const tokenIndex = mangoGroup.getTokenIndex(token)
-  const nativeQuantity = uiToNative(
-    quantity,
-    mangoGroup.mintDecimals[tokenIndex]
+  // const nativeQuantity = uiToNative(
+  //   quantity,
+  //   mangoGroup.mintDecimals[tokenIndex]
+  // )
+  const nativeQuantity = new BN(
+    Math.floor(quantity * Math.pow(10, mangoGroup.mintDecimals[tokenIndex]))
   )
 
   const keys = [
@@ -349,6 +352,118 @@ export async function borrow(
   transaction.add(instruction)
   const signers = []
   const functionName = 'Borrow'
+  const sendingMessage = `Sending ${functionName} instruction...`
+  const sentMessage = `${functionName} instruction sent`
+  const successMessage = `${functionName} instruction success`
+  return await sendTransaction({
+    transaction,
+    wallet,
+    signers,
+    connection,
+    sendingMessage,
+    sentMessage,
+    successMessage,
+  })
+}
+
+export async function borrowAndWithdraw(
+  connection: Connection,
+  programId: PublicKey,
+  mangoGroup: MangoGroup,
+  marginAccount: MarginAccount,
+  wallet: Wallet,
+  token: PublicKey,
+  tokenAcc: PublicKey,
+
+  withdrawQuantity: number
+): Promise<TransactionSignature> {
+  const transaction = new Transaction()
+  const tokenIndex = mangoGroup.getTokenIndex(token)
+  const tokenBalance = marginAccount.getUiDeposit(mangoGroup, tokenIndex)
+  const borrowQuantity = withdrawQuantity - tokenBalance
+  console.log('token balance: ', tokenBalance)
+  console.log('withdraw quantity', withdrawQuantity)
+  console.log('borrow quantity', borrowQuantity)
+
+  const nativeBorrowQuantity = uiToNative(
+    borrowQuantity,
+    mangoGroup.mintDecimals[tokenIndex]
+  )
+  console.log('nativeBorrowQuantity', nativeBorrowQuantity)
+
+  const borrowKeys = [
+    { isSigner: false, isWritable: true, pubkey: mangoGroup.publicKey },
+    { isSigner: false, isWritable: true, pubkey: marginAccount.publicKey },
+    { isSigner: true, isWritable: false, pubkey: wallet.publicKey },
+    { isSigner: false, isWritable: false, pubkey: SYSVAR_CLOCK_PUBKEY },
+    ...marginAccount.openOrders.map((pubkey) => ({
+      isSigner: false,
+      isWritable: false,
+      pubkey,
+    })),
+    ...mangoGroup.oracles.map((pubkey) => ({
+      isSigner: false,
+      isWritable: false,
+      pubkey,
+    })),
+  ]
+  const borrowData = encodeMangoInstruction({
+    Borrow: { tokenIndex: new BN(tokenIndex), quantity: nativeBorrowQuantity },
+  })
+
+  const borrowInstruction = new TransactionInstruction({
+    keys: borrowKeys,
+    data: borrowData,
+    programId,
+  })
+  transaction.add(borrowInstruction)
+
+  const withdrawKeys = [
+    { isSigner: false, isWritable: true, pubkey: mangoGroup.publicKey },
+    { isSigner: false, isWritable: true, pubkey: marginAccount.publicKey },
+    { isSigner: true, isWritable: false, pubkey: wallet.publicKey },
+    { isSigner: false, isWritable: true, pubkey: tokenAcc },
+    {
+      isSigner: false,
+      isWritable: true,
+      pubkey: mangoGroup.vaults[tokenIndex],
+    },
+    { isSigner: false, isWritable: false, pubkey: mangoGroup.signerKey },
+    { isSigner: false, isWritable: false, pubkey: TOKEN_PROGRAM_ID },
+    { isSigner: false, isWritable: false, pubkey: SYSVAR_CLOCK_PUBKEY },
+    ...marginAccount.openOrders.map((pubkey) => ({
+      isSigner: false,
+      isWritable: false,
+      pubkey,
+    })),
+    ...mangoGroup.oracles.map((pubkey) => ({
+      isSigner: false,
+      isWritable: false,
+      pubkey,
+    })),
+  ]
+
+  const nativeWithdrawQuantity = new BN(
+    Math.floor(
+      withdrawQuantity * Math.pow(10, mangoGroup.mintDecimals[tokenIndex])
+    ) * 0.98
+  )
+  // const nativeWithdrawQuantity = uiToNative(
+  //   withdrawQuantity,
+  //   mangoGroup.mintDecimals[tokenIndex]
+  // )
+  const withdrawData = encodeMangoInstruction({
+    Withdraw: { quantity: nativeWithdrawQuantity },
+  })
+  const withdrawInstruction = new TransactionInstruction({
+    keys: withdrawKeys,
+    data: withdrawData,
+    programId,
+  })
+  transaction.add(withdrawInstruction)
+
+  const signers = []
+  const functionName = 'Borrow And Withdraw'
   const sendingMessage = `Sending ${functionName} instruction...`
   const sentMessage = `${functionName} instruction sent`
   const successMessage = `${functionName} instruction success`

@@ -7,8 +7,6 @@ import FloatingElement from './FloatingElement'
 import Tooltip from './Tooltip'
 
 const calculatePNL = (tradeHistory, prices, mangoGroup) => {
-  console.log('calculate pnl, trade history:', tradeHistory)
-
   if (!tradeHistory.length) return '0.00'
   const profitAndLoss = {}
   const groupedTrades = groupBy(tradeHistory, (trade) => trade.marketName)
@@ -75,8 +73,6 @@ export default function MarginInfo() {
   useEffect(() => {
     if (selectedMangoGroup) {
       selectedMangoGroup.getPrices(connection).then((prices) => {
-        console.log('pricessss', prices)
-
         const collateralRatio = selectedMarginAccount
           ? selectedMarginAccount.getCollateralRatio(selectedMangoGroup, prices)
           : 200

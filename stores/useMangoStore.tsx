@@ -13,6 +13,7 @@ import { AccountInfo, Connection, PublicKey } from '@solana/web3.js'
 import { EndpointInfo, WalletAdapter } from '../@types/types'
 import { getOwnedTokenAccounts } from '../utils/tokens'
 import { isDefined } from '../utils/index'
+import { notify } from '../utils/notifications'
 
 export const ENDPOINTS: EndpointInfo[] = [
   {
@@ -221,7 +222,6 @@ const useMangoStore = create<MangoStore>((set, get) => ({
       const cluster = get().connection.cluster
       const mangoClient = get().mangoClient
       const programId = IDS[cluster].mango_program_id
-      const actions = get().actions
       const set = get().set
 
       if (!wallet?.publicKey || !wallet.publicKey) return
@@ -239,7 +239,6 @@ const useMangoStore = create<MangoStore>((set, get) => ({
               state.marginAccounts = marginAccounts
               state.selectedMarginAccount.current = marginAccounts[0]
             })
-            actions.fetchTradeHistory(marginAccounts[0])
           }
         })
         .catch((err) => {
@@ -275,7 +274,12 @@ const useMangoStore = create<MangoStore>((set, get) => ({
           })
         })
         .catch((err) => {
-          console.error('Could not get mango group: ', err)
+          notify({
+            message: 'Could not get mango group: ',
+            description: `${err}`,
+            type: 'error',
+          })
+          console.log('Could not get mango group: ', err)
         })
     },
     async fetchTradeHistory(marginAccount = null) {
