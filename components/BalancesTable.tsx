@@ -50,14 +50,14 @@ const BalancesTable = () => {
     <div className={`flex flex-col py-6`}>
       <div className={`-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8`}>
         <div className={`align-middle inline-block min-w-full sm:px-6 lg:px-8`}>
-          {balances.length &&
-          balances.find((balance) => balance.unsettled > 0) ? (
+          {/* balances.length && balances.find((balance) => balance.unsettled > 0) */}
+          {balances.length ? (
             <div
-              className={`flex items-center justify-center p-4 mb-2 rounded-md bg-th-bkg-1`}
+              className={`flex items-center justify-end p-4 mb-2 rounded-md bg-th-bkg-1`}
             >
-              <div className="text-fgd-1 font-semibold pr-4">
+              {/* <div className="text-fgd-1 font-semibold pr-4">
                 You have an unsettled balance
-              </div>
+              </div> */}
               <Button onClick={handleSettleAll}>Settle All</Button>
             </div>
           ) : null}
