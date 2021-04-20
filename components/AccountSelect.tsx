@@ -118,7 +118,9 @@ const AccountSelect = ({
             >
               <div className="flex justify-between">
                 <div className={`text-th-fgd-4 p-2`}>Accounts</div>
-                <div className={`text-th-fgd-4 p-2`}>Balance</div>
+                {!hideAddress ? (
+                  <div className={`text-th-fgd-4 p-2`}>Balance</div>
+                ) : null}
               </div>
               {accounts.map((account) => {
                 const symbolForAccount = getSymbolForTokenMintAddress(
