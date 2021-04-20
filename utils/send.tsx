@@ -28,7 +28,6 @@ export async function sendTransaction({
   signers = [],
   connection,
   sendingMessage = 'Sending transaction...',
-  sentMessage = 'Transaction sent',
   successMessage = 'Transaction confirmed',
   timeout = DEFAULT_TIMEOUT,
 }: {
@@ -37,7 +36,6 @@ export async function sendTransaction({
   signers?: Array<Account>
   connection: Connection
   sendingMessage?: string
-  sentMessage?: string
   successMessage?: string
   timeout?: number
 }) {
@@ -51,7 +49,6 @@ export async function sendTransaction({
     signedTransaction,
     connection,
     sendingMessage,
-    sentMessage,
     successMessage,
     timeout,
   })
@@ -107,14 +104,12 @@ export async function sendSignedTransaction({
   signedTransaction,
   connection,
   sendingMessage = 'Sending transaction...',
-  sentMessage = 'Transaction sent',
   successMessage = 'Transaction confirmed',
   timeout = DEFAULT_TIMEOUT,
 }: {
   signedTransaction: Transaction
   connection: Connection
   sendingMessage?: string
-  sentMessage?: string
   successMessage?: string
   timeout?: number
 }): Promise<string> {
@@ -127,7 +122,6 @@ export async function sendSignedTransaction({
       skipPreflight: true,
     }
   )
-  notify({ message: sentMessage, type: 'success', txid })
 
   console.log('Started awaiting confirmation for', txid)
 

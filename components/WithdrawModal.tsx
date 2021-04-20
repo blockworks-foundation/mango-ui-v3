@@ -82,7 +82,13 @@ const WithdrawModal = ({ isOpen, onClose }) => {
     const amountToWithdraw =
       liabsAvail / prices[tokenIndex] + getMaxForSelectedAccount()
     const decimals = mintDecimals[getTokenIndex(mintAddress)]
-    setInputAmount(formatBalanceDisplay(amountToWithdraw, decimals).toString())
+    if (amountToWithdraw > 0) {
+      setInputAmount(
+        formatBalanceDisplay(amountToWithdraw, decimals).toString()
+      )
+    } else {
+      setInputAmount('0')
+    }
   }
 
   const handleWithdraw = () => {
@@ -219,46 +225,6 @@ const WithdrawModal = ({ isOpen, onClose }) => {
           </Button>
         </div>
       </div>
-      {/* <div className={`pb-6 px-8`}>
-        <div className={`mt-3 sm:mt-5`}>
-          <div className="text-right text-th-fgd-2">
-            Balance: {getMaxForSelectedAccount()}
-          </div>
-          <div className={`mt-1 bg-th-bkg-3 rounded-md flex items-center`}>
-            <img
-              alt=""
-              width="20"
-              height="20"
-              src={`/assets/icons/${getSymbolForTokenMintAddress(
-                selectedAccount?.account?.mint.toString()
-              ).toLowerCase()}.svg`}
-              className={`ml-3`}
-            />
-            <input
-              type="number"
-              min="0"
-              className={`outline-none bg-th-bkg-3 w-full py-4 mx-3 text-2xl text-th-fgd-2 flex-grow`}
-              placeholder="0.00"
-              value={inputAmount}
-              onChange={(e) => setInputAmount(e.target.value)}
-            ></input>
-            <Button
-              onClick={setMaxForSelectedAccount}
-              className={`m-2 rounded py-1`}
-            >
-              Max
-            </Button>
-          </div>
-        </div>
-        <div className={`mt-5 sm:mt-6 flex justify-center`}>
-          <Button onClick={handleWithdraw} disabled={withdrawDisabled}>
-            <div className={`flex items-center`}>
-              {submitting && <Loading />}
-              Withdraw
-            </div>
-          </Button>
-        </div>
-      </div> */}
     </Modal>
   )
 }

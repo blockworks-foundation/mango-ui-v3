@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Listbox } from '@headlessui/react'
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid'
 import {
@@ -10,6 +11,7 @@ import { nativeToUi } from '@blockworks-foundation/mango-client/lib/utils'
 import useMangoStore from '../stores/useMangoStore'
 import { tokenPrecision } from '../utils/index'
 import { SRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
+import { RefreshIcon } from '@heroicons/react/outline'
 
 type AccountSelectProps = {
   accounts: any[]
@@ -28,6 +30,9 @@ const AccountSelect = ({
 }: AccountSelectProps) => {
   const { getTokenIndex } = useMarketList()
   const mintDecimals = useMangoStore((s) => s.selectedMangoGroup.mintDecimals)
+  const actions = useMangoStore((s) => s.actions)
+  const [loading, setLoading] = useState(false)
+
   const handleChange = (value) => {
     const newAccount = accounts.find((a) => a.publicKey.toString() === value)
     onSelectAccount(newAccount)
@@ -47,6 +52,12 @@ const AccountSelect = ({
     ).toString()
   }
 
+  const handleRefreshBalances = async () => {
+    setLoading(true)
+    await actions.fetchWalletBalances()
+    setLoading(false)
+  }
+
   return (
     <div className={`relative inline-block w-full`}>
       <Listbox
@@ -55,49 +66,61 @@ const AccountSelect = ({
       >
         {({ open }) => (
           <>
-            <Listbox.Button
-              className={`border border-th-fgd-4 bg-th-bkg-1 rounded-md default-transition hover:border-th-primary focus:outline-none focus:border-th-primary p-2 w-full font-normal`}
-            >
-              <div
-                className={`flex items-center text-th-fgd-1 justify-between`}
+            <div className="flex items-center">
+              <Listbox.Button
+                className={`border border-th-fgd-4 bg-th-bkg-1 rounded-md default-transition hover:border-th-primary focus:outline-none focus:border-th-primary p-2 w-full font-normal`}
               >
-                {selectedAccount ? (
-                  <div className={`flex items-center flex-grow`}>
-                    <img
-                      alt=""
-                      width="20"
-                      height="20"
-                      src={`/assets/icons/${getSymbolForTokenMintAddress(
-                        selectedAccount?.account?.mint.toString()
-                      ).toLowerCase()}.svg`}
-                      className={`mr-2`}
-                    />
-                    <div className="text-left">
-                      {getSymbolForTokenMintAddress(
-                        selectedAccount?.account?.mint.toString()
-                      )}
-                      {!hideAddress ? (
-                        <div className="text-xs text-th-fgd-4">
-                          {abbreviateAddress(selectedAccount?.publicKey)}
-                        </div>
-                      ) : null}
+                <div
+                  className={`flex items-center text-th-fgd-1 justify-between`}
+                >
+                  {selectedAccount ? (
+                    <div className={`flex items-center flex-grow`}>
+                      <img
+                        alt=""
+                        width="20"
+                        height="20"
+                        src={`/assets/icons/${getSymbolForTokenMintAddress(
+                          selectedAccount?.account?.mint.toString()
+                        ).toLowerCase()}.svg`}
+                        className={`mr-2`}
+                      />
+                      <div className="text-left">
+                        {getSymbolForTokenMintAddress(
+                          selectedAccount?.account?.mint.toString()
+                        )}
+                        {!hideAddress ? (
+                          <div className="text-xs text-th-fgd-4">
+                            {abbreviateAddress(selectedAccount?.publicKey)}
+                          </div>
+                        ) : null}
+                      </div>
+                      <div className={`ml-4 text-right flex-grow`}>
+                        {hideAddress
+                          ? getBalance(selectedAccount)
+                          : getBalanceForAccount(selectedAccount)}
+                      </div>
                     </div>
-                    <div className={`ml-4 text-right flex-grow`}>
-                      {hideAddress
-                        ? getBalance(selectedAccount)
-                        : getBalanceForAccount(selectedAccount)}
-                    </div>
-                  </div>
-                ) : (
-                  'No wallet addresses found'
-                )}
-                {open ? (
-                  <ChevronUpIcon className={`h-5 w-5 ml-2 text-th-primary`} />
-                ) : (
-                  <ChevronDownIcon className={`h-5 w-5 ml-2 text-th-primary`} />
-                )}
-              </div>
-            </Listbox.Button>
+                  ) : (
+                    'No wallet addresses found'
+                  )}
+                  {open ? (
+                    <ChevronUpIcon className="h-5 w-5 ml-2 text-th-primary" />
+                  ) : (
+                    <ChevronDownIcon className="h-5 w-5 ml-2 text-th-primary" />
+                  )}
+                </div>
+              </Listbox.Button>
+              {accounts.length < 3 ? (
+                <button
+                  className={`ml-2 text-th-primary outline-none focus:outline-none ${
+                    loading ? 'animate-spin' : ''
+                  }`}
+                  onClick={handleRefreshBalances}
+                >
+                  <RefreshIcon className="h-5 w-5" />
+                </button>
+              ) : null}
+            </div>
             <Listbox.Options
               className={`z-20 p-1 absolute right-0 top-13 bg-th-bkg-1 divide-y divide-th-bkg-3 shadow-lg outline-none rounded-md w-full max-h-60 overflow-auto`}
             >
