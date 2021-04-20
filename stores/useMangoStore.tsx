@@ -18,19 +18,22 @@ import { notify } from '../utils/notifications'
 export const ENDPOINTS: EndpointInfo[] = [
   {
     name: 'mainnet-beta',
-    endpoint: 'https://api.mainnet-beta.solana.com/',
+    url: 'https://solana-api.projectserum.com/',
+    websocket: 'https://api.mainnet-beta.solana.com/',
     custom: false,
   },
   {
     name: 'devnet',
-    endpoint: 'https://devnet.solana.com',
+    url: 'https://devnet.solana.com',
+    websocket: 'https://devnet.solana.com',
     custom: false,
   },
 ]
 
 const CLUSTER = 'mainnet-beta'
-const ENDPOINT_URL = ENDPOINTS.find((e) => e.name === CLUSTER).endpoint
-const DEFAULT_CONNECTION = new Connection(ENDPOINT_URL, 'recent')
+const ENDPOINT = ENDPOINTS.find((e) => e.name === CLUSTER)
+const DEFAULT_CONNECTION = new Connection(ENDPOINT.url, 'recent')
+const WEBSOCKET_CONNECTION = new Connection(ENDPOINT.websocket, 'recent')
 const DEFAULT_MANGO_GROUP_NAME = 'BTC_ETH_USDT'
 
 export const INITIAL_STATE = {
@@ -62,6 +65,7 @@ interface MangoStore extends State {
   connection: {
     cluster: string
     current: Connection
+    websocket: Connection
     endpoint: string
     srmMint: string
   }
@@ -118,7 +122,8 @@ const useMangoStore = create<MangoStore>((set, get) => ({
   connection: {
     cluster: CLUSTER,
     current: DEFAULT_CONNECTION,
-    endpoint: ENDPOINT_URL,
+    websocket: WEBSOCKET_CONNECTION,
+    endpoint: ENDPOINT.url,
     srmMint: IDS[CLUSTER].symbols['SRM'],
   },
   selectedMangoGroup: {

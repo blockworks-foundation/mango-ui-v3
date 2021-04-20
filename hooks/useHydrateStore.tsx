@@ -12,12 +12,14 @@ const _SLOW_REFRESH_INTERVAL = 5 * 1000
 
 const marketAddressSelector = (s) => s.selectedMarket.address
 const mangoGroupMarketsSelector = (s) => s.selectedMangoGroup.markets
+const websocketConnectionSelector = (s) => s.connection.websocket
 
 const useHydrateStore = () => {
   const setMangoStore = useMangoStore((s) => s.set)
   const setSerumStore = useSerumStore((s) => s.set)
   const selectedMarketAddress = useMangoStore(marketAddressSelector)
   const marketsForSelectedMangoGroup = useMangoStore(mangoGroupMarketsSelector)
+  const websocketConnection = useMangoStore(websocketConnectionSelector)
   const actions = useMangoStore((s) => s.actions)
   const { connection, dexProgramId } = useConnection()
   const { marketList } = useMarketList()
@@ -37,10 +39,10 @@ const useHydrateStore = () => {
       .then(async (market) => {
         // @ts-ignore
         const bidAccount = market._decoded.bids
-        const bidInfo = await connection.getAccountInfo(bidAccount)
+        const bidInfo = await websocketConnection.getAccountInfo(bidAccount)
         // @ts-ignore
         const askAccount = market._decoded.asks
-        const askInfo = await connection.getAccountInfo(askAccount)
+        const askInfo = await websocketConnection.getAccountInfo(askAccount)
         setMangoStore((state) => {
           state.market.current = market
           state.accountInfos[askAccount.toString()] = askInfo
@@ -88,7 +90,7 @@ const useHydrateStore = () => {
         let previousBidInfo: AccountInfo<Buffer> | null = null
         let previousAskInfo: AccountInfo<Buffer> | null = null
         return [
-          connection.onAccountChange(
+          websocketConnection.onAccountChange(
             // @ts-ignore
             market._decoded.bids,
             (info) => {
@@ -106,7 +108,7 @@ const useHydrateStore = () => {
               }
             }
           ),
-          connection.onAccountChange(
+          websocketConnection.onAccountChange(
             // @ts-ignore
             market._decoded.asks,
             (info) => {
@@ -131,7 +133,7 @@ const useHydrateStore = () => {
 
     return () => {
       for (const id of subscriptionIds.flat()) {
-        connection.removeAccountChangeListener(id)
+        websocketConnection.removeAccountChangeListener(id)
       }
     }
   }, [marketsForSelectedMangoGroup])

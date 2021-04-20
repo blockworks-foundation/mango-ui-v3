@@ -129,7 +129,8 @@ export interface PreferencesContextValues {
 
 export interface EndpointInfo {
   name: string
-  endpoint: string
+  url: string
+  websocket: string
   custom: boolean
 }
 

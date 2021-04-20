@@ -44,6 +44,7 @@ import {
 import { Order } from '@project-serum/serum/lib/market'
 import { SRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
 import { MangoSrmAccount } from '@blockworks-foundation/mango-client/lib/client'
+import { capitalize } from './index'
 
 export const DEFAULT_MANGO_GROUP = 'BTC_ETH_USDT'
 
@@ -1003,7 +1004,7 @@ export async function placeAndSettle(
     connection,
     wallet,
     signers,
-    'PlaceAndSettle'
+    'place order and settle'
   )
 }
 
@@ -1374,7 +1375,7 @@ async function packageAndSend(
   functionName: string
 ): Promise<TransactionSignature> {
   const sendingMessage = `Sending ${functionName} instruction...`
-  const successMessage = `${functionName} instruction success`
+  const successMessage = `${capitalize(functionName)} instruction success`
   return await sendTransaction({
     transaction,
     wallet,
