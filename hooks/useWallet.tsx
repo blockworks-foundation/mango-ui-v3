@@ -8,6 +8,7 @@ import {
   SolletExtensionAdapter,
 } from '../utils/wallet-adapters'
 import { WalletAdapter } from '../@types/types'
+import useInterval from './useInterval'
 
 const ASSET_URL =
   'https://cdn.jsdelivr.net/gh/solana-labs/oyster@main/assets/wallets'
@@ -42,6 +43,7 @@ export default function useWallet() {
     providerUrl: selectedProviderUrl,
   } = useMangoStore((state) => state.wallet)
   const endpoint = useMangoStore((state) => state.connection.endpoint)
+  const marginAccount = useMangoStore((s) => s.selectedMarginAccount.current)
   const actions = useMangoStore((s) => s.actions)
   const [savedProviderUrl, setSavedProviderUrl] = useLocalStorageState(
     'walletProvider',
@@ -89,7 +91,7 @@ export default function useWallet() {
 
   useEffect(() => {
     if (!wallet) return
-    wallet.on('connect', () => {
+    wallet.on('connect', async () => {
       console.log('connected')
 
       setMangoStore((state) => {
@@ -103,10 +105,11 @@ export default function useWallet() {
           '...' +
           wallet.publicKey.toString().substr(-5),
       })
+      actions.fetchMangoGroup()
       actions.fetchWalletBalances()
       actions.fetchMangoSrmAccounts()
-      actions.fetchMarginAccounts()
-      actions.fetchMangoGroup()
+      await actions.fetchMarginAccounts()
+      actions.fetchTradeHistory()
     })
     wallet.on('disconnect', () => {
       console.log('on disconnect')
@@ -133,6 +136,19 @@ export default function useWallet() {
       })
     }
   }, [wallet, setMangoStore])
+
+  useInterval(() => {
+    if (connected && marginAccount) {
+      actions.fetchMarginAccounts()
+      actions.fetchWalletBalances()
+    }
+  }, 15000)
+
+  useInterval(() => {
+    if (connected && marginAccount) {
+      actions.fetchTradeHistory()
+    }
+  }, 60000)
 
   return { connected, wallet }
 }

@@ -7,8 +7,6 @@ import FloatingElement from './FloatingElement'
 import Tooltip from './Tooltip'
 
 const calculatePNL = (tradeHistory, prices, mangoGroup) => {
-  console.log('calculate pnl, trade history:', tradeHistory)
-
   if (!tradeHistory.length) return '0.00'
   const profitAndLoss = {}
   const groupedTrades = groupBy(tradeHistory, (trade) => trade.marketName)

@@ -16,6 +16,8 @@ const ConnectWalletButton = () => {
     DEFAULT_PROVIDER.url
   )
 
+  if (!wallet) return null
+
   return (
     <div className="flex justify-between border border-th-primary rounded-md h-11 w-48">
       <button
