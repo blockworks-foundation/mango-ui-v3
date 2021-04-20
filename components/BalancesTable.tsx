@@ -5,11 +5,13 @@ import useConnection from '../hooks/useConnection'
 import Button from '../components/Button'
 import { notify } from '../utils/notifications'
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
+import useMarket from '../hooks/useMarket'
 
 const BalancesTable = () => {
   const balances = useBalances()
   const { programId, connection } = useConnection()
   const actions = useMangoStore((s) => s.actions)
+  const { marketName } = useMarket()
 
   async function handleSettleAll() {
     const markets = Object.values(
@@ -53,8 +55,9 @@ const BalancesTable = () => {
           {/* balances.length && balances.find((balance) => balance.unsettled > 0) */}
           {balances.length ? (
             <div
-              className={`flex items-center justify-end p-4 mb-2 rounded-md bg-th-bkg-1`}
+              className={`flex items-center justify-between p-4 mb-2 rounded-md bg-th-bkg-1`}
             >
+              <div>Balances for {marketName}</div>
               {/* <div className="text-fgd-1 font-semibold pr-4">
                 You have an unsettled balance
               </div> */}

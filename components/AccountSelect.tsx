@@ -1,15 +1,10 @@
 import { useState } from 'react'
 import { Listbox } from '@headlessui/react'
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid'
-import {
-  abbreviateAddress,
-  floorToDecimal,
-  getSymbolForTokenMintAddress,
-} from '../utils'
+import { abbreviateAddress, getSymbolForTokenMintAddress } from '../utils'
 import useMarketList from '../hooks/useMarketList'
 import { nativeToUi } from '@blockworks-foundation/mango-client/lib/utils'
 import useMangoStore from '../stores/useMangoStore'
-import { tokenPrecision } from '../utils/index'
 import { SRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
 import { RefreshIcon } from '@heroicons/react/outline'
 
@@ -46,10 +41,7 @@ const AccountSelect = ({
       symbol !== 'SRM' ? mintDecimals[getTokenIndex(mintAddress)] : SRM_DECIMALS
     )
 
-    return floorToDecimal(
-      balance,
-      symbol !== 'SRM' ? tokenPrecision[symbol] : SRM_DECIMALS
-    ).toString()
+    return balance.toString()
   }
 
   const handleRefreshBalances = async () => {
