@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Theme */
+
 :root {
   --primary: theme('colors.light-theme.orange');
   --red: theme('colors.light-theme.red.DEFAULT');
@@ -47,18 +49,22 @@
   --fgd-4: theme('colors.mango-theme["fgd-4"]');
 }
 
+/* Base */
+
 body {
   @apply text-sm font-body tracking-wide;
 }
 
 button {
   transition: all 0.3s ease;
-  @apply font-semibold;
+  @apply font-semibold rounded-md;
 }
 
 .default-transition {
   @apply transition-all duration-300;
 }
+
+/* Chart */
 
 .TVChartContainer {
   height: 100%;
@@ -68,6 +74,8 @@ button {
 .tradingview-chart {
   display: contents;
 }
+
+/* Grid */
 
 .react-grid-item.react-grid-placeholder {
   background: var(--bkg-3);
@@ -114,6 +122,8 @@ input[type='number'] {
   -moz-appearance: textfield;
 }
 
+/* Scrollbars */
+
 .thin-scroll {
   overflow: auto !important;
   overflow-x: hidden !important;
@@ -136,4 +146,71 @@ input[type='number'] {
 
 .thin-scroll::-webkit-scrollbar-corner {
   background-color: var(--bkg-3);
+}
+
+/* Responsive table */
+
+/* inspired by: https://css-tricks.com/responsive-data-tables/ */
+.responsiveTable {
+  width: 100%;
+}
+
+.responsiveTable td .tdBefore {
+  display: none;
+}
+
+@media screen and (max-width: 767px) {
+  .responsiveTable table,
+  .responsiveTable thead,
+  .responsiveTable tbody,
+  .responsiveTable th,
+  .responsiveTable td,
+  .responsiveTable tr {
+    display: block;
+  }
+
+  .responsiveTable thead tr {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+    border-bottom: 2px solid #333;
+  }
+
+  .responsiveTable tbody tr {
+    @apply px-4;
+  }
+
+  .responsiveTable td.pivoted {
+    /* Behave like a "row" */
+    @apply pb-1;
+    position: relative;
+    padding-left: calc(50% + 10px) !important;
+    text-align: left !important;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+  }
+
+  .responsiveTable td.pivoted:last-child {
+    /* Behave like a "row" */
+    @apply pb-4;
+  }
+
+  .responsiveTable td.pivoted:last-child {
+    /* Behave like a "row" */
+    @apply border-b-0;
+  }
+
+  .responsiveTable td .tdBefore {
+    /* Now like a table header */
+    @apply text-th-fgd-3 font-normal;
+    position: absolute;
+    display: block;
+
+    /* Top/left values mimic padding */
+    left: 1rem;
+    width: calc(50% - 20px);
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    text-align: left !important;
+  }
 }

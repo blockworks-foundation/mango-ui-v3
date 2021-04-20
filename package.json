@@ -49,6 +49,7 @@
     "react-dom": "^17.0.1",
     "react-grid-layout": "^1.2.4",
     "react-portal": "^4.2.1",
+    "react-super-responsive-table": "^5.2.0",
     "recharts": "^2.0.9",
     "zustand": "^3.3.3"
   },

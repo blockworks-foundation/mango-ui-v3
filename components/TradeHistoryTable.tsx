@@ -1,4 +1,6 @@
 import useTradeHistory from '../hooks/useTradeHistory'
+import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
+import SideBadge from './SideBadge'
 // import useMangoStore from '../stores/useMangoStore'
 // import Loading from './Loading'
 
@@ -14,111 +16,102 @@ const TradeHistoryTable = () => {
             <div
               className={`shadow overflow-hidden border-b border-th-bkg-2 sm:rounded-md`}
             >
-              <table className={`min-w-full divide-y divide-th-bkg-2`}>
-                <thead>
-                  <tr>
-                    <th
+              <Table className={`min-w-full divide-y divide-th-bkg-2`}>
+                <Thead>
+                  <Tr>
+                    <Th
                       scope="col"
-                      className={`px-6 py-3 text-left text-base font-medium text-th-fgd-2 tracking-wider`}
+                      className={`px-6 py-3 text-left font-normal`}
                     >
                       Market
-                    </th>
-                    <th
+                    </Th>
+                    <Th
                       scope="col"
-                      className={`px-6 py-3 text-left text-base font-medium text-th-fgd-2 tracking-wider`}
+                      className={`px-6 py-3 text-left font-normal`}
                     >
                       Side
-                    </th>
-                    <th
+                    </Th>
+                    <Th
                       scope="col"
-                      className={`px-6 py-3 text-left text-base font-medium text-th-fgd-2 tracking-wider`}
+                      className={`px-6 py-3 text-left font-normal`}
                     >
                       Size
-                    </th>
-                    <th
+                    </Th>
+                    <Th
                       scope="col"
-                      className={`px-6 py-3 text-left text-base font-medium text-th-fgd-2 tracking-wider`}
+                      className={`px-6 py-3 text-left font-normal`}
                     >
                       Price
-                    </th>
-                    <th
+                    </Th>
+                    <Th
                       scope="col"
-                      className={`px-6 py-3 text-left text-base font-medium text-th-fgd-2 tracking-wider`}
+                      className={`px-6 py-3 text-left font-normal`}
                     >
                       Liquidity
-                    </th>
-                    <th
+                    </Th>
+                    <Th
                       scope="col"
-                      className={`px-6 py-3 text-left text-base font-medium text-th-fgd-2 tracking-wider`}
+                      className={`px-6 py-3 text-left font-normal`}
                     >
                       Fees
-                    </th>
-                    <th
+                    </Th>
+                    <Th
                       scope="col"
-                      className={`px-6 py-3 text-left text-base font-medium text-th-fgd-2 tracking-wider`}
+                      className={`px-6 py-3 text-left font-normal`}
                     >
                       Date
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
+                    </Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
                   {tradeHistory.map((trade, index) => (
-                    <tr
+                    <Tr
                       key={`${trade.orderId}${trade.side}${trade.uuid}`}
-                      className={`
+                      className={`border-b border-th-bkg-3
                         ${index % 2 === 0 ? `bg-th-bkg-3` : `bg-th-bkg-2`}
                       `}
                     >
-                      <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2`}
+                      <Td
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
                         {trade.marketName}
-                      </td>
-                      <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2`}
+                      </Td>
+                      <Td
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
-                        <div
-                          className={`rounded inline-block ${
-                            trade.side === 'buy'
-                              ? 'bg-th-green text-th-bkg-1'
-                              : 'bg-th-red text-white'
-                          }
-                           px-2 py-1  font-bold`}
-                        >
-                          {trade.side.toUpperCase()}
-                        </div>
-                      </td>
-                      <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2`}
+                        <SideBadge side={trade.side} />
+                      </Td>
+                      <Td
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
                         {trade.size}
-                      </td>
-                      <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2`}
+                      </Td>
+                      <Td
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
                         {trade.price}
-                      </td>
-                      <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2`}
+                      </Td>
+                      <Td
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
                         {trade.liquidity}
-                      </td>
-                      <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2`}
+                      </Td>
+                      <Td
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
                         {trade.feeCost}
-                      </td>
-                      <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2`}
+                      </Td>
+                      <Td
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
                         {trade.loadTimestamp
                           ? new Date(trade.loadTimestamp).toLocaleDateString()
                           : 'Recent'}
-                      </td>
-                    </tr>
+                      </Td>
+                    </Tr>
                   ))}
-                </tbody>
-              </table>
+                </Tbody>
+              </Table>
             </div>
           ) : (
             <div

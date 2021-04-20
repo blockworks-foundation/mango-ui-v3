@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { TrashIcon } from '@heroicons/react/solid'
+import { TrashIcon } from '@heroicons/react/outline'
 import { useOpenOrders } from '../hooks/useOpenOrders'
 import { cancelOrderAndSettle } from '../utils/mango'
 import Button from './Button'
@@ -8,6 +8,8 @@ import { PublicKey } from '@solana/web3.js'
 import useConnection from '../hooks/useConnection'
 import useMangoStore from '../stores/useMangoStore'
 import { notify } from '../utils/notifications'
+import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
+import SideBadge from './SideBadge'
 
 const OpenOrdersTable = () => {
   const openOrders = useOpenOrders()
@@ -54,89 +56,83 @@ const OpenOrdersTable = () => {
             <div
               className={`shadow overflow-hidden border-b border-th-bkg-2 sm:rounded-md`}
             >
-              <table className={`min-w-full divide-y divide-th-bkg-2`}>
-                <thead>
-                  <tr>
-                    <th
+              <Table className={`min-w-full divide-y divide-th-bkg-2`}>
+                <Thead>
+                  <Tr className="text-th-fgd-3">
+                    <Th
                       scope="col"
-                      className={`px-6 py-3 text-left text-base font-medium text-th-fgd-2 tracking-wider`}
+                      className={`px-6 py-3 text-left font-normal`}
                     >
                       Market
-                    </th>
-                    <th
+                    </Th>
+                    <Th
                       scope="col"
-                      className={`px-6 py-3 text-left text-base font-medium text-th-fgd-2 tracking-wider`}
+                      className={`px-6 py-3 text-left font-normal`}
                     >
                       Side
-                    </th>
-                    <th
+                    </Th>
+                    <Th
                       scope="col"
-                      className={`px-6 py-3 text-left text-base font-medium text-th-fgd-2 tracking-wider`}
+                      className={`px-6 py-3 text-left font-normal`}
                     >
                       Size
-                    </th>
-                    <th
+                    </Th>
+                    <Th
                       scope="col"
-                      className={`px-6 py-3 text-left text-base font-medium text-th-fgd-2 tracking-wider`}
+                      className={`px-6 py-3 text-left font-normal`}
                     >
                       Price
-                    </th>
-                    <th scope="col" className={`relative px-6 py-3`}>
+                    </Th>
+                    <Th scope="col" className={`relative px-6 py-3`}>
                       <span className={`sr-only`}>Edit</span>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
+                    </Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
                   {openOrders.map((order, index) => (
-                    <tr
+                    <Tr
                       key={`${order.orderId}${order.side}`}
-                      className={`
-                        ${index % 2 === 0 ? `bg-th-bkg-1` : `bg-th-bkg-3`}
+                      className={`border-b border-th-bkg-3
+                        ${index % 2 === 0 ? `bg-th-bkg-3` : `bg-th-bkg-2`}
                       `}
                     >
-                      <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2 font-light`}
+                      <Td
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
                         {order.marketName}
-                      </td>
-                      <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2 font-light`}
+                      </Td>
+                      <Td
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
-                        <div
-                          className={`rounded inline-block bg-mango-green px-2 py-1 text-mango-dark font-bold`}
-                        >
-                          {order.side.toUpperCase()}
-                        </div>
-                      </td>
-                      <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2 font-light`}
+                        <SideBadge side={order.side} />
+                      </Td>
+                      <Td
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
                         {order.size}
-                      </td>
-                      <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2 font-light`}
+                      </Td>
+                      <Td
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
                         {order.price}
-                      </td>
-                      <td
-                        className={`px-6 py-4 opacity-75 whitespace-nowrap text-right text-sm font-medium`}
-                      >
+                      </Td>
+                      <Td className={`px-6 py-4 whitespace-nowrap text-left`}>
                         <Button
                           onClick={() => handleCancelOrder(order)}
-                          className={`flex items-center ml-auto rounded text-th-red border border-th-red hover:text-th-red hover:border-th-red py-1`}
+                          className={`flex items-center md:ml-auto px-2 py-1 text-xs`}
                         >
                           {cancelId + '' === order?.orderId + '' ? (
                             <Loading />
                           ) : (
-                            <TrashIcon className={`h-5 w-5 mr-1`} />
+                            <TrashIcon className={`h-4 w-4 mr-1`} />
                           )}
-                          <span>Cancel Order</span>
+                          <span>Cancel</span>
                         </Button>
-                      </td>
-                    </tr>
+                      </Td>
+                    </Tr>
                   ))}
-                </tbody>
-              </table>
+                </Tbody>
+              </Table>
             </div>
           ) : (
             <div

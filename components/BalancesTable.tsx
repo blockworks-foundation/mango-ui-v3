@@ -4,6 +4,7 @@ import { settleAll } from '../utils/mango'
 import useConnection from '../hooks/useConnection'
 import Button from '../components/Button'
 import { notify } from '../utils/notifications'
+import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
 
 const BalancesTable = () => {
   const balances = useBalances()
@@ -49,8 +50,14 @@ const BalancesTable = () => {
     <div className={`flex flex-col py-6`}>
       <div className={`-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8`}>
         <div className={`align-middle inline-block min-w-full sm:px-6 lg:px-8`}>
-          {balances.length ? (
-            <div className={`text-right`}>
+          {balances.length &&
+          balances.find((balance) => balance.unsettled > 0) ? (
+            <div
+              className={`flex items-center justify-center p-4 mb-2 rounded-md bg-th-bkg-1`}
+            >
+              <div className="text-fgd-1 font-semibold pr-4">
+                You have an unsettled balance
+              </div>
               <Button onClick={handleSettleAll}>Settle All</Button>
             </div>
           ) : null}
@@ -58,89 +65,89 @@ const BalancesTable = () => {
             <div
               className={`overflow-hidden border-b border-th-bkg-2 sm:rounded-md`}
             >
-              <table className={`min-w-full divide-y divide-th-bkg-2`}>
-                <thead>
-                  <tr>
-                    <th
+              <Table className={`min-w-full divide-y divide-th-bkg-2`}>
+                <Thead>
+                  <Tr className="text-th-fgd-3">
+                    <Th
                       scope="col"
-                      className={`px-6 py-3 text-left text-base font-medium text-th-fgd-2 tracking-wider`}
+                      className={`px-6 py-3 text-left font-normal`}
                     >
                       Coin
-                    </th>
-                    <th
+                    </Th>
+                    <Th
                       scope="col"
-                      className={`px-6 py-3 text-left text-base font-medium text-th-fgd-2 tracking-wider`}
+                      className={`px-6 py-3 text-left font-normal`}
                     >
                       Deposits
-                    </th>
-                    <th
+                    </Th>
+                    <Th
                       scope="col"
-                      className={`px-6 py-3 text-left text-base font-medium text-th-fgd-2 tracking-wider`}
+                      className={`px-6 py-3 text-left font-normal`}
                     >
                       Borrows
-                    </th>
-                    <th
+                    </Th>
+                    <Th
                       scope="col"
-                      className={`px-6 py-3 text-left text-base font-medium text-th-fgd-2 tracking-wider`}
+                      className={`px-6 py-3 text-left font-normal`}
                     >
                       In Orders
-                    </th>
-                    <th
+                    </Th>
+                    <Th
                       scope="col"
-                      className={`px-6 py-3 text-left text-base font-medium text-th-fgd-2 tracking-wider`}
+                      className={`px-6 py-3 text-left font-normal`}
                     >
                       Unsettled
-                    </th>
-                    <th
+                    </Th>
+                    <Th
                       scope="col"
-                      className={`px-6 py-3 text-left text-base font-medium text-th-fgd-2 tracking-wider`}
+                      className={`px-6 py-3 text-left font-normal`}
                     >
                       Net
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
+                    </Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
                   {balances.map((balance, index) => (
-                    <tr
+                    <Tr
                       key={`${index}`}
-                      className={`
-                        ${index % 2 === 0 ? `bg-th-bkg-1` : `bg-th-bkg-3`}
+                      className={`border-b border-th-bkg-3
+                        ${index % 2 === 0 ? `bg-th-bkg-3` : `bg-th-bkg-2`}
                       `}
                     >
-                      <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2`}
+                      <Td
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
                         {balance.coin}
-                      </td>
-                      <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2`}
+                      </Td>
+                      <Td
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
                         {balance.marginDeposits}
-                      </td>
-                      <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2`}
+                      </Td>
+                      <Td
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
                         {balance.borrows}
-                      </td>
-                      <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2`}
+                      </Td>
+                      <Td
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
                         {balance.orders}
-                      </td>
-                      <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2`}
+                      </Td>
+                      <Td
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
                         {balance.unsettled}
-                      </td>
-                      <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-2`}
+                      </Td>
+                      <Td
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
                         {balance.net}
-                      </td>
-                    </tr>
+                      </Td>
+                    </Tr>
                   ))}
-                </tbody>
-              </table>
+                </Tbody>
+              </Table>
             </div>
           ) : (
             <div
