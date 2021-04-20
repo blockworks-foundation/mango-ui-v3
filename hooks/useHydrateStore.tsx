@@ -37,11 +37,9 @@ const useHydrateStore = () => {
       new PublicKey(dexProgramId)
     )
       .then(async (market) => {
-        // @ts-ignore
-        const bidAccount = market._decoded.bids
+        const bidAccount = market['_decoded'].bids
         const bidInfo = await websocketConnection.getAccountInfo(bidAccount)
-        // @ts-ignore
-        const askAccount = market._decoded.asks
+        const askAccount = market['_decoded'].asks
         const askInfo = await websocketConnection.getAccountInfo(askAccount)
         setMangoStore((state) => {
           state.market.current = market

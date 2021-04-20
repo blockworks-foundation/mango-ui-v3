@@ -108,6 +108,7 @@ export default function useWallet() {
       actions.fetchMangoGroup()
       actions.fetchWalletBalances()
       actions.fetchMangoSrmAccounts()
+      // wait for margin account before fetching trade history
       await actions.fetchMarginAccounts()
       actions.fetchTradeHistory()
     })

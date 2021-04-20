@@ -172,7 +172,6 @@ const useMangoStore = create<MangoStore>((set, get) => ({
       const wallet = get().wallet.current
       const connected = get().wallet.connected
       const set = get().set
-      console.log('fetching wallet balances')
 
       if (wallet?.publicKey && connected) {
         const ownerAddress = wallet.publicKey
@@ -231,7 +230,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
 
       if (!wallet?.publicKey || !wallet.publicKey) return
 
-      mangoClient
+      return mangoClient
         .getMarginAccountsForOwner(
           connection,
           new PublicKey(programId),
@@ -265,7 +264,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
       const mangoGroupPk = new PublicKey(mangoGroupIds.mango_group_pk)
       const srmVaultPk = new PublicKey(mangoGroupIds.srm_vault_pk)
 
-      mangoClient
+      return mangoClient
         .getMangoGroup(connection, mangoGroupPk, srmVaultPk)
         .then(async (mangoGroup) => {
           const srmAccountInfo = await connection.getAccountInfo(
