@@ -410,6 +410,16 @@ export async function borrowAndWithdraw(
   )
   transaction.add(withdrawInstruction)
 
+  const settleBorrowInstruction = makeSettleBorrowInstruction(
+    programId,
+    mangoGroup.publicKey,
+    marginAccount.publicKey,
+    wallet.publicKey,
+    tokenIndex,
+    nativeWithdrawQuantity
+  )
+  transaction.add(settleBorrowInstruction)
+
   const signers = []
   const functionName = 'Borrow And Withdraw'
   const sendingMessage = `Sending ${functionName} instruction...`
