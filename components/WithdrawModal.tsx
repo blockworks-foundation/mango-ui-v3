@@ -73,12 +73,6 @@ const WithdrawModal = ({ isOpen, onClose }) => {
     )
     const liabsAvail = (assetsVal / 1.2 - currentLiabs) * 0.99 - 0.01
 
-    console.log('selected token deposits', getMaxForSelectedAccount())
-    console.log('prices', prices)
-    console.log('assetsVal', assetsVal)
-    console.log('currentLiabs', currentLiabs)
-    console.log('liabsAvail', liabsAvail)
-
     const amountToWithdraw =
       liabsAvail / prices[tokenIndex] + getMaxForSelectedAccount()
     const decimals = mintDecimals[getTokenIndex(mintAddress)]
@@ -99,8 +93,6 @@ const WithdrawModal = ({ isOpen, onClose }) => {
     if (!marginAccount || !mangoGroup) return
 
     if (Number(inputAmount) <= getMaxForSelectedAccount()) {
-      console.log('=withdraw without borrow=')
-
       withdraw(
         connection,
         programId,
@@ -129,8 +121,6 @@ const WithdrawModal = ({ isOpen, onClose }) => {
           onClose()
         })
     } else {
-      console.log('-withdraw with borrow-')
-
       borrowAndWithdraw(
         connection,
         programId,
