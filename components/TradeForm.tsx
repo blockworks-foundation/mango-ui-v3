@@ -310,7 +310,7 @@ export default function TradeForm() {
               <Button
                 disabled={disabledTradeButton}
                 onClick={onSubmit}
-                className={`rounded ${
+                className={`${
                   !disabledTradeButton &&
                   'border-th-green hover:border-th-green-dark'
                 } text-th-green hover:text-th-fgd-1 hover:bg-th-green-dark flex-grow`}
@@ -321,7 +321,7 @@ export default function TradeForm() {
               <Button
                 disabled={disabledTradeButton}
                 onClick={onSubmit}
-                className={`rounded ${
+                className={`${
                   !disabledTradeButton &&
                   'border-th-red hover:border-th-red-dark'
                 } text-th-red hover:text-th-fgd-1 hover:bg-th-red-dark flex-grow`}

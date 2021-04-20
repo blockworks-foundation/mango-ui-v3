@@ -1,15 +1,13 @@
 import { useEffect, useState } from 'react'
-import styled from '@emotion/styled'
 import { LineChart, Line, ReferenceLine, XAxis, YAxis, Tooltip } from 'recharts'
 import useDimensions from 'react-cool-dimensions'
 import { IDS, MangoClient } from '@blockworks-foundation/mango-client'
 import { PublicKey, Connection } from '@solana/web3.js'
 import { DEFAULT_MANGO_GROUP } from '../utils/mango'
-import FloatingElement from '../components/FloatingElement'
 import useConnection from '../hooks/useConnection'
 import TopBar from '../components/TopBar'
-import Select from '../components/Select'
 import { formatBalanceDisplay } from '../utils/index'
+import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
 
 const DECIMALS = {
   BTC: 4,
@@ -26,20 +24,6 @@ const icons = {
   USDC: '/assets/icons/usdc.svg',
   WUSDT: '/assets/icons/usdt.svg',
 }
-
-const ChartLayover = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
-  color: #525a6a;
-`
-
-const ChartWrapper = styled.div`
-  height: 100%;
-  width: 100%;
-`
 
 const useMangoStats = () => {
   const [stats, setStats] = useState([
@@ -119,25 +103,22 @@ const StatsChart = ({ title, xAxis, yAxis, data, labelFormat }) => {
   }
 
   return (
-    <ChartWrapper ref={observe}>
-      <ChartLayover>
-        <div>
-          <strong>
-            {title}
-            {mouseData ? `: ${labelFormat(mouseData[yAxis])}` : null}
-          </strong>
+    <div className="h-full w-full" ref={observe}>
+      <div className="absolute -top-4 left-0 h-full w-full pb-4">
+        <div className="text-center text-th-fgd-1 text-base font-semibold">
+          {title}
         </div>
         {mouseData ? (
-          <div>
-            <strong>
-              Date
-              {mouseData
-                ? `: ${new Date(mouseData[xAxis]).toDateString()}`
-                : null}
-            </strong>
+          <div className="text-center pt-1">
+            <div className="text-sm font-normal text-th-fgd-3">
+              {labelFormat(mouseData[yAxis])}
+            </div>
+            <div className="text-xs font-normal text-th-fgd-4">
+              {new Date(mouseData[xAxis]).toDateString()}
+            </div>
           </div>
         ) : null}
-      </ChartLayover>
+      </div>
       {width > 0 ? (
         <LineChart
           width={width}
@@ -176,7 +157,7 @@ const StatsChart = ({ title, xAxis, yAxis, data, labelFormat }) => {
           <YAxis dataKey={yAxis} hide />
         </LineChart>
       ) : null}
-    </ChartWrapper>
+    </div>
   )
 }
 
@@ -191,99 +172,116 @@ export default function StatsPage() {
   return (
     <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all `}>
       <TopBar />
-      <div className="min-h-screen w-full lg:w-2/3 mx-auto p-1 sm:px-2 sm:py-1 md:px-6 md:py-1">
-        <FloatingElement className="h-auto">
-          <div className="text-center">
-            <h1 className={`text-th-fgd-1 text-3xl`}>Mango Stats</h1>
-          </div>
-          <div className="hidden md:flex md:flex-col min-w-full">
-            <table className="min-w-full">
-              <thead className="">
-                <tr>
-                  <th scope="col" className="text-left py-4">
-                    Asset
-                  </th>
-                  <th scope="col" className="text-left py-4">
-                    Total Deposits
-                  </th>
-                  <th scope="col" className="text-left py-4">
-                    Total Borrows
-                  </th>
-                  <th scope="col" className="text-left py-4">
-                    Deposit Interest
-                  </th>
-                  <th scope="col" className="text-left py-4">
-                    Borrow Interest
-                  </th>
-                  <th scope="col" className="text-left py-4">
-                    Utilization
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-600">
-                {latestStats.map((stat) => (
-                  <tr key={stat.symbol}>
-                    <td className="flex items-center text-left py-4">
-                      <img src={icons[stat.symbol]} alt={icons[stat.symbol]} />
+      <div className="min-h-screen w-full xl:w-3/4 mx-auto px-4 sm:px-6 sm:py-1 md:px-8 md:py-1 lg:px-12">
+        <div className="text-center pt-8 pb-6 md:pt-10">
+          <h1 className={`text-th-fgd-1 text-2xl font-semibold`}>
+            Mango Stats
+          </h1>
+        </div>
+        <div className="md:flex md:flex-col min-w-full">
+          <Table className="min-w-full divide-y divide-th-bkg-2">
+            <Thead>
+              <Tr className="text-th-fgd-3">
+                <Th scope="col" className="px-6 py-3 text-left font-normal">
+                  Asset
+                </Th>
+                <Th scope="col" className="px-6 py-3 text-left font-normal">
+                  Total Deposits
+                </Th>
+                <Th scope="col" className="px-6 py-3 text-left font-normal">
+                  Total Borrows
+                </Th>
+                <Th scope="col" className="px-6 py-3 text-left font-normal">
+                  Deposit Interest
+                </Th>
+                <Th scope="col" className="px-6 py-3 text-left font-normal">
+                  Borrow Interest
+                </Th>
+                <Th scope="col" className="px-6 py-3 text-left font-normal">
+                  Utilization
+                </Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {latestStats.map((stat, index) => (
+                <Tr
+                  key={stat.symbol}
+                  className={`border-b border-th-bkg-2
+                  ${index % 2 === 0 ? `bg-th-bkg-2` : `bg-th-bkg-1`}
+                `}
+                >
+                  <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
+                    <div className="flex items-center">
+                      <img
+                        src={icons[stat.symbol]}
+                        alt={icons[stat.symbol]}
+                        className="w-5 h-5 md:w-6 md:h-6"
+                      />
                       <button
                         onClick={() => setSelectedAsset(stat.symbol)}
-                        className="text-th-primary cursor-pointer ml-2"
+                        className="underline cursor-pointer ml-3 hover:text-th-primary hover:no-underline"
                       >
-                        <div style={{ width: '100%' }}>{stat.symbol}</div>
+                        {stat.symbol}
                       </button>
-                    </td>
-                    <td className="text-left py-4">
-                      {formatBalanceDisplay(
-                        stat.totalDeposits,
-                        DECIMALS[stat.symbol]
-                      ).toLocaleString(undefined, {
-                        maximumFractionDigits: DECIMALS[stat.symbol],
-                      })}
-                    </td>
-                    <td className="text-left py-4">
-                      {formatBalanceDisplay(
-                        stat.totalBorrows,
-                        DECIMALS[stat.symbol]
-                      ).toLocaleString(undefined, {
-                        maximumFractionDigits: DECIMALS[stat.symbol],
-                      })}
-                    </td>
-                    <td className="text-left py-4">
-                      {stat.depositInterest.toFixed(2)}%
-                    </td>
-                    <td className="text-left py-4">
-                      {stat.borrowInterest.toFixed(2)}%
-                    </td>
-                    <td className="text-left py-4">
-                      {(parseFloat(stat.utilization) * 100).toFixed(2)}%
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </FloatingElement>
+                    </div>
+                  </Td>
+                  <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
+                    {formatBalanceDisplay(
+                      stat.totalDeposits,
+                      DECIMALS[stat.symbol]
+                    ).toLocaleString(undefined, {
+                      maximumFractionDigits: DECIMALS[stat.symbol],
+                    })}
+                  </Td>
+                  <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
+                    {formatBalanceDisplay(
+                      stat.totalBorrows,
+                      DECIMALS[stat.symbol]
+                    ).toLocaleString(undefined, {
+                      maximumFractionDigits: DECIMALS[stat.symbol],
+                    })}
+                  </Td>
+                  <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
+                    {stat.depositInterest.toFixed(2)}%
+                  </Td>
+                  <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
+                    {stat.borrowInterest.toFixed(2)}%
+                  </Td>
+                  <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
+                    {(parseFloat(stat.utilization) * 100).toFixed(2)}%
+                  </Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        </div>
         {selectedAsset ? (
-          <FloatingElement className="h-auto">
-            <div className="flex justify-center text-2xl">
-              <span className={`text-th-fgd-1`}>Historical</span>
-              <Select
-                className="mx-4 text-lg"
-                value={selectedAsset}
-                onChange={(val) => setSelectedAsset(val)}
-              >
-                {latestStats.map(({ symbol }) => (
-                  <Select.Option key={symbol} value={symbol}>
-                    {symbol}
-                  </Select.Option>
+          <div className="py-10 md:py-14">
+            <div className="flex flex-col items-center pb-12">
+              <h2 className="text-th-fgd-1 text-center text-2xl font-semibold mb-4">
+                Historical Stats
+              </h2>
+              <div className="flex self-center">
+                {latestStats.map((stat) => (
+                  <div
+                    className={`px-2 py-1 mr-2 rounded-md cursor-pointer default-transition bg-th-bkg-3
+              ${
+                selectedAsset === stat.symbol
+                  ? `text-th-primary`
+                  : `text-th-fgd-1 opacity-50 hover:opacity-100`
+              }
+            `}
+                    onClick={() => setSelectedAsset(stat.symbol)}
+                    key={stat.symbol as string}
+                  >
+                    {stat.symbol}
+                  </div>
                 ))}
-              </Select>
-              <span className={`text-th-fgd-1`}>Stats</span>
+              </div>
             </div>
-
-            <div className="flex flex-col md:flex-row mt-2">
+            <div className="flex flex-col md:flex-row pb-14">
               <div
-                className="relative my-2 md:w-1/2"
+                className="relative my-2 pb-14 md:pb-0 md:w-1/2"
                 style={{ height: '300px' }}
               >
                 <StatsChart
@@ -309,7 +307,7 @@ export default function StatsPage() {
             </div>
             <div className="flex flex-col md:flex-row">
               <div
-                className="relative my-2 md:w-1/2"
+                className="relative my-2 pb-14 md:pb-0 md:w-1/2"
                 style={{ height: '300px' }}
               >
                 <StatsChart
@@ -333,7 +331,7 @@ export default function StatsPage() {
                 />
               </div>
             </div>
-          </FloatingElement>
+          </div>
         ) : null}
       </div>
     </div>
