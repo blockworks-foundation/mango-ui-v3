@@ -10,6 +10,7 @@ import {
 import { WalletAdapter } from '../@types/types'
 import useInterval from './useInterval'
 
+const SECONDS = 1000
 const ASSET_URL =
   'https://cdn.jsdelivr.net/gh/solana-labs/oyster@main/assets/wallets'
 
@@ -143,13 +144,13 @@ export default function useWallet() {
       actions.fetchMarginAccounts()
       actions.fetchWalletBalances()
     }
-  }, 15000)
+  }, 20 * SECONDS)
 
   useInterval(() => {
     if (connected && marginAccount) {
       actions.fetchTradeHistory()
     }
-  }, 60000)
+  }, 180 * SECONDS)
 
   return { connected, wallet }
 }
