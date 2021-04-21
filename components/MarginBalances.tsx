@@ -156,37 +156,39 @@ const AddressTooltip = ({
     <>
       {owner && marginAccount ? (
         <>
-          <div className={`flex flex-nowrap`}>
+          <div className={`flex flex-nowrap text-th-fgd-3`}>
             Margin Account:
             <a
+              className="text-th-fgd-1 default-transition hover:text-th-primary"
               href={'https://explorer.solana.com/address/' + marginAccount}
               target="_blank"
               rel="noopener noreferrer"
             >
-              <div className={`ml-4 flex`}>
-                <ExternalLinkIcon
-                  className={`h-5 w-5 mr-1 text-mango-yellow`}
-                />
-                <span className={`text-mango-yellow hover:opacity-50`}>
-                  {marginAccount}
+              <div className={`ml-2 flex items-center`}>
+                <span className={`underline`}>
+                  {marginAccount.toString().substr(0, 5) +
+                    '...' +
+                    marginAccount.toString().substr(-5)}
                 </span>
+                <ExternalLinkIcon className={`h-4 w-4 ml-1`} />
               </div>
             </a>
           </div>
-          <div className={`flex mt-2`}>
+          <div className={`flex flex-nowrap text-th-fgd-3 pt-2`}>
             Account Owner:
             <a
+              className="text-th-fgd-1 default-transition hover:text-th-primary"
               href={'https://explorer.solana.com/address/' + owner}
               target="_blank"
               rel="noopener noreferrer"
             >
-              <div className={`ml-4 flex`}>
-                <ExternalLinkIcon
-                  className={`h-5 w-5 mr-1 text-mango-yellow`}
-                />
-                <span className={`text-mango-yellow hover:opacity-50`}>
-                  {owner}
+              <div className={`ml-2 flex items-center`}>
+                <span className={`underline`}>
+                  {owner.toString().substr(0, 5) +
+                    '...' +
+                    owner.toString().substr(-5)}
                 </span>
+                <ExternalLinkIcon className={`h-4 w-4 ml-1`} />
               </div>
             </a>
           </div>

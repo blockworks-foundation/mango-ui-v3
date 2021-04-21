@@ -26,7 +26,7 @@ export default function WalletSelect({ isPrimary = false }) {
       {({ open }) => (
         <>
           <Menu.Button
-            className={`flex justify-center items-center h-full rounded-r focus:outline-none text-th-primary hover:text-th-fgd-1 ${
+            className={`flex justify-center items-center h-full rounded-r rounded-l-none focus:outline-none text-th-primary hover:text-th-fgd-1 ${
               isPrimary
                 ? 'px-3 hover:bg-th-primary'
                 : 'px-2 hover:bg-th-bkg-3 border-l border-th-fgd-4'
