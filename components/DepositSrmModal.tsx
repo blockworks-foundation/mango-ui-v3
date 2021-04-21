@@ -85,12 +85,10 @@ const DepositSrmModal = ({ isOpen, onClose }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <Modal.Header>
-        {/* not sure what the below div os for? */}
         <div className={`text-th-fgd-3 flex-shrink invisible w-5`}>X</div>
         <ElementTitle noMarignBottom>Contribute SRM</ElementTitle>
       </Modal.Header>
       <div className={`pb-6 px-8`}>
-        <div className={`text-th-fgd-1 pb-2`}>SRM Account</div>
         <AccountSelect
           accounts={depositAccounts}
           selectedAccount={selectedAccount}

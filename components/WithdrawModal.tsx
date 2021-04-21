@@ -14,10 +14,12 @@ import { borrowAndWithdraw, withdraw } from '../utils/mango'
 import Loading from './Loading'
 import Button from './Button'
 import { notify } from '../utils/notifications'
+import Switch from './Switch'
 
 const WithdrawModal = ({ isOpen, onClose }) => {
   const [inputAmount, setInputAmount] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [includeBorrow, setIncludeBorrow] = useState(false)
   const { getTokenIndex, symbols } = useMarketList()
   const { connection, programId } = useConnection()
   const walletAccounts = useMangoStore((s) => s.wallet.balances)
@@ -159,7 +161,6 @@ const WithdrawModal = ({ isOpen, onClose }) => {
         <ElementTitle noMarignBottom>Withdraw Funds</ElementTitle>
       </Modal.Header>
       <div className="pb-6 px-8">
-        <div className="text-th-fgd-1 pb-2">Token Account</div>
         <AccountSelect
           hideAddress
           accounts={withdrawAccounts}
@@ -167,20 +168,26 @@ const WithdrawModal = ({ isOpen, onClose }) => {
           onSelectAccount={handleSetSelectedAccount}
           getBalance={getMaxForSelectedAccount}
         />
+        <div className="flex items-center jusitfy-between text-th-fgd-1 mt-4 px-3 py-2 rounded-md bg-th-bkg-3">
+          <span>Include Borrow</span>
+          <Switch
+            checked={includeBorrow}
+            className="ml-auto"
+            onChange={(checked) => setIncludeBorrow(checked)}
+          />
+        </div>
         <div className="flex justify-between pb-2 pt-4">
           <div className="text-th-fgd-1">Amount</div>
           <div className="flex space-x-4">
             <div
               className="text-th-fgd-1 underline cursor-pointer default-transition hover:text-th-primary hover:no-underline"
-              onClick={setMaxForSelectedAccount}
+              onClick={
+                includeBorrow
+                  ? setMaxBorrowForSelectedAccount
+                  : setMaxForSelectedAccount
+              }
             >
               Max
-            </div>
-            <div
-              className="text-th-fgd-1 underline cursor-pointer default-transition hover:text-th-primary hover:no-underline"
-              onClick={setMaxBorrowForSelectedAccount}
-            >
-              Max With Borrow
             </div>
           </div>
         </div>
