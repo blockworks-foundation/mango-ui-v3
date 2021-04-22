@@ -70,7 +70,7 @@ const BalancesTable = () => {
             >
               <div className="flex items-center text-fgd-1 font-semibold pr-4">
                 You have unsettled funds
-                <Tooltip content="If you have borrows, settling will reduce any deposits you have by the amount you have borrowed and any unsettled funds from trades will be added to your account.">
+                <Tooltip content="Use the Settle All button to move unsettled funds to your deposits. If you have borrows, settling will use deposits for that asset to reduce your borrows.">
                   <div>
                     <InformationCircleIcon
                       className={`h-5 w-5 ml-2 text-th-primary cursor-help`}

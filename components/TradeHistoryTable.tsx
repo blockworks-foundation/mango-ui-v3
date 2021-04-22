@@ -68,7 +68,7 @@ const TradeHistoryTable = () => {
                       scope="col"
                       className={`px-6 py-3 text-left font-normal`}
                     >
-                      Date
+                      Approx Date/Time
                     </Th>
                   </Tr>
                 </Thead>
