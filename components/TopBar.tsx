@@ -79,11 +79,7 @@ const TopBar = () => {
           </div>
           <div className="flex">
             <div className="flex items-center">
-              {asPath === '/' ? (
-                // <div className="flex items-center justify-center rounded-full bg-th-bkg-3 w-8 h-8 mr-4">
-                <UiLock />
-              ) : // </div>
-              null}
+              {asPath === '/' ? <UiLock /> : null}
               <div className="flex items-center justify-center rounded-full bg-th-bkg-3 w-8 h-8 mr-2">
                 <ThemeSwitch />
               </div>
