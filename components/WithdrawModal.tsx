@@ -160,29 +160,10 @@ const WithdrawModal = ({ isOpen, onClose }) => {
     }
   }
 
-  const DECIMALS = {
-    BTC: 4,
-    ETH: 3,
-    USDT: 2,
-  }
-
   const getBorrowAmount = () => {
     const tokenBalance = getMaxForSelectedAccount()
     const borrowAmount = parseFloat(inputAmount) - tokenBalance
     return borrowAmount > 0 ? borrowAmount : 0
-  }
-
-  const getInterestCostPerYear = () => {
-    const borrowAmount = getBorrowAmount()
-    const interestRate = selectedMangoGroup.getBorrowRate(tokenIndex)
-    const symbol = getSymbolForTokenMintAddress(
-      selectedAccount?.account?.mint.toString()
-    )
-    if (borrowAmount > 0) {
-      const borrowCostPerYear = borrowAmount * interestRate
-      return `~${borrowCostPerYear.toFixed(DECIMALS[symbol])} ${symbol}`
-    }
-    return `0 ${symbol}`
   }
 
   if (!selectedAccount) return null
@@ -202,8 +183,8 @@ const WithdrawModal = ({ isOpen, onClose }) => {
         />
         <div className="flex items-center jusitfy-between text-th-fgd-1 mt-4 p-2 rounded-md bg-th-bkg-3">
           <div className="flex items-center text-fgd-1 pr-4">
-            <span>Include Borrow</span>
-            <Tooltip content="Borrow allows you to loan funds and pay them back at a later date. Interest is charged on your loan balance and is subject to change.">
+            <span>Borrow Funds</span>
+            <Tooltip content="Interest is charged on your borrowed balance and is subject to change.">
               <InformationCircleIcon
                 className={`h-5 w-5 ml-2 text-th-primary cursor-help`}
               />
@@ -246,23 +227,13 @@ const WithdrawModal = ({ isOpen, onClose }) => {
         {includeBorrow ? (
           <div className="p-2 bg-th-bkg-1 rounded-md mt-4">
             <div className="flex justify-between pb-2">
-              <div className="text-th-fgd-3">Loan Amount</div>
-              <div className="text-th-fgd-1">{`${getBorrowAmount().toFixed(
-                DECIMALS[
-                  getSymbolForTokenMintAddress(
-                    selectedAccount?.account?.mint.toString()
-                  )
-                ]
-              )} ${getSymbolForTokenMintAddress(
+              <div className="text-th-fgd-3">Borrow Amount</div>
+              <div className="text-th-fgd-1">{`${getBorrowAmount()} ${getSymbolForTokenMintAddress(
                 selectedAccount?.account?.mint.toString()
               )}`}</div>
             </div>
-            <div className="flex justify-between pb-2">
-              <div className="text-th-fgd-3">Yearly Loan Cost</div>
-              <div className="text-th-fgd-1">{getInterestCostPerYear()}</div>
-            </div>
             <div className="flex justify-between">
-              <div className="text-th-fgd-3">Interest Rate</div>
+              <div className="text-th-fgd-3">Current APR</div>
               <div className="text-th-fgd-1">
                 {(selectedMangoGroup.getBorrowRate(tokenIndex) * 100).toFixed(
                   2
