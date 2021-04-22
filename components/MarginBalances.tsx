@@ -7,7 +7,7 @@ import FloatingElement from './FloatingElement'
 import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
 import useMarketList from '../hooks/useMarketList'
-import { tokenPrecision } from '../utils/index'
+import { floorToDecimal, tokenPrecision } from '../utils/index'
 import DepositModal from './DepositModal'
 import WithdrawModal from './WithdrawModal'
 import Button from './Button'
@@ -85,9 +85,13 @@ export default function MarginBalances() {
                   </td>
                   <td className={`text-center`}>
                     {selectedMarginAccount
-                      ? selectedMarginAccount
-                          .getUiDeposit(selectedMangoGroup, i)
-                          .toFixed(tokenPrecision[name])
+                      ? floorToDecimal(
+                          selectedMarginAccount.getUiDeposit(
+                            selectedMangoGroup,
+                            i
+                          ),
+                          tokenPrecision[name]
+                        ).toFixed(tokenPrecision[name])
                       : (0).toFixed(tokenPrecision[name])}
                   </td>
                   <td className={`text-center`}>

@@ -35,7 +35,7 @@ const MarketSelect = () => {
             </div>
           ))}
         </div>
-        <div className="text-th-fgd-4 mr-10">
+        <div className="text-th-fgd-3 mr-10">
           <a href="https://old.mango.markets" className="hover:text-th-primary">
             Use Previous Version
           </a>
