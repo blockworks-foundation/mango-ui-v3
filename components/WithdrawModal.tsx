@@ -101,7 +101,7 @@ const WithdrawModal = ({ isOpen, onClose }) => {
     const wallet = useMangoStore.getState().wallet.current
     if (!marginAccount || !mangoGroup) return
 
-    if (Number(inputAmount) <= getMaxForSelectedAccount()) {
+    if (!includeBorrow) {
       withdraw(
         connection,
         programId,
