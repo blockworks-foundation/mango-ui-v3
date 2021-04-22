@@ -15,6 +15,8 @@ import Loading from './Loading'
 import Button from './Button'
 import { notify } from '../utils/notifications'
 import Switch from './Switch'
+import Tooltip from './Tooltip'
+import { InformationCircleIcon } from '@heroicons/react/outline'
 
 const WithdrawModal = ({ isOpen, onClose }) => {
   const [inputAmount, setInputAmount] = useState('')
@@ -60,6 +62,11 @@ const WithdrawModal = ({ isOpen, onClose }) => {
 
   const setMaxForSelectedAccount = () => {
     setInputAmount(getMaxForSelectedAccount().toString())
+  }
+
+  const handleIncludeBorrowSwitch = (checked) => {
+    setIncludeBorrow(checked)
+    setInputAmount('')
   }
 
   const setMaxBorrowForSelectedAccount = async () => {
@@ -153,6 +160,31 @@ const WithdrawModal = ({ isOpen, onClose }) => {
     }
   }
 
+  const DECIMALS = {
+    BTC: 4,
+    ETH: 3,
+    USDT: 2,
+  }
+
+  const getBorrowAmount = () => {
+    const tokenBalance = getMaxForSelectedAccount()
+    const borrowAmount = parseFloat(inputAmount) - tokenBalance
+    return borrowAmount > 0 ? borrowAmount : 0
+  }
+
+  const getInterestCostPerYear = () => {
+    const borrowAmount = getBorrowAmount()
+    const interestRate = selectedMangoGroup.getBorrowRate(tokenIndex)
+    const symbol = getSymbolForTokenMintAddress(
+      selectedAccount?.account?.mint.toString()
+    )
+    if (borrowAmount > 0) {
+      const borrowCostPerYear = borrowAmount * interestRate
+      return `~${borrowCostPerYear.toFixed(DECIMALS[symbol])} ${symbol}`
+    }
+    return `0 ${symbol}`
+  }
+
   if (!selectedAccount) return null
 
   return (
@@ -168,12 +200,19 @@ const WithdrawModal = ({ isOpen, onClose }) => {
           onSelectAccount={handleSetSelectedAccount}
           getBalance={getMaxForSelectedAccount}
         />
-        <div className="flex items-center jusitfy-between text-th-fgd-1 mt-4 px-3 py-2 rounded-md bg-th-bkg-3">
-          <span>Include Borrow</span>
+        <div className="flex items-center jusitfy-between text-th-fgd-1 mt-4 p-2 rounded-md bg-th-bkg-3">
+          <div className="flex items-center text-fgd-1 pr-4">
+            <span>Include Borrow</span>
+            <Tooltip content="Borrow allows you to loan funds and pay them back at a later date. Interest is charged on your loan balance and is subject to change.">
+              <InformationCircleIcon
+                className={`h-5 w-5 ml-2 text-th-primary cursor-help`}
+              />
+            </Tooltip>
+          </div>
           <Switch
             checked={includeBorrow}
             className="ml-auto"
-            onChange={(checked) => setIncludeBorrow(checked)}
+            onChange={(checked) => handleIncludeBorrowSwitch(checked)}
           />
         </div>
         <div className="flex justify-between pb-2 pt-4">
@@ -204,6 +243,35 @@ const WithdrawModal = ({ isOpen, onClose }) => {
             )}
           />
         </div>
+        {includeBorrow ? (
+          <div className="p-2 bg-th-bkg-1 rounded-md mt-4">
+            <div className="flex justify-between pb-2">
+              <div className="text-th-fgd-3">Loan Amount</div>
+              <div className="text-th-fgd-1">{`${getBorrowAmount().toFixed(
+                DECIMALS[
+                  getSymbolForTokenMintAddress(
+                    selectedAccount?.account?.mint.toString()
+                  )
+                ]
+              )} ${getSymbolForTokenMintAddress(
+                selectedAccount?.account?.mint.toString()
+              )}`}</div>
+            </div>
+            <div className="flex justify-between pb-2">
+              <div className="text-th-fgd-3">Yearly Loan Cost</div>
+              <div className="text-th-fgd-1">{getInterestCostPerYear()}</div>
+            </div>
+            <div className="flex justify-between">
+              <div className="text-th-fgd-3">Interest Rate</div>
+              <div className="text-th-fgd-1">
+                {(selectedMangoGroup.getBorrowRate(tokenIndex) * 100).toFixed(
+                  2
+                )}
+                %
+              </div>
+            </div>
+          </div>
+        ) : null}
         <div className={`mt-5 flex justify-center`}>
           <Button
             onClick={handleWithdraw}
