@@ -164,7 +164,7 @@ const TopBar = () => {
 
           {connected && wallet?.publicKey ? (
             <button
-              className="block text-th-fgd-1 text-base items-center pl-3 pr-4 py-2 
+              className="block text-th-fgd-1 text-base items-center pl-3 pr-4 py-2 font-normal
                   sm:inline-flex sm:ml-4 sm:px-1 sm:py-0 border-l-4 sm:border-l-0 sm:border-b-2 hover:text-th-primary
                   border-transparent hover:border-th-primary rounded-none outline-none focus:outline-none"
               onClick={() => wallet.disconnect()}
@@ -173,7 +173,7 @@ const TopBar = () => {
             </button>
           ) : (
             <button
-              className="block text-th-fgd-1 text-base items-center pl-3 pr-4 py-2 
+              className="block text-th-fgd-1 text-base items-center pl-3 pr-4 py-2 font-normal
                   sm:inline-flex sm:ml-4 sm:px-1 sm:py-0 border-l-4 sm:border-l-0 sm:border-b-2 hover:text-th-primary
                   border-transparent hover:border-th-primary rounded-none outline-none focus:outline-none"
               onClick={() => wallet.connect()}
