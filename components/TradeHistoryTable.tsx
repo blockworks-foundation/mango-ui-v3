@@ -7,6 +7,15 @@ import SideBadge from './SideBadge'
 const TradeHistoryTable = () => {
   const tradeHistory = useTradeHistory()
   // const connected = useMangoStore((s) => s.wallet.connected)
+  const renderTradeDateTime = (timestamp) => {
+    const date = new Date(timestamp)
+    return (
+      <>
+        <div>{date.toLocaleDateString()}</div>
+        <div className="text-xs text-th-fgd-3">{date.toLocaleTimeString()}</div>
+      </>
+    )
+  }
 
   return (
     <div className={`flex flex-col py-6`}>
@@ -105,7 +114,7 @@ const TradeHistoryTable = () => {
                         className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
                         {trade.loadTimestamp
-                          ? new Date(trade.loadTimestamp).toLocaleDateString()
+                          ? renderTradeDateTime(trade.loadTimestamp)
                           : 'Recent'}
                       </Td>
                     </Tr>
