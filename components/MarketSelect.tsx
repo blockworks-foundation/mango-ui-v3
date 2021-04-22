@@ -18,7 +18,7 @@ const MarketSelect = () => {
         {/* <div className="text-xs text-th-fgd-4 font-semibold mr-2">MARKETS</div> */}
         {Object.entries(spotMarkets).map(([name, address]) => (
           <div
-            className={`px-2 py-1 mr-2 rounded-md cursor-pointer default-transition bg-th-bkg-2
+            className={`flex px-2 py-1 mr-2 rounded-md cursor-pointer default-transition bg-th-bkg-2
               ${
                 selectedMarket.name === name
                   ? `text-th-primary`
@@ -28,7 +28,9 @@ const MarketSelect = () => {
             onClick={() => handleChange(name)}
             key={address as string}
           >
-            {name}
+            <div className="pr-1">{name.split('/')[0]}</div>
+            <span className="text-th-fgd-4">/</span>
+            <div className="pl-1">{name.split('/')[1]}</div>
           </div>
         ))}
       </div>

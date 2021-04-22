@@ -331,6 +331,9 @@ export default function TradeForm() {
             )
           ) : (
             <>
+              <Button disabled className="flex-grow">
+                Connect Wallet
+              </Button>
               {/* <div className="flex justify-between border border-th-fgd-4 rounded-md w-full">
                 <Button
                   onClick={() => wallet.connect()}

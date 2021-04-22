@@ -52,6 +52,22 @@ const AccountSelect = ({
 
   return (
     <div className={`relative inline-block w-full`}>
+      <div className="flex justify-between pb-2">
+        <div className="text-th-fgd-1">Token Account</div>
+        {accounts.length < 3 ? (
+          <button
+            className="ml-2 text-th-fgd-1 hover:text-th-primary outline-none focus:outline-none"
+            onClick={handleRefreshBalances}
+          >
+            <div className="flex items-center text-th-fgd-1 font-normal underline cursor-pointer hover:text-th-primary hover:no-underline">
+              <RefreshIcon
+                className={`h-4 w-4 mr-1 ${loading ? 'animate-spin' : ''}`}
+              />
+              Refresh
+            </div>
+          </button>
+        ) : null}
+      </div>
       <Listbox
         value={selectedAccount?.publicKey.toString()}
         onChange={handleChange}
@@ -102,16 +118,6 @@ const AccountSelect = ({
                   )}
                 </div>
               </Listbox.Button>
-              {accounts.length < 3 ? (
-                <button
-                  className={`ml-2 text-th-primary outline-none focus:outline-none ${
-                    loading ? 'animate-spin' : ''
-                  }`}
-                  onClick={handleRefreshBalances}
-                >
-                  <RefreshIcon className="h-5 w-5" />
-                </button>
-              ) : null}
             </div>
             <Listbox.Options
               className={`z-20 p-1 absolute right-0 top-13 bg-th-bkg-1 divide-y divide-th-bkg-3 shadow-lg outline-none rounded-md w-full max-h-60 overflow-auto`}

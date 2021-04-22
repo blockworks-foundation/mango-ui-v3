@@ -2,11 +2,13 @@ import { FunctionComponent } from 'react'
 
 interface SwitchProps {
   checked: boolean
+  className?: string
   onChange: (x) => void
 }
 
 const Switch: FunctionComponent<SwitchProps> = ({
   checked = false,
+  className = '',
   children,
   onChange,
 }) => {
@@ -15,14 +17,14 @@ const Switch: FunctionComponent<SwitchProps> = ({
   }
 
   return (
-    <div className="flex items-center">
+    <div className={`flex items-center ${className}`}>
       <span className="mr-1">
         <span className="">{children}</span>
       </span>
       <button
         type="button"
         className={`${
-          checked ? 'bg-th-primary' : 'bg-th-bkg-3'
+          checked ? 'bg-th-primary' : 'bg-th-fgd-4'
         } relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent 
         rounded-full cursor-pointer transition-colors ease-in-out duration-200 
         focus:outline-none`}

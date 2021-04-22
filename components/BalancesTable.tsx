@@ -6,6 +6,9 @@ import Button from '../components/Button'
 import { notify } from '../utils/notifications'
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
 import useMarket from '../hooks/useMarket'
+import { ElementTitle } from './styles'
+import { InformationCircleIcon } from '@heroicons/react/outline'
+import Tooltip from './Tooltip'
 
 const BalancesTable = () => {
   const balances = useBalances()
@@ -52,15 +55,29 @@ const BalancesTable = () => {
     <div className={`flex flex-col py-6`}>
       <div className={`-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8`}>
         <div className={`align-middle inline-block min-w-full sm:px-6 lg:px-8`}>
-          {/* balances.length && balances.find((balance) => balance.unsettled > 0) */}
-          {balances.length ? (
+          <ElementTitle>
+            <div className="pr-1">{marketName.split('/')[0]}</div>
+            <span className="text-th-fgd-4">/</span>
+            <div className="pl-1">{marketName.split('/')[1]}</div>
+          </ElementTitle>
+          {balances.length &&
+          (balances.find(({ unsettled }) => unsettled > 0) ||
+            balances.find(
+              ({ borrows, marginDeposits }) => borrows > 0 && marginDeposits > 0
+            )) ? (
             <div
               className={`flex items-center justify-between p-4 mb-2 rounded-md bg-th-bkg-1`}
             >
-              <div>Balances for {marketName}</div>
-              {/* <div className="text-fgd-1 font-semibold pr-4">
-                You have an unsettled balance
-              </div> */}
+              <div className="flex items-center text-fgd-1 font-semibold pr-4">
+                You have unsettled funds
+                <Tooltip content="If you have borrows, settling will reduce any deposits you have by the amount you have borrowed and any unsettled funds from trades will be added to your account.">
+                  <div>
+                    <InformationCircleIcon
+                      className={`h-5 w-5 ml-2 text-th-primary cursor-help`}
+                    />
+                  </div>
+                </Tooltip>
+              </div>
               <Button onClick={handleSettleAll}>Settle All</Button>
             </div>
           ) : null}

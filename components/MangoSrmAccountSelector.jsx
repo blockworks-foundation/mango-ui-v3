@@ -63,7 +63,10 @@ const MangoSrmAccountSelector = ({
                 static
                 className={`z-20 p-1 absolute right-0 top-13 bg-th-bkg-1 divide-y divide-th-bkg-3 shadow-lg outline-none rounded-md w-full max-h-60 overflow-auto`}
               >
-                <div className={`text-th-fgd-4 p-2`}>SRM Accounts</div>
+                <div className="flex justify-between">
+                  <div className={`text-th-fgd-4 p-2`}>Accounts</div>
+                  <div className={`text-th-fgd-4 p-2`}>Balance</div>
+                </div>
                 {accounts.map((account) => {
                   return (
                     <Listbox.Option
@@ -91,7 +94,7 @@ const MangoSrmAccountSelector = ({
                               </div>
                             </div>
                             <div className={`text-sm`}>
-                              {getBalanceForAccount(account)}
+                              {getBalanceForAccount(account)} SRM
                             </div>
                           </div>
                         </div>
