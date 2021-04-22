@@ -1329,8 +1329,12 @@ export async function settleAll(
     ]
     const data = encodeMangoInstruction({ SettleFunds: {} })
 
-    const instruction = new TransactionInstruction({ keys, data, programId })
-    transaction.add(instruction)
+    const settleFundsInstruction = new TransactionInstruction({
+      keys,
+      data,
+      programId,
+    })
+    transaction.add(settleFundsInstruction)
   }
 
   const deposits = marginAccount.getDeposits(mangoGroup)
@@ -1356,8 +1360,12 @@ export async function settleAll(
       },
     })
 
-    const instruction = new TransactionInstruction({ keys, data, programId })
-    transaction.add(instruction)
+    const settleBorrowsInstruction = new TransactionInstruction({
+      keys,
+      data,
+      programId,
+    })
+    transaction.add(settleBorrowsInstruction)
   }
 
   if (transaction.instructions.length === 0) {
