@@ -62,12 +62,12 @@ const DepositSrmModal = ({ isOpen, onClose }) => {
           ? mangoSrmAccountsForOwner[0].publicKey
           : undefined
       )
-        .then((_mangoSrmAcct: PublicKey) => {
+        .then(async (_mangoSrmAcct: PublicKey) => {
           setSubmitting(false)
-          actions.fetchMangoSrmAccounts()
-          actions.fetchWalletBalances()
-          actions.fetchMangoGroup()
           onClose()
+          await actions.fetchWalletBalances()
+          await actions.fetchMangoSrmAccounts()
+          await actions.fetchMangoGroup()
         })
         .catch((err) => {
           setSubmitting(false)

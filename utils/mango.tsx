@@ -140,6 +140,23 @@ export async function deposit(
 
   const transaction = new Transaction()
   transaction.add(instruction)
+
+  // settle borrow
+  const settleKeys = [
+    { isSigner: false, isWritable: true, pubkey: mangoGroup.publicKey },
+    { isSigner: false, isWritable: true, pubkey: marginAccount.publicKey },
+    { isSigner: true, isWritable: false, pubkey: wallet.publicKey },
+    { isSigner: false, isWritable: false, pubkey: SYSVAR_CLOCK_PUBKEY },
+  ]
+  const setttleBorrowsData = encodeMangoInstruction({
+    SettleBorrow: { tokenIndex: new BN(tokenIndex), quantity: nativeQuantity },
+  })
+  const settleBorrowsInstruction = new TransactionInstruction({
+    keys: settleKeys,
+    data: setttleBorrowsData,
+    programId,
+  })
+  transaction.add(settleBorrowsInstruction)
   const signers = []
 
   const functionName = 'Deposit'

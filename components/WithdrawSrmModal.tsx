@@ -55,10 +55,10 @@ const WithdrawModal = ({ isOpen, onClose }) => {
         walletSrmAccount.publicKey,
         Number(inputAmount)
       )
-        .then((_transSig: string) => {
+        .then(async (_transSig: string) => {
           setSubmitting(false)
           onClose()
-          actions.fetchWalletBalances()
+          await actions.fetchWalletBalances()
           actions.fetchMangoSrmAccounts()
           actions.fetchMangoGroup()
         })

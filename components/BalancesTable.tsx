@@ -9,6 +9,7 @@ import useMarket from '../hooks/useMarket'
 import { ElementTitle } from './styles'
 import { InformationCircleIcon } from '@heroicons/react/outline'
 import Tooltip from './Tooltip'
+import { sleep } from '../utils'
 
 const BalancesTable = () => {
   const balances = useBalances()
@@ -33,6 +34,7 @@ const BalancesTable = () => {
         markets,
         wallet
       )
+      await sleep(250)
       actions.fetchMarginAccounts()
     } catch (e) {
       console.warn('Error settling all:', e)
