@@ -18,7 +18,7 @@ import useLocalStorageState from '../hooks/useLocalStorageState'
 
 const ResponsiveGridLayout = WidthProvider(Responsive)
 
-const defaultLayouts = {
+export const defaultLayouts = {
   xl: [
     { i: 'tvChart', x: 0, y: 0, w: 4, h: 30 },
     { i: 'orderbook', x: 4, y: 0, w: 2, h: 17 },
