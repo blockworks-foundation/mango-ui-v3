@@ -24,6 +24,11 @@ const Code = styled.code`
   font-size: 13px;
 `
 
+const WALLET_OPTIONS = [
+  { name: 'Copy address', icon: <DuplicateIcon /> },
+  { name: 'Disconnect', icon: <LogoutIcon /> },
+]
+
 const TopBar = () => {
   const { asPath } = useRouter()
   const connected = useMangoStore((s) => s.wallet.connected)
@@ -53,11 +58,6 @@ const TopBar = () => {
       wallet.disconnect()
     }
   }
-
-  const WALLET_OPTIONS = [
-    { name: 'Copy address', icon: <DuplicateIcon /> },
-    { name: 'Disconnect', icon: <LogoutIcon /> },
-  ]
 
   return (
     <nav className={`bg-th-bkg-2`}>
@@ -161,6 +161,26 @@ const TopBar = () => {
           <MenuItem href="/">Trade</MenuItem>
           <MenuItem href="/stats">Stats</MenuItem>
           <MenuItem href="https://docs.mango.markets/">Learn</MenuItem>
+
+          {connected && wallet?.publicKey ? (
+            <button
+              className="block text-th-fgd-1 text-base items-center pl-3 pr-4 py-2 
+                  sm:inline-flex sm:ml-4 sm:px-1 sm:py-0 border-l-4 sm:border-l-0 sm:border-b-2 hover:text-th-primary
+                  border-transparent hover:border-th-primary rounded-none outline-none focus:outline-none"
+              onClick={() => wallet.disconnect()}
+            >
+              Disconnect
+            </button>
+          ) : (
+            <button
+              className="block text-th-fgd-1 text-base items-center pl-3 pr-4 py-2 
+                  sm:inline-flex sm:ml-4 sm:px-1 sm:py-0 border-l-4 sm:border-l-0 sm:border-b-2 hover:text-th-primary
+                  border-transparent hover:border-th-primary rounded-none outline-none focus:outline-none"
+              onClick={() => wallet.connect()}
+            >
+              Connect
+            </button>
+          )}
         </div>
       </div>
     </nav>
