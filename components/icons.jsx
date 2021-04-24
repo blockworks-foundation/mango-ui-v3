@@ -70,7 +70,7 @@ export const ResizeIcon = ({ className }) => {
 export const MoveIcon = ({ className }) => {
   return (
     <svg
-      className={`feather feather-move ${className}`}
+      className={`${className}`}
       xmlns="http://www.w3.org/2000/svg"
       width="24"
       height="24"
@@ -87,6 +87,25 @@ export const MoveIcon = ({ className }) => {
       <polyline points="19 9 22 12 19 15"></polyline>
       <line x1="2" y1="12" x2="22" y2="12"></line>
       <line x1="12" y1="2" x2="12" y2="22"></line>
+    </svg>
+  )
+}
+
+export const RefreshClockwiseIcon = ({ className }) => {
+  return (
+    <svg
+      className={`${className}`}
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+    >
+      <path
+        d="M20 4.00188L19.418 9.00188M19.418 9.00188C18.7542 7.36001 17.5643 5.98479 16.035 5.09174C14.5056 4.19869 12.7232 3.83829 10.967 4.06702C9.21086 4.29575 7.58021 5.10068 6.33063 6.35566C5.08105 7.61064 4.28316 9.24474 4.062 11.0019M19.418 9.00188H15M4 20.0019L4.581 15.0019M4.581 15.0019C5.2458 16.6428 6.43597 18.0169 7.96517 18.9092C9.49436 19.8014 11.2763 20.1614 13.0319 19.9328C14.7875 19.7041 16.4178 18.8998 17.6675 17.6456C18.9171 16.3915 19.7156 14.7583 19.938 13.0019M4.581 15.0019H9"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
     </svg>
   )
 }

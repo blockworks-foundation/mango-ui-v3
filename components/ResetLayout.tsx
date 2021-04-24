@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { RefreshIcon } from '@heroicons/react/outline'
+import { RefreshClockwiseIcon } from './icons'
 import { defaultLayouts } from './TradePageGrid'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import Tooltip from './Tooltip'
@@ -24,13 +24,15 @@ const ResetLayout = ({ className = '' }) => {
   }
 
   return (
-    <div className={`flex relative ${className}`}>
-      <Tooltip content="Reset layout">
+    <div className={`flex relative ${className} mr-4`}>
+      <Tooltip content="Reset Layout" className="text-xs py-1">
         <button
           onClick={() => handleResetLayout()}
-          className="flex items-center justify-center rounded-full bg-th-bkg-3 w-8 h-8 mr-4 hover:text-th-primary focus:outline-none"
+          className="flex items-center justify-center rounded-full bg-th-bkg-3 w-8 h-8 hover:text-th-primary focus:outline-none"
         >
-          <RefreshIcon className={`w-5 h-5 ${spin ? 'animate-spin' : null}`} />
+          <RefreshClockwiseIcon
+            className={`w-5 h-5 ${spin ? 'animate-spin' : null}`}
+          />
         </button>
       </Tooltip>
     </div>

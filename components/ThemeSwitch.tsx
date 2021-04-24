@@ -28,6 +28,7 @@ const ThemeSwitch = () => {
       value={theme}
       onChange={(theme) => setTheme(theme)}
       options={THEMES}
+      toolTipContent="Change Theme"
     />
   )
 }

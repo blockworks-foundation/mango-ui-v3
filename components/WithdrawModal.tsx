@@ -17,6 +17,7 @@ import { notify } from '../utils/notifications'
 import Switch from './Switch'
 import Tooltip from './Tooltip'
 import { InformationCircleIcon } from '@heroicons/react/outline'
+import { Transition } from '@headlessui/react'
 
 const WithdrawModal = ({ isOpen, onClose }) => {
   const [inputAmount, setInputAmount] = useState('')
@@ -207,7 +208,7 @@ const WithdrawModal = ({ isOpen, onClose }) => {
                   : setMaxForSelectedAccount
               }
             >
-              Max
+              {includeBorrow ? 'Max with Borrow' : 'Max'}
             </div>
           </div>
         </div>
@@ -225,7 +226,17 @@ const WithdrawModal = ({ isOpen, onClose }) => {
           />
         </div>
         {includeBorrow ? (
-          <div className="p-2 bg-th-bkg-1 rounded-md mt-4">
+          <Transition
+            appear={true}
+            className="p-2 bg-th-bkg-1 rounded-md mt-4"
+            show={includeBorrow}
+            enter="transition-opacity duration-500"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="transition-opacity duration-500"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
             <div className="flex justify-between pb-2">
               <div className="text-th-fgd-3">Borrow Amount</div>
               <div className="text-th-fgd-1">{`${getBorrowAmount()} ${getSymbolForTokenMintAddress(
@@ -241,7 +252,7 @@ const WithdrawModal = ({ isOpen, onClose }) => {
                 %
               </div>
             </div>
-          </div>
+          </Transition>
         ) : null}
         <div className={`mt-5 flex justify-center`}>
           <Button

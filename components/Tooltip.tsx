@@ -4,9 +4,14 @@ import 'tippy.js/animations/scale.css'
 
 type TooltipProps = {
   content: ReactNode
+  className?: string
 }
 
-const Tooltip: FunctionComponent<TooltipProps> = ({ children, content }) => {
+const Tooltip: FunctionComponent<TooltipProps> = ({
+  children,
+  content,
+  className,
+}) => {
   return (
     <Tippy
       animation="scale"
@@ -14,7 +19,9 @@ const Tooltip: FunctionComponent<TooltipProps> = ({ children, content }) => {
       maxWidth="30rem"
       interactive
       content={
-        <div className="rounded p-3 text-sm bg-th-bkg-3 shadow-lg text-th-fgd-2 outline-none focus:outline-none">
+        <div
+          className={`rounded p-3 text-sm bg-th-bkg-3 shadow-md text-th-fgd-2 outline-none focus:outline-none ${className}`}
+        >
           {content}
         </div>
       }

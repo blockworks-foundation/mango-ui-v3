@@ -6,7 +6,7 @@ import useMarketList from '../hooks/useMarketList'
 import { nativeToUi } from '@blockworks-foundation/mango-client/lib/utils'
 import useMangoStore from '../stores/useMangoStore'
 import { SRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
-import { RefreshIcon } from '@heroicons/react/outline'
+import { RefreshClockwiseIcon } from './icons'
 
 type AccountSelectProps = {
   accounts: any[]
@@ -60,7 +60,7 @@ const AccountSelect = ({
             onClick={handleRefreshBalances}
           >
             <div className="flex items-center text-th-fgd-1 font-normal underline cursor-pointer hover:text-th-primary hover:no-underline">
-              <RefreshIcon
+              <RefreshClockwiseIcon
                 className={`h-4 w-4 mr-1 ${loading ? 'animate-spin' : ''}`}
               />
               Refresh

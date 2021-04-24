@@ -70,8 +70,8 @@ const TVChartContainer = () => {
       disabled_features: [
         'use_localstorage_for_settings',
         'timeframes_toolbar',
-        'volume_force_overlay',
-        'left_toolbar',
+        // 'volume_force_overlay',
+        // 'left_toolbar',
         'show_logo_on_all_charts',
         'caption_buttons_text_if_possible',
         'header_settings',
@@ -79,14 +79,14 @@ const TVChartContainer = () => {
         'header_compare',
         'compare_symbol',
         'header_screenshot',
-        'header_widget_dom_node',
+        // 'header_widget_dom_node',
         'header_saveload',
         'header_undo_redo',
         'header_interval_dialog_button',
         'show_interval_dialog_on_key_press',
         'header_symbol_search',
-        'header_resolutions',
-        'header_widget',
+        // 'header_resolutions',
+        // 'header_widget',
       ],
       enabled_features: ['study_templates'],
       load_last_chart: true,
@@ -96,6 +96,8 @@ const TVChartContainer = () => {
       autosize: defaultProps.autosize,
       studies_overrides: defaultProps.studiesOverrides,
       theme: theme === 'Light' ? 'Light' : 'Dark',
+      custom_css_url: '/tradingview-chart.css',
+      loading_screen: { backgroundColor: 'rgba(0,0,0,0.1)' },
       overrides: {
         'paneProperties.background':
           theme === 'Dark' ? '#2B2B2B' : theme === 'Light' ? '#fff' : '#1D1832',
@@ -122,21 +124,21 @@ const TVChartContainer = () => {
     tvWidgetRef.current = tvWidget
 
     tvWidget.onChartReady(() => {
-      tvWidget.headerReady().then(() => {
-        const button = tvWidget.createButton()
-        button.setAttribute('title', 'Click to show a notification popup')
-        button.classList.add('apply-common-tooltip')
-        button.addEventListener('click', () =>
-          tvWidget.showNoticeDialog({
-            title: 'Notification',
-            body: 'TradingView Charting Library API works correctly',
-            callback: () => {
-              // console.log('It works!!');
-            },
-          })
-        )
-        button.innerHTML = 'Check API'
-      })
+      // tvWidget.headerReady().then(() => {
+      // const button = tvWidget.createButton()
+      // button.setAttribute('title', 'Click to show a notification popup')
+      // button.classList.add('apply-common-tooltip')
+      // button.addEventListener('click', () =>
+      //   tvWidget.showNoticeDialog({
+      //     title: 'Notification',
+      //     body: 'TradingView Charting Library API works correctly',
+      //     callback: () => {
+      //       // console.log('It works!!');
+      //     },
+      //   })
+      // )
+      // button.innerHTML = 'Check API'
+      // })
     })
     //eslint-disable-next-line
   }, [selectedMarketName, theme])

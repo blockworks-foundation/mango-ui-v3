@@ -1,13 +1,37 @@
+import { FunctionComponent, ReactNode } from 'react'
 import { Listbox } from '@headlessui/react'
+import Tooltip from './Tooltip'
 
-const DropMenu = ({ button, buttonClassName, value, onChange, options }) => {
+type DropMenuProps = {
+  button: ReactNode
+  buttonClassName?: string
+  onChange: (...args: any[]) => any
+  options: Array<any>
+  toolTipContent?: string
+  value?: any
+}
+
+const DropMenu: FunctionComponent<DropMenuProps> = ({
+  button,
+  buttonClassName,
+  value,
+  onChange,
+  options,
+  toolTipContent,
+}) => {
   return (
     <div className={`relative`}>
       <Listbox value={value} onChange={onChange}>
         {({ open }) => (
           <>
             <Listbox.Button className={`${buttonClassName} default-transition`}>
-              {button}
+              {toolTipContent && !open ? (
+                <Tooltip content={toolTipContent} className="text-xs py-1">
+                  {button}
+                </Tooltip>
+              ) : (
+                button
+              )}
             </Listbox.Button>
             {open ? (
               <Listbox.Options
