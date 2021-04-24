@@ -68,7 +68,7 @@ const TradePageGrid = () => {
       onLayoutChange={(layout, layouts) => onLayoutChange(layouts)}
     >
       <div key="tvChart">
-        <FloatingElement>
+        <FloatingElement className="pl-0">
           <TVChartContainer />
         </FloatingElement>
       </div>
