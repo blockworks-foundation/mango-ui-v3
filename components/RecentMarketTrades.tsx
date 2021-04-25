@@ -29,7 +29,7 @@ export default function PublicTrades() {
   }, [fetchTradesForChart])
 
   useInterval(async () => {
-    fetchTradesForChart
+    fetchTradesForChart()
   }, 5000)
 
   return (

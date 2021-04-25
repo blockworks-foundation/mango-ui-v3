@@ -12,7 +12,7 @@ import { ElementTitle } from './styles'
 import Input from './Input'
 import { notify } from '../utils/notifications'
 import { SRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
-import { floorToDecimal } from '../utils'
+import { floorToDecimal, sleep } from '../utils'
 
 const DepositSrmModal = ({ isOpen, onClose }) => {
   const [inputAmount, setInputAmount] = useState('')
@@ -65,9 +65,10 @@ const DepositSrmModal = ({ isOpen, onClose }) => {
         .then(async (_mangoSrmAcct: PublicKey) => {
           setSubmitting(false)
           onClose()
-          await actions.fetchWalletBalances()
-          await actions.fetchMangoSrmAccounts()
-          await actions.fetchMangoGroup()
+          await sleep(500)
+          actions.fetchWalletBalances()
+          actions.fetchMangoSrmAccounts()
+          actions.fetchMangoGroup()
         })
         .catch((err) => {
           setSubmitting(false)

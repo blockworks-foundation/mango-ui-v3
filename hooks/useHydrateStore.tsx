@@ -8,7 +8,7 @@ import useMarketList from './useMarketList'
 import { notify } from '../utils/notifications'
 import useInterval from './useInterval'
 
-const _SLOW_REFRESH_INTERVAL = 5 * 1000
+const _SLOW_REFRESH_INTERVAL = 6 * 1000
 
 const marketAddressSelector = (s) => s.selectedMarket.address
 const mangoGroupMarketsSelector = (s) => s.selectedMangoGroup.markets

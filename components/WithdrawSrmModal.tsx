@@ -11,6 +11,7 @@ import Input from './Input'
 import { notify } from '../utils/notifications'
 import { SRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
 import { PublicKey } from '@solana/web3.js'
+import { sleep } from '../utils'
 
 const WithdrawModal = ({ isOpen, onClose }) => {
   const [inputAmount, setInputAmount] = useState('')
@@ -58,7 +59,8 @@ const WithdrawModal = ({ isOpen, onClose }) => {
         .then(async (_transSig: string) => {
           setSubmitting(false)
           onClose()
-          await actions.fetchWalletBalances()
+          await sleep(500)
+          actions.fetchWalletBalances()
           actions.fetchMangoSrmAccounts()
           actions.fetchMangoGroup()
         })
