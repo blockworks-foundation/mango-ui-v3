@@ -35,7 +35,7 @@ const UiLock = ({ className = '' }) => {
           content={uiLocked ? 'Unlock Layout' : 'Lock Layout'}
           className="text-xs py-1"
         >
-          <button
+          <div
             onClick={handleClick}
             className="flex items-center justify-center rounded-full bg-th-bkg-3 w-8 h-8 hover:text-th-primary focus:outline-none"
           >
@@ -44,7 +44,7 @@ const UiLock = ({ className = '' }) => {
             ) : (
               <LockOpenIcon className="w-5 h-5 animate-bounce" />
             )}
-          </button>
+          </div>
         </Tooltip>
       </div>
     </>

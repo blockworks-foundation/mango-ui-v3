@@ -28,9 +28,7 @@ const ConnectWalletButton = () => {
           <div>
             <span className="whitespace-nowrap">Connect Wallet</span>
             <StyledWalletTypeLabel className="font-normal text-th-fgd-1 text-left leading-3">
-              {WALLET_PROVIDERS.filter((p) => p.url === savedProviderUrl).map(
-                ({ name }) => name
-              )}
+              {WALLET_PROVIDERS.find((p) => p.url === savedProviderUrl)?.name}
             </StyledWalletTypeLabel>
           </div>
         </div>

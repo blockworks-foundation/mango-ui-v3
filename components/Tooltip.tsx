@@ -26,7 +26,7 @@ const Tooltip: FunctionComponent<TooltipProps> = ({
         </div>
       }
     >
-      <button className="outline-none focus:outline-none">{children}</button>
+      <div className="outline-none focus:outline-none">{children}</div>
     </Tippy>
   )
 }
