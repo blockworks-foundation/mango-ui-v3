@@ -21,9 +21,9 @@ const ConnectWalletButton = () => {
       <button
         onClick={() => wallet.connect()}
         disabled={!wallet}
-        className="text-th-primary hover:text-th-fgd-1 focus:outline-none disabled:text-th-fgd-4 disabled:cursor-wait"
+        className="text-th-primary hover:text-th-fgd-1 hover:bg-th-primary focus:outline-none disabled:text-th-fgd-4 disabled:cursor-wait rounded-r-none"
       >
-        <div className="flex flex-row items-center px-2 justify-center h-full rounded-l default-transition hover:bg-th-primary hover:text-th-fgd-1">
+        <div className="flex flex-row items-center px-2 justify-center h-full rounded-l default-transition hover:text-th-fgd-1">
           <WalletIcon className="w-5 h-5 mr-3 fill-current" />
           <div>
             <span className="whitespace-nowrap">Connect Wallet</span>
