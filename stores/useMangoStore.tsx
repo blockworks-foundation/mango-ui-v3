@@ -30,7 +30,10 @@ export const ENDPOINTS: EndpointInfo[] = [
   },
 ]
 
-const CLUSTER = 'mainnet-beta'
+type ClusterType = 'mainnet-beta' | 'devnet'
+
+const CLUSTER =
+  (process.env.NEXT_PUBLIC_CLUSTER as ClusterType) || 'mainnet-beta'
 const ENDPOINT = ENDPOINTS.find((e) => e.name === CLUSTER)
 const DEFAULT_CONNECTION = new Connection(ENDPOINT.url, 'recent')
 const WEBSOCKET_CONNECTION = new Connection(ENDPOINT.websocket, 'recent')
@@ -63,7 +66,7 @@ interface MangoStore extends State {
   }>
   accountInfos: AccountInfoList
   connection: {
-    cluster: string
+    cluster: ClusterType
     current: Connection
     websocket: Connection
     endpoint: string
@@ -114,7 +117,9 @@ interface MangoStore extends State {
   }
   tradeHistory: any[]
   set: (x: any) => void
-  actions: any
+  actions: {
+    [key: string]: () => void
+  }
 }
 
 const useMangoStore = create<MangoStore>((set, get) => ({
