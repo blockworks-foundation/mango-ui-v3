@@ -21,7 +21,7 @@ const UserInfoTabs = ({ activeTab, setActiveTab }) => {
         <select
           id="tabs"
           name="tabs"
-          className={`block w-full pl-3 pr-10 py-2 bg-th-bkg-2 border border-th-fgd-4 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md`}
+          className={`block w-full pl-3 pr-10 py-2 bg-th-bkg-2 border border-th-fgd-4 focus:outline-none sm:text-sm rounded-md`}
           onChange={(e) => handleTabChange(e.target.value)}
         >
           {TABS.map((tabName) => (
@@ -47,13 +47,6 @@ const UserInfoTabs = ({ activeTab, setActiveTab }) => {
                 `}
               >
                 {tabName}
-                {/* TODO: add indicator for number in tab */}
-                {/* <!-- Current: "bg-indigo-100 text-indigo-600", Default: "bg-gray-100 text-gray-900" -->
-              <span
-                className={`bg-gray-100 text-gray-900 hidden ml-2 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block`}
-              >
-                52
-              </span> */}
               </a>
             ))}
           </nav>

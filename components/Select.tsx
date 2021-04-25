@@ -1,19 +1,26 @@
 import { Listbox } from '@headlessui/react'
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid'
 
-const Select = ({ value, onChange, children, className = '' }) => {
+const Select = ({
+  value,
+  onChange,
+  children,
+  className = '',
+  placeholder = '',
+  disabled = false,
+}) => {
   return (
     <div className={`relative ${className}`}>
-      <Listbox value={value} onChange={onChange}>
+      <Listbox value={value} onChange={onChange} disabled={disabled}>
         {({ open }) => (
           <>
             <Listbox.Button
-              className={`h-full w-full bg-th-bkg-1 border border-th-fgd-4 rounded focus:outline-none focus:ring-1 focus:ring-th-primary`}
+              className={`h-full w-full font-normal bg-th-bkg-1 border border-th-fgd-4 rounded focus:outline-none focus:border-th-primary`}
             >
               <div
-                className={`flex items-center justify-between space-x-4 pl-2 pr-1`}
+                className={`flex items-center justify-between space-x-4 p-3`}
               >
-                <span>{value}</span>
+                <span className="">{value ? value : placeholder}</span>
                 {open ? (
                   <ChevronUpIcon className={`h-5 w-5 mr-1 text-th-primary`} />
                 ) : (
@@ -36,14 +43,14 @@ const Select = ({ value, onChange, children, className = '' }) => {
   )
 }
 
-const Option = ({ key, value, children }) => {
+const Option = ({ value, children, className = '' }) => {
   return (
-    <Listbox.Option key={key} value={value}>
+    <Listbox.Option value={value}>
       {({ selected }) => (
         <div
           className={`p-2 hover:bg-th-bkg-3 hover:cursor-pointer tracking-wider ${
             selected && `text-th-primary`
-          }`}
+          } ${className}`}
         >
           {children}
         </div>

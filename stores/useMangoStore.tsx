@@ -90,6 +90,7 @@ interface MangoStore extends State {
     }
     mintDecimals: number[]
   }
+  marginAccounts: MarginAccount[]
   selectedMarginAccount: {
     current: MarginAccount | null
   }
@@ -251,6 +252,27 @@ const useMangoStore = create<MangoStore>((set, get) => ({
             err
           )
         })
+    },
+    async fetchAllMangoGroups() {
+      const connection = get().connection.current
+      const cluster = get().connection.cluster
+      const mangoClient = get().mangoClient
+      const set = get().set
+      const mangoGroups = Object.keys(IDS[cluster].mango_groups)
+
+      const allMangoGroups = await Promise.all(
+        mangoGroups.map((mangoGroupName) => {
+          const mangoGroupIds = IDS[cluster].mango_groups[mangoGroupName]
+          const mangoGroupPk = new PublicKey(mangoGroupIds.mango_group_pk)
+          const srmVaultPk = new PublicKey(mangoGroupIds.srm_vault_pk)
+
+          return mangoClient.getMangoGroup(connection, mangoGroupPk, srmVaultPk)
+        })
+      )
+
+      set((state) => {
+        state.mangoGroups = allMangoGroups
+      })
     },
     async fetchMangoGroup() {
       const connection = get().connection.current

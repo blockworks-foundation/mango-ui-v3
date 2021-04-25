@@ -5,6 +5,7 @@ import '../node_modules/react-resizable/css/styles.css'
 import '../styles/index.css'
 import useWallet from '../hooks/useWallet'
 import useHydrateStore from '../hooks/useHydrateStore'
+import Notifications from '../components/Notification'
 
 function App({ Component, pageProps }) {
   useHydrateStore()
@@ -47,6 +48,7 @@ function App({ Component, pageProps }) {
       </Head>
       <ThemeProvider defaultTheme="Mango">
         <Component {...pageProps} />
+        <Notifications />
       </ThemeProvider>
     </>
   )

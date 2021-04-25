@@ -124,11 +124,6 @@ input[type='number'] {
 
 /* Scrollbars */
 
-.thin-scroll {
-  overflow: auto !important;
-  overflow-x: hidden !important;
-}
-
 .thin-scroll::-webkit-scrollbar {
   width: 4px;
   height: 8px;
@@ -213,4 +208,26 @@ input[type='number'] {
     overflow-wrap: break-word;
     text-align: left !important;
   }
+}
+
+/* phone input */
+
+.react-tel-input .selected-flag:hover {
+  background-color: transparent !important;
+}
+
+.react-tel-input .flag-dropdown .open {
+  background-color: transparent !important;
+}
+
+.react-tel-input .flag-dropdown:active {
+  background-color: transparent !important;
+}
+
+.react-tel-input .country-list .country:hover {
+  background-color: var(--bkg-1) !important;
+}
+
+.react-tel-input .country-list .highlight {
+  background-color: var(--bkg-1) !important;
 }

@@ -1,5 +1,4 @@
 import TopBar from '../components/TopBar'
-import Notifications from '../components/Notification'
 import TradePageGrid from '../components/TradePageGrid'
 import MarketSelect from '../components/MarketSelect'
 import AlphaModal from '../components/AlphaModal'
@@ -15,7 +14,6 @@ const Index = () => {
       <div className={`min-h-screen p-1 sm:px-2 sm:py-1 md:px-6 md:py-1`}>
         <TradePageGrid />
       </div>
-      <Notifications />
       {!alphaAccepted && (
         <AlphaModal isOpen={!alphaAccepted} onClose={() => {}} />
       )}

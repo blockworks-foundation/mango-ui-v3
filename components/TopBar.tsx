@@ -74,6 +74,7 @@ const TopBar = () => {
             <div className={`hidden sm:flex sm:space-x-8 sm:ml-4 py-2`}>
               <MenuItem href="/">Trade</MenuItem>
               <MenuItem href="/stats">Stats</MenuItem>
+              <MenuItem href="/alerts">Alerts</MenuItem>
               <MenuItem href="https://docs.mango.markets/">Learn</MenuItem>
             </div>
           </div>
@@ -156,6 +157,7 @@ const TopBar = () => {
         >
           <MenuItem href="/">Trade</MenuItem>
           <MenuItem href="/stats">Stats</MenuItem>
+          <MenuItem href="/alerts">Alerts</MenuItem>
           <MenuItem href="https://docs.mango.markets/">Learn</MenuItem>
 
           {connected && wallet?.publicKey ? (
