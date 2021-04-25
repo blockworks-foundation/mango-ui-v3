@@ -10,6 +10,7 @@ import { ElementTitle } from './styles'
 import { InformationCircleIcon } from '@heroicons/react/outline'
 import Tooltip from './Tooltip'
 import { sleep } from '../utils'
+import { PublicKey } from '@solana/web3.js'
 
 const BalancesTable = () => {
   const balances = useBalances()
@@ -28,7 +29,7 @@ const BalancesTable = () => {
     try {
       await settleAll(
         connection,
-        programId,
+        new PublicKey(programId),
         mangoGroup,
         marginAccount,
         markets,

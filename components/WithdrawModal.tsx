@@ -18,6 +18,7 @@ import Switch from './Switch'
 import Tooltip from './Tooltip'
 import { InformationCircleIcon } from '@heroicons/react/outline'
 import { Transition } from '@headlessui/react'
+import { PublicKey } from '@solana/web3.js'
 
 const WithdrawModal = ({ isOpen, onClose }) => {
   const [inputAmount, setInputAmount] = useState('')
@@ -105,7 +106,7 @@ const WithdrawModal = ({ isOpen, onClose }) => {
     if (!includeBorrow) {
       withdraw(
         connection,
-        programId,
+        new PublicKey(programId),
         mangoGroup,
         marginAccount,
         wallet,
@@ -133,7 +134,7 @@ const WithdrawModal = ({ isOpen, onClose }) => {
     } else {
       borrowAndWithdraw(
         connection,
-        programId,
+        new PublicKey(programId),
         mangoGroup,
         marginAccount,
         wallet,

@@ -89,7 +89,7 @@ const DepositModal = ({ isOpen, onClose }) => {
     } else {
       deposit(
         connection,
-        programId,
+        new PublicKey(programId),
         mangoGroup,
         marginAccount,
         wallet,
