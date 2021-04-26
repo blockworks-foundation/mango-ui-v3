@@ -12,8 +12,12 @@ import DepositModal from './DepositModal'
 import WithdrawModal from './WithdrawModal'
 import Button from './Button'
 import Tooltip from './Tooltip'
+import MarginAccountSelect from './MarginAccountSelect'
+import { MarginAccount } from '@blockworks-foundation/mango-client'
 
 export default function MarginBalances() {
+  const setMangoStore = useMangoStore((s) => s.set)
+  const marginAccounts = useMangoStore((s) => s.marginAccounts)
   const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const selectedMarginAccount = useMangoStore(
     (s) => s.selectedMarginAccount.current
@@ -31,6 +35,12 @@ export default function MarginBalances() {
   const handleCloseWithdraw = useCallback(() => {
     setShowWithdrawModal(false)
   }, [])
+
+  const handleMarginAccountChange = (marginAccount: MarginAccount) => {
+    setMangoStore((state) => {
+      state.selectedMarginAccount.current = marginAccount
+    })
+  }
 
   return (
     <>
@@ -52,6 +62,14 @@ export default function MarginBalances() {
             </div>
           </Tooltip>
         </ElementTitle>
+        <div>
+          {marginAccounts.length > 1 ? (
+            <MarginAccountSelect
+              onChange={handleMarginAccountChange}
+              className="mb-2"
+            />
+          ) : null}
+        </div>
         {selectedMangoGroup ? (
           <table className={`min-w-full`}>
             <thead>

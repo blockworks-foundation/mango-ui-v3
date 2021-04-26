@@ -1,18 +1,17 @@
 import React, { useState } from 'react'
 import { RadioGroup } from '@headlessui/react'
 import PhoneInput from 'react-phone-input-2'
-import { MarginAccount } from '@blockworks-foundation/mango-client'
 import 'react-phone-input-2/lib/plain.css'
 import Button from '../components/Button'
 import FloatingElement from '../components/FloatingElement'
 import Input from '../components/Input'
-import Select from '../components/Select'
 import { ElementTitle } from '../components/styles'
 import TopBar from '../components/TopBar'
 import useMangoStore from '../stores/useMangoStore'
 import { notify } from '../utils/notifications'
 import Modal from '../components/Modal'
 import Loading from '../components/Loading'
+import MarginAccountSelect from '../components/MarginAccountSelect'
 
 export default function Alerts() {
   const connected = useMangoStore((s) => s.wallet.connected)
@@ -248,54 +247,6 @@ export default function Alerts() {
         />
       ) : null}
     </div>
-  )
-}
-
-type MarginAccountSelectProps = {
-  onChange?: (x) => void
-  value?: MarginAccount | null
-  disabled?: boolean
-}
-
-const MarginAccountSelect = ({
-  onChange,
-  value,
-  disabled = false,
-}: MarginAccountSelectProps) => {
-  const marginAccounts = useMangoStore((s) => s.marginAccounts)
-  const [selectedMarginAccount, setSelectedMarginAccount] = useState(
-    value || null
-  )
-
-  const handleSelectMarginAccount = (value) => {
-    const marginAccount = marginAccounts.find(
-      (ma) => ma.publicKey.toString() === value
-    )
-    setSelectedMarginAccount(marginAccount)
-    if (onChange) {
-      onChange(marginAccount)
-    }
-  }
-
-  return (
-    <Select
-      disabled={disabled}
-      value={selectedMarginAccount?.publicKey.toString()}
-      onChange={handleSelectMarginAccount}
-      placeholder="Select Margin Account"
-    >
-      {marginAccounts.length ? (
-        marginAccounts.map((ma, index) => (
-          <Select.Option key={index} value={ma.publicKey.toString()}>
-            {ma.publicKey.toString()}
-          </Select.Option>
-        ))
-      ) : (
-        <Select.Option value className="text-th-fgd-4">
-          No Margin Accounts Found
-        </Select.Option>
-      )}
-    </Select>
   )
 }
 
