@@ -8,7 +8,8 @@ import useMarketList from './useMarketList'
 import { notify } from '../utils/notifications'
 import useInterval from './useInterval'
 
-const _SLOW_REFRESH_INTERVAL = 6 * 1000
+const SECONDS = 1000
+const _SLOW_REFRESH_INTERVAL = 6 * SECONDS
 
 const marketAddressSelector = (s) => s.selectedMarket.address
 const mangoGroupMarketsSelector = (s) => s.selectedMangoGroup.markets
@@ -28,6 +29,10 @@ const useHydrateStore = () => {
     actions.fetchAllMangoGroups()
     actions.fetchMangoGroup()
   }, [actions])
+
+  useInterval(() => {
+    actions.fetchMangoGroup()
+  }, 20 * SECONDS)
 
   // load selected market
   useEffect(() => {
