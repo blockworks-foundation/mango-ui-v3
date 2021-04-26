@@ -156,7 +156,7 @@ const AccountSelect = ({
                             {symbolForAccount}
                             {!hideAddress ? (
                               <div className="text-xs text-th-fgd-4">
-                                {abbreviateAddress(selectedAccount?.publicKey)}
+                                {abbreviateAddress(account?.publicKey)}
                               </div>
                             ) : null}
                           </div>
