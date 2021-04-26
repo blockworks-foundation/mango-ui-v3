@@ -90,7 +90,7 @@ export default function MarginBalances() {
                   Borrows
                 </th>
                 <th scope="col" className={`flex-auto font-normal text-right`}>
-                  Interest (APY)
+                  APY / APR
                 </th>
               </tr>
             </thead>

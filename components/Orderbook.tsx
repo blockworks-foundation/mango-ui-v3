@@ -68,18 +68,40 @@ const StyledFloatingElement = styled(FloatingElement)`
   `};
 `
 
+const getCumulativeOrderbookSide = (
+  orders,
+  totalSize,
+  depth,
+  backwards = false
+) => {
+  let cumulative = orders
+    .slice(0, depth)
+    .reduce((cumulative, [price, size], i) => {
+      const cumulativeSize = (cumulative[i - 1]?.cumulativeSize || 0) + size
+      cumulative.push({
+        price,
+        size,
+        cumulativeSize,
+        sizePercent: Math.round((cumulativeSize / (totalSize || 1)) * 100),
+      })
+      return cumulative
+    }, [])
+  if (backwards) {
+    cumulative = cumulative.reverse()
+  }
+  return cumulative
+}
+
 export default function Orderbook({ depth = 8 }) {
   const markPrice = useMarkPrice()
   const [orderbook] = useOrderbook()
   const { baseCurrency, quoteCurrency } = useMarket()
-  const setMangoStore = useMangoStore((s) => s.set)
 
   const currentOrderbookData = useRef(null)
   const lastOrderbookData = useRef(null)
 
   const [orderbookData, setOrderbookData] = useState(null)
   const [defaultLayout, setDefaultLayout] = useState(true)
-  const [loading, setLoading] = useState(true)
 
   useInterval(() => {
     if (
@@ -122,7 +144,6 @@ export default function Orderbook({ depth = 8 }) {
           spread: spread,
           spreadPercentage: spreadPercentage,
         })
-        setLoading(false)
       }
     }
   }, 250)
@@ -134,49 +155,12 @@ export default function Orderbook({ depth = 8 }) {
     }
   }, [orderbook])
 
-  const getCumulativeOrderbookSide = (
-    orders,
-    totalSize,
-    depth,
-    backwards = false
-  ) => {
-    let cumulative = orders
-      .slice(0, depth)
-      .reduce((cumulative, [price, size], i) => {
-        const cumulativeSize = (cumulative[i - 1]?.cumulativeSize || 0) + size
-        cumulative.push({
-          price,
-          size,
-          cumulativeSize,
-          sizePercent: Math.round((cumulativeSize / (totalSize || 1)) * 100),
-        })
-        return cumulative
-      }, [])
-    if (backwards) {
-      cumulative = cumulative.reverse()
-    }
-    return cumulative
-  }
-
-  const handlePriceClick = (price) => {
-    console.log('price click')
-
-    setMangoStore((state) => {
-      state.tradeForm.price = price
-    })
-  }
-
-  const handleSizeClick = (size) => {
-    console.log('size click')
-
-    setMangoStore((state) => {
-      state.tradeForm.baseSize = size
-    })
-  }
-
   const handleLayoutChange = () => {
-    setLoading(true)
     setDefaultLayout(!defaultLayout)
+    setOrderbookData((prevState) => ({
+      ...orderbookData,
+      asks: prevState.asks.reverse(),
+    }))
   }
 
   return (
@@ -192,7 +176,7 @@ export default function Orderbook({ depth = 8 }) {
                   <div className="flex relative">
                     <Tooltip content={'Switch Layout'} className="text-xs py-1">
                       <button
-                        onClick={() => handleLayoutChange()}
+                        onClick={handleLayoutChange}
                         className="flex items-center justify-center rounded-full bg-th-bkg-3 w-8 h-8 hover:text-th-primary focus:outline-none"
                       >
                         <SwitchHorizontalIcon className="w-5 h-5" />
@@ -201,82 +185,48 @@ export default function Orderbook({ depth = 8 }) {
                   </div>
                 </div>
                 <MarkPriceComponent markPrice={markPrice} />
-                {!loading ? (
-                  <>
-                    <div
-                      className={`text-th-fgd-4 flex justify-between mb-2 text-xs`}
-                    >
-                      <div className={`text-left`}>Size ({baseCurrency})</div>
-                      <div className={`text-center`}>
-                        Price ({quoteCurrency})
-                      </div>
-                      <div className={`text-right`}>Size ({baseCurrency})</div>
-                    </div>
-                    <div className="flex">
-                      <div className="w-1/2">
-                        {orderbookData?.bids.map(
-                          ({ price, size, sizePercent }) => (
-                            <OrderbookRow
-                              key={price + ''}
-                              price={price}
-                              size={size}
-                              side={'buy'}
-                              sizePercent={sizePercent}
-                              onPriceClick={() => handlePriceClick(price)}
-                              onSizeClick={() => handleSizeClick(size)}
-                            />
-                          )
-                        )}
-                      </div>
-                      <div className="w-1/2">
-                        {/* <div
-                          className={`text-th-fgd-4 flex justify-between mb-2`}
-                        >
-                          <div className={`text-left text-xs px-1`}>
-                            Ask ({quoteCurrency})
-                          </div>
-                          <div className={`text-right text-xs`}>
-                            Size ({baseCurrency})
-                          </div>
-                        </div> */}
-                        {orderbookData?.asks.map(
-                          ({ price, size, sizePercent }) => (
-                            <OrderbookRow
-                              invert
-                              key={price + ''}
-                              price={price}
-                              size={size}
-                              side={'sell'}
-                              sizePercent={sizePercent}
-                              onPriceClick={() => handlePriceClick(price)}
-                              onSizeClick={() => handleSizeClick(size)}
-                            />
-                          )
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex justify-between bg-th-bkg-1 p-2 mt-4 rounded-md text-xs">
-                      <div className="text-th-fgd-3">Spread</div>
-                      <div className="text-th-fgd-1">
-                        {orderbookData?.spread.toFixed(2)}
-                      </div>
-                      <div className="text-th-fgd-1">
-                        {orderbookData?.spreadPercentage.toFixed(2)}%
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <div className="animate-pulse space-y-3 w-full">
-                    <div className="h-5 w-full bg-th-bkg-3 rounded" />
-                    <div className="h-5 w-full bg-th-bkg-3 rounded" />
-                    <div className="h-5 w-full bg-th-bkg-3 rounded" />
-                    <div className="h-5 w-full bg-th-bkg-3 rounded" />
-                    <div className="h-5 w-full bg-th-bkg-3 rounded" />
-                    <div className="h-5 w-full bg-th-bkg-3 rounded" />
-                    <div className="h-5 w-full bg-th-bkg-3 rounded" />
-                    <div className="h-5 w-full bg-th-bkg-3 rounded" />
+
+                <div
+                  className={`text-th-fgd-4 flex justify-between mb-2 text-xs`}
+                >
+                  <div className={`text-left`}>Size ({baseCurrency})</div>
+                  <div className={`text-center`}>Price ({quoteCurrency})</div>
+                  <div className={`text-right`}>Size ({baseCurrency})</div>
+                </div>
+                <div className="flex">
+                  <div className="w-1/2">
+                    {orderbookData?.bids.map(({ price, size, sizePercent }) => (
+                      <OrderbookRow
+                        key={price + ''}
+                        price={price}
+                        size={size}
+                        side="buy"
+                        sizePercent={sizePercent}
+                      />
+                    ))}
                   </div>
-                )}
+                  <div className="w-1/2">
+                    {orderbookData?.asks.map(({ price, size, sizePercent }) => (
+                      <OrderbookRow
+                        invert
+                        key={price + ''}
+                        price={price}
+                        size={size}
+                        side="sell"
+                        sizePercent={sizePercent}
+                      />
+                    ))}
+                  </div>
+                </div>
+                <div className="flex justify-between bg-th-bkg-1 p-2 mt-4 rounded-md text-xs">
+                  <div className="text-th-fgd-3">Spread</div>
+                  <div className="text-th-fgd-1">
+                    {orderbookData?.spread.toFixed(2)}
+                  </div>
+                  <div className="text-th-fgd-1">
+                    {orderbookData?.spreadPercentage.toFixed(2)}%
+                  </div>
+                </div>
               </StyledFloatingElement>
             </FlipCardFront>
           ) : (
@@ -288,7 +238,7 @@ export default function Orderbook({ depth = 8 }) {
                   <div className="flex relative">
                     <Tooltip content={'Switch Layout'} className="text-xs py-1">
                       <button
-                        onClick={() => handleLayoutChange()}
+                        onClick={handleLayoutChange}
                         className="flex items-center justify-center rounded-full bg-th-bkg-3 w-8 h-8 hover:text-th-primary focus:outline-none"
                       >
                         <SwitchHorizontalIcon className="w-5 h-5" />
@@ -297,60 +247,41 @@ export default function Orderbook({ depth = 8 }) {
                   </div>
                 </div>
                 <MarkPriceComponent markPrice={markPrice} />
-                {!loading ? (
-                  <>
-                    <div className={`text-th-fgd-4 flex justify-between mb-2`}>
-                      <div className={`text-left text-xs`}>
-                        Size ({baseCurrency})
-                      </div>
-                      <div className={`text-right text-xs`}>
-                        Price ({quoteCurrency})
-                      </div>
-                    </div>
-                    {orderbookData?.asks.map(({ price, size, sizePercent }) => (
-                      <OrderbookRow
-                        key={price + ''}
-                        price={price}
-                        size={size}
-                        side={'sell'}
-                        sizePercent={sizePercent}
-                        onPriceClick={() => handlePriceClick(price)}
-                        onSizeClick={() => handleSizeClick(size)}
-                      />
-                    ))}
-                    <div className="flex justify-between bg-th-bkg-1 p-2 my-2 rounded-md text-xs">
-                      <div className="text-th-fgd-3">Spread</div>
-                      <div className="text-th-fgd-1">
-                        {orderbookData?.spread.toFixed(2)}
-                      </div>
-                      <div className="text-th-fgd-1">
-                        {orderbookData?.spreadPercentage.toFixed(2)}%
-                      </div>
-                    </div>
-                    {orderbookData?.bids.map(({ price, size, sizePercent }) => (
-                      <OrderbookRow
-                        key={price + ''}
-                        price={price}
-                        size={size}
-                        side={'buy'}
-                        sizePercent={sizePercent}
-                        onPriceClick={() => handlePriceClick(price)}
-                        onSizeClick={() => handleSizeClick(size)}
-                      />
-                    ))}
-                  </>
-                ) : (
-                  <div className="animate-pulse space-y-3 w-full">
-                    <div className="h-5 w-full bg-th-bkg-3 rounded" />
-                    <div className="h-5 w-full bg-th-bkg-3 rounded" />
-                    <div className="h-5 w-full bg-th-bkg-3 rounded" />
-                    <div className="h-5 w-full bg-th-bkg-3 rounded" />
-                    <div className="h-5 w-full bg-th-bkg-3 rounded" />
-                    <div className="h-5 w-full bg-th-bkg-3 rounded" />
-                    <div className="h-5 w-full bg-th-bkg-3 rounded" />
-                    <div className="h-5 w-full bg-th-bkg-3 rounded" />
+                <div className={`text-th-fgd-4 flex justify-between mb-2`}>
+                  <div className={`text-left text-xs`}>
+                    Size ({baseCurrency})
                   </div>
-                )}
+                  <div className={`text-right text-xs`}>
+                    Price ({quoteCurrency})
+                  </div>
+                </div>
+                {orderbookData?.asks.map(({ price, size, sizePercent }) => (
+                  <OrderbookRow
+                    key={price + ''}
+                    price={price}
+                    size={size}
+                    side="sell"
+                    sizePercent={sizePercent}
+                  />
+                ))}
+                <div className="flex justify-between bg-th-bkg-1 p-2 my-2 rounded-md text-xs">
+                  <div className="text-th-fgd-3">Spread</div>
+                  <div className="text-th-fgd-1">
+                    {orderbookData?.spread.toFixed(2)}
+                  </div>
+                  <div className="text-th-fgd-1">
+                    {orderbookData?.spreadPercentage.toFixed(2)}%
+                  </div>
+                </div>
+                {orderbookData?.bids.map(({ price, size, sizePercent }) => (
+                  <OrderbookRow
+                    key={price + ''}
+                    price={price}
+                    size={size}
+                    side="buy"
+                    sizePercent={sizePercent}
+                  />
+                ))}
               </StyledFloatingElement>
             </FlipCardBack>
           )}
@@ -361,9 +292,10 @@ export default function Orderbook({ depth = 8 }) {
 }
 
 const OrderbookRow = React.memo<any>(
-  ({ side, price, size, sizePercent, onSizeClick, onPriceClick, invert }) => {
+  ({ side, price, size, sizePercent, invert }) => {
     const element = useRef(null)
     const { market } = useMarket()
+    const setMangoStore = useMangoStore((s) => s.set)
 
     useEffect(() => {
       !element.current?.classList.contains('flash') &&
@@ -387,6 +319,18 @@ const OrderbookRow = React.memo<any>(
         ? Number(price).toFixed(getDecimalCount(market.tickSize) + 1)
         : price
 
+    const handlePriceClick = () => {
+      setMangoStore((state) => {
+        state.tradeForm.price = price
+      })
+    }
+
+    const handleSizeClick = () => {
+      setMangoStore((state) => {
+        state.tradeForm.baseSize = size
+      })
+    }
+
     return (
       <div className={`flex text-sm leading-7 justify-between`} ref={element}>
         {invert ? (
@@ -401,13 +345,13 @@ const OrderbookRow = React.memo<any>(
                 }`}
               />
               <div
-                onClick={onPriceClick}
+                onClick={handlePriceClick}
                 className="z-30 relative text-th-fgd-1 px-1"
               >
                 {formattedPrice}
               </div>
             </div>
-            <div className={`text-right`} onClick={onSizeClick}>
+            <div className={`text-right`} onClick={handleSizeClick}>
               {formattedSize}
             </div>
           </>
@@ -415,7 +359,7 @@ const OrderbookRow = React.memo<any>(
           <>
             <div
               className={`text-left flex-1 text-th-fgd-1`}
-              onClick={onSizeClick}
+              onClick={handleSizeClick}
             >
               {formattedSize}
             </div>
@@ -429,7 +373,7 @@ const OrderbookRow = React.memo<any>(
               />
               <div
                 className={`z-30 relative text-th-fgd-1 px-1`}
-                onClick={onPriceClick}
+                onClick={handlePriceClick}
               >
                 {formattedPrice}
               </div>

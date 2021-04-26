@@ -144,8 +144,8 @@ input[type='number'] {
 }
 
 /* Responsive table */
-
 /* inspired by: https://css-tricks.com/responsive-data-tables/ */
+
 .responsiveTable {
   width: 100%;
 }
@@ -230,4 +230,38 @@ input[type='number'] {
 
 .react-tel-input .country-list .highlight {
   background-color: var(--bkg-1) !important;
+}
+
+/* orderbook flash */
+
+@keyframes highlight {
+  from {
+    background-color: var(--primary);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+
+@-webkit-keyframes highlight {
+  from {
+    background-color: var(--primary);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+@-moz-keyframes highlight {
+  from {
+    background-color: var(--primary);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+
+.flash {
+  -moz-animation: highlight 0.5s ease 0s 1 alternate;
+  -webkit-animation: highlight 0.5s ease 0s 1 alternate;
+  animation: highlight 0.5s ease 0s 1 alternate;
 }
