@@ -73,9 +73,7 @@ const TradePageGrid = () => {
         </FloatingElement>
       </div>
       <div key="orderbook">
-        <FloatingElement>
-          <Orderbook />
-        </FloatingElement>
+        <Orderbook />
       </div>
       <div key="tradeForm">
         <TradeForm />

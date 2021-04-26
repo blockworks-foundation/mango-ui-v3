@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400&display=swap');
+
 :root:not(.theme-dark) {
   --black: #fff;
   --primary: #ff9c24;
@@ -47,6 +49,10 @@
 }
 
 /* light theme */
+
+html .chart-page {
+  font-family: 'Lato', sans-serif;
+}
 
 html .loading-indicator {
   background: transparent;
@@ -370,6 +376,10 @@ html .item-stVdeCwG.interactive-3E0jwVyG:active {
 }
 
 /* dark theme */
+
+html.theme-dark .chart-page {
+  font-family: 'Lato', sans-serif;
+}
 
 html.theme-dark .loading-indicator {
   background: transparent;

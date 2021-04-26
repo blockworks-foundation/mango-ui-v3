@@ -73,17 +73,23 @@ export default function MarginBalances() {
         {selectedMangoGroup ? (
           <table className={`min-w-full`}>
             <thead>
-              <tr className={`text-center text-th-fgd-4 mb-2`}>
-                <th scope="col" className={`flex-auto font-normal`}>
+              <tr className={`text-center text-th-fgd-4 mb-2 text-xs`}>
+                <th scope="col" className={`flex-auto font-normal text-left`}>
                   Assets
                 </th>
-                <th scope="col" className={`flex-auto font-normal`}>
+                <th
+                  scope="col"
+                  className={`flex-auto font-normal text-right px-2`}
+                >
                   Deposits
                 </th>
-                <th scope="col" className={`flex-auto font-normal`}>
+                <th
+                  scope="col"
+                  className={`flex-auto font-normal text-right px-2`}
+                >
                   Borrows
                 </th>
-                <th scope="col" className={`flex-auto font-normal`}>
+                <th scope="col" className={`flex-auto font-normal text-right`}>
                   Interest (APY)
                 </th>
               </tr>
@@ -101,7 +107,7 @@ export default function MarginBalances() {
                     />
                     <span>{name}</span>
                   </td>
-                  <td className={`text-center`}>
+                  <td className={`text-right px-2`}>
                     {selectedMarginAccount
                       ? floorToDecimal(
                           selectedMarginAccount.getUiDeposit(
@@ -112,14 +118,14 @@ export default function MarginBalances() {
                         ).toFixed(tokenPrecision[name])
                       : (0).toFixed(tokenPrecision[name])}
                   </td>
-                  <td className={`text-center`}>
+                  <td className={`text-right px-2`}>
                     {selectedMarginAccount
                       ? selectedMarginAccount
                           .getUiBorrow(selectedMangoGroup, i)
                           .toFixed(tokenPrecision[name])
                       : (0).toFixed(tokenPrecision[name])}
                   </td>
-                  <td className={`text-center`}>
+                  <td className={`text-right`}>
                     <span className={`text-th-green`}>
                       +{(selectedMangoGroup.getDepositRate(i) * 100).toFixed(2)}
                       %

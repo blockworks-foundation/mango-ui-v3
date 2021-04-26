@@ -35,7 +35,7 @@ export default function PublicTrades() {
   return (
     <FloatingElement>
       <ElementTitle>Recent Trades</ElementTitle>
-      <div className={`grid grid-cols-3 text-th-fgd-4 mb-2`}>
+      <div className={`grid grid-cols-3 text-th-fgd-4 mb-2 text-xs`}>
         <div>Price ({quoteCurrency}) </div>
         <div className={`text-right`}>Size ({baseCurrency})</div>
         <div className={`text-right`}>Time</div>

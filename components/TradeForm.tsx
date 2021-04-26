@@ -259,7 +259,7 @@ export default function TradeForm() {
             disabled={tradeType === 'Market'}
             prefix={'Price'}
             suffix={quoteCurrency}
-            className="rounded-none"
+            className="rounded-r-none"
             wrapperClassName="w-3/5"
           />
           <TradeType
@@ -275,7 +275,7 @@ export default function TradeForm() {
             step={market?.minOrderSize || 1}
             onChange={(e) => onSetBaseSize(parseFloat(e.target.value))}
             value={baseSize}
-            className="rounded-none"
+            className="rounded-r-none"
             wrapperClassName="w-3/5"
             prefix={'Size'}
             suffix={baseCurrency}
