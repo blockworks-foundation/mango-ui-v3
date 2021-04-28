@@ -18,7 +18,7 @@ import { notify } from '../utils/notifications'
 export const ENDPOINTS: EndpointInfo[] = [
   {
     name: 'mainnet-beta',
-    url: 'https://solana-api.projectserum.com/',
+    url: 'https://api.mainnet-beta.solana.com/',
     websocket: 'https://api.mainnet-beta.solana.com/',
     custom: false,
   },
