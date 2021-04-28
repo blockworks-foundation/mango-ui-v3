@@ -179,6 +179,14 @@ html .toggleButton-3TAD9tll .arrow-liYbPQ3o {
   stroke: var(--black);
 }
 
+html .button-263WXsg-.isActive-2mI1-NUL .icon-1Y-3MM9F {
+  color: var(--black);
+}
+
+html .button-263WXsg-.isActive-2mI1-NUL:hover .icon-1Y-3MM9F {
+  color: var(--black);
+}
+
 /* floating toolbar */
 
 html .tv-grouped-floating-toolbar__widget-wrapper {
@@ -510,6 +518,14 @@ html.theme-dark .container-3_8ayT2Q:hover .arrow-WcYWFXUn {
 
 html.theme-dark .toggleButton-3TAD9tll .arrow-liYbPQ3o {
   stroke: var(--black);
+}
+
+html.theme-dark .button-263WXsg-.isActive-2mI1-NUL .icon-1Y-3MM9F {
+  color: var(--black);
+}
+
+html.theme-dark .button-263WXsg-.isActive-2mI1-NUL:hover .icon-1Y-3MM9F {
+  color: var(--black);
 }
 
 /* floating toolbar */
