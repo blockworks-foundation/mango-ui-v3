@@ -7,7 +7,8 @@ import useMangoStore from '../stores/useMangoStore'
 import useMarketList from '../hooks/useMarketList'
 import {
   getSymbolForTokenMintAddress,
-  formatBalanceDisplay,
+  displayDepositsForMarginAccount,
+  floorToDecimal,
 } from '../utils/index'
 import useConnection from '../hooks/useConnection'
 import { borrowAndWithdraw, withdraw } from '../utils/mango'
@@ -59,7 +60,11 @@ const WithdrawModal = ({ isOpen, onClose }) => {
   const getMaxForSelectedAccount = () => {
     const marginAccount = useMangoStore.getState().selectedMarginAccount.current
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
-    return marginAccount.getUiDeposit(mangoGroup, tokenIndex)
+    return displayDepositsForMarginAccount(
+      marginAccount,
+      mangoGroup,
+      tokenIndex
+    )
   }
 
   const setMaxForSelectedAccount = () => {
@@ -72,26 +77,27 @@ const WithdrawModal = ({ isOpen, onClose }) => {
   }
 
   const setMaxBorrowForSelectedAccount = async () => {
+    // get index prices
     const prices = await selectedMangoGroup.getPrices(connection)
-    const assetsValBeforeTokenBal = selectedMarginAccount.getAssetsVal(
-      selectedMangoGroup,
-      prices
-    )
+    // get value of margin account assets minus the selected token
     const assetsVal =
-      assetsValBeforeTokenBal - getMaxForSelectedAccount() * prices[tokenIndex]
-
+      selectedMarginAccount.getAssetsVal(selectedMangoGroup, prices) -
+      getMaxForSelectedAccount() * prices[tokenIndex]
     const currentLiabs = selectedMarginAccount.getLiabsVal(
       selectedMangoGroup,
       prices
     )
+    // multiply by 0.99 and subtract 0.01 to account for rounding issues
     const liabsAvail = (assetsVal / 1.2 - currentLiabs) * 0.99 - 0.01
-
     const amountToWithdraw =
       liabsAvail / prices[tokenIndex] + getMaxForSelectedAccount()
-    const decimals = mintDecimals[getTokenIndex(mintAddress)]
+
     if (amountToWithdraw > 0) {
       setInputAmount(
-        formatBalanceDisplay(amountToWithdraw, decimals).toString()
+        floorToDecimal(
+          amountToWithdraw,
+          mintDecimals[getTokenIndex(mintAddress)]
+        ).toString()
       )
     } else {
       setInputAmount('0')

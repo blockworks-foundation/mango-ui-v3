@@ -389,9 +389,10 @@ export async function borrowAndWithdraw(
   const tokenBalance = marginAccount.getUiDeposit(mangoGroup, tokenIndex)
   const borrowQuantity = withdrawQuantity - tokenBalance
 
-  const nativeBorrowQuantity = uiToNative(
-    borrowQuantity,
-    mangoGroup.mintDecimals[tokenIndex]
+  const nativeBorrowQuantity = new BN(
+    Math.ceil(
+      borrowQuantity * Math.pow(10, mangoGroup.mintDecimals[tokenIndex])
+    )
   )
 
   const borrowInstruction = makeBorrowInstruction(

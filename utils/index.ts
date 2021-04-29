@@ -24,6 +24,26 @@ export const percentFormat = new Intl.NumberFormat(undefined, {
   maximumFractionDigits: 2,
 })
 
+export function displayDepositsForMarginAccount(
+  marginAccount,
+  mangoGroup,
+  tokenIndex
+) {
+  const deposit = marginAccount.getUiDeposit(mangoGroup, tokenIndex)
+  const decimals = mangoGroup.mintDecimals[tokenIndex]
+  return floorToDecimal(deposit, decimals)
+}
+
+export function displayBorrowsForMarginAccount(
+  marginAccount,
+  mangoGroup,
+  tokenIndex
+) {
+  const borrow = marginAccount.getUiBorrow(mangoGroup, tokenIndex)
+  const decimals = mangoGroup.mintDecimals[tokenIndex]
+  return ceilToDecimal(borrow, decimals)
+}
+
 export function floorToDecimal(
   value: number,
   decimals: number | undefined | null
@@ -31,6 +51,15 @@ export function floorToDecimal(
   return decimals
     ? Math.floor(value * 10 ** decimals) / 10 ** decimals
     : Math.floor(value)
+}
+
+export function ceilToDecimal(
+  value: number,
+  decimals: number | undefined | null
+) {
+  return decimals
+    ? Math.ceil(value * 10 ** decimals) / 10 ** decimals
+    : Math.ceil(value)
 }
 
 export function roundToDecimal(

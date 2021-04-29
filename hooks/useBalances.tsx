@@ -3,6 +3,11 @@ import { Balances } from '../@types/types'
 import { nativeToUi } from '@blockworks-foundation/mango-client'
 import useMarketList from './useMarketList'
 import useMangoStore from '../stores/useMangoStore'
+import {
+  displayBorrowsForMarginAccount,
+  displayDepositsForMarginAccount,
+  floorToDecimal,
+} from '../utils'
 
 export function useBalances(): Balances[] {
   const { baseCurrency, quoteCurrency, market } = useMarket()
@@ -47,10 +52,14 @@ export function useBalances(): Balances[] {
   const tokenIndex = marketIndex
 
   const net = (borrows, currencyIndex) => {
-    return (
+    const amount =
       marginAccount.getNativeDeposit(mangoGroup, currencyIndex) +
       borrows -
       marginAccount.getNativeBorrow(mangoGroup, currencyIndex)
+
+    return floorToDecimal(
+      nativeToUi(amount, mangoGroup.mintDecimals[currencyIndex]),
+      mangoGroup.mintDecimals[currencyIndex]
     )
   }
 
@@ -59,31 +68,38 @@ export function useBalances(): Balances[] {
       market,
       key: `${baseCurrency}${quoteCurrency}${baseCurrency}`,
       coin: baseCurrency,
-      marginDeposits:
-        mangoGroup && marginAccount
-          ? marginAccount.getUiDeposit(mangoGroup, baseCurrencyIndex)
-          : null,
-      borrows: marginAccount.getUiBorrow(mangoGroup, baseCurrencyIndex),
+      marginDeposits: displayDepositsForMarginAccount(
+        marginAccount,
+        mangoGroup,
+        baseCurrencyIndex
+      ),
+      borrows: displayBorrowsForMarginAccount(
+        marginAccount,
+        mangoGroup,
+        baseCurrencyIndex
+      ),
       orders: nativeToUi(nativeBaseLocked, mangoGroup.mintDecimals[tokenIndex]),
       openOrders,
       unsettled: nativeToUi(
         nativeBaseUnsettled,
         mangoGroup.mintDecimals[tokenIndex]
       ),
-      net: nativeToUi(
-        net(nativeBaseLocked, tokenIndex),
-        mangoGroup.mintDecimals[tokenIndex]
-      ),
+      net: net(nativeBaseLocked, tokenIndex),
     },
     {
       market,
       key: `${quoteCurrency}${baseCurrency}${quoteCurrency}`,
       coin: quoteCurrency,
-      marginDeposits:
-        mangoGroup && marginAccount
-          ? marginAccount.getUiDeposit(mangoGroup, quoteCurrencyIndex)
-          : null,
-      borrows: marginAccount.getUiBorrow(mangoGroup, quoteCurrencyIndex),
+      marginDeposits: displayDepositsForMarginAccount(
+        marginAccount,
+        mangoGroup,
+        quoteCurrencyIndex
+      ),
+      borrows: displayBorrowsForMarginAccount(
+        marginAccount,
+        mangoGroup,
+        quoteCurrencyIndex
+      ),
       openOrders,
       orders: nativeToUi(
         nativeQuoteLocked,
@@ -93,10 +109,7 @@ export function useBalances(): Balances[] {
         nativeQuoteUnsettled,
         mangoGroup.mintDecimals[quoteCurrencyIndex]
       ),
-      net: nativeToUi(
-        net(nativeQuoteLocked, quoteCurrencyIndex),
-        mangoGroup.mintDecimals[quoteCurrencyIndex]
-      ),
+      net: net(nativeQuoteLocked, quoteCurrencyIndex),
     },
   ]
 }
