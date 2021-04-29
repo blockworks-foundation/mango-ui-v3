@@ -89,8 +89,13 @@ export default function MarginBalances() {
                 >
                   Borrows
                 </th>
-                <th scope="col" className={`flex-auto font-normal text-right`}>
-                  APY / APR
+                <th
+                  scope="col"
+                  className="flex-auto font-normal flex justify-end items-center"
+                >
+                  <Tooltip content="Deposit APR and Borrow APY">
+                    <div>Deposits / Borrows</div>
+                  </Tooltip>
                 </th>
               </tr>
             </thead>
@@ -127,12 +132,11 @@ export default function MarginBalances() {
                   </td>
                   <td className={`text-right`}>
                     <span className={`text-th-green`}>
-                      +{(selectedMangoGroup.getDepositRate(i) * 100).toFixed(2)}
-                      %
+                      {(selectedMangoGroup.getDepositRate(i) * 100).toFixed(2)}%
                     </span>
                     <span className={`text-th-fgd-4`}>{'  /  '}</span>
                     <span className={`text-th-red`}>
-                      -{(selectedMangoGroup.getBorrowRate(i) * 100).toFixed(2)}%
+                      {(selectedMangoGroup.getBorrowRate(i) * 100).toFixed(2)}%
                     </span>
                   </td>
                 </tr>
