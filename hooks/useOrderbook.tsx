@@ -45,7 +45,7 @@ export default function useOrderbook(
 
   useEffect(() => {
     setMangoStore((state) => {
-      state.market.orderBook = [{ bids, asks }, !!bids || !!asks]
+      state.selectedMarket.orderBook = [{ bids, asks }, !!bids || !!asks]
     })
   }, [bids, asks])
 

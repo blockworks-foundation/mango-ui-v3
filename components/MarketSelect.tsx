@@ -3,12 +3,13 @@ import useMangoStore from '../stores/useMangoStore'
 
 const MarketSelect = () => {
   const { spotMarkets } = useMarketList()
-  const selectedMarket = useMangoStore((s) => s.selectedMarket)
+  const selectedMarketName = useMangoStore((s) => s.selectedMarket.name)
   const setMangoStore = useMangoStore((s) => s.set)
 
   const handleChange = (mktName) => {
     setMangoStore((state) => {
-      state.selectedMarket = { name: mktName, address: spotMarkets[mktName] }
+      state.selectedMarket.name = mktName
+      state.selectedMarket.address = spotMarkets[mktName]
     })
   }
 
@@ -21,7 +22,7 @@ const MarketSelect = () => {
             <div
               className={`flex px-2 py-1 mr-2 rounded-md cursor-pointer default-transition bg-th-bkg-2
               ${
-                selectedMarket.name === name
+                selectedMarketName === name
                   ? `text-th-primary`
                   : `text-th-fgd-1 opacity-50 hover:opacity-100`
               }

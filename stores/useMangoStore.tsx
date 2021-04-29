@@ -72,15 +72,13 @@ interface MangoStore extends State {
     endpoint: string
     srmMint: string
   }
-  market: {
+  selectedMarket: {
+    name: string
+    address: string
     current: Market | null
     mangoProgramId: number | null
     markPrice: number
     orderBook: any[]
-  }
-  selectedMarket: {
-    name: string
-    address: string
   }
   mangoClient: MangoClient
   mangoGroups: Array<MangoGroup>
@@ -146,8 +144,6 @@ const useMangoStore = create<MangoStore>((set, get) => ({
     address: Object.entries(
       IDS[CLUSTER].mango_groups[DEFAULT_MANGO_GROUP_NAME].spot_market_symbols
     )[0][1],
-  },
-  market: {
     current: null,
     mangoProgramId: null,
     markPrice: 0,

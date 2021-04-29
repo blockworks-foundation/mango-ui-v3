@@ -48,7 +48,7 @@ const useHydrateStore = () => {
         const askAccount = market['_decoded'].asks
         const askInfo = await websocketConnection.getAccountInfo(askAccount)
         setMangoStore((state) => {
-          state.market.current = market
+          state.selectedMarket.current = market
           state.accountInfos[askAccount.toString()] = askInfo
           state.accountInfos[bidAccount.toString()] = bidInfo
         })
@@ -145,7 +145,7 @@ const useHydrateStore = () => {
   // fetch filled trades for selected market
   useInterval(() => {
     async function fetchFills() {
-      const market = useMangoStore.getState().market.current
+      const market = useMangoStore.getState().selectedMarket.current
       if (!market || !connection) {
         return null
       }

@@ -7,7 +7,7 @@ import { ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/solid'
 import UiLock from './UiLock'
 
 const MarketHeader = () => {
-  const selectedMarket = useMangoStore((s) => s.selectedMarket)
+  const selectedMarketName = useMangoStore((s) => s.selectedMarket.name)
   const markPrice = useMarkPrice()
 
   return (
@@ -17,14 +17,12 @@ const MarketHeader = () => {
           alt=""
           width="32"
           height="32"
-          src={`/assets/icons/${selectedMarket.name
+          src={`/assets/icons/${selectedMarketName
             .split('/')[0]
             .toLowerCase()}.svg`}
           className={`mr-3`}
         />
-        <div className={`font-semibold text-lg pr-4`}>
-          {selectedMarket.name}
-        </div>
+        <div className={`font-semibold text-lg pr-4`}>{selectedMarketName}</div>
         <div className={`text-lg pr-4`}>{markPrice}</div>
         <ChangePercentage change={markPrice} />
       </div>

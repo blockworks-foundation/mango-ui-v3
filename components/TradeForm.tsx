@@ -34,13 +34,13 @@ export default function TradeForm() {
   const [ioc, setIoc] = useState(false)
   const [submitting, setSubmitting] = useState(false)
 
-  const orderBookRef = useRef(useMangoStore.getState().market.orderBook)
+  const orderBookRef = useRef(useMangoStore.getState().selectedMarket.orderBook)
   const orderbook = orderBookRef.current[0]
   useEffect(
     () =>
       useMangoStore.subscribe(
         (orderBook) => (orderBookRef.current = orderBook as any[]),
-        (state) => state.market.orderBook
+        (state) => state.selectedMarket.orderBook
       ),
     []
   )
@@ -70,13 +70,13 @@ export default function TradeForm() {
       s.tradeForm.tradeType = type
     })
 
-  const markPriceRef = useRef(useMangoStore.getState().market.markPrice)
+  const markPriceRef = useRef(useMangoStore.getState().selectedMarket.markPrice)
   const markPrice = markPriceRef.current
   useEffect(
     () =>
       useMangoStore.subscribe(
         (markPrice) => (markPriceRef.current = markPrice as number),
-        (state) => state.market.markPrice
+        (state) => state.selectedMarket.markPrice
       ),
     []
   )

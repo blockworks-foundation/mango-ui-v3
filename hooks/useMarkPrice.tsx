@@ -19,7 +19,7 @@ export function useTrades() {
 
 export default function useMarkPrice() {
   const setMangoStore = useMangoStore((s) => s.set)
-  const markPrice = useMangoStore((s) => s.market.markPrice)
+  const markPrice = useMangoStore((s) => s.selectedMarket.markPrice)
 
   const [orderbook] = useOrderbook()
   const trades = useTrades()
@@ -37,7 +37,7 @@ export default function useMarkPrice() {
         : null
     if (newMarkPrice !== markPrice) {
       setMangoStore((state) => {
-        state.market.markPrice = newMarkPrice
+        state.selectedMarket.markPrice = newMarkPrice
       })
     }
   }, [orderbook, trades])
