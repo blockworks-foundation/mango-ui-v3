@@ -77,7 +77,9 @@ const WithdrawModal = ({ isOpen, onClose }) => {
       selectedMangoGroup,
       prices
     )
-    const assetsVal = assetsValBeforeTokenBal - getMaxForSelectedAccount()
+    const assetsVal =
+      assetsValBeforeTokenBal - getMaxForSelectedAccount() * prices[tokenIndex]
+
     const currentLiabs = selectedMarginAccount.getLiabsVal(
       selectedMangoGroup,
       prices

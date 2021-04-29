@@ -411,7 +411,7 @@ export async function borrowAndWithdraw(
   const nativeWithdrawQuantity = new BN(
     Math.floor(
       withdrawQuantity * Math.pow(10, mangoGroup.mintDecimals[tokenIndex])
-    ) * 0.98
+    )
   )
 
   const withdrawInstruction = makeWithdrawInstruction(
