@@ -87,7 +87,7 @@ interface MangoStore extends State {
     current: MangoGroup | null
     srmAccount: AccountInfo<Buffer> | null
     markets: {
-      [key: string]: Market
+      [address: string]: Market
     }
     mintDecimals: number[]
   }

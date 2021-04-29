@@ -4,10 +4,17 @@ import useMangoStore from '../stores/useMangoStore'
 const MarketSelect = () => {
   const { spotMarkets } = useMarketList()
   const selectedMarketName = useMangoStore((s) => s.selectedMarket.name)
+  const selectedMangoGroupMarkets = useMangoStore(
+    (s) => s.selectedMangoGroup.markets
+  )
   const setMangoStore = useMangoStore((s) => s.set)
 
   const handleChange = (mktName) => {
+    const newMarket = Object.entries(selectedMangoGroupMarkets).find(
+      (m) => m[0] == spotMarkets[mktName]
+    )[1]
     setMangoStore((state) => {
+      state.selectedMarket.current = newMarket
       state.selectedMarket.name = mktName
       state.selectedMarket.address = spotMarkets[mktName]
     })
@@ -17,7 +24,6 @@ const MarketSelect = () => {
     <div className="bg-th-bkg-3">
       <div className="flex justify-between items-center">
         <div className="flex items-center py-2 px-4 sm:px-10">
-          {/* <div className="text-xs text-th-fgd-4 font-semibold mr-2">MARKETS</div> */}
           {Object.entries(spotMarkets).map(([name, address]) => (
             <div
               className={`flex px-2 py-1 mr-2 rounded-md cursor-pointer default-transition bg-th-bkg-2

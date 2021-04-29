@@ -106,7 +106,7 @@ export default function useWallet() {
           '...' +
           wallet.publicKey.toString().substr(-5),
       })
-      actions.fetchMangoGroup()
+
       actions.fetchWalletBalances()
       actions.fetchMangoSrmAccounts()
       // wait for margin account before fetching trade history
@@ -143,11 +143,6 @@ export default function useWallet() {
     if (connected && marginAccount) {
       actions.fetchMarginAccounts()
       actions.fetchWalletBalances()
-    }
-  }, 20 * SECONDS)
-
-  useInterval(() => {
-    if (connected && marginAccount) {
       actions.fetchTradeHistory()
     }
   }, 180 * SECONDS)

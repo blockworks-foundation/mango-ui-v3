@@ -1,28 +1,25 @@
 import { useEffect } from 'react'
 import { Market } from '@project-serum/serum'
-import { PublicKey, AccountInfo } from '@solana/web3.js'
+import { AccountInfo } from '@solana/web3.js'
 import useConnection from './useConnection'
 import useMangoStore from '../stores/useMangoStore'
 import useSerumStore from '../stores/useSerumStore'
 import useMarketList from './useMarketList'
-import { notify } from '../utils/notifications'
 import useInterval from './useInterval'
 
 const SECONDS = 1000
-const _SLOW_REFRESH_INTERVAL = 6 * SECONDS
+const _SLOW_REFRESH_INTERVAL = 60 * SECONDS
 
-const marketAddressSelector = (s) => s.selectedMarket.address
 const mangoGroupMarketsSelector = (s) => s.selectedMangoGroup.markets
 const websocketConnectionSelector = (s) => s.connection.websocket
 
 const useHydrateStore = () => {
   const setMangoStore = useMangoStore((s) => s.set)
   const setSerumStore = useSerumStore((s) => s.set)
-  const selectedMarketAddress = useMangoStore(marketAddressSelector)
   const marketsForSelectedMangoGroup = useMangoStore(mangoGroupMarketsSelector)
   const websocketConnection = useMangoStore(websocketConnectionSelector)
   const actions = useMangoStore((s) => s.actions)
-  const { connection, dexProgramId } = useConnection()
+  const { connection } = useConnection()
   const { marketList } = useMarketList()
 
   useEffect(() => {
@@ -32,35 +29,7 @@ const useHydrateStore = () => {
 
   useInterval(() => {
     actions.fetchMangoGroup()
-  }, 20 * SECONDS)
-
-  // load selected market
-  useEffect(() => {
-    Market.load(
-      connection,
-      new PublicKey(selectedMarketAddress),
-      {},
-      new PublicKey(dexProgramId)
-    )
-      .then(async (market) => {
-        const bidAccount = market['_decoded'].bids
-        const bidInfo = await websocketConnection.getAccountInfo(bidAccount)
-        const askAccount = market['_decoded'].asks
-        const askInfo = await websocketConnection.getAccountInfo(askAccount)
-        setMangoStore((state) => {
-          state.selectedMarket.current = market
-          state.accountInfos[askAccount.toString()] = askInfo
-          state.accountInfos[bidAccount.toString()] = bidInfo
-        })
-      })
-      .catch((e) => {
-        notify({
-          message: 'Error loading market',
-          description: e.message,
-          type: 'error',
-        })
-      })
-  }, [selectedMarketAddress])
+  }, 60 * SECONDS)
 
   // load all markets for mangoGroup
   useEffect(() => {
@@ -70,15 +39,14 @@ const useHydrateStore = () => {
       })
     ).then((markets) => {
       setMangoStore((state) => {
+        state.selectedMarket.current = markets[0]
         markets.forEach((market) => {
           state.selectedMangoGroup.markets[market.publicKey.toString()] = market
-          // @ts-ignore
-          const bidAcctAddress = market._decoded.bids.toString()
+          const bidAcctAddress = market['_decoded'].bids.toString()
           if (!(bidAcctAddress in state.accountInfos)) {
             state.accountInfos[bidAcctAddress] = null
           }
-          // @ts-ignore
-          const askAcctAddress = market._decoded.asks.toString()
+          const askAcctAddress = market['_decoded'].asks.toString()
           if (!(askAcctAddress in state.accountInfos)) {
             state.accountInfos[askAcctAddress] = null
           }
