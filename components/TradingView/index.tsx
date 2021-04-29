@@ -88,7 +88,6 @@ const TVChartContainer = () => {
         // 'header_resolutions',
         // 'header_widget',
       ],
-      enabled_features: ['study_templates'],
       load_last_chart: true,
       client_id: defaultProps.clientId,
       user_id: defaultProps.userId,
