@@ -1,5 +1,8 @@
 import React, { useMemo, useState } from 'react'
-import { nativeToUi } from '@blockworks-foundation/mango-client/lib/utils'
+import {
+  nativeToUi,
+  sleep,
+} from '@blockworks-foundation/mango-client/lib/utils'
 import Modal from './Modal'
 import Input from './Input'
 import AccountSelect from './AccountSelect'
@@ -57,7 +60,6 @@ const DepositModal = ({ isOpen, onClose }) => {
     const marginAccount = useMangoStore.getState().selectedMarginAccount.current
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
     const wallet = useMangoStore.getState().wallet.current
-    console.log('handleDeposit', wallet, walletAccounts)
 
     if (!marginAccount && mangoGroup) {
       initMarginAccountAndDeposit(
@@ -69,9 +71,9 @@ const DepositModal = ({ isOpen, onClose }) => {
         selectedAccount.publicKey,
         Number(inputAmount)
       )
-        .then((_response: Array<any>) => {
+        .then(async (_response: Array<any>) => {
+          await sleep(1000)
           actions.fetchWalletBalances()
-          actions.fetchMangoGroup()
           actions.fetchMarginAccounts()
           setSubmitting(false)
           onClose()
@@ -97,9 +99,9 @@ const DepositModal = ({ isOpen, onClose }) => {
         selectedAccount.publicKey,
         Number(inputAmount)
       )
-        .then((_response: string) => {
+        .then(async (_response: string) => {
+          await sleep(1000)
           actions.fetchWalletBalances()
-          actions.fetchMangoGroup()
           actions.fetchMarginAccounts()
           setSubmitting(false)
           onClose()
@@ -124,6 +126,7 @@ const DepositModal = ({ isOpen, onClose }) => {
       </Modal.Header>
       <div className={`pb-6 px-8`}>
         <AccountSelect
+          symbols={symbols}
           accounts={depositAccounts}
           selectedAccount={selectedAccount}
           onSelectAccount={handleAccountSelect}

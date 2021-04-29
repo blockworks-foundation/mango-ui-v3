@@ -13,6 +13,9 @@ const FeeDiscountsTable = () => {
   const { totalSrm, rates } = useSrmAccount()
   const connected = useMangoStore((s) => s.wallet.connected)
   const contributedSrm = useMangoStore((s) => s.wallet.contributedSrm)
+  const selectedMarginAccount = useMangoStore(
+    (s) => s.selectedMarginAccount.current
+  )
 
   const handleCloseDeposit = useCallback(() => {
     setShowDeposit(false)
@@ -26,7 +29,7 @@ const FeeDiscountsTable = () => {
     <div
       className={`flex flex-col items-center bg-th-bkg-1 py-6 mt-4 rounded-md`}
     >
-      {connected ? (
+      {connected && selectedMarginAccount ? (
         <div className="mb-6">
           <div className="bg-th-bkg-2 p-6 rounded">
             <div className="text-th-fgd-4 text-center">

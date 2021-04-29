@@ -18,7 +18,7 @@ import { notify } from '../utils/notifications'
 export const ENDPOINTS: EndpointInfo[] = [
   {
     name: 'mainnet-beta',
-    url: 'https://api.mainnet-beta.solana.com/',
+    url: 'https://vip-api.mainnet-beta.solana.com/',
     websocket: 'https://api.mainnet-beta.solana.com/',
     custom: false,
   },
@@ -229,8 +229,10 @@ const useMangoStore = create<MangoStore>((set, get) => ({
       const mangoClient = get().mangoClient
       const programId = IDS[cluster].mango_program_id
       const set = get().set
+      console.log('BEFORE-----------------------------------')
 
       if (!wallet?.publicKey || !wallet.publicKey) return
+      console.log('AFTER======--------------')
 
       return mangoClient
         .getMarginAccountsForOwner(
@@ -240,6 +242,8 @@ const useMangoStore = create<MangoStore>((set, get) => ({
           wallet
         )
         .then((marginAccounts) => {
+          console.log('HERE=========================================')
+
           if (marginAccounts.length > 0) {
             set((state) => {
               state.marginAccounts = marginAccounts

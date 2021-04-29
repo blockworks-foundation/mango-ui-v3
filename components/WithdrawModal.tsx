@@ -184,6 +184,7 @@ const WithdrawModal = ({ isOpen, onClose }) => {
           selectedAccount={selectedAccount}
           onSelectAccount={handleSetSelectedAccount}
           getBalance={getMaxForSelectedAccount}
+          symbols={symbols}
         />
         <div className="flex items-center jusitfy-between text-th-fgd-1 mt-4 p-2 rounded-md bg-th-bkg-3">
           <div className="flex items-center text-fgd-1 pr-4">

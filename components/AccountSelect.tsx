@@ -14,6 +14,7 @@ type AccountSelectProps = {
   onSelectAccount: (x) => any
   getBalance?: (x) => any
   hideAddress?: boolean
+  symbols?: Array<{ [key: string]: string }>
 }
 
 const AccountSelect = ({
@@ -22,6 +23,7 @@ const AccountSelect = ({
   onSelectAccount,
   getBalance,
   hideAddress = false,
+  symbols,
 }: AccountSelectProps) => {
   const { getTokenIndex } = useMarketList()
   const mintDecimals = useMangoStore((s) => s.selectedMangoGroup.mintDecimals)
@@ -49,6 +51,14 @@ const AccountSelect = ({
     await actions.fetchWalletBalances()
     setLoading(false)
   }
+
+  const symbolsForAccounts = accounts.map((a) =>
+    getSymbolForTokenMintAddress(a.account.mint.toString())
+  )
+
+  const missingTokens = Object.keys(symbols)
+    .filter((sym) => !symbolsForAccounts.includes(sym))
+    .join(', ')
 
   return (
     <div className={`relative inline-block w-full`}>
@@ -109,7 +119,7 @@ const AccountSelect = ({
                       </div>
                     </div>
                   ) : (
-                    'No wallet addresses found'
+                    'Select a token address'
                   )}
                   {open ? (
                     <ChevronUpIcon className="h-5 w-5 ml-2 text-th-primary" />
@@ -171,6 +181,13 @@ const AccountSelect = ({
                   </Listbox.Option>
                 )
               })}
+              {symbols && accounts.length !== 3 ? (
+                <Listbox.Option value="">
+                  <div className="flex items-center justify-center text-th-fgd-1 p-2">
+                    Wallet token addresses not found for: {missingTokens}
+                  </div>
+                </Listbox.Option>
+              ) : null}
             </Listbox.Options>
           </>
         )}
