@@ -56,9 +56,11 @@ const AccountSelect = ({
     getSymbolForTokenMintAddress(a.account.mint.toString())
   )
 
-  const missingTokens = Object.keys(symbols)
-    .filter((sym) => !symbolsForAccounts.includes(sym))
-    .join(', ')
+  const missingTokens = symbols
+    ? Object.keys(symbols)
+        .filter((sym) => !symbolsForAccounts.includes(sym))
+        .join(', ')
+    : null
 
   return (
     <div className={`relative inline-block w-full`}>
@@ -181,10 +183,10 @@ const AccountSelect = ({
                   </Listbox.Option>
                 )
               })}
-              {symbols && accounts.length !== 3 ? (
+              {missingTokens && accounts.length !== 3 ? (
                 <Listbox.Option value="">
                   <div className="flex items-center justify-center text-th-fgd-1 p-2">
-                    Wallet token addresses not found for: {missingTokens}
+                    Wallet token address not found for: {missingTokens}
                   </div>
                 </Listbox.Option>
               ) : null}
