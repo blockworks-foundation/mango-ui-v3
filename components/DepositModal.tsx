@@ -100,11 +100,11 @@ const DepositModal = ({ isOpen, onClose }) => {
         Number(inputAmount)
       )
         .then(async (_response: string) => {
-          await sleep(1000)
-          actions.fetchWalletBalances()
-          actions.fetchMarginAccounts()
           setSubmitting(false)
           onClose()
+          await sleep(750)
+          actions.fetchWalletBalances()
+          actions.fetchMarginAccounts()
         })
         .catch((err) => {
           setSubmitting(false)

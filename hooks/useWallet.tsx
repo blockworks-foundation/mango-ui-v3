@@ -9,6 +9,7 @@ import {
 } from '../utils/wallet-adapters'
 import { WalletAdapter } from '../@types/types'
 import useInterval from './useInterval'
+import { sleep } from '@blockworks-foundation/mango-client'
 
 const SECONDS = 1000
 const ASSET_URL =
@@ -105,6 +106,7 @@ export default function useWallet() {
           '...' +
           wallet.publicKey.toString().substr(-5),
       })
+      sleep(500)
       // wait for margin account before fetching trade history
       await actions.fetchMarginAccounts()
       actions.fetchWalletBalances()
