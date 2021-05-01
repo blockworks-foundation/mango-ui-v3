@@ -84,7 +84,7 @@ const WithdrawModal = ({ isOpen, onClose }) => {
         <div className={`text-th-fgd-3 flex-shrink invisible w-5`}>X</div>
         <ElementTitle noMarignBottom>Withdraw SRM</ElementTitle>
       </Modal.Header>
-      <div className={`pb-6 px-8`}>
+      <>
         <div className={`text-th-fgd-1 pb-2`}>Token Account</div>
         <MangoSrmAccountSelector
           accounts={mangoSrmAccountsForOwner}
@@ -124,7 +124,7 @@ const WithdrawModal = ({ isOpen, onClose }) => {
             </div>
           </Button>
         </div>
-      </div>
+      </>
     </Modal>
   )
 }

@@ -25,7 +25,7 @@ const AlphaModal = ({
           <ElementTitle noMarignBottom>Mango Markets UI V2</ElementTitle>
         </div>
       </Modal.Header>
-      <div className={`pb-4 px-6 text-th-fgd-2 text-center`}>
+      <div className={`text-th-fgd-2 text-center`}>
         This is an unaudited alpha release of Mango Markets. The software is
         provided &apos;AS IS&apos; without warranty of any kind.
         <div className={`mt-4 flex justify-center`}>

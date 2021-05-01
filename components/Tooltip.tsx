@@ -16,11 +16,11 @@ const Tooltip: FunctionComponent<TooltipProps> = ({
     <Tippy
       animation="scale"
       appendTo={() => document.body}
-      maxWidth="30rem"
+      maxWidth="20rem"
       interactive
       content={
         <div
-          className={`rounded p-3 text-sm bg-th-bkg-3 shadow-md text-th-fgd-2 outline-none focus:outline-none ${className}`}
+          className={`rounded p-3 text-xs bg-th-bkg-3 leading-5 shadow-md text-th-fgd-3 outline-none focus:outline-none ${className}`}
         >
           {content}
         </div>

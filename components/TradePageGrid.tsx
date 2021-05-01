@@ -29,9 +29,9 @@ export const defaultLayouts = {
     { i: 'marginInfo', x: 6, y: 2, w: 2, h: 12 },
   ],
   lg: [
-    { i: 'tvChart', x: 0, y: 0, w: 2, h: 24 },
-    { i: 'balanceInfo', x: 2, y: 0, w: 1, h: 13 },
-    { i: 'marginInfo', x: 2, y: 1, w: 1, h: 11 },
+    { i: 'tvChart', x: 0, y: 0, w: 2, h: 25 },
+    { i: 'balanceInfo', x: 2, y: 0, w: 1, h: 12 },
+    { i: 'marginInfo', x: 2, y: 1, w: 1, h: 13 },
     { i: 'orderbook', x: 0, y: 2, w: 1, h: 17 },
     { i: 'tradeForm', x: 1, y: 2, w: 1, h: 17 },
     { i: 'marketTrades', x: 2, y: 2, w: 1, h: 17 },

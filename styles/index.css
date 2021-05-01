@@ -55,6 +55,14 @@ body {
   @apply text-sm font-body tracking-wide;
 }
 
+p {
+  @apply text-th-fgd-3 mb-2.5;
+}
+
+a {
+  @apply text-th-primary transition-all duration-300 hover:opacity-70;
+}
+
 button {
   transition: all 0.3s ease;
   @apply font-semibold rounded-md;
@@ -212,6 +220,14 @@ input[type='number'] {
 
 /* phone input */
 
+.react-tel-input .form-control:hover + div {
+  border-right: 1px solid var(--primary) !important;
+}
+
+.react-tel-input .form-control:focus + div {
+  border-right: 1px solid var(--primary) !important;
+}
+
 .react-tel-input .selected-flag:hover {
   background-color: transparent !important;
 }
@@ -225,11 +241,21 @@ input[type='number'] {
 }
 
 .react-tel-input .country-list .country:hover {
-  background-color: var(--bkg-1) !important;
+  background-color: var(--bkg-3) !important;
 }
 
 .react-tel-input .country-list .highlight {
-  background-color: var(--bkg-1) !important;
+  background-color: var(--bkg-3) !important;
+}
+
+.react-tel-input .country-list {
+  margin: 8px 0 10px -6px !important;
+}
+
+.react-tel-input .selected-flag:hover,
+.react-tel-input .selected-flag:focus,
+.react-tel-input .selected-flag.open {
+  background-color: transparent !important;
 }
 
 /* orderbook flash */

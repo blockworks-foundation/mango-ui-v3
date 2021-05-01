@@ -16,6 +16,7 @@ import ThemeSwitch from './ThemeSwitch'
 import { WalletIcon } from './icons'
 import useMangoStore from '../stores/useMangoStore'
 import ConnectWalletButton from './ConnectWalletButton'
+import { copyToClipboard } from '../utils'
 
 const Code = styled.code`
   border: 1px solid hsla(0, 0%, 39.2%, 0.2);
@@ -47,12 +48,7 @@ const TopBar = () => {
 
   const handleWalletMenu = (option) => {
     if (option === 'Copy address') {
-      const el = document.createElement('textarea')
-      el.value = wallet.publicKey.toString()
-      document.body.appendChild(el)
-      el.select()
-      document.execCommand('copy')
-      document.body.removeChild(el)
+      copyToClipboard(wallet.publicKey)
       setIsCopied(true)
     } else {
       wallet.disconnect()
