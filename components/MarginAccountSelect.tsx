@@ -1,7 +1,16 @@
 import { MarginAccount } from '@blockworks-foundation/mango-client'
+import styled from '@emotion/styled'
 import { useState } from 'react'
 import useMangoStore from '../stores/useMangoStore'
 import Select from './Select'
+import { abbreviateAddress } from '../utils'
+import useMarketList from '../hooks/useMarketList'
+
+const StyledMarginAccountSymbols = styled.div`
+  :last-child {
+    border-right-width: 0px;
+  }
+`
 
 type MarginAccountSelectProps = {
   className?: string
@@ -20,6 +29,7 @@ const MarginAccountSelect = ({
   const [selectedMarginAccount, setSelectedMarginAccount] = useState(
     value || null
   )
+  const { symbols } = useMarketList()
 
   const handleSelectMarginAccount = (value) => {
     const marginAccount = marginAccounts.find(
@@ -34,7 +44,16 @@ const MarginAccountSelect = ({
   return (
     <Select
       disabled={disabled}
-      value={selectedMarginAccount?.publicKey.toString()}
+      value={
+        <div className="text-left">
+          {Object.keys(symbols).map((symbol, index) =>
+            index !== 0 ? `/${symbol}` : symbol
+          )}
+          <div className="text-xs text-th-fgd-4">
+            {abbreviateAddress(selectedMarginAccount?.publicKey)}
+          </div>
+        </div>
+      }
       onChange={handleSelectMarginAccount}
       placeholder="Select Margin Account"
       className={className}
@@ -42,7 +61,10 @@ const MarginAccountSelect = ({
       {marginAccounts.length ? (
         marginAccounts.map((ma, index) => (
           <Select.Option key={index} value={ma.publicKey.toString()}>
-            {ma.publicKey.toString()}
+            BTC/ETH/USDT
+            <div className="text-xs text-th-fgd-4">
+              {abbreviateAddress(ma.publicKey)}
+            </div>
           </Select.Option>
         ))
       ) : (

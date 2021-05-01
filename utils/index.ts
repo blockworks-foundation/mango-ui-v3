@@ -186,3 +186,12 @@ export const capitalize = (s) => {
   if (typeof s !== 'string') return ''
   return s.charAt(0).toUpperCase() + s.slice(1)
 }
+
+export const copyToClipboard = (copyThis) => {
+  const el = document.createElement('textarea')
+  el.value = copyThis.toString()
+  document.body.appendChild(el)
+  el.select()
+  document.execCommand('copy')
+  document.body.removeChild(el)
+}

@@ -183,7 +183,7 @@ const WithdrawModal = ({ isOpen, onClose }) => {
       <Modal.Header>
         <ElementTitle noMarignBottom>Withdraw Funds</ElementTitle>
       </Modal.Header>
-      <div className="pb-6 px-8">
+      <>
         <AccountSelect
           hideAddress
           accounts={withdrawAccounts}
@@ -281,7 +281,7 @@ const WithdrawModal = ({ isOpen, onClose }) => {
             </div>
           </Button>
         </div>
-      </div>
+      </>
     </Modal>
   )
 }
