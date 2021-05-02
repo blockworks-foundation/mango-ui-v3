@@ -157,21 +157,19 @@ export default function MarginInfo() {
       <>
         {mAccountInfo
           ? mAccountInfo.map((entry, i) => (
-              <>
-                <div className={`flex justify-between pt-2 pb-2`} key={i}>
-                  <Tooltip content={entry.desc}>
-                    <div
-                      className={`cursor-help font-normal text-th-fgd-4 border-b border-th-fgd-4 border-dashed border-opacity-20 leading-4 default-transition hover:border-th-bkg-2 hover:text-th-fgd-3`}
-                    >
-                      {entry.label}
-                    </div>
-                  </Tooltip>
-                  <div className={`text-th-fgd-1`}>
-                    {entry.currency + entry.value}
-                    {entry.unit}
+              <div className={`flex justify-between pt-2 pb-2`} key={i}>
+                <Tooltip content={entry.desc}>
+                  <div
+                    className={`cursor-help font-normal text-th-fgd-4 border-b border-th-fgd-4 border-dashed border-opacity-20 leading-4 default-transition hover:border-th-bkg-2 hover:text-th-fgd-3`}
+                  >
+                    {entry.label}
                   </div>
+                </Tooltip>
+                <div className={`text-th-fgd-1`}>
+                  {entry.currency + entry.value}
+                  {entry.unit}
                 </div>
-              </>
+              </div>
             ))
           : null}
         <Button
