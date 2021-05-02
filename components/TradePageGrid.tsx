@@ -20,29 +20,58 @@ const ResponsiveGridLayout = WidthProvider(Responsive)
 
 export const defaultLayouts = {
   xl: [
-    { i: 'tvChart', x: 0, y: 0, w: 4, h: 30 },
-    { i: 'orderbook', x: 4, y: 0, w: 2, h: 17 },
-    { i: 'tradeForm', x: 6, y: 0, w: 2, h: 17 },
-    { i: 'marketTrades', x: 4, y: 1, w: 2, h: 13 },
-    { i: 'balanceInfo', x: 6, y: 1, w: 2, h: 13 },
-    { i: 'userInfo', x: 0, y: 2, w: 6, h: 17 },
-    { i: 'marginInfo', x: 6, y: 2, w: 2, h: 12 },
+    { i: 'tvChart', x: 0, y: 0, w: 6, h: 30 },
+    { i: 'orderbook', x: 6, y: 0, w: 3, h: 17 },
+    { i: 'tradeForm', x: 9, y: 0, w: 3, h: 12 },
+    { i: 'marketTrades', x: 6, y: 1, w: 3, h: 13 },
+    { i: 'balanceInfo', x: 9, y: 1, w: 3, h: 13 },
+    { i: 'userInfo', x: 0, y: 2, w: 9, h: 17 },
+    { i: 'marginInfo', x: 9, y: 2, w: 3, h: 13 },
   ],
   lg: [
-    { i: 'tvChart', x: 0, y: 0, w: 2, h: 25 },
-    { i: 'balanceInfo', x: 2, y: 0, w: 1, h: 12 },
-    { i: 'marginInfo', x: 2, y: 1, w: 1, h: 13 },
-    { i: 'orderbook', x: 0, y: 2, w: 1, h: 17 },
-    { i: 'tradeForm', x: 1, y: 2, w: 1, h: 17 },
-    { i: 'marketTrades', x: 2, y: 2, w: 1, h: 17 },
-    { i: 'userInfo', x: 0, y: 3, w: 3, h: 17 },
+    { i: 'tvChart', x: 0, y: 0, w: 8, h: 25, minW: 2 },
+    { i: 'balanceInfo', x: 8, y: 0, w: 4, h: 12, minW: 2 },
+    { i: 'marginInfo', x: 8, y: 1, w: 4, h: 13, minW: 2 },
+    { i: 'orderbook', x: 0, y: 2, w: 4, h: 17, minW: 2 },
+    { i: 'tradeForm', x: 4, y: 2, w: 4, h: 17, minW: 3 },
+    { i: 'marketTrades', x: 8, y: 2, w: 4, h: 17, minW: 2 },
+    { i: 'userInfo', x: 0, y: 3, w: 12, h: 17, minW: 6 },
+  ],
+  md: [
+    { i: 'tvChart', x: 0, y: 0, w: 8, h: 25, minW: 2 },
+    { i: 'balanceInfo', x: 8, y: 0, w: 4, h: 12, minW: 2 },
+    { i: 'marginInfo', x: 8, y: 1, w: 4, h: 13, minW: 2 },
+    { i: 'orderbook', x: 0, y: 2, w: 4, h: 17, minW: 2 },
+    { i: 'tradeForm', x: 4, y: 2, w: 4, h: 17, minW: 3 },
+    { i: 'marketTrades', x: 8, y: 2, w: 4, h: 17, minW: 2 },
+    { i: 'userInfo', x: 0, y: 3, w: 12, h: 17, minW: 6 },
+  ],
+  sm: [
+    { i: 'tvChart', x: 0, y: 0, w: 12, h: 25, minW: 6 },
+    { i: 'balanceInfo', x: 0, y: 1, w: 6, h: 13, minW: 2 },
+    { i: 'marginInfo', x: 6, y: 1, w: 6, h: 13, minW: 2 },
+    { i: 'tradeForm', x: 0, y: 2, w: 12, h: 13, minW: 3 },
+    { i: 'orderbook', x: 0, y: 3, w: 6, h: 17, minW: 3 },
+    { i: 'marketTrades', x: 6, y: 3, w: 6, h: 17, minW: 2 },
+    { i: 'userInfo', x: 0, y: 4, w: 12, h: 17, minW: 6 },
+  ],
+  xs: [
+    { i: 'tvChart', x: 0, y: 0, w: 0, h: 0, minW: 6 },
+    { i: 'balanceInfo', x: 0, y: 1, w: 6, h: 13, minW: 2 },
+    { i: 'marginInfo', x: 0, y: 2, w: 6, h: 13, minW: 2 },
+    { i: 'tradeForm', x: 0, y: 3, w: 12, h: 13, minW: 3 },
+    { i: 'orderbook', x: 0, y: 4, w: 6, h: 17, minW: 3 },
+    { i: 'marketTrades', x: 0, y: 5, w: 6, h: 17, minW: 2 },
+    { i: 'userInfo', x: 0, y: 6, w: 12, h: 17, minW: 6 },
   ],
 }
+
+export const GRID_LAYOUT_KEY = 'mangoSavedLayouts-1.0'
 
 const TradePageGrid = () => {
   const { uiLocked } = useMangoStore((s) => s.settings)
   const [savedLayouts, setSavedLayouts] = useLocalStorageState(
-    'savedLayouts',
+    GRID_LAYOUT_KEY,
     defaultLayouts
   )
 
@@ -61,7 +90,7 @@ const TradePageGrid = () => {
       className="layout"
       layouts={savedLayouts || defaultLayouts}
       breakpoints={{ xl: 1600, lg: 1200, md: 1110, sm: 768, xs: 0 }}
-      cols={{ xl: 8, lg: 3, md: 3, sm: 2, xs: 1 }}
+      cols={{ xl: 12, lg: 12, md: 12, sm: 12, xs: 1 }}
       rowHeight={15}
       isDraggable={!uiLocked}
       isResizable={!uiLocked}

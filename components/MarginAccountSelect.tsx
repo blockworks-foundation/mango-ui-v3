@@ -1,16 +1,9 @@
 import { MarginAccount } from '@blockworks-foundation/mango-client'
-import styled from '@emotion/styled'
 import { useState } from 'react'
 import useMangoStore from '../stores/useMangoStore'
 import Select from './Select'
 import { abbreviateAddress } from '../utils'
 import useMarketList from '../hooks/useMarketList'
-
-const StyledMarginAccountSymbols = styled.div`
-  :last-child {
-    border-right-width: 0px;
-  }
-`
 
 type MarginAccountSelectProps = {
   className?: string

@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
 import { RefreshClockwiseIcon } from './icons'
-import { defaultLayouts } from './TradePageGrid'
+import { defaultLayouts, GRID_LAYOUT_KEY } from './TradePageGrid'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import Tooltip from './Tooltip'
 
 const ResetLayout = ({ className = '' }) => {
   const [spin, setSpin] = useState(false)
   const [, setSavedLayouts] = useLocalStorageState(
-    'savedLayouts',
+    GRID_LAYOUT_KEY,
     defaultLayouts
   )
 
