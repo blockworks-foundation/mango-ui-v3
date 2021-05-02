@@ -1,5 +1,10 @@
 import { Listbox } from '@headlessui/react'
+import styled from '@emotion/styled'
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid'
+
+const StyledDiv = styled.div`
+  min-height: 2.5rem;
+`
 
 const Select = ({
   value,
@@ -15,10 +20,10 @@ const Select = ({
         {({ open }) => (
           <>
             <Listbox.Button
-              className={`h-full w-full font-normal bg-th-bkg-1 border border-th-fgd-4 rounded hover:border-th-primary focus:outline-none focus:border-th-primary`}
+              className={`h-full w-full font-normal bg-th-bkg-1 ring-1 ring-th-fgd-4 ring-inset rounded hover:ring-th-primary focus:outline-none focus:border-th-primary`}
             >
-              <div
-                className={`flex items-center justify-between space-x-4 p-3`}
+              <StyledDiv
+                className={`flex items-center justify-between space-x-4 p-2`}
               >
                 <span className="text-th-fgd-1">
                   {value ? value : placeholder}
@@ -28,12 +33,12 @@ const Select = ({
                 ) : (
                   <ChevronDownIcon className={`h-5 w-5 mr-1 text-th-primary`} />
                 )}
-              </div>
+              </StyledDiv>
             </Listbox.Button>
             {open ? (
               <Listbox.Options
                 static
-                className={`text-th-fgd-1 z-20 w-full p-1 absolute left-0 mt-1 bg-th-bkg-1 origin-top-left divide-y divide-th-bkg-3 shadow-lg outline-none rounded-md`}
+                className={`text-th-fgd-1 max-h-40 overflow-auto z-20 w-full p-1 absolute left-0 mt-1 bg-th-bkg-1 origin-top-left divide-y divide-th-bkg-3 shadow-lg outline-none rounded-md thin-scroll`}
               >
                 {children}
               </Listbox.Options>
