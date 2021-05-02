@@ -20,7 +20,7 @@ const MarginAccountSelect = ({
 }: MarginAccountSelectProps) => {
   const marginAccounts = useMangoStore((s) => s.marginAccounts)
   const [selectedMarginAccount, setSelectedMarginAccount] = useState(
-    value || null
+    value || marginAccounts[0]
   )
   const { symbols } = useMarketList()
 

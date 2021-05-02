@@ -120,10 +120,7 @@ export default function Alerts() {
         <FloatingElement className="p-7 !overflow-visible">
           <ElementTitle>Select Margin Account</ElementTitle>
           {marginAccounts.length ? (
-            <MarginAccountSelect
-              value={marginAccounts[0]}
-              onChange={setSelectedMarginAccount}
-            />
+            <MarginAccountSelect onChange={setSelectedMarginAccount} />
           ) : (
             <div className=" text-base font-thin">
               Connect your wallet and deposit funds to create a margin account.

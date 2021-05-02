@@ -172,10 +172,7 @@ export default function AlertsModal({ isOpen, onClose }) {
               {marginAccounts.length > 1 ? (
                 <div className="pb-4">
                   <div className={`text-th-fgd-1 pb-2`}>Margin Account</div>
-                  <MarginAccountSelect
-                    value={marginAccounts[0]}
-                    onChange={setSelectedMarginAccount}
-                  />
+                  <MarginAccountSelect onChange={setSelectedMarginAccount} />
                 </div>
               ) : null}
               <div className="pb-4">
