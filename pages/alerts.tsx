@@ -119,10 +119,16 @@ export default function Alerts() {
       <div className="min-h-screen w-full md:max-w-xl mx-auto px-4 sm:px-6 sm:py-1 md:px-8 md:py-1 lg:px-12 mt-4">
         <FloatingElement className="p-7 !overflow-visible">
           <ElementTitle>Select Margin Account</ElementTitle>
-          <MarginAccountSelect
-            value={marginAccounts[0]}
-            onChange={setSelectedMarginAccount}
-          />
+          {marginAccounts.length ? (
+            <MarginAccountSelect
+              value={marginAccounts[0]}
+              onChange={setSelectedMarginAccount}
+            />
+          ) : (
+            <div className=" text-base font-thin">
+              Connect your wallet and deposit funds to create a margin account.
+            </div>
+          )}
           <ElementTitle className="pt-3">Liquidation Alert</ElementTitle>
           <div className="mb-4 text-base font-thin">
             You will receive an alert when your maintenance collateral ratio is
