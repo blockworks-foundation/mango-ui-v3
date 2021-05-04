@@ -18,8 +18,8 @@ import { notify } from '../utils/notifications'
 export const ENDPOINTS: EndpointInfo[] = [
   {
     name: 'mainnet-beta',
-    url: 'https://vip-api.mainnet-beta.solana.com/',
-    websocket: 'https://api.mainnet-beta.solana.com/',
+    url: 'https://mango.rpcpool.com/',
+    websocket: 'https://mango.rpcpool.com/',
     custom: false,
   },
   {
