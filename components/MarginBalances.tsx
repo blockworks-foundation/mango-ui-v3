@@ -22,6 +22,9 @@ export default function MarginBalances() {
   const selectedMarginAccount = useMangoStore(
     (s) => s.selectedMarginAccount.current
   )
+  const loadingMarginAccount = useMangoStore(
+    (s) => s.selectedMarginAccount.initialLoad
+  )
   const connected = useMangoStore((s) => s.wallet.connected)
   const { symbols } = useMarketList()
 
@@ -148,14 +151,16 @@ export default function MarginBalances() {
           <Button
             onClick={() => setShowDepositModal(true)}
             className="w-1/2"
-            disabled={!connected}
+            disabled={!connected || loadingMarginAccount}
           >
             <span>Deposit</span>
           </Button>
           <Button
             onClick={() => setShowWithdrawModal(true)}
             className="ml-4 w-1/2"
-            disabled={!connected || !selectedMarginAccount}
+            disabled={
+              !connected || !selectedMarginAccount || loadingMarginAccount
+            }
           >
             <span>Withdraw</span>
           </Button>

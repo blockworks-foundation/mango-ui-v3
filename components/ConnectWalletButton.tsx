@@ -11,15 +11,23 @@ const StyledWalletTypeLabel = styled.div`
 
 const ConnectWalletButton = () => {
   const wallet = useMangoStore((s) => s.wallet.current)
+  const set = useMangoStore((s) => s.set)
   const [savedProviderUrl] = useLocalStorageState(
     'walletProvider',
     DEFAULT_PROVIDER.url
   )
 
+  const handleWalletConect = () => {
+    wallet.connect()
+    set((state) => {
+      state.selectedMarginAccount.initialLoad = true
+    })
+  }
+
   return (
     <div className="flex justify-between border border-th-primary rounded-md h-11 w-48">
       <button
-        onClick={() => wallet.connect()}
+        onClick={handleWalletConect}
         disabled={!wallet}
         className="text-th-primary hover:text-th-fgd-1 hover:bg-th-primary focus:outline-none disabled:text-th-fgd-4 disabled:cursor-wait rounded-r-none"
       >

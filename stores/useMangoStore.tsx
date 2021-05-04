@@ -94,6 +94,7 @@ interface MangoStore extends State {
   marginAccounts: MarginAccount[]
   selectedMarginAccount: {
     current: MarginAccount | null
+    initialLoad: boolean
   }
   tradeForm: {
     side: 'buy' | 'sell'
@@ -154,6 +155,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
   marginAccounts: [],
   selectedMarginAccount: {
     current: null,
+    initialLoad: false,
   },
   tradeForm: {
     side: 'buy',
@@ -224,6 +226,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
     async fetchMarginAccounts() {
       const connection = get().connection.current
       const mangoGroup = get().selectedMangoGroup.current
+      const selectedMarginAcount = get().selectedMarginAccount.current
       const wallet = get().wallet.current
       const cluster = get().connection.cluster
       const mangoClient = get().mangoClient
@@ -231,6 +234,12 @@ const useMangoStore = create<MangoStore>((set, get) => ({
       const set = get().set
 
       if (!wallet?.publicKey || !wallet.publicKey) return
+
+      if (!selectedMarginAcount) {
+        set((state) => {
+          state.selectedMarginAccount.initialLoad = true
+        })
+      }
 
       return mangoClient
         .getMarginAccountsForOwner(
@@ -243,6 +252,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
           if (marginAccounts.length > 0) {
             set((state) => {
               state.marginAccounts = marginAccounts
+              state.selectedMarginAccount.initialLoad = false
               if (state.selectedMarginAccount.current) {
                 state.selectedMarginAccount.current = marginAccounts.find(
                   (ma) =>

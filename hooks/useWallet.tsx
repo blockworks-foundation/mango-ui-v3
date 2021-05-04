@@ -95,9 +95,12 @@ export default function useWallet() {
     if (!wallet) return
     wallet.on('connect', async () => {
       console.log('connected wallet')
-      setMangoStore((state) => {
-        state.wallet.connected = true
-      })
+      sleep(500)
+      // wait for margin account before fetching trade history
+      await actions.fetchMarginAccounts()
+      actions.fetchWalletBalances()
+      actions.fetchMangoSrmAccounts()
+      actions.fetchTradeHistory()
       notify({
         message: 'Wallet connected',
         description:
@@ -106,12 +109,9 @@ export default function useWallet() {
           '...' +
           wallet.publicKey.toString().substr(-5),
       })
-      sleep(500)
-      // wait for margin account before fetching trade history
-      await actions.fetchMarginAccounts()
-      actions.fetchWalletBalances()
-      actions.fetchMangoSrmAccounts()
-      actions.fetchTradeHistory()
+      setMangoStore((state) => {
+        state.wallet.connected = true
+      })
     })
     wallet.on('disconnect', () => {
       console.log('disconnecting wallet')
