@@ -212,13 +212,10 @@ const useMangoStore = create<MangoStore>((set, get) => ({
           set((state) => {
             state.wallet.srmAccountsForOwner = usersMangoSrmAccounts
             const totalSrmDeposits = usersMangoSrmAccounts.reduce(
-              (prev, cur) => prev + cur.amount,
+              (prev, cur) => prev + nativeToUi(cur.amount, SRM_DECIMALS),
               0
             )
-            state.wallet.contributedSrm = nativeToUi(
-              totalSrmDeposits,
-              SRM_DECIMALS
-            )
+            state.wallet.contributedSrm = totalSrmDeposits
           })
         }
       }
