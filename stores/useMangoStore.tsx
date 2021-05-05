@@ -249,7 +249,6 @@ const useMangoStore = create<MangoStore>((set, get) => ({
           if (marginAccounts.length > 0) {
             set((state) => {
               state.marginAccounts = marginAccounts
-              state.selectedMarginAccount.initialLoad = false
               if (state.selectedMarginAccount.current) {
                 state.selectedMarginAccount.current = marginAccounts.find(
                   (ma) =>
@@ -262,12 +261,12 @@ const useMangoStore = create<MangoStore>((set, get) => ({
               }
             })
           }
+          set((state) => {
+            state.selectedMarginAccount.initialLoad = false
+          })
         })
         .catch((err) => {
-          console.error(
-            'Could not get margin accounts for user in effect ',
-            err
-          )
+          console.error('Could not get margin accounts for wallet', err)
         })
     },
     async fetchAllMangoGroups() {
