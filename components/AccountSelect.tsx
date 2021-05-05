@@ -14,7 +14,7 @@ type AccountSelectProps = {
   onSelectAccount: (x) => any
   getBalance?: (x) => any
   hideAddress?: boolean
-  symbols?: Array<{ [key: string]: string }>
+  symbols?: { [key: string]: string }
 }
 
 const AccountSelect = ({

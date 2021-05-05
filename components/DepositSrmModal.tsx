@@ -91,6 +91,7 @@ const DepositSrmModal = ({ isOpen, onClose }) => {
       </Modal.Header>
       <>
         <AccountSelect
+          symbols={{ SRM: srmMintAddress }}
           accounts={depositAccounts}
           selectedAccount={selectedAccount}
           onSelectAccount={setSelectedAccount}
@@ -116,7 +117,11 @@ const DepositSrmModal = ({ isOpen, onClose }) => {
           />
         </div>
         <div className={`mt-5 flex justify-center`}>
-          <Button onClick={handleDeposit} className="w-full">
+          <Button
+            onClick={handleDeposit}
+            className="w-full"
+            disabled={!selectedAccount}
+          >
             <div className={`flex items-center justify-center`}>
               {submitting && <Loading />}
               {`Deposit ${inputAmount ? inputAmount : ''} SRM
