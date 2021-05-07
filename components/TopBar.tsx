@@ -17,6 +17,7 @@ import { WalletIcon } from './icons'
 import useMangoStore from '../stores/useMangoStore'
 import ConnectWalletButton from './ConnectWalletButton'
 import { copyToClipboard } from '../utils'
+import AlertsList from './AlertsList'
 
 const Code = styled.code`
   border: 1px solid hsla(0, 0%, 39.2%, 0.2);
@@ -57,7 +58,7 @@ const TopBar = () => {
 
   return (
     <nav className={`bg-th-bkg-2`}>
-      <div className={`px-4 sm:px-6 lg:px-8`}>
+      <div className={`px-4 md:px-6 lg:px-8`}>
         <div className={`flex justify-between h-16`}>
           <div className={`flex`}>
             <div className={`flex-shrink-0 flex items-center`}>
@@ -67,7 +68,7 @@ const TopBar = () => {
                 alt="next"
               />
             </div>
-            <div className={`hidden sm:flex sm:space-x-8 sm:ml-4 py-2`}>
+            <div className={`hidden md:flex md:space-x-6 md:ml-4 py-2`}>
               <MenuItem href="/">Trade</MenuItem>
               <MenuItem href="/stats">Stats</MenuItem>
               <MenuItem href="/alerts">Alerts</MenuItem>
@@ -76,11 +77,16 @@ const TopBar = () => {
           </div>
           <div className="flex">
             <div className="flex items-center">
-              {asPath === '/' ? <UiLock /> : null}
-              <div className="flex items-center justify-center rounded-full bg-th-bkg-3 w-8 h-8 mr-2">
+              <div className="pl-3">{asPath === '/' ? <UiLock /> : null}</div>
+              <div className="pl-3">
                 <ThemeSwitch />
               </div>
-              <div className="hidden sm:ml-4 sm:block">
+              {connected ? (
+                <div className="pl-3">
+                  <AlertsList />
+                </div>
+              ) : null}
+              <div className="hidden md:ml-4 md:block">
                 {connected && wallet?.publicKey ? (
                   <Menu>
                     {({ open }) => (
@@ -125,7 +131,7 @@ const TopBar = () => {
                 )}
               </div>
             </div>
-            <div className={`-mr-2 flex items-center sm:hidden`}>
+            <div className={`-mr-2 ml-2 flex items-center md:hidden`}>
               <button
                 type="button"
                 className={`inline-flex items-center justify-center p-2 rounded-md text-black dark:text-white hover:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-mango-orange`}
@@ -145,7 +151,7 @@ const TopBar = () => {
         </div>
       </div>
       <div
-        className={`${showMenu ? `visible` : `hidden`} sm:hidden`}
+        className={`${showMenu ? `visible` : `hidden`} md:hidden`}
         id="mobile-menu"
       >
         <div
@@ -159,7 +165,7 @@ const TopBar = () => {
           {connected && wallet?.publicKey ? (
             <button
               className="block text-th-fgd-1 text-base items-center pl-3 pr-4 py-2 font-normal
-                  sm:inline-flex sm:ml-4 sm:px-1 sm:py-0 border-l-4 sm:border-l-0 sm:border-b-2 hover:text-th-primary
+                  md:inline-flex md:ml-4 md:px-1 md:py-0 border-l-4 md:border-l-0 md:border-b-2 hover:text-th-primary
                   border-transparent hover:border-th-primary rounded-none outline-none focus:outline-none"
               onClick={() => wallet.disconnect()}
             >
@@ -168,7 +174,7 @@ const TopBar = () => {
           ) : (
             <button
               className="block text-th-fgd-1 text-base items-center pl-3 pr-4 py-2 font-normal
-                  sm:inline-flex sm:ml-4 sm:px-1 sm:py-0 border-l-4 sm:border-l-0 sm:border-b-2 hover:text-th-primary
+                  md:inline-flex md:ml-4 md:px-1 md:py-0 border-l-4 md:border-l-0 md:border-b-2 hover:text-th-primary
                   border-transparent hover:border-th-primary rounded-none outline-none focus:outline-none"
               onClick={() => wallet.connect()}
             >

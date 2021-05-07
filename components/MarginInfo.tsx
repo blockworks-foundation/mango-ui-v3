@@ -177,12 +177,13 @@ export default function MarginInfo() {
           disabled={!connected}
           onClick={() => setOpenAlertModal(true)}
         >
-          Set Liquidation Alert
+          Create Liquidation Alert
         </Button>
         {openAlertModal ? (
           <AlertsModal
             isOpen={openAlertModal}
             onClose={() => setOpenAlertModal(false)}
+            marginAccount={selectedMarginAccount}
           />
         ) : null}
       </>

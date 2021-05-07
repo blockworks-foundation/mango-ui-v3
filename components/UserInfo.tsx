@@ -33,12 +33,12 @@ const UserInfoTabs = ({ activeTab, setActiveTab }) => {
       </div>
       <div className={`hidden sm:block`}>
         <div className={`border-b border-th-fgd-4`}>
-          <nav className={`-mb-px flex space-x-8`} aria-label="Tabs">
+          <nav className={`-mb-px flex space-x-6`} aria-label="Tabs">
             {TABS.map((tabName) => (
               <a
                 key={tabName}
                 onClick={() => handleTabChange(tabName)}
-                className={`whitespace-nowrap py-4 px-1 border-b-2 font-semibold cursor-pointer transition-all duration-500
+                className={`whitespace-nowrap py-4 px-1 border-b-2 font-semibold cursor-pointer default-transition hover:opacity-100
                   ${
                     activeTab === tabName
                       ? `border-th-primary text-th-primary`

@@ -1,5 +1,5 @@
-import { FunctionComponent, ReactNode } from 'react'
-import { Listbox } from '@headlessui/react'
+import { Fragment, FunctionComponent, ReactNode } from 'react'
+import { Listbox, Transition } from '@headlessui/react'
 import Tooltip from './Tooltip'
 
 type DropMenuProps = {
@@ -33,9 +33,19 @@ const DropMenu: FunctionComponent<DropMenuProps> = ({
                 button
               )}
             </Listbox.Button>
-            {open ? (
+
+            <Transition
+              show={open}
+              as={Fragment}
+              enter="transition ease-out duration-200"
+              enterFrom="opacity-0 translate-y-1"
+              enterTo="opacity-100 translate-y-0"
+              leave="transition ease-in duration-150"
+              leaveFrom="opacity-100 translate-y-0"
+              leaveTo="opacity-0 translate-y-1"
+            >
               <Listbox.Options
-                className={`z-20 p-1 absolute right-0 top-11 bg-th-bkg-1 divide-y divide-th-bkg-3 shadow-lg outline-none rounded-md`}
+                className={`absolute z-10 mt-3 right-0 md:transform md:-translate-x-1/2 md:left-1/2 w-24 bg-th-bkg-1 divide-y divide-th-bkg-3 shadow-lg outline-none rounded-md`}
               >
                 {options.map((option) => (
                   <Listbox.Option key={option.name} value={option.name}>
@@ -43,10 +53,10 @@ const DropMenu: FunctionComponent<DropMenuProps> = ({
                       <div
                         className={`p-2 hover:bg-th-bkg-2 hover:cursor-pointer tracking-wider ${
                           selected && `text-th-primary`
-                        } ${option.icon && `flex flex-row items-center`}`}
+                        } ${option.icon && `flex items-center`}`}
                       >
                         {option.icon ? (
-                          <div className="mr-2 w-5 h-5">{option.icon}</div>
+                          <div className="mr-2">{option.icon}</div>
                         ) : null}
                         {option.name}
                       </div>
@@ -54,7 +64,7 @@ const DropMenu: FunctionComponent<DropMenuProps> = ({
                   </Listbox.Option>
                 ))}
               </Listbox.Options>
-            ) : null}
+            </Transition>
           </>
         )}
       </Listbox>

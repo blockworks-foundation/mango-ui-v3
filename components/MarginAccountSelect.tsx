@@ -1,9 +1,8 @@
 import { MarginAccount } from '@blockworks-foundation/mango-client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import useMangoStore from '../stores/useMangoStore'
 import Select from './Select'
 import { abbreviateAddress } from '../utils'
-import useMarketList from '../hooks/useMarketList'
 
 type MarginAccountSelectProps = {
   className?: string
@@ -22,7 +21,12 @@ const MarginAccountSelect = ({
   const [selectedMarginAccount, setSelectedMarginAccount] = useState(
     value || marginAccounts[0]
   )
-  const { symbols } = useMarketList()
+
+  useEffect(() => {
+    if (value) {
+      setSelectedMarginAccount(value)
+    }
+  }, [value])
 
   const handleSelectMarginAccount = (value) => {
     const marginAccount = marginAccounts.find(
@@ -39,12 +43,7 @@ const MarginAccountSelect = ({
       disabled={disabled}
       value={
         <div className="text-left">
-          {Object.keys(symbols).map((symbol, index) =>
-            index !== 0 ? `/${symbol}` : symbol
-          )}
-          <div className="text-xs text-th-fgd-4">
-            {abbreviateAddress(selectedMarginAccount?.publicKey)}
-          </div>
+          {abbreviateAddress(selectedMarginAccount?.publicKey)}
         </div>
       }
       onChange={handleSelectMarginAccount}
@@ -52,14 +51,17 @@ const MarginAccountSelect = ({
       className={className}
     >
       {marginAccounts.length ? (
-        marginAccounts.map((ma, index) => (
-          <Select.Option key={index} value={ma.publicKey.toString()}>
-            BTC/ETH/USDT
-            <div className="text-xs text-th-fgd-4">
+        marginAccounts
+          .slice()
+          .sort(
+            (a, b) =>
+              (a.publicKey.toBase58() > b.publicKey.toBase58() && 1) || -1
+          )
+          .map((ma, index) => (
+            <Select.Option key={index} value={ma.publicKey.toString()}>
               {abbreviateAddress(ma.publicKey)}
-            </div>
-          </Select.Option>
-        ))
+            </Select.Option>
+          ))
       ) : (
         <Select.Option value className="text-th-fgd-4">
           No Margin Accounts Found

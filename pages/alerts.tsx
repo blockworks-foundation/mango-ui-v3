@@ -1,287 +1,326 @@
-import React, { useState } from 'react'
-import { RadioGroup } from '@headlessui/react'
-import PhoneInput from 'react-phone-input-2'
-import 'react-phone-input-2/lib/plain.css'
-import Button from '../components/Button'
-import FloatingElement from '../components/FloatingElement'
-import Input from '../components/Input'
-import { ElementTitle } from '../components/styles'
-import TopBar from '../components/TopBar'
+import { useEffect, useState } from 'react'
 import useMangoStore from '../stores/useMangoStore'
-import { notify } from '../utils/notifications'
-import Modal from '../components/Modal'
-import Loading from '../components/Loading'
-import MarginAccountSelect from '../components/MarginAccountSelect'
+import dayjs from 'dayjs'
+import {
+  BadgeCheckIcon,
+  BellIcon,
+  InformationCircleIcon,
+  LinkIcon,
+  PlusCircleIcon,
+  TrashIcon,
+} from '@heroicons/react/outline'
+import { RadioGroup } from '@headlessui/react'
+import useAlertsStore from '../stores/useAlertsStore'
+import useLocalStorageState from '../hooks/useLocalStorageState'
+import TopBar from '../components/TopBar'
+import Button, { LinkButton } from '../components/Button'
+import AlertsModal from '../components/AlertsModal'
+import AlertItem from '../components/AlertItem'
+import PageBodyContainer from '../components/PageBodyContainer'
+import { abbreviateAddress } from '../utils'
+
+const relativeTime = require('dayjs/plugin/relativeTime')
+dayjs.extend(relativeTime)
+
+const TABS = ['Active', 'Triggered']
 
 export default function Alerts() {
   const connected = useMangoStore((s) => s.wallet.connected)
   const marginAccounts = useMangoStore((s) => s.marginAccounts)
-  const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  const [activeTab, setActiveTab] = useState(TABS[0])
+  const [openAlertModal, setOpenAlertModal] = useState(false)
+  const [reactivateAlertData, setReactivateAlertData] = useState(null)
+  const [acc, setAcc] = useState('all')
+  const [filteredActiveAlerts, setFilteredActiveAlerts] = useState([])
+  const [filteredTriggeredAlerts, setFilteredTriggeredAlerts] = useState([])
+  const activeAlerts = useAlertsStore((s) => s.activeAlerts)
+  const triggeredAlerts = useAlertsStore((s) => s.triggeredAlerts)
+  const loading = useAlertsStore((s) => s.loading)
+  const [clearedAlerts, setClearedAlerts] = useState([])
+  const [clearAlertsTimestamp, setClearAlertsTimestamp] = useLocalStorageState(
+    'clearAlertsTimestamp'
+  )
 
-  const [selectedMarginAccount, setSelectedMarginAccount] = useState<any>(null)
-  const [collateralRatioThresh, setCollateralRatioThresh] = useState(113)
-  const [alertProvider, setAlertProvider] = useState('sms')
-  const [phoneNumber, setPhoneNumber] = useState<any>({ phone: null })
-  const [email, setEmail] = useState<string>('')
-  const [tgCode, setTgCode] = useState<string>('')
-  const [submitting, setSubmitting] = useState(false)
+  useEffect(() => {
+    if (!connected || loading) {
+      setAcc('all')
+    }
+  }, [connected, loading])
 
-  const resetForm = () => {
-    setAlertProvider('sms')
-    setPhoneNumber({ phone: null })
-    setEmail('')
-    setTgCode('')
-    setCollateralRatioThresh(113)
+  useEffect(() => {
+    if (clearAlertsTimestamp && !loading) {
+      const filterByTimestamp = triggeredAlerts.filter(
+        (alert) =>
+          alert.triggeredTimestamp > clearAlertsTimestamp &&
+          Object.keys(alert).includes('triggeredTimestamp')
+      )
+      setClearedAlerts(filterByTimestamp)
+    }
+  }, [clearAlertsTimestamp, loading])
+
+  const handleTabChange = (tabName) => {
+    setActiveTab(tabName)
   }
 
-  async function onSubmit() {
-    if (!connected) {
-      notify({
-        message: 'Please connect wallet',
-        type: 'error',
-      })
-      return
-    } else if (!selectedMarginAccount) {
-      notify({
-        message: 'Please select a margin account',
-        type: 'error',
-      })
-      return
-    } else if (alertProvider === 'sms' && !phoneNumber.phone) {
-      notify({
-        message: 'Please provide phone number',
-        type: 'error',
-      })
-      return
-    } else if (alertProvider === 'mail' && !email) {
-      notify({
-        message: 'Please provide e-mail',
-        type: 'error',
-      })
-      return
+  const handleAccountRadioGroupChange = (val) => {
+    setAcc(val)
+    if (val !== 'all') {
+      const showActive = activeAlerts.filter(
+        (alert) => alert.acc.toString() === val
+      )
+      const showTriggered = clearAlertsTimestamp
+        ? clearedAlerts.filter((alert) => alert.acc.toString() === val)
+        : triggeredAlerts.filter((alert) => alert.acc.toString() === val)
+      setFilteredActiveAlerts(showActive)
+      setFilteredTriggeredAlerts(showTriggered)
     }
-    setSubmitting(true)
-    const fetchUrl = `https://mango-margin-call.herokuapp.com/alerts`
-    const body = {
-      mangoGroupPk: selectedMangoGroup.publicKey.toString(),
-      marginAccountPk: selectedMarginAccount.publicKey.toString(),
-      collateralRatioThresh,
-      alertProvider,
-      phoneNumber,
-      email,
-    }
-    const headers = { 'Content-Type': 'application/json' }
-    fetch(fetchUrl, {
-      method: 'POST',
-      headers: headers,
-      body: JSON.stringify(body),
-    })
-      .then((response: any) => {
-        if (!response.ok) {
-          throw response
-        }
-        return response.json()
-      })
-      .then((json: any) => {
-        if (alertProvider === 'tg') {
-          setTgCode(json.code)
-        } else {
-          notify({
-            message: 'You have succesfully saved your alert',
-            type: 'success',
-          })
-          resetForm()
-        }
-      })
-      .catch((err) => {
-        if (typeof err.text === 'function') {
-          err.text().then((errorMessage: string) => {
-            notify({
-              message: errorMessage,
-              type: 'error',
-            })
-          })
-        } else {
-          notify({
-            message: 'Something went wrong',
-            type: 'error',
-          })
-        }
-      })
-      .finally(() => {
-        setSubmitting(false)
-      })
   }
 
   return (
-    <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all `}>
+    <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
       <TopBar />
-      <div className="min-h-screen w-full md:max-w-xl mx-auto px-4 sm:px-6 sm:py-1 md:px-8 md:py-1 lg:px-12 mt-4">
-        <FloatingElement className="p-7 !overflow-visible">
-          <ElementTitle>Select Margin Account</ElementTitle>
-          {marginAccounts.length ? (
-            <MarginAccountSelect onChange={setSelectedMarginAccount} />
+      <PageBodyContainer>
+        <div className="flex flex-col sm:flex-row items-center justify-between pt-8 pb-3 sm:pb-6 md:pt-10">
+          <h1 className={`text-th-fgd-1 text-2xl font-semibold`}>Alerts</h1>
+          <div className="flex flex-col-reverse justify-between w-full pt-4 sm:pt-0 sm:justify-end sm:flex-row">
+            {marginAccounts.length > 1 ? (
+              <RadioGroup
+                value={acc.toString()}
+                onChange={(val) => handleAccountRadioGroupChange(val)}
+                className="flex border border-th-fgd-4 rounded-md w-full mt-3 sm:mt-0 sm:w-80 h-full text-xs h-8"
+              >
+                <RadioGroup.Option
+                  value="all"
+                  className="flex-1 focus:outline-none"
+                >
+                  {({ checked }) => (
+                    <button
+                      className={`${
+                        checked ? 'bg-th-bkg-3 rounded-l-md' : ''
+                      } font-normal text-th-fgd-1 text-center py-1.5 h-full w-full rounded-none hover:bg-th-bkg-3 focus:outline-none`}
+                    >
+                      All
+                    </button>
+                  )}
+                </RadioGroup.Option>
+                {marginAccounts
+                  .slice()
+                  .sort(
+                    (a, b) =>
+                      (a.publicKey.toBase58() > b.publicKey.toBase58() && 1) ||
+                      -1
+                  )
+                  .map((acc, i) => (
+                    <RadioGroup.Option
+                      value={acc.publicKey.toString()}
+                      className="focus:outline-none flex-1"
+                      key={i}
+                    >
+                      {({ checked }) => (
+                        <button
+                          className={`${
+                            checked ? 'bg-th-bkg-3' : ''
+                          } font-normal text-th-fgd-1  text-center py-1.5 h-full w-full rounded-none ${
+                            i === marginAccounts.length - 1
+                              ? 'rounded-r-md'
+                              : null
+                          } border-l border-th-fgd-4 hover:bg-th-bkg-3 focus:outline-none`}
+                        >
+                          {abbreviateAddress(acc.publicKey)}
+                        </button>
+                      )}
+                    </RadioGroup.Option>
+                  ))}
+              </RadioGroup>
+            ) : null}
+            <Button
+              className="text-xs flex items-center justify-center sm:ml-2 pt-0 pb-0 h-8 pl-3 pr-3"
+              disabled={!connected}
+              onClick={() => setOpenAlertModal(true)}
+            >
+              <div className="flex items-center">
+                <PlusCircleIcon className="h-5 w-5 mr-1.5" />
+                New
+              </div>
+            </Button>
+          </div>
+        </div>
+        <div className="p-6 rounded-lg bg-th-bkg-2">
+          {loading ? (
+            <>
+              <div className="h-12 w-full animate-pulse rounded-lg bg-th-bkg-3 mb-2" />
+              <div className="h-24 w-full animate-pulse rounded-lg bg-th-bkg-3 mb-2" />
+              <div className="h-24 w-full animate-pulse rounded-lg bg-th-bkg-3 mb-2" />
+              <div className="h-24 w-full animate-pulse rounded-lg bg-th-bkg-3" />
+            </>
+          ) : connected ? (
+            <>
+              <div className="border-b border-th-fgd-4 mb-4">
+                <nav className={`-mb-px flex space-x-6`} aria-label="Tabs">
+                  {TABS.map((tabName) => (
+                    <a
+                      key={tabName}
+                      onClick={() => handleTabChange(tabName)}
+                      className={`whitespace-nowrap pb-4 px-1 border-b-2 font-semibold cursor-pointer default-transition hover:opacity-100
+                  ${
+                    activeTab === tabName
+                      ? `border-th-primary text-th-primary`
+                      : `border-transparent text-th-fgd-4 hover:text-th-primary`
+                  }
+                `}
+                    >
+                      {tabName}
+                    </a>
+                  ))}
+                </nav>
+              </div>
+              <TabContent
+                acc={acc}
+                activeTab={activeTab}
+                activeAlerts={activeAlerts}
+                clearAlertsTimestamp={clearAlertsTimestamp}
+                clearedAlerts={clearedAlerts}
+                filteredActiveAlerts={filteredActiveAlerts}
+                filteredTriggeredAlerts={filteredTriggeredAlerts}
+                setClearAlertsTimestamp={setClearAlertsTimestamp}
+                setReactivateAlertData={setReactivateAlertData}
+                setOpenAlertModal={setOpenAlertModal}
+                triggeredAlerts={triggeredAlerts}
+              />
+            </>
           ) : (
-            <div className=" text-base font-thin">
-              Connect your wallet and deposit funds to create a margin account.
+            <div className="flex flex-col items-center text-th-fgd-1 px-4 pb-2 rounded-lg">
+              <LinkIcon className="w-6 h-6 mb-1 text-th-primary" />
+              <div className="font-bold text-lg pb-1">Connect Wallet</div>
+              <p className="mb-0 text-center">
+                Connect your wallet to view and create liquidation alerts.
+              </p>
             </div>
           )}
-          <ElementTitle className="pt-3">Liquidation Alert</ElementTitle>
-          <div className="mb-4 text-base font-thin">
-            You will receive an alert when your maintenance collateral ratio is
-            at or below the specified ratio below
-          </div>
-          <Input.Group>
-            <Input
-              type="number"
-              value={collateralRatioThresh}
-              onChange={(e) => setCollateralRatioThresh(e.target.value)}
-              prefix={'Ratio'}
-              suffix="%"
-            />
-          </Input.Group>
-
-          <RadioGroup
-            value={alertProvider}
-            onChange={(val) => setAlertProvider(val)}
-            className="flex mt-4 border border-th-fgd-4"
-          >
-            <RadioGroup.Option
-              value="sms"
-              className="flex-1 outline-none focus:outline-none"
-            >
-              {({ checked }) => (
-                <button
-                  className={`${
-                    checked ? 'bg-th-primary' : ''
-                  } text-th-fgd-1  text-center py-1.5 w-full rounded-none border-r border-th-fgd-4`}
-                >
-                  SMS
-                </button>
-              )}
-            </RadioGroup.Option>
-            <RadioGroup.Option
-              value="mail"
-              className="outline-none focus:outline-none flex-1"
-            >
-              {({ checked }) => (
-                <button
-                  className={`${
-                    checked ? 'bg-th-primary' : ''
-                  } text-th-fgd-1  text-center py-1.5 w-full rounded-none border-r border-th-fgd-4`}
-                >
-                  E-MAIL
-                </button>
-              )}
-            </RadioGroup.Option>
-            <RadioGroup.Option
-              value="tg"
-              className="outline-none focus:outline-none flex-1"
-            >
-              {({ checked }) => (
-                <button
-                  className={`${
-                    checked ? 'bg-th-primary' : ''
-                  } text-th-fgd-1  text-center py-1.5 w-full rounded-none`}
-                >
-                  TELEGRAM
-                </button>
-              )}
-            </RadioGroup.Option>
-          </RadioGroup>
-          <div className="py-4">
-            {alertProvider === 'sms' ? (
-              <PhoneInput
-                containerClass="w-full"
-                inputClass="!w-full !bg-th-bkg-1 !rounded !h-10 !text-th-fgd-1 
-                !border !border-th-fgd-4"
-                buttonClass="!bg-th-bkg-2 !border !border-th-fgd-4 !pl-1 !hover:bg-th-bkg-2"
-                dropdownClass="!bg-th-bkg-2 !border !border-th-fgd-4 !pl-1 thin-scroll"
-                country="us"
-                inputProps={{
-                  name: 'phone',
-                  required: true,
-                  autoFocus: true,
-                }}
-                onChange={(val) => setPhoneNumber({ phone: val, code: '' })}
-              />
-            ) : null}
-            {alertProvider === 'mail' ? (
-              <Input.Group>
-                <Input
-                  prefix={'Email'}
-                  value={email}
-                  type="mail"
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </Input.Group>
-            ) : null}
-            {alertProvider === 'tg' ? (
-              <>
-                <p>Instructions</p>
-                <ol className="list-decimal pl-8">
-                  <li>Connect wallet</li>
-                  <li>Click the Save alert button</li>
-                  <li>Follow instructions in the dialog</li>
-                </ol>
-              </>
-            ) : null}
-          </div>
-          <Button
-            disabled={!connected}
-            onClick={onSubmit}
-            className="w-full mb-2"
-          >
-            {connected ? (
-              <div className="flex justify-center">
-                {submitting ? <Loading /> : 'Save Alert'}
-              </div>
-            ) : (
-              'Connect Wallet To Save'
-            )}
-          </Button>
-        </FloatingElement>
-      </div>
-      {tgCode !== '' ? (
-        <TelegramModal
-          isOpen={tgCode !== ''}
-          onClose={() => setTgCode('')}
-          tgCode={tgCode}
+        </div>
+      </PageBodyContainer>
+      {openAlertModal ? (
+        <AlertsModal
+          alert={reactivateAlertData}
+          isOpen={openAlertModal}
+          onClose={() => setOpenAlertModal(false)}
         />
       ) : null}
     </div>
   )
 }
 
-const TelegramModal = ({ tgCode, isOpen, onClose }) => {
-  return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <div className="text-th-fgd-1 p-6 pt-0">
-        <div className="w-full text-center text-xl">
-          Claim Alert in Telegram
+const TabContent = ({
+  acc,
+  activeTab,
+  activeAlerts,
+  clearedAlerts,
+  clearAlertsTimestamp,
+  filteredActiveAlerts,
+  filteredTriggeredAlerts,
+  setClearAlertsTimestamp,
+  setOpenAlertModal,
+  setReactivateAlertData,
+  triggeredAlerts,
+}) => {
+  switch (activeTab) {
+    case 'Active':
+      return activeAlerts.length === 0 ? (
+        <div className="flex flex-col items-center text-th-fgd-1 px-4 pb-2 rounded-lg">
+          <BellIcon className="w-6 h-6 mb-1 text-th-primary" />
+          <div className="font-bold text-lg pb-1">No Alerts Found</div>
+          <p className="mb-0 text-center">
+            Get notified when your account is in danger of liquidation.
+          </p>
         </div>
-        <div className="rounded border mt-4 border-th-bkg-3 p-4 bg-th-bkg-3">
-          <ol className="ml-6 list-decimal space-y-2 text-base font-thin">
-            <li>
-              Please copy this code -{' '}
-              <span className="italic font-black">{tgCode}</span>
-            </li>
-            <li>
-              Visit this telegram channel -{' '}
-              <a
-                target="_blank"
-                rel="noopener noreferrer"
-                href="https://t.me/mango_alerts_bot"
-                className="text-th-primary"
-              >
-                https://t.me/mango_alerts_bot
-              </a>
-            </li>
-            <li>Paste the code and send</li>
-            <li>This alert can be claimed within 15 minutes</li>
-          </ol>
+      ) : (
+        <>
+          <div className="flex items-center pb-3">
+            <InformationCircleIcon className="flex-shrink-0 h-4 w-4 mr-1.5 text-th-fgd-4" />
+            <p className="mb-0 text-th-fgd-4">
+              Active alerts will only trigger once.
+            </p>
+          </div>
+          {acc === 'all'
+            ? activeAlerts.map((alert) => (
+                <AlertItem alert={alert} key={alert.timestamp} isLarge />
+              ))
+            : filteredActiveAlerts.map((alert) => (
+                <AlertItem alert={alert} key={alert.timestamp} isLarge />
+              ))}
+        </>
+      )
+    case 'Triggered':
+      return (
+        <div>
+          {triggeredAlerts.length === 0 ||
+          (clearAlertsTimestamp && clearedAlerts.length === 0) ||
+          (acc !== 'all' && filteredTriggeredAlerts.length === 0) ? (
+            <div className="flex flex-col items-center text-th-fgd-1 px-4 pb-2 rounded-lg">
+              <BadgeCheckIcon className="w-6 h-6 mb-1 text-th-green" />
+              <div className="font-bold text-lg pb-1">Smooth Sailing</div>
+              <p className="mb-0 text-center">
+                None of your active liquidation alerts have been triggered.
+              </p>
+            </div>
+          ) : (
+            <>
+              <div className="flex justify-between pb-3">
+                <div className="flex items-center pr-2">
+                  <InformationCircleIcon className="flex-shrink-0 h-4 w-4 mr-1.5 text-th-fgd-4" />
+                  <p className="mb-0 text-th-fgd-4">
+                    Re-activate alerts you want to receive again.
+                  </p>
+                </div>
+                <LinkButton
+                  onClick={() =>
+                    setClearAlertsTimestamp(
+                      triggeredAlerts[0].triggeredTimestamp
+                    )
+                  }
+                >
+                  <div className="flex items-center">
+                    <TrashIcon className="h-4 w-4 mr-1.5" />
+                    Clear
+                  </div>
+                </LinkButton>
+              </div>
+              {acc === 'all'
+                ? clearAlertsTimestamp
+                  ? clearedAlerts.map((alert) => (
+                      <AlertItem
+                        alert={alert}
+                        key={alert.timestamp}
+                        setReactivateAlertData={setReactivateAlertData}
+                        setOpenAlertModal={setOpenAlertModal}
+                        isLarge
+                      />
+                    ))
+                  : triggeredAlerts.map((alert) => (
+                      <AlertItem
+                        alert={alert}
+                        key={alert.timestamp}
+                        setReactivateAlertData={setReactivateAlertData}
+                        setOpenAlertModal={setOpenAlertModal}
+                        isLarge
+                      />
+                    ))
+                : filteredTriggeredAlerts.map((alert) => (
+                    <AlertItem
+                      alert={alert}
+                      key={alert.timestamp}
+                      setReactivateAlertData={setReactivateAlertData}
+                      setOpenAlertModal={setOpenAlertModal}
+                      isLarge
+                    />
+                  ))}
+            </>
+          )}
         </div>
-      </div>
-    </Modal>
-  )
+      )
+    default:
+      return activeAlerts.map((alert) => (
+        <AlertItem alert={alert} key={alert.timestamp} />
+      ))
+  }
 }

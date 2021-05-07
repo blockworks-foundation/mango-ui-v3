@@ -15,7 +15,7 @@ const UiLock = ({ className = '' }) => {
   }
 
   return (
-    <>
+    <div className="flex">
       {!uiLocked ? (
         <Transition
           appear={true}
@@ -26,28 +26,29 @@ const UiLock = ({ className = '' }) => {
           leave="transition-opacity duration-500"
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
+          className="pr-3"
         >
           <ResetLayout />
         </Transition>
       ) : null}
-      <div className={`${className} flex relative mr-4`}>
+      <div className={`${className} flex relative cursor-pointer`}>
         <Tooltip
           content={uiLocked ? 'Unlock Layout' : 'Lock Layout'}
           className="text-xs py-1"
         >
           <div
             onClick={handleClick}
-            className="flex items-center justify-center rounded-full bg-th-bkg-3 w-8 h-8 hover:text-th-primary focus:outline-none"
+            className="flex items-center justify-center rounded-full bg-th-bkg-3 w-8 h-8 default-transition hover:text-th-primary focus:outline-none"
           >
             {uiLocked ? (
-              <LockClosedIcon className="w-5 h-5" />
+              <LockClosedIcon className="w-4 h-4" />
             ) : (
-              <LockOpenIcon className="w-5 h-5 animate-bounce" />
+              <LockOpenIcon className="w-4 h-4 animate-bounce" />
             )}
           </div>
         </Tooltip>
       </div>
-    </>
+    </div>
   )
 }
 

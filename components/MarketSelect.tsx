@@ -23,7 +23,7 @@ const MarketSelect = () => {
   return (
     <div className="bg-th-bkg-3">
       <div className="flex justify-between items-center">
-        <div className="flex items-center py-2 px-4 sm:px-10">
+        <div className="flex items-center py-2 px-4 md:px-10">
           {Object.entries(spotMarkets).map(([name, address]) => (
             <div
               className={`flex px-2 py-1 mr-2 rounded-md cursor-pointer default-transition bg-th-bkg-2
@@ -42,10 +42,10 @@ const MarketSelect = () => {
             </div>
           ))}
         </div>
-        <div className="text-th-fgd-3 mr-10 text-xs">
+        <div className="mr-10 text-xs">
           <a
             href="https://old.mango.markets"
-            className="default-transition underline hover:text-th-primary hover:no-underline"
+            className="text-th-fgd-4 default-transition underline hover:text-th-primary hover:no-underline"
           >
             Use Previous Version
           </a>

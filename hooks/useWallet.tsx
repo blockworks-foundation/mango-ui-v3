@@ -2,6 +2,7 @@ import { useEffect, useMemo } from 'react'
 import Wallet from '@project-serum/sol-wallet-adapter'
 import useLocalStorageState from './useLocalStorageState'
 import useMangoStore from '../stores/useMangoStore'
+import useAlertsStore from '../stores/useAlertsStore'
 import { notify } from '../utils/notifications'
 import {
   PhantomWalletAdapter,
@@ -46,7 +47,10 @@ export default function useWallet() {
   } = useMangoStore((state) => state.wallet)
   const endpoint = useMangoStore((state) => state.connection.endpoint)
   const marginAccount = useMangoStore((s) => s.selectedMarginAccount.current)
+  const marginAccounts = useMangoStore((s) => s.marginAccounts)
+  const marginAccountsPublicKey = marginAccounts.map((acc) => acc.publicKey)
   const actions = useMangoStore((s) => s.actions)
+  const alertActions = useAlertsStore((s) => s.actions)
   const [savedProviderUrl, setSavedProviderUrl] = useLocalStorageState(
     'walletProvider',
     DEFAULT_PROVIDER.url
@@ -137,6 +141,12 @@ export default function useWallet() {
       })
     }
   }, [wallet, setMangoStore])
+
+  useEffect(() => {
+    if (connected && marginAccounts.length > 0) {
+      alertActions.loadAlerts(marginAccountsPublicKey)
+    }
+  }, [marginAccounts])
 
   useInterval(() => {
     if (connected && marginAccount) {

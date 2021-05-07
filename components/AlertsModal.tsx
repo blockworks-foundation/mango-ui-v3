@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, { FunctionComponent, useEffect, useState } from 'react'
+import { PublicKey } from '@solana/web3.js'
 import { RadioGroup } from '@headlessui/react'
 import {
-  InformationCircleIcon,
+  CheckCircleIcon,
   DuplicateIcon,
   ExclamationIcon,
+  InformationCircleIcon,
 } from '@heroicons/react/outline'
 import PhoneInput from 'react-phone-input-2'
 import 'react-phone-input-2/lib/plain.css'
@@ -11,6 +13,7 @@ import Button from './Button'
 import Input from './Input'
 import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
+import useAlertsStore from '../stores/useAlertsStore'
 import { notify } from '../utils/notifications'
 import { copyToClipboard } from '../utils'
 import Modal from './Modal'
@@ -19,22 +22,55 @@ import MarginAccountSelect from './MarginAccountSelect'
 import Tooltip from './Tooltip'
 import Select from './Select'
 
-export default function AlertsModal({ isOpen, onClose }) {
+interface AlertsModalProps {
+  marginAccount?: {
+    publicKey: PublicKey
+  }
+  alert?: {
+    alertProvider: string
+    collateralRatioThresh: number
+    acc: PublicKey
+  }
+  isOpen: boolean
+  onClose: () => void
+}
+
+const AlertsModal: FunctionComponent<AlertsModalProps> = ({
+  isOpen,
+  onClose,
+  alert,
+  marginAccount,
+}) => {
   const connected = useMangoStore((s) => s.wallet.connected)
   const marginAccounts = useMangoStore((s) => s.marginAccounts)
   const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  const actions = useAlertsStore((s) => s.actions)
+  const submitting = useAlertsStore((s) => s.submitting)
+  const success = useAlertsStore((s) => s.success)
+  const set = useAlertsStore((s) => s.set)
+  const tgCode = useAlertsStore((s) => s.tgCode)
 
+  // select by default:
+  // 1. margin account passed in directly (from the margin account info on the trade page)
+  // 2. previous alert's margin account (when re-activating from the alerts page)
+  // 3, the first margin account
   const [selectedMarginAccount, setSelectedMarginAccount] = useState<any>(
-    marginAccounts[0]
+    marginAccount || alert?.acc || marginAccounts[0]
   )
-  const [collateralRatioThresh, setCollateralRatioThresh] = useState(113)
+  const [collateralRatioPreset, setCollateralRatioPreset] = useState('113')
+  const [customCollateralRatio, setCustomCollateralRatio] = useState('')
   const [alertProvider, setAlertProvider] = useState('sms')
   const [phoneNumber, setPhoneNumber] = useState<any>({ phone: null })
   const [email, setEmail] = useState<string>('')
-  const [tgCode, setTgCode] = useState<string>('')
-  const [submitting, setSubmitting] = useState(false)
+  const [showTgCode, setShowTgCode] = useState<boolean>(false)
   const [isCopied, setIsCopied] = useState(false)
-  const [useCustomRatio, setUseCustomRatio] = useState(false)
+
+  const ratioPresets = ['Custom', '113', '115', '120', '130', '150', '200']
+
+  const collateralRatioThresh =
+    collateralRatioPreset !== 'Custom'
+      ? parseInt(collateralRatioPreset)
+      : parseInt(customCollateralRatio)
 
   useEffect(() => {
     if (isCopied) {
@@ -45,17 +81,54 @@ export default function AlertsModal({ isOpen, onClose }) {
     }
   }, [isCopied])
 
+  useEffect(() => {
+    if (tgCode) {
+      setShowTgCode(true)
+    }
+  }, [tgCode])
+
+  useEffect(() => {
+    if (alert) {
+      const isPreset = ratioPresets.find(
+        (preset) => preset === alert.collateralRatioThresh.toString()
+      )
+      if (isPreset) {
+        setCollateralRatioPreset(alert.collateralRatioThresh.toString())
+      } else {
+        setCollateralRatioPreset('Custom')
+        setCustomCollateralRatio(alert.collateralRatioThresh.toString())
+      }
+      setAlertProvider(alert.alertProvider)
+      const alertAccount = marginAccounts.find(
+        (account) => account.publicKey.toString() === alert.acc.toString()
+      )
+      setSelectedMarginAccount(alertAccount)
+    }
+  }, [alert])
+
   const handleCopyTgCode = (code) => {
     setIsCopied(true)
     copyToClipboard(code)
+  }
+
+  const handleCloseTgCodeView = () => {
+    resetForm()
+    setShowTgCode(false)
+  }
+
+  const handleCloseSuccessView = () => {
+    resetForm()
+    set((s) => {
+      s.success = ''
+    })
   }
 
   const resetForm = () => {
     setAlertProvider('sms')
     setPhoneNumber({ phone: null })
     setEmail('')
-    setTgCode('')
-    setCollateralRatioThresh(113)
+    setCollateralRatioPreset('113')
+    setCustomCollateralRatio('')
   }
 
   async function onSubmit() {
@@ -84,8 +157,6 @@ export default function AlertsModal({ isOpen, onClose }) {
       })
       return
     }
-    setSubmitting(true)
-    const fetchUrl = `https://mango-margin-call.herokuapp.com/alerts`
     const body = {
       mangoGroupPk: selectedMangoGroup.publicKey.toString(),
       marginAccountPk: selectedMarginAccount.publicKey.toString(),
@@ -94,69 +165,41 @@ export default function AlertsModal({ isOpen, onClose }) {
       phoneNumber,
       email,
     }
-    const headers = { 'Content-Type': 'application/json' }
-    fetch(fetchUrl, {
-      method: 'POST',
-      headers: headers,
-      body: JSON.stringify(body),
-    })
-      .then((response: any) => {
-        if (!response.ok) {
-          throw response
-        }
-        return response.json()
-      })
-      .then((json: any) => {
-        if (alertProvider === 'tg') {
-          setTgCode(json.code)
-        } else {
-          notify({
-            message: 'You have succesfully saved your alert',
-            type: 'success',
-          })
-          resetForm()
-        }
-      })
-      .catch((err) => {
-        if (typeof err.text === 'function') {
-          err.text().then((errorMessage: string) => {
-            notify({
-              message: errorMessage,
-              type: 'error',
-            })
-          })
-        } else {
-          notify({
-            message: 'Something went wrong',
-            type: 'error',
-          })
-        }
-      })
-      .finally(() => {
-        setSubmitting(false)
-      })
+    actions.createAlert(body)
   }
-
-  const ratioPresets = [113, 115, 120, 130, 150, 200]
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      {tgCode !== '' ? (
+      {tgCode && showTgCode ? (
         <TelegramModal
           tgCode={tgCode}
-          setTgCode={setTgCode}
           handleCopyToClipboard={handleCopyTgCode}
+          handleCloseTgCodeView={handleCloseTgCodeView}
           isCopied={isCopied}
         />
+      ) : success ? (
+        <div className="flex flex-col items-center text-th-fgd-1">
+          <CheckCircleIcon className="h-6 w-6 text-th-green mb-1" />
+          <div className="font-bold text-lg pb-1">{success}</div>
+          <p className="text-center">
+            {"We'll let you know if it's triggered."}
+          </p>
+          <Button
+            onClick={() => handleCloseSuccessView()}
+            className="w-full mt-2"
+          >
+            Okay, Got It
+          </Button>
+        </div>
       ) : (
         <>
           <Modal.Header>
             <div className={`text-th-fgd-3 flex-shrink invisible w-5`}>X</div>
             <ElementTitle noMarignBottom>
-              Set Liquidation Alert{' '}
+              Create Liquidation Alert{' '}
               <Tooltip
                 content="Your account can be liquidated if your collateral ratio is below 110%.
-            Set an alert above 110% and we'll let you know if it falls
+            Set an alert above 110% and we'll let you know if it is equal to or falls
             below that value."
               >
                 <div>
@@ -172,41 +215,44 @@ export default function AlertsModal({ isOpen, onClose }) {
               {marginAccounts.length > 1 ? (
                 <div className="pb-4">
                   <div className={`text-th-fgd-1 pb-2`}>Margin Account</div>
-                  <MarginAccountSelect onChange={setSelectedMarginAccount} />
+                  <MarginAccountSelect
+                    onChange={setSelectedMarginAccount}
+                    value={selectedMarginAccount}
+                  />
                 </div>
               ) : null}
               <div className="pb-4">
                 <div className={`text-th-fgd-1 pb-2`}>
                   Alert me when my collateral ratio is below:
                 </div>
-                {useCustomRatio ? (
+                <Select
+                  value={
+                    collateralRatioPreset !== 'Custom'
+                      ? `${collateralRatioPreset}%`
+                      : collateralRatioPreset
+                  }
+                  onChange={(v) => setCollateralRatioPreset(v)}
+                >
+                  {ratioPresets.map((option, index) => (
+                    <Select.Option key={index} value={option}>
+                      {option !== 'Custom' ? `${option}%` : option}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </div>
+              {collateralRatioPreset === 'Custom' ? (
+                <div className="pb-4">
+                  <div className={`text-th-fgd-1 pb-2`}>
+                    Custom collateral ratio
+                  </div>
                   <Input
                     type="number"
-                    value={collateralRatioThresh}
-                    onChange={(e) => setCollateralRatioThresh(e.target.value)}
+                    value={customCollateralRatio}
+                    onChange={(e) => setCustomCollateralRatio(e.target.value)}
                     suffix="%"
                   />
-                ) : (
-                  <Select
-                    value={collateralRatioThresh + '%'}
-                    onChange={(v) => setCollateralRatioThresh(v)}
-                  >
-                    {ratioPresets.map((option, index) => (
-                      <Select.Option key={index} value={option}>
-                        {option}%
-                      </Select.Option>
-                    ))}
-                  </Select>
-                )}
-                <Button
-                  className="px-0 py-0 mt-2 border-0 font-normal text-th-fgd-3 text-xs hover:bg-transparent hover:opacity-60"
-                  onClick={() => setUseCustomRatio(!useCustomRatio)}
-                >
-                  {useCustomRatio
-                    ? 'Choose a suggested collateral ratio threshold'
-                    : 'Enter a custom collateral ratio threshold'}
-                </Button>
-              </div>
+                </div>
+              ) : null}
               <div className="pb-4">
                 <div className={`text-th-fgd-1 pb-2`}>Alert me via:</div>
                 <RadioGroup
@@ -332,10 +378,12 @@ export default function AlertsModal({ isOpen, onClose }) {
   )
 }
 
+export default AlertsModal
+
 const TelegramModal = ({
   tgCode,
-  setTgCode,
   handleCopyToClipboard,
+  handleCloseTgCodeView,
   isCopied,
 }) => {
   return (
@@ -369,7 +417,7 @@ const TelegramModal = ({
           <li>Paste the code and send message</li>
         </ol>
       </div>
-      <Button onClick={() => setTgCode('')} className="w-full">
+      <Button onClick={() => handleCloseTgCodeView()} className="w-full">
         Okay, Got It
       </Button>
     </div>

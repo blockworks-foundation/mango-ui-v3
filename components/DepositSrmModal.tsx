@@ -123,7 +123,7 @@ const DepositSrmModal = ({ isOpen, onClose }) => {
             disabled={!selectedAccount}
           >
             <div className={`flex items-center justify-center`}>
-              {submitting && <Loading />}
+              {submitting && <Loading className="-ml-1 mr-3" />}
               {`Deposit ${inputAmount ? inputAmount : ''} SRM
               `}
             </div>

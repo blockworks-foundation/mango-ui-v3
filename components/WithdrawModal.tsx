@@ -271,7 +271,7 @@ const WithdrawModal = ({ isOpen, onClose }) => {
             className="w-full"
           >
             <div className={`flex items-center justify-center`}>
-              {submitting && <Loading />}
+              {submitting && <Loading className="-ml-1 mr-3" />}
               {`Withdraw ${
                 inputAmount ? inputAmount : ''
               } ${getSymbolForTokenMintAddress(

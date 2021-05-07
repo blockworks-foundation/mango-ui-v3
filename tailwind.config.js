@@ -97,6 +97,22 @@ module.exports = {
         'th-green': 'var(--green)',
         'th-green-dark': 'var(--green-dark)',
       },
+      keyframes: {
+        shake: {
+          '0%, 100%': {
+            transform: 'rotate(0deg)',
+          },
+          '20%, 60%': {
+            transform: 'rotate(6deg)',
+          },
+          '40%, 80%': {
+            transform: 'rotate(-6deg)',
+          },
+        },
+      },
+      animation: {
+        shake: 'shake 0.4s linear 4',
+      },
     },
   },
   variants: {

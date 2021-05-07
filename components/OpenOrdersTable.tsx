@@ -122,7 +122,7 @@ const OpenOrdersTable = () => {
                           className={`flex items-center md:ml-auto px-2 py-1 text-xs`}
                         >
                           {cancelId + '' === order?.orderId + '' ? (
-                            <Loading />
+                            <Loading className="-ml-1 mr-3" />
                           ) : (
                             <TrashIcon className={`h-4 w-4 mr-1`} />
                           )}
