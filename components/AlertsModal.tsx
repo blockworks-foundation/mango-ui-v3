@@ -111,12 +111,22 @@ const AlertsModal: FunctionComponent<AlertsModalProps> = ({
     copyToClipboard(code)
   }
 
-  const handleCloseTgCodeView = () => {
+  const handleNewFromTgCode = () => {
+    set((s) => {
+      s.tgCode = null
+    })
     resetForm()
-    setShowTgCode(false)
   }
 
-  const handleCloseSuccessView = () => {
+  const handleCloseModal = () => {
+    set((s) => {
+      ;(s.success = ''), (s.tgCode = null)
+    })
+    resetForm()
+    onClose()
+  }
+
+  const handleNewFromSuccess = () => {
     resetForm()
     set((s) => {
       s.success = ''
@@ -169,13 +179,14 @@ const AlertsModal: FunctionComponent<AlertsModalProps> = ({
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={handleCloseModal}>
       {tgCode && showTgCode ? (
         <TelegramModal
-          tgCode={tgCode}
+          handleCloseModal={handleCloseModal}
           handleCopyToClipboard={handleCopyTgCode}
-          handleCloseTgCodeView={handleCloseTgCodeView}
+          handleNewFromTgCode={handleNewFromTgCode}
           isCopied={isCopied}
+          tgCode={tgCode}
         />
       ) : success ? (
         <div className="flex flex-col items-center text-th-fgd-1">
@@ -184,12 +195,17 @@ const AlertsModal: FunctionComponent<AlertsModalProps> = ({
           <p className="text-center">
             {"We'll let you know if it's triggered."}
           </p>
-          <Button
-            onClick={() => handleCloseSuccessView()}
-            className="w-full mt-2"
-          >
-            Okay, Got It
-          </Button>
+          <div className="flex pt-2 w-full">
+            <Button
+              onClick={() => handleNewFromSuccess()}
+              className="w-full mr-2"
+            >
+              New Alert
+            </Button>
+            <Button onClick={() => handleCloseModal()} className="w-full ml-2">
+              Close
+            </Button>
+          </div>
         </div>
       ) : (
         <>
@@ -381,10 +397,11 @@ const AlertsModal: FunctionComponent<AlertsModalProps> = ({
 export default AlertsModal
 
 const TelegramModal = ({
-  tgCode,
+  handleCloseModal,
   handleCopyToClipboard,
-  handleCloseTgCodeView,
+  handleNewFromTgCode,
   isCopied,
+  tgCode,
 }) => {
   return (
     <div className="text-th-fgd-1">
@@ -417,9 +434,15 @@ const TelegramModal = ({
           <li>Paste the code and send message</li>
         </ol>
       </div>
-      <Button onClick={() => handleCloseTgCodeView()} className="w-full">
-        Okay, Got It
-      </Button>
+
+      <div className="flex pt-2 w-full">
+        <Button onClick={() => handleNewFromTgCode()} className="w-full mr-2">
+          New Alert
+        </Button>
+        <Button onClick={() => handleCloseModal()} className="w-full ml-2">
+          Close
+        </Button>
+      </div>
     </div>
   )
 }

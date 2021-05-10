@@ -146,7 +146,7 @@ export default function useWallet() {
     if (connected && marginAccounts.length > 0) {
       alertActions.loadAlerts(marginAccountsPublicKey)
     }
-  }, [marginAccounts])
+  }, [connected, marginAccounts])
 
   useInterval(() => {
     if (connected && marginAccount) {
