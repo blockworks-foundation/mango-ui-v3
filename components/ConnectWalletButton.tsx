@@ -71,7 +71,7 @@ const ConnectWalletButton = () => {
         <Menu>
           {({ open }) => (
             <div className="relative h-full">
-              <Menu.Button className="h-full w-full px-3 bg-th-bkg-1 rounded-none focus:outline-none text-th-primary hover:text-th-fgd-1">
+              <Menu.Button className="h-full w-full px-3 bg-th-bkg-1 rounded-none focus:outline-none text-th-primary hover:bg-th-bkg-3 hover:text-th-fgd-1">
                 <div className="flex flex-row items-center justify-between">
                   <div className="flex items-center">
                     <WalletIcon className="w-4 h-4 mr-3 text-th-green fill-current" />
@@ -90,7 +90,7 @@ const ConnectWalletButton = () => {
                   </div>
                 </div>
               </Menu.Button>
-              <Menu.Items className="z-20 mt-1 p-1 absolute right-0 md:transform md:-translate-x-1/2 md:left-1/2 bg-th-bkg-1 divide-y divide-th-bkg-3 shadow-lg outline-none rounded-md w-36">
+              <Menu.Items className="z-20 mt-1 p-1 absolute right-0 md:transform md:-translate-x-1/2 md:left-1/2 bg-th-bkg-1 divide-y divide-th-bkg-3 shadow-lg outline-none rounded-md w-48">
                 {WALLET_OPTIONS.map(({ name, icon }) => (
                   <Menu.Item key={name}>
                     <button
@@ -111,13 +111,13 @@ const ConnectWalletButton = () => {
           <button
             onClick={handleWalletConect}
             disabled={!wallet}
-            className="rounded-none text-th-primary hover:bg-th-primary focus:outline-none disabled:text-th-fgd-4 disabled:cursor-wait"
+            className="rounded-none text-th-primary hover:bg-th-bkg-3 focus:outline-none disabled:text-th-fgd-4 disabled:cursor-wait"
           >
-            <div className="flex flex-row items-center px-3 justify-center h-full default-transition hover:text-th-bkg-1">
+            <div className="flex flex-row items-center px-3 justify-center h-full default-transition hover:text-th-fgd-1">
               <WalletIcon className="w-4 h-4 mr-2 fill-current" />
               <div>
                 <div className="mb-0.5 whitespace-nowrap">Connect Wallet</div>
-                <StyledWalletTypeLabel className="font-normal text-th-fgd-4 text-left leading-3 tracking-wider">
+                <StyledWalletTypeLabel className="font-normal text-th-fgd-3 text-left leading-3 tracking-wider">
                   {
                     WALLET_PROVIDERS.find((p) => p.url === savedProviderUrl)
                       ?.name

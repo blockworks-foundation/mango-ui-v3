@@ -26,9 +26,9 @@ export default function WalletSelect({ isPrimary = false }) {
       {({ open }) => (
         <>
           <Menu.Button
-            className={`flex justify-center items-center h-full rounded-none focus:outline-none text-th-primary hover:text-th-bkg-1 ${
+            className={`flex justify-center items-center h-full rounded-none focus:outline-none text-th-primary hover:text-th-fgd-1 ${
               isPrimary
-                ? 'px-3 hover:bg-th-primary'
+                ? 'px-3 hover:bg-th-bkg-3'
                 : 'px-2 hover:bg-th-bkg-3 border-l border-th-fgd-4'
             } cursor-pointer`}
           >
@@ -38,7 +38,7 @@ export default function WalletSelect({ isPrimary = false }) {
               <ChevronDownIcon className="h-4 w-4" />
             )}
           </Menu.Button>
-          <Menu.Items className="absolute bg-th-bkg-1 divide-y divide-th-bkg-3 p-1 rounded-md right-0 mt-1 shadow-lg outline-none w-44 z-20">
+          <Menu.Items className="absolute bg-th-bkg-1 divide-y divide-th-bkg-3 p-1 rounded-md right-0.5 mt-1 shadow-lg outline-none w-48 z-20">
             {WALLET_PROVIDERS.map(({ name, url, icon }) => (
               <Menu.Item key={name}>
                 <button

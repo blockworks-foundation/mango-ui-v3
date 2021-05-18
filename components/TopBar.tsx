@@ -13,7 +13,7 @@ const TopBar = () => {
 
   return (
     <>
-      <nav className={`bg-th-bkg-2`}>
+      <nav className={`bg-th-bkg-2 border-b border-th-bkg-2`}>
         <div className={`px-6 md:px-9`}>
           <div className={`flex justify-between h-14`}>
             <div className={`flex`}>
