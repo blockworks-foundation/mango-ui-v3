@@ -26,7 +26,7 @@ const UiLock = ({ className = '' }) => {
           leave="transition-opacity duration-500"
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
-          className="pr-3"
+          className="pr-2"
         >
           <ResetLayout />
         </Transition>

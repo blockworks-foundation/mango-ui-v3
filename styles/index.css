@@ -52,7 +52,7 @@
 /* Base */
 
 body {
-  @apply text-sm font-body tracking-wide;
+  @apply text-sm font-body tracking-wider;
 }
 
 p {
@@ -65,7 +65,7 @@ a {
 
 button {
   transition: all 0.3s ease;
-  @apply font-semibold rounded-md;
+  @apply font-semibold rounded-md tracking-wider;
 }
 
 .default-transition {

@@ -107,7 +107,7 @@ const AlertsList = () => {
             >
               <Popover.Panel
                 static
-                className="absolute z-10 mt-3 right-0 md:transform md:-translate-x-1/2 md:left-1/2 w-64"
+                className="absolute z-10 mt-4 right-0 md:transform md:-translate-x-1/2 md:left-1/2 w-64"
               >
                 <div className="bg-th-bkg-1 p-4 overflow-auto max-h-80 rounded-lg shadow-lg thin-scroll">
                   {loading ? (

@@ -21,33 +21,34 @@ const MarketSelect = () => {
   }
 
   return (
-    <div className="bg-th-bkg-3">
+    <div className="bg-th-bkg-3 py-2">
       <div className="flex justify-between items-center">
-        <div className="flex items-center py-2 px-4 md:px-10">
+        <div className="flex items-center px-4 md:px-10">
+          <div className="border-r border-th-fgd-4 pr-4 text-th-fgd-4 text-xs">
+            MARKETS
+          </div>
           {Object.entries(spotMarkets).map(([name, address]) => (
             <div
-              className={`flex px-2 py-1 mr-2 rounded-md cursor-pointer default-transition bg-th-bkg-2
+              className={`border-r border-th-fgd-4 cursor-pointer default-transition flex font-semibold px-4 text-xs hover:text-th-primary
               ${
                 selectedMarketName === name
                   ? `text-th-primary`
-                  : `text-th-fgd-1 opacity-50 hover:opacity-100`
+                  : `text-th-fgd-3`
               }
             `}
               onClick={() => handleChange(name)}
               key={address as string}
             >
-              <div className="pr-1">{name.split('/')[0]}</div>
-              <span className="text-th-fgd-4">/</span>
-              <div className="pl-1">{name.split('/')[1]}</div>
+              {name.split('/')[0]}
             </div>
           ))}
         </div>
         <div className="mr-10 text-xs">
           <a
             href="https://old.mango.markets"
-            className="text-th-fgd-4 default-transition underline hover:text-th-primary hover:no-underline"
+            className="text-th-fgd-3 default-transition underline hover:text-th-primary hover:no-underline"
           >
-            Use Previous Version
+            Use V1
           </a>
         </div>
       </div>

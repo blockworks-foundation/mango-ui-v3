@@ -3,7 +3,7 @@ import {
   ChevronDownIcon,
   ChevronUpIcon,
   CheckCircleIcon,
-} from '@heroicons/react/outline'
+} from '@heroicons/react/solid'
 import useMangoStore from '../stores/useMangoStore'
 import { WALLET_PROVIDERS, DEFAULT_PROVIDER } from '../hooks/useWallet'
 import useLocalStorageState from '../hooks/useLocalStorageState'
@@ -26,23 +26,23 @@ export default function WalletSelect({ isPrimary = false }) {
       {({ open }) => (
         <>
           <Menu.Button
-            className={`flex justify-center items-center h-full rounded-r rounded-l-none focus:outline-none text-th-primary hover:text-th-fgd-1 ${
+            className={`flex justify-center items-center h-full rounded-none focus:outline-none text-th-primary hover:text-th-bkg-1 ${
               isPrimary
                 ? 'px-3 hover:bg-th-primary'
                 : 'px-2 hover:bg-th-bkg-3 border-l border-th-fgd-4'
             } cursor-pointer`}
           >
             {open ? (
-              <ChevronUpIcon className="h-5 w-5" />
+              <ChevronUpIcon className="h-4 w-4" />
             ) : (
-              <ChevronDownIcon className="h-5 w-5" />
+              <ChevronDownIcon className="h-4 w-4" />
             )}
           </Menu.Button>
-          <Menu.Items className="z-20 p-1 absolute right-0 top-11 bg-th-bkg-1 divide-y divide-th-bkg-3 shadow-lg outline-none rounded-md w-48">
+          <Menu.Items className="absolute bg-th-bkg-1 divide-y divide-th-bkg-3 p-1 rounded-md right-0 mt-1 shadow-lg outline-none w-44 z-20">
             {WALLET_PROVIDERS.map(({ name, url, icon }) => (
               <Menu.Item key={name}>
                 <button
-                  className="flex flex-row items-center justify-between w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer font-normal focus:outline-none"
+                  className="flex flex-row items-center justify-between rounded-none w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer font-normal focus:outline-none"
                   onClick={() => handleSelectProvider(url)}
                 >
                   <div className="flex">
