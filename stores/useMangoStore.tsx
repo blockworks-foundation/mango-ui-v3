@@ -90,6 +90,7 @@ interface MangoStore extends State {
       [address: string]: Market
     }
     mintDecimals: number[]
+    prices: number[]
   }
   marginAccounts: MarginAccount[]
   selectedMarginAccount: {
@@ -137,6 +138,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
     markets: {},
     srmAccount: null,
     mintDecimals: [],
+    prices: [],
   },
   selectedMarket: {
     name: Object.entries(
@@ -202,12 +204,13 @@ const useMangoStore = create<MangoStore>((set, get) => ({
       const set = get().set
 
       if (wallet?.publicKey && connected) {
-        const usersMangoSrmAccounts = await mangoClient.getMangoSrmAccountsForOwner(
-          connection,
-          new PublicKey(IDS[cluster].mango_program_id),
-          selectedMangoGroup,
-          wallet
-        )
+        const usersMangoSrmAccounts =
+          await mangoClient.getMangoSrmAccountsForOwner(
+            connection,
+            new PublicKey(IDS[cluster].mango_program_id),
+            selectedMangoGroup,
+            wallet
+          )
         if (usersMangoSrmAccounts.length) {
           set((state) => {
             state.wallet.srmAccountsForOwner = usersMangoSrmAccounts
@@ -305,14 +308,20 @@ const useMangoStore = create<MangoStore>((set, get) => ({
       return mangoClient
         .getMangoGroup(connection, mangoGroupPk, srmVaultPk)
         .then(async (mangoGroup) => {
-          const srmAccountInfo = await connection.getAccountInfo(
+          const srmAccountInfoPromise = connection.getAccountInfo(
             mangoGroup.srmVault
           )
+          const pricesPromise = mangoGroup.getPrices(connection)
+          const [srmAccountInfo, prices] = await Promise.all([
+            srmAccountInfoPromise,
+            pricesPromise,
+          ])
           // Set the mango group
           set((state) => {
             state.selectedMangoGroup.current = mangoGroup
             state.selectedMangoGroup.srmAccount = srmAccountInfo
             state.selectedMangoGroup.mintDecimals = mangoGroup.mintDecimals
+            state.selectedMangoGroup.prices = prices
           })
         })
         .catch((err) => {
@@ -332,9 +341,8 @@ const useMangoStore = create<MangoStore>((set, get) => ({
       if (!selectedMarginAccount) return
       if (selectedMarginAccount.openOrdersAccounts.length === 0) return
 
-      const openOrdersAccounts = selectedMarginAccount.openOrdersAccounts.filter(
-        isDefined
-      )
+      const openOrdersAccounts =
+        selectedMarginAccount.openOrdersAccounts.filter(isDefined)
       const publicKeys = openOrdersAccounts.map((act) =>
         act.publicKey.toString()
       )

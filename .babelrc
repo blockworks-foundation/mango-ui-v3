@@ -10,5 +10,9 @@
       }
     ]
   ],
-  "plugins": ["@emotion/babel-plugin"]
+  "plugins": [
+    "babel-plugin-macros",
+    ["styled-components", { "ssr": true }],
+    "@emotion/babel-plugin"
+  ]
 }

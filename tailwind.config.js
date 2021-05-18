@@ -61,9 +61,10 @@ module.exports = {
           'fgd-4': '#B0B0B0',
         },
         'dark-theme': {
-          orange: '#F2C94C',
+          yellow: '#F2C94C',
           red: { DEFAULT: '#CC2929', dark: '#AA2222' },
           green: { DEFAULT: '#5EBF4D', dark: '#4BA53B' },
+          orange: { DEFAULT: '#FF9C24' },
           'bkg-1': '#1C1C1C',
           'bkg-2': '#2B2B2B',
           'bkg-3': '#424242',
@@ -74,8 +75,15 @@ module.exports = {
         },
         'mango-theme': {
           yellow: '#F2C94C',
-          red: { DEFAULT: '#E54033', dark: '#C7251A' },
-          green: { DEFAULT: '#AFD803', dark: '#91B503' },
+          red: {
+            DEFAULT: '#E54033',
+            dark: '#C7251A',
+          },
+          green: {
+            DEFAULT: '#AFD803',
+            dark: '#91B503',
+          },
+          orange: { DEFAULT: '#FF9C24' },
           'bkg-1': '#141026',
           'bkg-2': '#1D1832',
           'bkg-3': '#322E47',
@@ -96,6 +104,7 @@ module.exports = {
         'th-red-dark': 'var(--red-dark)',
         'th-green': 'var(--green)',
         'th-green-dark': 'var(--green-dark)',
+        'th-orange': 'var(--orange)',
       },
       keyframes: {
         shake: {

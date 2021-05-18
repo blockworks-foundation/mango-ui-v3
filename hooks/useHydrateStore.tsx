@@ -25,7 +25,6 @@ const useHydrateStore = () => {
   const { marketList } = useMarketList()
 
   useEffect(() => {
-    actions.fetchAllMangoGroups()
     actions.fetchMangoGroup()
   }, [actions])
 

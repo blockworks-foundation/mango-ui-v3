@@ -10,6 +10,7 @@ interface InputProps {
   onChange: (e) => void
   className?: string
   disabled?: boolean
+  error?: boolean
   [x: string]: any
 }
 
@@ -22,6 +23,7 @@ const Input = ({
   value,
   onChange,
   className,
+  error,
   wrapperClassName = 'w-full',
   disabled,
   prefix,
@@ -43,7 +45,9 @@ const Input = ({
         value={value}
         onChange={onChange}
         className={`${className} px-2 w-full bg-th-bkg-1 rounded h-10 text-th-fgd-1 
-          border border-th-fgd-4 default-transition hover:border-th-primary 
+          border ${
+            error ? 'border-th-red' : 'border-th-fgd-4'
+          } default-transition hover:border-th-primary 
           focus:border-th-primary focus:outline-none 
           ${
             disabled
