@@ -19,6 +19,10 @@ const calculatePNL = (tradeHistory, prices, mangoGroup) => {
     'BTC/WUSDT': 0,
     'ETH/USDT': 1,
     'ETH/WUSDT': 1,
+    'SOL/USDT': 2,
+    'SOL/WUSDT': 2,
+    'SRM/USDT': 3,
+    'SRM/WUSDT': 3,
     USDT: 2,
     WUSDT: 2,
   }

@@ -12,6 +12,8 @@ import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
 const DECIMALS = {
   BTC: 4,
   ETH: 3,
+  SOL: 2,
+  SRM: 2,
   USDT: 2,
   USDC: 2,
 }
@@ -19,6 +21,8 @@ const DECIMALS = {
 const icons = {
   BTC: '/assets/icons/btc.svg',
   ETH: '/assets/icons/eth.svg',
+  SOL: '/assets/icons/sol.svg',
+  SRM: '/assets/icons/srm.svg',
   USDT: '/assets/icons/usdt.svg',
   USDC: '/assets/icons/usdc.svg',
   WUSDT: '/assets/icons/usdt.svg',
@@ -41,7 +45,7 @@ const useMangoStats = () => {
   useEffect(() => {
     const fetchStats = async () => {
       const response = await fetch(
-        `https://mango-stats.herokuapp.com?mangoGroup=BTC_ETH_USDT`
+        `https://mango-stats.herokuapp.com?mangoGroup=BTC_ETH_SOL_SRM_USDT`
       )
       const stats = await response.json()
 

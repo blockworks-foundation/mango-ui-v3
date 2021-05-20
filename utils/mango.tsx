@@ -53,6 +53,8 @@ import {
 import { MangoSrmAccount } from '@blockworks-foundation/mango-client/lib/client'
 import { capitalize } from './index'
 
+export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDT'
+
 export async function initMarginAccount(
   connection: Connection,
   programId: PublicKey,

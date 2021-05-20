@@ -70,6 +70,8 @@ const WithdrawModal = ({ isOpen, onClose }) => {
   const DECIMALS = {
     BTC: 6,
     ETH: 5,
+    SOL: 2,
+    SRM: 2,
     USDT: 2,
   }
 
