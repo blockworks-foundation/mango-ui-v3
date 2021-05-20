@@ -183,7 +183,7 @@ const AccountSelect = ({
                   </Listbox.Option>
                 )
               })}
-              {missingTokens && accounts.length !== 3 ? (
+              {missingTokens && accounts.length !== Object.keys(symbols).length ? (
                 <Listbox.Option value="">
                   <div className="flex items-center justify-center text-th-fgd-1 p-2">
                     Wallet token address not found for: {missingTokens}
