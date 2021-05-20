@@ -169,6 +169,8 @@ export const calculateMarketPrice = (
 export const tokenPrecision = {
   BTC: 4,
   ETH: 3,
+  SOL: 2,
+  SRM: 2,
   USDC: 2,
   USDT: 2,
   WUSDT: 2,

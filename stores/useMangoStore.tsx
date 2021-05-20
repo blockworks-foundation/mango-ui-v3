@@ -37,7 +37,7 @@ const CLUSTER =
 const ENDPOINT = ENDPOINTS.find((e) => e.name === CLUSTER)
 const DEFAULT_CONNECTION = new Connection(ENDPOINT.url, 'recent')
 const WEBSOCKET_CONNECTION = new Connection(ENDPOINT.websocket, 'recent')
-const DEFAULT_MANGO_GROUP_NAME = 'BTC_ETH_USDT'
+const DEFAULT_MANGO_GROUP_NAME = 'BTC_ETH_SOL_SRM_USDT'
 
 export const INITIAL_STATE = {
   WALLET: {
