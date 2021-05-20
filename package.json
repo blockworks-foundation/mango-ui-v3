@@ -31,7 +31,7 @@
     }
   },
   "dependencies": {
-    "@blockworks-foundation/mango-client": "^0.1.16",
+    "@blockworks-foundation/mango-client": "https://github.com/blockworks-foundation/mango-client-ts#5_tokens",
     "@emotion/react": "^11.1.5",
     "@emotion/styled": "^11.1.5",
     "@headlessui/react": "^1.2.0",

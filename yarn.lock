@@ -872,9 +872,9 @@
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
 
-"@blockworks-foundation/mango-client@^0.1.16":
+"@blockworks-foundation/mango-client@https://github.com/blockworks-foundation/mango-client-ts#5_tokens":
   version "0.1.19"
-  resolved "https://registry.yarnpkg.com/@blockworks-foundation/mango-client/-/mango-client-0.1.19.tgz#f138712a9a9d3db7beded1e20be1e6ac0ebbdbb0"
+  resolved "https://github.com/blockworks-foundation/mango-client-ts#0f47d83101815b66bfc301df390c1d19efe2da36"
   dependencies:
     "@project-serum/serum" "^0.13.20"
     "@project-serum/sol-wallet-adapter" "^0.1.4"
