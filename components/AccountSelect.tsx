@@ -66,7 +66,7 @@ const AccountSelect = ({
     <div className={`relative inline-block w-full`}>
       <div className="flex justify-between pb-2">
         <div className="text-th-fgd-1">Token Account</div>
-        {accounts.length < 3 ? (
+        {accounts.length < Object.keys(symbols).length ? (
           <button
             className="ml-2 text-th-fgd-1 hover:text-th-primary outline-none focus:outline-none"
             onClick={handleRefreshBalances}

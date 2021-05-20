@@ -11,7 +11,7 @@ import {
 import { SRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
 import { AccountInfo, Connection, PublicKey } from '@solana/web3.js'
 import { EndpointInfo, WalletAdapter } from '../@types/types'
-import { getOwnedTokenAccounts } from '../utils/tokens'
+import { getWalletTokenInfo } from '../utils/tokens'
 import { isDefined } from '../utils/index'
 import { notify } from '../utils/notifications'
 
@@ -181,7 +181,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
 
       if (wallet?.publicKey && connected) {
         const ownerAddress = wallet.publicKey
-        const ownedTokenAccounts = await getOwnedTokenAccounts(
+        const ownedTokenAccounts = await getWalletTokenInfo(
           connection,
           ownerAddress
         )

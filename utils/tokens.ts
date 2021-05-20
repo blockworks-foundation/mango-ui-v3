@@ -3,6 +3,8 @@ import { Connection, PublicKey } from '@solana/web3.js'
 import * as bs58 from 'bs58'
 import { AccountInfo as TokenAccount } from '@solana/spl-token'
 import { TokenInstructions } from '@project-serum/serum'
+import { WRAPPED_SOL_MINT } from '@project-serum/serum/lib/token-instructions'
+
 
 export const TOKEN_PROGRAM_ID = new PublicKey(
   'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
@@ -24,10 +26,28 @@ export function parseTokenAccountData(
   }
 }
 
+export async function getWalletTokenInfo(
+  connection: Connection,
+  ownerPublicKey: PublicKey
+) {
+  const splAccounts = await getOwnedTokenAccounts(connection, ownerPublicKey)
+  const account = await connection.getAccountInfo(ownerPublicKey)
+  return splAccounts.concat([
+    {
+      publicKey: ownerPublicKey,
+      account: {
+        mint: WRAPPED_SOL_MINT,
+        owner: ownerPublicKey,
+        amount: account.lamports,
+      },
+    },
+  ])
+}
+
 export async function getOwnedTokenAccounts(
   connection: Connection,
   publicKey: PublicKey
-): Promise<ProgramAccount<TokenAccount>[]> {
+): Promise<any[]> {
   const filters = getOwnedAccountsFilters(publicKey)
   // @ts-ignore
   const resp = await connection._rpcRequest('getProgramAccounts', [

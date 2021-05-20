@@ -7,7 +7,9 @@ import {
 import {
   Account,
   Connection,
+  LAMPORTS_PER_SOL,
   PublicKey,
+  SystemProgram,
   SYSVAR_CLOCK_PUBKEY,
   SYSVAR_RENT_PUBKEY,
   Transaction,
@@ -42,11 +44,14 @@ import {
   OpenOrders,
 } from '@project-serum/serum'
 import { Order } from '@project-serum/serum/lib/market'
-import { SRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
+import {
+  closeAccount,
+  initializeAccount,
+  SRM_DECIMALS,
+  WRAPPED_SOL_MINT,
+} from '@project-serum/serum/lib/token-instructions'
 import { MangoSrmAccount } from '@blockworks-foundation/mango-client/lib/client'
 import { capitalize } from './index'
-
-export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDT'
 
 export async function initMarginAccount(
   connection: Connection,
@@ -113,6 +118,33 @@ export async function deposit(
 
   quantity: number
 ): Promise<TransactionSignature> {
+  const transaction = new Transaction()
+  const signers = []
+
+  let wrappedSolAccount: Account | null = null
+  if (token.equals(WRAPPED_SOL_MINT)) {
+    wrappedSolAccount = new Account()
+    const lamports = Math.round(quantity * LAMPORTS_PER_SOL) + 1e7
+    transaction.add(
+      SystemProgram.createAccount({
+        fromPubkey: wallet.publicKey,
+        newAccountPubkey: wrappedSolAccount.publicKey,
+        lamports,
+        space: 165,
+        programId: TOKEN_PROGRAM_ID,
+      })
+    )
+
+    transaction.add(
+      initializeAccount({
+        account: wrappedSolAccount.publicKey,
+        mint: WRAPPED_SOL_MINT,
+        owner: wallet.publicKey,
+      })
+    )
+
+    signers.push(wrappedSolAccount)
+  }
   const tokenIndex = mangoGroup.getTokenIndex(token)
   const nativeQuantity = uiToNative(
     quantity,
@@ -123,7 +155,11 @@ export async function deposit(
     { isSigner: false, isWritable: true, pubkey: mangoGroup.publicKey },
     { isSigner: false, isWritable: true, pubkey: marginAccount.publicKey },
     { isSigner: true, isWritable: false, pubkey: wallet.publicKey },
-    { isSigner: false, isWritable: true, pubkey: tokenAcc },
+    {
+      isSigner: false,
+      isWritable: true,
+      pubkey: wrappedSolAccount?.publicKey ?? tokenAcc,
+    },
     {
       isSigner: false,
       isWritable: true,
@@ -137,9 +173,17 @@ export async function deposit(
   })
 
   const instruction = new TransactionInstruction({ keys, data, programId })
-
-  const transaction = new Transaction()
   transaction.add(instruction)
+
+  if (wrappedSolAccount) {
+    transaction.add(
+      closeAccount({
+        source: wrappedSolAccount.publicKey,
+        destination: wallet.publicKey,
+        owner: wallet.publicKey,
+      })
+    )
+  }
 
   // settle borrow
   const settleKeys = [
@@ -157,7 +201,6 @@ export async function deposit(
     programId,
   })
   transaction.add(settleBorrowsInstruction)
-  const signers = []
 
   const functionName = 'Deposit'
   const sendingMessage = `Sending ${functionName} instruction...`
@@ -181,6 +224,31 @@ export async function initMarginAccountAndDeposit(
   tokenAcc: PublicKey,
   quantity: number
 ): Promise<Array<any>> {
+  const transaction = new Transaction()
+  const signers = []
+
+  let wrappedSolAccount: Account | null = null
+  if (token.equals(WRAPPED_SOL_MINT)) {
+    wrappedSolAccount = new Account()
+    const lamports = Math.round(quantity * LAMPORTS_PER_SOL) + 1e7
+    transaction.add(
+      SystemProgram.createAccount({
+        fromPubkey: wallet.publicKey,
+        newAccountPubkey: wrappedSolAccount.publicKey,
+        lamports,
+        space: 165,
+        programId: TOKEN_PROGRAM_ID,
+      })
+    )
+    transaction.add(
+      initializeAccount({
+        account: wrappedSolAccount.publicKey,
+        mint: WRAPPED_SOL_MINT,
+        owner: wallet.publicKey,
+      })
+    )
+    signers.push(wrappedSolAccount)
+  }
   // Create a Solana account for the MarginAccount and allocate spac
 
   const accInstr = await createAccountInstruction(
@@ -207,7 +275,6 @@ export async function initMarginAccountAndDeposit(
   })
 
   // Add all instructions to one atomic transaction
-  const transaction = new Transaction()
   transaction.add(accInstr.instruction)
   transaction.add(initMarginAccountInstruction)
 
@@ -221,7 +288,11 @@ export async function initMarginAccountAndDeposit(
     { isSigner: false, isWritable: true, pubkey: mangoGroup.publicKey },
     { isSigner: false, isWritable: true, pubkey: accInstr.account.publicKey },
     { isSigner: true, isWritable: false, pubkey: wallet.publicKey },
-    { isSigner: false, isWritable: true, pubkey: tokenAcc },
+    {
+      isSigner: false,
+      isWritable: true,
+      pubkey: wrappedSolAccount?.publicKey ?? tokenAcc,
+    },
     {
       isSigner: false,
       isWritable: true,
@@ -241,8 +312,18 @@ export async function initMarginAccountAndDeposit(
   })
   transaction.add(instruction)
 
+  if (wrappedSolAccount) {
+    transaction.add(
+      closeAccount({
+        source: wrappedSolAccount.publicKey,
+        destination: wallet.publicKey,
+        owner: wallet.publicKey,
+      })
+    )
+  }
+
   // Specify signers in addition to the wallet
-  const signers = [accInstr.account]
+  signers.push(accInstr.account)
   const functionName = 'InitMarginAccount'
   const sendingMessage = `Sending ${functionName} instruction...`
   const successMessage = `${functionName} instruction success`
@@ -269,6 +350,32 @@ export async function withdraw(
 
   quantity: number
 ): Promise<TransactionSignature> {
+  const transaction = new Transaction()
+  const signers = []
+
+  let wrappedSolAccount: Account | null = null
+  if (token.equals(WRAPPED_SOL_MINT)) {
+    wrappedSolAccount = new Account()
+    const lamports = Math.round(quantity * LAMPORTS_PER_SOL) + 1e7
+    transaction.add(
+      SystemProgram.createAccount({
+        fromPubkey: wallet.publicKey,
+        newAccountPubkey: wrappedSolAccount.publicKey,
+        lamports,
+        space: 165,
+        programId: TOKEN_PROGRAM_ID,
+      })
+    )
+    transaction.add(
+      initializeAccount({
+        account: wrappedSolAccount.publicKey,
+        mint: WRAPPED_SOL_MINT,
+        owner: wallet.publicKey,
+      })
+    )
+    signers.push(wrappedSolAccount)
+  }
+
   const tokenIndex = mangoGroup.getTokenIndex(token)
   const nativeQuantity = uiToNative(
     quantity,
@@ -279,7 +386,11 @@ export async function withdraw(
     { isSigner: false, isWritable: true, pubkey: mangoGroup.publicKey },
     { isSigner: false, isWritable: true, pubkey: marginAccount.publicKey },
     { isSigner: true, isWritable: false, pubkey: wallet.publicKey },
-    { isSigner: false, isWritable: true, pubkey: tokenAcc },
+    {
+      isSigner: false,
+      isWritable: true,
+      pubkey: wrappedSolAccount?.publicKey ?? tokenAcc,
+    },
     {
       isSigner: false,
       isWritable: true,
@@ -303,10 +414,123 @@ export async function withdraw(
     Withdraw: { quantity: nativeQuantity },
   })
   const instruction = new TransactionInstruction({ keys, data, programId })
-  const transaction = new Transaction()
   transaction.add(instruction)
-  const signers = []
+
+  if (wrappedSolAccount) {
+    transaction.add(
+      closeAccount({
+        source: wrappedSolAccount.publicKey,
+        destination: wallet.publicKey,
+        owner: wallet.publicKey,
+      })
+    )
+  }
+
   const functionName = 'Withdraw'
+  const sendingMessage = `Sending ${functionName} instruction...`
+  const successMessage = `${functionName} instruction success`
+  return await sendTransaction({
+    transaction,
+    wallet,
+    signers,
+    connection,
+    sendingMessage,
+    successMessage,
+  })
+}
+
+export async function borrowAndWithdraw(
+  connection: Connection,
+  programId: PublicKey,
+  mangoGroup: MangoGroup,
+  marginAccount: MarginAccount,
+  wallet: Wallet,
+  token: PublicKey,
+  tokenAcc: PublicKey,
+
+  withdrawQuantity: number
+): Promise<TransactionSignature> {
+  const transaction = new Transaction()
+  const signers = []
+
+  let wrappedSolAccount: Account | null = null
+  if (token.equals(WRAPPED_SOL_MINT)) {
+    wrappedSolAccount = new Account()
+    const lamports = Math.round(withdrawQuantity * LAMPORTS_PER_SOL) + 1e7
+    transaction.add(
+      SystemProgram.createAccount({
+        fromPubkey: wallet.publicKey,
+        newAccountPubkey: wrappedSolAccount.publicKey,
+        lamports,
+        space: 165,
+        programId: TOKEN_PROGRAM_ID,
+      })
+    )
+    transaction.add(
+      initializeAccount({
+        account: wrappedSolAccount.publicKey,
+        mint: WRAPPED_SOL_MINT,
+        owner: wallet.publicKey,
+      })
+    )
+    signers.push(wrappedSolAccount)
+  }
+
+  const tokenIndex = mangoGroup.getTokenIndex(token)
+  const tokenBalance = marginAccount.getUiDeposit(mangoGroup, tokenIndex)
+  const borrowQuantity = withdrawQuantity - tokenBalance
+
+  const nativeBorrowQuantity = new BN(
+    Math.ceil(
+      borrowQuantity * Math.pow(10, mangoGroup.mintDecimals[tokenIndex])
+    )
+  )
+
+  const borrowInstruction = makeBorrowInstruction(
+    programId,
+    mangoGroup.publicKey,
+    marginAccount.publicKey,
+    wallet.publicKey,
+    tokenIndex,
+    marginAccount.openOrders,
+    mangoGroup.oracles,
+    nativeBorrowQuantity
+  )
+  transaction.add(borrowInstruction)
+
+  // uiToNative() uses Math.round causing
+  // errors so we use Math.floor here instead
+  const nativeWithdrawQuantity = new BN(
+    Math.floor(
+      withdrawQuantity * Math.pow(10, mangoGroup.mintDecimals[tokenIndex])
+    )
+  )
+
+  const withdrawInstruction = makeWithdrawInstruction(
+    programId,
+    mangoGroup.publicKey,
+    marginAccount.publicKey,
+    wallet.publicKey,
+    mangoGroup.signerKey,
+    tokenAcc,
+    mangoGroup.vaults[tokenIndex],
+    marginAccount.openOrders,
+    mangoGroup.oracles,
+    nativeWithdrawQuantity
+  )
+  transaction.add(withdrawInstruction)
+
+  const settleBorrowInstruction = makeSettleBorrowInstruction(
+    programId,
+    mangoGroup.publicKey,
+    marginAccount.publicKey,
+    wallet.publicKey,
+    tokenIndex,
+    nativeWithdrawQuantity
+  )
+  transaction.add(settleBorrowInstruction)
+
+  const functionName = 'Borrow And Withdraw'
   const sendingMessage = `Sending ${functionName} instruction...`
   const successMessage = `${functionName} instruction success`
   return await sendTransaction({
@@ -361,86 +585,6 @@ export async function borrow(
   transaction.add(instruction)
   const signers = []
   const functionName = 'Borrow'
-  const sendingMessage = `Sending ${functionName} instruction...`
-  const successMessage = `${functionName} instruction success`
-  return await sendTransaction({
-    transaction,
-    wallet,
-    signers,
-    connection,
-    sendingMessage,
-    successMessage,
-  })
-}
-
-export async function borrowAndWithdraw(
-  connection: Connection,
-  programId: PublicKey,
-  mangoGroup: MangoGroup,
-  marginAccount: MarginAccount,
-  wallet: Wallet,
-  token: PublicKey,
-  tokenAcc: PublicKey,
-
-  withdrawQuantity: number
-): Promise<TransactionSignature> {
-  const transaction = new Transaction()
-  const tokenIndex = mangoGroup.getTokenIndex(token)
-  const tokenBalance = marginAccount.getUiDeposit(mangoGroup, tokenIndex)
-  const borrowQuantity = withdrawQuantity - tokenBalance
-
-  const nativeBorrowQuantity = new BN(
-    Math.ceil(
-      borrowQuantity * Math.pow(10, mangoGroup.mintDecimals[tokenIndex])
-    )
-  )
-
-  const borrowInstruction = makeBorrowInstruction(
-    programId,
-    mangoGroup.publicKey,
-    marginAccount.publicKey,
-    wallet.publicKey,
-    tokenIndex,
-    marginAccount.openOrders,
-    mangoGroup.oracles,
-    nativeBorrowQuantity
-  )
-  transaction.add(borrowInstruction)
-
-  // uiToNative() uses Math.round causing
-  // errors so we use Math.floor here instead
-  const nativeWithdrawQuantity = new BN(
-    Math.floor(
-      withdrawQuantity * Math.pow(10, mangoGroup.mintDecimals[tokenIndex])
-    ) - 1
-  )
-
-  const withdrawInstruction = makeWithdrawInstruction(
-    programId,
-    mangoGroup.publicKey,
-    marginAccount.publicKey,
-    wallet.publicKey,
-    mangoGroup.signerKey,
-    tokenAcc,
-    mangoGroup.vaults[tokenIndex],
-    marginAccount.openOrders,
-    mangoGroup.oracles,
-    nativeWithdrawQuantity
-  )
-  transaction.add(withdrawInstruction)
-
-  const settleBorrowInstruction = makeSettleBorrowInstruction(
-    programId,
-    mangoGroup.publicKey,
-    marginAccount.publicKey,
-    wallet.publicKey,
-    tokenIndex,
-    nativeWithdrawQuantity
-  )
-  transaction.add(settleBorrowInstruction)
-
-  const signers = []
-  const functionName = 'Borrow And Withdraw'
   const sendingMessage = `Sending ${functionName} instruction...`
   const successMessage = `${functionName} instruction success`
   return await sendTransaction({
