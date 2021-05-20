@@ -23,14 +23,14 @@ const MarketHeader = () => {
     // calculate from and to date (0:00UTC to 23:59:59UTC)
     const date = new Date()
     const utcDate = date.getUTCDate()
-    let utcFrom = new Date(
+    const utcFrom = new Date(
       Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
     )
     utcFrom.setUTCDate(utcDate)
     utcFrom.setUTCHours(0)
     utcFrom.setUTCMinutes(0)
     utcFrom.setUTCSeconds(0)
-    let utcTo = new Date(
+    const utcTo = new Date(
       Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
     )
     utcTo.setUTCDate(utcDate)

@@ -120,7 +120,7 @@ const AlertsModal: FunctionComponent<AlertsModalProps> = ({
 
   const handleCloseModal = () => {
     set((s) => {
-      ;(s.success = ''), (s.tgCode = null)
+      (s.success = ''), (s.tgCode = null)
     })
     resetForm()
     onClose()
@@ -326,7 +326,7 @@ const AlertsModal: FunctionComponent<AlertsModalProps> = ({
                     <div className={`text-th-fgd-1 pb-2`}>Mobile Number</div>
                     <PhoneInput
                       containerClass="w-full"
-                      inputClass="!w-full !bg-th-bkg-1 !rounded !h-10 !text-th-fgd-1 
+                      inputClass="!w-full !bg-th-bkg-1 !rounded !h-10 !text-th-fgd-1
                 !border !border-th-fgd-4 !border-l hover:!border-th-primary focus:!border-th-primary default-transition"
                       buttonClass="!bg-th-bkg-2 !border !border-th-fgd-4 !pl-1 hover:!bg-th-bkg-3 focus:!bg-th-primary !rounded-l default-transition"
                       dropdownClass="!bg-th-bkg-1 !border-0 !pl-1 !text-th-fgd-1 !rounded !mt-2 !max-h-40 thin-scroll"
