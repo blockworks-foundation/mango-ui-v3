@@ -16,6 +16,14 @@ import { Buffer } from 'buffer'
 import assert from 'assert'
 import { struct } from 'superstruct'
 
+class TransactionError extends Error {
+    public txid: string;
+    constructor (message: string, txid?: string) {
+      super(message);
+      this.txid = txid;
+    }
+}
+
 export const getUnixTs = () => {
   return new Date().getTime() / 1000
 }
@@ -153,15 +161,22 @@ export async function sendSignedTransaction({
         for (let i = simulateResult.logs.length - 1; i >= 0; --i) {
           const line = simulateResult.logs[i]
           if (line.startsWith('Program log: ')) {
-            throw new Error(
-              'Transaction failed: ' + line.slice('Program log: '.length)
+            throw new TransactionError(
+              'Transaction failed: ' + line.slice('Program log: '.length),
+              txid
             )
           }
         }
       }
-      throw new Error(JSON.stringify(simulateResult.err))
+      throw new TransactionError(
+        JSON.stringify(simulateResult.err),
+        txid
+      )
     }
-    throw new Error('Transaction failed')
+    throw new TransactionError(
+      'Transaction failed',
+      txid
+    )
   } finally {
     done = true
   }

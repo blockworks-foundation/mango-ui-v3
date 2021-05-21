@@ -48,6 +48,7 @@ const BalancesTable = () => {
         notify({
           message: 'Error settling funds',
           description: e.message,
+          txid: e.txid,
           type: 'error',
         })
       }

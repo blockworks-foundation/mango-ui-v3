@@ -85,6 +85,7 @@ const DepositModal = ({ isOpen, onClose }) => {
             message:
               'Could not perform init margin account and deposit operation',
             type: 'error',
+            txid: err.txid
           })
           onClose()
         })
@@ -112,6 +113,7 @@ const DepositModal = ({ isOpen, onClose }) => {
           notify({
             message: 'Could not perform deposit operation',
             type: 'error',
+            txid: err.txid
           })
           onClose()
         })

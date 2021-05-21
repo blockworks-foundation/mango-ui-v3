@@ -40,6 +40,7 @@ const OpenOrdersTable = () => {
       notify({
         message: 'Error cancelling order',
         description: e.message,
+        txid: e.txid,
         type: 'error',
       })
       return

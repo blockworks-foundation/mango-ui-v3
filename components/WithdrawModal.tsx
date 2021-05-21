@@ -179,7 +179,7 @@ const WithdrawModal = ({ isOpen, onClose }) => {
           console.warn('Error withdrawing:', err)
           notify({
             message: 'Could not perform withdraw',
-            description: `${err}`,
+            txid: err.txid,
             type: 'error',
           })
           onClose()
@@ -208,6 +208,7 @@ const WithdrawModal = ({ isOpen, onClose }) => {
           notify({
             message: 'Could not perform borrow and withdraw',
             description: `${err}`,
+            txid: err.txid,
             type: 'error',
           })
           onClose()

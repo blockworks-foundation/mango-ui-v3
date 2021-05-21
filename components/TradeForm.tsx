@@ -193,6 +193,7 @@ export default function TradeForm() {
       notify({
         message: 'Error placing order',
         description: e.message,
+        txid: e.txid,
         type: 'error',
       })
     } finally {
