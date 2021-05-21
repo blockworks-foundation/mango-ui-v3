@@ -3,6 +3,7 @@ import {
   nativeToUi,
   sleep,
 } from '@blockworks-foundation/mango-client/lib/utils'
+import { WRAPPED_SOL_MINT } from '@project-serum/serum/lib/token-instructions'
 import Modal from './Modal'
 import Input from './Input'
 import AccountSelect from './AccountSelect'
@@ -43,10 +44,9 @@ const DepositModal = ({ isOpen, onClose }) => {
   const getBalanceForAccount = (account) => {
     const mintAddress = account?.account.mint.toString()
     const balance = nativeToUi(
-      account?.account?.amount,
+      (account?.account.mint.equals(WRAPPED_SOL_MINT)) ? Math.max(account?.account?.amount - (0.05 * 1e9), 0) : account?.account?.amount,
       mintDecimals[getTokenIndex(mintAddress)]
     )
-
     return balance.toString()
   }
 

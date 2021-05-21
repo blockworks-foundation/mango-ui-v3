@@ -2,10 +2,9 @@ import { useState } from 'react'
 import FloatingElement from './FloatingElement'
 import OpenOrdersTable from './OpenOrdersTable'
 import BalancesTable from './BalancesTable'
-import FeeDiscountsTable from './FeeDiscountsTable'
 import TradeHistoryTable from './TradeHistoryTable'
 
-const TABS = ['Open Orders', 'Balances', 'Fee Discounts', 'Trade History']
+const TABS = ['Open Orders', 'Balances', 'Trade History']
 
 const UserInfoTabs = ({ activeTab, setActiveTab }) => {
   const handleTabChange = (tabName) => {
@@ -62,8 +61,6 @@ const TabContent = ({ activeTab }) => {
       return <OpenOrdersTable />
     case 'Balances':
       return <BalancesTable />
-    case 'Fee Discounts':
-      return <FeeDiscountsTable />
     case 'Trade History':
       return <TradeHistoryTable />
     default:
