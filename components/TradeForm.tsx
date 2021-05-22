@@ -94,6 +94,7 @@ export default function TradeForm() {
   }
 
   const onSetBaseSize = (baseSize: number | '') => {
+    const {price} = useMangoStore.getState().tradeForm
     setBaseSize(baseSize)
     if (!baseSize) {
       setQuoteSize('')
@@ -193,6 +194,7 @@ export default function TradeForm() {
       notify({
         message: 'Error placing order',
         description: e.message,
+        txid: e.txid,
         type: 'error',
       })
     } finally {
