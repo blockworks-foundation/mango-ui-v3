@@ -874,11 +874,12 @@
 
 "@blockworks-foundation/mango-client@https://github.com/blockworks-foundation/mango-client-ts#5_tokens":
   version "0.1.19"
-  resolved "https://github.com/blockworks-foundation/mango-client-ts#e4d29989128e1082bc5ba8b9a4c9aba737a6ac9e"
+  resolved "https://github.com/blockworks-foundation/mango-client-ts#1985bf60bef1666f78d4c4adb46b90df6f103242"
   dependencies:
+    "@project-serum/common" "^0.0.1-beta.3"
     "@project-serum/serum" "^0.13.20"
     "@project-serum/sol-wallet-adapter" "^0.1.4"
-    "@solana/spl-token" "^0.0.13"
+    "@solana/spl-token" "0.0.13"
     "@solana/web3.js" "^0.90.0"
     bn.js "^5.1.2"
     borsh "https://github.com/defactojob/borsh-js#field-mapper"
@@ -1273,9 +1274,27 @@
   version "2.9.2"
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.9.2.tgz#adea7b6953cbb34651766b0548468e743c6a2353"
 
+"@project-serum/common@^0.0.1-beta.3":
+  version "0.0.1-beta.3"
+  resolved "https://registry.yarnpkg.com/@project-serum/common/-/common-0.0.1-beta.3.tgz#53586eaff9d9fd7e8938b1e12080c935b8b6ad07"
+  integrity sha512-gnQE/eUydTtto5okCgLWj1M97R9RRPJqnhKklikYI7jP/pnNhDmngSXC/dmfzED2GXSJEIKNIlxVw1k+E2Aw3w==
+  dependencies:
+    "@project-serum/serum" "^0.13.21"
+    bn.js "^5.1.2"
+    superstruct "0.8.3"
+
 "@project-serum/serum@^0.13.20":
   version "0.13.34"
   resolved "https://registry.yarnpkg.com/@project-serum/serum/-/serum-0.13.34.tgz#c76477c27e14d975afa38b6c352b3abe92af6e52"
+  dependencies:
+    "@solana/web3.js" "^0.90.0"
+    bn.js "^5.1.2"
+    buffer-layout "^1.2.0"
+
+"@project-serum/serum@^0.13.21":
+  version "0.13.37"
+  resolved "https://registry.yarnpkg.com/@project-serum/serum/-/serum-0.13.37.tgz#18cc2613a655a8e782e14c4d55a2707a79fbc625"
+  integrity sha512-Bt7D/0P0M1b+xyygCU9z1p7Pec6vontzy4Q92TgIg33/J1qiAR/899HXGlr7oho/NntGNwIlbEU22nqsWWuAiA==
   dependencies:
     "@solana/web3.js" "^0.90.0"
     bn.js "^5.1.2"
@@ -1301,7 +1320,7 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
-"@solana/spl-token@^0.0.13":
+"@solana/spl-token@0.0.13":
   version "0.0.13"
   resolved "https://registry.yarnpkg.com/@solana/spl-token/-/spl-token-0.0.13.tgz#5e0b235b1f8b34643280401dbfddeb34d13d1acd"
   integrity sha512-WT8M9V/hxURR5jLbhr3zgwVsgcY6m8UhHtK045w7o+jx8FJ9MKARkj387WBFU7mKiFq0k8jw/8YL7XmnIUuH8Q==
@@ -1795,6 +1814,7 @@ anser@1.4.9:
 ansi-colors@^4.1.1:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/ansi-colors/-/ansi-colors-4.1.1.tgz#cbb9ae256bf750af1eab344f229aa27fe94ba348"
+  integrity sha512-JoX0apGbHaUJBNl6yF+p6JAFYZ666/hhCGKN5t9QFjbJQKUU/g8MNbFDbvfrgKXvI1QpZplPOnwIo99lX/AAmA==
 
 ansi-escapes@^4.2.1, ansi-escapes@^4.3.0, ansi-escapes@^4.3.1:
   version "4.3.2"
@@ -2955,6 +2975,7 @@ debug@2, debug@^2.2.0, debug@^2.3.3:
 debug@^4.0.1, debug@^4.1.0, debug@^4.1.1, debug@^4.2.0:
   version "4.3.1"
   resolved "https://registry.yarnpkg.com/debug/-/debug-4.3.1.tgz#f0d229c505e0c6d8c49ac553d1b13dc183f6b2ee"
+  integrity sha512-doEwdvm4PCeK4K3RQN2ZC2BYUBaxwLARCqZmMjtF8a51J2Rb0xpVloFRnCODwqjpwnAoao4pelN8l3RJdv3gRQ==
   dependencies:
     ms "2.1.2"
 
@@ -3298,6 +3319,7 @@ escape-string-regexp@^2.0.0:
 escape-string-regexp@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-4.0.0.tgz#14ba83a5d373e3d311e5afca29cf5bfad965bf34"
+  integrity sha512-TtpcNJ3XAzx3Gq8sWRzJaVajRs0uVxA2YAkdb1jm2YkPz4G6egUFAyA3n5vtEIZefPk5Wa4UXbKuS5fKkJWdgA==
 
 escodegen@^2.0.0:
   version "2.0.0"
@@ -3647,6 +3669,7 @@ find-up@^4.0.0, find-up@^4.1.0:
 find-up@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/find-up/-/find-up-5.0.0.tgz#4c92819ecb7083561e4f4a240a86be5198f536fc"
+  integrity sha512-78/PXT1wlLLDgTzDs7sjq9hzz0vXD+zn+7wypEe4fXQxCmdmqfGsEPQxmiCSQI3ajFV91bVSsvNtrJRiW6nGng==
   dependencies:
     locate-path "^6.0.0"
     path-exists "^4.0.0"
@@ -3742,6 +3765,7 @@ gensync@^1.0.0-beta.2:
 get-caller-file@^2.0.1:
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/get-caller-file/-/get-caller-file-2.0.5.tgz#4f94412a82db32f36e3b0b9741f8a97feb031f7e"
+  integrity sha512-DyFP3BM/3YHTQOCUL/w0OZHR0lpKeGrxotcHWcqNEdnltqFwXVfhEBQ94eIo34AfQpo0rGki4cyIiftY06h2Fg==
 
 get-intrinsic@^1.0.2, get-intrinsic@^1.1.0, get-intrinsic@^1.1.1:
   version "1.1.1"
@@ -6385,6 +6409,7 @@ raf@^3.4.0:
 randombytes@^2.0.0, randombytes@^2.0.1, randombytes@^2.0.5:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/randombytes/-/randombytes-2.1.0.tgz#df6f84372f0270dc65cdf6291349ab7a473d4f2a"
+  integrity sha512-vYl3iOX+4CKUWuxGi9Ukhie6fsqXqS9FE2Zaic4tNFD2N2QQaXOMFbuKK4QmDHC0JO6B1Zp41J0LpT0oR68amQ==
   dependencies:
     safe-buffer "^5.1.0"
 
@@ -7346,6 +7371,7 @@ strip-final-newline@^2.0.0:
 strip-json-comments@^3.1.0, strip-json-comments@^3.1.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/strip-json-comments/-/strip-json-comments-3.1.1.tgz#31f1281b3832630434831c310c01cccda8cbe006"
+  integrity sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig==
 
 styled-jsx@3.3.2:
   version "3.3.2"
@@ -7371,6 +7397,14 @@ stylis@3.5.4:
 stylis@^4.0.3:
   version "4.0.10"
   resolved "https://registry.yarnpkg.com/stylis/-/stylis-4.0.10.tgz#446512d1097197ab3f02fb3c258358c3f7a14240"
+
+superstruct@0.8.3:
+  version "0.8.3"
+  resolved "https://registry.yarnpkg.com/superstruct/-/superstruct-0.8.3.tgz#fb4d8901aca3bf9f79afab1bbab7a7f335cc4ef2"
+  integrity sha512-LbtbFpktW1FcwxVIJlxdk7bCyBq/GzOx2FSFLRLTUhWIA1gHkYPIl3aXRG5mBdGZtnPNT6t+4eEcLDCMOuBHww==
+  dependencies:
+    kind-of "^6.0.2"
+    tiny-invariant "^1.0.6"
 
 superstruct@^0.8.3:
   version "0.8.4"
@@ -7400,6 +7434,7 @@ supports-color@^7.0.0, supports-color@^7.1.0:
 supports-color@^8.0.0:
   version "8.1.1"
   resolved "https://registry.yarnpkg.com/supports-color/-/supports-color-8.1.1.tgz#cd6fc17e28500cff56c1b86c0a7fd4a54a73005c"
+  integrity sha512-MpUEN2OodtUzxvKQl72cUF7RQ5EiHsGvSsVG0ia9c5RbWGL2CI4C7EpPS8UTBIplnlzZiNuV56w+FuNxy3ty2Q==
   dependencies:
     has-flag "^4.0.0"
 
@@ -8011,6 +8046,7 @@ which@^1.2.9:
 which@^2.0.1, which@^2.0.2:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/which/-/which-2.0.2.tgz#7c6a8dd0a636a0327e10b59c9286eee93f3f51b1"
+  integrity sha512-BLI3Tl1TW3Pvl70l3yq3Y64i+awpwXqsGBYWkkqMtnbXgrMD+yj7rhW0kuEDxzJaYXGjEW5ogapKNMEKNMjibA==
   dependencies:
     isexe "^2.0.0"
 

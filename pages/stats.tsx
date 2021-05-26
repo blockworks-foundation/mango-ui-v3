@@ -45,7 +45,7 @@ const useMangoStats = () => {
   useEffect(() => {
     const fetchStats = async () => {
       const response = await fetch(
-        `https://mango-stats.herokuapp.com?mangoGroup=BTC_ETH_SOL_SRM_USDT`
+        `https://mango-stats.herokuapp.com?mangoGroup=BTC_ETH_SOL_SRM_USDC`
       )
       const stats = await response.json()
 
