@@ -23,11 +23,9 @@ const Select = ({
               className={`h-full w-full font-normal bg-th-bkg-1 ring-1 ring-th-fgd-4 ring-inset rounded hover:ring-th-primary focus:outline-none focus:border-th-primary`}
             >
               <StyledDiv
-                className={`flex items-center justify-between space-x-4 p-2`}
+                className={`flex items-center justify-between space-x-4 p-2 text-th-fgd-1`}
               >
-                <span className="text-th-fgd-1">
-                  {value ? value : placeholder}
-                </span>
+                {value ? value : placeholder}
                 {open ? (
                   <ChevronUpIcon className={`h-5 w-5 mr-1 text-th-primary`} />
                 ) : (

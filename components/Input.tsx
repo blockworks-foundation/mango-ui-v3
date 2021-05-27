@@ -51,7 +51,7 @@ const Input = ({
           focus:border-th-primary focus:outline-none 
           ${
             disabled
-              ? 'bg-th-bkg-3 cursor-not-allowed hover:border-th-fgd-4'
+              ? 'bg-th-bkg-3 cursor-not-allowed hover:border-th-fgd-4 text-th-fgd-3'
               : ''
           }
             ${prefix ? 'rounded-l-none' : ''}`}

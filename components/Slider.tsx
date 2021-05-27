@@ -28,19 +28,7 @@ const StyledSlider = styled(Slider)<StyledSliderProps>`
     margin-top: -3px;
     ${({ enableTransition }) =>
       enableTransition && tw`transition-all duration-500`}
-  }
-  .rc-slider-mark-text {
-    ${tw`font-display transition-all duration-300 text-th-fgd-2 hover:text-th-primary`}
-    font-size: 10px;
-  }
-  .rc-slider-mark-text-active {
-    ${tw`opacity-60 hover:opacity-100`}
-  }
-  .rc-slider-mark-text:first-of-type {
-    padding-left: 12px;
-  }
-  .rc-slider-mark-text:last-of-type {
-    padding-right: 24px;
+    ${({ disabled }) => disabled && tw`bg-th-fgd-3 border-th-fgd-4`}
   }
   ${({ disabled }) => disabled && 'background-color: transparent'}
 `
@@ -50,6 +38,7 @@ const StyledSliderButtonWrapper = styled.div`
 `
 
 type StyledSliderButtonProps = {
+  disabled: boolean
   styleValue: number
   sliderValue: number
 }
@@ -81,6 +70,8 @@ const StyledSliderButton = styled.button<StyledSliderButtonProps>`
   ${({ styleValue, sliderValue }) => styleValue < sliderValue && tw`opacity-40`}
   ${({ styleValue, sliderValue }) =>
     styleValue === sliderValue && tw`text-th-primary`}
+  ${({ disabled }) =>
+    disabled && tw`cursor-not-allowed text-th-fgd-4 hover:text-th-fgd-4`}
 `
 
 type SliderProps = {
@@ -135,6 +126,7 @@ const AmountSlider: FunctionComponent<SliderProps> = ({
       />
       <StyledSliderButtonWrapper>
         <StyledSliderButton
+          disabled={disabled}
           onClick={() => handleSliderButtonClick(0)}
           styleValue={0}
           sliderValue={value}
@@ -142,6 +134,7 @@ const AmountSlider: FunctionComponent<SliderProps> = ({
           0%
         </StyledSliderButton>
         <StyledSliderButton
+          disabled={disabled}
           onClick={() => handleSliderButtonClick(25)}
           styleValue={25}
           sliderValue={value}
@@ -149,6 +142,7 @@ const AmountSlider: FunctionComponent<SliderProps> = ({
           25%
         </StyledSliderButton>
         <StyledSliderButton
+          disabled={disabled}
           onClick={() => handleSliderButtonClick(50)}
           styleValue={50}
           sliderValue={value}
@@ -156,6 +150,7 @@ const AmountSlider: FunctionComponent<SliderProps> = ({
           50%
         </StyledSliderButton>
         <StyledSliderButton
+          disabled={disabled}
           onClick={() => handleSliderButtonClick(75)}
           styleValue={75}
           sliderValue={value}
@@ -163,6 +158,7 @@ const AmountSlider: FunctionComponent<SliderProps> = ({
           75%
         </StyledSliderButton>
         <StyledSliderButton
+          disabled={disabled}
           onClick={() => handleSliderButtonClick(100)}
           styleValue={100}
           sliderValue={value}
