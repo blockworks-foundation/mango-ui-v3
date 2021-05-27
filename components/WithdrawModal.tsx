@@ -32,7 +32,7 @@ import { MarginAccount, uiToNative } from '@blockworks-foundation/mango-client'
 import Select from './Select'
 
 const WithdrawModal = ({ isOpen, onClose }) => {
-  const [withdrawTokenSymbol, setWithdrawTokenSymbol] = useState('')
+  const [withdrawTokenSymbol, setWithdrawTokenSymbol] = useState('USDC')
   const [inputAmount, setInputAmount] = useState(0)
   const [invalidAmountMessage, setInvalidAmountMessage] = useState('')
   const [maxAmount, setMaxAmount] = useState(0)
@@ -44,21 +44,12 @@ const WithdrawModal = ({ isOpen, onClose }) => {
   const [maxButtonTransition, setMaxButtonTransition] = useState(false)
   const { getTokenIndex, symbols } = useMarketList()
   const { connection, programId } = useConnection()
-  const walletAccounts = useMangoStore((s) => s.wallet.balances)
   const prices = useMangoStore((s) => s.selectedMangoGroup.prices)
   const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const selectedMarginAccount = useMangoStore(
     (s) => s.selectedMarginAccount.current
   )
   const actions = useMangoStore((s) => s.actions)
-  const withdrawAccounts = useMemo(
-    () =>
-      walletAccounts.filter((acc) =>
-        Object.values(symbols).includes(acc.account.mint.toString())
-      ),
-    [symbols, walletAccounts]
-  )
-  const [selectedAccount, setSelectedAccount] = useState(withdrawAccounts[0])
   const tokenIndex = useMemo(
     () => getTokenIndex(symbols[withdrawTokenSymbol]),
     [withdrawTokenSymbol, getTokenIndex]
@@ -130,6 +121,7 @@ const WithdrawModal = ({ isOpen, onClose }) => {
       prices
     )
     const leverage = 1 / Math.max(0, collateralRatio - 1)
+
     setSimulation({
       equity,
       assetsVal,
@@ -160,8 +152,7 @@ const WithdrawModal = ({ isOpen, onClose }) => {
         mangoGroup,
         marginAccount,
         wallet,
-        selectedAccount.account.mint,
-        selectedAccount.publicKey,
+        new PublicKey(symbols[withdrawTokenSymbol]),
         Number(inputAmount)
       )
         .then((_transSig: string) => {
@@ -188,8 +179,7 @@ const WithdrawModal = ({ isOpen, onClose }) => {
         mangoGroup,
         marginAccount,
         wallet,
-        selectedAccount.account.mint,
-        selectedAccount.publicKey,
+        new PublicKey(symbols[withdrawTokenSymbol]),
         Number(inputAmount)
       )
         .then((_transSig: string) => {
@@ -343,7 +333,7 @@ const WithdrawModal = ({ isOpen, onClose }) => {
     }
   }, [withdrawTokenSymbol])
 
-  if (!selectedAccount) return null
+  if (!withdrawTokenSymbol) return null
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>

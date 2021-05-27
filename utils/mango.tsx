@@ -52,6 +52,10 @@ import {
 } from '@project-serum/serum/lib/token-instructions'
 import { MangoSrmAccount } from '@blockworks-foundation/mango-client/lib/client'
 import { capitalize } from './index'
+import {
+  findAssociatedTokenAddress,
+  createAssociatedTokenAccount,
+} from './associated'
 
 export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 
@@ -348,21 +352,21 @@ export async function withdraw(
   marginAccount: MarginAccount,
   wallet: Wallet,
   token: PublicKey,
-  tokenAcc: PublicKey,
-
   quantity: number
 ): Promise<TransactionSignature> {
   const transaction = new Transaction()
   const signers = []
+  let tokenAcc = await findAssociatedTokenAddress(wallet.publicKey, token)
 
   let wrappedSolAccount: Account | null = null
   if (token.equals(WRAPPED_SOL_MINT)) {
     wrappedSolAccount = new Account()
+    tokenAcc = wrappedSolAccount.publicKey
     const lamports = Math.round(quantity * LAMPORTS_PER_SOL) + 1e7
     transaction.add(
       SystemProgram.createAccount({
         fromPubkey: wallet.publicKey,
-        newAccountPubkey: wrappedSolAccount.publicKey,
+        newAccountPubkey: tokenAcc,
         lamports,
         space: 165,
         programId: TOKEN_PROGRAM_ID,
@@ -370,12 +374,23 @@ export async function withdraw(
     )
     transaction.add(
       initializeAccount({
-        account: wrappedSolAccount.publicKey,
+        account: tokenAcc,
         mint: WRAPPED_SOL_MINT,
         owner: wallet.publicKey,
       })
     )
     signers.push(wrappedSolAccount)
+  } else {
+    const tokenAccExists = await connection.getAccountInfo(tokenAcc, 'recent')
+    if (!tokenAccExists) {
+      transaction.add(
+        await createAssociatedTokenAccount(
+          wallet.publicKey,
+          wallet.publicKey,
+          token
+        )
+      )
+    }
   }
 
   const tokenIndex = mangoGroup.getTokenIndex(token)
@@ -391,7 +406,7 @@ export async function withdraw(
     {
       isSigner: false,
       isWritable: true,
-      pubkey: wrappedSolAccount?.publicKey ?? tokenAcc,
+      pubkey: tokenAcc,
     },
     {
       isSigner: false,
@@ -448,21 +463,21 @@ export async function borrowAndWithdraw(
   marginAccount: MarginAccount,
   wallet: Wallet,
   token: PublicKey,
-  tokenAcc: PublicKey,
-
   withdrawQuantity: number
 ): Promise<TransactionSignature> {
   const transaction = new Transaction()
   const signers = []
+  let tokenAcc = await findAssociatedTokenAddress(wallet.publicKey, token)
 
   let wrappedSolAccount: Account | null = null
   if (token.equals(WRAPPED_SOL_MINT)) {
     wrappedSolAccount = new Account()
+    tokenAcc = wrappedSolAccount.publicKey
     const lamports = Math.round(withdrawQuantity * LAMPORTS_PER_SOL) + 1e7
     transaction.add(
       SystemProgram.createAccount({
         fromPubkey: wallet.publicKey,
-        newAccountPubkey: wrappedSolAccount.publicKey,
+        newAccountPubkey: tokenAcc,
         lamports,
         space: 165,
         programId: TOKEN_PROGRAM_ID,
@@ -476,6 +491,17 @@ export async function borrowAndWithdraw(
       })
     )
     signers.push(wrappedSolAccount)
+  } else {
+    const tokenAccExists = await connection.getAccountInfo(tokenAcc, 'recent')
+    if (!tokenAccExists) {
+      transaction.add(
+        await createAssociatedTokenAccount(
+          wallet.publicKey,
+          wallet.publicKey,
+          token
+        )
+      )
+    }
   }
 
   const tokenIndex = mangoGroup.getTokenIndex(token)
@@ -839,10 +865,11 @@ export async function placeOrderAndSettle(
     ) {
       // open orders missing for this market; create a new one now
       const openOrdersSpace = OpenOrders.getLayout(mangoGroup.dexProgramId).span
-      const openOrdersLamports = await connection.getMinimumBalanceForRentExemption(
-        openOrdersSpace,
-        'singleGossip'
-      )
+      const openOrdersLamports =
+        await connection.getMinimumBalanceForRentExemption(
+          openOrdersSpace,
+          'singleGossip'
+        )
       const accInstr = await createAccountInstruction(
         connection,
         wallet.publicKey,
@@ -1057,10 +1084,11 @@ export async function placeAndSettle(
     ) {
       // open orders missing for this market; create a new one now
       const openOrdersSpace = OpenOrders.getLayout(mangoGroup.dexProgramId).span
-      const openOrdersLamports = await connection.getMinimumBalanceForRentExemption(
-        openOrdersSpace,
-        'singleGossip'
-      )
+      const openOrdersLamports =
+        await connection.getMinimumBalanceForRentExemption(
+          openOrdersSpace,
+          'singleGossip'
+        )
       const accInstr = await createAccountInstruction(
         connection,
         wallet.publicKey,

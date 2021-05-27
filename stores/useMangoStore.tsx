@@ -203,7 +203,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
       const mangoClient = get().mangoClient
       const set = get().set
 
-      if (wallet?.publicKey && connected) {
+      if (wallet?.publicKey && connected && selectedMangoGroup) {
         const usersMangoSrmAccounts =
           await mangoClient.getMangoSrmAccountsForOwner(
             connection,
