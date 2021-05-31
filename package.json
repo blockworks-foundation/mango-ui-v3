@@ -38,7 +38,7 @@
     "@heroicons/react": "^1.0.0",
     "@project-serum/serum": "^0.13.20",
     "@project-serum/sol-wallet-adapter": "^0.1.8",
-    "@solana/web3.js": "^0.90.5",
+    "@solana/web3.js": "^0.95.0",
     "@tippyjs/react": "^4.2.5",
     "babel-plugin-import": "^1.13.3",
     "bn.js": "^5.2.0",
