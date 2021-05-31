@@ -434,11 +434,7 @@ const WithdrawModal = ({ isOpen, onClose }) => {
                 suffix={withdrawTokenSymbol}
               />
               {simulation ? (
-                <Tooltip
-                  content="Projected Leverage"
-                  className="py-1"
-                  placement="bottom"
-                >
+                <Tooltip content="Projected Leverage" className="py-1">
                   <span
                     className={`${getAccountStatusColor(
                       simulation.collateralRatio

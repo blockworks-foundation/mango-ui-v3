@@ -5,14 +5,12 @@ import 'tippy.js/animations/scale.css'
 type TooltipProps = {
   content: ReactNode
   className?: string
-  placement?: any
 }
 
 const Tooltip: FunctionComponent<TooltipProps> = ({
   children,
   content,
   className,
-  placement,
 }) => {
   return (
     <Tippy
@@ -27,7 +25,6 @@ const Tooltip: FunctionComponent<TooltipProps> = ({
           {content}
         </div>
       }
-      placement={placement}
     >
       <div className="outline-none focus:outline-none">{children}</div>
     </Tippy>
