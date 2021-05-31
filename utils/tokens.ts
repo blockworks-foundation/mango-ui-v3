@@ -1,10 +1,8 @@
 import { ACCOUNT_LAYOUT } from '@blockworks-foundation/mango-client'
 import { Connection, PublicKey } from '@solana/web3.js'
 import * as bs58 from 'bs58'
-import { AccountInfo as TokenAccount } from '@solana/spl-token'
 import { TokenInstructions } from '@project-serum/serum'
 import { WRAPPED_SOL_MINT } from '@project-serum/serum/lib/token-instructions'
-
 
 export const TOKEN_PROGRAM_ID = new PublicKey(
   'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
@@ -15,9 +13,11 @@ export type ProgramAccount<T> = {
   account: T
 }
 
-export function parseTokenAccountData(
-  data: Buffer
-): { mint: PublicKey; owner: PublicKey; amount: number } {
+export function parseTokenAccountData(data: Buffer): {
+  mint: PublicKey
+  owner: PublicKey
+  amount: number
+} {
   const { mint, owner, amount } = ACCOUNT_LAYOUT.decode(data)
   return {
     mint: new PublicKey(mint),

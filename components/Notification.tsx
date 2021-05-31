@@ -77,6 +77,7 @@ const Notification = ({ type, message, description, txid }) => {
                 href={'https://explorer.solana.com/tx/' + txid}
                 className="text-th-primary"
                 target="_blank"
+                rel="noreferrer"
               >
                 View transaction {txid.slice(0, 8)}...
                 {txid.slice(txid.length - 8)}
