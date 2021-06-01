@@ -988,7 +988,7 @@
 
 "@blockworks-foundation/mango-client@https://github.com/blockworks-foundation/mango-client-ts#5_tokens":
   version "0.1.19"
-  resolved "https://github.com/blockworks-foundation/mango-client-ts#87d09b0fa0eccfd5ed2d7433bd4ff4ab6edacbe3"
+  resolved "https://github.com/blockworks-foundation/mango-client-ts#6164366c55c42b2e377494518186af3970fab0eb"
   dependencies:
     "@project-serum/common" "^0.0.1-beta.3"
     "@project-serum/serum" "^0.13.20"
@@ -1519,25 +1519,6 @@
     dotenv "8.2.0"
     mkdirp "1.0.4"
 
-"@solana/web3.js@0.95.0", "@solana/web3.js@^0.95.0":
-  version "0.95.0"
-  resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-0.95.0.tgz#c028c800bf078bec90945240370df51026f8bdab"
-  integrity sha512-jdjAESYTChAYI1aZwH1RggcoT22BxdB9tDKBOt2Iw9SSpZ1Bb81ydrP+7eksE1AwQj6lpzrgtVt2d3sFosqupQ==
-  dependencies:
-    "@babel/runtime" "^7.12.5"
-    bn.js "^5.0.0"
-    bs58 "^4.0.1"
-    buffer "6.0.1"
-    buffer-layout "^1.2.0"
-    crypto-hash "^1.2.2"
-    jayson "^3.4.4"
-    js-sha3 "^0.8.0"
-    node-fetch "^2.6.1"
-    rpc-websockets "^7.4.2"
-    secp256k1 "^4.0.2"
-    superstruct "^0.14.2"
-    tweetnacl "^1.0.0"
-
 "@solana/web3.js@^0.86.1":
   version "0.86.4"
   resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-0.86.4.tgz#69216d3928ca4727c25a1ea96c405e897156ac3b"
@@ -1561,7 +1542,7 @@
     tweetnacl "^1.0.0"
     ws "^7.0.0"
 
-"@solana/web3.js@^0.90.0", "@solana/web3.js@^0.90.5":
+"@solana/web3.js@^0.90.0":
   version "0.90.5"
   resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-0.90.5.tgz#5be7d78a19f0b5e01bf82c52e3cbf0bb72a38cfd"
   integrity sha512-2elnwfIkdtrUjLdTBKu7Rc3mTv95k2cn+JtNtmO2fY/PFRZm7mnGS/gk/wWzGCpBVLiqz2o6o21oONqyDtLG/w==
