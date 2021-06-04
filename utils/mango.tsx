@@ -566,6 +566,16 @@ export async function borrowAndWithdraw(
   )
   transaction.add(settleBorrowInstruction)
 
+  if (wrappedSolAccount) {
+    transaction.add(
+      closeAccount({
+        source: wrappedSolAccount.publicKey,
+        destination: wallet.publicKey,
+        owner: wallet.publicKey,
+      })
+    )
+  }
+
   const functionName = 'Borrow And Withdraw'
   const sendingMessage = `Sending ${functionName} instruction...`
   const successMessage = `${functionName} instruction success`
