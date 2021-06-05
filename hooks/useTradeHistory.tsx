@@ -20,6 +20,7 @@ const formatTradeHistory = (newTradeHistory) => {
           : `${trade.baseCurrency}/${trade.quoteCurrency}`,
         key: `${trade.orderId}-${trade.uuid}`,
         liquidity: trade.maker || trade?.eventFlags?.maker ? 'Maker' : 'Taker',
+        value: trade.price * trade.size,
       }
     })
     .sort(byTimestamp)

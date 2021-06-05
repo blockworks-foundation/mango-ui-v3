@@ -5,6 +5,7 @@ import Tooltip from './Tooltip'
 type DropMenuProps = {
   button: ReactNode
   buttonClassName?: string
+  disabled?: boolean
   onChange: (...args: any[]) => any
   options: Array<any>
   toolTipContent?: string
@@ -14,6 +15,7 @@ type DropMenuProps = {
 const DropMenu: FunctionComponent<DropMenuProps> = ({
   button,
   buttonClassName,
+  disabled,
   value,
   onChange,
   options,
@@ -24,7 +26,10 @@ const DropMenu: FunctionComponent<DropMenuProps> = ({
       <Listbox value={value} onChange={onChange}>
         {({ open }) => (
           <>
-            <Listbox.Button className={`${buttonClassName} default-transition`}>
+            <Listbox.Button
+              className={`${buttonClassName} default-transition`}
+              disabled={disabled}
+            >
               {toolTipContent && !open ? (
                 <Tooltip content={toolTipContent} className="text-xs py-1">
                   {button}
@@ -45,7 +50,7 @@ const DropMenu: FunctionComponent<DropMenuProps> = ({
               leaveTo="opacity-0 translate-y-1"
             >
               <Listbox.Options
-                className={`absolute z-10 mt-4 p-1 right-0 md:transform md:-translate-x-1/2 md:left-1/2 w-24 bg-th-bkg-1 divide-y divide-th-bkg-3 shadow-lg outline-none rounded-md`}
+                className={`absolute z-10 mt-4 p-1 right-0 w-24 bg-th-bkg-1 divide-y divide-th-bkg-3 shadow-lg outline-none rounded-md`}
               >
                 {options.map((option) => (
                   <Listbox.Option key={option.name} value={option.name}>

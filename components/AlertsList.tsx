@@ -22,10 +22,8 @@ const AlertsList = () => {
   const triggeredAlerts = useAlertsStore((s) => s.triggeredAlerts)
   const loading = useAlertsStore((s) => s.loading)
 
-  const [
-    triggeredAlertsLength,
-    setTriggeredAlertsLength,
-  ] = useLocalStorageState('triggeredAlertsLength', null)
+  const [triggeredAlertsLength, setTriggeredAlertsLength] =
+    useLocalStorageState('triggeredAlertsLength', null)
 
   const [alertsCount, setAlertsCount] = useLocalStorageState('alertsCount', 0)
 
@@ -105,10 +103,7 @@ const AlertsList = () => {
               leaveFrom="opacity-100 translate-y-0"
               leaveTo="opacity-0 translate-y-1"
             >
-              <Popover.Panel
-                static
-                className="absolute z-10 mt-4 right-0 md:transform md:-translate-x-1/2 md:left-1/2 w-64"
-              >
+              <Popover.Panel static className="absolute z-10 mt-4 right-0 w-64">
                 <div className="bg-th-bkg-1 p-4 overflow-auto max-h-80 rounded-lg shadow-lg thin-scroll">
                   {loading ? (
                     <div className="flex items-center justify-center text-th-primary h-40">

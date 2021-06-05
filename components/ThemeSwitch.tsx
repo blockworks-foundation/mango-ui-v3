@@ -17,9 +17,7 @@ const ThemeSwitch = () => {
   // When mounted on client, now we can show the UI
   useEffect(() => setMounted(true), [])
 
-  if (!mounted) return null
-
-  return (
+  return mounted ? (
     <DropMenu
       button={
         <div className="flex items-center justify-center rounded-full bg-th-bkg-3 w-8 h-8">
@@ -32,6 +30,8 @@ const ThemeSwitch = () => {
       options={THEMES}
       toolTipContent="Change Theme"
     />
+  ) : (
+    <div className="bg-th-bkg-3 rounded-full w-8 h-8" />
   )
 }
 

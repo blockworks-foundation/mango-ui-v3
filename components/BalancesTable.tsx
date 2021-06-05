@@ -5,8 +5,6 @@ import useConnection from '../hooks/useConnection'
 import Button from '../components/Button'
 import { notify } from '../utils/notifications'
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
-import useMarket from '../hooks/useMarket'
-import { ElementTitle } from './styles'
 import { InformationCircleIcon } from '@heroicons/react/outline'
 import Tooltip from './Tooltip'
 import { sleep } from '../utils'
@@ -16,7 +14,6 @@ const BalancesTable = () => {
   const balances = useBalances()
   const { programId, connection } = useConnection()
   const actions = useMangoStore((s) => s.actions)
-  const { marketName } = useMarket()
 
   async function handleSettleAll() {
     const markets = Object.values(
@@ -56,15 +53,10 @@ const BalancesTable = () => {
   }
 
   return (
-    <div className={`flex flex-col py-6`}>
+    <div className={`flex flex-col py-4`}>
       <div className={`-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8`}>
         <div className={`align-middle inline-block min-w-full sm:px-6 lg:px-8`}>
-          <ElementTitle>
-            <div className="pr-1">{marketName.split('/')[0]}</div>
-            <span className="text-th-fgd-4">/</span>
-            <div className="pl-1">{marketName.split('/')[1]}</div>
-          </ElementTitle>
-          {balances.length &&
+          {balances.length > 0 &&
           (balances.find(({ unsettled }) => unsettled > 0) ||
             balances.find(
               ({ borrows, marginDeposits }) => borrows > 0 && marginDeposits > 0

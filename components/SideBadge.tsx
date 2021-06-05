@@ -7,7 +7,7 @@ type SideBadgeProps = {
 const SideBadge: FunctionComponent<SideBadgeProps> = ({ side }) => {
   return (
     <div
-      className={`rounded-md inline-block ${
+      className={`rounded inline-block ${
         side === 'buy'
           ? 'border border-th-green text-th-green'
           : 'border border-th-red text-th-red'

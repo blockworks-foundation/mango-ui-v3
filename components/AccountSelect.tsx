@@ -57,15 +57,13 @@ const AccountSelect = ({
   )
 
   const missingTokens = symbols
-    ? Object.keys(symbols)
-        .filter((sym) => !symbolsForAccounts.includes(sym))
-        .join(', ')
+    ? Object.keys(symbols).filter((sym) => !symbolsForAccounts.includes(sym))
     : null
 
   return (
     <div className={`relative inline-block w-full`}>
       <div className="flex justify-between pb-2">
-        <div className="text-th-fgd-1">Token Account</div>
+        <div className="text-th-fgd-1">Asset</div>
         {accounts.length < Object.keys(symbols).length ? (
           <button
             className="ml-2 text-th-fgd-1 hover:text-th-primary outline-none focus:outline-none"
@@ -121,7 +119,7 @@ const AccountSelect = ({
                       </div>
                     </div>
                   ) : (
-                    'Select a token address'
+                    'Select an asset'
                   )}
                   {open ? (
                     <ChevronUpIcon className="h-5 w-5 ml-2 text-th-primary" />
@@ -134,12 +132,6 @@ const AccountSelect = ({
             <Listbox.Options
               className={`z-20 p-1 absolute right-0 top-13 bg-th-bkg-1 divide-y divide-th-bkg-3 shadow-lg outline-none rounded-md w-full max-h-60 overflow-auto`}
             >
-              <div className="flex justify-between">
-                <div className={`text-th-fgd-4 p-2`}>Accounts</div>
-                {!hideAddress ? (
-                  <div className={`text-th-fgd-4 p-2`}>Balance</div>
-                ) : null}
-              </div>
               {accounts.map((account) => {
                 const symbolForAccount = getSymbolForTokenMintAddress(
                   account?.account?.mint.toString()
@@ -183,13 +175,27 @@ const AccountSelect = ({
                   </Listbox.Option>
                 )
               })}
-              {missingTokens && accounts.length !== Object.keys(symbols).length ? (
-                <Listbox.Option value="">
-                  <div className="flex items-center justify-center text-th-fgd-1 p-2">
-                    Wallet token address not found for: {missingTokens}
-                  </div>
-                </Listbox.Option>
-              ) : null}
+              {missingTokens && accounts.length !== Object.keys(symbols).length
+                ? missingTokens.map((token) => (
+                    <Listbox.Option disabled key={token} value={token}>
+                      <div
+                        className={`opacity-50 p-2 hover:cursor-not-allowed`}
+                      >
+                        <div className={`flex items-center text-th-fgd-1`}>
+                          <img
+                            alt=""
+                            width="20"
+                            height="20"
+                            src={`/assets/icons/${token.toLowerCase()}.svg`}
+                            className="mr-2"
+                          />
+                          <div className={`flex-grow text-left`}>{token}</div>
+                          <div className={`text-xs`}>No wallet address</div>
+                        </div>
+                      </div>
+                    </Listbox.Option>
+                  ))
+                : null}
             </Listbox.Options>
           </>
         )}

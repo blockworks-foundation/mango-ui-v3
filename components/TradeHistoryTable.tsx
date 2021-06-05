@@ -1,12 +1,17 @@
+import { ArrowSmDownIcon } from '@heroicons/react/solid'
 import useTradeHistory from '../hooks/useTradeHistory'
+import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
 import SideBadge from './SideBadge'
-// import useMangoStore from '../stores/useMangoStore'
-// import Loading from './Loading'
+import { LinkButton } from './Button'
+import { useSortableData } from '../hooks/useSortableData'
 
 const TradeHistoryTable = () => {
+  const { asPath } = useRouter()
   const tradeHistory = useTradeHistory()
-  // const connected = useMangoStore((s) => s.wallet.connected)
+  const { items, requestSort, sortConfig } = useSortableData(tradeHistory)
+
   const renderTradeDateTime = (timestamp) => {
     const date = new Date(timestamp)
     return (
@@ -18,62 +23,178 @@ const TradeHistoryTable = () => {
   }
 
   return (
-    <div className={`flex flex-col py-6`}>
+    <div className={`flex flex-col py-4`}>
       <div className={`-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8`}>
         <div className={`align-middle inline-block min-w-full sm:px-6 lg:px-8`}>
           {tradeHistory && tradeHistory.length ? (
-            <div
-              className={`shadow overflow-hidden border-b border-th-bkg-2 sm:rounded-md`}
-            >
+            <div className={`shadow overflow-hidden border-b border-th-bkg-2`}>
               <Table className={`min-w-full divide-y divide-th-bkg-2`}>
                 <Thead>
-                  <Tr>
+                  <Tr className="text-th-fgd-3 text-xs">
                     <Th
                       scope="col"
                       className={`px-6 py-3 text-left font-normal`}
                     >
-                      Market
+                      <LinkButton
+                        className="flex items-center no-underline"
+                        onClick={() => requestSort('market')}
+                      >
+                        Market
+                        <ArrowSmDownIcon
+                          className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                            sortConfig?.key === 'market'
+                              ? sortConfig.direction === 'ascending'
+                                ? 'transform rotate-180'
+                                : 'transform rotate-360'
+                              : null
+                          }`}
+                        />
+                      </LinkButton>
                     </Th>
                     <Th
                       scope="col"
                       className={`px-6 py-3 text-left font-normal`}
                     >
-                      Side
+                      <LinkButton
+                        className="flex items-center no-underline"
+                        onClick={() => requestSort('side')}
+                      >
+                        Side
+                        <ArrowSmDownIcon
+                          className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                            sortConfig?.key === 'side'
+                              ? sortConfig.direction === 'ascending'
+                                ? 'transform rotate-180'
+                                : 'transform rotate-360'
+                              : null
+                          }`}
+                        />
+                      </LinkButton>
                     </Th>
                     <Th
                       scope="col"
                       className={`px-6 py-3 text-left font-normal`}
                     >
-                      Size
+                      <LinkButton
+                        className="flex items-center no-underline"
+                        onClick={() => requestSort('size')}
+                      >
+                        Size
+                        <ArrowSmDownIcon
+                          className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                            sortConfig?.key === 'size'
+                              ? sortConfig.direction === 'ascending'
+                                ? 'transform rotate-180'
+                                : 'transform rotate-360'
+                              : null
+                          }`}
+                        />
+                      </LinkButton>
                     </Th>
                     <Th
                       scope="col"
                       className={`px-6 py-3 text-left font-normal`}
                     >
-                      Price
+                      <LinkButton
+                        className="flex items-center no-underline"
+                        onClick={() => requestSort('price')}
+                      >
+                        Price
+                        <ArrowSmDownIcon
+                          className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                            sortConfig?.key === 'price'
+                              ? sortConfig.direction === 'ascending'
+                                ? 'transform rotate-180'
+                                : 'transform rotate-360'
+                              : null
+                          }`}
+                        />
+                      </LinkButton>
                     </Th>
                     <Th
                       scope="col"
                       className={`px-6 py-3 text-left font-normal`}
                     >
-                      Liquidity
+                      <LinkButton
+                        className="flex items-center no-underline"
+                        onClick={() => requestSort('value')}
+                      >
+                        Value
+                        <ArrowSmDownIcon
+                          className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                            sortConfig?.key === 'value'
+                              ? sortConfig.direction === 'ascending'
+                                ? 'transform rotate-180'
+                                : 'transform rotate-360'
+                              : null
+                          }`}
+                        />
+                      </LinkButton>
                     </Th>
                     <Th
                       scope="col"
                       className={`px-6 py-3 text-left font-normal`}
                     >
-                      Fees
+                      <LinkButton
+                        className="flex items-center no-underline"
+                        onClick={() => requestSort('liquidity')}
+                      >
+                        Liquidity
+                        <ArrowSmDownIcon
+                          className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                            sortConfig?.key === 'liquidity'
+                              ? sortConfig.direction === 'ascending'
+                                ? 'transform rotate-180'
+                                : 'transform rotate-360'
+                              : null
+                          }`}
+                        />
+                      </LinkButton>
                     </Th>
                     <Th
                       scope="col"
                       className={`px-6 py-3 text-left font-normal`}
                     >
-                      Approx Date/Time
+                      <LinkButton
+                        className="flex items-center no-underline"
+                        onClick={() => requestSort('feeCost')}
+                      >
+                        Fee
+                        <ArrowSmDownIcon
+                          className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                            sortConfig?.key === 'feeCost'
+                              ? sortConfig.direction === 'ascending'
+                                ? 'transform rotate-180'
+                                : 'transform rotate-360'
+                              : null
+                          }`}
+                        />
+                      </LinkButton>
+                    </Th>
+                    <Th
+                      scope="col"
+                      className={`px-6 py-3 text-left font-normal`}
+                    >
+                      <LinkButton
+                        className="flex items-center no-underline"
+                        onClick={() => requestSort('loadTimestamp')}
+                      >
+                        Approx Date
+                        <ArrowSmDownIcon
+                          className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                            sortConfig?.key === 'loadTimestamp'
+                              ? sortConfig.direction === 'ascending'
+                                ? 'transform rotate-180'
+                                : 'transform rotate-360'
+                              : null
+                          }`}
+                        />
+                      </LinkButton>
                     </Th>
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {tradeHistory.map((trade, index) => (
+                  {items.map((trade, index) => (
                     <Tr
                       key={`${trade.orderId}${trade.side}${trade.uuid}`}
                       className={`border-b border-th-bkg-3
@@ -83,7 +204,18 @@ const TradeHistoryTable = () => {
                       <Td
                         className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
-                        {trade.marketName}
+                        <div className="flex items-center">
+                          <img
+                            alt=""
+                            width="20"
+                            height="20"
+                            src={`/assets/icons/${trade.marketName
+                              .split('/')[0]
+                              .toLowerCase()}.svg`}
+                            className={`mr-2.5`}
+                          />
+                          <div>{trade.marketName}</div>
+                        </div>
                       </Td>
                       <Td
                         className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
@@ -99,6 +231,11 @@ const TradeHistoryTable = () => {
                         className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
                         {trade.price}
+                      </Td>
+                      <Td
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
+                      >
+                        ${(trade.price * trade.size).toFixed(2)}
                       </Td>
                       <Td
                         className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
@@ -126,7 +263,17 @@ const TradeHistoryTable = () => {
             <div
               className={`w-full text-center py-6 bg-th-bkg-1 text-th-fgd-3 rounded-md`}
             >
-              No trade history
+              No trade history.
+              {asPath === '/account' ? (
+                <Link href={'/'}>
+                  <a
+                    className={`inline-flex ml-2 py-0
+        `}
+                  >
+                    Make a trade
+                  </a>
+                </Link>
+              ) : null}
             </div>
           )}
         </div>

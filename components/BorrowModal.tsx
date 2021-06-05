@@ -16,7 +16,6 @@ import Loading from './Loading'
 import Slider from './Slider'
 import Button, { LinkButton } from './Button'
 import { notify } from '../utils/notifications'
-import Switch from './Switch'
 import Tooltip from './Tooltip'
 import {
   ExclamationCircleIcon,
@@ -32,20 +31,21 @@ import { PublicKey } from '@solana/web3.js'
 import { MarginAccount, uiToNative } from '@blockworks-foundation/mango-client'
 import Select from './Select'
 
-interface WithdrawModalProps {
+interface BorrowModalProps {
   onClose: () => void
   isOpen: boolean
   tokenSymbol?: string
 }
 
-const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
+const BorrowModal: FunctionComponent<BorrowModalProps> = ({
   isOpen,
   onClose,
   tokenSymbol = '',
 }) => {
-  const [withdrawTokenSymbol, setWithdrawTokenSymbol] = useState(
+  const [borrowTokenSymbol, setBorrowTokenSymbol] = useState(
     tokenSymbol || 'USDC'
   )
+  const [borrowAssetDetails, setBorrowAssetDetails] = useState(null)
   const [inputAmount, setInputAmount] = useState(0)
   const [invalidAmountMessage, setInvalidAmountMessage] = useState('')
   const [maxAmount, setMaxAmount] = useState(0)
@@ -64,12 +64,12 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   )
   const actions = useMangoStore((s) => s.actions)
   const tokenIndex = useMemo(
-    () => getTokenIndex(symbols[withdrawTokenSymbol]),
-    [withdrawTokenSymbol, getTokenIndex]
+    () => getTokenIndex(symbols[borrowTokenSymbol]),
+    [borrowTokenSymbol, getTokenIndex]
   )
 
   useEffect(() => {
-    if (!selectedMangoGroup || !selectedMarginAccount || !withdrawTokenSymbol)
+    if (!selectedMangoGroup || !selectedMarginAccount || !borrowTokenSymbol)
       return
 
     const mintDecimals = selectedMangoGroup.mintDecimals[tokenIndex]
@@ -94,9 +94,8 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
     const liabsAvail = (currentAssetsVal / 1.2 - currentLiabs) * 0.99 - 0.01
 
     // calculate max withdraw amount
-    const amountToWithdraw = includeBorrow
-      ? liabsAvail / prices[tokenIndex] + getMaxForSelectedAsset()
-      : getMaxForSelectedAsset()
+    const amountToWithdraw =
+      liabsAvail / prices[tokenIndex] + getMaxForSelectedAsset()
 
     if (amountToWithdraw > 0) {
       setMaxAmount(amountToWithdraw)
@@ -158,7 +157,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
         mangoGroup,
         marginAccount,
         wallet,
-        new PublicKey(symbols[withdrawTokenSymbol]),
+        new PublicKey(symbols[borrowTokenSymbol]),
         Number(inputAmount)
       )
         .then((_transSig: string) => {
@@ -172,7 +171,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
           setSubmitting(false)
           console.warn('Error withdrawing:', err)
           notify({
-            message: 'Could not perform withdraw',
+            message: 'Could not perform borrow and withdraw',
             txid: err.txid,
             type: 'error',
           })
@@ -185,7 +184,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
         mangoGroup,
         marginAccount,
         wallet,
-        new PublicKey(symbols[withdrawTokenSymbol]),
+        new PublicKey(symbols[borrowTokenSymbol]),
         Number(inputAmount)
       )
         .then((_transSig: string) => {
@@ -212,7 +211,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   const handleSetSelectedAsset = (symbol) => {
     setInputAmount(0)
     setSliderPercentage(0)
-    setWithdrawTokenSymbol(symbol)
+    setBorrowTokenSymbol(symbol)
   }
 
   const getMaxForSelectedAsset = () => {
@@ -261,22 +260,8 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
     }
   }
 
-  const handleIncludeBorrowSwitch = (checked) => {
-    setIncludeBorrow(checked)
-    setInputAmount(0)
-    setSliderPercentage(0)
-    setInvalidAmountMessage('')
-  }
-
-  const setMaxForSelectedAsset = () => {
-    setInputAmount(getMaxForSelectedAsset())
-    setSliderPercentage(100)
-    setInvalidAmountMessage('')
-    setMaxButtonTransition(true)
-  }
-
   const setMaxBorrowForSelectedAsset = async () => {
-    setInputAmount(trimDecimals(maxAmount, DECIMALS[withdrawTokenSymbol]))
+    setInputAmount(trimDecimals(maxAmount, DECIMALS[borrowTokenSymbol]))
     setSliderPercentage(100)
     setInvalidAmountMessage('')
     setMaxButtonTransition(true)
@@ -290,7 +275,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
 
   const onChangeSlider = async (percentage) => {
     const amount = (percentage / 100) * maxAmount
-    setInputAmount(trimDecimals(amount, DECIMALS[withdrawTokenSymbol]))
+    setInputAmount(trimDecimals(amount, DECIMALS[borrowTokenSymbol]))
     setSliderPercentage(percentage)
     setInvalidAmountMessage('')
   }
@@ -332,14 +317,22 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
     }
   }, [maxButtonTransition])
 
-  // turn on borrow toggle when asset balance is zero
   useEffect(() => {
-    if (withdrawTokenSymbol && getMaxForSelectedAsset() === 0) {
-      setIncludeBorrow(true)
-    }
-  }, [withdrawTokenSymbol])
+    const assetIndex = Object.keys(symbols).findIndex(
+      (a) => a === borrowTokenSymbol
+    )
+    const totalDeposits = selectedMangoGroup.getUiTotalDeposit(assetIndex)
+    const totalBorrows = selectedMangoGroup.getUiTotalBorrow(assetIndex)
 
-  if (!withdrawTokenSymbol) return null
+    setBorrowAssetDetails({
+      interest: selectedMangoGroup.getBorrowRate(assetIndex) * 100,
+      price: prices[assetIndex],
+      totalDeposits,
+      utilization: totalDeposits > 0.0 ? totalBorrows / totalDeposits : 0.0,
+    })
+  }, [borrowTokenSymbol])
+
+  if (!borrowTokenSymbol) return null
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -347,29 +340,29 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
         {!showSimulation ? (
           <>
             <Modal.Header>
-              <ElementTitle noMarignBottom>Withdraw Funds</ElementTitle>
+              <ElementTitle noMarignBottom>Borrow Funds</ElementTitle>
             </Modal.Header>
             <div className="pb-2 text-th-fgd-1">Asset</div>
             <Select
               value={
-                withdrawTokenSymbol && selectedMarginAccount ? (
+                borrowTokenSymbol && selectedMarginAccount ? (
                   <div className="flex items-center justify-between w-full">
                     <div className="flex items-center">
                       <img
                         alt=""
                         width="20"
                         height="20"
-                        src={`/assets/icons/${withdrawTokenSymbol.toLowerCase()}.svg`}
+                        src={`/assets/icons/${borrowTokenSymbol.toLowerCase()}.svg`}
                         className={`mr-2.5`}
                       />
-                      {withdrawTokenSymbol}
+                      {borrowTokenSymbol}
                     </div>
                     {floorToDecimal(
                       selectedMarginAccount.getUiDeposit(
                         selectedMangoGroup,
                         tokenIndex
                       ),
-                      tokenPrecision[withdrawTokenSymbol]
+                      tokenPrecision[borrowTokenSymbol]
                     )}
                   </div>
                 ) : (
@@ -396,31 +389,12 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                 </Select.Option>
               ))}
             </Select>
-            <div className="flex items-center jusitfy-between text-th-fgd-1 mt-4 p-2 rounded-md bg-th-bkg-3">
-              <div className="flex items-center text-fgd-1 pr-4">
-                <span>Borrow Funds</span>
-                <Tooltip content="Interest is charged on your borrowed balance and is subject to change.">
-                  <InformationCircleIcon
-                    className={`h-5 w-5 ml-2 text-th-fgd-3 cursor-help`}
-                  />
-                </Tooltip>
-              </div>
-              <Switch
-                checked={includeBorrow}
-                className="ml-auto"
-                onChange={(checked) => handleIncludeBorrowSwitch(checked)}
-              />
-            </div>
             <div className="flex justify-between pb-2 pt-4">
               <div className="text-th-fgd-1">Amount</div>
               <div className="flex space-x-4">
                 <div
                   className="text-th-fgd-1 underline cursor-pointer default-transition hover:text-th-primary hover:no-underline"
-                  onClick={
-                    includeBorrow
-                      ? setMaxBorrowForSelectedAsset
-                      : setMaxForSelectedAsset
-                  }
+                  onClick={setMaxBorrowForSelectedAsset}
                 >
                   Max
                 </div>
@@ -428,7 +402,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
             </div>
             <div className="flex">
               <Input
-                disabled={!withdrawTokenSymbol}
+                disabled={!borrowTokenSymbol}
                 type="number"
                 min="0"
                 className={`border border-th-fgd-4 flex-grow pr-11`}
@@ -437,7 +411,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                 value={inputAmount}
                 onBlur={validateAmountInput}
                 onChange={(e) => onChangeAmountInput(e.target.value)}
-                suffix={withdrawTokenSymbol}
+                suffix={borrowTokenSymbol}
               />
               {simulation ? (
                 <Tooltip content="Projected Leverage" className="py-1">
@@ -462,7 +436,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
             ) : null}
             <div className="pt-3 pb-4">
               <Slider
-                disabled={!withdrawTokenSymbol}
+                disabled={!borrowTokenSymbol}
                 value={sliderPercentage}
                 onChange={(v) => onChangeSlider(v)}
                 step={1}
@@ -485,33 +459,63 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
         {showSimulation && simulation ? (
           <>
             <Modal.Header>
-              <ElementTitle noMarignBottom>Confirm Withdraw</ElementTitle>
+              <ElementTitle noMarignBottom>Confirm Borrow</ElementTitle>
             </Modal.Header>
             {simulation.collateralRatio < 1.2 ? (
               <div className="border border-th-red mb-4 p-2 rounded">
-                <div className="flex items-center text-th-red">
-                  <ExclamationCircleIcon className="h-4 w-4 mr-1.5 flex-shrink-0" />
+                <div className="flex items-center text-th-fgd-1">
+                  <ExclamationCircleIcon className="h-4 w-4 mr-1.5 flex-shrink-0 text-th-red" />
                   Prices have changed and increased your leverage. Reduce the
-                  withdrawal amount.
+                  borrow amount.
                 </div>
               </div>
             ) : null}
             <div className="bg-th-bkg-1 p-4 rounded-lg text-th-fgd-1 text-center">
-              <div className="text-th-fgd-3 pb-1">{`You're about to withdraw`}</div>
+              <div className="text-th-fgd-3 pb-1">You're about to withdraw</div>
               <div className="flex items-center justify-center">
                 <div className="font-semibold relative text-xl">
                   {inputAmount}
                   <span className="absolute bottom-0.5 font-normal ml-1.5 text-xs text-th-fgd-4">
-                    {withdrawTokenSymbol}
+                    {borrowTokenSymbol}
                   </span>
                 </div>
               </div>
-              {getBorrowAmount() > 0 ? (
-                <div className="pt-2 text-th-fgd-4">{`Includes borrow of ~${getBorrowAmount().toFixed(
-                  DECIMALS[withdrawTokenSymbol]
-                )} ${withdrawTokenSymbol}`}</div>
-              ) : null}
             </div>
+            {getBorrowAmount() > 0 ? (
+              <div className="bg-th-bkg-1 mt-2 p-4 rounded-lg text-th-fgd-1 text-center">
+                <div className="flex justify-between pb-2">
+                  <div className="text-th-fgd-4">Borrow Amount</div>
+                  <div className="text-th-fgd-1">
+                    {trimDecimals(
+                      getBorrowAmount(),
+                      DECIMALS[borrowTokenSymbol]
+                    )}{' '}
+                    {borrowTokenSymbol}
+                  </div>
+                </div>
+                <div className="flex justify-between pb-2">
+                  <div className="text-th-fgd-4">Interest APY</div>
+                  <div className="text-th-fgd-1">
+                    {borrowAssetDetails.interest.toFixed(2)}%
+                  </div>
+                </div>
+                <div className="flex justify-between pb-2">
+                  <div className="text-th-fgd-4">Price</div>
+                  <div className="text-th-fgd-1">
+                    ${borrowAssetDetails.price}
+                  </div>
+                </div>
+                <div className="flex justify-between">
+                  <div className="text-th-fgd-4">Available Liquidity</div>
+                  <div className="text-th-fgd-1">
+                    {borrowAssetDetails.totalDeposits.toFixed(
+                      DECIMALS[borrowTokenSymbol]
+                    )}{' '}
+                    {borrowTokenSymbol}
+                  </div>
+                </div>
+              </div>
+            ) : null}
             <Disclosure>
               {({ open }) => (
                 <>
@@ -627,4 +631,4 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   )
 }
 
-export default React.memo(WithdrawModal)
+export default React.memo(BorrowModal)

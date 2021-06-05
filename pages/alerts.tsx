@@ -17,6 +17,7 @@ import Button, { LinkButton } from '../components/Button'
 import AlertsModal from '../components/AlertsModal'
 import AlertItem from '../components/AlertItem'
 import PageBodyContainer from '../components/PageBodyContainer'
+import EmptyState from '../components/EmptyState'
 import { abbreviateAddress } from '../utils'
 
 const relativeTime = require('dayjs/plugin/relativeTime')
@@ -103,34 +104,27 @@ export default function Alerts() {
                     </button>
                   )}
                 </RadioGroup.Option>
-                {marginAccounts
-                  .slice()
-                  .sort(
-                    (a, b) =>
-                      (a.publicKey.toBase58() > b.publicKey.toBase58() && 1) ||
-                      -1
-                  )
-                  .map((acc, i) => (
-                    <RadioGroup.Option
-                      value={acc.publicKey.toString()}
-                      className="focus:outline-none flex-1"
-                      key={i}
-                    >
-                      {({ checked }) => (
-                        <button
-                          className={`${
-                            checked ? 'bg-th-bkg-3' : ''
-                          } font-normal text-th-fgd-1  text-center py-1.5 h-full w-full rounded-none ${
-                            i === marginAccounts.length - 1
-                              ? 'rounded-r-md'
-                              : null
-                          } border-l border-th-fgd-4 hover:bg-th-bkg-3 focus:outline-none`}
-                        >
-                          {abbreviateAddress(acc.publicKey)}
-                        </button>
-                      )}
-                    </RadioGroup.Option>
-                  ))}
+                {marginAccounts.map((acc, i) => (
+                  <RadioGroup.Option
+                    value={acc.publicKey.toString()}
+                    className="focus:outline-none flex-1"
+                    key={i}
+                  >
+                    {({ checked }) => (
+                      <button
+                        className={`${
+                          checked ? 'bg-th-bkg-3' : ''
+                        } font-normal text-th-fgd-1  text-center py-1.5 h-full w-full rounded-none ${
+                          i === marginAccounts.length - 1
+                            ? 'rounded-r-md'
+                            : null
+                        } border-l border-th-fgd-4 hover:bg-th-bkg-3 focus:outline-none`}
+                      >
+                        {abbreviateAddress(acc.publicKey)}
+                      </button>
+                    )}
+                  </RadioGroup.Option>
+                ))}
               </RadioGroup>
             ) : null}
             <Button
@@ -189,13 +183,11 @@ export default function Alerts() {
               />
             </>
           ) : (
-            <div className="flex flex-col items-center text-th-fgd-1 px-4 pb-2 rounded-lg">
-              <LinkIcon className="w-6 h-6 mb-1 text-th-primary" />
-              <div className="font-bold text-lg pb-1">Connect Wallet</div>
-              <p className="mb-0 text-center">
-                Connect your wallet to view and create liquidation alerts.
-              </p>
-            </div>
+            <EmptyState
+              desc="Connect a wallet to view and create liquidation alerts"
+              icon={<LinkIcon />}
+              title="Connect Wallet"
+            />
           )}
         </div>
       </PageBodyContainer>

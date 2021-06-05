@@ -51,17 +51,11 @@ const MarginAccountSelect = ({
       className={className}
     >
       {marginAccounts.length ? (
-        marginAccounts
-          .slice()
-          .sort(
-            (a, b) =>
-              (a.publicKey.toBase58() > b.publicKey.toBase58() && 1) || -1
-          )
-          .map((ma, index) => (
-            <Select.Option key={index} value={ma.publicKey.toString()}>
-              {abbreviateAddress(ma.publicKey)}
-            </Select.Option>
-          ))
+        marginAccounts.map((ma, index) => (
+          <Select.Option key={index} value={ma.publicKey.toString()}>
+            {abbreviateAddress(ma.publicKey)}
+          </Select.Option>
+        ))
       ) : (
         <Select.Option value className="text-th-fgd-4">
           No Margin Accounts Found

@@ -32,8 +32,7 @@ export const ENDPOINTS: EndpointInfo[] = [
 
 type ClusterType = 'mainnet-beta' | 'devnet'
 
-const CLUSTER =
-  (process.env.NEXT_PUBLIC_CLUSTER as ClusterType) || 'mainnet-beta'
+const CLUSTER = (process.env.NEXT_PUBLIC_CLUSTER as ClusterType) || 'devnet'
 const ENDPOINT = ENDPOINTS.find((e) => e.name === CLUSTER)
 const DEFAULT_CONNECTION = new Connection(ENDPOINT.url, 'recent')
 const WEBSOCKET_CONNECTION = new Connection(ENDPOINT.websocket, 'recent')
@@ -250,8 +249,14 @@ const useMangoStore = create<MangoStore>((set, get) => ({
         )
         .then((marginAccounts) => {
           if (marginAccounts.length > 0) {
+            const sortedAccounts = marginAccounts
+              .slice()
+              .sort(
+                (a, b) =>
+                  (a.publicKey.toBase58() > b.publicKey.toBase58() && 1) || -1
+              )
             set((state) => {
-              state.marginAccounts = marginAccounts
+              state.marginAccounts = sortedAccounts
               if (state.selectedMarginAccount.current) {
                 state.selectedMarginAccount.current = marginAccounts.find(
                   (ma) =>
@@ -260,7 +265,14 @@ const useMangoStore = create<MangoStore>((set, get) => ({
                     )
                 )
               } else {
-                state.selectedMarginAccount.current = marginAccounts[0]
+                const lastAccount = localStorage.getItem('lastAccountViewed')
+                console.log(JSON.parse(lastAccount))
+                state.selectedMarginAccount.current = lastAccount
+                  ? marginAccounts.find(
+                      (ma) =>
+                        ma.publicKey.toString() === JSON.parse(lastAccount)
+                    )
+                  : sortedAccounts[0]
               }
             })
           }
