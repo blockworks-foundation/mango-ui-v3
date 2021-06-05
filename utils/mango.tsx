@@ -523,7 +523,9 @@ export async function borrowAndWithdraw(
     Math.ceil(
       borrowQuantity * Math.pow(10, mangoGroup.mintDecimals[tokenIndex])
     )
-  )
+  ).add(new BN(1))
+  // add a lamport to make sure that we don't run into rounding issues
+  // between borrow & withdraw
 
   const borrowInstruction = makeBorrowInstruction(
     programId,
