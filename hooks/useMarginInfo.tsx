@@ -82,10 +82,15 @@ const useMarginInfo = () => {
   useEffect(() => {
     if (selectedMangoGroup) {
       selectedMangoGroup.getPrices(connection).then((prices) => {
-        const collateralRatio = selectedMarginAccount
-          ? selectedMarginAccount.getCollateralRatio(selectedMangoGroup, prices)
-          : 200
+        console.log('prices', prices)
 
+        const collateralRatio = selectedMarginAccount
+          ? selectedMarginAccount.getCollateralRatio(
+              selectedMangoGroup,
+              prices
+            ) || 200
+          : 200
+        console.log('collateral ratio', collateralRatio)
         const accountEquity = selectedMarginAccount
           ? selectedMarginAccount.computeValue(selectedMangoGroup, prices)
           : 0
@@ -100,7 +105,7 @@ const useMarginInfo = () => {
                 ) -
                   1)
               ).toFixed(2)
-            : '∞'
+            : '0'
         } else {
           leverage = '0'
         }

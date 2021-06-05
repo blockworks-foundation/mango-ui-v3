@@ -83,7 +83,10 @@ export default function MarginInfo() {
     if (selectedMangoGroup) {
       selectedMangoGroup.getPrices(connection).then((prices) => {
         const collateralRatio = selectedMarginAccount
-          ? selectedMarginAccount.getCollateralRatio(selectedMangoGroup, prices)
+          ? selectedMarginAccount.getCollateralRatio(
+              selectedMangoGroup,
+              prices
+            ) || 200
           : 200
 
         const accountEquity = selectedMarginAccount
@@ -100,7 +103,7 @@ export default function MarginInfo() {
                 ) -
                   1)
               ).toFixed(2)
-            : '∞'
+            : '0'
         } else {
           leverage = '0'
         }

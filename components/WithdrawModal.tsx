@@ -439,7 +439,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                 onChange={(e) => onChangeAmountInput(e.target.value)}
                 suffix={withdrawTokenSymbol}
               />
-              {simulation ? (
+              {/* {simulation ? (
                 <Tooltip content="Projected Leverage" className="py-1">
                   <span
                     className={`${getAccountStatusColor(
@@ -452,7 +452,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                     x
                   </span>
                 </Tooltip>
-              ) : null}
+              ) : null} */}
             </div>
             {invalidAmountMessage ? (
               <div className="flex items-center pt-1.5 text-th-red">

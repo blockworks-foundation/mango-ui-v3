@@ -349,7 +349,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
               onChange={(e) => onChangeAmountInput(e.target.value)}
               suffix={symbol}
             />
-            {simulation ? (
+            {/* {simulation ? (
               <Tooltip content="Projected Leverage" className="py-1">
                 <span
                   className={`${renderAccountRiskStatus(
@@ -362,7 +362,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
                   x
                 </span>
               </Tooltip>
-            ) : null}
+            ) : null} */}
           </div>
           {invalidAmountMessage ? (
             <div className="flex items-center pt-1.5 text-th-red">
