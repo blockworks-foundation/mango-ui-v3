@@ -128,7 +128,10 @@ export async function deposit(
   const signers = []
 
   let wrappedSolAccount: Account | null = null
-  if (token.equals(WRAPPED_SOL_MINT)) {
+  if (
+    token.equals(WRAPPED_SOL_MINT) &&
+    tokenAcc.toBase58() === wallet.publicKey.toBase58()
+  ) {
     wrappedSolAccount = new Account()
     const lamports = Math.round(quantity * LAMPORTS_PER_SOL) + 1e7
     transaction.add(
