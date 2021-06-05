@@ -1,8 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import useMangoStore from '../stores/useMangoStore'
 import useConnection from './useConnection'
+import useInterval from './useInterval'
 import useMarket from './useMarket'
 import useMarketList from './useMarketList'
+
+const SECONDS = 1000
 
 export default function useOraclePrice() {
   const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
@@ -11,17 +14,23 @@ export default function useOraclePrice() {
   const { getMarketIndex } = useMarketList()
   const [oraclePrice, setOraclePrice] = useState(null)
 
-  useEffect(() => {
+  const fetchOraclePrice = useCallback(() => {
     if (selectedMangoGroup) {
       const marketIndex = getMarketIndex(marketAddress)
       selectedMangoGroup.getPrices(connection).then((prices) => {
         const oraclePriceForMarket = prices[marketIndex]
         setOraclePrice(oraclePriceForMarket)
-        console.log('yoooo', marketAddress, marketIndex, oraclePriceForMarket)
       })
     }
   }, [selectedMangoGroup, marketAddress])
-  console.log('oracle prices', oraclePrice)
+
+  useEffect(() => {
+    fetchOraclePrice()
+  }, [fetchOraclePrice])
+
+  useInterval(() => {
+    fetchOraclePrice()
+  }, 20 * SECONDS)
 
   return oraclePrice
 }
