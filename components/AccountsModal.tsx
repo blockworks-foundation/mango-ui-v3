@@ -81,7 +81,7 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
         <span
           className={
             parseFloat(leverage) > 4
-              ? 'text-th-green'
+              ? 'text-th-red'
               : parseFloat(leverage) > 2
               ? 'text-th-orange'
               : 'text-th-green'
