@@ -1,9 +1,5 @@
 import { useState } from 'react'
 import { MenuIcon, XIcon } from '@heroicons/react/outline'
-import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/solid'
-import { Menu } from '@headlessui/react'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
 import MenuItem from './MenuItem'
 import ThemeSwitch from './ThemeSwitch'
 import useMangoStore from '../stores/useMangoStore'
@@ -14,7 +10,6 @@ const TopBar = () => {
   const connected = useMangoStore((s) => s.wallet.connected)
   const wallet = useMangoStore((s) => s.wallet.current)
   const [showMenu, setShowMenu] = useState(false)
-  const { asPath } = useRouter()
 
   return (
     <>
@@ -36,48 +31,8 @@ const TopBar = () => {
                 <MenuItem href="/account">Account</MenuItem>
                 <MenuItem href="/borrow">Borrow</MenuItem>
                 <MenuItem href="/alerts">Alerts</MenuItem>
-                <Menu>
-                  {({ open }) => (
-                    <div className="relative">
-                      <Menu.Button className="flex items-center hover:text-th-primary focus:outline-none">
-                        More
-                        <div className="pl-1">
-                          {open ? (
-                            <ChevronUpIcon className="h-5 w-5" />
-                          ) : (
-                            <ChevronDownIcon className="h-5 w-5" />
-                          )}
-                        </div>
-                      </Menu.Button>
-                      <Menu.Items className="absolute z-10 mt-4 p-1 right-0 md:transform md:-translate-x-1/2 md:left-1/2 w-24 bg-th-bkg-1 divide-y divide-th-bkg-3 shadow-lg outline-none rounded-md">
-                        <Menu.Item>
-                          <Link href="/stats">
-                            <a
-                              className={`block text-th-fgd-1 font-bold items-center p-2 hover:text-th-primary hover:opacity-100
-                              ${
-                                asPath === '/stats'
-                                  ? `text-th-primary`
-                                  : `border-transparent hover:border-th-primary`
-                              }
-                            `}
-                            >
-                              Stats
-                            </a>
-                          </Link>
-                        </Menu.Item>
-                        <Menu.Item>
-                          <Link href="https://docs.mango.markets/">
-                            <a
-                              className={`block text-th-fgd-1 font-bold items-center p-2 hover:text-th-primary hover:opacity-100`}
-                            >
-                              Learn
-                            </a>
-                          </Link>
-                        </Menu.Item>
-                      </Menu.Items>
-                    </div>
-                  )}
-                </Menu>
+                <MenuItem href="/stats">Stats</MenuItem>
+                <MenuItem href="https://docs.mango.markets/">Learn</MenuItem>
               </div>
             </div>
             <div className="flex items-center">
@@ -121,8 +76,10 @@ const TopBar = () => {
             className={`bg-th-bkg-3 pt-2 pb-3 space-y-1 border-b border-th-fgd-4`}
           >
             <MenuItem href="/">Trade</MenuItem>
-            <MenuItem href="/stats">Stats</MenuItem>
+            <MenuItem href="/account">Account</MenuItem>
+            <MenuItem href="/borrow">Borrow</MenuItem>
             <MenuItem href="/alerts">Alerts</MenuItem>
+            <MenuItem href="/stats">Stats</MenuItem>
             <MenuItem href="https://docs.mango.markets/">Learn</MenuItem>
 
             {connected && wallet?.publicKey ? (
@@ -141,7 +98,7 @@ const TopBar = () => {
                   border-transparent hover:border-th-primary rounded-none outline-none focus:outline-none"
                 onClick={() => wallet.connect()}
               >
-                Connect
+                Connect Wallet
               </button>
             )}
           </div>
