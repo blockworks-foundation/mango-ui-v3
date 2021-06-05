@@ -22,21 +22,27 @@ const MarketHeader = () => {
   const fetchOhlcv = useCallback(async () => {
     // calculate from and to date (0:00UTC to 23:59:59UTC)
     const date = new Date()
-    const utcDate = date.getUTCDate()
     const utcFrom = new Date(
-      Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
+      Date.UTC(
+        date.getFullYear(),
+        date.getUTCMonth(),
+        date.getUTCDate(),
+        0,
+        0,
+        0
+      )
     )
-    utcFrom.setUTCDate(utcDate)
-    utcFrom.setUTCHours(0)
-    utcFrom.setUTCMinutes(0)
-    utcFrom.setUTCSeconds(0)
     const utcTo = new Date(
-      Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
+      Date.UTC(
+        date.getFullYear(),
+        date.getUTCMonth(),
+        date.getUTCDate(),
+        23,
+        59,
+        59
+      )
     )
-    utcTo.setUTCDate(utcDate)
-    utcTo.setUTCHours(23)
-    utcTo.setUTCMinutes(59)
-    utcTo.setUTCSeconds(59)
+
     const from = utcFrom.getTime() / 1000
     const to = utcTo.getTime() / 1000
 
