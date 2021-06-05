@@ -276,7 +276,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   }
 
   const setMaxBorrowForSelectedAsset = async () => {
-    setInputAmount(trimDecimals(maxAmount, DECIMALS[withdrawTokenSymbol]))
+    setInputAmount(trimDecimals(maxAmount, DECIMALS[withdrawTokenSymbol] + 4))
     setSliderPercentage(100)
     setInvalidAmountMessage('')
     setMaxButtonTransition(true)
@@ -290,7 +290,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
 
   const onChangeSlider = async (percentage) => {
     const amount = (percentage / 100) * maxAmount
-    setInputAmount(trimDecimals(amount, DECIMALS[withdrawTokenSymbol]))
+    setInputAmount(trimDecimals(amount, DECIMALS[withdrawTokenSymbol] + 2))
     setSliderPercentage(percentage)
     setInvalidAmountMessage('')
   }
