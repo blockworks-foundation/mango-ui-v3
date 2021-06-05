@@ -333,11 +333,11 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   }, [maxButtonTransition])
 
   // turn on borrow toggle when asset balance is zero
-  useEffect(() => {
-    if (withdrawTokenSymbol && getMaxForSelectedAsset() === 0) {
-      setIncludeBorrow(true)
-    }
-  }, [withdrawTokenSymbol])
+  // useEffect(() => {
+  //   if (withdrawTokenSymbol && getMaxForSelectedAsset() === 0) {
+  //     setIncludeBorrow(true)
+  //   }
+  // }, [withdrawTokenSymbol])
 
   if (!withdrawTokenSymbol) return null
 

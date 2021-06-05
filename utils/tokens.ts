@@ -32,6 +32,7 @@ export async function getWalletTokenInfo(
 ) {
   const splAccounts = await getOwnedTokenAccounts(connection, ownerPublicKey)
   const account = await connection.getAccountInfo(ownerPublicKey)
+  if (!account) return splAccounts
   return splAccounts.concat([
     {
       publicKey: ownerPublicKey,
