@@ -168,7 +168,7 @@ export default function AccountAssets() {
                       Value
                     </Th>
                     <Th scope="col" className="px-6 py-3 text-left font-normal">
-                      Interest APR
+                      Interest APY
                     </Th>
                   </Tr>
                 </Thead>

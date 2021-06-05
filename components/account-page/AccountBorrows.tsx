@@ -125,7 +125,7 @@ export default function AccountBorrows() {
                   Value
                 </Th>
                 <Th scope="col" className="px-6 py-3 text-left font-normal">
-                  Interest APY
+                  Interest APR
                 </Th>
               </Tr>
             </Thead>
@@ -174,7 +174,7 @@ export default function AccountBorrows() {
                     <Td
                       className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
                     >
-                      <span className={`text-th-green`}>
+                      <span className={`text-th-red`}>
                         {(
                           selectedMangoGroup.getBorrowRate(
                             Object.keys(symbols).findIndex(
@@ -238,7 +238,7 @@ export default function AccountBorrows() {
               Price
             </Th>
             <Th scope="col" className="px-6 py-3 text-left font-normal">
-              Interest APY
+              Interest APR
             </Th>
             <Th scope="col" className="px-6 py-3 text-left font-normal">
               Available Liquidity
@@ -275,7 +275,7 @@ export default function AccountBorrows() {
               <Td
                 className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
               >
-                <span className={`text-th-green`}>
+                <span className={`text-th-red`}>
                   {(selectedMangoGroup.getBorrowRate(i) * 100).toFixed(2)}%
                 </span>
               </Td>
