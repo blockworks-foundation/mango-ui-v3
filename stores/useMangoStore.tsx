@@ -32,7 +32,8 @@ export const ENDPOINTS: EndpointInfo[] = [
 
 type ClusterType = 'mainnet-beta' | 'devnet'
 
-const CLUSTER = (process.env.NEXT_PUBLIC_CLUSTER as ClusterType) || 'devnet'
+const CLUSTER =
+  (process.env.NEXT_PUBLIC_CLUSTER as ClusterType) || 'mainnet-beta'
 const ENDPOINT = ENDPOINTS.find((e) => e.name === CLUSTER)
 const DEFAULT_CONNECTION = new Connection(ENDPOINT.url, 'recent')
 const WEBSOCKET_CONNECTION = new Connection(ENDPOINT.websocket, 'recent')

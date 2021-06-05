@@ -37,11 +37,17 @@ const useMarketList = () => {
     [symbolsForMangoGroup]
   )
 
+  const getMarketIndex = useCallback(
+    (address) => Object.entries(spotMarkets).findIndex((x) => x[1] === address),
+    [symbolsForMangoGroup]
+  )
+
   return {
     programId,
     marketList,
     spotMarkets,
     symbols: symbolsForMangoGroup,
+    getMarketIndex,
     getTokenIndex,
   }
 }
