@@ -69,7 +69,7 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
     const accountEquity = acc
       .computeValue(selectedMangoGroup, prices)
       .toFixed(2)
-    let leverage = accountEquity
+    const leverage = accountEquity
       ? (1 / (acc.getCollateralRatio(selectedMangoGroup, prices) - 1)).toFixed(
           2
         )
@@ -125,7 +125,7 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
                 Select a Margin Account
               </RadioGroup.Label>
               <div className="space-y-2">
-                {marginAccounts.map((account, i) => (
+                {marginAccounts.map((account) => (
                   <RadioGroup.Option
                     key={account.publicKey.toString()}
                     value={account}

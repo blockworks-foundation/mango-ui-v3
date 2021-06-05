@@ -17,11 +17,11 @@ import assert from 'assert'
 import { struct } from 'superstruct'
 
 class TransactionError extends Error {
-    public txid: string;
-    constructor (message: string, txid?: string) {
-      super(message);
-      this.txid = txid;
-    }
+  public txid: string
+  constructor(message: string, txid?: string) {
+    super(message)
+    this.txid = txid
+  }
 }
 
 export const getUnixTs = () => {
@@ -168,15 +168,9 @@ export async function sendSignedTransaction({
           }
         }
       }
-      throw new TransactionError(
-        JSON.stringify(simulateResult.err),
-        txid
-      )
+      throw new TransactionError(JSON.stringify(simulateResult.err), txid)
     }
-    throw new TransactionError(
-      'Transaction failed',
-      txid
-    )
+    throw new TransactionError('Transaction failed', txid)
   } finally {
     done = true
   }

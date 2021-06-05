@@ -189,6 +189,24 @@ export default function MarginBalances() {
             </tbody>
           </table>
         ) : null}
+        <div className={`flex justify-center items-center mt-4`}>
+          <Button
+            onClick={() => setShowDepositModal(true)}
+            className="w-1/2"
+            disabled={!connected || loadingMarginAccount}
+          >
+            <span>Deposit</span>
+          </Button>
+          <Button
+            onClick={() => setShowWithdrawModal(true)}
+            className="ml-4 w-1/2"
+            disabled={
+              !connected || !selectedMarginAccount || loadingMarginAccount
+            }
+          >
+            <span>Withdraw</span>
+          </Button>
+        </div>
       </FloatingElement>
       {showDepositModal && (
         <DepositModal isOpen={showDepositModal} onClose={handleCloseDeposit} />

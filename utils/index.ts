@@ -211,8 +211,8 @@ export const copyToClipboard = (copyThis) => {
 
 // Truncate decimals without rounding
 export const trimDecimals = (n, digits) => {
-  var step = Math.pow(10, digits || 0)
-  var temp = Math.trunc(step * n)
+  const step = Math.pow(10, digits || 0)
+  const temp = Math.trunc(step * n)
 
   return temp / step
 }

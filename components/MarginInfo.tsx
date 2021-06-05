@@ -64,16 +64,17 @@ export default function MarginInfo() {
     (s) => s.selectedMarginAccount.current
   )
   const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
-  const [mAccountInfo, setMAccountInfo] = useState<
-    | {
-        label: string
-        value: string
-        unit: string
-        desc: string
-        currency: string
-      }[]
-    | null
-  >(null)
+  const [mAccountInfo, setMAccountInfo] =
+    useState<
+      | {
+          label: string
+          value: string
+          unit: string
+          desc: string
+          currency: string
+        }[]
+      | null
+    >(null)
   const [openAlertModal, setOpenAlertModal] = useState(false)
   const tradeHistory = useTradeHistory()
   const tradeHistoryLength = useMemo(() => tradeHistory.length, [tradeHistory])
@@ -124,8 +125,7 @@ export default function MarginInfo() {
             value: calculatePNL(tradeHistory, prices, selectedMangoGroup),
             unit: '',
             currency: '$',
-            desc:
-              'Total PNL reflects trades placed after March 15th 2021 04:00 AM UTC. Visit the Learn link in the top menu for more information.',
+            desc: 'Total PNL reflects trades placed after March 15th 2021 04:00 AM UTC. Visit the Learn link in the top menu for more information.',
           },
           {
             // TODO: Get collaterization ratio
@@ -141,8 +141,7 @@ export default function MarginInfo() {
             value: (selectedMangoGroup.maintCollRatio * 100).toFixed(0),
             unit: '%',
             currency: '',
-            desc:
-              'The collateral ratio you must maintain to not get liquidated',
+            desc: 'The collateral ratio you must maintain to not get liquidated',
           },
           {
             label: 'Initial Collateral Ratio',

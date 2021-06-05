@@ -25,7 +25,8 @@ interface PhantomProvider {
 
 export class PhantomWalletAdapter
   extends EventEmitter
-  implements WalletAdapter {
+  implements WalletAdapter
+{
   constructor() {
     super()
     this.connect = this.connect.bind(this)

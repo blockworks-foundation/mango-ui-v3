@@ -4,7 +4,7 @@ export const useSortableData = (items, config = null) => {
   const [sortConfig, setSortConfig] = useState(config)
 
   const sortedItems = useMemo(() => {
-    let sortableItems = items ? [...items] : []
+    const sortableItems = items ? [...items] : []
     if (sortConfig !== null) {
       sortableItems.sort((a, b) => {
         if (!isNaN(a[sortConfig.key])) {

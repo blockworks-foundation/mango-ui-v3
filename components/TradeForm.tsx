@@ -94,7 +94,7 @@ export default function TradeForm() {
   }
 
   const onSetBaseSize = (baseSize: number | '') => {
-    const {price} = useMangoStore.getState().tradeForm
+    const { price } = useMangoStore.getState().tradeForm
     setBaseSize(baseSize)
     if (!baseSize) {
       setQuoteSize('')

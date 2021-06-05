@@ -120,7 +120,8 @@ const AlertsModal: FunctionComponent<AlertsModalProps> = ({
 
   const handleCloseModal = () => {
     set((s) => {
-      (s.success = ''), (s.tgCode = null)
+      s.success = ''
+      s.tgCode = null
     })
     resetForm()
     onClose()

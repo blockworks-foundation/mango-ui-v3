@@ -5,13 +5,16 @@ import useMangoStore from '../stores/useMangoStore'
 
 const useConnection = () => {
   const setMangoStore = useMangoStore((s) => s.set)
-  const { cluster, current: connection, endpoint } = useMangoStore(
-    (s) => s.connection
-  )
-
-  const sendConnection = useMemo(() => new Connection(endpoint, 'recent'), [
+  const {
+    cluster,
+    current: connection,
     endpoint,
-  ])
+  } = useMangoStore((s) => s.connection)
+
+  const sendConnection = useMemo(
+    () => new Connection(endpoint, 'recent'),
+    [endpoint]
+  )
 
   useEffect(() => {
     if (connection && endpoint === connection['_rpcEndpoint']) return

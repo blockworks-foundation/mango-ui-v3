@@ -11,7 +11,7 @@ import {
   displayDepositsForMarginAccount,
 } from '../utils/index'
 import useConnection from '../hooks/useConnection'
-import { borrowAndWithdraw, withdraw } from '../utils/mango'
+import { borrowAndWithdraw } from '../utils/mango'
 import Loading from './Loading'
 import Slider from './Slider'
 import Button, { LinkButton } from './Button'
@@ -50,7 +50,6 @@ const BorrowModal: FunctionComponent<BorrowModalProps> = ({
   const [invalidAmountMessage, setInvalidAmountMessage] = useState('')
   const [maxAmount, setMaxAmount] = useState(0)
   const [submitting, setSubmitting] = useState(false)
-  const [includeBorrow, setIncludeBorrow] = useState(false)
   const [simulation, setSimulation] = useState(null)
   const [showSimulation, setShowSimulation] = useState(false)
   const [sliderPercentage, setSliderPercentage] = useState(0)
@@ -135,7 +134,6 @@ const BorrowModal: FunctionComponent<BorrowModalProps> = ({
       leverage,
     })
   }, [
-    includeBorrow,
     inputAmount,
     prices,
     tokenIndex,
@@ -150,62 +148,33 @@ const BorrowModal: FunctionComponent<BorrowModalProps> = ({
     const wallet = useMangoStore.getState().wallet.current
     if (!marginAccount || !mangoGroup) return
 
-    if (!includeBorrow) {
-      withdraw(
-        connection,
-        new PublicKey(programId),
-        mangoGroup,
-        marginAccount,
-        wallet,
-        new PublicKey(symbols[borrowTokenSymbol]),
-        Number(inputAmount)
-      )
-        .then((_transSig: string) => {
-          setSubmitting(false)
-          actions.fetchMangoGroup()
-          actions.fetchMarginAccounts()
-          actions.fetchWalletBalances()
-          onClose()
+    borrowAndWithdraw(
+      connection,
+      new PublicKey(programId),
+      mangoGroup,
+      marginAccount,
+      wallet,
+      new PublicKey(symbols[borrowTokenSymbol]),
+      Number(inputAmount)
+    )
+      .then((_transSig: string) => {
+        setSubmitting(false)
+        actions.fetchMangoGroup()
+        actions.fetchMarginAccounts()
+        actions.fetchWalletBalances()
+        onClose()
+      })
+      .catch((err) => {
+        setSubmitting(false)
+        console.warn('Error borrowing and withdrawing:', err)
+        notify({
+          message: 'Could not perform borrow and withdraw',
+          description: `${err}`,
+          txid: err.txid,
+          type: 'error',
         })
-        .catch((err) => {
-          setSubmitting(false)
-          console.warn('Error withdrawing:', err)
-          notify({
-            message: 'Could not perform borrow and withdraw',
-            txid: err.txid,
-            type: 'error',
-          })
-          onClose()
-        })
-    } else {
-      borrowAndWithdraw(
-        connection,
-        new PublicKey(programId),
-        mangoGroup,
-        marginAccount,
-        wallet,
-        new PublicKey(symbols[borrowTokenSymbol]),
-        Number(inputAmount)
-      )
-        .then((_transSig: string) => {
-          setSubmitting(false)
-          actions.fetchMangoGroup()
-          actions.fetchMarginAccounts()
-          actions.fetchWalletBalances()
-          onClose()
-        })
-        .catch((err) => {
-          setSubmitting(false)
-          console.warn('Error borrowing and withdrawing:', err)
-          notify({
-            message: 'Could not perform borrow and withdraw',
-            description: `${err}`,
-            txid: err.txid,
-            type: 'error',
-          })
-          onClose()
-        })
-    }
+        onClose()
+      })
   }
 
   const handleSetSelectedAsset = (symbol) => {
@@ -471,7 +440,9 @@ const BorrowModal: FunctionComponent<BorrowModalProps> = ({
               </div>
             ) : null}
             <div className="bg-th-bkg-1 p-4 rounded-lg text-th-fgd-1 text-center">
-              <div className="text-th-fgd-3 pb-1">You're about to withdraw</div>
+              <div className="text-th-fgd-3 pb-1">
+                You&apos;re about to withdraw
+              </div>
               <div className="flex items-center justify-center">
                 <div className="font-semibold relative text-xl">
                   {inputAmount}

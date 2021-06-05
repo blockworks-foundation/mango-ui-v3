@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import TradeHistoryTable from '../TradeHistoryTable'
 
-const historyViews = ['Trades', 'Deposits', 'Withdrawals', 'Liquidations']
+// const historyViews = ['Trades', 'Deposits', 'Withdrawals', 'Liquidations']
 
 export default function AccountHistory() {
-  const [view, setView] = useState('Trades')
+  const [view] = useState('Trades')
   return (
     <>
       <div className="flex items-center justify-between pb-3.5 sm:pt-1">
