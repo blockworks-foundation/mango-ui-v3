@@ -282,9 +282,10 @@ export default function AccountBorrows() {
               <Td
                 className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
               >
-                {selectedMangoGroup
-                  .getUiTotalDeposit(i)
-                  .toFixed(tokenPrecision[asset])}
+                {(
+                  selectedMangoGroup.getUiTotalDeposit(i) -
+                  selectedMangoGroup.getUiTotalBorrow(i)
+                ).toLocaleString()}
               </Td>
               <Td
                 className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}

@@ -267,13 +267,11 @@ const useMangoStore = create<MangoStore>((set, get) => ({
                 )
               } else {
                 const lastAccount = localStorage.getItem('lastAccountViewed')
-                console.log(JSON.parse(lastAccount))
-                state.selectedMarginAccount.current = lastAccount
-                  ? marginAccounts.find(
-                      (ma) =>
-                        ma.publicKey.toString() === JSON.parse(lastAccount)
-                    )
-                  : sortedAccounts[0]
+
+                state.selectedMarginAccount.current =
+                  marginAccounts.find(
+                    (ma) => ma.publicKey.toString() === JSON.parse(lastAccount)
+                  ) || sortedAccounts[0]
               }
             })
           }
