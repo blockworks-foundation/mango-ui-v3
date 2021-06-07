@@ -59,6 +59,8 @@ export default function MarginInfo() {
     (s) => s.selectedMarginAccount.current
   )
   const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  const tradeHistory = useTradeHistory()
+  const tradeHistoryLength = useMemo(() => tradeHistory.length, [tradeHistory])
   const [mAccountInfo, setMAccountInfo] =
     useState<
       | {
@@ -71,8 +73,6 @@ export default function MarginInfo() {
       | null
     >(null)
   const [openAlertModal, setOpenAlertModal] = useState(false)
-  const tradeHistory = useTradeHistory()
-  const tradeHistoryLength = useMemo(() => tradeHistory.length, [tradeHistory])
 
   useEffect(() => {
     if (selectedMangoGroup) {

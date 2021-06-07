@@ -17,16 +17,11 @@ const calculatePNL = (tradeHistory, prices, mangoGroup) => {
   if (!prices.length) return '-'
 
   const assetIndex = {
-    'BTC/USDT': 0,
-    'BTC/WUSDT': 0,
-    'ETH/USDT': 1,
-    'ETH/WUSDT': 1,
-    'SOL/USDT': 2,
-    'SOL/WUSDT': 2,
-    'SRM/USDT': 3,
-    'SRM/WUSDT': 3,
-    USDT: 2,
-    WUSDT: 2,
+    'BTC/USDC': 0,
+    'ETH/USDC': 1,
+    'SOL/USDC': 2,
+    'SRM/USDC': 3,
+    USDC: 4,
   }
 
   groupedTrades.forEach((val, key) => {
@@ -37,7 +32,7 @@ const calculatePNL = (tradeHistory, prices, mangoGroup) => {
     )
   })
 
-  const totalNativeUsdt = tradeHistory.reduce((acc, current) => {
+  const totalNativeUSDC = tradeHistory.reduce((acc, current) => {
     const usdtAmount =
       current.side === 'sell'
         ? parseInt(current.nativeQuantityReleased)
@@ -46,9 +41,9 @@ const calculatePNL = (tradeHistory, prices, mangoGroup) => {
     return usdtAmount + acc
   }, 0)
 
-  profitAndLoss['USDT'] = nativeToUi(
-    totalNativeUsdt,
-    mangoGroup.mintDecimals[2]
+  profitAndLoss['USDC'] = nativeToUi(
+    totalNativeUSDC,
+    mangoGroup.mintDecimals[assetIndex['USDC']]
   )
 
   let total = 0
@@ -56,7 +51,7 @@ const calculatePNL = (tradeHistory, prices, mangoGroup) => {
     total = total + profitAndLoss[assetName] * prices[assetIndex[assetName]]
   }
 
-  return isNaN(total) ? 0 : total.toFixed(2)
+  return total.toFixed(2)
 }
 
 const useMarginInfo = () => {
@@ -79,18 +74,17 @@ const useMarginInfo = () => {
         }[]
       | null
     >(null)
+
   useEffect(() => {
     if (selectedMangoGroup) {
       selectedMangoGroup.getPrices(connection).then((prices) => {
-        console.log('prices', prices)
-
         const collateralRatio = selectedMarginAccount
           ? selectedMarginAccount.getCollateralRatio(
               selectedMangoGroup,
               prices
             ) || 200
           : 200
-        console.log('collateral ratio', collateralRatio)
+
         const accountEquity = selectedMarginAccount
           ? selectedMarginAccount.computeValue(selectedMangoGroup, prices)
           : 0
