@@ -71,11 +71,12 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
     const accountEquity = acc
       .computeValue(selectedMangoGroup, prices)
       .toFixed(2)
-    const leverage = accountEquity
-      ? (1 / (acc.getCollateralRatio(selectedMangoGroup, prices) - 1)).toFixed(
-          2
-        )
-      : '∞'
+
+    const collRatio = acc.getCollateralRatio(selectedMangoGroup, prices)
+
+    const leverage =
+      accountEquity && collRatio ? (1 / (collRatio - 1)).toFixed(2) : '0.00'
+
     return (
       <div className="text-th-fgd-3 text-xs">
         ${accountEquity}
