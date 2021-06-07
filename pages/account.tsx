@@ -50,7 +50,7 @@ export default function Account() {
           {selectedMarginAccount ? (
             <div className="divide-x divide-th-fgd-4 flex justify-center w-full pt-4 sm:pt-0 sm:justify-end">
               <div className="pr-4 text-xs text-th-fgd-1">
-                <div className="pb-0.5 text-2xs text-th-fgd-3">Acc Owner</div>
+                <div className="pb-0.5 text-2xs text-th-fgd-3">Acct Owner</div>
                 <a
                   className="default-transition flex items-center text-th-fgd-2"
                   href={`https://explorer.solana.com/address/${selectedMarginAccount?.owner}`}
@@ -62,7 +62,9 @@ export default function Account() {
                 </a>
               </div>
               <div className="pl-4 text-xs text-th-fgd-1">
-                <div className="pb-0.5 text-2xs text-th-fgd-3">Acc Address</div>
+                <div className="pb-0.5 text-2xs text-th-fgd-3">
+                  Margin Account
+                </div>
                 <a
                   className="default-transition flex items-center text-th-fgd-2"
                   href={`https://explorer.solana.com/address/${selectedMarginAccount?.publicKey}`}
@@ -78,7 +80,7 @@ export default function Account() {
             </div>
           ) : null}
         </div>
-        <div className="bg-th-bkg-2 overflow-auto p-6 rounded-lg">
+        <div className="bg-th-bkg-2 overflow-none p-6 rounded-lg">
           {selectedMarginAccount ? (
             <>
               <div className="pb-4 text-th-fgd-1 text-lg">Overview</div>
