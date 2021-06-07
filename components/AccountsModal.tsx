@@ -33,6 +33,7 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
   const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const prices = useMangoStore((s) => s.selectedMangoGroup.prices)
   const setMangoStore = useMangoStore((s) => s.set)
+  const actions = useMangoStore((s) => s.actions)
   const [, setLastAccountViewed] = useLocalStorageState('lastAccountViewed')
 
   const handleMarginAccountChange = (marginAccount: MarginAccount) => {
@@ -40,6 +41,7 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
     setMangoStore((state) => {
       state.selectedMarginAccount.current = marginAccount
     })
+    actions.fetchTradeHistory()
     onClose()
   }
 
