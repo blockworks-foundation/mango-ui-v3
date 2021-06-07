@@ -3,8 +3,9 @@ import FloatingElement from './FloatingElement'
 import OpenOrdersTable from './OpenOrdersTable'
 import BalancesTable from './BalancesTable'
 import TradeHistoryTable from './TradeHistoryTable'
+import FeeDiscountsTable from './FeeDiscountsTable'
 
-const TABS = ['Open Orders', 'Balances', 'Trade History']
+const TABS = ['Open Orders', 'Balances', 'Trade History', 'Fee Discounts']
 
 const UserInfoTabs = ({ activeTab, setActiveTab }) => {
   const handleTabChange = (tabName) => {
@@ -63,6 +64,8 @@ const TabContent = ({ activeTab }) => {
       return <BalancesTable />
     case 'Trade History':
       return <TradeHistoryTable />
+    case 'Fee Discounts':
+      return <FeeDiscountsTable />
     default:
       return <OpenOrdersTable />
   }
