@@ -80,8 +80,8 @@ export default function AccountBorrows() {
   }, [])
 
   const handleCloseDeposit = useCallback(() => {
-    setDepositToSettle(null)
     setShowDepositModal(false)
+    setDepositToSettle(null)
   }, [])
 
   const handleShowBorrow = (symbol) => {

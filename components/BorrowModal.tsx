@@ -297,6 +297,7 @@ const BorrowModal: FunctionComponent<BorrowModalProps> = ({
       interest: selectedMangoGroup.getBorrowRate(assetIndex) * 100,
       price: prices[assetIndex],
       totalDeposits,
+      totalBorrows,
       utilization: totalDeposits > 0.0 ? totalBorrows / totalDeposits : 0.0,
     })
   }, [borrowTokenSymbol])
@@ -465,7 +466,7 @@ const BorrowModal: FunctionComponent<BorrowModalProps> = ({
                   </div>
                 </div>
                 <div className="flex justify-between pb-2">
-                  <div className="text-th-fgd-4">Interest APY</div>
+                  <div className="text-th-fgd-4">Interest APR</div>
                   <div className="text-th-fgd-1">
                     {borrowAssetDetails.interest.toFixed(2)}%
                   </div>
@@ -479,9 +480,10 @@ const BorrowModal: FunctionComponent<BorrowModalProps> = ({
                 <div className="flex justify-between">
                   <div className="text-th-fgd-4">Available Liquidity</div>
                   <div className="text-th-fgd-1">
-                    {borrowAssetDetails.totalDeposits.toFixed(
-                      DECIMALS[borrowTokenSymbol]
-                    )}{' '}
+                    {(
+                      borrowAssetDetails.totalDeposits -
+                      borrowAssetDetails.totalBorrows
+                    ).toFixed(DECIMALS[borrowTokenSymbol])}{' '}
                     {borrowTokenSymbol}
                   </div>
                 </div>
