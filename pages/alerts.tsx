@@ -88,7 +88,7 @@ export default function Alerts() {
               <RadioGroup
                 value={acc.toString()}
                 onChange={(val) => handleAccountRadioGroupChange(val)}
-                className="flex border border-th-fgd-4 rounded-md w-full mt-3 sm:mt-0 sm:w-80 h-full text-xs h-8"
+                className="flex border border-th-fgd-4 rounded-md w-full mt-3 sm:mt-0 sm:w-auto h-full text-xs h-8"
               >
                 <RadioGroup.Option
                   value="all"
@@ -98,7 +98,7 @@ export default function Alerts() {
                     <button
                       className={`${
                         checked ? 'bg-th-bkg-3 rounded-l-md' : ''
-                      } font-normal text-th-fgd-1 text-center py-1.5 h-full w-full rounded-none hover:bg-th-bkg-3 focus:outline-none`}
+                      } font-normal text-th-fgd-1 text-center py-1.5 px-2.5 h-full w-full rounded-none hover:bg-th-bkg-3 focus:outline-none`}
                     >
                       All
                     </button>
@@ -107,14 +107,14 @@ export default function Alerts() {
                 {marginAccounts.map((acc, i) => (
                   <RadioGroup.Option
                     value={acc.publicKey.toString()}
-                    className="focus:outline-none flex-1"
+                    className="focus:outline-none flex-auto"
                     key={i}
                   >
                     {({ checked }) => (
                       <button
                         className={`${
                           checked ? 'bg-th-bkg-3' : ''
-                        } font-normal text-th-fgd-1  text-center py-1.5 h-full w-full rounded-none ${
+                        } font-normal text-th-fgd-1  text-center p-1.5 h-full w-full rounded-none ${
                           i === marginAccounts.length - 1
                             ? 'rounded-r-md'
                             : null
