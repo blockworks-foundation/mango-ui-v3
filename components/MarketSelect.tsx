@@ -45,7 +45,7 @@ const MarketSelect = () => {
         </div>
         <div className="mr-10 text-xs">
           <a
-            href="https://old.mango.markets"
+            href="https://usdt.mango.markets"
             className="text-primary default-transition underline hover:text-th-primary hover:no-underline border-1"
           >
             Go to Mango V1
