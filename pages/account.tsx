@@ -50,7 +50,7 @@ export default function Account() {
           {selectedMarginAccount ? (
             <div className="divide-x divide-th-fgd-4 flex justify-center w-full pt-4 sm:pt-0 sm:justify-end">
               <div className="pr-4 text-xs text-th-fgd-1">
-                <div className="pb-0.5 text-2xs text-th-fgd-3">Acct Owner</div>
+                <div className="pb-0.5 text-2xs text-th-fgd-3">Owner</div>
                 <a
                   className="default-transition flex items-center text-th-fgd-2"
                   href={`https://explorer.solana.com/address/${selectedMarginAccount?.owner}`}

@@ -6,7 +6,7 @@ import MarketHeader from '../components/MarketHeader'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 
 const Index = () => {
-  const [alphaAccepted] = useLocalStorageState('mangoAlphaAccepted', false)
+  const [alphaAccepted] = useLocalStorageState('mangoAlphaAccepted-2.0', false)
 
   return (
     <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all `}>
