@@ -16,6 +16,10 @@ export function useBalances(): Balances[] {
   const marginAccount = useMangoStore((s) => s.selectedMarginAccount.current)
   const { symbols } = useMarketList()
 
+  let nativeQuoteFree = 0
+  let nativeQuoteLocked = 0
+  let nativeQuoteUnsettled = 0
+
   for (const { market, baseCurrency, quoteCurrency } of markets) {
     if (!marginAccount || !mangoGroup || !market) {
       return []
@@ -40,17 +44,18 @@ export function useBalances(): Balances[] {
     }
 
     const nativeBaseFree = openOrders?.baseTokenFree || 0
-    const nativeQuoteFree = openOrders?.quoteTokenFree || 0
+    nativeQuoteFree += openOrders?.quoteTokenFree || 0
 
     const nativeBaseLocked = openOrders
       ? openOrders.baseTokenTotal - nativeBaseFree
       : 0
-    const nativeQuoteLocked = openOrders
+    nativeQuoteLocked += openOrders
       ? openOrders?.quoteTokenTotal - nativeQuoteFree
       : 0
 
     const nativeBaseUnsettled = openOrders?.baseTokenFree || 0
-    const nativeQuoteUnsettled = openOrders?.quoteTokenFree || 0
+    nativeQuoteUnsettled += openOrders?.quoteTokenFree || 0
+
     const tokenIndex = marketIndex
 
     const net = (borrows, currencyIndex) => {
@@ -121,7 +126,8 @@ export function useBalances(): Balances[] {
   }
 
   balances.sort((a, b) => (a.coin > b.coin ? 1 : -1))
-  balances = balances.filter(function (elem, index, self) {
+
+  balances = balances.filter((elem, index, self) => {
     return index === self.map((a) => a.coin).indexOf(elem.coin)
   })
 
