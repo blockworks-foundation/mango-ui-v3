@@ -9,7 +9,7 @@ import { notify } from '../utils/notifications'
 import { placeAndSettle } from '../utils/mango'
 import { calculateMarketPrice, getDecimalCount } from '../utils'
 import FloatingElement from './FloatingElement'
-import { roundToDecimal } from '../utils/index'
+import { floorToDecimal } from '../utils/index'
 import useMangoStore from '../stores/useMangoStore'
 import Button from './Button'
 import TradeType from './TradeType'
@@ -52,17 +52,29 @@ export default function TradeForm() {
 
   const setBaseSize = (baseSize) =>
     set((s) => {
-      s.tradeForm.baseSize = parseFloat(baseSize)
+      if (!Number.isNaN(parseFloat(baseSize))) {
+        s.tradeForm.baseSize = parseFloat(baseSize)
+      } else {
+        s.tradeForm.baseSize = baseSize
+      }
     })
 
   const setQuoteSize = (quoteSize) =>
     set((s) => {
-      s.tradeForm.quoteSize = parseFloat(quoteSize)
+      if (!Number.isNaN(parseFloat(quoteSize))) {
+        s.tradeForm.quoteSize = parseFloat(quoteSize)
+      } else {
+        s.tradeForm.quoteSize = quoteSize
+      }
     })
 
   const setPrice = (price) =>
     set((s) => {
-      s.tradeForm.price = parseFloat(price)
+      if (!Number.isNaN(parseFloat(price))) {
+        s.tradeForm.price = parseFloat(price)
+      } else {
+        s.tradeForm.price = price
+      }
     })
 
   const setTradeType = (type) =>
@@ -106,7 +118,7 @@ export default function TradeForm() {
       return
     }
     const rawQuoteSize = baseSize * usePrice
-    const quoteSize = baseSize && roundToDecimal(rawQuoteSize, sizeDecimalCount)
+    const quoteSize = baseSize && floorToDecimal(rawQuoteSize, sizeDecimalCount)
     setQuoteSize(quoteSize)
   }
 
@@ -123,7 +135,7 @@ export default function TradeForm() {
     }
     const usePrice = Number(price) || markPrice
     const rawBaseSize = quoteSize / usePrice
-    const baseSize = quoteSize && roundToDecimal(rawBaseSize, sizeDecimalCount)
+    const baseSize = quoteSize && floorToDecimal(rawBaseSize, sizeDecimalCount)
     setBaseSize(baseSize)
   }
 
@@ -255,8 +267,9 @@ export default function TradeForm() {
         <Input.Group className="mt-4">
           <Input
             type="number"
+            min="0"
             step={market?.tickSize || 1}
-            onChange={(e) => onSetPrice(parseFloat(e.target.value))}
+            onChange={(e) => onSetPrice(e.target.value)}
             value={price}
             disabled={tradeType === 'Market'}
             prefix={'Price'}
@@ -274,8 +287,9 @@ export default function TradeForm() {
         <Input.Group className="mt-4">
           <Input
             type="number"
+            min="0"
             step={market?.minOrderSize || 1}
-            onChange={(e) => onSetBaseSize(parseFloat(e.target.value))}
+            onChange={(e) => onSetBaseSize(e.target.value)}
             value={baseSize}
             className="rounded-r-none"
             wrapperClassName="w-3/5"
@@ -284,8 +298,9 @@ export default function TradeForm() {
           />
           <StyledRightInput
             type="number"
+            min="0"
             step={market?.minOrderSize || 1}
-            onChange={(e) => onSetQuoteSize(parseFloat(e.target.value))}
+            onChange={(e) => onSetQuoteSize(e.target.value)}
             value={quoteSize}
             className="rounded-l-none"
             wrapperClassName="w-2/5"
@@ -317,7 +332,7 @@ export default function TradeForm() {
                   'border-th-green hover:border-th-green-dark'
                 } text-th-green hover:text-th-fgd-1 hover:bg-th-green-dark flex-grow`}
               >
-                {`Buy ${baseSize > 0 ? baseSize : ''} ${baseCurrency}`}
+                {`${baseSize > 0 ? 'Buy ' + baseSize : 'Set BUY bid >= ' + market?.minOrderSize} ${baseCurrency}`}
               </Button>
             ) : (
               <Button
@@ -328,7 +343,7 @@ export default function TradeForm() {
                   'border-th-red hover:border-th-red-dark'
                 } text-th-red hover:text-th-fgd-1 hover:bg-th-red-dark flex-grow`}
               >
-                {`Sell ${baseSize > 0 ? baseSize : ''} ${baseCurrency}`}
+                {`${baseSize > 0 ? 'Sell ' + baseSize : 'Set SELL bid >= ' + market?.minOrderSize} ${baseCurrency}`}
               </Button>
             )
           ) : (
