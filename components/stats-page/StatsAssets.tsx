@@ -108,8 +108,8 @@ const AssetHeader = ({ asset }) => {
           <img
             src={icons[asset]}
             alt={icons[asset]}
-            width="32"
-            height="32"
+            width="24"
+            height="24"
             className="mr-2.5"
           />
           Bitcoin
@@ -121,8 +121,8 @@ const AssetHeader = ({ asset }) => {
           <img
             src={icons[asset]}
             alt={icons[asset]}
-            width="32"
-            height="32"
+            width="24"
+            height="24"
             className="mr-2.5"
           />
           Ethereum
@@ -134,8 +134,8 @@ const AssetHeader = ({ asset }) => {
           <img
             src={icons[asset]}
             alt={icons[asset]}
-            width="32"
-            height="32"
+            width="24"
+            height="24"
             className="mr-2.5"
           />
           Solana
@@ -147,8 +147,8 @@ const AssetHeader = ({ asset }) => {
           <img
             src={icons[asset]}
             alt={icons[asset]}
-            width="32"
-            height="32"
+            width="24"
+            height="24"
             className="mr-2.5"
           />
           Serum
@@ -160,8 +160,8 @@ const AssetHeader = ({ asset }) => {
           <img
             src={icons[asset]}
             alt={icons[asset]}
-            width="32"
-            height="32"
+            width="24"
+            height="24"
             className="mr-2.5"
           />
           USD Coin
@@ -173,8 +173,8 @@ const AssetHeader = ({ asset }) => {
           <img
             src={icons[asset]}
             alt={icons[asset]}
-            width="32"
-            height="32"
+            width="24"
+            height="24"
             className="mr-2.5"
           />
           Bitcoin
