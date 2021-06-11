@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts'
+import { AreaChart, Area, XAxis, YAxis, Tooltip, BarChart, Bar } from 'recharts'
 import useDimensions from 'react-cool-dimensions'
 
-const ReAreaChart = ({ title, xAxis, yAxis, data, labelFormat }) => {
+const Chart = ({ title, xAxis, yAxis, data, labelFormat, type }) => {
   const [mouseData, setMouseData] = useState<string | null>(null)
   // @ts-ignore
   const { observe, width, height } = useDimensions()
@@ -46,7 +46,7 @@ const ReAreaChart = ({ title, xAxis, yAxis, data, labelFormat }) => {
           </>
         )}
       </div>
-      {width > 0 ? (
+      {width > 0 && type === 'area' ? (
         <AreaChart
           width={width}
           height={height}
@@ -61,7 +61,7 @@ const ReAreaChart = ({ title, xAxis, yAxis, data, labelFormat }) => {
             content={<></>}
           />
           <defs>
-            <linearGradient id="gradient" x1="0" y1="0" x2="0" y2="1">
+            <linearGradient id="gradientArea" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#FF9C24" stopOpacity={0.5} />
               <stop offset="100%" stopColor="#FF9C24" stopOpacity={0} />
             </linearGradient>
@@ -71,14 +71,45 @@ const ReAreaChart = ({ title, xAxis, yAxis, data, labelFormat }) => {
             type="monotone"
             dataKey={yAxis}
             stroke="#FF9C24"
-            fill="url(#gradient)"
+            fill="url(#gradientArea)"
           />
           <XAxis dataKey={xAxis} hide />
           <YAxis dataKey={yAxis} hide />
         </AreaChart>
       ) : null}
+      {width > 0 && type === 'bar' ? (
+        <BarChart
+          width={width}
+          height={height}
+          data={data}
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
+        >
+          <Tooltip
+            cursor={{
+              fill: '#fff',
+              opacity: 0.2,
+            }}
+            content={<></>}
+          />
+          <defs>
+            <linearGradient id="gradientBar" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#FF9C24" stopOpacity={1} />
+              <stop offset="100%" stopColor="#FF9C24" stopOpacity={0.5} />
+            </linearGradient>
+          </defs>
+          <Bar
+            isAnimationActive={false}
+            type="monotone"
+            dataKey={yAxis}
+            fill="url(#gradientBar)"
+          />
+          <XAxis dataKey={xAxis} hide />
+          <YAxis dataKey={yAxis} hide />
+        </BarChart>
+      ) : null}
     </div>
   )
 }
 
-export default ReAreaChart
+export default Chart

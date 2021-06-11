@@ -1,10 +1,6 @@
 import { useState } from 'react'
-import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
-import { formatBalanceDisplay, tokenPrecision } from '../../utils/index'
-import useMangoStore from '../../stores/useMangoStore'
 import useMangoStats from '../../hooks/useMangoStats'
-import useMarketList from '../../hooks/useMarketList'
-import AreaChart from '../AreaChart'
+import Chart from '../Chart'
 
 const icons = {
   BTC: '/assets/icons/btc.svg',
@@ -24,19 +20,17 @@ export default function StatsAssets() {
     (stat) => stat.symbol === selectedAsset
   )
 
-  console.log(stats)
-
   return (
     <>
-      <div className="flex items-center justify-between h-12 mb-4 w-full">
+      <div className="flex flex-col-reverse items-center sm:flex-row sm:justify-between sm:h-12 mb-4 w-full">
         <AssetHeader asset={selectedAsset} />
-        <div className="flex">
+        <div className="flex pb-4 sm:pb-0">
           {latestStats.map((stat) => (
             <div
               className={`px-2 py-1 ml-2 rounded-md cursor-pointer default-transition bg-th-bkg-3
               ${
                 selectedAsset === stat.symbol
-                  ? `text-th-primary`
+                  ? `ring-1 ring-inset ring-th-primary text-th-primary`
                   : `text-th-fgd-1 opacity-50 hover:opacity-100`
               }
             `}
@@ -53,48 +47,52 @@ export default function StatsAssets() {
           className="border border-th-bkg-3 relative md:mb-0 p-4 rounded-md"
           style={{ height: '300px' }}
         >
-          <AreaChart
+          <Chart
             title="Total Deposits"
             xAxis="time"
             yAxis="totalDeposits"
             data={selectedStatsData}
             labelFormat={(x) => x && x.toLocaleString()}
+            type="area"
           />
         </div>
         <div
           className="border border-th-bkg-3 relative p-4 rounded-md"
           style={{ height: '300px' }}
         >
-          <AreaChart
+          <Chart
             title="Deposit Interest"
             xAxis="time"
             yAxis="depositInterest"
             data={selectedStatsData}
             labelFormat={(x) => `${(x * 100).toFixed(5)}%`}
+            type="bar"
           />
         </div>
         <div
           className="border border-th-bkg-3 relative md:mb-0 p-4 rounded-md"
           style={{ height: '300px' }}
         >
-          <AreaChart
+          <Chart
             title="Total Borrows"
             xAxis="time"
             yAxis="totalBorrows"
             data={selectedStatsData}
             labelFormat={(x) => x && x.toLocaleString()}
+            type="area"
           />
         </div>
         <div
           className="border border-th-bkg-3 relative p-4 rounded-md"
           style={{ height: '300px' }}
         >
-          <AreaChart
+          <Chart
             title="Borrow Interest"
             xAxis="time"
             yAxis="borrowInterest"
             data={selectedStatsData}
             labelFormat={(x) => `${(x * 100).toFixed(5)}%`}
+            type="bar"
           />
         </div>
       </div>

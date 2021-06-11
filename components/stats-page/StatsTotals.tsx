@@ -3,7 +3,7 @@ import { formatBalanceDisplay, tokenPrecision } from '../../utils/index'
 import useMangoStore from '../../stores/useMangoStore'
 import useMangoStats from '../../hooks/useMangoStats'
 import useMarketList from '../../hooks/useMarketList'
-import AreaChart from '../AreaChart'
+import Chart from '../Chart'
 
 const icons = {
   BTC: '/assets/icons/btc.svg',
@@ -20,6 +20,7 @@ export default function StatsTotals() {
   const { getTokenIndex, symbols } = useMarketList()
   const prices = useMangoStore((s) => s.selectedMangoGroup.prices)
 
+  // get deposit and borrow values from stats
   let depositValues = []
   let borrowValues = []
   for (let i = 0; i < stats.length; i++) {
@@ -39,7 +40,8 @@ export default function StatsTotals() {
   }
 
   const formatValues = (values) => {
-    const days = values.reduce((acc, d) => {
+    // get value for each symbol every hour
+    const hours = values.reduce((acc, d) => {
       const found = acc.find((a) => a.time === d.time && a.symbol === d.symbol)
       const value = {
         value: d.value,
@@ -54,9 +56,10 @@ export default function StatsTotals() {
       return acc
     }, [])
 
+    // sum the values for each hour
     let holder = {}
 
-    days.forEach(function (d) {
+    hours.forEach(function (d) {
       if (holder.hasOwnProperty(d.time)) {
         holder[d.time] = holder[d.time] + d.value
       } else {
@@ -64,12 +67,12 @@ export default function StatsTotals() {
       }
     })
 
-    var obj2 = []
+    let points = []
 
-    for (var prop in holder) {
-      obj2.push({ time: prop, value: holder[prop] })
+    for (let prop in holder) {
+      points.push({ time: prop, value: holder[prop] })
     }
-    return obj2
+    return points
   }
 
   return (
@@ -79,24 +82,26 @@ export default function StatsTotals() {
           className="border border-th-bkg-3 relative md:mb-0 p-4 rounded-md"
           style={{ height: '300px' }}
         >
-          <AreaChart
+          <Chart
             title="Total Deposit Value"
             xAxis="time"
             yAxis="value"
             data={formatValues(depositValues)}
             labelFormat={(x) => x && '$' + x.toLocaleString()}
+            type="area"
           />
         </div>
         <div
           className="border border-th-bkg-3 relative p-4 rounded-md"
           style={{ height: '300px' }}
         >
-          <AreaChart
+          <Chart
             title="Total Borrow Value"
             xAxis="time"
             yAxis="value"
             data={formatValues(borrowValues)}
             labelFormat={(x) => x && '$' + x.toLocaleString()}
+            type="area"
           />
         </div>
       </div>
