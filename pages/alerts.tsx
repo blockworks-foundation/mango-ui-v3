@@ -18,6 +18,7 @@ import AlertsModal from '../components/AlertsModal'
 import AlertItem from '../components/AlertItem'
 import PageBodyContainer from '../components/PageBodyContainer'
 import EmptyState from '../components/EmptyState'
+import Select from '../components/Select'
 import { abbreviateAddress } from '../utils'
 
 const relativeTime = require('dayjs/plugin/relativeTime')
@@ -31,7 +32,7 @@ export default function Alerts() {
   const [activeTab, setActiveTab] = useState(TABS[0])
   const [openAlertModal, setOpenAlertModal] = useState(false)
   const [reactivateAlertData, setReactivateAlertData] = useState(null)
-  const [acc, setAcc] = useState('all')
+  const [acc, setAcc] = useState('All')
   const [filteredActiveAlerts, setFilteredActiveAlerts] = useState([])
   const [filteredTriggeredAlerts, setFilteredTriggeredAlerts] = useState([])
   const activeAlerts = useAlertsStore((s) => s.activeAlerts)
@@ -44,7 +45,7 @@ export default function Alerts() {
 
   useEffect(() => {
     if (!connected || loading) {
-      setAcc('all')
+      setAcc('All')
     }
   }, [connected, loading])
 
@@ -63,9 +64,9 @@ export default function Alerts() {
     setActiveTab(tabName)
   }
 
-  const handleAccountRadioGroupChange = (val) => {
-    setAcc(val)
-    if (val !== 'all') {
+  const handleAccountChange = (val) => {
+    if (val !== 'All') {
+      setAcc(val)
       const showActive = activeAlerts.filter(
         (alert) => alert.acc.toString() === val
       )
@@ -74,6 +75,8 @@ export default function Alerts() {
         : triggeredAlerts.filter((alert) => alert.acc.toString() === val)
       setFilteredActiveAlerts(showActive)
       setFilteredTriggeredAlerts(showTriggered)
+    } else {
+      setAcc(val)
     }
   }
 
@@ -84,14 +87,14 @@ export default function Alerts() {
         <div className="flex flex-col sm:flex-row items-center justify-between pt-8 pb-3 sm:pb-6 md:pt-10">
           <h1 className={`text-th-fgd-1 text-2xl font-semibold`}>Alerts</h1>
           <div className="flex flex-col-reverse justify-between w-full pt-4 sm:pt-0 sm:justify-end sm:flex-row">
-            {marginAccounts.length > 1 ? (
+            {marginAccounts.length === 2 ? (
               <RadioGroup
                 value={acc.toString()}
-                onChange={(val) => handleAccountRadioGroupChange(val)}
-                className="flex border border-th-fgd-4 rounded-md w-full mt-3 sm:mt-0 sm:w-auto h-full text-xs h-8"
+                onChange={(val) => handleAccountChange(val)}
+                className="flex border border-th-fgd-4 rounded-md w-full mt-3 sm:mt-0 sm:w-80 h-full text-xs h-8"
               >
                 <RadioGroup.Option
-                  value="all"
+                  value="All"
                   className="flex-1 focus:outline-none"
                 >
                   {({ checked }) => (
@@ -127,8 +130,35 @@ export default function Alerts() {
                 ))}
               </RadioGroup>
             ) : null}
+            {marginAccounts.length > 2 ? (
+              <Select
+                className="w-full mt-2 sm:w-36 sm:mt-0"
+                value={
+                  acc === 'All'
+                    ? 'All'
+                    : `${acc.slice(0, 5)}...${acc.slice(-5)}`
+                }
+                onChange={(val) => handleAccountChange(val)}
+              >
+                <Select.Option value="All">All</Select.Option>
+                {marginAccounts
+                  .slice()
+                  .sort(
+                    (a, b) =>
+                      (a.publicKey.toBase58() > b.publicKey.toBase58() && 1) ||
+                      -1
+                  )
+                  .map((acc, i) => (
+                    <Select.Option key={i} value={acc.publicKey.toString()}>
+                      {abbreviateAddress(acc.publicKey)}
+                    </Select.Option>
+                  ))}
+              </Select>
+            ) : null}
             <Button
-              className="text-xs flex items-center justify-center sm:ml-2 pt-0 pb-0 h-8 pl-3 pr-3"
+              className={`text-xs flex items-center justify-center sm:ml-2 pt-0 pb-0 ${
+                marginAccounts.length > 2 ? 'h-10' : 'h-8'
+              } pl-3 pr-3`}
               disabled={!connected}
               onClick={() => setOpenAlertModal(true)}
             >
@@ -233,7 +263,7 @@ const TabContent = ({
               Active alerts will only trigger once.
             </p>
           </div>
-          {acc === 'all'
+          {acc === 'All'
             ? activeAlerts.map((alert) => (
                 <AlertItem alert={alert} key={alert.timestamp} isLarge />
               ))
@@ -247,7 +277,7 @@ const TabContent = ({
         <div>
           {triggeredAlerts.length === 0 ||
           (clearAlertsTimestamp && clearedAlerts.length === 0) ||
-          (acc !== 'all' && filteredTriggeredAlerts.length === 0) ? (
+          (acc !== 'All' && filteredTriggeredAlerts.length === 0) ? (
             <div className="flex flex-col items-center text-th-fgd-1 px-4 pb-2 rounded-lg">
               <BadgeCheckIcon className="w-6 h-6 mb-1 text-th-green" />
               <div className="font-bold text-lg pb-1">Smooth Sailing</div>
@@ -277,7 +307,7 @@ const TabContent = ({
                   </div>
                 </LinkButton>
               </div>
-              {acc === 'all'
+              {acc === 'All'
                 ? clearAlertsTimestamp
                   ? clearedAlerts.map((alert) => (
                       <AlertItem

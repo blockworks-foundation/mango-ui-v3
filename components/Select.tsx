@@ -36,7 +36,7 @@ const Select = ({
             {open ? (
               <Listbox.Options
                 static
-                className={`text-th-fgd-1 max-h-56 overflow-auto z-20 w-full p-1 absolute left-0 mt-1 bg-th-bkg-1 origin-top-left divide-y divide-th-bkg-3 shadow-lg outline-none rounded-md thin-scroll`}
+                className={`text-th-fgd-1 max-h-60 overflow-auto z-20 w-full p-1 absolute left-0 mt-1 bg-th-bkg-1 origin-top-left divide-y divide-th-bkg-3 shadow-lg outline-none rounded-md thin-scroll`}
               >
                 {children}
               </Listbox.Options>

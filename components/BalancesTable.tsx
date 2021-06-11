@@ -5,8 +5,8 @@ import useConnection from '../hooks/useConnection'
 import Button from '../components/Button'
 import { notify } from '../utils/notifications'
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
-// import { InformationCircleIcon } from '@heroicons/react/outline'
-// import Tooltip from './Tooltip'
+import { InformationCircleIcon } from '@heroicons/react/outline'
+import Tooltip from './Tooltip'
 import { sleep } from '../utils'
 import { PublicKey } from '@solana/web3.js'
 
@@ -56,11 +56,15 @@ const BalancesTable = () => {
     <div className={`flex flex-col py-4`}>
       <div className={`-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8`}>
         <div className={`align-middle inline-block min-w-full sm:px-6 lg:px-8`}>
-          {balances.length > 0 ? (
+          {balances.length > 0 &&
+          (balances.find(({ unsettled }) => unsettled > 0) ||
+            balances.find(
+              ({ borrows, marginDeposits }) => borrows > 0 && marginDeposits > 0
+            )) ? (
             <div
               className={`flex items-center justify-between p-4 mb-2 rounded-md bg-th-bkg-1`}
             >
-              {/* <div className="flex items-center text-fgd-1 font-semibold pr-4">
+              <div className="flex items-center text-fgd-1 font-semibold pr-4">
                 You have unsettled funds
                 <Tooltip content="Use the Settle All button to move unsettled funds to your deposits. If you have borrows, settling will use deposits for that asset to reduce your borrows.">
                   <div>
@@ -69,7 +73,7 @@ const BalancesTable = () => {
                     />
                   </div>
                 </Tooltip>
-              </div> */}
+              </div>
               <Button onClick={handleSettleAll}>Settle All</Button>
             </div>
           ) : null}

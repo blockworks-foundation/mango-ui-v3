@@ -873,9 +873,16 @@
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
 
+<<<<<<< HEAD
 "@blockworks-foundation/mango-client@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@blockworks-foundation/mango-client/-/mango-client-1.0.0.tgz#d298fff4e3e83a954532a5402e7d997118487aa5"
+=======
+"@blockworks-foundation/mango-client@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@blockworks-foundation/mango-client/-/mango-client-2.0.0.tgz#2040497f7137d97aebd8ef459a887ddcef4ef9e0"
+  integrity sha512-lDRjARyXVuBbsohllnrAfkZd2xCY8iOA8xbimAGe9qmYeQIJDqN6SSwd5dcCkIFmihIQrObEym54MvaRAQaWVg==
+>>>>>>> main
   dependencies:
     "@project-serum/common" "^0.0.1-beta.3"
     "@project-serum/serum" "^0.13.20"
@@ -1643,12 +1650,23 @@
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.170.tgz#0d67711d4bf7f4ca5147e9091b847479b87925d6"
 
 "@types/node@*":
+<<<<<<< HEAD
   version "15.12.1"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-15.12.1.tgz#9b60797dee1895383a725f828a869c86c6caa5c2"
 
 "@types/node@^12.12.54":
   version "12.20.14"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.20.14.tgz#9caf7eea0df08b406829889cc015256a6d81ab10"
+=======
+  version "15.12.2"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-15.12.2.tgz#1f2b42c4be7156ff4a6f914b2fb03d05fa84e38d"
+  integrity sha512-zjQ69G564OCIWIOHSXyQEEDpdpGl+G348RAKY0XXy9Z5kU9Vzv1GMNnkar/ZJ8dzXB3COzD9Mo9NtRZ4xfgUww==
+
+"@types/node@^12.12.54":
+  version "12.20.15"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.20.15.tgz#10ee6a6a3f971966fddfa3f6e89ef7a73ec622df"
+  integrity sha512-F6S4Chv4JicJmyrwlDkxUdGNSplsQdGwp1A0AJloEVDirWdZOAiRHhovDlsFkKUrquUXhz1imJhXHsf59auyAg==
+>>>>>>> main
 
 "@types/node@^14.14.25":
   version "14.17.1"
