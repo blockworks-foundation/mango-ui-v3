@@ -52,7 +52,9 @@ export default function StatsAssets() {
             xAxis="time"
             yAxis="totalDeposits"
             data={selectedStatsData}
-            labelFormat={(x) => x && x.toLocaleString()}
+            labelFormat={(x) =>
+              x && x.toLocaleString(undefined, { maximumFractionDigits: 2 })
+            }
             type="area"
           />
         </div>
@@ -78,7 +80,9 @@ export default function StatsAssets() {
             xAxis="time"
             yAxis="totalBorrows"
             data={selectedStatsData}
-            labelFormat={(x) => x && x.toLocaleString()}
+            labelFormat={(x) =>
+              x && x.toLocaleString(undefined, { maximumFractionDigits: 2 })
+            }
             type="area"
           />
         </div>

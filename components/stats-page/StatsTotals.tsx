@@ -87,7 +87,10 @@ export default function StatsTotals() {
             xAxis="time"
             yAxis="value"
             data={formatValues(depositValues)}
-            labelFormat={(x) => x && '$' + x.toLocaleString()}
+            labelFormat={(x) =>
+              x &&
+              '$' + x.toLocaleString(undefined, { maximumFractionDigits: 0 })
+            }
             type="area"
           />
         </div>
@@ -100,7 +103,10 @@ export default function StatsTotals() {
             xAxis="time"
             yAxis="value"
             data={formatValues(borrowValues)}
-            labelFormat={(x) => x && '$' + x.toLocaleString()}
+            labelFormat={(x) =>
+              x &&
+              '$' + x.toLocaleString(undefined, { maximumFractionDigits: 0 })
+            }
             type="area"
           />
         </div>
