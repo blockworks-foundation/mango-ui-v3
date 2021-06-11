@@ -267,8 +267,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
     }
   }
 
-  const validateAmountInput = (e) => {
-    const amount = e.target.value
+  const validateAmountInput = (amount) => {
     if (Number(amount) <= 0) {
       setInvalidAmountMessage('Enter an amount to deposit')
     }
@@ -289,9 +288,14 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
   const onChangeSlider = async (percentage) => {
     const max = getBalanceForAccount(selectedAccount)
     const amount = (percentage / 100) * max
-    setInputAmount(trimDecimals(amount, DECIMALS[symbol]))
+    if (percentage === 100) {
+      setInputAmount(amount)
+    } else {
+      setInputAmount(trimDecimals(amount, DECIMALS[symbol]))
+    }
     setSliderPercentage(percentage)
     setInvalidAmountMessage('')
+    validateAmountInput(amount)
   }
 
   // turn off slider transition for dragging slider handle interaction
@@ -344,7 +348,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
               className={`border border-th-fgd-4 flex-grow pr-11`}
               placeholder="0.00"
               error={!!invalidAmountMessage}
-              onBlur={validateAmountInput}
+              onBlur={(e) => validateAmountInput(e.target.value)}
               value={inputAmount}
               onChange={(e) => onChangeAmountInput(e.target.value)}
               suffix={symbol}

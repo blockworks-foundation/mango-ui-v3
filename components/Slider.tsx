@@ -75,16 +75,18 @@ const StyledSliderButton = styled.button<StyledSliderButtonProps>`
 `
 
 type SliderProps = {
-  onChange: (...args: any[]) => any
+  onChange: (x) => void
+  onAfterChange?: (x) => void
   step: number
   value: number
-  disabled: boolean
+  disabled?: boolean
   max?: number
   maxButtonTransition?: boolean
 }
 
 const AmountSlider: FunctionComponent<SliderProps> = ({
   onChange,
+  onAfterChange,
   step,
   value,
   disabled,
@@ -120,6 +122,7 @@ const AmountSlider: FunctionComponent<SliderProps> = ({
         max={max}
         value={value || 0}
         onChange={onChange}
+        onAfterChange={onAfterChange}
         step={step}
         enableTransition={enableTransition}
         disabled={disabled}

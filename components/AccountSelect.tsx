@@ -139,13 +139,17 @@ const AccountSelect = ({
 
                 return (
                   <Listbox.Option
+                    disabled={getBalanceForAccount(account) === '0'}
                     key={account?.publicKey.toString()}
                     value={account?.publicKey.toString()}
                   >
-                    {({ selected }) => (
+                    {({ disabled, selected }) => (
                       <div
                         className={`p-2 hover:bg-th-bkg-2 hover:cursor-pointer ${
                           selected && `text-th-primary`
+                        } ${
+                          disabled &&
+                          'opacity-50 hover:bg-th-bkg-1 hover:cursor-not-allowed'
                         }`}
                       >
                         <div className={`flex items-center text-th-fgd-1`}>

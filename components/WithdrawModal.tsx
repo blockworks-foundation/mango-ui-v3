@@ -290,22 +290,39 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
 
   const onChangeSlider = async (percentage) => {
     const amount = (percentage / 100) * maxAmount
-    setInputAmount(trimDecimals(amount, DECIMALS[withdrawTokenSymbol] + 2))
+    if (percentage === 100) {
+      setInputAmount(trimDecimals(maxAmount, DECIMALS[withdrawTokenSymbol] + 4))
+    } else {
+      setInputAmount(trimDecimals(amount, DECIMALS[withdrawTokenSymbol] + 2))
+    }
     setSliderPercentage(percentage)
     setInvalidAmountMessage('')
+    validateAmountInput(amount)
   }
 
-  const validateAmountInput = (e) => {
-    const amount = e.target.value
-    if (Number(amount) <= 0) {
-      setInvalidAmountMessage('Withdrawal amount must be greater than 0')
+  const validateAmountInput = (amount) => {
+    if (
+      (Number(amount) <= 0 && getMaxForSelectedAsset() > 0) ||
+      (Number(amount) <= 0 && includeBorrow)
+    ) {
+      setInvalidAmountMessage('Enter an amount to withdraw')
     }
-    if (simulation.collateralRatio < 1.2) {
+    if (
+      (getMaxForSelectedAsset() === 0 ||
+        Number(amount) > getMaxForSelectedAsset()) &&
+      !includeBorrow
+    ) {
+      setInvalidAmountMessage('Insufficient balance. Borrow funds to withdraw')
+    }
+  }
+
+  useEffect(() => {
+    if (simulation && simulation.collateralRatio < 1.2 && includeBorrow) {
       setInvalidAmountMessage(
         'Leverage too high. Reduce the amount to withdraw'
       )
     }
-  }
+  }, [simulation])
 
   const trimDecimals = (n, digits) => {
     const step = Math.pow(10, digits || 0)
@@ -414,8 +431,9 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
             <div className="flex justify-between pb-2 pt-4">
               <div className="text-th-fgd-1">Amount</div>
               <div className="flex space-x-4">
-                <div
-                  className="text-th-fgd-1 underline cursor-pointer default-transition hover:text-th-primary hover:no-underline"
+                <button
+                  className="font-normal text-th-fgd-1 underline cursor-pointer default-transition hover:text-th-primary hover:no-underline focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={!includeBorrow && getMaxForSelectedAsset() === 0}
                   onClick={
                     includeBorrow
                       ? setMaxBorrowForSelectedAsset
@@ -423,7 +441,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                   }
                 >
                   Max
-                </div>
+                </button>
               </div>
             </div>
             <div className="flex">
@@ -435,7 +453,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                 error={!!invalidAmountMessage}
                 placeholder="0.00"
                 value={inputAmount}
-                onBlur={validateAmountInput}
+                onBlur={(e) => validateAmountInput(e.target.value)}
                 onChange={(e) => onChangeAmountInput(e.target.value)}
                 suffix={withdrawTokenSymbol}
               />
