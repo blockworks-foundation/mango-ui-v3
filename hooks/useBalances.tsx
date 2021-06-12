@@ -49,15 +49,15 @@ export function useBalances(): Balances[] {
       ? openOrders.baseTokenTotal - openOrders?.baseTokenFree
       : 0
     const nativeQuoteLocked = openOrders
-      ? openOrders?.quoteTokenTotal - openOrders?.quoteTokenFree
+      ? openOrders?.quoteTokenTotal - nativeQuoteFree
       : 0
 
     const tokenIndex = marketIndex
 
-    const net = (borrows, currencyIndex) => {
+    const net = (locked, currencyIndex) => {
       const amount =
         marginAccount.getNativeDeposit(mangoGroup, currencyIndex) +
-        borrows -
+        locked -
         marginAccount.getNativeBorrow(mangoGroup, currencyIndex)
 
       return floorToDecimal(
@@ -85,7 +85,6 @@ export function useBalances(): Balances[] {
           nativeBaseLocked,
           mangoGroup.mintDecimals[tokenIndex]
         ),
-        openOrders,
         unsettled: nativeToUi(
           nativeBaseFree,
           mangoGroup.mintDecimals[tokenIndex]
@@ -106,7 +105,6 @@ export function useBalances(): Balances[] {
           mangoGroup,
           quoteCurrencyIndex
         ),
-        openOrders,
         orders: nativeToUi(
           nativeQuoteLocked,
           mangoGroup.mintDecimals[quoteCurrencyIndex]
@@ -124,6 +122,8 @@ export function useBalances(): Balances[] {
   const baseBalances = balances.map((b) => b[0])
   const quoteBalances = balances.map((b) => b[1])
   const quoteMeta = quoteBalances[0]
+  const quoteInOrders = sumBy(quoteBalances, 'orders')
+  const net = quoteMeta.marginDeposits + quoteMeta.borrows - quoteInOrders
 
   return baseBalances.concat([
     {
@@ -132,10 +132,9 @@ export function useBalances(): Balances[] {
       coin: quoteMeta.coin,
       marginDeposits: quoteMeta.marginDeposits,
       borrows: quoteMeta.borrows,
-      openOrders: sumBy(quoteBalances, 'openOrders'),
-      orders: sumBy(quoteBalances, 'orders'),
+      orders: quoteInOrders,
       unsettled: sumBy(quoteBalances, 'unsettled'),
-      net: quoteMeta.net,
+      net,
     },
   ])
 }

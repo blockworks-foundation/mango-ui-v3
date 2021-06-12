@@ -1345,12 +1345,6 @@ export async function settleAll(
       programId,
     })
 
-    if (openOrdersAccount['referrerRebatesAccrued']) {
-      console.log('instruction market index', i)
-      console.log('yooooo---------===============')
-      console.log(openOrdersAccount['referrerRebatesAccrued'].toString())
-    }
-
     transaction.add(settleFundsInstruction)
   }
 
