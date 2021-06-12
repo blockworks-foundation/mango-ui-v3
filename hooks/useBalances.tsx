@@ -8,6 +8,7 @@ import {
   floorToDecimal,
 } from '../utils'
 import useAllMarkets from './useAllMarkets'
+import { sumBy } from 'lodash'
 
 export function useBalances(): Balances[] {
   const balances = []
@@ -124,15 +125,6 @@ export function useBalances(): Balances[] {
   const quoteBalances = balances.map((b) => b[1])
   const quoteMeta = quoteBalances[0]
 
-  let quoteOpenOrders = 0
-  quoteBalances.forEach((qb) => (quoteOpenOrders += qb.openOrders))
-  let orders = 0
-  quoteBalances.forEach((qb) => (orders += qb.orders))
-  let unsettled = 0
-  quoteBalances.forEach((qb) => (unsettled += qb.unsettled))
-  let net = 0
-  quoteBalances.forEach((qb) => (net += qb.net))
-
   return baseBalances.concat([
     {
       market: null,
@@ -140,10 +132,10 @@ export function useBalances(): Balances[] {
       coin: quoteMeta.coin,
       marginDeposits: quoteMeta.marginDeposits,
       borrows: quoteMeta.borrows,
-      openOrders: quoteOpenOrders,
-      orders,
-      unsettled,
-      net,
+      openOrders: sumBy(quoteBalances, 'openOrders'),
+      orders: sumBy(quoteBalances, 'orders'),
+      unsettled: sumBy(quoteBalances, 'unsettled'),
+      net: sumBy(quoteBalances, 'net'),
     },
   ])
 }
