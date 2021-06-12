@@ -856,12 +856,14 @@ export async function placeAndSettle(
   )
   const rates = getFeeRates(feeTier)
   const maxQuoteQuantity = new BN(
-    spotMarket['_decoded'].quoteLotSize.toNumber() * (1 + rates.taker)
-  ).mul(
-    spotMarket
-      .baseSizeNumberToLots(size)
-      .mul(spotMarket.priceNumberToLots(price))
+    maxBaseQuantity
+      .mul(limitPrice)
+      .mul(spotMarket['_decoded'].quoteLotSize)
+      .toNumber() *
+      (1 + rates.taker)
   )
+
+  console.log(maxBaseQuantity.toString(), maxQuoteQuantity.toString())
 
   if (maxBaseQuantity.lte(new BN(0))) {
     throw new Error('size too small')
