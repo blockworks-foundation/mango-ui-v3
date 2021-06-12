@@ -26,6 +26,7 @@ const SANCTIONED_COUNTRIES = [
   { country: 'Venezuela', code: 'VE' },
   { country: 'Yemen', code: 'YE' },
   { country: 'Zimbabwe', code: 'ZW' },
+  { country: 'United States', code: 'US' },
 ]
 
 const SANCTIONED_COUNTRY_CODES = SANCTIONED_COUNTRIES.map(({ code }) => code)
