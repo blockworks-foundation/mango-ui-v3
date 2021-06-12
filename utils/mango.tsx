@@ -1281,14 +1281,18 @@ export async function settleAll(
     if (openOrdersAccount === undefined) {
       continue
     } else if (
-      openOrdersAccount.quoteTokenFree.toNumber() === 0 &&
+      openOrdersAccount.quoteTokenFree.toNumber() +
+        openOrdersAccount['referrerRebatesAccrued'].toNumber() ===
+        0 &&
       openOrdersAccount.baseTokenFree.toNumber() === 0
     ) {
       continue
     }
 
     assetGains[i] += openOrdersAccount.baseTokenFree.toNumber()
-    assetGains[NUM_TOKENS - 1] += openOrdersAccount.quoteTokenFree.toNumber()
+    assetGains[NUM_TOKENS - 1] +=
+      openOrdersAccount.quoteTokenFree.toNumber() +
+      openOrdersAccount['referrerRebatesAccrued'].toNumber()
 
     const spotMarket = markets[i]
     const dexSigner = await PublicKey.createProgramAddress(
@@ -1338,6 +1342,13 @@ export async function settleAll(
       data,
       programId,
     })
+
+    if (openOrdersAccount['referrerRebatesAccrued']) {
+      console.log('instruction market index', i)
+      console.log('yooooo---------===============')
+      console.log(openOrdersAccount['referrerRebatesAccrued'].toString())
+    }
+
     transaction.add(settleFundsInstruction)
   }
 

@@ -10,15 +10,11 @@ import {
 import useAllMarkets from './useAllMarkets'
 
 export function useBalances(): Balances[] {
-  let balances = []
+  const balances = []
   const markets = useAllMarkets()
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const marginAccount = useMangoStore((s) => s.selectedMarginAccount.current)
   const { symbols } = useMarketList()
-
-  let nativeQuoteFree = 0
-  let nativeQuoteLocked = 0
-  let nativeQuoteUnsettled = 0
 
   for (const { market, baseCurrency, quoteCurrency } of markets) {
     if (!marginAccount || !mangoGroup || !market) {
@@ -44,17 +40,16 @@ export function useBalances(): Balances[] {
     }
 
     const nativeBaseFree = openOrders?.baseTokenFree || 0
-    nativeQuoteFree += openOrders?.quoteTokenFree || 0
+    const nativeQuoteFree =
+      (openOrders?.quoteTokenFree || 0) +
+      (openOrders?.['referrerRebatesAccrued'].toNumber() || 0)
 
     const nativeBaseLocked = openOrders
-      ? openOrders.baseTokenTotal - nativeBaseFree
+      ? openOrders.baseTokenTotal - openOrders?.baseTokenFree
       : 0
-    nativeQuoteLocked += openOrders
-      ? openOrders?.quoteTokenTotal - nativeQuoteFree
+    const nativeQuoteLocked = openOrders
+      ? openOrders?.quoteTokenTotal - openOrders?.quoteTokenFree
       : 0
-
-    const nativeBaseUnsettled = openOrders?.baseTokenFree || 0
-    nativeQuoteUnsettled += openOrders?.quoteTokenFree || 0
 
     const tokenIndex = marketIndex
 
@@ -91,7 +86,7 @@ export function useBalances(): Balances[] {
         ),
         openOrders,
         unsettled: nativeToUi(
-          nativeBaseUnsettled,
+          nativeBaseFree,
           mangoGroup.mintDecimals[tokenIndex]
         ),
         net: net(nativeBaseLocked, tokenIndex),
@@ -116,20 +111,39 @@ export function useBalances(): Balances[] {
           mangoGroup.mintDecimals[quoteCurrencyIndex]
         ),
         unsettled: nativeToUi(
-          nativeQuoteUnsettled,
+          nativeQuoteFree,
           mangoGroup.mintDecimals[quoteCurrencyIndex]
         ),
         net: net(nativeQuoteLocked, quoteCurrencyIndex),
       },
     ]
-    balances = balances.concat(marketPair)
+    balances.push(marketPair)
   }
 
-  balances.sort((a, b) => (a.coin > b.coin ? 1 : -1))
+  const baseBalances = balances.map((b) => b[0])
+  const quoteBalances = balances.map((b) => b[1])
+  const quoteMeta = quoteBalances[0]
 
-  balances = balances.filter((elem, index, self) => {
-    return index === self.map((a) => a.coin).indexOf(elem.coin)
-  })
+  let quoteOpenOrders = 0
+  quoteBalances.forEach((qb) => (quoteOpenOrders += qb.openOrders))
+  let orders = 0
+  quoteBalances.forEach((qb) => (orders += qb.orders))
+  let unsettled = 0
+  quoteBalances.forEach((qb) => (unsettled += qb.unsettled))
+  let net = 0
+  quoteBalances.forEach((qb) => (net += qb.net))
 
-  return balances
+  return baseBalances.concat([
+    {
+      market: null,
+      key: `${quoteMeta.quoteCurrency}${quoteMeta.quoteCurrency}`,
+      coin: quoteMeta.coin,
+      marginDeposits: quoteMeta.marginDeposits,
+      borrows: quoteMeta.borrows,
+      openOrders: quoteOpenOrders,
+      orders,
+      unsettled,
+      net,
+    },
+  ])
 }
