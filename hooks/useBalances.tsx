@@ -49,7 +49,7 @@ export function useBalances(): Balances[] {
       ? openOrders.baseTokenTotal - openOrders?.baseTokenFree
       : 0
     const nativeQuoteLocked = openOrders
-      ? openOrders?.quoteTokenTotal - nativeQuoteFree
+      ? openOrders?.quoteTokenTotal - (openOrders?.quoteTokenFree || 0)
       : 0
 
     const tokenIndex = marketIndex
@@ -123,18 +123,23 @@ export function useBalances(): Balances[] {
   const quoteBalances = balances.map((b) => b[1])
   const quoteMeta = quoteBalances[0]
   const quoteInOrders = sumBy(quoteBalances, 'orders')
-  const net = quoteMeta.marginDeposits + quoteMeta.borrows - quoteInOrders
+  const unsettled = sumBy(quoteBalances, 'unsettled')
+  const net =
+    quoteMeta.marginDeposits + unsettled - quoteMeta.borrows - quoteInOrders
+  const quoteCurrencyIndex = Object.entries(symbols).findIndex(
+    (x) => x[0] === quoteMeta.coin
+  )
 
   return baseBalances.concat([
     {
       market: null,
-      key: `${quoteMeta.quoteCurrency}${quoteMeta.quoteCurrency}`,
+      key: `${quoteMeta.coin}${quoteMeta.coin}`,
       coin: quoteMeta.coin,
       marginDeposits: quoteMeta.marginDeposits,
       borrows: quoteMeta.borrows,
       orders: quoteInOrders,
-      unsettled: sumBy(quoteBalances, 'unsettled'),
-      net,
+      unsettled,
+      net: floorToDecimal(net, mangoGroup.mintDecimals[quoteCurrencyIndex]),
     },
   ])
 }
