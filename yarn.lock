@@ -986,10 +986,9 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@blockworks-foundation/mango-client@^2.0.0":
+"@blockworks-foundation/mango-client@https://github.com/blockworks-foundation/mango-client-ts#dd/gui-hoster":
   version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@blockworks-foundation/mango-client/-/mango-client-2.0.0.tgz#2040497f7137d97aebd8ef459a887ddcef4ef9e0"
-  integrity sha512-lDRjARyXVuBbsohllnrAfkZd2xCY8iOA8xbimAGe9qmYeQIJDqN6SSwd5dcCkIFmihIQrObEym54MvaRAQaWVg==
+  resolved "https://github.com/blockworks-foundation/mango-client-ts#66e21732a160b1c2708bf6e2f650c5344ae41574"
   dependencies:
     "@project-serum/common" "^0.0.1-beta.3"
     "@project-serum/serum" "^0.13.20"
@@ -2515,9 +2514,9 @@ boolbase@^1.0.0, boolbase@~1.0.0:
   resolved "https://registry.yarnpkg.com/boolbase/-/boolbase-1.0.0.tgz#68dff5fbe60c51eb37725ea9e3ed310dcc1e776e"
   integrity sha1-aN/1++YMUes3cl6p4+0xDcwed24=
 
-"borsh@git+https://github.com/defactojob/borsh-js.git#field-mapper":
+"borsh@https://github.com/defactojob/borsh-js#field-mapper":
   version "0.3.1"
-  resolved "git+https://github.com/defactojob/borsh-js.git#33a0d24af281112c0a48efb3fa503f3212443de9"
+  resolved "https://github.com/defactojob/borsh-js#33a0d24af281112c0a48efb3fa503f3212443de9"
   dependencies:
     "@types/bn.js" "^4.11.5"
     bn.js "^5.0.0"
@@ -5855,6 +5854,11 @@ locate-path@^6.0.0:
   integrity sha512-iPZK6eYjbxRu3uB4/WZ3EsEIMJFMqAoopl3R+zuq0UjcAm/MO6KCweDgPfP3elTztoKP3KtnVHxTn2NHBSDVUw==
   dependencies:
     p-locate "^5.0.0"
+
+lodash-es@^4.17.21:
+  version "4.17.21"
+  resolved "https://registry.yarnpkg.com/lodash-es/-/lodash-es-4.17.21.tgz#43e626c46e6591b7750beb2b50117390c609e3ee"
+  integrity sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==
 
 lodash.assignin@^4.0.9:
   version "4.2.0"

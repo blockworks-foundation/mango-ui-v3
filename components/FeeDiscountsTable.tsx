@@ -1,6 +1,8 @@
 import { percentFormat } from '../utils/index'
 import useSrmAccount from '../hooks/useSrmAccount'
 import { SRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
+import Tooltip from './Tooltip'
+import { InformationCircleIcon } from '@heroicons/react/outline'
 
 const FeeDiscountsTable = () => {
   const { totalSrm, rates } = useSrmAccount()
@@ -27,9 +29,24 @@ const FeeDiscountsTable = () => {
           </div>
         </div>
         <div className="px-4 mt-4 sm:mt-0">
-          <div>Taker Fee</div>
+          <div className="flex items-center">
+            <div>Taker Fee</div>
+            <div className="flex items-center">
+              <Tooltip
+                content={`Taker fee is ${percentFormat.format(
+                  rates.taker
+                )} before the 20% GUI hoster fee is rebated.`}
+              >
+                <div>
+                  <InformationCircleIcon
+                    className={`h-5 w-5 ml-2 text-th-fgd-4 cursor-help`}
+                  />
+                </div>
+              </Tooltip>
+            </div>
+          </div>
           <div className="text-th-fgd-1 text-lg font-semibold">
-            {rates ? percentFormat.format(rates.taker) : null}
+            {rates ? percentFormat.format(rates.taker * 0.8) : null}
           </div>
         </div>
       </div>
