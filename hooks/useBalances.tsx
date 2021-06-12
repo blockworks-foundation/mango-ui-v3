@@ -135,7 +135,7 @@ export function useBalances(): Balances[] {
       openOrders: sumBy(quoteBalances, 'openOrders'),
       orders: sumBy(quoteBalances, 'orders'),
       unsettled: sumBy(quoteBalances, 'unsettled'),
-      net: sumBy(quoteBalances, 'net'),
+      net: quoteMeta.net,
     },
   ])
 }
