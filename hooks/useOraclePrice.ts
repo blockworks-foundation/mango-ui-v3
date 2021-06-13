@@ -16,6 +16,7 @@ export default function useOraclePrice() {
 
   const fetchOraclePrice = useCallback(() => {
     if (selectedMangoGroup) {
+      setOraclePrice(null)
       const marketIndex = getMarketIndex(marketAddress)
       selectedMangoGroup.getPrices(connection).then((prices) => {
         const oraclePriceForMarket = prices[marketIndex]

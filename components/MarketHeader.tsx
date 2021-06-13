@@ -20,6 +20,8 @@ const MarketHeader = () => {
   const volume = ohlcv ? ohlcv.v[0] : '--'
 
   const fetchOhlcv = useCallback(async () => {
+    if (!selectedMarketName) return
+
     // calculate from and to date (0:00UTC to 23:59:59UTC)
     const date = new Date()
     const utcFrom = new Date(
@@ -118,7 +120,7 @@ const MarketHeader = () => {
           <div className="pr-4 sm:pr-0 sm:w-24">
             <div className="mb-0.5 text-th-fgd-4 text-xs">24hr Vol</div>
             <div className={`font-semibold`}>
-              {ohlcv && !loading && volume ? (
+              {ohlcv && !loading ? (
                 volume !== '--' ? (
                   <>
                     {volume.toFixed(2)}
