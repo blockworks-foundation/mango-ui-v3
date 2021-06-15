@@ -975,6 +975,23 @@ export async function placeAndSettle(
     })),
   ]
 
+  const settleFundsInstr = makeSettleFundsInstruction(
+    programId,
+    mangoGroup.publicKey,
+    wallet.publicKey,
+    marginAccount.publicKey,
+    spotMarket.programId,
+    spotMarket.publicKey,
+    openOrdersKeys[marketIndex],
+    mangoGroup.signerKey,
+    spotMarket['_decoded'].baseVault,
+    spotMarket['_decoded'].quoteVault,
+    mangoGroup.vaults[marketIndex],
+    mangoGroup.vaults[NUM_TOKENS - 1],
+    dexSigner
+  )
+  transaction.add(settleFundsInstr)
+
   const data = encodeMangoInstruction({
     PlaceAndSettle: clientId
       ? {
