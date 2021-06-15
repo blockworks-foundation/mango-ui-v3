@@ -1,8 +1,7 @@
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
 import { formatBalanceDisplay, tokenPrecision } from '../../utils/index'
-import useMangoStore from '../../stores/useMangoStore'
 import useMangoStats from '../../hooks/useMangoStats'
-import useMarketList from '../../hooks/useMarketList'
+import useHistoricPrices from '../../hooks/useHistoricPrices'
 import Chart from '../Chart'
 
 const icons = {
@@ -17,26 +16,40 @@ const icons = {
 
 export default function StatsTotals() {
   const { latestStats, stats } = useMangoStats()
-  const { getTokenIndex, symbols } = useMarketList()
-  const prices = useMangoStore((s) => s.selectedMangoGroup.prices)
+  const { prices } = useHistoricPrices()
+
+  const startTimestamp = 1622905200000
+
+  const trimmedStats = stats.filter(
+    (stat) => new Date(stat.hourly).getTime() >= startTimestamp
+  )
 
   // get deposit and borrow values from stats
   let depositValues = []
   let borrowValues = []
-  for (let i = 0; i < stats.length; i++) {
-    depositValues.push({
-      symbol: stats[i].symbol,
-      value:
-        stats[i].totalDeposits *
-        prices[getTokenIndex(symbols[stats[i].symbol])],
-      time: stats[i].hourly,
-    })
-    borrowValues.push({
-      symbol: stats[i].symbol,
-      value:
-        stats[i].totalBorrows * prices[getTokenIndex(symbols[stats[i].symbol])],
-      time: stats[i].hourly,
-    })
+  if (prices) {
+    for (let i = 0; i < trimmedStats.length; i++) {
+      const depositValue =
+        trimmedStats[i].symbol === 'USDC'
+          ? trimmedStats[i].totalDeposits
+          : trimmedStats[i].totalDeposits *
+            prices[trimmedStats[i].symbol][trimmedStats[i].hourly]
+      const borrowValue =
+        trimmedStats[i].symbol === 'USDC'
+          ? trimmedStats[i].totalBorrows
+          : trimmedStats[i].totalBorrows *
+            prices[trimmedStats[i].symbol][trimmedStats[i].hourly]
+      depositValues.push({
+        symbol: trimmedStats[i].symbol,
+        value: depositValue,
+        time: trimmedStats[i].hourly,
+      })
+      borrowValues.push({
+        symbol: stats[i].symbol,
+        value: borrowValue,
+        time: stats[i].hourly,
+      })
+    }
   }
 
   const formatValues = (values) => {
