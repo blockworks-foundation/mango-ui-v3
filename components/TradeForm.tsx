@@ -332,7 +332,11 @@ export default function TradeForm() {
                   'border-th-green hover:border-th-green-dark'
                 } text-th-green hover:text-th-fgd-1 hover:bg-th-green-dark flex-grow`}
               >
-                {`${baseSize > 0 ? 'Buy ' + baseSize : 'Set BUY bid >= ' + market?.minOrderSize} ${baseCurrency}`}
+                {`${
+                  baseSize > 0
+                    ? 'Buy ' + baseSize
+                    : 'Set BUY bid >= ' + market?.minOrderSize
+                } ${baseCurrency}`}
               </Button>
             ) : (
               <Button
@@ -343,7 +347,11 @@ export default function TradeForm() {
                   'border-th-red hover:border-th-red-dark'
                 } text-th-red hover:text-th-fgd-1 hover:bg-th-red-dark flex-grow`}
               >
-                {`${baseSize > 0 ? 'Sell ' + baseSize : 'Set SELL bid >= ' + market?.minOrderSize} ${baseCurrency}`}
+                {`${
+                  baseSize > 0
+                    ? 'Sell ' + baseSize
+                    : 'Set SELL bid >= ' + market?.minOrderSize
+                } ${baseCurrency}`}
               </Button>
             )
           ) : (

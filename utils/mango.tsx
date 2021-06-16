@@ -856,12 +856,14 @@ export async function placeAndSettle(
   )
   const rates = getFeeRates(feeTier)
   const maxQuoteQuantity = new BN(
-    spotMarket['_decoded'].quoteLotSize.toNumber() * (1 + rates.taker)
-  ).mul(
-    spotMarket
-      .baseSizeNumberToLots(size)
-      .mul(spotMarket.priceNumberToLots(price))
+    maxBaseQuantity
+      .mul(limitPrice)
+      .mul(spotMarket['_decoded'].quoteLotSize)
+      .toNumber() *
+      (1 + rates.taker)
   )
+
+  console.log(maxBaseQuantity.toString(), maxQuoteQuantity.toString())
 
   if (maxBaseQuantity.lte(new BN(0))) {
     throw new Error('size too small')
@@ -915,6 +917,26 @@ export async function placeAndSettle(
     } else {
       openOrdersKeys.push(marginAccount.openOrders[i])
     }
+  }
+
+  // Only send a pre-settle instruction if open orders account already exists
+  if (!marginAccount.openOrders[marketIndex].equals(zeroKey)) {
+    const settleFundsInstr = makeSettleFundsInstruction(
+      programId,
+      mangoGroup.publicKey,
+      wallet.publicKey,
+      marginAccount.publicKey,
+      spotMarket.programId,
+      spotMarket.publicKey,
+      openOrdersKeys[marketIndex],
+      mangoGroup.signerKey,
+      spotMarket['_decoded'].baseVault,
+      spotMarket['_decoded'].quoteVault,
+      mangoGroup.vaults[marketIndex],
+      mangoGroup.vaults[NUM_TOKENS - 1],
+      dexSigner
+    )
+    transaction.add(settleFundsInstr)
   }
 
   const keys = [
@@ -1281,14 +1303,18 @@ export async function settleAll(
     if (openOrdersAccount === undefined) {
       continue
     } else if (
-      openOrdersAccount.quoteTokenFree.toNumber() === 0 &&
+      openOrdersAccount.quoteTokenFree.toNumber() +
+        openOrdersAccount['referrerRebatesAccrued'].toNumber() ===
+        0 &&
       openOrdersAccount.baseTokenFree.toNumber() === 0
     ) {
       continue
     }
 
     assetGains[i] += openOrdersAccount.baseTokenFree.toNumber()
-    assetGains[NUM_TOKENS - 1] += openOrdersAccount.quoteTokenFree.toNumber()
+    assetGains[NUM_TOKENS - 1] +=
+      openOrdersAccount.quoteTokenFree.toNumber() +
+      openOrdersAccount['referrerRebatesAccrued'].toNumber()
 
     const spotMarket = markets[i]
     const dexSigner = await PublicKey.createProgramAddress(
@@ -1338,6 +1364,7 @@ export async function settleAll(
       data,
       programId,
     })
+
     transaction.add(settleFundsInstruction)
   }
 

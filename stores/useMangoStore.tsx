@@ -24,8 +24,8 @@ export const ENDPOINTS: EndpointInfo[] = [
   },
   {
     name: 'devnet',
-    url: 'https://devnet.solana.com',
-    websocket: 'https://devnet.solana.com',
+    url: 'https://api.devnet.solana.com',
+    websocket: 'https://api.devnet.solana.com',
     custom: false,
   },
 ]

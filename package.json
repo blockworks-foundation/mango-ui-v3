@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "type-check": "tsc --pretty --noEmit",
-    "format": "prettier --check .",
+    "format": "prettier --write .",
     "lint": "eslint . --ext ts --ext tsx --ext js --quiet",
     "test": "jest",
     "test-all": "yarn lint && yarn type-check && yarn test"
@@ -31,7 +31,7 @@
     }
   },
   "dependencies": {
-    "@blockworks-foundation/mango-client": "^2.0.0",
+    "@blockworks-foundation/mango-client": "2.1.0",
     "@emotion/react": "^11.1.5",
     "@emotion/styled": "^11.1.5",
     "@headlessui/react": "^1.2.0",
@@ -47,6 +47,7 @@
     "dayjs": "^1.10.4",
     "immer": "^9.0.1",
     "immutable-tuple": "^0.4.10",
+    "lodash-es": "^4.17.21",
     "next": "^10.1.3",
     "next-themes": "^0.0.14",
     "postcss-preset-env": "^6.7.0",

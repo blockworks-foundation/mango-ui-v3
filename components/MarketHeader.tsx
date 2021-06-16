@@ -20,6 +20,8 @@ const MarketHeader = () => {
   const volume = ohlcv ? ohlcv.v[0] : '--'
 
   const fetchOhlcv = useCallback(async () => {
+    if (!selectedMarketName) return
+
     // calculate from and to date (0:00UTC to 23:59:59UTC)
     const date = new Date()
     const utcFrom = new Date(
