@@ -919,6 +919,26 @@ export async function placeAndSettle(
     }
   }
 
+  // Only send a pre-settle instruction if open orders account already exists
+  if (!marginAccount.openOrders[marketIndex].equals(zeroKey)) {
+    const settleFundsInstr = makeSettleFundsInstruction(
+      programId,
+      mangoGroup.publicKey,
+      wallet.publicKey,
+      marginAccount.publicKey,
+      spotMarket.programId,
+      spotMarket.publicKey,
+      openOrdersKeys[marketIndex],
+      mangoGroup.signerKey,
+      spotMarket['_decoded'].baseVault,
+      spotMarket['_decoded'].quoteVault,
+      mangoGroup.vaults[marketIndex],
+      mangoGroup.vaults[NUM_TOKENS - 1],
+      dexSigner
+    )
+    transaction.add(settleFundsInstr)
+  }
+
   const keys = [
     { isSigner: false, isWritable: true, pubkey: mangoGroup.publicKey },
     { isSigner: true, isWritable: false, pubkey: wallet.publicKey },
@@ -974,23 +994,6 @@ export async function placeAndSettle(
       pubkey,
     })),
   ]
-
-  const settleFundsInstr = makeSettleFundsInstruction(
-    programId,
-    mangoGroup.publicKey,
-    wallet.publicKey,
-    marginAccount.publicKey,
-    spotMarket.programId,
-    spotMarket.publicKey,
-    openOrdersKeys[marketIndex],
-    mangoGroup.signerKey,
-    spotMarket['_decoded'].baseVault,
-    spotMarket['_decoded'].quoteVault,
-    mangoGroup.vaults[marketIndex],
-    mangoGroup.vaults[NUM_TOKENS - 1],
-    dexSigner
-  )
-  transaction.add(settleFundsInstr)
 
   const data = encodeMangoInstruction({
     PlaceAndSettle: clientId
