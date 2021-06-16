@@ -25,8 +25,8 @@ export default function StatsTotals() {
   )
 
   // get deposit and borrow values from stats
-  let depositValues = []
-  let borrowValues = []
+  const depositValues = []
+  const borrowValues = []
   if (prices) {
     for (let i = 0; i < trimmedStats.length; i++) {
       const depositValue =
@@ -70,19 +70,19 @@ export default function StatsTotals() {
     }, [])
 
     // sum the values for each hour
-    let holder = {}
+    const holder = {}
 
     hours.forEach(function (d) {
-      if (holder.hasOwnProperty(d.time)) {
+      if (d.time in holder) {
         holder[d.time] = holder[d.time] + d.value
       } else {
         holder[d.time] = d.value
       }
     })
 
-    let points = []
+    const points = []
 
-    for (let prop in holder) {
+    for (const prop in holder) {
       points.push({ time: prop, value: holder[prop] })
     }
     return points

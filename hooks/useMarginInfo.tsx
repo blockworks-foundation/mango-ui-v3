@@ -62,18 +62,17 @@ const useMarginInfo = () => {
   )
   const tradeHistory = useTradeHistory()
   const tradeHistoryLength = useMemo(() => tradeHistory.length, [tradeHistory])
-  const [mAccountInfo, setMAccountInfo] =
-    useState<
-      | {
-          label: string
-          value: string
-          unit: string
-          desc: string
-          currency: string
-          icon: ReactNode
-        }[]
-      | null
-    >(null)
+  const [mAccountInfo, setMAccountInfo] = useState<
+    | {
+        label: string
+        value: string
+        unit: string
+        desc: string
+        currency: string
+        icon: ReactNode
+      }[]
+    | null
+  >(null)
 
   useEffect(() => {
     if (selectedMangoGroup) {
