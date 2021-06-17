@@ -106,7 +106,7 @@ export default function useWallet() {
       })
       // set connected before fetching data
       actions.fetchTradeHistory()
-      actions.fetchMangoSrmAccounts()
+      // actions.fetchMangoSrmAccounts()
       actions.fetchWalletBalances()
       notify({
         message: 'Wallet connected',

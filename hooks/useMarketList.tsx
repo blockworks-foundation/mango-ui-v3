@@ -23,7 +23,7 @@ const useMarketList = () => {
       Object.entries(spotMarkets).map(([name, address]) => {
         return {
           address: new PublicKey(address as string),
-          programId: new PublicKey(dexProgramId as string),
+          programId: dexProgramId,
           deprecated: false,
           name,
         }

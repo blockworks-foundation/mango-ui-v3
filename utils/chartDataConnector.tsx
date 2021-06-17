@@ -24,6 +24,7 @@ export default class ChartApi {
   static async getRecentTrades(
     marketAddress: string
   ): Promise<ChartTradeType[] | null> {
+    if (!marketAddress) return
     return ChartApi.get(`trades/address/${marketAddress}`)
   }
 
@@ -33,6 +34,7 @@ export default class ChartApi {
     from: number,
     to: number
   ): Promise<ChartTradeType[] | null> {
+    if (!symbol) return
     return ChartApi.get(
       `tv/history?symbol=${symbol}&resolution=${resolution}&from=${from}&to=${to}`
     )

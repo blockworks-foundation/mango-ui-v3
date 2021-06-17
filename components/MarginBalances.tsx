@@ -1,54 +1,57 @@
-import { useCallback, useState } from 'react'
+// import { useCallback, useState } from 'react'
 import Link from 'next/link'
 import { Menu } from '@headlessui/react'
 import { DotsHorizontalIcon } from '@heroicons/react/outline'
 import FloatingElement from './FloatingElement'
 import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
-import useMarketList from '../hooks/useMarketList'
+// import useMarketList from '../hooks/useMarketList'
 import {
   abbreviateAddress,
-  floorToDecimal,
-  tokenPrecision,
+  // floorToDecimal,
+  // tokenPrecision,
 } from '../utils/index'
-import DepositModal from './DepositModal'
-import WithdrawModal from './WithdrawModal'
-import BorrowModal from './BorrowModal'
-import Button from './Button'
+// import DepositModal from './DepositModal'
+// import WithdrawModal from './WithdrawModal'
+// import BorrowModal from './BorrowModal'
+// import Button from './Button'
 import Tooltip from './Tooltip'
-import AccountsModal from './AccountsModal'
+// import AccountsModal from './AccountsModal'
 
 export default function MarginBalances() {
   const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  const selectedMangoGroupTokens = useMangoStore(
+    (s) => s.selectedMangoGroup.tokens
+  )
   const selectedMarginAccount = useMangoStore(
     (s) => s.selectedMarginAccount.current
   )
-  const loadingMarginAccount = useMangoStore(
-    (s) => s.selectedMarginAccount.initialLoad
-  )
+  // const loadingMarginAccount = useMangoStore(
+  //   (s) => s.selectedMarginAccount.initialLoad
+  // )
   const connected = useMangoStore((s) => s.wallet.connected)
-  const { symbols } = useMarketList()
+  // const { symbols } = useMarketList()
 
-  const [showDepositModal, setShowDepositModal] = useState(false)
-  const [showWithdrawModal, setShowWithdrawModal] = useState(false)
-  const [showBorrowModal, setShowBorrowModal] = useState(false)
-  const [showAccountsModal, setShowAccountsModal] = useState(false)
+  // const [showDepositModal, setShowDepositModal] = useState(false)
+  // const [showWithdrawModal, setShowWithdrawModal] = useState(false)
+  // const [showBorrowModal, setShowBorrowModal] = useState(false)
+  // const [showAccountsModal, setShowAccountsModal] = useState(false)
 
-  const handleCloseDeposit = useCallback(() => {
-    setShowDepositModal(false)
-  }, [])
+  // const handleCloseDeposit = useCallback(() => {
+  //   setShowDepositModal(false)
+  // }, [])
 
-  const handleCloseWithdraw = useCallback(() => {
-    setShowWithdrawModal(false)
-  }, [])
+  // const handleCloseWithdraw = useCallback(() => {
+  //   setShowWithdrawModal(false)
+  // }, [])
 
-  const handleCloseBorrow = useCallback(() => {
-    setShowBorrowModal(false)
-  }, [])
+  // const handleCloseBorrow = useCallback(() => {
+  //   setShowBorrowModal(false)
+  // }, [])
 
-  const handleCloseAccounts = useCallback(() => {
-    setShowAccountsModal(false)
-  }, [])
+  // const handleCloseAccounts = useCallback(() => {
+  //   setShowAccountsModal(false)
+  // }, [])
 
   return (
     <>
@@ -73,7 +76,7 @@ export default function MarginBalances() {
               >
                 <DotsHorizontalIcon className="w-5 h-5" />
               </Menu.Button>
-              <Menu.Items className="bg-th-bkg-1 mt-2 p-1 absolute right-0 shadow-lg outline-none rounded-md w-48 z-20">
+              {/* <Menu.Items className="bg-th-bkg-1 mt-2 p-1 absolute right-0 shadow-lg outline-none rounded-md w-48 z-20">
                 <Menu.Item>
                   <button
                     className="flex flex-row font-normal items-center rounded-none w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer focus:outline-none"
@@ -108,7 +111,7 @@ export default function MarginBalances() {
                     <div className="pl-2 text-left">Withdraw</div>
                   </button>
                 </Menu.Item>
-              </Menu.Items>
+              </Menu.Items> */}
             </div>
           </Menu>
         </div>
@@ -117,7 +120,7 @@ export default function MarginBalances() {
             <thead>
               <tr className={`text-center text-th-fgd-4 mb-2 text-xs`}>
                 <th scope="col" className={`flex-auto font-normal text-left`}>
-                  Assets
+                  Asset
                 </th>
                 <th
                   scope="col"
@@ -145,20 +148,20 @@ export default function MarginBalances() {
               </tr>
             </thead>
             <tbody>
-              {Object.entries(symbols).map(([name], i) => (
-                <tr key={name} className={`text-th-fgd-1`}>
+              {selectedMangoGroupTokens.map((token) => (
+                <tr key={token.symbol} className={`text-th-fgd-1`}>
                   <td className={`flex items-center py-2`}>
                     <img
                       alt=""
                       width="20"
                       height="20"
-                      src={`/assets/icons/${name.toLowerCase()}.svg`}
+                      src={`/assets/icons/${token.symbol.toLowerCase()}.svg`}
                       className={`mr-2.5`}
                     />
-                    <span>{name}</span>
+                    <span>{token.symbol}</span>
                   </td>
                   <td className={`text-right px-2`}>
-                    {selectedMarginAccount
+                    {/* {selectedMarginAccount
                       ? floorToDecimal(
                           selectedMarginAccount.getUiDeposit(
                             selectedMangoGroup,
@@ -166,22 +169,22 @@ export default function MarginBalances() {
                           ),
                           tokenPrecision[name]
                         ).toFixed(tokenPrecision[name])
-                      : (0).toFixed(tokenPrecision[name])}
+                      : (0).toFixed(tokenPrecision[name])} */}
                   </td>
                   <td className={`text-right px-2`}>
-                    {selectedMarginAccount
+                    {/* {selectedMarginAccount
                       ? selectedMarginAccount
                           .getUiBorrow(selectedMangoGroup, i)
                           .toFixed(tokenPrecision[name])
-                      : (0).toFixed(tokenPrecision[name])}
+                      : (0).toFixed(tokenPrecision[name])} */}
                   </td>
                   <td className={`text-right`}>
                     <span className={`text-th-green`}>
-                      {(selectedMangoGroup.getDepositRate(i) * 100).toFixed(2)}%
+                      {/* {(selectedMangoGroup.getDepositRate(i) * 100).toFixed(2)}% */}
                     </span>
                     <span className={`text-th-fgd-4`}>{'  /  '}</span>
                     <span className={`text-th-red`}>
-                      {(selectedMangoGroup.getBorrowRate(i) * 100).toFixed(2)}%
+                      {/* {(selectedMangoGroup.getBorrowRate(i) * 100).toFixed(2)}% */}
                     </span>
                   </td>
                 </tr>
@@ -190,7 +193,7 @@ export default function MarginBalances() {
           </table>
         ) : null}
         <div className={`flex justify-center items-center mt-4`}>
-          <Button
+          {/* <Button
             onClick={() => setShowDepositModal(true)}
             className="w-1/2"
             disabled={!connected || loadingMarginAccount}
@@ -205,10 +208,10 @@ export default function MarginBalances() {
             }
           >
             <span>Withdraw</span>
-          </Button>
+          </Button> */}
         </div>
       </FloatingElement>
-      {showDepositModal && (
+      {/* {showDepositModal && (
         <DepositModal isOpen={showDepositModal} onClose={handleCloseDeposit} />
       )}
       {showWithdrawModal && (
@@ -225,7 +228,7 @@ export default function MarginBalances() {
           onClose={handleCloseAccounts}
           isOpen={showAccountsModal}
         />
-      ) : null}
+      ) : null} */}
     </>
   )
 }

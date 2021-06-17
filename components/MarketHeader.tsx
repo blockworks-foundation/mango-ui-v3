@@ -5,10 +5,10 @@ import useInterval from '../hooks/useInterval'
 import ChartApi from '../utils/chartDataConnector'
 import UiLock from './UiLock'
 import ManualRefresh from './ManualRefresh'
-import useOraclePrice from '../hooks/useOraclePrice'
+// import useOraclePrice from '../hooks/useOraclePrice'
 
 const MarketHeader = () => {
-  const oraclePrice = useOraclePrice()
+  // const oraclePrice = useOraclePrice()
   const selectedMarketName = useMangoStore((s) => s.selectedMarket.name)
   const previousMarketName: string = usePrevious(selectedMarketName)
   const marginAccount = useMangoStore((s) => s.selectedMarginAccount.current)
@@ -95,7 +95,7 @@ const MarketHeader = () => {
           <div className="pr-4 sm:pr-0 sm:w-24">
             <div className="text-th-fgd-4 text-xs">Oracle price</div>
             <div className="font-semibold mt-0.5">
-              {oraclePrice ? oraclePrice.toFixed(2) : '--'}
+              {/* {oraclePrice ? oraclePrice.toFixed(2) : '--'} */}
             </div>
           </div>
           <div className="pr-4 sm:pr-0 sm:w-24">

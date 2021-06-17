@@ -1,7 +1,10 @@
 import { useEffect, useMemo } from 'react'
 import { Account, Connection } from '@solana/web3.js'
-import { IDS } from '@blockworks-foundation/mango-client'
-import useMangoStore from '../stores/useMangoStore'
+// import { IDS } from '@blockworks-foundation/mango-client'
+import useMangoStore, {
+  programId,
+  serumProgramId,
+} from '../stores/useMangoStore'
 
 const useConnection = () => {
   const setMangoStore = useMangoStore((s) => s.set)
@@ -42,8 +45,9 @@ const useConnection = () => {
     }
   }, [endpoint])
 
-  const programId = useMemo(() => IDS[cluster].mango_program_id, [cluster])
-  const dexProgramId = useMemo(() => IDS[cluster]?.dex_program_id, [cluster])
+  // const programId = useMemo(() => IDS[cluster].mango_program_id, [cluster])
+  // const dexProgramId = useMemo(() => IDS[cluster]?.dex_program_id, [cluster])
+  const dexProgramId = serumProgramId
 
   return { connection, dexProgramId, cluster, programId, sendConnection }
 }
