@@ -57,9 +57,9 @@ export default function StatsTotals() {
       })
 
       borrowValues.push({
-        symbol: stats[i].symbol,
+        symbol: trimmedStats[i].symbol,
         value: borrowValue,
-        time: stats[i].hourly,
+        time: trimmedStats[i].hourly,
       })
     }
   }
