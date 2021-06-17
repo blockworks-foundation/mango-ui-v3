@@ -25,6 +25,7 @@ import { EndpointInfo, WalletAdapter } from '../@types/types'
 import { getWalletTokenInfo } from '../utils/tokens'
 import { isDefined } from '../utils'
 import { notify } from '../utils/notifications'
+import useAllMarkets from '../hooks/useAllMarkets'
 
 export const ENDPOINTS: EndpointInfo[] = [
   {
@@ -89,6 +90,11 @@ export interface WalletToken {
   uiBalance: number
 }
 
+export interface Orderbook {
+  bids: number[][],
+  asks: number[][]
+}
+
 interface MangoStore extends State {
   notifications: Array<{
     type: string
@@ -112,7 +118,7 @@ interface MangoStore extends State {
     markPrice: number
     askInfo: AccountInfo<Buffer> | null
     bidInfo: AccountInfo<Buffer> | null
-    orderBook: any[]
+    orderBook: Orderbook 
   }
   mangoClient: MangoClient
   mangoGroups: Array<MangoGroup>
@@ -185,7 +191,9 @@ const useMangoStore = create<MangoStore>((set, get) => ({
     current: null,
     mangoProgramId: null,
     markPrice: 0,
-    orderBook: [],
+    askInfo: null,
+    bidInfo: null,
+    orderBook: { bids: [[]], asks: [[]] },
   },
   mangoClient: new MangoClient(DEFAULT_CONNECTION, programId),
   mangoGroups: [],

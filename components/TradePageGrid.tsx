@@ -10,7 +10,7 @@ import FloatingElement from '../components/FloatingElement'
 import Orderbook from '../components/Orderbook'
 // import MarginInfo from './MarginInfo'
 import MarginBalances from './MarginBalances'
-// import TradeForm from './TradeForm'
+import TradeForm from './TradeForm'
 // import UserInfo from './UserInfo'
 // import RecentMarketTrades from './RecentMarketTrades'
 import useMangoStore from '../stores/useMangoStore'
@@ -102,7 +102,7 @@ const TradePageGrid = () => {
         </FloatingElement>
       </div>
       <div key="orderbook">{<Orderbook />}</div>
-      <div key="tradeForm">{/* <TradeForm /> */}</div>
+      <div key="tradeForm">{<TradeForm />}</div>
       <div key="marginInfo">{/* <MarginInfo /> */}</div>
       <div key="userInfo">{/* <UserInfo /> */}</div>
       <div key="balanceInfo">

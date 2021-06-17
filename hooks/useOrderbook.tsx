@@ -1,7 +1,6 @@
 import { useEffect, useMemo } from 'react'
-import { Orderbook, Market } from '@project-serum/serum'
-import useMarket from './useMarket'
-import useMangoStore from '../stores/useMangoStore'
+import { Orderbook as SpotOrderBook, Market } from '@project-serum/serum'
+import useMangoStore, { Orderbook } from '../stores/useMangoStore'
 import { BookSide, BookSideLayout, PerpMarket } from '@blockworks-foundation/mango-client'
 import { AccountInfo } from '@solana/web3.js'
 
@@ -15,19 +14,18 @@ function decodeBook(market, accInfo: AccountInfo<Buffer>): number[][] {
   if (market && accInfo) {
     const depth = 20; 
     if (market instanceof Market) {
-      const book = Orderbook.decode(market, accInfo.data);
+      const book = SpotOrderBook.decode(market, accInfo.data);
       return book.getL2(depth).map(([price, size]) => [price, size])
     } else if (market instanceof PerpMarket) {
       const book = new BookSide(null, market, BookSideLayout.decode(accInfo.data));
-      return book.getL2(depth).map(([price, size]) => [price, size])
+      return book.getL2(depth).map(([price, size]) => [price.toNumber(), size.toNumber()])
     }    
   } else {
     return [[]]
   }
 }
 
-export default function useOrderbook():
-{ bids: number[][]; asks: number[][] } {
+export default function useOrderbook(): Orderbook {
   const setMangoStore = useMangoStore((s) => s.set)
   const market = useMangoStore((state) => state.selectedMarket.current)
   const askInfo = useMangoStore((state) => state.selectedMarket.askInfo)

@@ -4,9 +4,9 @@ import useMarket from '../hooks/useMarket'
 import useIpAddress from '../hooks/useIpAddress'
 import useConnection from '../hooks/useConnection'
 import { PublicKey } from '@solana/web3.js'
-import { IDS } from '@blockworks-foundation/mango-client'
+import { getTokenBySymbol, IDS, PerpMarket } from '@blockworks-foundation/mango-client'
 import { notify } from '../utils/notifications'
-import { placeAndSettle } from '../utils/mango'
+// import { placeAndSettle } from '../utils/mango'
 import { calculateMarketPrice, getDecimalCount } from '../utils'
 import FloatingElement from './FloatingElement'
 import { floorToDecimal } from '../utils/index'
@@ -15,17 +15,21 @@ import Button from './Button'
 import TradeType from './TradeType'
 import Input from './Input'
 import Switch from './Switch'
+import { Market } from '@project-serum/serum'
+import { I80F48, NEG_ONE_I80F48 } from '@blockworks-foundation/mango-client/lib/src/fixednum'
 
 const StyledRightInput = styled(Input)`
   border-left: 1px solid transparent;
 `
 
 export default function TradeForm() {
-  const { baseCurrency, quoteCurrency, market, marketAddress } = useMarket()
   const set = useMangoStore((s) => s.set)
   const connected = useMangoStore((s) => s.wallet.connected)
   const actions = useMangoStore((s) => s.actions)
   const { connection, cluster } = useConnection()
+  const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config);
+  const marketConfig = useMangoStore((s) => s.selectedMarket.config);
+  const market = useMangoStore((s) => s.selectedMarket.current);
   const { side, baseSize, quoteSize, price, tradeType } = useMangoStore(
     (s) => s.tradeForm
   )
@@ -35,15 +39,16 @@ export default function TradeForm() {
   const [submitting, setSubmitting] = useState(false)
 
   const orderBookRef = useRef(useMangoStore.getState().selectedMarket.orderBook)
-  const orderbook = orderBookRef.current[0]
+  const orderbook = orderBookRef.current
   useEffect(
     () =>
       useMangoStore.subscribe(
-        (orderBook) => (orderBookRef.current = orderBook as any[]),
+        (orderBook) => (orderBookRef.current = orderBook),
         (state) => state.selectedMarket.orderBook
       ),
     []
   )
+  console.log({orderbook, orderBookRef});
 
   const setSide = (side) =>
     set((s) => {
@@ -92,11 +97,31 @@ export default function TradeForm() {
       ),
     []
   )
+  let minOrderSize = "0";
+  if (market instanceof Market && market.minOrderSize) {
+    minOrderSize = market.minOrderSize.toString();
+  } else if (market instanceof PerpMarket) {
+    const baseDecimals = getTokenBySymbol(groupConfig, marketConfig.base_symbol).decimals;
+    const baseUnit = I80F48.fromNumber(Math.pow(10, baseDecimals));
+    const baseLotSize = I80F48.fromI64(market.contractSize);
+    minOrderSize = baseLotSize.div(baseUnit).toString();
+  }
+  const sizeDecimalCount = getDecimalCount(minOrderSize);
 
-  const sizeDecimalCount =
-    market?.minOrderSize && getDecimalCount(market.minOrderSize)
-  // const priceDecimalCount = market?.tickSize && getDecimalCount(market.tickSize)
+  let tickSize = 1;
+  if (market instanceof Market) {
+    tickSize = market.tickSize;
+  } else if (market instanceof PerpMarket) {
+    const baseDecimals = getTokenBySymbol(groupConfig, marketConfig.base_symbol).decimals;
+    const baseUnit = I80F48.fromNumber(Math.pow(10, baseDecimals));
+    const baseLotSize = I80F48.fromI64(market.contractSize);
+    const quoteDecimals = getTokenBySymbol(groupConfig, groupConfig.quote_symbol).decimals;
+    const quoteUnit = I80F48.fromNumber(Math.pow(10, quoteDecimals));
+    const quoteLotSize = I80F48.fromI64(market.quoteLotSize);
+    tickSize = quoteLotSize.mul(baseUnit).div(baseLotSize).div(quoteUnit).toNumber();
+  }
 
+  
   const onSetPrice = (price: number | '') => {
     setPrice(price)
     if (!price) return
@@ -153,6 +178,7 @@ export default function TradeForm() {
   }
 
   async function onSubmit() {
+    /*
     if (!price && tradeType === 'Limit') {
       console.warn('Missing price')
       notify({
@@ -212,6 +238,7 @@ export default function TradeForm() {
     } finally {
       setSubmitting(false)
     }
+    */
   }
 
   const handleTradeTypeChange = (tradeType) => {
@@ -220,9 +247,10 @@ export default function TradeForm() {
       setIoc(true)
       setPrice('')
     } else {
-      const limitPrice =
-        side === 'buy' ? orderbook.asks[0][0] : orderbook.bids[0][0]
-      setPrice(limitPrice)
+      const priceOnBook = side === 'buy' ? orderbook?.asks : orderbook?.bids;
+      if (priceOnBook && priceOnBook.length > 0 && priceOnBook[0].length > 0) {
+        setPrice(priceOnBook[0][0]);
+      }
       setIoc(false)
     }
   }
@@ -268,12 +296,12 @@ export default function TradeForm() {
           <Input
             type="number"
             min="0"
-            step={market?.tickSize || 1}
+            step={tickSize}
             onChange={(e) => onSetPrice(e.target.value)}
             value={price}
             disabled={tradeType === 'Market'}
             prefix={'Price'}
-            suffix={quoteCurrency}
+            suffix={groupConfig.quote_symbol}
             className="rounded-r-none"
             wrapperClassName="w-3/5"
           />
@@ -288,23 +316,23 @@ export default function TradeForm() {
           <Input
             type="number"
             min="0"
-            step={market?.minOrderSize || 1}
+            step={minOrderSize}
             onChange={(e) => onSetBaseSize(e.target.value)}
             value={baseSize}
             className="rounded-r-none"
             wrapperClassName="w-3/5"
             prefix={'Size'}
-            suffix={baseCurrency}
+            suffix={marketConfig.base_symbol}
           />
           <StyledRightInput
             type="number"
             min="0"
-            step={market?.minOrderSize || 1}
+            step={minOrderSize}
             onChange={(e) => onSetQuoteSize(e.target.value)}
             value={quoteSize}
             className="rounded-l-none"
             wrapperClassName="w-2/5"
-            suffix={quoteCurrency}
+            suffix={groupConfig.quote_symbol}
           />
         </Input.Group>
         {tradeType !== 'Market' ? (
@@ -335,8 +363,8 @@ export default function TradeForm() {
                 {`${
                   baseSize > 0
                     ? 'Buy ' + baseSize
-                    : 'Set BUY bid >= ' + market?.minOrderSize
-                } ${baseCurrency}`}
+                    : 'Set BUY bid >= ' + minOrderSize
+                } ${marketConfig.base_symbol}`}
               </Button>
             ) : (
               <Button
@@ -350,8 +378,8 @@ export default function TradeForm() {
                 {`${
                   baseSize > 0
                     ? 'Sell ' + baseSize
-                    : 'Set SELL bid >= ' + market?.minOrderSize
-                } ${baseCurrency}`}
+                    : 'Set SELL bid >= ' + minOrderSize
+                } ${marketConfig.base_symbol}`}
               </Button>
             )
           ) : (
