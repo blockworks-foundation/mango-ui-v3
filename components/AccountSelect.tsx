@@ -2,45 +2,36 @@ import { useMemo, useState } from 'react'
 import { Listbox } from '@headlessui/react'
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid'
 import { abbreviateAddress } from '../utils'
-import { nativeToUi } from '@blockworks-foundation/mango-client/lib/src/utils'
-import { getTokenByMint } from '@blockworks-foundation/mango-client'
-import useMangoStore from '../stores/useMangoStore'
+import useMangoStore, { WalletToken } from '../stores/useMangoStore'
 import { RefreshClockwiseIcon } from './icons'
 import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
 
 type AccountSelectProps = {
-  accounts: any[]
-  selectedAccount: any
-  onSelectAccount: (x) => any
+  accounts: WalletToken[]
+  selectedAccount: WalletToken
+  onSelectAccount: (WalletToken) => any
   hideAddress?: boolean
-  symbols?: { [key: string]: string }
 }
 
 const AccountSelect = ({
   accounts,
   selectedAccount,
   onSelectAccount,
-  getBalance,
   hideAddress = false,
 }: AccountSelectProps) => {
   const groupConfig = useMangoGroupConfig();
   const tokenSymbols = useMemo(() => groupConfig.tokens.map(t => t.symbol), [groupConfig]);
+  const missingTokenSymbols = useMemo(() => {
+    const symbolsForAccounts = accounts.map(a => a.config.symbol);
+    return tokenSymbols.filter((sym) => !symbolsForAccounts.includes(sym));
+  }, [accounts, tokenSymbols]);
 
   const actions = useMangoStore((s) => s.actions)
   const [loading, setLoading] = useState(false)
 
-  const handleChange = (value) => {
-    const newAccount = accounts.find((a) => a.publicKey.toString() === value)
+  const handleChange = (value: string) => {
+    const newAccount = accounts.find((a) => a.account.publicKey.toBase58() === value)
     onSelectAccount(newAccount)
-  }
-
-  const getBalanceForAccount = (account) => {
-    const balance = nativeToUi(
-      account?.account?.amount,
-      getTokenByMint(groupConfig, account?.account.mint).decimals
-    )
-
-    return balance.toString()
   }
 
   const handleRefreshBalances = async () => {
@@ -49,15 +40,11 @@ const AccountSelect = ({
     setLoading(false)
   }
 
-  const getSymbolOfAccount = (a) => getTokenByMint(groupConfig, a.account.mint)?.symbol;
-  const symbolsForAccounts = accounts.map(getSymbolOfAccount)
-  const missingTokens = tokenSymbols.filter((sym) => !symbolsForAccounts.includes(sym))
-
   return (
     <div className={`relative inline-block w-full`}>
       <div className="flex justify-between pb-2">
         <div className="text-th-fgd-1">Asset</div>
-        {missingTokens.length > 0 ? (
+        {missingTokenSymbols.length > 0 ? (
           <button
             className="ml-2 text-th-fgd-1 hover:text-th-primary outline-none focus:outline-none"
             onClick={handleRefreshBalances}
@@ -72,7 +59,7 @@ const AccountSelect = ({
         ) : null}
       </div>
       <Listbox
-        value={selectedAccount?.publicKey.toString()}
+        value={selectedAccount.account.publicKey.toBase58()}
         onChange={handleChange}
       >
         {({ open }) => (
@@ -90,21 +77,19 @@ const AccountSelect = ({
                         alt=""
                         width="20"
                         height="20"
-                        src={`/assets/icons/${getSymbolOfAccount(selectedAccount).toLowerCase()}.svg`}
+                        src={`/assets/icons/${selectedAccount.config.symbol.toLowerCase()}.svg`}
                         className={`mr-2`}
                       />
                       <div className="text-left">
-                        {getSymbolOfAccount(selectedAccount)}
+                        {selectedAccount.config.symbol}
                         {!hideAddress ? (
                           <div className="text-xs text-th-fgd-4">
-                            {abbreviateAddress(selectedAccount?.publicKey)}
+                            {abbreviateAddress(selectedAccount.account.publicKey)}
                           </div>
                         ) : null}
                       </div>
                       <div className={`ml-4 text-right flex-grow`}>
-                        {hideAddress
-                          ? getBalance(selectedAccount)
-                          : getBalanceForAccount(selectedAccount)}
+                        {selectedAccount.uiBalance}
                       </div>
                     </div>
                   ) : (
@@ -122,13 +107,13 @@ const AccountSelect = ({
               className={`z-20 p-1 absolute right-0 top-13 bg-th-bkg-1 divide-y divide-th-bkg-3 shadow-lg outline-none rounded-md w-full max-h-60 overflow-auto`}
             >
               {accounts.map((account) => {
-                const symbolForAccount = getSymbolOfAccount(account);
+                const symbolForAccount = account.config.symbol;
 
                 return (
                   <Listbox.Option
-                    disabled={getBalanceForAccount(account) === '0'}
-                    key={account?.publicKey.toString()}
-                    value={account?.publicKey.toString()}
+                    disabled={account.uiBalance === 0}
+                    key={account?.account.publicKey.toBase58()}
+                    value={account?.account.publicKey.toBase58()}
                   >
                     {({ disabled, selected }) => (
                       <div
@@ -151,13 +136,13 @@ const AccountSelect = ({
                             {symbolForAccount}
                             {!hideAddress ? (
                               <div className="text-xs text-th-fgd-4">
-                                {abbreviateAddress(account?.publicKey)}
+                                {abbreviateAddress(account.account.publicKey)}
                               </div>
                             ) : null}
                           </div>
                           {!hideAddress ? (
                             <div className={`text-sm`}>
-                              {getBalanceForAccount(account)} {symbolForAccount}
+                              {account.uiBalance} {symbolForAccount}
                             </div>
                           ) : null}
                         </div>
@@ -166,7 +151,7 @@ const AccountSelect = ({
                   </Listbox.Option>
                 )
               })}
-              {missingTokens.map((token) => (
+              {missingTokenSymbols.map((token) => (
                     <Listbox.Option disabled key={token} value={token}>
                       <div
                         className={`opacity-50 p-2 hover:cursor-not-allowed`}

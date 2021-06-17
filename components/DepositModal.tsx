@@ -394,7 +394,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
               <div className="font-semibold relative text-xl">
                 {inputAmount}
                 <span className="absolute bottom-0.5 font-normal ml-1.5 text-xs text-th-fgd-4">
-                  {symbol}
+                  {selectedAccount?.config.symbol}
                 </span>
               </div>
             </div>

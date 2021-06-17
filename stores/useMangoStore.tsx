@@ -239,35 +239,6 @@ const useMangoStore = create<MangoStore>((set, get) => ({
         })
       }
     },
-    // async fetchMangoSrmAccounts() {
-    //   const connection = get().connection.current
-    //   const wallet = get().wallet.current
-    //   const connected = get().wallet.connected
-    //   const selectedMangoGroup = get().selectedMangoGroup.current
-    //   const cluster = get().connection.cluster
-    //   const mangoClient = get().mangoClient
-    //   const set = get().set
-
-    //   if (wallet?.publicKey && connected && selectedMangoGroup) {
-    //     const usersMangoSrmAccounts =
-    //       await mangoClient.getMangoSrmAccountsForOwner(
-    //         connection,
-    //         new PublicKey(IDS[cluster].mango_program_id),
-    //         selectedMangoGroup,
-    //         wallet
-    //       )
-    //     if (usersMangoSrmAccounts.length) {
-    //       set((state) => {
-    //         state.wallet.srmAccountsForOwner = usersMangoSrmAccounts
-    //         const totalSrmDeposits = usersMangoSrmAccounts.reduce(
-    //           (prev, cur) => prev + nativeToUi(cur.amount, SRM_DECIMALS),
-    //           0
-    //         )
-    //         state.wallet.contributedSrm = totalSrmDeposits
-    //       })
-    //     }
-    //   }
-    // },
     async fetchMarginAccounts() {
       const mangoClient = get().mangoClient
       const mangoGroup = get().selectedMangoGroup.current
