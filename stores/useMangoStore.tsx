@@ -16,6 +16,7 @@ import {
   getTokenByMint,
   TokenAccount,
   nativeToUi,
+  MerpsCache,
 } from '@blockworks-foundation/mango-client'
 // import { SRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
 import { AccountInfo, Connection, PublicKey, TokenAmount } from '@solana/web3.js'
@@ -47,8 +48,11 @@ const DEFAULT_CONNECTION = new Connection(ENDPOINT.url, 'recent')
 const WEBSOCKET_CONNECTION = new Connection(ENDPOINT.websocket, 'recent')
 
 const DEFAULT_MANGO_GROUP_NAME = 'merps_test_v1'
-const DEFAULT_MANGO_GROUP_CONFIG = Config.ids().getGroup(CLUSTER, DEFAULT_MANGO_GROUP_NAME)
-console.log(DEFAULT_MANGO_GROUP_CONFIG);
+const DEFAULT_MANGO_GROUP_CONFIG = Config.ids().getGroup(
+  CLUSTER,
+  DEFAULT_MANGO_GROUP_NAME
+)
+console.log(DEFAULT_MANGO_GROUP_CONFIG)
 
 const defaultMangoGroupIds = IDS['groups'].find(
   (group) => group.name === DEFAULT_MANGO_GROUP_NAME
@@ -99,7 +103,7 @@ interface MangoStore extends State {
     endpoint: string
   }
   selectedMarket: {
-    config: MarketConfig,
+    config: MarketConfig
     name: string
     address: string
     current: Market | null
@@ -110,15 +114,14 @@ interface MangoStore extends State {
   mangoClient: MangoClient
   mangoGroups: Array<MangoGroup>
   selectedMangoGroup: {
-    config: GroupConfig,
+    config: GroupConfig
     name: string
     current: MangoGroup | null
     markets: {
       [address: string]: Market
     }
-    ids: any
-    tokens: any[]
     rootBanks: any[]
+    cache: MerpsCache | null
   }
   marginAccounts: MarginAccount[]
   selectedMarginAccount: {
@@ -164,12 +167,15 @@ const useMangoStore = create<MangoStore>((set, get) => ({
     name: DEFAULT_MANGO_GROUP_NAME,
     current: null,
     markets: {},
-    ids: defaultMangoGroupIds,
-    tokens: defaultMangoGroupIds.tokens,
     rootBanks: [],
+    cache: null,
   },
   selectedMarket: {
-    config: getMarketByBaseSymbolAndKind(DEFAULT_MANGO_GROUP_CONFIG, 'BTC', 'spot') as MarketConfig,
+    config: getMarketByBaseSymbolAndKind(
+      DEFAULT_MANGO_GROUP_CONFIG,
+      'BTC',
+      'spot'
+    ) as MarketConfig,
     kind: 'spot',
     name: 'BTC/USDC',
     address: defaultMangoGroupIds.spot_markets[0].key,
@@ -322,13 +328,15 @@ const useMangoStore = create<MangoStore>((set, get) => ({
       const set = get().set
 
       if (!mangoClient) return
-
       const mangoGroupPk = merpsGroupPk
 
       return mangoClient
         .getMerpsGroup(mangoGroupPk)
         .then(async (mangoGroup) => {
           console.log('we have a mango group', mangoGroup)
+          const rootBanks = await mangoGroup.loadRootBanks(DEFAULT_CONNECTION)
+          const merpsCache = await mangoGroup.loadCache(DEFAULT_CONNECTION)
+          console.log('we have merps cache::', merpsCache)
 
           // const srmAccountInfoPromise = connection.getAccountInfo(
           //   mangoGroup.srmVault
@@ -341,6 +349,8 @@ const useMangoStore = create<MangoStore>((set, get) => ({
           // Set the mango group
           set((state) => {
             state.selectedMangoGroup.current = mangoGroup
+            state.selectedMangoGroup.rootBanks = rootBanks
+            state.selectedMangoGroup.cache = merpsCache
             // state.selectedMangoGroup.srmAccount = srmAccountInfo
             // state.selectedMangoGroup.mintDecimals = mangoGroup.mintDecimals // TODO store "tokens" from merps group ids
             // state.selectedMangoGroup.prices = prices

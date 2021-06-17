@@ -13,7 +13,7 @@ const SECONDS = 1000
 
 // const mangoGroupMarketsSelector = (s) => s.selectedMangoGroup.markets
 // const websocketConnectionSelector = (s) => s.connection.websocket
-const selectedMarketKindSelector = (s) => s.selectedMarket.kind
+// const selectedMarketKindSelector = (s) => s.selectedMarket.kind
 const selectedMarketAddressSelector = (s) => s.selectedMarket.address
 
 const useHydrateStore = () => {

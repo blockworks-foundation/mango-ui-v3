@@ -8,8 +8,9 @@ import useMangoStore from '../stores/useMangoStore'
 // import useMarketList from '../hooks/useMarketList'
 import {
   abbreviateAddress,
+  i80f48ToPercent,
   // floorToDecimal,
-  // tokenPrecision,
+  tokenPrecision,
 } from '../utils/index'
 import DepositModal from './DepositModal'
 import WithdrawModal from './WithdrawModal'
@@ -20,8 +21,11 @@ import Tooltip from './Tooltip'
 
 export default function MarginBalances() {
   const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
-  const selectedMangoGroupTokens = useMangoStore(
-    (s) => s.selectedMangoGroup.tokens
+  const selectedMangoGroupConfig = useMangoStore(
+    (s) => s.selectedMangoGroup.config
+  )
+  const selectedMangoGroupCache = useMangoStore(
+    (s) => s.selectedMangoGroup.cache
   )
   const selectedMarginAccount = useMangoStore(
     (s) => s.selectedMarginAccount.current
@@ -148,47 +152,60 @@ export default function MarginBalances() {
               </tr>
             </thead>
             <tbody>
-              {selectedMangoGroupTokens.map((token) => (
-                <tr key={token.symbol} className={`text-th-fgd-1`}>
-                  <td className={`flex items-center py-2`}>
-                    <img
-                      alt=""
-                      width="20"
-                      height="20"
-                      src={`/assets/icons/${token.symbol.toLowerCase()}.svg`}
-                      className={`mr-2.5`}
-                    />
-                    <span>{token.symbol}</span>
-                  </td>
-                  <td className={`text-right px-2`}>
-                    {/* {selectedMarginAccount
-                      ? floorToDecimal(
-                          selectedMarginAccount.getUiDeposit(
-                            selectedMangoGroup,
-                            i
-                          ),
-                          tokenPrecision[name]
-                        ).toFixed(tokenPrecision[name])
-                      : (0).toFixed(tokenPrecision[name])} */}
-                  </td>
-                  <td className={`text-right px-2`}>
-                    {/* {selectedMarginAccount
-                      ? selectedMarginAccount
-                          .getUiBorrow(selectedMangoGroup, i)
-                          .toFixed(tokenPrecision[name])
-                      : (0).toFixed(tokenPrecision[name])} */}
-                  </td>
-                  <td className={`text-right`}>
-                    <span className={`text-th-green`}>
-                      {/* {(selectedMangoGroup.getDepositRate(i) * 100).toFixed(2)}% */}
-                    </span>
-                    <span className={`text-th-fgd-4`}>{'  /  '}</span>
-                    <span className={`text-th-red`}>
-                      {/* {(selectedMangoGroup.getBorrowRate(i) * 100).toFixed(2)}% */}
-                    </span>
-                  </td>
-                </tr>
-              ))}
+              {selectedMangoGroupConfig.tokens.map(({ symbol, mint_key }) => {
+                const tokenIndex = selectedMangoGroup.getTokenIndex(mint_key)
+                return (
+                  <tr key={symbol} className={`text-th-fgd-1`}>
+                    <td className={`flex items-center py-2`}>
+                      <img
+                        alt=""
+                        width="20"
+                        height="20"
+                        src={`/assets/icons/${symbol.toLowerCase()}.svg`}
+                        className={`mr-2.5`}
+                      />
+                      <span>{symbol}</span>
+                    </td>
+                    <td className={`text-right px-2`}>
+                      {selectedMarginAccount
+                        ? selectedMarginAccount
+                            .getUiDeposit(
+                              selectedMangoGroupCache.rootBankCache[tokenIndex],
+                              selectedMangoGroup,
+                              tokenIndex
+                            )
+                            .toFixed(tokenPrecision[symbol])
+                        : (0).toFixed(tokenPrecision[symbol])}
+                    </td>
+                    <td className={`text-right px-2`}>
+                      {selectedMarginAccount
+                        ? selectedMarginAccount
+                            .getUiBorrow(
+                              selectedMangoGroupCache.rootBankCache[tokenIndex],
+                              selectedMangoGroup,
+                              tokenIndex
+                            )
+                            .toFixed(tokenPrecision[symbol])
+                        : (0).toFixed(tokenPrecision[symbol])}
+                    </td>
+                    <td className={`text-right`}>
+                      <span className={`text-th-green`}>
+                        {i80f48ToPercent(
+                          selectedMangoGroup.getDepositRate(tokenIndex)
+                        ).toFixed(2)}
+                        %
+                      </span>
+                      <span className={`text-th-fgd-4`}>{'  /  '}</span>
+                      <span className={`text-th-red`}>
+                        {i80f48ToPercent(
+                          selectedMangoGroup.getBorrowRate(tokenIndex)
+                        ).toFixed(2)}
+                        %
+                      </span>
+                    </td>
+                  </tr>
+                )
+              })}
             </tbody>
           </table>
         ) : null}

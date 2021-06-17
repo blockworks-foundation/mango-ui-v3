@@ -995,7 +995,7 @@
 
 "@blockworks-foundation/mango-client@git+ssh://git@github.com/blockworks-foundation/merps-ts#ts/ui-exports":
   version "0.0.0"
-  resolved "git+ssh://git@github.com/blockworks-foundation/merps-ts#b9f5fcd9ad9fa572ee30be00e1f6e6d66b8ae285"
+  resolved "git+ssh://git@github.com/blockworks-foundation/merps-ts#62854b395fa6eee3c4092dfd90e892fa8ae52517"
   dependencies:
     "@project-serum/serum" "^0.13.38"
     "@project-serum/sol-wallet-adapter" "^0.2.0"
