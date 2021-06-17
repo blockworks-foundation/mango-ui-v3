@@ -1,12 +1,12 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Listbox } from '@headlessui/react'
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid'
-import { abbreviateAddress, getSymbolForTokenMintAddress } from '../utils'
-import useMarketList from '../hooks/useMarketList'
-import { nativeToUi } from '@blockworks-foundation/mango-client/lib/utils'
+import { abbreviateAddress } from '../utils'
+import { nativeToUi } from '@blockworks-foundation/mango-client/lib/src/utils'
+import { getTokenByMint } from '@blockworks-foundation/mango-client'
 import useMangoStore from '../stores/useMangoStore'
-import { SRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
 import { RefreshClockwiseIcon } from './icons'
+import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
 
 type AccountSelectProps = {
   accounts: any[]
@@ -23,10 +23,10 @@ const AccountSelect = ({
   onSelectAccount,
   getBalance,
   hideAddress = false,
-  symbols,
 }: AccountSelectProps) => {
-  const { getTokenIndex } = useMarketList()
-  const mintDecimals = useMangoStore((s) => s.selectedMangoGroup.mintDecimals)
+  const groupConfig = useMangoGroupConfig();
+  const tokenSymbols = useMemo(() => groupConfig.tokens.map(t => t.symbol), [groupConfig]);
+
   const actions = useMangoStore((s) => s.actions)
   const [loading, setLoading] = useState(false)
 
@@ -36,11 +36,9 @@ const AccountSelect = ({
   }
 
   const getBalanceForAccount = (account) => {
-    const mintAddress = account?.account.mint.toString()
-    const symbol = getSymbolForTokenMintAddress(mintAddress)
     const balance = nativeToUi(
       account?.account?.amount,
-      symbol !== 'SRM' ? mintDecimals[getTokenIndex(mintAddress)] : SRM_DECIMALS
+      getTokenByMint(groupConfig, account?.account.mint).decimals
     )
 
     return balance.toString()
@@ -52,19 +50,15 @@ const AccountSelect = ({
     setLoading(false)
   }
 
-  const symbolsForAccounts = accounts.map((a) =>
-    getSymbolForTokenMintAddress(a.account.mint.toString())
-  )
-
-  const missingTokens = symbols
-    ? Object.keys(symbols).filter((sym) => !symbolsForAccounts.includes(sym))
-    : null
+  const getSymbolOfAccount = (a) => getTokenByMint(groupConfig, a.account.mint)?.symbol;
+  const symbolsForAccounts = accounts.map(getSymbolOfAccount)
+  const missingTokens = tokenSymbols.filter((sym) => !symbolsForAccounts.includes(sym))
 
   return (
     <div className={`relative inline-block w-full`}>
       <div className="flex justify-between pb-2">
         <div className="text-th-fgd-1">Asset</div>
-        {accounts.length < Object.keys(symbols).length ? (
+        {missingTokens.length > 0 ? (
           <button
             className="ml-2 text-th-fgd-1 hover:text-th-primary outline-none focus:outline-none"
             onClick={handleRefreshBalances}
@@ -97,15 +91,11 @@ const AccountSelect = ({
                         alt=""
                         width="20"
                         height="20"
-                        src={`/assets/icons/${getSymbolForTokenMintAddress(
-                          selectedAccount?.account?.mint.toString()
-                        ).toLowerCase()}.svg`}
+                        src={`/assets/icons/${getSymbolOfAccount(selectedAccount).toLowerCase()}.svg`}
                         className={`mr-2`}
                       />
                       <div className="text-left">
-                        {getSymbolForTokenMintAddress(
-                          selectedAccount?.account?.mint.toString()
-                        )}
+                        {getSymbolOfAccount(selectedAccount)}
                         {!hideAddress ? (
                           <div className="text-xs text-th-fgd-4">
                             {abbreviateAddress(selectedAccount?.publicKey)}
@@ -133,9 +123,7 @@ const AccountSelect = ({
               className={`z-20 p-1 absolute right-0 top-13 bg-th-bkg-1 divide-y divide-th-bkg-3 shadow-lg outline-none rounded-md w-full max-h-60 overflow-auto`}
             >
               {accounts.map((account) => {
-                const symbolForAccount = getSymbolForTokenMintAddress(
-                  account?.account?.mint.toString()
-                )
+                const symbolForAccount = getSymbolOfAccount(account);
 
                 return (
                   <Listbox.Option
@@ -179,8 +167,7 @@ const AccountSelect = ({
                   </Listbox.Option>
                 )
               })}
-              {missingTokens && accounts.length !== Object.keys(symbols).length
-                ? missingTokens.map((token) => (
+              {missingTokens.map((token) => (
                     <Listbox.Option disabled key={token} value={token}>
                       <div
                         className={`opacity-50 p-2 hover:cursor-not-allowed`}
@@ -199,7 +186,7 @@ const AccountSelect = ({
                       </div>
                     </Listbox.Option>
                   ))
-                : null}
+              }
             </Listbox.Options>
           </>
         )}

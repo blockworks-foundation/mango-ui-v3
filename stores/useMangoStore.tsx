@@ -3,9 +3,14 @@ import produce from 'immer'
 import { Market } from '@project-serum/serum'
 import {
   IDS,
+  Config,
+  MarketKind,
   MerpsClient as MangoClient,
   MerpsGroup as MangoGroup,
   MerpsAccount as MarginAccount,
+  MarketConfig,
+  getMarketByBaseSymbolAndKind,
+  GroupConfig,
 } from '@blockworks-foundation/mango-client'
 // import { SRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
 import { AccountInfo, Connection, PublicKey } from '@solana/web3.js'
@@ -37,6 +42,8 @@ const DEFAULT_CONNECTION = new Connection(ENDPOINT.url, 'recent')
 const WEBSOCKET_CONNECTION = new Connection(ENDPOINT.websocket, 'recent')
 
 const DEFAULT_MANGO_GROUP_NAME = 'merps_test_v1'
+const DEFAULT_MANGO_GROUP_CONFIG = Config.ids().getGroup(CLUSTER, DEFAULT_MANGO_GROUP_NAME)
+console.log(DEFAULT_MANGO_GROUP_CONFIG);
 
 const defaultMangoGroupIds = IDS['groups'].find(
   (group) => group.name === DEFAULT_MANGO_GROUP_NAME
@@ -81,6 +88,7 @@ interface MangoStore extends State {
     endpoint: string
   }
   selectedMarket: {
+    config: MarketConfig,
     name: string
     address: string
     current: Market | null
@@ -91,6 +99,7 @@ interface MangoStore extends State {
   mangoClient: MangoClient
   mangoGroups: Array<MangoGroup>
   selectedMangoGroup: {
+    config: GroupConfig,
     name: string
     current: MangoGroup | null
     markets: {
@@ -140,6 +149,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
     endpoint: ENDPOINT.url,
   },
   selectedMangoGroup: {
+    config: DEFAULT_MANGO_GROUP_CONFIG,
     name: DEFAULT_MANGO_GROUP_NAME,
     current: null,
     markets: {},
@@ -148,7 +158,9 @@ const useMangoStore = create<MangoStore>((set, get) => ({
     rootBanks: [],
   },
   selectedMarket: {
-    name: defaultMangoGroupIds.spot_markets[0].base_symbol,
+    config: getMarketByBaseSymbolAndKind(DEFAULT_MANGO_GROUP_CONFIG, 'BTC', 'spot') as MarketConfig,
+    kind: 'spot',
+    name: 'BTC/USDC',
     address: defaultMangoGroupIds.spot_markets[0].key,
     current: null,
     mangoProgramId: null,

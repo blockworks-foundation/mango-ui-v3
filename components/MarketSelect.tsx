@@ -1,24 +1,21 @@
-import useMarketList from '../hooks/useMarketList'
+import useMangoGroupConfig from '../hooks/useMangoGroupConfig';
 import useMangoStore from '../stores/useMangoStore'
+import { getMarketByBaseSymbolAndKind } from '@blockworks-foundation/mango-client'
 
 const MarketSelect = () => {
-  const { spotMarkets } = useMarketList()
-  const selectedMarketName = useMangoStore((s) => s.selectedMarket.name)
-  const selectedMangoGroupMarkets = useMangoStore(
-    (s) => s.selectedMangoGroup.markets
-  )
+  const groupConfig = useMangoGroupConfig();
+  const selectedMarket = useMangoStore((s) => s.selectedMarket.config)
   const setMangoStore = useMangoStore((s) => s.set)
 
-  const handleChange = (mktName) => {
-    const newMarket = Object.entries(selectedMangoGroupMarkets).find(
-      (m) => m[0] == spotMarkets[mktName]
-    )[1]
+  const handleChange = (symbol, kind) => {
+    const newMarket = getMarketByBaseSymbolAndKind(groupConfig, symbol, kind);
     setMangoStore((state) => {
-      state.selectedMarket.current = newMarket
-      state.selectedMarket.name = mktName
-      state.selectedMarket.address = spotMarkets[mktName]
+      state.selectedMarket.current = null
+      state.selectedMarket.config = newMarket
     })
   }
+
+  console.log(selectedMarket)
 
   return (
     <div className="bg-th-bkg-3 py-2">
@@ -27,19 +24,35 @@ const MarketSelect = () => {
           <div className="border-r border-th-fgd-4 pr-4 text-th-fgd-4 text-xs">
             MARKETS
           </div>
-          {Object.entries(spotMarkets).map(([name, address]) => (
+          {groupConfig.perp_markets.map((s) => (
             <div
               className={`border-r border-th-fgd-4 cursor-pointer default-transition flex font-semibold px-4 text-xs hover:text-th-primary
               ${
-                selectedMarketName === name
+                selectedMarket.name === s.name
                   ? `text-th-primary`
                   : `text-th-fgd-3`
               }
             `}
-              onClick={() => handleChange(name)}
-              key={address as string}
+              onClick={() => handleChange(s.base_symbol, 'perp')}
+              key={s.key.toBase58()}
             >
-              {name.split('/')[0]}
+              {s.name}
+            </div>
+          ))}
+
+          {groupConfig.spot_markets.map((s) => (
+            <div
+              className={`border-r border-th-fgd-4 cursor-pointer default-transition flex font-semibold px-4 text-xs hover:text-th-primary
+              ${
+                selectedMarket.name === s.name
+                  ? `text-th-primary`
+                  : `text-th-fgd-3`
+              }
+            `}
+              onClick={() => handleChange(s.base_symbol, 'spot')}
+              key={s.key.toBase58()}
+            >
+              {s.name}
             </div>
           ))}
         </div>

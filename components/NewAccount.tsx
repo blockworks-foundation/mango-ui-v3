@@ -1,14 +1,14 @@
 import React, { FunctionComponent, useEffect, useMemo, useState } from 'react'
 import { ExclamationCircleIcon } from '@heroicons/react/outline'
+import { getTokenByMint } from '@blockworks-foundation/mango-client'
 import {
   nativeToUi,
   sleep,
-} from '@blockworks-foundation/mango-client/lib/utils'
+} from '@blockworks-foundation/mango-client/lib/utils/src'
 import Input from './Input'
 import AccountSelect from './AccountSelect'
 import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
-import useMarketList from '../hooks/useMarketList'
 import {
   getSymbolForTokenMintAddress,
   DECIMALS,
@@ -16,11 +16,11 @@ import {
 } from '../utils/index'
 import useConnection from '../hooks/useConnection'
 import { initMarginAccountAndDeposit } from '../utils/mango'
-import { PublicKey } from '@solana/web3.js'
 import Loading from './Loading'
 import Button from './Button'
 import Slider from './Slider'
 import { notify } from '../utils/notifications'
+import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
 
 interface NewAccountProps {
   onAccountCreation?: (x?) => void
@@ -29,22 +29,19 @@ interface NewAccountProps {
 const NewAccount: FunctionComponent<NewAccountProps> = ({
   onAccountCreation,
 }) => {
+  const groupConfig = useMangoGroupConfig()
+  const tokenMints = useMemo(() => groupConfig.tokens.map(t => t.mint_key.toBase58()), [groupConfig]);
   const [inputAmount, setInputAmount] = useState(0)
   const [submitting, setSubmitting] = useState(false)
   const [invalidAmountMessage, setInvalidAmountMessage] = useState('')
   const [sliderPercentage, setSliderPercentage] = useState(0)
   const [maxButtonTransition, setMaxButtonTransition] = useState(false)
-  const { getTokenIndex, symbols } = useMarketList()
-  const { connection, programId } = useConnection()
-  const mintDecimals = useMangoStore((s) => s.selectedMangoGroup.mintDecimals)
+  const { connection } = useConnection()
   const walletAccounts = useMangoStore((s) => s.wallet.balances)
   const actions = useMangoStore((s) => s.actions)
   const depositAccounts = useMemo(
-    () =>
-      walletAccounts.filter((acc) =>
-        Object.values(symbols).includes(acc.account.mint.toString())
-      ),
-    [symbols, walletAccounts]
+    () => walletAccounts.filter((acc) => tokenMints.includes(acc.account.mint.toString())),
+    [tokenMints, walletAccounts]
   )
   const [selectedAccount, setSelectedAccount] = useState(depositAccounts[0])
 
@@ -61,10 +58,9 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
 
   // TODO: remove duplication in AccountSelect
   const getBalanceForAccount = (account) => {
-    const mintAddress = account?.account.mint.toString()
     const balance = nativeToUi(
       account?.account?.amount,
-      mintDecimals[getTokenIndex(mintAddress)]
+      getTokenByMint(groupConfig, account?.account.mint).decimals
     )
 
     return balance
@@ -85,7 +81,7 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
 
     initMarginAccountAndDeposit(
       connection,
-      new PublicKey(programId),
+      groupConfig.merps_program_id,
       mangoGroup,
       wallet,
       selectedAccount.account.mint,
@@ -155,8 +151,8 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
       <div className="text-th-fgd-3 text-center pb-4 pt-2">
         Make a deposit to initialize a new margin account
       </div>
+      
       <AccountSelect
-        symbols={symbols}
         accounts={depositAccounts}
         selectedAccount={selectedAccount}
         onSelectAccount={handleAccountSelect}

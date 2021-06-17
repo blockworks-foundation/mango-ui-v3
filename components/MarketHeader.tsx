@@ -9,7 +9,9 @@ import ManualRefresh from './ManualRefresh'
 
 const MarketHeader = () => {
   // const oraclePrice = useOraclePrice()
-  const selectedMarketName = useMangoStore((s) => s.selectedMarket.name)
+  const marketConfig = useMangoStore((s) => s.selectedMarket.config)
+  const baseSymbol = marketConfig.base_symbol;
+  const selectedMarketName = marketConfig.name;
   const previousMarketName: string = usePrevious(selectedMarketName)
   const marginAccount = useMangoStore((s) => s.selectedMarginAccount.current)
   const connected = useMangoStore((s) => s.wallet.connected)
@@ -76,18 +78,16 @@ const MarketHeader = () => {
               alt=""
               width="24"
               height="24"
-              src={`/assets/icons/${selectedMarketName
-                .split('/')[0]
-                .toLowerCase()}.svg`}
+              src={`/assets/icons/${baseSymbol.toLowerCase()}.svg`}
               className={`mr-2.5`}
             />
 
             <div className="font-semibold pr-1.5 text-xl">
-              {selectedMarketName.split('/')[0]}
+              {baseSymbol}
             </div>
             <span className="text-th-fgd-4 text-xl">/</span>
             <div className="font-semibold pl-1.5 text-xl">
-              {selectedMarketName.split('/')[1]}
+              {selectedMarketName.split(/\/|-/)[1]}
             </div>
           </div>
         </div>
@@ -125,7 +125,7 @@ const MarketHeader = () => {
                   <>
                     {volume.toFixed(2)}
                     <span className="ml-1 text-th-fgd-3 text-xs">
-                      {selectedMarketName.split('/')[0]}
+                      {baseSymbol}
                     </span>
                   </>
                 ) : (
