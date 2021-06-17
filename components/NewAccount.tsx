@@ -111,8 +111,7 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
       })
   }
 
-  const validateAmountInput = (e) => {
-    const amount = e.target.value
+  const validateAmountInput = (amount) => {
     if (Number(amount) <= 0) {
       setInvalidAmountMessage('Enter an amount to deposit')
     }
@@ -133,9 +132,14 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
   const onChangeSlider = async (percentage) => {
     const max = getBalanceForAccount(selectedAccount)
     const amount = (percentage / 100) * max
-    setInputAmount(trimDecimals(amount, DECIMALS[symbol]))
+    if (percentage === 100) {
+      setInputAmount(amount)
+    } else {
+      setInputAmount(trimDecimals(amount, DECIMALS[symbol]))
+    }
     setSliderPercentage(percentage)
     setInvalidAmountMessage('')
+    validateAmountInput(amount)
   }
 
   // turn off slider transition for dragging slider handle interaction
@@ -173,7 +177,7 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
           className={`border border-th-fgd-4 flex-grow pr-11`}
           placeholder="0.00"
           error={!!invalidAmountMessage}
-          onBlur={validateAmountInput}
+          onBlur={(e) => validateAmountInput(e.target.value)}
           value={inputAmount}
           onChange={(e) => onChangeAmountInput(e.target.value)}
           suffix={symbol}
@@ -187,7 +191,6 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
       ) : null}
       <div className="pt-3 pb-4">
         <Slider
-          disabled={null}
           value={sliderPercentage}
           onChange={(v) => onChangeSlider(v)}
           step={1}
@@ -195,7 +198,14 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
         />
       </div>
       <div className={`pt-8 flex justify-center`}>
-        <Button onClick={handleNewAccountDeposit} className="w-full">
+        <Button
+          disabled={
+            inputAmount <= 0 ||
+            inputAmount > getBalanceForAccount(selectedAccount)
+          }
+          onClick={handleNewAccountDeposit}
+          className="w-full"
+        >
           <div className={`flex items-center justify-center`}>
             {submitting && <Loading className="-ml-1 mr-3" />}
             Create Account

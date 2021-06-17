@@ -62,7 +62,7 @@ const BalancesTable = () => {
               ({ borrows, marginDeposits }) => borrows > 0 && marginDeposits > 0
             )) ? (
             <div
-              className={`flex items-center justify-between p-4 mb-2 rounded-md bg-th-bkg-1`}
+              className={`flex items-center justify-between px-4 py-2 mb-2 rounded-md bg-th-bkg-1`}
             >
               <div className="flex items-center text-fgd-1 font-semibold pr-4">
                 You have unsettled funds
@@ -86,37 +86,37 @@ const BalancesTable = () => {
                   <Tr className="text-th-fgd-3">
                     <Th
                       scope="col"
-                      className={`px-6 py-3 text-left font-normal`}
+                      className={`px-6 py-2 text-left font-normal`}
                     >
                       Coin
                     </Th>
                     <Th
                       scope="col"
-                      className={`px-6 py-3 text-left font-normal`}
+                      className={`px-6 py-2 text-left font-normal`}
                     >
                       Deposits
                     </Th>
                     <Th
                       scope="col"
-                      className={`px-6 py-3 text-left font-normal`}
+                      className={`px-6 py-2 text-left font-normal`}
                     >
                       Borrows
                     </Th>
                     <Th
                       scope="col"
-                      className={`px-6 py-3 text-left font-normal`}
+                      className={`px-6 py-2 text-left font-normal`}
                     >
                       In Orders
                     </Th>
                     <Th
                       scope="col"
-                      className={`px-6 py-3 text-left font-normal`}
+                      className={`px-6 py-2 text-left font-normal`}
                     >
                       Unsettled
                     </Th>
                     <Th
                       scope="col"
-                      className={`px-6 py-3 text-left font-normal`}
+                      className={`px-6 py-2 text-left font-normal`}
                     >
                       Net
                     </Th>
