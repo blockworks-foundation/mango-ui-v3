@@ -2,6 +2,8 @@ import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
 import { formatBalanceDisplay, tokenPrecision } from '../../utils/index'
 import useMangoStats from '../../hooks/useMangoStats'
 import useHistoricPrices from '../../hooks/useHistoricPrices'
+import useMarketList from '../../hooks/useMarketList'
+import useMangoStore from '../../stores/useMangoStore'
 import Chart from '../Chart'
 
 const icons = {
@@ -17,6 +19,8 @@ const icons = {
 export default function StatsTotals() {
   const { latestStats, stats } = useMangoStats()
   const { prices } = useHistoricPrices()
+  const backupPrices = useMangoStore((s) => s.selectedMangoGroup.prices)
+  const { getTokenIndex, symbols } = useMarketList()
 
   const startTimestamp = 1622905200000
 
@@ -29,21 +33,29 @@ export default function StatsTotals() {
   let borrowValues = []
   if (prices) {
     for (let i = 0; i < trimmedStats.length; i++) {
+      // use the current price if no match for hour from the prices api
+      const price =
+        trimmedStats[i].symbol !== 'USDC' &&
+        prices[trimmedStats[i].symbol][trimmedStats[i].hourly]
+          ? prices[trimmedStats[i].symbol][trimmedStats[i].hourly]
+          : backupPrices[getTokenIndex(symbols[trimmedStats[i].symbol])]
+
       const depositValue =
         trimmedStats[i].symbol === 'USDC'
           ? trimmedStats[i].totalDeposits
-          : trimmedStats[i].totalDeposits *
-            prices[trimmedStats[i].symbol][trimmedStats[i].hourly]
+          : trimmedStats[i].totalDeposits * price
+
       const borrowValue =
         trimmedStats[i].symbol === 'USDC'
           ? trimmedStats[i].totalBorrows
-          : trimmedStats[i].totalBorrows *
-            prices[trimmedStats[i].symbol][trimmedStats[i].hourly]
+          : trimmedStats[i].totalBorrows * price
+
       depositValues.push({
         symbol: trimmedStats[i].symbol,
         value: depositValue,
         time: trimmedStats[i].hourly,
       })
+
       borrowValues.push({
         symbol: stats[i].symbol,
         value: borrowValue,
@@ -87,6 +99,10 @@ export default function StatsTotals() {
     }
     return points
   }
+
+  console.log(prices)
+  console.log(depositValues)
+  // console.log(borrowValues)
 
   return (
     <>
