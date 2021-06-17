@@ -161,7 +161,7 @@ const BorrowModal: FunctionComponent<BorrowModalProps> = ({
         setSubmitting(false)
         actions.fetchMangoGroup()
         actions.fetchMarginAccounts()
-        actions.fetchWalletBalances()
+        actions.fetchWalletTokens()
         onClose()
       })
       .catch((err) => {

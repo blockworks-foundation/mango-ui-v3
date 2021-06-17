@@ -12,7 +12,6 @@ type AccountSelectProps = {
   accounts: any[]
   selectedAccount: any
   onSelectAccount: (x) => any
-  getBalance?: (x) => any
   hideAddress?: boolean
   symbols?: { [key: string]: string }
 }
@@ -46,7 +45,7 @@ const AccountSelect = ({
 
   const handleRefreshBalances = async () => {
     setLoading(true)
-    await actions.fetchWalletBalances()
+    await actions.fetchWalletTokens()
     setLoading(false)
   }
 

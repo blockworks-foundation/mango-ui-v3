@@ -30,20 +30,17 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
   onAccountCreation,
 }) => {
   const groupConfig = useMangoGroupConfig()
-  const tokenMints = useMemo(() => groupConfig.tokens.map(t => t.mint_key.toBase58()), [groupConfig]);
+  // const tokenMints = useMemo(() => groupConfig.tokens.map(t => t.mint_key.toBase58()), [groupConfig]);
   const [inputAmount, setInputAmount] = useState(0)
   const [submitting, setSubmitting] = useState(false)
   const [invalidAmountMessage, setInvalidAmountMessage] = useState('')
   const [sliderPercentage, setSliderPercentage] = useState(0)
   const [maxButtonTransition, setMaxButtonTransition] = useState(false)
   const { connection } = useConnection()
-  const walletAccounts = useMangoStore((s) => s.wallet.balances)
+  const walletTokens = useMangoStore((s) => s.wallet.tokens)
   const actions = useMangoStore((s) => s.actions)
-  const depositAccounts = useMemo(
-    () => walletAccounts.filter((acc) => tokenMints.includes(acc.account.mint.toString())),
-    [tokenMints, walletAccounts]
-  )
-  const [selectedAccount, setSelectedAccount] = useState(depositAccounts[0])
+
+  const [selectedAccount, setSelectedAccount] = useState(walletTokens[0])
 
   const symbol = getSymbolForTokenMintAddress(
     selectedAccount?.account?.mint.toString()
@@ -56,18 +53,8 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
     setSelectedAccount(account)
   }
 
-  // TODO: remove duplication in AccountSelect
-  const getBalanceForAccount = (account) => {
-    const balance = nativeToUi(
-      account?.account?.amount,
-      getTokenByMint(groupConfig, account?.account.mint).decimals
-    )
-
-    return balance
-  }
-
   const setMaxForSelectedAccount = () => {
-    const max = getBalanceForAccount(selectedAccount)
+    const max = selectedAccount.uiBalance;
     setInputAmount(max)
     setSliderPercentage(100)
     setInvalidAmountMessage('')
@@ -85,12 +72,12 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
       mangoGroup,
       wallet,
       selectedAccount.account.mint,
-      selectedAccount.publicKey,
+      selectedAccount.account.publicKey,
       Number(inputAmount)
     )
       .then(async (_response: Array<any>) => {
         await sleep(1000)
-        actions.fetchWalletBalances()
+        actions.fetchWalletTokens()
         actions.fetchMarginAccounts()
         setSubmitting(false)
         onAccountCreation(_response[0].publicKey)
@@ -111,7 +98,7 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
     if (Number(amount) <= 0) {
       setInvalidAmountMessage('Enter an amount to deposit')
     }
-    if (Number(amount) > getBalanceForAccount(selectedAccount)) {
+    if (Number(amount) > selectedAccount.uiBalance) {
       setInvalidAmountMessage(
         'Insufficient balance. Reduce the amount to deposit'
       )
@@ -119,14 +106,14 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
   }
 
   const onChangeAmountInput = (amount) => {
-    const max = getBalanceForAccount(selectedAccount)
+    const max = selectedAccount.uiBalance
     setInputAmount(amount)
     setSliderPercentage((amount / max) * 100)
     setInvalidAmountMessage('')
   }
 
   const onChangeSlider = async (percentage) => {
-    const max = getBalanceForAccount(selectedAccount)
+    const max = selectedAccount.uiBalance
     const amount = (percentage / 100) * max
     if (percentage === 100) {
       setInputAmount(amount)
@@ -153,7 +140,7 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
       </div>
       
       <AccountSelect
-        accounts={depositAccounts}
+        accounts={walletTokens}
         selectedAccount={selectedAccount}
         onSelectAccount={handleAccountSelect}
       />
@@ -197,7 +184,7 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
         <Button
           disabled={
             inputAmount <= 0 ||
-            inputAmount > getBalanceForAccount(selectedAccount)
+            inputAmount > selectedAccount.uiBalance
           }
           onClick={handleNewAccountDeposit}
           className="w-full"

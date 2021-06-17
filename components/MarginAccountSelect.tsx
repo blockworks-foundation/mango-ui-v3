@@ -1,4 +1,4 @@
-import { MarginAccount } from '@blockworks-foundation/mango-client'
+import { MerpsAccount as MarginAccount } from '@blockworks-foundation/mango-client'
 import { useEffect, useState } from 'react'
 import useMangoStore from '../stores/useMangoStore'
 import Select from './Select'

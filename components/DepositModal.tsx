@@ -12,13 +12,13 @@ import {
 import {
   nativeToUi,
   sleep,
-} from '@blockworks-foundation/mango-client/lib/utils'
-import { MarginAccount, uiToNative } from '@blockworks-foundation/mango-client'
+} from '@blockworks-foundation/mango-client'
+import { MerpsAccount as MarginAccount, uiToNative } from '@blockworks-foundation/mango-client'
 import Modal from './Modal'
 import Input from './Input'
 import AccountSelect from './AccountSelect'
 import { ElementTitle } from './styles'
-import useMangoStore from '../stores/useMangoStore'
+import useMangoStore, { WalletToken } from '../stores/useMangoStore'
 import useMarketList from '../hooks/useMarketList'
 import {
   getSymbolForTokenMintAddress,
@@ -26,7 +26,7 @@ import {
   trimDecimals,
 } from '../utils/index'
 import useConnection from '../hooks/useConnection'
-import { deposit, initMarginAccountAndDeposit } from '../utils/mango'
+// import { deposit, initMarginAccountAndDeposit } from '../utils/mango'
 import { PublicKey } from '@solana/web3.js'
 import Loading from './Loading'
 import Button, { LinkButton } from './Button'
@@ -34,6 +34,7 @@ import Tooltip from './Tooltip'
 import Slider from './Slider'
 import InlineNotification from './InlineNotification'
 import { notify } from '../utils/notifications'
+import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
 
 interface DepositModalProps {
   onClose: () => void
@@ -48,6 +49,9 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
   settleDeficit,
   tokenSymbol = '',
 }) => {
+  // const groupConfig = useMangoGroupConfig()
+  // const tokenSymbols = useMemo(() => groupConfig.tokens.map(t => t.symbol), [groupConfig]);
+
   const [inputAmount, setInputAmount] = useState(settleDeficit || 0)
   const [submitting, setSubmitting] = useState(false)
   const [simulation, setSimulation] = useState(null)
@@ -55,42 +59,21 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
   const [invalidAmountMessage, setInvalidAmountMessage] = useState('')
   const [sliderPercentage, setSliderPercentage] = useState(0)
   const [maxButtonTransition, setMaxButtonTransition] = useState(false)
-  const { getTokenIndex, symbols } = useMarketList()
   const { connection, programId } = useConnection()
-  const mintDecimals = useMangoStore((s) => s.selectedMangoGroup.mintDecimals)
-  const walletAccounts = useMangoStore((s) => s.wallet.balances)
+  const walletTokens = useMangoStore((s) => s.wallet.tokens)
   const actions = useMangoStore((s) => s.actions)
-  const depositAccounts = useMemo(
-    () =>
-      walletAccounts.filter((acc) =>
-        Object.values(symbols).includes(acc.account.mint.toString())
-      ),
-    [symbols, walletAccounts]
-  )
-  const [selectedAccount, setSelectedAccount] = useState(depositAccounts[0])
+  const [selectedAccount, setSelectedAccount] = useState(walletTokens[0])
 
-  const prices = useMangoStore((s) => s.selectedMangoGroup.prices)
+  const prices = [];//useMangoStore((s) => s.selectedMangoGroup.prices)
   const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const selectedMarginAccount = useMangoStore(
     (s) => s.selectedMarginAccount.current
   )
-  const mintAddress = useMemo(
-    () => selectedAccount?.account.mint.toString(),
-    [selectedAccount]
-  )
-  const tokenIndex = useMemo(
-    () => getTokenIndex(mintAddress),
-    [mintAddress, getTokenIndex]
-  )
-  const symbol = getSymbolForTokenMintAddress(
-    selectedAccount?.account?.mint.toString()
-  )
 
   useEffect(() => {
     if (tokenSymbol) {
-      const symbolMint = symbols[tokenSymbol]
-      const symbolAccount = walletAccounts.find(
-        (a) => a.account.mint.toString() === symbolMint
+      const symbolAccount = walletTokens.find(
+        (a) => a.config.symbol === tokenSymbol
       )
       if (symbolAccount) {
         setSelectedAccount(symbolAccount)
@@ -98,8 +81,9 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
         setSelectedAccount(null)
       }
     }
-  }, [tokenSymbol])
+  }, [tokenSymbol, walletTokens])
 
+  /* TODO: simulation
   useEffect(() => {
     if (!selectedMangoGroup || !selectedMarginAccount || !selectedAccount)
       return
@@ -145,6 +129,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
     selectedMarginAccount,
     selectedMangoGroup,
   ])
+  */
 
   const handleAccountSelect = (account) => {
     setInputAmount(0)
@@ -153,26 +138,16 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
     setSelectedAccount(account)
   }
 
-  // TODO: remove duplication in AccountSelect
-  const getBalanceForAccount = (account) => {
-    const mintAddress = account?.account.mint.toString()
-    const balance = nativeToUi(
-      account?.account?.amount,
-      mintDecimals[getTokenIndex(mintAddress)]
-    )
-
-    return balance
-  }
-
   const setMaxForSelectedAccount = () => {
-    const max = getBalanceForAccount(selectedAccount)
-    setInputAmount(max)
+    setInputAmount(selectedAccount.uiBalance)
     setSliderPercentage(100)
     setInvalidAmountMessage('')
     setMaxButtonTransition(true)
   }
 
   const handleDeposit = () => {
+        /*
+
     setSubmitting(true)
     const marginAccount = useMangoStore.getState().selectedMarginAccount.current
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
@@ -181,7 +156,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
     if (!marginAccount && mangoGroup) {
       initMarginAccountAndDeposit(
         connection,
-        new PublicKey(programId),
+        programId,
         mangoGroup,
         wallet,
         selectedAccount.account.mint,
@@ -190,7 +165,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
       )
         .then(async (_response: Array<any>) => {
           await sleep(1000)
-          actions.fetchWalletBalances()
+          actions.fetchWalletTokens()
           actions.fetchMarginAccounts()
           setSubmitting(false)
           onClose()
@@ -220,7 +195,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
           setSubmitting(false)
           onClose()
           await sleep(750)
-          actions.fetchWalletBalances()
+          actions.fetchWalletTokens()
           actions.fetchMarginAccounts()
         })
         .catch((err) => {
@@ -233,6 +208,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
           onClose()
         })
     }
+    */
   }
 
   const renderAccountRiskStatus = (
@@ -271,7 +247,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
     if (Number(amount) <= 0) {
       setInvalidAmountMessage('Enter an amount to deposit')
     }
-    if (Number(amount) > getBalanceForAccount(selectedAccount)) {
+    if (selectedAccount && Number(amount) > selectedAccount.uiBalance) {
       setInvalidAmountMessage(
         'Insufficient balance. Reduce the amount to deposit'
       )
@@ -279,21 +255,33 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
   }
 
   const onChangeAmountInput = (amount) => {
-    const max = getBalanceForAccount(selectedAccount)
     setInputAmount(amount)
+
+    if (!selectedAccount) {
+      setInvalidAmountMessage('Please fund wallet with one of the supported assets.')
+      return
+    }
+      
+    const max = selectedAccount.uiBalance
     setSliderPercentage((amount / max) * 100)
     setInvalidAmountMessage('')
   }
 
   const onChangeSlider = async (percentage) => {
-    const max = getBalanceForAccount(selectedAccount)
+    setSliderPercentage(percentage)
+
+    if (!selectedAccount) {
+      setInvalidAmountMessage('Please fund wallet with one of the supported assets.')
+      return
+    }
+
+    const max = selectedAccount.uiBalance
     const amount = (percentage / 100) * max
     if (percentage === 100) {
       setInputAmount(amount)
     } else {
-      setInputAmount(trimDecimals(amount, DECIMALS[symbol]))
+      setInputAmount(trimDecimals(amount, DECIMALS[selectedAccount.config.symbol]))
     }
-    setSliderPercentage(percentage)
     setInvalidAmountMessage('')
     validateAmountInput(amount)
   }
@@ -327,8 +315,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
             />
           ) : null}
           <AccountSelect
-            symbols={symbols}
-            accounts={depositAccounts}
+            accounts={walletTokens}
             selectedAccount={selectedAccount}
             onSelectAccount={handleAccountSelect}
           />
@@ -351,7 +338,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
               onBlur={(e) => validateAmountInput(e.target.value)}
               value={inputAmount}
               onChange={(e) => onChangeAmountInput(e.target.value)}
-              suffix={symbol}
+              suffix={selectedAccount?.config.symbol}
             />
             {/* {simulation ? (
               <Tooltip content="Projected Leverage" className="py-1">
@@ -388,8 +375,8 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
               onClick={() => setShowSimulation(true)}
               className="w-full"
               disabled={
-                inputAmount <= 0 ||
-                inputAmount > getBalanceForAccount(selectedAccount)
+                inputAmount <= 0 || !selectedAccount ||
+                inputAmount > selectedAccount.uiBalance
               }
             >
               Next

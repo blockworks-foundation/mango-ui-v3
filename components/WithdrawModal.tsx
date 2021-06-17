@@ -11,7 +11,7 @@ import {
   displayDepositsForMarginAccount,
 } from '../utils/index'
 import useConnection from '../hooks/useConnection'
-import { borrowAndWithdraw, withdraw } from '../utils/mango'
+// import { borrowAndWithdraw, withdraw } from '../utils/mango'
 import Loading from './Loading'
 import Slider from './Slider'
 import Button, { LinkButton } from './Button'
@@ -29,7 +29,7 @@ import {
 } from '@heroicons/react/solid'
 import { Disclosure } from '@headlessui/react'
 import { PublicKey } from '@solana/web3.js'
-import { MarginAccount, uiToNative } from '@blockworks-foundation/mango-client'
+import { MerpsAccount as MarginAccount, uiToNative } from '@blockworks-foundation/mango-client'
 import Select from './Select'
 
 interface WithdrawModalProps {
@@ -43,6 +43,9 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   onClose,
   tokenSymbol = '',
 }) => {
+
+  return (<></>)
+
   const [withdrawTokenSymbol, setWithdrawTokenSymbol] = useState(
     tokenSymbol || 'USDC'
   )
@@ -165,7 +168,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
           setSubmitting(false)
           actions.fetchMangoGroup()
           actions.fetchMarginAccounts()
-          actions.fetchWalletBalances()
+          actions.fetchWalletTokens()
           onClose()
         })
         .catch((err) => {
@@ -192,7 +195,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
           setSubmitting(false)
           actions.fetchMangoGroup()
           actions.fetchMarginAccounts()
-          actions.fetchWalletBalances()
+          actions.fetchWalletTokens()
           onClose()
         })
         .catch((err) => {

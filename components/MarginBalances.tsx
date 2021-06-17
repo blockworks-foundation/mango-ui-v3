@@ -1,4 +1,4 @@
-// import { useCallback, useState } from 'react'
+import { useCallback, useState } from 'react'
 import Link from 'next/link'
 import { Menu } from '@headlessui/react'
 import { DotsHorizontalIcon } from '@heroicons/react/outline'
@@ -11,10 +11,10 @@ import {
   // floorToDecimal,
   // tokenPrecision,
 } from '../utils/index'
-// import DepositModal from './DepositModal'
-// import WithdrawModal from './WithdrawModal'
+import DepositModal from './DepositModal'
+import WithdrawModal from './WithdrawModal'
 // import BorrowModal from './BorrowModal'
-// import Button from './Button'
+import Button from './Button'
 import Tooltip from './Tooltip'
 // import AccountsModal from './AccountsModal'
 
@@ -26,24 +26,24 @@ export default function MarginBalances() {
   const selectedMarginAccount = useMangoStore(
     (s) => s.selectedMarginAccount.current
   )
-  // const loadingMarginAccount = useMangoStore(
-  //   (s) => s.selectedMarginAccount.initialLoad
-  // )
+  const loadingMarginAccount = useMangoStore(
+    (s) => s.selectedMarginAccount.initialLoad
+  )
   const connected = useMangoStore((s) => s.wallet.connected)
   // const { symbols } = useMarketList()
 
-  // const [showDepositModal, setShowDepositModal] = useState(false)
-  // const [showWithdrawModal, setShowWithdrawModal] = useState(false)
+  const [showDepositModal, setShowDepositModal] = useState(false)
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false)
   // const [showBorrowModal, setShowBorrowModal] = useState(false)
   // const [showAccountsModal, setShowAccountsModal] = useState(false)
 
-  // const handleCloseDeposit = useCallback(() => {
-  //   setShowDepositModal(false)
-  // }, [])
+  const handleCloseDeposit = useCallback(() => {
+    setShowDepositModal(false)
+  }, [])
 
-  // const handleCloseWithdraw = useCallback(() => {
-  //   setShowWithdrawModal(false)
-  // }, [])
+  const handleCloseWithdraw = useCallback(() => {
+    setShowWithdrawModal(false)
+  }, [])
 
   // const handleCloseBorrow = useCallback(() => {
   //   setShowBorrowModal(false)
@@ -193,7 +193,7 @@ export default function MarginBalances() {
           </table>
         ) : null}
         <div className={`flex justify-center items-center mt-4`}>
-          {/* <Button
+          <Button
             onClick={() => setShowDepositModal(true)}
             className="w-1/2"
             disabled={!connected || loadingMarginAccount}
@@ -208,10 +208,10 @@ export default function MarginBalances() {
             }
           >
             <span>Withdraw</span>
-          </Button> */}
+          </Button>
         </div>
       </FloatingElement>
-      {/* {showDepositModal && (
+      {showDepositModal && (
         <DepositModal isOpen={showDepositModal} onClose={handleCloseDeposit} />
       )}
       {showWithdrawModal && (
@@ -220,6 +220,7 @@ export default function MarginBalances() {
           onClose={handleCloseWithdraw}
         />
       )}
+      {/* 
       {showBorrowModal && (
         <BorrowModal isOpen={showBorrowModal} onClose={handleCloseBorrow} />
       )}

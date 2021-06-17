@@ -107,7 +107,7 @@ export default function useWallet() {
       // set connected before fetching data
       actions.fetchTradeHistory()
       // actions.fetchMangoSrmAccounts()
-      actions.fetchWalletBalances()
+      actions.fetchWalletTokens()
       notify({
         message: 'Wallet connected',
         description:
@@ -151,7 +151,7 @@ export default function useWallet() {
   useInterval(() => {
     if (connected && marginAccount) {
       actions.fetchMarginAccounts()
-      actions.fetchWalletBalances()
+      actions.fetchWalletTokens()
       actions.fetchTradeHistory()
     }
   }, 180 * SECONDS)

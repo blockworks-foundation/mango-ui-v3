@@ -11,12 +11,17 @@ import {
   MarketConfig,
   getMarketByBaseSymbolAndKind,
   GroupConfig,
+  TokenConfig,
+  getTokenAccountsByOwnerWithWrappedSol,
+  getTokenByMint,
+  TokenAccount,
+  nativeToUi,
 } from '@blockworks-foundation/mango-client'
 // import { SRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
-import { AccountInfo, Connection, PublicKey } from '@solana/web3.js'
+import { AccountInfo, Connection, PublicKey, TokenAmount } from '@solana/web3.js'
 import { EndpointInfo, WalletAdapter } from '../@types/types'
 import { getWalletTokenInfo } from '../utils/tokens'
-// import { isDefined } from '../utils/index'
+import { isDefined } from '../utils'
 import { notify } from '../utils/notifications'
 
 export const ENDPOINTS: EndpointInfo[] = [
@@ -60,7 +65,7 @@ export const INITIAL_STATE = {
     providerUrl: null,
     connected: false,
     current: null,
-    balances: [],
+    tokens: [],
     srmAccountsForOwner: [],
     contributedSrm: 0,
   },
@@ -71,6 +76,12 @@ export const INITIAL_STATE = {
 // useHydrateStore hook
 interface AccountInfoList {
   [key: string]: AccountInfo<Buffer>
+}
+
+export interface WalletToken {
+  account: TokenAccount,
+  config: TokenConfig,
+  uiBalance: number
 }
 
 interface MangoStore extends State {
@@ -125,7 +136,7 @@ interface MangoStore extends State {
     providerUrl: string
     connected: boolean
     current: WalletAdapter | undefined
-    balances: Array<{ account: any; publicKey: PublicKey }>
+    tokens: WalletToken[],
     srmAccountsForOwner: any[]
     contributedSrm: number
   }
@@ -188,24 +199,37 @@ const useMangoStore = create<MangoStore>((set, get) => ({
   tradeHistory: [],
   set: (fn) => set(produce(fn)),
   actions: {
-    async fetchWalletBalances() {
+    async fetchWalletTokens() {
       const connection = get().connection.current
+      const groupConfig = get().selectedMangoGroup.config
       const wallet = get().wallet.current
       const connected = get().wallet.connected
       const set = get().set
 
       if (wallet?.publicKey && connected) {
         const ownerAddress = wallet.publicKey
-        const ownedTokenAccounts = await getWalletTokenInfo(
+        const ownedTokenAccounts = await getTokenAccountsByOwnerWithWrappedSol(
           connection,
           ownerAddress
         )
+        const tokens = []
+        ownedTokenAccounts.forEach(account => {
+          const config = getTokenByMint(groupConfig, account.mint);
+          if (config) {
+            const uiBalance = nativeToUi(
+              account.amount,
+              config.decimals
+            )
+            tokens.push({account, config, uiBalance})
+          }
+        });
+
         set((state) => {
-          state.wallet.balances = ownedTokenAccounts
+          state.wallet.tokens = tokens;
         })
       } else {
         set((state) => {
-          state.wallet.balances = []
+          state.wallet.tokens = []
         })
       }
     },
@@ -238,66 +262,61 @@ const useMangoStore = create<MangoStore>((set, get) => ({
     //     }
     //   }
     // },
-    // async fetchMarginAccounts() {
-    //   const connection = get().connection.current
-    //   const mangoGroup = get().selectedMangoGroup.current
-    //   const selectedMarginAcount = get().selectedMarginAccount.current
-    //   const wallet = get().wallet.current
-    //   const cluster = get().connection.cluster
-    //   const mangoClient = get().mangoClient
-    //   const programId = IDS[cluster].mango_program_id
-    //   const set = get().set
+    async fetchMarginAccounts() {
+      const mangoClient = get().mangoClient
+      const mangoGroup = get().selectedMangoGroup.current
+      const selectedMarginAcount = get().selectedMarginAccount.current
+      const wallet = get().wallet.current
+      const set = get().set
 
-    //   if (!wallet?.publicKey || !wallet.publicKey) return
+      if (!wallet?.publicKey || !wallet.publicKey) return
 
-    //   if (!selectedMarginAcount) {
-    //     set((state) => {
-    //       state.selectedMarginAccount.initialLoad = true
-    //     })
-    //   }
+      if (!selectedMarginAcount) {
+        set((state) => {
+          state.selectedMarginAccount.initialLoad = true
+        })
+      }
 
-    //   return mangoClient
-    //     .getMarginAccountsForOwner(
-    //       connection,
-    //       new PublicKey(programId),
-    //       mangoGroup,
-    //       wallet
-    //     )
-    //     .then((marginAccounts) => {
-    //       if (marginAccounts.length > 0) {
-    //         const sortedAccounts = marginAccounts
-    //           .slice()
-    //           .sort(
-    //             (a, b) =>
-    //               (a.publicKey.toBase58() > b.publicKey.toBase58() && 1) || -1
-    //           )
-    //         set((state) => {
-    //           state.marginAccounts = sortedAccounts
-    //           if (state.selectedMarginAccount.current) {
-    //             state.selectedMarginAccount.current = marginAccounts.find(
-    //               (ma) =>
-    //                 ma.publicKey.equals(
-    //                   state.selectedMarginAccount.current.publicKey
-    //                 )
-    //             )
-    //           } else {
-    //             const lastAccount = localStorage.getItem('lastAccountViewed')
+      return mangoClient
+        .getMarginAccountsForOwner(
+          mangoGroup,
+          wallet.publicKey
+        )
+        .then((marginAccounts) => {
+          if (marginAccounts.length > 0) {
+            const sortedAccounts = marginAccounts
+              .slice()
+              .sort(
+                (a, b) =>
+                  (a.publicKey.toBase58() > b.publicKey.toBase58() && 1) || -1
+              )
+            set((state) => {
+              state.marginAccounts = sortedAccounts
+              if (state.selectedMarginAccount.current) {
+                state.selectedMarginAccount.current = marginAccounts.find(
+                  (ma) =>
+                    ma.publicKey.equals(
+                      state.selectedMarginAccount.current.publicKey
+                    )
+                )
+              } else {
+                const lastAccount = localStorage.getItem('lastAccountViewed')
 
-    //             state.selectedMarginAccount.current =
-    //               marginAccounts.find(
-    //                 (ma) => ma.publicKey.toString() === JSON.parse(lastAccount)
-    //               ) || sortedAccounts[0]
-    //           }
-    //         })
-    //       }
-    //       set((state) => {
-    //         state.selectedMarginAccount.initialLoad = false
-    //       })
-    //     })
-    //     .catch((err) => {
-    //       console.error('Could not get margin accounts for wallet', err)
-    //     })
-    // },
+                state.selectedMarginAccount.current =
+                  marginAccounts.find(
+                    (ma) => ma.publicKey.toString() === JSON.parse(lastAccount)
+                  ) || sortedAccounts[0]
+              }
+            })
+          }
+          set((state) => {
+            state.selectedMarginAccount.initialLoad = false
+          })
+        })
+        .catch((err) => {
+          console.error('Could not get margin accounts for wallet', err)
+        })
+    },
     async fetchMangoGroup() {
       const mangoClient = get().mangoClient
       const set = get().set
@@ -336,33 +355,34 @@ const useMangoStore = create<MangoStore>((set, get) => ({
           console.log('Could not get mango group: ', err)
         })
     },
-    // async fetchTradeHistory(marginAccount = null) {
-    //   const selectedMarginAccount =
-    //     marginAccount || get().selectedMarginAccount.current
-    //   const set = get().set
+    async fetchTradeHistory(marginAccount = null) {
+      const selectedMarginAccount =
+        marginAccount || get().selectedMarginAccount.current
+      const set = get().set
 
-    //   if (!selectedMarginAccount) return
-    //   if (selectedMarginAccount.openOrdersAccounts.length === 0) return
+      if (!selectedMarginAccount) return
+      if (selectedMarginAccount.openOrdersAccounts.length === 0) return
 
-    //   const openOrdersAccounts =
-    //     selectedMarginAccount.openOrdersAccounts.filter(isDefined)
-    //   const publicKeys = openOrdersAccounts.map((act) =>
-    //     act.publicKey.toString()
-    //   )
-    //   const results = await Promise.all(
-    //     publicKeys.map(async (pk) => {
-    //       const response = await fetch(
-    //         `https://stark-fjord-45757.herokuapp.com/trades/open_orders/${pk.toString()}`
-    //       )
+      const openOrdersAccounts =
+        selectedMarginAccount.openOrdersAccounts.filter(isDefined)
+      const publicKeys = openOrdersAccounts.map((act) =>
+        act.publicKey.toString()
+      )
+      const results = await Promise.all(
+        publicKeys.map(async (pk) => {
+          const response = await fetch(
+            `https://stark-fjord-45757.herokuapp.com/trades/open_orders/${pk.toString()}`
+          )
 
-    //       const parsedResponse = await response.json()
-    //       return parsedResponse?.data ? parsedResponse.data : []
-    //     })
-    //   )
-    //   set((state) => {
-    //     state.tradeHistory = results
-    //   })
-    // },
+          const parsedResponse = await response.json()
+          return parsedResponse?.data ? parsedResponse.data : []
+        })
+      )
+      set((state) => {
+        state.tradeHistory = results
+        console.log('spot-history', results);
+      })
+    },
   },
 }))
 
