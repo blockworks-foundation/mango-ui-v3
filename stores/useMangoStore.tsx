@@ -35,6 +35,7 @@ const CLUSTER = (process.env.NEXT_PUBLIC_CLUSTER as ClusterType) || 'devnet'
 const ENDPOINT = ENDPOINTS.find((e) => e.name === CLUSTER)
 const DEFAULT_CONNECTION = new Connection(ENDPOINT.url, 'recent')
 const WEBSOCKET_CONNECTION = new Connection(ENDPOINT.websocket, 'recent')
+
 const DEFAULT_MANGO_GROUP_NAME = 'merps_test_v1'
 
 const defaultMangoGroupIds = IDS['groups'].find(
@@ -97,6 +98,7 @@ interface MangoStore extends State {
     }
     ids: any
     tokens: any[]
+    rootBanks: any[]
   }
   marginAccounts: MarginAccount[]
   selectedMarginAccount: {
@@ -143,6 +145,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
     markets: {},
     ids: defaultMangoGroupIds,
     tokens: defaultMangoGroupIds.tokens,
+    rootBanks: [],
   },
   selectedMarket: {
     name: defaultMangoGroupIds.spot_markets[0].base_symbol,
