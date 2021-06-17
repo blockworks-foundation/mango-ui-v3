@@ -21,7 +21,7 @@ export default function useMarkPrice() {
   const setMangoStore = useMangoStore((s) => s.set)
   const markPrice = useMangoStore((s) => s.selectedMarket.markPrice)
 
-  const [orderbook] = useOrderbook()
+  const orderbook = useOrderbook()
   const trades = useTrades()
 
   useEffect(() => {

@@ -94,7 +94,7 @@ const getCumulativeOrderbookSide = (
 
 export default function Orderbook({ depth = 8 }) {
   const markPrice = useMarkPrice()
-  const [orderbook] = useOrderbook()
+  const { orderbook } = useOrderbook()
   const { baseCurrency, quoteCurrency } = useMarket()
 
   const currentOrderbookData = useRef(null)

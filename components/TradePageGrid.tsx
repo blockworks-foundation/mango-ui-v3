@@ -7,7 +7,7 @@ const TVChartContainer = dynamic(
 )
 import { useEffect, useState } from 'react'
 import FloatingElement from '../components/FloatingElement'
-// import Orderbook from '../components/Orderbook'
+import Orderbook from '../components/Orderbook'
 // import MarginInfo from './MarginInfo'
 import MarginBalances from './MarginBalances'
 // import TradeForm from './TradeForm'
@@ -101,7 +101,7 @@ const TradePageGrid = () => {
           <TVChartContainer />
         </FloatingElement>
       </div>
-      <div key="orderbook">{/* <Orderbook /> */}</div>
+      <div key="orderbook">{<Orderbook />}</div>
       <div key="tradeForm">{/* <TradeForm /> */}</div>
       <div key="marginInfo">{/* <MarginInfo /> */}</div>
       <div key="userInfo">{/* <UserInfo /> */}</div>

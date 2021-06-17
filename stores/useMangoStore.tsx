@@ -17,6 +17,7 @@ import {
   TokenAccount,
   nativeToUi,
   MerpsCache,
+  PerpMarket,
 } from '@blockworks-foundation/mango-client'
 // import { SRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
 import { AccountInfo, Connection, PublicKey, TokenAmount } from '@solana/web3.js'
@@ -106,9 +107,11 @@ interface MangoStore extends State {
     config: MarketConfig
     name: string
     address: string
-    current: Market | null
+    current: Market | PerpMarket | null
     mangoProgramId: number | null
     markPrice: number
+    askInfo: AccountInfo<Buffer> | null
+    bidInfo: AccountInfo<Buffer> | null
     orderBook: any[]
   }
   mangoClient: MangoClient
@@ -265,7 +268,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
               .slice()
               .sort(
                 (a, b) =>
-                  (a.publicKey.toBase58() > b.publicKey.toBase58() && 1) || -1
+                  a.publicKey.toBase58() > b.publicKey.toBase58() ? 1 : -1
               )
             set((state) => {
               state.marginAccounts = sortedAccounts
