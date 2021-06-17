@@ -9,11 +9,11 @@ import {
   ChevronDownIcon,
   ChevronUpIcon,
 } from '@heroicons/react/solid'
+import { nativeToUi, sleep } from '@blockworks-foundation/mango-client'
 import {
-  nativeToUi,
-  sleep,
+  MerpsAccount as MarginAccount,
+  uiToNative,
 } from '@blockworks-foundation/mango-client'
-import { MerpsAccount as MarginAccount, uiToNative } from '@blockworks-foundation/mango-client'
 import Modal from './Modal'
 import Input from './Input'
 import AccountSelect from './AccountSelect'
@@ -35,6 +35,7 @@ import Slider from './Slider'
 import InlineNotification from './InlineNotification'
 import { notify } from '../utils/notifications'
 import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
+import { QUOTE_INDEX } from '@blockworks-foundation/mango-client/lib/src/MerpsGroup'
 
 interface DepositModalProps {
   onClose: () => void
@@ -64,7 +65,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
   const actions = useMangoStore((s) => s.actions)
   const [selectedAccount, setSelectedAccount] = useState(walletTokens[0])
 
-  const prices = [];//useMangoStore((s) => s.selectedMangoGroup.prices)
+  const prices = [] //useMangoStore((s) => s.selectedMangoGroup.prices)
   const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const selectedMarginAccount = useMangoStore(
     (s) => s.selectedMarginAccount.current
@@ -146,13 +147,45 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
   }
 
   const handleDeposit = () => {
-        /*
-
     setSubmitting(true)
     const marginAccount = useMangoStore.getState().selectedMarginAccount.current
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
     const wallet = useMangoStore.getState().wallet.current
+    const client = useMangoStore.getState().mangoClient
 
+    console.log('mango group', mangoGroup.rootBankAccounts)
+
+    if (!marginAccount) {
+      client
+        .initMerpsAccount(mangoGroup, wallet)
+        .then((resp) => console.log('something happened', resp))
+    }
+    if (marginAccount) {
+      console.log('we have a margin acc', marginAccount.publicKey)
+
+      client
+        .deposit(
+          mangoGroup,
+          marginAccount,
+          wallet,
+          mangoGroup.tokens[QUOTE_INDEX].rootBank,
+          mangoGroup.rootBankAccounts[QUOTE_INDEX].nodeBankAccounts[0]
+            .publicKey,
+          mangoGroup.rootBankAccounts[QUOTE_INDEX].nodeBankAccounts[0].vault,
+          selectedAccount.account.publicKey,
+          Number(inputAmount)
+        )
+        .then((resp) => {
+          console.log('desposit status', resp)
+          sleep(2000)
+
+          setSubmitting(false)
+          onClose()
+          actions.fetchMarginAccounts()
+        })
+    }
+
+    /*
     if (!marginAccount && mangoGroup) {
       initMarginAccountAndDeposit(
         connection,
@@ -258,10 +291,12 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
     setInputAmount(amount)
 
     if (!selectedAccount) {
-      setInvalidAmountMessage('Please fund wallet with one of the supported assets.')
+      setInvalidAmountMessage(
+        'Please fund wallet with one of the supported assets.'
+      )
       return
     }
-      
+
     const max = selectedAccount.uiBalance
     setSliderPercentage((amount / max) * 100)
     setInvalidAmountMessage('')
@@ -271,7 +306,9 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
     setSliderPercentage(percentage)
 
     if (!selectedAccount) {
-      setInvalidAmountMessage('Please fund wallet with one of the supported assets.')
+      setInvalidAmountMessage(
+        'Please fund wallet with one of the supported assets.'
+      )
       return
     }
 
@@ -280,7 +317,9 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
     if (percentage === 100) {
       setInputAmount(amount)
     } else {
-      setInputAmount(trimDecimals(amount, DECIMALS[selectedAccount.config.symbol]))
+      setInputAmount(
+        trimDecimals(amount, DECIMALS[selectedAccount.config.symbol])
+      )
     }
     setInvalidAmountMessage('')
     validateAmountInput(amount)
@@ -375,7 +414,8 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
               onClick={() => setShowSimulation(true)}
               className="w-full"
               disabled={
-                inputAmount <= 0 || !selectedAccount ||
+                inputAmount <= 0 ||
+                !selectedAccount ||
                 inputAmount > selectedAccount.uiBalance
               }
             >

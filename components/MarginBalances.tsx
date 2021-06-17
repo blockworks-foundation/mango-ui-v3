@@ -17,6 +17,7 @@ import WithdrawModal from './WithdrawModal'
 // import BorrowModal from './BorrowModal'
 import Button from './Button'
 import Tooltip from './Tooltip'
+import { QUOTE_INDEX } from '@blockworks-foundation/mango-client/lib/src/MerpsGroup'
 // import AccountsModal from './AccountsModal'
 
 export default function MarginBalances() {
@@ -56,6 +57,8 @@ export default function MarginBalances() {
   // const handleCloseAccounts = useCallback(() => {
   //   setShowAccountsModal(false)
   // }, [])
+
+  console.log('margin Account', selectedMarginAccount)
 
   return (
     <>

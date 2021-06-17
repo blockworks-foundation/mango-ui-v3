@@ -20,7 +20,12 @@ import {
   PerpMarket,
 } from '@blockworks-foundation/mango-client'
 // import { SRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
-import { AccountInfo, Connection, PublicKey, TokenAmount } from '@solana/web3.js'
+import {
+  AccountInfo,
+  Connection,
+  PublicKey,
+  TokenAmount,
+} from '@solana/web3.js'
 import { EndpointInfo, WalletAdapter } from '../@types/types'
 import { getWalletTokenInfo } from '../utils/tokens'
 import { isDefined } from '../utils'
@@ -85,8 +90,8 @@ interface AccountInfoList {
 }
 
 export interface WalletToken {
-  account: TokenAccount,
-  config: TokenConfig,
+  account: TokenAccount
+  config: TokenConfig
   uiBalance: number
 }
 
@@ -148,7 +153,7 @@ interface MangoStore extends State {
     providerUrl: string
     connected: boolean
     current: WalletAdapter | undefined
-    tokens: WalletToken[],
+    tokens: WalletToken[]
     srmAccountsForOwner: any[]
     contributedSrm: number
   }
@@ -230,19 +235,16 @@ const useMangoStore = create<MangoStore>((set, get) => ({
           ownerAddress
         )
         const tokens = []
-        ownedTokenAccounts.forEach(account => {
-          const config = getTokenByMint(groupConfig, account.mint);
+        ownedTokenAccounts.forEach((account) => {
+          const config = getTokenByMint(groupConfig, account.mint)
           if (config) {
-            const uiBalance = nativeToUi(
-              account.amount,
-              config.decimals
-            )
-            tokens.push({account, config, uiBalance})
+            const uiBalance = nativeToUi(account.amount, config.decimals)
+            tokens.push({ account, config, uiBalance })
           }
-        });
+        })
 
         set((state) => {
-          state.wallet.tokens = tokens;
+          state.wallet.tokens = tokens
         })
       } else {
         set((state) => {
@@ -266,10 +268,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
       }
 
       return mangoClient
-        .getMarginAccountsForOwner(
-          mangoGroup,
-          wallet.publicKey
-        )
+        .getMarginAccountsForOwner(mangoGroup, wallet.publicKey)
         .then((marginAccounts) => {
           if (marginAccounts.length > 0) {
             const sortedAccounts = marginAccounts
@@ -280,21 +279,22 @@ const useMangoStore = create<MangoStore>((set, get) => ({
               )
             set((state) => {
               state.marginAccounts = sortedAccounts
-              if (state.selectedMarginAccount.current) {
-                state.selectedMarginAccount.current = marginAccounts.find(
-                  (ma) =>
-                    ma.publicKey.equals(
-                      state.selectedMarginAccount.current.publicKey
-                    )
-                )
-              } else {
-                const lastAccount = localStorage.getItem('lastAccountViewed')
+              state.selectedMarginAccount.current = sortedAccounts[0]
+              // if (state.selectedMarginAccount.current) {
+              //   state.selectedMarginAccount.current = marginAccounts.find(
+              //     (ma) =>
+              //       ma.publicKey.equals(
+              //         state.selectedMarginAccount.current.publicKey
+              //       )
+              //   )
+              // } else {
+              //   const lastAccount = localStorage.getItem('lastAccountViewed')
 
-                state.selectedMarginAccount.current =
-                  marginAccounts.find(
-                    (ma) => ma.publicKey.toString() === JSON.parse(lastAccount)
-                  ) || sortedAccounts[0]
-              }
+              //   state.selectedMarginAccount.current =
+              //     marginAccounts.find(
+              //       (ma) => ma.publicKey.toString() === JSON.parse(lastAccount)
+              //     ) || sortedAccounts[0]
+              // }
             })
           }
           set((state) => {
@@ -347,34 +347,34 @@ const useMangoStore = create<MangoStore>((set, get) => ({
           console.log('Could not get mango group: ', err)
         })
     },
-    async fetchTradeHistory(marginAccount = null) {
-      const selectedMarginAccount =
-        marginAccount || get().selectedMarginAccount.current
-      const set = get().set
+    // async fetchTradeHistory(marginAccount = null) {
+    //   const selectedMarginAccount =
+    //     marginAccount || get().selectedMarginAccount.current
+    //   const set = get().set
 
-      if (!selectedMarginAccount) return
-      if (selectedMarginAccount.openOrdersAccounts.length === 0) return
+    //   if (!selectedMarginAccount) return
+    //   if (selectedMarginAccount.openOrdersAccounts.length === 0) return
 
-      const openOrdersAccounts =
-        selectedMarginAccount.openOrdersAccounts.filter(isDefined)
-      const publicKeys = openOrdersAccounts.map((act) =>
-        act.publicKey.toString()
-      )
-      const results = await Promise.all(
-        publicKeys.map(async (pk) => {
-          const response = await fetch(
-            `https://stark-fjord-45757.herokuapp.com/trades/open_orders/${pk.toString()}`
-          )
+    //   const openOrdersAccounts =
+    //     selectedMarginAccount.openOrdersAccounts.filter(isDefined)
+    //   const publicKeys = openOrdersAccounts.map((act) =>
+    //     act.publicKey.toString()
+    //   )
+    //   const results = await Promise.all(
+    //     publicKeys.map(async (pk) => {
+    //       const response = await fetch(
+    //         `https://stark-fjord-45757.herokuapp.com/trades/open_orders/${pk.toString()}`
+    //       )
 
-          const parsedResponse = await response.json()
-          return parsedResponse?.data ? parsedResponse.data : []
-        })
-      )
-      set((state) => {
-        state.tradeHistory = results
-        console.log('spot-history', results);
-      })
-    },
+    //       const parsedResponse = await response.json()
+    //       return parsedResponse?.data ? parsedResponse.data : []
+    //     })
+    //   )
+    //   set((state) => {
+    //     state.tradeHistory = results
+    //     console.log('spot-history', results);
+    //   })
+    // },
   },
 }))
 
