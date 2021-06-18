@@ -32,7 +32,7 @@ const MarketSelect = () => {
               }
             `}
               onClick={() => handleChange(s.baseSymbol, 'perp')}
-              key={s.key.toBase58()}
+              key={s.publicKey.toBase58()}
             >
               {s.name}
             </div>
@@ -48,7 +48,7 @@ const MarketSelect = () => {
               }
             `}
               onClick={() => handleChange(s.baseSymbol, 'spot')}
-              key={s.key.toBase58()}
+              key={s.publicKey.toBase58()}
             >
               {s.name}
             </div>

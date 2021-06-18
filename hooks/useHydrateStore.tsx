@@ -38,7 +38,7 @@ const useHydrateStore = () => {
     if (marketConfig.kind === 'spot') {
       Market.load(
         connection,
-        marketConfig.key,
+        marketConfig.publicKey,
         {},
         groupConfig.serumProgramId
       )
@@ -62,7 +62,7 @@ const useHydrateStore = () => {
           })
         })
     } else {
-      mangoClient.getPerpMarket(marketConfig.key).then(async (market) => {
+      mangoClient.getPerpMarket(marketConfig.publicKey).then(async (market) => {
         const bidInfo = await connection.getAccountInfo(market.bids)
         const askInfo = await connection.getAccountInfo(market.asks)
 

@@ -242,10 +242,10 @@ export async function decodeAndLoadMarkets(
 
     console.log('decoded accs===', decodedAcc)
     const baseToken = groupConfig.tokens.find((token) =>
-      token.mint_key.equals(decodedAcc.baseMint)
+      token.mintKey.equals(decodedAcc.baseMint)
     )
     const quoteToken = groupConfig.tokens.find((token) =>
-      token.mint_key.equals(decodedAcc.quoteMint)
+      token.mintKey.equals(decodedAcc.quoteMint)
     )
 
     const baseMintDecimals = baseToken.decimals

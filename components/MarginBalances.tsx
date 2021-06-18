@@ -153,8 +153,8 @@ export default function MarginBalances() {
               </tr>
             </thead>
             <tbody>
-              {selectedMangoGroupConfig.tokens.map(({ symbol, mint_key }) => {
-                const tokenIndex = selectedMangoGroup.getTokenIndex(mint_key)
+              {selectedMangoGroupConfig.tokens.map(({ symbol, mintKey }) => {
+                const tokenIndex = selectedMangoGroup.getTokenIndex(mintKey)
                 return (
                   <tr key={symbol} className={`text-th-fgd-1`}>
                     <td className={`flex items-center py-2`}>

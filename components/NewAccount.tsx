@@ -30,7 +30,7 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
   onAccountCreation,
 }) => {
   const groupConfig = useMangoGroupConfig()
-  // const tokenMints = useMemo(() => groupConfig.tokens.map(t => t.mint_key.toBase58()), [groupConfig]);
+  // const tokenMints = useMemo(() => groupConfig.tokens.map(t => t.mintKey.toBase58()), [groupConfig]);
   const [inputAmount, setInputAmount] = useState(0)
   const [submitting, setSubmitting] = useState(false)
   const [invalidAmountMessage, setInvalidAmountMessage] = useState('')
