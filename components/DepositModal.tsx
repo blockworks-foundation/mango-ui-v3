@@ -152,10 +152,9 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
 
   const handleDeposit = () => {
     setSubmitting(true)
-
     deposit({
       amount: inputAmount,
-      fromTokenAcc: selectedAccount.account.publicKey,
+      fromTokenAcc: selectedAccount.account,
     }).then(() => {
       setSubmitting(false)
       onClose()

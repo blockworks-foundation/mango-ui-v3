@@ -1,5 +1,4 @@
-import { QUOTE_INDEX } from '@blockworks-foundation/mango-client/lib/src/MerpsGroup'
-import { PublicKey } from '@solana/web3.js'
+import { TokenAccount } from '@blockworks-foundation/mango-client'
 import useMangoStore, { mangoClient } from '../stores/useMangoStore'
 
 export async function deposit({
@@ -7,25 +6,30 @@ export async function deposit({
   fromTokenAcc,
 }: {
   amount: number
-  fromTokenAcc: PublicKey
+  fromTokenAcc: TokenAccount
 }) {
   const marginAccount = useMangoStore.getState().selectedMarginAccount.current
   const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
   const wallet = useMangoStore.getState().wallet.current
 
+  const tokenIndex = mangoGroup.getTokenIndex(fromTokenAcc.mint)
+
   let marginAccountPk
   if (!marginAccount) {
     marginAccountPk = await mangoClient.initMerpsAccount(mangoGroup, wallet)
   }
+
+  // TODO add to basket before deposit for non quote index
+
   if (marginAccount || marginAccountPk) {
     return mangoClient.deposit(
       mangoGroup,
       marginAccountPk || marginAccount.publicKey,
       wallet,
-      mangoGroup.tokens[QUOTE_INDEX].rootBank,
-      mangoGroup.rootBankAccounts[QUOTE_INDEX].nodeBankAccounts[0].publicKey,
-      mangoGroup.rootBankAccounts[QUOTE_INDEX].nodeBankAccounts[0].vault,
-      fromTokenAcc,
+      mangoGroup.tokens[tokenIndex].rootBank,
+      mangoGroup.rootBankAccounts[tokenIndex].nodeBankAccounts[0].publicKey,
+      mangoGroup.rootBankAccounts[tokenIndex].nodeBankAccounts[0].vault,
+      fromTokenAcc.publicKey,
       Number(amount)
     )
   }
