@@ -48,15 +48,15 @@ const ConnectWalletButton = () => {
               <ProfileIcon className="fill-current h-5 w-5" />
             </Menu.Button>
             <Menu.Items className="bg-th-bkg-1 mt-2 p-1 absolute right-0 shadow-lg outline-none rounded-md w-48 z-20">
-              <Menu.Item>
-                {/* <button
+              {/* <Menu.Item>
+                <button
                   className="flex flex-row font-normal items-center rounded-none w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer focus:outline-none"
                   onClick={() => setShowAccountsModal(true)}
                 >
                   <CurrencyDollarIcon className="h-4 w-4" />
                   <div className="pl-2 text-left">Accounts</div>
-                </button> */}
-              </Menu.Item>
+                </button>
+              </Menu.Item> */}
               <Menu.Item>
                 <button
                   className="flex flex-row font-normal items-center rounded-none w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer focus:outline-none"

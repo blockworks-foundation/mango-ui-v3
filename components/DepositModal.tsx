@@ -18,7 +18,10 @@ import Modal from './Modal'
 import Input from './Input'
 import AccountSelect from './AccountSelect'
 import { ElementTitle } from './styles'
-import useMangoStore, { WalletToken } from '../stores/useMangoStore'
+import useMangoStore, {
+  mangoClient,
+  WalletToken,
+} from '../stores/useMangoStore'
 import useMarketList from '../hooks/useMarketList'
 import {
   getSymbolForTokenMintAddress,
@@ -36,6 +39,7 @@ import InlineNotification from './InlineNotification'
 import { notify } from '../utils/notifications'
 import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
 import { QUOTE_INDEX } from '@blockworks-foundation/mango-client/lib/src/MerpsGroup'
+import { deposit } from '../utils/mango'
 
 interface DepositModalProps {
   onClose: () => void
@@ -148,100 +152,15 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
 
   const handleDeposit = () => {
     setSubmitting(true)
-    const marginAccount = useMangoStore.getState().selectedMarginAccount.current
-    const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
-    const wallet = useMangoStore.getState().wallet.current
-    const client = useMangoStore.getState().mangoClient
 
-    console.log('mango group', mangoGroup.rootBankAccounts)
-
-    if (!marginAccount) {
-      client
-        .initMerpsAccount(mangoGroup, wallet)
-        .then((resp) => console.log('something happened', resp))
-    }
-    if (marginAccount) {
-      console.log('we have a margin acc', marginAccount.publicKey)
-
-      client
-        .deposit(
-          mangoGroup,
-          marginAccount,
-          wallet,
-          mangoGroup.tokens[QUOTE_INDEX].rootBank,
-          mangoGroup.rootBankAccounts[QUOTE_INDEX].nodeBankAccounts[0]
-            .publicKey,
-          mangoGroup.rootBankAccounts[QUOTE_INDEX].nodeBankAccounts[0].vault,
-          selectedAccount.account.publicKey,
-          Number(inputAmount)
-        )
-        .then((resp) => {
-          console.log('desposit status', resp)
-          sleep(2000)
-
-          setSubmitting(false)
-          onClose()
-          actions.fetchMarginAccounts()
-        })
-    }
-
-    /*
-    if (!marginAccount && mangoGroup) {
-      initMarginAccountAndDeposit(
-        connection,
-        programId,
-        mangoGroup,
-        wallet,
-        selectedAccount.account.mint,
-        selectedAccount.publicKey,
-        Number(inputAmount)
-      )
-        .then(async (_response: Array<any>) => {
-          await sleep(1000)
-          actions.fetchWalletTokens()
-          actions.fetchMarginAccounts()
-          setSubmitting(false)
-          onClose()
-        })
-        .catch((err) => {
-          setSubmitting(false)
-          console.error(err)
-          notify({
-            message:
-              'Could not perform init margin account and deposit operation',
-            type: 'error',
-          })
-          onClose()
-        })
-    } else {
-      deposit(
-        connection,
-        new PublicKey(programId),
-        mangoGroup,
-        marginAccount,
-        wallet,
-        selectedAccount.account.mint,
-        selectedAccount.publicKey,
-        Number(inputAmount)
-      )
-        .then(async (_response: string) => {
-          setSubmitting(false)
-          onClose()
-          await sleep(750)
-          actions.fetchWalletTokens()
-          actions.fetchMarginAccounts()
-        })
-        .catch((err) => {
-          setSubmitting(false)
-          console.error(err)
-          notify({
-            message: 'Could not perform deposit operation',
-            type: 'error',
-          })
-          onClose()
-        })
-    }
-    */
+    deposit({
+      amount: inputAmount,
+      fromTokenAcc: selectedAccount.account.publicKey,
+    }).then(() => {
+      setSubmitting(false)
+      onClose()
+      actions.fetchMarginAccounts()
+    })
   }
 
   const renderAccountRiskStatus = (

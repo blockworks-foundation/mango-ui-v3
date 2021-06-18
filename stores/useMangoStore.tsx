@@ -71,6 +71,8 @@ export const serumProgramId = new PublicKey(
 )
 const merpsGroupPk = new PublicKey(defaultMangoGroupIds.key)
 
+export const mangoClient = new MangoClient(DEFAULT_CONNECTION, programId)
+
 export const INITIAL_STATE = {
   WALLET: {
     providerUrl: null,
@@ -96,7 +98,7 @@ export interface WalletToken {
 }
 
 export interface Orderbook {
-  bids: number[][],
+  bids: number[][]
   asks: number[][]
 }
 
@@ -123,9 +125,8 @@ interface MangoStore extends State {
     markPrice: number
     askInfo: AccountInfo<Buffer> | null
     bidInfo: AccountInfo<Buffer> | null
-    orderBook: Orderbook 
+    orderBook: Orderbook
   }
-  mangoClient: MangoClient
   mangoGroups: Array<MangoGroup>
   selectedMangoGroup: {
     config: GroupConfig
@@ -200,7 +201,6 @@ const useMangoStore = create<MangoStore>((set, get) => ({
     bidInfo: null,
     orderBook: { bids: [[]], asks: [[]] },
   },
-  mangoClient: new MangoClient(DEFAULT_CONNECTION, programId),
   mangoGroups: [],
   marginAccounts: [],
   selectedMarginAccount: {
@@ -253,7 +253,6 @@ const useMangoStore = create<MangoStore>((set, get) => ({
       }
     },
     async fetchMarginAccounts() {
-      const mangoClient = get().mangoClient
       const mangoGroup = get().selectedMangoGroup.current
       const selectedMarginAcount = get().selectedMarginAccount.current
       const wallet = get().wallet.current
@@ -273,9 +272,8 @@ const useMangoStore = create<MangoStore>((set, get) => ({
           if (marginAccounts.length > 0) {
             const sortedAccounts = marginAccounts
               .slice()
-              .sort(
-                (a, b) =>
-                  a.publicKey.toBase58() > b.publicKey.toBase58() ? 1 : -1
+              .sort((a, b) =>
+                a.publicKey.toBase58() > b.publicKey.toBase58() ? 1 : -1
               )
             set((state) => {
               state.marginAccounts = sortedAccounts
@@ -306,7 +304,6 @@ const useMangoStore = create<MangoStore>((set, get) => ({
         })
     },
     async fetchMangoGroup() {
-      const mangoClient = get().mangoClient
       const set = get().set
 
       if (!mangoClient) return
