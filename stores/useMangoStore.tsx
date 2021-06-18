@@ -76,9 +76,7 @@ const defaultMangoGroupIds = IDS['groups'].find(
 )
 
 export const programId = new PublicKey(defaultMangoGroupIds.merpsProgramId)
-export const serumProgramId = new PublicKey(
-  defaultMangoGroupIds.serumProgramId
-)
+export const serumProgramId = new PublicKey(defaultMangoGroupIds.serumProgramId)
 const merpsGroupPk = new PublicKey(defaultMangoGroupIds.publicKey)
 
 export const mangoClient = new MangoClient(DEFAULT_CONNECTION, programId)
@@ -279,6 +277,8 @@ const useMangoStore = create<MangoStore>((set, get) => ({
               .sort((a, b) =>
                 a.publicKey.toBase58() > b.publicKey.toBase58() ? 1 : -1
               )
+            console.log('margin acc: ', sortedAccounts[0])
+
             set((state) => {
               state.marginAccounts = sortedAccounts
               state.selectedMarginAccount.current = sortedAccounts[0]

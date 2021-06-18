@@ -240,7 +240,6 @@ export async function decodeAndLoadMarkets(
       groupConfig.serumProgramId
     ).decode(accountInfo.data)
 
-    console.log('decoded accs===', decodedAcc)
     const baseToken = groupConfig.tokens.find((token) =>
       token.mintKey.equals(decodedAcc.baseMint)
     )
