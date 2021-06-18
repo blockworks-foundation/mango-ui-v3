@@ -995,7 +995,7 @@
 
 "@blockworks-foundation/mango-client@git+ssh://git@github.com/blockworks-foundation/merps-ts#ts/ui-exports":
   version "0.0.0"
-  resolved "git+ssh://git@github.com/blockworks-foundation/merps-ts#b6a156a3caf60a4f829ec14d41153d538c1dd278"
+  resolved "git+ssh://git@github.com/blockworks-foundation/merps-ts#95cba2176b561018f403600abe4f9da151bc39c7"
   dependencies:
     "@project-serum/serum" "^0.13.38"
     "@project-serum/sol-wallet-adapter" "^0.2.0"
@@ -1494,9 +1494,9 @@
     eventemitter3 "^4.0.4"
 
 "@project-serum/sol-wallet-adapter@^0.2.0":
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/@project-serum/sol-wallet-adapter/-/sol-wallet-adapter-0.2.1.tgz#237ff1da13b7cc9936d8d24540c97dee6adc24f7"
-  integrity sha512-KCnC9O/7LbqsmYyyMK/FYr0Js9mVuedlPLjWWL8xYrW7/Hv2yIFs/7LLhbyNcG+2wACdXC2IV0+Trzqm2yr5/w==
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/@project-serum/sol-wallet-adapter/-/sol-wallet-adapter-0.2.4.tgz#205adc303aea38d6c2043cb644fd70ba2fa758e0"
+  integrity sha512-NlFD5FumLddrHsRB1Dco7adiproUvXFC8kRxNg8ptEMD7k9p5gr8iKf6t06eARZAWQ7r90Bq1gEJc9GHlZ0c4Q==
   dependencies:
     bs58 "^4.0.1"
     eventemitter3 "^4.0.4"

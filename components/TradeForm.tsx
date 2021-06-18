@@ -33,7 +33,8 @@ export default function TradeForm() {
   const { side, baseSize, quoteSize, price, tradeType } = useMangoStore(
     (s) => s.tradeForm
   )
-  const { ipAllowed } = useIpAddress()
+  let { ipAllowed } = useIpAddress()
+  ipAllowed = true;
   const [postOnly, setPostOnly] = useState(false)
   const [ioc, setIoc] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -178,7 +179,8 @@ export default function TradeForm() {
   }
 
   async function onSubmit() {
-    /*
+
+
     if (!price && tradeType === 'Limit') {
       console.warn('Missing price')
       notify({
@@ -195,34 +197,29 @@ export default function TradeForm() {
       return
     }
 
+    const client = useMangoStore.getState().mangoClient
     const marginAccount = useMangoStore.getState().selectedMarginAccount.current
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
     const wallet = useMangoStore.getState().wallet.current
 
-    if (!mangoGroup || !marketAddress || !marginAccount || !market) return
+    if (!wallet || !mangoGroup || !marginAccount || !market) return
     setSubmitting(true)
 
     try {
-      let calculatedPrice
+      let orderPrice = Number(price);
       if (tradeType === 'Market') {
-        calculatedPrice =
-          side === 'buy'
-            ? calculateMarketPrice(orderbook.asks, baseSize, side)
-            : calculateMarketPrice(orderbook.bids, baseSize, side)
+        orderPrice = calculateMarketPrice(orderbook, baseSize, side)
       }
 
-      await placeAndSettle(
-        connection,
-        new PublicKey(IDS[cluster].mango_program_id),
-        mangoGroup,
-        marginAccount,
-        market,
-        wallet,
-        side,
-        calculatedPrice ?? price,
-        baseSize,
-        ioc ? 'ioc' : postOnly ? 'postOnly' : 'limit'
-      )
+      console.log('place', orderPrice, baseSize);
+
+      const orderType = ioc ? 'ioc' : postOnly ? 'postOnly' : 'limit';
+      if (market instanceof Market) {
+        client.placeSpotOrder(mangoGroup, marginAccount, mangoGroup.merpsCache, market, wallet, side, orderPrice, baseSize, orderType)
+      } else {
+        //
+      }
+      
       console.log('Successfully placed trade!')
 
       setPrice('')
@@ -238,7 +235,6 @@ export default function TradeForm() {
     } finally {
       setSubmitting(false)
     }
-    */
   }
 
   const handleTradeTypeChange = (tradeType) => {
@@ -257,6 +253,8 @@ export default function TradeForm() {
 
   const disabledTradeButton =
     (!price && tradeType === 'Limit') || !baseSize || !connected || submitting
+
+    console.log('dis', (!price && tradeType === 'Limit'), !baseSize, !connected, submitting);
 
   return (
     <FloatingElement>
