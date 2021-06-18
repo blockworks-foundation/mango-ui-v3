@@ -111,7 +111,7 @@ export default function TradeForm() {
   } else if (market instanceof PerpMarket) {
     const baseDecimals = getTokenBySymbol(
       groupConfig,
-      marketConfig.base_symbol
+      marketConfig.baseSymbol
     ).decimals
     minOrderSize = new Big(market.contractSize)
       .div(new Big(10).pow(baseDecimals))
@@ -125,11 +125,11 @@ export default function TradeForm() {
   } else if (market instanceof PerpMarket) {
     const baseDecimals = getTokenBySymbol(
       groupConfig,
-      marketConfig.base_symbol
+      marketConfig.baseSymbol
     ).decimals
     const quoteDecimals = getTokenBySymbol(
       groupConfig,
-      groupConfig.quote_symbol
+      groupConfig.quoteSymbol
     ).decimals
 
     const nativeToUi = new Big(10).pow(baseDecimals - quoteDecimals)
@@ -328,7 +328,7 @@ export default function TradeForm() {
             value={price}
             disabled={tradeType === 'Market'}
             prefix={'Price'}
-            suffix={groupConfig.quote_symbol}
+            suffix={groupConfig.quoteSymbol}
             className="rounded-r-none"
             wrapperClassName="w-3/5"
           />
@@ -349,7 +349,7 @@ export default function TradeForm() {
             className="rounded-r-none"
             wrapperClassName="w-3/5"
             prefix={'Size'}
-            suffix={marketConfig.base_symbol}
+            suffix={marketConfig.baseSymbol}
           />
           <StyledRightInput
             type="number"
@@ -359,7 +359,7 @@ export default function TradeForm() {
             value={quoteSize}
             className="rounded-l-none"
             wrapperClassName="w-2/5"
-            suffix={groupConfig.quote_symbol}
+            suffix={groupConfig.quoteSymbol}
           />
         </Input.Group>
         {tradeType !== 'Market' ? (
@@ -391,7 +391,7 @@ export default function TradeForm() {
                   baseSize > 0
                     ? 'Buy ' + baseSize
                     : 'Set BUY bid >= ' + minOrderSize
-                } ${marketConfig.base_symbol}`}
+                } ${marketConfig.baseSymbol}`}
               </Button>
             ) : (
               <Button
@@ -406,7 +406,7 @@ export default function TradeForm() {
                   baseSize > 0
                     ? 'Sell ' + baseSize
                     : 'Set SELL bid >= ' + minOrderSize
-                } ${marketConfig.base_symbol}`}
+                } ${marketConfig.baseSymbol}`}
               </Button>
             )
           ) : (

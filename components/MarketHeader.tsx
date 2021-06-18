@@ -10,7 +10,7 @@ import ManualRefresh from './ManualRefresh'
 const MarketHeader = () => {
   // const oraclePrice = useOraclePrice()
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
-  const baseSymbol = marketConfig.base_symbol;
+  const baseSymbol = marketConfig.baseSymbol;
   const selectedMarketName = marketConfig.name;
   const previousMarketName: string = usePrevious(selectedMarketName)
   const marginAccount = useMangoStore((s) => s.selectedMarginAccount.current)

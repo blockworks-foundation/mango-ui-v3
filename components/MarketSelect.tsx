@@ -22,7 +22,7 @@ const MarketSelect = () => {
           <div className="border-r border-th-fgd-4 pr-4 text-th-fgd-4 text-xs">
             MARKETS
           </div>
-          {groupConfig.perp_markets.map((s) => (
+          {groupConfig.perpMarkets.map((s) => (
             <div
               className={`border-r border-th-fgd-4 cursor-pointer default-transition flex font-semibold px-4 text-xs hover:text-th-primary
               ${
@@ -31,7 +31,7 @@ const MarketSelect = () => {
                   : `text-th-fgd-3`
               }
             `}
-              onClick={() => handleChange(s.base_symbol, 'perp')}
+              onClick={() => handleChange(s.baseSymbol, 'perp')}
               key={s.key.toBase58()}
             >
               {s.name}
@@ -47,7 +47,7 @@ const MarketSelect = () => {
                   : `text-th-fgd-3`
               }
             `}
-              onClick={() => handleChange(s.base_symbol, 'spot')}
+              onClick={() => handleChange(s.baseSymbol, 'spot')}
               key={s.key.toBase58()}
             >
               {s.name}

@@ -193,13 +193,13 @@ export default function Orderbook({ depth = 8 }) {
                   className={`text-th-fgd-4 flex justify-between mb-2 text-xs`}
                 >
                   <div className={`text-left`}>
-                    Size ({marketConfig.base_symbol})
+                    Size ({marketConfig.baseSymbol})
                   </div>
                   <div className={`text-center`}>
-                    Price ({groupConfig.quote_symbol})
+                    Price ({groupConfig.quoteSymbol})
                   </div>
                   <div className={`text-right`}>
-                    Size ({marketConfig.base_symbol})
+                    Size ({marketConfig.baseSymbol})
                   </div>
                 </div>
                 <div className="flex">
