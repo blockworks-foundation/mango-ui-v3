@@ -68,7 +68,7 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
 
     initMarginAccountAndDeposit(
       connection,
-      groupConfig.merps_program_id,
+      groupConfig.merpsProgramId,
       mangoGroup,
       wallet,
       selectedAccount.account.mint,

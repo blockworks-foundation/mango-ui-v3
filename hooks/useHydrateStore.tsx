@@ -40,7 +40,7 @@ const useHydrateStore = () => {
         connection,
         marketConfig.key,
         {},
-        groupConfig.serum_program_id
+        groupConfig.serumProgramId
       )
         .then(async (market) => {
           const bidAccount = market['_decoded'].bids

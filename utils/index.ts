@@ -237,7 +237,7 @@ export async function decodeAndLoadMarkets(
   for (let i = 0; i < marketAccountInfos.length; i++) {
     const { publicKey, accountInfo } = marketAccountInfos[i]
     const decodedAcc = await Market.getLayout(
-      groupConfig.serum_program_id
+      groupConfig.serumProgramId
     ).decode(accountInfo.data)
 
     console.log('decoded accs===', decodedAcc)
@@ -255,7 +255,7 @@ export async function decodeAndLoadMarkets(
       baseMintDecimals,
       quoteMintDecimals,
       {},
-      groupConfig.serum_program_id
+      groupConfig.serumProgramId
     )
   }
 

@@ -38,7 +38,7 @@ const MarketSelect = () => {
             </div>
           ))}
 
-          {groupConfig.spot_markets.map((s) => (
+          {groupConfig.spotMarkets.map((s) => (
             <div
               className={`border-r border-th-fgd-4 cursor-pointer default-transition flex font-semibold px-4 text-xs hover:text-th-primary
               ${

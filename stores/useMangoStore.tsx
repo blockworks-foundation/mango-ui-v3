@@ -66,7 +66,7 @@ export const WEBSOCKET_CONNECTION = new Connection(
   'processed' as Commitment
 )
 
-const DEFAULT_MANGO_GROUP_NAME = 'merps_test_v2'
+const DEFAULT_MANGO_GROUP_NAME = 'merps_test_v2.1'
 const DEFAULT_MANGO_GROUP_CONFIG = Config.ids().getGroup(
   CLUSTER,
   DEFAULT_MANGO_GROUP_NAME
@@ -75,11 +75,11 @@ const defaultMangoGroupIds = IDS['groups'].find(
   (group) => group.name === DEFAULT_MANGO_GROUP_NAME
 )
 
-export const programId = new PublicKey(defaultMangoGroupIds.merps_program_id)
+export const programId = new PublicKey(defaultMangoGroupIds.merpsProgramId)
 export const serumProgramId = new PublicKey(
-  defaultMangoGroupIds.serum_program_id
+  defaultMangoGroupIds.serumProgramId
 )
-const merpsGroupPk = new PublicKey(defaultMangoGroupIds.key)
+const merpsGroupPk = new PublicKey(defaultMangoGroupIds.publicKey)
 
 export const mangoClient = new MangoClient(DEFAULT_CONNECTION, programId)
 
@@ -321,7 +321,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
 
           const spotMarketAccountInfos = await getMultipleAccounts(
             DEFAULT_CONNECTION,
-            mangoGroupConfig.spot_markets.map((mkt) => mkt.key)
+            mangoGroupConfig.spotMarkets.map((mkt) => mkt.publicKey)
           )
           const spotOrderBookAccountInfos = await getOrderBookAccountInfos(
             mangoGroup.dexProgramId,
@@ -338,7 +338,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
             state.selectedMangoGroup.cache = merpsCache
             state.selectedMangoGroup.markets = spotMarkets
             state.selectedMarket.current =
-              spotMarkets[selectedMarketConfig.key.toString()]
+              spotMarkets[selectedMarketConfig.publicKey.toString()]
 
             spotMarketAccountInfos
               .concat(spotOrderBookAccountInfos)
