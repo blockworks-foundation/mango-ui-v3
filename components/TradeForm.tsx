@@ -24,6 +24,7 @@ import {
   I80F48,
   NEG_ONE_I80F48,
 } from '@blockworks-foundation/mango-client/lib/src/fixednum'
+import Big from 'big.js'
 
 const StyledRightInput = styled(Input)`
   border-left: 1px solid transparent;
@@ -113,9 +114,9 @@ export default function TradeForm() {
       groupConfig,
       marketConfig.base_symbol
     ).decimals
-    const baseUnit = I80F48.fromNumber(Math.pow(10, baseDecimals))
-    const baseLotSize = I80F48.fromI64(market.contractSize)
-    minOrderSize = baseLotSize.div(baseUnit).toString()
+    minOrderSize = new Big(market.contractSize)
+      .div(new Big(10).pow(baseDecimals))
+      .toString()
   }
   const sizeDecimalCount = getDecimalCount(minOrderSize)
 
@@ -127,19 +128,16 @@ export default function TradeForm() {
       groupConfig,
       marketConfig.base_symbol
     ).decimals
-    const baseUnit = I80F48.fromNumber(Math.pow(10, baseDecimals))
-    const baseLotSize = I80F48.fromI64(market.contractSize)
     const quoteDecimals = getTokenBySymbol(
       groupConfig,
       groupConfig.quote_symbol
     ).decimals
-    const quoteUnit = I80F48.fromNumber(Math.pow(10, quoteDecimals))
-    const quoteLotSize = I80F48.fromI64(market.quoteLotSize)
-    tickSize = quoteLotSize
-      .mul(baseUnit)
-      .div(baseLotSize)
-      .div(quoteUnit)
-      .toNumber()
+
+    const nativeToUi = new Big(10).pow(baseDecimals - quoteDecimals)
+    const lotsToNative = new Big(market.quoteLotSize).div(
+      new Big(market.contractSize)
+    )
+    tickSize = lotsToNative.mul(nativeToUi).toNumber()
   }
 
   const onSetPrice = (price: number | '') => {
@@ -439,4 +437,11 @@ export default function TradeForm() {
       </div>
     </FloatingElement>
   )
+}
+
+function divideBnToNumber(numerator: BN, denominator: BN): number {
+  const quotient = numerator.div(denominator).toNumber()
+  const rem = numerator.umod(denominator)
+  const gcd = rem.gcd(denominator)
+  return quotient + rem.div(gcd).toNumber() / denominator.div(gcd).toNumber()
 }
