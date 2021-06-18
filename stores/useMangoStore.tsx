@@ -18,17 +18,23 @@ import {
   nativeToUi,
   MerpsCache,
   PerpMarket,
+  getMultipleAccounts,
 } from '@blockworks-foundation/mango-client'
 // import { SRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
 import {
   AccountInfo,
+  Commitment,
   Connection,
   PublicKey,
   TokenAmount,
 } from '@solana/web3.js'
 import { EndpointInfo, WalletAdapter } from '../@types/types'
 import { getWalletTokenInfo } from '../utils/tokens'
-import { isDefined } from '../utils'
+import {
+  decodeAndLoadMarkets,
+  getOrderBookAccountInfos,
+  isDefined,
+} from '../utils'
 import { notify } from '../utils/notifications'
 import useAllMarkets from '../hooks/useAllMarkets'
 
@@ -51,8 +57,14 @@ type ClusterType = 'mainnet-beta' | 'devnet'
 
 const CLUSTER = (process.env.NEXT_PUBLIC_CLUSTER as ClusterType) || 'devnet'
 const ENDPOINT = ENDPOINTS.find((e) => e.name === CLUSTER)
-const DEFAULT_CONNECTION = new Connection(ENDPOINT.url, 'processed')
-const WEBSOCKET_CONNECTION = new Connection(ENDPOINT.websocket, 'processed')
+export const DEFAULT_CONNECTION = new Connection(
+  ENDPOINT.url,
+  'processed' as Commitment
+)
+const WEBSOCKET_CONNECTION = new Connection(
+  ENDPOINT.websocket,
+  'processed' as Commitment
+)
 
 const DEFAULT_MANGO_GROUP_NAME = 'merps_test_v1'
 const DEFAULT_MANGO_GROUP_CONFIG = Config.ids().getGroup(
@@ -222,7 +234,6 @@ const useMangoStore = create<MangoStore>((set, get) => ({
   set: (fn) => set(produce(fn)),
   actions: {
     async fetchWalletTokens() {
-      const connection = get().connection.current
       const groupConfig = get().selectedMangoGroup.config
       const wallet = get().wallet.current
       const connected = get().wallet.connected
@@ -231,7 +242,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
       if (wallet?.publicKey && connected) {
         const ownerAddress = wallet.publicKey
         const ownedTokenAccounts = await getTokenAccountsByOwnerWithWrappedSol(
-          connection,
+          DEFAULT_CONNECTION,
           ownerAddress
         )
         const tokens = []
@@ -267,7 +278,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
       }
 
       return mangoClient
-        .getMarginAccountsForOwner(mangoGroup, wallet.publicKey)
+        .getMarginAccountsForOwner(mangoGroup, wallet.publicKey, true)
         .then((marginAccounts) => {
           if (marginAccounts.length > 0) {
             const sortedAccounts = marginAccounts
@@ -305,17 +316,29 @@ const useMangoStore = create<MangoStore>((set, get) => ({
     },
     async fetchMangoGroup() {
       const set = get().set
-
-      if (!mangoClient) return
       const mangoGroupPk = merpsGroupPk
+
+      const mangoGroupConfig = get().selectedMangoGroup.config
+      console.log('CONFIG:', mangoGroupConfig)
 
       return mangoClient
         .getMerpsGroup(mangoGroupPk)
         .then(async (mangoGroup) => {
-          console.log('we have a mango group', mangoGroup)
           const rootBanks = await mangoGroup.loadRootBanks(DEFAULT_CONNECTION)
           const merpsCache = await mangoGroup.loadCache(DEFAULT_CONNECTION)
-          console.log('we have merps cache::', merpsCache)
+
+          const spotMarketAccountInfos = await getMultipleAccounts(
+            DEFAULT_CONNECTION,
+            mangoGroupConfig.spot_markets.map((mkt) => mkt.key)
+          )
+          const spotOrderBookAccountInfos = await getOrderBookAccountInfos(
+            mangoGroup.dexProgramId,
+            spotMarketAccountInfos.map(({ accountInfo }) => accountInfo)
+          )
+          const spotMarkets = await decodeAndLoadMarkets(
+            mangoGroup.dexProgramId,
+            spotMarketAccountInfos
+          )
 
           // const srmAccountInfoPromise = connection.getAccountInfo(
           //   mangoGroup.srmVault
@@ -330,6 +353,14 @@ const useMangoStore = create<MangoStore>((set, get) => ({
             state.selectedMangoGroup.current = mangoGroup
             state.selectedMangoGroup.rootBanks = rootBanks
             state.selectedMangoGroup.cache = merpsCache
+            state.selectedMangoGroup.markets = spotMarkets
+
+            spotMarketAccountInfos
+              .concat(spotOrderBookAccountInfos)
+              .forEach(({ publicKey, accountInfo }) => {
+                state.accountInfos[publicKey.toString()] = accountInfo
+              })
+
             // state.selectedMangoGroup.srmAccount = srmAccountInfo
             // state.selectedMangoGroup.mintDecimals = mangoGroup.mintDecimals // TODO store "tokens" from merps group ids
             // state.selectedMangoGroup.prices = prices
@@ -344,6 +375,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
           console.log('Could not get mango group: ', err)
         })
     },
+    async fetchAllMarkets() {},
     // async fetchTradeHistory(marginAccount = null) {
     //   const selectedMarginAccount =
     //     marginAccount || get().selectedMarginAccount.current

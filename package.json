@@ -31,7 +31,7 @@
     }
   },
   "dependencies": {
-    "@blockworks-foundation/mango-client": "git+ssh://git@github.com/blockworks-foundation/merps-ts#ts/ui-exports",
+    "@blockworks-foundation/mango-client": "git+ssh://git@github.com/blockworks-foundation/merps-ts#main",
     "@emotion/react": "^11.1.5",
     "@emotion/styled": "^11.1.5",
     "@headlessui/react": "^1.2.0",

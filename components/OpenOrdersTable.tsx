@@ -8,7 +8,7 @@ import Button, { LinkButton } from './Button'
 import Loading from './Loading'
 // import { PublicKey } from '@solana/web3.js'
 // import useConnection from '../hooks/useConnection'
-import useMangoStore from '../stores/useMangoStore'
+import useMangoStore, { mangoClient } from '../stores/useMangoStore'
 import { notify } from '../utils/notifications'
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
 import SideBadge from './SideBadge'
@@ -23,7 +23,7 @@ const OpenOrdersTable = () => {
   const actions = useMangoStore((s) => s.actions)
 
   const handleCancelOrder = async (order) => {
-    // const wallet = useMangoStore.getState().wallet.current
+    const wallet = useMangoStore.getState().wallet.current
     const selectedMangoGroup =
       useMangoStore.getState().selectedMangoGroup.current
     const selectedMarginAccount =
@@ -31,15 +31,13 @@ const OpenOrdersTable = () => {
     setCancelId(order?.orderId)
     try {
       if (!selectedMangoGroup || !selectedMarginAccount) return
-      // await cancelOrderAndSettle(
-      //   connection,
-      //   new PublicKey(programId),
-      //   selectedMangoGroup,
-      //   selectedMarginAccount,
-      //   wallet,
-      //   order.market,
-      //   order
-      // )
+      await mangoClient.cancelSpotOrder(
+        selectedMangoGroup,
+        selectedMarginAccount,
+        wallet,
+        order.market,
+        order
+      )
       actions.fetchMarginAccounts()
     } catch (e) {
       notify({
@@ -48,6 +46,8 @@ const OpenOrdersTable = () => {
         txid: e.txid,
         type: 'error',
       })
+      console.log('error', `${e}`)
+
       return
     } finally {
       setCancelId(null)

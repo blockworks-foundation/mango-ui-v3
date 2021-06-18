@@ -1,7 +1,6 @@
-// import { useEffect, useRef } from 'react'
 import { Orderbook } from '@project-serum/serum'
+import { PublicKey } from '@solana/web3.js'
 import useMangoStore from '../stores/useMangoStore'
-import useMarketList from './useMarketList'
 
 const getOrderBookAccounts = (market, accountInfos) => {
   const bidData = accountInfos[market._decoded.bids.toString()]?.data
@@ -19,22 +18,17 @@ export function useOpenOrders() {
   const markets = useMangoStore((s) => s.selectedMangoGroup.markets)
   const marginAccount = useMangoStore((s) => s.selectedMarginAccount.current)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  const mangoGroupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const accountInfos = useMangoStore((s) => s.accountInfos)
-  const { marketList } = useMarketList()
 
-  console.log('in useOpenorders, before if')
-  console.log('markets length', markets.length)
   if (!mangoGroup || !marginAccount || !accountInfos) return null
-  console.log('in useOpenorders, after if')
 
   const openOrders = Object.entries(markets).map(([address, market]) => {
-    const marketIndex = mangoGroup.getSpotMarketIndex(market)
+    const marketIndex = mangoGroup.getSpotMarketIndex(new PublicKey(address))
     const openOrdersAccount = marginAccount.spotOpenOrdersAccounts[marketIndex]
-    console.log('=================')
-    console.log('my open orders acc: ', openOrdersAccount)
 
-    const marketName = marketList.find(
-      (mkt) => mkt.address.toString() === address
+    const marketName = mangoGroupConfig.spot_markets.find(
+      (mkt) => mkt.key.toString() === address
     ).name
 
     if (!openOrdersAccount) return []

@@ -1,9 +1,10 @@
+import { getMultipleAccounts } from '@blockworks-foundation/mango-client'
 import { I80F48 } from '@blockworks-foundation/mango-client/lib/src/fixednum'
-import { TOKEN_MINTS } from '@project-serum/serum'
-import { PublicKey } from '@solana/web3.js'
+import { Market, TOKEN_MINTS } from '@project-serum/serum'
+import { AccountInfo, PublicKey } from '@solana/web3.js'
 import BN from 'bn.js'
 import { Side } from '../public/charting_library/charting_library'
-import { Orderbook } from '../stores/useMangoStore'
+import { DEFAULT_CONNECTION, Orderbook } from '../stores/useMangoStore'
 
 export function isValidPublicKey(key) {
   if (!key) {
@@ -223,3 +224,52 @@ export const trimDecimals = (n, digits) => {
 
 export const i80f48ToPercent = (value: I80F48) =>
   value.mul(I80F48.fromNumber(100))
+
+export async function decodeAndLoadMarkets(
+  serumProgramId: PublicKey,
+  marketAccountInfos
+): Promise<{ [marketPk: string]: Market }> {
+  const markets = {}
+
+  for (let i = 0; i < marketAccountInfos.length; i++) {
+    const { publicKey, accountInfo } = marketAccountInfos[i]
+    const decodedAcc = await Market.getLayout(serumProgramId).decode(
+      accountInfo.data
+    )
+
+    const baseMintDecimals = 6
+    const quoteMintDecimals = 9
+    markets[publicKey] = new Market(
+      decodedAcc,
+      baseMintDecimals,
+      quoteMintDecimals,
+      {},
+      serumProgramId
+    )
+  }
+  console.log('loaded markets', markets)
+
+  return markets
+}
+
+export async function getOrderBookAccountInfos(
+  serumProgramId,
+  spotMarketAccountInfos: AccountInfo<Buffer>[]
+): Promise<
+  {
+    publicKey: PublicKey
+    accountInfo: AccountInfo<Buffer>
+  }[]
+> {
+  const decodedMarkets = spotMarketAccountInfos.map((accountInfo) =>
+    Market.getLayout(serumProgramId).decode(accountInfo.data)
+  )
+
+  const orderBookPks = []
+  decodedMarkets.forEach((mkt) => {
+    orderBookPks.push(mkt.bids)
+    orderBookPks.push(mkt.asks)
+  })
+
+  return await getMultipleAccounts(DEFAULT_CONNECTION, orderBookPks)
+}
