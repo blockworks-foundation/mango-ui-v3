@@ -6,7 +6,7 @@ const useHistoricPrices = () => {
   useEffect(() => {
     const fetchPrices = async () => {
       const response = await fetch(
-        `https://serumtaxtime.com/stats/prices/2oogpTYm1sp6LPZAWD3bp2wsFpnV2kXL1s52yyFhW5vp`
+        `https://mango-transaction-log.herokuapp.com/stats/prices/2oogpTYm1sp6LPZAWD3bp2wsFpnV2kXL1s52yyFhW5vp`
       )
       const prices = await response.json()
       setPrices(prices)
