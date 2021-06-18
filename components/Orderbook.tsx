@@ -148,6 +148,8 @@ export default function Orderbook({ depth = 8 }) {
           spread: spread,
           spreadPercentage: spreadPercentage,
         })
+      } else {
+        setOrderbookData(null);
       }
     }
   }, 250)

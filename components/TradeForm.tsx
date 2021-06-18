@@ -241,7 +241,17 @@ export default function TradeForm() {
           orderType
         )
       } else {
-        //
+        mangoClient.placePerpOrder(
+          mangoGroup,
+          marginAccount,
+          mangoGroup.merpsCache,
+          market,
+          wallet,
+          side,
+          orderPrice,
+          baseSize,
+          orderType
+        )
       }
 
       console.log('Successfully placed trade!')
@@ -277,14 +287,6 @@ export default function TradeForm() {
 
   const disabledTradeButton =
     (!price && tradeType === 'Limit') || !baseSize || !connected || submitting
-
-  console.log(
-    'dis',
-    !price && tradeType === 'Limit',
-    !baseSize,
-    !connected,
-    submitting
-  )
 
   return (
     <FloatingElement>
