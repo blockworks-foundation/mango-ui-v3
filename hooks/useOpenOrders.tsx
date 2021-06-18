@@ -22,11 +22,17 @@ export function useOpenOrders() {
   const accountInfos = useMangoStore((s) => s.accountInfos)
   const { marketList } = useMarketList()
 
+  console.log('in useOpenorders, before if')
+  console.log('markets length', markets.length)
   if (!mangoGroup || !marginAccount || !accountInfos) return null
+  console.log('in useOpenorders, after if')
 
   const openOrders = Object.entries(markets).map(([address, market]) => {
-    const marketIndex = mangoGroup.getMarketIndex(market)
-    const openOrdersAccount = marginAccount.openOrdersAccounts[marketIndex]
+    const marketIndex = mangoGroup.getSpotMarketIndex(market)
+    const openOrdersAccount = marginAccount.spotOpenOrdersAccounts[marketIndex]
+    console.log('=================')
+    console.log('my open orders acc: ', openOrdersAccount)
+
     const marketName = marketList.find(
       (mkt) => mkt.address.toString() === address
     ).name

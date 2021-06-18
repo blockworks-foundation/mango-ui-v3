@@ -3,11 +3,11 @@ import Link from 'next/link'
 import { ArrowSmDownIcon } from '@heroicons/react/solid'
 import { useRouter } from 'next/router'
 import { useOpenOrders } from '../hooks/useOpenOrders'
-import { cancelOrderAndSettle } from '../utils/mango'
+// import { cancelOrderAndSettle } from '../utils/mango'
 import Button, { LinkButton } from './Button'
 import Loading from './Loading'
-import { PublicKey } from '@solana/web3.js'
-import useConnection from '../hooks/useConnection'
+// import { PublicKey } from '@solana/web3.js'
+// import useConnection from '../hooks/useConnection'
 import useMangoStore from '../stores/useMangoStore'
 import { notify } from '../utils/notifications'
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
@@ -19,11 +19,11 @@ const OpenOrdersTable = () => {
   const openOrders = useOpenOrders()
   const { items, requestSort, sortConfig } = useSortableData(openOrders)
   const [cancelId, setCancelId] = useState(null)
-  const { connection, programId } = useConnection()
+  // const { connection, programId } = useConnection()
   const actions = useMangoStore((s) => s.actions)
 
   const handleCancelOrder = async (order) => {
-    const wallet = useMangoStore.getState().wallet.current
+    // const wallet = useMangoStore.getState().wallet.current
     const selectedMangoGroup =
       useMangoStore.getState().selectedMangoGroup.current
     const selectedMarginAccount =
@@ -31,15 +31,15 @@ const OpenOrdersTable = () => {
     setCancelId(order?.orderId)
     try {
       if (!selectedMangoGroup || !selectedMarginAccount) return
-      await cancelOrderAndSettle(
-        connection,
-        new PublicKey(programId),
-        selectedMangoGroup,
-        selectedMarginAccount,
-        wallet,
-        order.market,
-        order
-      )
+      // await cancelOrderAndSettle(
+      //   connection,
+      //   new PublicKey(programId),
+      //   selectedMangoGroup,
+      //   selectedMarginAccount,
+      //   wallet,
+      //   order.market,
+      //   order
+      // )
       actions.fetchMarginAccounts()
     } catch (e) {
       notify({

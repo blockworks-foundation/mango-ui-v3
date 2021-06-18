@@ -3,7 +3,7 @@ import { Market } from '@project-serum/serum'
 // import { AccountInfo, PublicKey } from '@solana/web3.js'
 import { PublicKey } from '@solana/web3.js'
 import useConnection from './useConnection'
-import useMangoStore from '../stores/useMangoStore'
+import useMangoStore, { mangoClient } from '../stores/useMangoStore'
 // import useSerumStore from '../stores/useSerumStore'
 // import useMarketList from './useMarketList'
 import useInterval from './useInterval'
@@ -12,13 +12,11 @@ import { PerpMarket } from '@blockworks-foundation/mango-client'
 const SECONDS = 1000
 // const _SLOW_REFRESH_INTERVAL = 60 * SECONDS
 
-
 const useHydrateStore = () => {
   const setMangoStore = useMangoStore((s) => s.set)
   const actions = useMangoStore((s) => s.actions)
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
-  const mangoClient = useMangoStore((s) => s.mangoClient);
 
   const { connection } = useConnection()
   // const { marketList } = useMarketList()
@@ -46,7 +44,14 @@ const useHydrateStore = () => {
           const askAccount = market['_decoded'].asks
           const askInfo = await connection.getAccountInfo(askAccount)
 
-          console.log('spot', market, bidAccount.toString(), bidInfo, askAccount.toString(), askInfo);
+          console.log(
+            'spot',
+            market,
+            bidAccount.toString(),
+            bidInfo,
+            askAccount.toString(),
+            askInfo
+          )
           setMangoStore((state) => {
             state.selectedMarket.current = market
             state.selectedMarket.askInfo = askInfo
@@ -62,17 +67,24 @@ const useHydrateStore = () => {
         })
     } else {
       mangoClient.getPerpMarket(marketConfig.key).then(async (market) => {
-        const bidInfo = await connection.getAccountInfo(market.bids);
-        const askInfo = await connection.getAccountInfo(market.asks);
+        const bidInfo = await connection.getAccountInfo(market.bids)
+        const askInfo = await connection.getAccountInfo(market.asks)
 
-        console.log('perp', market, market.bids.toString(), bidInfo, market.asks.toString(), askInfo);
+        console.log(
+          'perp',
+          market,
+          market.bids.toString(),
+          bidInfo,
+          market.asks.toString(),
+          askInfo
+        )
 
         setMangoStore((state) => {
           state.selectedMarket.current = market
           state.selectedMarket.askInfo = askInfo
           state.selectedMarket.bidInfo = bidInfo
         })
-      });
+      })
     }
   }, [connection, mangoClient, marketConfig, groupConfig, setMangoStore])
 

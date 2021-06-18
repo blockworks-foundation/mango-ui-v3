@@ -4,19 +4,26 @@ import useMarket from '../hooks/useMarket'
 import useIpAddress from '../hooks/useIpAddress'
 import useConnection from '../hooks/useConnection'
 import { PublicKey } from '@solana/web3.js'
-import { getTokenBySymbol, IDS, PerpMarket } from '@blockworks-foundation/mango-client'
+import {
+  getTokenBySymbol,
+  IDS,
+  PerpMarket,
+} from '@blockworks-foundation/mango-client'
 import { notify } from '../utils/notifications'
 // import { placeAndSettle } from '../utils/mango'
 import { calculateMarketPrice, getDecimalCount } from '../utils'
 import FloatingElement from './FloatingElement'
 import { floorToDecimal } from '../utils/index'
-import useMangoStore from '../stores/useMangoStore'
+import useMangoStore, { mangoClient } from '../stores/useMangoStore'
 import Button from './Button'
 import TradeType from './TradeType'
 import Input from './Input'
 import Switch from './Switch'
 import { Market } from '@project-serum/serum'
-import { I80F48, NEG_ONE_I80F48 } from '@blockworks-foundation/mango-client/lib/src/fixednum'
+import {
+  I80F48,
+  NEG_ONE_I80F48,
+} from '@blockworks-foundation/mango-client/lib/src/fixednum'
 
 const StyledRightInput = styled(Input)`
   border-left: 1px solid transparent;
@@ -27,14 +34,14 @@ export default function TradeForm() {
   const connected = useMangoStore((s) => s.wallet.connected)
   const actions = useMangoStore((s) => s.actions)
   const { connection, cluster } = useConnection()
-  const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config);
-  const marketConfig = useMangoStore((s) => s.selectedMarket.config);
-  const market = useMangoStore((s) => s.selectedMarket.current);
+  const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
+  const marketConfig = useMangoStore((s) => s.selectedMarket.config)
+  const market = useMangoStore((s) => s.selectedMarket.current)
   const { side, baseSize, quoteSize, price, tradeType } = useMangoStore(
     (s) => s.tradeForm
   )
   let { ipAllowed } = useIpAddress()
-  ipAllowed = true;
+  ipAllowed = true
   const [postOnly, setPostOnly] = useState(false)
   const [ioc, setIoc] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -49,7 +56,7 @@ export default function TradeForm() {
       ),
     []
   )
-  console.log({orderbook, orderBookRef});
+  console.log({ orderbook, orderBookRef })
 
   const setSide = (side) =>
     set((s) => {
@@ -98,31 +105,43 @@ export default function TradeForm() {
       ),
     []
   )
-  let minOrderSize = "0";
+  let minOrderSize = '0'
   if (market instanceof Market && market.minOrderSize) {
-    minOrderSize = market.minOrderSize.toString();
+    minOrderSize = market.minOrderSize.toString()
   } else if (market instanceof PerpMarket) {
-    const baseDecimals = getTokenBySymbol(groupConfig, marketConfig.base_symbol).decimals;
-    const baseUnit = I80F48.fromNumber(Math.pow(10, baseDecimals));
-    const baseLotSize = I80F48.fromI64(market.contractSize);
-    minOrderSize = baseLotSize.div(baseUnit).toString();
+    const baseDecimals = getTokenBySymbol(
+      groupConfig,
+      marketConfig.base_symbol
+    ).decimals
+    const baseUnit = I80F48.fromNumber(Math.pow(10, baseDecimals))
+    const baseLotSize = I80F48.fromI64(market.contractSize)
+    minOrderSize = baseLotSize.div(baseUnit).toString()
   }
-  const sizeDecimalCount = getDecimalCount(minOrderSize);
+  const sizeDecimalCount = getDecimalCount(minOrderSize)
 
-  let tickSize = 1;
+  let tickSize = 1
   if (market instanceof Market) {
-    tickSize = market.tickSize;
+    tickSize = market.tickSize
   } else if (market instanceof PerpMarket) {
-    const baseDecimals = getTokenBySymbol(groupConfig, marketConfig.base_symbol).decimals;
-    const baseUnit = I80F48.fromNumber(Math.pow(10, baseDecimals));
-    const baseLotSize = I80F48.fromI64(market.contractSize);
-    const quoteDecimals = getTokenBySymbol(groupConfig, groupConfig.quote_symbol).decimals;
-    const quoteUnit = I80F48.fromNumber(Math.pow(10, quoteDecimals));
-    const quoteLotSize = I80F48.fromI64(market.quoteLotSize);
-    tickSize = quoteLotSize.mul(baseUnit).div(baseLotSize).div(quoteUnit).toNumber();
+    const baseDecimals = getTokenBySymbol(
+      groupConfig,
+      marketConfig.base_symbol
+    ).decimals
+    const baseUnit = I80F48.fromNumber(Math.pow(10, baseDecimals))
+    const baseLotSize = I80F48.fromI64(market.contractSize)
+    const quoteDecimals = getTokenBySymbol(
+      groupConfig,
+      groupConfig.quote_symbol
+    ).decimals
+    const quoteUnit = I80F48.fromNumber(Math.pow(10, quoteDecimals))
+    const quoteLotSize = I80F48.fromI64(market.quoteLotSize)
+    tickSize = quoteLotSize
+      .mul(baseUnit)
+      .div(baseLotSize)
+      .div(quoteUnit)
+      .toNumber()
   }
 
-  
   const onSetPrice = (price: number | '') => {
     setPrice(price)
     if (!price) return
@@ -179,8 +198,6 @@ export default function TradeForm() {
   }
 
   async function onSubmit() {
-
-
     if (!price && tradeType === 'Limit') {
       console.warn('Missing price')
       notify({
@@ -197,7 +214,6 @@ export default function TradeForm() {
       return
     }
 
-    const client = useMangoStore.getState().mangoClient
     const marginAccount = useMangoStore.getState().selectedMarginAccount.current
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
     const wallet = useMangoStore.getState().wallet.current
@@ -206,20 +222,30 @@ export default function TradeForm() {
     setSubmitting(true)
 
     try {
-      let orderPrice = Number(price);
+      let orderPrice = Number(price)
       if (tradeType === 'Market') {
         orderPrice = calculateMarketPrice(orderbook, baseSize, side)
       }
 
-      console.log('place', orderPrice, baseSize);
+      console.log('place', orderPrice, baseSize)
 
-      const orderType = ioc ? 'ioc' : postOnly ? 'postOnly' : 'limit';
+      const orderType = ioc ? 'ioc' : postOnly ? 'postOnly' : 'limit'
       if (market instanceof Market) {
-        client.placeSpotOrder(mangoGroup, marginAccount, mangoGroup.merpsCache, market, wallet, side, orderPrice, baseSize, orderType)
+        mangoClient.placeSpotOrder(
+          mangoGroup,
+          marginAccount,
+          mangoGroup.merpsCache,
+          market,
+          wallet,
+          side,
+          orderPrice,
+          baseSize,
+          orderType
+        )
       } else {
         //
       }
-      
+
       console.log('Successfully placed trade!')
 
       setPrice('')
@@ -243,9 +269,9 @@ export default function TradeForm() {
       setIoc(true)
       setPrice('')
     } else {
-      const priceOnBook = side === 'buy' ? orderbook?.asks : orderbook?.bids;
+      const priceOnBook = side === 'buy' ? orderbook?.asks : orderbook?.bids
       if (priceOnBook && priceOnBook.length > 0 && priceOnBook[0].length > 0) {
-        setPrice(priceOnBook[0][0]);
+        setPrice(priceOnBook[0][0])
       }
       setIoc(false)
     }
@@ -254,7 +280,13 @@ export default function TradeForm() {
   const disabledTradeButton =
     (!price && tradeType === 'Limit') || !baseSize || !connected || submitting
 
-    console.log('dis', (!price && tradeType === 'Limit'), !baseSize, !connected, submitting);
+  console.log(
+    'dis',
+    !price && tradeType === 'Limit',
+    !baseSize,
+    !connected,
+    submitting
+  )
 
   return (
     <FloatingElement>
