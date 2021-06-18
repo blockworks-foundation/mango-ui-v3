@@ -1476,7 +1476,7 @@
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.9.2.tgz#adea7b6953cbb34651766b0548468e743c6a2353"
   integrity sha512-VZMYa7+fXHdwIq1TDhSXoVmSPEGM/aa+6Aiq3nVVJ9bXr24zScr+NlKFKC3iPljA7ho/GAZr+d2jOf5GIRC30Q==
 
-"@project-serum/serum@^0.13.20", "@project-serum/serum@^0.13.38":
+"@project-serum/serum@^0.13.38":
   version "0.13.38"
   resolved "https://registry.yarnpkg.com/@project-serum/serum/-/serum-0.13.38.tgz#ef50a0f50bd69fd7b51309fbb44ad995a1e6e210"
   integrity sha512-TOph1Hxoi5kOUg72tWbbNGviqBw29SrP4BH70gXtqUDiFTQJLrE2yfS5HC7p0JaU8p9WdrYGnxcFKCddZJ3ing==
@@ -1485,10 +1485,10 @@
     bn.js "^5.1.2"
     buffer-layout "^1.2.0"
 
-"@project-serum/sol-wallet-adapter@^0.1.8":
-  version "0.1.8"
-  resolved "https://registry.yarnpkg.com/@project-serum/sol-wallet-adapter/-/sol-wallet-adapter-0.1.8.tgz#90c6c1da793d32ed4ba3c67c5702a5bc804ef197"
-  integrity sha512-lKMgp7bsKpkrtBtIaEjtGuUMke0GUqFUL39Z7cjqsQpTVhkU5Ez4zHyjhXqAEORRGLFbwx/+H6HLpwppxpUDMQ==
+"@project-serum/sol-wallet-adapter@0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@project-serum/sol-wallet-adapter/-/sol-wallet-adapter-0.2.0.tgz#e1fa5508bf13110429bf26e10b818182015f2161"
+  integrity sha512-ed7wZwlDqjF88VCq7eHVO8njHqdUkBxBL8WEVOnB47ooLO4btOJt6GBdkKpKqKX86c86LiEROJclcdW8e7kIjg==
   dependencies:
     bs58 "^4.0.1"
     eventemitter3 "^4.0.4"
@@ -1549,25 +1549,6 @@
     superstruct "^0.8.3"
     tweetnacl "^1.0.0"
     ws "^7.0.0"
-
-"@solana/web3.js@^0.95.0":
-  version "0.95.0"
-  resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-0.95.0.tgz#c028c800bf078bec90945240370df51026f8bdab"
-  integrity sha512-jdjAESYTChAYI1aZwH1RggcoT22BxdB9tDKBOt2Iw9SSpZ1Bb81ydrP+7eksE1AwQj6lpzrgtVt2d3sFosqupQ==
-  dependencies:
-    "@babel/runtime" "^7.12.5"
-    bn.js "^5.0.0"
-    bs58 "^4.0.1"
-    buffer "6.0.1"
-    buffer-layout "^1.2.0"
-    crypto-hash "^1.2.2"
-    jayson "^3.4.4"
-    js-sha3 "^0.8.0"
-    node-fetch "^2.6.1"
-    rpc-websockets "^7.4.2"
-    secp256k1 "^4.0.2"
-    superstruct "^0.14.2"
-    tweetnacl "^1.0.0"
 
 "@solana/web3.js@^1.12.0", "@solana/web3.js@^1.18.0":
   version "1.18.0"
