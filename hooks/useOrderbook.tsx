@@ -28,7 +28,7 @@ function decodeBook(market, accInfo: AccountInfo<Buffer>): number[][] {
       )
       return book
         .getL2(depth)
-        .map(([price, size]) => [price.toNumber(), size.toNumber()])
+        .map(([price, size]) => [price, size])
     }
   } else {
     return []
