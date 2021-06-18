@@ -28,7 +28,7 @@ export function useOpenOrders() {
     const openOrdersAccount = marginAccount.spotOpenOrdersAccounts[marketIndex]
 
     const marketName = mangoGroupConfig.spotMarkets.find(
-      (mkt) => mkt.key.toString() === address
+      (mkt) => mkt.publicKey.toString() === address
     ).name
 
     if (!openOrdersAccount) return []

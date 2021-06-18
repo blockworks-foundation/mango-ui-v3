@@ -62,7 +62,7 @@ const useHydrateStore = () => {
           })
         })
     } else {
-      mangoClient.getPerpMarket(marketConfig.publicKey).then(async (market) => {
+      mangoClient.getPerpMarket(marketConfig.publicKey, marketConfig.baseDecimals, marketConfig.quoteDecimals).then(async (market) => {
         const bidInfo = await connection.getAccountInfo(market.bids)
         const askInfo = await connection.getAccountInfo(market.asks)
 
