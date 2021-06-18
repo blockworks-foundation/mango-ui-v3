@@ -258,10 +258,10 @@ export default function Orderbook({ depth = 8 }) {
                 <MarkPriceComponent markPrice={markPrice} />
                 <div className={`text-th-fgd-4 flex justify-between mb-2`}>
                   <div className={`text-left text-xs`}>
-                    Size ({baseCurrency})
+                    Size ({marketConfig.baseSymbol})
                   </div>
                   <div className={`text-right text-xs`}>
-                    Price ({quoteCurrency})
+                    Price ({groupConfig.quoteSymbol})
                   </div>
                 </div>
                 {orderbookData?.asks.map(({ price, size, sizePercent }) => (
