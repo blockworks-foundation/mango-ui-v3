@@ -1,9 +1,12 @@
 import { useEffect } from 'react'
 import { Market } from '@project-serum/serum'
 // import { AccountInfo, PublicKey } from '@solana/web3.js'
-import { PublicKey } from '@solana/web3.js'
+import { AccountInfo, PublicKey } from '@solana/web3.js'
 import useConnection from './useConnection'
-import useMangoStore, { mangoClient } from '../stores/useMangoStore'
+import useMangoStore, {
+  mangoClient,
+  WEBSOCKET_CONNECTION,
+} from '../stores/useMangoStore'
 // import useSerumStore from '../stores/useSerumStore'
 // import useMarketList from './useMarketList'
 import useInterval from './useInterval'
@@ -17,6 +20,7 @@ const useHydrateStore = () => {
   const actions = useMangoStore((s) => s.actions)
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
+  const selectedMarket = useMangoStore((s) => s.selectedMarket)
 
   const { connection } = useConnection()
   // const { marketList } = useMarketList()
@@ -44,14 +48,6 @@ const useHydrateStore = () => {
           const askAccount = market['_decoded'].asks
           const askInfo = await connection.getAccountInfo(askAccount)
 
-          console.log(
-            'spot',
-            market,
-            bidAccount.toString(),
-            bidInfo,
-            askAccount.toString(),
-            askInfo
-          )
           setMangoStore((state) => {
             state.selectedMarket.current = market
             state.selectedMarket.askInfo = askInfo
@@ -70,15 +66,6 @@ const useHydrateStore = () => {
         const bidInfo = await connection.getAccountInfo(market.bids)
         const askInfo = await connection.getAccountInfo(market.asks)
 
-        console.log(
-          'perp',
-          market,
-          market.bids.toString(),
-          bidInfo,
-          market.asks.toString(),
-          askInfo
-        )
-
         setMangoStore((state) => {
           state.selectedMarket.current = market
           state.selectedMarket.askInfo = askInfo
@@ -90,58 +77,56 @@ const useHydrateStore = () => {
 
   // // hydrate orderbook with all markets in mango group
   // useEffect(() => {
-  //   const subscriptionIds = Object.entries(marketsForSelectedMangoGroup).map(
-  //     ([, market]) => {
-  //       let previousBidInfo: AccountInfo<Buffer> | null = null
-  //       let previousAskInfo: AccountInfo<Buffer> | null = null
-  //       return [
-  //         websocketConnection.onAccountChange(
-  //           // @ts-ignore
-  //           market._decoded.bids,
-  //           (info) => {
-  //             if (
-  //               !previousBidInfo ||
-  //               !previousBidInfo.data.equals(info.data) ||
-  //               previousBidInfo.lamports !== info.lamports
-  //             ) {
-  //               previousBidInfo = info
-  //               setMangoStore((state) => {
-  //                 // @ts-ignore
-  //                 const pkString = market._decoded.bids.toString()
-  //                 state.accountInfos[pkString] = previousBidInfo
-  //               })
-  //             }
-  //           }
-  //         ),
-  //         websocketConnection.onAccountChange(
-  //           // @ts-ignore
-  //           market._decoded.asks,
-  //           (info) => {
-  //             if (
-  //               !previousAskInfo ||
-  //               !previousAskInfo.data.equals(info.data) ||
-  //               previousAskInfo.lamports !== info.lamports
-  //             ) {
-  //               previousAskInfo = info
-  //               setMangoStore((state) => {
-  //                 // @ts-ignore
-  //                 const pkString = market._decoded.asks.toString()
-  //                 state.accountInfos[pkString] = previousAskInfo
-  //               })
-  //             }
-  //           }
-  //         ),
-  //       ]
+  //   let previousBidInfo: AccountInfo<Buffer> | null = null
+  //   let previousAskInfo: AccountInfo<Buffer> | null = null
+  //   const market = selectedMarket.current
+  //   if (!market) return
+  //   console.log('selected market =: ', market)
+
+  //   const bidSubscriptionId = WEBSOCKET_CONNECTION.onAccountChange(
+  //     market['_decoded']?.bids,
+  //     (info) => {
+  //       console.log('bid websocket')
+
+  //       if (
+  //         !previousBidInfo ||
+  //         !previousBidInfo.data.equals(info.data) ||
+  //         previousBidInfo.lamports !== info.lamports
+  //       ) {
+  //         previousBidInfo = info
+  //         setMangoStore((state) => {
+  //           const pkString = market['_decoded'].bids.toString()
+  //           state.accountInfos[pkString] = previousBidInfo
+  //           state.selectedMarket.bidInfo = previousBidInfo
+  //         })
+  //       }
   //     }
   //   )
-  //   console.log('subscription ids', subscriptionIds)
+  //   const askSubscriptionId = WEBSOCKET_CONNECTION.onAccountChange(
+  //     market['_decoded'].asks,
+  //     (info) => {
+  //       console.log('ask websocket')
+
+  //       if (
+  //         !previousAskInfo ||
+  //         !previousAskInfo.data.equals(info.data) ||
+  //         previousAskInfo.lamports !== info.lamports
+  //       ) {
+  //         previousAskInfo = info
+  //         setMangoStore((state) => {
+  //           const pkString = market['_decoded'].asks.toString()
+  //           state.accountInfos[pkString] = previousAskInfo
+  //           state.selectedMarket.askInfo = previousAskInfo
+  //         })
+  //       }
+  //     }
+  //   )
 
   //   return () => {
-  //     for (const id of subscriptionIds.flat()) {
-  //       websocketConnection.removeAccountChangeListener(id)
-  //     }
+  //     WEBSOCKET_CONNECTION.removeAccountChangeListener(bidSubscriptionId)
+  //     WEBSOCKET_CONNECTION.removeAccountChangeListener(askSubscriptionId)
   //   }
-  // }, [marketsForSelectedMangoGroup])
+  // }, [selectedMarket])
 
   // // fetch filled trades for selected market
   // useInterval(() => {

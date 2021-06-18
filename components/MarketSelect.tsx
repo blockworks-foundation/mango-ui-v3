@@ -1,21 +1,19 @@
-import useMangoGroupConfig from '../hooks/useMangoGroupConfig';
+import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
 import useMangoStore from '../stores/useMangoStore'
 import { getMarketByBaseSymbolAndKind } from '@blockworks-foundation/mango-client'
 
 const MarketSelect = () => {
-  const groupConfig = useMangoGroupConfig();
+  const groupConfig = useMangoGroupConfig()
   const selectedMarket = useMangoStore((s) => s.selectedMarket.config)
   const setMangoStore = useMangoStore((s) => s.set)
 
   const handleChange = (symbol, kind) => {
-    const newMarket = getMarketByBaseSymbolAndKind(groupConfig, symbol, kind);
+    const newMarket = getMarketByBaseSymbolAndKind(groupConfig, symbol, kind)
     setMangoStore((state) => {
       state.selectedMarket.current = null
       state.selectedMarket.config = newMarket
     })
   }
-
-  console.log(selectedMarket)
 
   return (
     <div className="bg-th-bkg-3 py-2">

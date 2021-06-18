@@ -21,7 +21,6 @@ const useConnection = () => {
 
   useEffect(() => {
     if (connection && endpoint === connection['_rpcEndpoint']) return
-    console.log('setting new connection')
 
     const newConnection = new Connection(endpoint, 'recent')
     setMangoStore((state) => {

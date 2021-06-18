@@ -101,8 +101,12 @@ const TradePageGrid = () => {
           <TVChartContainer />
         </FloatingElement>
       </div>
-      <div key="orderbook">{<Orderbook />}</div>
-      <div key="tradeForm">{<TradeForm />}</div>
+      <div key="orderbook">
+        <Orderbook />
+      </div>
+      <div key="tradeForm">
+        <TradeForm />
+      </div>
       <div key="marginInfo">{/* <MarginInfo /> */}</div>
       <div key="userInfo">
         <UserInfo />

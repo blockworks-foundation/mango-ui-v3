@@ -32,12 +32,12 @@ export interface ChartContainerProps {
 // export interface ChartContainerState {}
 
 const TVChartContainer = () => {
-  const selectedMarketName = useMangoStore((s) => s.selectedMarket.name)
+  const selectedMarketConfig = useMangoStore((s) => s.selectedMarket.config)
   const { theme } = useTheme()
 
   // @ts-ignore
   const defaultProps: ChartContainerProps = {
-    symbol: selectedMarketName,
+    symbol: selectedMarketConfig.name,
     interval: '60' as ResolutionString,
     theme: 'Dark',
     containerId: 'tv_chart_container',
@@ -57,7 +57,7 @@ const TVChartContainer = () => {
 
   useEffect(() => {
     const widgetOptions: ChartingLibraryWidgetOptions = {
-      symbol: selectedMarketName,
+      symbol: selectedMarketConfig.name,
       // BEWARE: no trailing slash is expected in feed URL
       // tslint:disable-next-line:no-any
       datafeed: new (window as any).Datafeeds.UDFCompatibleDatafeed(
@@ -142,7 +142,7 @@ const TVChartContainer = () => {
       // })
     })
     //eslint-disable-next-line
-  }, [selectedMarketName, theme])
+  }, [selectedMarketConfig, theme])
 
   // TODO: add market back to dep array
   // }, [market])

@@ -22,17 +22,24 @@ export async function deposit({
 
   const tokenIndex = mangoGroup.getTokenIndex(fromTokenAcc.mint)
 
-  let marginAccountPk
+  let newMarginAccount
   if (!marginAccount) {
-    marginAccountPk = await mangoClient.initMerpsAccount(mangoGroup, wallet)
+    const marginAccountPk = await mangoClient.initMerpsAccount(
+      mangoGroup,
+      wallet
+    )
+    newMarginAccount = await mangoClient.getMerpsAccount(
+      marginAccountPk,
+      mangoGroup.dexProgramId
+    )
   }
 
   // TODO add to basket before deposit for non quote index
 
-  if (marginAccount || marginAccountPk) {
+  if (marginAccount || newMarginAccount) {
     return mangoClient.deposit(
       mangoGroup,
-      marginAccountPk || marginAccount.publicKey,
+      newMarginAccount || marginAccount,
       wallet,
       mangoGroup.tokens[tokenIndex].rootBank,
       mangoGroup.rootBankAccounts[tokenIndex].nodeBankAccounts[0].publicKey,

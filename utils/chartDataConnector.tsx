@@ -6,15 +6,15 @@ export default class ChartApi {
 
   static async get(path: string) {
     try {
-      const response = await fetch(this.URL + path)
-      if (response.ok) {
-        const responseJson = await response.json()
-        return responseJson.success
-          ? responseJson.data
-          : responseJson
-          ? responseJson
-          : null
-      }
+      // const response = await fetch(this.URL + path)
+      // if (response.ok) {
+      //   const responseJson = await response.json()
+      //   return responseJson.success
+      //     ? responseJson.data
+      //     : responseJson
+      //     ? responseJson
+      //     : null
+      // }
     } catch (err) {
       console.log(`Error fetching from Chart API ${path}: ${err}`)
     }

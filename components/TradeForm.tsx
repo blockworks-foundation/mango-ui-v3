@@ -57,7 +57,6 @@ export default function TradeForm() {
       ),
     []
   )
-  console.log({ orderbook, orderBookRef })
 
   const setSide = (side) =>
     set((s) => {
@@ -224,8 +223,6 @@ export default function TradeForm() {
       if (tradeType === 'Market') {
         orderPrice = calculateMarketPrice(orderbook, baseSize, side)
       }
-
-      console.log('place', orderPrice, baseSize)
 
       const orderType = ioc ? 'ioc' : postOnly ? 'postOnly' : 'limit'
       if (market instanceof Market) {

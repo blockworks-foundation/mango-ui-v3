@@ -1,7 +1,11 @@
 import { useEffect, useMemo } from 'react'
 import { Orderbook as SpotOrderBook, Market } from '@project-serum/serum'
 import useMangoStore, { Orderbook } from '../stores/useMangoStore'
-import { BookSide, BookSideLayout, PerpMarket } from '@blockworks-foundation/mango-client'
+import {
+  BookSide,
+  BookSideLayout,
+  PerpMarket,
+} from '@blockworks-foundation/mango-client'
 import { AccountInfo } from '@solana/web3.js'
 
 export function useAccountData(publicKey) {
@@ -12,14 +16,20 @@ export function useAccountData(publicKey) {
 
 function decodeBook(market, accInfo: AccountInfo<Buffer>): number[][] {
   if (market && accInfo) {
-    const depth = 20; 
+    const depth = 20
     if (market instanceof Market) {
-      const book = SpotOrderBook.decode(market, accInfo.data);
+      const book = SpotOrderBook.decode(market, accInfo.data)
       return book.getL2(depth).map(([price, size]) => [price, size])
     } else if (market instanceof PerpMarket) {
-      const book = new BookSide(null, market, BookSideLayout.decode(accInfo.data));
-      return book.getL2(depth).map(([price, size]) => [price.toNumber(), size.toNumber()])
-    }    
+      const book = new BookSide(
+        null,
+        market,
+        BookSideLayout.decode(accInfo.data)
+      )
+      return book
+        .getL2(depth)
+        .map(([price, size]) => [price.toNumber(), size.toNumber()])
+    }
   } else {
     return []
   }
@@ -36,7 +46,7 @@ export default function useOrderbook(): Orderbook {
 
   useEffect(() => {
     setMangoStore((state) => {
-      state.selectedMarket.orderBook = {bids, asks}
+      state.selectedMarket.orderBook = { bids, asks }
     })
   }, [bids, asks, setMangoStore])
 

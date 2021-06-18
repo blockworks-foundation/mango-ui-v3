@@ -61,7 +61,6 @@ export default function useWallet() {
   )
 
   useEffect(() => {
-    console.log('provider url changed', selectedProviderUrl)
     if (selectedProviderUrl) {
       setSavedProviderUrl(selectedProviderUrl)
     }

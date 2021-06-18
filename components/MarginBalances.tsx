@@ -58,8 +58,6 @@ export default function MarginBalances() {
   //   setShowAccountsModal(false)
   // }, [])
 
-  console.log('margin Account', selectedMarginAccount)
-
   return (
     <>
       <FloatingElement>

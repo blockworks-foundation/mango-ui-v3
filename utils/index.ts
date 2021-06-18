@@ -1,4 +1,7 @@
-import { getMultipleAccounts } from '@blockworks-foundation/mango-client'
+import {
+  getMultipleAccounts,
+  GroupConfig,
+} from '@blockworks-foundation/mango-client'
 import { I80F48 } from '@blockworks-foundation/mango-client/lib/src/fixednum'
 import { Market, TOKEN_MINTS } from '@project-serum/serum'
 import { AccountInfo, PublicKey } from '@solana/web3.js'
@@ -226,28 +229,35 @@ export const i80f48ToPercent = (value: I80F48) =>
   value.mul(I80F48.fromNumber(100))
 
 export async function decodeAndLoadMarkets(
-  serumProgramId: PublicKey,
+  groupConfig: GroupConfig,
   marketAccountInfos
 ): Promise<{ [marketPk: string]: Market }> {
   const markets = {}
 
   for (let i = 0; i < marketAccountInfos.length; i++) {
     const { publicKey, accountInfo } = marketAccountInfos[i]
-    const decodedAcc = await Market.getLayout(serumProgramId).decode(
-      accountInfo.data
+    const decodedAcc = await Market.getLayout(
+      groupConfig.serum_program_id
+    ).decode(accountInfo.data)
+
+    console.log('decoded accs===', decodedAcc)
+    const baseToken = groupConfig.tokens.find((token) =>
+      token.mint_key.equals(decodedAcc.baseMint)
+    )
+    const quoteToken = groupConfig.tokens.find((token) =>
+      token.mint_key.equals(decodedAcc.quoteMint)
     )
 
-    const baseMintDecimals = 6
-    const quoteMintDecimals = 9
+    const baseMintDecimals = baseToken.decimals
+    const quoteMintDecimals = quoteToken.decimals
     markets[publicKey] = new Market(
       decodedAcc,
       baseMintDecimals,
       quoteMintDecimals,
       {},
-      serumProgramId
+      groupConfig.serum_program_id
     )
   }
-  console.log('loaded markets', markets)
 
   return markets
 }
