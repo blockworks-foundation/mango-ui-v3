@@ -5,8 +5,8 @@ import produce from 'immer'
 
 interface SerumStore extends State {
   orderbook: {
-    bids: any[]
-    asks: any[]
+    bids: number[][]
+    asks: number[][]
   }
   fills: any[]
   chartApiTrades: any[]

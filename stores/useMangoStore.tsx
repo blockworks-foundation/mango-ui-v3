@@ -51,8 +51,8 @@ type ClusterType = 'mainnet-beta' | 'devnet'
 
 const CLUSTER = (process.env.NEXT_PUBLIC_CLUSTER as ClusterType) || 'devnet'
 const ENDPOINT = ENDPOINTS.find((e) => e.name === CLUSTER)
-const DEFAULT_CONNECTION = new Connection(ENDPOINT.url, 'recent')
-const WEBSOCKET_CONNECTION = new Connection(ENDPOINT.websocket, 'recent')
+const DEFAULT_CONNECTION = new Connection(ENDPOINT.url, 'processed')
+const WEBSOCKET_CONNECTION = new Connection(ENDPOINT.websocket, 'processed')
 
 const DEFAULT_MANGO_GROUP_NAME = 'merps_test_v1'
 const DEFAULT_MANGO_GROUP_CONFIG = Config.ids().getGroup(
@@ -199,7 +199,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
     markPrice: 0,
     askInfo: null,
     bidInfo: null,
-    orderBook: { bids: [[]], asks: [[]] },
+    orderBook: { bids: [], asks: [] },
   },
   mangoGroups: [],
   marginAccounts: [],

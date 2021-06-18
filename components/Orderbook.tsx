@@ -93,9 +93,10 @@ const getCumulativeOrderbookSide = (
 }
 
 export default function Orderbook({ depth = 8 }) {
+  const groupConfig = useMangoStore((s)=> s.selectedMangoGroup.config);
+  const marketConfig = useMangoStore((s)=> s.selectedMarket.config);
   const markPrice = useMarkPrice()
   const orderbook = useOrderbook()
-  const { baseCurrency, quoteCurrency } = useMarket()
 
   const currentOrderbookData = useRef(null)
   const lastOrderbookData = useRef(null)
@@ -103,12 +104,15 @@ export default function Orderbook({ depth = 8 }) {
   const [orderbookData, setOrderbookData] = useState(null)
   const [defaultLayout, setDefaultLayout] = useState(true)
 
+  console.log('orderbookData', orderbookData);
+
   useInterval(() => {
     if (
       !currentOrderbookData.current ||
       JSON.stringify(currentOrderbookData.current) !==
         JSON.stringify(lastOrderbookData.current)
     ) {
+      console.log('flash!', orderbook, currentOrderbookData.current);
       const bids = orderbook?.bids || []
       const asks = orderbook?.asks || []
 
@@ -134,7 +138,7 @@ export default function Orderbook({ depth = 8 }) {
         const bid = bidsToDisplay[0].price
         const ask = defaultLayout
           ? asksToDisplay[0].price
-          : asksToDisplay[7].price
+          : asksToDisplay[asksToDisplay.length-1].price
         const spread = ask - bid
         const spreadPercentage = (spread / ask) * 100
 
@@ -189,9 +193,9 @@ export default function Orderbook({ depth = 8 }) {
                 <div
                   className={`text-th-fgd-4 flex justify-between mb-2 text-xs`}
                 >
-                  <div className={`text-left`}>Size ({baseCurrency})</div>
-                  <div className={`text-center`}>Price ({quoteCurrency})</div>
-                  <div className={`text-right`}>Size ({baseCurrency})</div>
+                  <div className={`text-left`}>Size ({marketConfig.base_symbol})</div>
+                  <div className={`text-center`}>Price ({groupConfig.quote_symbol})</div>
+                  <div className={`text-right`}>Size ({marketConfig.base_symbol})</div>
                 </div>
                 <div className="flex">
                   <div className="w-1/2">
