@@ -13,6 +13,8 @@ import { notify } from '../utils/notifications'
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
 import SideBadge from './SideBadge'
 import { useSortableData } from '../hooks/useSortableData'
+import { Order, Market } from '@project-serum/serum/lib/market'
+import { Order as PerpOrder, PerpMarket } from '@blockworks-foundation/mango-client'
 
 const OpenOrdersTable = () => {
   const { asPath } = useRouter()
@@ -22,22 +24,27 @@ const OpenOrdersTable = () => {
   // const { connection, programId } = useConnection()
   const actions = useMangoStore((s) => s.actions)
 
-  const handleCancelOrder = async (order) => {
+  const handleCancelOrder = async (order: Order | PerpOrder, market: Market | PerpMarket) => {
     const wallet = useMangoStore.getState().wallet.current
     const selectedMangoGroup =
       useMangoStore.getState().selectedMangoGroup.current
     const selectedMarginAccount =
       useMangoStore.getState().selectedMarginAccount.current
-    setCancelId(order?.orderId)
+    setCancelId(order.orderId)
+
     try {
       if (!selectedMangoGroup || !selectedMarginAccount) return
+      if (market instanceof Market) {
       await mangoClient.cancelSpotOrder(
         selectedMangoGroup,
         selectedMarginAccount,
         wallet,
-        order.market,
-        order
+        market,
+        order as Order
       )
+      } else if (market instanceof PerpMarket) {
+        console.log('TBD');
+      }
       actions.fetchMarginAccounts()
     } catch (e) {
       notify({
@@ -149,7 +156,7 @@ const OpenOrdersTable = () => {
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {items.map((order, index) => (
+                  {items.map( ({order, market}, index) => (
                     <Tr
                       key={`${order.orderId}${order.side}`}
                       className={`border-b border-th-bkg-3
@@ -164,12 +171,11 @@ const OpenOrdersTable = () => {
                             alt=""
                             width="20"
                             height="20"
-                            src={`/assets/icons/${order.marketName
-                              .split('/')[0]
+                            src={`/assets/icons/${market.config.baseSymbol
                               .toLowerCase()}.svg`}
                             className={`mr-2.5`}
                           />
-                          <div>{order.marketName}</div>
+                          <div>{market.config.name}</div>
                         </div>
                       </Td>
                       <Td
@@ -199,10 +205,10 @@ const OpenOrdersTable = () => {
                             Modify
                           </Button> */}
                           <Button
-                            onClick={() => handleCancelOrder(order)}
+                            onClick={() => handleCancelOrder(order, market.account)}
                             className={`ml-3 text-xs pt-0 pb-0 h-8 pl-3 pr-3`}
                           >
-                            {cancelId + '' === order?.orderId + '' ? (
+                            {cancelId + '' === order.orderId + '' ? (
                               <Loading />
                             ) : (
                               <span>Cancel</span>

@@ -988,7 +988,7 @@
 
 "@blockworks-foundation/mango-client@git+ssh://git@github.com/blockworks-foundation/merps-ts#main":
   version "0.0.0"
-  resolved "git+ssh://git@github.com/blockworks-foundation/merps-ts#67e15d85ee1120a049358c12a46929bdc9ae31ce"
+  resolved "git+ssh://git@github.com/blockworks-foundation/merps-ts#1f2e298d58badd27069f89e2355550ff5d036ed3"
   dependencies:
     "@project-serum/serum" "^0.13.38"
     "@project-serum/sol-wallet-adapter" "^0.2.0"

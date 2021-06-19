@@ -19,7 +19,7 @@ const SECONDS = 1000
 const useHydrateStore = () => {
   const setMangoStore = useMangoStore((s) => s.set)
   const actions = useMangoStore((s) => s.actions)
-  const spotMarkets = useMangoStore((s) => s.selectedMangoGroup.markets)
+  const markets = useMangoStore((s) => s.selectedMangoGroup.markets)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
 
@@ -32,24 +32,10 @@ const useHydrateStore = () => {
   }, 60 * SECONDS)
 
   useEffect(() => {
-    if (marketConfig.kind === 'spot') {
       setMangoStore((state) => {
         state.selectedMarket.current =
-          spotMarkets[marketConfig.publicKey.toString()]
+        markets[marketConfig.publicKey.toString()]
       })
-    } else {
-      mangoClient
-        .getPerpMarket(
-          marketConfig.publicKey,
-          marketConfig.baseDecimals,
-          marketConfig.quoteDecimals
-        )
-        .then(async (market) => {
-          setMangoStore((state) => {
-            state.selectedMarket.current = market
-          })
-        })
-    }
   }, [marketConfig])
 
   // hydrate orderbook with all markets in mango group

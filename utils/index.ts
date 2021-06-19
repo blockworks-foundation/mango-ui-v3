@@ -208,6 +208,20 @@ export const capitalize = (s) => {
   return s.charAt(0).toUpperCase() + s.slice(1)
 }
 
+export function* chunks(arr, n) {
+  for (let i = 0; i < arr.length; i += n) {
+    yield arr.slice(i, i + n)
+  }
+}
+
+export function zipDict<K, V>(keys: K[], values: V[]): Record<K, V> {
+  let result: Record<K, V> = {}
+  keys.forEach((key, index) => {
+    result[key] = values[index]
+  })
+  return result
+}
+
 export const copyToClipboard = (copyThis) => {
   const el = document.createElement('textarea')
   el.value = copyThis.toString()

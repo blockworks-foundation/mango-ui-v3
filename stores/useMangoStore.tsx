@@ -18,7 +18,11 @@ import {
   nativeToUi,
   MerpsCache,
   PerpMarket,
+  getAllMarkets,
   getMultipleAccounts,
+  PerpMarketConfig,
+  SpotMarketConfig,
+  PerpMarketLayout,
 } from '@blockworks-foundation/mango-client'
 // import { SRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
 import {
@@ -31,9 +35,11 @@ import {
 import { EndpointInfo, WalletAdapter } from '../@types/types'
 import { getWalletTokenInfo } from '../utils/tokens'
 import {
+  chunks,
   decodeAndLoadMarkets,
   getOrderBookAccountInfos,
   isDefined,
+  zipDict,
 } from '../utils'
 import { notify } from '../utils/notifications'
 import useAllMarkets from '../hooks/useAllMarkets'
@@ -139,10 +145,10 @@ interface MangoStore extends State {
     name: string
     current: MangoGroup | null
     markets: {
-      [address: string]: Market
+      [address: string]: Market | PerpMarket
     }
     rootBanks: any[]
-    cache: MerpsCache | null
+    cache: MerpsCache |   null
   }
   marginAccounts: MarginAccount[]
   selectedMarginAccount: {
@@ -316,34 +322,42 @@ const useMangoStore = create<MangoStore>((set, get) => ({
       return mangoClient
         .getMerpsGroup(mangoGroupPk)
         .then(async (mangoGroup) => {
+          // TODO also perps
           const rootBanks = await mangoGroup.loadRootBanks(DEFAULT_CONNECTION)
           const merpsCache = await mangoGroup.loadCache(DEFAULT_CONNECTION)
 
-          const spotMarketAccountInfos = await getMultipleAccounts(
-            DEFAULT_CONNECTION,
-            mangoGroupConfig.spotMarkets.map((mkt) => mkt.publicKey)
-          )
-          const spotOrderBookAccountInfos = await getOrderBookAccountInfos(
-            mangoGroup.dexProgramId,
-            spotMarketAccountInfos.map(({ accountInfo }) => accountInfo)
-          )
-          const spotMarkets = await decodeAndLoadMarkets(
-            mangoGroupConfig,
-            spotMarketAccountInfos
-          )
+          const allMarketConfigs = getAllMarkets(mangoGroupConfig);
+          const allMarketPks = allMarketConfigs.map(m => m.publicKey);
+          const allMarketAccountInfos = await getMultipleAccounts(DEFAULT_CONNECTION, allMarketPks);
+          const allMarketAccounts = allMarketConfigs.map((config, i) => {
+              if (config.kind == 'spot') {
+                const decoded = Market.getLayout(programId).decode(allMarketAccountInfos[i].accountInfo.data);
+                return new Market(decoded, config.baseDecimals, config.quoteDecimals, undefined, mangoGroupConfig.serumProgramId);
+              }
+              if (config.kind == 'perp') {
+                const decoded = PerpMarketLayout.decode(allMarketAccountInfos[i].accountInfo.data);
+                return new PerpMarket(config.publicKey, config.baseDecimals, config.quoteDecimals, decoded);
+              }
+          })
+
+          const allBidsAndAsksPks = allMarketConfigs.map(m => [m.bidsKey, m.asksKey]).flat()
+          const allBidsAndAsksAccountInfos = await getMultipleAccounts(DEFAULT_CONNECTION, allBidsAndAsksPks);
+
+          const allMarkets = zipDict(allMarketPks.map(pk => pk.toBase58()), allMarketAccounts);
+          console.log('all', allMarkets);
 
           set((state) => {
             state.selectedMangoGroup.current = mangoGroup
             state.selectedMangoGroup.rootBanks = rootBanks
             state.selectedMangoGroup.cache = merpsCache
-            state.selectedMangoGroup.markets = spotMarkets
-            state.selectedMarket.current =
-              spotMarkets[selectedMarketConfig.publicKey.toString()]
+            state.selectedMangoGroup.markets = allMarkets
+            state.selectedMarket.current = allMarkets[selectedMarketConfig.publicKey.toBase58()]
 
-            spotMarketAccountInfos
-              .concat(spotOrderBookAccountInfos)
+            allMarketAccountInfos
+              .concat(allBidsAndAsksAccountInfos)
               .forEach(({ publicKey, accountInfo }) => {
-                state.accountInfos[publicKey.toString()] = accountInfo
+                console.log(publicKey.toBase58(), accountInfo)
+                state.accountInfos[publicKey.toBase58()] = accountInfo
               })
           })
         })

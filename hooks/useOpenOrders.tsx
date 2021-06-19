@@ -1,52 +1,64 @@
-import { Orderbook } from '@project-serum/serum'
+import { Order as PerpOrder, BookSide, BookSideLayout, getMarketByPublicKey, MarketConfig, PerpMarket, MerpsAccount as MarginAccount, LeafNode, PerpMarketConfig } from '@blockworks-foundation/mango-client'
+import { Market, OpenOrders, Orderbook } from '@project-serum/serum'
+import { Order } from '@project-serum/serum/lib/market'
 import { PublicKey } from '@solana/web3.js'
 import useMangoStore from '../stores/useMangoStore'
 
-const getOrderBookAccounts = (market, accountInfos) => {
-  const bidData = accountInfos[market._decoded.bids.toString()]?.data
-  const askData = accountInfos[market._decoded.asks.toString()]?.data
+type OrderInfo = {
+  order: Order | PerpOrder,
+  market: { account: Market | PerpMarket, config: MarketConfig }}
 
-  return {
-    bidOrderBook:
-      market && bidData ? Orderbook.decode(market, Buffer.from(bidData)) : [],
-    askOrderBook:
-      market && askData ? Orderbook.decode(market, Buffer.from(askData)) : [],
-  }
+function parseSpotOrders(market: Market, config: MarketConfig, marginAccount: MarginAccount, accountInfos) {
+  const openOrders = marginAccount.spotOpenOrdersAccounts[config.marketIndex];
+  const bidData = accountInfos[market['_decoded'].bids.toBase58()]?.data
+  const askData = accountInfos[market['_decoded'].asks.toBase58()]?.data
+
+  const bidOrderBook = market && bidData ? Orderbook.decode(market, bidData) : []
+  const askOrderBook = market && askData ? Orderbook.decode(market, askData) : []
+
+  const openOrdersForMarket = [...bidOrderBook, ...askOrderBook].filter((o) =>
+      o.openOrdersAddress.equals(openOrders.address)
+  )
+
+  return openOrdersForMarket.map<OrderInfo>((order) => ({
+      order,
+      market: { account: market, config: config },
+    }))
+}
+
+function parsePerpOpenOrders(market: PerpMarket, config: MarketConfig, marginAccount: MarginAccount, accountInfos) {
+  const bidData = accountInfos[market.bids.toBase58()]?.data
+  const askData = accountInfos[market.asks.toBase58()]?.data
+
+  const bidOrderBook = market && bidData ? new BookSide(market.bids, market, BookSideLayout.decode(bidData)) : [] 
+  const askOrderBook = market && askData ? new BookSide(market.asks, market, BookSideLayout.decode(askData)) : [] 
+
+  const openOrdersForMarket = [...bidOrderBook, ...askOrderBook].filter((o) =>
+      o.owner.equals(marginAccount.publicKey)
+  )
+
+  return openOrdersForMarket.map<OrderInfo>((order) => ({
+    order,
+    market: { account: market, config: config },
+  }));
 }
 
 export function useOpenOrders() {
   const markets = useMangoStore((s) => s.selectedMangoGroup.markets)
   const marginAccount = useMangoStore((s) => s.selectedMarginAccount.current)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
-  const mangoGroupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
+  const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const accountInfos = useMangoStore((s) => s.accountInfos)
 
   if (!mangoGroup || !marginAccount || !accountInfos) return null
 
-  const openOrders = Object.entries(markets).map(([address, market]) => {
-    const marketIndex = mangoGroup.getSpotMarketIndex(new PublicKey(address))
-    const openOrdersAccount = marginAccount.spotOpenOrdersAccounts[marketIndex]
-
-    const marketName = mangoGroupConfig.spotMarkets.find(
-      (mkt) => mkt.publicKey.toString() === address
-    ).name
-
-    if (!openOrdersAccount) return []
-
-    const { bidOrderBook, askOrderBook } = getOrderBookAccounts(
-      market,
-      accountInfos
-    )
-
-    const openOrdersForMarket = [...bidOrderBook, ...askOrderBook].filter((o) =>
-      o.openOrdersAddress.equals(openOrdersAccount.address)
-    )
-
-    return openOrdersForMarket.map((order) => ({
-      ...order,
-      marketName,
-      market,
-    }))
+  const openOrders = Object.entries(markets).map(([address, market]) => {    
+    const marketConfig = getMarketByPublicKey(groupConfig, address)
+    if (market instanceof Market) {
+      return parseSpotOrders(market, marketConfig, marginAccount, accountInfos);
+    } else if (market instanceof PerpMarket) {
+      return parsePerpOpenOrders(market, marketConfig, marginAccount, accountInfos);
+    }
   })
 
   return openOrders.flat()
