@@ -6,7 +6,6 @@ import { I80F48 } from '@blockworks-foundation/mango-client/lib/src/fixednum'
 import { Market, TOKEN_MINTS } from '@project-serum/serum'
 import { AccountInfo, PublicKey } from '@solana/web3.js'
 import BN from 'bn.js'
-import { Side } from '../public/charting_library/charting_library'
 import { DEFAULT_CONNECTION, Orderbook } from '../stores/useMangoStore'
 
 export function isValidPublicKey(key) {
@@ -214,8 +213,11 @@ export function* chunks(arr, n) {
   }
 }
 
-export function zipDict<K, V>(keys: K[], values: V[]): Record<K, V> {
-  let result: Record<K, V> = {}
+export function zipDict<K extends string | number | symbol, V>(
+  keys: K[],
+  values: V[]
+) {
+  const result: Partial<Record<K, V>> = {}
   keys.forEach((key, index) => {
     result[key] = values[index]
   })

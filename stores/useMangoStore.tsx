@@ -4,7 +4,6 @@ import { Market } from '@project-serum/serum'
 import {
   IDS,
   Config,
-  MarketKind,
   MerpsClient as MangoClient,
   MerpsGroup as MangoGroup,
   MerpsAccount as MarginAccount,
@@ -20,8 +19,6 @@ import {
   PerpMarket,
   getAllMarkets,
   getMultipleAccounts,
-  PerpMarketConfig,
-  SpotMarketConfig,
   PerpMarketLayout,
 } from '@blockworks-foundation/mango-client'
 // import { SRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
@@ -30,19 +27,10 @@ import {
   Commitment,
   Connection,
   PublicKey,
-  TokenAmount,
 } from '@solana/web3.js'
 import { EndpointInfo, WalletAdapter } from '../@types/types'
-import { getWalletTokenInfo } from '../utils/tokens'
-import {
-  chunks,
-  decodeAndLoadMarkets,
-  getOrderBookAccountInfos,
-  isDefined,
-  zipDict,
-} from '../utils'
+import { zipDict } from '../utils'
 import { notify } from '../utils/notifications'
-import useAllMarkets from '../hooks/useAllMarkets'
 
 export const ENDPOINTS: EndpointInfo[] = [
   {
@@ -72,7 +60,7 @@ export const WEBSOCKET_CONNECTION = new Connection(
   'processed' as Commitment
 )
 
-const DEFAULT_MANGO_GROUP_NAME = 'merps_test_v2.1'
+const DEFAULT_MANGO_GROUP_NAME = 'merps_test_v2.2'
 const DEFAULT_MANGO_GROUP_CONFIG = Config.ids().getGroup(
   CLUSTER,
   DEFAULT_MANGO_GROUP_NAME

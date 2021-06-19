@@ -180,7 +180,7 @@ export default function AccountBorrows() {
                             Object.keys(symbols).findIndex(
                               (key) => key === asset.coin
                             )
-                          ) * 100
+                          ).toNumber() * 100
                         ).toFixed(2)}
                         %
                       </span>

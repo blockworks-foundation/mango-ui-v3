@@ -1,16 +1,11 @@
 import { useState, useEffect, useRef } from 'react'
 import styled from '@emotion/styled'
-import useMarket from '../hooks/useMarket'
 import useIpAddress from '../hooks/useIpAddress'
-import useConnection from '../hooks/useConnection'
-import { PublicKey } from '@solana/web3.js'
 import {
   getTokenBySymbol,
-  IDS,
   PerpMarket,
 } from '@blockworks-foundation/mango-client'
 import { notify } from '../utils/notifications'
-// import { placeAndSettle } from '../utils/mango'
 import { calculateMarketPrice, getDecimalCount } from '../utils'
 import FloatingElement from './FloatingElement'
 import { floorToDecimal } from '../utils/index'
@@ -20,10 +15,6 @@ import TradeType from './TradeType'
 import Input from './Input'
 import Switch from './Switch'
 import { Market } from '@project-serum/serum'
-import {
-  I80F48,
-  NEG_ONE_I80F48,
-} from '@blockworks-foundation/mango-client/lib/src/fixednum'
 import Big from 'big.js'
 
 const StyledRightInput = styled(Input)`
@@ -34,7 +25,6 @@ export default function TradeForm() {
   const set = useMangoStore((s) => s.set)
   const connected = useMangoStore((s) => s.wallet.connected)
   const actions = useMangoStore((s) => s.actions)
-  const { connection, cluster } = useConnection()
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const market = useMangoStore((s) => s.selectedMarket.current)
@@ -436,11 +426,4 @@ export default function TradeForm() {
       </div>
     </FloatingElement>
   )
-}
-
-function divideBnToNumber(numerator: BN, denominator: BN): number {
-  const quotient = numerator.div(denominator).toNumber()
-  const rem = numerator.umod(denominator)
-  const gcd = rem.gcd(denominator)
-  return quotient + rem.div(gcd).toNumber() / denominator.div(gcd).toNumber()
 }

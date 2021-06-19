@@ -1,17 +1,7 @@
 import { useEffect } from 'react'
-import { Market } from '@project-serum/serum'
-// import { AccountInfo, PublicKey } from '@solana/web3.js'
-import { AccountInfo, PublicKey } from '@solana/web3.js'
-import useConnection from './useConnection'
-import useMangoStore, {
-  DEFAULT_CONNECTION,
-  mangoClient,
-  WEBSOCKET_CONNECTION,
-} from '../stores/useMangoStore'
-// import useSerumStore from '../stores/useSerumStore'
-// import useMarketList from './useMarketList'
+import { AccountInfo } from '@solana/web3.js'
+import useMangoStore, { WEBSOCKET_CONNECTION } from '../stores/useMangoStore'
 import useInterval from './useInterval'
-import { PerpMarket } from '@blockworks-foundation/mango-client'
 
 const SECONDS = 1000
 // const _SLOW_REFRESH_INTERVAL = 60 * SECONDS

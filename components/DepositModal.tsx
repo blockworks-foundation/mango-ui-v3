@@ -9,36 +9,21 @@ import {
   ChevronDownIcon,
   ChevronUpIcon,
 } from '@heroicons/react/solid'
-import { nativeToUi, sleep } from '@blockworks-foundation/mango-client'
-import {
-  MerpsAccount as MarginAccount,
-  uiToNative,
-} from '@blockworks-foundation/mango-client'
 import Modal from './Modal'
 import Input from './Input'
 import AccountSelect from './AccountSelect'
 import { ElementTitle } from './styles'
-import useMangoStore, {
-  mangoClient,
-  WalletToken,
-} from '../stores/useMangoStore'
-import useMarketList from '../hooks/useMarketList'
+import useMangoStore from '../stores/useMangoStore'
 import {
-  getSymbolForTokenMintAddress,
   DECIMALS,
   trimDecimals,
 } from '../utils/index'
 import useConnection from '../hooks/useConnection'
-// import { deposit, initMarginAccountAndDeposit } from '../utils/mango'
-import { PublicKey } from '@solana/web3.js'
 import Loading from './Loading'
 import Button, { LinkButton } from './Button'
 import Tooltip from './Tooltip'
 import Slider from './Slider'
 import InlineNotification from './InlineNotification'
-import { notify } from '../utils/notifications'
-import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
-import { QUOTE_INDEX } from '@blockworks-foundation/mango-client/lib/src/MerpsGroup'
 import { deposit } from '../utils/mango'
 
 interface DepositModalProps {

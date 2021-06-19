@@ -1,7 +1,6 @@
-import { Order as PerpOrder, BookSide, BookSideLayout, getMarketByPublicKey, MarketConfig, PerpMarket, MerpsAccount as MarginAccount, LeafNode, PerpMarketConfig } from '@blockworks-foundation/mango-client'
-import { Market, OpenOrders, Orderbook } from '@project-serum/serum'
+import { PerpOrder, BookSide, BookSideLayout, getMarketByPublicKey, MarketConfig, PerpMarket, MerpsAccount as MarginAccount } from '@blockworks-foundation/mango-client'
+import { Market, Orderbook } from '@project-serum/serum'
 import { Order } from '@project-serum/serum/lib/market'
-import { PublicKey } from '@solana/web3.js'
 import useMangoStore from '../stores/useMangoStore'
 
 type OrderInfo = {
@@ -10,6 +9,9 @@ type OrderInfo = {
 
 function parseSpotOrders(market: Market, config: MarketConfig, marginAccount: MarginAccount, accountInfos) {
   const openOrders = marginAccount.spotOpenOrdersAccounts[config.marketIndex];
+  if (!openOrders)
+    return [];
+
   const bidData = accountInfos[market['_decoded'].bids.toBase58()]?.data
   const askData = accountInfos[market['_decoded'].asks.toBase58()]?.data
 

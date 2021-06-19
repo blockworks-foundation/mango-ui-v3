@@ -14,7 +14,7 @@ import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
 import SideBadge from './SideBadge'
 import { useSortableData } from '../hooks/useSortableData'
 import { Order, Market } from '@project-serum/serum/lib/market'
-import { Order as PerpOrder, PerpMarket } from '@blockworks-foundation/mango-client'
+import { PerpOrder, PerpMarket } from '@blockworks-foundation/mango-client'
 
 const OpenOrdersTable = () => {
   const { asPath } = useRouter()
@@ -35,15 +35,21 @@ const OpenOrdersTable = () => {
     try {
       if (!selectedMangoGroup || !selectedMarginAccount) return
       if (market instanceof Market) {
-      await mangoClient.cancelSpotOrder(
-        selectedMangoGroup,
-        selectedMarginAccount,
-        wallet,
-        market,
-        order as Order
-      )
+        await mangoClient.cancelSpotOrder(
+          selectedMangoGroup,
+          selectedMarginAccount,
+          wallet,
+          market,
+          order as Order
+        )
       } else if (market instanceof PerpMarket) {
-        console.log('TBD');
+        await mangoClient.cancelPerpOrder(
+          selectedMangoGroup,
+          selectedMarginAccount,
+          wallet,
+          market,
+          order as PerpOrder
+        )
       }
       actions.fetchMarginAccounts()
     } catch (e) {
