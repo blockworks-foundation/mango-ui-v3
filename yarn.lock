@@ -986,9 +986,9 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@blockworks-foundation/mango-client@git+ssh://git@github.com/blockworks-foundation/merps-ts#main":
+"@blockworks-foundation/mango-client@git+ssh://git@github.com:blockworks-foundation/merps-ts.git":
   version "0.0.0"
-  resolved "git+ssh://git@github.com/blockworks-foundation/merps-ts#e96f7eaa49d625c8e5c18318733fbe665f88fa8c"
+  resolved "git+ssh://git@github.com:blockworks-foundation/merps-ts.git#37bbdea2a417046a896071bcba40a2e06108a40e"
   dependencies:
     "@project-serum/serum" "^0.13.38"
     "@project-serum/sol-wallet-adapter" "^0.2.0"
