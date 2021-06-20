@@ -1,10 +1,9 @@
 import { useEffect } from 'react'
 import useMangoStore from '../stores/useMangoStore'
-import useSerumStore from '../stores/useSerumStore'
 import useOrderbook from './useOrderbook'
 
 export function useTrades() {
-  const trades = useSerumStore((state) => state.fills)
+  const trades = useMangoStore((state) => state.selectedMarket.fills)
   if (!trades) {
     return null
   }

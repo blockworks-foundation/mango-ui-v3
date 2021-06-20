@@ -1,7 +1,5 @@
 import { useEffect, useRef } from 'react'
 import useMangoStore from '../stores/useMangoStore'
-import useSerumStore from '../stores/useSerumStore'
-import useMarket from './useMarket'
 
 const byTimestamp = (a, b) => {
   return (
@@ -27,29 +25,30 @@ const formatTradeHistory = (newTradeHistory) => {
 }
 
 const useFills = () => {
-  const fillsRef = useRef(useSerumStore.getState().fills)
+  const fillsRef = useRef(useMangoStore.getState().selectedMarket.fills)
   const fills = fillsRef.current
   useEffect(
     () =>
-      useSerumStore.subscribe(
+      useMangoStore.subscribe(
         (fills) => (fillsRef.current = fills as []),
-        (state) => state.fills
+        (state) => state.selectedMarket.fills
       ),
     []
   )
 
-  const { market, marketName } = useMarket()
   const marginAccount = useMangoStore((s) => s.selectedMarginAccount.current)
   const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  const marketConfig = useMangoStore((s) => s.selectedMarket.config)
 
   if (!marginAccount || !selectedMangoGroup) return null
 
-  const marketIndex = selectedMangoGroup.getMarketIndex(market)
-  const openOrdersAccount = marginAccount.openOrdersAccounts[marketIndex]
+  const openOrdersAccount =
+    marginAccount.spotOpenOrdersAccounts[marketConfig.marketIndex]
   if (!openOrdersAccount) return []
+
   return fills
     .filter((fill) => fill.openOrders.equals(openOrdersAccount.publicKey))
-    .map((fill) => ({ ...fill, marketName }))
+    .map((fill) => ({ ...fill, marketName: marketConfig.name }))
 }
 
 export const useTradeHistory = () => {

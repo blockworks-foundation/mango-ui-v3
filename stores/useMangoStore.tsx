@@ -22,12 +22,7 @@ import {
   PerpMarketLayout,
 } from '@blockworks-foundation/mango-client'
 // import { SRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
-import {
-  AccountInfo,
-  Commitment,
-  Connection,
-  PublicKey,
-} from '@solana/web3.js'
+import { AccountInfo, Commitment, Connection, PublicKey } from '@solana/web3.js'
 import { EndpointInfo, WalletAdapter } from '../@types/types'
 import { zipDict } from '../utils'
 import { notify } from '../utils/notifications'
@@ -126,6 +121,7 @@ interface MangoStore extends State {
     askInfo: AccountInfo<Buffer> | null
     bidInfo: AccountInfo<Buffer> | null
     orderBook: Orderbook
+    fills: any[]
   }
   mangoGroups: Array<MangoGroup>
   selectedMangoGroup: {
@@ -136,7 +132,7 @@ interface MangoStore extends State {
       [address: string]: Market | PerpMarket
     }
     rootBanks: any[]
-    cache: MerpsCache |   null
+    cache: MerpsCache | null
   }
   marginAccounts: MarginAccount[]
   selectedMarginAccount: {
@@ -197,6 +193,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
     askInfo: null,
     bidInfo: null,
     orderBook: { bids: [], asks: [] },
+    fills: [],
   },
   mangoGroups: [],
   marginAccounts: [],
@@ -314,32 +311,58 @@ const useMangoStore = create<MangoStore>((set, get) => ({
           const rootBanks = await mangoGroup.loadRootBanks(DEFAULT_CONNECTION)
           const merpsCache = await mangoGroup.loadCache(DEFAULT_CONNECTION)
 
-          const allMarketConfigs = getAllMarkets(mangoGroupConfig);
-          const allMarketPks = allMarketConfigs.map(m => m.publicKey);
-          const allMarketAccountInfos = await getMultipleAccounts(DEFAULT_CONNECTION, allMarketPks);
+          const allMarketConfigs = getAllMarkets(mangoGroupConfig)
+          const allMarketPks = allMarketConfigs.map((m) => m.publicKey)
+          const allMarketAccountInfos = await getMultipleAccounts(
+            DEFAULT_CONNECTION,
+            allMarketPks
+          )
           const allMarketAccounts = allMarketConfigs.map((config, i) => {
-              if (config.kind == 'spot') {
-                const decoded = Market.getLayout(programId).decode(allMarketAccountInfos[i].accountInfo.data);
-                return new Market(decoded, config.baseDecimals, config.quoteDecimals, undefined, mangoGroupConfig.serumProgramId);
-              }
-              if (config.kind == 'perp') {
-                const decoded = PerpMarketLayout.decode(allMarketAccountInfos[i].accountInfo.data);
-                return new PerpMarket(config.publicKey, config.baseDecimals, config.quoteDecimals, decoded);
-              }
+            if (config.kind == 'spot') {
+              const decoded = Market.getLayout(programId).decode(
+                allMarketAccountInfos[i].accountInfo.data
+              )
+              return new Market(
+                decoded,
+                config.baseDecimals,
+                config.quoteDecimals,
+                undefined,
+                mangoGroupConfig.serumProgramId
+              )
+            }
+            if (config.kind == 'perp') {
+              const decoded = PerpMarketLayout.decode(
+                allMarketAccountInfos[i].accountInfo.data
+              )
+              return new PerpMarket(
+                config.publicKey,
+                config.baseDecimals,
+                config.quoteDecimals,
+                decoded
+              )
+            }
           })
 
-          const allBidsAndAsksPks = allMarketConfigs.map(m => [m.bidsKey, m.asksKey]).flat()
-          const allBidsAndAsksAccountInfos = await getMultipleAccounts(DEFAULT_CONNECTION, allBidsAndAsksPks);
+          const allBidsAndAsksPks = allMarketConfigs
+            .map((m) => [m.bidsKey, m.asksKey])
+            .flat()
+          const allBidsAndAsksAccountInfos = await getMultipleAccounts(
+            DEFAULT_CONNECTION,
+            allBidsAndAsksPks
+          )
 
-          const allMarkets = zipDict(allMarketPks.map(pk => pk.toBase58()), allMarketAccounts);
-          console.log('all', allMarkets);
+          const allMarkets = zipDict(
+            allMarketPks.map((pk) => pk.toBase58()),
+            allMarketAccounts
+          )
 
           set((state) => {
             state.selectedMangoGroup.current = mangoGroup
             state.selectedMangoGroup.rootBanks = rootBanks
             state.selectedMangoGroup.cache = merpsCache
             state.selectedMangoGroup.markets = allMarkets
-            state.selectedMarket.current = allMarkets[selectedMarketConfig.publicKey.toBase58()]
+            state.selectedMarket.current =
+              allMarkets[selectedMarketConfig.publicKey.toBase58()]
 
             allMarketAccountInfos
               .concat(allBidsAndAsksAccountInfos)

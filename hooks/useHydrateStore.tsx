@@ -1,10 +1,14 @@
 import { useEffect } from 'react'
 import { AccountInfo } from '@solana/web3.js'
-import useMangoStore, { WEBSOCKET_CONNECTION } from '../stores/useMangoStore'
+import useMangoStore, {
+  DEFAULT_CONNECTION,
+  WEBSOCKET_CONNECTION,
+} from '../stores/useMangoStore'
 import useInterval from './useInterval'
+import { Market } from '@project-serum/serum'
 
 const SECONDS = 1000
-// const _SLOW_REFRESH_INTERVAL = 60 * SECONDS
+const _SLOW_REFRESH_INTERVAL = 5 * SECONDS
 
 const useHydrateStore = () => {
   const setMangoStore = useMangoStore((s) => s.set)
@@ -22,10 +26,9 @@ const useHydrateStore = () => {
   }, 60 * SECONDS)
 
   useEffect(() => {
-      setMangoStore((state) => {
-        state.selectedMarket.current =
-        markets[marketConfig.publicKey.toString()]
-      })
+    setMangoStore((state) => {
+      state.selectedMarket.current = markets[marketConfig.publicKey.toString()]
+    })
   }, [marketConfig])
 
   // hydrate orderbook with all markets in mango group
@@ -75,25 +78,32 @@ const useHydrateStore = () => {
     }
   }, [selectedMarket])
 
-  // // fetch filled trades for selected market
-  // useInterval(() => {
-  //   async function fetchFills() {
-  //     const market = useMangoStore.getState().selectedMarket.current
-  //     if (!market || !connection) {
-  //       return null
-  //     }
-  //     try {
-  //       const loadedFills = await market.loadFills(connection, 10000)
-  //       setSerumStore((state) => {
-  //         state.fills = loadedFills
-  //       })
-  //     } catch (err) {
-  //       console.log('Error fetching fills:', err)
-  //     }
-  //   }
+  // fetch filled trades for selected market
+  useInterval(() => {
+    async function fetchFills() {
+      const market = useMangoStore.getState().selectedMarket.current
 
-  //   fetchFills()
-  // }, _SLOW_REFRESH_INTERVAL)
+      if (!market) {
+        return null
+      }
+      if (marketConfig.kind === 'spot') {
+        const selectedMarket = market as Market
+        try {
+          const loadedFills = await selectedMarket.loadFills(
+            DEFAULT_CONNECTION,
+            10000
+          )
+          setMangoStore((state) => {
+            state.selectedMarket.fills = loadedFills
+          })
+        } catch (err) {
+          console.log('Error fetching fills:', err)
+        }
+      }
+    }
+
+    fetchFills()
+  }, _SLOW_REFRESH_INTERVAL)
 }
 
 export default useHydrateStore
