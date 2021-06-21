@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react'
-import { nativeToUi } from '@blockworks-foundation/mango-client/lib/utils'
+// import { nativeToUi } from '@blockworks-foundation/mango-client/lib/utils'
 import { groupBy } from '../utils'
 import useTradeHistory from '../hooks/useTradeHistory'
 import useMangoStore from '../stores/useMangoStore'
@@ -61,17 +61,16 @@ export default function MarginInfo() {
   const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const tradeHistory = useTradeHistory()
   const tradeHistoryLength = useMemo(() => tradeHistory.length, [tradeHistory])
-  const [mAccountInfo, setMAccountInfo] =
-    useState<
-      | {
-          label: string
-          value: string
-          unit: string
-          desc: string
-          currency: string
-        }[]
-      | null
-    >(null)
+  const [mAccountInfo, setMAccountInfo] = useState<
+    | {
+        label: string
+        value: string
+        unit: string
+        desc: string
+        currency: string
+      }[]
+    | null
+  >(null)
   const [openAlertModal, setOpenAlertModal] = useState(false)
 
   useEffect(() => {

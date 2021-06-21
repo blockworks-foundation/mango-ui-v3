@@ -14,17 +14,14 @@ import Input from './Input'
 import AccountSelect from './AccountSelect'
 import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
-import {
-  DECIMALS,
-  trimDecimals,
-} from '../utils/index'
+import { DECIMALS, trimDecimals } from '../utils/index'
 import useConnection from '../hooks/useConnection'
 import Loading from './Loading'
 import Button, { LinkButton } from './Button'
 import Tooltip from './Tooltip'
 import Slider from './Slider'
 import InlineNotification from './InlineNotification'
-import { deposit } from '../utils/mango'
+// import { deposit } from '../utils/mango'
 
 interface DepositModalProps {
   onClose: () => void

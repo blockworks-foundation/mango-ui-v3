@@ -5,7 +5,7 @@ import {
   ChartPieIcon,
   ScaleIcon,
 } from '@heroicons/react/outline'
-import { nativeToUi } from '@blockworks-foundation/mango-client/lib/utils'
+// import { nativeToUi } from '@blockworks-foundation/mango-client/lib/utils'
 import { groupBy } from '../utils'
 import useMangoStore from '../stores/useMangoStore'
 import useTradeHistory from '../hooks/useTradeHistory'
@@ -62,18 +62,17 @@ const useMarginInfo = () => {
   )
   const tradeHistory = useTradeHistory()
   const tradeHistoryLength = useMemo(() => tradeHistory.length, [tradeHistory])
-  const [mAccountInfo, setMAccountInfo] =
-    useState<
-      | {
-          label: string
-          value: string
-          unit: string
-          desc: string
-          currency: string
-          icon: ReactNode
-        }[]
-      | null
-    >(null)
+  const [mAccountInfo, setMAccountInfo] = useState<
+    | {
+        label: string
+        value: string
+        unit: string
+        desc: string
+        currency: string
+        icon: ReactNode
+      }[]
+    | null
+  >(null)
 
   useEffect(() => {
     if (selectedMangoGroup) {

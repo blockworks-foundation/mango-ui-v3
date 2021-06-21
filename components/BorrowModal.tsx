@@ -11,7 +11,7 @@ import {
   displayDepositsForMarginAccount,
 } from '../utils/index'
 import useConnection from '../hooks/useConnection'
-import { borrowAndWithdraw } from '../utils/mango'
+// import { borrowAndWithdraw } from '../utils/mango'
 import Loading from './Loading'
 import Slider from './Slider'
 import Button, { LinkButton } from './Button'

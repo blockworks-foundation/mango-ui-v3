@@ -15,7 +15,7 @@ import {
   trimDecimals,
 } from '../utils/index'
 import useConnection from '../hooks/useConnection'
-import { initMarginAccountAndDeposit } from '../utils/mango'
+// import { initMarginAccountAndDeposit } from '../utils/mango'
 import Loading from './Loading'
 import Button from './Button'
 import Slider from './Slider'

@@ -8,7 +8,7 @@ import { notify } from '../../utils/notifications'
 import { sleep } from '../../utils'
 import { PublicKey } from '@solana/web3.js'
 import { tokenPrecision } from '../../utils/index'
-import { settleBorrow } from '../../utils/mango'
+// import { settleBorrow } from '../../utils/mango'
 import BorrowModal from '../BorrowModal'
 import Button from '../Button'
 import DepositModal from '../DepositModal'
@@ -176,11 +176,13 @@ export default function AccountBorrows() {
                     >
                       <span className={`text-th-red`}>
                         {(
-                          selectedMangoGroup.getBorrowRate(
-                            Object.keys(symbols).findIndex(
-                              (key) => key === asset.coin
+                          selectedMangoGroup
+                            .getBorrowRate(
+                              Object.keys(symbols).findIndex(
+                                (key) => key === asset.coin
+                              )
                             )
-                          ).toNumber() * 100
+                            .toNumber() * 100
                         ).toFixed(2)}
                         %
                       </span>

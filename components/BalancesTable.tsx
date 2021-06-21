@@ -1,6 +1,6 @@
 import { useBalances } from '../hooks/useBalances'
 import useMangoStore from '../stores/useMangoStore'
-import { settleAll } from '../utils/mango'
+// import { settleAll } from '../utils/mango'
 import useConnection from '../hooks/useConnection'
 import Button from '../components/Button'
 import { notify } from '../utils/notifications'
