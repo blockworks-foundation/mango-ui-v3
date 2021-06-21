@@ -21,7 +21,7 @@ import Button, { LinkButton } from './Button'
 import Tooltip from './Tooltip'
 import Slider from './Slider'
 import InlineNotification from './InlineNotification'
-// import { deposit } from '../utils/mango'
+import { deposit } from '../utils/mango'
 
 interface DepositModalProps {
   onClose: () => void
