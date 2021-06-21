@@ -19,18 +19,23 @@ const AccountSelect = ({
   onSelectAccount,
   hideAddress = false,
 }: AccountSelectProps) => {
-  const groupConfig = useMangoGroupConfig();
-  const tokenSymbols = useMemo(() => groupConfig.tokens.map(t => t.symbol), [groupConfig]);
+  const groupConfig = useMangoGroupConfig()
+  const tokenSymbols = useMemo(
+    () => groupConfig.tokens.map((t) => t.symbol),
+    [groupConfig]
+  )
   const missingTokenSymbols = useMemo(() => {
-    const symbolsForAccounts = accounts.map(a => a.config.symbol);
-    return tokenSymbols.filter((sym) => !symbolsForAccounts.includes(sym));
-  }, [accounts, tokenSymbols]);
+    const symbolsForAccounts = accounts.map((a) => a.config.symbol)
+    return tokenSymbols.filter((sym) => !symbolsForAccounts.includes(sym))
+  }, [accounts, tokenSymbols])
 
   const actions = useMangoStore((s) => s.actions)
   const [loading, setLoading] = useState(false)
 
   const handleChange = (value: string) => {
-    const newAccount = accounts.find((a) => a.account.publicKey.toBase58() === value)
+    const newAccount = accounts.find(
+      (a) => a.account.publicKey.toBase58() === value
+    )
     onSelectAccount(newAccount)
   }
 
@@ -59,7 +64,7 @@ const AccountSelect = ({
         ) : null}
       </div>
       <Listbox
-        value={selectedAccount.account.publicKey.toBase58()}
+        value={selectedAccount?.account.publicKey.toBase58()}
         onChange={handleChange}
       >
         {({ open }) => (
@@ -84,7 +89,9 @@ const AccountSelect = ({
                         {selectedAccount.config.symbol}
                         {!hideAddress ? (
                           <div className="text-xs text-th-fgd-4">
-                            {abbreviateAddress(selectedAccount.account.publicKey)}
+                            {abbreviateAddress(
+                              selectedAccount.account.publicKey
+                            )}
                           </div>
                         ) : null}
                       </div>
@@ -107,7 +114,7 @@ const AccountSelect = ({
               className={`z-20 p-1 absolute right-0 top-13 bg-th-bkg-1 divide-y divide-th-bkg-3 shadow-lg outline-none rounded-md w-full max-h-60 overflow-auto`}
             >
               {accounts.map((account) => {
-                const symbolForAccount = account.config.symbol;
+                const symbolForAccount = account.config.symbol
 
                 return (
                   <Listbox.Option
@@ -152,25 +159,22 @@ const AccountSelect = ({
                 )
               })}
               {missingTokenSymbols.map((token) => (
-                    <Listbox.Option disabled key={token} value={token}>
-                      <div
-                        className={`opacity-50 p-2 hover:cursor-not-allowed`}
-                      >
-                        <div className={`flex items-center text-th-fgd-1`}>
-                          <img
-                            alt=""
-                            width="20"
-                            height="20"
-                            src={`/assets/icons/${token.toLowerCase()}.svg`}
-                            className="mr-2"
-                          />
-                          <div className={`flex-grow text-left`}>{token}</div>
-                          <div className={`text-xs`}>No wallet address</div>
-                        </div>
-                      </div>
-                    </Listbox.Option>
-                  ))
-              }
+                <Listbox.Option disabled key={token} value={token}>
+                  <div className={`opacity-50 p-2 hover:cursor-not-allowed`}>
+                    <div className={`flex items-center text-th-fgd-1`}>
+                      <img
+                        alt=""
+                        width="20"
+                        height="20"
+                        src={`/assets/icons/${token.toLowerCase()}.svg`}
+                        className="mr-2"
+                      />
+                      <div className={`flex-grow text-left`}>{token}</div>
+                      <div className={`text-xs`}>No wallet address</div>
+                    </div>
+                  </div>
+                </Listbox.Option>
+              ))}
             </Listbox.Options>
           </>
         )}
