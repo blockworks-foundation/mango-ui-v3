@@ -1,10 +1,10 @@
 import React, { FunctionComponent, useEffect, useMemo, useState } from 'react'
 import { ExclamationCircleIcon } from '@heroicons/react/outline'
 import { getTokenByMint } from '@blockworks-foundation/mango-client'
-import {
-  nativeToUi,
-  sleep,
-} from '@blockworks-foundation/mango-client/lib/utils/src'
+// import {
+//   nativeToUi,
+//   sleep,
+// } from '@blockworks-foundation/mango-client/lib/utils/src'
 import Input from './Input'
 import AccountSelect from './AccountSelect'
 import { ElementTitle } from './styles'
@@ -54,7 +54,7 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
   }
 
   const setMaxForSelectedAccount = () => {
-    const max = selectedAccount.uiBalance;
+    const max = selectedAccount.uiBalance
     setInputAmount(max)
     setSliderPercentage(100)
     setInvalidAmountMessage('')
@@ -138,7 +138,7 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
       <div className="text-th-fgd-3 text-center pb-4 pt-2">
         Make a deposit to initialize a new margin account
       </div>
-      
+
       <AccountSelect
         accounts={walletTokens}
         selectedAccount={selectedAccount}
@@ -182,10 +182,7 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
       </div>
       <div className={`pt-8 flex justify-center`}>
         <Button
-          disabled={
-            inputAmount <= 0 ||
-            inputAmount > selectedAccount.uiBalance
-          }
+          disabled={inputAmount <= 0 || inputAmount > selectedAccount.uiBalance}
           onClick={handleNewAccountDeposit}
           className="w-full"
         >
