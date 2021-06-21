@@ -367,7 +367,6 @@ const useMangoStore = create<MangoStore>((set, get) => ({
             allMarketAccountInfos
               .concat(allBidsAndAsksAccountInfos)
               .forEach(({ publicKey, accountInfo }) => {
-                console.log(publicKey.toBase58(), accountInfo)
                 state.accountInfos[publicKey.toBase58()] = accountInfo
               })
           })

@@ -1,4 +1,3 @@
-import { useEffect, useRef } from 'react'
 import useMangoStore from '../stores/useMangoStore'
 
 const byTimestamp = (a, b) => {
@@ -25,20 +24,10 @@ const formatTradeHistory = (newTradeHistory) => {
 }
 
 const useFills = () => {
-  const fillsRef = useRef(useMangoStore.getState().selectedMarket.fills)
-  const fills = fillsRef.current
-  useEffect(
-    () =>
-      useMangoStore.subscribe(
-        (fills) => (fillsRef.current = fills as []),
-        (state) => state.selectedMarket.fills
-      ),
-    []
-  )
-
+  const marketConfig = useMangoStore((s) => s.selectedMarket.config)
+  const fills = useMangoStore((s) => s.selectedMarket.fills)
   const marginAccount = useMangoStore((s) => s.selectedMarginAccount.current)
   const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
-  const marketConfig = useMangoStore((s) => s.selectedMarket.config)
 
   if (!marginAccount || !selectedMangoGroup) return null
 

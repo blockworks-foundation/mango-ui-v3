@@ -99,6 +99,11 @@ const useHydrateStore = () => {
         } catch (err) {
           console.log('Error fetching fills:', err)
         }
+      } else {
+        // Load perp market fills
+        setMangoStore((state) => {
+          state.selectedMarket.fills = []
+        })
       }
     }
 

@@ -6,11 +6,13 @@ import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
 import SideBadge from './SideBadge'
 import { LinkButton } from './Button'
 import { useSortableData } from '../hooks/useSortableData'
+import useMangoStore from '../stores/useMangoStore'
 
 const TradeHistoryTable = () => {
   const { asPath } = useRouter()
   const tradeHistory = useTradeHistory()
   const { items, requestSort, sortConfig } = useSortableData(tradeHistory)
+  const marketConfig = useMangoStore((s) => s.selectedMarket.config)
 
   const renderTradeDateTime = (timestamp) => {
     const date = new Date(timestamp)
@@ -263,7 +265,7 @@ const TradeHistoryTable = () => {
             <div
               className={`w-full text-center py-6 bg-th-bkg-1 text-th-fgd-3 rounded-md`}
             >
-              No trade history.
+              No {marketConfig.name} trade history.
               {asPath === '/account' ? (
                 <Link href={'/'}>
                   <a
