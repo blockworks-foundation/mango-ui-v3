@@ -5,7 +5,7 @@ import useMangoStore, {
   WEBSOCKET_CONNECTION,
 } from '../stores/useMangoStore'
 import useInterval from './useInterval'
-import { Market } from '@project-serum/serum'
+import useOrderbook from './useOrderbook'
 
 const SECONDS = 1000
 const _SLOW_REFRESH_INTERVAL = 5 * SECONDS
@@ -16,6 +16,7 @@ const useHydrateStore = () => {
   const markets = useMangoStore((s) => s.selectedMangoGroup.markets)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
+  useOrderbook()
 
   useEffect(() => {
     actions.fetchMangoGroup()
@@ -35,10 +36,10 @@ const useHydrateStore = () => {
   useEffect(() => {
     let previousBidInfo: AccountInfo<Buffer> | null = null
     let previousAskInfo: AccountInfo<Buffer> | null = null
-    if (!selectedMarket || marketConfig.kind !== 'spot') return
+    if (!marketConfig) return
 
     const bidSubscriptionId = WEBSOCKET_CONNECTION.onAccountChange(
-      selectedMarket['_decoded'].bids,
+      marketConfig.bidsKey,
       (info) => {
         console.log('bid websocket')
         if (
@@ -48,14 +49,14 @@ const useHydrateStore = () => {
         ) {
           previousBidInfo = info
           setMangoStore((state) => {
-            const pkString = selectedMarket['_decoded'].bids.toString()
-            state.accountInfos[pkString] = previousBidInfo
+            state.accountInfos[marketConfig.bidsKey.toString()] =
+              previousBidInfo
           })
         }
       }
     )
     const askSubscriptionId = WEBSOCKET_CONNECTION.onAccountChange(
-      selectedMarket['_decoded'].asks,
+      marketConfig.asksKey,
       (info) => {
         console.log('ask websocket')
         if (
@@ -65,8 +66,8 @@ const useHydrateStore = () => {
         ) {
           previousAskInfo = info
           setMangoStore((state) => {
-            const pkString = selectedMarket['_decoded'].asks.toString()
-            state.accountInfos[pkString] = previousAskInfo
+            state.accountInfos[marketConfig.asksKey.toString()] =
+              previousAskInfo
           })
         }
       }
@@ -91,7 +92,7 @@ const useHydrateStore = () => {
           DEFAULT_CONNECTION,
           10000
         )
-        console.log('loadedFills', loadedFills)
+        // console.log('loadedFills', loadedFills)
 
         // setMangoStore((state) => {
         //   state.selectedMarket.fills = loadedFills

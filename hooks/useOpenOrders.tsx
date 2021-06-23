@@ -5,7 +5,7 @@ import {
   getMarketByPublicKey,
   MarketConfig,
   PerpMarket,
-  MerpsAccount as MangoAccount,
+  MangoAccount,
 } from '@blockworks-foundation/mango-client'
 import { Market, Orderbook } from '@project-serum/serum'
 import { Order } from '@project-serum/serum/lib/market'
