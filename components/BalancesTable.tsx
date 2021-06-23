@@ -24,14 +24,14 @@ const BalancesTable = () => {
     const wallet = useMangoStore.getState().wallet.current
 
     try {
-      await settleAll(
-        connection,
-        new PublicKey(programId),
-        mangoGroup,
-        marginAccount,
-        markets,
-        wallet
-      )
+      // await settleAll(
+      //   connection,
+      //   new PublicKey(programId),
+      //   mangoGroup,
+      //   marginAccount,
+      //   markets,
+      //   wallet
+      // )
       await sleep(250)
       actions.fetchMarginAccounts()
     } catch (e) {
