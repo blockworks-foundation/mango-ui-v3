@@ -16,11 +16,11 @@ export async function deposit({
 
   let newMangoAccount
   if (!mangoAccount) {
-    const mangoAccountPk = await mangoClient.initMerpsAccount(
+    const mangoAccountPk = await mangoClient.initMangoAccount(
       mangoGroup,
       wallet
     )
-    newMangoAccount = await mangoClient.getMerpsAccount(
+    newMangoAccount = await mangoClient.getMangoAccount(
       mangoAccountPk,
       mangoGroup.dexProgramId
     )
