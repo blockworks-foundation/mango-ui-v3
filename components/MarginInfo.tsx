@@ -19,12 +19,12 @@ export default function MarginInfo() {
   let initHealth = I80F48.fromString('0')
   let maintHealth = I80F48.fromString('0')
   if (selectedMangoAccount) {
-    // initHealth = selectedMangoAccount.getHealth(mangoGroup, mangoCache, 'Init')
-    // maintHealth = selectedMangoAccount.getHealth(
-    //   mangoGroup,
-    //   mangoCache,
-    //   'Maint'
-    // )
+    initHealth = selectedMangoAccount.getHealth(mangoGroup, mangoCache, 'Init')
+    maintHealth = selectedMangoAccount.getHealth(
+      mangoGroup,
+      mangoCache,
+      'Maint'
+    )
   }
 
   // const tradeHistory = useTradeHistory()
