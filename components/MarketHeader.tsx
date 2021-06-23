@@ -82,9 +82,11 @@ const MarketHeader = () => {
               className={`mr-2.5`}
             />
 
-            <div className="font-semibold pr-1.5 text-xl">{baseSymbol}</div>
-            <span className="text-th-fgd-4 text-xl">/</span>
-            <div className="font-semibold pl-1.5 text-xl">
+            <div className="font-semibold pr-0.5 text-xl">{baseSymbol}</div>
+            <span className="text-th-fgd-4 text-xl">
+              {selectedMarketName.includes('PERP') ? '–' : '/'}
+            </span>
+            <div className="font-semibold pl-0.5 text-xl">
               {selectedMarketName.split(/\/|-/)[1]}
             </div>
           </div>
