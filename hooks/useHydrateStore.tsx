@@ -94,9 +94,9 @@ const useHydrateStore = () => {
         )
         // console.log('loadedFills', loadedFills)
 
-        // setMangoStore((state) => {
-        //   state.selectedMarket.fills = loadedFills
-        // })
+        setMangoStore((state) => {
+          state.selectedMarket.fills = loadedFills
+        })
       } catch (err) {
         console.log('Error fetching fills:', err)
       }

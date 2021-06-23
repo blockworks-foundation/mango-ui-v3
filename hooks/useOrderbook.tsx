@@ -26,11 +26,7 @@ function decodeBook(market, accInfo: AccountInfo<Buffer>): number[][] {
         market,
         BookSideLayout.decode(accInfo.data)
       )
-      console.log('book', book)
-      const x = book.getL2(depth).map(([price, size]) => [price, size])
-      console.log('getL2', x)
-
-      return x
+      return book.getL2(depth).map(([price, size]) => [price, size])
     }
   } else {
     return []
@@ -38,8 +34,6 @@ function decodeBook(market, accInfo: AccountInfo<Buffer>): number[][] {
 }
 
 export default function useOrderbook() {
-  console.log('useOrderbook')
-
   const setMangoStore = useMangoStore((s) => s.set)
   const market = useMangoStore((state) => state.selectedMarket.current)
   const marketConfig = useMangoStore((state) => state.selectedMarket.config)
@@ -53,7 +47,6 @@ export default function useOrderbook() {
   useEffect(() => {
     const bids = decodeBook(market, bidInfo)
     const asks = decodeBook(market, askInfo)
-    console.log('bids asks', bids, asks)
 
     setMangoStore((state) => {
       state.selectedMarket.orderBook = { bids, asks }

@@ -6,6 +6,8 @@ export function useTrades() {
   if (!trades) {
     return null
   }
+  console.log('trades', trades)
+
   // Until partial fills are each given their own fill, use maker fills
   return trades
     .filter(({ eventFlags }) => eventFlags.maker)
