@@ -1,12 +1,13 @@
 import { useEffect } from 'react'
 import useMangoStore from '../stores/useMangoStore'
-import useOrderbook from './useOrderbook'
 
 export function useTrades() {
   const trades = useMangoStore((state) => state.selectedMarket.fills)
   if (!trades) {
     return null
   }
+  console.log('trades', trades)
+
   // Until partial fills are each given their own fill, use maker fills
   return trades
     .filter(({ eventFlags }) => eventFlags.maker)
@@ -19,8 +20,8 @@ export function useTrades() {
 export default function useMarkPrice() {
   const setMangoStore = useMangoStore((s) => s.set)
   const markPrice = useMangoStore((s) => s.selectedMarket.markPrice)
+  const orderbook = useMangoStore((s) => s.selectedMarket.orderBook)
 
-  const orderbook = useOrderbook()
   const trades = useTrades()
 
   useEffect(() => {

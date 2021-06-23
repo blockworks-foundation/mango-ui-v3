@@ -95,8 +95,8 @@ const getCumulativeOrderbookSide = (
 export default function Orderbook({ depth = 8 }) {
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
+  const orderbook = useMangoStore((s) => s.selectedMarket.orderBook)
   const markPrice = useMarkPrice()
-  const orderbook = useOrderbook()
 
   const currentOrderbookData = useRef(null)
   const lastOrderbookData = useRef(null)

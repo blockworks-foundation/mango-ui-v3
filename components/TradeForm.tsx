@@ -219,7 +219,7 @@ export default function TradeForm() {
         mangoClient.placeSpotOrder(
           mangoGroup,
           mangoAccount,
-          mangoGroup.merpsCache,
+          mangoGroup.mangoCache,
           market,
           wallet,
           side,
@@ -231,7 +231,7 @@ export default function TradeForm() {
         mangoClient.placePerpOrder(
           mangoGroup,
           mangoAccount,
-          mangoGroup.merpsCache,
+          mangoGroup.mangoCache,
           market,
           wallet,
           side,
