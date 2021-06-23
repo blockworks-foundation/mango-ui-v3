@@ -18,7 +18,7 @@ interface AlertRequest {
   alertProvider: AlertProvider
   collateralRatioThresh: number
   mangoGroupPk: string
-  marginAccountPk: string
+  mangoAccountPk: string
   phoneNumber: any
   email: string | undefined
 }
@@ -48,7 +48,7 @@ const useAlertsStore = create<AlertsStore>((set, get) => ({
     async createAlert(req: AlertRequest) {
       const set = get().set
       const alert = {
-        acc: new PublicKey(req.marginAccountPk),
+        acc: new PublicKey(req.mangoAccountPk),
         alertProvider: req.alertProvider,
         collateralRatioThresh: req.collateralRatioThresh,
         open: true,
@@ -111,7 +111,7 @@ const useAlertsStore = create<AlertsStore>((set, get) => ({
           })
         })
     },
-    async loadAlerts(marginAccounts: PublicKey[]) {
+    async loadAlerts(mangoAccounts: PublicKey[]) {
       const set = get().set
 
       set((state) => {
@@ -120,7 +120,7 @@ const useAlertsStore = create<AlertsStore>((set, get) => ({
 
       const headers = { 'Content-Type': 'application/json' }
       const responses = await Promise.all(
-        marginAccounts.map((pubkey) => {
+        mangoAccounts.map((pubkey) => {
           return fetch(
             `https://mango-margin-call.herokuapp.com/alerts/${pubkey}`,
             {
@@ -157,7 +157,7 @@ const useAlertsStore = create<AlertsStore>((set, get) => ({
       // Assign triggeredTimestamp for old alerts in the DB that don't have this property yet
       responses.forEach((accounts, index) =>
         accounts.alerts.forEach((alert) => {
-          alert.acc = marginAccounts[index]
+          alert.acc = mangoAccounts[index]
           if (!alert.open) {
             alert.triggeredTimestamp ||= alert.timestamp
           }

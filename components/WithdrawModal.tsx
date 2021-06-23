@@ -8,7 +8,7 @@ import {
   DECIMALS,
   floorToDecimal,
   tokenPrecision,
-  displayDepositsForMarginAccount,
+  displayDepositsForMangoAccount,
 } from '../utils/index'
 import useConnection from '../hooks/useConnection'
 // import { borrowAndWithdraw, withdraw } from '../utils/mango'
@@ -29,7 +29,10 @@ import {
 } from '@heroicons/react/solid'
 import { Disclosure } from '@headlessui/react'
 import { PublicKey } from '@solana/web3.js'
-import { MerpsAccount as MarginAccount, uiToNative } from '@blockworks-foundation/mango-client'
+import {
+  MerpsAccount as MangoAccount,
+  uiToNative,
+} from '@blockworks-foundation/mango-client'
 import Select from './Select'
 
 interface WithdrawModalProps {
@@ -43,8 +46,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   onClose,
   tokenSymbol = '',
 }) => {
-
-  return (<></>)
+  return <></>
 
   const [withdrawTokenSymbol, setWithdrawTokenSymbol] = useState(
     tokenSymbol || 'USDC'
@@ -62,8 +64,8 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   const { connection, programId } = useConnection()
   const prices = useMangoStore((s) => s.selectedMangoGroup.prices)
   const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
-  const selectedMarginAccount = useMangoStore(
-    (s) => s.selectedMarginAccount.current
+  const selectedMangoAccount = useMangoStore(
+    (s) => s.selectedMangoAccount.current
   )
   const actions = useMangoStore((s) => s.actions)
   const tokenIndex = useMemo(
@@ -72,24 +74,24 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   )
 
   useEffect(() => {
-    if (!selectedMangoGroup || !selectedMarginAccount || !withdrawTokenSymbol)
+    if (!selectedMangoGroup || !selectedMangoAccount || !withdrawTokenSymbol)
       return
 
     const mintDecimals = selectedMangoGroup.mintDecimals[tokenIndex]
     const groupIndex = selectedMangoGroup.indexes[tokenIndex]
-    const deposits = selectedMarginAccount.getUiDeposit(
+    const deposits = selectedMangoAccount.getUiDeposit(
       selectedMangoGroup,
       tokenIndex
     )
-    const borrows = selectedMarginAccount.getUiBorrow(
+    const borrows = selectedMangoAccount.getUiBorrow(
       selectedMangoGroup,
       tokenIndex
     )
 
     const currentAssetsVal =
-      selectedMarginAccount.getAssetsVal(selectedMangoGroup, prices) -
+      selectedMangoAccount.getAssetsVal(selectedMangoGroup, prices) -
       getMaxForSelectedAsset() * prices[tokenIndex]
-    const currentLiabs = selectedMarginAccount.getLiabsVal(
+    const currentLiabs = selectedMangoAccount.getLiabsVal(
       selectedMangoGroup,
       prices
     )
@@ -111,10 +113,10 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
     const newDeposit = Math.max(0, deposits - inputAmount)
     const newBorrows = borrows + Math.max(0, inputAmount - deposits)
 
-    // clone MarginAccount and arrays to not modify selectedMarginAccount
-    const simulation = new MarginAccount(null, selectedMarginAccount)
-    simulation.deposits = [...selectedMarginAccount.deposits]
-    simulation.borrows = [...selectedMarginAccount.borrows]
+    // clone MangoAccount and arrays to not modify selectedMangoAccount
+    const simulation = new MangoAccount(null, selectedMangoAccount)
+    simulation.deposits = [...selectedMangoAccount.deposits]
+    simulation.borrows = [...selectedMangoAccount.borrows]
 
     // update with simulated values
     simulation.deposits[tokenIndex] =
@@ -143,23 +145,23 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
     inputAmount,
     prices,
     tokenIndex,
-    selectedMarginAccount,
+    selectedMangoAccount,
     selectedMangoGroup,
   ])
 
   const handleWithdraw = () => {
     setSubmitting(true)
-    const marginAccount = useMangoStore.getState().selectedMarginAccount.current
+    const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
     const wallet = useMangoStore.getState().wallet.current
-    if (!marginAccount || !mangoGroup) return
+    if (!mangoAccount || !mangoGroup) return
 
     if (!includeBorrow) {
       withdraw(
         connection,
         new PublicKey(programId),
         mangoGroup,
-        marginAccount,
+        mangoAccount,
         wallet,
         new PublicKey(symbols[withdrawTokenSymbol]),
         Number(inputAmount)
@@ -167,7 +169,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
         .then((_transSig: string) => {
           setSubmitting(false)
           actions.fetchMangoGroup()
-          actions.fetchMarginAccounts()
+          actions.fetchMangoAccounts()
           actions.fetchWalletTokens()
           onClose()
         })
@@ -186,7 +188,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
         connection,
         new PublicKey(programId),
         mangoGroup,
-        marginAccount,
+        mangoAccount,
         wallet,
         new PublicKey(symbols[withdrawTokenSymbol]),
         Number(inputAmount)
@@ -194,7 +196,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
         .then((_transSig: string) => {
           setSubmitting(false)
           actions.fetchMangoGroup()
-          actions.fetchMarginAccounts()
+          actions.fetchMangoAccounts()
           actions.fetchWalletTokens()
           onClose()
         })
@@ -219,8 +221,8 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   }
 
   const getMaxForSelectedAsset = () => {
-    return displayDepositsForMarginAccount(
-      selectedMarginAccount,
+    return displayDepositsForMangoAccount(
+      selectedMangoAccount,
       selectedMangoGroup,
       tokenIndex
     )
@@ -339,7 +341,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
       return {
         symbol: name,
         balance: floorToDecimal(
-          selectedMarginAccount.getUiDeposit(selectedMangoGroup, i),
+          selectedMangoAccount.getUiDeposit(selectedMangoGroup, i),
           tokenPrecision[name]
         ),
       }
@@ -372,7 +374,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
             <div className="pb-2 text-th-fgd-1">Asset</div>
             <Select
               value={
-                withdrawTokenSymbol && selectedMarginAccount ? (
+                withdrawTokenSymbol && selectedMangoAccount ? (
                   <div className="flex items-center justify-between w-full">
                     <div className="flex items-center">
                       <img
@@ -385,7 +387,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                       {withdrawTokenSymbol}
                     </div>
                     {floorToDecimal(
-                      selectedMarginAccount.getUiDeposit(
+                      selectedMangoAccount.getUiDeposit(
                         selectedMangoGroup,
                         tokenIndex
                       ),

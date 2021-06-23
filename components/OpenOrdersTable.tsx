@@ -24,20 +24,23 @@ const OpenOrdersTable = () => {
   // const { connection, programId } = useConnection()
   const actions = useMangoStore((s) => s.actions)
 
-  const handleCancelOrder = async (order: Order | PerpOrder, market: Market | PerpMarket) => {
+  const handleCancelOrder = async (
+    order: Order | PerpOrder,
+    market: Market | PerpMarket
+  ) => {
     const wallet = useMangoStore.getState().wallet.current
     const selectedMangoGroup =
       useMangoStore.getState().selectedMangoGroup.current
-    const selectedMarginAccount =
-      useMangoStore.getState().selectedMarginAccount.current
+    const selectedMangoAccount =
+      useMangoStore.getState().selectedMangoAccount.current
     setCancelId(order.orderId)
 
     try {
-      if (!selectedMangoGroup || !selectedMarginAccount) return
+      if (!selectedMangoGroup || !selectedMangoAccount) return
       if (market instanceof Market) {
         await mangoClient.cancelSpotOrder(
           selectedMangoGroup,
-          selectedMarginAccount,
+          selectedMangoAccount,
           wallet,
           market,
           order as Order
@@ -45,13 +48,13 @@ const OpenOrdersTable = () => {
       } else if (market instanceof PerpMarket) {
         await mangoClient.cancelPerpOrder(
           selectedMangoGroup,
-          selectedMarginAccount,
+          selectedMangoAccount,
           wallet,
           market,
           order as PerpOrder
         )
       }
-      actions.fetchMarginAccounts()
+      actions.fetchMangoAccounts()
     } catch (e) {
       notify({
         message: 'Error cancelling order',
@@ -162,7 +165,7 @@ const OpenOrdersTable = () => {
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {items.map( ({order, market}, index) => (
+                  {items.map(({ order, market }, index) => (
                     <Tr
                       key={`${order.orderId}${order.side}`}
                       className={`border-b border-th-bkg-3
@@ -177,8 +180,7 @@ const OpenOrdersTable = () => {
                             alt=""
                             width="20"
                             height="20"
-                            src={`/assets/icons/${market.config.baseSymbol
-                              .toLowerCase()}.svg`}
+                            src={`/assets/icons/${market.config.baseSymbol.toLowerCase()}.svg`}
                             className={`mr-2.5`}
                           />
                           <div>{market.config.name}</div>
@@ -211,7 +213,9 @@ const OpenOrdersTable = () => {
                             Modify
                           </Button> */}
                           <Button
-                            onClick={() => handleCancelOrder(order, market.account)}
+                            onClick={() =>
+                              handleCancelOrder(order, market.account)
+                            }
                             className={`ml-3 text-xs pt-0 pb-0 h-8 pl-3 pr-3`}
                           >
                             {cancelId + '' === order.orderId + '' ? (

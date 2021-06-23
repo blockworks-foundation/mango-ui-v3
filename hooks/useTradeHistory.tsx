@@ -26,13 +26,13 @@ const formatTradeHistory = (newTradeHistory) => {
 const useFills = () => {
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const fills = useMangoStore((s) => s.selectedMarket.fills)
-  const marginAccount = useMangoStore((s) => s.selectedMarginAccount.current)
+  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
 
-  if (!marginAccount || !selectedMangoGroup) return null
+  if (!mangoAccount || !selectedMangoGroup) return null
 
   const openOrdersAccount =
-    marginAccount.spotOpenOrdersAccounts[marketConfig.marketIndex]
+    mangoAccount.spotOpenOrdersAccounts[marketConfig.marketIndex]
   if (!openOrdersAccount) return []
 
   return fills

@@ -57,8 +57,8 @@ const calculatePNL = (tradeHistory, prices, mangoGroup) => {
 const useMarginInfo = () => {
   const connection = useMangoStore((s) => s.connection.current)
   const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
-  const selectedMarginAccount = useMangoStore(
-    (s) => s.selectedMarginAccount.current
+  const selectedMangoAccount = useMangoStore(
+    (s) => s.selectedMangoAccount.current
   )
   const tradeHistory = useTradeHistory()
   const tradeHistoryLength = useMemo(() => tradeHistory.length, [tradeHistory])
@@ -77,22 +77,22 @@ const useMarginInfo = () => {
   useEffect(() => {
     if (selectedMangoGroup) {
       selectedMangoGroup.getPrices(connection).then((prices) => {
-        const collateralRatio = selectedMarginAccount
-          ? selectedMarginAccount.getCollateralRatio(
+        const collateralRatio = selectedMangoAccount
+          ? selectedMangoAccount.getCollateralRatio(
               selectedMangoGroup,
               prices
             ) || 200
           : 200
 
-        const accountEquity = selectedMarginAccount
-          ? selectedMarginAccount.computeValue(selectedMangoGroup, prices)
+        const accountEquity = selectedMangoAccount
+          ? selectedMangoAccount.computeValue(selectedMangoGroup, prices)
           : 0
         let leverage
-        if (selectedMarginAccount) {
+        if (selectedMangoAccount) {
           leverage = accountEquity
             ? (
                 1 /
-                (selectedMarginAccount.getCollateralRatio(
+                (selectedMangoAccount.getCollateralRatio(
                   selectedMangoGroup,
                   prices
                 ) -
@@ -149,7 +149,7 @@ const useMarginInfo = () => {
         ])
       })
     }
-  }, [selectedMarginAccount, selectedMangoGroup, tradeHistoryLength])
+  }, [selectedMangoAccount, selectedMangoGroup, tradeHistoryLength])
 
   return mAccountInfo
 }

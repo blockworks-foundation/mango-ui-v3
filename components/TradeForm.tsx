@@ -201,11 +201,11 @@ export default function TradeForm() {
       return
     }
 
-    const marginAccount = useMangoStore.getState().selectedMarginAccount.current
+    const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
     const wallet = useMangoStore.getState().wallet.current
 
-    if (!wallet || !mangoGroup || !marginAccount || !market) return
+    if (!wallet || !mangoGroup || !mangoAccount || !market) return
     setSubmitting(true)
 
     try {
@@ -218,7 +218,7 @@ export default function TradeForm() {
       if (market instanceof Market) {
         mangoClient.placeSpotOrder(
           mangoGroup,
-          marginAccount,
+          mangoAccount,
           mangoGroup.merpsCache,
           market,
           wallet,
@@ -230,7 +230,7 @@ export default function TradeForm() {
       } else {
         mangoClient.placePerpOrder(
           mangoGroup,
-          marginAccount,
+          mangoAccount,
           mangoGroup.merpsCache,
           market,
           wallet,
@@ -245,7 +245,7 @@ export default function TradeForm() {
 
       setPrice('')
       onSetBaseSize('')
-      actions.fetchMarginAccounts()
+      actions.fetchMangoAccounts()
     } catch (e) {
       notify({
         message: 'Error placing order',

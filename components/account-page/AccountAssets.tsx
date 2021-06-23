@@ -19,11 +19,11 @@ export default function AccountAssets() {
   const { programId, connection } = useConnection()
   const actions = useMangoStore((s) => s.actions)
   const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
-  const selectedMarginAccount = useMangoStore(
-    (s) => s.selectedMarginAccount.current
+  const selectedMangoAccount = useMangoStore(
+    (s) => s.selectedMangoAccount.current
   )
-  const loadingMarginAccount = useMangoStore(
-    (s) => s.selectedMarginAccount.initialLoad
+  const loadingMangoAccount = useMangoStore(
+    (s) => s.selectedMangoAccount.initialLoad
   )
   const connected = useMangoStore((s) => s.wallet.connected)
 
@@ -56,7 +56,7 @@ export default function AccountAssets() {
     const markets = Object.values(
       useMangoStore.getState().selectedMangoGroup.markets
     )
-    const marginAccount = useMangoStore.getState().selectedMarginAccount.current
+    const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
     const wallet = useMangoStore.getState().wallet.current
 
@@ -65,12 +65,12 @@ export default function AccountAssets() {
         connection,
         new PublicKey(programId),
         mangoGroup,
-        marginAccount,
+        mangoAccount,
         markets,
         wallet
       )
       await sleep(250)
-      actions.fetchMarginAccounts()
+      actions.fetchMangoAccounts()
     } catch (e) {
       console.warn('Error settling all:', e)
       if (e.message === 'No unsettled funds') {
@@ -89,7 +89,7 @@ export default function AccountAssets() {
     }
   }
 
-  return selectedMarginAccount ? (
+  return selectedMangoAccount ? (
     <>
       <div className="sm:flex sm:items-center sm:justify-between pb-2">
         <div className="pb-2 sm:pb-0 text-th-fgd-1 text-lg">Your Assets</div>
@@ -235,14 +235,14 @@ export default function AccountAssets() {
                           <Button
                             onClick={() => handleShowDeposit(bal.coin)}
                             className="text-xs pt-0 pb-0 h-8 pl-3 pr-3"
-                            disabled={!connected || loadingMarginAccount}
+                            disabled={!connected || loadingMangoAccount}
                           >
                             <span>Deposit</span>
                           </Button>
                           <Button
                             onClick={() => handleShowWithdraw(bal.coin)}
                             className="ml-3 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
-                            disabled={!connected || loadingMarginAccount}
+                            disabled={!connected || loadingMangoAccount}
                           >
                             <span>Withdraw</span>
                           </Button>

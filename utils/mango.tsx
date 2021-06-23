@@ -1,5 +1,5 @@
 import { TokenAccount } from '@blockworks-foundation/mango-client'
-import useMangoStore, {mangoClient} from '../stores/useMangoStore'
+import useMangoStore, { mangoClient } from '../stores/useMangoStore'
 
 export async function deposit({
   amount,
@@ -8,30 +8,30 @@ export async function deposit({
   amount: number
   fromTokenAcc: TokenAccount
 }) {
-  const marginAccount = useMangoStore.getState().selectedMarginAccount.current
+  const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
   const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
   const wallet = useMangoStore.getState().wallet.current
 
   const tokenIndex = mangoGroup.getTokenIndex(fromTokenAcc.mint)
 
-  let newMarginAccount
-  if (!marginAccount) {
-    const marginAccountPk = await mangoClient.initMerpsAccount(
+  let newMangoAccount
+  if (!mangoAccount) {
+    const mangoAccountPk = await mangoClient.initMerpsAccount(
       mangoGroup,
       wallet
     )
-    newMarginAccount = await mangoClient.getMerpsAccount(
-      marginAccountPk,
+    newMangoAccount = await mangoClient.getMerpsAccount(
+      mangoAccountPk,
       mangoGroup.dexProgramId
     )
   }
 
   // TODO add to basket before deposit for non quote index
 
-  if (marginAccount || newMarginAccount) {
+  if (mangoAccount || newMangoAccount) {
     return mangoClient.deposit(
       mangoGroup,
-      newMarginAccount || marginAccount,
+      newMangoAccount || mangoAccount,
       wallet,
       mangoGroup.tokens[tokenIndex].rootBank,
       mangoGroup.rootBankAccounts[tokenIndex].nodeBankAccounts[0].publicKey,
@@ -64,8 +64,8 @@ export async function deposit({
 // import {
 //   MangoGroup,
 //   MangoSrmAccountLayout,
-//   MarginAccount,
-//   MarginAccountLayout,
+//   MangoAccount,
+//   MangoAccountLayout,
 // } from '@blockworks-foundation/mango-client'
 // import {
 //   encodeMangoInstruction,
@@ -103,17 +103,17 @@ export async function deposit({
 
 export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 
-// export async function initMarginAccount(
+// export async function initMangoAccount(
 //   connection: Connection,
 //   programId: PublicKey,
 //   mangoGroup: MangoGroup,
 //   wallet: Wallet
 // ): Promise<PublicKey> {
-//   // Create a Solana account for the MarginAccount and allocate space
+//   // Create a Solana account for the MangoAccount and allocate space
 //   const accInstr = await createAccountInstruction(
 //     connection,
 //     wallet.publicKey,
-//     MarginAccountLayout.span,
+//     MangoAccountLayout.span,
 //     programId
 //   )
 
@@ -125,9 +125,9 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 //     { isSigner: false, isWritable: false, pubkey: SYSVAR_RENT_PUBKEY },
 //   ]
 
-//   // Encode and create instruction for actual initMarginAccount instruction
-//   const data = encodeMangoInstruction({ InitMarginAccount: {} })
-//   const initMarginAccountInstruction = new TransactionInstruction({
+//   // Encode and create instruction for actual initMangoAccount instruction
+//   const data = encodeMangoInstruction({ InitMangoAccount: {} })
+//   const initMangoAccountInstruction = new TransactionInstruction({
 //     keys,
 //     data,
 //     programId,
@@ -136,12 +136,12 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 //   // Add all instructions to one atomic transaction
 //   const transaction = new Transaction()
 //   transaction.add(accInstr.instruction)
-//   transaction.add(initMarginAccountInstruction)
+//   transaction.add(initMangoAccountInstruction)
 
 //   // Specify signers in addition to the wallet
 //   const signers = [accInstr.account]
 
-//   const functionName = 'InitMarginAccount'
+//   const functionName = 'InitMangoAccount'
 //   const sendingMessage = `Sending ${functionName} instruction...`
 //   const successMessage = `${functionName} instruction success`
 
@@ -161,7 +161,7 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 //   connection: Connection,
 //   programId: PublicKey,
 //   mangoGroup: MangoGroup,
-//   marginAccount: MarginAccount,
+//   mangoAccount: MangoAccount,
 //   wallet: Wallet,
 //   token: PublicKey,
 //   tokenAcc: PublicKey,
@@ -206,7 +206,7 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 
 //   const keys = [
 //     { isSigner: false, isWritable: true, pubkey: mangoGroup.publicKey },
-//     { isSigner: false, isWritable: true, pubkey: marginAccount.publicKey },
+//     { isSigner: false, isWritable: true, pubkey: mangoAccount.publicKey },
 //     { isSigner: true, isWritable: false, pubkey: wallet.publicKey },
 //     {
 //       isSigner: false,
@@ -241,7 +241,7 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 //   // settle borrow
 //   const settleKeys = [
 //     { isSigner: false, isWritable: true, pubkey: mangoGroup.publicKey },
-//     { isSigner: false, isWritable: true, pubkey: marginAccount.publicKey },
+//     { isSigner: false, isWritable: true, pubkey: mangoAccount.publicKey },
 //     { isSigner: true, isWritable: false, pubkey: wallet.publicKey },
 //     { isSigner: false, isWritable: false, pubkey: SYSVAR_CLOCK_PUBKEY },
 //   ]
@@ -268,7 +268,7 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 //   })
 // }
 
-// export async function initMarginAccountAndDeposit(
+// export async function initMangoAccountAndDeposit(
 //   connection: Connection,
 //   programId: PublicKey,
 //   mangoGroup: MangoGroup,
@@ -302,12 +302,12 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 //     )
 //     signers.push(wrappedSolAccount)
 //   }
-//   // Create a Solana account for the MarginAccount and allocate spac
+//   // Create a Solana account for the MangoAccount and allocate spac
 
 //   const accInstr = await createAccountInstruction(
 //     connection,
 //     wallet.publicKey,
-//     MarginAccountLayout.span,
+//     MangoAccountLayout.span,
 //     programId
 //   )
 
@@ -319,9 +319,9 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 //     { isSigner: false, isWritable: false, pubkey: SYSVAR_RENT_PUBKEY },
 //   ]
 
-//   // Encode and create instruction for actual initMarginAccount instruction
-//   const data = encodeMangoInstruction({ InitMarginAccount: {} })
-//   const initMarginAccountInstruction = new TransactionInstruction({
+//   // Encode and create instruction for actual initMangoAccount instruction
+//   const data = encodeMangoInstruction({ InitMangoAccount: {} })
+//   const initMangoAccountInstruction = new TransactionInstruction({
 //     keys,
 //     data,
 //     programId,
@@ -329,7 +329,7 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 
 //   // Add all instructions to one atomic transaction
 //   transaction.add(accInstr.instruction)
-//   transaction.add(initMarginAccountInstruction)
+//   transaction.add(initMangoAccountInstruction)
 
 //   const tokenIndex = mangoGroup.getTokenIndex(token)
 //   const nativeQuantity = uiToNative(
@@ -377,7 +377,7 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 
 //   // Specify signers in addition to the wallet
 //   signers.push(accInstr.account)
-//   const functionName = 'InitMarginAccount'
+//   const functionName = 'InitMangoAccount'
 //   const sendingMessage = `Sending ${functionName} instruction...`
 //   const successMessage = `${functionName} instruction success`
 
@@ -396,7 +396,7 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 //   connection: Connection,
 //   programId: PublicKey,
 //   mangoGroup: MangoGroup,
-//   marginAccount: MarginAccount,
+//   mangoAccount: MangoAccount,
 //   wallet: Wallet,
 //   token: PublicKey,
 //   quantity: number
@@ -452,7 +452,7 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 
 //   const keys = [
 //     { isSigner: false, isWritable: true, pubkey: mangoGroup.publicKey },
-//     { isSigner: false, isWritable: true, pubkey: marginAccount.publicKey },
+//     { isSigner: false, isWritable: true, pubkey: mangoAccount.publicKey },
 //     { isSigner: true, isWritable: false, pubkey: wallet.publicKey },
 //     {
 //       isSigner: false,
@@ -467,7 +467,7 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 //     { isSigner: false, isWritable: false, pubkey: mangoGroup.signerKey },
 //     { isSigner: false, isWritable: false, pubkey: TOKEN_PROGRAM_ID },
 //     { isSigner: false, isWritable: false, pubkey: SYSVAR_CLOCK_PUBKEY },
-//     ...marginAccount.openOrders.map((pubkey) => ({
+//     ...mangoAccount.openOrders.map((pubkey) => ({
 //       isSigner: false,
 //       isWritable: false,
 //       pubkey,
@@ -511,7 +511,7 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 //   connection: Connection,
 //   programId: PublicKey,
 //   mangoGroup: MangoGroup,
-//   marginAccount: MarginAccount,
+//   mangoAccount: MangoAccount,
 //   wallet: Wallet,
 //   token: PublicKey,
 //   withdrawQuantity: number
@@ -560,7 +560,7 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 //   }
 
 //   const tokenIndex = mangoGroup.getTokenIndex(token)
-//   const tokenBalance = marginAccount.getUiDeposit(mangoGroup, tokenIndex)
+//   const tokenBalance = mangoAccount.getUiDeposit(mangoGroup, tokenIndex)
 //   const borrowQuantity = withdrawQuantity - tokenBalance
 
 //   const nativeBorrowQuantity = new BN(
@@ -574,10 +574,10 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 //   const borrowInstruction = makeBorrowInstruction(
 //     programId,
 //     mangoGroup.publicKey,
-//     marginAccount.publicKey,
+//     mangoAccount.publicKey,
 //     wallet.publicKey,
 //     tokenIndex,
-//     marginAccount.openOrders,
+//     mangoAccount.openOrders,
 //     mangoGroup.oracles,
 //     nativeBorrowQuantity
 //   )
@@ -594,12 +594,12 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 //   const withdrawInstruction = makeWithdrawInstruction(
 //     programId,
 //     mangoGroup.publicKey,
-//     marginAccount.publicKey,
+//     mangoAccount.publicKey,
 //     wallet.publicKey,
 //     mangoGroup.signerKey,
 //     tokenAcc,
 //     mangoGroup.vaults[tokenIndex],
-//     marginAccount.openOrders,
+//     mangoAccount.openOrders,
 //     mangoGroup.oracles,
 //     nativeWithdrawQuantity
 //   )
@@ -608,7 +608,7 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 //   const settleBorrowInstruction = makeSettleBorrowInstruction(
 //     programId,
 //     mangoGroup.publicKey,
-//     marginAccount.publicKey,
+//     mangoAccount.publicKey,
 //     wallet.publicKey,
 //     tokenIndex,
 //     nativeWithdrawQuantity
@@ -642,7 +642,7 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 //   connection: Connection,
 //   programId: PublicKey,
 //   mangoGroup: MangoGroup,
-//   marginAccount: MarginAccount,
+//   mangoAccount: MangoAccount,
 //   wallet: Wallet,
 //   token: PublicKey,
 
@@ -656,10 +656,10 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 
 //   const keys = [
 //     { isSigner: false, isWritable: true, pubkey: mangoGroup.publicKey },
-//     { isSigner: false, isWritable: true, pubkey: marginAccount.publicKey },
+//     { isSigner: false, isWritable: true, pubkey: mangoAccount.publicKey },
 //     { isSigner: true, isWritable: false, pubkey: wallet.publicKey },
 //     { isSigner: false, isWritable: false, pubkey: SYSVAR_CLOCK_PUBKEY },
-//     ...marginAccount.openOrders.map((pubkey) => ({
+//     ...mangoAccount.openOrders.map((pubkey) => ({
 //       isSigner: false,
 //       isWritable: false,
 //       pubkey,
@@ -696,7 +696,7 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 //   connection: Connection,
 //   programId: PublicKey,
 //   mangoGroup: MangoGroup,
-//   marginAccount: MarginAccount,
+//   mangoAccount: MangoAccount,
 //   wallet: Wallet,
 
 //   token: PublicKey,
@@ -709,7 +709,7 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 //   )
 //   const keys = [
 //     { isSigner: false, isWritable: true, pubkey: mangoGroup.publicKey },
-//     { isSigner: false, isWritable: true, pubkey: marginAccount.publicKey },
+//     { isSigner: false, isWritable: true, pubkey: mangoAccount.publicKey },
 //     { isSigner: true, isWritable: false, pubkey: wallet.publicKey },
 //     { isSigner: false, isWritable: false, pubkey: SYSVAR_CLOCK_PUBKEY },
 //   ]
@@ -734,7 +734,7 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 //   connection: Connection,
 //   programId: PublicKey,
 //   mangoGroup: MangoGroup,
-//   marginAccount: MarginAccount,
+//   mangoAccount: MangoAccount,
 //   wallet: Wallet,
 
 //   token: Array<PublicKey>,
@@ -753,7 +753,7 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 //     )
 //     const keys = [
 //       { isSigner: false, isWritable: true, pubkey: mangoGroup.publicKey },
-//       { isSigner: false, isWritable: true, pubkey: marginAccount.publicKey },
+//       { isSigner: false, isWritable: true, pubkey: mangoAccount.publicKey },
 //       { isSigner: true, isWritable: false, pubkey: wallet.publicKey },
 //       { isSigner: false, isWritable: false, pubkey: SYSVAR_CLOCK_PUBKEY },
 //     ]
@@ -879,7 +879,7 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 //   connection: Connection,
 //   programId: PublicKey,
 //   mangoGroup: MangoGroup,
-//   marginAccount: MarginAccount,
+//   mangoAccount: MangoAccount,
 //   spotMarket: Market,
 //   wallet: Wallet,
 
@@ -935,10 +935,10 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 
 //   // Create a Solana account for the open orders account if it's missing
 //   const openOrdersKeys: PublicKey[] = []
-//   for (let i = 0; i < marginAccount.openOrders.length; i++) {
+//   for (let i = 0; i < mangoAccount.openOrders.length; i++) {
 //     if (
 //       i === marketIndex &&
-//       marginAccount.openOrders[marketIndex].equals(zeroKey)
+//       mangoAccount.openOrders[marketIndex].equals(zeroKey)
 //     ) {
 //       // open orders missing for this market; create a new one now
 //       const openOrdersSpace = OpenOrders.getLayout(mangoGroup.dexProgramId).span
@@ -959,17 +959,17 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 //       signers.push(accInstr.account)
 //       openOrdersKeys.push(accInstr.account.publicKey)
 //     } else {
-//       openOrdersKeys.push(marginAccount.openOrders[i])
+//       openOrdersKeys.push(mangoAccount.openOrders[i])
 //     }
 //   }
 
 //   // Only send a pre-settle instruction if open orders account already exists
-//   if (!marginAccount.openOrders[marketIndex].equals(zeroKey)) {
+//   if (!mangoAccount.openOrders[marketIndex].equals(zeroKey)) {
 //     const settleFundsInstr = makeSettleFundsInstruction(
 //       programId,
 //       mangoGroup.publicKey,
 //       wallet.publicKey,
-//       marginAccount.publicKey,
+//       mangoAccount.publicKey,
 //       spotMarket.programId,
 //       spotMarket.publicKey,
 //       openOrdersKeys[marketIndex],
@@ -986,7 +986,7 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 //   const keys = [
 //     { isSigner: false, isWritable: true, pubkey: mangoGroup.publicKey },
 //     { isSigner: true, isWritable: false, pubkey: wallet.publicKey },
-//     { isSigner: false, isWritable: true, pubkey: marginAccount.publicKey },
+//     { isSigner: false, isWritable: true, pubkey: mangoAccount.publicKey },
 //     { isSigner: false, isWritable: false, pubkey: SYSVAR_CLOCK_PUBKEY },
 //     { isSigner: false, isWritable: false, pubkey: spotMarket.programId },
 //     { isSigner: false, isWritable: true, pubkey: spotMarket.publicKey },
@@ -1082,7 +1082,7 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 //   connection: Connection,
 //   programId: PublicKey,
 //   mangoGroup: MangoGroup,
-//   marginAccount: MarginAccount,
+//   mangoAccount: MangoAccount,
 //   wallet: Wallet,
 //   spotMarket: Market
 // ): Promise<TransactionSignature> {
@@ -1099,10 +1099,10 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 //     programId,
 //     mangoGroup.publicKey,
 //     wallet.publicKey,
-//     marginAccount.publicKey,
+//     mangoAccount.publicKey,
 //     spotMarket.programId,
 //     spotMarket.publicKey,
-//     marginAccount.openOrders[marketIndex],
+//     mangoAccount.openOrders[marketIndex],
 //     mangoGroup.signerKey,
 //     spotMarket['_decoded'].baseVault,
 //     spotMarket['_decoded'].quoteVault,
@@ -1113,7 +1113,7 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 //   transaction.add(settleFundsIns)
 
 //   const tokenIndex = marketIndex
-//   const quantity = marginAccount.getUiBorrow(mangoGroup, tokenIndex)
+//   const quantity = mangoAccount.getUiBorrow(mangoGroup, tokenIndex)
 //   const nativeQuantity = uiToNative(
 //     quantity,
 //     mangoGroup.mintDecimals[tokenIndex]
@@ -1122,7 +1122,7 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 //   const settleBorrowIns = await makeSettleBorrowInstruction(
 //     programId,
 //     mangoGroup.publicKey,
-//     marginAccount.publicKey,
+//     mangoAccount.publicKey,
 //     wallet.publicKey,
 //     tokenIndex,
 //     nativeQuantity
@@ -1143,7 +1143,7 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 //   connection: Connection,
 //   programId: PublicKey,
 //   mangoGroup: MangoGroup,
-//   marginAccount: MarginAccount,
+//   mangoAccount: MangoAccount,
 //   wallet: Wallet,
 //   spotMarket: Market
 // ): Promise<TransactionSignature> {
@@ -1159,14 +1159,14 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 //   const keys = [
 //     { isSigner: false, isWritable: true, pubkey: mangoGroup.publicKey },
 //     { isSigner: true, isWritable: false, pubkey: wallet.publicKey },
-//     { isSigner: false, isWritable: true, pubkey: marginAccount.publicKey },
+//     { isSigner: false, isWritable: true, pubkey: mangoAccount.publicKey },
 //     { isSigner: false, isWritable: false, pubkey: SYSVAR_CLOCK_PUBKEY },
 //     { isSigner: false, isWritable: false, pubkey: spotMarket.programId },
 //     { isSigner: false, isWritable: true, pubkey: spotMarket.publicKey },
 //     {
 //       isSigner: false,
 //       isWritable: true,
-//       pubkey: marginAccount.openOrders[marketIndex],
+//       pubkey: mangoAccount.openOrders[marketIndex],
 //     },
 //     { isSigner: false, isWritable: false, pubkey: mangoGroup.signerKey },
 //     {
@@ -1218,7 +1218,7 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 //   connection: Connection,
 //   programId: PublicKey,
 //   mangoGroup: MangoGroup,
-//   marginAccount: MarginAccount,
+//   mangoAccount: MangoAccount,
 //   wallet: Wallet,
 //   spotMarket: Market,
 //   order: Order
@@ -1226,7 +1226,7 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 //   const keys = [
 //     { isSigner: false, isWritable: true, pubkey: mangoGroup.publicKey },
 //     { isSigner: true, isWritable: false, pubkey: wallet.publicKey },
-//     { isSigner: false, isWritable: true, pubkey: marginAccount.publicKey },
+//     { isSigner: false, isWritable: true, pubkey: mangoAccount.publicKey },
 //     { isSigner: false, isWritable: false, pubkey: SYSVAR_CLOCK_PUBKEY },
 //     { isSigner: false, isWritable: false, pubkey: mangoGroup.dexProgramId },
 //     { isSigner: false, isWritable: true, pubkey: spotMarket.publicKey },
@@ -1265,10 +1265,10 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 //     programId,
 //     mangoGroup.publicKey,
 //     wallet.publicKey,
-//     marginAccount.publicKey,
+//     mangoAccount.publicKey,
 //     spotMarket.programId,
 //     spotMarket.publicKey,
-//     marginAccount.openOrders[marketIndex],
+//     mangoAccount.openOrders[marketIndex],
 //     mangoGroup.signerKey,
 //     spotMarket['_decoded'].baseVault,
 //     spotMarket['_decoded'].quoteVault,
@@ -1281,7 +1281,7 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 //   const baseTokenIndex = marketIndex
 //   const quoteTokenIndex = NUM_TOKENS - 1
 
-//   const baseTokenQuantity = marginAccount.getUiBorrow(
+//   const baseTokenQuantity = mangoAccount.getUiBorrow(
 //     mangoGroup,
 //     baseTokenIndex
 //   )
@@ -1290,7 +1290,7 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 //     mangoGroup.mintDecimals[baseTokenIndex]
 //   )
 
-//   const quoteTokenQuantity = marginAccount.getUiBorrow(
+//   const quoteTokenQuantity = mangoAccount.getUiBorrow(
 //     mangoGroup,
 //     quoteTokenIndex
 //   )
@@ -1302,7 +1302,7 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 //   const settleBorrowBaseToken = await makeSettleBorrowInstruction(
 //     programId,
 //     mangoGroup.publicKey,
-//     marginAccount.publicKey,
+//     mangoAccount.publicKey,
 //     wallet.publicKey,
 //     baseTokenIndex,
 //     baseTokenNativeQuantity
@@ -1313,7 +1313,7 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 //   const settleBorrowQuoteToken = await makeSettleBorrowInstruction(
 //     programId,
 //     mangoGroup.publicKey,
-//     marginAccount.publicKey,
+//     mangoAccount.publicKey,
 //     wallet.publicKey,
 //     quoteTokenIndex,
 //     quoteTokenNativeQuantity
@@ -1334,7 +1334,7 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 //   connection: Connection,
 //   programId: PublicKey,
 //   mangoGroup: MangoGroup,
-//   marginAccount: MarginAccount,
+//   mangoAccount: MangoAccount,
 //   markets: Market[],
 //   wallet: Wallet
 // ): Promise<TransactionSignature> {
@@ -1343,7 +1343,7 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 //   const assetGains: number[] = new Array(NUM_TOKENS).fill(0)
 
 //   for (let i = 0; i < NUM_MARKETS; i++) {
-//     const openOrdersAccount = marginAccount.openOrdersAccounts[i]
+//     const openOrdersAccount = mangoAccount.openOrdersAccounts[i]
 //     if (openOrdersAccount === undefined) {
 //       continue
 //     } else if (
@@ -1372,14 +1372,14 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 //     const keys = [
 //       { isSigner: false, isWritable: true, pubkey: mangoGroup.publicKey },
 //       { isSigner: true, isWritable: false, pubkey: wallet.publicKey },
-//       { isSigner: false, isWritable: true, pubkey: marginAccount.publicKey },
+//       { isSigner: false, isWritable: true, pubkey: mangoAccount.publicKey },
 //       { isSigner: false, isWritable: false, pubkey: SYSVAR_CLOCK_PUBKEY },
 //       { isSigner: false, isWritable: false, pubkey: spotMarket.programId },
 //       { isSigner: false, isWritable: true, pubkey: spotMarket.publicKey },
 //       {
 //         isSigner: false,
 //         isWritable: true,
-//         pubkey: marginAccount.openOrders[i],
+//         pubkey: mangoAccount.openOrders[i],
 //       },
 //       { isSigner: false, isWritable: false, pubkey: mangoGroup.signerKey },
 //       {
@@ -1412,8 +1412,8 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 //     transaction.add(settleFundsInstruction)
 //   }
 
-//   const deposits = marginAccount.getDeposits(mangoGroup)
-//   const liabs = marginAccount.getLiabs(mangoGroup)
+//   const deposits = mangoAccount.getDeposits(mangoGroup)
+//   const liabs = mangoAccount.getLiabs(mangoGroup)
 
 //   for (let i = 0; i < NUM_TOKENS; i++) {
 //     // TODO test this. maybe it hits transaction size limit
@@ -1424,7 +1424,7 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 //     }
 //     const keys = [
 //       { isSigner: false, isWritable: true, pubkey: mangoGroup.publicKey },
-//       { isSigner: false, isWritable: true, pubkey: marginAccount.publicKey },
+//       { isSigner: false, isWritable: true, pubkey: mangoAccount.publicKey },
 //       { isSigner: true, isWritable: false, pubkey: wallet.publicKey },
 //       { isSigner: false, isWritable: false, pubkey: SYSVAR_CLOCK_PUBKEY },
 //     ]
@@ -1473,7 +1473,7 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 //   connection: Connection,
 //   programId: PublicKey,
 //   mangoGroup: MangoGroup,
-//   marginAccount: MarginAccount,
+//   mangoAccount: MangoAccount,
 //   markets: Market[],
 //   wallet: Wallet
 // ): Promise<TransactionSignature> {
@@ -1482,7 +1482,7 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 //   const assetGains: number[] = new Array(NUM_TOKENS).fill(0)
 
 //   for (let i = 0; i < NUM_MARKETS; i++) {
-//     const openOrdersAccount = marginAccount.openOrdersAccounts[i]
+//     const openOrdersAccount = mangoAccount.openOrdersAccounts[i]
 //     if (openOrdersAccount === undefined) {
 //       continue
 //     } else if (
@@ -1507,14 +1507,14 @@ export const DEFAULT_MANGO_GROUP = 'BTC_ETH_SOL_SRM_USDC'
 //     const keys = [
 //       { isSigner: false, isWritable: true, pubkey: mangoGroup.publicKey },
 //       { isSigner: true, isWritable: false, pubkey: wallet.publicKey },
-//       { isSigner: false, isWritable: true, pubkey: marginAccount.publicKey },
+//       { isSigner: false, isWritable: true, pubkey: mangoAccount.publicKey },
 //       { isSigner: false, isWritable: false, pubkey: SYSVAR_CLOCK_PUBKEY },
 //       { isSigner: false, isWritable: false, pubkey: spotMarket.programId },
 //       { isSigner: false, isWritable: true, pubkey: spotMarket.publicKey },
 //       {
 //         isSigner: false,
 //         isWritable: true,
-//         pubkey: marginAccount.openOrders[i],
+//         pubkey: mangoAccount.openOrders[i],
 //       },
 //       { isSigner: false, isWritable: false, pubkey: mangoGroup.signerKey },
 //       {

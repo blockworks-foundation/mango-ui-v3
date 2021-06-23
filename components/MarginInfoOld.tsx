@@ -55,8 +55,8 @@ const calculatePNL = (tradeHistory, prices, mangoGroup) => {
 export default function MarginInfo() {
   const connection = useMangoStore((s) => s.connection.current)
   const connected = useMangoStore((s) => s.wallet.connected)
-  const selectedMarginAccount = useMangoStore(
-    (s) => s.selectedMarginAccount.current
+  const selectedMangoAccount = useMangoStore(
+    (s) => s.selectedMangoAccount.current
   )
   const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const tradeHistory = useTradeHistory()
@@ -76,22 +76,22 @@ export default function MarginInfo() {
   useEffect(() => {
     if (selectedMangoGroup) {
       selectedMangoGroup.getPrices(connection).then((prices) => {
-        const collateralRatio = selectedMarginAccount
-          ? selectedMarginAccount.getCollateralRatio(
+        const collateralRatio = selectedMangoAccount
+          ? selectedMangoAccount.getCollateralRatio(
               selectedMangoGroup,
               prices
             ) || 200
           : 200
 
-        const accountEquity = selectedMarginAccount
-          ? selectedMarginAccount.computeValue(selectedMangoGroup, prices)
+        const accountEquity = selectedMangoAccount
+          ? selectedMangoAccount.computeValue(selectedMangoGroup, prices)
           : 0
         let leverage
-        if (selectedMarginAccount) {
+        if (selectedMangoAccount) {
           leverage = accountEquity
             ? (
                 1 /
-                (selectedMarginAccount.getCollateralRatio(
+                (selectedMangoAccount.getCollateralRatio(
                   selectedMangoGroup,
                   prices
                 ) -
@@ -150,7 +150,7 @@ export default function MarginInfo() {
         ])
       })
     }
-  }, [selectedMarginAccount, selectedMangoGroup, tradeHistoryLength])
+  }, [selectedMangoAccount, selectedMangoGroup, tradeHistoryLength])
 
   return (
     <FloatingElement>
@@ -183,7 +183,7 @@ export default function MarginInfo() {
           <AlertsModal
             isOpen={openAlertModal}
             onClose={() => setOpenAlertModal(false)}
-            marginAccount={selectedMarginAccount}
+            mangoAccount={selectedMangoAccount}
           />
         ) : null}
       </>

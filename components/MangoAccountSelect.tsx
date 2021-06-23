@@ -1,40 +1,40 @@
-import { MerpsAccount as MarginAccount } from '@blockworks-foundation/mango-client'
+import { MerpsAccount as MangoAccount } from '@blockworks-foundation/mango-client'
 import { useEffect, useState } from 'react'
 import useMangoStore from '../stores/useMangoStore'
 import Select from './Select'
 import { abbreviateAddress } from '../utils'
 
-type MarginAccountSelectProps = {
+type MangoAccountSelectProps = {
   className?: string
   onChange?: (x) => void
-  value?: MarginAccount | null
+  value?: MangoAccount | null
   disabled?: boolean
 }
 
-const MarginAccountSelect = ({
+const MangoAccountSelect = ({
   onChange,
   value,
   disabled = false,
   className = '',
-}: MarginAccountSelectProps) => {
-  const marginAccounts = useMangoStore((s) => s.marginAccounts)
-  const [selectedMarginAccount, setSelectedMarginAccount] = useState(
-    value || marginAccounts[0]
+}: MangoAccountSelectProps) => {
+  const mangoAccounts = useMangoStore((s) => s.mangoAccounts)
+  const [selectedMangoAccount, setSelectedMangoAccount] = useState(
+    value || mangoAccounts[0]
   )
 
   useEffect(() => {
     if (value) {
-      setSelectedMarginAccount(value)
+      setSelectedMangoAccount(value)
     }
   }, [value])
 
-  const handleSelectMarginAccount = (value) => {
-    const marginAccount = marginAccounts.find(
+  const handleSelectMangoAccount = (value) => {
+    const mangoAccount = mangoAccounts.find(
       (ma) => ma.publicKey.toString() === value
     )
-    setSelectedMarginAccount(marginAccount)
+    setSelectedMangoAccount(mangoAccount)
     if (onChange) {
-      onChange(marginAccount)
+      onChange(mangoAccount)
     }
   }
 
@@ -43,15 +43,15 @@ const MarginAccountSelect = ({
       disabled={disabled}
       value={
         <div className="text-left">
-          {abbreviateAddress(selectedMarginAccount?.publicKey)}
+          {abbreviateAddress(selectedMangoAccount?.publicKey)}
         </div>
       }
-      onChange={handleSelectMarginAccount}
+      onChange={handleSelectMangoAccount}
       placeholder="Select Margin Account"
       className={className}
     >
-      {marginAccounts.length ? (
-        marginAccounts.map((ma, index) => (
+      {mangoAccounts.length ? (
+        mangoAccounts.map((ma, index) => (
           <Select.Option key={index} value={ma.publicKey.toString()}>
             {abbreviateAddress(ma.publicKey)}
           </Select.Option>
@@ -65,4 +65,4 @@ const MarginAccountSelect = ({
   )
 }
 
-export default MarginAccountSelect
+export default MangoAccountSelect

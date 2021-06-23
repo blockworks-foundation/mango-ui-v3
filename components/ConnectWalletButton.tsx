@@ -31,7 +31,7 @@ const ConnectWalletButton = () => {
   const handleWalletConect = () => {
     wallet.connect()
     set((state) => {
-      state.selectedMarginAccount.initialLoad = true
+      state.selectedMangoAccount.initialLoad = true
     })
   }
 

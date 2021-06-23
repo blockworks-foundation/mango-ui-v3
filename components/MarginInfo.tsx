@@ -11,21 +11,20 @@ import Tooltip from './Tooltip'
 export default function MarginInfo() {
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
-  const selectedMarginAccount = useMangoStore(
-    (s) => s.selectedMarginAccount.current
+  const selectedMangoAccount = useMangoStore(
+    (s) => s.selectedMangoAccount.current
   )
 
   // TODO move out of component
   let initHealth = I80F48.fromString('0')
   let maintHealth = I80F48.fromString('0')
-  if (selectedMarginAccount) {
-    initHealth = selectedMarginAccount.getHealth(mangoGroup, mangoCache, 'Init')
-
-    maintHealth = selectedMarginAccount.getHealth(
-      mangoGroup,
-      mangoCache,
-      'Maint'
-    )
+  if (selectedMangoAccount) {
+    // initHealth = selectedMangoAccount.getHealth(mangoGroup, mangoCache, 'Init')
+    // maintHealth = selectedMangoAccount.getHealth(
+    //   mangoGroup,
+    //   mangoCache,
+    //   'Maint'
+    // )
   }
 
   // const tradeHistory = useTradeHistory()
@@ -67,7 +66,7 @@ export default function MarginInfo() {
           <AlertsModal
             isOpen={openAlertModal}
             onClose={() => setOpenAlertModal(false)}
-            marginAccount={selectedMarginAccount}
+            mangoAccount={selectedMangoAccount}
           />
         ) : null} */}
       </>

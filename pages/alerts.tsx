@@ -28,7 +28,7 @@ const TABS = ['Active', 'Triggered']
 
 export default function Alerts() {
   const connected = useMangoStore((s) => s.wallet.connected)
-  const marginAccounts = useMangoStore((s) => s.marginAccounts)
+  const mangoAccounts = useMangoStore((s) => s.mangoAccounts)
   const [activeTab, setActiveTab] = useState(TABS[0])
   const [openAlertModal, setOpenAlertModal] = useState(false)
   const [reactivateAlertData, setReactivateAlertData] = useState(null)
@@ -87,7 +87,7 @@ export default function Alerts() {
         <div className="flex flex-col sm:flex-row items-center justify-between pt-8 pb-3 sm:pb-6 md:pt-10">
           <h1 className={`text-th-fgd-1 text-2xl font-semibold`}>Alerts</h1>
           <div className="flex flex-col-reverse justify-between w-full pt-4 sm:pt-0 sm:justify-end sm:flex-row">
-            {marginAccounts.length === 2 ? (
+            {mangoAccounts.length === 2 ? (
               <RadioGroup
                 value={acc.toString()}
                 onChange={(val) => handleAccountChange(val)}
@@ -107,7 +107,7 @@ export default function Alerts() {
                     </button>
                   )}
                 </RadioGroup.Option>
-                {marginAccounts.map((acc, i) => (
+                {mangoAccounts.map((acc, i) => (
                   <RadioGroup.Option
                     value={acc.publicKey.toString()}
                     className="focus:outline-none flex-auto"
@@ -118,9 +118,7 @@ export default function Alerts() {
                         className={`${
                           checked ? 'bg-th-bkg-3' : ''
                         } font-normal text-th-fgd-1  text-center p-1.5 h-full w-full rounded-none ${
-                          i === marginAccounts.length - 1
-                            ? 'rounded-r-md'
-                            : null
+                          i === mangoAccounts.length - 1 ? 'rounded-r-md' : null
                         } border-l border-th-fgd-4 hover:bg-th-bkg-3 focus:outline-none`}
                       >
                         {abbreviateAddress(acc.publicKey)}
@@ -130,7 +128,7 @@ export default function Alerts() {
                 ))}
               </RadioGroup>
             ) : null}
-            {marginAccounts.length > 2 ? (
+            {mangoAccounts.length > 2 ? (
               <Select
                 className="w-full mt-2 sm:w-36 sm:mt-0"
                 value={
@@ -141,7 +139,7 @@ export default function Alerts() {
                 onChange={(val) => handleAccountChange(val)}
               >
                 <Select.Option value="All">All</Select.Option>
-                {marginAccounts
+                {mangoAccounts
                   .slice()
                   .sort(
                     (a, b) =>
@@ -157,7 +155,7 @@ export default function Alerts() {
             ) : null}
             <Button
               className={`text-xs flex items-center justify-center sm:ml-2 pt-0 pb-0 ${
-                marginAccounts.length > 2 ? 'h-10' : 'h-8'
+                mangoAccounts.length > 2 ? 'h-10' : 'h-8'
               } pl-3 pr-3`}
               disabled={!connected}
               onClick={() => setOpenAlertModal(true)}

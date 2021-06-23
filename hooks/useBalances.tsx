@@ -3,19 +3,19 @@ import { nativeToUi } from '@blockworks-foundation/mango-client'
 import useMarketList from './useMarketList'
 import useMangoStore from '../stores/useMangoStore'
 import {
-  // displayBorrowsForMarginAccount,
-  // displayDepositsForMarginAccount,
+  // displayBorrowsForMangoAccount,
+  // displayDepositsForMangoAccount,
   floorToDecimal,
 } from '../utils'
 import useAllMarkets from './useAllMarkets'
 import { sumBy } from 'lodash'
-import { QUOTE_INDEX } from '@blockworks-foundation/mango-client/lib/src/MerpsGroup'
+import { QUOTE_INDEX } from '@blockworks-foundation/mango-client/lib/src/MangoGroup'
 import { I80F48 } from '@blockworks-foundation/mango-client/lib/src/fixednum'
 
 export function useBalances(): Balances[] {
   const balances = []
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
-  const marginAccount = useMangoStore((s) => s.selectedMarginAccount.current)
+  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const mangoGroupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
 
@@ -24,11 +24,11 @@ export function useBalances(): Balances[] {
     baseSymbol,
     name,
   } of mangoGroupConfig.spotMarkets) {
-    if (!marginAccount || !mangoGroup) {
+    if (!mangoAccount || !mangoGroup) {
       return []
     }
 
-    const openOrders: any = marginAccount.spotOpenOrdersAccounts[marketIndex]
+    const openOrders: any = mangoAccount.spotOpenOrdersAccounts[marketIndex]
     const quoteCurrencyIndex = QUOTE_INDEX
 
     const nativeBaseFree = openOrders?.baseTokenFree || 0
@@ -46,14 +46,14 @@ export function useBalances(): Balances[] {
     const tokenIndex = marketIndex
 
     const net = (locked, currencyIndex) => {
-      const amount = marginAccount
+      const amount = mangoAccount
         .getNativeDeposit(
           mangoCache.rootBankCache[currencyIndex],
           currencyIndex
         )
         .add(
           I80F48.fromNumber(locked).sub(
-            marginAccount.getNativeBorrow(
+            mangoAccount.getNativeBorrow(
               mangoCache.rootBankCache[currencyIndex],
               currencyIndex
             )
@@ -72,14 +72,14 @@ export function useBalances(): Balances[] {
         market: null,
         key: `${baseSymbol}${name}`,
         coin: baseSymbol,
-        marginDeposits: marginAccount
+        marginDeposits: mangoAccount
           .getUiDeposit(
             mangoCache.rootBankCache[tokenIndex],
             mangoGroup,
             tokenIndex
           )
           .toString(),
-        borrows: marginAccount
+        borrows: mangoAccount
           .getUiBorrow(
             mangoCache.rootBankCache[tokenIndex],
             mangoGroup,
@@ -100,14 +100,14 @@ export function useBalances(): Balances[] {
         market: null,
         key: `${name}`,
         coin: mangoGroupConfig.quoteSymbol,
-        marginDeposits: marginAccount
+        marginDeposits: mangoAccount
           .getUiDeposit(
             mangoCache.rootBankCache[quoteCurrencyIndex],
             mangoGroup,
             quoteCurrencyIndex
           )
           .toString(),
-        borrows: marginAccount
+        borrows: mangoAccount
           .getUiBorrow(
             mangoCache.rootBankCache[tokenIndex],
             mangoGroup,

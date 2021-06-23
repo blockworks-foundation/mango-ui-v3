@@ -19,7 +19,7 @@ const BalancesTable = () => {
     const markets = Object.values(
       useMangoStore.getState().selectedMangoGroup.markets
     )
-    const marginAccount = useMangoStore.getState().selectedMarginAccount.current
+    const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
     const wallet = useMangoStore.getState().wallet.current
 
@@ -28,12 +28,12 @@ const BalancesTable = () => {
       //   connection,
       //   new PublicKey(programId),
       //   mangoGroup,
-      //   marginAccount,
+      //   mangoAccount,
       //   markets,
       //   wallet
       // )
       await sleep(250)
-      actions.fetchMarginAccounts()
+      actions.fetchMangoAccounts()
     } catch (e) {
       console.warn('Error settling all:', e)
       if (e.message === 'No unsettled funds') {

@@ -18,12 +18,12 @@ import { notify } from '../utils/notifications'
 import { copyToClipboard } from '../utils'
 import Modal from './Modal'
 import Loading from './Loading'
-import MarginAccountSelect from './MarginAccountSelect'
+import MangoAccountSelect from './MangoAccountSelect'
 import Tooltip from './Tooltip'
 import Select from './Select'
 
 interface AlertsModalProps {
-  marginAccount?: {
+  mangoAccount?: {
     publicKey: PublicKey
   }
   alert?: {
@@ -39,10 +39,10 @@ const AlertsModal: FunctionComponent<AlertsModalProps> = ({
   isOpen,
   onClose,
   alert,
-  marginAccount,
+  mangoAccount,
 }) => {
   const connected = useMangoStore((s) => s.wallet.connected)
-  const marginAccounts = useMangoStore((s) => s.marginAccounts)
+  const mangoAccounts = useMangoStore((s) => s.mangoAccounts)
   const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const actions = useAlertsStore((s) => s.actions)
   const submitting = useAlertsStore((s) => s.submitting)
@@ -54,8 +54,8 @@ const AlertsModal: FunctionComponent<AlertsModalProps> = ({
   // 1. margin account passed in directly (from the margin account info on the trade page)
   // 2. previous alert's margin account (when re-activating from the alerts page)
   // 3, the first margin account
-  const [selectedMarginAccount, setSelectedMarginAccount] = useState<any>(
-    marginAccount || alert?.acc || marginAccounts[0]
+  const [selectedMangoAccount, setSelectedMangoAccount] = useState<any>(
+    mangoAccount || alert?.acc || mangoAccounts[0]
   )
   const [collateralRatioPreset, setCollateralRatioPreset] = useState('113')
   const [customCollateralRatio, setCustomCollateralRatio] = useState('')
@@ -99,10 +99,10 @@ const AlertsModal: FunctionComponent<AlertsModalProps> = ({
         setCustomCollateralRatio(alert.collateralRatioThresh.toString())
       }
       setAlertProvider(alert.alertProvider)
-      const alertAccount = marginAccounts.find(
+      const alertAccount = mangoAccounts.find(
         (account) => account.publicKey.toString() === alert.acc.toString()
       )
-      setSelectedMarginAccount(alertAccount)
+      setSelectedMangoAccount(alertAccount)
     }
   }, [alert])
 
@@ -149,7 +149,7 @@ const AlertsModal: FunctionComponent<AlertsModalProps> = ({
         type: 'error',
       })
       return
-    } else if (!selectedMarginAccount) {
+    } else if (!selectedMangoAccount) {
       notify({
         message: 'Please select a margin account',
         type: 'error',
@@ -170,7 +170,7 @@ const AlertsModal: FunctionComponent<AlertsModalProps> = ({
     }
     const body = {
       mangoGroupPk: selectedMangoGroup.publicKey.toString(),
-      marginAccountPk: selectedMarginAccount.publicKey.toString(),
+      mangoAccountPk: selectedMangoAccount.publicKey.toString(),
       collateralRatioThresh,
       alertProvider,
       phoneNumber,
@@ -227,14 +227,14 @@ const AlertsModal: FunctionComponent<AlertsModalProps> = ({
               </Tooltip>
             </ElementTitle>
           </Modal.Header>
-          {marginAccounts.length > 0 ? (
+          {mangoAccounts.length > 0 ? (
             <>
-              {marginAccounts.length > 1 ? (
+              {mangoAccounts.length > 1 ? (
                 <div className="pb-4">
                   <div className={`text-th-fgd-1 pb-2`}>Margin Account</div>
-                  <MarginAccountSelect
-                    onChange={setSelectedMarginAccount}
-                    value={selectedMarginAccount}
+                  <MangoAccountSelect
+                    onChange={setSelectedMangoAccount}
+                    value={selectedMangoAccount}
                   />
                 </div>
               ) : null}

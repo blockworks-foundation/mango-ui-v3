@@ -30,8 +30,8 @@ export default function Account() {
   const [showAccountsModal, setShowAccountsModal] = useState(false)
   const accountMarginInfo = useMarginInfo()
   const connected = useMangoStore((s) => s.wallet.connected)
-  const selectedMarginAccount = useMangoStore(
-    (s) => s.selectedMarginAccount.current
+  const selectedMangoAccount = useMangoStore(
+    (s) => s.selectedMangoAccount.current
   )
 
   const handleTabChange = (tabName) => {
@@ -47,17 +47,17 @@ export default function Account() {
       <PageBodyContainer>
         <div className="flex flex-col sm:flex-row items-center justify-between pt-8 pb-3 sm:pb-6 md:pt-10">
           <h1 className={`text-th-fgd-1 text-2xl font-semibold`}>Account</h1>
-          {selectedMarginAccount ? (
+          {selectedMangoAccount ? (
             <div className="divide-x divide-th-fgd-4 flex justify-center w-full pt-4 sm:pt-0 sm:justify-end">
               <div className="pr-4 text-xs text-th-fgd-1">
                 <div className="pb-0.5 text-2xs text-th-fgd-3">Owner</div>
                 <a
                   className="default-transition flex items-center text-th-fgd-2"
-                  href={`https://explorer.solana.com/address/${selectedMarginAccount?.owner}`}
+                  href={`https://explorer.solana.com/address/${selectedMangoAccount?.owner}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <span>{abbreviateAddress(selectedMarginAccount?.owner)}</span>
+                  <span>{abbreviateAddress(selectedMangoAccount?.owner)}</span>
                   <ExternalLinkIcon className={`h-3 w-3 ml-1`} />
                 </a>
               </div>
@@ -67,12 +67,12 @@ export default function Account() {
                 </div>
                 <a
                   className="default-transition flex items-center text-th-fgd-2"
-                  href={`https://explorer.solana.com/address/${selectedMarginAccount?.publicKey}`}
+                  href={`https://explorer.solana.com/address/${selectedMangoAccount?.publicKey}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
                   <span>
-                    {abbreviateAddress(selectedMarginAccount?.publicKey)}
+                    {abbreviateAddress(selectedMangoAccount?.publicKey)}
                   </span>
                   <ExternalLinkIcon className={`h-3 w-3 ml-1`} />
                 </a>
@@ -81,7 +81,7 @@ export default function Account() {
           ) : null}
         </div>
         <div className="bg-th-bkg-2 overflow-none p-6 rounded-lg">
-          {selectedMarginAccount ? (
+          {selectedMangoAccount ? (
             <>
               <div className="pb-4 text-th-fgd-1 text-lg">Overview</div>
               {accountMarginInfo ? (

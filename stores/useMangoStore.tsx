@@ -4,9 +4,9 @@ import { Market } from '@project-serum/serum'
 import {
   IDS,
   Config,
-  MerpsClient as MangoClient,
-  MerpsGroup as MangoGroup,
-  MerpsAccount as MarginAccount,
+  MangoClient,
+  MangoGroup,
+  MangoAccount,
   MarketConfig,
   getMarketByBaseSymbolAndKind,
   GroupConfig,
@@ -15,7 +15,7 @@ import {
   getTokenByMint,
   TokenAccount,
   nativeToUi,
-  MerpsCache,
+  MangoCache,
   PerpMarket,
   getAllMarkets,
   getMultipleAccounts,
@@ -55,7 +55,7 @@ export const WEBSOCKET_CONNECTION = new Connection(
   'processed' as Commitment
 )
 
-const DEFAULT_MANGO_GROUP_NAME = 'merps_test_v2.2'
+const DEFAULT_MANGO_GROUP_NAME = 'mango_test_v2.2'
 const DEFAULT_MANGO_GROUP_CONFIG = Config.ids().getGroup(
   CLUSTER,
   DEFAULT_MANGO_GROUP_NAME
@@ -64,9 +64,9 @@ const defaultMangoGroupIds = IDS['groups'].find(
   (group) => group.name === DEFAULT_MANGO_GROUP_NAME
 )
 
-export const programId = new PublicKey(defaultMangoGroupIds.merpsProgramId)
+export const programId = new PublicKey(defaultMangoGroupIds.mangoProgramId)
 export const serumProgramId = new PublicKey(defaultMangoGroupIds.serumProgramId)
-const merpsGroupPk = new PublicKey(defaultMangoGroupIds.publicKey)
+const mangoGroupPk = new PublicKey(defaultMangoGroupIds.publicKey)
 
 export const mangoClient = new MangoClient(DEFAULT_CONNECTION, programId)
 
@@ -132,11 +132,11 @@ interface MangoStore extends State {
       [address: string]: Market | PerpMarket
     }
     rootBanks: any[]
-    cache: MerpsCache | null
+    cache: MangoCache | null
   }
-  marginAccounts: MarginAccount[]
-  selectedMarginAccount: {
-    current: MarginAccount | null
+  mangoAccounts: MangoAccount[]
+  selectedMangoAccount: {
+    current: MangoAccount | null
     initialLoad: boolean
   }
   tradeForm: {
@@ -196,8 +196,8 @@ const useMangoStore = create<MangoStore>((set, get) => ({
     fills: [],
   },
   mangoGroups: [],
-  marginAccounts: [],
-  selectedMarginAccount: {
+  mangoAccounts: [],
+  selectedMangoAccount: {
     current: null,
     initialLoad: false,
   },
@@ -245,9 +245,9 @@ const useMangoStore = create<MangoStore>((set, get) => ({
         })
       }
     },
-    async fetchMarginAccounts() {
+    async fetchMangoAccounts() {
       const mangoGroup = get().selectedMangoGroup.current
-      const selectedMarginAcount = get().selectedMarginAccount.current
+      const selectedMarginAcount = get().selectedMangoAccount.current
       const wallet = get().wallet.current
       const set = get().set
 
@@ -255,15 +255,15 @@ const useMangoStore = create<MangoStore>((set, get) => ({
 
       if (!selectedMarginAcount) {
         set((state) => {
-          state.selectedMarginAccount.initialLoad = true
+          state.selectedMangoAccount.initialLoad = true
         })
       }
 
       return mangoClient
         .getMarginAccountsForOwner(mangoGroup, wallet.publicKey, true)
-        .then((marginAccounts) => {
-          if (marginAccounts.length > 0) {
-            const sortedAccounts = marginAccounts
+        .then((mangoAccounts) => {
+          if (mangoAccounts.length > 0) {
+            const sortedAccounts = mangoAccounts
               .slice()
               .sort((a, b) =>
                 a.publicKey.toBase58() > b.publicKey.toBase58() ? 1 : -1
@@ -271,27 +271,27 @@ const useMangoStore = create<MangoStore>((set, get) => ({
             console.log('margin acc: ', sortedAccounts[0])
 
             set((state) => {
-              state.marginAccounts = sortedAccounts
-              state.selectedMarginAccount.current = sortedAccounts[0]
-              // if (state.selectedMarginAccount.current) {
-              //   state.selectedMarginAccount.current = marginAccounts.find(
+              state.mangoAccounts = sortedAccounts
+              state.selectedMangoAccount.current = sortedAccounts[0]
+              // if (state.selectedMangoAccount.current) {
+              //   state.selectedMangoAccount.current = mangoAccounts.find(
               //     (ma) =>
               //       ma.publicKey.equals(
-              //         state.selectedMarginAccount.current.publicKey
+              //         state.selectedMangoAccount.current.publicKey
               //       )
               //   )
               // } else {
               //   const lastAccount = localStorage.getItem('lastAccountViewed')
 
-              //   state.selectedMarginAccount.current =
-              //     marginAccounts.find(
+              //   state.selectedMangoAccount.current =
+              //     mangoAccounts.find(
               //       (ma) => ma.publicKey.toString() === JSON.parse(lastAccount)
               //     ) || sortedAccounts[0]
               // }
             })
           }
           set((state) => {
-            state.selectedMarginAccount.initialLoad = false
+            state.selectedMangoAccount.initialLoad = false
           })
         })
         .catch((err) => {
@@ -300,16 +300,15 @@ const useMangoStore = create<MangoStore>((set, get) => ({
     },
     async fetchMangoGroup() {
       const set = get().set
-      const mangoGroupPk = merpsGroupPk
       const mangoGroupConfig = get().selectedMangoGroup.config
       const selectedMarketConfig = get().selectedMarket.config
 
       return mangoClient
-        .getMerpsGroup(mangoGroupPk)
+        .getMangoGroup(mangoGroupPk)
         .then(async (mangoGroup) => {
           // TODO also perps
           const rootBanks = await mangoGroup.loadRootBanks(DEFAULT_CONNECTION)
-          const merpsCache = await mangoGroup.loadCache(DEFAULT_CONNECTION)
+          const mangoCache = await mangoGroup.loadCache(DEFAULT_CONNECTION)
 
           const allMarketConfigs = getAllMarkets(mangoGroupConfig)
           const allMarketPks = allMarketConfigs.map((m) => m.publicKey)
@@ -359,7 +358,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
           set((state) => {
             state.selectedMangoGroup.current = mangoGroup
             state.selectedMangoGroup.rootBanks = rootBanks
-            state.selectedMangoGroup.cache = merpsCache
+            state.selectedMangoGroup.cache = mangoCache
             state.selectedMangoGroup.markets = allMarkets
             state.selectedMarket.current =
               allMarkets[selectedMarketConfig.publicKey.toBase58()]
@@ -380,16 +379,16 @@ const useMangoStore = create<MangoStore>((set, get) => ({
           console.log('Could not get mango group: ', err)
         })
     },
-    // async fetchTradeHistory(marginAccount = null) {
-    //   const selectedMarginAccount =
-    //     marginAccount || get().selectedMarginAccount.current
+    // async fetchTradeHistory(mangoAccount = null) {
+    //   const selectedMangoAccount =
+    //     mangoAccount || get().selectedMangoAccount.current
     //   const set = get().set
 
-    //   if (!selectedMarginAccount) return
-    //   if (selectedMarginAccount.openOrdersAccounts.length === 0) return
+    //   if (!selectedMangoAccount) return
+    //   if (selectedMangoAccount.openOrdersAccounts.length === 0) return
 
     //   const openOrdersAccounts =
-    //     selectedMarginAccount.openOrdersAccounts.filter(isDefined)
+    //     selectedMangoAccount.openOrdersAccounts.filter(isDefined)
     //   const publicKeys = openOrdersAccounts.map((act) =>
     //     act.publicKey.toString()
     //   )

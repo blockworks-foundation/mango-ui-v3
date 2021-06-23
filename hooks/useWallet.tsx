@@ -46,9 +46,9 @@ export default function useWallet() {
     providerUrl: selectedProviderUrl,
   } = useMangoStore((state) => state.wallet)
   const endpoint = useMangoStore((state) => state.connection.endpoint)
-  const marginAccount = useMangoStore((s) => s.selectedMarginAccount.current)
-  const marginAccounts = useMangoStore((s) => s.marginAccounts)
-  const marginAccountsPublicKey = marginAccounts.map((acc) => acc.publicKey)
+  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
+  const mangoAccounts = useMangoStore((s) => s.mangoAccounts)
+  const mangoAccountsPublicKey = mangoAccounts.map((acc) => acc.publicKey)
   const actions = useMangoStore((s) => s.actions)
   const alertActions = useAlertsStore((s) => s.actions)
   const [savedProviderUrl, setSavedProviderUrl] = useLocalStorageState(
@@ -99,7 +99,7 @@ export default function useWallet() {
     wallet.on('connect', async () => {
       console.log('connected wallet')
       sleep(250)
-      await actions.fetchMarginAccounts()
+      await actions.fetchMangoAccounts()
       setMangoStore((state) => {
         state.wallet.connected = true
       })
@@ -120,8 +120,8 @@ export default function useWallet() {
       console.log('disconnecting wallet')
       setMangoStore((state) => {
         state.wallet.connected = false
-        state.marginAccounts = []
-        state.selectedMarginAccount.current = null
+        state.mangoAccounts = []
+        state.selectedMangoAccount.current = null
         state.tradeHistory = []
       })
       notify({
@@ -142,14 +142,14 @@ export default function useWallet() {
   }, [wallet, setMangoStore])
 
   useEffect(() => {
-    if (connected && marginAccounts.length > 0) {
-      alertActions.loadAlerts(marginAccountsPublicKey)
+    if (connected && mangoAccounts.length > 0) {
+      alertActions.loadAlerts(mangoAccountsPublicKey)
     }
-  }, [connected, marginAccounts])
+  }, [connected, mangoAccounts])
 
   useInterval(() => {
-    if (connected && marginAccount) {
-      actions.fetchMarginAccounts()
+    if (connected && mangoAccount) {
+      actions.fetchMangoAccounts()
       actions.fetchWalletTokens()
       // actions.fetchTradeHistory()
     }

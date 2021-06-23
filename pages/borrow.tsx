@@ -10,8 +10,8 @@ import AccountBorrows from '../components/account-page/AccountBorrows'
 export default function Borrow() {
   const [showAccountsModal, setShowAccountsModal] = useState(false)
   const connected = useMangoStore((s) => s.wallet.connected)
-  const selectedMarginAccount = useMangoStore(
-    (s) => s.selectedMarginAccount.current
+  const selectedMangoAccount = useMangoStore(
+    (s) => s.selectedMangoAccount.current
   )
   const handleCloseAccounts = useCallback(() => {
     setShowAccountsModal(false)
@@ -26,7 +26,7 @@ export default function Borrow() {
           </h1>
         </div>
         <div className="p-6 rounded-lg bg-th-bkg-2">
-          {selectedMarginAccount ? (
+          {selectedMangoAccount ? (
             <AccountBorrows />
           ) : connected ? (
             <EmptyState

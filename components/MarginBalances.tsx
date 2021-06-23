@@ -17,7 +17,7 @@ import WithdrawModal from './WithdrawModal'
 // import BorrowModal from './BorrowModal'
 import Button from './Button'
 import Tooltip from './Tooltip'
-import { QUOTE_INDEX } from '@blockworks-foundation/mango-client/lib/src/MerpsGroup'
+import { QUOTE_INDEX } from '@blockworks-foundation/mango-client/lib/src/MangoGroup'
 // import AccountsModal from './AccountsModal'
 
 export default function MarginBalances() {
@@ -28,11 +28,11 @@ export default function MarginBalances() {
   const selectedMangoGroupCache = useMangoStore(
     (s) => s.selectedMangoGroup.cache
   )
-  const selectedMarginAccount = useMangoStore(
-    (s) => s.selectedMarginAccount.current
+  const selectedMangoAccount = useMangoStore(
+    (s) => s.selectedMangoAccount.current
   )
-  const loadingMarginAccount = useMangoStore(
-    (s) => s.selectedMarginAccount.initialLoad
+  const loadingMangoAccount = useMangoStore(
+    (s) => s.selectedMangoAccount.initialLoad
   )
   const connected = useMangoStore((s) => s.wallet.connected)
   // const { symbols } = useMarketList()
@@ -65,10 +65,10 @@ export default function MarginBalances() {
           <div className="w-8 h-8" />
           <div className="flex flex-col items-center">
             <ElementTitle noMarignBottom>Margin Account</ElementTitle>
-            {selectedMarginAccount ? (
+            {selectedMangoAccount ? (
               <Link href={'/account'}>
                 <a className="pt-1 text-th-fgd-3 text-xs underline hover:no-underline">
-                  {abbreviateAddress(selectedMarginAccount?.publicKey)}
+                  {abbreviateAddress(selectedMangoAccount?.publicKey)}
                 </a>
               </Link>
             ) : null}
@@ -93,7 +93,7 @@ export default function MarginBalances() {
                 <Menu.Item>
                   <button
                     className="flex flex-row font-normal items-center rounded-none w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-                    disabled={!selectedMarginAccount}
+                    disabled={!selectedMangoAccount}
                     onClick={() => setShowBorrowModal(true)}
                   >
                     <div className="pl-2 text-left">Borrow</div>
@@ -110,7 +110,7 @@ export default function MarginBalances() {
                 <Menu.Item>
                   <button
                     className="flex flex-row font-normal items-center rounded-none w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-                    disabled={!selectedMarginAccount}
+                    disabled={!selectedMangoAccount}
                     onClick={() => setShowWithdrawModal(true)}
                   >
                     <div className="pl-2 text-left">Withdraw</div>
@@ -168,8 +168,8 @@ export default function MarginBalances() {
                       <span>{symbol}</span>
                     </td>
                     <td className={`text-right px-2`}>
-                      {selectedMarginAccount
-                        ? selectedMarginAccount
+                      {selectedMangoAccount
+                        ? selectedMangoAccount
                             .getUiDeposit(
                               selectedMangoGroupCache.rootBankCache[tokenIndex],
                               selectedMangoGroup,
@@ -179,8 +179,8 @@ export default function MarginBalances() {
                         : (0).toFixed(tokenPrecision[symbol])}
                     </td>
                     <td className={`text-right px-2`}>
-                      {selectedMarginAccount
-                        ? selectedMarginAccount
+                      {selectedMangoAccount
+                        ? selectedMangoAccount
                             .getUiBorrow(
                               selectedMangoGroupCache.rootBankCache[tokenIndex],
                               selectedMangoGroup,
@@ -214,7 +214,7 @@ export default function MarginBalances() {
           <Button
             onClick={() => setShowDepositModal(true)}
             className="w-1/2"
-            disabled={!connected || loadingMarginAccount}
+            disabled={!connected || loadingMangoAccount}
           >
             <span>Deposit</span>
           </Button>
@@ -222,7 +222,7 @@ export default function MarginBalances() {
             onClick={() => setShowWithdrawModal(true)}
             className="ml-4 w-1/2"
             disabled={
-              !connected || !selectedMarginAccount || loadingMarginAccount
+              !connected || !selectedMangoAccount || loadingMangoAccount
             }
           >
             <span>Withdraw</span>

@@ -15,7 +15,7 @@ import {
   trimDecimals,
 } from '../utils/index'
 import useConnection from '../hooks/useConnection'
-// import { initMarginAccountAndDeposit } from '../utils/mango'
+// import { initMangoAccountAndDeposit } from '../utils/mango'
 import Loading from './Loading'
 import Button from './Button'
 import Slider from './Slider'
@@ -66,7 +66,7 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
     const wallet = useMangoStore.getState().wallet.current
 
-    initMarginAccountAndDeposit(
+    initMangoAccountAndDeposit(
       connection,
       groupConfig.merpsProgramId,
       mangoGroup,
@@ -78,7 +78,7 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
       .then(async (_response: Array<any>) => {
         await sleep(1000)
         actions.fetchWalletTokens()
-        actions.fetchMarginAccounts()
+        actions.fetchMangoAccounts()
         setSubmitting(false)
         onAccountCreation(_response[0].publicKey)
       })

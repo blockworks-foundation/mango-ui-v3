@@ -986,9 +986,9 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@blockworks-foundation/mango-client@git+ssh://git@github.com:blockworks-foundation/merps-ts.git":
-  version "0.0.0"
-  resolved "git+ssh://git@github.com:blockworks-foundation/merps-ts.git#37bbdea2a417046a896071bcba40a2e06108a40e"
+"@blockworks-foundation/mango-client@git+https://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:x-oauth-basic@github.com/blockworks-foundation/mango-client-v3.git":
+  version "3.0.0"
+  resolved "git+https://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:x-oauth-basic@github.com/blockworks-foundation/mango-client-v3.git#b09eaf139f7f714779587bbe9bebd5d754c87797"
   dependencies:
     "@project-serum/serum" "^0.13.38"
     "@project-serum/sol-wallet-adapter" "^0.2.0"
@@ -9294,9 +9294,9 @@ yargs-parser@^18.1.2:
     decamelize "^1.2.0"
 
 yargs-parser@^20.2.2:
-  version "20.2.7"
-  resolved "https://registry.yarnpkg.com/yargs-parser/-/yargs-parser-20.2.7.tgz#61df85c113edfb5a7a4e36eb8aa60ef423cbc90a"
-  integrity sha512-FiNkvbeHzB/syOjIUxFDCnhSfzAL8R5vs40MgLFBorXACCOAEaWu0gRZl14vG8MR9AOJIZbmkjhusqBYZ3HTHw==
+  version "20.2.9"
+  resolved "https://registry.yarnpkg.com/yargs-parser/-/yargs-parser-20.2.9.tgz#2eb7dc3b0289718fc295f362753845c41a0c94ee"
+  integrity sha512-y11nGElTIV+CT3Zv9t7VKl+Q3hTQoT9a1Qzezhhl6Rp21gJ/IVTW7Z3y9EWXhuUBC2Shnf+DX0antecpAwSP8w==
 
 yargs@^15.4.1:
   version "15.4.1"

@@ -53,8 +53,8 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
 
   const prices = [] //useMangoStore((s) => s.selectedMangoGroup.prices)
   const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
-  const selectedMarginAccount = useMangoStore(
-    (s) => s.selectedMarginAccount.current
+  const selectedMangoAccount = useMangoStore(
+    (s) => s.selectedMangoAccount.current
   )
 
   useEffect(() => {
@@ -72,12 +72,12 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
 
   /* TODO: simulation
   useEffect(() => {
-    if (!selectedMangoGroup || !selectedMarginAccount || !selectedAccount)
+    if (!selectedMangoGroup || !selectedMangoAccount || !selectedAccount)
       return
 
     const mintDecimals = selectedMangoGroup.mintDecimals[tokenIndex]
     const groupIndex = selectedMangoGroup.indexes[tokenIndex]
-    const deposits = selectedMarginAccount.getUiDeposit(
+    const deposits = selectedMangoAccount.getUiDeposit(
       selectedMangoGroup,
       tokenIndex
     )
@@ -85,10 +85,10 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
     // simulate change to deposits based on input amount
     const newDeposit = Math.max(0, +inputAmount + +deposits)
 
-    // clone MarginAccount and arrays to not modify selectedMarginAccount
-    const simulation = new MarginAccount(null, selectedMarginAccount)
-    simulation.deposits = [...selectedMarginAccount.deposits]
-    simulation.borrows = [...selectedMarginAccount.borrows]
+    // clone MangoAccount and arrays to not modify selectedMangoAccount
+    const simulation = new MangoAccount(null, selectedMangoAccount)
+    simulation.deposits = [...selectedMangoAccount.deposits]
+    simulation.borrows = [...selectedMangoAccount.borrows]
 
     // update with simulated values
     simulation.deposits[tokenIndex] =
@@ -113,7 +113,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
     inputAmount,
     prices,
     tokenIndex,
-    selectedMarginAccount,
+    selectedMangoAccount,
     selectedMangoGroup,
   ])
   */
@@ -140,7 +140,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
     }).then(() => {
       setSubmitting(false)
       onClose()
-      actions.fetchMarginAccounts()
+      actions.fetchMangoAccounts()
     })
   }
 

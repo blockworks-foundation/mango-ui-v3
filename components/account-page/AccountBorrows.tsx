@@ -18,11 +18,11 @@ export default function AccountBorrows() {
   const { programId, connection } = useConnection()
   const actions = useMangoStore((s) => s.actions)
   const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
-  const selectedMarginAccount = useMangoStore(
-    (s) => s.selectedMarginAccount.current
+  const selectedMangoAccount = useMangoStore(
+    (s) => s.selectedMangoAccount.current
   )
-  const loadingMarginAccount = useMangoStore(
-    (s) => s.selectedMarginAccount.initialLoad
+  const loadingMangoAccount = useMangoStore(
+    (s) => s.selectedMangoAccount.initialLoad
   )
   const connected = useMangoStore((s) => s.wallet.connected)
   const { symbols } = useMarketList()
@@ -35,7 +35,7 @@ export default function AccountBorrows() {
   const [showDepositModal, setShowDepositModal] = useState(false)
 
   async function handleSettleBorrow(token, borrowQuantity, depositBalance) {
-    const marginAccount = useMangoStore.getState().selectedMarginAccount.current
+    const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
     const wallet = useMangoStore.getState().wallet.current
 
@@ -50,13 +50,13 @@ export default function AccountBorrows() {
         connection,
         new PublicKey(programId),
         mangoGroup,
-        marginAccount,
+        mangoAccount,
         wallet,
         new PublicKey(symbols[token]),
         Number(borrowQuantity)
       )
       await sleep(250)
-      actions.fetchMarginAccounts()
+      actions.fetchMangoAccounts()
     } catch (e) {
       console.warn('Error settling all:', e)
       if (e.message === 'No unsettled borrows') {
@@ -202,8 +202,8 @@ export default function AccountBorrows() {
                           className="text-xs pt-0 pb-0 h-8 pl-3 pr-3"
                           disabled={
                             !connected ||
-                            !selectedMarginAccount ||
-                            loadingMarginAccount
+                            !selectedMangoAccount ||
+                            loadingMangoAccount
                           }
                         >
                           Settle
@@ -211,7 +211,7 @@ export default function AccountBorrows() {
                         <Button
                           onClick={() => handleShowBorrow(asset.coin)}
                           className="ml-3 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
-                          disabled={!connected || loadingMarginAccount}
+                          disabled={!connected || loadingMangoAccount}
                         >
                           Borrow
                         </Button>
@@ -296,7 +296,7 @@ export default function AccountBorrows() {
                   <Button
                     onClick={() => handleShowBorrow(asset)}
                     className="text-xs pt-0 pb-0 h-8 pl-3 pr-3"
-                    disabled={!connected || loadingMarginAccount}
+                    disabled={!connected || loadingMangoAccount}
                   >
                     Borrow
                   </Button>

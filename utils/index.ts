@@ -30,22 +30,22 @@ export const percentFormat = new Intl.NumberFormat(undefined, {
   maximumFractionDigits: 2,
 })
 
-export function displayDepositsForMarginAccount(
-  marginAccount,
+export function displayDepositsForMangoAccount(
+  mangoAccount,
   mangoGroup,
   tokenIndex
 ) {
-  const deposit = marginAccount.getUiDeposit(mangoGroup, tokenIndex)
+  const deposit = mangoAccount.getUiDeposit(mangoGroup, tokenIndex)
   const decimals = mangoGroup.mintDecimals[tokenIndex]
   return floorToDecimal(deposit, decimals)
 }
 
-export function displayBorrowsForMarginAccount(
-  marginAccount,
+export function displayBorrowsForMangoAccount(
+  mangoAccount,
   mangoGroup,
   tokenIndex
 ) {
-  const borrow = marginAccount.getUiBorrow(mangoGroup, tokenIndex)
+  const borrow = mangoAccount.getUiBorrow(mangoGroup, tokenIndex)
   const decimals = mangoGroup.mintDecimals[tokenIndex]
   return ceilToDecimal(borrow, decimals)
 }

@@ -9,7 +9,7 @@ const ManualRefresh = ({ className = '' }) => {
 
   const handleRefreshData = async () => {
     setSpin(true)
-    await actions.fetchMarginAccounts()
+    await actions.fetchMangoAccounts()
     await actions.fetchWalletTokens()
     await actions.fetchTradeHistory()
     setSpin(false)

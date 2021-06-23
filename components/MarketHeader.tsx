@@ -10,10 +10,10 @@ import ManualRefresh from './ManualRefresh'
 const MarketHeader = () => {
   // const oraclePrice = useOraclePrice()
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
-  const baseSymbol = marketConfig.baseSymbol;
-  const selectedMarketName = marketConfig.name;
+  const baseSymbol = marketConfig.baseSymbol
+  const selectedMarketName = marketConfig.name
   const previousMarketName: string = usePrevious(selectedMarketName)
-  const marginAccount = useMangoStore((s) => s.selectedMarginAccount.current)
+  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const connected = useMangoStore((s) => s.wallet.connected)
 
   const [ohlcv, setOhlcv] = useState(null)
@@ -82,9 +82,7 @@ const MarketHeader = () => {
               className={`mr-2.5`}
             />
 
-            <div className="font-semibold pr-1.5 text-xl">
-              {baseSymbol}
-            </div>
+            <div className="font-semibold pr-1.5 text-xl">{baseSymbol}</div>
             <span className="text-th-fgd-4 text-xl">/</span>
             <div className="font-semibold pl-1.5 text-xl">
               {selectedMarketName.split(/\/|-/)[1]}
@@ -140,7 +138,7 @@ const MarketHeader = () => {
       </div>
       <div className="flex">
         <UiLock />
-        {connected && marginAccount ? <ManualRefresh className="pl-2" /> : null}
+        {connected && mangoAccount ? <ManualRefresh className="pl-2" /> : null}
       </div>
     </div>
   )

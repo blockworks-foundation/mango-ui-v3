@@ -86,24 +86,18 @@ const useHydrateStore = () => {
       if (!market) {
         return null
       }
-      if (marketConfig.kind === 'spot') {
-        const selectedMarket = market as Market
-        try {
-          const loadedFills = await selectedMarket.loadFills(
-            DEFAULT_CONNECTION,
-            10000
-          )
-          setMangoStore((state) => {
-            state.selectedMarket.fills = loadedFills
-          })
-        } catch (err) {
-          console.log('Error fetching fills:', err)
-        }
-      } else {
-        // Load perp market fills
-        setMangoStore((state) => {
-          state.selectedMarket.fills = []
-        })
+      try {
+        const loadedFills = await selectedMarket.loadFills(
+          DEFAULT_CONNECTION,
+          10000
+        )
+        console.log('loadedFills', loadedFills)
+
+        // setMangoStore((state) => {
+        //   state.selectedMarket.fills = loadedFills
+        // })
+      } catch (err) {
+        console.log('Error fetching fills:', err)
       }
     }
 

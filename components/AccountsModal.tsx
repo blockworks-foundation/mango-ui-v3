@@ -7,7 +7,7 @@ import {
   PlusCircleIcon,
 } from '@heroicons/react/outline'
 import useMangoStore from '../stores/useMangoStore'
-import { MarginAccount } from '@blockworks-foundation/mango-client'
+import { MangoAccount } from '@blockworks-foundation/mango-client'
 import { abbreviateAddress } from '../utils'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import Modal from './Modal'
@@ -26,9 +26,9 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
 }) => {
   const [showNewAccountForm, setShowNewAccountForm] = useState(false)
   const [newAccPublicKey, setNewAccPublicKey] = useState(null)
-  const marginAccounts = useMangoStore((s) => s.marginAccounts)
-  const selectedMarginAccount = useMangoStore(
-    (s) => s.selectedMarginAccount.current
+  const mangoAccounts = useMangoStore((s) => s.mangoAccounts)
+  const selectedMangoAccount = useMangoStore(
+    (s) => s.selectedMangoAccount.current
   )
   const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const prices = useMangoStore((s) => s.selectedMangoGroup.prices)
@@ -36,10 +36,10 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
   const actions = useMangoStore((s) => s.actions)
   const [, setLastAccountViewed] = useLocalStorageState('lastAccountViewed')
 
-  const handleMarginAccountChange = (marginAccount: MarginAccount) => {
-    setLastAccountViewed(marginAccount.publicKey.toString())
+  const handleMangoAccountChange = (mangoAccount: MangoAccount) => {
+    setLastAccountViewed(mangoAccount.publicKey.toString())
     setMangoStore((state) => {
-      state.selectedMarginAccount.current = marginAccount
+      state.selectedMangoAccount.current = mangoAccount
     })
     actions.fetchTradeHistory()
     onClose()
@@ -48,12 +48,12 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
   useEffect(() => {
     if (newAccPublicKey) {
       setMangoStore((state) => {
-        state.selectedMarginAccount.current = marginAccounts.find((ma) =>
+        state.selectedMangoAccount.current = mangoAccounts.find((ma) =>
           ma.publicKey.equals(newAccPublicKey)
         )
       })
     }
-  }, [marginAccounts, newAccPublicKey])
+  }, [mangoAccounts, newAccPublicKey])
 
   const handleNewAccountCreation = (newAccPublicKey) => {
     if (newAccPublicKey) {
@@ -98,7 +98,7 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      {marginAccounts.length > 0 ? (
+      {mangoAccounts.length > 0 ? (
         !showNewAccountForm ? (
           <>
             <Modal.Header>
@@ -106,7 +106,7 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
             </Modal.Header>
             <div className="flex items-center justify-between pb-3 text-th-fgd-1">
               <div className="font-semibold">
-                {marginAccounts.length > 1
+                {mangoAccounts.length > 1
                   ? 'Select an account'
                   : 'Your Account'}
               </div>
@@ -121,14 +121,14 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
               </Button>
             </div>
             <RadioGroup
-              value={selectedMarginAccount}
-              onChange={(acc) => handleMarginAccountChange(acc)}
+              value={selectedMangoAccount}
+              onChange={(acc) => handleMangoAccountChange(acc)}
             >
               <RadioGroup.Label className="sr-only">
                 Select a Margin Account
               </RadioGroup.Label>
               <div className="space-y-2">
-                {marginAccounts.map((account) => (
+                {mangoAccounts.map((account) => (
                   <RadioGroup.Option
                     key={account.publicKey.toString()}
                     value={account}
