@@ -96,6 +96,7 @@ export default function Orderbook({ depth = 8 }) {
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const orderbook = useMangoStore((s) => s.selectedMarket.orderBook)
   const markPrice = useMarkPrice()
+  console.log('mark price', markPrice)
 
   const currentOrderbookData = useRef(null)
   const lastOrderbookData = useRef(null)
@@ -397,13 +398,7 @@ const OrderbookRow = React.memo<any>(
 
 const MarkPriceComponent = React.memo<{ markPrice: number }>(
   ({ markPrice }) => {
-    const { market } = useMarket()
     const previousMarkPrice: number = usePrevious(markPrice)
-
-    const formattedMarkPrice =
-      markPrice &&
-      market?.tickSize &&
-      markPrice.toFixed(getDecimalCount(market.tickSize))
 
     return (
       <div
@@ -421,7 +416,7 @@ const MarkPriceComponent = React.memo<{ markPrice: number }>(
         {markPrice < previousMarkPrice && (
           <ArrowDownIcon className={`h-5 w-5 mr-1 text-th-red`} />
         )}
-        {formattedMarkPrice || '----'}
+        {markPrice || '----'}
       </div>
     )
   },
