@@ -1,37 +1,28 @@
 import { useBalances } from '../hooks/useBalances'
-import useMangoStore from '../stores/useMangoStore'
-// import { settleAll } from '../utils/mango'
-import useConnection from '../hooks/useConnection'
+import useMangoStore, { mangoClient } from '../stores/useMangoStore'
 import Button from '../components/Button'
 import { notify } from '../utils/notifications'
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
 import { InformationCircleIcon } from '@heroicons/react/outline'
 import Tooltip from './Tooltip'
 import { sleep } from '../utils'
-import { PublicKey } from '@solana/web3.js'
+import { Market } from '@project-serum/serum'
 
 const BalancesTable = () => {
   const balances = useBalances()
-  const { programId, connection } = useConnection()
   const actions = useMangoStore((s) => s.actions)
 
   async function handleSettleAll() {
-    const markets = Object.values(
-      useMangoStore.getState().selectedMangoGroup.markets
-    )
     const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
+    const markets = useMangoStore.getState().selectedMangoGroup.markets
     const wallet = useMangoStore.getState().wallet.current
 
     try {
-      // await settleAll(
-      //   connection,
-      //   new PublicKey(programId),
-      //   mangoGroup,
-      //   mangoAccount,
-      //   markets,
-      //   wallet
-      // )
+      const spotMarkets = Object.values(markets).filter(
+        (mkt) => mkt instanceof Market
+      ) as Market[]
+      await mangoClient.settleAll(mangoGroup, mangoAccount, spotMarkets, wallet)
       await sleep(250)
       actions.fetchMangoAccounts()
     } catch (e) {
