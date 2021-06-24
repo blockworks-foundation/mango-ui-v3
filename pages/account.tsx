@@ -6,7 +6,7 @@ import {
 } from '@heroicons/react/outline'
 import useMangoStore from '../stores/useMangoStore'
 import { abbreviateAddress } from '../utils'
-import useMarginInfo from '../hooks/useMarginInfo'
+// import useMarginInfo from '../hooks/useMarginInfo'
 import PageBodyContainer from '../components/PageBodyContainer'
 import TopBar from '../components/TopBar'
 import AccountAssets from '../components/account-page/AccountAssets'
@@ -28,7 +28,8 @@ const TABS = [
 export default function Account() {
   const [activeTab, setActiveTab] = useState(TABS[0])
   const [showAccountsModal, setShowAccountsModal] = useState(false)
-  const accountMarginInfo = useMarginInfo()
+  // const accountMarginInfo = useMarginInfo()
+  const accountMarginInfo = []
   const connected = useMangoStore((s) => s.wallet.connected)
   const selectedMangoAccount = useMangoStore(
     (s) => s.selectedMangoAccount.current
