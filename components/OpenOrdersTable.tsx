@@ -3,11 +3,8 @@ import Link from 'next/link'
 import { ArrowSmDownIcon } from '@heroicons/react/solid'
 import { useRouter } from 'next/router'
 import { useOpenOrders } from '../hooks/useOpenOrders'
-// import { cancelOrderAndSettle } from '../utils/mango'
 import Button, { LinkButton } from './Button'
 import Loading from './Loading'
-// import { PublicKey } from '@solana/web3.js'
-// import useConnection from '../hooks/useConnection'
 import useMangoStore, { mangoClient } from '../stores/useMangoStore'
 import { notify } from '../utils/notifications'
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
@@ -21,7 +18,6 @@ const OpenOrdersTable = () => {
   const openOrders = useOpenOrders()
   const { items, requestSort, sortConfig } = useSortableData(openOrders)
   const [cancelId, setCancelId] = useState(null)
-  // const { connection, programId } = useConnection()
   const actions = useMangoStore((s) => s.actions)
 
   const handleCancelOrder = async (

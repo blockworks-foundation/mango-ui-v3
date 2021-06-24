@@ -1,6 +1,6 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect } from 'react'
 import { Orderbook as SpotOrderBook, Market } from '@project-serum/serum'
-import useMangoStore, { Orderbook } from '../stores/useMangoStore'
+import useMangoStore from '../stores/useMangoStore'
 import {
   BookSide,
   BookSideLayout,

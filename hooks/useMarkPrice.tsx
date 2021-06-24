@@ -1,28 +1,18 @@
 import { useEffect } from 'react'
 import useMangoStore from '../stores/useMangoStore'
 
-export function useTrades() {
-  const trades = useMangoStore((state) => state.selectedMarket.fills)
-  if (!trades) {
-    return null
-  }
-  console.log('trades', trades)
-
-  // Until partial fills are each given their own fill, use maker fills
-  return trades
-    .filter(({ eventFlags }) => eventFlags.maker)
-    .map((trade) => ({
-      ...trade,
-      side: trade.side === 'buy' ? 'sell' : 'buy',
-    }))
-}
-
 export default function useMarkPrice() {
   const setMangoStore = useMangoStore((s) => s.set)
   const markPrice = useMangoStore((s) => s.selectedMarket.markPrice)
   const orderbook = useMangoStore((s) => s.selectedMarket.orderBook)
+  const fills = useMangoStore((state) => state.selectedMarket.fills)
 
-  const trades = useTrades()
+  const trades = fills
+    .filter((trade) => trade?.eventFlags?.maker || trade?.maker)
+    .map((trade) => ({
+      ...trade,
+      side: trade.side === 'buy' ? 'sell' : 'buy',
+    }))
 
   useEffect(() => {
     const bb = orderbook?.bids?.length > 0 && Number(orderbook.bids[0][0])

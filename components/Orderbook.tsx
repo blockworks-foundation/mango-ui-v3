@@ -10,7 +10,6 @@ import {
   SwitchHorizontalIcon,
 } from '@heroicons/react/solid'
 import useMarkPrice from '../hooks/useMarkPrice'
-import useOrderbook from '../hooks/useOrderbook'
 import useMarket from '../hooks/useMarket'
 import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
