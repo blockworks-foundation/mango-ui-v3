@@ -199,7 +199,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
   mangoAccounts: [],
   selectedMangoAccount: {
     current: null,
-    initialLoad: false,
+    initialLoad: true,
   },
   tradeForm: {
     side: 'buy',
@@ -247,17 +247,10 @@ const useMangoStore = create<MangoStore>((set, get) => ({
     },
     async fetchMangoAccounts() {
       const mangoGroup = get().selectedMangoGroup.current
-      const selectedMarginAcount = get().selectedMangoAccount.current
       const wallet = get().wallet.current
       const set = get().set
 
       if (!wallet?.publicKey || !wallet.publicKey) return
-
-      if (!selectedMarginAcount) {
-        set((state) => {
-          state.selectedMangoAccount.initialLoad = true
-        })
-      }
 
       return mangoClient
         .getMarginAccountsForOwner(mangoGroup, wallet.publicKey, true)

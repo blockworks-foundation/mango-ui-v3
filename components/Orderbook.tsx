@@ -96,7 +96,6 @@ export default function Orderbook({ depth = 8 }) {
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const orderbook = useMangoStore((s) => s.selectedMarket.orderBook)
   const markPrice = useMarkPrice()
-  console.log('mark price', markPrice)
 
   const currentOrderbookData = useRef(null)
   const lastOrderbookData = useRef(null)

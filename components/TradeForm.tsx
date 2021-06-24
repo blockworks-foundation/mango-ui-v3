@@ -216,7 +216,7 @@ export default function TradeForm() {
 
       const orderType = ioc ? 'ioc' : postOnly ? 'postOnly' : 'limit'
       if (market instanceof Market) {
-        mangoClient.placeSpotOrder(
+        await mangoClient.placeSpotOrder(
           mangoGroup,
           mangoAccount,
           mangoGroup.mangoCache,
@@ -228,7 +228,7 @@ export default function TradeForm() {
           orderType
         )
       } else {
-        mangoClient.placePerpOrder(
+        await mangoClient.placePerpOrder(
           mangoGroup,
           mangoAccount,
           mangoGroup.mangoCache,

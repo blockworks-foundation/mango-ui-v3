@@ -6,36 +6,24 @@ const byTimestamp = (a, b) => {
   )
 }
 
-const parsedPerpEvent = (trade) => {
-  let side
-  if (trade.maker) {
-    side = trade.quoteChange === 0 ? 'buy' : 'sell'
-  } else {
-    side = trade.quoteChange === 0 ? 'sell' : 'buy'
-  }
-
+const parsedPerpEvent = (event) => {
   return {
-    ...trade,
-    marketName: trade.marketName
-      ? trade.marketName
-      : `${trade.baseCurrency}/${trade.quoteCurrency}`,
-    key: `${trade.orderId}-${trade.uuid}`,
-    liquidity: trade.maker,
-    value: trade.price * trade.size,
-    side,
+    ...event,
+    key: `${event.orderId}-${event.uuid}`,
+    liquidity: event.maker ? 'Maker' : 'Taker',
+    value: event.price * event.size,
+    side: event.side,
+    feeCost: 0.0,
   }
 }
 
-const parsedSerumEvent = (trade) => {
+const parsedSerumEvent = (event) => {
   return {
-    ...trade,
-    marketName: trade.marketName
-      ? trade.marketName
-      : `${trade.baseCurrency}/${trade.quoteCurrency}`,
-    key: `${trade.orderId}-${trade.uuid}`,
-    liquidity: trade.maker || trade?.eventFlags?.maker ? 'Maker' : 'Taker',
-    value: trade.price * trade.size,
-    side: trade.side,
+    ...event,
+    key: `${event.maker}-${event.price}`,
+    liquidity: event?.eventFlags?.maker ? 'Maker' : 'Taker',
+    value: event.price * event.size,
+    side: event.side,
   }
 }
 
@@ -66,7 +54,7 @@ export const useTradeHistory = () => {
 
   const mangoAccountFills = fills
     .filter((fill) => {
-      if (fill.eventFlags) {
+      if (fill.openOrders) {
         return fill.openOrders.equals(openOrdersAccount.publicKey)
       } else {
         return fill.owner.equals(mangoAccount.publicKey)

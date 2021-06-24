@@ -198,7 +198,7 @@ const TradeHistoryTable = () => {
                 <Tbody>
                   {items.map((trade, index) => (
                     <Tr
-                      key={`${trade.orderId}${trade.side}${trade.uuid}`}
+                      key={`${trade.price}${trade.side}${trade.uuid}`}
                       className={`border-b border-th-bkg-3
                         ${index % 2 === 0 ? `bg-th-bkg-3` : `bg-th-bkg-2`}
                       `}
