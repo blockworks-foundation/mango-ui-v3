@@ -55,6 +55,65 @@ export default function MarginInfo() {
           <div className={`text-th-fgd-1`}>{maintHealth.toFixed(3)}</div>
         </div>
 
+        {selectedMangoAccount ? (
+          <>
+            <div className={`flex justify-between pt-2 pb-2`}>
+              <Tooltip content="Account health">
+                <div
+                  className={`cursor-help font-normal text-th-fgd-4 border-b border-th-fgd-4 border-dashed border-opacity-20 leading-4 default-transition hover:border-th-bkg-2 hover:text-th-fgd-3`}
+                >
+                  Assets Val
+                </div>
+              </Tooltip>
+              <div className={`text-th-fgd-1`}>
+                {selectedMangoAccount
+                  .getAssetsVal(mangoGroup, mangoCache)
+                  .toString()}
+              </div>
+            </div>
+            <div className={`flex justify-between pt-2 pb-2`}>
+              <Tooltip content="Account health">
+                <div
+                  className={`cursor-help font-normal text-th-fgd-4 border-b border-th-fgd-4 border-dashed border-opacity-20 leading-4 default-transition hover:border-th-bkg-2 hover:text-th-fgd-3`}
+                >
+                  Liabs Val
+                </div>
+              </Tooltip>
+              <div className={`text-th-fgd-1`}>
+                {selectedMangoAccount
+                  .getLiabsVal(mangoGroup, mangoCache)
+                  .toString()}
+              </div>
+            </div>
+            <div className={`flex justify-between pt-2 pb-2`}>
+              <Tooltip content="Account health">
+                <div
+                  className={`cursor-help font-normal text-th-fgd-4 border-b border-th-fgd-4 border-dashed border-opacity-20 leading-4 default-transition hover:border-th-bkg-2 hover:text-th-fgd-3`}
+                >
+                  Equity
+                </div>
+              </Tooltip>
+              <div className={`text-th-fgd-1`}>
+                {selectedMangoAccount
+                  .computeValue(mangoGroup, mangoCache)
+                  .toString()}
+              </div>
+            </div>
+            <div className={`flex justify-between pt-2 pb-2`}>
+              <Tooltip content="Account health">
+                <div
+                  className={`cursor-help font-normal text-th-fgd-4 border-b border-th-fgd-4 border-dashed border-opacity-20 leading-4 default-transition hover:border-th-bkg-2 hover:text-th-fgd-3`}
+                >
+                  BTC Price
+                </div>
+              </Tooltip>
+              <div className={`text-th-fgd-1`}>
+                {mangoGroup.getPrice(0, mangoCache).toString()}
+              </div>
+            </div>
+          </>
+        ) : null}
+
         {/* <Button
           className="mt-4 w-full"
           disabled={!connected}
