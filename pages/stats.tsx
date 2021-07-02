@@ -1,21 +1,24 @@
 import { useEffect, useState } from 'react'
 import { LineChart, Line, ReferenceLine, XAxis, YAxis, Tooltip } from 'recharts'
 import useDimensions from 'react-cool-dimensions'
-import { IDS, MangoClient } from '@blockworks-foundation/mango-client'
+import { I80F48, IDS, MangoClient } from '@blockworks-foundation/mango-client'
 import { PublicKey, Connection } from '@solana/web3.js'
 // import { DEFAULT_MANGO_GROUP } from '../utils/mango'
 import useConnection from '../hooks/useConnection'
 import TopBar from '../components/TopBar'
-import { formatBalanceDisplay } from '../utils/index'
+import { formatBalanceDisplay, tokenPrecision } from '../utils/index'
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
+import useMangoStore from '../stores/useMangoStore'
+import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
 
 const DECIMALS = {
-  BTC: 4,
-  ETH: 3,
+  BTC: 5,
+  ETH: 4,
   SOL: 2,
   SRM: 2,
-  USDT: 2,
   USDC: 2,
+  USDT: 2,
+  WUSDT: 2,
 }
 
 const icons = {
@@ -41,11 +44,15 @@ const useMangoStats = () => {
   ])
   const [latestStats, setLatestStats] = useState<any[]>([])
   const { cluster } = useConnection()
-
+  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  const mangoGroupName = useMangoStore((s) => s.selectedMangoGroup.name)
+  const connection = useMangoStore((s) => s.connection.current);
+  const config = useMangoGroupConfig();
   useEffect(() => {
     const fetchStats = async () => {
+      
       const response = await fetch(
-        `https://mango-stats.herokuapp.com?mangoGroup=BTC_ETH_SOL_SRM_USDC`
+        `http://localhost:8000/v3?mangoGroup=${mangoGroupName}`
       )
       const stats = await response.json()
 
@@ -56,32 +63,31 @@ const useMangoStats = () => {
 
   useEffect(() => {
     const getLatestStats = async () => {
-      const client = new MangoClient()
-      const connection = new Connection(
-        IDS.cluster_urls[cluster],
-        'singleGossip'
-      )
-      const assets = IDS[cluster].mango_groups?.[DEFAULT_MANGO_GROUP]?.symbols
-      const mangoGroupId =
-        IDS[cluster].mango_groups?.[DEFAULT_MANGO_GROUP]?.mango_group_pk
-      if (!mangoGroupId) return
-      const mangoGroupPk = new PublicKey(mangoGroupId)
-      const mangoGroup = await client.getMangoGroup(connection, mangoGroupPk)
-      const latestStats = Object.keys(assets).map((symbol, index) => {
-        const totalDeposits = mangoGroup.getUiTotalDeposit(index)
-        const totalBorrows = mangoGroup.getUiTotalBorrow(index)
+      if (mangoGroup) {
+        const rootBanks = await mangoGroup.loadRootBanks(connection);
+        const latestStats = config.tokens.map((token) => {
+          const rootBank = rootBanks.find((bank) => {
+            if (!bank) {
+              return false;
+            
+            }
+            return bank.publicKey.toBase58() == token.rootKey.toBase58();
+          })
+          const totalDeposits = rootBank.getUiTotalDeposit(mangoGroup).toNumber();
+          const totalBorrows = rootBank.getUiTotalBorrow(mangoGroup).toNumber();
 
-        return {
-          time: new Date(),
-          symbol,
-          totalDeposits,
-          totalBorrows,
-          depositInterest: mangoGroup.getDepositRate(index) * 100,
-          borrowInterest: mangoGroup.getBorrowRate(index) * 100,
-          utilization: totalDeposits > 0.0 ? totalBorrows / totalDeposits : 0.0,
-        }
-      })
-      setLatestStats(latestStats)
+          return {
+            time: new Date(),
+            symbol: token.symbol,
+            totalDeposits: totalDeposits.toFixed(tokenPrecision[token.symbol]),
+            totalBorrows: totalBorrows.toFixed(tokenPrecision[token.symbol]),
+            depositInterest: rootBank.getDepositRate(mangoGroup).mul(I80F48.fromNumber(100)),
+            borrowInterest: rootBank.getBorrowRate(mangoGroup).mul(I80F48.fromNumber(100)),
+            utilization: totalDeposits > 0.0 ? totalBorrows / totalDeposits : 0.0,
+          }
+        })
+        setLatestStats(latestStats)
+      }
     }
 
     getLatestStats()
