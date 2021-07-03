@@ -4,13 +4,14 @@ import useConnection from './useConnection'
 import useInterval from './useInterval'
 import useMarket from './useMarket'
 import useMarketList from './useMarketList'
+import { nativeToUi } from '@blockworks-foundation/mango-client'
 
 const SECONDS = 1000
 
 export default function useOraclePrice() {
   const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const { connection } = useConnection()
-  const { marketAddress } = useMarket()
+  const { marketAddress, marketName } = useMarket()
   const { getMarketIndex } = useMarketList()
   const [oraclePrice, setOraclePrice] = useState(null)
 
@@ -18,8 +19,13 @@ export default function useOraclePrice() {
     if (selectedMangoGroup) {
       setOraclePrice(null)
       const marketIndex = getMarketIndex(marketAddress)
-      selectedMangoGroup.getPrices(connection).then((prices) => {
-        const oraclePriceForMarket = prices[marketIndex]
+      selectedMangoGroup.loadCache(connection).then((cache) => {
+        console.log(marketName)
+        console.log(cache.priceCache, marketIndex)
+        const oraclePriceForMarket = nativeToUi(
+          cache.priceCache[marketIndex].price.toNumber(),
+          3
+        )
         setOraclePrice(oraclePriceForMarket)
       })
     }

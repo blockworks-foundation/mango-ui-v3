@@ -15,7 +15,7 @@ export const formatTokenMints = (symbols: { [name: string]: string }) => {
 
 const useMarket = () => {
   const market = useMangoStore((state) => state.selectedMarket.current)
-  const selectedMarketName = useMangoStore((state) => state.selectedMarket.name)
+  const selectedMarketName = useMangoStore((state) => state.selectedMarket.config.name)
   const { programId } = useConnection()
 
   const marketAddress = useMemo(
