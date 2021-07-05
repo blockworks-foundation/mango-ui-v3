@@ -7,6 +7,7 @@ import { InformationCircleIcon } from '@heroicons/react/outline'
 import Tooltip from './Tooltip'
 import { sleep } from '../utils'
 import { Market } from '@project-serum/serum'
+import { ZERO_I80F48 } from '@blockworks-foundation/mango-client'
 
 const BalancesTable = () => {
   const balances = useBalances()
@@ -50,7 +51,8 @@ const BalancesTable = () => {
           {balances.length > 0 &&
           (balances.find(({ unsettled }) => unsettled > 0) ||
             balances.find(
-              ({ borrows, marginDeposits }) => borrows > 0 && marginDeposits > 0
+              ({ borrows, marginDeposits }) =>
+                borrows.gt(ZERO_I80F48) && marginDeposits.gt(ZERO_I80F48)
             )) ? (
             <div
               className={`flex items-center justify-between px-4 py-2 mb-2 rounded-md bg-th-bkg-1`}

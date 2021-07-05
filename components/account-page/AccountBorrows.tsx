@@ -10,7 +10,6 @@ import { tokenPrecision } from '../../utils/index'
 import BorrowModal from '../BorrowModal'
 import Button from '../Button'
 import DepositModal from '../DepositModal'
-import { QUOTE_INDEX } from '@blockworks-foundation/mango-client/lib/src/MangoGroup'
 
 export default function AccountBorrows() {
   const balances = useBalances()
