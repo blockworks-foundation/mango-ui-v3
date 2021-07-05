@@ -28,16 +28,27 @@ import {
   ONE_I80F48,
 } from '@blockworks-foundation/mango-client'
 
+// const trimDecimals = (n, digits) => {
+//   const step = Math.pow(10, digits || 0)
+//   const temp = Math.trunc(step * n)
+
+//   return temp / step
+// }
+
 interface WithdrawModalProps {
   onClose: () => void
   isOpen: boolean
+  title?: string
   tokenSymbol?: string
+  borrow?: boolean
 }
 
 const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   isOpen,
   onClose,
   tokenSymbol = '',
+  borrow = false,
+  title,
 }) => {
   const [withdrawTokenSymbol, setWithdrawTokenSymbol] = useState(
     tokenSymbol || 'USDC'
@@ -46,7 +57,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   const [invalidAmountMessage, setInvalidAmountMessage] = useState('')
   const [maxAmount, setMaxAmount] = useState(0)
   const [submitting, setSubmitting] = useState(false)
-  const [includeBorrow, setIncludeBorrow] = useState(false)
+  const [includeBorrow, setIncludeBorrow] = useState(borrow)
   const [simulation, setSimulation] = useState(null)
   const [showSimulation, setShowSimulation] = useState(false)
   const [sliderPercentage, setSliderPercentage] = useState(0)
@@ -263,7 +274,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   const setMaxBorrowForSelectedAsset = async () => {
     console.log('setting max borrow for selected', maxAmount)
 
-    setInputAmount(trimDecimals(maxAmount, DECIMALS[withdrawTokenSymbol] + 4))
+    setInputAmount(maxAmount.toString())
     setSliderPercentage(100)
     setInvalidAmountMessage('')
     setMaxButtonTransition(true)
@@ -278,9 +289,9 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   const onChangeSlider = async (percentage) => {
     const amount = (percentage / 100) * maxAmount
     if (percentage === 100) {
-      setInputAmount(trimDecimals(maxAmount, DECIMALS[withdrawTokenSymbol] + 4))
+      setInputAmount(maxAmount.toString())
     } else {
-      setInputAmount(trimDecimals(amount, DECIMALS[withdrawTokenSymbol] + 2))
+      setInputAmount(amount.toString())
     }
     setSliderPercentage(percentage)
     setInvalidAmountMessage('')
@@ -289,14 +300,14 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
 
   const validateAmountInput = (amount) => {
     if (
-      (Number(amount) <= 0 && getDepositsForSelectedAsset() > 0) ||
+      (Number(amount) <= 0 && getDepositsForSelectedAsset().gt(ZERO_I80F48)) ||
       (Number(amount) <= 0 && includeBorrow)
     ) {
       setInvalidAmountMessage('Enter an amount to withdraw')
     }
     if (
-      (getDepositsForSelectedAsset() === 0 ||
-        Number(amount) > getDepositsForSelectedAsset()) &&
+      (getDepositsForSelectedAsset() === ZERO_I80F48 ||
+        getDepositsForSelectedAsset().lt(I80F48.fromString(amount))) &&
       !includeBorrow
     ) {
       setInvalidAmountMessage('Insufficient balance. Borrow funds to withdraw')
@@ -310,13 +321,6 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
       )
     }
   }, [simulation])
-
-  const trimDecimals = (n, digits) => {
-    const step = Math.pow(10, digits || 0)
-    const temp = Math.trunc(step * n)
-
-    return temp / step
-  }
 
   const getTokenBalances = () => {
     const mangoCache = useMangoStore.getState().selectedMangoGroup.cache
@@ -359,7 +363,9 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
         {!showSimulation ? (
           <>
             <Modal.Header>
-              <ElementTitle noMarignBottom>Withdraw Funds</ElementTitle>
+              <ElementTitle noMarignBottom>
+                {title ? title : 'Withdraw Funds'}
+              </ElementTitle>
             </Modal.Header>
             <div className="pb-2 text-th-fgd-1">Asset</div>
             <Select

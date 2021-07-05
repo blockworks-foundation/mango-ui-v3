@@ -7,7 +7,7 @@ import {
 import useMangoStore from '../../stores/useMangoStore'
 import { useBalances } from '../../hooks/useBalances'
 import { tokenPrecision } from '../../utils/index'
-import BorrowModal from '../BorrowModal'
+import WithdrawModal from '../WithdrawModal'
 import Button from '../Button'
 import DepositModal from '../DepositModal'
 
@@ -235,10 +235,12 @@ export default function AccountBorrows() {
         </Tbody>
       </Table>
       {showBorrowModal && (
-        <BorrowModal
+        <WithdrawModal
           isOpen={showBorrowModal}
           onClose={handleCloseWithdraw}
           tokenSymbol={borrowSymbol}
+          title="Borrow and Withdraw"
+          borrow
         />
       )}
       {showDepositModal && (

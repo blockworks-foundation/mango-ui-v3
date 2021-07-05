@@ -4,11 +4,7 @@ import { InformationCircleIcon } from '@heroicons/react/outline'
 import useMangoStore from '../../stores/useMangoStore'
 // import { settleAllTrades } from '../../utils/mango'
 import { useBalances } from '../../hooks/useBalances'
-import useConnection from '../../hooks/useConnection'
 import { tokenPrecision } from '../../utils/index'
-import { notify } from '../../utils/notifications'
-import { sleep } from '../../utils'
-import { PublicKey } from '@solana/web3.js'
 import DepositModal from '../DepositModal'
 import WithdrawModal from '../WithdrawModal'
 import Button from '../Button'
@@ -16,8 +12,7 @@ import Tooltip from '../Tooltip'
 
 export default function AccountAssets() {
   const balances = useBalances()
-  const { programId, connection } = useConnection()
-  const actions = useMangoStore((s) => s.actions)
+  // const actions = useMangoStore((s) => s.actions)
   const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const selectedMangoAccount = useMangoStore(
     (s) => s.selectedMangoAccount.current
@@ -26,8 +21,6 @@ export default function AccountAssets() {
     (s) => s.selectedMangoAccount.initialLoad
   )
   const connected = useMangoStore((s) => s.wallet.connected)
-
-  const prices = useMangoStore((s) => s.selectedMangoGroup.prices)
 
   const [showDepositModal, setShowDepositModal] = useState(false)
   const [showWithdrawModal, setShowWithdrawModal] = useState(false)
@@ -53,40 +46,39 @@ export default function AccountAssets() {
   }
 
   async function handleSettleAllTrades() {
-    const markets = Object.values(
-      useMangoStore.getState().selectedMangoGroup.markets
-    )
-    const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
-    const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
-    const wallet = useMangoStore.getState().wallet.current
-
-    try {
-      await settleAllTrades(
-        connection,
-        new PublicKey(programId),
-        mangoGroup,
-        mangoAccount,
-        markets,
-        wallet
-      )
-      await sleep(250)
-      actions.fetchMangoAccounts()
-    } catch (e) {
-      console.warn('Error settling all:', e)
-      if (e.message === 'No unsettled funds') {
-        notify({
-          message: 'There are no unsettled funds',
-          type: 'error',
-        })
-      } else {
-        notify({
-          message: 'Error settling funds',
-          description: e.message,
-          txid: e.txid,
-          type: 'error',
-        })
-      }
-    }
+    //   const markets = Object.values(
+    //     useMangoStore.getState().selectedMangoGroup.markets
+    //   )
+    //   const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
+    //   const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
+    //   const wallet = useMangoStore.getState().wallet.current
+    //   try {
+    //     await settleAllTrades(
+    //       connection,
+    //       new PublicKey(programId),
+    //       mangoGroup,
+    //       mangoAccount,
+    //       markets,
+    //       wallet
+    //     )
+    //     await sleep(250)
+    //     actions.fetchMangoAccounts()
+    //   } catch (e) {
+    //     console.warn('Error settling all:', e)
+    //     if (e.message === 'No unsettled funds') {
+    //       notify({
+    //         message: 'There are no unsettled funds',
+    //         type: 'error',
+    //       })
+    //     } else {
+    //       notify({
+    //         message: 'Error settling funds',
+    //         description: e.message,
+    //         txid: e.txid,
+    //         type: 'error',
+    //       })
+    //     }
+    //   }
   }
 
   return selectedMangoAccount ? (
@@ -96,17 +88,7 @@ export default function AccountAssets() {
         {balances.length > 0 ? (
           <div className="border border-th-green flex items-center justify-between p-2 rounded">
             <div className="pr-4 text-xs text-th-fgd-3">Total Asset Value:</div>
-            <span>
-              $
-              {balances
-                .reduce(
-                  (acc, d, i) =>
-                    acc +
-                    (d.marginDeposits + d.orders + d.unsettled) * prices[i],
-                  0
-                )
-                .toFixed(2)}
-            </span>
+            <span>$ -.--</span>
           </div>
         ) : null}
       </div>
@@ -188,44 +170,44 @@ export default function AccountAssets() {
                             alt=""
                             width="20"
                             height="20"
-                            src={`/assets/icons/${bal.coin.toLowerCase()}.svg`}
+                            src={`/assets/icons/${bal.symbol.toLowerCase()}.svg`}
                             className={`mr-2.5`}
                           />
-                          <div>{bal.coin}</div>
+                          <div>{bal.symbol}</div>
                         </div>
                       </Td>
                       <Td
                         className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
-                        {bal.marginDeposits.toFixed(tokenPrecision[bal.coin])}
+                        {bal.marginDeposits.toFixed(tokenPrecision[bal.symbol])}
                       </Td>
                       <Td
                         className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
-                        {bal.orders.toFixed(tokenPrecision[bal.coin])}
+                        {bal.orders.toFixed(tokenPrecision[bal.symbol])}
                       </Td>
                       <Td
                         className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
-                        {bal.unsettled.toFixed(tokenPrecision[bal.coin])}
+                        {bal.unsettled.toFixed(tokenPrecision[bal.symbol])}
                       </Td>
                       <Td
                         className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
-                        $
-                        {(
+                        $ -.--
+                        {/* {(
                           (bal.marginDeposits + bal.orders + bal.unsettled) *
                           prices[i]
-                        ).toFixed(2)}
+                        ).toFixed(2)} */}
                       </Td>
                       <Td
                         className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
                         <span className={`text-th-green`}>
-                          {(selectedMangoGroup.getDepositRate(i) * 100).toFixed(
+                          {/* {(selectedMangoGroup.getDepositRate(i) * 100).toFixed(
                             2
-                          )}
-                          %
+                          )} */}
+                          -.--%
                         </span>
                       </Td>
                       <Td
@@ -233,14 +215,14 @@ export default function AccountAssets() {
                       >
                         <div className={`flex justify-end`}>
                           <Button
-                            onClick={() => handleShowDeposit(bal.coin)}
+                            onClick={() => handleShowDeposit(bal.symbol)}
                             className="text-xs pt-0 pb-0 h-8 pl-3 pr-3"
                             disabled={!connected || loadingMangoAccount}
                           >
                             <span>Deposit</span>
                           </Button>
                           <Button
-                            onClick={() => handleShowWithdraw(bal.coin)}
+                            onClick={() => handleShowWithdraw(bal.symbol)}
                             className="ml-3 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
                             disabled={!connected || loadingMangoAccount}
                           >
