@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useMemo, useState } from 'react'
+import React, { FunctionComponent, useEffect, useState } from 'react'
 import { Disclosure } from '@headlessui/react'
 import {
   ExclamationCircleIcon,
@@ -15,7 +15,6 @@ import AccountSelect from './AccountSelect'
 import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
 import { DECIMALS, trimDecimals } from '../utils/index'
-import useConnection from '../hooks/useConnection'
 import Loading from './Loading'
 import Button, { LinkButton } from './Button'
 import Tooltip from './Tooltip'
@@ -41,21 +40,20 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
 
   const [inputAmount, setInputAmount] = useState(settleDeficit || 0)
   const [submitting, setSubmitting] = useState(false)
-  const [simulation, setSimulation] = useState(null)
+  const [simulation /*setSimulation*/] = useState(null)
   const [showSimulation, setShowSimulation] = useState(false)
   const [invalidAmountMessage, setInvalidAmountMessage] = useState('')
   const [sliderPercentage, setSliderPercentage] = useState(0)
   const [maxButtonTransition, setMaxButtonTransition] = useState(false)
-  const { connection, programId } = useConnection()
   const walletTokens = useMangoStore((s) => s.wallet.tokens)
   const actions = useMangoStore((s) => s.actions)
   const [selectedAccount, setSelectedAccount] = useState(walletTokens[0])
 
-  const prices = [] //useMangoStore((s) => s.selectedMangoGroup.prices)
-  const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
-  const selectedMangoAccount = useMangoStore(
-    (s) => s.selectedMangoAccount.current
-  )
+  // const prices = [] //useMangoStore((s) => s.selectedMangoGroup.prices)
+  // const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  // const selectedMangoAccount = useMangoStore(
+  //   (s) => s.selectedMangoAccount.current
+  // )
 
   useEffect(() => {
     if (tokenSymbol) {

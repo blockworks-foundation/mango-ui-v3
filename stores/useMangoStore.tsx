@@ -261,7 +261,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
               .sort((a, b) =>
                 a.publicKey.toBase58() > b.publicKey.toBase58() ? 1 : -1
               )
-            console.log('margin acc: ', sortedAccounts[0])
+            console.log('mango acc: ', sortedAccounts[0])
 
             set((state) => {
               state.mangoAccounts = sortedAccounts

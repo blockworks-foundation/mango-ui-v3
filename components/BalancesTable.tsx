@@ -79,7 +79,7 @@ const BalancesTable = () => {
                       scope="col"
                       className={`px-6 py-2 text-left font-normal`}
                     >
-                      Coin
+                      Asset
                     </Th>
                     <Th
                       scope="col"
@@ -124,17 +124,17 @@ const BalancesTable = () => {
                       <Td
                         className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
-                        {balance.coin}
+                        {balance.symbol}
                       </Td>
                       <Td
                         className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
-                        {balance.marginDeposits}
+                        {balance.marginDeposits.toString()}
                       </Td>
                       <Td
                         className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
-                        {balance.borrows}
+                        {balance.borrows.toString()}
                       </Td>
                       <Td
                         className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}

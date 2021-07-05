@@ -41,7 +41,6 @@ const useHydrateStore = () => {
     const bidSubscriptionId = WEBSOCKET_CONNECTION.onAccountChange(
       marketConfig.bidsKey,
       (info) => {
-        console.log('bid websocket')
         if (
           !previousBidInfo ||
           !previousBidInfo.data.equals(info.data) ||
@@ -58,7 +57,6 @@ const useHydrateStore = () => {
     const askSubscriptionId = WEBSOCKET_CONNECTION.onAccountChange(
       marketConfig.asksKey,
       (info) => {
-        console.log('ask websocket')
         if (
           !previousAskInfo ||
           !previousAskInfo.data.equals(info.data) ||
