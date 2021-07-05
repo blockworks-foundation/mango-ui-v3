@@ -1,79 +1,32 @@
 import { useCallback, useState } from 'react'
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
-import useConnection from '../../hooks/useConnection'
+import {
+  getTokenBySymbol,
+  ZERO_I80F48,
+} from '@blockworks-foundation/mango-client'
 import useMangoStore from '../../stores/useMangoStore'
-import useMarketList from '../../hooks/useMarketList'
 import { useBalances } from '../../hooks/useBalances'
-import { notify } from '../../utils/notifications'
-import { sleep } from '../../utils'
-import { PublicKey } from '@solana/web3.js'
 import { tokenPrecision } from '../../utils/index'
-// import { settleBorrow } from '../../utils/mango'
 import BorrowModal from '../BorrowModal'
 import Button from '../Button'
 import DepositModal from '../DepositModal'
+import { QUOTE_INDEX } from '@blockworks-foundation/mango-client/lib/src/MangoGroup'
 
 export default function AccountBorrows() {
   const balances = useBalances()
-  const { programId, connection } = useConnection()
-  const actions = useMangoStore((s) => s.actions)
-  const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
-  const selectedMangoAccount = useMangoStore(
-    (s) => s.selectedMangoAccount.current
-  )
+  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
+  const mangoConfig = useMangoStore((s) => s.selectedMangoGroup.config)
+  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const loadingMangoAccount = useMangoStore(
     (s) => s.selectedMangoAccount.initialLoad
   )
   const connected = useMangoStore((s) => s.wallet.connected)
-  const { symbols } = useMarketList()
-
-  const prices = useMangoStore((s) => s.selectedMangoGroup.prices)
 
   const [borrowSymbol, setBorrowSymbol] = useState('')
   const [depositToSettle, setDepositToSettle] = useState(null)
   const [showBorrowModal, setShowBorrowModal] = useState(false)
   const [showDepositModal, setShowDepositModal] = useState(false)
-
-  async function handleSettleBorrow(token, borrowQuantity, depositBalance) {
-    const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
-    const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
-    const wallet = useMangoStore.getState().wallet.current
-
-    if (borrowQuantity > depositBalance) {
-      const deficit = borrowQuantity - depositBalance
-      handleShowDeposit(token, deficit)
-      return
-    }
-
-    try {
-      await settleBorrow(
-        connection,
-        new PublicKey(programId),
-        mangoGroup,
-        mangoAccount,
-        wallet,
-        new PublicKey(symbols[token]),
-        Number(borrowQuantity)
-      )
-      await sleep(250)
-      actions.fetchMangoAccounts()
-    } catch (e) {
-      console.warn('Error settling all:', e)
-      if (e.message === 'No unsettled borrows') {
-        notify({
-          message: 'There are no unsettled borrows',
-          type: 'error',
-        })
-      } else {
-        notify({
-          message: 'Error settling borrows',
-          description: e.message,
-          txid: e.txid,
-          type: 'error',
-        })
-      }
-    }
-  }
 
   const handleCloseWithdraw = useCallback(() => {
     setShowBorrowModal(false)
@@ -89,12 +42,8 @@ export default function AccountBorrows() {
     setShowBorrowModal(true)
   }
 
-  const handleShowDeposit = (symbol, deficit) => {
-    setDepositToSettle({ symbol, deficit })
-    setShowDepositModal(true)
-  }
-
-  console.log(depositToSettle)
+  // console.log(depositToSettle)
+  console.log('balances', balances)
 
   return (
     <>
@@ -103,15 +52,12 @@ export default function AccountBorrows() {
         <div className="border border-th-red flex items-center justify-between p-2 rounded">
           <div className="pr-4 text-xs text-th-fgd-3">Total Borrow Value:</div>
           <span>
-            $
-            {balances
-              .reduce((acc, d, i) => acc + d.borrows * prices[i], 0)
-              .toFixed(2)}
+            ${mangoAccount.getLiabsVal(mangoGroup, mangoCache).toFixed(2)}
           </span>
         </div>
       </div>
-      {selectedMangoGroup ? (
-        balances.find((b) => b.borrows > 0) ? (
+      {mangoGroup ? (
+        balances.find((b) => b.borrows.gt(ZERO_I80F48)) ? (
           <Table className="min-w-full divide-y divide-th-bkg-2">
             <Thead>
               <Tr className="text-th-fgd-3 text-xs">
@@ -131,94 +77,73 @@ export default function AccountBorrows() {
             </Thead>
             <Tbody>
               {balances
-                .filter((assets) => assets.borrows > 0)
-                .map((asset, i) => (
-                  <Tr
-                    key={`${i}`}
-                    className={`border-b border-th-bkg-3
+                .filter((assets) => assets.borrows.gt(ZERO_I80F48))
+                .map((asset, i) => {
+                  const token = getTokenBySymbol(mangoConfig, asset.symbol)
+                  console.log('token', mangoConfig, asset.symbol)
+
+                  const tokenIndex = mangoGroup.getTokenIndex(token.mintKey)
+                  return (
+                    <Tr
+                      key={tokenIndex}
+                      className={`border-b border-th-bkg-3
                   ${i % 2 === 0 ? `bg-th-bkg-3` : `bg-th-bkg-2`}
                 `}
-                  >
-                    <Td
-                      className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
                     >
-                      <div className="flex items-center">
-                        <img
-                          alt=""
-                          width="20"
-                          height="20"
-                          src={`/assets/icons/${asset.coin.toLowerCase()}.svg`}
-                          className={`mr-2.5`}
-                        />
-                        <div>{asset.coin}</div>
-                      </div>
-                    </Td>
-                    <Td
-                      className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
-                    >
-                      {asset.borrows.toFixed(tokenPrecision[asset.coin])}
-                    </Td>
-                    <Td
-                      className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
-                    >
-                      $
-                      {(
-                        asset.borrows *
-                        prices[
-                          Object.keys(symbols).findIndex(
-                            (key) => key === asset.coin
-                          )
-                        ]
-                      ).toFixed(tokenPrecision[asset.coin])}
-                    </Td>
-                    <Td
-                      className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
-                    >
-                      <span className={`text-th-red`}>
-                        {(
-                          selectedMangoGroup
-                            .getBorrowRate(
-                              Object.keys(symbols).findIndex(
-                                (key) => key === asset.coin
-                              )
-                            )
-                            .toNumber() * 100
-                        ).toFixed(2)}
-                        %
-                      </span>
-                    </Td>
-                    <Td
-                      className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
-                    >
-                      <div className={`flex justify-end`}>
-                        <Button
-                          onClick={() =>
-                            handleSettleBorrow(
-                              asset.coin,
-                              asset.borrows,
-                              asset.marginDeposits
-                            )
-                          }
-                          className="text-xs pt-0 pb-0 h-8 pl-3 pr-3"
-                          disabled={
-                            !connected ||
-                            !selectedMangoAccount ||
-                            loadingMangoAccount
-                          }
-                        >
-                          Settle
-                        </Button>
-                        <Button
-                          onClick={() => handleShowBorrow(asset.coin)}
-                          className="ml-3 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
-                          disabled={!connected || loadingMangoAccount}
-                        >
-                          Borrow
-                        </Button>
-                      </div>
-                    </Td>
-                  </Tr>
-                ))}
+                      <Td
+                        className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
+                      >
+                        <div className="flex items-center">
+                          <img
+                            alt=""
+                            width="20"
+                            height="20"
+                            src={`/assets/icons/${asset.symbol.toLowerCase()}.svg`}
+                            className={`mr-2.5`}
+                          />
+                          <div>{asset.symbol}</div>
+                        </div>
+                      </Td>
+                      <Td
+                        className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
+                      >
+                        {asset.borrows.toFixed(tokenPrecision[asset.symbol])}
+                      </Td>
+                      <Td
+                        className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
+                      >
+                        $
+                        {asset.borrows
+                          .mul(mangoGroup.getPrice(tokenIndex, mangoCache))
+                          .toFixed(tokenPrecision[asset.symbol])}
+                      </Td>
+                      <Td
+                        className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
+                      >
+                        <span className={`text-th-red`}>
+                          {(
+                            mangoGroup.getBorrowRate(tokenIndex).toNumber() *
+                            100
+                          ).toFixed(2)}
+                          %
+                        </span>
+                      </Td>
+                      <Td
+                        className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
+                      >
+                        <div className={`flex justify-end`}>
+                          <Button
+                            onClick={() => handleShowBorrow(asset.symbol)}
+                            className="ml-3 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
+                            disabled={!connected || loadingMangoAccount}
+                          >
+                            Borrow
+                          </Button>
+                        </div>
+                      </Td>
+                    </Tr>
+                  )
+                })}
             </Tbody>
           </Table>
         ) : (
@@ -248,62 +173,66 @@ export default function AccountBorrows() {
           </Tr>
         </Thead>
         <Tbody>
-          {Object.entries(symbols).map(([asset], i) => (
-            <Tr
-              key={`${i}`}
-              className={`border-b border-th-bkg-3
+          {mangoConfig.tokens.map((token, i) => {
+            const tokenIndex = mangoGroup.getTokenIndex(token.mintKey)
+            return (
+              <Tr
+                key={`${i}`}
+                className={`border-b border-th-bkg-3
                   ${i % 2 === 0 ? `bg-th-bkg-3` : `bg-th-bkg-2`}
                 `}
-            >
-              <Td
-                className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
               >
-                <div className="flex items-center">
-                  <img
-                    alt=""
-                    width="20"
-                    height="20"
-                    src={`/assets/icons/${asset.toLowerCase()}.svg`}
-                    className={`mr-2.5`}
-                  />
-                  <div>{asset}</div>
-                </div>
-              </Td>
-              <Td
-                className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
-              >
-                ${prices[i]}
-              </Td>
-              <Td
-                className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
-              >
-                <span className={`text-th-red`}>
-                  {(selectedMangoGroup.getBorrowRate(i) * 100).toFixed(2)}%
-                </span>
-              </Td>
-              <Td
-                className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
-              >
-                {(
-                  selectedMangoGroup.getUiTotalDeposit(i) -
-                  selectedMangoGroup.getUiTotalBorrow(i)
-                ).toLocaleString()}
-              </Td>
-              <Td
-                className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
-              >
-                <div className={`flex justify-end`}>
-                  <Button
-                    onClick={() => handleShowBorrow(asset)}
-                    className="text-xs pt-0 pb-0 h-8 pl-3 pr-3"
-                    disabled={!connected || loadingMangoAccount}
-                  >
-                    Borrow
-                  </Button>
-                </div>
-              </Td>
-            </Tr>
-          ))}
+                <Td
+                  className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
+                >
+                  <div className="flex items-center">
+                    <img
+                      alt=""
+                      width="20"
+                      height="20"
+                      src={`/assets/icons/${token.symbol.toLowerCase()}.svg`}
+                      className={`mr-2.5`}
+                    />
+                    <div>{token.symbol}</div>
+                  </div>
+                </Td>
+                <Td
+                  className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
+                >
+                  ${mangoGroup.getPrice(tokenIndex, mangoCache).toFixed(2)}
+                </Td>
+                <Td
+                  className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
+                >
+                  <span className={`text-th-red`}>
+                    {mangoGroup.getBorrowRate(tokenIndex).toFixed(2)}%
+                  </span>
+                </Td>
+                <Td
+                  className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
+                >
+                  $
+                  {mangoGroup
+                    .getUiTotalDeposit(tokenIndex)
+                    .sub(mangoGroup.getUiTotalBorrow(tokenIndex))
+                    .toFixed(2)}
+                </Td>
+                <Td
+                  className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
+                >
+                  <div className={`flex justify-end`}>
+                    <Button
+                      onClick={() => handleShowBorrow(token.symbol)}
+                      className="text-xs pt-0 pb-0 h-8 pl-3 pr-3"
+                      disabled={!connected || loadingMangoAccount}
+                    >
+                      Borrow
+                    </Button>
+                  </div>
+                </Td>
+              </Tr>
+            )
+          })}
         </Tbody>
       </Table>
       {showBorrowModal && (

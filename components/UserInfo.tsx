@@ -2,9 +2,9 @@ import { useState } from 'react'
 import FloatingElement from './FloatingElement'
 import OpenOrdersTable from './OpenOrdersTable'
 import BalancesTable from './BalancesTable'
-// import PositionsTable from './PositionsTable'
+import PositionsTable from './PositionsTable'
 import TradeHistoryTable from './TradeHistoryTable'
-import { Position } from '../public/charting_library/charting_library'
+// import { Position } from '../public/charting_library/charting_library'
 // import FeeDiscountsTable from './FeeDiscountsTable'
 
 const TABS = [

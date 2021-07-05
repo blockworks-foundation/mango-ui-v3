@@ -54,8 +54,6 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
 
   const actions = useMangoStore((s) => s.actions)
   const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
-  console.log('mg:     ', selectedMangoGroup)
-
   const selectedMangoAccount = useMangoStore(
     (s) => s.selectedMangoAccount.current
   )
@@ -68,8 +66,6 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
     [withdrawTokenSymbol, tokens]
   )
   const tokenIndex = selectedMangoGroup.getTokenIndex(token.mintKey)
-
-  console.log('mango Acc', selectedMangoAccount)
 
   useEffect(() => {
     if (!selectedMangoGroup || !selectedMangoAccount || !withdrawTokenSymbol)
@@ -92,33 +88,18 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
     )
 
     const currentAssetsVal = selectedMangoAccount
-      .getAssetsVal(selectedMangoGroup, mangoCache)
+      .getAssetsVal(selectedMangoGroup, mangoCache, 'Init')
       .sub(maxValForSelectedAsset)
 
     const currentLiabsVal = selectedMangoAccount.getLiabsVal(
       selectedMangoGroup,
-      mangoCache
+      mangoCache,
+      'Init'
     )
 
     const liabsAvail = currentAssetsVal.sub(currentLiabsVal)
 
     // calculate max withdraw amount
-    console.log('currentAssetsVal', currentAssetsVal.toString())
-    // console.log(
-    //   'current assets / 1.2 == ',
-    //   currentAssetsVal.div(I80F48.fromNumber(1.19)).toString()
-    // )
-
-    console.log('currentLiabsVal', currentLiabsVal.toString())
-
-    console.log('========================================')
-    console.log('liabsAvail', liabsAvail.toString())
-    console.log(
-      'selected asset price',
-      selectedMangoGroup.getPrice(tokenIndex, mangoCache)?.toString() ||
-        ONE_I80F48.toString()
-    )
-
     const amountToWithdraw = includeBorrow
       ? liabsAvail
           .div(
@@ -126,13 +107,6 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
           )
           .add(getDepositsForSelectedAsset())
       : getDepositsForSelectedAsset()
-
-    // liabsVal = equity * 5
-    // 73550   =
-    // health
-    //  0 = quoteDeposits - quoteBorrows + spotHealth
-
-    console.log('amount to withdraw', amountToWithdraw.toString())
 
     if (amountToWithdraw.gt(I80F48.fromNumber(0))) {
       setMaxAmount(amountToWithdraw.toNumber())
@@ -164,9 +138,16 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
       .div(I80F48.fromNumber(Math.pow(10, mintDecimals)))
       .div(mangoCache.rootBankCache[tokenIndex].borrowIndex)
 
-    const equity = simulation.computeValue(selectedMangoGroup, mangoCache)
-    const assetsVal = simulation.getAssetsVal(selectedMangoGroup, mangoCache)
-    const liabsVal = simulation.getLiabsVal(selectedMangoGroup, mangoCache)
+    const assetsVal = simulation.getAssetsVal(
+      selectedMangoGroup,
+      mangoCache,
+      'Init'
+    )
+    const liabsVal = simulation.getLiabsVal(
+      selectedMangoGroup,
+      mangoCache,
+      'Init'
+    )
     // const collateralRatio = simulation.getCollateralRatio(
     //   selectedMangoGroup,
     //   prices
@@ -174,7 +155,6 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
     // const leverage = 1 / Math.max(0, collateralRatio - 1)
 
     setSimulation({
-      equity,
       assetsVal,
       liabsVal,
     })
