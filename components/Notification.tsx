@@ -33,9 +33,9 @@ const NotificationList = () => {
       <div className={`flex flex-col w-full`}>
         {reversedNotifications.map((n, idx) => (
           <Notification
-            key={`${n.message}${idx}`}
+            key={`${n.title}${idx}`}
             type={n.type}
-            message={n.message}
+            title={n.title}
             description={n.description}
             txid={n.txid}
           />
@@ -45,7 +45,7 @@ const NotificationList = () => {
   )
 }
 
-const Notification = ({ type, message, description, txid }) => {
+const Notification = ({ type, title, description, txid }) => {
   const [showNotification, setShowNotification] = useState(true)
 
   if (!showNotification) return null
@@ -68,7 +68,7 @@ const Notification = ({ type, message, description, txid }) => {
             )}
           </div>
           <div className={`ml-2 w-0 flex-1`}>
-            <div className={`text-lg text-th-fgd-1`}>{message}</div>
+            <div className={`text-lg text-th-fgd-1`}>{title}</div>
             {description ? (
               <p className={`mt-0.5 text-base text-th-fgd-2`}>{description}</p>
             ) : null}

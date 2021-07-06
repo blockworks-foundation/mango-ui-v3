@@ -53,7 +53,7 @@ const OpenOrdersTable = () => {
       actions.fetchMangoAccounts()
     } catch (e) {
       notify({
-        message: 'Error cancelling order',
+        title: 'Error cancelling order',
         description: e.message,
         txid: e.txid,
         type: 'error',

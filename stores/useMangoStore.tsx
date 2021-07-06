@@ -26,6 +26,7 @@ import { AccountInfo, Commitment, Connection, PublicKey } from '@solana/web3.js'
 import { EndpointInfo, WalletAdapter } from '../@types/types'
 import { zipDict } from '../utils'
 import { notify } from '../utils/notifications'
+import { LAST_ACCOUNT_KEY } from '../components/AccountsModal'
 
 export const ENDPOINTS: EndpointInfo[] = [
   {
@@ -102,7 +103,7 @@ export interface Orderbook {
 interface MangoStore extends State {
   notifications: Array<{
     type: string
-    message: string
+    title: string
     description?: string
     txid?: string
   }>
@@ -265,22 +266,19 @@ const useMangoStore = create<MangoStore>((set, get) => ({
 
             set((state) => {
               state.mangoAccounts = sortedAccounts
-              state.selectedMangoAccount.current = sortedAccounts[0]
-              // if (state.selectedMangoAccount.current) {
-              //   state.selectedMangoAccount.current = mangoAccounts.find(
-              //     (ma) =>
-              //       ma.publicKey.equals(
-              //         state.selectedMangoAccount.current.publicKey
-              //       )
-              //   )
-              // } else {
-              //   const lastAccount = localStorage.getItem('lastAccountViewed')
-
-              //   state.selectedMangoAccount.current =
-              //     mangoAccounts.find(
-              //       (ma) => ma.publicKey.toString() === JSON.parse(lastAccount)
-              //     ) || sortedAccounts[0]
-              // }
+              if (state.selectedMangoAccount.current) {
+                state.selectedMangoAccount.current = mangoAccounts.find((ma) =>
+                  ma.publicKey.equals(
+                    state.selectedMangoAccount.current.publicKey
+                  )
+                )
+              } else {
+                const lastAccount = localStorage.getItem(LAST_ACCOUNT_KEY)
+                state.selectedMangoAccount.current =
+                  mangoAccounts.find(
+                    (ma) => ma.publicKey.toString() === JSON.parse(lastAccount)
+                  ) || sortedAccounts[0]
+              }
             })
           }
           set((state) => {
@@ -365,7 +363,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
         })
         .catch((err) => {
           notify({
-            message: 'Could not get mango group: ',
+            title: 'Could not get mango group',
             description: `${err}`,
             type: 'error',
           })

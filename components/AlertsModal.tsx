@@ -145,25 +145,25 @@ const AlertsModal: FunctionComponent<AlertsModalProps> = ({
   async function onSubmit() {
     if (!connected) {
       notify({
-        message: 'Please connect wallet',
+        title: 'Please connect wallet',
         type: 'error',
       })
       return
     } else if (!selectedMangoAccount) {
       notify({
-        message: 'Please select a margin account',
+        title: 'Please select a margin account',
         type: 'error',
       })
       return
     } else if (alertProvider === 'sms' && !phoneNumber.phone) {
       notify({
-        message: 'Please provide phone number',
+        title: 'Please provide phone number',
         type: 'error',
       })
       return
     } else if (alertProvider === 'mail' && !email) {
       notify({
-        message: 'Please provide e-mail',
+        title: 'Please provide e-mail',
         type: 'error',
       })
       return

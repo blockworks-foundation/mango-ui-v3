@@ -5,11 +5,9 @@ import { DotsHorizontalIcon } from '@heroicons/react/outline'
 import FloatingElement from './FloatingElement'
 import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
-// import useMarketList from '../hooks/useMarketList'
 import {
   abbreviateAddress,
   i80f48ToPercent,
-  // floorToDecimal,
   tokenPrecision,
 } from '../utils/index'
 import DepositModal from './DepositModal'
@@ -17,8 +15,7 @@ import WithdrawModal from './WithdrawModal'
 // import BorrowModal from './BorrowModal'
 import Button from './Button'
 import Tooltip from './Tooltip'
-import { QUOTE_INDEX } from '@blockworks-foundation/mango-client/lib/src/MangoGroup'
-// import AccountsModal from './AccountsModal'
+import AccountsModal from './AccountsModal'
 
 export default function MarginBalances() {
   const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
@@ -35,12 +32,11 @@ export default function MarginBalances() {
     (s) => s.selectedMangoAccount.initialLoad
   )
   const connected = useMangoStore((s) => s.wallet.connected)
-  // const { symbols } = useMarketList()
 
   const [showDepositModal, setShowDepositModal] = useState(false)
   const [showWithdrawModal, setShowWithdrawModal] = useState(false)
+  const [showAccountsModal, setShowAccountsModal] = useState(false)
   // const [showBorrowModal, setShowBorrowModal] = useState(false)
-  // const [showAccountsModal, setShowAccountsModal] = useState(false)
 
   const handleCloseDeposit = useCallback(() => {
     setShowDepositModal(false)
@@ -54,9 +50,9 @@ export default function MarginBalances() {
   //   setShowBorrowModal(false)
   // }, [])
 
-  // const handleCloseAccounts = useCallback(() => {
-  //   setShowAccountsModal(false)
-  // }, [])
+  const handleCloseAccounts = useCallback(() => {
+    setShowAccountsModal(false)
+  }, [])
 
   return (
     <>
@@ -81,7 +77,7 @@ export default function MarginBalances() {
               >
                 <DotsHorizontalIcon className="w-5 h-5" />
               </Menu.Button>
-              {/* <Menu.Items className="bg-th-bkg-1 mt-2 p-1 absolute right-0 shadow-lg outline-none rounded-md w-48 z-20">
+              <Menu.Items className="bg-th-bkg-1 mt-2 p-1 absolute right-0 shadow-lg outline-none rounded-md w-48 z-20">
                 <Menu.Item>
                   <button
                     className="flex flex-row font-normal items-center rounded-none w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer focus:outline-none"
@@ -90,7 +86,7 @@ export default function MarginBalances() {
                     <div className="pl-2 text-left">Change Account</div>
                   </button>
                 </Menu.Item>
-                <Menu.Item>
+                {/* <Menu.Item>
                   <button
                     className="flex flex-row font-normal items-center rounded-none w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                     disabled={!selectedMangoAccount}
@@ -115,8 +111,8 @@ export default function MarginBalances() {
                   >
                     <div className="pl-2 text-left">Withdraw</div>
                   </button>
-                </Menu.Item>
-              </Menu.Items> */}
+                </Menu.Item> */}
+              </Menu.Items>
             </div>
           </Menu>
         </div>
@@ -238,16 +234,16 @@ export default function MarginBalances() {
           onClose={handleCloseWithdraw}
         />
       )}
-      {/* 
-      {showBorrowModal && (
+
+      {/* {showBorrowModal && (
         <BorrowModal isOpen={showBorrowModal} onClose={handleCloseBorrow} />
-      )}
+      )} */}
       {showAccountsModal ? (
         <AccountsModal
           onClose={handleCloseAccounts}
           isOpen={showAccountsModal}
         />
-      ) : null} */}
+      ) : null}
     </>
   )
 }

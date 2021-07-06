@@ -1,6 +1,5 @@
-import React, { FunctionComponent, useEffect, useMemo, useState } from 'react'
+import React, { FunctionComponent, useEffect, useState } from 'react'
 import { ExclamationCircleIcon } from '@heroicons/react/outline'
-import { getTokenByMint } from '@blockworks-foundation/mango-client'
 // import {
 //   nativeToUi,
 //   sleep,
@@ -13,14 +12,15 @@ import {
   getSymbolForTokenMintAddress,
   DECIMALS,
   trimDecimals,
+  sleep,
 } from '../utils/index'
-import useConnection from '../hooks/useConnection'
 // import { initMangoAccountAndDeposit } from '../utils/mango'
 import Loading from './Loading'
 import Button from './Button'
 import Slider from './Slider'
 import { notify } from '../utils/notifications'
 import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
+import { deposit } from '../utils/mango'
 
 interface NewAccountProps {
   onAccountCreation?: (x?) => void
@@ -36,7 +36,6 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
   const [invalidAmountMessage, setInvalidAmountMessage] = useState('')
   const [sliderPercentage, setSliderPercentage] = useState(0)
   const [maxButtonTransition, setMaxButtonTransition] = useState(false)
-  const { connection } = useConnection()
   const walletTokens = useMangoStore((s) => s.wallet.tokens)
   const actions = useMangoStore((s) => s.actions)
 
@@ -63,24 +62,16 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
 
   const handleNewAccountDeposit = () => {
     setSubmitting(true)
-    const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
-    const wallet = useMangoStore.getState().wallet.current
-
-    initMangoAccountAndDeposit(
-      connection,
-      groupConfig.merpsProgramId,
-      mangoGroup,
-      wallet,
-      selectedAccount.account.mint,
-      selectedAccount.account.publicKey,
-      Number(inputAmount)
-    )
-      .then(async (_response: Array<any>) => {
+    deposit({
+      amount: inputAmount,
+      fromTokenAcc: selectedAccount.account,
+    })
+      .then(async (response) => {
         await sleep(1000)
         actions.fetchWalletTokens()
         actions.fetchMangoAccounts()
         setSubmitting(false)
-        onAccountCreation(_response[0].publicKey)
+        onAccountCreation(response[0].publicKey)
       })
       .catch((err) => {
         setSubmitting(false)

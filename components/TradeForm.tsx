@@ -188,14 +188,14 @@ export default function TradeForm() {
     if (!price && tradeType === 'Limit') {
       console.warn('Missing price')
       notify({
-        message: 'Missing price',
+        title: 'Missing price',
         type: 'error',
       })
       return
     } else if (!baseSize) {
       console.warn('Missing size')
       notify({
-        message: 'Missing size',
+        title: 'Missing size',
         type: 'error',
       })
       return
@@ -248,7 +248,7 @@ export default function TradeForm() {
       actions.fetchMangoAccounts()
     } catch (e) {
       notify({
-        message: 'Error placing order',
+        title: 'Error placing order',
         description: e.message,
         txid: e.txid,
         type: 'error',

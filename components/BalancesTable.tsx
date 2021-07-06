@@ -30,12 +30,12 @@ const BalancesTable = () => {
       console.warn('Error settling all:', e)
       if (e.message === 'No unsettled funds') {
         notify({
-          message: 'There are no unsettled funds',
+          title: 'There are no unsettled funds',
           type: 'error',
         })
       } else {
         notify({
-          message: 'Error settling funds',
+          title: 'Error settling funds',
           description: e.message,
           txid: e.txid,
           type: 'error',

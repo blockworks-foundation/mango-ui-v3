@@ -247,7 +247,7 @@ export default function AccountBorrows() {
         <DepositModal
           isOpen={showDepositModal}
           onClose={handleCloseDeposit}
-          settleDeficit={depositToSettle.deficit}
+          settleDeficit={depositToSettle.deficit.toString()}
           tokenSymbol={depositToSettle.symbol}
         />
       )}

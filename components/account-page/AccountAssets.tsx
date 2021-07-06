@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react'
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
 import { InformationCircleIcon } from '@heroicons/react/outline'
-import useMangoStore from '../../stores/useMangoStore'
+import useMangoStore, { mangoClient } from '../../stores/useMangoStore'
 // import { settleAllTrades } from '../../utils/mango'
 import { useBalances } from '../../hooks/useBalances'
 import { tokenPrecision } from '../../utils/index'
@@ -9,10 +9,12 @@ import DepositModal from '../DepositModal'
 import WithdrawModal from '../WithdrawModal'
 import Button from '../Button'
 import Tooltip from '../Tooltip'
+import { Market } from '@project-serum/serum'
+import { PerpMarket } from '@blockworks-foundation/mango-client'
 
 export default function AccountAssets() {
   const balances = useBalances()
-  // const actions = useMangoStore((s) => s.actions)
+  const actions = useMangoStore((s) => s.actions)
   const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const selectedMangoAccount = useMangoStore(
     (s) => s.selectedMangoAccount.current
@@ -46,39 +48,36 @@ export default function AccountAssets() {
   }
 
   async function handleSettleAllTrades() {
-    //   const markets = Object.values(
-    //     useMangoStore.getState().selectedMangoGroup.markets
-    //   )
-    //   const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
-    //   const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
-    //   const wallet = useMangoStore.getState().wallet.current
-    //   try {
-    //     await settleAllTrades(
-    //       connection,
-    //       new PublicKey(programId),
-    //       mangoGroup,
-    //       mangoAccount,
-    //       markets,
-    //       wallet
-    //     )
-    //     await sleep(250)
-    //     actions.fetchMangoAccounts()
-    //   } catch (e) {
-    //     console.warn('Error settling all:', e)
-    //     if (e.message === 'No unsettled funds') {
-    //       notify({
-    //         message: 'There are no unsettled funds',
-    //         type: 'error',
-    //       })
-    //     } else {
-    //       notify({
-    //         message: 'Error settling funds',
-    //         description: e.message,
-    //         txid: e.txid,
-    //         type: 'error',
-    //       })
-    //     }
-    //   }
+    const markets: Array<Market | PerpMarket> = Object.values(
+      useMangoStore.getState().selectedMangoGroup.markets
+    )
+    const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
+    const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
+    const wallet = useMangoStore.getState().wallet.current
+    const spotMarkets = markets.filter(
+      (mkt) => mkt instanceof Market
+    ) as Market[]
+
+    try {
+      await mangoClient.settleAll(mangoGroup, mangoAccount, spotMarkets, wallet)
+
+      actions.fetchMangoAccounts()
+    } catch (e) {
+      console.warn('Error settling all:', e)
+      if (e.message === 'No unsettled funds') {
+        // notify({
+        //   title: 'There are no unsettled funds',
+        //   type: 'error',
+        // })
+      } else {
+        // notify({
+        //   title: 'Error settling funds',
+        //   description: e.message,
+        //   txid: e.txid,
+        //   type: 'error',
+        // })
+      }
+    }
   }
 
   return selectedMangoAccount ? (

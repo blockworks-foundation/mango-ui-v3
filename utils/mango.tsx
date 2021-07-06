@@ -1,4 +1,4 @@
-import { TokenAccount } from '@blockworks-foundation/mango-client'
+import { MangoAccount, TokenAccount } from '@blockworks-foundation/mango-client'
 import { PublicKey } from '@solana/web3.js'
 import useMangoStore, { mangoClient } from '../stores/useMangoStore'
 import { findAssociatedTokenAddress } from './associated'
@@ -6,14 +6,14 @@ import { findAssociatedTokenAddress } from './associated'
 export async function deposit({
   amount,
   fromTokenAcc,
+  mangoAccount,
 }: {
   amount: number
   fromTokenAcc: TokenAccount
+  mangoAccount?: MangoAccount
 }) {
-  const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
   const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
   const wallet = useMangoStore.getState().wallet.current
-
   const tokenIndex = mangoGroup.getTokenIndex(fromTokenAcc.mint)
 
   let newMangoAccount
@@ -28,10 +28,9 @@ export async function deposit({
     )
   }
 
-  // TODO add to basket before deposit for non quote index
-
-  if (mangoAccount || newMangoAccount) {
-    return mangoClient.deposit(
+  return [
+    mangoAccount || newMangoAccount,
+    await mangoClient.deposit(
       mangoGroup,
       newMangoAccount || mangoAccount,
       wallet,
@@ -40,8 +39,8 @@ export async function deposit({
       mangoGroup.rootBankAccounts[tokenIndex].nodeBankAccounts[0].vault,
       fromTokenAcc.publicKey,
       Number(amount)
-    )
-  }
+    ),
+  ]
 }
 
 export async function withdraw({
@@ -58,10 +57,9 @@ export async function withdraw({
   const wallet = useMangoStore.getState().wallet.current
 
   const tokenAcc = await findAssociatedTokenAddress(wallet.publicKey, token)
-
   const tokenIndex = mangoGroup.getTokenIndex(token)
 
-  return mangoClient.withdraw(
+  return await mangoClient.withdraw(
     mangoGroup,
     mangoAccount,
     wallet,

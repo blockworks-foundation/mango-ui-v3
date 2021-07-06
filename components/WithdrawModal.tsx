@@ -108,7 +108,9 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
       'Init'
     )
 
-    const liabsAvail = currentAssetsVal.sub(currentLiabsVal)
+    const liabsAvail = currentAssetsVal
+      .sub(currentLiabsVal)
+      .sub(I80F48.fromNumber(0.01))
 
     // calculate max withdraw amount
     const amountToWithdraw = includeBorrow
@@ -197,7 +199,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
         setSubmitting(false)
         console.warn('Error withdrawing:', err)
         // notify({
-        //   message: 'Could not perform withdraw',
+        //   title: 'Could not perform withdraw',
         //   txid: err.txid,
         //   type: 'error',
         // })
