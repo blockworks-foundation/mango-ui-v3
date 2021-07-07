@@ -136,7 +136,7 @@ const BalancesTable = () => {
                       <Td
                         className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
-                        {balance.borrows.toString()}
+                        {balance.borrows.toFixed()}
                       </Td>
                       <Td
                         className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}

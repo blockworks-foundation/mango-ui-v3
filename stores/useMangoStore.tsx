@@ -369,33 +369,30 @@ const useMangoStore = create<MangoStore>((set, get) => ({
           console.log('Could not get mango group: ', err)
         })
     },
-    // async fetchTradeHistory(mangoAccount = null) {
-    //   const selectedMangoAccount =
-    //     mangoAccount || get().selectedMangoAccount.current
-    //   const set = get().set
-
-    //   if (!selectedMangoAccount) return
-    //   if (selectedMangoAccount.openOrdersAccounts.length === 0) return
-
-    //   const openOrdersAccounts =
-    //     selectedMangoAccount.openOrdersAccounts.filter(isDefined)
-    //   const publicKeys = openOrdersAccounts.map((act) =>
-    //     act.publicKey.toString()
-    //   )
-    //   const results = await Promise.all(
-    //     publicKeys.map(async (pk) => {
-    //       const response = await fetch(
-    //         `https://stark-fjord-45757.herokuapp.com/trades/open_orders/${pk.toString()}`
-    //       )
-
-    //       const parsedResponse = await response.json()
-    //       return parsedResponse?.data ? parsedResponse.data : []
-    //     })
-    //   )
-    //   set((state) => {
-    //     state.tradeHistory = results
-    //   })
-    // },
+    async fetchTradeHistory(mangoAccount = null) {
+      // const selectedMangoAccount =
+      //   mangoAccount || get().selectedMangoAccount.current
+      // const set = get().set
+      // if (!selectedMangoAccount) return
+      // if (selectedMangoAccount.openOrdersAccounts.length === 0) return
+      // const openOrdersAccounts =
+      //   selectedMangoAccount.openOrdersAccounts.filter(isDefined)
+      // const publicKeys = openOrdersAccounts.map((act) =>
+      //   act.publicKey.toString()
+      // )
+      // const results = await Promise.all(
+      //   publicKeys.map(async (pk) => {
+      //     const response = await fetch(
+      //       `https://stark-fjord-45757.herokuapp.com/trades/open_orders/${pk.toString()}`
+      //     )
+      //     const parsedResponse = await response.json()
+      //     return parsedResponse?.data ? parsedResponse.data : []
+      //   })
+      // )
+      // set((state) => {
+      //   state.tradeHistory = results
+      // })
+    },
   },
 }))
 
