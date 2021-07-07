@@ -6,18 +6,16 @@ import Tooltip from './Tooltip'
 export default function MarginInfo() {
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
-  const selectedMangoAccount = useMangoStore(
-    (s) => s.selectedMangoAccount.current
-  )
+  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
 
-  const maintHealth = selectedMangoAccount
-    ? selectedMangoAccount.getHealthRatio(mangoGroup, mangoCache, 'Maint')
+  const maintHealth = mangoAccount
+    ? mangoAccount.getHealthRatio(mangoGroup, mangoCache, 'Maint')
     : 0
 
   return (
     <FloatingElement>
       <div className="flex flex-col h-full justify-between">
-        {selectedMangoAccount ? (
+        {mangoAccount ? (
           <div>
             <div className={`flex justify-between pt-2 pb-2`}>
               <Tooltip content="Must be above 0% to borrow funds">
@@ -28,7 +26,7 @@ export default function MarginInfo() {
                 </div>
               </Tooltip>
               <div className={`text-th-fgd-1`}>
-                {selectedMangoAccount
+                {mangoAccount
                   .getHealthRatio(mangoGroup, mangoCache, 'Init')
                   .toFixed(2)}
                 %

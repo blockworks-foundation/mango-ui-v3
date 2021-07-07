@@ -10,15 +10,20 @@ import WithdrawModal from '../WithdrawModal'
 import Button from '../Button'
 import Tooltip from '../Tooltip'
 import { Market } from '@project-serum/serum'
-import { PerpMarket } from '@blockworks-foundation/mango-client'
+import {
+  getTokenBySymbol,
+  I80F48,
+  PerpMarket,
+} from '@blockworks-foundation/mango-client'
+import { notify } from '../../utils/notifications'
 
 export default function AccountAssets() {
   const balances = useBalances()
   const actions = useMangoStore((s) => s.actions)
-  const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
-  const selectedMangoAccount = useMangoStore(
-    (s) => s.selectedMangoAccount.current
-  )
+  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
+  const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
+  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const loadingMangoAccount = useMangoStore(
     (s) => s.selectedMangoAccount.initialLoad
   )
@@ -60,34 +65,34 @@ export default function AccountAssets() {
 
     try {
       await mangoClient.settleAll(mangoGroup, mangoAccount, spotMarkets, wallet)
-
       actions.fetchMangoAccounts()
     } catch (e) {
-      console.warn('Error settling all:', e)
       if (e.message === 'No unsettled funds') {
-        // notify({
-        //   title: 'There are no unsettled funds',
-        //   type: 'error',
-        // })
+        notify({
+          title: 'There are no unsettled funds',
+          type: 'error',
+        })
       } else {
-        // notify({
-        //   title: 'Error settling funds',
-        //   description: e.message,
-        //   txid: e.txid,
-        //   type: 'error',
-        // })
+        notify({
+          title: 'Error settling funds',
+          description: e.message,
+          txid: e.txid,
+          type: 'error',
+        })
       }
     }
   }
 
-  return selectedMangoAccount ? (
+  return mangoAccount ? (
     <>
       <div className="sm:flex sm:items-center sm:justify-between pb-2">
         <div className="pb-2 sm:pb-0 text-th-fgd-1 text-lg">Your Assets</div>
         {balances.length > 0 ? (
           <div className="border border-th-green flex items-center justify-between p-2 rounded">
             <div className="pr-4 text-xs text-th-fgd-3">Total Asset Value:</div>
-            <span>$ -.--</span>
+            <span>
+              $ {mangoAccount.getAssetsVal(mangoGroup, mangoCache).toFixed(2)}
+            </span>
           </div>
         ) : null}
       </div>
@@ -109,7 +114,7 @@ export default function AccountAssets() {
           <Button onClick={handleSettleAllTrades}>Settle All</Button>
         </div>
       ) : null}
-      {selectedMangoGroup && balances.length > 0 ? (
+      {mangoGroup && balances.length > 0 ? (
         <div className={`flex flex-col py-4`}>
           <div className={`-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8`}>
             <div
@@ -154,83 +159,99 @@ export default function AccountAssets() {
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {balances.map((bal, i) => (
-                    <Tr
-                      key={`${i}`}
-                      className={`border-b border-th-bkg-3
+                  {balances.map((bal, i) => {
+                    const token = getTokenBySymbol(groupConfig, bal.symbol)
+                    const tokenIndex = mangoGroup.getTokenIndex(token.mintKey)
+                    console.log(
+                      'price cache',
+                      mangoCache.priceCache[tokenIndex]
+                    )
+
+                    return (
+                      <Tr
+                        key={tokenIndex}
+                        className={`border-b border-th-bkg-3
                   ${i % 2 === 0 ? `bg-th-bkg-3` : `bg-th-bkg-2`}
                 `}
-                    >
-                      <Td
-                        className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
-                        <div className="flex items-center">
-                          <img
-                            alt=""
-                            width="20"
-                            height="20"
-                            src={`/assets/icons/${bal.symbol.toLowerCase()}.svg`}
-                            className={`mr-2.5`}
-                          />
-                          <div>{bal.symbol}</div>
-                        </div>
-                      </Td>
-                      <Td
-                        className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
-                      >
-                        {bal.marginDeposits.toFixed(tokenPrecision[bal.symbol])}
-                      </Td>
-                      <Td
-                        className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
-                      >
-                        {bal.orders.toFixed(tokenPrecision[bal.symbol])}
-                      </Td>
-                      <Td
-                        className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
-                      >
-                        {bal.unsettled.toFixed(tokenPrecision[bal.symbol])}
-                      </Td>
-                      <Td
-                        className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
-                      >
-                        $ -.--
-                        {/* {(
-                          (bal.marginDeposits + bal.orders + bal.unsettled) *
-                          prices[i]
-                        ).toFixed(2)} */}
-                      </Td>
-                      <Td
-                        className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
-                      >
-                        <span className={`text-th-green`}>
-                          {/* {(selectedMangoGroup.getDepositRate(i) * 100).toFixed(
-                            2
-                          )} */}
-                          -.--%
-                        </span>
-                      </Td>
-                      <Td
-                        className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
-                      >
-                        <div className={`flex justify-end`}>
-                          <Button
-                            onClick={() => handleShowDeposit(bal.symbol)}
-                            className="text-xs pt-0 pb-0 h-8 pl-3 pr-3"
-                            disabled={!connected || loadingMangoAccount}
-                          >
-                            <span>Deposit</span>
-                          </Button>
-                          <Button
-                            onClick={() => handleShowWithdraw(bal.symbol)}
-                            className="ml-3 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
-                            disabled={!connected || loadingMangoAccount}
-                          >
-                            <span>Withdraw</span>
-                          </Button>
-                        </div>
-                      </Td>
-                    </Tr>
-                  ))}
+                        <Td
+                          className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
+                        >
+                          <div className="flex items-center">
+                            <img
+                              alt=""
+                              width="20"
+                              height="20"
+                              src={`/assets/icons/${bal.symbol.toLowerCase()}.svg`}
+                              className={`mr-2.5`}
+                            />
+                            <div>{bal.symbol}</div>
+                          </div>
+                        </Td>
+                        <Td
+                          className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
+                        >
+                          {bal.marginDeposits.toFixed(
+                            tokenPrecision[bal.symbol]
+                          )}
+                        </Td>
+                        <Td
+                          className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
+                        >
+                          {bal.orders.toFixed(tokenPrecision[bal.symbol])}
+                        </Td>
+                        <Td
+                          className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
+                        >
+                          {bal.unsettled.toFixed(tokenPrecision[bal.symbol])}
+                        </Td>
+                        <Td
+                          className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
+                        >
+                          $
+                          {(
+                            (bal.marginDeposits.toNumber() +
+                              bal.orders +
+                              bal.unsettled) *
+                            mangoGroup
+                              .getPrice(tokenIndex, mangoCache)
+                              .toNumber()
+                          ).toFixed(2)}
+                        </Td>
+                        <Td
+                          className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
+                        >
+                          <span className={`text-th-green`}>
+                            {mangoGroup
+                              .getDepositRate(tokenIndex)
+                              .mul(I80F48.fromNumber(100))
+                              .toFixed(2)}
+                            %
+                          </span>
+                        </Td>
+                        <Td
+                          className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
+                        >
+                          <div className={`flex justify-end`}>
+                            <Button
+                              onClick={() => handleShowDeposit(bal.symbol)}
+                              className="text-xs pt-0 pb-0 h-8 pl-3 pr-3"
+                              disabled={!connected || loadingMangoAccount}
+                            >
+                              <span>Deposit</span>
+                            </Button>
+                            <Button
+                              onClick={() => handleShowWithdraw(bal.symbol)}
+                              className="ml-3 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
+                              disabled={!connected || loadingMangoAccount}
+                            >
+                              <span>Withdraw</span>
+                            </Button>
+                          </div>
+                        </Td>
+                      </Tr>
+                    )
+                  })}
                 </Tbody>
               </Table>
             </div>

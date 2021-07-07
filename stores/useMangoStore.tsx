@@ -223,10 +223,9 @@ const useMangoStore = create<MangoStore>((set, get) => ({
       const set = get().set
 
       if (wallet?.publicKey && connected) {
-        const ownerAddress = wallet.publicKey
         const ownedTokenAccounts = await getTokenAccountsByOwnerWithWrappedSol(
           DEFAULT_CONNECTION,
-          ownerAddress
+          wallet.publicKey
         )
         const tokens = []
         ownedTokenAccounts.forEach((account) => {

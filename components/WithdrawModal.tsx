@@ -27,6 +27,7 @@ import {
   MangoAccount,
   ONE_I80F48,
 } from '@blockworks-foundation/mango-client'
+import { notify } from '../utils/notifications'
 
 // const trimDecimals = (n, digits) => {
 //   const step = Math.pow(10, digits || 0)
@@ -188,21 +189,26 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
       token: selectedMangoGroup.tokens[tokenIndex].mint,
       allowBorrow: includeBorrow,
     })
-      .then((_transSig: string) => {
+      .then((txid: string) => {
         setSubmitting(false)
-        // actions.fetchMangoGroup()
+        actions.fetchMangoGroup()
         actions.fetchMangoAccounts()
-        // actions.fetchWalletTokens()
+        actions.fetchWalletTokens()
+        notify({
+          title: 'Withdraw successful',
+          type: 'success',
+          txid,
+        })
         onClose()
       })
       .catch((err) => {
         setSubmitting(false)
-        console.warn('Error withdrawing:', err)
-        // notify({
-        //   title: 'Could not perform withdraw',
-        //   txid: err.txid,
-        //   type: 'error',
-        // })
+        console.error('Error withdrawing:', err)
+        notify({
+          title: 'Could not perform withdraw',
+          txid: err.txid,
+          type: 'error',
+        })
         onClose()
       })
   }

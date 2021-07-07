@@ -1,12 +1,13 @@
 import { useCallback, useState } from 'react'
 import {
   CurrencyDollarIcon,
+  ChartBarIcon,
   ExternalLinkIcon,
+  ChartPieIcon,
   LinkIcon,
 } from '@heroicons/react/outline'
 import useMangoStore from '../stores/useMangoStore'
 import { abbreviateAddress } from '../utils'
-// import useMarginInfo from '../hooks/useMarginInfo'
 import PageBodyContainer from '../components/PageBodyContainer'
 import TopBar from '../components/TopBar'
 import AccountAssets from '../components/account-page/AccountAssets'
@@ -28,12 +29,10 @@ const TABS = [
 export default function Account() {
   const [activeTab, setActiveTab] = useState(TABS[0])
   const [showAccountsModal, setShowAccountsModal] = useState(false)
-  // const accountMarginInfo = useMarginInfo()
-  const accountMarginInfo = []
   const connected = useMangoStore((s) => s.wallet.connected)
-  const selectedMangoAccount = useMangoStore(
-    (s) => s.selectedMangoAccount.current
-  )
+  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
+  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
 
   const handleTabChange = (tabName) => {
     setActiveTab(tabName)
@@ -48,17 +47,17 @@ export default function Account() {
       <PageBodyContainer>
         <div className="flex flex-col sm:flex-row items-center justify-between pt-8 pb-3 sm:pb-6 md:pt-10">
           <h1 className={`text-th-fgd-1 text-2xl font-semibold`}>Account</h1>
-          {selectedMangoAccount ? (
+          {mangoAccount ? (
             <div className="divide-x divide-th-fgd-4 flex justify-center w-full pt-4 sm:pt-0 sm:justify-end">
               <div className="pr-4 text-xs text-th-fgd-1">
                 <div className="pb-0.5 text-2xs text-th-fgd-3">Owner</div>
                 <a
                   className="default-transition flex items-center text-th-fgd-2"
-                  href={`https://explorer.solana.com/address/${selectedMangoAccount?.owner}`}
+                  href={`https://explorer.solana.com/address/${mangoAccount?.owner}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <span>{abbreviateAddress(selectedMangoAccount?.owner)}</span>
+                  <span>{abbreviateAddress(mangoAccount?.owner)}</span>
                   <ExternalLinkIcon className={`h-3 w-3 ml-1`} />
                 </a>
               </div>
@@ -68,13 +67,11 @@ export default function Account() {
                 </div>
                 <a
                   className="default-transition flex items-center text-th-fgd-2"
-                  href={`https://explorer.solana.com/address/${selectedMangoAccount?.publicKey}`}
+                  href={`https://explorer.solana.com/address/${mangoAccount?.publicKey}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <span>
-                    {abbreviateAddress(selectedMangoAccount?.publicKey)}
-                  </span>
+                  <span>{abbreviateAddress(mangoAccount?.publicKey)}</span>
                   <ExternalLinkIcon className={`h-3 w-3 ml-1`} />
                 </a>
               </div>
@@ -82,27 +79,48 @@ export default function Account() {
           ) : null}
         </div>
         <div className="bg-th-bkg-2 overflow-none p-6 rounded-lg">
-          {selectedMangoAccount ? (
+          {mangoAccount ? (
             <>
               <div className="pb-4 text-th-fgd-1 text-lg">Overview</div>
-              {accountMarginInfo ? (
-                <div className="grid grid-flow-col grid-cols-1 grid-rows-4 sm:grid-cols-2 sm:grid-rows-2 md:grid-cols-4 md:grid-rows-1 gap-4 pb-10">
-                  {accountMarginInfo.map((info) => (
-                    <div
-                      className="bg-th-bkg-3 p-3 rounded-md"
-                      key={info.label}
-                    >
-                      <div className="pb-0.5 text-xs text-th-fgd-3">
-                        {info.label}
-                      </div>
-                      <div className="flex items-center">
-                        {info.icon}
-                        <div className="text-lg text-th-fgd-1">{`${info.currency}${info.value}${info.unit}`}</div>
-                      </div>
+              <div className="grid grid-flow-col grid-cols-1 grid-rows-4 sm:grid-cols-2 sm:grid-rows-2 md:grid-cols-4 md:grid-rows-1 gap-4 pb-10">
+                <div className="bg-th-bkg-3 p-3 rounded-md">
+                  <div className="pb-0.5 text-xs text-th-fgd-3">
+                    Est. Account Value
+                  </div>
+                  <div className="flex items-center">
+                    <CurrencyDollarIcon className="flex-shrink-0 h-5 w-5 mr-2 text-th-primary" />
+                    <div className="text-lg text-th-fgd-1">
+                      $
+                      {mangoAccount
+                        .computeValue(mangoGroup, mangoCache)
+                        .toFixed(2)}
                     </div>
-                  ))}
+                  </div>
                 </div>
-              ) : null}
+                <div className="bg-th-bkg-3 p-3 rounded-md">
+                  <div className="pb-0.5 text-xs text-th-fgd-3">Total PnL</div>
+                  <div className="flex items-center">
+                    <ChartBarIcon className="flex-shrink-0 h-5 w-5 mr-2 text-th-primary" />
+                    <div className="text-lg text-th-fgd-1">$0.00</div>
+                  </div>
+                </div>
+                <div className="bg-th-bkg-3 p-3 rounded-md">
+                  <div className="pb-0.5 text-xs text-th-fgd-3">
+                    Health Ratio
+                  </div>
+                  <div className="flex items-center">
+                    <ChartPieIcon className="flex-shrink-0 h-5 w-5 mr-2 text-th-primary" />
+                    <div className="text-lg text-th-fgd-1">
+                      {mangoAccount.getHealthRatio(
+                        mangoGroup,
+                        mangoCache,
+                        'Maint'
+                      )}
+                      %
+                    </div>
+                  </div>
+                </div>
+              </div>
               <div className="border-b border-th-fgd-4 mb-4">
                 <nav className={`-mb-px flex space-x-6`} aria-label="Tabs">
                   {TABS.map((tabName) => (

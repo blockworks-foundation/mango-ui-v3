@@ -139,16 +139,18 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
       .then((response) => {
         notify({
           title: 'Deposit successful',
-          type: 'error',
+          type: 'success',
+          txid: response[1],
         })
         console.log('deposit response', response)
         setSubmitting(false)
         onClose()
         actions.fetchMangoAccounts()
       })
-      .catch(() => {
+      .catch((err) => {
         notify({
           title: 'Deposit failed',
+          description: err.message,
           type: 'error',
         })
       })

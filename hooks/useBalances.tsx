@@ -54,10 +54,6 @@ export function useBalances(): Balances[] {
         )
 
       return amount.toString()
-      // return floorToDecimal(
-      //   nativeToUi(amount, mangoGroup.tokens[currencyIndex].decimals),
-      //   mangoGroup.tokens[currencyIndex].decimals
-      // )
     }
 
     const marketPair = [
