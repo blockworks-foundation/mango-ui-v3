@@ -7,7 +7,12 @@ import {
   PlusCircleIcon,
 } from '@heroicons/react/outline'
 import useMangoStore from '../stores/useMangoStore'
-import { MangoAccount } from '@blockworks-foundation/mango-client'
+import {
+  MangoAccount,
+  MangoCache,
+  MangoGroup,
+  ZERO_I80F48,
+} from '@blockworks-foundation/mango-client'
 import { abbreviateAddress } from '../utils'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import Modal from './Modal'
@@ -171,18 +176,27 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
   )
 }
 
-const AccountInfo = ({ mangoGroup, mangoAccount, mangoCache }) => {
-  const accountEquity = mangoAccount
-    .computeValue(mangoGroup, mangoCache)
-    .toFixed(2)
-  const leverage = mangoAccount
-    .getLiabsVal(mangoGroup, mangoCache)
-    .div(mangoAccount.computeValue(mangoGroup, mangoCache))
-    .toFixed(2)
+const AccountInfo = ({
+  mangoGroup,
+  mangoAccount,
+  mangoCache,
+}: {
+  mangoGroup: MangoGroup
+  mangoAccount: MangoAccount
+  mangoCache: MangoCache
+}) => {
+  const accountEquity = mangoAccount.computeValue(mangoGroup, mangoCache)
+
+  const leverage = accountEquity.gt(ZERO_I80F48)
+    ? mangoAccount
+        .getLiabsVal(mangoGroup, mangoCache)
+        .div(accountEquity)
+        .toFixed(2)
+    : '0.00'
 
   return (
     <div className="text-th-fgd-3 text-xs">
-      ${accountEquity}
+      ${accountEquity.toFixed(2)}
       <span className="px-1.5 text-th-fgd-4">|</span>
       <span
         className={

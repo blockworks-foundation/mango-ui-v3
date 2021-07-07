@@ -1,3 +1,4 @@
+import { ZERO_I80F48 } from '@blockworks-foundation/mango-client'
 import { HeartIcon } from '@heroicons/react/outline'
 import useMangoStore from '../stores/useMangoStore'
 import FloatingElement from './FloatingElement'
@@ -12,11 +13,14 @@ export default function MarginInfo() {
     ? mangoAccount.getHealthRatio(mangoGroup, mangoCache, 'Maint')
     : 0
 
-  const leverage = mangoAccount
-    ? mangoAccount
-        .getLiabsVal(mangoGroup, mangoCache)
-        .div(mangoAccount.computeValue(mangoGroup, mangoCache))
-    : 0.0
+  const equity = mangoAccount
+    ? mangoAccount.computeValue(mangoGroup, mangoCache)
+    : ZERO_I80F48
+
+  const leverage =
+    mangoAccount && equity.gt(ZERO_I80F48)
+      ? mangoAccount.getLiabsVal(mangoGroup, mangoCache).div(equity)
+      : 0.0
 
   return (
     <FloatingElement>
@@ -31,9 +35,7 @@ export default function MarginInfo() {
                   Equity
                 </div>
               </Tooltip>
-              <div className={`text-th-fgd-1`}>
-                ${mangoAccount.computeValue(mangoGroup, mangoCache).toFixed(2)}
-              </div>
+              <div className={`text-th-fgd-1`}>${equity.toFixed(2)}</div>
             </div>
             <div className={`flex justify-between pt-2 pb-2`}>
               <Tooltip content="Leverage">

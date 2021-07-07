@@ -55,7 +55,7 @@ export function useBalances(): Balances[] {
           )
         )
 
-      return amount.toString()
+      return amount
     }
 
     const marketPair = [
@@ -131,7 +131,7 @@ export function useBalances(): Balances[] {
       borrows: quoteMeta.borrows,
       orders: quoteInOrders,
       unsettled,
-      net: net.toString(),
+      net,
     },
   ])
 }
