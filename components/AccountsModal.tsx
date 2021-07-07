@@ -32,9 +32,10 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
   const selectedMangoAccount = useMangoStore(
     (s) => s.selectedMangoAccount.current
   )
-  const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const setMangoStore = useMangoStore((s) => s.set)
-  const actions = useMangoStore((s) => s.actions)
+  // const actions = useMangoStore((s) => s.actions)
   const [, setLastAccountViewed] = useLocalStorageState(LAST_ACCOUNT_KEY)
 
   const handleMangoAccountChange = (mangoAccount: MangoAccount) => {
@@ -125,11 +126,12 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
                                   <div className="pb-0.5">
                                     {abbreviateAddress(account.publicKey)}
                                   </div>
-                                  {selectedMangoGroup ? (
+                                  {mangoGroup ? (
                                     <div className="text-th-fgd-3 text-xs">
                                       <AccountInfo
-                                        mangoGroup={selectedMangoGroup}
-                                        marginAccount={account}
+                                        mangoGroup={mangoGroup}
+                                        mangoAccount={account}
+                                        mangoCache={mangoCache}
                                       />
                                     </div>
                                   ) : null}
@@ -169,19 +171,14 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
   )
 }
 
-const AccountInfo = ({ mangoGroup, marginAccount }) => {
-  // const accountEquity = marginAccount
-  //   .computeValue(mangoGroup, prices)
-  //   .toFixed(2)
-
-  // const collRatio = marginAccount.getCollateralRatio(mangoGroup, prices)
-
-  // const leverage =
-  //   accountEquity && collRatio ? (1 / (collRatio - 1)).toFixed(2) : '0.00'
-
-  // TODO wire up
-  const accountEquity = (0).toFixed(2)
-  const leverage = '0.00'
+const AccountInfo = ({ mangoGroup, mangoAccount, mangoCache }) => {
+  const accountEquity = mangoAccount
+    .computeValue(mangoGroup, mangoCache)
+    .toFixed(2)
+  const leverage = mangoAccount
+    .getLiabsVal(mangoGroup, mangoCache)
+    .div(mangoAccount.computeValue(mangoGroup, mangoCache))
+    .toFixed(2)
 
   return (
     <div className="text-th-fgd-3 text-xs">

@@ -25,7 +25,7 @@ const TopBar = () => {
                 />
               </div>
               <div
-                className={`hidden md:flex md:items-center md:space-x-6 md:ml-4 py-2`}
+                className={`hidden md:flex md:items-center md:space-x-6 md:ml-4`}
               >
                 <MenuItem href="/">Trade</MenuItem>
                 <MenuItem href="/account">Account</MenuItem>

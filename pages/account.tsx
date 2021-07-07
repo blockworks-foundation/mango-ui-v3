@@ -85,7 +85,7 @@ export default function Account() {
               <div className="grid grid-flow-col grid-cols-1 grid-rows-4 sm:grid-cols-2 sm:grid-rows-2 md:grid-cols-4 md:grid-rows-1 gap-4 pb-10">
                 <div className="bg-th-bkg-3 p-3 rounded-md">
                   <div className="pb-0.5 text-xs text-th-fgd-3">
-                    Est. Account Value
+                    Account Value
                   </div>
                   <div className="flex items-center">
                     <CurrencyDollarIcon className="flex-shrink-0 h-5 w-5 mr-2 text-th-primary" />

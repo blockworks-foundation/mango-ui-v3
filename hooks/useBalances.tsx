@@ -38,17 +38,19 @@ export function useBalances(): Balances[] {
 
     const tokenIndex = marketIndex
 
-    const net = (locked, currencyIndex) => {
+    const net = (locked, tokenIndex) => {
       const amount = mangoAccount
-        .getNativeDeposit(
-          mangoCache.rootBankCache[currencyIndex],
-          currencyIndex
+        .getUiDeposit(
+          mangoCache.rootBankCache[tokenIndex],
+          mangoGroup,
+          tokenIndex
         )
         .add(
           I80F48.fromNumber(locked).sub(
-            mangoAccount.getNativeBorrow(
-              mangoCache.rootBankCache[currencyIndex],
-              currencyIndex
+            mangoAccount.getUiBorrow(
+              mangoCache.rootBankCache[tokenIndex],
+              mangoGroup,
+              tokenIndex
             )
           )
         )
@@ -114,6 +116,7 @@ export function useBalances(): Balances[] {
   const quoteMeta = quoteBalances[0]
   const quoteInOrders = sumBy(quoteBalances, 'orders')
   const unsettled = sumBy(quoteBalances, 'unsettled')
+
   const net = quoteMeta.marginDeposits
     .add(I80F48.fromNumber(unsettled))
     .sub(quoteMeta.borrows)
@@ -131,6 +134,4 @@ export function useBalances(): Balances[] {
       net: net.toString(),
     },
   ])
-
-  return baseBalances
 }

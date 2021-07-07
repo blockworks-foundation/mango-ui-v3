@@ -267,7 +267,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
 
   const handleIncludeBorrowSwitch = (checked) => {
     setIncludeBorrow(checked)
-    setInputAmount('0')
+    setInputAmount('')
     setSliderPercentage(0)
     setInvalidAmountMessage('')
   }
@@ -290,7 +290,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
 
   const onChangeAmountInput = (amount: string) => {
     setInputAmount(amount)
-    setSliderPercentage((amount / maxAmount) * 100)
+    setSliderPercentage((Number(amount) / maxAmount) * 100)
     setInvalidAmountMessage('')
   }
 
@@ -307,15 +307,16 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   }
 
   const validateAmountInput = (amount) => {
+    const parsedAmount = Number(amount)
     if (
-      (Number(amount) <= 0 && getDepositsForSelectedAsset().gt(ZERO_I80F48)) ||
-      (Number(amount) <= 0 && includeBorrow)
+      (parsedAmount <= 0 && getDepositsForSelectedAsset().gt(ZERO_I80F48)) ||
+      (parsedAmount <= 0 && includeBorrow)
     ) {
       setInvalidAmountMessage('Enter an amount to withdraw')
     }
     if (
       (getDepositsForSelectedAsset() === ZERO_I80F48 ||
-        getDepositsForSelectedAsset().lt(I80F48.fromString(amount))) &&
+        getDepositsForSelectedAsset().lt(I80F48.fromNumber(parsedAmount))) &&
       !includeBorrow
     ) {
       setInvalidAmountMessage('Insufficient balance. Borrow funds to withdraw')
