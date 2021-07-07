@@ -38,7 +38,7 @@ export function useBalances(): Balances[] {
 
     const tokenIndex = marketIndex
 
-    const net = (locked, tokenIndex) => {
+    const net = (nativeBaseLocked, tokenIndex) => {
       const amount = mangoAccount
         .getUiDeposit(
           mangoCache.rootBankCache[tokenIndex],
@@ -46,7 +46,7 @@ export function useBalances(): Balances[] {
           tokenIndex
         )
         .add(
-          I80F48.fromNumber(locked).sub(
+          I80F48.fromNumber(nativeBaseLocked).sub(
             mangoAccount.getUiBorrow(
               mangoCache.rootBankCache[tokenIndex],
               mangoGroup,

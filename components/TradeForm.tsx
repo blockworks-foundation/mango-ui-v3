@@ -186,14 +186,12 @@ export default function TradeForm() {
 
   async function onSubmit() {
     if (!price && tradeType === 'Limit') {
-      console.warn('Missing price')
       notify({
         title: 'Missing price',
         type: 'error',
       })
       return
     } else if (!baseSize) {
-      console.warn('Missing size')
       notify({
         title: 'Missing size',
         type: 'error',
@@ -215,8 +213,9 @@ export default function TradeForm() {
       }
 
       const orderType = ioc ? 'ioc' : postOnly ? 'postOnly' : 'limit'
+      let txid
       if (market instanceof Market) {
-        await mangoClient.placeSpotOrder(
+        txid = await mangoClient.placeSpotOrder(
           mangoGroup,
           mangoAccount,
           mangoGroup.mangoCache,
@@ -228,7 +227,7 @@ export default function TradeForm() {
           orderType
         )
       } else {
-        await mangoClient.placePerpOrder(
+        txid = await mangoClient.placePerpOrder(
           mangoGroup,
           mangoAccount,
           mangoGroup.mangoCache,
@@ -241,8 +240,7 @@ export default function TradeForm() {
         )
       }
 
-      console.log('Successfully placed trade!')
-
+      notify({ title: 'Successfully placed trade', txid })
       setPrice('')
       onSetBaseSize('')
       actions.fetchMangoAccounts()
