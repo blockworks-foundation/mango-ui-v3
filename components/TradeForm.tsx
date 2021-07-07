@@ -103,7 +103,7 @@ export default function TradeForm() {
       groupConfig,
       marketConfig.baseSymbol
     ).decimals
-    minOrderSize = new Big(market.contractSize)
+    minOrderSize = new Big(market.baseLotSize)
       .div(new Big(10).pow(baseDecimals))
       .toString()
   }
@@ -124,7 +124,7 @@ export default function TradeForm() {
 
     const nativeToUi = new Big(10).pow(baseDecimals - quoteDecimals)
     const lotsToNative = new Big(market.quoteLotSize).div(
-      new Big(market.contractSize)
+      new Big(market.baseLotSize)
     )
     tickSize = lotsToNative.mul(nativeToUi).toNumber()
   }
