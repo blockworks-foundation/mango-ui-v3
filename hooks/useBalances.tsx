@@ -117,7 +117,7 @@ export function useBalances(): Balances[] {
   const quoteInOrders = sumBy(quoteBalances, 'orders')
   const unsettled = sumBy(quoteBalances, 'unsettled')
 
-  const net = quoteMeta.marginDeposits
+  const net: I80F48 = quoteMeta.marginDeposits
     .add(I80F48.fromNumber(unsettled))
     .sub(quoteMeta.borrows)
     .sub(I80F48.fromNumber(quoteInOrders))

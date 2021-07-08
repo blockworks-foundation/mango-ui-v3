@@ -131,12 +131,12 @@ const BalancesTable = () => {
                       <Td
                         className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
-                        {balance.marginDeposits.toFixed()}
+                        {balance.marginDeposits.toFixedUi()}
                       </Td>
                       <Td
                         className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
-                        {balance.borrows.toFixed()}
+                        {balance.borrows.toFixedUi()}
                       </Td>
                       <Td
                         className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
@@ -151,7 +151,7 @@ const BalancesTable = () => {
                       <Td
                         className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
-                        {balance.net.toFixed()}
+                        {balance.net.toFixedUi()}
                       </Td>
                     </Tr>
                   ))}
