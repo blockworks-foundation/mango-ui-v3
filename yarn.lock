@@ -988,7 +988,7 @@
 
 "@blockworks-foundation/mango-client@git+https://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:x-oauth-basic@github.com/blockworks-foundation/mango-client-v3.git":
   version "3.0.1"
-  resolved "git+https://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:x-oauth-basic@github.com/blockworks-foundation/mango-client-v3.git#7d5962473fc958b8302a31643a36d8a07e249dc4"
+  resolved "git+https://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:x-oauth-basic@github.com/blockworks-foundation/mango-client-v3.git#76a4d99724e66b81903b1de68e4dc7732a3d703f"
   dependencies:
     "@project-serum/serum" "^0.13.38"
     "@project-serum/sol-wallet-adapter" "^0.2.0"
