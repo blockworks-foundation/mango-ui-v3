@@ -273,7 +273,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   }
 
   const setMaxForSelectedAsset = () => {
-    setInputAmount(getDepositsForSelectedAsset().toString())
+    setInputAmount(getDepositsForSelectedAsset().toFixed())
     setSliderPercentage(100)
     setInvalidAmountMessage('')
     setMaxButtonTransition(true)
