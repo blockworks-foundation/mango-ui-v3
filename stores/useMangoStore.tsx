@@ -56,7 +56,7 @@ export const WEBSOCKET_CONNECTION = new Connection(
   'processed' as Commitment
 )
 
-const DEFAULT_MANGO_GROUP_NAME = 'mango_test_v3.3'
+const DEFAULT_MANGO_GROUP_NAME = 'mango_test_v3.4'
 const DEFAULT_MANGO_GROUP_CONFIG = Config.ids().getGroup(
   CLUSTER,
   DEFAULT_MANGO_GROUP_NAME
