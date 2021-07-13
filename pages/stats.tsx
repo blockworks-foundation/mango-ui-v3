@@ -3,6 +3,7 @@ import TopBar from '../components/TopBar'
 import PageBodyContainer from '../components/PageBodyContainer'
 import StatsTotals from '../components/stats-page/StatsTotals'
 import StatsAssets from '../components/stats-page/StatsAssets'
+import StatsPerps from '../components/stats-page/StatsPerps'
 
 const TABS = [
   'Totals',
@@ -59,6 +60,8 @@ const TabContent = ({ activeTab }) => {
       return <StatsTotals />
     case 'Assets':
       return <StatsAssets />
+    case 'Perps':
+      return <StatsPerps />
     case 'Markets':
       return <div>Markets</div>
     case 'Liquidations':

@@ -19,7 +19,7 @@ const icons = {
 export default function StatsTotals() {
   const { latestStats, stats } = useMangoStats()
   const { prices } = useHistoricPrices()
-  const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  // const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   // TODO: fix this
   const backupPrices = [0, 0]
   const { getTokenIndex, symbols } = useMarketList()
