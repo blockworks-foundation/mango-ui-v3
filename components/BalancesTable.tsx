@@ -7,6 +7,7 @@ import { InformationCircleIcon } from '@heroicons/react/outline'
 import Tooltip from './Tooltip'
 import { sleep } from '../utils'
 import { Market } from '@project-serum/serum'
+import { ZERO_I80F48 } from '@blockworks-foundation/mango-client'
 
 const BalancesTable = () => {
   const balances = useBalances()
@@ -29,12 +30,12 @@ const BalancesTable = () => {
       console.warn('Error settling all:', e)
       if (e.message === 'No unsettled funds') {
         notify({
-          message: 'There are no unsettled funds',
+          title: 'There are no unsettled funds',
           type: 'error',
         })
       } else {
         notify({
-          message: 'Error settling funds',
+          title: 'Error settling funds',
           description: e.message,
           txid: e.txid,
           type: 'error',
@@ -50,7 +51,8 @@ const BalancesTable = () => {
           {balances.length > 0 &&
           (balances.find(({ unsettled }) => unsettled > 0) ||
             balances.find(
-              ({ borrows, marginDeposits }) => borrows > 0 && marginDeposits > 0
+              ({ borrows, marginDeposits }) =>
+                borrows.gt(ZERO_I80F48) && marginDeposits.gt(ZERO_I80F48)
             )) ? (
             <div
               className={`flex items-center justify-between px-4 py-2 mb-2 rounded-md bg-th-bkg-1`}
@@ -79,7 +81,7 @@ const BalancesTable = () => {
                       scope="col"
                       className={`px-6 py-2 text-left font-normal`}
                     >
-                      Coin
+                      Asset
                     </Th>
                     <Th
                       scope="col"
@@ -124,17 +126,17 @@ const BalancesTable = () => {
                       <Td
                         className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
-                        {balance.coin}
+                        {balance.symbol}
                       </Td>
                       <Td
                         className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
-                        {balance.marginDeposits}
+                        {balance.marginDeposits.toFixed()}
                       </Td>
                       <Td
                         className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
-                        {balance.borrows}
+                        {balance.borrows.toFixed()}
                       </Td>
                       <Td
                         className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
@@ -149,7 +151,7 @@ const BalancesTable = () => {
                       <Td
                         className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
-                        {balance.net}
+                        {balance.net.toFixed()}
                       </Td>
                     </Tr>
                   ))}

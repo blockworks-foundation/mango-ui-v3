@@ -57,7 +57,10 @@ export const useTradeHistory = () => {
       if (fill.openOrders) {
         return fill.openOrders.equals(openOrdersAccount.publicKey)
       } else {
-        return fill.owner.equals(mangoAccount.publicKey)
+        return (
+          fill.taker.equals(mangoAccount.publicKey) ||
+          fill.maker.equals(mangoAccount.publicKey)
+        )
       }
     })
     .map((fill) => ({ ...fill, marketName: marketConfig.name }))

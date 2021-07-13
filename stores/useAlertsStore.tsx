@@ -91,7 +91,7 @@ const useAlertsStore = create<AlertsStore>((set, get) => ({
                 state.error = errorMessage
               })
               notify({
-                message: errorMessage,
+                title: errorMessage,
                 type: 'error',
               })
             })
@@ -100,7 +100,7 @@ const useAlertsStore = create<AlertsStore>((set, get) => ({
               state.error = 'Something went wrong'
             })
             notify({
-              message: 'Something went wrong',
+              title: 'Something went wrong',
               type: 'error',
             })
           }
@@ -139,13 +139,13 @@ const useAlertsStore = create<AlertsStore>((set, get) => ({
               if (typeof err.text === 'function') {
                 err.text().then((errorMessage: string) => {
                   notify({
-                    message: errorMessage,
+                    title: errorMessage,
                     type: 'error',
                   })
                 })
               } else {
                 notify({
-                  message: 'Something went wrong',
+                  title: 'Something went wrong',
                   type: 'error',
                 })
               }

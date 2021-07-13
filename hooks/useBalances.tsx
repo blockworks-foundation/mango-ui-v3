@@ -1,13 +1,6 @@
 import { Balances } from '../@types/types'
 import { nativeToUi } from '@blockworks-foundation/mango-client'
-import useMarketList from './useMarketList'
 import useMangoStore from '../stores/useMangoStore'
-import {
-  // displayBorrowsForMangoAccount,
-  // displayDepositsForMangoAccount,
-  floorToDecimal,
-} from '../utils'
-import useAllMarkets from './useAllMarkets'
 import { sumBy } from 'lodash'
 import { QUOTE_INDEX } from '@blockworks-foundation/mango-client/lib/src/MangoGroup'
 import { I80F48 } from '@blockworks-foundation/mango-client/lib/src/fixednum'
@@ -45,47 +38,41 @@ export function useBalances(): Balances[] {
 
     const tokenIndex = marketIndex
 
-    const net = (locked, currencyIndex) => {
+    const net = (nativeBaseLocked, tokenIndex) => {
       const amount = mangoAccount
-        .getNativeDeposit(
-          mangoCache.rootBankCache[currencyIndex],
-          currencyIndex
+        .getUiDeposit(
+          mangoCache.rootBankCache[tokenIndex],
+          mangoGroup,
+          tokenIndex
         )
         .add(
-          I80F48.fromNumber(locked).sub(
-            mangoAccount.getNativeBorrow(
-              mangoCache.rootBankCache[currencyIndex],
-              currencyIndex
+          I80F48.fromNumber(nativeBaseLocked).sub(
+            mangoAccount.getUiBorrow(
+              mangoCache.rootBankCache[tokenIndex],
+              mangoGroup,
+              tokenIndex
             )
           )
         )
 
-      return amount.toString()
-      // return floorToDecimal(
-      //   nativeToUi(amount, mangoGroup.tokens[currencyIndex].decimals),
-      //   mangoGroup.tokens[currencyIndex].decimals
-      // )
+      return amount
     }
 
     const marketPair = [
       {
         market: null,
         key: `${baseSymbol}${name}`,
-        coin: baseSymbol,
-        marginDeposits: mangoAccount
-          .getUiDeposit(
-            mangoCache.rootBankCache[tokenIndex],
-            mangoGroup,
-            tokenIndex
-          )
-          .toString(),
-        borrows: mangoAccount
-          .getUiBorrow(
-            mangoCache.rootBankCache[tokenIndex],
-            mangoGroup,
-            tokenIndex
-          )
-          .toString(),
+        symbol: baseSymbol,
+        marginDeposits: mangoAccount.getUiDeposit(
+          mangoCache.rootBankCache[tokenIndex],
+          mangoGroup,
+          tokenIndex
+        ),
+        borrows: mangoAccount.getUiBorrow(
+          mangoCache.rootBankCache[tokenIndex],
+          mangoGroup,
+          tokenIndex
+        ),
         orders: nativeToUi(
           nativeBaseLocked,
           mangoGroup.tokens[tokenIndex].decimals
@@ -99,21 +86,17 @@ export function useBalances(): Balances[] {
       {
         market: null,
         key: `${name}`,
-        coin: mangoGroupConfig.quoteSymbol,
-        marginDeposits: mangoAccount
-          .getUiDeposit(
-            mangoCache.rootBankCache[quoteCurrencyIndex],
-            mangoGroup,
-            quoteCurrencyIndex
-          )
-          .toString(),
-        borrows: mangoAccount
-          .getUiBorrow(
-            mangoCache.rootBankCache[tokenIndex],
-            mangoGroup,
-            quoteCurrencyIndex
-          )
-          .toString(),
+        symbol: mangoGroupConfig.quoteSymbol,
+        marginDeposits: mangoAccount.getUiDeposit(
+          mangoCache.rootBankCache[quoteCurrencyIndex],
+          mangoGroup,
+          quoteCurrencyIndex
+        ),
+        borrows: mangoAccount.getUiBorrow(
+          mangoCache.rootBankCache[tokenIndex],
+          mangoGroup,
+          quoteCurrencyIndex
+        ),
         orders: nativeToUi(
           nativeQuoteLocked,
           mangoGroup.tokens[quoteCurrencyIndex].decimals
@@ -129,25 +112,26 @@ export function useBalances(): Balances[] {
   }
 
   const baseBalances = balances.map((b) => b[0])
-  // const quoteBalances = balances.map((b) => b[1])
-  // const quoteMeta = quoteBalances[0]
-  // const quoteInOrders = sumBy(quoteBalances, 'orders')
-  // const unsettled = sumBy(quoteBalances, 'unsettled')
-  // const net =
-  //   quoteMeta.marginDeposits + unsettled - quoteMeta.borrows - quoteInOrders
+  const quoteBalances = balances.map((b) => b[1])
+  const quoteMeta = quoteBalances[0]
+  const quoteInOrders = sumBy(quoteBalances, 'orders')
+  const unsettled = sumBy(quoteBalances, 'unsettled')
 
-  // return baseBalances.concat([
-  //   {
-  //     market: null,
-  //     key: `${quoteMeta.coin}${quoteMeta.coin}`,
-  //     coin: quoteMeta.coin,
-  //     marginDeposits: quoteMeta.marginDeposits,
-  //     borrows: quoteMeta.borrows,
-  //     orders: quoteInOrders,
-  //     unsettled,
-  //     net: floorToDecimal(net, mangoGroup.tokens[QUOTE_INDEX].decimals),
-  //   },
-  // ])
+  const net: I80F48 = quoteMeta.marginDeposits
+    .add(I80F48.fromNumber(unsettled))
+    .sub(quoteMeta.borrows)
+    .sub(I80F48.fromNumber(quoteInOrders))
 
-  return baseBalances
+  return baseBalances.concat([
+    {
+      market: null,
+      key: `${quoteMeta.symbol}${quoteMeta.symbol}`,
+      symbol: quoteMeta.symbol,
+      marginDeposits: quoteMeta.marginDeposits,
+      borrows: quoteMeta.borrows,
+      orders: quoteInOrders,
+      unsettled,
+      net,
+    },
+  ])
 }

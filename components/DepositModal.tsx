@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useMemo, useState } from 'react'
+import React, { FunctionComponent, useEffect, useState } from 'react'
 import { Disclosure } from '@headlessui/react'
 import {
   ExclamationCircleIcon,
@@ -14,19 +14,18 @@ import Input from './Input'
 import AccountSelect from './AccountSelect'
 import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
-import { DECIMALS, trimDecimals } from '../utils/index'
-import useConnection from '../hooks/useConnection'
 import Loading from './Loading'
 import Button, { LinkButton } from './Button'
 import Tooltip from './Tooltip'
 import Slider from './Slider'
 import InlineNotification from './InlineNotification'
 import { deposit } from '../utils/mango'
+import { notify } from '../utils/notifications'
 
 interface DepositModalProps {
   onClose: () => void
   isOpen: boolean
-  settleDeficit?: number
+  settleDeficit?: string
   tokenSymbol?: string
 }
 
@@ -39,23 +38,19 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
   // const groupConfig = useMangoGroupConfig()
   // const tokenSymbols = useMemo(() => groupConfig.tokens.map(t => t.symbol), [groupConfig]);
 
-  const [inputAmount, setInputAmount] = useState(settleDeficit || 0)
+  const [inputAmount, setInputAmount] = useState<string>(settleDeficit || '')
   const [submitting, setSubmitting] = useState(false)
-  const [simulation, setSimulation] = useState(null)
+  const [simulation /*setSimulation*/] = useState(null)
   const [showSimulation, setShowSimulation] = useState(false)
   const [invalidAmountMessage, setInvalidAmountMessage] = useState('')
   const [sliderPercentage, setSliderPercentage] = useState(0)
   const [maxButtonTransition, setMaxButtonTransition] = useState(false)
-  const { connection, programId } = useConnection()
   const walletTokens = useMangoStore((s) => s.wallet.tokens)
   const actions = useMangoStore((s) => s.actions)
   const [selectedAccount, setSelectedAccount] = useState(walletTokens[0])
 
-  const prices = [] //useMangoStore((s) => s.selectedMangoGroup.prices)
-  const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
-  const selectedMangoAccount = useMangoStore(
-    (s) => s.selectedMangoAccount.current
-  )
+  // const prices = [] //useMangoStore((s) => s.selectedMangoGroup.prices)
+  // const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
 
   useEffect(() => {
     if (tokenSymbol) {
@@ -119,29 +114,46 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
   */
 
   const handleAccountSelect = (account) => {
-    setInputAmount(0)
+    setInputAmount('0')
     setSliderPercentage(0)
     setInvalidAmountMessage('')
     setSelectedAccount(account)
   }
 
   const setMaxForSelectedAccount = () => {
-    setInputAmount(selectedAccount.uiBalance)
+    setInputAmount(selectedAccount.uiBalance.toString())
     setSliderPercentage(100)
     setInvalidAmountMessage('')
     setMaxButtonTransition(true)
   }
 
   const handleDeposit = () => {
+    const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
+
     setSubmitting(true)
     deposit({
-      amount: inputAmount,
+      amount: parseFloat(inputAmount),
       fromTokenAcc: selectedAccount.account,
-    }).then(() => {
-      setSubmitting(false)
-      onClose()
-      actions.fetchMangoAccounts()
+      mangoAccount,
     })
+      .then((response) => {
+        notify({
+          title: 'Deposit successful',
+          type: 'success',
+          txid: response[1],
+        })
+        console.log('deposit response', response)
+        setSubmitting(false)
+        onClose()
+        actions.fetchMangoAccounts()
+      })
+      .catch((err) => {
+        notify({
+          title: 'Deposit failed',
+          description: err.message,
+          type: 'error',
+        })
+      })
   }
 
   const renderAccountRiskStatus = (
@@ -215,11 +227,9 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
     const max = selectedAccount.uiBalance
     const amount = (percentage / 100) * max
     if (percentage === 100) {
-      setInputAmount(amount)
+      setInputAmount(amount.toString())
     } else {
-      setInputAmount(
-        trimDecimals(amount, DECIMALS[selectedAccount.config.symbol])
-      )
+      setInputAmount(amount.toString())
     }
     setInvalidAmountMessage('')
     validateAmountInput(amount)
@@ -314,9 +324,9 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
               onClick={() => setShowSimulation(true)}
               className="w-full"
               disabled={
-                inputAmount <= 0 ||
+                parseFloat(inputAmount) <= 0 ||
                 !selectedAccount ||
-                inputAmount > selectedAccount.uiBalance
+                parseFloat(inputAmount) > selectedAccount.uiBalance
               }
             >
               Next

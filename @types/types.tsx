@@ -1,6 +1,7 @@
 import { AccountInfo, PublicKey, Transaction } from '@solana/web3.js'
 import { Market, OpenOrders } from '@project-serum/serum'
 import { Event } from '@project-serum/serum/lib/queue'
+import { I80F48 } from '@blockworks-foundation/mango-client/lib/src/fixednum'
 
 export interface MarketInfo {
   address: PublicKey
@@ -34,7 +35,7 @@ export interface Trade extends Event {
 
 interface BalancesBase {
   key: string
-  coin: string
+  symbol: string
   wallet?: number | null | undefined
   orders?: number | null | undefined
   openOrders?: OpenOrders | null | undefined
@@ -43,9 +44,9 @@ interface BalancesBase {
 
 export interface Balances extends BalancesBase {
   market?: Market | null | undefined
-  marginDeposits?: number | null | undefined
-  borrows?: number | null | undefined
-  net?: number | null | undefined
+  marginDeposits?: I80F48 | null | undefined
+  borrows?: I80F48 | null | undefined
+  net?: I80F48 | null | undefined
 }
 
 export interface OpenOrdersBalances extends BalancesBase {

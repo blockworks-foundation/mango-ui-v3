@@ -2,20 +2,24 @@ import { useCallback, useEffect, useState } from 'react'
 import { getDecimalCount } from '../utils'
 import { ChartTradeType } from '../@types/types'
 import FloatingElement from './FloatingElement'
-import useMarket from '../hooks/useMarket'
 import useInterval from '../hooks/useInterval'
 import ChartApi from '../utils/chartDataConnector'
 import { ElementTitle } from './styles'
 import { isEqual } from '../utils/index'
+import useMangoStore from '../stores/useMangoStore'
 
-export default function PublicTrades() {
-  const { baseCurrency, quoteCurrency, market, marketAddress } = useMarket()
+export default function RecentMarketTrades() {
+  const mangoConfig = useMangoStore((s) => s.selectedMangoGroup.config)
+  const marketConfig = useMangoStore((s) => s.selectedMarket.config)
+  const market = useMangoStore((s) => s.selectedMarket.current)
   const [trades, setTrades] = useState([])
 
   const fetchTradesForChart = useCallback(async () => {
-    if (!marketAddress) return
+    if (!marketConfig) return
 
-    const newTrades = await ChartApi.getRecentTrades(marketAddress)
+    const newTrades = await ChartApi.getRecentTrades(
+      marketConfig.publicKey.toString()
+    )
     if (!newTrades) return null
     if (newTrades.length && trades.length === 0) {
       setTrades(newTrades)
@@ -25,7 +29,7 @@ export default function PublicTrades() {
     ) {
       setTrades(newTrades)
     }
-  }, [marketAddress, trades])
+  }, [marketConfig, trades])
 
   useEffect(() => {
     fetchTradesForChart()
@@ -39,8 +43,8 @@ export default function PublicTrades() {
     <FloatingElement>
       <ElementTitle>Recent Trades</ElementTitle>
       <div className={`grid grid-cols-3 text-th-fgd-4 mb-2 text-xs`}>
-        <div>Price ({quoteCurrency}) </div>
-        <div className={`text-right`}>Size ({baseCurrency})</div>
+        <div>Price ({mangoConfig.quoteSymbol}) </div>
+        <div className={`text-right`}>Size ({marketConfig.baseSymbol})</div>
         <div className={`text-right`}>Time</div>
       </div>
       {!!trades.length && (

@@ -5,7 +5,7 @@ import useInterval from '../hooks/useInterval'
 import ChartApi from '../utils/chartDataConnector'
 import UiLock from './UiLock'
 import ManualRefresh from './ManualRefresh'
- import useOraclePrice from '../hooks/useOraclePrice'
+import useOraclePrice from '../hooks/useOraclePrice'
 
 const MarketHeader = () => {
   const oraclePrice = useOraclePrice()
@@ -69,7 +69,7 @@ const MarketHeader = () => {
 
   return (
     <div
-      className={`flex items-end sm:items-center justify-between pt-6 px-6 md:px-9`}
+      className={`flex items-end sm:items-center justify-between pt-4 px-6 md:px-9`}
     >
       <div className="flex flex-col sm:flex-row sm:items-center">
         <div className="pb-3 sm:pb-0 w-44">

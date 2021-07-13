@@ -108,7 +108,7 @@ export default function useWallet() {
       // actions.fetchMangoSrmAccounts()
       actions.fetchWalletTokens()
       notify({
-        message: 'Wallet connected',
+        title: 'Wallet connected',
         description:
           'Connected to wallet ' +
           wallet.publicKey.toString().substr(0, 5) +
@@ -126,7 +126,7 @@ export default function useWallet() {
       })
       notify({
         type: 'info',
-        message: 'Disconnected from wallet',
+        title: 'Disconnected from wallet',
       })
     })
     return () => {

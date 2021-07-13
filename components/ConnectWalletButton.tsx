@@ -1,9 +1,9 @@
-// import { useCallback, useState } from 'react'
+import { useCallback, useState } from 'react'
 import styled from '@emotion/styled'
 import useMangoStore from '../stores/useMangoStore'
 import { Menu } from '@headlessui/react'
 import {
-  // CurrencyDollarIcon,
+  CurrencyDollarIcon,
   DuplicateIcon,
   LogoutIcon,
 } from '@heroicons/react/outline'
@@ -12,7 +12,7 @@ import useLocalStorageState from '../hooks/useLocalStorageState'
 import { abbreviateAddress, copyToClipboard } from '../utils'
 import WalletSelect from './WalletSelect'
 import { WalletIcon, ProfileIcon } from './icons'
-// import AccountsModal from './AccountsModal'
+import AccountsModal from './AccountsModal'
 
 const StyledWalletTypeLabel = styled.div`
   font-size: 0.65rem;
@@ -22,7 +22,7 @@ const ConnectWalletButton = () => {
   const wallet = useMangoStore((s) => s.wallet.current)
   const connected = useMangoStore((s) => s.wallet.connected)
   const set = useMangoStore((s) => s.set)
-  // const [showAccountsModal, setShowAccountsModal] = useState(false)
+  const [showAccountsModal, setShowAccountsModal] = useState(false)
   const [savedProviderUrl] = useLocalStorageState(
     'walletProvider',
     DEFAULT_PROVIDER.url
@@ -35,9 +35,9 @@ const ConnectWalletButton = () => {
     })
   }
 
-  // const handleCloseAccounts = useCallback(() => {
-  //   setShowAccountsModal(false)
-  // }, [])
+  const handleCloseAccounts = useCallback(() => {
+    setShowAccountsModal(false)
+  }, [])
 
   return (
     <>
@@ -48,7 +48,7 @@ const ConnectWalletButton = () => {
               <ProfileIcon className="fill-current h-5 w-5" />
             </Menu.Button>
             <Menu.Items className="bg-th-bkg-1 mt-2 p-1 absolute right-0 shadow-lg outline-none rounded-md w-48 z-20">
-              {/* <Menu.Item>
+              <Menu.Item>
                 <button
                   className="flex flex-row font-normal items-center rounded-none w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer focus:outline-none"
                   onClick={() => setShowAccountsModal(true)}
@@ -56,7 +56,7 @@ const ConnectWalletButton = () => {
                   <CurrencyDollarIcon className="h-4 w-4" />
                   <div className="pl-2 text-left">Accounts</div>
                 </button>
-              </Menu.Item> */}
+              </Menu.Item>
               <Menu.Item>
                 <button
                   className="flex flex-row font-normal items-center rounded-none w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer focus:outline-none"
@@ -108,12 +108,12 @@ const ConnectWalletButton = () => {
           </div>
         </div>
       )}
-      {/* {showAccountsModal ? (
+      {showAccountsModal ? (
         <AccountsModal
           onClose={handleCloseAccounts}
           isOpen={showAccountsModal}
         />
-      ) : null} */}
+      ) : null}
     </>
   )
 }

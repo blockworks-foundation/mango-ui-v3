@@ -1,8 +1,8 @@
 import useMangoStore from '../stores/useMangoStore'
 
 export function notify(newNotification: {
-  type?: string
-  message: string
+  type?: 'success' | 'info' | 'error'
+  title: string
   description?: string
   txid?: string
 }) {

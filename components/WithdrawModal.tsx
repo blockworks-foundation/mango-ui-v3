@@ -3,19 +3,10 @@ import Modal from './Modal'
 import Input from './Input'
 import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
-import useMarketList from '../hooks/useMarketList'
-import {
-  DECIMALS,
-  floorToDecimal,
-  tokenPrecision,
-  displayDepositsForMangoAccount,
-} from '../utils/index'
-import useConnection from '../hooks/useConnection'
-// import { borrowAndWithdraw, withdraw } from '../utils/mango'
+import { DECIMALS, tokenPrecision } from '../utils/index'
 import Loading from './Loading'
 import Slider from './Slider'
 import Button, { LinkButton } from './Button'
-import { notify } from '../utils/notifications'
 import Switch from './Switch'
 import Tooltip from './Tooltip'
 import {
@@ -28,90 +19,125 @@ import {
   ChevronUpIcon,
 } from '@heroicons/react/solid'
 import { Disclosure } from '@headlessui/react'
-import { PublicKey } from '@solana/web3.js'
-import {
-  MerpsAccount as MangoAccount,
-  uiToNative,
-} from '@blockworks-foundation/mango-client'
 import Select from './Select'
+import { withdraw } from '../utils/mango'
+import {
+  ZERO_I80F48,
+  I80F48,
+  MangoAccount,
+  ONE_I80F48,
+} from '@blockworks-foundation/mango-client'
+import { notify } from '../utils/notifications'
+
+// const trimDecimals = (n, digits) => {
+//   const step = Math.pow(10, digits || 0)
+//   const temp = Math.trunc(step * n)
+
+//   return temp / step
+// }
 
 interface WithdrawModalProps {
   onClose: () => void
   isOpen: boolean
+  title?: string
   tokenSymbol?: string
+  borrow?: boolean
 }
 
 const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   isOpen,
   onClose,
   tokenSymbol = '',
+  borrow = false,
+  title,
 }) => {
-  return <></>
-
   const [withdrawTokenSymbol, setWithdrawTokenSymbol] = useState(
     tokenSymbol || 'USDC'
   )
-  const [inputAmount, setInputAmount] = useState(0)
+  const [inputAmount, setInputAmount] = useState('')
   const [invalidAmountMessage, setInvalidAmountMessage] = useState('')
   const [maxAmount, setMaxAmount] = useState(0)
   const [submitting, setSubmitting] = useState(false)
-  const [includeBorrow, setIncludeBorrow] = useState(false)
+  const [includeBorrow, setIncludeBorrow] = useState(borrow)
   const [simulation, setSimulation] = useState(null)
   const [showSimulation, setShowSimulation] = useState(false)
   const [sliderPercentage, setSliderPercentage] = useState(0)
   const [maxButtonTransition, setMaxButtonTransition] = useState(false)
-  const { getTokenIndex, symbols } = useMarketList()
-  const { connection, programId } = useConnection()
-  const prices = useMangoStore((s) => s.selectedMangoGroup.prices)
+
+  const actions = useMangoStore((s) => s.actions)
   const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const selectedMangoAccount = useMangoStore(
     (s) => s.selectedMangoAccount.current
   )
-  const actions = useMangoStore((s) => s.actions)
-  const tokenIndex = useMemo(
-    () => getTokenIndex(symbols[withdrawTokenSymbol]),
-    [withdrawTokenSymbol, getTokenIndex]
+  const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
+  const mangoGroupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
+
+  const tokens = useMemo(() => mangoGroupConfig.tokens, [mangoGroupConfig])
+  const token = useMemo(
+    () => tokens.find((t) => t.symbol === withdrawTokenSymbol),
+    [withdrawTokenSymbol, tokens]
   )
+  const tokenIndex = selectedMangoGroup.getTokenIndex(token.mintKey)
 
   useEffect(() => {
     if (!selectedMangoGroup || !selectedMangoAccount || !withdrawTokenSymbol)
       return
 
-    const mintDecimals = selectedMangoGroup.mintDecimals[tokenIndex]
-    const groupIndex = selectedMangoGroup.indexes[tokenIndex]
+    const mintDecimals = selectedMangoGroup.tokens[tokenIndex].decimals
     const deposits = selectedMangoAccount.getUiDeposit(
+      mangoCache.rootBankCache[tokenIndex],
       selectedMangoGroup,
       tokenIndex
     )
     const borrows = selectedMangoAccount.getUiBorrow(
+      mangoCache.rootBankCache[tokenIndex],
       selectedMangoGroup,
       tokenIndex
     )
 
-    const currentAssetsVal =
-      selectedMangoAccount.getAssetsVal(selectedMangoGroup, prices) -
-      getMaxForSelectedAsset() * prices[tokenIndex]
-    const currentLiabs = selectedMangoAccount.getLiabsVal(
-      selectedMangoGroup,
-      prices
+    const maxValForSelectedAsset = getDepositsForSelectedAsset().mul(
+      selectedMangoGroup.getPrice(tokenIndex, mangoCache) || ONE_I80F48
     )
-    // multiply by 0.99 and subtract 0.01 to account for rounding issues
-    const liabsAvail = (currentAssetsVal / 1.2 - currentLiabs) * 0.99 - 0.01
+
+    const currentAssetsVal = selectedMangoAccount
+      .getAssetsVal(selectedMangoGroup, mangoCache, 'Init')
+      .sub(maxValForSelectedAsset)
+
+    const currentLiabsVal = selectedMangoAccount.getLiabsVal(
+      selectedMangoGroup,
+      mangoCache,
+      'Init'
+    )
+
+    const liabsAvail = currentAssetsVal
+      .sub(currentLiabsVal)
+      .sub(I80F48.fromNumber(0.01))
 
     // calculate max withdraw amount
     const amountToWithdraw = includeBorrow
-      ? liabsAvail / prices[tokenIndex] + getMaxForSelectedAsset()
-      : getMaxForSelectedAsset()
+      ? liabsAvail
+          .div(
+            selectedMangoGroup.getPrice(tokenIndex, mangoCache) || ONE_I80F48
+          )
+          .add(getDepositsForSelectedAsset())
+      : getDepositsForSelectedAsset()
 
-    if (amountToWithdraw > 0) {
-      setMaxAmount(amountToWithdraw)
+    if (amountToWithdraw.gt(I80F48.fromNumber(0))) {
+      setMaxAmount(amountToWithdraw.toNumber())
     } else {
       setMaxAmount(0)
     }
 
     // simulate change to deposits & borrow based on input amount
-    const newDeposit = Math.max(0, deposits - inputAmount)
-    const newBorrows = borrows + Math.max(0, inputAmount - deposits)
+    const parsedInputAmount = inputAmount
+      ? I80F48.fromString(inputAmount)
+      : ZERO_I80F48
+    let newDeposit = deposits.sub(parsedInputAmount)
+    newDeposit = newDeposit.gt(ZERO_I80F48) ? newDeposit : ZERO_I80F48
+
+    let newBorrows = parsedInputAmount.sub(deposits)
+    newBorrows = newBorrows.gt(ZERO_I80F48) ? newBorrows : ZERO_I80F48
+    newBorrows = newBorrows.add(borrows)
 
     // clone MangoAccount and arrays to not modify selectedMangoAccount
     const simulation = new MangoAccount(null, selectedMangoAccount)
@@ -119,119 +145,92 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
     simulation.borrows = [...selectedMangoAccount.borrows]
 
     // update with simulated values
-    simulation.deposits[tokenIndex] =
-      uiToNative(newDeposit, mintDecimals).toNumber() / groupIndex.deposit
-    simulation.borrows[tokenIndex] =
-      uiToNative(newBorrows, mintDecimals).toNumber() / groupIndex.borrow
+    simulation.deposits[tokenIndex] = newDeposit
+      .div(I80F48.fromNumber(Math.pow(10, mintDecimals)))
+      .div(mangoCache.rootBankCache[tokenIndex].depositIndex)
+    simulation.borrows[tokenIndex] = newBorrows
+      .div(I80F48.fromNumber(Math.pow(10, mintDecimals)))
+      .div(mangoCache.rootBankCache[tokenIndex].borrowIndex)
 
-    const equity = simulation.computeValue(selectedMangoGroup, prices)
-    const assetsVal = simulation.getAssetsVal(selectedMangoGroup, prices)
-    const liabsVal = simulation.getLiabsVal(selectedMangoGroup, prices)
-    const collateralRatio = simulation.getCollateralRatio(
+    const assetsVal = simulation.getAssetsVal(
       selectedMangoGroup,
-      prices
+      mangoCache,
+      'Init'
     )
-    const leverage = 1 / Math.max(0, collateralRatio - 1)
+    const liabsVal = simulation.getLiabsVal(
+      selectedMangoGroup,
+      mangoCache,
+      'Init'
+    )
+    // const collateralRatio = simulation.getCollateralRatio(
+    //   selectedMangoGroup,
+    //   prices
+    // )
+    // const leverage = 1 / Math.max(0, collateralRatio - 1)
 
     setSimulation({
-      equity,
       assetsVal,
       liabsVal,
-      collateralRatio,
-      leverage,
     })
   }, [
     includeBorrow,
     inputAmount,
-    prices,
     tokenIndex,
     selectedMangoAccount,
     selectedMangoGroup,
+    mangoCache,
   ])
 
   const handleWithdraw = () => {
     setSubmitting(true)
-    const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
-    const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
-    const wallet = useMangoStore.getState().wallet.current
-    if (!mangoAccount || !mangoGroup) return
 
-    if (!includeBorrow) {
-      withdraw(
-        connection,
-        new PublicKey(programId),
-        mangoGroup,
-        mangoAccount,
-        wallet,
-        new PublicKey(symbols[withdrawTokenSymbol]),
-        Number(inputAmount)
-      )
-        .then((_transSig: string) => {
-          setSubmitting(false)
-          actions.fetchMangoGroup()
-          actions.fetchMangoAccounts()
-          actions.fetchWalletTokens()
-          onClose()
+    withdraw({
+      amount: Number(inputAmount),
+      token: selectedMangoGroup.tokens[tokenIndex].mint,
+      allowBorrow: includeBorrow,
+    })
+      .then((txid: string) => {
+        setSubmitting(false)
+        actions.fetchMangoGroup()
+        actions.fetchMangoAccounts()
+        actions.fetchWalletTokens()
+        notify({
+          title: 'Withdraw successful',
+          type: 'success',
+          txid,
         })
-        .catch((err) => {
-          setSubmitting(false)
-          console.warn('Error withdrawing:', err)
-          notify({
-            message: 'Could not perform withdraw',
-            txid: err.txid,
-            type: 'error',
-          })
-          onClose()
+        onClose()
+      })
+      .catch((err) => {
+        setSubmitting(false)
+        console.error('Error withdrawing:', err)
+        notify({
+          title: 'Could not perform withdraw',
+          txid: err.txid,
+          type: 'error',
         })
-    } else {
-      borrowAndWithdraw(
-        connection,
-        new PublicKey(programId),
-        mangoGroup,
-        mangoAccount,
-        wallet,
-        new PublicKey(symbols[withdrawTokenSymbol]),
-        Number(inputAmount)
-      )
-        .then((_transSig: string) => {
-          setSubmitting(false)
-          actions.fetchMangoGroup()
-          actions.fetchMangoAccounts()
-          actions.fetchWalletTokens()
-          onClose()
-        })
-        .catch((err) => {
-          setSubmitting(false)
-          console.warn('Error borrowing and withdrawing:', err)
-          notify({
-            message: 'Could not perform borrow and withdraw',
-            description: `${err}`,
-            txid: err.txid,
-            type: 'error',
-          })
-          onClose()
-        })
-    }
+        onClose()
+      })
   }
 
   const handleSetSelectedAsset = (symbol) => {
-    setInputAmount(0)
+    setInputAmount('')
     setSliderPercentage(0)
     setWithdrawTokenSymbol(symbol)
   }
 
-  const getMaxForSelectedAsset = () => {
-    return displayDepositsForMangoAccount(
-      selectedMangoAccount,
+  const getDepositsForSelectedAsset = (): I80F48 => {
+    return selectedMangoAccount.getUiDeposit(
+      mangoCache.rootBankCache[tokenIndex],
       selectedMangoGroup,
       tokenIndex
     )
   }
 
   const getBorrowAmount = () => {
-    const tokenBalance = getMaxForSelectedAsset()
-    const borrowAmount = inputAmount - tokenBalance
-    return borrowAmount > 0 ? borrowAmount : 0
+    const tokenBalance = getDepositsForSelectedAsset()
+    const borrowAmount = I80F48.fromString(inputAmount).sub(tokenBalance)
+    return borrowAmount.gt(ZERO_I80F48) ? borrowAmount : 0
   }
 
   const getAccountStatusColor = (
@@ -268,37 +267,39 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
 
   const handleIncludeBorrowSwitch = (checked) => {
     setIncludeBorrow(checked)
-    setInputAmount(0)
+    setInputAmount('')
     setSliderPercentage(0)
     setInvalidAmountMessage('')
   }
 
   const setMaxForSelectedAsset = () => {
-    setInputAmount(getMaxForSelectedAsset())
+    setInputAmount(getDepositsForSelectedAsset().toFixed())
     setSliderPercentage(100)
     setInvalidAmountMessage('')
     setMaxButtonTransition(true)
   }
 
   const setMaxBorrowForSelectedAsset = async () => {
-    setInputAmount(trimDecimals(maxAmount, DECIMALS[withdrawTokenSymbol] + 4))
+    console.log('setting max borrow for selected', maxAmount)
+
+    setInputAmount(maxAmount.toString())
     setSliderPercentage(100)
     setInvalidAmountMessage('')
     setMaxButtonTransition(true)
   }
 
-  const onChangeAmountInput = (amount) => {
+  const onChangeAmountInput = (amount: string) => {
     setInputAmount(amount)
-    setSliderPercentage((amount / maxAmount) * 100)
+    setSliderPercentage((Number(amount) / maxAmount) * 100)
     setInvalidAmountMessage('')
   }
 
   const onChangeSlider = async (percentage) => {
     const amount = (percentage / 100) * maxAmount
     if (percentage === 100) {
-      setInputAmount(trimDecimals(maxAmount, DECIMALS[withdrawTokenSymbol] + 4))
+      setInputAmount(maxAmount.toString())
     } else {
-      setInputAmount(trimDecimals(amount, DECIMALS[withdrawTokenSymbol] + 2))
+      setInputAmount(amount.toString())
     }
     setSliderPercentage(percentage)
     setInvalidAmountMessage('')
@@ -306,15 +307,16 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   }
 
   const validateAmountInput = (amount) => {
+    const parsedAmount = Number(amount)
     if (
-      (Number(amount) <= 0 && getMaxForSelectedAsset() > 0) ||
-      (Number(amount) <= 0 && includeBorrow)
+      (parsedAmount <= 0 && getDepositsForSelectedAsset().gt(ZERO_I80F48)) ||
+      (parsedAmount <= 0 && includeBorrow)
     ) {
       setInvalidAmountMessage('Enter an amount to withdraw')
     }
     if (
-      (getMaxForSelectedAsset() === 0 ||
-        Number(amount) > getMaxForSelectedAsset()) &&
+      (getDepositsForSelectedAsset() === ZERO_I80F48 ||
+        getDepositsForSelectedAsset().lt(I80F48.fromNumber(parsedAmount))) &&
       !includeBorrow
     ) {
       setInvalidAmountMessage('Insufficient balance. Borrow funds to withdraw')
@@ -329,23 +331,24 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
     }
   }, [simulation])
 
-  const trimDecimals = (n, digits) => {
-    const step = Math.pow(10, digits || 0)
-    const temp = Math.trunc(step * n)
+  const getTokenBalances = () => {
+    const mangoCache = useMangoStore.getState().selectedMangoGroup.cache
+    const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
 
-    return temp / step
-  }
-
-  const getTokenBalances = () =>
-    Object.entries(symbols).map(([name], i) => {
+    return tokens.map((token) => {
+      const tokenIndex = mangoGroup.getTokenIndex(token.mintKey)
       return {
-        symbol: name,
-        balance: floorToDecimal(
-          selectedMangoAccount.getUiDeposit(selectedMangoGroup, i),
-          tokenPrecision[name]
-        ),
+        symbol: token.symbol,
+        balance: selectedMangoAccount
+          .getUiDeposit(
+            mangoCache.rootBankCache[tokenIndex],
+            mangoGroup,
+            tokenIndex
+          )
+          .toFixed(tokenPrecision[token.symbol]),
       }
     })
+  }
 
   // turn off slider transition for dragging slider handle interaction
   useEffect(() => {
@@ -356,7 +359,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
 
   // turn on borrow toggle when asset balance is zero
   // useEffect(() => {
-  //   if (withdrawTokenSymbol && getMaxForSelectedAsset() === 0) {
+  //   if (withdrawTokenSymbol && getDepositsForSelectedAsset() === 0) {
   //     setIncludeBorrow(true)
   //   }
   // }, [withdrawTokenSymbol])
@@ -369,7 +372,9 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
         {!showSimulation ? (
           <>
             <Modal.Header>
-              <ElementTitle noMarignBottom>Withdraw Funds</ElementTitle>
+              <ElementTitle noMarignBottom>
+                {title ? title : 'Withdraw Funds'}
+              </ElementTitle>
             </Modal.Header>
             <div className="pb-2 text-th-fgd-1">Asset</div>
             <Select
@@ -386,13 +391,13 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                       />
                       {withdrawTokenSymbol}
                     </div>
-                    {floorToDecimal(
-                      selectedMangoAccount.getUiDeposit(
+                    {selectedMangoAccount
+                      .getUiDeposit(
+                        mangoCache.rootBankCache[tokenIndex],
                         selectedMangoGroup,
                         tokenIndex
-                      ),
-                      tokenPrecision[withdrawTokenSymbol]
-                    )}
+                      )
+                      .toFixed(tokenPrecision[withdrawTokenSymbol])}
                   </div>
                 ) : (
                   <span className="text-th-fgd-4">Select an asset</span>
@@ -438,7 +443,10 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
               <div className="flex space-x-4">
                 <button
                   className="font-normal text-th-fgd-1 underline cursor-pointer default-transition hover:text-th-primary hover:no-underline focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
-                  disabled={!includeBorrow && getMaxForSelectedAsset() === 0}
+                  disabled={
+                    !includeBorrow &&
+                    getDepositsForSelectedAsset().eq(ZERO_I80F48)
+                  }
                   onClick={
                     includeBorrow
                       ? setMaxBorrowForSelectedAsset
@@ -546,20 +554,20 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                     <div className="flex items-center justify-between">
                       <div className="flex items-center">
                         <span className="flex h-2 w-2 mr-2.5 relative">
-                          <span
+                          {/* <span
                             className={`animate-ping absolute inline-flex h-full w-full rounded-full ${getAccountStatusColor(
                               simulation.collateralRatio,
                               false,
                               true
                             )} opacity-75`}
-                          ></span>
-                          <span
+                          ></span> */}
+                          {/* <span
                             className={`relative inline-flex rounded-full h-2 w-2 ${getAccountStatusColor(
                               simulation.collateralRatio,
                               false,
                               true
                             )}`}
-                          ></span>
+                          ></span> */}
                         </span>
                         Account Health Check
                         <Tooltip content="The details of your account after this withdrawal.">
@@ -596,18 +604,18 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                       </div>
                       <div className="flex justify-between pb-2">
                         <div className="text-th-fgd-4">Leverage</div>
-                        <div className="text-th-fgd-1">
+                        {/* <div className="text-th-fgd-1">
                           {simulation.leverage.toFixed(2)}x
-                        </div>
+                        </div> */}
                       </div>
                       <div className="flex justify-between">
                         <div className="text-th-fgd-4">Collateral Ratio</div>
-                        <div className="text-th-fgd-1">
+                        {/* <div className="text-th-fgd-1">
                           {simulation.collateralRatio * 100 < 200
                             ? Math.floor(simulation.collateralRatio * 100)
                             : '>200'}
                           %
-                        </div>
+                        </div> */}
                       </div>
                       {simulation.liabsVal > 0.05 ? (
                         <div className="flex justify-between pt-2">
@@ -626,7 +634,8 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
               <Button
                 onClick={handleWithdraw}
                 disabled={
-                  Number(inputAmount) <= 0 || simulation.collateralRatio < 1.2
+                  Number(inputAmount) <=
+                  0 /* || simulation.collateralRatio < 1.2*/
                 }
                 className="w-full"
               >

@@ -4,15 +4,30 @@ import { getMarketByPublicKey } from '@blockworks-foundation/mango-client'
 import { useMemo } from 'react'
 
 const PositionsTable = () => {
-  const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config);
-  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current);
-  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current);
-  const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache);
-  const perpMarkets = useMemo(() => mangoGroup ? groupConfig.perpMarkets.map(m => mangoGroup.perpMarkets[m.marketIndex]) : [], [mangoGroup]);
-  const perpAccounts = useMemo(() => mangoAccount ? groupConfig.perpMarkets.map(m => mangoAccount.perpAccounts[m.marketIndex]) : [], [mangoAccount]);
-  
+  const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
+  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
+  const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
+  const perpMarkets = useMemo(
+    () =>
+      mangoGroup
+        ? groupConfig.perpMarkets.map(
+            (m) => mangoGroup.perpMarkets[m.marketIndex]
+          )
+        : [],
+    [mangoGroup]
+  )
+  const perpAccounts = useMemo(
+    () =>
+      mangoAccount
+        ? groupConfig.perpMarkets.map(
+            (m) => mangoAccount.perpAccounts[m.marketIndex]
+          )
+        : [],
+    [mangoAccount]
+  )
 
-  console.log({ perpMarkets, perpAccounts });
+  console.log({ perpMarkets, perpAccounts })
 
   return (
     <div className={`flex flex-col py-4`}>
@@ -59,45 +74,58 @@ const PositionsTable = () => {
                 </Thead>
                 <Tbody>
                   {perpAccounts.map((acc, index) => {
-                    const market = perpMarkets[index];
-                    const marketConfig = getMarketByPublicKey(groupConfig, market.perpMarket);
-                    const marketCache = mangoCache.perpMarketCache[marketConfig.marketIndex];
-                    const price = mangoCache.priceCache[marketConfig.marketIndex].price;
-                    
-                    
+                    const market = perpMarkets[index]
+                    const marketConfig = getMarketByPublicKey(
+                      groupConfig,
+                      market.perpMarket
+                    )
+                    const marketCache =
+                      mangoCache.perpMarketCache[marketConfig.marketIndex]
+                    const price =
+                      mangoCache.priceCache[marketConfig.marketIndex].price
+
                     return (
-                    <Tr
-                      key={`${index}`}
-                      className={`border-b border-th-bkg-3
+                      <Tr
+                        key={`${index}`}
+                        className={`border-b border-th-bkg-3
                         ${index % 2 === 0 ? `bg-th-bkg-3` : `bg-th-bkg-2`}
                       `}
-                    >
-                      <Td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
-                        {marketConfig.name}
-                      </Td>
-                      <Td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
-                      >
-                        {acc.basePosition.toString()}
-                      </Td>
-                      <Td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
-                      >
-                        {acc.quotePosition.toString()}
-                      </Td>
-                      <Td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
-                      >
-                        {acc.getPnl(market, price).toFixed(2)}$
-                      </Td>
-                      <Td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
-                      >
-                        {acc.getHealth(market, price, market.maintAssetWeight, market.maintLiabWeight, marketCache.longFunding, marketCache.shortFunding).toFixed(3)}
-                      </Td>
-                    </Tr>
+                        <Td
+                          className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
+                        >
+                          {marketConfig.name}
+                        </Td>
+                        <Td
+                          className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
+                        >
+                          {acc.basePosition.toString()}
+                        </Td>
+                        <Td
+                          className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
+                        >
+                          {acc.quotePosition.toString()}
+                        </Td>
+                        <Td
+                          className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
+                        >
+                          ${acc.getPnl(market, price).toFixed(2)}
+                        </Td>
+                        <Td
+                          className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
+                        >
+                          {acc
+                            .getHealth(
+                              market,
+                              price,
+                              market.maintAssetWeight,
+                              market.maintLiabWeight,
+                              marketCache.longFunding,
+                              marketCache.shortFunding
+                            )
+                            .toFixed(3)}
+                        </Td>
+                      </Tr>
                     )
                   })}
                 </Tbody>

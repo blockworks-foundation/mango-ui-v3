@@ -7,13 +7,20 @@ import {
   PlusCircleIcon,
 } from '@heroicons/react/outline'
 import useMangoStore from '../stores/useMangoStore'
-import { MangoAccount } from '@blockworks-foundation/mango-client'
+import {
+  MangoAccount,
+  MangoCache,
+  MangoGroup,
+  ZERO_I80F48,
+} from '@blockworks-foundation/mango-client'
 import { abbreviateAddress } from '../utils'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import Modal from './Modal'
 import { ElementTitle } from './styles'
 import Button, { LinkButton } from './Button'
 import NewAccount from './NewAccount'
+
+export const LAST_ACCOUNT_KEY = 'lastAccountViewed-3.0'
 
 interface AccountsModalProps {
   onClose: () => void
@@ -30,18 +37,19 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
   const selectedMangoAccount = useMangoStore(
     (s) => s.selectedMangoAccount.current
   )
-  const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
-  const prices = useMangoStore((s) => s.selectedMangoGroup.prices)
+  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const setMangoStore = useMangoStore((s) => s.set)
-  const actions = useMangoStore((s) => s.actions)
-  const [, setLastAccountViewed] = useLocalStorageState('lastAccountViewed')
+  // const actions = useMangoStore((s) => s.actions)
+  const [, setLastAccountViewed] = useLocalStorageState(LAST_ACCOUNT_KEY)
 
   const handleMangoAccountChange = (mangoAccount: MangoAccount) => {
     setLastAccountViewed(mangoAccount.publicKey.toString())
     setMangoStore((state) => {
       state.selectedMangoAccount.current = mangoAccount
     })
-    actions.fetchTradeHistory()
+    // TODO
+    // actions.fetchTradeHistory()
     onClose()
   }
 
@@ -65,35 +73,6 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
   const handleShowNewAccountForm = () => {
     setNewAccPublicKey(null)
     setShowNewAccountForm(true)
-  }
-
-  const getAccountInfo = (acc) => {
-    const accountEquity = acc
-      .computeValue(selectedMangoGroup, prices)
-      .toFixed(2)
-
-    const collRatio = acc.getCollateralRatio(selectedMangoGroup, prices)
-
-    const leverage =
-      accountEquity && collRatio ? (1 / (collRatio - 1)).toFixed(2) : '0.00'
-
-    return (
-      <div className="text-th-fgd-3 text-xs">
-        ${accountEquity}
-        <span className="px-1.5 text-th-fgd-4">|</span>
-        <span
-          className={
-            parseFloat(leverage) > 4
-              ? 'text-th-red'
-              : parseFloat(leverage) > 2
-              ? 'text-th-orange'
-              : 'text-th-green'
-          }
-        >
-          {leverage}x
-        </span>
-      </div>
-    )
   }
 
   return (
@@ -152,9 +131,13 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
                                   <div className="pb-0.5">
                                     {abbreviateAddress(account.publicKey)}
                                   </div>
-                                  {prices && selectedMangoGroup ? (
+                                  {mangoGroup ? (
                                     <div className="text-th-fgd-3 text-xs">
-                                      {getAccountInfo(account)}
+                                      <AccountInfo
+                                        mangoGroup={mangoGroup}
+                                        mangoAccount={account}
+                                        mangoCache={mangoCache}
+                                      />
                                     </div>
                                   ) : null}
                                 </div>
@@ -190,6 +173,43 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
         <NewAccount onAccountCreation={handleNewAccountCreation} />
       )}
     </Modal>
+  )
+}
+
+const AccountInfo = ({
+  mangoGroup,
+  mangoAccount,
+  mangoCache,
+}: {
+  mangoGroup: MangoGroup
+  mangoAccount: MangoAccount
+  mangoCache: MangoCache
+}) => {
+  const accountEquity = mangoAccount.computeValue(mangoGroup, mangoCache)
+
+  const leverage = accountEquity.gt(ZERO_I80F48)
+    ? mangoAccount
+        .getLiabsVal(mangoGroup, mangoCache)
+        .div(accountEquity)
+        .toFixed(2)
+    : '0.00'
+
+  return (
+    <div className="text-th-fgd-3 text-xs">
+      ${accountEquity.toFixed(2)}
+      <span className="px-1.5 text-th-fgd-4">|</span>
+      <span
+        className={
+          parseFloat(leverage) > 4
+            ? 'text-th-red'
+            : parseFloat(leverage) > 2
+            ? 'text-th-orange'
+            : 'text-th-green'
+        }
+      >
+        {leverage}x
+      </span>
+    </div>
   )
 }
 

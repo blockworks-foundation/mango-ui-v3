@@ -26,6 +26,7 @@ import { AccountInfo, Commitment, Connection, PublicKey } from '@solana/web3.js'
 import { EndpointInfo, WalletAdapter } from '../@types/types'
 import { zipDict } from '../utils'
 import { notify } from '../utils/notifications'
+import { LAST_ACCOUNT_KEY } from '../components/AccountsModal'
 
 export const ENDPOINTS: EndpointInfo[] = [
   {
@@ -55,7 +56,7 @@ export const WEBSOCKET_CONNECTION = new Connection(
   'processed' as Commitment
 )
 
-const DEFAULT_MANGO_GROUP_NAME = 'mango_test_v3.2'
+const DEFAULT_MANGO_GROUP_NAME = 'mango_test_v3.4'
 const DEFAULT_MANGO_GROUP_CONFIG = Config.ids().getGroup(
   CLUSTER,
   DEFAULT_MANGO_GROUP_NAME
@@ -102,7 +103,7 @@ export interface Orderbook {
 interface MangoStore extends State {
   notifications: Array<{
     type: string
-    message: string
+    title: string
     description?: string
     txid?: string
   }>
@@ -222,10 +223,9 @@ const useMangoStore = create<MangoStore>((set, get) => ({
       const set = get().set
 
       if (wallet?.publicKey && connected) {
-        const ownerAddress = wallet.publicKey
         const ownedTokenAccounts = await getTokenAccountsByOwnerWithWrappedSol(
           DEFAULT_CONNECTION,
-          ownerAddress
+          wallet.publicKey
         )
         const tokens = []
         ownedTokenAccounts.forEach((account) => {
@@ -261,26 +261,23 @@ const useMangoStore = create<MangoStore>((set, get) => ({
               .sort((a, b) =>
                 a.publicKey.toBase58() > b.publicKey.toBase58() ? 1 : -1
               )
-            console.log('margin acc: ', sortedAccounts[0])
+            console.log('mango acc: ', sortedAccounts[0])
 
             set((state) => {
               state.mangoAccounts = sortedAccounts
-              state.selectedMangoAccount.current = sortedAccounts[0]
-              // if (state.selectedMangoAccount.current) {
-              //   state.selectedMangoAccount.current = mangoAccounts.find(
-              //     (ma) =>
-              //       ma.publicKey.equals(
-              //         state.selectedMangoAccount.current.publicKey
-              //       )
-              //   )
-              // } else {
-              //   const lastAccount = localStorage.getItem('lastAccountViewed')
-
-              //   state.selectedMangoAccount.current =
-              //     mangoAccounts.find(
-              //       (ma) => ma.publicKey.toString() === JSON.parse(lastAccount)
-              //     ) || sortedAccounts[0]
-              // }
+              if (state.selectedMangoAccount.current) {
+                state.selectedMangoAccount.current = mangoAccounts.find((ma) =>
+                  ma.publicKey.equals(
+                    state.selectedMangoAccount.current.publicKey
+                  )
+                )
+              } else {
+                const lastAccount = localStorage.getItem(LAST_ACCOUNT_KEY)
+                state.selectedMangoAccount.current =
+                  mangoAccounts.find(
+                    (ma) => ma.publicKey.toString() === JSON.parse(lastAccount)
+                  ) || sortedAccounts[0]
+              }
             })
           }
           set((state) => {
@@ -365,40 +362,37 @@ const useMangoStore = create<MangoStore>((set, get) => ({
         })
         .catch((err) => {
           notify({
-            message: 'Could not get mango group: ',
+            title: 'Could not get mango group',
             description: `${err}`,
             type: 'error',
           })
           console.log('Could not get mango group: ', err)
         })
     },
-    // async fetchTradeHistory(mangoAccount = null) {
-    //   const selectedMangoAccount =
-    //     mangoAccount || get().selectedMangoAccount.current
-    //   const set = get().set
-
-    //   if (!selectedMangoAccount) return
-    //   if (selectedMangoAccount.openOrdersAccounts.length === 0) return
-
-    //   const openOrdersAccounts =
-    //     selectedMangoAccount.openOrdersAccounts.filter(isDefined)
-    //   const publicKeys = openOrdersAccounts.map((act) =>
-    //     act.publicKey.toString()
-    //   )
-    //   const results = await Promise.all(
-    //     publicKeys.map(async (pk) => {
-    //       const response = await fetch(
-    //         `https://stark-fjord-45757.herokuapp.com/trades/open_orders/${pk.toString()}`
-    //       )
-
-    //       const parsedResponse = await response.json()
-    //       return parsedResponse?.data ? parsedResponse.data : []
-    //     })
-    //   )
-    //   set((state) => {
-    //     state.tradeHistory = results
-    //   })
-    // },
+    async fetchTradeHistory(mangoAccount = null) {
+      // const selectedMangoAccount =
+      //   mangoAccount || get().selectedMangoAccount.current
+      // const set = get().set
+      // if (!selectedMangoAccount) return
+      // if (selectedMangoAccount.openOrdersAccounts.length === 0) return
+      // const openOrdersAccounts =
+      //   selectedMangoAccount.openOrdersAccounts.filter(isDefined)
+      // const publicKeys = openOrdersAccounts.map((act) =>
+      //   act.publicKey.toString()
+      // )
+      // const results = await Promise.all(
+      //   publicKeys.map(async (pk) => {
+      //     const response = await fetch(
+      //       `https://stark-fjord-45757.herokuapp.com/trades/open_orders/${pk.toString()}`
+      //     )
+      //     const parsedResponse = await response.json()
+      //     return parsedResponse?.data ? parsedResponse.data : []
+      //   })
+      // )
+      // set((state) => {
+      //   state.tradeHistory = results
+      // })
+    },
   },
 }))
 
