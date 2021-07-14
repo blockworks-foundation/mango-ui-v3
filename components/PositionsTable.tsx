@@ -1,6 +1,11 @@
 import useMangoStore from '../stores/useMangoStore'
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
-import { getMarketByPublicKey } from '@blockworks-foundation/mango-client'
+import {
+  getMarketByPublicKey,
+  nativeI80F48ToUi,
+  nativeToUi,
+  PerpMarket,
+} from '@blockworks-foundation/mango-client'
 import { useMemo } from 'react'
 
 const PositionsTable = () => {
@@ -8,6 +13,7 @@ const PositionsTable = () => {
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
+  const allMarkets = useMangoStore((s) => s.selectedMangoGroup.markets)
   const perpMarkets = useMemo(
     () =>
       mangoGroup
@@ -79,10 +85,14 @@ const PositionsTable = () => {
                       groupConfig,
                       market.perpMarket
                     )
+
                     const marketCache =
                       mangoCache.perpMarketCache[marketConfig.marketIndex]
                     const price =
                       mangoCache.priceCache[marketConfig.marketIndex].price
+                    const perpMarket = allMarkets[
+                      marketConfig.publicKey.toString()
+                    ] as PerpMarket
 
                     return (
                       <Tr
@@ -99,17 +109,24 @@ const PositionsTable = () => {
                         <Td
                           className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
                         >
-                          {acc.basePosition.toString()}
+                          {perpMarket.baseLotsToNumber(acc.basePosition)}
                         </Td>
                         <Td
                           className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
                         >
-                          {acc.quotePosition.toString()}
+                          {nativeI80F48ToUi(
+                            acc.quotePosition,
+                            marketConfig.quoteDecimals
+                          ).toFixed()}
                         </Td>
                         <Td
                           className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
                         >
-                          ${acc.getPnl(market, price).toFixed(2)}
+                          $
+                          {nativeI80F48ToUi(
+                            acc.getPnl(market, price),
+                            marketConfig.quoteDecimals
+                          ).toFixed()}
                         </Td>
                         <Td
                           className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
