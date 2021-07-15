@@ -988,9 +988,9 @@
 
 "@blockworks-foundation/mango-client@git+https://github.com/blockworks-foundation/mango-client-v3.git":
   version "3.0.1"
-  resolved "git+https://github.com/blockworks-foundation/mango-client-v3.git#0cf27efb853ed4380550405d4995924775fcfc62"
+  resolved "git+https://github.com/blockworks-foundation/mango-client-v3.git#e51d1002a256f4c7414c2fb204451fbfc30df6dd"
   dependencies:
-    "@project-serum/serum" "^0.13.38"
+    "@project-serum/serum" "^0.13.45"
     "@project-serum/sol-wallet-adapter" "^0.2.0"
     "@solana/spl-token" "^0.1.6"
     "@solana/web3.js" "^1.18.0"
@@ -1473,6 +1473,15 @@
   version "0.13.38"
   resolved "https://registry.yarnpkg.com/@project-serum/serum/-/serum-0.13.38.tgz#ef50a0f50bd69fd7b51309fbb44ad995a1e6e210"
   integrity sha512-TOph1Hxoi5kOUg72tWbbNGviqBw29SrP4BH70gXtqUDiFTQJLrE2yfS5HC7p0JaU8p9WdrYGnxcFKCddZJ3ing==
+  dependencies:
+    "@solana/web3.js" "^0.90.0"
+    bn.js "^5.1.2"
+    buffer-layout "^1.2.0"
+
+"@project-serum/serum@^0.13.45":
+  version "0.13.45"
+  resolved "https://registry.yarnpkg.com/@project-serum/serum/-/serum-0.13.45.tgz#a735ebaba355dfb08003fb14375b46f53c9472ba"
+  integrity sha512-f3aAKE9LXxLHJ8cX7Rkzs3IDglo4+/GHRGP5grxn9ujx9XkPwbQpUbZYV7oyQwP8tHHZQBXUw0ThHXvR2MhlNg==
   dependencies:
     "@solana/web3.js" "^0.90.0"
     bn.js "^5.1.2"
