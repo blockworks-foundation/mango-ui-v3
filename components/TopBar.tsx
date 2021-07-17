@@ -5,6 +5,7 @@ import ThemeSwitch from './ThemeSwitch'
 import useMangoStore from '../stores/useMangoStore'
 import ConnectWalletButton from './ConnectWalletButton'
 import AlertsList from './AlertsList'
+import NavDropMenu from './NavDropMenu'
 
 const TopBar = () => {
   const connected = useMangoStore((s) => s.wallet.connected)
@@ -33,6 +34,15 @@ const TopBar = () => {
                 {/* <MenuItem href="/alerts">Alerts</MenuItem>
                 <MenuItem href="/stats">Stats</MenuItem> */}
                 <MenuItem href="https://docs.mango.markets/">Learn</MenuItem>
+                {/* TODO: change v2 link before mainnet */}
+                <NavDropMenu
+                  menuTitle="More"
+                  // linksArray: [name: string, href: string, isExternal: boolean]
+                  linksArray={[
+                    ['Mango v1', 'https://usdt.mango.markets', true],
+                    ['Mango v2', 'https://trade.mango.markets', true],
+                  ]}
+                />
               </div>
             </div>
             <div className="flex items-center">

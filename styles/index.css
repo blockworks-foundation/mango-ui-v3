@@ -75,7 +75,7 @@ button {
 }
 
 .default-transition {
-  @apply transition-all duration-300;
+  @apply transition-all duration-500;
 }
 
 /* Chart */
