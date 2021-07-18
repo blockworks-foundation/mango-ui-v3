@@ -66,7 +66,7 @@ export const defaultLayouts = {
   ],
 }
 
-export const GRID_LAYOUT_KEY = 'mangoSavedLayouts-2.2'
+export const GRID_LAYOUT_KEY = 'mangoSavedLayouts-3.0'
 
 const TradePageGrid = () => {
   const { uiLocked } = useMangoStore((s) => s.settings)
