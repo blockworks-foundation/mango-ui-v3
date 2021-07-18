@@ -1,13 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32">
-  <g fill="none" fill-rule="evenodd">
-    <circle cx="16" cy="16" r="16" fill="#627EEA"/>
-    <g fill="#FFF" fill-rule="nonzero">
-      <path fill-opacity=".602" d="M16.498 4v8.87l7.497 3.35z"/>
-      <path d="M16.498 4L9 16.22l7.498-3.35z"/>
-      <path fill-opacity=".602" d="M16.498 21.968v6.027L24 17.616z"/>
-      <path d="M16.498 27.995v-6.028L9 17.616z"/>
-      <path fill-opacity=".2" d="M16.498 20.573l7.497-4.353-7.497-3.348z"/>
-      <path fill-opacity=".602" d="M9 16.22l7.498 4.353v-7.701z"/>
-    </g>
-  </g>
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0)">
+<path d="M15.9995 0V11.8291L25.9976 16.2967L15.9995 0Z" fill="#627EEA" fill-opacity="0.602"/>
+<path d="M15.9994 0L6 16.2967L15.9994 11.8291V0Z" fill="#627EEA"/>
+<path d="M15.9995 23.9626V32.0002L26.0043 18.1587L15.9995 23.9626Z" fill="#627EEA" fill-opacity="0.602"/>
+<path d="M15.9994 32.0002V23.9612L6 18.1587L15.9994 32.0002Z" fill="#627EEA"/>
+<path d="M15.9995 22.1022L25.9976 16.297L15.9995 11.832V22.1022Z" fill="#627EEA" fill-opacity="0.2"/>
+<path d="M6 16.297L15.9994 22.1022V11.832L6 16.297Z" fill="#627EEA" fill-opacity="0.602"/>
+</g>
+<defs>
+<clipPath id="clip0">
+<rect width="32" height="32" fill="white"/>
+</clipPath>
+</defs>
 </svg>

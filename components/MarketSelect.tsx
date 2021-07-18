@@ -1,8 +1,10 @@
+import { useState } from 'react'
 import styled from '@emotion/styled'
-// import { MenuAlt1Icon } from '@heroicons/react/solid'
-// import useLocalStorageState from '../hooks/useLocalStorageState'
 import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
 import MarketMenuItem from './MarketMenuItem'
+import { LinkButton } from './Button'
+import MarketsModal from './MarketsModal'
+import useLocalStorageState from '../hooks/useLocalStorageState'
 
 const StyledMarketTypeToggleWrapper = styled.div`
   background: rgba(255, 255, 255, 0.12);
@@ -18,10 +20,8 @@ const StyledArrow = styled.div`
 `
 
 const MarketSelect = () => {
-  // const [lastViewedMarket, setLastViewedMarket] = useLocalStorageState(
-  //   'lastViewedMarket',
-  //   { baseSymbol: 'BTC', kind: 'spot' }
-  // )
+  const [showMarketsModal, setShowMarketsModal] = useState(false)
+  const [hiddenMarkets] = useLocalStorageState('hiddenMarkets', [])
   const groupConfig = useMangoGroupConfig()
 
   const markets = []
@@ -29,7 +29,6 @@ const MarketSelect = () => {
   allMarkets.forEach((market) => {
     const base = market.name.slice(0, -5)
     const found = markets.find((b) => b.baseAsset === base)
-    console.log(found)
     if (!found) {
       markets.push({ baseAsset: base, markets: [market] })
     } else {
@@ -37,27 +36,44 @@ const MarketSelect = () => {
     }
   })
 
+  const sortedMarkets = markets.sort((a, b) =>
+    a.baseAsset.localeCompare(b.baseAsset)
+  )
+
   return (
-    <div className="bg-th-bkg-3 flex h-10">
-      <StyledMarketTypeToggleWrapper className="flex items-center pl-6 md:pl-9 pr-1">
-        {/* <MenuAlt1Icon className="h-5 w-5 text-th-fgd-1" /> */}
-        <span className="text-th-fgd-3 text-xs">MARKETS</span>
-      </StyledMarketTypeToggleWrapper>
-      <StyledArrow />
-      <div className="flex items-center justify-between w-full">
-        <div className="flex items-center">
-          {markets
-            .sort((a, b) => a.baseAsset.localeCompare(b.baseAsset))
-            .map((s) => (
-              <MarketMenuItem
-                key={s.baseAsset}
-                linksArray={s.markets}
-                menuTitle={s.baseAsset}
-              />
-            ))}
+    <>
+      <div className="bg-th-bkg-3 flex h-10">
+        <StyledMarketTypeToggleWrapper className="flex items-center pl-6 md:pl-9 pr-1">
+          <LinkButton
+            className="font-normal text-th-fgd-2 text-xs"
+            onClick={() => setShowMarketsModal(true)}
+          >
+            MARKETS
+          </LinkButton>
+        </StyledMarketTypeToggleWrapper>
+        <StyledArrow />
+        <div className="flex items-center justify-between w-full">
+          <div className="flex items-center">
+            {sortedMarkets
+              .filter((m) => !hiddenMarkets.includes(m.baseAsset))
+              .map((s) => (
+                <MarketMenuItem
+                  key={s.baseAsset}
+                  linksArray={s.markets}
+                  menuTitle={s.baseAsset}
+                />
+              ))}
+          </div>
         </div>
       </div>
-    </div>
+      {showMarketsModal ? (
+        <MarketsModal
+          isOpen={showMarketsModal}
+          onClose={() => setShowMarketsModal(false)}
+          markets={sortedMarkets}
+        />
+      ) : null}
+    </>
   )
 }
 

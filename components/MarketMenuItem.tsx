@@ -1,13 +1,54 @@
 import { useRef, useState } from 'react'
 import { useRouter } from 'next/router'
 import { Popover } from '@headlessui/react'
-import { ChevronDownIcon } from '@heroicons/react/solid'
 import Link from 'next/link'
+import {
+  AaveMonoIcon,
+  BtcMonoIcon,
+  CopeMonoIcon,
+  DogeMonoIcon,
+  EthMonoIcon,
+  FidaMonoIcon,
+  FttMonoIcon,
+  MediaMonoIcon,
+  MerMonoIcon,
+  MngoMonoIcon,
+  RayMonoIcon,
+  SolMonoIcon,
+  SrmMonoIcon,
+  StepMonoIcon,
+  SushiMonoIcon,
+  UniMonoIcon,
+} from './icons'
+
+const symbolIcons = {
+  AaveMonoIcon,
+  BtcMonoIcon,
+  CopeMonoIcon,
+  DogeMonoIcon,
+  EthMonoIcon,
+  FidaMonoIcon,
+  FttMonoIcon,
+  MediaMonoIcon,
+  MerMonoIcon,
+  MngoMonoIcon,
+  RayMonoIcon,
+  SolMonoIcon,
+  SrmMonoIcon,
+  StepMonoIcon,
+  SushiMonoIcon,
+  UniMonoIcon,
+}
 
 export default function MarketMenuItem({ menuTitle = '', linksArray = [] }) {
   const { asPath } = useRouter()
   const buttonRef = useRef(null)
   const [openState, setOpenState] = useState(false)
+
+  const iconName = `${menuTitle.substr(0, 1)}${menuTitle
+    .substr(1, 4)
+    .toLowerCase()}MonoIcon`
+  const SymbolIcon = symbolIcons[iconName]
 
   const toggleMenu = () => {
     setOpenState((openState) => !openState)
@@ -34,36 +75,28 @@ export default function MarketMenuItem({ menuTitle = '', linksArray = [] }) {
           <div
             onMouseEnter={() => onHover(open, 'onMouseEnter')}
             onMouseLeave={() => onHover(open, 'onMouseLeave')}
-            className="flex flex-col"
+            className="flex flex-col h-10"
           >
-            <Popover.Button className="focus:outline-none" ref={buttonRef}>
-              <div
-                className="flex items-center px-2.5 py-1 text-th-fgd-3 hover:text-th-primary"
-                onClick={() => handleClick(open)}
+            <Popover.Button
+              className="flex items-center px-2.5 h-10 text-th-fgd-3 hover:text-th-primary focus:outline-none"
+              ref={buttonRef}
+              onClick={() => handleClick(open)}
+            >
+              <SymbolIcon
+                className={`h-3.5 w-auto mr-1.5 ${
+                  asPath.includes(menuTitle) && 'text-th-primary'
+                }`}
+              />
+              <span
+                className={`font-normal text-xs ${
+                  asPath.includes(menuTitle) && 'text-th-primary'
+                }`}
               >
-                {/* <img
-                  alt=""
-                  src={`/assets/icons/${menuTitle.toLowerCase()}.svg`}
-                  className={`mr-1.5 h-4 w-auto`}
-                /> */}
-                <span
-                  className={`font-normal text-xs ${
-                    asPath.includes(menuTitle) && 'text-th-primary'
-                  }`}
-                >
-                  {menuTitle}
-                </span>
-                <ChevronDownIcon
-                  className={`${
-                    open ? 'transform rotate-180' : 'transform rotate-360'
-                  } h-4 w-4 default-transition
-                    `}
-                  aria-hidden="true"
-                />
-              </div>
+                {menuTitle}
+              </span>
             </Popover.Button>
-            <Popover.Panel className="absolute top-4 z-10">
-              <div className="relative bg-th-bkg-3 divide-y divide-th-fgd-4 px-3 pt-4 rounded">
+            <Popover.Panel className="absolute top-10 z-10">
+              <div className="relative bg-th-bkg-3 divide-y divide-th-fgd-4 px-3 rounded rounded-t-none">
                 {linksArray.map((m) => (
                   <Link
                     href={`/${

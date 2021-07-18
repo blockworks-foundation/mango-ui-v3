@@ -19,7 +19,7 @@ module.exports = withBundleAnalyzer({
     return [
       {
         source: '/',
-        destination: '/spot/btc',
+        destination: '/spot/BTC',
         permanent: false,
       },
     ]

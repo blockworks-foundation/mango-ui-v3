@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { Popover } from '@headlessui/react'
-import { ChevronDownIcon } from '@heroicons/react/solid'
+import { DotsHorizontalIcon } from '@heroicons/react/solid'
 import Link from 'next/link'
 
 export default function NavDropMenu({ menuTitle = '', linksArray = [] }) {
@@ -34,26 +34,23 @@ export default function NavDropMenu({ menuTitle = '', linksArray = [] }) {
             onMouseLeave={() => onHover(open, 'onMouseLeave')}
             className="flex flex-col"
           >
-            <Popover.Button className="focus:outline-none" ref={buttonRef}>
+            <Popover.Button className="h-10 focus:outline-none" ref={buttonRef}>
               <div
                 className="flex items-center text-th-fgd-1 hover:text-th-primary"
                 onClick={() => handleClick(open)}
               >
                 <span className="font-bold">{menuTitle}</span>
-                <ChevronDownIcon
-                  className={`${
-                    open ? 'transform rotate-180' : 'transform rotate-360'
-                  } h-5 w-5 default-transition
-                    `}
+                <DotsHorizontalIcon
+                  className="h-4 w-4 default-transition ml-1.5"
                   aria-hidden="true"
                 />
               </div>
             </Popover.Button>
-            <Popover.Panel className="absolute top-4 z-10">
-              <div className="relative bg-th-bkg-2 divide-y divide-th-bkg-3 px-4 pt-4 rounded">
+            <Popover.Panel className="absolute top-10 z-10">
+              <div className="relative bg-th-bkg-2 divide-y divide-th-bkg-3 px-4 rounded">
                 {linksArray.map(([name, href, isExternal]) =>
                   !isExternal ? (
-                    <Link href={href}>
+                    <Link href={href} key={href}>
                       <a className="block py-3 text-th-fgd-1 whitespace-nowrap hover:text-th-primary">
                         {name}
                       </a>
@@ -62,6 +59,7 @@ export default function NavDropMenu({ menuTitle = '', linksArray = [] }) {
                     <a
                       className="block py-3 text-th-fgd-1 whitespace-nowrap hover:text-th-primary"
                       href={href}
+                      key={href}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
