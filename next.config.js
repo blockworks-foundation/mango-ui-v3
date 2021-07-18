@@ -21,4 +21,13 @@ module.exports = withBundleAnalyzer({
 
     return config
   },
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/spot/BTC',
+        permanent: false,
+      },
+    ]
+  },
 })
