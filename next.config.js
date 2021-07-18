@@ -7,7 +7,13 @@ module.exports = withBundleAnalyzer({
   typescript: {
     ignoreBuildErrors: true, // TODO: remove this before mainnet
   },
-  webpack(config) {
+  webpack(config, { isServer }) {
+    // Fixes npm packages that depend on `fs` module
+    if (!isServer) {
+      config.node = {
+        fs: 'empty',
+      }
+    }
     config.module.rules.push({
       test: /\.svg$/,
       use: ['@svgr/webpack'],
