@@ -102,17 +102,17 @@ const PositionsTable = () => {
                       `}
                       >
                         <Td
-                          className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
+                          className={`px-6 py-2.5 whitespace-nowrap text-sm text-th-fgd-1`}
                         >
                           {marketConfig.name}
                         </Td>
                         <Td
-                          className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
+                          className={`px-6 py-2.5 whitespace-nowrap text-sm text-th-fgd-1`}
                         >
                           {perpMarket.baseLotsToNumber(acc.basePosition)}
                         </Td>
                         <Td
-                          className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
+                          className={`px-6 py-2.5 whitespace-nowrap text-sm text-th-fgd-1`}
                         >
                           {nativeI80F48ToUi(
                             acc.quotePosition,
@@ -120,7 +120,7 @@ const PositionsTable = () => {
                           ).toFixed()}
                         </Td>
                         <Td
-                          className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
+                          className={`px-6 py-2.5 whitespace-nowrap text-sm text-th-fgd-1`}
                         >
                           $
                           {nativeI80F48ToUi(
@@ -129,7 +129,7 @@ const PositionsTable = () => {
                           ).toFixed()}
                         </Td>
                         <Td
-                          className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
+                          className={`px-6 py-2.5 whitespace-nowrap text-sm text-th-fgd-1`}
                         >
                           {acc
                             .getHealth(

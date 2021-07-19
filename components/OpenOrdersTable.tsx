@@ -75,12 +75,9 @@ const OpenOrdersTable = () => {
               <Table className={`min-w-full divide-y divide-th-bkg-2`}>
                 <Thead>
                   <Tr className="text-th-fgd-3 text-xs">
-                    <Th
-                      scope="col"
-                      className={`px-6 py-3 text-left font-normal`}
-                    >
+                    <Th scope="col" className={`px-6 py-2 text-left`}>
                       <LinkButton
-                        className="flex items-center no-underline"
+                        className="flex items-center no-underline font-normal text-sm"
                         onClick={() => requestSort('marketName')}
                       >
                         Market
@@ -95,12 +92,9 @@ const OpenOrdersTable = () => {
                         />
                       </LinkButton>
                     </Th>
-                    <Th
-                      scope="col"
-                      className={`px-6 py-3 text-left font-normal`}
-                    >
+                    <Th scope="col" className={`px-6 py-2 text-left`}>
                       <LinkButton
-                        className="flex items-center no-underline"
+                        className="flex items-center no-underline font-normal text-sm"
                         onClick={() => requestSort('side')}
                       >
                         Side
@@ -115,12 +109,9 @@ const OpenOrdersTable = () => {
                         />
                       </LinkButton>
                     </Th>
-                    <Th
-                      scope="col"
-                      className={`px-6 py-3 text-left font-normal`}
-                    >
+                    <Th scope="col" className={`px-6 py-2 text-left`}>
                       <LinkButton
-                        className="flex items-center no-underline"
+                        className="flex items-center no-underline font-normal text-sm"
                         onClick={() => requestSort('size')}
                       >
                         Size
@@ -135,12 +126,9 @@ const OpenOrdersTable = () => {
                         />
                       </LinkButton>
                     </Th>
-                    <Th
-                      scope="col"
-                      className={`px-6 py-3 text-left font-normal`}
-                    >
+                    <Th scope="col" className={`px-6 py-2 text-left`}>
                       <LinkButton
-                        className="flex items-center no-underline"
+                        className="flex items-center no-underline font-normal text-sm"
                         onClick={() => requestSort('price')}
                       >
                         Price
@@ -155,7 +143,7 @@ const OpenOrdersTable = () => {
                         />
                       </LinkButton>
                     </Th>
-                    <Th scope="col" className={`relative px-6 py-3`}>
+                    <Th scope="col" className={`relative px-6 py-2.5`}>
                       <span className={`sr-only`}>Edit</span>
                     </Th>
                   </Tr>
@@ -169,7 +157,7 @@ const OpenOrdersTable = () => {
                       `}
                     >
                       <Td
-                        className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
+                        className={`px-4 py-1 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
                         <div className="flex items-center">
                           <img
@@ -183,21 +171,21 @@ const OpenOrdersTable = () => {
                         </div>
                       </Td>
                       <Td
-                        className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
+                        className={`px-4 py-1 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
                         <SideBadge side={order.side} />
                       </Td>
                       <Td
-                        className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
+                        className={`px-4 py-1 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
                         {order.size}
                       </Td>
                       <Td
-                        className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
+                        className={`px-4 py-1 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
                         {order.price}
                       </Td>
-                      <Td className={`px-6 py-3 whitespace-nowrap text-left`}>
+                      <Td className={`px-4 py-1 whitespace-nowrap text-left`}>
                         <div className={`flex justify-end`}>
                           {/* Todo: support order modification */}
                           {/* <Button
