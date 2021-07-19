@@ -295,11 +295,11 @@ const useMangoStore = create<MangoStore>((set, get) => ({
       return mangoClient
         .getMangoGroup(mangoGroupPk)
         .then(async (mangoGroup) => {
-          // TODO also perps
+          mangoGroup.loadRootBanks(DEFAULT_CONNECTION)
           const mangoCache = await mangoGroup.loadCache(DEFAULT_CONNECTION)
-
           const allMarketConfigs = getAllMarkets(mangoGroupConfig)
           const allMarketPks = allMarketConfigs.map((m) => m.publicKey)
+
           const allMarketAccountInfos = await getMultipleAccounts(
             DEFAULT_CONNECTION,
             allMarketPks
