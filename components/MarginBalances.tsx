@@ -60,11 +60,11 @@ export default function MarginBalances() {
         <div className="flex justify-between pb-5">
           <div className="w-8 h-8" />
           <div className="flex flex-col items-center">
-            <ElementTitle noMarignBottom>Account</ElementTitle>
+            <ElementTitle noMarignBottom>Mango Account</ElementTitle>
             {selectedMangoAccount ? (
               <Link href={'/account'}>
                 <a className="pt-1 text-th-fgd-3 text-xs underline hover:no-underline">
-                  {abbreviateAddress(selectedMangoAccount?.publicKey)}
+                  {selectedMangoAccount?.publicKey.toString()}
                 </a>
               </Link>
             ) : null}
@@ -116,97 +116,7 @@ export default function MarginBalances() {
             </div>
           </Menu>
         </div>
-        {selectedMangoGroup ? (
-          <table className={`min-w-full`}>
-            <thead>
-              <tr className={`text-center text-th-fgd-4 mb-2 text-xs`}>
-                <th scope="col" className={`flex-auto font-normal text-left`}>
-                  Asset
-                </th>
-                <th
-                  scope="col"
-                  className={`flex-auto font-normal text-right px-2`}
-                >
-                  Deposits
-                </th>
-                <th
-                  scope="col"
-                  className={`flex-auto font-normal text-right px-2`}
-                >
-                  Borrows
-                </th>
-                <th
-                  scope="col"
-                  className="flex-auto font-normal flex justify-end items-center"
-                >
-                  <Tooltip
-                    className="text-xs py-1"
-                    content="Deposit APR and Borrow APY"
-                  >
-                    <div>Deposits / Borrows</div>
-                  </Tooltip>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {selectedMangoGroupConfig.tokens.map(({ symbol, mintKey }) => {
-                const tokenIndex = selectedMangoGroup.getTokenIndex(mintKey)
-                return (
-                  <tr key={symbol} className={`text-th-fgd-1`}>
-                    <td className={`flex items-center py-2`}>
-                      <img
-                        alt=""
-                        width="20"
-                        height="20"
-                        src={`/assets/icons/${symbol.toLowerCase()}.svg`}
-                        className={`mr-2.5`}
-                      />
-                      <span>{symbol}</span>
-                    </td>
-                    <td className={`text-right px-2`}>
-                      {selectedMangoAccount
-                        ? selectedMangoAccount
-                            .getUiDeposit(
-                              selectedMangoGroupCache.rootBankCache[tokenIndex],
-                              selectedMangoGroup,
-                              tokenIndex
-                            )
-                            .toFixed(tokenPrecision[symbol])
-                        : (0).toFixed(tokenPrecision[symbol])}
-                    </td>
-                    <td className={`text-right px-2`}>
-                      {selectedMangoAccount
-                        ? selectedMangoAccount
-                            .getUiBorrow(
-                              selectedMangoGroupCache.rootBankCache[tokenIndex],
-                              selectedMangoGroup,
-                              tokenIndex
-                            )
-                            .toFixed(tokenPrecision[symbol])
-                        : (0).toFixed(tokenPrecision[symbol])}
-                    </td>
-                    <td className={`text-right`}>
-                      <span className={`text-th-green`}>
-                        {i80f48ToPercent(
-                          selectedMangoGroup.getDepositRate(tokenIndex)
-                        ).toFixed(2)}
-                        %
-                      </span>
-                      <span className={`text-th-fgd-4`}>{'  /  '}</span>
-                      <span className={`text-th-red`}>
-                        {i80f48ToPercent(
-                          selectedMangoGroup.getBorrowRate(tokenIndex)
-                        ).toFixed(2)}
-                        %
-                      </span>
-                    </td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
-        ) : null}
-        <div className={`flex justify-center items-center mt-4`}>
+        <div className={`flex justify-center items-center`}>
           <Button
             onClick={() => setShowDepositModal(true)}
             className="w-1/2"

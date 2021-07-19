@@ -370,6 +370,8 @@ const useMangoStore = create<MangoStore>((set, get) => ({
         })
     },
     async fetchTradeHistory(mangoAccount = null) {
+      console.log('TODO Fetch Trade History', mangoAccount)
+
       // const selectedMangoAccount =
       //   mangoAccount || get().selectedMangoAccount.current
       // const set = get().set

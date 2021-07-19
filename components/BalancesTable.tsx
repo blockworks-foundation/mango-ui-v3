@@ -124,32 +124,40 @@ const BalancesTable = () => {
                       `}
                     >
                       <Td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
+                        className={`flex items-center px-4 py-2.5 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
+                        <img
+                          alt=""
+                          width="20"
+                          height="20"
+                          src={`/assets/icons/${balance.symbol.toLowerCase()}.svg`}
+                          className={`mr-2.5`}
+                        />
+
                         {balance.symbol}
                       </Td>
                       <Td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
+                        className={`px-4 py-2.5 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
                         {balance.marginDeposits.toFixed()}
                       </Td>
                       <Td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
+                        className={`px-4 py-2.5 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
                         {balance.borrows.toFixed()}
                       </Td>
                       <Td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
+                        className={`px-4 py-2.5 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
                         {balance.orders}
                       </Td>
                       <Td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
+                        className={`px-4 py-2.5 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
                         {balance.unsettled}
                       </Td>
                       <Td
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
+                        className={`px-4 py-2.5 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
                         {balance.net.toFixed()}
                       </Td>

@@ -8,10 +8,11 @@ import TradeHistoryTable from './TradeHistoryTable'
 // import FeeDiscountsTable from './FeeDiscountsTable'
 
 const TABS = [
-  'Open Orders',
   'Balances',
+  'Open Orders',
+  'Positions',
+  /*'Fee Discounts'*/
   'Trade History',
-  'Positions' /*'Fee Discounts'*/,
 ]
 
 const UserInfoTabs = ({ activeTab, setActiveTab }) => {
@@ -65,7 +66,7 @@ const UserInfoTabs = ({ activeTab, setActiveTab }) => {
 
 const TabContent = ({ activeTab }) => {
   switch (activeTab) {
-    case 'Orders':
+    case 'Open Orders':
       return <OpenOrdersTable />
     case 'Balances':
       return <BalancesTable />
@@ -76,7 +77,7 @@ const TabContent = ({ activeTab }) => {
     // case 'Fee Discounts':
     //   return <FeeDiscountsTable />
     default:
-      return <OpenOrdersTable />
+      return <BalancesTable />
   }
 }
 
