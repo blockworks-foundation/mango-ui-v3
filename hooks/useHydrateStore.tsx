@@ -8,7 +8,7 @@ import useInterval from './useInterval'
 import useOrderbook from './useOrderbook'
 
 const SECONDS = 1000
-const _SLOW_REFRESH_INTERVAL = 5 * SECONDS
+const _SLOW_REFRESH_INTERVAL = 10 * SECONDS
 
 const useHydrateStore = () => {
   const setMangoStore = useMangoStore((s) => s.set)
@@ -30,7 +30,7 @@ const useHydrateStore = () => {
     setMangoStore((state) => {
       state.selectedMarket.current = markets[marketConfig.publicKey.toString()]
     })
-  }, [marketConfig])
+  }, [marketConfig, markets, setMangoStore])
 
   // hydrate orderbook with all markets in mango group
   useEffect(() => {
@@ -90,8 +90,6 @@ const useHydrateStore = () => {
           DEFAULT_CONNECTION,
           10000
         )
-        // console.log('loadedFills', loadedFills)
-
         setMangoStore((state) => {
           state.selectedMarket.fills = loadedFills
         })

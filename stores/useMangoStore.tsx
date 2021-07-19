@@ -132,7 +132,6 @@ interface MangoStore extends State {
     markets: {
       [address: string]: Market | PerpMarket
     }
-    rootBanks: any[]
     cache: MangoCache | null
   }
   mangoAccounts: MangoAccount[]
@@ -297,7 +296,6 @@ const useMangoStore = create<MangoStore>((set, get) => ({
         .getMangoGroup(mangoGroupPk)
         .then(async (mangoGroup) => {
           // TODO also perps
-          const rootBanks = await mangoGroup.loadRootBanks(DEFAULT_CONNECTION)
           const mangoCache = await mangoGroup.loadCache(DEFAULT_CONNECTION)
 
           const allMarketConfigs = getAllMarkets(mangoGroupConfig)
@@ -347,7 +345,6 @@ const useMangoStore = create<MangoStore>((set, get) => ({
 
           set((state) => {
             state.selectedMangoGroup.current = mangoGroup
-            state.selectedMangoGroup.rootBanks = rootBanks
             state.selectedMangoGroup.cache = mangoCache
             state.selectedMangoGroup.markets = allMarkets
             state.selectedMarket.current =
