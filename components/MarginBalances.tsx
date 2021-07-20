@@ -7,6 +7,7 @@ import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
 import {
   abbreviateAddress,
+  divideBnToNumber,
   i80f48ToPercent,
   tokenPrecision,
 } from '../utils/index'
@@ -67,6 +68,10 @@ export default function MarginBalances() {
                   {selectedMangoAccount?.publicKey.toString()}
                 </a>
               </Link>
+            ) : connected ? (
+              <div className="pt-1 text-th-fgd-3">
+                Deposit funds to get started
+              </div>
             ) : null}
           </div>
           <Menu>

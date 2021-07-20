@@ -55,8 +55,6 @@ export async function withdraw({
   const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
   const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
   const wallet = useMangoStore.getState().wallet.current
-
-  const tokenAcc = await findAssociatedTokenAddress(wallet.publicKey, token)
   const tokenIndex = mangoGroup.getTokenIndex(token)
 
   return await mangoClient.withdraw(
@@ -66,7 +64,6 @@ export async function withdraw({
     mangoGroup.tokens[tokenIndex].rootBank,
     mangoGroup.rootBankAccounts[tokenIndex].nodeBankAccounts[0].publicKey,
     mangoGroup.rootBankAccounts[tokenIndex].nodeBankAccounts[0].vault,
-    tokenAcc,
     Number(amount),
     allowBorrow
   )
