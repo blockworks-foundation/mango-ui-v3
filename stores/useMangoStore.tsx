@@ -160,7 +160,7 @@ interface MangoStore extends State {
   tradeHistory: any[]
   set: (x: any) => void
   actions: {
-    [key: string]: () => void
+    [key: string]: (args?) => void
   }
 }
 
@@ -391,6 +391,26 @@ const useMangoStore = create<MangoStore>((set, get) => ({
       // set((state) => {
       //   state.tradeHistory = results
       // })
+    },
+    async updateOpenOrders() {
+      const set = get().set
+      const mangoGroupConfig = get().selectedMangoGroup.config
+      const allMarketConfigs = getAllMarkets(mangoGroupConfig)
+
+      const allBidsAndAsksPks = allMarketConfigs
+        .map((m) => [m.bidsKey, m.asksKey])
+        .flat()
+
+      const allBidsAndAsksAccountInfos = await getMultipleAccounts(
+        DEFAULT_CONNECTION,
+        allBidsAndAsksPks
+      )
+
+      set((state) => {
+        allBidsAndAsksAccountInfos.forEach(({ publicKey, accountInfo }) => {
+          state.accountInfos[publicKey.toBase58()] = accountInfo
+        })
+      })
     },
   },
 }))

@@ -50,6 +50,7 @@ const OpenOrdersTable = () => {
           order as PerpOrder
         )
       }
+      actions.updateOpenOrders()
       actions.fetchMangoAccounts()
     } catch (e) {
       notify({
