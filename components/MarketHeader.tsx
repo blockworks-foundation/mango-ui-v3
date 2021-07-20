@@ -69,7 +69,7 @@ const MarketHeader = () => {
 
   return (
     <div
-      className={`flex items-end sm:items-center justify-between pt-4 px-6 md:px-9`}
+      className={`flex items-end sm:items-center justify-between pt-4 px-6 md:px-6`}
     >
       <div className="flex flex-col sm:flex-row sm:items-center">
         <div className="pb-3 sm:pb-0 w-44">

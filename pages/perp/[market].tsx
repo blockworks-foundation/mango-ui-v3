@@ -33,7 +33,7 @@ const PerpMarket = () => {
       <TopBar />
       <MarketSelect />
       <MarketHeader />
-      <div className={`min-h-screen p-1 sm:px-2 sm:py-1 md:px-6 md:py-1`}>
+      <div className={`min-h-screen p-1 sm:px-2 sm:py-1 md:px-2 md:py-1`}>
         <TradePageGrid />
       </div>
     </div>
