@@ -78,6 +78,10 @@ button {
   @apply transition-all duration-500;
 }
 
+.tiny-text {
+  font-size: 0.7rem;
+}
+
 /* Chart */
 
 .TVChartContainer {
