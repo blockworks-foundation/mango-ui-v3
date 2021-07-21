@@ -24,6 +24,7 @@ const BalancesTable = () => {
         (mkt) => mkt instanceof Market
       ) as Market[]
       await mangoClient.settleAll(mangoGroup, mangoAccount, spotMarkets, wallet)
+      notify({ title: 'Successfully settled funds' })
       await sleep(250)
       actions.fetchMangoAccounts()
     } catch (e) {
