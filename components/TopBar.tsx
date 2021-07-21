@@ -31,8 +31,8 @@ const TopBar = () => {
                 <MenuItem href="/spot/BTC">Trade</MenuItem>
                 <MenuItem href="/account">Account</MenuItem>
                 <MenuItem href="/borrow">Borrow</MenuItem>
-                {/* <MenuItem href="/alerts">Alerts</MenuItem>
-                <MenuItem href="/stats">Stats</MenuItem> */}
+                {/* <MenuItem href="/alerts">Alerts</MenuItem> */}
+                <MenuItem href="/stats">Stats</MenuItem> 
                 <MenuItem href="https://docs.mango.markets/">Learn</MenuItem>
                 {/* TODO: change v2 link before mainnet */}
                 <NavDropMenu

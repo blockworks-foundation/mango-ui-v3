@@ -3,13 +3,18 @@ import useConnection from './useConnection'
 import { PublicKey } from '@solana/web3.js'
 import useMangoStore from '../stores/useMangoStore'
 import { IDS } from '@blockworks-foundation/mango-client'
+import useMangoGroupConfig from './useMangoGroupConfig'
 
 const useMarketList = () => {
+  const config = useMangoGroupConfig()
   const mangoGroupName = useMangoStore((state) => state.selectedMangoGroup.name)
   const { cluster, programId, dexProgramId } = useConnection()
 
   const spotMarkets = useMemo(
-    () => IDS[cluster]?.mango_groups[mangoGroupName]?.spot_market_symbols || {},
+    () => config.spotMarkets.reduce((acc, market) => {
+      acc[market.name] = market.publicKey.toBase58()
+      return acc;
+    }, {}) || {},
     [cluster, mangoGroupName]
   )
 
