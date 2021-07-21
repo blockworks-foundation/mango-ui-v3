@@ -67,7 +67,7 @@ const MarketsModal = ({
               />
             )}
           </div>
-          <div className="flex items-center justify-between pt-2.5 px-2.5 text-th-fgd-4 text-xs">
+          <div className="flex items-center justify-between pt-2.5 px-2.5 text-th-fgd-3">
             <StyledColumnHeader>Market</StyledColumnHeader>
             <div className="flex justify-between">
               <StyledColumnHeader className="text-right w-20">
