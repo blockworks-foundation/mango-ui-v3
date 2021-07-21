@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react'
 import FloatingElement from '../components/FloatingElement'
 import Orderbook from '../components/Orderbook'
 import MarginInfo from './MarginInfo'
-import MarketPosition from './MarketPosition'
+// import MarketPosition from './MarketPosition'
 import TradeForm from './TradeForm'
 import DepositWithdraw from './DepositWithdraw'
 import UserInfo from './UserInfo'
@@ -73,7 +73,7 @@ export const defaultLayouts = {
   ],
 }
 
-export const GRID_LAYOUT_KEY = 'mangoSavedLayouts-3.0.1'
+export const GRID_LAYOUT_KEY = 'mangoSavedLayouts-3.0.2'
 
 const TradePageGrid = () => {
   const { uiLocked } = useMangoStore((s) => s.settings)
@@ -95,7 +95,7 @@ const TradePageGrid = () => {
   return (
     <ResponsiveGridLayout
       className="layout"
-      layouts={defaultLayouts}
+      layouts={savedLayouts || defaultLayouts}
       breakpoints={{ xl: 1600, lg: 1200, md: 1110, sm: 768, xs: 0 }}
       cols={{ xl: 12, lg: 12, md: 12, sm: 12, xs: 1 }}
       rowHeight={15}

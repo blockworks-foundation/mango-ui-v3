@@ -37,6 +37,7 @@ export default function useOrderbook() {
   const setMangoStore = useMangoStore((s) => s.set)
   const market = useMangoStore((state) => state.selectedMarket.current)
   const marketConfig = useMangoStore((state) => state.selectedMarket.config)
+  const mangoGroup = useMangoStore((state) => state.selectedMangoGroup.current)
   const askInfo = useMangoStore(
     (state) => state.accountInfos[marketConfig.asksKey.toString()]
   )
@@ -45,6 +46,7 @@ export default function useOrderbook() {
   )
 
   useEffect(() => {
+    if (!mangoGroup) return
     const bids = decodeBook(market, bidInfo)
     const asks = decodeBook(market, askInfo)
 

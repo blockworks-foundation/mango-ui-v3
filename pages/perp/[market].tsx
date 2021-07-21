@@ -11,11 +11,12 @@ import MarketHeader from '../../components/MarketHeader'
 const PerpMarket = () => {
   const groupConfig = useMangoGroupConfig()
   const setMangoStore = useMangoStore((s) => s.set)
+  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const router = useRouter()
   const { market } = router.query
 
   useEffect(() => {
-    if (market) {
+    if (market && mangoGroup) {
       const newMarket = getMarketByBaseSymbolAndKind(
         groupConfig,
         market.toString().toUpperCase(),
@@ -26,7 +27,7 @@ const PerpMarket = () => {
         state.selectedMarket.config = newMarket
       })
     }
-  }, [market])
+  }, [market, mangoGroup])
 
   return (
     <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all `}>
