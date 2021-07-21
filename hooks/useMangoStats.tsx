@@ -20,8 +20,8 @@ const useMangoStats = () => {
   const { cluster } = useConnection()
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoGroupName = useMangoStore((s) => s.selectedMangoGroup.name)
-  const connection = useMangoStore((s) => s.connection.current);
-  const config = useMangoGroupConfig();
+  const connection = useMangoStore((s) => s.connection.current)
+  const config = useMangoGroupConfig()
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -31,36 +31,48 @@ const useMangoStats = () => {
       const stats = await response.json()
       setStats(stats)
     }
-    fetchStats()
+    // fetchStats()
   }, [])
 
   useEffect(() => {
     const getLatestStats = async () => {
       if (mangoGroup) {
-        const rootBanks = await mangoGroup.loadRootBanks(connection);
+        const rootBanks = await mangoGroup.loadRootBanks(connection)
         const latestStats = config.tokens.map((token) => {
           const rootBank = rootBanks.find((bank) => {
             if (!bank) {
-              return false;
-          
+              return false
             }
-            return bank.publicKey.toBase58() == token.rootKey.toBase58();
+            return bank.publicKey.toBase58() == token.rootKey.toBase58()
           })
-          const totalDeposits = rootBank.getUiTotalDeposit(mangoGroup);
-          const totalBorrows = rootBank.getUiTotalBorrow(mangoGroup);
+          const totalDeposits = rootBank.getUiTotalDeposit(mangoGroup)
+          console.log(
+            `total deposits for ${token.symbol}: `,
+            totalDeposits.toFixed(),
+            totalDeposits
+          )
+
+          const totalBorrows = rootBank.getUiTotalBorrow(mangoGroup)
 
           return {
             time: new Date(),
             symbol: token.symbol,
-            totalDeposits: totalDeposits,
-            totalBorrows: totalBorrows,
-            depositInterest: rootBank.getDepositRate(mangoGroup).mul(I80F48.fromNumber(100)),
-            borrowInterest: rootBank.getBorrowRate(mangoGroup).mul(I80F48.fromNumber(100)),
-            utilization: totalDeposits > I80F48.fromNumber(0) ? totalBorrows.div(totalDeposits) : I80F48.fromNumber(0),
+            totalDeposits: totalDeposits.toFixed(),
+            totalBorrows: totalBorrows.toFixed(),
+            depositInterest: rootBank
+              .getDepositRate(mangoGroup)
+              .mul(I80F48.fromNumber(100)),
+            borrowInterest: rootBank
+              .getBorrowRate(mangoGroup)
+              .mul(I80F48.fromNumber(100)),
+            utilization:
+              totalDeposits > I80F48.fromNumber(0)
+                ? totalBorrows.div(totalDeposits)
+                : I80F48.fromNumber(0),
           }
-        });
+        })
         setLatestStats(latestStats)
-      }      
+      }
     }
 
     getLatestStats()

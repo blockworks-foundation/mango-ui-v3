@@ -7,8 +7,8 @@ import StatsPerps from '../components/stats-page/StatsPerps'
 
 const TABS = [
   'Totals',
-  'Assets',
-  'Perps',
+  // 'Assets',
+  // 'Perps',
   // 'Markets',
   // 'Liquidations',
 ]

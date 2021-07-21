@@ -1,25 +1,13 @@
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
-import { formatBalanceDisplay, tokenPrecision } from '../../utils/index'
+import { I80F48 } from '@blockworks-foundation/mango-client'
 import useMangoStats from '../../hooks/useMangoStats'
 import useHistoricPrices from '../../hooks/useHistoricPrices'
 import useMarketList from '../../hooks/useMarketList'
-import useMangoStore from '../../stores/useMangoStore'
 import Chart from '../Chart'
-
-const icons = {
-  BTC: '/assets/icons/btc.svg',
-  ETH: '/assets/icons/eth.svg',
-  SOL: '/assets/icons/sol.svg',
-  SRM: '/assets/icons/srm.svg',
-  USDT: '/assets/icons/usdt.svg',
-  USDC: '/assets/icons/usdc.svg',
-  WUSDT: '/assets/icons/usdt.svg',
-}
 
 export default function StatsTotals() {
   const { latestStats, stats } = useMangoStats()
   const { prices } = useHistoricPrices()
-  // const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   // TODO: fix this
   const backupPrices = [0, 0]
   const { getTokenIndex, symbols } = useMarketList()
@@ -173,39 +161,29 @@ export default function StatsTotals() {
                 <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
                   <div className="flex items-center">
                     <img
-                      src={icons[stat.symbol]}
-                      alt={icons[stat.symbol]}
+                      alt=""
                       width="20"
                       height="20"
-                      className="mr-2.5"
+                      src={`/assets/icons/${stat.symbol.toLowerCase()}.svg`}
+                      className={`mr-2.5`}
                     />
                     {stat.symbol}
                   </div>
                 </Td>
                 <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
-                  {formatBalanceDisplay(
-                    stat.totalDeposits,
-                    tokenPrecision[stat.symbol]
-                  ).toLocaleString(undefined, {
-                    maximumFractionDigits: tokenPrecision[stat.symbol],
-                  })}
+                  {stat.totalDeposits}
                 </Td>
                 <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
-                  {formatBalanceDisplay(
-                    stat.totalBorrows,
-                    tokenPrecision[stat.symbol]
-                  ).toLocaleString(undefined, {
-                    maximumFractionDigits: tokenPrecision[stat.symbol],
-                  })}
+                  {stat.totalBorrows}
                 </Td>
                 <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
-                  {stat.depositInterest.toFixed(2)}%
+                  {stat.depositInterest.toString()}%
                 </Td>
                 <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
-                  {stat.borrowInterest.toFixed(2)}%
+                  {stat.borrowInterest.toString()}%
                 </Td>
                 <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
-                  {(parseFloat(stat.utilization) * 100).toFixed(2)}%
+                  {stat.utilization.mul(I80F48.fromNumber(100)).toFixed(3)}%
                 </Td>
               </Tr>
             ))}
