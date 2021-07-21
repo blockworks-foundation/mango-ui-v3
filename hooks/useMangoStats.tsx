@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { I80F48 } from '@blockworks-foundation/mango-client'
-import useConnection from './useConnection'
 import useMangoStore from '../stores/useMangoStore'
 import useMangoGroupConfig from './useMangoGroupConfig'
 
@@ -17,7 +16,6 @@ const useMangoStats = () => {
     },
   ])
   const [latestStats, setLatestStats] = useState<any[]>([])
-  const { cluster } = useConnection()
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoGroupName = useMangoStore((s) => s.selectedMangoGroup.name)
   const connection = useMangoStore((s) => s.connection.current)
@@ -32,7 +30,7 @@ const useMangoStats = () => {
       setStats(stats)
     }
     // fetchStats()
-  }, [])
+  }, [mangoGroupName])
 
   useEffect(() => {
     const getLatestStats = async () => {
@@ -76,7 +74,7 @@ const useMangoStats = () => {
     }
 
     getLatestStats()
-  }, [cluster])
+  }, [mangoGroup])
 
   return { latestStats, stats }
 }
