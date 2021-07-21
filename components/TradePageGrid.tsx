@@ -11,6 +11,7 @@ import Orderbook from '../components/Orderbook'
 import MarginInfo from './MarginInfo'
 import MarketPosition from './MarketPosition'
 import TradeForm from './TradeForm'
+import DepositWithdraw from './DepositWithdraw'
 import UserInfo from './UserInfo'
 import RecentMarketTrades from './RecentMarketTrades'
 import useMangoStore from '../stores/useMangoStore'
@@ -22,12 +23,13 @@ export const defaultLayouts = {
   xl: [
     { i: 'tvChart', x: 0, y: 0, w: 6, h: 30 },
     { i: 'orderbook', x: 6, y: 0, w: 3, h: 17 },
-    { i: 'tradeForm', x: 9, y: 0, w: 3, h: 14 },
+    { i: 'depositWithdraw', x: 9, y: 0, w: 3, h: 6 },
+    { i: 'tradeForm', x: 9, y: 1, w: 3, h: 14 },
     { i: 'marketTrades', x: 6, y: 1, w: 3, h: 13 },
-    { i: 'balanceInfo', x: 9, y: 1, w: 3, h: 15 },
-    { i: 'marketPosition', x: 9, y: 1, w: 3, h: 15 },
+    { i: 'balanceInfo', x: 9, y: 2, w: 3, h: 15 },
+    { i: 'marketPosition', x: 9, y: 3, w: 3, h: 14 },
     { i: 'userInfo', x: 0, y: 2, w: 9, h: 19 },
-    { i: 'marginInfo', x: 9, y: 2, w: 3, h: 14 },
+    { i: 'marginInfo', x: 9, y: 4, w: 3, h: 14 },
   ],
   lg: [
     { i: 'tvChart', x: 0, y: 0, w: 8, h: 29, minW: 2 },
@@ -118,13 +120,12 @@ const TradePageGrid = () => {
       <div key="userInfo">
         <UserInfo />
       </div>
-      <div key="marketPosition">
+      {/* <div key="marketPosition">
         <MarketPosition />
-      </div>
-      {/* TODO: Delete MarginBalances */}
-      {/* <div key="balanceInfo">
-        <MarginBalances />
       </div> */}
+      <div key="depositWithdraw">
+        <DepositWithdraw />
+      </div>
       <div key="marketTrades">
         <RecentMarketTrades />
       </div>

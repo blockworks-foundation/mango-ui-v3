@@ -54,8 +54,8 @@ export default function MarketPosition() {
   return selectedMarketName.includes('PERP') ? (
     <FloatingElement>
       <ElementTitle>Position</ElementTitle>
-      <div className="pt-2">
-        <div className={`flex items-center justify-between pt-2 pb-2`}>
+      <div className="">
+        <div className={`flex items-center justify-between pt-1 pb-2`}>
           <div className="font-normal text-th-fgd-3 leading-4">Side</div>
           <SideBadge side="long" />
         </div>
