@@ -55,8 +55,8 @@ const useMangoStats = () => {
           return {
             time: new Date(),
             symbol: token.symbol,
-            totalDeposits: totalDeposits.toFixed(),
-            totalBorrows: totalBorrows.toFixed(),
+            totalDeposits: totalDeposits.toFixed(2),
+            totalBorrows: totalBorrows.toFixed(2),
             depositInterest: rootBank
               .getDepositRate(mangoGroup)
               .mul(I80F48.fromNumber(100)),

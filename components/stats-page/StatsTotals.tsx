@@ -5,6 +5,10 @@ import useHistoricPrices from '../../hooks/useHistoricPrices'
 import useMarketList from '../../hooks/useMarketList'
 import Chart from '../Chart'
 
+function formatNumberString(x: string): string {
+  return x.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',')
+}
+
 export default function StatsTotals() {
   const { latestStats, stats } = useMangoStats()
   const { prices } = useHistoricPrices()
@@ -171,19 +175,22 @@ export default function StatsTotals() {
                   </div>
                 </Td>
                 <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
-                  {stat.totalDeposits}
+                  {formatNumberString(stat.totalDeposits)}
                 </Td>
                 <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
-                  {stat.totalBorrows}
+                  {formatNumberString(stat.totalBorrows)}
                 </Td>
                 <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
-                  {stat.depositInterest.toString()}%
+                  {formatNumberString(stat.depositInterest.toString())}%
                 </Td>
                 <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
-                  {stat.borrowInterest.toString()}%
+                  {formatNumberString(stat.borrowInterest.toString())}%
                 </Td>
                 <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
-                  {stat.utilization.mul(I80F48.fromNumber(100)).toFixed(3)}%
+                  {formatNumberString(
+                    stat.utilization.mul(I80F48.fromNumber(100)).toFixed(3)
+                  )}
+                  %
                 </Td>
               </Tr>
             ))}
