@@ -9,10 +9,11 @@ import { useEffect, useState } from 'react'
 import FloatingElement from '../components/FloatingElement'
 import Orderbook from '../components/Orderbook'
 import MarginInfo from './MarginInfo'
-import MarginBalances from './MarginBalances'
+// import MarketPosition from './MarketPosition'
 import TradeForm from './TradeForm'
+import DepositWithdraw from './DepositWithdraw'
 import UserInfo from './UserInfo'
-// import RecentMarketTrades from './RecentMarketTrades'
+import RecentMarketTrades from './RecentMarketTrades'
 import useMangoStore from '../stores/useMangoStore'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 
@@ -22,16 +23,19 @@ export const defaultLayouts = {
   xl: [
     { i: 'tvChart', x: 0, y: 0, w: 6, h: 30 },
     { i: 'orderbook', x: 6, y: 0, w: 3, h: 17 },
-    { i: 'tradeForm', x: 9, y: 0, w: 3, h: 12 },
+    { i: 'depositWithdraw', x: 9, y: 0, w: 3, h: 6 },
+    { i: 'tradeForm', x: 9, y: 1, w: 3, h: 14 },
     { i: 'marketTrades', x: 6, y: 1, w: 3, h: 13 },
-    { i: 'balanceInfo', x: 9, y: 1, w: 3, h: 15 },
+    { i: 'balanceInfo', x: 9, y: 2, w: 3, h: 15 },
+    { i: 'marketPosition', x: 9, y: 3, w: 3, h: 14 },
     { i: 'userInfo', x: 0, y: 2, w: 9, h: 19 },
-    { i: 'marginInfo', x: 9, y: 2, w: 3, h: 13 },
+    { i: 'marginInfo', x: 9, y: 4, w: 3, h: 14 },
   ],
   lg: [
-    { i: 'tvChart', x: 0, y: 0, w: 8, h: 26, minW: 2 },
+    { i: 'tvChart', x: 0, y: 0, w: 8, h: 29, minW: 2 },
     { i: 'balanceInfo', x: 8, y: 0, w: 4, h: 15, minW: 2 },
-    { i: 'marginInfo', x: 8, y: 1, w: 4, h: 13, minW: 2 },
+    { i: 'marketPosition', x: 8, y: 0, w: 4, h: 15, minW: 2 },
+    { i: 'marginInfo', x: 8, y: 1, w: 4, h: 14, minW: 2 },
     { i: 'orderbook', x: 0, y: 2, w: 4, h: 17, minW: 2 },
     { i: 'tradeForm', x: 4, y: 2, w: 4, h: 17, minW: 3 },
     { i: 'marketTrades', x: 8, y: 2, w: 4, h: 17, minW: 2 },
@@ -40,7 +44,8 @@ export const defaultLayouts = {
   md: [
     { i: 'tvChart', x: 0, y: 0, w: 8, h: 26, minW: 2 },
     { i: 'balanceInfo', x: 8, y: 0, w: 4, h: 15, minW: 2 },
-    { i: 'marginInfo', x: 8, y: 1, w: 4, h: 13, minW: 2 },
+    { i: 'marketPosition', x: 8, y: 0, w: 4, h: 15, minW: 2 },
+    { i: 'marginInfo', x: 8, y: 1, w: 4, h: 14, minW: 2 },
     { i: 'orderbook', x: 0, y: 2, w: 4, h: 17, minW: 2 },
     { i: 'tradeForm', x: 4, y: 2, w: 4, h: 17, minW: 3 },
     { i: 'marketTrades', x: 8, y: 2, w: 4, h: 17, minW: 2 },
@@ -49,7 +54,8 @@ export const defaultLayouts = {
   sm: [
     { i: 'tvChart', x: 0, y: 0, w: 12, h: 25, minW: 6 },
     { i: 'balanceInfo', x: 0, y: 1, w: 6, h: 15, minW: 2 },
-    { i: 'marginInfo', x: 6, y: 1, w: 6, h: 13, minW: 2 },
+    { i: 'marketPosition', x: 0, y: 1, w: 6, h: 15, minW: 2 },
+    { i: 'marginInfo', x: 6, y: 1, w: 6, h: 14, minW: 2 },
     { i: 'tradeForm', x: 0, y: 2, w: 12, h: 13, minW: 3 },
     { i: 'orderbook', x: 0, y: 3, w: 6, h: 17, minW: 3 },
     { i: 'marketTrades', x: 6, y: 3, w: 6, h: 17, minW: 2 },
@@ -58,7 +64,8 @@ export const defaultLayouts = {
   xs: [
     { i: 'tvChart', x: 0, y: 0, w: 0, h: 0, minW: 6 },
     { i: 'balanceInfo', x: 0, y: 1, w: 6, h: 15, minW: 2 },
-    { i: 'marginInfo', x: 0, y: 2, w: 6, h: 13, minW: 2 },
+    { i: 'marketPosition', x: 0, y: 1, w: 6, h: 15, minW: 2 },
+    { i: 'marginInfo', x: 0, y: 2, w: 6, h: 14, minW: 2 },
     { i: 'tradeForm', x: 0, y: 3, w: 12, h: 13, minW: 3 },
     { i: 'orderbook', x: 0, y: 4, w: 6, h: 17, minW: 3 },
     { i: 'marketTrades', x: 0, y: 5, w: 6, h: 17, minW: 2 },
@@ -66,7 +73,7 @@ export const defaultLayouts = {
   ],
 }
 
-export const GRID_LAYOUT_KEY = 'mangoSavedLayouts-2.2'
+export const GRID_LAYOUT_KEY = 'mangoSavedLayouts-3.0.2'
 
 const TradePageGrid = () => {
   const { uiLocked } = useMangoStore((s) => s.settings)
@@ -113,10 +120,15 @@ const TradePageGrid = () => {
       <div key="userInfo">
         <UserInfo />
       </div>
-      <div key="balanceInfo">
-        <MarginBalances />
+      {/* <div key="marketPosition">
+        <MarketPosition />
+      </div> */}
+      <div key="depositWithdraw">
+        <DepositWithdraw />
       </div>
-      <div key="marketTrades">{/* <RecentMarketTrades /> */}</div>
+      <div key="marketTrades">
+        <RecentMarketTrades />
+      </div>
     </ResponsiveGridLayout>
   )
 }

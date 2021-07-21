@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react'
+import styled from '@emotion/styled'
 import useMangoStore from '../stores/useMangoStore'
 import usePrevious from '../hooks/usePrevious'
 import useInterval from '../hooks/useInterval'
@@ -6,6 +7,11 @@ import ChartApi from '../utils/chartDataConnector'
 import UiLock from './UiLock'
 import ManualRefresh from './ManualRefresh'
 import useOraclePrice from '../hooks/useOraclePrice'
+import DayHighLow from './DayHighLow'
+
+export const StyledMarketInfoLabel = styled.div`
+  font-size: 0.7rem;
+`
 
 const MarketHeader = () => {
   const oraclePrice = useOraclePrice()
@@ -69,10 +75,10 @@ const MarketHeader = () => {
 
   return (
     <div
-      className={`flex items-end sm:items-center justify-between pt-4 px-6 md:px-9`}
+      className={`flex items-end sm:items-center justify-between pt-4 px-6 md:px-6`}
     >
       <div className="flex flex-col sm:flex-row sm:items-center">
-        <div className="pb-3 sm:pb-0 w-44">
+        <div className="pb-3 sm:pb-0 pr-8">
           <div className="flex items-center">
             <img
               alt=""
@@ -92,17 +98,21 @@ const MarketHeader = () => {
           </div>
         </div>
         <div className="flex items-center">
-          <div className="pr-4 sm:pr-0 sm:w-24">
-            <div className="text-th-fgd-4 text-xs">Oracle price</div>
-            <div className="font-semibold mt-0.5">
+          <div className="pr-6">
+            <StyledMarketInfoLabel className="text-th-fgd-3">
+              Oracle price
+            </StyledMarketInfoLabel>
+            <div className="font-semibold text-th-fgd-1 text-xs">
               {oraclePrice ? oraclePrice.toFixed(2) : '--'}
             </div>
           </div>
-          <div className="pr-4 sm:pr-0 sm:w-24">
-            <div className="mb-0.5 text-th-fgd-4 text-xs">24hr Change</div>
+          <div className="pr-4">
+            <StyledMarketInfoLabel className="text-th-fgd-3">
+              24h Change
+            </StyledMarketInfoLabel>
             {ohlcv && !loading ? (
               <div
-                className={`font-semibold ${
+                className={`font-semibold text-xs ${
                   change > 0
                     ? `text-th-green`
                     : change < 0
@@ -117,16 +127,16 @@ const MarketHeader = () => {
               <MarketDataLoader />
             )}
           </div>
-          <div className="pr-4 sm:pr-0 sm:w-24">
-            <div className="mb-0.5 text-th-fgd-4 text-xs">24hr Vol</div>
-            <div className={`font-semibold`}>
+          <div className="pr-6">
+            <StyledMarketInfoLabel className="text-th-fgd-3">
+              24h Vol
+            </StyledMarketInfoLabel>
+            <div className="font-semibold text-th-fgd-1 text-xs">
               {ohlcv && !loading && volume ? (
                 volume !== '--' ? (
                   <>
                     {volume.toFixed(2)}
-                    <span className="ml-1 text-th-fgd-3 text-xs">
-                      {baseSymbol}
-                    </span>
+                    <span className="ml-1 text-th-fgd-3">{baseSymbol}</span>
                   </>
                 ) : (
                   volume
@@ -136,6 +146,25 @@ const MarketHeader = () => {
               )}
             </div>
           </div>
+          <DayHighLow />
+          {selectedMarketName.includes('PERP') ? (
+            <>
+              <div className="pr-6">
+                <StyledMarketInfoLabel className="text-th-fgd-3">
+                  Funding (8h Ave)
+                </StyledMarketInfoLabel>
+                <div className="font-semibold text-th-fgd-1 text-xs">
+                  0.001%
+                </div>
+              </div>
+              <div className="pr-6">
+                <StyledMarketInfoLabel className="text-th-fgd-3">
+                  Open Interest
+                </StyledMarketInfoLabel>
+                <div className="font-semibold text-th-fgd-1 text-xs">$XXXm</div>
+              </div>
+            </>
+          ) : null}
         </div>
       </div>
       <div className="flex">
@@ -149,5 +178,5 @@ const MarketHeader = () => {
 export default MarketHeader
 
 const MarketDataLoader = () => (
-  <div className="animate-pulse bg-th-bkg-3 h-5 w-10 rounded-sm" />
+  <div className="animate-pulse bg-th-bkg-3 h-3.5 mt-0.5 w-10 rounded-sm" />
 )

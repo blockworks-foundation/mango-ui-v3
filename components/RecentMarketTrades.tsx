@@ -51,7 +51,7 @@ export default function RecentMarketTrades() {
         <div>
           {trades.map((trade: ChartTradeType, i: number) => (
             <div key={i} className={`leading-7 grid grid-cols-3`}>
-              <div
+              {/* <div
                 className={`${
                   trade.side === 'buy' ? `text-th-green` : `text-th-red`
                 }`}
@@ -68,7 +68,7 @@ export default function RecentMarketTrades() {
                       getDecimalCount(market.minOrderSize)
                     )
                   : trade.size}
-              </div>
+              </div> */}
               <div className={`text-right text-th-fgd-3`}>
                 {trade.time && new Date(trade.time).toLocaleTimeString()}
               </div>

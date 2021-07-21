@@ -56,7 +56,7 @@ export const WEBSOCKET_CONNECTION = new Connection(
   'processed' as Commitment
 )
 
-const DEFAULT_MANGO_GROUP_NAME = 'mango_test_v3.4'
+const DEFAULT_MANGO_GROUP_NAME = 'mango_test_v3.8'
 const DEFAULT_MANGO_GROUP_CONFIG = Config.ids().getGroup(
   CLUSTER,
   DEFAULT_MANGO_GROUP_NAME
@@ -132,7 +132,6 @@ interface MangoStore extends State {
     markets: {
       [address: string]: Market | PerpMarket
     }
-    rootBanks: any[]
     cache: MangoCache | null
   }
   mangoAccounts: MangoAccount[]
@@ -161,7 +160,7 @@ interface MangoStore extends State {
   tradeHistory: any[]
   set: (x: any) => void
   actions: {
-    [key: string]: () => void
+    [key: string]: (args?) => void
   }
 }
 
@@ -296,12 +295,11 @@ const useMangoStore = create<MangoStore>((set, get) => ({
       return mangoClient
         .getMangoGroup(mangoGroupPk)
         .then(async (mangoGroup) => {
-          // TODO also perps
-          const rootBanks = await mangoGroup.loadRootBanks(DEFAULT_CONNECTION)
+          mangoGroup.loadRootBanks(DEFAULT_CONNECTION)
           const mangoCache = await mangoGroup.loadCache(DEFAULT_CONNECTION)
-
           const allMarketConfigs = getAllMarkets(mangoGroupConfig)
           const allMarketPks = allMarketConfigs.map((m) => m.publicKey)
+
           const allMarketAccountInfos = await getMultipleAccounts(
             DEFAULT_CONNECTION,
             allMarketPks
@@ -347,7 +345,6 @@ const useMangoStore = create<MangoStore>((set, get) => ({
 
           set((state) => {
             state.selectedMangoGroup.current = mangoGroup
-            state.selectedMangoGroup.rootBanks = rootBanks
             state.selectedMangoGroup.cache = mangoCache
             state.selectedMangoGroup.markets = allMarkets
             state.selectedMarket.current =
@@ -370,6 +367,8 @@ const useMangoStore = create<MangoStore>((set, get) => ({
         })
     },
     async fetchTradeHistory(mangoAccount = null) {
+      console.log('TODO Fetch Trade History', mangoAccount)
+
       // const selectedMangoAccount =
       //   mangoAccount || get().selectedMangoAccount.current
       // const set = get().set
@@ -392,6 +391,26 @@ const useMangoStore = create<MangoStore>((set, get) => ({
       // set((state) => {
       //   state.tradeHistory = results
       // })
+    },
+    async updateOpenOrders() {
+      const set = get().set
+      const mangoGroupConfig = get().selectedMangoGroup.config
+      const allMarketConfigs = getAllMarkets(mangoGroupConfig)
+
+      const allBidsAndAsksPks = allMarketConfigs
+        .map((m) => [m.bidsKey, m.asksKey])
+        .flat()
+
+      const allBidsAndAsksAccountInfos = await getMultipleAccounts(
+        DEFAULT_CONNECTION,
+        allBidsAndAsksPks
+      )
+
+      set((state) => {
+        allBidsAndAsksAccountInfos.forEach(({ publicKey, accountInfo }) => {
+          state.accountInfos[publicKey.toBase58()] = accountInfo
+        })
+      })
     },
   },
 }))

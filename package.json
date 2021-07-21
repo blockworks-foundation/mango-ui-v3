@@ -31,12 +31,12 @@
     }
   },
   "dependencies": {
-    "@blockworks-foundation/mango-client": "git+https://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:x-oauth-basic@github.com/blockworks-foundation/mango-client-v3.git",
+    "@blockworks-foundation/mango-client": "git+https://github.com/blockworks-foundation/mango-client-v3.git",
     "@emotion/react": "^11.1.5",
     "@emotion/styled": "^11.1.5",
     "@headlessui/react": "^1.2.0",
     "@heroicons/react": "^1.0.0",
-    "@project-serum/serum": "^0.13.38",
+    "@project-serum/serum": "^0.13.45",
     "@project-serum/sol-wallet-adapter": "0.2.0",
     "@solana/web3.js": "^1.18.0",
     "@tippyjs/react": "^4.2.5",
