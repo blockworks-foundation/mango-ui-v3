@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import styled from '@emotion/styled'
 import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
 import MarketMenuItem from './MarketMenuItem'
@@ -22,23 +22,25 @@ const StyledArrow = styled.div`
 const MarketSelect = () => {
   const [showMarketsModal, setShowMarketsModal] = useState(false)
   const [hiddenMarkets] = useLocalStorageState('hiddenMarkets', [])
+  const [sortedMarkets, setSortedMarkets] = useState([])
   const groupConfig = useMangoGroupConfig()
 
-  const markets = []
-  const allMarkets = [...groupConfig.perpMarkets, ...groupConfig.spotMarkets]
-  allMarkets.forEach((market) => {
-    const base = market.name.slice(0, -5)
-    const found = markets.find((b) => b.baseAsset === base)
-    if (!found) {
-      markets.push({ baseAsset: base, markets: [market] })
-    } else {
-      found.markets.push(market)
-    }
-  })
-
-  const sortedMarkets = markets.sort((a, b) =>
-    a.baseAsset.localeCompare(b.baseAsset)
-  )
+  useEffect(() => {
+    const markets = []
+    const allMarkets = [...groupConfig.perpMarkets, ...groupConfig.spotMarkets]
+    allMarkets.forEach((market) => {
+      const base = market.name.slice(0, -5)
+      const found = markets.find((b) => b.baseAsset === base)
+      if (!found) {
+        markets.push({ baseAsset: base, markets: [market] })
+      } else {
+        found.markets.push(market)
+      }
+    })
+    setSortedMarkets(
+      markets.sort((a, b) => a.baseAsset.localeCompare(b.baseAsset))
+    )
+  }, [])
 
   return (
     <>
