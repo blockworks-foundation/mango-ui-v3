@@ -6,13 +6,14 @@ import { ElementTitle } from './styles'
 import Tooltip from './Tooltip'
 
 export default function MarginInfo() {
+  const connected = useMangoStore((s) => s.wallet.connected)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
 
   const maintHealth = mangoAccount
     ? mangoAccount.getHealthRatio(mangoGroup, mangoCache, 'Maint')
-    : 0
+    : 100
 
   const equity = mangoAccount
     ? mangoAccount.computeValue(mangoGroup, mangoCache)
@@ -24,10 +25,10 @@ export default function MarginInfo() {
       : 0.0
 
   return (
-    <FloatingElement>
-      <ElementTitle>Account</ElementTitle>
-      <div>
-        {mangoAccount ? (
+    <FloatingElement showConnect>
+      <div className={!connected && 'filter blur-sm'}>
+        <ElementTitle>Account</ElementTitle>
+        <div>
           <div>
             <div className={`flex justify-between pt-2 pb-2`}>
               <Tooltip content="Account value">
@@ -52,7 +53,10 @@ export default function MarginInfo() {
                 </div>
               </Tooltip>
               <div className={`text-th-fgd-1`}>
-                ${mangoAccount.getAssetsVal(mangoGroup, mangoCache).toFixed(2)}
+                $
+                {mangoAccount
+                  ? mangoAccount.getAssetsVal(mangoGroup, mangoCache).toFixed(2)
+                  : 0}
               </div>
             </div>
             <div className={`flex justify-between pt-2 pb-2`}>
@@ -62,7 +66,10 @@ export default function MarginInfo() {
                 </div>
               </Tooltip>
               <div className={`text-th-fgd-1`}>
-                ${mangoAccount.getLiabsVal(mangoGroup, mangoCache).toFixed(2)}
+                $
+                {mangoAccount
+                  ? mangoAccount.getLiabsVal(mangoGroup, mangoCache).toFixed(2)
+                  : 0}
               </div>
             </div>
             <div className={`flex justify-between pt-2 pb-2`}>
@@ -75,30 +82,32 @@ export default function MarginInfo() {
               </Tooltip>
               <div className={`text-th-fgd-1`}>
                 {mangoAccount
-                  .getHealthRatio(mangoGroup, mangoCache, 'Init')
-                  .toFixed(2)}
+                  ? mangoAccount
+                      .getHealthRatio(mangoGroup, mangoCache, 'Init')
+                      .toFixed(2)
+                  : 100.0}
                 %
               </div>
             </div>
           </div>
-        ) : null}
-        <div className="bg-th-bkg-3 mt-4 p-4 rounded">
-          <div className="flex flex-col">
-            <div className="flex justify-between">
-              <div className="flex items-center">
-                <HeartIcon className="h-5 w-5" aria-hidden="true" />
-                <span className="ml-2">Health Ratio</span>
+          <div className="bg-th-bkg-3 mt-4 p-4 rounded">
+            <div className="flex flex-col">
+              <div className="flex justify-between">
+                <div className="flex items-center">
+                  <HeartIcon className="h-5 w-5" aria-hidden="true" />
+                  <span className="ml-2">Health Ratio</span>
+                </div>
+                <div className="text-right">{maintHealth.toFixed(2)}%</div>
               </div>
-              <div className="text-right">{maintHealth.toFixed(2)}%</div>
-            </div>
-            <div className="mt-4">
-              <div className="h-1.5 flex rounded bg-th-fgd-4">
-                <div
-                  style={{
-                    width: `${maintHealth}%`,
-                  }}
-                  className="flex rounded bg-th-primary"
-                ></div>
+              <div className="mt-4">
+                <div className="h-1.5 flex rounded bg-th-fgd-4">
+                  <div
+                    style={{
+                      width: `${maintHealth}%`,
+                    }}
+                    className="flex rounded bg-th-primary"
+                  ></div>
+                </div>
               </div>
             </div>
           </div>

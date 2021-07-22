@@ -274,98 +274,98 @@ export default function TradeForm() {
     (!price && tradeType === 'Limit') || !baseSize || !connected || submitting
 
   return (
-    <FloatingElement>
-      <div>
-        <div className={`flex text-base text-th-fgd-4`}>
-          <button
-            onClick={() => setSide('buy')}
-            className={`flex-1 outline-none focus:outline-none`}
-          >
-            <div
-              className={`hover:text-th-green pb-1 transition-colors duration-500
+    <FloatingElement showConnect>
+      <div className={!connected && 'filter blur-sm'}>
+        <div>
+          <div className={`flex text-base text-th-fgd-4`}>
+            <button
+              onClick={() => setSide('buy')}
+              className={`flex-1 outline-none focus:outline-none`}
+            >
+              <div
+                className={`hover:text-th-green pb-1 transition-colors duration-500
                 ${
                   side === 'buy' &&
                   `text-th-green hover:text-th-green border-b-2 border-th-green`
                 }`}
+              >
+                Buy
+              </div>
+            </button>
+            <button
+              onClick={() => setSide('sell')}
+              className={`flex-1 outline-none focus:outline-none`}
             >
-              Buy
-            </div>
-          </button>
-          <button
-            onClick={() => setSide('sell')}
-            className={`flex-1 outline-none focus:outline-none`}
-          >
-            <div
-              className={`hover:text-th-red pb-1 transition-colors duration-500
+              <div
+                className={`hover:text-th-red pb-1 transition-colors duration-500
                 ${
                   side === 'sell' &&
                   `text-th-red hover:text-th-red border-b-2 border-th-red`
                 }
               `}
-            >
-              Sell
-            </div>
-          </button>
-        </div>
-        <Input.Group className="mt-4">
-          <Input
-            type="number"
-            min="0"
-            step={tickSize}
-            onChange={(e) => onSetPrice(e.target.value)}
-            value={price}
-            disabled={tradeType === 'Market'}
-            prefix={'Price'}
-            suffix={groupConfig.quoteSymbol}
-            className="rounded-r-none"
-            wrapperClassName="w-3/5"
-          />
-          <TradeType
-            onChange={handleTradeTypeChange}
-            value={tradeType}
-            className="hover:border-th-primary flex-grow"
-          />
-        </Input.Group>
-
-        <Input.Group className="mt-4">
-          <Input
-            type="number"
-            min="0"
-            step={minOrderSize}
-            onChange={(e) => onSetBaseSize(e.target.value)}
-            value={baseSize}
-            className="rounded-r-none"
-            wrapperClassName="w-3/5"
-            prefix={'Size'}
-            suffix={marketConfig.baseSymbol}
-          />
-          <StyledRightInput
-            type="number"
-            min="0"
-            step={minOrderSize}
-            onChange={(e) => onSetQuoteSize(e.target.value)}
-            value={quoteSize}
-            className="rounded-l-none"
-            wrapperClassName="w-2/5"
-            suffix={groupConfig.quoteSymbol}
-          />
-        </Input.Group>
-        {tradeType !== 'Market' ? (
-          <div className="flex items-center mt-4">
-            <Switch checked={postOnly} onChange={postOnChange}>
-              POST
-            </Switch>
-            <div className="ml-4">
-              <Switch checked={ioc} onChange={iocOnChange}>
-                IOC
-              </Switch>
-            </div>
+              >
+                Sell
+              </div>
+            </button>
           </div>
-        ) : null}
-      </div>
-      <div className={`flex pt-6`}>
-        {ipAllowed ? (
-          connected ? (
+          <Input.Group className="mt-4">
+            <Input
+              type="number"
+              min="0"
+              step={tickSize}
+              onChange={(e) => onSetPrice(e.target.value)}
+              value={price}
+              disabled={tradeType === 'Market'}
+              prefix={'Price'}
+              suffix={groupConfig.quoteSymbol}
+              className="rounded-r-none"
+              wrapperClassName="w-3/5"
+            />
+            <TradeType
+              onChange={handleTradeTypeChange}
+              value={tradeType}
+              className="hover:border-th-primary flex-grow"
+            />
+          </Input.Group>
+
+          <Input.Group className="mt-4">
+            <Input
+              type="number"
+              min="0"
+              step={minOrderSize}
+              onChange={(e) => onSetBaseSize(e.target.value)}
+              value={baseSize}
+              className="rounded-r-none"
+              wrapperClassName="w-3/5"
+              prefix={'Size'}
+              suffix={marketConfig.baseSymbol}
+            />
+            <StyledRightInput
+              type="number"
+              min="0"
+              step={minOrderSize}
+              onChange={(e) => onSetQuoteSize(e.target.value)}
+              value={quoteSize}
+              className="rounded-l-none"
+              wrapperClassName="w-2/5"
+              suffix={groupConfig.quoteSymbol}
+            />
+          </Input.Group>
+          {tradeType !== 'Market' ? (
+            <div className="flex items-center mt-4">
+              <Switch checked={postOnly} onChange={postOnChange}>
+                POST
+              </Switch>
+              <div className="ml-4">
+                <Switch checked={ioc} onChange={iocOnChange}>
+                  IOC
+                </Switch>
+              </div>
+            </div>
+          ) : null}
+        </div>
+        <div className={`flex pt-6`}>
+          {ipAllowed ? (
             side === 'buy' ? (
               <Button
                 disabled={disabledTradeButton}
@@ -398,29 +398,11 @@ export default function TradeForm() {
               </Button>
             )
           ) : (
-            <>
-              <Button disabled className="flex-grow">
-                Connect Wallet
-              </Button>
-              {/* <div className="flex justify-between border border-th-fgd-4 rounded-md w-full">
-                <Button
-                  onClick={() => wallet.connect()}
-                  className={`rounded-r-none flex flex-grow items-center justify-center border-none`}
-                >
-                  <WalletIcon className="fill-current h-4 w-4 mr-2" />
-                  Connect Wallet
-                </Button>
-                <div className="relative h-full">
-                  <WalletSelect />
-                </div>
-              </div> */}
-            </>
-          )
-        ) : (
-          <Button disabled className="flex-grow">
-            <span className="text-lg font-light">Country Not Allowed</span>
-          </Button>
-        )}
+            <Button disabled className="flex-grow">
+              <span className="text-lg font-light">Country Not Allowed</span>
+            </Button>
+          )}
+        </div>
       </div>
     </FloatingElement>
   )

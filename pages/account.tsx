@@ -33,6 +33,7 @@ export default function Account() {
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
+  const wallet = useMangoStore((s) => s.wallet.current)
 
   const handleTabChange = (tabName) => {
     setActiveTab(tabName)
@@ -151,8 +152,10 @@ export default function Account() {
             />
           ) : (
             <EmptyState
+              buttonText="Connect"
               desc="Connect a wallet to view your account"
               icon={<LinkIcon />}
+              onClickButton={() => wallet.connect()}
               title="Connect Wallet"
             />
           )}

@@ -13,9 +13,12 @@ export default function Borrow() {
   const selectedMangoAccount = useMangoStore(
     (s) => s.selectedMangoAccount.current
   )
+  const wallet = useMangoStore((s) => s.wallet.current)
+
   const handleCloseAccounts = useCallback(() => {
     setShowAccountsModal(false)
   }, [])
+
   return (
     <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
       <TopBar />
@@ -37,8 +40,10 @@ export default function Borrow() {
             />
           ) : (
             <EmptyState
-              desc="Connect a wallet to view and create borrows"
+              buttonText="Connect"
+              desc="Connect a wallet to view your account"
               icon={<LinkIcon />}
+              onClickButton={() => wallet.connect()}
               title="Connect Wallet"
             />
           )}
