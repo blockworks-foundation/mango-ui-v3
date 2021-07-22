@@ -104,7 +104,7 @@ export default function MarketPosition() {
         <div className={!connected && 'filter blur'}>
           <ElementTitle>Balances</ElementTitle>
           {selectedMangoGroup ? (
-            <div className="pt-2">
+            <div className="grid grid-cols-2 grid-rows-1 gap-4 pt-2">
               {selectedMangoGroupConfig.tokens
                 .filter((t) => t.symbol === baseSymbol || t.symbol === 'USDC')
                 .reverse()
@@ -124,63 +124,40 @@ export default function MarketPosition() {
                           />
                           <span className="text-th-fgd-2">{symbol}</span>
                         </div>
-                        <div className="flex">
-                          <LinkButton
-                            className="text-th-fgd-3 text-xs"
-                            onClick={() => setShowDepositModal(true)}
-                            disabled={!connected || loadingMangoAccount}
-                          >
-                            Deposit
-                          </LinkButton>
-                          <LinkButton
-                            className="ml-4 text-th-fgd-3 text-xs"
-                            onClick={() => setShowWithdrawModal(true)}
-                            disabled={
-                              !connected ||
-                              !selectedMangoAccount ||
-                              loadingMangoAccount
-                            }
-                          >
-                            Withdraw
-                          </LinkButton>
+                      </div>
+                      <div className="pb-2">
+                        <div className="text-th-fgd-3 tiny-text">Deposits</div>
+                        <div className={`text-th-fgd-1`}>
+                          {selectedMangoAccount
+                            ? selectedMangoAccount
+                                .getUiDeposit(
+                                  selectedMangoGroupCache.rootBankCache[
+                                    tokenIndex
+                                  ],
+                                  selectedMangoGroup,
+                                  tokenIndex
+                                )
+                                .toFixed(tokenPrecision[symbol])
+                            : (0).toFixed(tokenPrecision[symbol])}
                         </div>
                       </div>
-                      <div className="flex">
-                        <div className="w-1/4">
-                          <div className="text-th-fgd-3 tiny-text">
-                            Deposits
-                          </div>
-                          <div className={`text-th-fgd-1`}>
-                            {selectedMangoAccount
-                              ? selectedMangoAccount
-                                  .getUiDeposit(
-                                    selectedMangoGroupCache.rootBankCache[
-                                      tokenIndex
-                                    ],
-                                    selectedMangoGroup,
+                      <div className="pb-2">
+                        <div className="text-th-fgd-3 tiny-text">Borrows</div>
+                        <div className={`text-th-fgd-1`}>
+                          {selectedMangoAccount
+                            ? selectedMangoAccount
+                                .getUiBorrow(
+                                  selectedMangoGroupCache.rootBankCache[
                                     tokenIndex
-                                  )
-                                  .toFixed(tokenPrecision[symbol])
-                              : (0).toFixed(tokenPrecision[symbol])}
-                          </div>
+                                  ],
+                                  selectedMangoGroup,
+                                  tokenIndex
+                                )
+                                .toFixed(tokenPrecision[symbol])
+                            : (0).toFixed(tokenPrecision[symbol])}
                         </div>
-                        <div className="w-1/4">
-                          <div className="text-th-fgd-3 tiny-text">Borrows</div>
-                          <div className={`text-th-fgd-1`}>
-                            {selectedMangoAccount
-                              ? selectedMangoAccount
-                                  .getUiBorrow(
-                                    selectedMangoGroupCache.rootBankCache[
-                                      tokenIndex
-                                    ],
-                                    selectedMangoGroup,
-                                    tokenIndex
-                                  )
-                                  .toFixed(tokenPrecision[symbol])
-                              : (0).toFixed(tokenPrecision[symbol])}
-                          </div>
-                        </div>
-                        <div className="w-1/4">
+                      </div>
+                      {/* <div className="w-1/4">
                           <Tooltip content="Maximum available with leverage">
                             <div
                               className={`cursor-help font-normal pb-0.5 text-th-fgd-3 tiny-text default-transition hover:border-th-bkg-2 hover:text-th-fgd-3`}
@@ -189,30 +166,29 @@ export default function MarketPosition() {
                             </div>
                           </Tooltip>
                           <div className={`text-th-fgd-1`}>0.00</div>
-                        </div>
-                        <div className="w-1/4">
-                          <Tooltip content="Deposit APY and Borrow APR">
-                            <div
-                              className={`cursor-help font-normal pb-0.5 text-th-fgd-3 tiny-text default-transition hover:border-th-bkg-2 hover:text-th-fgd-3`}
-                            >
-                              Interest Rates
-                            </div>
-                          </Tooltip>
-                          <div className={`text-th-fgd-1`}>
-                            <span className={`text-th-green`}>
-                              {i80f48ToPercent(
-                                selectedMangoGroup.getDepositRate(tokenIndex)
-                              ).toFixed(2)}
-                              %
-                            </span>
-                            <span className={`text-th-fgd-4`}>{'  /  '}</span>
-                            <span className={`text-th-red`}>
-                              {i80f48ToPercent(
-                                selectedMangoGroup.getBorrowRate(tokenIndex)
-                              ).toFixed(2)}
-                              %
-                            </span>
+                        </div> */}
+                      <div>
+                        <Tooltip content="Deposit APY and Borrow APR">
+                          <div
+                            className={`cursor-help font-normal pb-0.5 text-th-fgd-3 tiny-text default-transition hover:border-th-bkg-2 hover:text-th-fgd-3`}
+                          >
+                            Interest Rates
                           </div>
+                        </Tooltip>
+                        <div className={`text-th-fgd-1`}>
+                          <span className={`text-th-green`}>
+                            {i80f48ToPercent(
+                              selectedMangoGroup.getDepositRate(tokenIndex)
+                            ).toFixed(2)}
+                            %
+                          </span>
+                          <span className={`text-th-fgd-4`}>{'  /  '}</span>
+                          <span className={`text-th-red`}>
+                            {i80f48ToPercent(
+                              selectedMangoGroup.getBorrowRate(tokenIndex)
+                            ).toFixed(2)}
+                            %
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -220,6 +196,22 @@ export default function MarketPosition() {
                 })}
             </div>
           ) : null}
+          <div className={`grid grid-cols-2 grid-rows-1 gap-4 pt-2`}>
+            <Button
+              onClick={() => setShowDepositModal(true)}
+              className="w-full"
+              disabled={!connected}
+            >
+              <span>Deposit</span>
+            </Button>
+            <Button
+              onClick={() => setShowWithdrawModal(true)}
+              className="w-full"
+              disabled={!connected}
+            >
+              <span>Withdraw</span>
+            </Button>
+          </div>
         </div>
       </FloatingElement>
       {showDepositModal && (

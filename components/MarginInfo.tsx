@@ -90,7 +90,7 @@ export default function MarginInfo() {
               </div>
             </div>
           </div>
-          <div className="bg-th-bkg-3 mt-4 p-4 rounded">
+          <div className="border border-th-bkg-3 mt-4 p-4 rounded">
             <div className="flex flex-col">
               <div className="flex justify-between">
                 <div className="flex items-center">
@@ -100,7 +100,7 @@ export default function MarginInfo() {
                 <div className="text-right">{maintHealth.toFixed(2)}%</div>
               </div>
               <div className="mt-4">
-                <div className="h-1.5 flex rounded bg-th-fgd-4">
+                <div className="h-1.5 flex rounded bg-th-bkg-3">
                   <div
                     style={{
                       width: `${maintHealth}%`,
