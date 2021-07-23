@@ -6,6 +6,15 @@ import { LinkButton } from './Button'
 import MarketsModal from './MarketsModal'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 
+const StyledMarketSelectWrapper = styled.div`
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
+`
+
 const StyledMarketTypeToggleWrapper = styled.div`
   background: rgba(255, 255, 255, 0.12);
 `
@@ -44,7 +53,7 @@ const MarketSelect = () => {
 
   return (
     <>
-      <div className="bg-th-bkg-3 flex h-10">
+      <StyledMarketSelectWrapper className="bg-th-bkg-3 flex h-10 overflow-x-auto">
         <StyledMarketTypeToggleWrapper className="flex items-center pl-6 md:pl-9 pr-1">
           <LinkButton
             className="font-normal text-th-fgd-2 text-xs"
@@ -67,7 +76,7 @@ const MarketSelect = () => {
               ))}
           </div>
         </div>
-      </div>
+      </StyledMarketSelectWrapper>
       {showMarketsModal ? (
         <MarketsModal
           isOpen={showMarketsModal}
