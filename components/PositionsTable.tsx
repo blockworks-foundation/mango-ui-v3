@@ -49,7 +49,6 @@ const PositionsTable = () => {
         perpAccount.basePosition.eq(new BN(0))
       )
   )
-  console.log('perp acc length', filteredPerpAccounts.length)
 
   const handleSettlePnl = async (
     perpMarket: PerpMarket,
@@ -98,7 +97,7 @@ const PositionsTable = () => {
                 <Thead>
                   <Tr className="text-th-fgd-3">
                     <Th scope="col" className="px-6 py-2 text-left font-normal">
-                      Market
+                      Perp Market
                     </Th>
                     <Th scope="col" className="px-2 py-2 text-left font-normal">
                       Side
@@ -140,13 +139,22 @@ const PositionsTable = () => {
                         <Tr
                           key={`${marketIndex}`}
                           className={`border-b border-th-bkg-3
-                        ${index % 2 === 0 ? `bg-th-bkg-2` : `bg-th-bkg-3`}
+                        ${index % 2 === 0 ? `bg-th-bkg-3` : `bg-th-bkg-2`}
                       `}
                         >
-                          <Td className="px-6 py-2.5 whitespace-nowrap text-sm text-th-fgd-1">
-                            {marketConfig.name}
+                          <Td className="px-6 py-1 whitespace-nowrap text-sm text-th-fgd-1">
+                            <div className="flex items-center">
+                              <img
+                                alt=""
+                                width="20"
+                                height="20"
+                                src={`/assets/icons/${marketConfig.baseSymbol.toLowerCase()}.svg`}
+                                className={`mr-2.5`}
+                              />
+                              <div>{marketConfig.name}</div>
+                            </div>
                           </Td>
-                          <Td className="px-2 py-2.5 whitespace-nowrap text-sm text-th-fgd-1">
+                          <Td className="px-2 py-1 whitespace-nowrap text-sm text-th-fgd-1">
                             <SideBadge
                               side={
                                 perpAccount.basePosition.gt(new BN(0))
@@ -155,25 +163,25 @@ const PositionsTable = () => {
                               }
                             />
                           </Td>
-                          <Td className="px-2 py-2.5 whitespace-nowrap text-sm text-th-fgd-1">
+                          <Td className="px-2 py-1 whitespace-nowrap text-sm text-th-fgd-1">
                             {perpMarket.baseLotsToNumber(
                               perpAccount.basePosition
                             )}
                           </Td>
-                          <Td className="px-2 py-2.5 whitespace-nowrap text-sm text-th-fgd-1">
+                          <Td className="px-2 py-1 whitespace-nowrap text-sm text-th-fgd-1">
                             {nativeI80F48ToUi(
                               perpAccount.quotePosition,
                               marketConfig.quoteDecimals
                             ).toFixed()}
                           </Td>
-                          <Td className="px-2 py-2.5 whitespace-nowrap text-sm text-th-fgd-1">
+                          <Td className="px-2 py-1 whitespace-nowrap text-sm text-th-fgd-1">
                             $
                             {nativeI80F48ToUi(
                               perpAccount.getPnl(perpMarketInfo, price),
                               marketConfig.quoteDecimals
                             ).toFixed()}
                           </Td>
-                          <Td className="px-2 py-2.5 whitespace-nowrap text-sm text-th-fgd-1">
+                          <Td className="px-2 py-1 whitespace-nowrap text-sm text-th-fgd-1">
                             {perpAccount
                               .getHealth(
                                 perpMarketInfo,
@@ -185,7 +193,7 @@ const PositionsTable = () => {
                               )
                               .toFixed(3)}
                           </Td>
-                          <Td className="px-6 whitespace-nowrap text-sm text-th-fgd-1">
+                          <Td className="px-6 py-1 whitespace-nowrap text-sm text-th-fgd-1">
                             <div className="flex justify-end">
                               <Button
                                 onClick={() =>

@@ -7,11 +7,15 @@ import { InformationCircleIcon } from '@heroicons/react/outline'
 import Tooltip from './Tooltip'
 import { sleep } from '../utils'
 import { Market } from '@project-serum/serum'
-import { ZERO_I80F48 } from '@blockworks-foundation/mango-client'
+import {
+  getTokenBySymbol,
+  ZERO_I80F48,
+} from '@blockworks-foundation/mango-client'
 
 const BalancesTable = () => {
   const balances = useBalances()
   const actions = useMangoStore((s) => s.actions)
+  const mangoGroupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
 
   async function handleSettleAll() {
     const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
@@ -117,53 +121,59 @@ const BalancesTable = () => {
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {balances.map((balance, index) => (
-                    <Tr
-                      key={`${index}`}
-                      className={`border-b border-th-bkg-3
+                  {balances.map((balance, index) => {
+                    const tokenConfig = getTokenBySymbol(
+                      mangoGroupConfig,
+                      balance.symbol.toUpperCase()
+                    )
+                    return (
+                      <Tr
+                        key={`${index}`}
+                        className={`border-b border-th-bkg-3
                         ${index % 2 === 0 ? `bg-th-bkg-3` : `bg-th-bkg-2`}
                       `}
-                    >
-                      <Td
-                        className={`flex items-center px-4 py-2.5 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
-                        <img
-                          alt=""
-                          width="20"
-                          height="20"
-                          src={`/assets/icons/${balance.symbol.toLowerCase()}.svg`}
-                          className={`mr-2.5`}
-                        />
+                        <Td
+                          className={`flex items-center px-4 py-2.5 whitespace-nowrap text-sm text-th-fgd-1`}
+                        >
+                          <img
+                            alt=""
+                            width="20"
+                            height="20"
+                            src={`/assets/icons/${balance.symbol.toLowerCase()}.svg`}
+                            className={`mr-2.5`}
+                          />
 
-                        {balance.symbol}
-                      </Td>
-                      <Td
-                        className={`px-4 py-2.5 whitespace-nowrap text-sm text-th-fgd-1`}
-                      >
-                        {balance.marginDeposits.toFixed()}
-                      </Td>
-                      <Td
-                        className={`px-4 py-2.5 whitespace-nowrap text-sm text-th-fgd-1`}
-                      >
-                        {balance.borrows.toFixed()}
-                      </Td>
-                      <Td
-                        className={`px-4 py-2.5 whitespace-nowrap text-sm text-th-fgd-1`}
-                      >
-                        {balance.orders}
-                      </Td>
-                      <Td
-                        className={`px-4 py-2.5 whitespace-nowrap text-sm text-th-fgd-1`}
-                      >
-                        {balance.unsettled}
-                      </Td>
-                      <Td
-                        className={`px-4 py-2.5 whitespace-nowrap text-sm text-th-fgd-1`}
-                      >
-                        {balance.net.toFixed()}
-                      </Td>
-                    </Tr>
-                  ))}
+                          {balance.symbol}
+                        </Td>
+                        <Td
+                          className={`px-4 py-2.5 whitespace-nowrap text-sm text-th-fgd-1`}
+                        >
+                          {balance.marginDeposits.toFixed(tokenConfig.decimals)}
+                        </Td>
+                        <Td
+                          className={`px-4 py-2.5 whitespace-nowrap text-sm text-th-fgd-1`}
+                        >
+                          {balance.borrows.toFixed(tokenConfig.decimals)}
+                        </Td>
+                        <Td
+                          className={`px-4 py-2.5 whitespace-nowrap text-sm text-th-fgd-1`}
+                        >
+                          {balance.orders}
+                        </Td>
+                        <Td
+                          className={`px-4 py-2.5 whitespace-nowrap text-sm text-th-fgd-1`}
+                        >
+                          {balance.unsettled}
+                        </Td>
+                        <Td
+                          className={`px-4 py-2.5 whitespace-nowrap text-sm text-th-fgd-1`}
+                        >
+                          {balance.net.toFixed(tokenConfig.decimals)}
+                        </Td>
+                      </Tr>
+                    )
+                  })}
                 </Tbody>
               </Table>
             </div>

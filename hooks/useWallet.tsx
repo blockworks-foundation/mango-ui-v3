@@ -93,7 +93,6 @@ export default function useWallet() {
   useEffect(() => {
     if (!wallet) return
     wallet.on('connect', async () => {
-      console.log('connected wallet')
       sleep(250)
       await actions.fetchMangoAccounts()
       setMangoStore((state) => {
