@@ -188,20 +188,11 @@ const OpenOrdersTable = () => {
                       </Td>
                       <Td className={`px-4 py-1 whitespace-nowrap text-left`}>
                         <div className={`flex justify-end`}>
-                          {/* Todo: support order modification */}
-                          {/* <Button
-                            onClick={() =>
-                              console.log('trigger modify order modal')
-                            }
-                            className={`text-xs pt-0 pb-0 h-8 pl-3 pr-3`}
-                          >
-                            Modify
-                          </Button> */}
                           <Button
                             onClick={() =>
                               handleCancelOrder(order, market.account)
                             }
-                            className={`ml-3 text-xs pt-0 pb-0 h-8 pl-3 pr-3`}
+                            className="ml-3 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
                           >
                             {cancelId + '' === order.orderId + '' ? (
                               <Loading />

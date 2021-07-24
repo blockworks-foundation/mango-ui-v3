@@ -1,4 +1,5 @@
 import { ArrowSmDownIcon } from '@heroicons/react/solid'
+import BN from 'bn.js'
 import useTradeHistory from '../hooks/useTradeHistory'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -12,10 +13,18 @@ const TradeHistoryTable = () => {
   const { asPath } = useRouter()
   const tradeHistory = useTradeHistory()
   const { items, requestSort, sortConfig } = useSortableData(tradeHistory)
+  console.log('trade history items: ', items)
+
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
 
-  const renderTradeDateTime = (timestamp) => {
-    const date = new Date(timestamp)
+  const renderTradeDateTime = (timestamp: BN | string) => {
+    let date
+    if (timestamp instanceof BN) {
+      date = new Date(timestamp.toNumber() * 1000)
+    } else {
+      date = new Date(timestamp)
+    }
+
     return (
       <>
         <div>{date.toLocaleDateString()}</div>
@@ -181,7 +190,7 @@ const TradeHistoryTable = () => {
                         className="flex items-center no-underline"
                         onClick={() => requestSort('loadTimestamp')}
                       >
-                        Approx Date
+                        Approx Time
                         <ArrowSmDownIcon
                           className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                             sortConfig?.key === 'loadTimestamp'
@@ -212,7 +221,7 @@ const TradeHistoryTable = () => {
                             width="20"
                             height="20"
                             src={`/assets/icons/${trade.marketName
-                              .split('/')[0]
+                              .split(/-|\//)[0]
                               .toLowerCase()}.svg`}
                             className={`mr-2.5`}
                           />
@@ -237,7 +246,7 @@ const TradeHistoryTable = () => {
                       <Td
                         className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
-                        ${(trade.price * trade.size).toFixed(2)}
+                        ${trade.value.toFixed(2)}
                       </Td>
                       <Td
                         className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
@@ -247,13 +256,15 @@ const TradeHistoryTable = () => {
                       <Td
                         className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
-                        {trade.feeCost}
+                        ${trade.feeCost}
                       </Td>
                       <Td
                         className={`px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
-                        {trade.loadTimestamp
-                          ? renderTradeDateTime(trade.loadTimestamp)
+                        {trade.loadTimestamp || trade.timestamp
+                          ? renderTradeDateTime(
+                              trade.loadTimestamp || trade.timestamp
+                            )
                           : 'Recent'}
                       </Td>
                     </Tr>
