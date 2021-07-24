@@ -114,7 +114,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
   */
 
   const handleAccountSelect = (account) => {
-    setInputAmount('0')
+    setInputAmount('')
     setSliderPercentage(0)
     setInvalidAmountMessage('')
     setSelectedAccount(account)

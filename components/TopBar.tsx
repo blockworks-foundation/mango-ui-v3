@@ -5,7 +5,6 @@ import MenuItem from './MenuItem'
 import ThemeSwitch from './ThemeSwitch'
 import useMangoStore from '../stores/useMangoStore'
 import ConnectWalletButton from './ConnectWalletButton'
-import AlertsList from './AlertsList'
 import NavDropMenu from './NavDropMenu'
 import AccountsModal from './AccountsModal'
 import Button from './Button'
@@ -40,7 +39,6 @@ const TopBar = () => {
                 <MenuItem href="/spot/BTC">Trade</MenuItem>
                 <MenuItem href="/account">Account</MenuItem>
                 <MenuItem href="/borrow">Borrow</MenuItem>
-                {/* <MenuItem href="/alerts">Alerts</MenuItem> */}
                 <MenuItem href="/stats">Stats</MenuItem>
                 <MenuItem href="https://docs.mango.markets/">Learn</MenuItem>
                 {/* TODO: change v2 link before mainnet */}
@@ -58,11 +56,6 @@ const TopBar = () => {
               <div className={`pl-2`}>
                 <ThemeSwitch />
               </div>
-              {connected ? (
-                <div className="pl-2">
-                  <AlertsList />
-                </div>
-              ) : null}
               {mangoAccount ? (
                 <div className="pl-3">
                   <Button
@@ -110,7 +103,6 @@ const TopBar = () => {
             <MenuItem href="/">Trade</MenuItem>
             <MenuItem href="/account">Account</MenuItem>
             <MenuItem href="/borrow">Borrow</MenuItem>
-            <MenuItem href="/alerts">Alerts</MenuItem>
             <MenuItem href="/stats">Stats</MenuItem>
             <MenuItem href="https://docs.mango.markets/">Learn</MenuItem>
 

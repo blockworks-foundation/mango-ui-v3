@@ -275,7 +275,7 @@ export default function TradeForm() {
 
   return (
     <FloatingElement showConnect>
-      <div className={!connected && 'filter blur-sm'}>
+      <div className={!connected ? 'filter blur-sm' : undefined}>
         <div>
           <div className={`flex text-base text-th-fgd-4`}>
             <button
@@ -285,8 +285,9 @@ export default function TradeForm() {
               <div
                 className={`hover:text-th-green pb-1 transition-colors duration-500
                 ${
-                  side === 'buy' &&
-                  `text-th-green hover:text-th-green border-b-2 border-th-green`
+                  side === 'buy'
+                    ? `text-th-green hover:text-th-green border-b-2 border-th-green`
+                    : undefined
                 }`}
               >
                 Buy
@@ -299,8 +300,9 @@ export default function TradeForm() {
               <div
                 className={`hover:text-th-red pb-1 transition-colors duration-500
                 ${
-                  side === 'sell' &&
-                  `text-th-red hover:text-th-red border-b-2 border-th-red`
+                  side === 'sell'
+                    ? `text-th-red hover:text-th-red border-b-2 border-th-red`
+                    : undefined
                 }
               `}
               >
@@ -371,8 +373,9 @@ export default function TradeForm() {
                 disabled={disabledTradeButton}
                 onClick={onSubmit}
                 className={`${
-                  !disabledTradeButton &&
-                  'border-th-green hover:border-th-green-dark'
+                  !disabledTradeButton
+                    ? 'border-th-green hover:border-th-green-dark'
+                    : undefined
                 } text-th-green hover:text-th-fgd-1 hover:bg-th-green-dark flex-grow`}
               >
                 {`${
@@ -386,8 +389,9 @@ export default function TradeForm() {
                 disabled={disabledTradeButton}
                 onClick={onSubmit}
                 className={`${
-                  !disabledTradeButton &&
-                  'border-th-red hover:border-th-red-dark'
+                  !disabledTradeButton
+                    ? 'border-th-red hover:border-th-red-dark'
+                    : undefined
                 } text-th-red hover:text-th-fgd-1 hover:bg-th-red-dark flex-grow`}
               >
                 {`${
