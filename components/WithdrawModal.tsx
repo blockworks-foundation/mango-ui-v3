@@ -604,18 +604,10 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                       </div>
                       <div className="flex justify-between pb-2">
                         <div className="text-th-fgd-4">Leverage</div>
-                        {/* <div className="text-th-fgd-1">
-                          {simulation.leverage.toFixed(2)}x
-                        </div> */}
-                      </div>
-                      <div className="flex justify-between">
-                        <div className="text-th-fgd-4">Collateral Ratio</div>
-                        {/* <div className="text-th-fgd-1">
-                          {simulation.collateralRatio * 100 < 200
-                            ? Math.floor(simulation.collateralRatio * 100)
-                            : '>200'}
-                          %
-                        </div> */}
+                        <div className="text-th-fgd-1">
+                          {/* {simulation.leverage.toFixed(2)}x */}
+                          X.XXx
+                        </div>
                       </div>
                       {simulation.liabsVal > 0.05 ? (
                         <div className="flex justify-between pt-2">

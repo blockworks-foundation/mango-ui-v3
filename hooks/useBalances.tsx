@@ -122,7 +122,7 @@ export function useBalances(): Balances[] {
     .sub(quoteMeta.borrows)
     .sub(I80F48.fromNumber(quoteInOrders))
 
-  return baseBalances.concat([
+  return [
     {
       market: null,
       key: `${quoteMeta.symbol}${quoteMeta.symbol}`,
@@ -133,5 +133,5 @@ export function useBalances(): Balances[] {
       unsettled,
       net,
     },
-  ])
+  ].concat(baseBalances)
 }

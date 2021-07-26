@@ -1,3 +1,8 @@
+import {
+  getMarketIndexBySymbol,
+  MangoGroup,
+} from '@blockworks-foundation/mango-client'
+import { PublicKey } from '@solana/web3.js'
 import useMangoStore from '../stores/useMangoStore'
 
 const byTimestamp = (a, b) => {
@@ -6,14 +11,33 @@ const byTimestamp = (a, b) => {
   )
 }
 
-const parsedPerpEvent = (event) => {
+const parsedPerpEvent = (
+  mangoGroup: MangoGroup,
+  mangoAccountPk: PublicKey,
+  event
+) => {
+  const mangoGroupConfig = useMangoStore.getState().selectedMangoGroup.config
+  const marketIndex = getMarketIndexBySymbol(
+    mangoGroupConfig,
+    event.marketName.split(/-|\//)[0]
+  )
+  const perpMarketInfo = mangoGroup.perpMarkets[marketIndex]
+  const maker = event.maker.equals(mangoAccountPk)
+  const orderId = maker ? event.makerOrderId : event.takerOrderId
+  const value = event.quantity * event.price
+  const feeRate = maker
+    ? perpMarketInfo.makerFee.toNumber()
+    : perpMarketInfo.takerFee.toNumber()
+
   return {
     ...event,
-    key: `${event.orderId}-${event.uuid}`,
-    liquidity: event.maker ? 'Maker' : 'Taker',
-    value: event.price * event.size,
+    key: orderId.toString(),
+    liquidity: maker ? 'Maker' : 'Taker',
+    size: event.quantity,
+    price: event.price,
+    value,
+    feeCost: (feeRate * value).toFixed(4),
     side: event.side,
-    feeCost: 0.0,
   }
 }
 
@@ -27,14 +51,18 @@ const parsedSerumEvent = (event) => {
   }
 }
 
-const formatTradeHistory = (newTradeHistory) => {
+const formatTradeHistory = (
+  selectedMangoGroup,
+  mangoAccountPk: PublicKey,
+  newTradeHistory
+) => {
   return newTradeHistory
     .flat()
     .map((trade) => {
       if (trade.eventFlags) {
         return parsedSerumEvent(trade)
       } else {
-        return parsedPerpEvent(trade)
+        return parsedPerpEvent(selectedMangoGroup, mangoAccountPk, trade)
       }
     })
     .sort(byTimestamp)
@@ -73,11 +101,19 @@ export const useTradeHistory = () => {
     )
     const newTradeHistory = [...newFills, ...tradeHistory]
     if (newFills.length > 0 && newTradeHistory.length !== allTrades.length) {
-      return formatTradeHistory(newTradeHistory)
+      return formatTradeHistory(
+        selectedMangoGroup,
+        mangoAccount.publicKey,
+        newTradeHistory
+      )
     }
   }
 
-  return formatTradeHistory(tradeHistory)
+  return formatTradeHistory(
+    selectedMangoGroup,
+    mangoAccount.publicKey,
+    tradeHistory
+  )
 }
 
 export default useTradeHistory

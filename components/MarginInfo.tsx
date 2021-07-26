@@ -26,25 +26,23 @@ export default function MarginInfo() {
 
   return (
     <FloatingElement showConnect>
-      <div className={!connected && 'filter blur-sm'}>
+      <div className={!connected ? 'filter blur-sm' : undefined}>
         <ElementTitle>Account</ElementTitle>
         <div>
           <div>
-            <div className={`flex justify-between pt-2 pb-2`}>
+            <div className="flex justify-between pt-2 pb-2">
               <Tooltip content="Account value">
-                <div
-                  className={`cursor-help font-normal text-th-fgd-3 border-b border-th-fgd-3 border-dashed border-opacity-20 leading-4 default-transition hover:border-th-bkg-2 hover:text-th-fgd-3`}
-                >
+                <div className="cursor-help font-normal text-th-fgd-3 border-b border-th-fgd-3 border-dashed border-opacity-20 leading-4 default-transition hover:border-th-bkg-2 hover:text-th-fgd-3">
                   Equity
                 </div>
               </Tooltip>
-              <div className={`text-th-fgd-1`}>${equity.toFixed(2)}</div>
+              <div className="text-th-fgd-1">${equity.toFixed(2)}</div>
             </div>
-            <div className={`flex justify-between pt-2 pb-2`}>
+            <div className="flex justify-between pt-2 pb-2">
               <div className="font-normal text-th-fgd-3 leading-4">
                 Leverage
               </div>
-              <div className={`text-th-fgd-1`}>{leverage.toFixed(2)}x</div>
+              <div className="text-th-fgd-1">{leverage.toFixed(2)}x</div>
             </div>
             <div className={`flex justify-between pt-2 pb-2`}>
               <div className="font-normal text-th-fgd-3 leading-4">
@@ -68,15 +66,13 @@ export default function MarginInfo() {
                   : 0}
               </div>
             </div>
-            <div className={`flex justify-between pt-2 pb-2`}>
+            <div className="flex justify-between pt-2 pb-2">
               <Tooltip content="Must be above 0% to borrow funds">
-                <div
-                  className={`cursor-help font-normal text-th-fgd-3 border-b border-th-fgd-3 border-dashed border-opacity-20 leading-4 default-transition hover:border-th-bkg-2 hover:text-th-fgd-3`}
-                >
+                <div className="cursor-help font-normal text-th-fgd-3 border-b border-th-fgd-3 border-dashed border-opacity-20 leading-4 default-transition hover:border-th-bkg-2 hover:text-th-fgd-3">
                   Init Ratio
                 </div>
               </Tooltip>
-              <div className={`text-th-fgd-1`}>
+              <div className="text-th-fgd-1">
                 {mangoAccount
                   ? mangoAccount
                       .getHealthRatio(mangoGroup, mangoCache, 'Init')

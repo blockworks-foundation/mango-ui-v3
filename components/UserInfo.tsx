@@ -10,7 +10,7 @@ import TradeHistoryTable from './TradeHistoryTable'
 const TABS = [
   'Balances',
   'Open Orders',
-  'Positions',
+  'Perp Positions',
   /*'Fee Discounts'*/
   'Trade History',
 ]
@@ -72,7 +72,7 @@ const TabContent = ({ activeTab }) => {
       return <BalancesTable />
     case 'Trade History':
       return <TradeHistoryTable />
-    case 'Positions':
+    case 'Perp Positions':
       return <PositionsTable />
     // case 'Fee Discounts':
     //   return <FeeDiscountsTable />
