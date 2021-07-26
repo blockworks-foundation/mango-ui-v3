@@ -32,6 +32,7 @@ export const defaultLayouts = {
   ],
   lg: [
     { i: 'tvChart', x: 0, y: 0, w: 8, h: 29, minW: 2 },
+    { i: 'depositWithdraw', x: 8, y: 0, w: 4, h: 6 },
     { i: 'marketPosition', x: 8, y: 0, w: 4, h: 15, minW: 2 },
     { i: 'marginInfo', x: 8, y: 1, w: 4, h: 14, minW: 2 },
     { i: 'orderbook', x: 0, y: 2, w: 4, h: 17, minW: 2 },
@@ -41,6 +42,7 @@ export const defaultLayouts = {
   ],
   md: [
     { i: 'tvChart', x: 0, y: 0, w: 8, h: 29, minW: 2 },
+    { i: 'depositWithdraw', x: 8, y: 0, w: 4, h: 6 },
     { i: 'marketPosition', x: 8, y: 0, w: 4, h: 15, minW: 2 },
     { i: 'marginInfo', x: 8, y: 1, w: 4, h: 14, minW: 2 },
     { i: 'orderbook', x: 0, y: 2, w: 4, h: 17, minW: 2 },
@@ -50,6 +52,7 @@ export const defaultLayouts = {
   ],
   sm: [
     { i: 'tvChart', x: 0, y: 0, w: 12, h: 25, minW: 6 },
+    { i: 'depositWithdraw', x: 0, y: 1, w: 6, h: 15 },
     { i: 'marketPosition', x: 0, y: 1, w: 6, h: 15, minW: 2 },
     { i: 'marginInfo', x: 6, y: 1, w: 6, h: 15, minW: 2 },
     { i: 'tradeForm', x: 0, y: 2, w: 12, h: 13, minW: 3 },
@@ -86,11 +89,11 @@ const TradePageGrid = () => {
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
   if (!mounted) return null
-
+  // TODO enable savedLayouts
   return (
     <ResponsiveGridLayout
       className="layout"
-      layouts={savedLayouts || defaultLayouts}
+      layouts={defaultLayouts}
       breakpoints={{ xl: 1600, lg: 1200, md: 1110, sm: 768, xs: 0 }}
       cols={{ xl: 12, lg: 12, md: 12, sm: 12, xs: 1 }}
       rowHeight={15}
