@@ -1,11 +1,7 @@
-import { StyledMarketInfoLabel } from './MarketHeader'
-
 const DayHighLow = () => {
   return (
     <div className="pr-6">
-      <StyledMarketInfoLabel className="text-center text-th-fgd-3">
-        24h Range
-      </StyledMarketInfoLabel>
+      <div className="text-center text-th-fgd-3 tiny-text">24h Range</div>
       <div className="flex items-center">
         <div className="pr-2 text-th-fgd-1 text-xs">$XX.XX</div>
         <div className="h-1.5 flex rounded bg-th-bkg-3 w-24">

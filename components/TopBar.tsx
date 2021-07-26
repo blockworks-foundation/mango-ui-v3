@@ -1,15 +1,24 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { MenuIcon, XIcon } from '@heroicons/react/outline'
+import { abbreviateAddress } from '../utils/index'
 import MenuItem from './MenuItem'
 import ThemeSwitch from './ThemeSwitch'
 import useMangoStore from '../stores/useMangoStore'
 import ConnectWalletButton from './ConnectWalletButton'
 import NavDropMenu from './NavDropMenu'
+import AccountsModal from './AccountsModal'
+import Button from './Button'
 
 const TopBar = () => {
   const connected = useMangoStore((s) => s.wallet.connected)
+  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const wallet = useMangoStore((s) => s.wallet.current)
   const [showMenu, setShowMenu] = useState(false)
+  const [showAccountsModal, setShowAccountsModal] = useState(false)
+
+  const handleCloseAccounts = useCallback(() => {
+    setShowAccountsModal(false)
+  }, [])
 
   return (
     <>
@@ -47,8 +56,21 @@ const TopBar = () => {
               <div className={`pl-2`}>
                 <ThemeSwitch />
               </div>
+              {mangoAccount ? (
+                <div className="pl-3">
+                  <Button
+                    className="pb-1 pt-1 pl-2 pr-2 text-xs"
+                    onClick={() => setShowAccountsModal(true)}
+                  >
+                    <div className="font-normal text-th-primary tiny-text">
+                      Account
+                    </div>
+                    {abbreviateAddress(mangoAccount.publicKey)}
+                  </Button>
+                </div>
+              ) : null}
               <div className="flex">
-                <div className="hidden md:block pl-4">
+                <div className="hidden md:block pl-3">
                   <ConnectWalletButton />
                 </div>
               </div>
@@ -106,6 +128,12 @@ const TopBar = () => {
           </div>
         </div>
       </nav>
+      {showAccountsModal ? (
+        <AccountsModal
+          onClose={handleCloseAccounts}
+          isOpen={showAccountsModal}
+        />
+      ) : null}
     </>
   )
 }

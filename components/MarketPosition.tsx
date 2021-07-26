@@ -125,8 +125,10 @@ export default function MarketPosition() {
                           <span className="text-th-fgd-2">{symbol}</span>
                         </div>
                       </div>
-                      <div className="pb-2">
-                        <div className="text-th-fgd-3 tiny-text">Deposits</div>
+                      <div className="pb-3">
+                        <div className="pb-0.5 text-th-fgd-3 text-xs">
+                          Deposits
+                        </div>
                         <div className={`text-th-fgd-1`}>
                           {selectedMangoAccount
                             ? selectedMangoAccount
@@ -141,8 +143,10 @@ export default function MarketPosition() {
                             : (0).toFixed(tokenPrecision[symbol])}
                         </div>
                       </div>
-                      <div className="pb-2">
-                        <div className="text-th-fgd-3 tiny-text">Borrows</div>
+                      <div className="pb-3">
+                        <div className="pb-0.5 text-th-fgd-3 text-xs">
+                          Borrows
+                        </div>
                         <div className={`text-th-fgd-1`}>
                           {selectedMangoAccount
                             ? selectedMangoAccount
@@ -160,7 +164,7 @@ export default function MarketPosition() {
                       {/* <div className="w-1/4">
                           <Tooltip content="Maximum available with leverage">
                             <div
-                              className={`cursor-help font-normal pb-0.5 text-th-fgd-3 tiny-text default-transition hover:border-th-bkg-2 hover:text-th-fgd-3`}
+                              className={`cursor-help font-normal pb-0.5 text-th-fgd-3 text-xs default-transition hover:border-th-bkg-2 hover:text-th-fgd-3`}
                             >
                               Available
                             </div>
@@ -170,7 +174,7 @@ export default function MarketPosition() {
                       <div>
                         <Tooltip content="Deposit APY and Borrow APR">
                           <div
-                            className={`cursor-help font-normal pb-0.5 text-th-fgd-3 tiny-text default-transition hover:border-th-bkg-2 hover:text-th-fgd-3`}
+                            className={`cursor-help font-normal pb-0.5 text-th-fgd-3 text-xs default-transition hover:border-th-bkg-2 hover:text-th-fgd-3`}
                           >
                             Interest Rates
                           </div>

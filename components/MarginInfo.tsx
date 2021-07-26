@@ -44,26 +44,22 @@ export default function MarginInfo() {
               </div>
               <div className="text-th-fgd-1">{leverage.toFixed(2)}x</div>
             </div>
-            <div className="flex justify-between pt-2 pb-2">
-              <Tooltip content="Leverage">
-                <div className="font-normal text-th-fgd-3 leading-4">
-                  Total Assets Value
-                </div>
-              </Tooltip>
-              <div className="text-th-fgd-1">
+            <div className={`flex justify-between pt-2 pb-2`}>
+              <div className="font-normal text-th-fgd-3 leading-4">
+                Total Assets Value
+              </div>
+              <div className={`text-th-fgd-1`}>
                 $
                 {mangoAccount
                   ? mangoAccount.getAssetsVal(mangoGroup, mangoCache).toFixed(2)
                   : 0}
               </div>
             </div>
-            <div className="flex justify-between pt-2 pb-2">
-              <Tooltip content="Leverage">
-                <div className="font-normal text-th-fgd-3 leading-4">
-                  Total Liabilities Value
-                </div>
-              </Tooltip>
-              <div className="text-th-fgd-1">
+            <div className={`flex justify-between pt-2 pb-2`}>
+              <div className="font-normal text-th-fgd-3 leading-4">
+                Total Liabilities Value
+              </div>
+              <div className={`text-th-fgd-1`}>
                 $
                 {mangoAccount
                   ? mangoAccount.getLiabsVal(mangoGroup, mangoCache).toFixed(2)
