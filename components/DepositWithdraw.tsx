@@ -5,27 +5,13 @@ import { DotsHorizontalIcon } from '@heroicons/react/outline'
 import FloatingElement from './FloatingElement'
 import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
-import {
-  abbreviateAddress,
-  divideBnToNumber,
-  i80f48ToPercent,
-  tokenPrecision,
-} from '../utils/index'
 import DepositModal from './DepositModal'
 import WithdrawModal from './WithdrawModal'
 // import BorrowModal from './BorrowModal'
 import Button from './Button'
-import Tooltip from './Tooltip'
 import AccountsModal from './AccountsModal'
 
 export default function MarginBalances() {
-  const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
-  const selectedMangoGroupConfig = useMangoStore(
-    (s) => s.selectedMangoGroup.config
-  )
-  const selectedMangoGroupCache = useMangoStore(
-    (s) => s.selectedMangoGroup.cache
-  )
   const selectedMangoAccount = useMangoStore(
     (s) => s.selectedMangoAccount.current
   )
@@ -58,24 +44,10 @@ export default function MarginBalances() {
   return (
     <>
       <FloatingElement>
-        <div className="flex justify-between pb-5">
-          <div className="w-8 h-8" />
-          <div className="flex flex-col items-center">
-            <ElementTitle noMarignBottom>Mango Account</ElementTitle>
-            {selectedMangoAccount ? (
-              <Link href={'/account'}>
-                <a className="pt-1 text-th-fgd-3 text-xs underline hover:no-underline">
-                  {selectedMangoAccount?.publicKey.toString()}
-                </a>
-              </Link>
-            ) : connected ? (
-              <div className="pt-1 text-th-fgd-3">
-                Deposit funds to get started
-              </div>
-            ) : null}
-          </div>
-          <Menu>
-            <div className="relative h-full">
+        <div className="flex justify-center">
+          <ElementTitle noMarignBottom>Mango Account</ElementTitle>
+          <div className="absolute right-0 pr-4">
+            <Menu>
               <Menu.Button
                 className="flex items-center justify-center rounded-full bg-th-bkg-3 w-8 h-8 hover:text-th-primary focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                 disabled={!connected}
@@ -118,10 +90,23 @@ export default function MarginBalances() {
                   </button>
                 </Menu.Item> */}
               </Menu.Items>
-            </div>
-          </Menu>
+            </Menu>
+          </div>
         </div>
-        <div className={`flex justify-center items-center`}>
+        <div className="flex justify-center mt-2">
+          {selectedMangoAccount ? (
+            <Link href={'/account'}>
+              <a className="pt-1 text-th-fgd-3 text-xs underline hover:no-underline">
+                {selectedMangoAccount?.publicKey.toString()}
+              </a>
+            </Link>
+          ) : connected ? (
+            <div className="pt-1 text-th-fgd-3">
+              Deposit funds to get started
+            </div>
+          ) : null}
+        </div>
+        <div className="flex justify-center items-center mt-2">
           <Button
             onClick={() => setShowDepositModal(true)}
             className="w-1/2"
@@ -149,10 +134,6 @@ export default function MarginBalances() {
           onClose={handleCloseWithdraw}
         />
       )}
-
-      {/* {showBorrowModal && (
-        <BorrowModal isOpen={showBorrowModal} onClose={handleCloseBorrow} />
-      )} */}
       {showAccountsModal ? (
         <AccountsModal
           onClose={handleCloseAccounts}
