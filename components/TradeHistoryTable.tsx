@@ -37,10 +37,29 @@ const TradeHistoryTable = () => {
         <div className="align-middle inline-block min-w-full sm:px-6 lg:px-8">
           {tradeHistory && tradeHistory.length ? (
             <div className="shadow overflow-hidden border-b border-th-bkg-2">
-              <div className="text-xs text-th-fgd-4">For selected market</div>
               <Table className="min-w-full divide-y divide-th-bkg-2">
                 <Thead>
                   <Tr className="text-th-fgd-3 text-xs">
+                    <Th
+                      scope="col"
+                      className={`px-6 py-3 text-left font-normal`}
+                    >
+                      <LinkButton
+                        className="flex items-center no-underline"
+                        onClick={() => requestSort('market')}
+                      >
+                        Market
+                        <ArrowSmDownIcon
+                          className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                            sortConfig?.key === 'market'
+                              ? sortConfig.direction === 'ascending'
+                                ? 'transform rotate-180'
+                                : 'transform rotate-360'
+                              : null
+                          }`}
+                        />
+                      </LinkButton>
+                    </Th>
                     <Th scope="col" className="px-6 py-3 text-left font-normal">
                       <LinkButton
                         className="flex items-center no-underline"
@@ -170,6 +189,20 @@ const TradeHistoryTable = () => {
                         ${index % 2 === 0 ? `bg-th-bkg-3` : `bg-th-bkg-2`}
                       `}
                     >
+                      <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
+                        <div className="flex items-center">
+                          <img
+                            alt=""
+                            width="20"
+                            height="20"
+                            src={`/assets/icons/${trade.marketName
+                              .split(/-|\//)[0]
+                              .toLowerCase()}.svg`}
+                            className={`mr-2.5`}
+                          />
+                          <div>{trade.marketName}</div>
+                        </div>
+                      </Td>
                       <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
                         <SideBadge side={trade.side} />
                       </Td>

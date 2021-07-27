@@ -134,6 +134,8 @@ const PositionsTable = () => {
                       const perpMarket = allMarkets[
                         marketConfig.publicKey.toString()
                       ] as PerpMarket
+                      console.log('perp account: ', perpAccount)
+                      console.log('perp market: ', perpMarket)
 
                       return (
                         <Tr
