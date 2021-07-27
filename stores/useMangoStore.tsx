@@ -299,7 +299,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
           const mangoCache = await mangoGroup.loadCache(DEFAULT_CONNECTION)
           const allMarketConfigs = getAllMarkets(mangoGroupConfig)
           const allMarketPks = allMarketConfigs.map((m) => m.publicKey)
-
+          console.log('mango group: ', mangoGroup)
           const allMarketAccountInfos = await getMultipleAccounts(
             DEFAULT_CONNECTION,
             allMarketPks

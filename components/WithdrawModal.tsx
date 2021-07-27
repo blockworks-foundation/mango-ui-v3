@@ -65,7 +65,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   const [maxButtonTransition, setMaxButtonTransition] = useState(false)
 
   const actions = useMangoStore((s) => s.actions)
-  const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const selectedMangoAccount = useMangoStore(
     (s) => s.selectedMangoAccount.current
   )
@@ -77,34 +77,33 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
     () => tokens.find((t) => t.symbol === withdrawTokenSymbol),
     [withdrawTokenSymbol, tokens]
   )
-  const tokenIndex = selectedMangoGroup.getTokenIndex(token.mintKey)
+  const tokenIndex = mangoGroup.getTokenIndex(token.mintKey)
 
   useEffect(() => {
-    if (!selectedMangoGroup || !selectedMangoAccount || !withdrawTokenSymbol)
-      return
+    if (!mangoGroup || !selectedMangoAccount || !withdrawTokenSymbol) return
 
-    const mintDecimals = selectedMangoGroup.tokens[tokenIndex].decimals
+    const mintDecimals = mangoGroup.tokens[tokenIndex].decimals
     const deposits = selectedMangoAccount.getUiDeposit(
       mangoCache.rootBankCache[tokenIndex],
-      selectedMangoGroup,
+      mangoGroup,
       tokenIndex
     )
     const borrows = selectedMangoAccount.getUiBorrow(
       mangoCache.rootBankCache[tokenIndex],
-      selectedMangoGroup,
+      mangoGroup,
       tokenIndex
     )
 
     const maxValForSelectedAsset = getDepositsForSelectedAsset().mul(
-      selectedMangoGroup.getPrice(tokenIndex, mangoCache) || ONE_I80F48
+      mangoGroup.getPrice(tokenIndex, mangoCache) || ONE_I80F48
     )
 
     const currentAssetsVal = selectedMangoAccount
-      .getAssetsVal(selectedMangoGroup, mangoCache, 'Init')
+      .getAssetsVal(mangoGroup, mangoCache, 'Init')
       .sub(maxValForSelectedAsset)
 
     const currentLiabsVal = selectedMangoAccount.getLiabsVal(
-      selectedMangoGroup,
+      mangoGroup,
       mangoCache,
       'Init'
     )
@@ -117,7 +116,9 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
     const amountToWithdraw = includeBorrow
       ? liabsAvail
           .div(
-            selectedMangoGroup.getPrice(tokenIndex, mangoCache) || ONE_I80F48
+            (mangoGroup.getPrice(tokenIndex, mangoCache) || ONE_I80F48).mul(
+              mangoGroup.spotMarkets[tokenIndex].initLiabWeight
+            )
           )
           .add(getDepositsForSelectedAsset())
       : getDepositsForSelectedAsset()
@@ -152,18 +153,10 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
       .div(I80F48.fromNumber(Math.pow(10, mintDecimals)))
       .div(mangoCache.rootBankCache[tokenIndex].borrowIndex)
 
-    const assetsVal = simulation.getAssetsVal(
-      selectedMangoGroup,
-      mangoCache,
-      'Init'
-    )
-    const liabsVal = simulation.getLiabsVal(
-      selectedMangoGroup,
-      mangoCache,
-      'Init'
-    )
+    const assetsVal = simulation.getAssetsVal(mangoGroup, mangoCache, 'Init')
+    const liabsVal = simulation.getLiabsVal(mangoGroup, mangoCache, 'Init')
     // const collateralRatio = simulation.getCollateralRatio(
-    //   selectedMangoGroup,
+    //   mangoGroup,
     //   prices
     // )
     // const leverage = 1 / Math.max(0, collateralRatio - 1)
@@ -177,7 +170,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
     inputAmount,
     tokenIndex,
     selectedMangoAccount,
-    selectedMangoGroup,
+    mangoGroup,
     mangoCache,
   ])
 
@@ -186,7 +179,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
 
     withdraw({
       amount: Number(inputAmount),
-      token: selectedMangoGroup.tokens[tokenIndex].mint,
+      token: mangoGroup.tokens[tokenIndex].mint,
       allowBorrow: includeBorrow,
     })
       .then((txid: string) => {
@@ -206,6 +199,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
         console.error('Error withdrawing:', err)
         notify({
           title: 'Could not perform withdraw',
+          description: err.message,
           txid: err.txid,
           type: 'error',
         })
@@ -222,7 +216,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   const getDepositsForSelectedAsset = (): I80F48 => {
     return selectedMangoAccount.getUiDeposit(
       mangoCache.rootBankCache[tokenIndex],
-      selectedMangoGroup,
+      mangoGroup,
       tokenIndex
     )
   }
@@ -394,7 +388,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                     {selectedMangoAccount
                       .getUiDeposit(
                         mangoCache.rootBankCache[tokenIndex],
-                        selectedMangoGroup,
+                        mangoGroup,
                         tokenIndex
                       )
                       .toFixed(tokenPrecision[withdrawTokenSymbol])}
