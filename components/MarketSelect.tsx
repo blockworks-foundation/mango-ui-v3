@@ -53,7 +53,7 @@ const MarketSelect = () => {
 
   return (
     <>
-      <StyledMarketSelectWrapper className="bg-th-bkg-3 flex h-10 overflow-x-auto">
+      <StyledMarketSelectWrapper className="bg-th-bkg-3 flex h-10">
         <StyledMarketTypeToggleWrapper className="flex items-center pl-6 md:pl-9 pr-1">
           <LinkButton
             className="font-normal text-th-fgd-2 text-xs"
