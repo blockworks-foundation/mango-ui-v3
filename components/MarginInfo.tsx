@@ -66,7 +66,7 @@ export default function MarginInfo() {
                   : 0}
               </div>
             </div>
-            {/* <div className={`flex justify-between pt-2 pb-2`}>
+            <div className={`flex justify-between pt-2 pb-2`}>
               <div className="font-normal text-th-fgd-3 leading-4">
                 Maint Health
               </div>
@@ -89,7 +89,7 @@ export default function MarginInfo() {
                       .toFixed(2)
                   : 0}
               </div>
-            </div> */}
+            </div>
             {/* <div className="flex justify-between pt-2 pb-2">
               <Tooltip content="Must be above 0% to borrow funds">
                 <div className="cursor-help font-normal text-th-fgd-3 border-b border-th-fgd-3 border-dashed border-opacity-20 leading-4 default-transition hover:border-th-bkg-2 hover:text-th-fgd-3">

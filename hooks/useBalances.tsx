@@ -1,8 +1,7 @@
 import { Balances } from '../@types/types'
-import { nativeToUi } from '@blockworks-foundation/mango-client'
+import { nativeToUi, QUOTE_INDEX } from '@blockworks-foundation/mango-client'
 import useMangoStore from '../stores/useMangoStore'
 import { sumBy } from 'lodash'
-import { QUOTE_INDEX } from '@blockworks-foundation/mango-client/lib/src/MangoGroup'
 import { I80F48 } from '@blockworks-foundation/mango-client/lib/src/fixednum'
 
 export function useBalances(): Balances[] {
