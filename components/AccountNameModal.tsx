@@ -1,5 +1,5 @@
 import { FunctionComponent, useState } from 'react'
-import useMangoStore from '../stores/useMangoStore'
+import useMangoStore, { mangoClient } from '../stores/useMangoStore'
 import {
   ExclamationCircleIcon,
   InformationCircleIcon,
@@ -9,9 +9,6 @@ import Button from './Button'
 import Modal from './Modal'
 import { ElementTitle } from './styles'
 import Tooltip from './Tooltip'
-import useConnection from '../hooks/useConnection'
-import { PublicKey } from '@solana/web3.js'
-// import { addMarginAccountInfo } from '../utils/mango'
 import { notify } from '../utils/notifications'
 
 interface AccountNameModalProps {
@@ -27,34 +24,35 @@ const AccountNameModal: FunctionComponent<AccountNameModalProps> = ({
 }) => {
   const [name, setName] = useState(accountName || '')
   const [invalidNameMessage, setInvalidNameMessage] = useState('')
-  const wallet = useMangoStore.getState().wallet.current
-  const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const actions = useMangoStore((s) => s.actions)
-  const { connection, programId } = useConnection()
 
   const submitName = async () => {
-    // addMarginAccountInfo(
-    //   connection,
-    //   new PublicKey(programId),
-    //   selectedMangoGroup,
-    //   mangoAccount,
-    //   wallet,
-    //   name
-    // )
-    //   .then(() => {
-    //     actions.fetchMarginAccounts()
-    //     onClose()
-    //   })
-    //   .catch((err) => {
-    //     console.warn('Error setting account name:', err)
-    //     notify({
-    //       message: 'Could not set account name',
-    //       description: `${err}`,
-    //       txid: err.txid,
-    //       type: 'error',
-    //     })
-    //   })
+    const wallet = useMangoStore.getState().wallet.current
+
+    try {
+      const txid = await mangoClient.addMangoAccountInfo(
+        mangoGroup,
+        mangoAccount,
+        wallet,
+        name
+      )
+      actions.fetchMangoAccounts()
+      onClose()
+      notify({
+        title: 'Account name updated',
+        txid,
+      })
+    } catch (err) {
+      console.warn('Error setting account name:', err)
+      notify({
+        title: 'Could not set account name',
+        description: `${err}`,
+        txid: err.txid,
+        type: 'error',
+      })
+    }
   }
 
   const validateNameInput = () => {

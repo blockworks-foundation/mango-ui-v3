@@ -26,7 +26,6 @@ import AccountOverview from '../components/account-page/AccountOverview'
 import AccountNameModal from '../components/AccountNameModal'
 import Button from '../components/Button'
 import EmptyState from '../components/EmptyState'
-import { MangoAccount } from '@blockworks-foundation/mango-client'
 
 const TABS = [
   'Overview',
@@ -37,15 +36,6 @@ const TABS = [
   'Orders',
   'Activity',
 ]
-
-export function getMarginInfoString(marginAccount: MangoAccount) {
-  return marginAccount?.info
-    ? String.fromCharCode(...marginAccount?.info).replaceAll(
-        String.fromCharCode(0),
-        ''
-      )
-    : ''
-}
 
 export default function Account() {
   const [activeTab, setActiveTab] = useState(TABS[0])
@@ -61,9 +51,6 @@ export default function Account() {
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const wallet = useMangoStore((s) => s.wallet.current)
-
-  const marginInfoString = getMarginInfoString(mangoAccount)
-  const [accountName, setAccountName] = useState(marginInfoString)
 
   const handleTabChange = (tabName) => {
     setActiveTab(tabName)
@@ -143,6 +130,7 @@ export default function Account() {
     })
     setPortfolio(portfolio.sort((a, b) => b.value - a.value))
   }, [perpAccounts])
+
   const handleCopyPublicKey = (code) => {
     setIsCopied(true)
     copyToClipboard(code)
@@ -169,7 +157,7 @@ export default function Account() {
             <>
               <div className="flex flex-col sm:flex-row sm:items-end pb-4 md:pb-0">
                 <h1 className={`font-semibold mr-3 text-th-fgd-1 text-2xl`}>
-                  {accountName ? accountName : 'Account'}
+                  {mangoAccount.name || 'Account'}
                 </h1>
                 <div className="flex items-center pb-0.5 text-th-fgd-3 ">
                   {abbreviateAddress(mangoAccount.publicKey)}
@@ -183,17 +171,15 @@ export default function Account() {
                 </div>
               </div>
               <div className="flex items-center">
-                {/* Re-instate when added to program code */}
-
-                {/* <Button
+                <Button
                   className="text-xs flex flex-grow items-center justify-center mr-2 pt-0 pb-0 h-8 pl-3 pr-3"
                   onClick={() => setShowNameModal(true)}
                 >
                   <div className="flex items-center">
                     <PencilIcon className="h-4 w-4 mr-1.5" />
-                    {accountName ? 'Edit Name' : 'Add Name'}
+                    {mangoAccount.name ? 'Edit Name' : 'Add Name'}
                   </div>
-                </Button> */}
+                </Button>
                 <a
                   className="bg-th-bkg-4 default-transition flex flex-grow font-bold h-8 items-center justify-center pl-3 pr-3 rounded-full text-th-fgd-1 text-xs hover:bg-th-bkg-3 hover:text-th-fgd-1 focus:outline-none"
                   href={`https://explorer.solana.com/address/${mangoAccount?.publicKey}`}
@@ -267,7 +253,7 @@ export default function Account() {
       ) : null}
       {showNameModal ? (
         <AccountNameModal
-          accountName={accountName}
+          accountName={mangoAccount.name}
           isOpen={showNameModal}
           onClose={handleCloseNameModal}
         />

@@ -81,7 +81,7 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
         !showNewAccountForm ? (
           <>
             <Modal.Header>
-              <ElementTitle noMarignBottom>Margin Accounts</ElementTitle>
+              <ElementTitle noMarignBottom>Mango Accounts</ElementTitle>
             </Modal.Header>
             <div className="flex items-center justify-between pb-3 text-th-fgd-1">
               <div className="font-semibold">
@@ -104,7 +104,7 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
               onChange={(acc) => handleMangoAccountChange(acc)}
             >
               <RadioGroup.Label className="sr-only">
-                Select a Margin Account
+                Select a Mango Account
               </RadioGroup.Label>
               <div className="space-y-2">
                 {mangoAccounts.map((account) => (
@@ -129,7 +129,8 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
                                 <CurrencyDollarIcon className="h-5 w-5 mr-2.5" />
                                 <div>
                                   <div className="pb-0.5">
-                                    {abbreviateAddress(account.publicKey)}
+                                    {account.name ||
+                                      abbreviateAddress(account.publicKey)}
                                   </div>
                                   {mangoGroup ? (
                                     <div className="text-th-fgd-3 text-xs">

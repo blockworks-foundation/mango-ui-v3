@@ -7,45 +7,26 @@ import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
 import DepositModal from './DepositModal'
 import WithdrawModal from './WithdrawModal'
-// import BorrowModal from './BorrowModal'
 import Button, { IconButton } from './Button'
 import AccountsModal from './AccountsModal'
 
 export default function MarginBalances() {
-  const selectedMangoAccount = useMangoStore(
-    (s) => s.selectedMangoAccount.current
-  )
+  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const loadingMangoAccount = useMangoStore(
     (s) => s.selectedMangoAccount.initialLoad
   )
   const connected = useMangoStore((s) => s.wallet.connected)
-
   const [showDepositModal, setShowDepositModal] = useState(false)
   const [showWithdrawModal, setShowWithdrawModal] = useState(false)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
-  // const [showBorrowModal, setShowBorrowModal] = useState(false)
-
-  const handleCloseDeposit = useCallback(() => {
-    setShowDepositModal(false)
-  }, [])
-
-  const handleCloseWithdraw = useCallback(() => {
-    setShowWithdrawModal(false)
-  }, [])
-
-  // const handleCloseBorrow = useCallback(() => {
-  //   setShowBorrowModal(false)
-  // }, [])
-
-  const handleCloseAccounts = useCallback(() => {
-    setShowAccountsModal(false)
-  }, [])
 
   return (
     <>
       <FloatingElement>
         <div className="flex justify-center">
-          <ElementTitle noMarignBottom>Mango Account</ElementTitle>
+          <ElementTitle noMarignBottom>
+            {mangoAccount.name || 'Mango Account'}
+          </ElementTitle>
           <div className="absolute right-0 pr-4">
             <Menu>
               <Menu.Button disabled={!connected}>
@@ -62,41 +43,15 @@ export default function MarginBalances() {
                     <div className="pl-2 text-left">Change Account</div>
                   </button>
                 </Menu.Item>
-                {/* <Menu.Item>
-                  <button
-                    className="flex flex-row font-normal items-center rounded-none w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-                    disabled={!selectedMangoAccount}
-                    onClick={() => setShowBorrowModal(true)}
-                  >
-                    <div className="pl-2 text-left">Borrow</div>
-                  </button>
-                </Menu.Item>
-                <Menu.Item>
-                  <button
-                    className="flex flex-row font-normal items-center rounded-none w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer focus:outline-none"
-                    onClick={() => setShowDepositModal(true)}
-                  >
-                    <div className="pl-2 text-left">Deposit</div>
-                  </button>
-                </Menu.Item>
-                <Menu.Item>
-                  <button
-                    className="flex flex-row font-normal items-center rounded-none w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-                    disabled={!selectedMangoAccount}
-                    onClick={() => setShowWithdrawModal(true)}
-                  >
-                    <div className="pl-2 text-left">Withdraw</div>
-                  </button>
-                </Menu.Item> */}
               </Menu.Items>
             </Menu>
           </div>
         </div>
         <div className="flex justify-center mt-2">
-          {selectedMangoAccount ? (
+          {mangoAccount ? (
             <Link href={'/account'}>
               <a className="pt-1 text-th-fgd-3 text-xs underline hover:no-underline">
-                {selectedMangoAccount?.publicKey.toString()}
+                {mangoAccount?.publicKey.toString()}
               </a>
             </Link>
           ) : connected ? (
@@ -116,26 +71,27 @@ export default function MarginBalances() {
           <Button
             onClick={() => setShowWithdrawModal(true)}
             className="ml-4 w-1/2"
-            disabled={
-              !connected || !selectedMangoAccount || loadingMangoAccount
-            }
+            disabled={!connected || !mangoAccount || loadingMangoAccount}
           >
             <span>Withdraw</span>
           </Button>
         </div>
       </FloatingElement>
       {showDepositModal && (
-        <DepositModal isOpen={showDepositModal} onClose={handleCloseDeposit} />
+        <DepositModal
+          isOpen={showDepositModal}
+          onClose={() => setShowDepositModal(false)}
+        />
       )}
       {showWithdrawModal && (
         <WithdrawModal
           isOpen={showWithdrawModal}
-          onClose={handleCloseWithdraw}
+          onClose={() => setShowWithdrawModal(false)}
         />
       )}
       {showAccountsModal ? (
         <AccountsModal
-          onClose={handleCloseAccounts}
+          onClose={() => setShowAccountsModal(false)}
           isOpen={showAccountsModal}
         />
       ) : null}
