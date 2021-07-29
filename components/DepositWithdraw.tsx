@@ -8,7 +8,7 @@ import useMangoStore from '../stores/useMangoStore'
 import DepositModal from './DepositModal'
 import WithdrawModal from './WithdrawModal'
 // import BorrowModal from './BorrowModal'
-import Button from './Button'
+import Button, { IconButton } from './Button'
 import AccountsModal from './AccountsModal'
 
 export default function MarginBalances() {
@@ -48,11 +48,10 @@ export default function MarginBalances() {
           <ElementTitle noMarignBottom>Mango Account</ElementTitle>
           <div className="absolute right-0 pr-4">
             <Menu>
-              <Menu.Button
-                className="flex items-center justify-center rounded-full bg-th-bkg-3 w-8 h-8 hover:text-th-primary focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-                disabled={!connected}
-              >
-                <DotsHorizontalIcon className="w-5 h-5" />
+              <Menu.Button disabled={!connected}>
+                <IconButton>
+                  <DotsHorizontalIcon className="w-5 h-5" />
+                </IconButton>
               </Menu.Button>
               <Menu.Items className="bg-th-bkg-1 mt-2 p-1 absolute right-0 shadow-lg outline-none rounded-md w-48 z-20">
                 <Menu.Item>

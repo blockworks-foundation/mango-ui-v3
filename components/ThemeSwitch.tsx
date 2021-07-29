@@ -3,6 +3,7 @@ import { useTheme } from 'next-themes'
 import { MoonIcon, SunIcon } from '@heroicons/react/outline'
 import DropMenu from './DropMenu'
 import { MangoIcon } from './icons'
+import { IconButton } from './Button'
 
 const THEMES = [
   { name: 'Light', icon: <SunIcon className="h-4 w-4" /> },
@@ -20,9 +21,7 @@ const ThemeSwitch = () => {
   return mounted ? (
     <DropMenu
       button={
-        <div className="flex items-center justify-center rounded-full bg-th-bkg-3 w-8 h-8">
-          {THEMES.find((t) => t.name === theme).icon}
-        </div>
+        <IconButton>{THEMES.find((t) => t.name === theme).icon}</IconButton>
       }
       buttonClassName="flex items-center justify-center hover:text-th-primary rounded-md focus:outline-none"
       value={theme}

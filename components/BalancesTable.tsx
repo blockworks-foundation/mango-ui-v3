@@ -81,7 +81,7 @@ const BalancesTable = () => {
             >
               <Table className={`min-w-full divide-y divide-th-bkg-2`}>
                 <Thead>
-                  <Tr className="text-th-fgd-3">
+                  <Tr className="text-th-fgd-3 text-xs">
                     <Th
                       scope="col"
                       className={`px-6 py-2 text-left font-normal`}
@@ -134,7 +134,7 @@ const BalancesTable = () => {
                       `}
                       >
                         <Td
-                          className={`flex items-center px-4 py-2.5 whitespace-nowrap text-sm text-th-fgd-1`}
+                          className={`flex items-center px-4 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
                         >
                           <img
                             alt=""
@@ -147,27 +147,27 @@ const BalancesTable = () => {
                           {balance.symbol}
                         </Td>
                         <Td
-                          className={`px-4 py-2.5 whitespace-nowrap text-sm text-th-fgd-1`}
+                          className={`px-4 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
                         >
                           {balance.marginDeposits.toFixed(tokenConfig.decimals)}
                         </Td>
                         <Td
-                          className={`px-4 py-2.5 whitespace-nowrap text-sm text-th-fgd-1`}
+                          className={`px-4 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
                         >
                           {balance.borrows.toFixed(tokenConfig.decimals)}
                         </Td>
                         <Td
-                          className={`px-4 py-2.5 whitespace-nowrap text-sm text-th-fgd-1`}
+                          className={`px-4 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
                         >
                           {balance.orders}
                         </Td>
                         <Td
-                          className={`px-4 py-2.5 whitespace-nowrap text-sm text-th-fgd-1`}
+                          className={`px-4 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
                         >
                           {balance.unsettled}
                         </Td>
                         <Td
-                          className={`px-4 py-2.5 whitespace-nowrap text-sm text-th-fgd-1`}
+                          className={`px-4 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
                         >
                           {balance.net.toFixed(tokenConfig.decimals)}
                         </Td>

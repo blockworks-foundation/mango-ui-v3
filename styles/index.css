@@ -15,6 +15,7 @@
   --bkg-1: theme('colors.light-theme["bkg-1"]');
   --bkg-2: theme('colors.light-theme["bkg-2"]');
   --bkg-3: theme('colors.light-theme["bkg-3"]');
+  --bkg-4: theme('colors.light-theme["bkg-4"]');
   --fgd-1: theme('colors.light-theme["fgd-1"]');
   --fgd-2: theme('colors.light-theme["fgd-2"]');
   --fgd-3: theme('colors.light-theme["fgd-3"]');
@@ -32,6 +33,7 @@
   --bkg-1: theme('colors.dark-theme["bkg-1"]');
   --bkg-2: theme('colors.dark-theme["bkg-2"]');
   --bkg-3: theme('colors.dark-theme["bkg-3"]');
+  --bkg-4: theme('colors.dark-theme["bkg-4"]');
   --fgd-1: theme('colors.dark-theme["fgd-1"]');
   --fgd-2: theme('colors.dark-theme["fgd-2"]');
   --fgd-3: theme('colors.dark-theme["fgd-3"]');
@@ -49,6 +51,7 @@
   --bkg-1: theme('colors.mango-theme["bkg-1"]');
   --bkg-2: theme('colors.mango-theme["bkg-2"]');
   --bkg-3: theme('colors.mango-theme["bkg-3"]');
+  --bkg-4: theme('colors.mango-theme["bkg-4"]');
   --fgd-1: theme('colors.mango-theme["fgd-1"]');
   --fgd-2: theme('colors.mango-theme["fgd-2"]');
   --fgd-3: theme('colors.mango-theme["fgd-3"]');

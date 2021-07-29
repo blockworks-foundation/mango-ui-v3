@@ -15,6 +15,7 @@ import BN from 'bn.js'
 import SideBadge from './SideBadge'
 import { useState } from 'react'
 import Loading from './Loading'
+import { usdFormatter } from '../utils'
 
 const PositionsTable = () => {
   const actions = useMangoStore((s) => s.actions)
@@ -95,9 +96,9 @@ const PositionsTable = () => {
             <div className="overflow-hidden border-b border-th-bkg-2 sm:rounded-m">
               <Table className="min-w-full divide-y divide-th-bkg-2">
                 <Thead>
-                  <Tr className="text-th-fgd-3">
+                  <Tr className="text-th-fgd-3 text-xs">
                     <Th scope="col" className="px-6 py-2 text-left font-normal">
-                      Perp Market
+                      Market
                     </Th>
                     <Th scope="col" className="px-2 py-2 text-left font-normal">
                       Side
@@ -144,7 +145,7 @@ const PositionsTable = () => {
                         ${index % 2 === 0 ? `bg-th-bkg-3` : `bg-th-bkg-2`}
                       `}
                         >
-                          <Td className="px-6 py-1 whitespace-nowrap text-sm text-th-fgd-1">
+                          <Td className="px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1">
                             <div className="flex items-center">
                               <img
                                 alt=""
@@ -156,7 +157,7 @@ const PositionsTable = () => {
                               <div>{marketConfig.name}</div>
                             </div>
                           </Td>
-                          <Td className="px-2 py-1 whitespace-nowrap text-sm text-th-fgd-1">
+                          <Td className="px-2 py-2 whitespace-nowrap text-sm text-th-fgd-1">
                             <SideBadge
                               side={
                                 perpAccount.basePosition.gt(new BN(0))
@@ -165,25 +166,28 @@ const PositionsTable = () => {
                               }
                             />
                           </Td>
-                          <Td className="px-2 py-1 whitespace-nowrap text-sm text-th-fgd-1">
+                          <Td className="px-2 py-2 whitespace-nowrap text-sm text-th-fgd-1">
                             {perpMarket.baseLotsToNumber(
                               perpAccount.basePosition
                             )}
                           </Td>
-                          <Td className="px-2 py-1 whitespace-nowrap text-sm text-th-fgd-1">
-                            {nativeI80F48ToUi(
-                              perpAccount.quotePosition,
-                              marketConfig.quoteDecimals
-                            ).toFixed()}
+                          <Td className="px-2 py-2 whitespace-nowrap text-sm text-th-fgd-1">
+                            {usdFormatter.format(
+                              +nativeI80F48ToUi(
+                                perpAccount.quotePosition,
+                                marketConfig.quoteDecimals
+                              )
+                            )}
                           </Td>
-                          <Td className="px-2 py-1 whitespace-nowrap text-sm text-th-fgd-1">
-                            $
-                            {nativeI80F48ToUi(
-                              perpAccount.getPnl(perpMarketInfo, price),
-                              marketConfig.quoteDecimals
-                            ).toFixed()}
+                          <Td className="px-2 py-2 whitespace-nowrap text-sm text-th-fgd-1">
+                            {usdFormatter.format(
+                              +nativeI80F48ToUi(
+                                perpAccount.getPnl(perpMarketInfo, price),
+                                marketConfig.quoteDecimals
+                              )
+                            )}
                           </Td>
-                          <Td className="px-2 py-1 whitespace-nowrap text-sm text-th-fgd-1">
+                          <Td className="px-2 py-2 whitespace-nowrap text-sm text-th-fgd-1">
                             {perpAccount
                               .getHealth(
                                 perpMarketInfo,
@@ -195,7 +199,7 @@ const PositionsTable = () => {
                               )
                               .toFixed(3)}
                           </Td>
-                          <Td className="px-6 py-1 whitespace-nowrap text-sm text-th-fgd-1">
+                          <Td className="px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1">
                             <div className="flex justify-end">
                               <Button
                                 onClick={() =>

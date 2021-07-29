@@ -15,16 +15,16 @@ const StyledMarketSelectWrapper = styled.div`
   }
 `
 
-const StyledMarketTypeToggleWrapper = styled.div`
-  background: rgba(255, 255, 255, 0.12);
-`
+// const StyledMarketTypeToggleWrapper = styled.div`
+//   background: rgba(255, 255, 255, 0.12);
+// `
 
 const StyledArrow = styled.div`
   width: 0;
   height: 0;
   border-top: 20px solid transparent;
   border-bottom: 20px solid transparent;
-  border-left: 20px solid rgba(255, 255, 255, 0.12);
+  // border-left: 20px solid rgba(255, 255, 255, 0.12);
   padding-right: 0.5rem;
 `
 
@@ -54,15 +54,15 @@ const MarketSelect = () => {
   return (
     <>
       <StyledMarketSelectWrapper className="bg-th-bkg-3 flex h-10">
-        <StyledMarketTypeToggleWrapper className="flex items-center pl-6 md:pl-9 pr-1">
+        <div className="bg-th-bkg-4 flex items-center pl-6 md:pl-9 pr-1">
           <LinkButton
             className="font-normal text-th-fgd-2 text-xs"
             onClick={() => setShowMarketsModal(true)}
           >
             MARKETS
           </LinkButton>
-        </StyledMarketTypeToggleWrapper>
-        <StyledArrow />
+        </div>
+        <StyledArrow className="border-l-[20px] border-th-bkg-4" />
         <div className="flex items-center justify-between w-full">
           <div className="flex items-center">
             {sortedMarkets

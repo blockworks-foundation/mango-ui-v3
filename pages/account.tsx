@@ -195,7 +195,7 @@ export default function Account() {
                   </div>
                 </Button> */}
                 <a
-                  className="border border-th-fgd-4 bg-th-bkg-2 default-transition flex flex-grow font-bold h-8 items-center justify-center pl-3 pr-3 rounded-md text-th-fgd-1 text-xs hover:bg-th-bkg-3 hover:text-th-fgd-1 focus:outline-none"
+                  className="bg-th-bkg-4 default-transition flex flex-grow font-bold h-8 items-center justify-center pl-3 pr-3 rounded-full text-th-fgd-1 text-xs hover:bg-th-bkg-3 hover:text-th-fgd-1 focus:outline-none"
                   href={`https://explorer.solana.com/address/${mangoAccount?.publicKey}`}
                   target="_blank"
                   rel="noopener noreferrer"
