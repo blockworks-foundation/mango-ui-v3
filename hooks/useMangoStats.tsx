@@ -63,10 +63,9 @@ const useMangoStats = () => {
             borrowInterest: rootBank
               .getBorrowRate(mangoGroup)
               .mul(I80F48.fromNumber(100)),
-            utilization:
-              totalDeposits > I80F48.fromNumber(0)
-                ? totalBorrows.div(totalDeposits)
-                : I80F48.fromNumber(0),
+            utilization: totalDeposits.gt(I80F48.fromNumber(0))
+              ? totalBorrows.div(totalDeposits)
+              : I80F48.fromNumber(0),
           }
         })
         setLatestStats(latestStats)

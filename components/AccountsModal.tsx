@@ -11,7 +11,7 @@ import {
   MangoAccount,
   MangoCache,
   MangoGroup,
-  ZERO_I80F48,
+  // ZERO_I80F48,
 } from '@blockworks-foundation/mango-client'
 import { abbreviateAddress } from '../utils'
 import useLocalStorageState from '../hooks/useLocalStorageState'
@@ -187,17 +187,17 @@ const AccountInfo = ({
 }) => {
   const accountEquity = mangoAccount.computeValue(mangoGroup, mangoCache)
 
-  const leverage = accountEquity.gt(ZERO_I80F48)
-    ? mangoAccount
-        .getLiabsVal(mangoGroup, mangoCache)
-        .div(accountEquity)
-        .toFixed(2)
-    : '0.00'
+  // const leverage = accountEquity.gt(ZERO_I80F48)
+  //   ? mangoAccount
+  //       .getLiabsVal(mangoGroup, mangoCache)
+  //       .div(accountEquity)
+  //       .toFixed(2)
+  //   : '0.00'
 
   return (
     <div className="text-th-fgd-3 text-xs">
       ${accountEquity.toFixed(2)}
-      <span className="px-1.5 text-th-fgd-4">|</span>
+      {/* <span className="px-1.5 text-th-fgd-4">|</span>
       <span
         className={
           parseFloat(leverage) > 4
@@ -208,7 +208,7 @@ const AccountInfo = ({
         }
       >
         {leverage}x
-      </span>
+      </span> */}
     </div>
   )
 }

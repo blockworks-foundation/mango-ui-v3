@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   CurrencyDollarIcon,
+  DuplicateIcon,
   ExternalLinkIcon,
   LinkIcon,
+  PencilIcon,
 } from '@heroicons/react/outline'
 import {
   getTokenBySymbol,
@@ -12,7 +14,7 @@ import {
 } from '@blockworks-foundation/mango-client'
 import useMangoStore from '../stores/useMangoStore'
 import { useBalances } from '../hooks/useBalances'
-import { abbreviateAddress } from '../utils'
+import { abbreviateAddress, copyToClipboard } from '../utils'
 import PageBodyContainer from '../components/PageBodyContainer'
 import TopBar from '../components/TopBar'
 import AccountAssets from '../components/account-page/AccountAssets'
@@ -21,7 +23,10 @@ import AccountOrders from '../components/account-page/AccountOrders'
 import AccountHistory from '../components/account-page/AccountHistory'
 import AccountsModal from '../components/AccountsModal'
 import AccountOverview from '../components/account-page/AccountOverview'
+import AccountNameModal from '../components/AccountNameModal'
+import Button from '../components/Button'
 import EmptyState from '../components/EmptyState'
+import { MangoAccount } from '@blockworks-foundation/mango-client'
 
 const TABS = [
   'Overview',
@@ -33,18 +38,32 @@ const TABS = [
   'Activity',
 ]
 
+export function getMarginInfoString(marginAccount: MangoAccount) {
+  return marginAccount?.info
+    ? String.fromCharCode(...marginAccount?.info).replaceAll(
+        String.fromCharCode(0),
+        ''
+      )
+    : ''
+}
+
 export default function Account() {
   const [activeTab, setActiveTab] = useState(TABS[0])
   const [showAccountsModal, setShowAccountsModal] = useState(false)
   const [portfolio, setPortfolio] = useState([])
   const allMarkets = useMangoStore((s) => s.selectedMangoGroup.markets)
   const balances = useBalances()
+  const [showNameModal, setShowNameModal] = useState(false)
+  const [isCopied, setIsCopied] = useState(false)
   const connected = useMangoStore((s) => s.wallet.connected)
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const wallet = useMangoStore((s) => s.wallet.current)
+
+  const marginInfoString = getMarginInfoString(mangoAccount)
+  const [accountName, setAccountName] = useState(marginInfoString)
 
   const handleTabChange = (tabName) => {
     setActiveTab(tabName)
@@ -124,42 +143,77 @@ export default function Account() {
     })
     setPortfolio(portfolio.sort((a, b) => b.value - a.value))
   }, [perpAccounts])
+  const handleCopyPublicKey = (code) => {
+    setIsCopied(true)
+    copyToClipboard(code)
+  }
+  const handleCloseNameModal = useCallback(() => {
+    setShowNameModal(false)
+  }, [])
+
+  useEffect(() => {
+    if (isCopied) {
+      const timer = setTimeout(() => {
+        setIsCopied(false)
+      }, 1500)
+      return () => clearTimeout(timer)
+    }
+  }, [isCopied])
 
   return (
     <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
       <TopBar />
       <PageBodyContainer>
         <div className="flex flex-col sm:flex-row items-center justify-between pt-8 pb-3 sm:pb-6 md:pt-10">
-          <h1 className={`text-th-fgd-1 text-2xl font-semibold`}>Account</h1>
           {mangoAccount ? (
-            <div className="divide-x divide-th-fgd-4 flex justify-center w-full pt-4 sm:pt-0 sm:justify-end">
-              <div className="pr-4 text-xs text-th-fgd-1">
-                <div className="pb-0.5 text-2xs text-th-fgd-3">Owner</div>
-                <a
-                  className="default-transition flex items-center text-th-fgd-2"
-                  href={`https://explorer.solana.com/address/${mangoAccount?.owner}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <span>{abbreviateAddress(mangoAccount?.owner)}</span>
-                  <ExternalLinkIcon className={`h-3 w-3 ml-1`} />
-                </a>
-              </div>
-              <div className="pl-4 text-xs text-th-fgd-1">
-                <div className="pb-0.5 text-2xs text-th-fgd-3">
-                  Margin Account
+            <>
+              <div className="flex flex-col sm:flex-row sm:items-end pb-4 md:pb-0">
+                <h1 className={`font-semibold mr-3 text-th-fgd-1 text-2xl`}>
+                  {accountName ? accountName : 'Account'}
+                </h1>
+                <div className="flex items-center pb-0.5 text-th-fgd-3 ">
+                  {abbreviateAddress(mangoAccount.publicKey)}
+                  <DuplicateIcon
+                    className="cursor-pointer default-transition h-4 w-4 ml-1.5 hover:text-th-fgd-1"
+                    onClick={() => handleCopyPublicKey(mangoAccount.publicKey)}
+                  />
+                  {isCopied ? (
+                    <div className="ml-2 text-th-fgd-2 text-xs">Copied!</div>
+                  ) : null}
                 </div>
+              </div>
+              <div className="flex items-center">
+                {/* Re-instate when added to program code */}
+
+                {/* <Button
+                  className="text-xs flex flex-grow items-center justify-center mr-2 pt-0 pb-0 h-8 pl-3 pr-3"
+                  onClick={() => setShowNameModal(true)}
+                >
+                  <div className="flex items-center">
+                    <PencilIcon className="h-4 w-4 mr-1.5" />
+                    {accountName ? 'Edit Name' : 'Add Name'}
+                  </div>
+                </Button> */}
                 <a
-                  className="default-transition flex items-center text-th-fgd-2"
+                  className="border border-th-fgd-4 bg-th-bkg-2 default-transition flex flex-grow font-bold h-8 items-center justify-center pl-3 pr-3 rounded-md text-th-fgd-1 text-xs hover:bg-th-bkg-3 hover:text-th-fgd-1 focus:outline-none"
                   href={`https://explorer.solana.com/address/${mangoAccount?.publicKey}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <span>{abbreviateAddress(mangoAccount?.publicKey)}</span>
-                  <ExternalLinkIcon className={`h-3 w-3 ml-1`} />
+                  <span>Explorer</span>
+                  <ExternalLinkIcon className={`h-4 w-4 ml-1.5`} />
                 </a>
+                <Button
+                  className="text-xs flex flex-grow items-center justify-center ml-2 pt-0 pb-0 h-8 pl-3 pr-3"
+                  onClick={() => setShowAccountsModal(true)}
+                >
+                  <div className="flex items-center">
+                    <CurrencyDollarIcon className="h-4 w-4 mr-1.5" />
+                    Accounts
+                  </div>
+                </Button>
               </div>
-            </div>
+            </>
           ) : null}
         </div>
         <div className="bg-th-bkg-2 overflow-none p-6 rounded-lg">
@@ -209,6 +263,13 @@ export default function Account() {
         <AccountsModal
           onClose={handleCloseAccounts}
           isOpen={showAccountsModal}
+        />
+      ) : null}
+      {showNameModal ? (
+        <AccountNameModal
+          accountName={accountName}
+          isOpen={showNameModal}
+          onClose={handleCloseNameModal}
         />
       ) : null}
     </div>

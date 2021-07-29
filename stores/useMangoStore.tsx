@@ -37,7 +37,7 @@ export const ENDPOINTS: EndpointInfo[] = [
   },
   {
     name: 'devnet',
-    url: 'https://api.devnet.solana.com',
+    url: 'https://mango.devnet.rpcpool.com',
     websocket: 'https://api.devnet.solana.com',
     custom: false,
   },
@@ -56,7 +56,7 @@ export const WEBSOCKET_CONNECTION = new Connection(
   'processed' as Commitment
 )
 
-const DEFAULT_MANGO_GROUP_NAME = 'mango_test_v3.8'
+const DEFAULT_MANGO_GROUP_NAME = 'devnet.0'
 const DEFAULT_MANGO_GROUP_CONFIG = Config.ids().getGroup(
   CLUSTER,
   DEFAULT_MANGO_GROUP_NAME
@@ -299,7 +299,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
           const mangoCache = await mangoGroup.loadCache(DEFAULT_CONNECTION)
           const allMarketConfigs = getAllMarkets(mangoGroupConfig)
           const allMarketPks = allMarketConfigs.map((m) => m.publicKey)
-
+          console.log('mango group: ', mangoGroup)
           const allMarketAccountInfos = await getMultipleAccounts(
             DEFAULT_CONNECTION,
             allMarketPks
