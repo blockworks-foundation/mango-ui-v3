@@ -80,7 +80,7 @@ export default function MarketMenuItem({ menuTitle = '', linksArray = [] }) {
             className="flex flex-col h-10"
           >
             <Popover.Button
-              className="flex items-center px-2.5 h-10 text-th-fgd-3 hover:text-th-primary focus:outline-none"
+              className="flex items-center px-3 h-10 text-th-fgd-3 hover:text-th-primary focus:outline-none"
               ref={buttonRef}
               onClick={() => handleClick(open)}
             >

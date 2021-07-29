@@ -298,3 +298,8 @@ export async function getOrderBookAccountInfos(
 
   return await getMultipleAccounts(DEFAULT_CONNECTION, orderBookPks)
 }
+
+export const usdFormatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+})

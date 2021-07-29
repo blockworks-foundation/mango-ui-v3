@@ -106,11 +106,14 @@ export default function MarginInfo() {
               </div>
             </div> */}
           </div>
-          <div className="border border-th-bkg-3 mt-4 p-4 rounded">
+          <div className="border border-th-bkg-4 mt-4 p-4 rounded">
             <div className="flex flex-col">
               <div className="flex justify-between">
                 <div className="flex items-center">
-                  <HeartIcon className="h-5 w-5" aria-hidden="true" />
+                  <HeartIcon
+                    className="h-5 w-5 text-th-primary"
+                    aria-hidden="true"
+                  />
                   <span className="ml-2">Health Ratio</span>
                 </div>
                 <div className="text-right">{maintHealth.toFixed(2)}%</div>
@@ -121,7 +124,13 @@ export default function MarginInfo() {
                     style={{
                       width: `${maintHealth}%`,
                     }}
-                    className="flex rounded bg-th-primary"
+                    className={`flex rounded ${
+                      maintHealth > 50
+                        ? 'bg-th-green'
+                        : maintHealth <= 50 && maintHealth > 24
+                        ? 'bg-th-orange'
+                        : 'bg-th-red'
+                    }`}
                   ></div>
                 </div>
               </div>

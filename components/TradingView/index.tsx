@@ -58,7 +58,10 @@ const TVChartContainer = () => {
   useEffect(() => {
     const widgetOptions: ChartingLibraryWidgetOptions = {
       // TODO: stop trading view from not crash looping on perp
-      symbol: selectedMarketConfig.kind == "perp" ? "BTC/USDC" : selectedMarketConfig.name,
+      symbol:
+        selectedMarketConfig.kind == 'perp'
+          ? 'BTC/USDC'
+          : selectedMarketConfig.name,
       // BEWARE: no trailing slash is expected in feed URL
       // tslint:disable-next-line:no-any
       datafeed: new (window as any).Datafeeds.UDFCompatibleDatafeed(
@@ -102,7 +105,7 @@ const TVChartContainer = () => {
       loading_screen: { backgroundColor: 'rgba(0,0,0,0.1)' },
       overrides: {
         'paneProperties.background':
-          theme === 'Dark' ? '#2B2B2B' : theme === 'Light' ? '#fff' : '#1D1832',
+          theme === 'Dark' ? '#1B1B1F' : theme === 'Light' ? '#fff' : '#1D1832',
         'mainSeriesProperties.candleStyle.upColor':
           theme === 'Mango' ? '#AFD803' : '#5EBF4D',
         'mainSeriesProperties.candleStyle.downColor':

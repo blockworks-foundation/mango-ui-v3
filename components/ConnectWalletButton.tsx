@@ -44,8 +44,8 @@ const ConnectWalletButton = () => {
       {connected && wallet?.publicKey ? (
         <Menu>
           <div className="relative h-full">
-            <Menu.Button className="bg-th-fgd-4 flex items-center justify-center rounded-full w-10 h-10 text-th-fgd-2 focus:outline-none hover:bg-th-bkg-3 hover:text-th-fgd-3">
-              <ProfileIcon className="fill-current h-6 w-6" />
+            <Menu.Button className="bg-th-bkg-4 flex items-center justify-center rounded-full w-10 h-10 text-white focus:outline-none hover:bg-th-bkg-3 hover:text-th-fgd-3">
+              <ProfileIcon className="h-6 w-6" />
             </Menu.Button>
             <Menu.Items className="bg-th-bkg-1 mt-2 p-1 absolute right-0 shadow-lg outline-none rounded-md w-48 z-20">
               <Menu.Item>

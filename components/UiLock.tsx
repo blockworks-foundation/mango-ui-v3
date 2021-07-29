@@ -3,6 +3,7 @@ import { Transition } from '@headlessui/react'
 import useMangoStore from '../stores/useMangoStore'
 import ResetLayout from './ResetLayout'
 import Tooltip from './Tooltip'
+import { IconButton } from './Button'
 
 const UiLock = ({ className = '' }) => {
   const set = useMangoStore((s) => s.set)
@@ -36,16 +37,13 @@ const UiLock = ({ className = '' }) => {
           content={uiLocked ? 'Unlock Layout' : 'Lock Layout'}
           className="text-xs py-1"
         >
-          <div
-            onClick={handleClick}
-            className="flex items-center justify-center rounded-full bg-th-bkg-3 w-8 h-8 default-transition hover:text-th-primary focus:outline-none"
-          >
+          <IconButton onClick={handleClick}>
             {uiLocked ? (
               <LockClosedIcon className="w-4 h-4" />
             ) : (
               <LockOpenIcon className="w-4 h-4 animate-bounce" />
             )}
-          </div>
+          </IconButton>
         </Tooltip>
       </div>
     </div>

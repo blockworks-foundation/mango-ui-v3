@@ -162,10 +162,10 @@ export default function AccountAssets() {
                   {balances.map((bal, i) => {
                     const token = getTokenBySymbol(groupConfig, bal.symbol)
                     const tokenIndex = mangoGroup.getTokenIndex(token.mintKey)
-                    console.log(
-                      'price cache',
-                      mangoCache.priceCache[tokenIndex]
-                    )
+                    // console.log(
+                    //   'price cache',
+                    //   mangoCache.priceCache[tokenIndex]
+                    // )
 
                     return (
                       <Tr

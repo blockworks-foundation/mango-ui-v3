@@ -58,15 +58,15 @@ const TopBar = () => {
               </div>
               {mangoAccount ? (
                 <div className="pl-3">
-                  <Button
-                    className="pb-1 pt-1 pl-2 pr-2 text-xs"
+                  <button
+                    className="border border-th-bkg-4 py-1 px-2 rounded text-xs focus:outline-none hover:border-th-fgd-4"
                     onClick={() => setShowAccountsModal(true)}
                   >
                     <div className="font-normal text-th-primary tiny-text">
                       Account
                     </div>
                     {abbreviateAddress(mangoAccount.publicKey)}
-                  </Button>
+                  </button>
                 </div>
               ) : null}
               <div className="flex">

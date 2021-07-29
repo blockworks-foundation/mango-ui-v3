@@ -374,15 +374,15 @@ export default function TradeForm() {
                 onClick={onSubmit}
                 className={`${
                   !disabledTradeButton
-                    ? 'border-th-green hover:border-th-green-dark'
-                    : undefined
+                    ? 'bg-th-bkg-2 border border-th-green hover:border-th-green-dark'
+                    : 'border border-th-bkg-4'
                 } text-th-green hover:text-th-fgd-1 hover:bg-th-green-dark flex-grow`}
               >
-                {`${
-                  baseSize > 0
-                    ? 'Buy ' + baseSize
-                    : 'Set BUY bid >= ' + minOrderSize
-                } ${marketConfig.baseSymbol}`}
+                {`${baseSize > 0 ? 'Buy ' + baseSize : 'Buy '} ${
+                  marketConfig.name.includes('PERP')
+                    ? marketConfig.name
+                    : marketConfig.baseSymbol
+                }`}
               </Button>
             ) : (
               <Button
@@ -390,15 +390,15 @@ export default function TradeForm() {
                 onClick={onSubmit}
                 className={`${
                   !disabledTradeButton
-                    ? 'border-th-red hover:border-th-red-dark'
-                    : undefined
+                    ? 'bg-th-bkg-2 border border-th-red hover:border-th-red-dark'
+                    : 'border border-th-bkg-4'
                 } text-th-red hover:text-th-fgd-1 hover:bg-th-red-dark flex-grow`}
               >
-                {`${
-                  baseSize > 0
-                    ? 'Sell ' + baseSize
-                    : 'Set SELL bid >= ' + minOrderSize
-                } ${marketConfig.baseSymbol}`}
+                {`${baseSize > 0 ? 'Sell ' + baseSize : 'Sell '} ${
+                  marketConfig.name.includes('PERP')
+                    ? marketConfig.name
+                    : marketConfig.baseSymbol
+                }`}
               </Button>
             )
           ) : (
