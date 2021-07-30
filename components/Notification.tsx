@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import {
   CheckCircleIcon,
+  ExternalLinkIcon,
   InformationCircleIcon,
   XCircleIcon,
 } from '@heroicons/react/outline'
@@ -54,57 +55,56 @@ const Notification = ({ type, title, description, txid }) => {
     <div
       className={`max-w-sm w-full bg-th-bkg-3 shadow-lg rounded-md mt-2 pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden`}
     >
-      <div className={`p-4`}>
-        <div className={`flex items-center`}>
-          <div className={`flex-shrink-0`}>
-            {type === 'success' ? (
-              <CheckCircleIcon className={`text-th-green h-9 w-9 mr-1`} />
-            ) : null}
-            {type === 'info' && (
-              <XCircleIcon className={`text-th-primary h-9 w-9 mr-1`} />
-            )}
-            {type === 'error' && (
-              <InformationCircleIcon className={`text-th-red h-9 w-9 mr-1`} />
-            )}
-          </div>
-          <div className={`ml-2 w-0 flex-1`}>
-            <div className={`text-lg text-th-fgd-1`}>{title}</div>
-            {description ? (
-              <p className={`mt-0.5 text-base text-th-fgd-2`}>{description}</p>
-            ) : null}
-            {txid ? (
-              <a
-                href={'https://explorer.solana.com/tx/' + txid}
-                className="text-th-primary"
-                target="_blank"
-                rel="noreferrer"
-              >
-                View transaction {txid.slice(0, 8)}...
-                {txid.slice(txid.length - 8)}
-              </a>
-            ) : null}
-          </div>
-          <div className={`ml-4 flex-shrink-0 self-start flex`}>
-            <button
-              onClick={() => setShowNotification(false)}
-              className={`bg-th-bkg-3 rounded-md inline-flex text-fgd-3 hover:text-th-fgd-4 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-th-primary`}
+      <div className={`flex items-center p-4 relative`}>
+        <div className={`flex-shrink-0`}>
+          {type === 'success' ? (
+            <CheckCircleIcon className={`text-th-green h-7 w-7 mr-1`} />
+          ) : null}
+          {type === 'info' && (
+            <XCircleIcon className={`text-th-primary h-7 w-7 mr-1`} />
+          )}
+          {type === 'error' && (
+            <InformationCircleIcon className={`text-th-red h-7 w-7 mr-1`} />
+          )}
+        </div>
+        <div className={`ml-2 w-0 flex-1`}>
+          <div className={`font-bold text-base text-th-fgd-1`}>{title}</div>
+          {description ? (
+            <p className={`mb-0 mt-0.5 text-th-fgd-3`}>{description}</p>
+          ) : null}
+          {txid ? (
+            <a
+              href={'https://explorer.solana.com/tx/' + txid}
+              className="block flex items-center mt-0.5 text-sm"
+              target="_blank"
+              rel="noreferrer"
             >
-              <span className={`sr-only`}>Close</span>
-              <svg
-                className={`h-5 w-5`}
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </button>
-          </div>
+              {txid.slice(0, 8)}...
+              {txid.slice(txid.length - 8)}
+              <ExternalLinkIcon className="h-4 mb-0.5 ml-1 w-4" />
+            </a>
+          ) : null}
+        </div>
+        <div className={`absolute flex-shrink-0 right-2 top-2`}>
+          <button
+            onClick={() => setShowNotification(false)}
+            className={`text-th-fgd-4 hover:text-th-primary focus:outline-none`}
+          >
+            <span className={`sr-only`}>Close</span>
+            <svg
+              className={`h-5 w-5`}
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                fillRule="evenodd"
+                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </button>
         </div>
       </div>
     </div>
