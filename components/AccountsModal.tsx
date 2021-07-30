@@ -129,7 +129,7 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
                                 <CurrencyDollarIcon className="h-5 w-5 mr-2.5" />
                                 <div>
                                   <div className="pb-0.5">
-                                    {account.name ||
+                                    {account?.name ||
                                       abbreviateAddress(account.publicKey)}
                                   </div>
                                   {mangoGroup ? (

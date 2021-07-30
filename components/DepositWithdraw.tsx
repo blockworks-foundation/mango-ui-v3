@@ -25,7 +25,7 @@ export default function MarginBalances() {
       <FloatingElement>
         <div className="flex justify-center">
           <ElementTitle noMarignBottom>
-            {mangoAccount.name || 'Mango Account'}
+            {mangoAccount?.name || 'Mango Account'}
           </ElementTitle>
           <div className="absolute right-0 pr-4">
             <Menu>

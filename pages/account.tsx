@@ -157,7 +157,7 @@ export default function Account() {
             <>
               <div className="flex flex-col sm:flex-row sm:items-end pb-4 md:pb-0">
                 <h1 className={`font-semibold mr-3 text-th-fgd-1 text-2xl`}>
-                  {mangoAccount.name || 'Account'}
+                  {mangoAccount?.name || 'Account'}
                 </h1>
                 <div className="flex items-center pb-0.5 text-th-fgd-3 ">
                   {abbreviateAddress(mangoAccount.publicKey)}
@@ -177,7 +177,7 @@ export default function Account() {
                 >
                   <div className="flex items-center">
                     <PencilIcon className="h-4 w-4 mr-1.5" />
-                    {mangoAccount.name ? 'Edit Name' : 'Add Name'}
+                    {mangoAccount?.name ? 'Edit Name' : 'Add Name'}
                   </div>
                 </Button>
                 <a
@@ -253,7 +253,7 @@ export default function Account() {
       ) : null}
       {showNameModal ? (
         <AccountNameModal
-          accountName={mangoAccount.name}
+          accountName={mangoAccount?.name}
           isOpen={showNameModal}
           onClose={handleCloseNameModal}
         />
