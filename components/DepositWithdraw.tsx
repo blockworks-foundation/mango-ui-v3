@@ -49,9 +49,9 @@ export default function MarginBalances() {
           <div className="absolute right-0 pr-4">
             <Menu>
               <Menu.Button disabled={!connected}>
-                <IconButton>
+                <div className="bg-th-bkg-4 flex items-center justify-center rounded-full w-8 h-8 text-th-fgd-1 focus:outline-none hover:text-th-primary">
                   <DotsHorizontalIcon className="w-5 h-5" />
-                </IconButton>
+                </div>
               </Menu.Button>
               <Menu.Items className="bg-th-bkg-1 mt-2 p-1 absolute right-0 shadow-lg outline-none rounded-md w-48 z-20">
                 <Menu.Item>

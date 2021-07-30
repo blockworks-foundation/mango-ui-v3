@@ -21,9 +21,11 @@ const ThemeSwitch = () => {
   return mounted ? (
     <DropMenu
       button={
-        <IconButton>{THEMES.find((t) => t.name === theme).icon}</IconButton>
+        <div className="bg-th-bkg-4 flex items-center justify-center rounded-full w-8 h-8 text-th-fgd-1 focus:outline-none hover:text-th-primary">
+          {THEMES.find((t) => t.name === theme).icon}
+        </div>
       }
-      buttonClassName="flex items-center justify-center hover:text-th-primary rounded-md focus:outline-none"
+      // buttonClassName="flex items-center justify-center hover:text-th-primary rounded-md focus:outline-none"
       value={theme}
       onChange={(theme) => setTheme(theme)}
       options={THEMES}
