@@ -1,29 +1,30 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useCallback, useState } from 'react'
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
 import styled from '@emotion/styled'
 import { Menu } from '@headlessui/react'
+import Link from 'next/link'
 import {
   ArrowSmDownIcon,
+  ChartBarIcon,
   CurrencyDollarIcon,
+  ExclamationIcon,
   DotsHorizontalIcon,
   HeartIcon,
   XIcon,
 } from '@heroicons/react/outline'
-import {
-  getTokenBySymbol,
-  getMarketByPublicKey,
-  I80F48,
-  nativeI80F48ToUi,
-  PerpMarket,
-} from '@blockworks-foundation/mango-client'
-import useMangoStore from '../../stores/useMangoStore'
+import { getTokenBySymbol, I80F48 } from '@blockworks-foundation/mango-client'
+import useMangoStore, { mangoClient } from '../../stores/useMangoStore'
 import { useBalances } from '../../hooks/useBalances'
 import { useSortableData } from '../../hooks/useSortableData'
-import { usdFormatter, tokenPrecision } from '../../utils'
+import { sleep, usdFormatter, tokenPrecision } from '../../utils'
+import { notify } from '../../utils/notifications'
+import { Market } from '@project-serum/serum'
 import SideBadge from '../SideBadge'
 import Button, { LinkButton } from '../Button'
 import Switch from '../Switch'
 import PositionsTable from '../PositionsTable'
+import DepositModal from '../DepositModal'
+import WithdrawModal from '../WithdrawModal'
 
 const StyledAccountValue = styled.div`
   font-size: 1.8rem;
@@ -32,11 +33,14 @@ const StyledAccountValue = styled.div`
 
 export default function AccountOverview() {
   const [spotPortfolio, setSpotPortfolio] = useState([])
-  const [perpPositions, setPerpPositions] = useState([])
+  const [unsettled, setUnsettled] = useState([])
   const [filteredSpotPortfolio, setFilteredSpotPortfolio] = useState([])
   const [showZeroBalances, setShowZeroBalances] = useState(false)
-  const allMarkets = useMangoStore((s) => s.selectedMangoGroup.markets)
+  const [showDepositModal, setShowDepositModal] = useState(false)
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false)
+  const [actionSymbol, setActionSymbol] = useState('')
   const balances = useBalances()
+  const actions = useMangoStore((s) => s.actions)
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
@@ -45,62 +49,13 @@ export default function AccountOverview() {
     filteredSpotPortfolio
   )
 
-  const perpMarkets = useMemo(
-    () =>
-      mangoGroup
-        ? groupConfig.perpMarkets.map(
-            (m) => mangoGroup.perpMarkets[m.marketIndex]
-          )
-        : [],
-    [mangoGroup]
-  )
-
-  const perpAccounts = useMemo(
-    () =>
-      mangoAccount
-        ? groupConfig.perpMarkets.map(
-            (m) => mangoAccount.perpAccounts[m.marketIndex]
-          )
-        : [],
-    [mangoAccount]
-  )
-
-  useEffect(() => {
-    let positions = []
-    perpAccounts.forEach((acc, index) => {
-      const market = perpMarkets[index]
-      const marketConfig = getMarketByPublicKey(groupConfig, market.perpMarket)
-      const perpMarket = allMarkets[
-        marketConfig.publicKey.toString()
-      ] as PerpMarket
-      if (
-        +nativeI80F48ToUi(acc.quotePosition, marketConfig.quoteDecimals) !== 0
-      ) {
-        positions.push({
-          market: marketConfig.name,
-          balance: perpMarket.baseLotsToNumber(acc.basePosition),
-          price: mangoGroup.getPrice(marketConfig.marketIndex, mangoCache),
-          symbol: marketConfig.baseSymbol,
-          value: +nativeI80F48ToUi(
-            acc.quotePosition,
-            marketConfig.quoteDecimals
-          ),
-          type:
-            perpMarket.baseLotsToNumber(acc.basePosition) > 0
-              ? 'Long'
-              : 'Short',
-        })
-      }
-    })
-    setPerpPositions(positions.sort((a, b) => b.value - a.value))
-  }, [])
-
   useEffect(() => {
     const spotPortfolio = []
+    const unsettled = []
     balances.forEach((b) => {
       const token = getTokenBySymbol(groupConfig, b.symbol)
       const tokenIndex = mangoGroup.getTokenIndex(token.mintKey)
-      if (+b.marginDeposits > 0) {
+      if (+b.marginDeposits > 0 || b.orders > 0) {
         spotPortfolio.push({
           market: b.symbol,
           balance: +b.marginDeposits + b.orders + b.unsettled,
@@ -148,6 +103,16 @@ export default function AccountOverview() {
           type: '–',
         })
       }
+      if (b.unsettled > 0) {
+        unsettled.push({
+          market: b.symbol,
+          balance: b.unsettled,
+          symbol: b.symbol,
+          value:
+            b.unsettled *
+            mangoGroup.getPrice(tokenIndex, mangoCache).toNumber(),
+        })
+      }
     })
     setSpotPortfolio(spotPortfolio.sort((a, b) => b.value - a.value))
     setFilteredSpotPortfolio(
@@ -155,6 +120,7 @@ export default function AccountOverview() {
         .filter((pos) => pos.balance > 0)
         .sort((a, b) => b.value - a.value)
     )
+    setUnsettled(unsettled)
   }, [])
 
   const handleShowZeroBalances = (checked) => {
@@ -166,20 +132,75 @@ export default function AccountOverview() {
     setShowZeroBalances(checked)
   }
 
+  async function handleSettleAll() {
+    const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
+    const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
+    const markets = useMangoStore.getState().selectedMangoGroup.markets
+    const wallet = useMangoStore.getState().wallet.current
+
+    try {
+      const spotMarkets = Object.values(markets).filter(
+        (mkt) => mkt instanceof Market
+      ) as Market[]
+      await mangoClient.settleAll(mangoGroup, mangoAccount, spotMarkets, wallet)
+      notify({ title: 'Successfully settled funds' })
+      await sleep(250)
+      actions.fetchMangoAccounts()
+    } catch (e) {
+      console.warn('Error settling all:', e)
+      if (e.message === 'No unsettled funds') {
+        notify({
+          title: 'There are no unsettled funds',
+          type: 'error',
+        })
+      } else {
+        notify({
+          title: 'Error settling funds',
+          description: e.message,
+          txid: e.txid,
+          type: 'error',
+        })
+      }
+    }
+  }
+
+  const handleOpenDepositModal = useCallback((symbol) => {
+    setActionSymbol(symbol)
+    setShowDepositModal(true)
+  }, [])
+
+  const handleOpenWithdrawModal = useCallback((symbol) => {
+    setActionSymbol(symbol)
+    setShowWithdrawModal(true)
+  }, [])
+
   return mangoAccount ? (
     <>
-      <div className="pb-6">
-        <div className="pb-1 text-th-fgd-3">Account Value</div>
-        <div className="flex items-center">
-          <CurrencyDollarIcon className="flex-shrink-0 h-7 w-7 mr-1.5 text-th-primary" />
-          <StyledAccountValue className="text-th-fgd-1">
-            {usdFormatter.format(
-              +mangoAccount.computeValue(mangoGroup, mangoCache).toFixed(2)
-            )}
-          </StyledAccountValue>
+      <div className="grid grid-flow-col grid-cols-1 grid-rows-2 md:grid-cols-2 md:grid-rows-1 gap-4 pb-4">
+        <div className="border border-th-bkg-4 p-4 rounded-lg">
+          <div className="pb-2 text-th-fgd-3">Account Value</div>
+          <div className="flex items-center">
+            <CurrencyDollarIcon className="flex-shrink-0 h-7 w-7 mr-1.5 text-th-primary" />
+            <StyledAccountValue className="font-bold text-th-fgd-1">
+              {usdFormatter.format(
+                +mangoAccount.computeValue(mangoGroup, mangoCache).toFixed(2)
+              )}
+            </StyledAccountValue>
+          </div>
+        </div>
+        <div className="border border-th-bkg-4 p-4 rounded-lg">
+          <div className="pb-2 text-th-fgd-3">PNL</div>
+          <div className="flex items-center">
+            <ChartBarIcon className="flex-shrink-0 h-7 w-7 mr-1.5 text-th-primary" />
+            <StyledAccountValue className="font-bold text-th-fgd-1">
+              {usdFormatter.format(
+                +mangoAccount.computeValue(mangoGroup, mangoCache).toFixed(2)
+              )}
+            </StyledAccountValue>
+          </div>
         </div>
       </div>
-      <div className="grid grid-flow-col grid-cols-1 grid-rows-4 sm:grid-cols-2 sm:grid-rows-2 md:grid-cols-4 md:grid-rows-1 gap-4 pb-10">
+      <div className="grid grid-flow-col grid-cols-1 grid-rows-4 md:grid-cols-2 md:grid-rows-2 lg:grid-cols-4 lg:grid-rows-1 gap-4 pb-8">
         <div className="border border-th-bkg-4 p-4 rounded-lg">
           <div className="pb-0.5 text-xs text-th-fgd-3">Positions</div>
           <div className="flex items-center">
@@ -225,6 +246,40 @@ export default function AccountOverview() {
           </div>
         </div>
       </div>
+      {unsettled.length > 0 ? (
+        <div className="border border-th-primary rounded-lg mb-8 p-6">
+          <div className="flex items-center justify-between pb-4">
+            <div className="flex items-center text-lg">
+              <ExclamationIcon className="h-5 mr-1.5 mt-0.5 text-th-primary w-5" />
+              Unsettled Balances
+            </div>
+            <Button
+              className="text-xs pt-0 pb-0 h-8 pl-3 pr-3"
+              onClick={handleSettleAll}
+            >
+              Settle All
+            </Button>
+          </div>
+          {unsettled.map((a) => (
+            <div
+              className="border-b border-th-bkg-4 flex items-center justify-between py-4 last:border-b-0 last:pb-0"
+              key={a.symbol}
+            >
+              <div className="flex items-center">
+                <img
+                  alt=""
+                  width="20"
+                  height="20"
+                  src={`/assets/icons/${a.symbol.toLowerCase()}.svg`}
+                  className={`mr-2.5`}
+                />
+                <div>{a.symbol}</div>
+              </div>
+              {a.balance.toFixed(tokenPrecision[a.symbol])}
+            </div>
+          ))}
+        </div>
+      ) : null}
       <div className="pb-8">
         <div className="pb-4 text-th-fgd-1 text-lg">Perp Positions</div>
         <PositionsTable />
@@ -244,9 +299,9 @@ export default function AccountOverview() {
           <Table className="min-w-full divide-y divide-th-bkg-2">
             <Thead>
               <Tr className="text-th-fgd-3 text-xs">
-                <Th scope="col" className={`px-6 py-2 text-left font-normal`}>
+                <Th scope="col" className={`px-6 py-2 text-left`}>
                   <LinkButton
-                    className="flex items-center no-underline"
+                    className="flex font-normal items-center no-underline"
                     onClick={() => requestSort('market')}
                   >
                     Asset
@@ -261,9 +316,9 @@ export default function AccountOverview() {
                     />
                   </LinkButton>
                 </Th>
-                <Th scope="col" className={`px-6 py-2 text-left font-normal`}>
+                <Th scope="col" className={`px-6 py-2 text-left`}>
                   <LinkButton
-                    className="flex items-center no-underline"
+                    className="flex font-normal items-center no-underline"
                     onClick={() => requestSort('type')}
                   >
                     Type
@@ -278,9 +333,9 @@ export default function AccountOverview() {
                     />
                   </LinkButton>
                 </Th>
-                <Th scope="col" className={`px-6 py-2 text-left font-normal`}>
+                <Th scope="col" className={`px-6 py-2 text-left`}>
                   <LinkButton
-                    className="flex items-center no-underline"
+                    className="flex font-normal items-center no-underline"
                     onClick={() => requestSort('balance')}
                   >
                     Balance
@@ -295,9 +350,9 @@ export default function AccountOverview() {
                     />
                   </LinkButton>
                 </Th>
-                <Th scope="col" className={`px-6 py-2 text-left font-normal`}>
+                <Th scope="col" className={`px-6 py-2 text-left`}>
                   <LinkButton
-                    className="flex items-center no-underline"
+                    className="flex font-normal items-center no-underline"
                     onClick={() => requestSort('price')}
                   >
                     Price
@@ -312,9 +367,9 @@ export default function AccountOverview() {
                     />
                   </LinkButton>
                 </Th>
-                <Th scope="col" className="px-6 py-2 text-left font-normal">
+                <Th scope="col" className="px-6 py-2 text-left">
                   <LinkButton
-                    className="flex items-center no-underline"
+                    className="flex font-normal items-center no-underline"
                     onClick={() => requestSort('value')}
                   >
                     Value
@@ -329,9 +384,9 @@ export default function AccountOverview() {
                     />
                   </LinkButton>
                 </Th>
-                <Th scope="col" className="px-6 py-2 text-left font-normal">
+                <Th scope="col" className="px-6 py-2 text-left">
                   <LinkButton
-                    className="flex items-center no-underline"
+                    className="flex font-normal items-center no-underline"
                     onClick={() => requestSort('depositRate')}
                   >
                     Deposit Rate
@@ -346,9 +401,9 @@ export default function AccountOverview() {
                     />
                   </LinkButton>
                 </Th>
-                <Th scope="col" className="px-6 py-2 text-left font-normal">
+                <Th scope="col" className="px-6 py-2 text-left">
                   <LinkButton
-                    className="flex items-center no-underline"
+                    className="flex font-normal items-center no-underline"
                     onClick={() => requestSort('borrowRate')}
                   >
                     Borrow Rate
@@ -445,18 +500,24 @@ export default function AccountOverview() {
                               />
                               {pos.symbol}
                             </div>
+                            {pos.symbol !== 'USDC' ? (
+                              <Menu.Item>
+                                <Link
+                                  href={`/spot/${pos.symbol}`}
+                                  key={pos.symbol}
+                                >
+                                  <a className="block font-normal p-2 rounded-none text-th-fgd-1 w-full hover:bg-th-bkg-2 hover:cursor-pointer hover:text-th-fgd-1 focus:outline-none">
+                                    <div className="text-left">Trade</div>
+                                  </a>
+                                </Link>
+                              </Menu.Item>
+                            ) : null}
                             <Menu.Item>
                               <button
                                 className="font-normal rounded-none w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer focus:outline-none"
-                                onClick={() => console.log('true')}
-                              >
-                                <div className="text-left">Trade</div>
-                              </button>
-                            </Menu.Item>
-                            <Menu.Item>
-                              <button
-                                className="font-normal rounded-none w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer focus:outline-none"
-                                onClick={() => console.log('true')}
+                                onClick={() =>
+                                  handleOpenDepositModal(pos.symbol)
+                                }
                               >
                                 <div className="text-left">Deposit</div>
                               </button>
@@ -464,17 +525,11 @@ export default function AccountOverview() {
                             <Menu.Item>
                               <button
                                 className="font-normal rounded-none w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer focus:outline-none"
-                                onClick={() => console.log('true')}
+                                onClick={() =>
+                                  handleOpenWithdrawModal(pos.symbol)
+                                }
                               >
                                 <div className="text-left">Withdraw</div>
-                              </button>
-                            </Menu.Item>
-                            <Menu.Item>
-                              <button
-                                className="font-normal rounded-none w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer focus:outline-none"
-                                onClick={() => console.log('true')}
-                              >
-                                <div className="text-left">Borrow</div>
                               </button>
                             </Menu.Item>
                           </Menu.Items>
@@ -488,6 +543,20 @@ export default function AccountOverview() {
           </Table>
         </>
       ) : null}
+      {showDepositModal && (
+        <DepositModal
+          isOpen={showDepositModal}
+          onClose={() => setShowDepositModal(false)}
+          tokenSymbol={actionSymbol}
+        />
+      )}
+      {showWithdrawModal && (
+        <WithdrawModal
+          isOpen={showWithdrawModal}
+          onClose={() => setShowWithdrawModal(false)}
+          tokenSymbol={actionSymbol}
+        />
+      )}
     </>
   ) : null
 }

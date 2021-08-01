@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import styled from '@emotion/styled'
 import Link from 'next/link'
 import { EyeIcon, EyeOffIcon } from '@heroicons/react/outline'
 import Modal from './Modal'
 import useLocalStorageState from '../hooks/useLocalStorageState'
+import useMangoStore from '../stores/useMangoStore'
 import { LinkButton } from './Button'
 
 const StyledColumnHeader = styled.span`
@@ -17,12 +18,26 @@ const MarketsModal = ({
 }: {
   isOpen: boolean
   markets: Array<any>
-  onClose?: (x) => void
+  onClose?: (x?) => void
 }) => {
   const [hiddenMarkets, setHiddenMarkets] = useLocalStorageState(
     'hiddenMarkets',
     []
   )
+  const setMangoStore = useMangoStore((s) => s.set)
+
+  useEffect(() => {
+    setMangoStore((state) => {
+      state.blurBackground = true
+    })
+  }, [])
+
+  const handleClose = () => {
+    setMangoStore((state) => {
+      state.blurBackground = false
+    })
+    onClose()
+  }
 
   const handleHideShowMarket = (asset) => {
     if (hiddenMarkets.includes(asset)) {
@@ -33,7 +48,7 @@ const MarketsModal = ({
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={handleClose}>
       <div className="flex items-end justify-between pb-3 pt-2">
         <div className="font-bold text-lg text-th-fgd-1">Markets</div>
         <LinkButton

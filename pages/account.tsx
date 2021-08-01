@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import {
   CurrencyDollarIcon,
   DuplicateIcon,
@@ -6,14 +6,7 @@ import {
   LinkIcon,
   PencilIcon,
 } from '@heroicons/react/outline'
-import {
-  getTokenBySymbol,
-  getMarketByPublicKey,
-  nativeI80F48ToUi,
-  PerpMarket,
-} from '@blockworks-foundation/mango-client'
 import useMangoStore from '../stores/useMangoStore'
-import { useBalances } from '../hooks/useBalances'
 import { abbreviateAddress, copyToClipboard } from '../utils'
 import PageBodyContainer from '../components/PageBodyContainer'
 import TopBar from '../components/TopBar'
@@ -28,9 +21,9 @@ import Button from '../components/Button'
 import EmptyState from '../components/EmptyState'
 
 const TABS = [
-  'Overview',
-  'Assets',
-  'Borrows',
+  'Portfolio',
+  // 'Assets',
+  // 'Borrows',
   // 'Stats',
   // 'Positions',
   'Orders',
@@ -40,16 +33,10 @@ const TABS = [
 export default function Account() {
   const [activeTab, setActiveTab] = useState(TABS[0])
   const [showAccountsModal, setShowAccountsModal] = useState(false)
-  const [portfolio, setPortfolio] = useState([])
-  const allMarkets = useMangoStore((s) => s.selectedMangoGroup.markets)
-  const balances = useBalances()
   const [showNameModal, setShowNameModal] = useState(false)
   const [isCopied, setIsCopied] = useState(false)
   const connected = useMangoStore((s) => s.wallet.connected)
-  const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
-  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
-  const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const wallet = useMangoStore((s) => s.wallet.current)
 
   const handleTabChange = (tabName) => {
@@ -58,78 +45,6 @@ export default function Account() {
   const handleCloseAccounts = useCallback(() => {
     setShowAccountsModal(false)
   }, [])
-
-  const perpMarkets = useMemo(
-    () =>
-      mangoGroup
-        ? groupConfig.perpMarkets.map(
-            (m) => mangoGroup.perpMarkets[m.marketIndex]
-          )
-        : [],
-    [mangoGroup]
-  )
-
-  const perpAccounts = useMemo(
-    () =>
-      mangoAccount
-        ? groupConfig.perpMarkets.map(
-            (m) => mangoAccount.perpAccounts[m.marketIndex]
-          )
-        : [],
-    [mangoAccount]
-  )
-
-  useEffect(() => {
-    const portfolio = []
-    perpAccounts.forEach((acc, index) => {
-      const market = perpMarkets[index]
-      const marketConfig = getMarketByPublicKey(groupConfig, market.perpMarket)
-      const perpMarket = allMarkets[
-        marketConfig.publicKey.toString()
-      ] as PerpMarket
-      if (
-        +nativeI80F48ToUi(acc.quotePosition, marketConfig.quoteDecimals) > 0
-      ) {
-        portfolio.push({
-          market: marketConfig.name,
-          balance: perpMarket.baseLotsToNumber(acc.basePosition),
-          symbol: marketConfig.baseSymbol,
-          value: +nativeI80F48ToUi(
-            acc.quotePosition,
-            marketConfig.quoteDecimals
-          ),
-          type:
-            perpMarket.baseLotsToNumber(acc.basePosition) > 0
-              ? 'Long'
-              : 'Short',
-        })
-      }
-    })
-    balances.forEach((b) => {
-      const token = getTokenBySymbol(groupConfig, b.symbol)
-      const tokenIndex = mangoGroup.getTokenIndex(token.mintKey)
-      if (+b.marginDeposits > 0) {
-        portfolio.push({
-          market: b.symbol,
-          balance: +b.marginDeposits + b.orders + b.unsettled,
-          symbol: b.symbol,
-          value:
-            (+b.marginDeposits + b.orders + b.unsettled) *
-            mangoGroup.getPrice(tokenIndex, mangoCache).toNumber(),
-          type: 'Deposits',
-        })
-      }
-      if (+b.borrows > 0) {
-        portfolio.push({
-          market: b.symbol,
-          balance: +b.borrows,
-          value: b.borrows.mul(mangoGroup.getPrice(tokenIndex, mangoCache)),
-          type: 'Borrows',
-        })
-      }
-    })
-    setPortfolio(portfolio.sort((a, b) => b.value - a.value))
-  }, [perpAccounts])
 
   const handleCopyPublicKey = (code) => {
     setIsCopied(true)
@@ -181,7 +96,7 @@ export default function Account() {
                   </div>
                 </Button>
                 <a
-                  className="bg-th-bkg-4 default-transition flex flex-grow font-bold h-8 items-center justify-center pl-3 pr-3 rounded-full text-th-fgd-1 text-xs hover:bg-th-bkg-3 hover:text-th-fgd-1 focus:outline-none"
+                  className="bg-th-bkg-4 default-transition flex flex-grow font-bold h-8 items-center justify-center pl-3 pr-3 rounded-full text-th-fgd-1 text-xs hover:text-th-fgd-1 hover:brightness-[1.15] focus:outline-none"
                   href={`https://explorer.solana.com/address/${mangoAccount?.publicKey}`}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -193,10 +108,7 @@ export default function Account() {
                   className="text-xs flex flex-grow items-center justify-center ml-2 pt-0 pb-0 h-8 pl-3 pr-3"
                   onClick={() => setShowAccountsModal(true)}
                 >
-                  <div className="flex items-center">
-                    <CurrencyDollarIcon className="h-4 w-4 mr-1.5" />
-                    Accounts
-                  </div>
+                  Accounts
                 </Button>
               </div>
             </>
@@ -264,7 +176,7 @@ export default function Account() {
 
 const TabContent = ({ activeTab }) => {
   switch (activeTab) {
-    case 'Overview':
+    case 'Portfolio':
       return <AccountOverview />
     case 'Assets':
       return <AccountAssets />
