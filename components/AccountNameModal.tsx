@@ -1,4 +1,4 @@
-import { FunctionComponent, useState } from 'react'
+import { FunctionComponent, useEffect, useState } from 'react'
 import useMangoStore, { mangoClient } from '../stores/useMangoStore'
 import {
   ExclamationCircleIcon,
@@ -27,6 +27,20 @@ const AccountNameModal: FunctionComponent<AccountNameModalProps> = ({
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const actions = useMangoStore((s) => s.actions)
+  const setMangoStore = useMangoStore((s) => s.set)
+
+  useEffect(() => {
+    setMangoStore((state) => {
+      state.blurBackground = true
+    })
+  }, [])
+
+  const handleClose = () => {
+    setMangoStore((state) => {
+      state.blurBackground = false
+    })
+    onClose()
+  }
 
   const submitName = async () => {
     const wallet = useMangoStore.getState().wallet.current
@@ -72,7 +86,7 @@ const AccountNameModal: FunctionComponent<AccountNameModalProps> = ({
   }
 
   return (
-    <Modal onClose={onClose} isOpen={isOpen}>
+    <Modal onClose={handleClose} isOpen={isOpen}>
       <Modal.Header>
         <div className="flex items-center">
           <ElementTitle noMarignBottom>Name your Account</ElementTitle>

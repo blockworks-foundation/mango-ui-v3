@@ -1,11 +1,7 @@
 import React, { FunctionComponent, useEffect, useState } from 'react'
 import { RadioGroup } from '@headlessui/react'
 import { CheckCircleIcon } from '@heroicons/react/solid'
-import {
-  ChevronLeftIcon,
-  CurrencyDollarIcon,
-  PlusCircleIcon,
-} from '@heroicons/react/outline'
+import { ChevronLeftIcon, PlusCircleIcon } from '@heroicons/react/outline'
 import useMangoStore from '../stores/useMangoStore'
 import {
   MangoAccount,
@@ -54,6 +50,19 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
   }
 
   useEffect(() => {
+    setMangoStore((state) => {
+      state.blurBackground = true
+    })
+  }, [])
+
+  const handleClose = () => {
+    setMangoStore((state) => {
+      state.blurBackground = false
+    })
+    onClose()
+  }
+
+  useEffect(() => {
     if (newAccPublicKey) {
       setMangoStore((state) => {
         state.selectedMangoAccount.current = mangoAccounts.find((ma) =>
@@ -76,7 +85,7 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={handleClose}>
       {mangoAccounts.length > 0 ? (
         !showNewAccountForm ? (
           <>
@@ -126,7 +135,6 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
                           <div className="flex items-center">
                             <div className="text-sm">
                               <RadioGroup.Label className="cursor-pointer flex items-center text-th-fgd-1">
-                                <CurrencyDollarIcon className="h-5 w-5 mr-2.5" />
                                 <div>
                                   <div className="pb-0.5">
                                     {account?.name ||
@@ -142,6 +150,15 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
                                     </div>
                                   ) : null}
                                 </div>
+                                {mangoGroup ? (
+                                  <div className="text-th-fgd-3 text-xs">
+                                    <AccountInfo
+                                      mangoGroup={mangoGroup}
+                                      mangoAccount={account}
+                                      mangoCache={mangoCache}
+                                    />
+                                  </div>
+                                ) : null}
                               </RadioGroup.Label>
                             </div>
                           </div>

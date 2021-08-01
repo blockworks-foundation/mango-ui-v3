@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Modal from './Modal'
 import Button from './Button'
 import useLocalStorageState from '../hooks/useLocalStorageState'
+import useMangoStore from '../stores/useMangoStore'
 
 const AlphaModal = ({
   isOpen,
@@ -14,6 +15,20 @@ const AlphaModal = ({
     'mangoAlphaAccepted-2.0',
     false
   )
+  const setMangoStore = useMangoStore((s) => s.set)
+
+  useEffect(() => {
+    setMangoStore((state) => {
+      state.blurBackground = true
+    })
+  }, [])
+
+  const handleAccept = () => {
+    setAlphaAccepted(true)
+    setMangoStore((state) => {
+      state.blurBackground = false
+    })
+  }
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} hideClose>
@@ -55,7 +70,7 @@ const AlphaModal = ({
       <div className={`text-th-fgd-2 text-center`}>
         Mango Markets is unaudited software. Use at your own risk.
         <div className={`mt-4 flex justify-center`}>
-          <Button onClick={() => setAlphaAccepted(true)}>
+          <Button onClick={handleAccept}>
             <div className={`flex items-center`}>Accept</div>
           </Button>
         </div>

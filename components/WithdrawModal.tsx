@@ -65,6 +65,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   const [maxButtonTransition, setMaxButtonTransition] = useState(false)
 
   const actions = useMangoStore((s) => s.actions)
+  const setMangoStore = useMangoStore((s) => s.set)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const selectedMangoAccount = useMangoStore(
     (s) => s.selectedMangoAccount.current
@@ -351,6 +352,19 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
     }
   }, [maxButtonTransition])
 
+  useEffect(() => {
+    setMangoStore((state) => {
+      state.blurBackground = true
+    })
+  }, [])
+
+  const handleClose = () => {
+    setMangoStore((state) => {
+      state.blurBackground = false
+    })
+    onClose()
+  }
+
   // turn on borrow toggle when asset balance is zero
   // useEffect(() => {
   //   if (withdrawTokenSymbol && getDepositsForSelectedAsset() === 0) {
@@ -361,7 +375,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   if (!withdrawTokenSymbol) return null
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={handleClose}>
       <>
         {!showSimulation ? (
           <>
