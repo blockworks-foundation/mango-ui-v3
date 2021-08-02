@@ -53,6 +53,9 @@ const AccountNameModal: FunctionComponent<AccountNameModalProps> = ({
         name
       )
       actions.fetchMangoAccounts()
+      setMangoStore((state) => {
+        state.blurBackground = false
+      })
       onClose()
       notify({
         title: 'Account name updated',

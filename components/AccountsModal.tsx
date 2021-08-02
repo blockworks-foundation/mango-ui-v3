@@ -46,6 +46,9 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
     })
     // TODO
     // actions.fetchTradeHistory()
+    setMangoStore((state) => {
+      state.blurBackground = false
+    })
     onClose()
   }
 

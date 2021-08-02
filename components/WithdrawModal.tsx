@@ -193,6 +193,9 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
           type: 'success',
           txid,
         })
+        setMangoStore((state) => {
+          state.blurBackground = false
+        })
         onClose()
       })
       .catch((err) => {
@@ -203,6 +206,9 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
           description: err.message,
           txid: err.txid,
           type: 'error',
+        })
+        setMangoStore((state) => {
+          state.blurBackground = false
         })
         onClose()
       })

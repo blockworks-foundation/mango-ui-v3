@@ -158,6 +158,9 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
         })
         console.log('deposit response', response)
         setSubmitting(false)
+        setMangoStore((state) => {
+          state.blurBackground = false
+        })
         onClose()
         actions.fetchMangoAccounts()
       })
