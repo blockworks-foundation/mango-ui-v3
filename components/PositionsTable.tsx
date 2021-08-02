@@ -226,7 +226,7 @@ const PositionsTable = () => {
             <div
               className={`w-full text-center py-6 bg-th-bkg-1 text-th-fgd-3 rounded-md`}
             >
-              No open positions
+              No perp positions
             </div>
           )}
         </div>

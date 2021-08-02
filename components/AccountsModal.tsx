@@ -153,15 +153,6 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
                                     </div>
                                   ) : null}
                                 </div>
-                                {mangoGroup ? (
-                                  <div className="text-th-fgd-3 text-xs">
-                                    <AccountInfo
-                                      mangoGroup={mangoGroup}
-                                      mangoAccount={account}
-                                      mangoCache={mangoCache}
-                                    />
-                                  </div>
-                                ) : null}
                               </RadioGroup.Label>
                             </div>
                           </div>
