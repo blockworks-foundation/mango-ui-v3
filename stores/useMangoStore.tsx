@@ -24,7 +24,7 @@ import {
 // import { SRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
 import { AccountInfo, Commitment, Connection, PublicKey } from '@solana/web3.js'
 import { EndpointInfo, WalletAdapter } from '../@types/types'
-import { zipDict } from '../utils'
+import { isDefined, zipDict } from '../utils'
 import { notify } from '../utils/notifications'
 import { LAST_ACCOUNT_KEY } from '../components/AccountsModal'
 
@@ -369,30 +369,31 @@ const useMangoStore = create<MangoStore>((set, get) => ({
         })
     },
     async fetchTradeHistory(mangoAccount = null) {
-      console.log('TODO Fetch Trade History', mangoAccount)
+      // TODO fetch perps open orders account from trade history service
+      const selectedMangoAccount =
+        mangoAccount || get().selectedMangoAccount.current
+      const set = get().set
+      if (!selectedMangoAccount) return
+      console.log('selectedMangoAccount', selectedMangoAccount)
 
-      // const selectedMangoAccount =
-      //   mangoAccount || get().selectedMangoAccount.current
-      // const set = get().set
-      // if (!selectedMangoAccount) return
-      // if (selectedMangoAccount.openOrdersAccounts.length === 0) return
-      // const openOrdersAccounts =
-      //   selectedMangoAccount.openOrdersAccounts.filter(isDefined)
-      // const publicKeys = openOrdersAccounts.map((act) =>
-      //   act.publicKey.toString()
-      // )
-      // const results = await Promise.all(
-      //   publicKeys.map(async (pk) => {
-      //     const response = await fetch(
-      //       `https://stark-fjord-45757.herokuapp.com/trades/open_orders/${pk.toString()}`
-      //     )
-      //     const parsedResponse = await response.json()
-      //     return parsedResponse?.data ? parsedResponse.data : []
-      //   })
-      // )
-      // set((state) => {
-      //   state.tradeHistory = results
-      // })
+      if (selectedMangoAccount.spotOpenOrdersAccounts.length === 0) return
+      const openOrdersAccounts =
+        selectedMangoAccount.spotOpenOrdersAccounts.filter(isDefined)
+      const publicKeys = openOrdersAccounts.map((act) =>
+        act.publicKey.toString()
+      )
+      const results = await Promise.all(
+        publicKeys.map(async (pk) => {
+          const response = await fetch(
+            `https://stark-fjord-45757.herokuapp.com/trades/open_orders/${pk.toString()}`
+          )
+          const parsedResponse = await response.json()
+          return parsedResponse?.data ? parsedResponse.data : []
+        })
+      )
+      set((state) => {
+        state.tradeHistory = results
+      })
     },
     async updateOpenOrders() {
       const set = get().set

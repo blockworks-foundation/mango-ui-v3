@@ -99,8 +99,7 @@ export default function useWallet() {
         state.wallet.connected = true
       })
       // set connected before fetching data
-      // actions.fetchTradeHistory()
-      // actions.fetchMangoSrmAccounts()
+      actions.fetchTradeHistory()
       actions.fetchWalletTokens()
       notify({
         title: 'Wallet connected',
@@ -140,7 +139,7 @@ export default function useWallet() {
     if (connected && mangoAccount) {
       actions.fetchMangoAccounts()
       actions.fetchWalletTokens()
-      // actions.fetchTradeHistory()
+      actions.fetchTradeHistory()
     }
   }, 180 * SECONDS)
 
