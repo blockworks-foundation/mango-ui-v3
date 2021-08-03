@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { Menu } from '@headlessui/react'
 import { DotsHorizontalIcon } from '@heroicons/react/outline'
@@ -7,7 +7,7 @@ import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
 import DepositModal from './DepositModal'
 import WithdrawModal from './WithdrawModal'
-import Button, { IconButton } from './Button'
+import Button from './Button'
 import AccountsModal from './AccountsModal'
 
 export default function MarginBalances() {

@@ -5,12 +5,13 @@ import {
   nativeI80F48ToUi,
   PerpAccount,
   PerpMarket,
+  QUOTE_INDEX,
   ZERO_I80F48,
 } from '@blockworks-foundation/mango-client'
 import { useMemo } from 'react'
 import Button from './Button'
 import { notify } from '../utils/notifications'
-import { QUOTE_INDEX } from '@blockworks-foundation/mango-client/lib/src/MangoGroup'
+
 import BN from 'bn.js'
 import SideBadge from './SideBadge'
 import { useState } from 'react'

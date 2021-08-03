@@ -1,5 +1,9 @@
 import { Balances } from '../@types/types'
-import { nativeToUi, QUOTE_INDEX } from '@blockworks-foundation/mango-client'
+import {
+  nativeI80F48ToUi,
+  nativeToUi,
+  QUOTE_INDEX,
+} from '@blockworks-foundation/mango-client'
 import useMangoStore from '../stores/useMangoStore'
 import { sumBy } from 'lodash'
 import { I80F48 } from '@blockworks-foundation/mango-client/lib/src/fixednum'
@@ -45,7 +49,10 @@ export function useBalances(): Balances[] {
           tokenIndex
         )
         .add(
-          I80F48.fromNumber(nativeBaseLocked).sub(
+          nativeI80F48ToUi(
+            I80F48.fromNumber(nativeBaseLocked),
+            mangoGroup.tokens[tokenIndex].decimals
+          ).sub(
             mangoAccount.getUiBorrow(
               mangoCache.rootBankCache[tokenIndex],
               mangoGroup,
@@ -119,7 +126,7 @@ export function useBalances(): Balances[] {
   const net: I80F48 = quoteMeta.marginDeposits
     .add(I80F48.fromNumber(unsettled))
     .sub(quoteMeta.borrows)
-    .sub(I80F48.fromNumber(quoteInOrders))
+    .add(I80F48.fromNumber(quoteInOrders))
 
   return [
     {
