@@ -17,6 +17,12 @@ const ASSET_URL =
 
 export const WALLET_PROVIDERS = [
   {
+    name: 'Phantom',
+    url: 'https://www.phantom.app',
+    icon: `https://www.phantom.app/img/logo.png`,
+    adapter: PhantomWalletAdapter,
+  },
+  {
     name: 'Sollet.io',
     url: 'https://www.sollet.io',
     icon: `${ASSET_URL}/sollet.svg`,
@@ -26,12 +32,6 @@ export const WALLET_PROVIDERS = [
     url: 'https://www.sollet.io/extension',
     icon: `${ASSET_URL}/sollet.svg`,
     adapter: SolletExtensionAdapter as any,
-  },
-  {
-    name: 'Phantom',
-    url: 'https://www.phantom.app',
-    icon: `https://www.phantom.app/img/logo.png`,
-    adapter: PhantomWalletAdapter,
   },
 ]
 
