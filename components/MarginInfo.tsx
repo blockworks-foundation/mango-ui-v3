@@ -149,10 +149,12 @@ export default function MarginInfo() {
                   >
                     <span>
                       Redeem{' '}
-                      {nativeToUi(
-                        mngoAccrued.toNumber(),
-                        mangoGroup.tokens[MNGO_INDEX].decimals
-                      )}{' '}
+                      {mangoGroup
+                        ? nativeToUi(
+                            mngoAccrued.toNumber(),
+                            mangoGroup.tokens[MNGO_INDEX].decimals
+                          )
+                        : 0}{' '}
                       MNGO
                     </span>
                   </Button>
