@@ -7,7 +7,8 @@ import useMangoStore from '../stores/useMangoStore'
 
 const byTimestamp = (a, b) => {
   return (
-    new Date(b.loadTimestamp).getTime() - new Date(a.loadTimestamp).getTime()
+    new Date(b.loadTimestamp || b.timestamp.toNumber()).getTime() -
+    new Date(a.loadTimestamp || a.timestamp.toNumber()).getTime()
   )
 }
 
