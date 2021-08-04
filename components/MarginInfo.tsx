@@ -78,7 +78,7 @@ export default function MarginInfo() {
           <div>
             <div className="flex justify-between pt-2 pb-2">
               <Tooltip content="Account value">
-                <div className="cursor-help font-normal text-th-fgd-3 border-b border-th-fgd-3 border-dashed border-opacity-20 leading-4 default-transition hover:border-th-bkg-2 hover:text-th-fgd-3">
+                <div className="cursor-help font-normal text-th-fgd-3 leading-4 border-b border-th-fgd-3 border-dashed border-opacity-20 default-transition hover:border-th-bkg-2">
                   Equity
                 </div>
               </Tooltip>
@@ -137,9 +137,24 @@ export default function MarginInfo() {
               </div>
             </div>
             <div className={`flex justify-between pt-2 pb-2`}>
-              <div className="font-normal text-th-fgd-3 leading-4">
-                MNGO Accrued
-              </div>
+              <Tooltip
+                content={
+                  <div>
+                    Earn MNGO by market making on the Perp markets.{' '}
+                    <a
+                      href="https://docs.mango.markets/mango-v3/liquidity-incentives"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Learn more
+                    </a>
+                  </div>
+                }
+              >
+                <div className="cursor-help font-normal text-th-fgd-3 leading-4 border-b border-th-fgd-3 border-dashed border-opacity-20 default-transition hover:border-th-bkg-2">
+                  MNGO Accrued
+                </div>
+              </Tooltip>
               <div className={`text-th-fgd-1`}>
                 {
                   <Button
