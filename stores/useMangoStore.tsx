@@ -64,6 +64,9 @@ const DEFAULT_MANGO_GROUP_CONFIG = Config.ids().getGroup(
 const defaultMangoGroupIds = IDS['groups'].find(
   (group) => group.name === DEFAULT_MANGO_GROUP_NAME
 )
+export const MNGO_INDEX = defaultMangoGroupIds.oracles.findIndex(
+  (t) => t.symbol === 'MNGO'
+)
 
 export const programId = new PublicKey(defaultMangoGroupIds.mangoProgramId)
 export const serumProgramId = new PublicKey(defaultMangoGroupIds.serumProgramId)

@@ -1,8 +1,9 @@
-import useMangoStore, { mangoClient } from '../stores/useMangoStore'
+import useMangoStore, { mangoClient, MNGO_INDEX } from '../stores/useMangoStore'
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
 import {
   getMarketByPublicKey,
   nativeI80F48ToUi,
+  nativeToUi,
   PerpAccount,
   PerpMarket,
   QUOTE_INDEX,
@@ -48,7 +49,8 @@ const PositionsTable = () => {
     ({ perpAccount }) =>
       !(
         perpAccount.quotePosition.eq(ZERO_I80F48) &&
-        perpAccount.basePosition.eq(new BN(0))
+        perpAccount.basePosition.eq(new BN(0)) &&
+        perpAccount.mngoAccrued.eq(new BN(0))
       )
   )
 
@@ -89,6 +91,37 @@ const PositionsTable = () => {
     }
   }
 
+  const handleRedeemMngo = async (perpMarket: PerpMarket) => {
+    const wallet = useMangoStore.getState().wallet.current
+    const mngoNodeBank =
+      mangoGroup.rootBankAccounts[MNGO_INDEX].nodeBankAccounts[0]
+
+    try {
+      const txid = await mangoClient.redeemMngo(
+        mangoGroup,
+        mangoAccount,
+        perpMarket,
+        wallet,
+        mangoGroup.tokens[MNGO_INDEX].rootBank,
+        mngoNodeBank.publicKey,
+        mngoNodeBank.vault
+      )
+      actions.fetchMangoAccounts()
+      notify({
+        title: 'Successfully redeemed MNGO',
+        description: '',
+        txid,
+      })
+    } catch (e) {
+      notify({
+        title: 'Error redeeming MNGO',
+        description: e.message,
+        txid: e.txid,
+        type: 'error',
+      })
+    }
+  }
+
   return (
     <div className="flex flex-col py-4">
       <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -115,6 +148,9 @@ const PositionsTable = () => {
                     </Th>
                     <Th scope="col" className="px-2 py-2 text-left font-normal">
                       Health
+                    </Th>
+                    <Th scope="col" className="px-2 py-2 text-left font-normal">
+                      MNGO Accrued
                     </Th>
                     <Th scope="col" className={`relative px-6 py-2.5`}>
                       <span className={`sr-only`}>Edit</span>
@@ -200,8 +236,23 @@ const PositionsTable = () => {
                               )
                               .toFixed(3)}
                           </Td>
-                          <Td className="px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1">
+                          <Td className="px-2 py-2 whitespace-nowrap text-sm text-th-fgd-1">
+                            {nativeToUi(perpAccount.mngoAccrued.toNumber(), 6)}
+                          </Td>
+                          <Td className="px-2 py-2 whitespace-nowrap text-sm text-th-fgd-1">
                             <div className="flex justify-end">
+                              {perpAccount.mngoAccrued.gt(new BN(0)) ? (
+                                <Button
+                                  onClick={() => handleRedeemMngo(perpMarket)}
+                                  className="ml-3 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
+                                >
+                                  {settlingPerpAcc == perpAccount ? (
+                                    <Loading />
+                                  ) : (
+                                    <span>Redeem MNGO</span>
+                                  )}
+                                </Button>
+                              ) : null}
                               <Button
                                 onClick={() =>
                                   handleSettlePnl(perpMarket, perpAccount)

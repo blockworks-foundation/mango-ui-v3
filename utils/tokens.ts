@@ -26,65 +26,65 @@ export function parseTokenAccountData(data: Buffer): {
   }
 }
 
-export async function getWalletTokenInfo(
-  connection: Connection,
-  ownerPublicKey: PublicKey
-) {
-  const splAccounts = await getOwnedTokenAccounts(connection, ownerPublicKey)
-  const account = await connection.getAccountInfo(ownerPublicKey)
-  if (!account) return splAccounts
-  return [
-    {
-      publicKey: ownerPublicKey,
-      account: {
-        mint: WRAPPED_SOL_MINT,
-        owner: ownerPublicKey,
-        amount: account.lamports,
-      },
-    },
-  ].concat(splAccounts)
-}
+// export async function getWalletTokenInfo(
+//   connection: Connection,
+//   ownerPublicKey: PublicKey
+// ) {
+//   const splAccounts = await getOwnedTokenAccounts(connection, ownerPublicKey)
+//   const account = await connection.getAccountInfo(ownerPublicKey)
+//   if (!account) return splAccounts
+//   return [
+//     {
+//       publicKey: ownerPublicKey,
+//       account: {
+//         mint: WRAPPED_SOL_MINT,
+//         owner: ownerPublicKey,
+//         amount: account.lamports,
+//       },
+//     },
+//   ].concat(splAccounts)
+// }
 
-export async function getOwnedTokenAccounts(
-  connection: Connection,
-  publicKey: PublicKey
-): Promise<any[]> {
-  const filters = getOwnedAccountsFilters(publicKey)
-  // @ts-ignore
-  const resp = await connection._rpcRequest('getProgramAccounts', [
-    TokenInstructions.TOKEN_PROGRAM_ID.toBase58(),
-    {
-      commitment: connection.commitment,
-      filters,
-    },
-  ])
-  if (resp.error) {
-    throw new Error(
-      'failed to get token accounts owned by ' +
-        publicKey.toBase58() +
-        ': ' +
-        resp.error.message
-    )
-  }
-  return resp.result.map(({ pubkey, account: { data } }) => {
-    data = bs58.decode(data)
-    return {
-      publicKey: new PublicKey(pubkey),
-      account: parseTokenAccountData(data),
-    }
-  })
-}
+// export async function getOwnedTokenAccounts(
+//   connection: Connection,
+//   publicKey: PublicKey
+// ): Promise<any[]> {
+//   const filters = getOwnedAccountsFilters(publicKey)
+//   // @ts-ignore
+//   const resp = await connection._rpcRequest('getProgramAccounts', [
+//     TokenInstructions.TOKEN_PROGRAM_ID.toBase58(),
+//     {
+//       commitment: connection.commitment,
+//       filters,
+//     },
+//   ])
+//   if (resp.error) {
+//     throw new Error(
+//       'failed to get token accounts owned by ' +
+//         publicKey.toBase58() +
+//         ': ' +
+//         resp.error.message
+//     )
+//   }
+//   return resp.result.map(({ pubkey, account: { data } }) => {
+//     data = bs58.decode(data)
+//     return {
+//       publicKey: new PublicKey(pubkey),
+//       account: parseTokenAccountData(data),
+//     }
+//   })
+// }
 
-export function getOwnedAccountsFilters(publicKey: PublicKey) {
-  return [
-    {
-      memcmp: {
-        offset: ACCOUNT_LAYOUT.offsetOf('owner'),
-        bytes: publicKey.toBase58(),
-      },
-    },
-    {
-      dataSize: ACCOUNT_LAYOUT.span,
-    },
-  ]
-}
+// export function getOwnedAccountsFilters(publicKey: PublicKey) {
+//   return [
+//     {
+//       memcmp: {
+//         offset: ACCOUNT_LAYOUT.offsetOf('owner'),
+//         bytes: publicKey.toBase58(),
+//       },
+//     },
+//     {
+//       dataSize: ACCOUNT_LAYOUT.span,
+//     },
+//   ]
+// }
