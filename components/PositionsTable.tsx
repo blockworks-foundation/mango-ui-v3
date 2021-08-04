@@ -203,9 +203,6 @@ const PositionsTable = () => {
                               .toFixed(3)}
                           </Td>
                           <Td className="px-2 py-2 whitespace-nowrap text-sm text-th-fgd-1">
-                            {nativeToUi(perpAccount.mngoAccrued.toNumber(), 6)}
-                          </Td>
-                          <Td className="px-2 py-2 whitespace-nowrap text-sm text-th-fgd-1">
                             <div className="flex justify-end">
                               <Button
                                 onClick={() =>
