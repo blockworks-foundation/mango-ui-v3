@@ -1,8 +1,15 @@
-import { ZERO_I80F48 } from '@blockworks-foundation/mango-client'
+import {
+  nativeToUi,
+  ZERO_BN,
+  ZERO_I80F48,
+} from '@blockworks-foundation/mango-client'
 import { HeartIcon } from '@heroicons/react/outline'
-import useMangoStore from '../stores/useMangoStore'
+import { useMemo } from 'react'
+import useMangoStore, { mangoClient, MNGO_INDEX } from '../stores/useMangoStore'
+import { notify } from '../utils/notifications'
+import Button from './Button'
 import FloatingElement from './FloatingElement'
-import { ElementTitle } from './styles'
+// import { ElementTitle } from './styles'
 import Tooltip from './Tooltip'
 
 export default function MarginInfo() {
@@ -10,6 +17,7 @@ export default function MarginInfo() {
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
+  const actions = useMangoStore((s) => s.actions)
 
   const maintHealth = mangoAccount
     ? mangoAccount.getHealthRatio(mangoGroup, mangoCache, 'Maint')
@@ -19,15 +27,53 @@ export default function MarginInfo() {
     ? mangoAccount.computeValue(mangoGroup, mangoCache)
     : ZERO_I80F48
 
+  const mngoAccrued = useMemo(() => {
+    return mangoAccount
+      ? mangoAccount.perpAccounts.reduce((acc, perpAcct) => {
+          return perpAcct.mngoAccrued.add(acc)
+        }, ZERO_BN)
+      : ZERO_BN
+  }, [mangoAccount])
+
   // const leverage =
   //   mangoAccount && equity.gt(ZERO_I80F48)
   //     ? mangoAccount.getLiabsVal(mangoGroup, mangoCache).div(equity)
   //     : 0.0
 
+  const handleRedeemMngo = async () => {
+    const wallet = useMangoStore.getState().wallet.current
+    const mngoNodeBank =
+      mangoGroup.rootBankAccounts[MNGO_INDEX].nodeBankAccounts[0]
+
+    try {
+      const txid = await mangoClient.redeemAllMngo(
+        mangoGroup,
+        mangoAccount,
+        wallet,
+        mangoGroup.tokens[MNGO_INDEX].rootBank,
+        mngoNodeBank.publicKey,
+        mngoNodeBank.vault
+      )
+      actions.fetchMangoAccounts()
+      notify({
+        title: 'Successfully redeemed MNGO',
+        description: '',
+        txid,
+      })
+    } catch (e) {
+      notify({
+        title: 'Error redeeming MNGO',
+        description: e.message,
+        txid: e.txid,
+        type: 'error',
+      })
+    }
+  }
+
   return (
     <FloatingElement showConnect>
       <div className={!connected ? 'filter blur-sm' : undefined}>
-        <ElementTitle>Account</ElementTitle>
+        {/* <ElementTitle>Account</ElementTitle> */}
         <div>
           <div>
             <div className="flex justify-between pt-2 pb-2">
@@ -88,6 +134,29 @@ export default function MarginInfo() {
                       .getHealth(mangoGroup, mangoCache, 'Init')
                       .toFixed(2)
                   : 0}
+              </div>
+            </div>
+            <div className={`flex justify-between pt-2 pb-2`}>
+              <div className="font-normal text-th-fgd-3 leading-4">
+                MNGO Accrued
+              </div>
+              <div className={`text-th-fgd-1`}>
+                {
+                  <Button
+                    onClick={handleRedeemMngo}
+                    className="ml-3 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
+                    disabled={mngoAccrued.eq(ZERO_BN)}
+                  >
+                    <span>
+                      Redeem{' '}
+                      {nativeToUi(
+                        mngoAccrued.toNumber(),
+                        mangoGroup.tokens[MNGO_INDEX].decimals
+                      )}{' '}
+                      MNGO
+                    </span>
+                  </Button>
+                }
               </div>
             </div>
             {/* <div className="flex justify-between pt-2 pb-2">

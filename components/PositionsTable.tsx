@@ -246,11 +246,7 @@ const PositionsTable = () => {
                                   onClick={() => handleRedeemMngo(perpMarket)}
                                   className="ml-3 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
                                 >
-                                  {settlingPerpAcc == perpAccount ? (
-                                    <Loading />
-                                  ) : (
-                                    <span>Redeem MNGO</span>
-                                  )}
+                                  <span>Redeem MNGO</span>
                                 </Button>
                               ) : null}
                               <Button
