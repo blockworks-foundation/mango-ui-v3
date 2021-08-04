@@ -130,19 +130,22 @@ export default function Orderbook({ depth = 8 }) {
         bids: orderbook?.bids,
         asks: orderbook?.asks,
       }
-      if (bidsToDisplay[0] && asksToDisplay[0]) {
-        const bid = bidsToDisplay[0].price
+      if (bidsToDisplay[0] || asksToDisplay[0]) {
+        const bid = bidsToDisplay[0]?.price
         const ask = defaultLayout
-          ? asksToDisplay[0].price
-          : asksToDisplay[asksToDisplay.length - 1].price
-        const spread = ask - bid
-        const spreadPercentage = (spread / ask) * 100
+          ? asksToDisplay[0]?.price
+          : asksToDisplay[asksToDisplay.length - 1]?.price
+        let spread, spreadPercentage
+        if (bid && ask) {
+          spread = ask - bid
+          spreadPercentage = (spread / ask) * 100
+        }
 
         setOrderbookData({
           bids: bidsToDisplay,
           asks: asksToDisplay,
-          spread: spread,
-          spreadPercentage: spreadPercentage,
+          spread,
+          spreadPercentage,
         })
       } else {
         setOrderbookData(null)
@@ -229,10 +232,10 @@ export default function Orderbook({ depth = 8 }) {
                 <div className="flex justify-between bg-th-bkg-1 p-2 mt-4 rounded-md text-xs">
                   <div className="text-th-fgd-3">Spread</div>
                   <div className="text-th-fgd-1">
-                    {orderbookData?.spread.toFixed(2)}
+                    {orderbookData?.spread?.toFixed(2)}
                   </div>
                   <div className="text-th-fgd-1">
-                    {orderbookData?.spreadPercentage.toFixed(2)}%
+                    {orderbookData?.spreadPercentage?.toFixed(2)}%
                   </div>
                 </div>
               </StyledFloatingElement>
