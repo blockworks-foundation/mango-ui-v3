@@ -265,7 +265,6 @@ const useMangoStore = create<MangoStore>((set, get) => ({
               .sort((a, b) =>
                 a.publicKey.toBase58() > b.publicKey.toBase58() ? 1 : -1
               )
-            console.log('mango acc: ', sortedAccounts[0])
 
             set((state) => {
               state.mangoAccounts = sortedAccounts
@@ -304,7 +303,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
           const mangoCache = await mangoGroup.loadCache(DEFAULT_CONNECTION)
           const allMarketConfigs = getAllMarkets(mangoGroupConfig)
           const allMarketPks = allMarketConfigs.map((m) => m.publicKey)
-          console.log('mango group: ', mangoGroup)
+
           const allMarketAccountInfos = await getMultipleAccounts(
             DEFAULT_CONNECTION,
             allMarketPks

@@ -34,7 +34,7 @@ export const WALLET_PROVIDERS = [
     adapter: SolletExtensionAdapter as any,
   },
 ]
-
+export const PROVIDER_LOCAL_STORAGE_KEY = 'walletProvider-0.1'
 export const DEFAULT_PROVIDER = WALLET_PROVIDERS[0]
 
 export default function useWallet() {
@@ -48,7 +48,7 @@ export default function useWallet() {
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const actions = useMangoStore((s) => s.actions)
   const [savedProviderUrl, setSavedProviderUrl] = useLocalStorageState(
-    'walletProvider',
+    PROVIDER_LOCAL_STORAGE_KEY,
     DEFAULT_PROVIDER.url
   )
   const provider = useMemo(

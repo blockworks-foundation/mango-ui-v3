@@ -5,13 +5,17 @@ import {
   CheckCircleIcon,
 } from '@heroicons/react/solid'
 import useMangoStore from '../stores/useMangoStore'
-import { WALLET_PROVIDERS, DEFAULT_PROVIDER } from '../hooks/useWallet'
+import {
+  WALLET_PROVIDERS,
+  DEFAULT_PROVIDER,
+  PROVIDER_LOCAL_STORAGE_KEY,
+} from '../hooks/useWallet'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 
 export default function WalletSelect({ isPrimary = false }) {
   const setMangoStore = useMangoStore((s) => s.set)
   const [savedProviderUrl] = useLocalStorageState(
-    'walletProvider',
+    PROVIDER_LOCAL_STORAGE_KEY,
     DEFAULT_PROVIDER.url
   )
 

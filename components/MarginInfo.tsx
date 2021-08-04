@@ -9,7 +9,7 @@ import useMangoStore, { mangoClient, MNGO_INDEX } from '../stores/useMangoStore'
 import { notify } from '../utils/notifications'
 import Button from './Button'
 import FloatingElement from './FloatingElement'
-// import { ElementTitle } from './styles'
+import { ElementTitle } from './styles'
 import Tooltip from './Tooltip'
 
 export default function MarginInfo() {
@@ -18,10 +18,6 @@ export default function MarginInfo() {
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const actions = useMangoStore((s) => s.actions)
-
-  const maintHealth = mangoAccount
-    ? mangoAccount.getHealthRatio(mangoGroup, mangoCache, 'Maint')
-    : 100
 
   const equity = mangoAccount
     ? mangoAccount.computeValue(mangoGroup, mangoCache)
@@ -34,11 +30,6 @@ export default function MarginInfo() {
         }, ZERO_BN)
       : ZERO_BN
   }, [mangoAccount])
-
-  // const leverage =
-  //   mangoAccount && equity.gt(ZERO_I80F48)
-  //     ? mangoAccount.getLiabsVal(mangoGroup, mangoCache).div(equity)
-  //     : 0.0
 
   const handleRedeemMngo = async () => {
     const wallet = useMangoStore.getState().wallet.current
@@ -70,10 +61,22 @@ export default function MarginInfo() {
     }
   }
 
+  const maintHealthRatio = useMemo(() => {
+    return mangoAccount
+      ? mangoAccount.getHealthRatio(mangoGroup, mangoCache, 'Maint')
+      : 100
+  }, [mangoAccount, mangoGroup, mangoCache])
+
+  const initHealthRatio = useMemo(() => {
+    return mangoAccount
+      ? mangoAccount.getHealthRatio(mangoGroup, mangoCache, 'Init')
+      : 100
+  }, [mangoAccount, mangoGroup, mangoCache])
+
   return (
     <FloatingElement showConnect>
       <div className={!connected ? 'filter blur-sm' : undefined}>
-        {/* <ElementTitle>Account</ElementTitle> */}
+        <ElementTitle>Account</ElementTitle>
         <div>
           <div>
             <div className="flex justify-between pt-2 pb-2">
@@ -84,12 +87,12 @@ export default function MarginInfo() {
               </Tooltip>
               <div className="text-th-fgd-1">${equity.toFixed(2)}</div>
             </div>
-            {/* <div className="flex justify-between pt-2 pb-2">
+            <div className="flex justify-between pt-2 pb-2">
               <div className="font-normal text-th-fgd-3 leading-4">
                 Leverage
               </div>
-              <div className="text-th-fgd-1">{leverage.toFixed(2)}x</div>
-            </div> */}
+              <div className="text-th-fgd-1">0.00x</div>
+            </div>
             <div className={`flex justify-between pt-2 pb-2`}>
               <div className="font-normal text-th-fgd-3 leading-4">
                 Total Assets Value
@@ -109,30 +112,6 @@ export default function MarginInfo() {
                 $
                 {mangoAccount
                   ? mangoAccount.getLiabsVal(mangoGroup, mangoCache).toFixed(2)
-                  : 0}
-              </div>
-            </div>
-            <div className={`flex justify-between pt-2 pb-2`}>
-              <div className="font-normal text-th-fgd-3 leading-4">
-                Maint Health
-              </div>
-              <div className={`text-th-fgd-1`}>
-                {mangoAccount
-                  ? mangoAccount
-                      .getHealth(mangoGroup, mangoCache, 'Maint')
-                      .toFixed(2)
-                  : 0}
-              </div>
-            </div>
-            <div className={`flex justify-between pt-2 pb-2`}>
-              <div className="font-normal text-th-fgd-3 leading-4">
-                Init Health
-              </div>
-              <div className={`text-th-fgd-1`}>
-                {mangoAccount
-                  ? mangoAccount
-                      .getHealth(mangoGroup, mangoCache, 'Init')
-                      .toFixed(2)
                   : 0}
               </div>
             </div>
@@ -176,21 +155,6 @@ export default function MarginInfo() {
                 }
               </div>
             </div>
-            {/* <div className="flex justify-between pt-2 pb-2">
-              <Tooltip content="Must be above 0% to borrow funds">
-                <div className="cursor-help font-normal text-th-fgd-3 border-b border-th-fgd-3 border-dashed border-opacity-20 leading-4 default-transition hover:border-th-bkg-2 hover:text-th-fgd-3">
-                  Init Ratio
-                </div>
-              </Tooltip>
-              <div className="text-th-fgd-1">
-                {mangoAccount
-                  ? mangoAccount
-                      .getHealthRatio(mangoGroup, mangoCache, 'Init')
-                      .toFixed(2)
-                  : 100.0}
-                %
-              </div>
-            </div> */}
           </div>
           <div className="border border-th-bkg-4 mt-4 p-4 rounded">
             <div className="flex flex-col">
@@ -200,20 +164,39 @@ export default function MarginInfo() {
                     className="h-5 w-5 text-th-primary"
                     aria-hidden="true"
                   />
-                  <span className="ml-2">Health Ratio</span>
+                  <span className="ml-2">
+                    <Tooltip
+                      content={
+                        <div>
+                          Account will be liquidated if Health Ratio reaches 0%.{' '}
+                          <a
+                            href="https://docs.mango.markets/mango-v3/overview#health"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Learn more
+                          </a>
+                        </div>
+                      }
+                    >
+                      <div className="cursor-help font-normal text-th-fgd-3 leading-4 border-b border-th-fgd-3 border-dashed border-opacity-20 default-transition hover:border-th-bkg-2">
+                        Health Ratio
+                      </div>
+                    </Tooltip>
+                  </span>
                 </div>
-                <div className="text-right">{maintHealth.toFixed(2)}%</div>
+                <div className="text-right">{maintHealthRatio.toFixed(2)}%</div>
               </div>
-              <div className="mt-4">
-                <div className="h-1.5 flex rounded bg-th-bkg-3">
+              <div className="mt-1">
+                <div className="h-1.5 flex rounded bg-th-bkg-3 mt-4">
                   <div
                     style={{
-                      width: `${maintHealth}%`,
+                      width: `${maintHealthRatio}%`,
                     }}
                     className={`flex rounded ${
-                      maintHealth > 50
+                      maintHealthRatio > 30
                         ? 'bg-th-green'
-                        : maintHealth <= 50 && maintHealth > 24
+                        : initHealthRatio > 0
                         ? 'bg-th-orange'
                         : 'bg-th-red'
                     }`}

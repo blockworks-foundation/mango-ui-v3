@@ -7,12 +7,17 @@ import {
   DuplicateIcon,
   LogoutIcon,
 } from '@heroicons/react/outline'
-import { WALLET_PROVIDERS, DEFAULT_PROVIDER } from '../hooks/useWallet'
+import {
+  WALLET_PROVIDERS,
+  DEFAULT_PROVIDER,
+  PROVIDER_LOCAL_STORAGE_KEY,
+} from '../hooks/useWallet'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import { abbreviateAddress, copyToClipboard } from '../utils'
 import WalletSelect from './WalletSelect'
 import { WalletIcon, ProfileIcon } from './icons'
 import AccountsModal from './AccountsModal'
+import { useEffect } from 'react'
 
 const StyledWalletTypeLabel = styled.div`
   font-size: 0.65rem;
@@ -23,10 +28,16 @@ const ConnectWalletButton = () => {
   const connected = useMangoStore((s) => s.wallet.connected)
   const set = useMangoStore((s) => s.set)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
+  const [selectedWallet, setSelectedWallet] = useState(DEFAULT_PROVIDER.url)
   const [savedProviderUrl] = useLocalStorageState(
-    'walletProvider',
+    PROVIDER_LOCAL_STORAGE_KEY,
     DEFAULT_PROVIDER.url
   )
+
+  // update in useEffect to prevent SRR error from next.js
+  useEffect(() => {
+    setSelectedWallet(savedProviderUrl)
+  }, [savedProviderUrl])
 
   const handleWalletConect = () => {
     wallet.connect()
@@ -95,10 +106,7 @@ const ConnectWalletButton = () => {
               <div>
                 <div className="mb-0.5 whitespace-nowrap">Connect Wallet</div>
                 <StyledWalletTypeLabel className="font-normal text-th-fgd-3 text-left leading-3 tracking-wider">
-                  {
-                    WALLET_PROVIDERS.find((p) => p.url === savedProviderUrl)
-                      ?.name
-                  }
+                  {WALLET_PROVIDERS.find((p) => p.url === selectedWallet)?.name}
                 </StyledWalletTypeLabel>
               </div>
             </div>
