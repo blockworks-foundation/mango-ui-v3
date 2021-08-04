@@ -995,7 +995,7 @@
 
 "@blockworks-foundation/mango-client@git+https://github.com/blockworks-foundation/mango-client-v3.git":
   version "3.0.2"
-  resolved "git+https://github.com/blockworks-foundation/mango-client-v3.git#4574e865c8d41046dd7ceb88e739403b5cde7c6b"
+  resolved "git+https://github.com/blockworks-foundation/mango-client-v3.git#aae162e490252bf3be853ecd029ea510a924e667"
   dependencies:
     "@project-serum/serum" "^0.13.45"
     "@project-serum/sol-wallet-adapter" "^0.2.0"
@@ -1891,14 +1891,14 @@
   integrity sha512-/BHF5HAx3em7/KkzVKm3LrsD6HZAXuXO1AJZQ3cRRBZj4oHZDviWPYu0aEplAqDFNHZPW6d3G7KN+ONcCCC7pw==
 
 "@types/node@*":
-  version "16.4.11"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.4.11.tgz#245030af802c776c31f00eb0cdde40ee615db462"
-  integrity sha512-nWSFUbuNiPKJEe1IViuodSI+9cM+vpM8SWF/O6dJK7wmGRNq55U7XavJHrlRrPkSMuUZUFzg1xaZ1B+ZZCrRWw==
+  version "16.4.12"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.4.12.tgz#961e3091f263e6345d2d84afab4e047a60b4b11b"
+  integrity sha512-zxrTNFl9Z8boMJXs6ieqZP0wAhvkdzmHSxTlJabM16cf5G9xBc1uPRH5Bbv2omEDDiM8MzTfqTJXBf0Ba4xFWA==
 
 "@types/node@^12.12.54":
-  version "12.20.18"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.20.18.tgz#37a0aab0560d1186da54ee5d62ff6a78cacb8c75"
-  integrity sha512-YoTiIwdKxM3VLiY2sM05x4iGuTveYiCcDaUVmo1L5ndrXxPGW/NEoZu+pGcBirziomizcZsnsQoemikKcB2fRA==
+  version "12.20.19"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.20.19.tgz#538e61fc220f77ae4a4663c3d8c3cb391365c209"
+  integrity sha512-niAuZrwrjKck4+XhoCw6AAVQBENHftpXw9F4ryk66fTgYaKQ53R4FI7c9vUGGw5vQis1HKBHDR1gcYI/Bq1xvw==
 
 "@types/node@^14.14.25":
   version "14.17.3"

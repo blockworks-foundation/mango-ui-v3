@@ -12,6 +12,8 @@ const byTimestamp = (a, b) => {
   )
 }
 
+const reverseSide = (side) => (side === 'buy' ? 'sell' : 'buy')
+
 const parsedPerpEvent = (
   mangoGroup: MangoGroup,
   mangoAccountPk: PublicKey,
@@ -29,6 +31,7 @@ const parsedPerpEvent = (
   const feeRate = maker
     ? perpMarketInfo.makerFee.toNumber()
     : perpMarketInfo.takerFee.toNumber()
+  const side = maker ? reverseSide(event.takerSide) : event.takerSide
 
   return {
     ...event,
@@ -38,7 +41,7 @@ const parsedPerpEvent = (
     price: event.price,
     value,
     feeCost: (feeRate * value).toFixed(4),
-    side: event.side,
+    side,
   }
 }
 
