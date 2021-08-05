@@ -7,7 +7,7 @@ import { HeartIcon } from '@heroicons/react/outline'
 import { useMemo } from 'react'
 import useMangoStore, { mangoClient, MNGO_INDEX } from '../stores/useMangoStore'
 import { notify } from '../utils/notifications'
-import Button, { LinkButton } from './Button'
+import { LinkButton } from './Button'
 import FloatingElement from './FloatingElement'
 import { ElementTitle } from './styles'
 import Tooltip from './Tooltip'
@@ -23,13 +23,11 @@ export default function MarginInfo() {
     ? mangoAccount.computeValue(mangoGroup, mangoCache)
     : ZERO_I80F48
 
-  const mngoAccrued = useMemo(() => {
-    return mangoAccount
-      ? mangoAccount.perpAccounts.reduce((acc, perpAcct) => {
-          return perpAcct.mngoAccrued.add(acc)
-        }, ZERO_BN)
-      : ZERO_BN
-  }, [mangoAccount])
+  const mngoAccrued = mangoAccount
+    ? mangoAccount.perpAccounts.reduce((acc, perpAcct) => {
+        return perpAcct.mngoAccrued.add(acc)
+      }, ZERO_BN)
+    : ZERO_BN
 
   const handleRedeemMngo = async () => {
     const wallet = useMangoStore.getState().wallet.current
