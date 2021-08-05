@@ -7,7 +7,7 @@ import { HeartIcon } from '@heroicons/react/outline'
 import { useMemo } from 'react'
 import useMangoStore, { mangoClient, MNGO_INDEX } from '../stores/useMangoStore'
 import { notify } from '../utils/notifications'
-import Button from './Button'
+import Button, { LinkButton } from './Button'
 import FloatingElement from './FloatingElement'
 import { ElementTitle } from './styles'
 import Tooltip from './Tooltip'
@@ -119,7 +119,7 @@ export default function MarginInfo() {
               <Tooltip
                 content={
                   <div>
-                    Earn MNGO by market making on the Perp markets.{' '}
+                    Earn MNGO by market making on Perp markets.{' '}
                     <a
                       href="https://docs.mango.markets/mango-v3/liquidity-incentives"
                       target="_blank"
@@ -131,28 +131,23 @@ export default function MarginInfo() {
                 }
               >
                 <div className="cursor-help font-normal text-th-fgd-3 leading-4 border-b border-th-fgd-3 border-dashed border-opacity-20 default-transition hover:border-th-bkg-2">
-                  MNGO Accrued
+                  MNGO Rewards
                 </div>
               </Tooltip>
-              <div className={`text-th-fgd-1`}>
-                {
-                  <Button
-                    onClick={handleRedeemMngo}
-                    className="ml-3 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
-                    disabled={mngoAccrued.eq(ZERO_BN)}
-                  >
-                    <span>
-                      Redeem{' '}
-                      {mangoGroup
-                        ? nativeToUi(
-                            mngoAccrued.toNumber(),
-                            mangoGroup.tokens[MNGO_INDEX].decimals
-                          )
-                        : 0}{' '}
-                      MNGO
-                    </span>
-                  </Button>
-                }
+              <div className={`flex items-center text-th-fgd-1`}>
+                {mangoGroup
+                  ? nativeToUi(
+                      mngoAccrued.toNumber(),
+                      mangoGroup.tokens[MNGO_INDEX].decimals
+                    )
+                  : 0}
+                <LinkButton
+                  onClick={handleRedeemMngo}
+                  className="ml-2 text-th-primary text-xs"
+                  disabled={mngoAccrued.eq(ZERO_BN)}
+                >
+                  Claim
+                </LinkButton>
               </div>
             </div>
           </div>

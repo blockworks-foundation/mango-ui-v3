@@ -1,19 +1,28 @@
-import { useEffect, useCallback, useState } from 'react'
+import { useEffect, useCallback, useMemo, useState } from 'react'
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
 import styled from '@emotion/styled'
 import { Menu } from '@headlessui/react'
 import Link from 'next/link'
 import {
-  ArrowSmDownIcon,
   ChartBarIcon,
   CurrencyDollarIcon,
   ExclamationIcon,
   DotsHorizontalIcon,
+  GiftIcon,
   HeartIcon,
   XIcon,
 } from '@heroicons/react/outline'
-import { getTokenBySymbol, I80F48 } from '@blockworks-foundation/mango-client'
-import useMangoStore, { mangoClient } from '../../stores/useMangoStore'
+import { ArrowSmDownIcon, ArrowSmUpIcon } from '@heroicons/react/solid'
+import {
+  getTokenBySymbol,
+  nativeToUi,
+  ZERO_BN,
+  I80F48,
+} from '@blockworks-foundation/mango-client'
+import useMangoStore, {
+  mangoClient,
+  MNGO_INDEX,
+} from '../../stores/useMangoStore'
 import { useBalances } from '../../hooks/useBalances'
 import { useSortableData } from '../../hooks/useSortableData'
 import useLocalStorageState from '../../hooks/useLocalStorageState'
@@ -130,6 +139,26 @@ export default function AccountOverview() {
     setUnsettled(unsettled)
   }, [mangoAccount])
 
+  const maintHealthRatio = useMemo(() => {
+    return mangoAccount
+      ? mangoAccount.getHealthRatio(mangoGroup, mangoCache, 'Maint')
+      : 100
+  }, [mangoAccount, mangoGroup, mangoCache])
+
+  const initHealthRatio = useMemo(() => {
+    return mangoAccount
+      ? mangoAccount.getHealthRatio(mangoGroup, mangoCache, 'Init')
+      : 100
+  }, [mangoAccount, mangoGroup, mangoCache])
+
+  const mngoAccrued = useMemo(() => {
+    return mangoAccount
+      ? mangoAccount.perpAccounts.reduce((acc, perpAcct) => {
+          return perpAcct.mngoAccrued.add(acc)
+        }, ZERO_BN)
+      : ZERO_BN
+  }, [mangoAccount])
+
   const handleShowZeroBalances = (checked) => {
     if (checked) {
       setFilteredSpotPortfolio(spotPortfolio)
@@ -171,6 +200,36 @@ export default function AccountOverview() {
     }
   }
 
+  const handleRedeemMngo = async () => {
+    const wallet = useMangoStore.getState().wallet.current
+    const mngoNodeBank =
+      mangoGroup.rootBankAccounts[MNGO_INDEX].nodeBankAccounts[0]
+
+    try {
+      const txid = await mangoClient.redeemAllMngo(
+        mangoGroup,
+        mangoAccount,
+        wallet,
+        mangoGroup.tokens[MNGO_INDEX].rootBank,
+        mngoNodeBank.publicKey,
+        mngoNodeBank.vault
+      )
+      actions.fetchMangoAccounts()
+      notify({
+        title: 'Successfully redeemed MNGO',
+        description: '',
+        txid,
+      })
+    } catch (e) {
+      notify({
+        title: 'Error redeeming MNGO',
+        description: e.message,
+        txid: e.txid,
+        type: 'error',
+      })
+    }
+  }
+
   const handleOpenDepositModal = useCallback((symbol) => {
     setActionSymbol(symbol)
     setShowDepositModal(true)
@@ -183,10 +242,10 @@ export default function AccountOverview() {
 
   return mangoAccount ? (
     <>
-      <div className="grid grid-flow-col grid-cols-1 grid-rows-2 md:grid-cols-2 md:grid-rows-1 gap-4 pb-4">
+      <div className="grid grid-flow-col grid-cols-1 grid-rows-4 md:grid-cols-4 md:grid-rows-1 gap-4 pb-8">
         <div className="border border-th-bkg-4 p-4 rounded-lg">
           <div className="pb-2 text-th-fgd-3">Account Value</div>
-          <div className="flex items-center">
+          <div className="flex items-center pb-3">
             <CurrencyDollarIcon className="flex-shrink-0 h-7 w-7 mr-1.5 text-th-primary" />
             <StyledAccountValue className="font-bold text-th-fgd-1">
               {usdFormatter.format(
@@ -194,10 +253,14 @@ export default function AccountOverview() {
               )}
             </StyledAccountValue>
           </div>
+          <div className="flex items-center text-th-fgd-3 text-xs">
+            <ArrowSmUpIcon className="h-4 w-4 mr-1.5 text-th-green" />
+            XX.XX today
+          </div>
         </div>
         <div className="border border-th-bkg-4 p-4 rounded-lg">
           <div className="pb-2 text-th-fgd-3">PNL</div>
-          <div className="flex items-center">
+          <div className="flex items-center pb-3">
             <ChartBarIcon className="flex-shrink-0 h-7 w-7 mr-1.5 text-th-primary" />
             <StyledAccountValue className="font-bold text-th-fgd-1">
               {usdFormatter.format(
@@ -205,56 +268,58 @@ export default function AccountOverview() {
               )}
             </StyledAccountValue>
           </div>
+          <div className="flex items-center text-th-fgd-3 text-xs">
+            <ArrowSmUpIcon className="h-4 w-4 mr-1.5 text-th-green" />
+            XX.XX today
+          </div>
         </div>
-      </div>
-      <div className="grid grid-flow-col grid-cols-1 grid-rows-4 md:grid-cols-2 md:grid-rows-2 lg:grid-cols-4 lg:grid-rows-1 gap-4 pb-8">
         <div className="border border-th-bkg-4 p-4 rounded-lg">
-          <div className="pb-0.5 text-xs text-th-fgd-3">Positions</div>
-          <div className="flex items-center">
-            <div className="text-lg text-th-fgd-1">
-              {spotPortfolio.length > 0
-                ? usdFormatter.format(
-                    spotPortfolio.reduce(
-                      (acc, d) => d.market.includes('PERP') && acc + d.value,
-                      0
-                    )
+          <div className="pb-2 text-th-fgd-3">Health Ratio</div>
+          <div className="flex items-center pb-4">
+            <HeartIcon className="flex-shrink-0 h-7 w-7 mr-1.5 text-th-primary" />
+            <StyledAccountValue className="font-bold text-th-fgd-1">
+              {maintHealthRatio.toFixed(2)}%
+            </StyledAccountValue>
+          </div>
+          <div className="h-1.5 flex rounded bg-th-bkg-3">
+            <div
+              style={{
+                width: `${maintHealthRatio}%`,
+              }}
+              className={`flex rounded ${
+                maintHealthRatio > 30
+                  ? 'bg-th-green'
+                  : initHealthRatio > 0
+                  ? 'bg-th-orange'
+                  : 'bg-th-red'
+              }`}
+            ></div>
+          </div>
+        </div>
+        <div className="border border-th-bkg-4 p-4 rounded-lg">
+          <div className="pb-2 text-th-fgd-3">MNGO Rewards</div>
+          <div className="flex items-center pb-2">
+            <GiftIcon className="flex-shrink-0 h-7 w-7 mr-1.5 text-th-primary" />
+            <StyledAccountValue className="font-bold text-th-fgd-1">
+              {mangoGroup
+                ? nativeToUi(
+                    mngoAccrued.toNumber(),
+                    mangoGroup.tokens[MNGO_INDEX].decimals
                   )
                 : 0}
-            </div>
+            </StyledAccountValue>
           </div>
-        </div>
-        <div className="border border-th-bkg-4 p-4 rounded-lg">
-          <div className="pb-0.5 text-xs text-th-fgd-3">Deposits</div>
-          <div className="flex items-center">
-            <div className="text-lg text-th-fgd-1">
-              {usdFormatter.format(
-                +mangoAccount.getAssetsVal(mangoGroup, mangoCache)
-              )}
-            </div>
-          </div>
-        </div>
-        <div className="border border-th-bkg-4 p-4 rounded-lg">
-          <div className="pb-0.5 text-xs text-th-fgd-3">Borrows</div>
-          <div className="flex items-center">
-            <div className="text-lg text-th-fgd-1">
-              {usdFormatter.format(
-                +mangoAccount.getLiabsVal(mangoGroup, mangoCache)
-              )}
-            </div>
-          </div>
-        </div>
-        <div className="border border-th-bkg-4 p-4 rounded-lg">
-          <div className="pb-0.5 text-xs text-th-fgd-3">Health Ratio</div>
-          <div className="flex items-center">
-            <HeartIcon className="flex-shrink-0 h-5 w-5 mr-2 text-th-primary" />
-            <div className="text-lg text-th-fgd-1">
-              {mangoAccount.getHealthRatio(mangoGroup, mangoCache, 'Maint')}%
-            </div>
-          </div>
+          <LinkButton
+            onClick={handleRedeemMngo}
+            disabled={mngoAccrued.eq(ZERO_BN)}
+            className="text-th-primary text-xs"
+          >
+            Claim Reward
+          </LinkButton>
         </div>
       </div>
       {unsettled.length > 0 ? (
-        <div className="border border-th-primary rounded-lg mb-8 p-6">
+        <div className="border border-th-bkg-3 rounded-lg mb-8 p-6">
           <div className="flex items-center justify-between pb-4">
             <div className="flex items-center text-lg">
               <ExclamationIcon className="h-5 mr-1.5 mt-0.5 text-th-primary w-5" />
@@ -291,8 +356,33 @@ export default function AccountOverview() {
         <div className="pb-4 text-th-fgd-1 text-lg">Perp Positions</div>
         <PositionsTable />
       </div>
-      <div className="flex items-center justify-between pb-4">
-        <div className="text-th-fgd-1 text-lg">Assets</div>
+      <div className="pb-4 text-th-fgd-1 text-lg">Assets & Liabilities</div>
+
+      <div className="grid grid-flow-col grid-cols-1 grid-rows-2 md:grid-cols-2 md:grid-rows-1 gap-4 pb-4">
+        <div className="border border-th-bkg-4 p-4 rounded-lg">
+          <div className="pb-0.5 text-xs text-th-fgd-3">Total Assets Value</div>
+          <div className="flex items-center">
+            <div className="text-lg text-th-fgd-1">
+              {usdFormatter.format(
+                +mangoAccount.getAssetsVal(mangoGroup, mangoCache)
+              )}
+            </div>
+          </div>
+        </div>
+        <div className="border border-th-bkg-4 p-4 rounded-lg">
+          <div className="pb-0.5 text-xs text-th-fgd-3">
+            Total Liabilities Value
+          </div>
+          <div className="flex items-center">
+            <div className="text-lg text-th-fgd-1">
+              {usdFormatter.format(
+                +mangoAccount.getLiabsVal(mangoGroup, mangoCache)
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="flex justify-end pb-4">
         <Switch
           checked={showZeroBalances}
           className="text-xs"
@@ -301,7 +391,6 @@ export default function AccountOverview() {
           Show zero balances
         </Switch>
       </div>
-
       {filteredSpotPortfolio.length > 0 ? (
         <Table className="min-w-full divide-y divide-th-bkg-2">
           <Thead>
