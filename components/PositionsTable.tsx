@@ -107,16 +107,13 @@ const PositionsTable = () => {
                       Side
                     </Th>
                     <Th scope="col" className="px-2 py-2 text-left font-normal">
-                      Base Position
+                      Position
                     </Th>
                     <Th scope="col" className="px-2 py-2 text-left font-normal">
-                      Quote Position
+                      Mark Price
                     </Th>
                     <Th scope="col" className="px-2 py-2 text-left font-normal">
                       Unrealized PnL
-                    </Th>
-                    <Th scope="col" className="px-2 py-2 text-left font-normal">
-                      Health
                     </Th>
                     <Th scope="col" className={`relative px-6 py-2.5`}>
                       <span className={`sr-only`}>Edit</span>
@@ -131,9 +128,6 @@ const PositionsTable = () => {
                         groupConfig,
                         perpMarketInfo.perpMarket
                       )
-
-                      const marketCache =
-                        mangoCache.perpMarketCache[marketIndex]
                       const price = mangoCache.priceCache[marketIndex].price
                       const perpMarket = allMarkets[
                         marketConfig.publicKey.toString()
@@ -174,10 +168,9 @@ const PositionsTable = () => {
                           </Td>
                           <Td className="px-2 py-2 whitespace-nowrap text-sm text-th-fgd-1">
                             {usdFormatter.format(
-                              +nativeI80F48ToUi(
-                                perpAccount.quotePosition,
-                                marketConfig.quoteDecimals
-                              )
+                              mangoGroup
+                                .getPrice(marketIndex, mangoCache)
+                                .toNumber()
                             )}
                           </Td>
                           <Td className="px-2 py-2 whitespace-nowrap text-sm text-th-fgd-1">
@@ -187,18 +180,6 @@ const PositionsTable = () => {
                                 marketConfig.quoteDecimals
                               )
                             )}
-                          </Td>
-                          <Td className="px-2 py-2 whitespace-nowrap text-sm text-th-fgd-1">
-                            {perpAccount
-                              .getHealth(
-                                perpMarketInfo,
-                                price,
-                                perpMarketInfo.maintAssetWeight,
-                                perpMarketInfo.maintLiabWeight,
-                                marketCache.longFunding,
-                                marketCache.shortFunding
-                              )
-                              .toFixed(3)}
                           </Td>
                           <Td className="px-2 py-2 whitespace-nowrap text-sm text-th-fgd-1">
                             <div className="flex justify-end">
