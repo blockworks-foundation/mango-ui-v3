@@ -78,7 +78,6 @@ export const useTradeHistory = () => {
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const tradeHistory = useMangoStore((s) => s.tradeHistory)
-  console.log('in trade history')
 
   if (!mangoAccount || !selectedMangoGroup) return null
   const openOrdersAccount =
@@ -96,7 +95,6 @@ export const useTradeHistory = () => {
       }
     })
     .map((fill) => ({ ...fill, marketName: marketConfig.name }))
-  console.log('mangoAccountFills', mangoAccountFills)
 
   const allTrades = []
   if (mangoAccountFills && mangoAccountFills.length > 0) {

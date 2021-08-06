@@ -993,9 +993,9 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@blockworks-foundation/mango-client@git+https://github.com/blockworks-foundation/mango-client-v3.git#ts/levcalc":
+"@blockworks-foundation/mango-client@git+https://github.com/blockworks-foundation/mango-client-v3.git":
   version "3.0.2"
-  resolved "git+https://github.com/blockworks-foundation/mango-client-v3.git#1df3194663a5a649acd3c373ea5aac1d9d49648c"
+  resolved "git+https://github.com/blockworks-foundation/mango-client-v3.git#d3aba25a04041fd855155796b081435c9f63ca80"
   dependencies:
     "@project-serum/serum" "^0.13.45"
     "@project-serum/sol-wallet-adapter" "^0.2.0"

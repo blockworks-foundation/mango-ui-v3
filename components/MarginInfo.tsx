@@ -89,7 +89,7 @@ export default function MarginInfo() {
               <div className="font-normal text-th-fgd-3 leading-4">
                 Leverage
               </div>
-              <div className="text-th-fgd-1">0.00x</div>
+              <div className="text-th-fgd-1">x.xx</div>
             </div>
             <div className={`flex justify-between pt-2 pb-2`}>
               <div className="font-normal text-th-fgd-3 leading-4">
