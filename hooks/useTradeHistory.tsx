@@ -86,7 +86,9 @@ export const useTradeHistory = () => {
   const mangoAccountFills = fills
     .filter((fill) => {
       if (fill.openOrders) {
-        return fill.openOrders.equals(openOrdersAccount?.publicKey)
+        return openOrdersAccount?.publicKey
+          ? fill.openOrders.equals(openOrdersAccount?.publicKey)
+          : false
       } else {
         return (
           fill.taker.equals(mangoAccount.publicKey) ||
