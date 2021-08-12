@@ -941,9 +941,9 @@
     regenerator-runtime "^0.13.4"
 
 "@babel/runtime@^7.10.5", "@babel/runtime@^7.11.2", "@babel/runtime@^7.12.5":
-  version "7.14.8"
-  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.14.8.tgz#7119a56f421018852694290b9f9148097391b446"
-  integrity sha512-twj3L8Og5SaCRCErB4x4ajbvBIVV77CGeFglHpeg5WC5FF8TZzBWXtTJ4MqaD9QszLYTtr+IsaAL2rEUevb+eg==
+  version "7.15.3"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.15.3.tgz#2e1c2880ca118e5b2f9988322bd8a7656a32502b"
+  integrity sha512-OvwMLqNXkCXSz1kSm58sEsNuhqOx/fKpnUnKnFB5v8uDda5bLNEHNgKPvhDN6IU0LDcnHQ90LlJ0Q6jnyBSIBA==
   dependencies:
     regenerator-runtime "^0.13.4"
 
@@ -995,12 +995,12 @@
 
 "@blockworks-foundation/mango-client@git+https://github.com/blockworks-foundation/mango-client-v3.git":
   version "3.0.2"
-  resolved "git+https://github.com/blockworks-foundation/mango-client-v3.git#d3aba25a04041fd855155796b081435c9f63ca80"
+  resolved "git+https://github.com/blockworks-foundation/mango-client-v3.git#0ed7cbbd3609741abd62ee7c61f0c015283bb24a"
   dependencies:
-    "@project-serum/serum" "^0.13.45"
+    "@project-serum/serum" "0.13.55"
     "@project-serum/sol-wallet-adapter" "^0.2.0"
     "@solana/spl-token" "^0.1.6"
-    "@solana/web3.js" "^1.18.0"
+    "@solana/web3.js" "1.21.0"
     big.js "^6.1.1"
     bigint-buffer "^1.1.5"
     bn.js "^5.1.2"
@@ -1504,6 +1504,17 @@
     bn.js "^5.1.2"
     buffer-layout "^1.2.0"
 
+"@project-serum/serum@0.13.55":
+  version "0.13.55"
+  resolved "https://registry.yarnpkg.com/@project-serum/serum/-/serum-0.13.55.tgz#2ac44fe7b07651274eb57ac54ea9325789df5dd7"
+  integrity sha512-SPQ4NsuNbBJO3mLGnTYbjt47WCXoNIcW2C9xv0gNXyG62dxgONsAEEgErKv1gT34hWCMPsXFSpatnX6ppriq7w==
+  dependencies:
+    "@project-serum/anchor" "^0.11.1"
+    "@solana/spl-token" "^0.1.6"
+    "@solana/web3.js" "^1.21.0"
+    bn.js "^5.1.2"
+    buffer-layout "^1.2.0"
+
 "@project-serum/serum@^0.13.45":
   version "0.13.48"
   resolved "https://registry.yarnpkg.com/@project-serum/serum/-/serum-0.13.48.tgz#b72dd4aa830f24c0f277eb9af5063ebe5738d013"
@@ -1564,10 +1575,10 @@
     buffer-layout "^1.2.0"
     dotenv "10.0.0"
 
-"@solana/web3.js@^1.12.0":
-  version "1.22.0"
-  resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.22.0.tgz#ded439eb903aff4269a16a7fdfacc6866c6f0c13"
-  integrity sha512-7BQUiR1AIj2L8KJ8LYsI31iPRLytgF8T4hz7xLlvvBfalpUK7qD2om7frlNpXl8ROUpvruNf83QaectJdZJW1w==
+"@solana/web3.js@1.21.0", "@solana/web3.js@^1.17.0", "@solana/web3.js@^1.21.0":
+  version "1.21.0"
+  resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.21.0.tgz#4f98edea38d4cb3ae4d2ea49a050b0ec09508023"
+  integrity sha512-x1NXlF92tEjxuTxS0u4n9JV17UKk0Dn2L+qSWGvKOb4iWhzApDj6wicJsrGdSbGdxnZ7eciQ/SNn3zB4ydUllA==
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@solana/buffer-layout" "^3.0.0"
@@ -1584,10 +1595,10 @@
     superstruct "^0.14.2"
     tweetnacl "^1.0.0"
 
-"@solana/web3.js@^1.17.0", "@solana/web3.js@^1.21.0":
-  version "1.21.0"
-  resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.21.0.tgz#4f98edea38d4cb3ae4d2ea49a050b0ec09508023"
-  integrity sha512-x1NXlF92tEjxuTxS0u4n9JV17UKk0Dn2L+qSWGvKOb4iWhzApDj6wicJsrGdSbGdxnZ7eciQ/SNn3zB4ydUllA==
+"@solana/web3.js@^1.12.0":
+  version "1.23.0"
+  resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.23.0.tgz#74f81d074c1b13aeb286990edde6f2e4c7301731"
+  integrity sha512-+bstAFs3qnajHlxW0k4BM/hNZ93tmtSacfVBmdDWkk0kvCpLZUuMop5Qfrf10TPD4yfvdCA9hOT5CXwRnWc87Q==
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@solana/buffer-layout" "^3.0.0"
@@ -1891,9 +1902,9 @@
   integrity sha512-/BHF5HAx3em7/KkzVKm3LrsD6HZAXuXO1AJZQ3cRRBZj4oHZDviWPYu0aEplAqDFNHZPW6d3G7KN+ONcCCC7pw==
 
 "@types/node@*":
-  version "16.4.13"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.4.13.tgz#7dfd9c14661edc65cccd43a29eb454174642370d"
-  integrity sha512-bLL69sKtd25w7p1nvg9pigE4gtKVpGTPojBFLMkGHXuUgap2sLqQt2qUnqmVCDfzGUL0DRNZP+1prIZJbMeAXg==
+  version "16.6.0"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.6.0.tgz#0d5685f85066f94e97f19e8a67fe003c5fadacc4"
+  integrity sha512-OyiZPohMMjZEYqcVo/UJ04GyAxXOJEZO/FpzyXxcH4r/ArrVoXHf4MbUrkLp0Tz7/p1mMKpo5zJ6ZHl8XBNthQ==
 
 "@types/node@^12.12.54":
   version "12.20.19"
