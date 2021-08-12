@@ -418,7 +418,7 @@ const MarkPriceComponent = React.memo<{ markPrice: number }>(
         {markPrice < previousMarkPrice && (
           <ArrowDownIcon className={`h-5 w-5 mr-1 text-th-red`} />
         )}
-        {markPrice || '----'}
+        {markPrice?.toFixed(2) || '----'}
       </div>
     )
   },
