@@ -3,7 +3,6 @@ import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
 import {
   getMarketByPublicKey,
   nativeI80F48ToUi,
-  nativeToUi,
   PerpAccount,
   PerpMarket,
   QUOTE_INDEX,
