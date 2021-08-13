@@ -14,32 +14,34 @@ export async function deposit({
   const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
   const wallet = useMangoStore.getState().wallet.current
   const tokenIndex = mangoGroup.getTokenIndex(fromTokenAcc.mint)
+  console.log('starting')
 
-  let newMangoAccount
-  if (!mangoAccount) {
-    const mangoAccountPk = await mangoClient.initMangoAccount(
-      mangoGroup,
-      wallet
-    )
-    newMangoAccount = await mangoClient.getMangoAccount(
-      mangoAccountPk,
-      mangoGroup.dexProgramId
-    )
-  }
+  if (mangoAccount) {
+    console.log('1')
 
-  return [
-    mangoAccount || newMangoAccount,
-    await mangoClient.deposit(
+    return await mangoClient.deposit(
       mangoGroup,
-      newMangoAccount || mangoAccount,
+      mangoAccount,
       wallet,
       mangoGroup.tokens[tokenIndex].rootBank,
       mangoGroup.rootBankAccounts[tokenIndex].nodeBankAccounts[0].publicKey,
       mangoGroup.rootBankAccounts[tokenIndex].nodeBankAccounts[0].vault,
       fromTokenAcc.publicKey,
       Number(amount)
-    ),
-  ]
+    )
+  } else {
+    console.log('2')
+
+    return await mangoClient.initMangoAccountAndDeposit(
+      mangoGroup,
+      wallet,
+      mangoGroup.tokens[tokenIndex].rootBank,
+      mangoGroup.rootBankAccounts[tokenIndex].nodeBankAccounts[0].publicKey,
+      mangoGroup.rootBankAccounts[tokenIndex].nodeBankAccounts[0].vault,
+      fromTokenAcc.publicKey,
+      Number(amount)
+    )
+  }
 }
 
 export async function withdraw({

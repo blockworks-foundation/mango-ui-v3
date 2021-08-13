@@ -186,7 +186,7 @@ const TradeHistoryTable = () => {
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {items.map((trade, index) => (
+                  {items.map((trade: any, index) => (
                     <Tr
                       key={`${getTradeTimestamp(trade)}`}
                       className={`border-b border-th-bkg-3
