@@ -7,10 +7,32 @@ import UiLock from './UiLock'
 import ManualRefresh from './ManualRefresh'
 import useOraclePrice from '../hooks/useOraclePrice'
 import DayHighLow from './DayHighLow'
+import { useEffect } from 'react'
+
+function calculateFundingRate(perpStats, perpMarket) {
+  const oldestStat = perpStats[perpStats.length - 1]
+  const latestStat = perpStats[0]
+
+  if (!latestStat || !perpMarket) return null
+
+  const fundingDifference = latestStat.longFunding - oldestStat.longFunding
+  const fundingInQuoteDecimals =
+    fundingDifference / Math.pow(10, perpMarket.quoteDecimals)
+  const basePriceInBaseLots =
+    latestStat.baseOraclePrice * perpMarket.baseLotsToNumber(1)
+
+  return (fundingInQuoteDecimals / basePriceInBaseLots) * 100
+}
+
+function parseOpenInterest(perpStats) {
+  if (!perpStats?.length) return 0
+  return perpStats[0].openInterest / 2
+}
 
 const MarketHeader = () => {
   const oraclePrice = useOraclePrice()
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
+  const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
   const baseSymbol = marketConfig.baseSymbol
   const selectedMarketName = marketConfig.name
   const previousMarketName: string = usePrevious(selectedMarketName)
@@ -19,8 +41,23 @@ const MarketHeader = () => {
 
   const [ohlcv, setOhlcv] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [perpStats, setPerpStats] = useState([])
   const change = ohlcv ? ((ohlcv.c[0] - ohlcv.o[0]) / ohlcv.o[0]) * 100 : '--'
   const volume = ohlcv ? ohlcv.v[0] : '--'
+
+  const fetchPerpStats = useCallback(async () => {
+    const perpStats = await fetch(
+      `https://mango-stats-v3.herokuapp.com/perp/funding_rate?market=${selectedMarketName}`
+    )
+    const parsedPerpStats = await perpStats.json()
+    setPerpStats(parsedPerpStats)
+  }, [selectedMarketName])
+
+  useEffect(() => {
+    if (selectedMarketName.includes('PERP')) {
+      fetchPerpStats()
+    }
+  }, [fetchPerpStats, selectedMarketName])
 
   const fetchOhlcv = useCallback(async () => {
     if (!selectedMarketName) return
@@ -141,14 +178,16 @@ const MarketHeader = () => {
           {selectedMarketName.includes('PERP') ? (
             <>
               <div className="pr-6">
-                <div className="text-th-fgd-3 tiny-text">Funding (8h Ave)</div>
+                <div className="text-th-fgd-3 tiny-text">Funding (1h Ave)</div>
                 <div className="font-semibold text-th-fgd-1 text-xs">
-                  0.001%
+                  {calculateFundingRate(perpStats, selectedMarket)?.toFixed(4)}%
                 </div>
               </div>
               <div className="pr-6">
                 <div className="text-th-fgd-3 tiny-text">Open Interest</div>
-                <div className="font-semibold text-th-fgd-1 text-xs">$XXXm</div>
+                <div className="font-semibold text-th-fgd-1 text-xs">
+                  {parseOpenInterest(perpStats)}
+                </div>
               </div>
             </>
           ) : null}

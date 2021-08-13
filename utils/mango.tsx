@@ -14,11 +14,8 @@ export async function deposit({
   const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
   const wallet = useMangoStore.getState().wallet.current
   const tokenIndex = mangoGroup.getTokenIndex(fromTokenAcc.mint)
-  console.log('starting')
 
   if (mangoAccount) {
-    console.log('1')
-
     return await mangoClient.deposit(
       mangoGroup,
       mangoAccount,
@@ -30,8 +27,6 @@ export async function deposit({
       Number(amount)
     )
   } else {
-    console.log('2')
-
     return await mangoClient.initMangoAccountAndDeposit(
       mangoGroup,
       wallet,
