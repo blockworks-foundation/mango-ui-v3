@@ -47,6 +47,8 @@ const MarketHeader = () => {
   const volume = ohlcv ? ohlcv.v[0] : '--'
 
   const fetchPerpStats = useCallback(async () => {
+    console.log('fetching perp stats')
+
     const perpStats = await fetch(
       `https://mango-stats-v3.herokuapp.com/perp/funding_rate?market=${selectedMarketName}`
     )
@@ -179,7 +181,9 @@ const MarketHeader = () => {
           {selectedMarketName.includes('PERP') ? (
             <>
               <div className="pr-6">
-                <div className="text-th-fgd-3 tiny-text">Funding (1h Ave)</div>
+                <div className="text-th-fgd-3 tiny-text">
+                  Avg Funding Rate (1h)
+                </div>
                 <div className="font-semibold text-th-fgd-1 text-xs">
                   {calculateFundingRate(perpStats, selectedMarket)?.toFixed(4)}%
                 </div>
