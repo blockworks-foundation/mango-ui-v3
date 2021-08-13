@@ -52,7 +52,7 @@ const MarketHeader = () => {
     const urlParams = new URLSearchParams({ mangoGroup: mangoGroupName })
     urlParams.append('market', selectedMarketName)
     const spotStats = await fetch(
-      'http://mango-stats-v3.herokuapp.com/spot/change/24?' + urlParams
+      'https://mango-stats-v3.herokuapp.com/spot/change/24?' + urlParams
     )
 
     const parsedSpotStats = await spotStats.json()
