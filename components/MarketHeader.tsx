@@ -34,6 +34,7 @@ const MarketHeader = () => {
   const oraclePrice = useOraclePrice()
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
+  const mangoGroupName = useMangoStore((s) => s.selectedMangoGroup.name)
   const baseSymbol = marketConfig.baseSymbol
   const selectedMarketName = marketConfig.name
   const previousMarketName: string = usePrevious(selectedMarketName)
@@ -43,18 +44,34 @@ const MarketHeader = () => {
   const [ohlcv, setOhlcv] = useState(null)
   const [loading, setLoading] = useState(false)
   const [perpStats, setPerpStats] = useState([])
-  const change = ohlcv ? ((ohlcv.c[0] - ohlcv.o[0]) / ohlcv.o[0]) * 100 : '--'
+  const [spotStats, setSpotStats] = useState(null)
+  // const change = ohlcv ? ((ohlcv.c[0] - ohlcv.o[0]) / ohlcv.o[0]) * 100 : '--'
   const volume = ohlcv ? ohlcv.v[0] : '--'
 
-  const fetchPerpStats = useCallback(async () => {
-    console.log('fetching perp stats')
+  const fetchSpotStats = useCallback(async () => {
+    const urlParams = new URLSearchParams({ mangoGroup: mangoGroupName })
+    urlParams.append('market', selectedMarketName)
+    const spotStats = await fetch(
+      'http://mango-stats-v3.herokuapp.com/spot/change/24?' + urlParams
+    )
 
+    const parsedSpotStats = await spotStats.json()
+    setSpotStats(parsedSpotStats)
+  }, [selectedMarketName, mangoGroupName])
+
+  const fetchPerpStats = useCallback(async () => {
     const perpStats = await fetch(
       `https://mango-stats-v3.herokuapp.com/perp/funding_rate?market=${selectedMarketName}`
     )
     const parsedPerpStats = await perpStats.json()
     setPerpStats(parsedPerpStats)
   }, [selectedMarketName])
+
+  useEffect(() => {
+    if (!selectedMarketName.includes('PERP')) {
+      fetchSpotStats()
+    }
+  }, [fetchSpotStats, selectedMarketName])
 
   useEffect(() => {
     if (selectedMarketName.includes('PERP')) {
@@ -141,19 +158,8 @@ const MarketHeader = () => {
           </div>
           <div className="pr-4">
             <div className="text-th-fgd-3 tiny-text">24h Change</div>
-            {ohlcv && !loading ? (
-              <div
-                className={`font-semibold text-xs ${
-                  change > 0
-                    ? `text-th-green`
-                    : change < 0
-                    ? `text-th-red`
-                    : `text-th-fgd-1`
-                }`}
-              >
-                {change > 0 && <span className={`text-th-green`}>+</span>}
-                {change !== '--' ? `${change.toFixed(2)}%` : change}
-              </div>
+            {spotStats?.change ? (
+              spotStats.change.toFixed(2) + '%'
             ) : (
               <MarketDataLoader />
             )}
@@ -177,7 +183,11 @@ const MarketHeader = () => {
               )}
             </div>
           </div>
-          <DayHighLow />
+          <DayHighLow
+            high={spotStats?.high}
+            low={spotStats?.low}
+            latest={spotStats?.latest}
+          />
           {selectedMarketName.includes('PERP') ? (
             <>
               <div className="pr-6">
