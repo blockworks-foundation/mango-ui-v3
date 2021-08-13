@@ -3,7 +3,7 @@ function formatRangePrice(price) {
   const priceAsFloat = parseFloat(price)
   if (priceAsFloat > 1000) {
     return priceAsFloat.toFixed(0)
-  } else if (priceAsFloat > 100) {
+  } else if (priceAsFloat > 1) {
     return priceAsFloat.toFixed(2)
   } else {
     return priceAsFloat.toFixed(4)
