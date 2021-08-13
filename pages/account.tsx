@@ -27,7 +27,7 @@ const TABS = [
   // 'Stats',
   // 'Positions',
   'Orders',
-  'Activity',
+  'History',
 ]
 
 export default function Account() {

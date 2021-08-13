@@ -7,8 +7,8 @@ import useMangoStore from '../stores/useMangoStore'
 
 const byTimestamp = (a, b) => {
   return (
-    new Date(b.loadTimestamp || b.timestamp.toNumber() * 1000).getTime() -
-    new Date(a.loadTimestamp || a.timestamp.toNumber() * 1000).getTime()
+    new Date(b.loadTimestamp || b.timestamp * 1000).getTime() -
+    new Date(a.loadTimestamp || a.timestamp * 1000).getTime()
   )
 }
 
@@ -110,7 +110,7 @@ export const useTradeHistory = () => {
           if (t.orderId) {
             return t.orderId === fill.orderId?.toString()
           } else {
-            return t.seqNum === fill.seqNum.toString()
+            return t.seqNum === fill.seqNum?.toString()
           }
         })
     )

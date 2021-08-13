@@ -253,10 +253,6 @@ export default function AccountOverview() {
               )}
             </StyledAccountValue>
           </div>
-          <div className="flex items-center text-th-fgd-3 text-xs">
-            <ArrowSmUpIcon className="h-4 w-4 mr-1.5 text-th-green" />
-            XX.XX today
-          </div>
         </div>
         <div className="border border-th-bkg-4 p-4 rounded-lg">
           <div className="pb-2 text-th-fgd-3">PNL</div>
@@ -267,10 +263,6 @@ export default function AccountOverview() {
                 +mangoAccount.computeValue(mangoGroup, mangoCache).toFixed(2)
               )}
             </StyledAccountValue>
-          </div>
-          <div className="flex items-center text-th-fgd-3 text-xs">
-            <ArrowSmUpIcon className="h-4 w-4 mr-1.5 text-th-green" />
-            XX.XX today
           </div>
         </div>
         <div className="border border-th-bkg-4 p-4 rounded-lg">
