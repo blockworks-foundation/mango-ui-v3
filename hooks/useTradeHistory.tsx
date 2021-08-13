@@ -1,5 +1,5 @@
 import {
-  getMarketIndexBySymbol,
+  getMarketByPublicKey,
   MangoGroup,
 } from '@blockworks-foundation/mango-client'
 import { PublicKey } from '@solana/web3.js'
@@ -7,30 +7,33 @@ import useMangoStore from '../stores/useMangoStore'
 
 const byTimestamp = (a, b) => {
   return (
-    new Date(b.loadTimestamp || b.timestamp.toNumber()).getTime() -
-    new Date(a.loadTimestamp || a.timestamp.toNumber()).getTime()
+    new Date(b.loadTimestamp || b.timestamp.toNumber() * 1000).getTime() -
+    new Date(a.loadTimestamp || a.timestamp.toNumber() * 1000).getTime()
   )
 }
 
 const reverseSide = (side) => (side === 'buy' ? 'sell' : 'buy')
+
+function getPerpMarketName(event) {
+  const mangoGroupConfig = useMangoStore.getState().selectedMangoGroup.config
+
+  let marketName
+  if (!event.marketName) {
+    const marketInfo = getMarketByPublicKey(mangoGroupConfig, event.address)
+    marketName = marketInfo.name
+  }
+  return event.marketName || marketName
+}
 
 const parsedPerpEvent = (
   mangoGroup: MangoGroup,
   mangoAccountPk: PublicKey,
   event
 ) => {
-  const mangoGroupConfig = useMangoStore.getState().selectedMangoGroup.config
-  const marketIndex = getMarketIndexBySymbol(
-    mangoGroupConfig,
-    event.marketName.split(/-|\//)[0]
-  )
-  const perpMarketInfo = mangoGroup.perpMarkets[marketIndex]
-  const maker = event.maker.equals(mangoAccountPk)
+  const maker = event.maker.toString() === mangoAccountPk.toString()
   const orderId = maker ? event.makerOrderId : event.takerOrderId
   const value = event.quantity * event.price
-  const feeRate = maker
-    ? perpMarketInfo.makerFee.toNumber()
-    : perpMarketInfo.takerFee.toNumber()
+  const feeRate = maker ? event.makerFee : event.takerFee
   const side = maker ? reverseSide(event.takerSide) : event.takerSide
 
   return {
@@ -42,6 +45,7 @@ const parsedPerpEvent = (
     value,
     feeCost: (feeRate * value).toFixed(4),
     side,
+    marketName: getPerpMarketName(event),
   }
 }
 
@@ -102,7 +106,13 @@ export const useTradeHistory = () => {
   if (mangoAccountFills && mangoAccountFills.length > 0) {
     const newFills = mangoAccountFills.filter(
       (fill) =>
-        !tradeHistory.flat().find((t) => t.orderId === fill.orderId.toString())
+        !tradeHistory.flat().find((t) => {
+          if (t.orderId) {
+            return t.orderId === fill.orderId?.toString()
+          } else {
+            return t.seqNum === fill.seqNum.toString()
+          }
+        })
     )
     const newTradeHistory = [...newFills, ...tradeHistory]
     if (newFills.length > 0 && newTradeHistory.length !== allTrades.length) {

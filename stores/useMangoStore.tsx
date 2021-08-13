@@ -371,7 +371,6 @@ const useMangoStore = create<MangoStore>((set, get) => ({
         })
     },
     async fetchTradeHistory(mangoAccount = null) {
-      // TODO fetch perps open orders account from trade history service
       const selectedMangoAccount =
         mangoAccount || get().selectedMangoAccount.current
       const set = get().set
@@ -384,7 +383,13 @@ const useMangoStore = create<MangoStore>((set, get) => ({
       const publicKeys = openOrdersAccounts.map((act) =>
         act.publicKey.toString()
       )
-      const results = await Promise.all(
+      const perpHistory = await fetch(
+        `https://event-history-api.herokuapp.com/perp_trades/${selectedMangoAccount.publicKey.toString()}`
+      )
+      let parsedPerpHistory = await perpHistory.json()
+      parsedPerpHistory = parsedPerpHistory?.data || []
+
+      const serumHistory = await Promise.all(
         publicKeys.map(async (pk) => {
           const response = await fetch(
             `https://stark-fjord-45757.herokuapp.com/trades/open_orders/${pk.toString()}`
@@ -394,7 +399,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
         })
       )
       set((state) => {
-        state.tradeHistory = results
+        state.tradeHistory = [...serumHistory, ...parsedPerpHistory]
       })
     },
     async updateOpenOrders() {

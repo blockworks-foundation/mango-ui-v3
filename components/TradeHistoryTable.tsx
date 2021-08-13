@@ -9,6 +9,10 @@ import { LinkButton } from './Button'
 import { useSortableData } from '../hooks/useSortableData'
 import useMangoStore from '../stores/useMangoStore'
 
+function getTradeTimestamp(trade) {
+  return trade?.timestamp ? trade.timestamp.toNumber() : trade.loadTimestamp
+}
+
 const TradeHistoryTable = () => {
   const { asPath } = useRouter()
   const tradeHistory = useTradeHistory()
@@ -42,7 +46,7 @@ const TradeHistoryTable = () => {
                   <Tr className="text-th-fgd-3 text-xs">
                     <Th
                       scope="col"
-                      className={`px-6 py-3 text-left font-normal`}
+                      className={`px-6 py-2 text-left font-normal`}
                     >
                       <LinkButton
                         className="flex items-center no-underline"
@@ -60,7 +64,7 @@ const TradeHistoryTable = () => {
                         />
                       </LinkButton>
                     </Th>
-                    <Th scope="col" className="px-6 py-3 text-left font-normal">
+                    <Th scope="col" className="px-6 py-2 text-left font-normal">
                       <LinkButton
                         className="flex items-center no-underline"
                         onClick={() => requestSort('side')}
@@ -77,7 +81,7 @@ const TradeHistoryTable = () => {
                         />
                       </LinkButton>
                     </Th>
-                    <Th scope="col" className="px-6 py-3 text-left font-normal">
+                    <Th scope="col" className="px-6 py-2 text-left font-normal">
                       <LinkButton
                         className="flex items-center no-underline"
                         onClick={() => requestSort('size')}
@@ -94,7 +98,7 @@ const TradeHistoryTable = () => {
                         />
                       </LinkButton>
                     </Th>
-                    <Th scope="col" className="px-6 py-3 text-left font-normal">
+                    <Th scope="col" className="px-6 py-2 text-left font-normal">
                       <LinkButton
                         className="flex items-center no-underline"
                         onClick={() => requestSort('price')}
@@ -111,7 +115,7 @@ const TradeHistoryTable = () => {
                         />
                       </LinkButton>
                     </Th>
-                    <Th scope="col" className="px-6 py-3 text-left font-normal">
+                    <Th scope="col" className="px-6 py-2 text-left font-normal">
                       <LinkButton
                         className="flex items-center no-underline"
                         onClick={() => requestSort('value')}
@@ -128,7 +132,7 @@ const TradeHistoryTable = () => {
                         />
                       </LinkButton>
                     </Th>
-                    <Th scope="col" className="px-6 py-3 text-left font-normal">
+                    <Th scope="col" className="px-6 py-2 text-left font-normal">
                       <LinkButton
                         className="flex items-center no-underline"
                         onClick={() => requestSort('liquidity')}
@@ -145,7 +149,7 @@ const TradeHistoryTable = () => {
                         />
                       </LinkButton>
                     </Th>
-                    <Th scope="col" className="px-6 py-3 text-left font-normal">
+                    <Th scope="col" className="px-6 py-2 text-left font-normal">
                       <LinkButton
                         className="flex items-center no-underline"
                         onClick={() => requestSort('feeCost')}
@@ -162,7 +166,7 @@ const TradeHistoryTable = () => {
                         />
                       </LinkButton>
                     </Th>
-                    <Th scope="col" className="px-6 py-3 text-left font-normal">
+                    <Th scope="col" className="px-6 py-2 text-left font-normal">
                       <LinkButton
                         className="flex items-center no-underline"
                         onClick={() => requestSort('loadTimestamp')}
@@ -184,12 +188,12 @@ const TradeHistoryTable = () => {
                 <Tbody>
                   {items.map((trade, index) => (
                     <Tr
-                      key={`${trade.timestamp.toNumber()}`}
+                      key={`${getTradeTimestamp(trade)}`}
                       className={`border-b border-th-bkg-3
                         ${index % 2 === 0 ? `bg-th-bkg-3` : `bg-th-bkg-2`}
                       `}
                     >
-                      <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
+                      <Td className="px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1">
                         <div className="flex items-center">
                           <img
                             alt=""
@@ -203,25 +207,25 @@ const TradeHistoryTable = () => {
                           <div>{trade.marketName}</div>
                         </div>
                       </Td>
-                      <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
+                      <Td className="px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1">
                         <SideBadge side={trade.side} />
                       </Td>
-                      <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
+                      <Td className="px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1">
                         {trade.size}
                       </Td>
-                      <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
+                      <Td className="px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1">
                         {trade.price}
                       </Td>
-                      <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
+                      <Td className="px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1">
                         ${trade.value.toFixed(2)}
                       </Td>
-                      <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
+                      <Td className="px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1">
                         {trade.liquidity}
                       </Td>
-                      <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
+                      <Td className="px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1">
                         ${trade.feeCost}
                       </Td>
-                      <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
+                      <Td className="px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1">
                         {trade.loadTimestamp || trade.timestamp
                           ? renderTradeDateTime(
                               trade.loadTimestamp || trade.timestamp
