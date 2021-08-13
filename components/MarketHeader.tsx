@@ -24,9 +24,10 @@ function calculateFundingRate(perpStats, perpMarket) {
   return (fundingInQuoteDecimals / basePriceInBaseLots) * 100
 }
 
-function parseOpenInterest(perpStats) {
-  if (!perpStats?.length) return 0
-  return perpStats[0].openInterest / 2
+function parseOpenInterest(perpStats, perpMarket) {
+  if (!perpStats?.length || !perpMarket) return 0
+
+  return perpMarket.baseLotsToNumber(perpStats[0].openInterest / 2)
 }
 
 const MarketHeader = () => {
@@ -186,7 +187,7 @@ const MarketHeader = () => {
               <div className="pr-6">
                 <div className="text-th-fgd-3 tiny-text">Open Interest</div>
                 <div className="font-semibold text-th-fgd-1 text-xs">
-                  {parseOpenInterest(perpStats)}
+                  {parseOpenInterest(perpStats, selectedMarket)} {baseSymbol}
                 </div>
               </div>
             </>
