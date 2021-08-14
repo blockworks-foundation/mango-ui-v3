@@ -15,7 +15,7 @@ function getTradeTimestamp(trade) {
 
 const TradeHistoryTable = () => {
   const { asPath } = useRouter()
-  const tradeHistory = useTradeHistory()
+  const tradeHistory = useTradeHistory({ excludePerpLiquidations: true })
   const { items, requestSort, sortConfig } = useSortableData(tradeHistory)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
 

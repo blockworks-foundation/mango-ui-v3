@@ -67,12 +67,14 @@ const formatTradeHistory = (mangoAccountPk: PublicKey, newTradeHistory) => {
     .sort(byTimestamp)
 }
 
-export const useTradeHistory = () => {
+export const useTradeHistory = (
+  opts: { excludePerpLiquidations?: boolean } = {}
+) => {
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const fills = useMangoStore((s) => s.selectedMarket.fills)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
-  const tradeHistory = useMangoStore((s) => s.tradeHistory)
+  let tradeHistory = useMangoStore((s) => s.tradeHistory)
 
   if (!mangoAccount || !selectedMangoGroup) return null
   const openOrdersAccount =
@@ -107,11 +109,18 @@ export const useTradeHistory = () => {
     )
     const newTradeHistory = [...newFills, ...tradeHistory]
     if (newFills.length > 0 && newTradeHistory.length !== allTrades.length) {
-      return formatTradeHistory(mangoAccount.publicKey, newTradeHistory)
+      tradeHistory = newTradeHistory
     }
   }
 
-  return formatTradeHistory(mangoAccount.publicKey, tradeHistory)
+  const formattedTradeHistory = formatTradeHistory(
+    mangoAccount.publicKey,
+    tradeHistory
+  )
+  if (opts.excludePerpLiquidations) {
+    return formattedTradeHistory.filter((t) => !('liqor' in t))
+  }
+  return formattedTradeHistory
 }
 
 export default useTradeHistory
