@@ -5,10 +5,8 @@ import useMangoStore from '../stores/useMangoStore'
 import { i80f48ToPercent, tokenPrecision } from '../utils/index'
 import DepositModal from './DepositModal'
 import WithdrawModal from './WithdrawModal'
-// import BorrowModal from './BorrowModal'
-import Button, { LinkButton } from './Button'
+import Button from './Button'
 import Tooltip from './Tooltip'
-// import AccountsModal from './AccountsModal'
 import SideBadge from './SideBadge'
 
 export default function MarketPosition() {
@@ -25,15 +23,13 @@ export default function MarketPosition() {
   const selectedMangoAccount = useMangoStore(
     (s) => s.selectedMangoAccount.current
   )
-  const loadingMangoAccount = useMangoStore(
-    (s) => s.selectedMangoAccount.initialLoad
-  )
+  // const loadingMangoAccount = useMangoStore(
+  //   (s) => s.selectedMangoAccount.initialLoad
+  // )
   const connected = useMangoStore((s) => s.wallet.connected)
 
   const [showDepositModal, setShowDepositModal] = useState(false)
   const [showWithdrawModal, setShowWithdrawModal] = useState(false)
-  // const [showAccountsModal, setShowAccountsModal] = useState(false)
-  // const [showBorrowModal, setShowBorrowModal] = useState(false)
 
   const handleCloseDeposit = useCallback(() => {
     setShowDepositModal(false)
@@ -43,17 +39,9 @@ export default function MarketPosition() {
     setShowWithdrawModal(false)
   }, [])
 
-  // const handleCloseBorrow = useCallback(() => {
-  //   setShowBorrowModal(false)
-  // }, [])
-
-  // const handleCloseAccounts = useCallback(() => {
-  //   setShowAccountsModal(false)
-  // }, [])
-
   return selectedMarketName.includes('PERP') ? (
     <FloatingElement showConnect>
-      <div className={!connected && 'filter blur-sm'}>
+      <div className={!connected ? 'filter blur-sm' : null}>
         <ElementTitle>Position</ElementTitle>
         <div className={`flex items-center justify-between pt-1 pb-2`}>
           <div className="font-normal text-th-fgd-3 leading-4">Side</div>
@@ -101,7 +89,7 @@ export default function MarketPosition() {
   ) : (
     <>
       <FloatingElement showConnect>
-        <div className={!connected && 'filter blur'}>
+        <div className={!connected ? 'filter blur' : null}>
           <ElementTitle>Balances</ElementTitle>
           {selectedMangoGroup ? (
             <div className="grid grid-cols-2 grid-rows-1 gap-4 pt-2">
@@ -227,16 +215,6 @@ export default function MarketPosition() {
           onClose={handleCloseWithdraw}
         />
       )}
-
-      {/* {showBorrowModal && (
-        <BorrowModal isOpen={showBorrowModal} onClose={handleCloseBorrow} />
-      )} */}
-      {/* {showAccountsModal ? (
-        <AccountsModal
-          onClose={handleCloseAccounts}
-          isOpen={showAccountsModal}
-        />
-      ) : null} */}
     </>
   )
 }

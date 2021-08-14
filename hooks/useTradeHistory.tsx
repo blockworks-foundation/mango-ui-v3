@@ -1,7 +1,4 @@
-import {
-  getMarketByPublicKey,
-  MangoGroup,
-} from '@blockworks-foundation/mango-client'
+import { getMarketByPublicKey } from '@blockworks-foundation/mango-client'
 import { PublicKey } from '@solana/web3.js'
 import useMangoStore from '../stores/useMangoStore'
 
@@ -25,11 +22,7 @@ function getPerpMarketName(event) {
   return event.marketName || marketName
 }
 
-const parsedPerpEvent = (
-  mangoGroup: MangoGroup,
-  mangoAccountPk: PublicKey,
-  event
-) => {
+const parsedPerpEvent = (mangoAccountPk: PublicKey, event) => {
   const maker = event.maker.toString() === mangoAccountPk.toString()
   const orderId = maker ? event.makerOrderId : event.takerOrderId
   const value = event.quantity * event.price
@@ -59,18 +52,16 @@ const parsedSerumEvent = (event) => {
   }
 }
 
-const formatTradeHistory = (
-  selectedMangoGroup,
-  mangoAccountPk: PublicKey,
-  newTradeHistory
-) => {
+const formatTradeHistory = (mangoAccountPk: PublicKey, newTradeHistory) => {
   return newTradeHistory
     .flat()
-    .map((trade) => {
-      if (trade.eventFlags) {
-        return parsedSerumEvent(trade)
+    .map((event) => {
+      if (event.eventFlags) {
+        return parsedSerumEvent(event)
+      } else if (event.maker) {
+        return parsedPerpEvent(mangoAccountPk, event)
       } else {
-        return parsedPerpEvent(selectedMangoGroup, mangoAccountPk, trade)
+        return event
       }
     })
     .sort(byTimestamp)
@@ -116,19 +107,11 @@ export const useTradeHistory = () => {
     )
     const newTradeHistory = [...newFills, ...tradeHistory]
     if (newFills.length > 0 && newTradeHistory.length !== allTrades.length) {
-      return formatTradeHistory(
-        selectedMangoGroup,
-        mangoAccount.publicKey,
-        newTradeHistory
-      )
+      return formatTradeHistory(mangoAccount.publicKey, newTradeHistory)
     }
   }
 
-  return formatTradeHistory(
-    selectedMangoGroup,
-    mangoAccount.publicKey,
-    tradeHistory
-  )
+  return formatTradeHistory(mangoAccount.publicKey, tradeHistory)
 }
 
 export default useTradeHistory

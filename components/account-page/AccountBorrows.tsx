@@ -41,9 +41,6 @@ export default function AccountBorrows() {
     setShowBorrowModal(true)
   }
 
-  // console.log(depositToSettle)
-  console.log('balances', balances)
-
   return (
     <>
       <div className="sm:flex sm:items-center sm:justify-between pb-4">

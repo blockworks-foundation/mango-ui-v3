@@ -17,6 +17,45 @@ import SideBadge from './SideBadge'
 import { useState } from 'react'
 import Loading from './Loading'
 import { usdFormatter } from '../utils'
+import useTradeHistory from '../hooks/useTradeHistory'
+
+function getAvgEntryPrice(
+  mangoAccount,
+  perpAccount,
+  perpMarket,
+  perpTradeHistory
+) {
+  let avgEntryPrice = '--'
+  if (perpTradeHistory.length) {
+    try {
+      avgEntryPrice = perpAccount
+        .getAverageOpenPrice(mangoAccount, perpMarket, perpTradeHistory)
+        .toFixed(2)
+    } catch {
+      avgEntryPrice = '--'
+    }
+  }
+  return avgEntryPrice
+}
+
+function getBreakEvenPrice(
+  mangoAccount,
+  perpAccount,
+  perpMarket,
+  perpTradeHistory
+) {
+  let breakEvenPrice = '--'
+  if (perpTradeHistory.length) {
+    try {
+      breakEvenPrice = perpAccount
+        .getBreakEvenPrice(mangoAccount, perpMarket, perpTradeHistory)
+        .toFixed(2)
+    } catch {
+      breakEvenPrice = '--'
+    }
+  }
+  return breakEvenPrice
+}
 
 const PositionsTable = () => {
   const actions = useMangoStore((s) => s.actions)
@@ -26,6 +65,7 @@ const PositionsTable = () => {
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const allMarkets = useMangoStore((s) => s.selectedMangoGroup.markets)
   const [settlingPerpAcc, setSettlingPerpAcc] = useState(null)
+  const tradeHistory = useTradeHistory()
 
   const perpMarkets = useMemo(
     () =>
@@ -106,13 +146,19 @@ const PositionsTable = () => {
                       Side
                     </Th>
                     <Th scope="col" className="px-2 py-2 text-left font-normal">
-                      Position
+                      Position Size
                     </Th>
                     <Th scope="col" className="px-2 py-2 text-left font-normal">
-                      Mark Price
+                      Notional Size
                     </Th>
                     <Th scope="col" className="px-2 py-2 text-left font-normal">
-                      Unrealized PnL
+                      Avg entry price
+                    </Th>
+                    <Th scope="col" className="px-2 py-2 text-left font-normal">
+                      Break-even price
+                    </Th>
+                    <Th scope="col" className="px-2 py-2 text-left font-normal">
+                      Unsettled PnL
                     </Th>
                     <Th scope="col" className={`relative px-6 py-2.5`}>
                       <span className={`sr-only`}>Edit</span>
@@ -131,6 +177,9 @@ const PositionsTable = () => {
                       const perpMarket = allMarkets[
                         marketConfig.publicKey.toString()
                       ] as PerpMarket
+                      const perpTradeHistory = tradeHistory.filter(
+                        (t) => t.marketName === marketConfig.name
+                      )
 
                       return (
                         <Tr
@@ -165,11 +214,35 @@ const PositionsTable = () => {
                               perpAccount.basePosition
                             )}
                           </Td>
-                          <Td className="px-2 py-2 whitespace-nowrap text-sm text-th-fgd-1">
+                          <Th
+                            scope="col"
+                            className="px-2 py-2 text-left font-normal"
+                          >
                             {usdFormatter.format(
-                              mangoGroup
-                                .getPrice(marketIndex, mangoCache)
-                                .toNumber()
+                              perpMarket.baseLotsToNumber(
+                                perpAccount.basePosition
+                              ) *
+                                mangoGroup
+                                  .getPrice(marketIndex, mangoCache)
+                                  .toNumber()
+                            )}
+                          </Th>
+                          <Td className="px-2 py-2 whitespace-nowrap text-sm text-th-fgd-1">
+                            $
+                            {getAvgEntryPrice(
+                              mangoAccount,
+                              perpAccount,
+                              perpMarket,
+                              perpTradeHistory
+                            )}
+                          </Td>
+                          <Td className="px-2 py-2 whitespace-nowrap text-sm text-th-fgd-1">
+                            $
+                            {getBreakEvenPrice(
+                              mangoAccount,
+                              perpAccount,
+                              perpMarket,
+                              perpTradeHistory
                             )}
                           </Td>
                           <Td className="px-2 py-2 whitespace-nowrap text-sm text-th-fgd-1">

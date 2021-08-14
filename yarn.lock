@@ -993,9 +993,9 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@blockworks-foundation/mango-client@git+https://github.com/blockworks-foundation/mango-client-v3.git":
+"@blockworks-foundation/mango-client@git+https://github.com/blockworks-foundation/mango-client-v3.git#break-even":
   version "3.0.4"
-  resolved "git+https://github.com/blockworks-foundation/mango-client-v3.git#aa6c136d3461f1c10a5863d8f110d8ceb7ed10ff"
+  resolved "git+https://github.com/blockworks-foundation/mango-client-v3.git#f54b058a6064c586759d3444ef137e6b0bec9c38"
   dependencies:
     "@project-serum/serum" "0.13.55"
     "@project-serum/sol-wallet-adapter" "^0.2.0"
@@ -9245,9 +9245,9 @@ yargs@^15.4.1:
     yargs-parser "^18.1.2"
 
 yargs@^17.0.1:
-  version "17.1.0"
-  resolved "https://registry.yarnpkg.com/yargs/-/yargs-17.1.0.tgz#0cd9827a0572c9a1795361c4d1530e53ada168cf"
-  integrity sha512-SQr7qqmQ2sNijjJGHL4u7t8vyDZdZ3Ahkmo4sc1w5xI9TBX0QDdG/g4SFnxtWOsGLjwHQue57eFALfwFCnixgg==
+  version "17.1.1"
+  resolved "https://registry.yarnpkg.com/yargs/-/yargs-17.1.1.tgz#c2a8091564bdb196f7c0a67c1d12e5b85b8067ba"
+  integrity sha512-c2k48R0PwKIqKhPMWjeiF6y2xY/gPMUlro0sgxqXpbOIohWiLNXWslsootttv7E1e73QPAMQSg5FeySbVcpsPQ==
   dependencies:
     cliui "^7.0.2"
     escalade "^3.1.1"
