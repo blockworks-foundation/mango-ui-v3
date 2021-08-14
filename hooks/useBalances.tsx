@@ -27,17 +27,22 @@ export function useBalances(): Balances[] {
     const openOrders: any = mangoAccount.spotOpenOrdersAccounts[marketIndex]
     const quoteCurrencyIndex = QUOTE_INDEX
 
-    const nativeBaseFree = openOrders?.baseTokenFree || 0
-    const nativeQuoteFree =
-      (openOrders?.quoteTokenFree || 0) +
-      (openOrders?.['referrerRebatesAccrued'].toNumber() || 0)
-
-    const nativeBaseLocked = openOrders
-      ? openOrders.baseTokenTotal - openOrders?.baseTokenFree
-      : 0
-    const nativeQuoteLocked = openOrders
-      ? openOrders?.quoteTokenTotal - (openOrders?.quoteTokenFree || 0)
-      : 0
+    let nativeBaseFree = 0
+    let nativeQuoteFree = 0
+    let nativeBaseLocked = 0
+    let nativeQuoteLocked = 0
+    if (openOrders) {
+      nativeBaseFree = openOrders.baseTokenFree.toNumber()
+      nativeQuoteFree = openOrders.quoteTokenFree
+        .add(openOrders['referrerRebatesAccrued'])
+        .toNumber()
+      nativeBaseLocked = openOrders.baseTokenTotal
+        .sub(openOrders.baseTokenFree)
+        .toNumber()
+      nativeQuoteLocked = openOrders.quoteTokenTotal
+        .sub(openOrders.quoteTokenFree)
+        .toNumber()
+    }
 
     const tokenIndex = marketIndex
 
