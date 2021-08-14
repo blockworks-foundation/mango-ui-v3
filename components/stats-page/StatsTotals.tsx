@@ -181,14 +181,14 @@ export default function StatsTotals() {
                   {formatNumberString(stat.totalBorrows)}
                 </Td>
                 <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
-                  {formatNumberString(stat.depositInterest.toString())}%
+                  {formatNumberString(stat.depositInterest.toFixed(2))}%
                 </Td>
                 <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
-                  {formatNumberString(stat.borrowInterest.toString())}%
+                  {formatNumberString(stat.borrowInterest.toFixed(2))}%
                 </Td>
                 <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
                   {formatNumberString(
-                    stat.utilization.mul(I80F48.fromNumber(100)).toFixed(3)
+                    stat.utilization.mul(I80F48.fromNumber(100)).toFixed(2)
                   )}
                   %
                 </Td>

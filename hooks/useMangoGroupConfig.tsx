@@ -1,6 +1,5 @@
-import { useMemo, useCallback } from 'react'
+import { useMemo } from 'react'
 import useConnection from './useConnection'
-import { PublicKey } from '@solana/web3.js'
 import useMangoStore from '../stores/useMangoStore'
 import { Config } from '@blockworks-foundation/mango-client'
 import { GroupConfig } from '@blockworks-foundation/mango-client/lib/src/config'
@@ -14,5 +13,5 @@ export default function useMangoGroupConfig(): GroupConfig {
     [cluster, mangoGroupName]
   )
 
-  return mangoGroupConfig;
+  return mangoGroupConfig
 }

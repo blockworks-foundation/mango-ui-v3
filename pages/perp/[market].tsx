@@ -12,6 +12,7 @@ const PerpMarket = () => {
   const groupConfig = useMangoGroupConfig()
   const setMangoStore = useMangoStore((s) => s.set)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const router = useRouter()
   const { market } = router.query
 
@@ -22,9 +23,12 @@ const PerpMarket = () => {
         market.toString().toUpperCase(),
         'perp'
       )
+
       setMangoStore((state) => {
         state.selectedMarket.current = null
-        state.selectedMarket.config = newMarket
+        if (newMarket.name !== marketConfig.name) {
+          state.selectedMarket.config = newMarket
+        }
       })
     }
   }, [market, mangoGroup])

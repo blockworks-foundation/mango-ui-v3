@@ -6,6 +6,7 @@ import {
   PerpAccount,
   PerpMarket,
   QUOTE_INDEX,
+  ZERO_BN,
   ZERO_I80F48,
 } from '@blockworks-foundation/mango-client'
 import { useMemo } from 'react'
@@ -19,7 +20,7 @@ import Loading from './Loading'
 import { usdFormatter } from '../utils'
 import useTradeHistory from '../hooks/useTradeHistory'
 
-function getAvgEntryPrice(
+export function getAvgEntryPrice(
   mangoAccount,
   perpAccount,
   perpMarket,
@@ -38,7 +39,7 @@ function getAvgEntryPrice(
   return avgEntryPrice
 }
 
-function getBreakEvenPrice(
+export function getBreakEvenPrice(
   mangoAccount,
   perpAccount,
   perpMarket,
@@ -146,10 +147,10 @@ const PositionsTable = () => {
                       Side
                     </Th>
                     <Th scope="col" className="px-2 py-2 text-left font-normal">
-                      Position Size
+                      Position size
                     </Th>
                     <Th scope="col" className="px-2 py-2 text-left font-normal">
-                      Notional Size
+                      Notional size
                     </Th>
                     <Th scope="col" className="px-2 py-2 text-left font-normal">
                       Avg entry price
@@ -203,7 +204,7 @@ const PositionsTable = () => {
                           <Td className="px-2 py-2 whitespace-nowrap text-sm text-th-fgd-1">
                             <SideBadge
                               side={
-                                perpAccount.basePosition.gt(new BN(0))
+                                perpAccount.basePosition.gt(ZERO_BN)
                                   ? 'long'
                                   : 'short'
                               }

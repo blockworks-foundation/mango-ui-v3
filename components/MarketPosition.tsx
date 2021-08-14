@@ -1,35 +1,89 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import FloatingElement from './FloatingElement'
 import { ElementTitle } from './styles'
-import useMangoStore from '../stores/useMangoStore'
-import { i80f48ToPercent, tokenPrecision } from '../utils/index'
+import useMangoStore, { mangoClient } from '../stores/useMangoStore'
+import { i80f48ToPercent, tokenPrecision, usdFormatter } from '../utils/index'
 import DepositModal from './DepositModal'
 import WithdrawModal from './WithdrawModal'
 import Button from './Button'
 import Tooltip from './Tooltip'
 import SideBadge from './SideBadge'
+import {
+  getMarketIndexBySymbol,
+  nativeI80F48ToUi,
+  PerpAccount,
+  PerpMarket,
+  QUOTE_INDEX,
+  ZERO_BN,
+} from '@blockworks-foundation/mango-client'
+import useTradeHistory from '../hooks/useTradeHistory'
+import { getAvgEntryPrice, getBreakEvenPrice } from './PositionsTable'
+import { notify } from '../utils/notifications'
+
+const handleSettlePnl = async (
+  perpMarket: PerpMarket,
+  perpAccount: PerpAccount
+) => {
+  const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
+  const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
+  const mangoCache = useMangoStore.getState().selectedMangoGroup.cache
+  const wallet = useMangoStore.getState().wallet.current
+  const actions = useMangoStore.getState().actions
+  const marketIndex = mangoGroup.getPerpMarketIndex(perpMarket.publicKey)
+
+  try {
+    const txid = await mangoClient.settlePnl(
+      mangoGroup,
+      mangoAccount,
+      perpMarket,
+      mangoGroup.rootBankAccounts[QUOTE_INDEX],
+      mangoCache.priceCache[marketIndex].price,
+      wallet
+    )
+    actions.fetchMangoAccounts()
+    notify({
+      title: 'Successfully settled PNL',
+      description: '',
+      txid,
+    })
+  } catch (e) {
+    console.log('Error settling PNL: ', `${e}`, `${perpAccount}`)
+    notify({
+      title: 'Error settling PNL',
+      description: e.message,
+      txid: e.txid,
+      type: 'error',
+    })
+  }
+}
 
 export default function MarketPosition() {
-  const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  const mangoGroupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
+  const mangoGroupCache = useMangoStore((s) => s.selectedMangoGroup.cache)
+  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
+  const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
-  const baseSymbol = marketConfig.baseSymbol
-  const selectedMarketName = marketConfig.name
-  const selectedMangoGroupConfig = useMangoStore(
-    (s) => s.selectedMangoGroup.config
-  )
-  const selectedMangoGroupCache = useMangoStore(
-    (s) => s.selectedMangoGroup.cache
-  )
-  const selectedMangoAccount = useMangoStore(
-    (s) => s.selectedMangoAccount.current
-  )
-  // const loadingMangoAccount = useMangoStore(
-  //   (s) => s.selectedMangoAccount.initialLoad
-  // )
   const connected = useMangoStore((s) => s.wallet.connected)
+  const baseSymbol = marketConfig.baseSymbol
+  const marketName = marketConfig.name
+  const tradeHistory = useTradeHistory()
+  const perpTradeHistory = tradeHistory?.filter(
+    (t) => t.marketName === marketName
+  )
 
   const [showDepositModal, setShowDepositModal] = useState(false)
   const [showWithdrawModal, setShowWithdrawModal] = useState(false)
+
+  const marketIndex = useMemo(() => {
+    return getMarketIndexBySymbol(mangoGroupConfig, baseSymbol)
+  }, [mangoGroupConfig, baseSymbol])
+
+  const perpAccount = useMemo(() => {
+    if (marketName.includes('PERP') && mangoAccount) {
+      return mangoAccount.perpAccounts[marketIndex]
+    }
+  }, [marketName, mangoAccount, marketIndex])
 
   const handleCloseDeposit = useCallback(() => {
     setShowDepositModal(false)
@@ -39,51 +93,105 @@ export default function MarketPosition() {
     setShowWithdrawModal(false)
   }, [])
 
-  return selectedMarketName.includes('PERP') ? (
+  return selectedMarket instanceof PerpMarket ? (
     <FloatingElement showConnect>
       <div className={!connected ? 'filter blur-sm' : null}>
         <ElementTitle>Position</ElementTitle>
         <div className={`flex items-center justify-between pt-1 pb-2`}>
           <div className="font-normal text-th-fgd-3 leading-4">Side</div>
-          <SideBadge side="long" />
-        </div>
-        <div className={`flex justify-between pt-2 pb-2`}>
-          <div className="font-normal text-th-fgd-3 leading-4">Size</div>
-          <div className={`text-th-fgd-1`}>X.XXX BTC</div>
-        </div>
-        <div className={`flex justify-between pt-2 pb-2`}>
-          <div className="font-normal text-th-fgd-3 leading-4">
-            Notional Size
-          </div>
-          <div className={`text-th-fgd-1`}>$XXX.XX</div>
-        </div>
-        <div className={`flex justify-between pt-2 pb-2`}>
-          <div className="font-normal text-th-fgd-3 leading-4">PNL</div>
-          <div className={`text-th-fgd-1`}>$XX.XX</div>
+          {perpAccount && !perpAccount.basePosition.eq(ZERO_BN) ? (
+            <SideBadge
+              side={perpAccount.basePosition.gt(ZERO_BN) ? 'long' : 'short'}
+            />
+          ) : (
+            '-'
+          )}
         </div>
         <div className={`flex justify-between pt-2 pb-2`}>
           <div className="font-normal text-th-fgd-3 leading-4">
-            Break-even Price
+            Position size
           </div>
-          <div className={`text-th-fgd-1`}>$XX,XXX.XX</div>
+          <div className={`text-th-fgd-1`}>
+            {perpAccount
+              ? selectedMarket.baseLotsToNumber(perpAccount.basePosition)
+              : 0}{' '}
+            {baseSymbol}
+          </div>
         </div>
         <div className={`flex justify-between pt-2 pb-2`}>
-          <Tooltip content="Leverage">
-            <div
-              className={`cursor-help font-normal text-th-fgd-3 border-b border-th-fgd-3 border-dashed border-opacity-20 leading-4 default-transition hover:border-th-bkg-2 hover:text-th-fgd-3`}
+          <div className="font-normal text-th-fgd-3 leading-4">
+            Notional size
+          </div>
+          <div className={`text-th-fgd-1`}>
+            {perpAccount
+              ? usdFormatter.format(
+                  selectedMarket.baseLotsToNumber(perpAccount.basePosition) *
+                    mangoGroup.getPrice(marketIndex, mangoGroupCache).toNumber()
+                )
+              : 0}
+          </div>
+        </div>
+        <div className={`flex justify-between pt-2 pb-2`}>
+          <div className="font-normal text-th-fgd-3 leading-4">
+            Avg entry price
+          </div>
+          <div className={`text-th-fgd-1`}>
+            $
+            {perpAccount
+              ? getAvgEntryPrice(
+                  mangoAccount,
+                  perpAccount,
+                  selectedMarket,
+                  perpTradeHistory
+                )
+              : 0}
+          </div>
+        </div>
+        <div className={`flex justify-between pt-2 pb-2`}>
+          <div className="font-normal text-th-fgd-3 leading-4">
+            Break-even price
+          </div>
+          <div className={`text-th-fgd-1`}>
+            $
+            {perpAccount
+              ? getBreakEvenPrice(
+                  mangoAccount,
+                  perpAccount,
+                  selectedMarket,
+                  perpTradeHistory
+                )
+              : 0}
+          </div>
+        </div>
+        <div className={`flex justify-between pt-2 pb-2`}>
+          <div className="font-normal text-th-fgd-3 leading-4">
+            Unsettled PnL
+          </div>
+          <div className={`text-th-fgd-1`}>
+            {perpAccount
+              ? usdFormatter.format(
+                  +nativeI80F48ToUi(
+                    perpAccount.getPnl(
+                      mangoGroup.perpMarkets[marketIndex],
+                      mangoGroupCache.priceCache[marketIndex].price
+                    ),
+                    marketConfig.quoteDecimals
+                  )
+                )
+              : '0'}
+          </div>
+        </div>
+        <div className="flex">
+          {perpAccount ? (
+            <Button
+              className="mt-4 w-full"
+              disabled={!connected}
+              onClick={() => handleSettlePnl(selectedMarket, perpAccount)}
             >
-              Estimated Liquidation Price
-            </div>
-          </Tooltip>
-          <div className={`text-th-fgd-1`}>$XX,XXX.XX</div>
+              Settle PNL
+            </Button>
+          ) : null}
         </div>
-        <Button
-          className="mt-4 w-full"
-          disabled={!connected}
-          onClick={() => console.log('close position')}
-        >
-          Market Close Position
-        </Button>
       </div>
     </FloatingElement>
   ) : (
@@ -91,13 +199,13 @@ export default function MarketPosition() {
       <FloatingElement showConnect>
         <div className={!connected ? 'filter blur' : null}>
           <ElementTitle>Balances</ElementTitle>
-          {selectedMangoGroup ? (
+          {mangoGroup ? (
             <div className="grid grid-cols-2 grid-rows-1 gap-4 pt-2">
-              {selectedMangoGroupConfig.tokens
+              {mangoGroupConfig.tokens
                 .filter((t) => t.symbol === baseSymbol || t.symbol === 'USDC')
                 .reverse()
                 .map(({ symbol, mintKey }) => {
-                  const tokenIndex = selectedMangoGroup.getTokenIndex(mintKey)
+                  const tokenIndex = mangoGroup.getTokenIndex(mintKey)
                   return (
                     <div
                       className="border border-th-bkg-3 mb-4 p-3 rounded-md"
@@ -118,13 +226,11 @@ export default function MarketPosition() {
                           Deposits
                         </div>
                         <div className={`text-th-fgd-1`}>
-                          {selectedMangoAccount
-                            ? selectedMangoAccount
+                          {mangoAccount
+                            ? mangoAccount
                                 .getUiDeposit(
-                                  selectedMangoGroupCache.rootBankCache[
-                                    tokenIndex
-                                  ],
-                                  selectedMangoGroup,
+                                  mangoGroupCache.rootBankCache[tokenIndex],
+                                  mangoGroup,
                                   tokenIndex
                                 )
                                 .toFixed(tokenPrecision[symbol])
@@ -136,29 +242,17 @@ export default function MarketPosition() {
                           Borrows
                         </div>
                         <div className={`text-th-fgd-1`}>
-                          {selectedMangoAccount
-                            ? selectedMangoAccount
+                          {mangoAccount
+                            ? mangoAccount
                                 .getUiBorrow(
-                                  selectedMangoGroupCache.rootBankCache[
-                                    tokenIndex
-                                  ],
-                                  selectedMangoGroup,
+                                  mangoGroupCache.rootBankCache[tokenIndex],
+                                  mangoGroup,
                                   tokenIndex
                                 )
                                 .toFixed(tokenPrecision[symbol])
                             : (0).toFixed(tokenPrecision[symbol])}
                         </div>
                       </div>
-                      {/* <div className="w-1/4">
-                          <Tooltip content="Maximum available with leverage">
-                            <div
-                              className={`cursor-help font-normal pb-0.5 text-th-fgd-3 text-xs default-transition hover:border-th-bkg-2 hover:text-th-fgd-3`}
-                            >
-                              Available
-                            </div>
-                          </Tooltip>
-                          <div className={`text-th-fgd-1`}>0.00</div>
-                        </div> */}
                       <div>
                         <Tooltip content="Deposit APY and Borrow APR">
                           <div
@@ -170,14 +264,14 @@ export default function MarketPosition() {
                         <div className={`text-th-fgd-1`}>
                           <span className={`text-th-green`}>
                             {i80f48ToPercent(
-                              selectedMangoGroup.getDepositRate(tokenIndex)
+                              mangoGroup.getDepositRate(tokenIndex)
                             ).toFixed(2)}
                             %
                           </span>
                           <span className={`text-th-fgd-4`}>{'  /  '}</span>
                           <span className={`text-th-red`}>
                             {i80f48ToPercent(
-                              selectedMangoGroup.getBorrowRate(tokenIndex)
+                              mangoGroup.getBorrowRate(tokenIndex)
                             ).toFixed(2)}
                             %
                           </span>
