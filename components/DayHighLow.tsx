@@ -12,11 +12,13 @@ function formatRangePrice(price) {
 
 const DayHighLow = ({ high, low, latest }) => {
   let rangePercent = 0
+
   if (high?.baseOraclePrice) {
     rangePercent =
-      (parseFloat(latest?.baseOraclePrice) /
-        parseFloat(high?.baseOraclePrice)) *
-      100
+      ((parseFloat(latest?.baseOraclePrice) -
+        parseFloat(low?.baseOraclePrice)) *
+        100) /
+      (parseFloat(high?.baseOraclePrice) - parseFloat(low?.baseOraclePrice))
   }
 
   return (
