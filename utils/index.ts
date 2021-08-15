@@ -299,7 +299,15 @@ export async function getOrderBookAccountInfos(
   return await getMultipleAccounts(DEFAULT_CONNECTION, orderBookPks)
 }
 
-export const usdFormatter = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD',
-})
+export const usdFormatter = (value, decimals = 2) =>
+  new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  }).format(value)
+
+export const formatUsdValue = (value) => {
+  const precision = value >= 1 || value <= -1 ? 2 : value === 0 ? 0 : 4
+  return usdFormatter(value, precision)
+}

@@ -185,7 +185,7 @@ const OpenOrdersTable = () => {
                       <Td
                         className={`px-6 py-2 whitespace-nowrap text-th-fgd-1`}
                       >
-                        {usdFormatter.format(order.price)}
+                        {usdFormatter(order.price)}
                       </Td>
                       <Td className={`px-6 py-2 whitespace-nowrap`}>
                         <div className={`flex justify-end`}>
@@ -212,7 +212,7 @@ const OpenOrdersTable = () => {
             <div
               className={`w-full text-center py-6 bg-th-bkg-1 text-th-fgd-3 rounded-md`}
             >
-              No open orders.
+              No open orders
               {asPath === '/account' ? (
                 <Link href={'/'}>
                   <a

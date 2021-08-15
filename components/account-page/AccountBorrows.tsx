@@ -6,7 +6,7 @@ import {
 } from '@blockworks-foundation/mango-client'
 import useMangoStore from '../../stores/useMangoStore'
 import { useBalances } from '../../hooks/useBalances'
-import { tokenPrecision } from '../../utils/index'
+import { formatUsdValue, tokenPrecision, usdFormatter } from '../../utils/index'
 import WithdrawModal from '../WithdrawModal'
 import Button from '../Button'
 import DepositModal from '../DepositModal'
@@ -48,7 +48,7 @@ export default function AccountBorrows() {
         <div className="border border-th-red flex items-center justify-between p-2 rounded">
           <div className="pr-4 text-xs text-th-fgd-3">Total Borrow Value:</div>
           <span>
-            ${mangoAccount.getLiabsVal(mangoGroup, mangoCache).toFixed(2)}
+            {formatUsdValue(+mangoAccount.getLiabsVal(mangoGroup, mangoCache))}
           </span>
         </div>
       </div>
@@ -108,10 +108,11 @@ export default function AccountBorrows() {
                       <Td
                         className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
-                        $
-                        {asset.borrows
-                          .mul(mangoGroup.getPrice(tokenIndex, mangoCache))
-                          .toFixed(tokenPrecision[asset.symbol])}
+                        {formatUsdValue(
+                          asset.borrows.mul(
+                            mangoGroup.getPrice(tokenIndex, mangoCache)
+                          )
+                        )}
                       </Td>
                       <Td
                         className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
@@ -195,7 +196,7 @@ export default function AccountBorrows() {
                 <Td
                   className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
                 >
-                  ${mangoGroup.getPrice(tokenIndex, mangoCache).toFixed(2)}
+                  {formatUsdValue(mangoGroup.getPrice(tokenIndex, mangoCache))}
                 </Td>
                 <Td
                   className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
@@ -207,11 +208,12 @@ export default function AccountBorrows() {
                 <Td
                   className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
                 >
-                  $
-                  {mangoGroup
-                    .getUiTotalDeposit(tokenIndex)
-                    .sub(mangoGroup.getUiTotalBorrow(tokenIndex))
-                    .toFixed(2)}
+                  {usdFormatter(
+                    mangoGroup
+                      .getUiTotalDeposit(tokenIndex)
+                      .sub(mangoGroup.getUiTotalBorrow(tokenIndex)),
+                    0
+                  )}
                 </Td>
                 <Td
                   className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}

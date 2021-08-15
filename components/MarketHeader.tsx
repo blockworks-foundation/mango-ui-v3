@@ -8,6 +8,7 @@ import ManualRefresh from './ManualRefresh'
 import useOraclePrice from '../hooks/useOraclePrice'
 import DayHighLow from './DayHighLow'
 import { useEffect } from 'react'
+import { formatUsdValue } from '../utils'
 
 function calculateFundingRate(perpStats, perpMarket) {
   const oldestStat = perpStats[perpStats.length - 1]
@@ -153,7 +154,7 @@ const MarketHeader = () => {
           <div className="pr-6">
             <div className="text-th-fgd-3 tiny-text">Oracle price</div>
             <div className="font-semibold text-th-fgd-1 text-xs">
-              {oraclePrice ? oraclePrice.toFixed(2) : '--'}
+              {oraclePrice ? formatUsdValue(oraclePrice) : '--'}
             </div>
           </div>
           <div className="pr-4">

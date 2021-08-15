@@ -17,7 +17,7 @@ import BN from 'bn.js'
 import SideBadge from './SideBadge'
 import { useState } from 'react'
 import Loading from './Loading'
-import { usdFormatter } from '../utils'
+import { formatUsdValue, usdFormatter } from '../utils'
 import useTradeHistory from '../hooks/useTradeHistory'
 
 export function getAvgEntryPrice(
@@ -29,9 +29,13 @@ export function getAvgEntryPrice(
   let avgEntryPrice = '--'
   if (perpTradeHistory.length) {
     try {
-      avgEntryPrice = perpAccount
-        .getAverageOpenPrice(mangoAccount, perpMarket, perpTradeHistory)
-        .toFixed(2)
+      avgEntryPrice = formatUsdValue(
+        perpAccount.getAverageOpenPrice(
+          mangoAccount,
+          perpMarket,
+          perpTradeHistory
+        )
+      )
     } catch {
       avgEntryPrice = '--'
     }
@@ -48,9 +52,13 @@ export function getBreakEvenPrice(
   let breakEvenPrice = '--'
   if (perpTradeHistory.length) {
     try {
-      breakEvenPrice = perpAccount
-        .getBreakEvenPrice(mangoAccount, perpMarket, perpTradeHistory)
-        .toFixed(2)
+      breakEvenPrice = formatUsdValue(
+        perpAccount.getBreakEvenPrice(
+          mangoAccount,
+          perpMarket,
+          perpTradeHistory
+        )
+      )
     } catch {
       breakEvenPrice = '--'
     }
@@ -219,7 +227,7 @@ const PositionsTable = () => {
                             scope="col"
                             className="px-2 py-2 text-left font-normal"
                           >
-                            {usdFormatter.format(
+                            {usdFormatter(
                               perpMarket.baseLotsToNumber(
                                 perpAccount.basePosition
                               ) *
@@ -229,7 +237,6 @@ const PositionsTable = () => {
                             )}
                           </Th>
                           <Td className="px-2 py-2 whitespace-nowrap text-sm text-th-fgd-1">
-                            $
                             {getAvgEntryPrice(
                               mangoAccount,
                               perpAccount,
@@ -238,7 +245,6 @@ const PositionsTable = () => {
                             )}
                           </Td>
                           <Td className="px-2 py-2 whitespace-nowrap text-sm text-th-fgd-1">
-                            $
                             {getBreakEvenPrice(
                               mangoAccount,
                               perpAccount,
@@ -247,7 +253,7 @@ const PositionsTable = () => {
                             )}
                           </Td>
                           <Td className="px-2 py-2 whitespace-nowrap text-sm text-th-fgd-1">
-                            {usdFormatter.format(
+                            {usdFormatter(
                               +nativeI80F48ToUi(
                                 perpAccount.getPnl(perpMarketInfo, price),
                                 marketConfig.quoteDecimals
