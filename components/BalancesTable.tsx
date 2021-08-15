@@ -5,7 +5,7 @@ import { notify } from '../utils/notifications'
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
 import { InformationCircleIcon } from '@heroicons/react/outline'
 import Tooltip from './Tooltip'
-import { sleep } from '../utils'
+import { floorToDecimal, sleep } from '../utils'
 import { Market } from '@project-serum/serum'
 import {
   getTokenBySymbol,
@@ -159,7 +159,8 @@ const BalancesTable = () => {
                           className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
                         >
                           {+balance.marginDeposits > 0
-                            ? balance.marginDeposits.toFixed(
+                            ? floorToDecimal(
+                                balance.marginDeposits.toNumber(),
                                 tokenConfig.decimals
                               )
                             : 0}

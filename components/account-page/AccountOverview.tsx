@@ -32,7 +32,7 @@ import { Market } from '@project-serum/serum'
 import SideBadge from '../SideBadge'
 import Button, { LinkButton } from '../Button'
 import Switch from '../Switch'
-import PositionsTable from '../PositionsTable'
+import PositionsTable from '../PerpPositionsTable'
 import DepositModal from '../DepositModal'
 import WithdrawModal from '../WithdrawModal'
 

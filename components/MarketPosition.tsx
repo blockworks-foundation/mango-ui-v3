@@ -2,7 +2,12 @@ import { useCallback, useMemo, useState } from 'react'
 import FloatingElement from './FloatingElement'
 import { ElementTitle } from './styles'
 import useMangoStore, { mangoClient } from '../stores/useMangoStore'
-import { i80f48ToPercent, tokenPrecision, formatUsdValue } from '../utils/index'
+import {
+  ceilToDecimal,
+  floorToDecimal,
+  i80f48ToPercent,
+  formatUsdValue,
+} from '../utils/index'
 import DepositModal from './DepositModal'
 import WithdrawModal from './WithdrawModal'
 import Button from './Button'
@@ -17,7 +22,7 @@ import {
   ZERO_BN,
 } from '@blockworks-foundation/mango-client'
 import useTradeHistory from '../hooks/useTradeHistory'
-import { getAvgEntryPrice, getBreakEvenPrice } from './PositionsTable'
+import { getAvgEntryPrice, getBreakEvenPrice } from './PerpPositionsTable'
 import { notify } from '../utils/notifications'
 
 const handleSettlePnl = async (
@@ -225,14 +230,19 @@ export default function MarketPosition() {
                         </div>
                         <div className={`text-th-fgd-1`}>
                           {mangoAccount
-                            ? mangoAccount
-                                .getUiDeposit(
-                                  mangoGroupCache.rootBankCache[tokenIndex],
-                                  mangoGroup,
-                                  tokenIndex
-                                )
-                                .toFixed(tokenPrecision[symbol])
-                            : (0).toFixed(tokenPrecision[symbol])}
+                            ? floorToDecimal(
+                                mangoAccount
+                                  .getUiDeposit(
+                                    mangoGroupCache.rootBankCache[tokenIndex],
+                                    mangoGroup,
+                                    tokenIndex
+                                  )
+                                  .toNumber(),
+                                mangoGroup.tokens[tokenIndex].decimals
+                              )
+                            : (0).toFixed(
+                                mangoGroup.tokens[tokenIndex].decimals
+                              )}
                         </div>
                       </div>
                       <div className="pb-3">
@@ -241,14 +251,19 @@ export default function MarketPosition() {
                         </div>
                         <div className={`text-th-fgd-1`}>
                           {mangoAccount
-                            ? mangoAccount
-                                .getUiBorrow(
-                                  mangoGroupCache.rootBankCache[tokenIndex],
-                                  mangoGroup,
-                                  tokenIndex
-                                )
-                                .toFixed(tokenPrecision[symbol])
-                            : (0).toFixed(tokenPrecision[symbol])}
+                            ? ceilToDecimal(
+                                mangoAccount
+                                  .getUiBorrow(
+                                    mangoGroupCache.rootBankCache[tokenIndex],
+                                    mangoGroup,
+                                    tokenIndex
+                                  )
+                                  .toNumber(),
+                                mangoGroup.tokens[tokenIndex].decimals
+                              )
+                            : (0).toFixed(
+                                mangoGroup.tokens[tokenIndex].decimals
+                              )}
                         </div>
                       </div>
                       <div>
