@@ -239,7 +239,7 @@ const TradeHistoryTable = () => {
             </div>
           ) : (
             <div className="w-full text-center py-6 bg-th-bkg-1 text-th-fgd-3 rounded-md">
-              No {marketConfig.name} trade history.
+              No {marketConfig.name} trade history
               {asPath === '/account' ? (
                 <Link href={'/'}>
                   <a className="inline-flex ml-2 py-0">Make a trade</a>

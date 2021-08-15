@@ -6,6 +6,7 @@ import {
 import { HeartIcon } from '@heroicons/react/outline'
 import { useMemo } from 'react'
 import useMangoStore, { mangoClient, MNGO_INDEX } from '../stores/useMangoStore'
+import { formatUsdValue } from '../utils'
 import { notify } from '../utils/notifications'
 import { LinkButton } from './Button'
 import FloatingElement from './FloatingElement'
@@ -78,12 +79,8 @@ export default function MarginInfo() {
         <div>
           <div>
             <div className="flex justify-between pt-2 pb-2">
-              <Tooltip content="Account value">
-                <div className="cursor-help font-normal text-th-fgd-3 leading-4 border-b border-th-fgd-3 border-dashed border-opacity-20 default-transition hover:border-th-bkg-2">
-                  Equity
-                </div>
-              </Tooltip>
-              <div className="text-th-fgd-1">${equity.toFixed(2)}</div>
+              <div className="font-normal text-th-fgd-3 leading-4">Equity</div>
+              <div className="text-th-fgd-1">{formatUsdValue(+equity)}</div>
             </div>
             <div className="flex justify-between pt-2 pb-2">
               <div className="font-normal text-th-fgd-3 leading-4">
@@ -92,7 +89,7 @@ export default function MarginInfo() {
               <div className="text-th-fgd-1">
                 {mangoAccount
                   ? mangoAccount.getLeverage(mangoGroup, mangoCache).toFixed(2)
-                  : '0.00'}
+                  : '--'}
                 x
               </div>
             </div>
@@ -101,10 +98,11 @@ export default function MarginInfo() {
                 Total Assets Value
               </div>
               <div className={`text-th-fgd-1`}>
-                $
                 {mangoAccount
-                  ? mangoAccount.getAssetsVal(mangoGroup, mangoCache).toFixed(2)
-                  : '0.00'}
+                  ? formatUsdValue(
+                      +mangoAccount.getAssetsVal(mangoGroup, mangoCache)
+                    )
+                  : '--'}
               </div>
             </div>
             <div className={`flex justify-between pt-2 pb-2`}>
@@ -112,10 +110,11 @@ export default function MarginInfo() {
                 Total Liabilities Value
               </div>
               <div className={`text-th-fgd-1`}>
-                $
                 {mangoAccount
-                  ? mangoAccount.getLiabsVal(mangoGroup, mangoCache).toFixed(2)
-                  : 0}
+                  ? formatUsdValue(
+                      +mangoAccount.getLiabsVal(mangoGroup, mangoCache)
+                    )
+                  : '--'}
               </div>
             </div>
             <div className={`flex justify-between pt-2 pb-2`}>

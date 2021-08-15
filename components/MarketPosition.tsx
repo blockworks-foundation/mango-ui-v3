@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from 'react'
 import FloatingElement from './FloatingElement'
 import { ElementTitle } from './styles'
 import useMangoStore, { mangoClient } from '../stores/useMangoStore'
-import { i80f48ToPercent, tokenPrecision, usdFormatter } from '../utils/index'
+import { i80f48ToPercent, tokenPrecision, formatUsdValue } from '../utils/index'
 import DepositModal from './DepositModal'
 import WithdrawModal from './WithdrawModal'
 import Button from './Button'
@@ -104,7 +104,7 @@ export default function MarketPosition() {
               side={perpAccount.basePosition.gt(ZERO_BN) ? 'long' : 'short'}
             />
           ) : (
-            '-'
+            '--'
           )}
         </div>
         <div className={`flex justify-between pt-2 pb-2`}>
@@ -124,7 +124,7 @@ export default function MarketPosition() {
           </div>
           <div className={`text-th-fgd-1`}>
             {perpAccount
-              ? usdFormatter.format(
+              ? formatUsdValue(
                   selectedMarket.baseLotsToNumber(perpAccount.basePosition) *
                     mangoGroup.getPrice(marketIndex, mangoGroupCache).toNumber()
                 )
@@ -136,7 +136,6 @@ export default function MarketPosition() {
             Avg entry price
           </div>
           <div className={`text-th-fgd-1`}>
-            $
             {perpAccount
               ? getAvgEntryPrice(
                   mangoAccount,
@@ -152,7 +151,6 @@ export default function MarketPosition() {
             Break-even price
           </div>
           <div className={`text-th-fgd-1`}>
-            $
             {perpAccount
               ? getBreakEvenPrice(
                   mangoAccount,
@@ -169,7 +167,7 @@ export default function MarketPosition() {
           </div>
           <div className={`text-th-fgd-1`}>
             {perpAccount
-              ? usdFormatter.format(
+              ? formatUsdValue(
                   +nativeI80F48ToUi(
                     perpAccount.getPnl(
                       mangoGroup.perpMarkets[marketIndex],
@@ -208,10 +206,10 @@ export default function MarketPosition() {
                   const tokenIndex = mangoGroup.getTokenIndex(mintKey)
                   return (
                     <div
-                      className="border border-th-bkg-3 mb-4 p-3 rounded-md"
+                      className="border border-th-bkg-4 mb-4 p-3 rounded-md"
                       key={mintKey.toString()}
                     >
-                      <div className="border-b border-th-bkg-3 flex items-center justify-between mb-3 pb-3">
+                      <div className="border-b border-th-bkg-4 flex items-center justify-between mb-3 pb-3">
                         <div className="flex items-center">
                           <img
                             alt=""

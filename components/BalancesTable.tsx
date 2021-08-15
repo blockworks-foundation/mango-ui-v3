@@ -50,6 +50,14 @@ const BalancesTable = () => {
     }
   }
 
+  const filteredBalances = balances.filter(
+    (bal) =>
+      +bal.marginDeposits > 0 ||
+      +bal.borrows > 0 ||
+      bal.orders > 0 ||
+      bal.unsettled > 0
+  )
+
   return (
     <div className={`flex flex-col py-4`}>
       <div className={`-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8`}>
@@ -61,7 +69,7 @@ const BalancesTable = () => {
                 borrows.gt(ZERO_I80F48) && marginDeposits.gt(ZERO_I80F48)
             )) ? (
             <div
-              className={`flex items-center justify-between px-4 py-2 mb-2 rounded-md bg-th-bkg-1`}
+              className={`flex items-center justify-between px-6 py-3 mb-2 rounded-md bg-th-bkg-1`}
             >
               <div className="flex items-center text-fgd-1 font-semibold pr-4">
                 You have unsettled funds
@@ -76,7 +84,7 @@ const BalancesTable = () => {
               <Button onClick={handleSettleAll}>Settle All</Button>
             </div>
           ) : null}
-          {balances.length ? (
+          {filteredBalances.length > 0 ? (
             <div
               className={`overflow-hidden border-b border-th-bkg-2 sm:rounded-md`}
             >
@@ -85,44 +93,44 @@ const BalancesTable = () => {
                   <Tr className="text-th-fgd-3 text-xs">
                     <Th
                       scope="col"
-                      className={`px-6 py-2 text-left font-normal`}
+                      className={`px-6 py-3 text-left font-normal`}
                     >
                       Asset
                     </Th>
                     <Th
                       scope="col"
-                      className={`px-6 py-2 text-left font-normal`}
+                      className={`px-6 py-3 text-left font-normal`}
                     >
                       Deposits
                     </Th>
                     <Th
                       scope="col"
-                      className={`px-6 py-2 text-left font-normal`}
+                      className={`px-6 py-3 text-left font-normal`}
                     >
                       Borrows
                     </Th>
                     <Th
                       scope="col"
-                      className={`px-6 py-2 text-left font-normal`}
+                      className={`px-6 py-3 text-left font-normal`}
                     >
                       In Orders
                     </Th>
                     <Th
                       scope="col"
-                      className={`px-6 py-2 text-left font-normal`}
+                      className={`px-6 py-3 text-left font-normal`}
                     >
                       Unsettled
                     </Th>
                     <Th
                       scope="col"
-                      className={`px-6 py-2 text-left font-normal`}
+                      className={`px-6 py-3 text-left font-normal`}
                     >
                       Net
                     </Th>
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {balances.map((balance, index) => {
+                  {filteredBalances.map((balance, index) => {
                     const tokenConfig = getTokenBySymbol(
                       mangoGroupConfig,
                       balance.symbol.toUpperCase()
@@ -135,7 +143,7 @@ const BalancesTable = () => {
                       `}
                       >
                         <Td
-                          className={`flex items-center px-4 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
+                          className={`flex items-center px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
                         >
                           <img
                             alt=""
@@ -148,29 +156,41 @@ const BalancesTable = () => {
                           {balance.symbol}
                         </Td>
                         <Td
-                          className={`px-4 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
+                          className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
                         >
-                          {balance.marginDeposits.toFixed(tokenConfig.decimals)}
+                          {+balance.marginDeposits > 0
+                            ? balance.marginDeposits.toFixed(
+                                tokenConfig.decimals
+                              )
+                            : 0}
                         </Td>
                         <Td
-                          className={`px-4 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
+                          className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
                         >
-                          {balance.borrows.toFixed(tokenConfig.decimals)}
+                          {+balance.borrows > 0
+                            ? balance.marginDeposits.toFixed(
+                                tokenConfig.decimals
+                              )
+                            : 0}
                         </Td>
                         <Td
-                          className={`px-4 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
+                          className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
                         >
                           {balance.orders}
                         </Td>
                         <Td
-                          className={`px-4 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
+                          className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
                         >
                           {balance.unsettled}
                         </Td>
                         <Td
-                          className={`px-4 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
+                          className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
                         >
-                          {balance.net.toFixed(tokenConfig.decimals)}
+                          {+balance.net === 0
+                            ? 0
+                            : balance.marginDeposits.toFixed(
+                                tokenConfig.decimals
+                              )}
                         </Td>
                       </Tr>
                     )

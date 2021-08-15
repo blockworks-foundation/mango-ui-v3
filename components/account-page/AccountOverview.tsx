@@ -26,7 +26,7 @@ import useMangoStore, {
 import { useBalances } from '../../hooks/useBalances'
 import { useSortableData } from '../../hooks/useSortableData'
 import useLocalStorageState from '../../hooks/useLocalStorageState'
-import { sleep, usdFormatter, tokenPrecision } from '../../utils'
+import { sleep, tokenPrecision, formatUsdValue } from '../../utils'
 import { notify } from '../../utils/notifications'
 import { Market } from '@project-serum/serum'
 import SideBadge from '../SideBadge'
@@ -249,8 +249,8 @@ export default function AccountOverview() {
           <div className="flex items-center pb-3">
             <CurrencyDollarIcon className="flex-shrink-0 h-7 w-7 mr-1.5 text-th-primary" />
             <StyledAccountValue className="font-bold text-th-fgd-1">
-              {usdFormatter.format(
-                +mangoAccount.computeValue(mangoGroup, mangoCache).toFixed(2)
+              {formatUsdValue(
+                +mangoAccount.computeValue(mangoGroup, mangoCache)
               )}
             </StyledAccountValue>
           </div>
@@ -260,8 +260,8 @@ export default function AccountOverview() {
           <div className="flex items-center pb-3">
             <ChartBarIcon className="flex-shrink-0 h-7 w-7 mr-1.5 text-th-primary" />
             <StyledAccountValue className="font-bold text-th-fgd-1">
-              {usdFormatter.format(
-                +mangoAccount.computeValue(mangoGroup, mangoCache).toFixed(2)
+              {formatUsdValue(
+                +mangoAccount.computeValue(mangoGroup, mangoCache)
               )}
             </StyledAccountValue>
           </div>
@@ -356,7 +356,7 @@ export default function AccountOverview() {
           <div className="pb-0.5 text-xs text-th-fgd-3">Total Assets Value</div>
           <div className="flex items-center">
             <div className="text-lg text-th-fgd-1">
-              {usdFormatter.format(
+              {formatUsdValue(
                 +mangoAccount.getAssetsVal(mangoGroup, mangoCache)
               )}
             </div>
@@ -368,7 +368,7 @@ export default function AccountOverview() {
           </div>
           <div className="flex items-center">
             <div className="text-lg text-th-fgd-1">
-              {usdFormatter.format(
+              {formatUsdValue(
                 +mangoAccount.getLiabsVal(mangoGroup, mangoCache)
               )}
             </div>
@@ -550,12 +550,12 @@ export default function AccountOverview() {
                 <Td
                   className={`px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
                 >
-                  {usdFormatter.format(pos.price)}
+                  {formatUsdValue(pos.price)}
                 </Td>
                 <Td
                   className={`px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
                 >
-                  {usdFormatter.format(pos.value)}
+                  {formatUsdValue(pos.value)}
                 </Td>
                 <Td
                   className={`px-6 py-2 whitespace-nowrap text-sm text-th-green`}
