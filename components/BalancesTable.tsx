@@ -5,7 +5,7 @@ import { notify } from '../utils/notifications'
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
 import { InformationCircleIcon } from '@heroicons/react/outline'
 import Tooltip from './Tooltip'
-import { floorToDecimal, sleep } from '../utils'
+import { ceilToDecimal, floorToDecimal, sleep } from '../utils'
 import { Market } from '@project-serum/serum'
 import {
   getTokenBySymbol,
@@ -158,21 +158,18 @@ const BalancesTable = () => {
                         <Td
                           className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
                         >
-                          {+balance.marginDeposits > 0
-                            ? floorToDecimal(
-                                balance.marginDeposits.toNumber(),
-                                tokenConfig.decimals
-                              )
-                            : 0}
+                          {floorToDecimal(
+                            balance.marginDeposits.toNumber(),
+                            tokenConfig.decimals
+                          )}
                         </Td>
                         <Td
                           className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
                         >
-                          {+balance.borrows > 0
-                            ? balance.marginDeposits.toFixed(
-                                tokenConfig.decimals
-                              )
-                            : 0}
+                          {ceilToDecimal(
+                            balance.borrows.toNumber(),
+                            tokenConfig.decimals
+                          )}
                         </Td>
                         <Td
                           className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
@@ -187,11 +184,10 @@ const BalancesTable = () => {
                         <Td
                           className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
                         >
-                          {+balance.net === 0
-                            ? 0
-                            : balance.marginDeposits.toFixed(
-                                tokenConfig.decimals
-                              )}
+                          {floorToDecimal(
+                            balance.net.toNumber(),
+                            tokenConfig.decimals
+                          )}
                         </Td>
                       </Tr>
                     )

@@ -3,7 +3,7 @@ import Modal from './Modal'
 import Input from './Input'
 import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
-import { DECIMALS, tokenPrecision } from '../utils/index'
+import { DECIMALS, floorToDecimal, tokenPrecision } from '../utils/index'
 import Loading from './Loading'
 import Slider from './Slider'
 import Button, { LinkButton } from './Button'
@@ -25,16 +25,8 @@ import {
   ZERO_I80F48,
   I80F48,
   MangoAccount,
-  ONE_I80F48,
 } from '@blockworks-foundation/mango-client'
 import { notify } from '../utils/notifications'
-
-// const trimDecimals = (n, digits) => {
-//   const step = Math.pow(10, digits || 0)
-//   const temp = Math.trunc(step * n)
-
-//   return temp / step
-// }
 
 interface WithdrawModalProps {
   onClose: () => void
@@ -67,9 +59,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   const actions = useMangoStore((s) => s.actions)
   const setMangoStore = useMangoStore((s) => s.set)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
-  const selectedMangoAccount = useMangoStore(
-    (s) => s.selectedMangoAccount.current
-  )
+  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const mangoGroupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
 
@@ -81,51 +71,31 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   const tokenIndex = mangoGroup.getTokenIndex(token.mintKey)
 
   useEffect(() => {
-    if (!mangoGroup || !selectedMangoAccount || !withdrawTokenSymbol) return
+    if (!mangoGroup || !mangoAccount || !withdrawTokenSymbol) return
 
     const mintDecimals = mangoGroup.tokens[tokenIndex].decimals
-    const deposits = selectedMangoAccount.getUiDeposit(
+    const tokenDeposits = mangoAccount.getUiDeposit(
       mangoCache.rootBankCache[tokenIndex],
       mangoGroup,
       tokenIndex
     )
-    const borrows = selectedMangoAccount.getUiBorrow(
+    const tokenBorrows = mangoAccount.getUiBorrow(
       mangoCache.rootBankCache[tokenIndex],
       mangoGroup,
       tokenIndex
     )
 
-    const maxValForSelectedAsset = getDepositsForSelectedAsset().mul(
-      mangoGroup.getPrice(tokenIndex, mangoCache) || ONE_I80F48
-    )
-
-    const currentAssetsVal = selectedMangoAccount
-      .getAssetsVal(mangoGroup, mangoCache, 'Init')
-      .sub(maxValForSelectedAsset)
-
-    const currentLiabsVal = selectedMangoAccount.getLiabsVal(
-      mangoGroup,
-      mangoCache,
-      'Init'
-    )
-
-    const liabsAvail = currentAssetsVal
-      .sub(currentLiabsVal)
-      .sub(I80F48.fromNumber(0.01))
-
-    // calculate max withdraw amount
-    const amountToWithdraw = includeBorrow
-      ? liabsAvail
-          .div(
-            (mangoGroup.getPrice(tokenIndex, mangoCache) || ONE_I80F48).mul(
-              mangoGroup.spotMarkets[tokenIndex].initLiabWeight
-            )
-          )
-          .add(getDepositsForSelectedAsset())
+    // get max withdraw amount
+    const maxWithdraw = includeBorrow
+      ? mangoAccount.getMaxWithBorrowForToken(
+          mangoGroup,
+          mangoCache,
+          tokenIndex
+        )
       : getDepositsForSelectedAsset()
 
-    if (amountToWithdraw.gt(I80F48.fromNumber(0))) {
-      setMaxAmount(amountToWithdraw.toNumber())
+    if (maxWithdraw.gt(I80F48.fromNumber(0))) {
+      setMaxAmount(floorToDecimal(maxWithdraw.toNumber(), token.decimals))
     } else {
       setMaxAmount(0)
     }
@@ -134,43 +104,46 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
     const parsedInputAmount = inputAmount
       ? I80F48.fromString(inputAmount)
       : ZERO_I80F48
-    let newDeposit = deposits.sub(parsedInputAmount)
+    let newDeposit = tokenDeposits.sub(parsedInputAmount)
     newDeposit = newDeposit.gt(ZERO_I80F48) ? newDeposit : ZERO_I80F48
 
-    let newBorrows = parsedInputAmount.sub(deposits)
-    newBorrows = newBorrows.gt(ZERO_I80F48) ? newBorrows : ZERO_I80F48
-    newBorrows = newBorrows.add(borrows)
+    let newBorrow = parsedInputAmount.sub(tokenDeposits)
+    newBorrow = newBorrow.gt(ZERO_I80F48) ? newBorrow : ZERO_I80F48
+    newBorrow = newBorrow.add(tokenBorrows)
 
     // clone MangoAccount and arrays to not modify selectedMangoAccount
-    const simulation = new MangoAccount(null, selectedMangoAccount)
-    simulation.deposits = [...selectedMangoAccount.deposits]
-    simulation.borrows = [...selectedMangoAccount.borrows]
+    const simulation = new MangoAccount(null, mangoAccount)
+    simulation.deposits = [...mangoAccount.deposits]
+    simulation.borrows = [...mangoAccount.borrows]
 
     // update with simulated values
     simulation.deposits[tokenIndex] = newDeposit
-      .div(I80F48.fromNumber(Math.pow(10, mintDecimals)))
+      .mul(I80F48.fromNumber(Math.pow(10, mintDecimals)))
       .div(mangoCache.rootBankCache[tokenIndex].depositIndex)
-    simulation.borrows[tokenIndex] = newBorrows
-      .div(I80F48.fromNumber(Math.pow(10, mintDecimals)))
+    simulation.borrows[tokenIndex] = newBorrow
+      .mul(I80F48.fromNumber(Math.pow(10, mintDecimals)))
       .div(mangoCache.rootBankCache[tokenIndex].borrowIndex)
 
-    const assetsVal = simulation.getAssetsVal(mangoGroup, mangoCache, 'Init')
-    const liabsVal = simulation.getLiabsVal(mangoGroup, mangoCache, 'Init')
-    // const collateralRatio = simulation.getCollateralRatio(
-    //   mangoGroup,
-    //   prices
-    // )
-    // const leverage = 1 / Math.max(0, collateralRatio - 1)
+    const liabsVal = simulation
+      .getLiabsVal(mangoGroup, mangoCache, 'Init')
+      .toNumber()
+    const leverage = simulation.getLeverage(mangoGroup, mangoCache).toNumber()
+    const equity = simulation.computeValue(mangoGroup, mangoCache).toNumber()
+    const initHealthRatio = simulation
+      .getHealthRatio(mangoGroup, mangoCache, 'Init')
+      .toNumber()
 
     setSimulation({
-      assetsVal,
+      initHealthRatio,
       liabsVal,
+      leverage,
+      equity,
     })
   }, [
     includeBorrow,
     inputAmount,
     tokenIndex,
-    selectedMangoAccount,
+    mangoAccount,
     mangoGroup,
     mangoCache,
   ])
@@ -221,7 +194,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   }
 
   const getDepositsForSelectedAsset = (): I80F48 => {
-    return selectedMangoAccount.getUiDeposit(
+    return mangoAccount.getUiDeposit(
       mangoCache.rootBankCache[tokenIndex],
       mangoGroup,
       tokenIndex
@@ -235,11 +208,11 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   }
 
   const getAccountStatusColor = (
-    collateralRatio: number,
+    initHealthRatio: number,
     isRisk?: boolean,
     isStatus?: boolean
   ) => {
-    if (collateralRatio < 1.25) {
+    if (initHealthRatio < 1) {
       return isRisk ? (
         <div className="text-th-red">High</div>
       ) : isStatus ? (
@@ -247,7 +220,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
       ) : (
         'border-th-red text-th-red'
       )
-    } else if (collateralRatio > 1.25 && collateralRatio < 1.5) {
+    } else if (initHealthRatio > 1 && initHealthRatio < 10) {
       return isRisk ? (
         <div className="text-th-orange">Moderate</div>
       ) : isStatus ? (
@@ -274,7 +247,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   }
 
   const setMaxForSelectedAsset = () => {
-    setInputAmount(getDepositsForSelectedAsset().toFixed())
+    setInputAmount(getDepositsForSelectedAsset().toString())
     setSliderPercentage(100)
     setInvalidAmountMessage('')
     setMaxButtonTransition(true)
@@ -282,7 +255,6 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
 
   const setMaxBorrowForSelectedAsset = async () => {
     console.log('setting max borrow for selected', maxAmount)
-
     setInputAmount(maxAmount.toString())
     setSliderPercentage(100)
     setInvalidAmountMessage('')
@@ -300,7 +272,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
     if (percentage === 100) {
       setInputAmount(maxAmount.toString())
     } else {
-      setInputAmount(amount.toString())
+      setInputAmount(floorToDecimal(amount, token.decimals).toString())
     }
     setSliderPercentage(percentage)
     setInvalidAmountMessage('')
@@ -309,12 +281,6 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
 
   const validateAmountInput = (amount) => {
     const parsedAmount = Number(amount)
-    if (
-      (parsedAmount <= 0 && getDepositsForSelectedAsset().gt(ZERO_I80F48)) ||
-      (parsedAmount <= 0 && includeBorrow)
-    ) {
-      setInvalidAmountMessage('Enter an amount to withdraw')
-    }
     if (
       (getDepositsForSelectedAsset() === ZERO_I80F48 ||
         getDepositsForSelectedAsset().lt(I80F48.fromNumber(parsedAmount))) &&
@@ -325,7 +291,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   }
 
   useEffect(() => {
-    if (simulation && simulation.collateralRatio < 1.2 && includeBorrow) {
+    if (simulation && simulation.initHealthRatio < 0 && includeBorrow) {
       setInvalidAmountMessage(
         'Leverage too high. Reduce the amount to withdraw'
       )
@@ -340,7 +306,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
       const tokenIndex = mangoGroup.getTokenIndex(token.mintKey)
       return {
         symbol: token.symbol,
-        balance: selectedMangoAccount
+        balance: mangoAccount
           .getUiDeposit(
             mangoCache.rootBankCache[tokenIndex],
             mangoGroup,
@@ -371,13 +337,6 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
     onClose()
   }
 
-  // turn on borrow toggle when asset balance is zero
-  // useEffect(() => {
-  //   if (withdrawTokenSymbol && getDepositsForSelectedAsset() === 0) {
-  //     setIncludeBorrow(true)
-  //   }
-  // }, [withdrawTokenSymbol])
-
   if (!withdrawTokenSymbol) return null
 
   return (
@@ -393,7 +352,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
             <div className="pb-2 text-th-fgd-1">Asset</div>
             <Select
               value={
-                withdrawTokenSymbol && selectedMangoAccount ? (
+                withdrawTokenSymbol && mangoAccount ? (
                   <div className="flex items-center justify-between w-full">
                     <div className="flex items-center">
                       <img
@@ -405,7 +364,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                       />
                       {withdrawTokenSymbol}
                     </div>
-                    {selectedMangoAccount
+                    {mangoAccount
                       .getUiDeposit(
                         mangoCache.rootBankCache[tokenIndex],
                         mangoGroup,
@@ -484,20 +443,17 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                 onChange={(e) => onChangeAmountInput(e.target.value)}
                 suffix={withdrawTokenSymbol}
               />
-              {/* {simulation ? (
+              {simulation ? (
                 <Tooltip content="Projected Leverage" className="py-1">
                   <span
                     className={`${getAccountStatusColor(
-                      simulation.collateralRatio
+                      simulation.initHealthRatio
                     )} bg-th-bkg-1 border flex font-semibold h-10 items-center justify-center ml-2 rounded text-th-fgd-1 w-14`}
                   >
-                    {simulation.leverage < 5
-                      ? simulation.leverage.toFixed(2)
-                      : '>5'}
-                    x
+                    {simulation.leverage.toFixed(2)}x
                   </span>
                 </Tooltip>
-              ) : null} */}
+              ) : null}
             </div>
             {invalidAmountMessage ? (
               <div className="flex items-center pt-1.5 text-th-red">
@@ -518,7 +474,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
               <Button
                 onClick={() => setShowSimulation(true)}
                 disabled={
-                  Number(inputAmount) <= 0 || simulation?.collateralRatio < 1.2
+                  Number(inputAmount) <= 0 || simulation?.initHealthRatio < 0
                 }
                 className="w-full"
               >
@@ -532,7 +488,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
             <Modal.Header>
               <ElementTitle noMarignBottom>Confirm Withdraw</ElementTitle>
             </Modal.Header>
-            {simulation.collateralRatio < 1.2 ? (
+            {simulation.initHealthRatio < 0 ? (
               <div className="border border-th-red mb-4 p-2 rounded">
                 <div className="flex items-center text-th-red">
                   <ExclamationCircleIcon className="h-4 w-4 mr-1.5 flex-shrink-0" />
@@ -568,20 +524,20 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                     <div className="flex items-center justify-between">
                       <div className="flex items-center">
                         <span className="flex h-2 w-2 mr-2.5 relative">
-                          {/* <span
+                          <span
                             className={`animate-ping absolute inline-flex h-full w-full rounded-full ${getAccountStatusColor(
-                              simulation.collateralRatio,
+                              simulation.initHealthRatio,
                               false,
                               true
                             )} opacity-75`}
-                          ></span> */}
-                          {/* <span
+                          ></span>
+                          <span
                             className={`relative inline-flex rounded-full h-2 w-2 ${getAccountStatusColor(
-                              simulation.collateralRatio,
+                              simulation.initHealthRatio,
                               false,
                               true
                             )}`}
-                          ></span> */}
+                          ></span>
                         </span>
                         Account Health Check
                         <Tooltip content="The details of your account after this withdrawal.">
@@ -600,38 +556,38 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                   <Disclosure.Panel
                     className={`border border-th-fgd-4 border-t-0 p-4 rounded-b-md`}
                   >
-                    <div>
-                      <div className="flex justify-between pb-2">
-                        <div className="text-th-fgd-4">Account Value</div>
-                        <div className="text-th-fgd-1">
-                          ${simulation.assetsVal.toFixed(2)}
+                    {simulation ? (
+                      <div>
+                        <div className="flex justify-between pb-2">
+                          <div className="text-th-fgd-4">Account Value</div>
+                          <div className="text-th-fgd-1">
+                            ${simulation.equity.toFixed(2)}
+                          </div>
                         </div>
-                      </div>
-                      <div className="flex justify-between pb-2">
-                        <div className="text-th-fgd-4">Account Risk</div>
-                        <div className="text-th-fgd-1">
-                          {getAccountStatusColor(
-                            simulation.collateralRatio,
-                            true
-                          )}
+                        <div className="flex justify-between pb-2">
+                          <div className="text-th-fgd-4">Account Risk</div>
+                          <div className="text-th-fgd-1">
+                            {getAccountStatusColor(
+                              simulation.initHealthRatio,
+                              true
+                            )}
+                          </div>
                         </div>
-                      </div>
-                      <div className="flex justify-between pb-2">
-                        <div className="text-th-fgd-4">Leverage</div>
-                        <div className="text-th-fgd-1">
-                          {/* {simulation.leverage.toFixed(2)}x */}
-                          X.XXx
+                        <div className="flex justify-between pb-2">
+                          <div className="text-th-fgd-4">Leverage</div>
+                          <div className="text-th-fgd-1">
+                            {simulation.leverage.toFixed(2)}x
+                          </div>
                         </div>
-                      </div>
-                      {simulation.liabsVal > 0.05 ? (
-                        <div className="flex justify-between pt-2">
+
+                        <div className="flex justify-between">
                           <div className="text-th-fgd-4">Borrow Value</div>
                           <div className="text-th-fgd-1">
                             ${simulation.liabsVal.toFixed(2)}
                           </div>
                         </div>
-                      ) : null}
-                    </div>
+                      </div>
+                    ) : null}
                   </Disclosure.Panel>
                 </>
               )}
@@ -640,14 +596,13 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
               <Button
                 onClick={handleWithdraw}
                 disabled={
-                  Number(inputAmount) <=
-                  0 /* || simulation.collateralRatio < 1.2*/
+                  Number(inputAmount) <= 0 || simulation.initHealthRatio < 0
                 }
                 className="w-full"
               >
                 <div className={`flex items-center justify-center`}>
                   {submitting && <Loading className="-ml-1 mr-3" />}
-                  Confirm
+                  Withdraw
                 </div>
               </Button>
             </div>
