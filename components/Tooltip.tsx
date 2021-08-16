@@ -28,10 +28,10 @@ const Tooltip = ({ children, content, className }: TooltipProps) => {
   )
 }
 
-const Content = ({ className, children }) => {
+const Content = ({ className = '', children }) => {
   return (
     <div
-      className={`cursor-help border-b border-th-fgd-3 border-dashed border-opacity-20 default-transition hover:border-th-bkg-2 ${className}`}
+      className={`inline-block cursor-help border-b border-th-fgd-3 border-dashed border-opacity-20 default-transition hover:border-th-bkg-2 ${className}`}
     >
       {children}
     </div>

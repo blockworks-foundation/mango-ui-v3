@@ -19,6 +19,8 @@ import { useState } from 'react'
 import Loading from './Loading'
 import { formatUsdValue, usdFormatter } from '../utils'
 import useTradeHistory from '../hooks/useTradeHistory'
+import Tooltip from './Tooltip'
+import { SettlePnlTooltip } from './MarketPosition'
 
 export function getAvgEntryPrice(
   mangoAccount,
@@ -167,7 +169,9 @@ const PositionsTable = () => {
                       Break-even price
                     </Th>
                     <Th scope="col" className="px-2 py-2 text-left font-normal">
-                      Unsettled PnL
+                      <Tooltip content={<SettlePnlTooltip />}>
+                        <Tooltip.Content>Unsettled PnL</Tooltip.Content>
+                      </Tooltip>
                     </Th>
                     <Th scope="col" className={`relative px-6 py-2.5`}>
                       <span className={`sr-only`}>Edit</span>

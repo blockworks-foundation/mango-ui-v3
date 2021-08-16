@@ -61,6 +61,21 @@ const handleSettlePnl = async (
   }
 }
 
+export function SettlePnlTooltip() {
+  return (
+    <div>
+      Settling will update your USDC balance to reflect the PnL amount.{' '}
+      <a
+        href="https://docs.mango.markets/mango-v3/overview#settle-pnl"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Learn more
+      </a>
+    </div>
+  )
+}
+
 export default function MarketPosition() {
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoGroupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
@@ -155,21 +170,7 @@ export default function MarketPosition() {
           </div>
         </div>
         <div className={`flex justify-between pt-2 pb-2`}>
-          <Tooltip
-            content={
-              <div>
-                Settling will update your USDC balance to reflect the PnL
-                amount.{' '}
-                <a
-                  href="https://docs.mango.markets/mango-v3/overview#settle-pnl"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Learn more
-                </a>
-              </div>
-            }
-          >
+          <Tooltip content={<SettlePnlTooltip />}>
             <Tooltip.Content className="font-normal text-th-fgd-3 leading-4">
               Unsettled PnL
             </Tooltip.Content>
