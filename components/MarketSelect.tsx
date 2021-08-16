@@ -15,16 +15,11 @@ const StyledMarketSelectWrapper = styled.div`
   }
 `
 
-// const StyledMarketTypeToggleWrapper = styled.div`
-//   background: rgba(255, 255, 255, 0.12);
-// `
-
 const StyledArrow = styled.div`
   width: 0;
   height: 0;
   border-top: 20px solid transparent;
   border-bottom: 20px solid transparent;
-  // border-left: 20px solid rgba(255, 255, 255, 0.12);
   padding-right: 0.5rem;
 `
 
@@ -46,10 +41,8 @@ const MarketSelect = () => {
         found.markets.push(market)
       }
     })
-    setSortedMarkets(
-      markets.sort((a, b) => a.baseAsset.localeCompare(b.baseAsset))
-    )
-  }, [])
+    setSortedMarkets(markets)
+  }, [groupConfig])
 
   return (
     <>

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import styled from '@emotion/styled'
 import Link from 'next/link'
 import { EyeIcon, EyeOffIcon } from '@heroicons/react/outline'
@@ -20,6 +20,8 @@ const MarketsModal = ({
   markets: Array<any>
   onClose?: (x?) => void
 }) => {
+  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const [hiddenMarkets, setHiddenMarkets] = useLocalStorageState(
     'hiddenMarkets',
     []
@@ -45,26 +47,26 @@ const MarketsModal = ({
           Show all in Nav
         </LinkButton>
       </div>
-      {markets.map((m) => (
-        <div key={m.baseAsset}>
+      {markets.map((mkt, index) => (
+        <div key={mkt.baseAsset}>
           <div className="bg-th-bkg-3 flex items-center justify-between p-2 rounded">
             <div className="flex items-center">
               <img
                 alt=""
-                src={`/assets/icons/${m.baseAsset.toLowerCase()}.svg`}
+                src={`/assets/icons/${mkt.baseAsset.toLowerCase()}.svg`}
                 className={`h-5 mr-2.5 w-auto`}
               />
-              <span className="text-th-fgd-2">{m.baseAsset}</span>
+              <span className="text-th-fgd-2">{mkt.baseAsset}</span>
             </div>
-            {hiddenMarkets.includes(m.baseAsset) ? (
+            {hiddenMarkets.includes(mkt.baseAsset) ? (
               <EyeOffIcon
                 className="cursor-pointer default-transition h-5 text-th-fgd-4 w-5 hover:text-th-fgd-3"
-                onClick={() => handleHideShowMarket(m.baseAsset)}
+                onClick={() => handleHideShowMarket(mkt.baseAsset)}
               />
             ) : (
               <EyeIcon
                 className="cursor-pointer default-transition h-5 text-th-primary w-5 hover:text-th-primary-dark"
-                onClick={() => handleHideShowMarket(m.baseAsset)}
+                onClick={() => handleHideShowMarket(mkt.baseAsset)}
               />
             )}
           </div>
@@ -74,16 +76,16 @@ const MarketsModal = ({
               <StyledColumnHeader className="text-right w-20">
                 Price
               </StyledColumnHeader>
-              <StyledColumnHeader className="text-right w-20">
+              {/* <StyledColumnHeader className="text-right w-20">
                 24h Change
               </StyledColumnHeader>
               <StyledColumnHeader className="text-right w-20">
                 24h Vol
-              </StyledColumnHeader>
+              </StyledColumnHeader> */}
             </div>
           </div>
           <div className="divide-y divide-th-bkg-3">
-            {m.markets.map((m, i) => (
+            {mkt.markets.map((m, i) => (
               <div
                 className={`flex items-center justify-between p-2.5 text-xs ${
                   i === 0 && 'pt-1'
@@ -104,9 +106,11 @@ const MarketsModal = ({
                   </a>
                 </Link>
                 <div className="flex justify-between">
-                  <span className="text-th-fgd-2 text-right w-20">$10,000</span>
-                  <span className="text-th-green text-right w-20">+2.44%</span>
-                  <span className="text-th-fgd-3 text-right w-20">$233m</span>
+                  <span className="text-th-fgd-2 text-right w-20">
+                    ${mangoGroup.getPrice(index, mangoCache).toFixed(2)}
+                  </span>
+                  {/* <span className="text-th-green text-right w-20">+2.44%</span>
+                  <span className="text-th-fgd-3 text-right w-20">$233m</span> */}
                 </div>
               </div>
             ))}
