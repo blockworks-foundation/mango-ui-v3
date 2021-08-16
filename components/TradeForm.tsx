@@ -6,7 +6,7 @@ import {
   PerpMarket,
 } from '@blockworks-foundation/mango-client'
 import { notify } from '../utils/notifications'
-import { calculateMarketPrice, getDecimalCount } from '../utils'
+import { calculateMarketPrice, getDecimalCount, sleep } from '../utils'
 import FloatingElement from './FloatingElement'
 import { floorToDecimal } from '../utils/index'
 import useMangoStore, { mangoClient } from '../stores/useMangoStore'
@@ -226,6 +226,9 @@ export default function TradeForm() {
           baseSize,
           orderType
         )
+        sleep(2000).then(() => {
+          actions.fetchMangoAccounts()
+        })
       } else {
         txid = await mangoClient.placePerpOrder(
           mangoGroup,
@@ -238,12 +241,14 @@ export default function TradeForm() {
           baseSize,
           orderType
         )
+        sleep(3000).then(() => {
+          actions.fetchMangoAccounts()
+        })
       }
 
       notify({ title: 'Successfully placed trade', txid })
       setPrice('')
       onSetBaseSize('')
-      actions.fetchMangoAccounts()
     } catch (e) {
       notify({
         title: 'Error placing order',
