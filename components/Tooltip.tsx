@@ -1,17 +1,14 @@
-import React, { FunctionComponent, ReactNode } from 'react'
+import React, { ReactNode } from 'react'
 import Tippy from '@tippyjs/react'
 import 'tippy.js/animations/scale.css'
 
 type TooltipProps = {
   content: ReactNode
   className?: string
+  children?: ReactNode
 }
 
-const Tooltip: FunctionComponent<TooltipProps> = ({
-  children,
-  content,
-  className,
-}) => {
+const Tooltip = ({ children, content, className }: TooltipProps) => {
   return (
     <Tippy
       animation="scale"
@@ -30,5 +27,17 @@ const Tooltip: FunctionComponent<TooltipProps> = ({
     </Tippy>
   )
 }
+
+const Content = ({ className, children }) => {
+  return (
+    <div
+      className={`cursor-help border-b border-th-fgd-3 border-dashed border-opacity-20 default-transition hover:border-th-bkg-2 ${className}`}
+    >
+      {children}
+    </div>
+  )
+}
+
+Tooltip.Content = Content
 
 export default Tooltip

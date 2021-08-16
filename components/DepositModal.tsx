@@ -1,14 +1,6 @@
 import React, { FunctionComponent, useEffect, useState } from 'react'
-import { Disclosure } from '@headlessui/react'
-import {
-  ExclamationCircleIcon,
-  InformationCircleIcon,
-} from '@heroicons/react/outline'
-import {
-  ChevronLeftIcon,
-  ChevronDownIcon,
-  ChevronUpIcon,
-} from '@heroicons/react/solid'
+import { ExclamationCircleIcon } from '@heroicons/react/outline'
+import { ChevronLeftIcon } from '@heroicons/react/solid'
 import Modal from './Modal'
 import Input from './Input'
 import AccountSelect from './AccountSelect'
@@ -16,7 +8,6 @@ import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
 import Loading from './Loading'
 import Button, { LinkButton } from './Button'
-import Tooltip from './Tooltip'
 import Slider from './Slider'
 import InlineNotification from './InlineNotification'
 import { deposit } from '../utils/mango'
@@ -35,13 +26,9 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
   settleDeficit,
   tokenSymbol = '',
 }) => {
-  // const groupConfig = useMangoGroupConfig()
-  // const tokenSymbols = useMemo(() => groupConfig.tokens.map(t => t.symbol), [groupConfig]);
-
   const [inputAmount, setInputAmount] = useState<string>(settleDeficit || '')
   const [submitting, setSubmitting] = useState(false)
-  const [simulation /*setSimulation*/] = useState(null)
-  const [showSimulation, setShowSimulation] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
   const [invalidAmountMessage, setInvalidAmountMessage] = useState('')
   const [sliderPercentage, setSliderPercentage] = useState(0)
   const [maxButtonTransition, setMaxButtonTransition] = useState(false)
@@ -49,9 +36,6 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
   const actions = useMangoStore((s) => s.actions)
   const setMangoStore = useMangoStore((s) => s.set)
   const [selectedAccount, setSelectedAccount] = useState(walletTokens[0])
-
-  // const prices = [] //useMangoStore((s) => s.selectedMangoGroup.prices)
-  // const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
 
   useEffect(() => {
     if (tokenSymbol) {
@@ -78,54 +62,6 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
     })
     onClose()
   }
-
-  /* TODO: simulation
-  useEffect(() => {
-    if (!selectedMangoGroup || !selectedMangoAccount || !selectedAccount)
-      return
-
-    const mintDecimals = selectedMangoGroup.mintDecimals[tokenIndex]
-    const groupIndex = selectedMangoGroup.indexes[tokenIndex]
-    const deposits = selectedMangoAccount.getUiDeposit(
-      selectedMangoGroup,
-      tokenIndex
-    )
-
-    // simulate change to deposits based on input amount
-    const newDeposit = Math.max(0, +inputAmount + +deposits)
-
-    // clone MangoAccount and arrays to not modify selectedMangoAccount
-    const simulation = new MangoAccount(null, selectedMangoAccount)
-    simulation.deposits = [...selectedMangoAccount.deposits]
-    simulation.borrows = [...selectedMangoAccount.borrows]
-
-    // update with simulated values
-    simulation.deposits[tokenIndex] =
-      uiToNative(newDeposit, mintDecimals).toNumber() / groupIndex.deposit
-
-    const equity = simulation.computeValue(selectedMangoGroup, prices)
-    const assetsVal = simulation.getAssetsVal(selectedMangoGroup, prices)
-    const liabsVal = simulation.getLiabsVal(selectedMangoGroup, prices)
-    const collateralRatio = simulation.getCollateralRatio(
-      selectedMangoGroup,
-      prices
-    )
-    const leverage = 1 / Math.max(0, collateralRatio - 1)
-    setSimulation({
-      equity,
-      assetsVal,
-      liabsVal,
-      collateralRatio,
-      leverage,
-    })
-  }, [
-    inputAmount,
-    prices,
-    tokenIndex,
-    selectedMangoAccount,
-    selectedMangoGroup,
-  ])
-  */
 
   const handleAccountSelect = (account) => {
     setInputAmount('')
@@ -171,38 +107,6 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
           type: 'error',
         })
       })
-  }
-
-  const renderAccountRiskStatus = (
-    collateralRatio: number,
-    isRiskLevel?: boolean,
-    isStatusIcon?: boolean
-  ) => {
-    if (collateralRatio < 1.25) {
-      return isRiskLevel ? (
-        <div className="text-th-red">High</div>
-      ) : isStatusIcon ? (
-        'bg-th-red'
-      ) : (
-        'border-th-red text-th-red'
-      )
-    } else if (collateralRatio > 1.25 && collateralRatio < 1.5) {
-      return isRiskLevel ? (
-        <div className="text-th-orange">Moderate</div>
-      ) : isStatusIcon ? (
-        'bg-th-orange'
-      ) : (
-        'border-th-orange text-th-orange'
-      )
-    } else {
-      return isRiskLevel ? (
-        <div className="text-th-green">Low</div>
-      ) : isStatusIcon ? (
-        'bg-th-green'
-      ) : (
-        'border-th-green text-th-green'
-      )
-    }
   }
 
   const validateAmountInput = (amount) => {
@@ -261,7 +165,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose}>
-      {!showSimulation ? (
+      {!showConfirm ? (
         <>
           <Modal.Header>
             <ElementTitle noMarignBottom>Deposit Funds</ElementTitle>
@@ -306,20 +210,6 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
               onChange={(e) => onChangeAmountInput(e.target.value)}
               suffix={selectedAccount?.config.symbol}
             />
-            {/* {simulation ? (
-              <Tooltip content="Projected Leverage" className="py-1">
-                <span
-                  className={`${renderAccountRiskStatus(
-                    simulation?.collateralRatio
-                  )} bg-th-bkg-1 border flex font-semibold h-10 items-center justify-center ml-2 rounded text-th-fgd-1 w-14`}
-                >
-                  {simulation?.leverage < 5
-                    ? simulation?.leverage.toFixed(2)
-                    : '>5'}
-                  x
-                </span>
-              </Tooltip>
-            ) : null} */}
           </div>
           {invalidAmountMessage ? (
             <div className="flex items-center pt-1.5 text-th-red">
@@ -338,9 +228,10 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
           </div>
           <div className={`pt-8 flex justify-center`}>
             <Button
-              onClick={() => setShowSimulation(true)}
+              onClick={() => setShowConfirm(true)}
               className="w-full"
               disabled={
+                !inputAmount ||
                 parseFloat(inputAmount) <= 0 ||
                 !selectedAccount ||
                 parseFloat(inputAmount) > selectedAccount.uiBalance
@@ -366,95 +257,6 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
               </div>
             </div>
           </div>
-          {simulation ? (
-            <Disclosure>
-              {({ open }) => (
-                <>
-                  <Disclosure.Button
-                    className={`border border-th-fgd-4 default-transition font-normal mt-4 pl-3 pr-2 py-2.5 ${
-                      open ? 'rounded-b-none' : 'rounded-md'
-                    } text-th-fgd-1 w-full hover:bg-th-bkg-3 focus:outline-none`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
-                        <span className="flex h-2 w-2 mr-2.5 relative">
-                          <span
-                            className={`animate-ping absolute inline-flex h-full w-full rounded-full ${renderAccountRiskStatus(
-                              simulation?.collateralRatio,
-                              false,
-                              true
-                            )} opacity-75`}
-                          ></span>
-                          <span
-                            className={`relative inline-flex rounded-full h-2 w-2 ${renderAccountRiskStatus(
-                              simulation?.collateralRatio,
-                              false,
-                              true
-                            )}`}
-                          ></span>
-                        </span>
-                        Account Health Check
-                        <Tooltip content="The details of your account after this deposit.">
-                          <InformationCircleIcon
-                            className={`h-5 w-5 ml-2 text-th-fgd-3 cursor-help`}
-                          />
-                        </Tooltip>
-                      </div>
-                      {open ? (
-                        <ChevronUpIcon className="h-5 w-5 mr-1" />
-                      ) : (
-                        <ChevronDownIcon className="h-5 w-5 mr-1" />
-                      )}
-                    </div>
-                  </Disclosure.Button>
-                  <Disclosure.Panel
-                    className={`border border-th-fgd-4 border-t-0 p-4 rounded-b-md`}
-                  >
-                    <div>
-                      <div className="flex justify-between pb-2">
-                        <div className="text-th-fgd-4">Account Value</div>
-                        <div className="text-th-fgd-1">
-                          ${simulation?.assetsVal.toFixed(2)}
-                        </div>
-                      </div>
-                      <div className="flex justify-between pb-2">
-                        <div className="text-th-fgd-4">Account Risk</div>
-                        <div className="text-th-fgd-1">
-                          {renderAccountRiskStatus(
-                            simulation?.collateralRatio,
-                            true
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex justify-between pb-2">
-                        <div className="text-th-fgd-4">Leverage</div>
-                        <div className="text-th-fgd-1">
-                          {simulation?.leverage.toFixed(2)}x
-                        </div>
-                      </div>
-                      <div className="flex justify-between">
-                        <div className="text-th-fgd-4">Collateral Ratio</div>
-                        <div className="text-th-fgd-1">
-                          {simulation?.collateralRatio * 100 < 200
-                            ? Math.floor(simulation?.collateralRatio * 100)
-                            : '>200'}
-                          %
-                        </div>
-                      </div>
-                      {simulation?.liabsVal > 0.05 ? (
-                        <div className="flex justify-between pt-2">
-                          <div className="text-th-fgd-4">Borrow Value</div>
-                          <div className="text-th-fgd-1">
-                            ${simulation?.liabsVal.toFixed(2)}
-                          </div>
-                        </div>
-                      ) : null}
-                    </div>
-                  </Disclosure.Panel>
-                </>
-              )}
-            </Disclosure>
-          ) : null}
           <div className={`mt-5 flex justify-center`}>
             <Button onClick={handleDeposit} className="w-full">
               <div className={`flex items-center justify-center`}>
@@ -465,7 +267,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
           </div>
           <LinkButton
             className="flex items-center mt-4 text-th-fgd-3"
-            onClick={() => setShowSimulation(false)}
+            onClick={() => setShowConfirm(false)}
           >
             <ChevronLeftIcon className="h-5 w-5 mr-1" />
             Back

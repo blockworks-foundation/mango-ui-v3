@@ -4,7 +4,8 @@ import styled from '@emotion/styled'
 import { Menu } from '@headlessui/react'
 import Link from 'next/link'
 import {
-  ChartBarIcon,
+  // ChartBarIcon,
+  ScaleIcon,
   CurrencyDollarIcon,
   ExclamationIcon,
   DotsHorizontalIcon,
@@ -255,7 +256,7 @@ export default function AccountOverview() {
             </StyledAccountValue>
           </div>
         </div>
-        <div className="border border-th-bkg-4 p-4 rounded-lg">
+        {/* <div className="border border-th-bkg-4 p-4 rounded-lg">
           <div className="pb-2 text-th-fgd-3">PNL</div>
           <div className="flex items-center pb-3">
             <ChartBarIcon className="flex-shrink-0 h-7 w-7 mr-1.5 text-th-primary" />
@@ -263,6 +264,15 @@ export default function AccountOverview() {
               {formatUsdValue(
                 +mangoAccount.computeValue(mangoGroup, mangoCache)
               )}
+            </StyledAccountValue>
+          </div>
+        </div> */}
+        <div className="border border-th-bkg-4 p-4 rounded-lg">
+          <div className="pb-2 text-th-fgd-3">Leverage</div>
+          <div className="flex items-center pb-3">
+            <ScaleIcon className="flex-shrink-0 h-7 w-7 mr-1.5 text-th-primary" />
+            <StyledAccountValue className="font-bold text-th-fgd-1">
+              {mangoAccount.getLeverage(mangoGroup, mangoCache).toFixed(2)}x
             </StyledAccountValue>
           </div>
         </div>

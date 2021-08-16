@@ -18,6 +18,7 @@ import {
   PerpMarket,
   QUOTE_INDEX,
   ZERO_BN,
+  ZERO_I80F48,
 } from '@blockworks-foundation/mango-client'
 import useTradeHistory from '../hooks/useTradeHistory'
 import { getAvgEntryPrice, getBreakEvenPrice } from './PerpPositionsTable'
@@ -67,7 +68,6 @@ export default function MarketPosition() {
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
-  const selectedMarketName = marketConfig.name
   const connected = useMangoStore((s) => s.wallet.connected)
   const baseSymbol = marketConfig.baseSymbol
   const marketName = marketConfig.name
@@ -155,9 +155,25 @@ export default function MarketPosition() {
           </div>
         </div>
         <div className={`flex justify-between pt-2 pb-2`}>
-          <div className="font-normal text-th-fgd-3 leading-4">
-            Unsettled PnL
-          </div>
+          <Tooltip
+            content={
+              <div>
+                Settling will update your USDC balance to reflect the PnL
+                amount.{' '}
+                <a
+                  href="https://docs.mango.markets/mango-v3/overview#settle-pnl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Learn more
+                </a>
+              </div>
+            }
+          >
+            <Tooltip.Content className="font-normal text-th-fgd-3 leading-4">
+              Unsettled PnL
+            </Tooltip.Content>
+          </Tooltip>
           <div className={`flex items-center text-th-fgd-1`}>
             {perpAccount
               ? formatUsdValue(
@@ -174,14 +190,14 @@ export default function MarketPosition() {
               onClick={() => handleSettlePnl(selectedMarket, perpAccount)}
               className="ml-2 text-th-primary text-xs disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:underline"
               disabled={
-                perpAccount &&
-                +nativeI80F48ToUi(
-                  perpAccount.getPnl(
-                    mangoGroup.perpMarkets[marketIndex],
-                    mangoGroupCache.priceCache[marketIndex].price
-                  ),
-                  marketConfig.quoteDecimals
-                ) === 0
+                perpAccount
+                  ? perpAccount
+                      .getPnl(
+                        mangoGroup.perpMarkets[marketIndex],
+                        mangoGroupCache.priceCache[marketIndex].price
+                      )
+                      .eq(ZERO_I80F48)
+                  : true
               }
             >
               Settle
@@ -262,22 +278,22 @@ export default function MarketPosition() {
                           >
                             Interest Rates
                           </div>
+                          <div className={`text-th-fgd-1`}>
+                            <span className={`text-th-green`}>
+                              {i80f48ToPercent(
+                                mangoGroup.getDepositRate(tokenIndex)
+                              ).toFixed(2)}
+                              %
+                            </span>
+                            <span className={`text-th-fgd-4`}>{'  /  '}</span>
+                            <span className={`text-th-red`}>
+                              {i80f48ToPercent(
+                                mangoGroup.getBorrowRate(tokenIndex)
+                              ).toFixed(2)}
+                              %
+                            </span>
+                          </div>
                         </Tooltip>
-                        <div className={`text-th-fgd-1`}>
-                          <span className={`text-th-green`}>
-                            {i80f48ToPercent(
-                              mangoGroup.getDepositRate(tokenIndex)
-                            ).toFixed(2)}
-                            %
-                          </span>
-                          <span className={`text-th-fgd-4`}>{'  /  '}</span>
-                          <span className={`text-th-red`}>
-                            {i80f48ToPercent(
-                              mangoGroup.getBorrowRate(tokenIndex)
-                            ).toFixed(2)}
-                            %
-                          </span>
-                        </div>
                       </div>
                     </div>
                   )

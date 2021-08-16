@@ -8,7 +8,7 @@ const TVChartContainer = dynamic(
 import { useEffect, useState } from 'react'
 import FloatingElement from '../components/FloatingElement'
 import Orderbook from '../components/Orderbook'
-import MarginInfo from './MarginInfo'
+import AccountInfo from './AccountInfo'
 import MarketPosition from './MarketPosition'
 import TradeForm from './TradeForm'
 import UserInfo from './UserInfo'
@@ -26,12 +26,12 @@ export const defaultLayouts = {
     { i: 'marketTrades', x: 6, y: 1, w: 3, h: 13 },
     { i: 'marketPosition', x: 9, y: 3, w: 3, h: 13 },
     { i: 'userInfo', x: 0, y: 2, w: 9, h: 19 },
-    { i: 'marginInfo', x: 9, y: 4, w: 3, h: 15 },
+    { i: 'accountInfo', x: 9, y: 4, w: 3, h: 15 },
   ],
   lg: [
     { i: 'tvChart', x: 0, y: 0, w: 8, h: 28, minW: 2 },
     { i: 'marketPosition', x: 8, y: 0, w: 4, h: 13, minW: 2 },
-    { i: 'marginInfo', x: 8, y: 1, w: 4, h: 15, minW: 2 },
+    { i: 'accountInfo', x: 8, y: 1, w: 4, h: 15, minW: 2 },
     { i: 'orderbook', x: 0, y: 2, w: 4, h: 17, minW: 2 },
     { i: 'tradeForm', x: 4, y: 2, w: 4, h: 17, minW: 3 },
     { i: 'marketTrades', x: 8, y: 2, w: 4, h: 17, minW: 2 },
@@ -40,7 +40,7 @@ export const defaultLayouts = {
   md: [
     { i: 'tvChart', x: 0, y: 0, w: 8, h: 28, minW: 2 },
     { i: 'marketPosition', x: 8, y: 0, w: 4, h: 13, minW: 2 },
-    { i: 'marginInfo', x: 8, y: 1, w: 4, h: 15, minW: 2 },
+    { i: 'accountInfo', x: 8, y: 1, w: 4, h: 15, minW: 2 },
     { i: 'orderbook', x: 0, y: 2, w: 4, h: 17, minW: 2 },
     { i: 'tradeForm', x: 4, y: 2, w: 4, h: 17, minW: 3 },
     { i: 'marketTrades', x: 8, y: 2, w: 4, h: 17, minW: 2 },
@@ -49,7 +49,7 @@ export const defaultLayouts = {
   sm: [
     { i: 'tvChart', x: 0, y: 0, w: 12, h: 25, minW: 6 },
     { i: 'marketPosition', x: 0, y: 1, w: 6, h: 15, minW: 2 },
-    { i: 'marginInfo', x: 6, y: 1, w: 6, h: 15, minW: 2 },
+    { i: 'accountInfo', x: 6, y: 1, w: 6, h: 15, minW: 2 },
     { i: 'tradeForm', x: 0, y: 2, w: 12, h: 13, minW: 3 },
     { i: 'orderbook', x: 0, y: 3, w: 6, h: 17, minW: 3 },
     { i: 'marketTrades', x: 6, y: 3, w: 6, h: 17, minW: 2 },
@@ -58,7 +58,7 @@ export const defaultLayouts = {
   xs: [
     { i: 'tvChart', x: 0, y: 0, w: 0, h: 0, minW: 6 },
     { i: 'marketPosition', x: 0, y: 1, w: 6, h: 13, minW: 2 },
-    { i: 'marginInfo', x: 0, y: 2, w: 6, h: 15, minW: 2 },
+    { i: 'accountInfo', x: 0, y: 2, w: 6, h: 15, minW: 2 },
     { i: 'tradeForm', x: 0, y: 3, w: 12, h: 13, minW: 3 },
     { i: 'orderbook', x: 0, y: 4, w: 6, h: 17, minW: 3 },
     { i: 'marketTrades', x: 0, y: 5, w: 6, h: 17, minW: 2 },
@@ -66,7 +66,7 @@ export const defaultLayouts = {
   ],
 }
 
-export const GRID_LAYOUT_KEY = 'mangoSavedLayouts-3.0.4'
+export const GRID_LAYOUT_KEY = 'mangoSavedLayouts-3.0.6'
 
 const TradePageGrid = () => {
   const { uiLocked } = useMangoStore((s) => s.settings)
@@ -84,7 +84,7 @@ const TradePageGrid = () => {
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
   if (!mounted) return null
-  // TODO enable savedLayouts
+
   return (
     <ResponsiveGridLayout
       className="layout"
@@ -107,8 +107,8 @@ const TradePageGrid = () => {
       <div key="tradeForm">
         <TradeForm />
       </div>
-      <div key="marginInfo">
-        <MarginInfo />
+      <div key="accountInfo">
+        <AccountInfo />
       </div>
       <div key="userInfo">
         <UserInfo />
