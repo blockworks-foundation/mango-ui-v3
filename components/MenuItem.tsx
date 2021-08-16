@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 
-const MenuItem = ({ href, children, newWindow }) => {
+const MenuItem = ({ href, children, newWindow = false }) => {
   const { asPath } = useRouter()
 
   return (
