@@ -214,13 +214,17 @@ const PositionsTable = () => {
                             </div>
                           </Td>
                           <Td className="px-2 py-2 whitespace-nowrap text-sm text-th-fgd-1">
-                            <SideBadge
-                              side={
-                                perpAccount.basePosition.gt(ZERO_BN)
-                                  ? 'long'
-                                  : 'short'
-                              }
-                            />
+                            {!perpAccount.basePosition.eq(ZERO_BN) ? (
+                              <SideBadge
+                                side={
+                                  perpAccount.basePosition.gt(ZERO_BN)
+                                    ? 'long'
+                                    : 'short'
+                                }
+                              />
+                            ) : (
+                              '-'
+                            )}
                           </Td>
                           <Td className="px-2 py-2 whitespace-nowrap text-sm text-th-fgd-1">
                             {perpMarket.baseLotsToNumber(

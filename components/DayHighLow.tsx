@@ -18,7 +18,7 @@ const DayHighLow = ({ high, low, latest }) => {
       </div>
       <div className="flex items-center">
         <div className="pr-2 text-th-fgd-1 text-xs">
-          {formatUsdValue(low?.baseOraclePrice)}
+          {low?.baseOraclePrice ? formatUsdValue(low.baseOraclePrice) : null}
         </div>
         <div className="h-1.5 flex rounded bg-th-bkg-3 w-24">
           <div
@@ -29,7 +29,7 @@ const DayHighLow = ({ high, low, latest }) => {
           ></div>
         </div>
         <div className="pl-2 text-th-fgd-1 text-xs">
-          {formatUsdValue(high?.baseOraclePrice)}
+          {high?.baseOraclePrice ? formatUsdValue(high.baseOraclePrice) : null}
         </div>
       </div>
     </div>

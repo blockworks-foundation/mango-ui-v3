@@ -112,7 +112,7 @@ export default function MarketPosition() {
               side={perpAccount.basePosition.gt(ZERO_BN) ? 'long' : 'short'}
             />
           ) : (
-            '--'
+            '-'
           )}
         </div>
         <div className={`flex justify-between pt-2 pb-2`}>
