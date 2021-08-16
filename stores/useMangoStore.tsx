@@ -161,7 +161,6 @@ interface MangoStore extends State {
     uiLocked: boolean
   }
   tradeHistory: any[]
-  blurBackground: boolean
   set: (x: any) => void
   actions: {
     [key: string]: (args?) => void
@@ -217,7 +216,6 @@ const useMangoStore = create<MangoStore>((set, get) => ({
     uiLocked: true,
   },
   tradeHistory: [],
-  blurBackground: false,
   set: (fn) => set(produce(fn)),
   actions: {
     async fetchWalletTokens() {

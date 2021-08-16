@@ -24,20 +24,6 @@ const MarketsModal = ({
     'hiddenMarkets',
     []
   )
-  const setMangoStore = useMangoStore((s) => s.set)
-
-  useEffect(() => {
-    setMangoStore((state) => {
-      state.blurBackground = true
-    })
-  }, [])
-
-  const handleClose = () => {
-    setMangoStore((state) => {
-      state.blurBackground = false
-    })
-    onClose()
-  }
 
   const handleHideShowMarket = (asset) => {
     if (hiddenMarkets.includes(asset)) {
@@ -48,7 +34,7 @@ const MarketsModal = ({
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose}>
+    <Modal isOpen={isOpen} onClose={onClose}>
       <div className="flex items-end justify-between pb-3 pt-2">
         <div className="font-bold text-lg text-th-fgd-1">Markets</div>
         <LinkButton

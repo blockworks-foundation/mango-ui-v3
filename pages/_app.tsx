@@ -5,13 +5,11 @@ import '../node_modules/react-resizable/css/styles.css'
 import '../styles/index.css'
 import useWallet from '../hooks/useWallet'
 import useHydrateStore from '../hooks/useHydrateStore'
-import useMangoStore from '../stores/useMangoStore'
 import Notifications from '../components/Notification'
 
 function App({ Component, pageProps }) {
   useHydrateStore()
   useWallet()
-  const blurBackground = useMangoStore((s) => s.blurBackground)
 
   return (
     <>
@@ -50,13 +48,7 @@ function App({ Component, pageProps }) {
       </Head>
       <ThemeProvider defaultTheme="Mango">
         <div className="bg-th-bkg-1">
-          <div
-            className={`default-transition filter ${
-              blurBackground ? 'blur-sm' : 'blur-none'
-            }`}
-          >
-            <Component {...pageProps} />
-          </div>
+          <Component {...pageProps} />
         </div>
         <Notifications />
       </ThemeProvider>

@@ -34,7 +34,6 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
   const [maxButtonTransition, setMaxButtonTransition] = useState(false)
   const walletTokens = useMangoStore((s) => s.wallet.tokens)
   const actions = useMangoStore((s) => s.actions)
-  const setMangoStore = useMangoStore((s) => s.set)
   const [selectedAccount, setSelectedAccount] = useState(walletTokens[0])
 
   useEffect(() => {
@@ -49,19 +48,6 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
       }
     }
   }, [tokenSymbol, walletTokens])
-
-  useEffect(() => {
-    setMangoStore((state) => {
-      state.blurBackground = true
-    })
-  }, [])
-
-  const handleClose = () => {
-    setMangoStore((state) => {
-      state.blurBackground = false
-    })
-    onClose()
-  }
 
   const handleAccountSelect = (account) => {
     setInputAmount('')
@@ -94,9 +80,6 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
         })
         console.log('deposit response', response)
         setSubmitting(false)
-        setMangoStore((state) => {
-          state.blurBackground = false
-        })
         onClose()
         actions.fetchMangoAccounts()
       })
@@ -164,7 +147,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
   }, [maxButtonTransition])
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose}>
+    <Modal isOpen={isOpen} onClose={onClose}>
       {!showConfirm ? (
         <>
           <Modal.Header>

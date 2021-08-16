@@ -36,7 +36,7 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const setMangoStore = useMangoStore((s) => s.set)
-  // const actions = useMangoStore((s) => s.actions)
+  const actions = useMangoStore((s) => s.actions)
   const [, setLastAccountViewed] = useLocalStorageState(LAST_ACCOUNT_KEY)
 
   const handleMangoAccountChange = (mangoAccount: MangoAccount) => {
@@ -44,24 +44,8 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
     setMangoStore((state) => {
       state.selectedMangoAccount.current = mangoAccount
     })
-    // TODO
-    // actions.fetchTradeHistory()
-    setMangoStore((state) => {
-      state.blurBackground = false
-    })
-    onClose()
-  }
 
-  useEffect(() => {
-    setMangoStore((state) => {
-      state.blurBackground = true
-    })
-  }, [])
-
-  const handleClose = () => {
-    setMangoStore((state) => {
-      state.blurBackground = false
-    })
+    actions.fetchTradeHistory()
     onClose()
   }
 
@@ -88,7 +72,7 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose}>
+    <Modal isOpen={isOpen} onClose={onClose}>
       {mangoAccounts.length > 0 ? (
         !showNewAccountForm ? (
           <>

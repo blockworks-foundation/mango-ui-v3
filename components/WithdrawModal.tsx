@@ -57,7 +57,6 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   const [maxButtonTransition, setMaxButtonTransition] = useState(false)
 
   const actions = useMangoStore((s) => s.actions)
-  const setMangoStore = useMangoStore((s) => s.set)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
@@ -166,9 +165,6 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
           type: 'success',
           txid,
         })
-        setMangoStore((state) => {
-          state.blurBackground = false
-        })
         onClose()
       })
       .catch((err) => {
@@ -179,9 +175,6 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
           description: err.message,
           txid: err.txid,
           type: 'error',
-        })
-        setMangoStore((state) => {
-          state.blurBackground = false
         })
         onClose()
       })
@@ -324,23 +317,10 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
     }
   }, [maxButtonTransition])
 
-  useEffect(() => {
-    setMangoStore((state) => {
-      state.blurBackground = true
-    })
-  }, [])
-
-  const handleClose = () => {
-    setMangoStore((state) => {
-      state.blurBackground = false
-    })
-    onClose()
-  }
-
   if (!withdrawTokenSymbol) return null
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose}>
+    <Modal isOpen={isOpen} onClose={onClose}>
       <>
         {!showSimulation ? (
           <>
