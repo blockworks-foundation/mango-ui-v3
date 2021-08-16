@@ -40,7 +40,9 @@ const TopBar = () => {
                 <MenuItem href="/account">Account</MenuItem>
                 <MenuItem href="/borrow">Borrow</MenuItem>
                 <MenuItem href="/stats">Stats</MenuItem>
-                <MenuItem href="https://docs.mango.markets/">Learn</MenuItem>
+                <MenuItem href="https://docs.mango.markets/" newWindow>
+                  Learn
+                </MenuItem>
                 {/* TODO: change v2 link before mainnet */}
                 <NavDropMenu
                   menuTitle="More"

@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 
-const MenuItem = ({ href, children }) => {
+const MenuItem = ({ href, children, newWindow }) => {
   const { asPath } = useRouter()
 
   return (
@@ -15,6 +15,8 @@ const MenuItem = ({ href, children }) => {
               : `border-transparent hover:border-th-primary`
           }
         `}
+        target={newWindow ? '_blank' : ''}
+        rel={newWindow ? 'noopener noreferrer' : ''}
       >
         {children}
       </a>
