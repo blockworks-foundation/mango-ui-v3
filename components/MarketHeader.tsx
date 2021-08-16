@@ -152,13 +152,13 @@ const MarketHeader = () => {
         </div>
         <div className="flex items-center">
           <div className="pr-6">
-            <div className="text-th-fgd-3 tiny-text">Oracle price</div>
+            <div className="text-th-fgd-3 tiny-text pb-0.5">Oracle price</div>
             <div className="font-semibold text-th-fgd-1 text-xs">
               {oraclePrice ? formatUsdValue(oraclePrice) : '--'}
             </div>
           </div>
           <div className="pr-4">
-            <div className="text-th-fgd-3 tiny-text">24h Change</div>
+            <div className="text-th-fgd-3 tiny-text pb-0.5">24h Change</div>
             {spotStats?.change ? (
               <div
                 className={`font-semibold text-xs ${
@@ -176,13 +176,13 @@ const MarketHeader = () => {
             )}
           </div>
           <div className="pr-6">
-            <div className="text-th-fgd-3 tiny-text">24h Vol</div>
+            <div className="text-th-fgd-3 tiny-text pb-0.5">24h Vol</div>
             <div className="font-semibold text-th-fgd-1 text-xs">
               {ohlcv && !loading && volume ? (
                 volume !== '--' ? (
                   <>
                     {volume.toFixed(2)}
-                    <span className="ml-1 text-th-fgd-3 tiny-text">
+                    <span className="ml-1 text-th-fgd-3 tiny-text pb-0.5">
                       {baseSymbol}
                     </span>
                   </>
@@ -202,7 +202,7 @@ const MarketHeader = () => {
           {selectedMarketName.includes('PERP') ? (
             <>
               <div className="pr-6">
-                <div className="text-th-fgd-3 tiny-text">
+                <div className="text-th-fgd-3 tiny-text pb-0.5">
                   Avg Funding Rate (1h)
                 </div>
                 <div className="font-semibold text-th-fgd-1 text-xs">
@@ -210,7 +210,9 @@ const MarketHeader = () => {
                 </div>
               </div>
               <div className="pr-6">
-                <div className="text-th-fgd-3 tiny-text">Open Interest</div>
+                <div className="text-th-fgd-3 tiny-text pb-0.5">
+                  Open Interest
+                </div>
                 <div className="font-semibold text-th-fgd-1 text-xs">
                   {parseOpenInterest(perpStats, selectedMarket)} {baseSymbol}
                 </div>
@@ -219,7 +221,7 @@ const MarketHeader = () => {
           ) : null}
         </div>
       </div>
-      <div className="flex">
+      <div className="flex items-center">
         <UiLock />
         {connected && mangoAccount ? <ManualRefresh className="pl-2" /> : null}
       </div>

@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import FloatingElement from './FloatingElement'
 import { ElementTitle } from './styles'
 import useMangoStore, { mangoClient } from '../stores/useMangoStore'
@@ -8,9 +8,7 @@ import {
   i80f48ToPercent,
   formatUsdValue,
 } from '../utils/index'
-import DepositModal from './DepositModal'
-import WithdrawModal from './WithdrawModal'
-import Button from './Button'
+import { LinkButton } from './Button'
 import Tooltip from './Tooltip'
 import SideBadge from './SideBadge'
 import {
@@ -69,6 +67,7 @@ export default function MarketPosition() {
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
+  const selectedMarketName = marketConfig.name
   const connected = useMangoStore((s) => s.wallet.connected)
   const baseSymbol = marketConfig.baseSymbol
   const marketName = marketConfig.name
@@ -76,9 +75,6 @@ export default function MarketPosition() {
   const perpTradeHistory = tradeHistory?.filter(
     (t) => t.marketName === marketName
   )
-
-  const [showDepositModal, setShowDepositModal] = useState(false)
-  const [showWithdrawModal, setShowWithdrawModal] = useState(false)
 
   const marketIndex = useMemo(() => {
     return getMarketIndexBySymbol(mangoGroupConfig, baseSymbol)
@@ -89,14 +85,6 @@ export default function MarketPosition() {
       return mangoAccount.perpAccounts[marketIndex]
     }
   }, [marketName, mangoAccount, marketIndex])
-
-  const handleCloseDeposit = useCallback(() => {
-    setShowDepositModal(false)
-  }, [])
-
-  const handleCloseWithdraw = useCallback(() => {
-    setShowWithdrawModal(false)
-  }, [])
 
   return selectedMarket instanceof PerpMarket ? (
     <FloatingElement showConnect>
@@ -170,7 +158,7 @@ export default function MarketPosition() {
           <div className="font-normal text-th-fgd-3 leading-4">
             Unsettled PnL
           </div>
-          <div className={`text-th-fgd-1`}>
+          <div className={`flex items-center text-th-fgd-1`}>
             {perpAccount
               ? formatUsdValue(
                   +nativeI80F48ToUi(
@@ -182,18 +170,23 @@ export default function MarketPosition() {
                   )
                 )
               : '0'}
-          </div>
-        </div>
-        <div className="flex">
-          {perpAccount ? (
-            <Button
-              className="mt-4 w-full"
-              disabled={!connected}
+            <LinkButton
               onClick={() => handleSettlePnl(selectedMarket, perpAccount)}
+              className="ml-2 text-th-primary text-xs disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:underline"
+              disabled={
+                perpAccount &&
+                +nativeI80F48ToUi(
+                  perpAccount.getPnl(
+                    mangoGroup.perpMarkets[marketIndex],
+                    mangoGroupCache.priceCache[marketIndex].price
+                  ),
+                  marketConfig.quoteDecimals
+                ) === 0
+              }
             >
-              Settle PNL
-            </Button>
-          ) : null}
+              Settle
+            </LinkButton>
+          </div>
         </div>
       </div>
     </FloatingElement>
@@ -201,7 +194,7 @@ export default function MarketPosition() {
     <>
       <FloatingElement showConnect>
         <div className={!connected ? 'filter blur' : null}>
-          <ElementTitle>Balances</ElementTitle>
+          <ElementTitle>Balance</ElementTitle>
           {mangoGroup ? (
             <div className="grid grid-cols-2 grid-rows-1 gap-4 pt-2">
               {mangoGroupConfig.tokens
@@ -211,10 +204,10 @@ export default function MarketPosition() {
                   const tokenIndex = mangoGroup.getTokenIndex(mintKey)
                   return (
                     <div
-                      className="border border-th-bkg-4 mb-4 p-3 rounded-md"
+                      className="border border-th-bkg-4 p-4 rounded-md"
                       key={mintKey.toString()}
                     >
-                      <div className="border-b border-th-bkg-4 flex items-center justify-between mb-3 pb-3">
+                      <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center">
                           <img
                             alt=""
@@ -224,10 +217,8 @@ export default function MarketPosition() {
                           <span className="text-th-fgd-2">{symbol}</span>
                         </div>
                       </div>
-                      <div className="pb-3">
-                        <div className="pb-0.5 text-th-fgd-3 text-xs">
-                          Deposits
-                        </div>
+                      <div className="pb-4">
+                        <div className="pb-0.5 text-th-fgd-3">Deposits</div>
                         <div className={`text-th-fgd-1`}>
                           {mangoAccount
                             ? floorToDecimal(
@@ -245,10 +236,8 @@ export default function MarketPosition() {
                               )}
                         </div>
                       </div>
-                      <div className="pb-3">
-                        <div className="pb-0.5 text-th-fgd-3 text-xs">
-                          Borrows
-                        </div>
+                      <div className="pb-4">
+                        <div className="pb-0.5 text-th-fgd-3">Borrows</div>
                         <div className={`text-th-fgd-1`}>
                           {mangoAccount
                             ? ceilToDecimal(
@@ -269,7 +258,7 @@ export default function MarketPosition() {
                       <div>
                         <Tooltip content="Deposit APY and Borrow APR">
                           <div
-                            className={`cursor-help font-normal pb-0.5 text-th-fgd-3 text-xs default-transition hover:border-th-bkg-2 hover:text-th-fgd-3`}
+                            className={`cursor-help font-normal pb-0.5 text-th-fgd-3 default-transition hover:border-th-bkg-2 hover:text-th-fgd-3`}
                           >
                             Interest Rates
                           </div>
@@ -295,33 +284,8 @@ export default function MarketPosition() {
                 })}
             </div>
           ) : null}
-          <div className={`grid grid-cols-2 grid-rows-1 gap-4 pt-2`}>
-            <Button
-              onClick={() => setShowDepositModal(true)}
-              className="w-full"
-              disabled={!connected}
-            >
-              <span>Deposit</span>
-            </Button>
-            <Button
-              onClick={() => setShowWithdrawModal(true)}
-              className="w-full"
-              disabled={!connected}
-            >
-              <span>Withdraw</span>
-            </Button>
-          </div>
         </div>
       </FloatingElement>
-      {showDepositModal && (
-        <DepositModal isOpen={showDepositModal} onClose={handleCloseDeposit} />
-      )}
-      {showWithdrawModal && (
-        <WithdrawModal
-          isOpen={showWithdrawModal}
-          onClose={handleCloseWithdraw}
-        />
-      )}
     </>
   )
 }
