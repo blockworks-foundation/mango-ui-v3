@@ -1,4 +1,5 @@
 import {
+  I80F48,
   nativeToUi,
   ZERO_BN,
   ZERO_I80F48,
@@ -15,6 +16,8 @@ import Tooltip from './Tooltip'
 import DepositModal from './DepositModal'
 import WithdrawModal from './WithdrawModal'
 import Button from './Button'
+
+const I80F48_100 = I80F48.fromString('100')
 
 export default function MarginInfo() {
   const connected = useMangoStore((s) => s.wallet.connected)
@@ -77,13 +80,13 @@ export default function MarginInfo() {
   const maintHealthRatio = useMemo(() => {
     return mangoAccount
       ? mangoAccount.getHealthRatio(mangoGroup, mangoCache, 'Maint')
-      : 100
+      : I80F48_100
   }, [mangoAccount, mangoGroup, mangoCache])
 
   const initHealthRatio = useMemo(() => {
     return mangoAccount
       ? mangoAccount.getHealthRatio(mangoGroup, mangoCache, 'Init')
-      : 100
+      : I80F48_100
   }, [mangoAccount, mangoGroup, mangoCache])
 
   return (
@@ -200,16 +203,19 @@ export default function MarginInfo() {
                   width: `${maintHealthRatio}%`,
                 }}
                 className={`flex rounded ${
-                  maintHealthRatio > 30
+                  maintHealthRatio.toNumber() > 30
                     ? 'bg-th-green'
-                    : initHealthRatio > 0
+                    : initHealthRatio.toNumber() > 0
                     ? 'bg-th-orange'
                     : 'bg-th-red'
                 }`}
               ></div>
             </div>
             <div className="pl-2 text-right">
-              {maintHealthRatio.toFixed(2)}%
+              {maintHealthRatio.gt(I80F48_100)
+                ? '>100'
+                : maintHealthRatio.toFixed(2)}
+              %
             </div>
           </div>
           <div className={`grid grid-cols-2 grid-rows-1 gap-4 pt-2`}>
