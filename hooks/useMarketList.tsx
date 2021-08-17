@@ -11,10 +11,11 @@ const useMarketList = () => {
   const { cluster, programId, dexProgramId } = useConnection()
 
   const spotMarkets = useMemo(
-    () => config.spotMarkets.reduce((acc, market) => {
-      acc[market.name] = market.publicKey.toBase58()
-      return acc;
-    }, {}) || {},
+    () =>
+      config.spotMarkets.reduce((acc, market) => {
+        acc[market.name] = market.publicKey.toBase58()
+        return acc
+      }, {}) || {},
     [cluster, mangoGroupName]
   )
 
