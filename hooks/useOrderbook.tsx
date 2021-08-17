@@ -52,6 +52,8 @@ export default function useOrderbook() {
 
     setMangoStore((state) => {
       state.selectedMarket.orderBook = { bids, asks }
+      state.selectedMarket.askInfo = askInfo
+      state.selectedMarket.bidInfo = bidInfo
     })
   }, [market, bidInfo, askInfo, setMangoStore])
 }

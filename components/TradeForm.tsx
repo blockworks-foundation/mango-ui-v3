@@ -228,6 +228,7 @@ export default function TradeForm() {
           orderType
         )
       } else {
+        const selectedMarket = useMangoStore.getState().selectedMarket;
         txid = await mangoClient.placePerpOrder(
           mangoGroup,
           mangoAccount,
@@ -237,8 +238,11 @@ export default function TradeForm() {
           side,
           orderPrice,
           baseSize,
-          orderType
+          orderType,
+          0,
+          (side === 'buy') ? selectedMarket.askInfo : selectedMarket.bidInfo
         )
+
       }
 
       notify({ title: 'Successfully placed trade', txid })
