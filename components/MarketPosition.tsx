@@ -123,7 +123,9 @@ export default function MarketPosition() {
           </div>
           <div className={`text-th-fgd-1`}>
             {perpAccount
-              ? selectedMarket.baseLotsToNumber(perpAccount.basePosition)
+              ? Math.abs(
+                  selectedMarket.baseLotsToNumber(perpAccount.basePosition)
+                )
               : 0}{' '}
             {baseSymbol}
           </div>

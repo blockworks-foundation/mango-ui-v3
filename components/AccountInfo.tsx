@@ -106,7 +106,7 @@ export default function MarginInfo() {
               <div className="text-th-fgd-1">
                 {mangoAccount
                   ? mangoAccount.getLeverage(mangoGroup, mangoCache).toFixed(2)
-                  : '--'}
+                  : '0.00'}
                 x
               </div>
             </div>
