@@ -16,6 +16,7 @@ import Input from './Input'
 import Switch from './Switch'
 import { Market } from '@project-serum/serum'
 import Big from 'big.js'
+import MarketFee from './MarketFee'
 
 const StyledRightInput = styled(Input)`
   border-left: 1px solid transparent;
@@ -277,7 +278,7 @@ export default function TradeForm() {
 
   return (
     <FloatingElement showConnect>
-      <div className={!connected ? 'filter blur-sm' : undefined}>
+      <div className={!connected ? 'filter blur-sm' : 'flex flex-col h-full'}>
         <div>
           <div className={`flex text-base text-th-fgd-4`}>
             <button
@@ -356,7 +357,7 @@ export default function TradeForm() {
             />
           </Input.Group>
           {tradeType !== 'Market' ? (
-            <div className="flex items-center mt-4">
+            <div className="flex mt-4">
               <Switch checked={postOnly} onChange={postOnChange}>
                 POST
               </Switch>
@@ -408,6 +409,9 @@ export default function TradeForm() {
               <span className="text-lg font-light">Country Not Allowed</span>
             </Button>
           )}
+        </div>
+        <div className="flex text-xs text-th-fgd-4 px-6 mt-6">
+          <MarketFee />
         </div>
       </div>
     </FloatingElement>

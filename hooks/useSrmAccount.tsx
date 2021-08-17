@@ -12,14 +12,16 @@ const useSrmAccount = () => {
   // const [msrmAccount, setMsrmAccount] = useState(null)
 
   useEffect(() => {
-    const srmPk = mangoGroup.srmVault
-    const fetchAccounts = async () => {
-      const srmAccountInfo = await DEFAULT_CONNECTION.getAccountInfo(srmPk)
+    if (mangoGroup) {
+      const srmPk = mangoGroup.srmVault
+      const fetchAccounts = async () => {
+        const srmAccountInfo = await DEFAULT_CONNECTION.getAccountInfo(srmPk)
 
-      setSrmAccount(srmAccountInfo)
+        setSrmAccount(srmAccountInfo)
+      }
+
+      fetchAccounts()
     }
-
-    fetchAccounts()
   }, [mangoGroup])
 
   const accountData = srmAccount

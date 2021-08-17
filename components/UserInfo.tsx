@@ -10,7 +10,7 @@ const TABS = [
   'Balances',
   'Open Orders',
   'Perp Positions',
-  'Fee Discounts',
+  'Fees',
   'Trade History',
 ]
 
@@ -73,7 +73,7 @@ const TabContent = ({ activeTab }) => {
       return <TradeHistoryTable />
     case 'Perp Positions':
       return <PositionsTable />
-    case 'Fee Discounts':
+    case 'Fees':
       return <FeeDiscountsTable />
     default:
       return <BalancesTable />
