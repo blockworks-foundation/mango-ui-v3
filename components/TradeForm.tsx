@@ -226,9 +226,6 @@ export default function TradeForm() {
           baseSize,
           orderType
         )
-        sleep(2000).then(() => {
-          actions.fetchMangoAccounts()
-        })
       } else {
         txid = await mangoClient.placePerpOrder(
           mangoGroup,
@@ -241,9 +238,6 @@ export default function TradeForm() {
           baseSize,
           orderType
         )
-        sleep(3000).then(() => {
-          actions.fetchMangoAccounts()
-        })
       }
 
       notify({ title: 'Successfully placed trade', txid })
@@ -257,6 +251,9 @@ export default function TradeForm() {
         type: 'error',
       })
     } finally {
+      sleep(2000).then(() => {
+        actions.fetchMangoAccounts()
+      })
       setSubmitting(false)
     }
   }
