@@ -255,7 +255,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
       if (!wallet?.publicKey || !wallet.publicKey) return
 
       return mangoClient
-        .getMarginAccountsForOwner(mangoGroup, wallet.publicKey, true)
+        .getMangoAccountsForOwner(mangoGroup, wallet.publicKey, true)
         .then((mangoAccounts) => {
           if (mangoAccounts.length > 0) {
             const sortedAccounts = mangoAccounts
