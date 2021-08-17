@@ -1,12 +1,8 @@
-import React, { FunctionComponent, useEffect, useMemo, useState } from 'react'
+import React, { FunctionComponent, useEffect, useState } from 'react'
 import {
   ExclamationCircleIcon,
   InformationCircleIcon,
 } from '@heroicons/react/outline'
-// import {
-//   nativeToUi,
-//   sleep,
-// } from '@blockworks-foundation/mango-client/lib/utils/src'
 import Input from './Input'
 import AccountSelect from './AccountSelect'
 import { ElementTitle } from './styles'
@@ -17,13 +13,11 @@ import {
   trimDecimals,
   sleep,
 } from '../utils/index'
-// import { initMangoAccountAndDeposit } from '../utils/mango'
 import Loading from './Loading'
 import Button from './Button'
 import Slider from './Slider'
 import Tooltip from './Tooltip'
 import { notify } from '../utils/notifications'
-import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
 import { deposit } from '../utils/mango'
 
 interface NewAccountProps {
@@ -33,8 +27,6 @@ interface NewAccountProps {
 const NewAccount: FunctionComponent<NewAccountProps> = ({
   onAccountCreation,
 }) => {
-  const groupConfig = useMangoGroupConfig()
-  // const tokenMints = useMemo(() => groupConfig.tokens.map(t => t.mintKey.toBase58()), [groupConfig]);
   const [inputAmount, setInputAmount] = useState(0)
   const [submitting, setSubmitting] = useState(false)
   const [invalidAmountMessage, setInvalidAmountMessage] = useState('')
@@ -78,14 +70,13 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
         actions.fetchWalletTokens()
         actions.fetchMangoAccounts()
         setSubmitting(false)
-        onAccountCreation(response[0].publicKey)
+        onAccountCreation(response)
       })
       .catch((err) => {
         setSubmitting(false)
         console.error(err)
         notify({
-          message:
-            'Could not perform init margin account and deposit operation',
+          title: 'Could not perform init margin account and deposit operation',
           type: 'error',
         })
         onAccountCreation()
@@ -149,7 +140,7 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
   return (
     <>
       <ElementTitle noMarignBottom>New Account</ElementTitle>
-      {/* {showNewAccountName ? (
+      {showNewAccountName ? (
         <>
           <div className="flex items-center justify-center text-th-fgd-3 pb-4 pt-2">
             Create a public nickname for your account
@@ -183,68 +174,68 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
             Next
           </Button>
         </>
-      ) : ( */}
-      <>
-        <div className="text-th-fgd-3 text-center pb-4 pt-2">
-          Make a deposit to initialize your new account
-        </div>
-        <AccountSelect
-          accounts={walletTokens}
-          selectedAccount={selectedAccount}
-          onSelectAccount={handleAccountSelect}
-        />
-        <div className="flex justify-between pb-2 pt-4">
-          <div className={`text-th-fgd-1`}>Amount</div>
-          <div
-            className="text-th-fgd-1 underline cursor-pointer default-transition hover:text-th-primary hover:no-underline"
-            onClick={setMaxForSelectedAccount}
-          >
-            Max
+      ) : (
+        <>
+          <div className="text-th-fgd-3 text-center pb-4 pt-2">
+            Make a deposit to initialize your new account
           </div>
-        </div>
-        <div className="flex">
-          <Input
-            type="number"
-            min="0"
-            className={`border border-th-fgd-4 flex-grow pr-11`}
-            placeholder="0.00"
-            error={!!invalidAmountMessage}
-            onBlur={(e) => validateAmountInput(e.target.value)}
-            value={inputAmount}
-            onChange={(e) => onChangeAmountInput(e.target.value)}
-            suffix={symbol}
+          <AccountSelect
+            accounts={walletTokens}
+            selectedAccount={selectedAccount}
+            onSelectAccount={handleAccountSelect}
           />
-        </div>
-        {invalidAmountMessage ? (
-          <div className="flex items-center pt-1.5 text-th-red">
-            <ExclamationCircleIcon className="h-4 w-4 mr-1.5" />
-            {invalidAmountMessage}
-          </div>
-        ) : null}
-        <div className="pt-3 pb-4">
-          <Slider
-            value={sliderPercentage}
-            onChange={(v) => onChangeSlider(v)}
-            step={1}
-            maxButtonTransition={maxButtonTransition}
-          />
-        </div>
-        <div className={`pt-8 flex justify-center`}>
-          <Button
-            disabled={
-              inputAmount <= 0 || inputAmount > selectedAccount.uiBalance
-            }
-            onClick={handleNewAccountDeposit}
-            className="w-full"
-          >
-            <div className={`flex items-center justify-center`}>
-              {submitting && <Loading className="-ml-1 mr-3" />}
-              Create New Account
+          <div className="flex justify-between pb-2 pt-4">
+            <div className={`text-th-fgd-1`}>Amount</div>
+            <div
+              className="text-th-fgd-1 underline cursor-pointer default-transition hover:text-th-primary hover:no-underline"
+              onClick={setMaxForSelectedAccount}
+            >
+              Max
             </div>
-          </Button>
-        </div>
-      </>
-      {/* )} */}
+          </div>
+          <div className="flex">
+            <Input
+              type="number"
+              min="0"
+              className={`border border-th-fgd-4 flex-grow pr-11`}
+              placeholder="0.00"
+              error={!!invalidAmountMessage}
+              onBlur={(e) => validateAmountInput(e.target.value)}
+              value={inputAmount}
+              onChange={(e) => onChangeAmountInput(e.target.value)}
+              suffix={symbol}
+            />
+          </div>
+          {invalidAmountMessage ? (
+            <div className="flex items-center pt-1.5 text-th-red">
+              <ExclamationCircleIcon className="h-4 w-4 mr-1.5" />
+              {invalidAmountMessage}
+            </div>
+          ) : null}
+          <div className="pt-3 pb-4">
+            <Slider
+              value={sliderPercentage}
+              onChange={(v) => onChangeSlider(v)}
+              step={1}
+              maxButtonTransition={maxButtonTransition}
+            />
+          </div>
+          <div className={`pt-8 flex justify-center`}>
+            <Button
+              disabled={
+                inputAmount <= 0 || inputAmount > selectedAccount.uiBalance
+              }
+              onClick={handleNewAccountDeposit}
+              className="w-full"
+            >
+              <div className={`flex items-center justify-center`}>
+                {submitting && <Loading className="-ml-1 mr-3" />}
+                Create New Account
+              </div>
+            </Button>
+          </div>
+        </>
+      )}
     </>
   )
 }

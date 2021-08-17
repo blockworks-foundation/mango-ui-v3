@@ -3,7 +3,6 @@ import { useTheme } from 'next-themes'
 import { MoonIcon, SunIcon } from '@heroicons/react/outline'
 import DropMenu from './DropMenu'
 import { MangoIcon } from './icons'
-import { IconButton } from './Button'
 
 const THEMES = [
   { name: 'Light', icon: <SunIcon className="h-4 w-4" /> },
@@ -25,7 +24,6 @@ const ThemeSwitch = () => {
           {THEMES.find((t) => t.name === theme).icon}
         </div>
       }
-      // buttonClassName="flex items-center justify-center hover:text-th-primary rounded-md focus:outline-none"
       value={theme}
       onChange={(theme) => setTheme(theme)}
       options={THEMES}
