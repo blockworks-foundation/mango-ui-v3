@@ -4,7 +4,7 @@ import useMangoStore from '../stores/useMangoStore'
 import useMangoGroupConfig from './useMangoGroupConfig'
 
 const useMangoStats = () => {
-  const [stats, setStats] = useState([
+  const [stats] = useState([
     {
       symbol: '',
       hourly: '',
@@ -22,14 +22,14 @@ const useMangoStats = () => {
   const config = useMangoGroupConfig()
 
   useEffect(() => {
-    const fetchStats = async () => {
-      const response = await fetch(
-        `http://localhost:8000/v3?mangoGroup=${mangoGroupName}`
-      )
-      const stats = await response.json()
-      setStats(stats)
-    }
-    // fetchStats()
+    // const fetchHistoricalStats = async () => {
+    //   const response = await fetch(
+    //     `http://localhost:8000/v3?mangoGroup=${mangoGroupName}`
+    //   )
+    //   const stats = await response.json()
+    //   setStats(stats)
+    // }
+    // fetchHistoricalStats()
   }, [mangoGroupName])
 
   useEffect(() => {

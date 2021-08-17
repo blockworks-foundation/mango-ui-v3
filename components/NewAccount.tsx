@@ -19,7 +19,6 @@ import Slider from './Slider'
 import Tooltip from './Tooltip'
 import { notify } from '../utils/notifications'
 import { deposit } from '../utils/mango'
-import { PublicKey } from '@solana/web3.js'
 
 interface NewAccountProps {
   onAccountCreation?: (x?) => void

@@ -7,7 +7,6 @@ import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
 import SideBadge from './SideBadge'
 import { LinkButton } from './Button'
 import { useSortableData } from '../hooks/useSortableData'
-import useMangoStore from '../stores/useMangoStore'
 
 function getTradeTimestamp(trade) {
   return trade?.timestamp ? trade.timestamp.toNumber() : trade.loadTimestamp
@@ -17,7 +16,6 @@ const TradeHistoryTable = () => {
   const { asPath } = useRouter()
   const tradeHistory = useTradeHistory({ excludePerpLiquidations: true })
   const { items, requestSort, sortConfig } = useSortableData(tradeHistory)
-  const marketConfig = useMangoStore((s) => s.selectedMarket.config)
 
   const renderTradeDateTime = (timestamp: BN | string) => {
     let date

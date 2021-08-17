@@ -76,7 +76,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
         notify({
           title: 'Deposit successful',
           type: 'success',
-          txid: response,
+          txid: response.toString(),
         })
         console.log('deposit response', response)
         setSubmitting(false)

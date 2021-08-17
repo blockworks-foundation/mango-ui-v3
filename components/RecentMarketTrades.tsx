@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from 'react'
-import { getDecimalCount } from '../utils'
 import { ChartTradeType } from '../@types/types'
 import FloatingElement from './FloatingElement'
 import useInterval from '../hooks/useInterval'
@@ -11,7 +10,7 @@ import useMangoStore from '../stores/useMangoStore'
 export default function RecentMarketTrades() {
   const mangoConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
-  const market = useMangoStore((s) => s.selectedMarket.current)
+  // const market = useMangoStore((s) => s.selectedMarket.current)
   const [trades, setTrades] = useState([])
 
   const fetchTradesForChart = useCallback(async () => {
