@@ -43,6 +43,7 @@ export default function TradeForm() {
   useEffect(
     () =>
       useMangoStore.subscribe(
+        // @ts-ignore
         (orderBook) => (orderBookRef.current = orderBook),
         (state) => state.selectedMarket.orderBook
       ),
@@ -202,6 +203,7 @@ export default function TradeForm() {
 
     const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
+    const { askInfo, bidInfo } = useMangoStore.getState().selectedMarket
     const wallet = useMangoStore.getState().wallet.current
 
     if (!wallet || !mangoGroup || !mangoAccount || !market) return
@@ -228,7 +230,6 @@ export default function TradeForm() {
           orderType
         )
       } else {
-        const selectedMarket = useMangoStore.getState().selectedMarket;
         txid = await mangoClient.placePerpOrder(
           mangoGroup,
           mangoAccount,
@@ -240,9 +241,8 @@ export default function TradeForm() {
           baseSize,
           orderType,
           0,
-          (side === 'buy') ? selectedMarket.askInfo : selectedMarket.bidInfo
+          side === 'buy' ? askInfo : bidInfo
         )
-
       }
 
       notify({ title: 'Successfully placed trade', txid })
