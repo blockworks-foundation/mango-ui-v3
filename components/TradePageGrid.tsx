@@ -24,9 +24,9 @@ export const defaultLayouts = {
     { i: 'orderbook', x: 6, y: 0, w: 3, h: 17 },
     { i: 'tradeForm', x: 9, y: 1, w: 3, h: 14 },
     { i: 'marketTrades', x: 6, y: 1, w: 3, h: 13 },
-    { i: 'marketPosition', x: 9, y: 3, w: 3, h: 13 },
+    { i: 'accountInfo', x: 9, y: 3, w: 3, h: 15 },
     { i: 'userInfo', x: 0, y: 2, w: 9, h: 19 },
-    { i: 'accountInfo', x: 9, y: 4, w: 3, h: 15 },
+    { i: 'marketPosition', x: 9, y: 4, w: 3, h: 13 },
   ],
   lg: [
     { i: 'tvChart', x: 0, y: 0, w: 8, h: 28, minW: 2 },
@@ -66,7 +66,7 @@ export const defaultLayouts = {
   ],
 }
 
-export const GRID_LAYOUT_KEY = 'mangoSavedLayouts-3.0.6'
+export const GRID_LAYOUT_KEY = 'mangoSavedLayouts-3.0.8'
 
 const TradePageGrid = () => {
   const { uiLocked } = useMangoStore((s) => s.settings)
