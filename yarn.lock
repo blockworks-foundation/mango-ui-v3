@@ -995,7 +995,7 @@
 
 "@blockworks-foundation/mango-client@git+https://github.com/blockworks-foundation/mango-client-v3.git":
   version "3.0.4"
-  resolved "git+https://github.com/blockworks-foundation/mango-client-v3.git#e25f4f19f8fa5fcfdfe548961d9c5877e35a493e"
+  resolved "git+https://github.com/blockworks-foundation/mango-client-v3.git#08f24c0ac8f68b3acc4252ae1c4c5555c95fa795"
   dependencies:
     "@project-serum/serum" "0.13.55"
     "@project-serum/sol-wallet-adapter" "^0.2.0"
