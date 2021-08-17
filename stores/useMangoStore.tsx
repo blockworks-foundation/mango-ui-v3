@@ -80,8 +80,6 @@ export const INITIAL_STATE = {
     connected: false,
     current: null,
     tokens: [],
-    srmAccountsForOwner: [],
-    contributedSrm: 0,
   },
 }
 
@@ -154,8 +152,6 @@ interface MangoStore extends State {
     connected: boolean
     current: WalletAdapter | undefined
     tokens: WalletToken[]
-    srmAccountsForOwner: any[]
-    contributedSrm: number
   }
   settings: {
     uiLocked: boolean

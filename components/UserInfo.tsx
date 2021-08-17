@@ -4,14 +4,13 @@ import OpenOrdersTable from './OpenOrdersTable'
 import BalancesTable from './BalancesTable'
 import PositionsTable from './PerpPositionsTable'
 import TradeHistoryTable from './TradeHistoryTable'
-// import { Position } from '../public/charting_library/charting_library'
-// import FeeDiscountsTable from './FeeDiscountsTable'
+import FeeDiscountsTable from './FeeDiscountsTable'
 
 const TABS = [
   'Balances',
   'Open Orders',
   'Perp Positions',
-  /*'Fee Discounts'*/
+  'Fee Discounts',
   'Trade History',
 ]
 
@@ -74,8 +73,8 @@ const TabContent = ({ activeTab }) => {
       return <TradeHistoryTable />
     case 'Perp Positions':
       return <PositionsTable />
-    // case 'Fee Discounts':
-    //   return <FeeDiscountsTable />
+    case 'Fee Discounts':
+      return <FeeDiscountsTable />
     default:
       return <BalancesTable />
   }
