@@ -101,6 +101,8 @@ export default function MarketPosition() {
     }
   }, [marketName, mangoAccount, marketIndex])
 
+  if (!mangoGroup) return null
+
   return selectedMarket instanceof PerpMarket ? (
     <FloatingElement showConnect>
       <div className={!connected ? 'filter blur-sm' : null}>
