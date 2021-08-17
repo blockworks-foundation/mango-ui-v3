@@ -239,14 +239,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
     setInvalidAmountMessage('')
   }
 
-  const setMaxForSelectedAsset = () => {
-    setInputAmount(getDepositsForSelectedAsset().toString())
-    setSliderPercentage(100)
-    setInvalidAmountMessage('')
-    setMaxButtonTransition(true)
-  }
-
-  const setMaxBorrowForSelectedAsset = async () => {
+  const setMaxForSelectedAsset = async () => {
     console.log('setting max borrow for selected', maxAmount)
     setInputAmount(maxAmount.toString())
     setSliderPercentage(100)
@@ -400,11 +393,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                     !includeBorrow &&
                     getDepositsForSelectedAsset().eq(ZERO_I80F48)
                   }
-                  onClick={
-                    includeBorrow
-                      ? setMaxBorrowForSelectedAsset
-                      : setMaxForSelectedAsset
-                  }
+                  onClick={setMaxForSelectedAsset}
                 >
                   Max
                 </button>
