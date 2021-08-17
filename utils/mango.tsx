@@ -6,10 +6,12 @@ export async function deposit({
   amount,
   fromTokenAcc,
   mangoAccount,
+  accountName,
 }: {
   amount: number
   fromTokenAcc: TokenAccount
   mangoAccount?: MangoAccount
+  accountName?: string
 }) {
   const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
   const wallet = useMangoStore.getState().wallet.current
@@ -34,7 +36,8 @@ export async function deposit({
       mangoGroup.rootBankAccounts[tokenIndex].nodeBankAccounts[0].publicKey,
       mangoGroup.rootBankAccounts[tokenIndex].nodeBankAccounts[0].vault,
       fromTokenAcc.publicKey,
-      Number(amount)
+      Number(amount),
+      accountName
     )
   }
 }

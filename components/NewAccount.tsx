@@ -64,6 +64,7 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
     deposit({
       amount: inputAmount,
       fromTokenAcc: selectedAccount.account,
+      accountName: name,
     })
       .then(async (response) => {
         await sleep(1000)
