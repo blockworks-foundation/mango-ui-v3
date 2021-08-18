@@ -74,7 +74,7 @@ export function useBalances(): Balances[] {
         market: null,
         key: `${baseSymbol}${name}`,
         symbol: baseSymbol,
-        marginDeposits: mangoAccount.getUiDeposit(
+        deposits: mangoAccount.getUiDeposit(
           mangoCache.rootBankCache[tokenIndex],
           mangoGroup,
           tokenIndex
@@ -98,7 +98,7 @@ export function useBalances(): Balances[] {
         market: null,
         key: `${name}`,
         symbol: mangoGroupConfig.quoteSymbol,
-        marginDeposits: mangoAccount.getUiDeposit(
+        deposits: mangoAccount.getUiDeposit(
           mangoCache.rootBankCache[quoteCurrencyIndex],
           mangoGroup,
           quoteCurrencyIndex
@@ -128,7 +128,7 @@ export function useBalances(): Balances[] {
   const quoteInOrders = sumBy(quoteBalances, 'orders')
   const unsettled = sumBy(quoteBalances, 'unsettled')
 
-  const net: I80F48 = quoteMeta.marginDeposits
+  const net: I80F48 = quoteMeta.deposits
     .add(I80F48.fromNumber(unsettled))
     .sub(quoteMeta.borrows)
     .add(I80F48.fromNumber(quoteInOrders))
@@ -138,7 +138,7 @@ export function useBalances(): Balances[] {
       market: null,
       key: `${quoteMeta.symbol}${quoteMeta.symbol}`,
       symbol: quoteMeta.symbol,
-      marginDeposits: quoteMeta.marginDeposits,
+      deposits: quoteMeta.deposits,
       borrows: quoteMeta.borrows,
       orders: quoteInOrders,
       unsettled,

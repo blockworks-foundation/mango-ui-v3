@@ -44,7 +44,7 @@ interface BalancesBase {
 
 export interface Balances extends BalancesBase {
   market?: Market | null | undefined
-  marginDeposits?: I80F48 | null | undefined
+  deposits?: I80F48 | null | undefined
   borrows?: I80F48 | null | undefined
   net?: I80F48 | null | undefined
 }

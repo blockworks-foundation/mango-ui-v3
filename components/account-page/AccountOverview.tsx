@@ -69,10 +69,10 @@ export default function AccountOverview() {
     balances.forEach((b) => {
       const token = getTokenBySymbol(groupConfig, b.symbol)
       const tokenIndex = mangoGroup.getTokenIndex(token.mintKey)
-      if (+b.marginDeposits > 0 || b.orders > 0) {
+      if (+b.deposits > 0 || b.orders > 0) {
         spotPortfolio.push({
           market: b.symbol,
-          balance: +b.marginDeposits + b.orders + b.unsettled,
+          balance: +b.deposits + b.orders + b.unsettled,
           borrowRate: mangoGroup
             .getBorrowRate(tokenIndex)
             .mul(I80F48.fromNumber(100)),
@@ -82,7 +82,7 @@ export default function AccountOverview() {
           price: mangoGroup.getPrice(tokenIndex, mangoCache).toNumber(),
           symbol: b.symbol,
           value:
-            (+b.marginDeposits + b.orders + b.unsettled) *
+            (+b.deposits + b.orders + b.unsettled) *
             mangoGroup.getPrice(tokenIndex, mangoCache).toNumber(),
           type: 'Deposit',
         })

@@ -191,9 +191,7 @@ export default function AccountAssets() {
                         <Td
                           className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
                         >
-                          {bal.marginDeposits.toFixed(
-                            tokenPrecision[bal.symbol]
-                          )}
+                          {bal.deposits.toFixed(tokenPrecision[bal.symbol])}
                         </Td>
                         <Td
                           className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
@@ -210,7 +208,7 @@ export default function AccountAssets() {
                         >
                           $
                           {(
-                            (bal.marginDeposits.toNumber() +
+                            (bal.deposits.toNumber() +
                               bal.orders +
                               bal.unsettled) *
                             mangoGroup

@@ -52,7 +52,7 @@ const BalancesTable = () => {
 
   const filteredBalances = balances.filter(
     (bal) =>
-      +bal.marginDeposits > 0 ||
+      +bal.deposits > 0 ||
       +bal.borrows > 0 ||
       bal.orders > 0 ||
       bal.unsettled > 0
@@ -65,8 +65,8 @@ const BalancesTable = () => {
           {balances.length > 0 &&
           (balances.find(({ unsettled }) => unsettled > 0) ||
             balances.find(
-              ({ borrows, marginDeposits }) =>
-                borrows.gt(ZERO_I80F48) && marginDeposits.gt(ZERO_I80F48)
+              ({ borrows, deposits }) =>
+                borrows.gt(ZERO_I80F48) && deposits.gt(ZERO_I80F48)
             )) ? (
             <div
               className={`flex items-center justify-between px-6 py-3 mb-2 rounded-md bg-th-bkg-1`}
@@ -159,7 +159,7 @@ const BalancesTable = () => {
                           className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
                         >
                           {floorToDecimal(
-                            balance.marginDeposits.toNumber(),
+                            balance.deposits.toNumber(),
                             tokenConfig.decimals
                           )}
                         </Td>
