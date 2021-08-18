@@ -37,9 +37,10 @@ const PerpMarket = () => {
         state.selectedMarket.kind = 'perp'
         if (newMarket.name !== marketConfig.name) {
           state.selectedMarket.config = newMarket
-          state.tradeForm.price = mangoGroup
-            .getPrice(marketIndex, mangoCache)
-            .toFixed(2)
+          state.tradeForm.price =
+            state.tradeForm.tradeType === 'Limit'
+              ? mangoGroup.getPrice(marketIndex, mangoCache).toFixed(2)
+              : ''
         }
       })
     }

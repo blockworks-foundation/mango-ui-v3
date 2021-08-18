@@ -226,8 +226,10 @@ const PositionsTable = () => {
                             )}
                           </Td>
                           <Td className="px-2 py-2 whitespace-nowrap text-sm text-th-fgd-1">
-                            {perpMarket.baseLotsToNumber(
-                              perpAccount.basePosition
+                            {Math.abs(
+                              perpMarket.baseLotsToNumber(
+                                perpAccount.basePosition
+                              )
                             )}
                           </Td>
                           <Th

@@ -6,7 +6,7 @@ import {
   PerpMarket,
 } from '@blockworks-foundation/mango-client'
 import { notify } from '../utils/notifications'
-import { calculateMarketPrice, getDecimalCount, sleep } from '../utils'
+import { calculateTradePrice, getDecimalCount, sleep } from '../utils'
 import FloatingElement from './FloatingElement'
 import { floorToDecimal } from '../utils/index'
 import useMangoStore, { mangoClient } from '../stores/useMangoStore'
@@ -235,9 +235,20 @@ export default function TradeForm() {
     setSubmitting(true)
 
     try {
-      let orderPrice = Number(price)
-      if (tradeType === 'Market') {
-        orderPrice = calculateMarketPrice(orderbook, baseSize, side)
+      const orderPrice = calculateTradePrice(
+        tradeType,
+        orderbook,
+        baseSize,
+        side,
+        price
+      )
+
+      if (!orderPrice) {
+        notify({
+          title: 'Price not available',
+          description: 'Please try again',
+          type: 'error',
+        })
       }
 
       const orderType = ioc ? 'ioc' : postOnly ? 'postOnly' : 'limit'
@@ -377,6 +388,13 @@ export default function TradeForm() {
             step={parseFloat(minOrderSize)}
             disabled={false}
             side={side}
+            price={calculateTradePrice(
+              tradeType,
+              orderbook,
+              baseSize ? baseSize : 0,
+              side,
+              price
+            )}
           />
           {tradeType !== 'Market' ? (
             <div className="flex mt-4">

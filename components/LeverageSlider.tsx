@@ -2,7 +2,11 @@ import React, { useEffect, useMemo, useState } from 'react'
 import Slider from 'rc-slider'
 import 'rc-slider/assets/index.css'
 import useMangoStore from '../stores/useMangoStore'
-import { getMarketIndexBySymbol } from '@blockworks-foundation/mango-client'
+import {
+  getMarketIndexBySymbol,
+  I80F48,
+  PerpMarket,
+} from '@blockworks-foundation/mango-client'
 import tw from 'twin.macro'
 import styled from '@emotion/styled'
 import 'rc-slider/assets/index.css'
@@ -41,6 +45,7 @@ type SliderProps = {
   step: number
   value: number
   side: string
+  price: number
   disabled?: boolean
   max?: number
   maxButtonTransition?: boolean
@@ -54,6 +59,7 @@ export default function LeverageSlider({
   disabled,
   maxButtonTransition,
   side,
+  price,
 }: SliderProps) {
   const [enableTransition, setEnableTransition] = useState(false)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
@@ -68,35 +74,44 @@ export default function LeverageSlider({
     marketConfig.baseSymbol
   )
 
-  const marketInfo = useMemo(() => {
-    if (mangoGroup) {
-      if (marketType === 'perp') {
-        return mangoGroup.perpMarkets[marketIndex]
-      } else {
-        return mangoGroup.spotMarkets[marketIndex]
-      }
-    }
-  }, [marketType, mangoGroup, marketIndex])
-
   const max = useMemo(() => {
-    if (mangoAccount) {
-      console.log('market', market)
+    if (!mangoAccount) return 0
+    const priceOrDefault = price
+      ? I80F48.fromNumber(price)
+      : mangoGroup.getPrice(marketIndex, mangoCache)
+    console.log('price', priceOrDefault.toFixed())
 
-      const maxQuote = mangoAccount
-        .getMaxLeverageForMarket(
-          mangoGroup,
-          mangoCache,
-          marketIndex,
-          marketInfo.initAssetWeight,
-          marketInfo.initLiabWeight,
-          market,
-          side
-        )
-        .toNumber()
-      return maxQuote / mangoGroup.getPrice(marketIndex, mangoCache).toNumber()
-    }
-    return 0
-  }, [mangoAccount, marketInfo, mangoGroup, mangoCache, side, marketIndex])
+    const maxQuote = mangoAccount
+      .getMaxLeverageForMarket(
+        mangoGroup,
+        mangoCache,
+        marketIndex,
+        market,
+        side,
+        priceOrDefault
+      )
+      .toNumber()
+    console.log('max quote :: ', maxQuote)
+
+    if (maxQuote <= 0) return 0
+    // mul by scaler value to account for rounding errors in getMaxLeverageForMarket or fees
+    const maxScaler = market instanceof PerpMarket ? 0.99 : 0.95
+    const max =
+      (maxQuote * maxScaler) /
+      mangoGroup.getPrice(marketIndex, mangoCache).toNumber()
+
+    return max
+  }, [
+    mangoAccount,
+    mangoGroup,
+    mangoCache,
+    marketIndex,
+    market,
+    marketType,
+    side,
+    step,
+    price,
+  ])
 
   useEffect(() => {
     if (maxButtonTransition) {

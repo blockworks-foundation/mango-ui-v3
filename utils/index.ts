@@ -149,11 +149,24 @@ export function isDefined<T>(argument: T | undefined): argument is T {
   return argument !== undefined
 }
 
+export function calculateTradePrice(
+  tradeType: string,
+  orderBook: Orderbook,
+  baseSize: number,
+  side: 'buy' | 'sell',
+  price: string | number
+): number {
+  if (tradeType === 'Market') {
+    return calculateMarketPrice(orderBook, baseSize, side)
+  }
+  return Number(price)
+}
+
 export const calculateMarketPrice = (
   orderBook: Orderbook,
   size: number,
   side: 'buy' | 'sell'
-) => {
+): number => {
   const orders = side === 'buy' ? orderBook.asks : orderBook.bids
   let acc = 0
   let selectedOrder
@@ -163,6 +176,11 @@ export const calculateMarketPrice = (
       selectedOrder = order
       break
     }
+  }
+
+  if (!selectedOrder) {
+    console.error('Orderbook empty no market price available')
+    return
   }
 
   if (side === 'buy') {
