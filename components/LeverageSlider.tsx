@@ -18,10 +18,11 @@ type StyledSliderProps = {
 
 const StyledSlider = styled(Slider)<StyledSliderProps>`
   .rc-slider-rail {
-    ${tw`bg-th-bkg-3 h-2.5 rounded-full`}
+    ${tw`bg-th-primary  h-2 rounded-full`}
+    opacity: 0.6;
   }
   .rc-slider-track {
-    ${tw`bg-th-primary h-2.5 rounded-full ring-1 ring-th-primary ring-inset`}
+    ${tw`bg-th-primary h-2 rounded-full ring-1 ring-th-primary ring-inset`}
     ${({ enableTransition }) =>
       enableTransition && tw`transition-all duration-500`}
   }
@@ -31,7 +32,7 @@ const StyledSlider = styled(Slider)<StyledSliderProps>`
   .rc-slider-handle {
     ${tw`border-4 border-th-primary h-4 w-4 ring-white light:ring-gray-400 hover:ring-4 hover:ring-opacity-50 active:ring-8 active:ring-opacity-50`}
     background: #fff;
-    margin-top: -3px;
+    margin-top: -4px;
     ${({ enableTransition }) =>
       enableTransition && tw`transition-all duration-500`}
     ${({ disabled }) => disabled && tw`bg-th-fgd-3 border-th-fgd-4`}
@@ -66,7 +67,6 @@ export default function LeverageSlider({
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoGroupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
-  const marketType = useMangoStore((s) => s.selectedMarket.kind)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const market = useMangoStore((s) => s.selectedMarket.current)
   const marketIndex = getMarketIndexBySymbol(
@@ -91,27 +91,17 @@ export default function LeverageSlider({
         priceOrDefault
       )
       .toNumber()
-    console.log('max quote :: ', maxQuote)
 
     if (maxQuote <= 0) return 0
-    // mul by scaler value to account for rounding errors in getMaxLeverageForMarket or fees
+    // multiply the maxQuote by a scaler value to account for
+    // srm fees or rounding issues in getMaxLeverageForMarket
     const maxScaler = market instanceof PerpMarket ? 0.99 : 0.95
     const max =
       (maxQuote * maxScaler) /
       mangoGroup.getPrice(marketIndex, mangoCache).toNumber()
 
     return max
-  }, [
-    mangoAccount,
-    mangoGroup,
-    mangoCache,
-    marketIndex,
-    market,
-    marketType,
-    side,
-    step,
-    price,
-  ])
+  }, [mangoAccount, mangoGroup, mangoCache, marketIndex, market, side, price])
 
   useEffect(() => {
     if (maxButtonTransition) {
