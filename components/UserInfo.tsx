@@ -4,13 +4,13 @@ import OpenOrdersTable from './OpenOrdersTable'
 import BalancesTable from './BalancesTable'
 import PositionsTable from './PerpPositionsTable'
 import TradeHistoryTable from './TradeHistoryTable'
-import FeeDiscountsTable from './FeeDiscountsTable'
+// import FeeDiscountsTable from './FeeDiscountsTable'
 
 const TABS = [
   'Balances',
   'Open Orders',
   'Perp Positions',
-  'Fees',
+  // 'Fees',
   'Trade History',
 ]
 
@@ -73,8 +73,8 @@ const TabContent = ({ activeTab }) => {
       return <TradeHistoryTable />
     case 'Perp Positions':
       return <PositionsTable />
-    case 'Fees':
-      return <FeeDiscountsTable />
+    // case 'Fees':
+    //   return <FeeDiscountsTable /> // now displayed in trade form. may add back when MRSRM deposits are supported
     default:
       return <BalancesTable />
   }

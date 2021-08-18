@@ -2,7 +2,10 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/router'
 import useMangoGroupConfig from '../../hooks/useMangoGroupConfig'
 import useMangoStore from '../../stores/useMangoStore'
-import { getMarketByBaseSymbolAndKind } from '@blockworks-foundation/mango-client'
+import {
+  getMarketByBaseSymbolAndKind,
+  getMarketIndexBySymbol,
+} from '@blockworks-foundation/mango-client'
 import TopBar from '../../components/TopBar'
 import TradePageGrid from '../../components/TradePageGrid'
 import MarketSelect from '../../components/MarketSelect'
@@ -12,6 +15,7 @@ const PerpMarket = () => {
   const groupConfig = useMangoGroupConfig()
   const setMangoStore = useMangoStore((s) => s.set)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const router = useRouter()
   const { market } = router.query
@@ -23,11 +27,19 @@ const PerpMarket = () => {
         market.toString().toUpperCase(),
         'perp'
       )
+      const marketIndex = getMarketIndexBySymbol(
+        groupConfig,
+        market.toString().toUpperCase()
+      )
 
       setMangoStore((state) => {
         state.selectedMarket.current = null
+        state.selectedMarket.kind = 'perp'
         if (newMarket.name !== marketConfig.name) {
           state.selectedMarket.config = newMarket
+          state.tradeForm.price = mangoGroup
+            .getPrice(marketIndex, mangoCache)
+            .toFixed(2)
         }
       })
     }

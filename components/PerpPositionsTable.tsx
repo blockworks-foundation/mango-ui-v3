@@ -99,8 +99,7 @@ const PositionsTable = () => {
     ({ perpAccount }) =>
       !(
         perpAccount.quotePosition.eq(ZERO_I80F48) &&
-        perpAccount.basePosition.eq(new BN(0)) &&
-        perpAccount.mngoAccrued.eq(new BN(0))
+        perpAccount.basePosition.eq(new BN(0))
       )
   )
 

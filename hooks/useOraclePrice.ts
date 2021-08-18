@@ -1,7 +1,8 @@
+import { I80F48 } from '@blockworks-foundation/mango-client'
 import { useCallback, useEffect, useState } from 'react'
 import useMangoStore from '../stores/useMangoStore'
 
-export default function useOraclePrice() {
+export default function useOraclePrice(): I80F48 {
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const selectedMarket = useMangoStore((s) => s.selectedMarket.config)

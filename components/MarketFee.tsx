@@ -19,7 +19,9 @@ export default function MarketFee() {
   let takerFee, makerFee
   if (market instanceof PerpMarket) {
     takerFee =
-      parseFloat(mangoGroup.perpMarkets[marketIndex].takerFee.toFixed()) * 100
+      parseFloat(mangoGroup.perpMarkets[marketIndex].takerFee.toFixed()) *
+      100 *
+      0.8
     makerFee =
       parseFloat(mangoGroup.perpMarkets[marketIndex].makerFee.toFixed()) * 100
   } else {
