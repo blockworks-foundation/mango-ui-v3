@@ -119,7 +119,7 @@ export default function LeverageSlider({
   }, [enableTransition])
 
   return (
-    <div className="relative mt-4">
+    <div className="relative mt-4 pl-2 pr-0">
       <StyledSlider
         min={0}
         max={max}
