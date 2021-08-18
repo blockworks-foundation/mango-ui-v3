@@ -1,10 +1,17 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import styled from '@emotion/styled'
 import useIpAddress from '../hooks/useIpAddress'
 import {
   getTokenBySymbol,
   PerpMarket,
+  I80F48,
+  ZERO_I80F48,
+  ONE_I80F48,
+  nativeI80F48ToUi,
+  QUOTE_INDEX,
+  MangoAccount,
 } from '@blockworks-foundation/mango-client'
+import { useBalances } from '../hooks/useBalances'
 import { notify } from '../utils/notifications'
 import { calculateMarketPrice, getDecimalCount, sleep } from '../utils'
 import FloatingElement from './FloatingElement'
@@ -14,8 +21,11 @@ import Button from './Button'
 import TradeType from './TradeType'
 import Input from './Input'
 import Switch from './Switch'
+import LeverageSlider from './LeverageSlider'
 import { Market } from '@project-serum/serum'
 import Big from 'big.js'
+import { InformationCircleIcon } from '@heroicons/react/outline'
+import Tooltip from './Tooltip'
 import MarketFee from './MarketFee'
 
 const StyledRightInput = styled(Input)`
@@ -26,17 +36,32 @@ export default function TradeForm() {
   const set = useMangoStore((s) => s.set)
   const connected = useMangoStore((s) => s.wallet.connected)
   const actions = useMangoStore((s) => s.actions)
+  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
+  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const market = useMangoStore((s) => s.selectedMarket.current)
   const { side, baseSize, quoteSize, price, tradeType } = useMangoStore(
     (s) => s.tradeForm
   )
+  const balances = useBalances()
+  const tokens = useMemo(() => groupConfig.tokens, [groupConfig])
+  const token = useMemo(
+    () => tokens.find((t) => t.symbol === marketConfig.baseSymbol),
+    [marketConfig.baseSymbol, tokens]
+  )
+
   let { ipAllowed } = useIpAddress()
   ipAllowed = true
+
   const [postOnly, setPostOnly] = useState(false)
   const [ioc, setIoc] = useState(false)
+  const [leveragePct, setLeveragePct] = useState(0)
+  const [leverageNotification, setLeverageNotification] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [maxAmount, setMaxAmount] = useState(ZERO_I80F48)
+  // const [simulation, setSimulation] = useState(null)
 
   const orderBookRef = useRef(useMangoStore.getState().selectedMarket.orderBook)
   const orderbook = orderBookRef.current
@@ -49,6 +74,255 @@ export default function TradeForm() {
       ),
     []
   )
+
+  const [tokenIndex, setTokenIndex] = useState(0)
+  const [tokenBorrows, setTokenBorrows] = useState(ZERO_I80F48)
+  const [tokenDeposits, setTokenDeposits] = useState(ZERO_I80F48)
+  const [usdcDeposits, setUSDCDeposits] = useState(ZERO_I80F48)
+  useEffect(() => {
+    setTokenIndex(mangoGroup.getTokenIndex(token.mintKey))
+    setTokenBorrows(mangoAccount.getUiBorrow(
+      mangoCache.rootBankCache[tokenIndex],
+      mangoGroup,
+      tokenIndex
+    ))
+    setTokenDeposits(mangoAccount.getUiDeposit(
+      mangoCache.rootBankCache[tokenIndex],
+      mangoGroup,
+      tokenIndex
+    ))
+    setUSDCDeposits(mangoAccount.getUiDeposit(
+      mangoCache.rootBankCache[QUOTE_INDEX],
+      mangoGroup,
+      QUOTE_INDEX
+    ))
+  }, [mangoGroup, mangoAccount, mangoCache, token])
+
+  const extendLeverageTradeCalc = () => {
+      // const {spot, perps, quote} = mangoAccount.
+      //   getHealthComponents(
+      //     mangoGroup,
+      //     mangoCache
+      //   )
+          // // QUESTION will every spot market index always match 1:1 with a perp market & vice versa???
+    // // Will indexes of spot.map and perps.map always match indexes of mangoGroup.tokens?
+      // const spotUi= spot.map((x, index) => nativeI80F48ToUi(x, mangoGroup.tokens[index].decimals))
+      // const perpsUi= perps.map((x, index) => nativeI80F48ToUi(x, mangoGroup.tokens[index].decimals))
+      // const quoteUi= nativeI80F48ToUi(quote, mangoGroup.tokens[QUOTE_INDEX].decimals)
+      // const spotNums = spotUi.map((x) => x.toNumber()) //TODO remove
+      // const perpsNums = perpsUi.map((x) => x.toNumber()) //TODO remove
+      // const quoteNum = quoteUi.toNumber()//TODO remove
+
+      // let health = mangoAccount.getHealthFromComponents(mangoGroup, mangoCache, spot, perps, quote, 'Init')
+      
+      let health = mangoAccount.getHealth(mangoGroup, mangoCache, 'Init')
+      health = nativeI80F48ToUi(health, mangoGroup.tokens[QUOTE_INDEX].decimals)
+      const healthNum = health.toNumber() //TODO remove
+      // if (side === "buy") {// max borrow: inithealth / 1-assetweight
+      const maxTrade = health.div(
+        ONE_I80F48.sub(mangoGroup.spotMarkets[tokenIndex].initAssetWeight)
+      ) //TODO will any asset ever have a weight of 1? will cause div by 0 error, infinite leverage}
+        // } else {
+        //   remainingLeverage = health.div(
+        //     ONE_I80F48.sub(mangoGroup.spotMarkets[tokenIndex].initLiabWeight)
+        //   ) 
+        // }
+      return maxTrade
+  }
+  const crossBookTradeCalc = () => {
+    let newTokenDeposit = ZERO_I80F48
+    let newUSDCDeposit = ZERO_I80F48
+    const tokenPrice = mangoGroup.getPrice(tokenIndex, mangoCache)
+    const tokenPriceNum = tokenPrice.toNumber() //TODO remove
+    if (side == 'sell') {
+      newUSDCDeposit = tokenDeposits.mul(tokenPrice).add(usdcDeposits)
+    } else {
+      newTokenDeposit = usdcDeposits.div(tokenPrice).add(tokenDeposits)
+    }
+    const newTokenDepositsNum = newTokenDeposit.toNumber() //TODO remove
+    const newUSDCDepositsNum = newUSDCDeposit.toNumber() //TODO remove
+    // let newDeposit = tokenDeposits.sub(parsedInputAmount)
+    // newDeposit = newDeposit.gt(ZERO_I80F48) ? newDeposit : ZERO_I80F48
+
+    // let newBorrow = parsedInputAmount.sub(tokenDeposits)
+    // newBorrow = newBorrow.gt(ZERO_I80F48) ? newBorrow : ZERO_I80F48
+    // newBorrow = newBorrow.add(tokenBorrows)
+
+    // clone MangoAccount and arrays to not modify selectedMangoAccount
+    const simulation = new MangoAccount(null, mangoAccount)
+    simulation.deposits = [...mangoAccount.deposits]
+    simulation.borrows = [...mangoAccount.borrows]
+
+    const tokenDecimals = mangoGroup.tokens[tokenIndex].decimals
+    const usdcDecimals = mangoGroup.tokens[QUOTE_INDEX].decimals
+    // update with simulated values
+    simulation.deposits[tokenIndex] = newTokenDeposit
+      .mul(I80F48.fromNumber(Math.pow(10, tokenDecimals)))
+      .div(mangoCache.rootBankCache[tokenIndex].depositIndex)
+    simulation.deposits[QUOTE_INDEX] = newUSDCDeposit
+      .mul(I80F48.fromNumber(Math.pow(10, usdcDecimals)))
+      .div(mangoCache.rootBankCache[QUOTE_INDEX].borrowIndex)
+
+    const simTokDepNum = simulation.deposits[tokenIndex].toNumber() //TODO remove
+    const simUSDCDepNum = simulation.deposits[QUOTE_INDEX].toNumber() //TODO remove
+    // const liabsVal = simulation
+    //   .getLiabsVal(mangoGroup, mangoCache, 'Init')
+    //   .toNumber()
+    const leverage = simulation.getLeverage(mangoGroup, mangoCache).toNumber()
+    // const equity = simulation.computeValue(mangoGroup, mangoCache).toNumber()
+    // const initHealthRatio = simulation
+    //   .getHealthRatio(mangoGroup, mangoCache, 'Init')
+    //   .toNumber()
+
+    // setSimulation({
+    //   initHealthRatio,
+    //   liabsVal,
+    //   leverage,
+    //   equity,
+    // })
+
+    // const {spot: simSpot, perps: simPerps, quote: simQuote} = simulation.
+    //   getHealthComponents(
+    //     mangoGroup,
+    //     mangoCache
+    //   )
+    // const simSpotUi= simSpot.map((x, index) => nativeI80F48ToUi(x, mangoGroup.tokens[index].decimals))
+    // const simPerpsUi= simPerps.map((x, index) => nativeI80F48ToUi(x, mangoGroup.tokens[index].decimals))
+    // const simQuoteUi= nativeI80F48ToUi(simQuote, mangoGroup.tokens[QUOTE_INDEX].decimals)
+    // const simSpotNums = simSpotUi.map((x) => x.toNumber()) //TODO remove
+    // const simPerpsNums = simPerpsUi.map((x) => x.toNumber()) //TODO remove
+    // const simQuoteNum = simQuoteUi.toNumber()//TODO remove
+
+    // let simHealth = simulation.getHealthFromComponents(mangoGroup, mangoCache, simSpot, simPerps, simQuote, 'Init')
+    let simHealth = simulation.getHealth(mangoGroup, mangoCache, 'Init')
+    simHealth = nativeI80F48ToUi(
+      simHealth,
+      mangoGroup.tokens[QUOTE_INDEX].decimals
+    )
+
+    const simHealthNum = simHealth.toNumber() //TODO remove
+    const simRemainingLeverage = simHealth.div(
+      ONE_I80F48.sub(mangoGroup.spotMarkets[tokenIndex].initAssetWeight)
+    )
+    // max borrow: inithealth / 1-assetweight
+    const simRemainingLeverageNum = simRemainingLeverage.toNumber() //TODO remove
+    let maxTrade
+    if (side === 'buy') {
+      // these bits I'm still not sure about
+      maxTrade = simRemainingLeverage.add(
+        usdcDeposits.isPos() ? usdcDeposits : ZERO_I80F48
+      )
+    } else {
+      maxTrade = simRemainingLeverage.add(
+        tokenDeposits.isPos()
+          ? tokenDeposits.mul(mangoGroup.getPrice(tokenIndex, mangoCache))
+          : ZERO_I80F48
+      )
+    }
+    return maxTrade
+  }
+  useEffect(() => {
+    // GET MAX MARGIN VAL
+    if (!connected || !mangoGroup || !mangoAccount || !market) return
+
+    const tokenBorrowsNum = tokenBorrows.toNumber() //TODO remove
+    const tokenDepositsNum = tokenDeposits.toNumber() //TODO remove
+    const usdcDepositsNum = usdcDeposits.toNumber() //TODO remove
+
+    let maxLeverageAmount: I80F48
+    // if has net borrows and selling OR has net deposits and buying, use remainingLeverage below as max trade
+    // else simulate closing current position, then calculate remaining leverage and add new token or usdc deposits to get max trade
+    if (
+      (side == 'sell' && tokenBorrows.gte(tokenDeposits)) ||
+      (side == 'buy' && tokenDeposits.gte(tokenBorrows))
+    ) {
+      maxLeverageAmount = extendLeverageTradeCalc()
+    } else {
+      maxLeverageAmount = crossBookTradeCalc()
+    }
+
+    const maxLeverageAmountNum = maxLeverageAmount.toNumber() // TODO remove
+    if (maxLeverageAmount.gt(ZERO_I80F48)) {
+      setMaxAmount(maxLeverageAmount)
+      setLeverageNotification('')
+      debugger // TODO remove
+    } else {
+      setMaxAmount(ZERO_I80F48)
+      setLeverageNotification(
+        `Leverage limit exceeded.
+        Please reduce account leverage before ${side}ing`
+      )
+      debugger // TODO remove
+    }
+  }, [connected, mangoAccount, market, side])
+
+  // const accountAssetsVal = //TODO remove
+  // //unweighted
+  // //if Init: account value * 0.8 (max withdraw amount)
+  //   mangoAccount.getAssetsVal(
+  //     mangoGroup,
+  //     mangoCache,
+  //     // 'Init'
+  //   )
+  // const accountAssetsValNum = accountAssetsVal.toNumber()// TODO remove
+
+  // const currentLiabsVal = mangoAccount.getLiabsVal( //TODO remove
+  //   //unweighted
+  //   mangoGroup,
+  //   mangoCache,
+  //   // 'Init'
+  // )
+  // const currentLiabsValNum = currentLiabsVal.toNumber()// TODO remove
+
+  // // const liabsAvail = currentAssetsVal
+  // //   .sub(currentLiabsVal)
+  // //   .sub(I80F48.fromNumber(0.01))
+
+  // const maxLiabsNum = maxLiabs.toNumber()
+
+  async function handleSettleAll() {
+    const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
+    const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
+    const markets = useMangoStore.getState().selectedMangoGroup.markets
+    const wallet = useMangoStore.getState().wallet.current
+
+    try {
+      const spotMarkets = Object.values(markets).filter(
+        (mkt) => mkt instanceof Market
+      ) as Market[]
+      await mangoClient.settleAll(mangoGroup, mangoAccount, spotMarkets, wallet)
+      notify({ title: 'Successfully settled funds' })
+      await sleep(250)
+      actions.fetchMangoAccounts()
+    } catch (e) {
+      console.warn('Error settling all:', e)
+      if (e.message === 'No unsettled funds') {
+        notify({
+          title: 'There are no unsettled funds',
+          type: 'error',
+        })
+      } else {
+        notify({
+          title: 'Error settling funds',
+          description: e.message,
+          txid: e.txid,
+          type: 'error',
+        })
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (!connected || !mangoGroup || !mangoAccount || !market) return
+    setLeveragePct(0)
+    debugger
+  }, [market, side]) //TODO how to reset to 0 only when user manually changes mangoAccount
+
+  useEffect(() => {
+    if (!connected || !mangoGroup || !mangoAccount || !market) return
+      const newQuoteSize = maxAmount.mul(I80F48.fromNumber(leveragePct / 100))
+      onSetQuoteSize(floorToDecimal(newQuoteSize.toNumber(), sizeDecimalCount))
+  }, [leveragePct, side])
 
   const setSide = (side) =>
     set((s) => {
@@ -171,6 +445,12 @@ export default function TradeForm() {
     const rawBaseSize = quoteSize / usePrice
     const baseSize = quoteSize && floorToDecimal(rawBaseSize, sizeDecimalCount)
     setBaseSize(baseSize)
+    debugger
+  }
+
+  const onChangeSlider = (leveragePct: number) => {
+    setLeveragePct(leveragePct)
+    debugger
   }
 
   const postOnChange = (checked) => {
@@ -255,6 +535,7 @@ export default function TradeForm() {
         txid: e.txid,
         type: 'error',
       })
+      debugger
     } finally {
       sleep(2000).then(() => {
         actions.fetchMangoAccounts()
@@ -370,6 +651,42 @@ export default function TradeForm() {
                   IOC
                 </Switch>
               </div>
+            </div>
+          ) : null}
+          <div className={'pt-4 mx-2'}>
+            <LeverageSlider
+              value={leveragePct}
+              onChange={(v) => onChangeSlider(v)}
+              step={1}
+              max={100}
+            />
+          </div>
+          {leverageNotification ? (
+            <div
+              className={`flex flex-col items-center justify-between px-3 py-2 mt-4 rounded-md bg-th-bkg-1`}
+            >
+              {balances.find(({ unsettled }) => unsettled > 0) ||
+              balances.find(
+                ({ borrows, marginDeposits }) =>
+                  borrows.gt(ZERO_I80F48) && marginDeposits.gt(ZERO_I80F48)
+              ) ? (
+                <div className="flex flex-wrap items-center text-fgd-1">
+                  Please
+                  <Button onClick={handleSettleAll} className="py-0 px-2 mx-1">
+                    Settle All
+                  </Button>
+                  funds before placing this order
+                  <Tooltip content="Use the Settle All button to move unsettled funds to your deposits. If you have borrows, settling will use deposits for that asset to reduce your borrows.">
+                    <div>
+                      <InformationCircleIcon
+                        className={`h-5 w-5 ml-1 text-th-primary cursor-help`}
+                      />
+                    </div>
+                  </Tooltip>
+                </div>
+              ) : leverageNotification ? (
+                <div className={`text-th-primary`}>{leverageNotification}</div>
+              ) : null}
             </div>
           ) : null}
         </div>
