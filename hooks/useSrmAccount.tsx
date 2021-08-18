@@ -31,9 +31,10 @@ const useSrmAccount = () => {
     ? nativeToUi(accountData.amount, SRM_DECIMALS)
     : 0
   const feeTier = getFeeTier(0, totalSrm)
-  const rates = getFeeRates(feeTier)
+  const { maker, taker } = getFeeRates(feeTier)
 
-  return { totalSrm, feeTier, rates }
+  // mul taker by 0.8 to account for GUI rebate
+  return { totalSrm, feeTier, rates: { maker, taker: taker * 0.8 } }
 }
 
 export default useSrmAccount

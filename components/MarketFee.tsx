@@ -4,6 +4,7 @@ import {
 } from '@blockworks-foundation/mango-client'
 import useSrmAccount from '../hooks/useSrmAccount'
 import useMangoStore from '../stores/useMangoStore'
+import { percentFormat } from '../utils'
 
 export default function MarketFee() {
   const { rates } = useSrmAccount()
@@ -18,23 +19,23 @@ export default function MarketFee() {
 
   let takerFee, makerFee
   if (market instanceof PerpMarket) {
-    takerFee =
-      parseFloat(mangoGroup.perpMarkets[marketIndex].takerFee.toFixed()) *
-      100 *
-      0.8
-    makerFee =
-      parseFloat(mangoGroup.perpMarkets[marketIndex].makerFee.toFixed()) * 100
+    takerFee = parseFloat(
+      mangoGroup.perpMarkets[marketIndex].takerFee.toFixed()
+    )
+    makerFee = parseFloat(
+      mangoGroup.perpMarkets[marketIndex].makerFee.toFixed()
+    )
   } else {
-    takerFee = rates.taker * 100
-    makerFee = rates.maker * 100
+    takerFee = rates.taker
+    makerFee = rates.maker
   }
 
   return (
     <div className="flex mx-auto">
       <>
-        <div>Maker Fee: {makerFee}%</div>
+        <div>Maker Fee: {percentFormat.format(makerFee)}</div>
         <div className="px-2">|</div>
-        <div>Taker Fee: {takerFee}%</div>
+        <div>Taker Fee: {percentFormat.format(takerFee)}</div>
       </>
     </div>
   )
