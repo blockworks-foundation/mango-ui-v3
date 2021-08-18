@@ -10,8 +10,10 @@ import {
   nativeI80F48ToUi,
   QUOTE_INDEX,
   MangoAccount,
+  getMarketIndexBySymbol
 } from '@blockworks-foundation/mango-client'
 import { useBalances } from '../hooks/useBalances'
+import useSrmAccount from '../hooks/useSrmAccount'
 import { notify } from '../utils/notifications'
 import { calculateMarketPrice, getDecimalCount, sleep } from '../utils'
 import FloatingElement from './FloatingElement'
@@ -58,6 +60,7 @@ export default function TradeForm() {
   const [postOnly, setPostOnly] = useState(false)
   const [ioc, setIoc] = useState(false)
   const [leveragePct, setLeveragePct] = useState(0)
+  const [maxLeveragePct, setMaxLeveragePct] = useState(100)
   const [leverageNotification, setLeverageNotification] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [maxAmount, setMaxAmount] = useState(ZERO_I80F48)
@@ -65,6 +68,23 @@ export default function TradeForm() {
 
   const orderBookRef = useRef(useMangoStore.getState().selectedMarket.orderBook)
   const orderbook = orderBookRef.current
+
+  const { rates } = useSrmAccount()
+  const marketIndex = getMarketIndexBySymbol(
+    groupConfig,
+    marketConfig.baseSymbol
+  )
+  let takerFee, makerFee
+  if (market instanceof PerpMarket) {
+    takerFee =
+      parseFloat(mangoGroup.perpMarkets[marketIndex].takerFee.toFixed()) * 100
+    makerFee =
+      parseFloat(mangoGroup.perpMarkets[marketIndex].makerFee.toFixed()) * 100
+  } else {
+    takerFee = rates.taker * 100
+    makerFee = rates.maker * 100
+  }
+
   useEffect(
     () =>
       useMangoStore.subscribe(
@@ -78,8 +98,19 @@ export default function TradeForm() {
   const [tokenIndex, setTokenIndex] = useState(0)
   const [tokenBorrows, setTokenBorrows] = useState(ZERO_I80F48)
   const [tokenDeposits, setTokenDeposits] = useState(ZERO_I80F48)
+  const [tokenPerpPosition, setTokenPerpPosition] = useState(ZERO_I80F48)
   const [usdcDeposits, setUSDCDeposits] = useState(ZERO_I80F48)
   useEffect(() => {
+    if (!token || !mangoGroup || !mangoAccount || !mangoCache) return
+    const {spot, perps, quote} = mangoAccount.
+      getHealthComponents(
+        mangoGroup,
+        mangoCache
+      )
+    const spotUi= spot.map((x, index) => nativeI80F48ToUi(x, mangoGroup.tokens[index].decimals))
+    const perpsUi= perps.map((x, index) => nativeI80F48ToUi(x, mangoGroup.tokens[index].decimals))
+    const spotNums = spotUi.map((x) => x.toNumber()) //TODO remove
+    const perpsNums = perpsUi.map((x) => x.toNumber()) //TODO remove
     setTokenIndex(mangoGroup.getTokenIndex(token.mintKey))
     setTokenBorrows(mangoAccount.getUiBorrow(
       mangoCache.rootBankCache[tokenIndex],
@@ -96,32 +127,24 @@ export default function TradeForm() {
       mangoGroup,
       QUOTE_INDEX
     ))
+    setTokenPerpPosition(perps[tokenIndex])
   }, [mangoGroup, mangoAccount, mangoCache, token])
 
-  const extendLeverageTradeCalc = () => {
-      // const {spot, perps, quote} = mangoAccount.
-      //   getHealthComponents(
-      //     mangoGroup,
-      //     mangoCache
-      //   )
-          // // QUESTION will every spot market index always match 1:1 with a perp market & vice versa???
-    // // Will indexes of spot.map and perps.map always match indexes of mangoGroup.tokens?
-      // const spotUi= spot.map((x, index) => nativeI80F48ToUi(x, mangoGroup.tokens[index].decimals))
-      // const perpsUi= perps.map((x, index) => nativeI80F48ToUi(x, mangoGroup.tokens[index].decimals))
-      // const quoteUi= nativeI80F48ToUi(quote, mangoGroup.tokens[QUOTE_INDEX].decimals)
-      // const spotNums = spotUi.map((x) => x.toNumber()) //TODO remove
-      // const perpsNums = perpsUi.map((x) => x.toNumber()) //TODO remove
-      // const quoteNum = quoteUi.toNumber()//TODO remove
-
-      // let health = mangoAccount.getHealthFromComponents(mangoGroup, mangoCache, spot, perps, quote, 'Init')
-      
+  const extendLeverageTradeCalc = () => {      
       let health = mangoAccount.getHealth(mangoGroup, mangoCache, 'Init')
       health = nativeI80F48ToUi(health, mangoGroup.tokens[QUOTE_INDEX].decimals)
       const healthNum = health.toNumber() //TODO remove
       // if (side === "buy") {// max borrow: inithealth / 1-assetweight
+      let weight = ONE_I80F48
+      if (market instanceof PerpMarket) {
+        weight = mangoGroup.perpMarkets[tokenIndex].initAssetWeight
+      } else {
+        weight = mangoGroup.spotMarkets[tokenIndex].initAssetWeight
+      }
       const maxTrade = health.div(
-        ONE_I80F48.sub(mangoGroup.spotMarkets[tokenIndex].initAssetWeight)
-      ) //TODO will any asset ever have a weight of 1? will cause div by 0 error, infinite leverage}
+        ONE_I80F48.sub(weight)
+      )
+      //TODO will any asset ever have a weight of 1? will cause div by 0 error, infinite leverage}
         // } else {
         //   remainingLeverage = health.div(
         //     ONE_I80F48.sub(mangoGroup.spotMarkets[tokenIndex].initLiabWeight)
@@ -129,7 +152,45 @@ export default function TradeForm() {
         // }
       return maxTrade
   }
-  const crossBookTradeCalc = () => {
+  const crossBookPerpsTradeCalc = () => {
+    const {spot, perps: simPerps, quote} = mangoAccount.
+      getHealthComponents(
+        mangoGroup,
+        mangoCache
+      )
+    simPerps[tokenIndex] = ZERO_I80F48
+    // const simulation = new MangoAccount(null, mangoAccount)
+    // // simulation.deposits = [...mangoAccount.deposits]
+    // // simulation.borrows = [...mangoAccount.borrows]
+    let simHealth = mangoAccount.getHealthFromComponents(mangoGroup, mangoCache, spot, simPerps, quote, 'Init')
+    simHealth = nativeI80F48ToUi(
+      simHealth,
+      mangoGroup.tokens[QUOTE_INDEX].decimals
+    )
+
+    const simHealthNum = simHealth.toNumber() //TODO remove
+    const simRemainingLeverage = simHealth.div( //current settings allow for 10x init leverage on perps?? is this intentional?
+      ONE_I80F48.sub(mangoGroup.perpMarkets[tokenIndex].initAssetWeight)
+    )
+    const simRemainingLeverageNum = simRemainingLeverage.toNumber() //TODO remove
+    // let maxTrade
+    // if (side === 'buy') {
+    //   // these bits I'm still not sure about
+    //   maxTrade = simRemainingLeverage.add(
+    //     usdcDeposits.isPos() ? usdcDeposits : ZERO_I80F48
+    //   )
+    // } else {
+    //   maxTrade = simRemainingLeverage.add(
+    //     tokenDeposits.isPos()
+    //       ? tokenDeposits.mul(mangoGroup.getPrice(tokenIndex, mangoCache))
+    //       : ZERO_I80F48
+    //   )
+    // }
+    // return maxTrade
+    return simRemainingLeverage
+  }
+
+  const crossBookSpotTradeCalc = () => { 
     let newTokenDeposit = ZERO_I80F48
     let newUSDCDeposit = ZERO_I80F48
     const tokenPrice = mangoGroup.getPrice(tokenIndex, mangoCache)
@@ -181,18 +242,6 @@ export default function TradeForm() {
     //   equity,
     // })
 
-    // const {spot: simSpot, perps: simPerps, quote: simQuote} = simulation.
-    //   getHealthComponents(
-    //     mangoGroup,
-    //     mangoCache
-    //   )
-    // const simSpotUi= simSpot.map((x, index) => nativeI80F48ToUi(x, mangoGroup.tokens[index].decimals))
-    // const simPerpsUi= simPerps.map((x, index) => nativeI80F48ToUi(x, mangoGroup.tokens[index].decimals))
-    // const simQuoteUi= nativeI80F48ToUi(simQuote, mangoGroup.tokens[QUOTE_INDEX].decimals)
-    // const simSpotNums = simSpotUi.map((x) => x.toNumber()) //TODO remove
-    // const simPerpsNums = simPerpsUi.map((x) => x.toNumber()) //TODO remove
-    // const simQuoteNum = simQuoteUi.toNumber()//TODO remove
-
     // let simHealth = simulation.getHealthFromComponents(mangoGroup, mangoCache, simSpot, simPerps, simQuote, 'Init')
     let simHealth = simulation.getHealth(mangoGroup, mangoCache, 'Init')
     simHealth = nativeI80F48ToUi(
@@ -232,13 +281,24 @@ export default function TradeForm() {
     let maxLeverageAmount: I80F48
     // if has net borrows and selling OR has net deposits and buying, use remainingLeverage below as max trade
     // else simulate closing current position, then calculate remaining leverage and add new token or usdc deposits to get max trade
-    if (
-      (side == 'sell' && tokenBorrows.gte(tokenDeposits)) ||
-      (side == 'buy' && tokenDeposits.gte(tokenBorrows))
-    ) {
-      maxLeverageAmount = extendLeverageTradeCalc()
-    } else {
-      maxLeverageAmount = crossBookTradeCalc()
+    if (market instanceof PerpMarket) {
+      if (
+        (side == 'sell' && tokenPerpPosition.lte(ZERO_I80F48)) ||
+        (side == 'buy' && tokenPerpPosition.gte(ZERO_I80F48))
+      ) {
+        maxLeverageAmount = extendLeverageTradeCalc()
+      } else {
+        maxLeverageAmount = crossBookPerpsTradeCalc()
+      }
+    } else { 
+      if (
+        (side == 'sell' && tokenBorrows.gte(tokenDeposits)) ||
+        (side == 'buy' && tokenDeposits.gte(tokenBorrows))
+      ) {
+        maxLeverageAmount = extendLeverageTradeCalc()
+      } else {
+        maxLeverageAmount = crossBookSpotTradeCalc()
+      }
     }
 
     const maxLeverageAmountNum = maxLeverageAmount.toNumber() // TODO remove
@@ -256,6 +316,13 @@ export default function TradeForm() {
     }
   }, [connected, mangoAccount, market, side])
 
+  useEffect(() => {
+    if (tradeType === 'Limit') {
+      setMaxLeveragePct(100 - makerFee)
+    } else {
+      setMaxLeveragePct(100 - takerFee)
+    }
+  }, [tradeType, market])
   // const accountAssetsVal = //TODO remove
   // //unweighted
   // //if Init: account value * 0.8 (max withdraw amount)
@@ -315,8 +382,7 @@ export default function TradeForm() {
   useEffect(() => {
     if (!connected || !mangoGroup || !mangoAccount || !market) return
     setLeveragePct(0)
-    debugger
-  }, [market, side]) //TODO how to reset to 0 only when user manually changes mangoAccount
+  }, [token, side]) //TODO how to reset to 0 only when user manually changes mangoAccount??
 
   useEffect(() => {
     if (!connected || !mangoGroup || !mangoAccount || !market) return
@@ -658,7 +724,7 @@ export default function TradeForm() {
               value={leveragePct}
               onChange={(v) => onChangeSlider(v)}
               step={1}
-              max={100}
+              max={maxLeveragePct}
             />
           </div>
           {leverageNotification ? (
