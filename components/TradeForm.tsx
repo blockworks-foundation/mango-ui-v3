@@ -256,7 +256,7 @@ export default function TradeForm() {
         type: 'error',
       })
     } finally {
-      sleep(2000).then(() => {
+      sleep(1000).then(() => {
         actions.fetchMangoAccounts()
       })
       setSubmitting(false)
