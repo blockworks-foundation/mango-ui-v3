@@ -17,6 +17,7 @@ import Switch from './Switch'
 import { Market } from '@project-serum/serum'
 import Big from 'big.js'
 import MarketFee from './MarketFee'
+import LeverageSlider from './LeverageSlider'
 
 const StyledRightInput = styled(Input)`
   border-left: 1px solid transparent;
@@ -24,6 +25,7 @@ const StyledRightInput = styled(Input)`
 
 export default function TradeForm() {
   const set = useMangoStore((s) => s.set)
+  const { ipAllowed } = useIpAddress()
   const connected = useMangoStore((s) => s.wallet.connected)
   const actions = useMangoStore((s) => s.actions)
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
@@ -32,8 +34,7 @@ export default function TradeForm() {
   const { side, baseSize, quoteSize, price, tradeType } = useMangoStore(
     (s) => s.tradeForm
   )
-  let { ipAllowed } = useIpAddress()
-  ipAllowed = true
+
   const [postOnly, setPostOnly] = useState(false)
   const [ioc, setIoc] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -49,6 +50,14 @@ export default function TradeForm() {
       ),
     []
   )
+
+  useEffect(() => {
+    if (tradeType === 'Market') {
+      set((s) => {
+        s.tradeForm.price = ''
+      })
+    }
+  }, [tradeType, set])
 
   const setSide = (side) =>
     set((s) => {
@@ -97,6 +106,7 @@ export default function TradeForm() {
       ),
     []
   )
+
   let minOrderSize = '0'
   if (market instanceof Market && market.minOrderSize) {
     minOrderSize = market.minOrderSize.toString()
@@ -109,6 +119,7 @@ export default function TradeForm() {
       .div(new Big(10).pow(baseDecimals))
       .toString()
   }
+
   const sizeDecimalCount = getDecimalCount(minOrderSize)
 
   let tickSize = 1
@@ -171,6 +182,20 @@ export default function TradeForm() {
     const rawBaseSize = quoteSize / usePrice
     const baseSize = quoteSize && floorToDecimal(rawBaseSize, sizeDecimalCount)
     setBaseSize(baseSize)
+  }
+
+  const onTradeTypeChange = (tradeType) => {
+    setTradeType(tradeType)
+    if (tradeType === 'Market') {
+      setIoc(true)
+      setPrice('')
+    } else {
+      const priceOnBook = side === 'buy' ? orderbook?.asks : orderbook?.bids
+      if (priceOnBook && priceOnBook.length > 0 && priceOnBook[0].length > 0) {
+        setPrice(priceOnBook[0][0])
+      }
+      setIoc(false)
+    }
   }
 
   const postOnChange = (checked) => {
@@ -263,20 +288,6 @@ export default function TradeForm() {
     }
   }
 
-  const handleTradeTypeChange = (tradeType) => {
-    setTradeType(tradeType)
-    if (tradeType === 'Market') {
-      setIoc(true)
-      setPrice('')
-    } else {
-      const priceOnBook = side === 'buy' ? orderbook?.asks : orderbook?.bids
-      if (priceOnBook && priceOnBook.length > 0 && priceOnBook[0].length > 0) {
-        setPrice(priceOnBook[0][0])
-      }
-      setIoc(false)
-    }
-  }
-
   const disabledTradeButton =
     (!price && tradeType === 'Limit') || !baseSize || !connected || submitting
 
@@ -331,7 +342,7 @@ export default function TradeForm() {
               wrapperClassName="w-3/5"
             />
             <TradeType
-              onChange={handleTradeTypeChange}
+              onChange={onTradeTypeChange}
               value={tradeType}
               className="hover:border-th-primary flex-grow"
             />
@@ -360,6 +371,13 @@ export default function TradeForm() {
               suffix={groupConfig.quoteSymbol}
             />
           </Input.Group>
+          <LeverageSlider
+            onChange={(e) => onSetBaseSize(e)}
+            value={baseSize ? baseSize : 0}
+            step={parseFloat(minOrderSize)}
+            disabled={false}
+            side={side}
+          />
           {tradeType !== 'Market' ? (
             <div className="flex mt-4">
               <Switch checked={postOnly} onChange={postOnChange}>
@@ -414,7 +432,7 @@ export default function TradeForm() {
             </Button>
           )}
         </div>
-        <div className="flex text-xs text-th-fgd-4 px-6 mt-6">
+        <div className="flex text-xs text-th-fgd-4 px-6 mt-4">
           <MarketFee />
         </div>
       </div>
