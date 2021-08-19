@@ -52,8 +52,8 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
   useEffect(() => {
     if (newAccPublicKey) {
       setMangoStore((state) => {
-        state.selectedMangoAccount.current = mangoAccounts.find((ma) =>
-          ma.publicKey.equals(newAccPublicKey)
+        state.selectedMangoAccount.current = mangoAccounts.find(
+          (ma) => ma.publicKey.toString() === newAccPublicKey
         )
       })
     }
