@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useEffect, useState } from 'react'
 import { RadioGroup } from '@headlessui/react'
 import { CheckCircleIcon } from '@heroicons/react/solid'
-import { ChevronLeftIcon, PlusCircleIcon } from '@heroicons/react/outline'
+import { PlusCircleIcon } from '@heroicons/react/outline'
 import useMangoStore from '../stores/useMangoStore'
 import {
   MangoAccount,
@@ -9,7 +9,7 @@ import {
   MangoGroup,
   // ZERO_I80F48,
 } from '@blockworks-foundation/mango-client'
-import { abbreviateAddress } from '../utils'
+import { abbreviateAddress, formatUsdValue } from '../utils'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import Modal from './Modal'
 import { ElementTitle } from './styles'
@@ -157,11 +157,10 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
           <>
             <NewAccount onAccountCreation={handleNewAccountCreation} />
             <LinkButton
-              className="flex items-center mt-4 text-th-fgd-3"
+              className="flex justify-center mt-4 text-th-fgd-3 w-full"
               onClick={() => setShowNewAccountForm(false)}
             >
-              <ChevronLeftIcon className="h-5 w-5 mr-1" />
-              Back
+              Cancel
             </LinkButton>
           </>
         )
@@ -192,7 +191,7 @@ const AccountInfo = ({
 
   return (
     <div className="text-th-fgd-3 text-xs">
-      ${accountEquity.toFixed(2)}
+      {formatUsdValue(accountEquity)}
       {/* <span className="px-1.5 text-th-fgd-4">|</span>
       <span
         className={

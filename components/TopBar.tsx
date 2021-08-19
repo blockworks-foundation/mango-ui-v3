@@ -66,7 +66,9 @@ const TopBar = () => {
                     <div className="font-normal text-th-primary tiny-text">
                       Account
                     </div>
-                    {abbreviateAddress(mangoAccount.publicKey)}
+                    {mangoAccount.name
+                      ? mangoAccount.name
+                      : abbreviateAddress(mangoAccount.publicKey)}
                   </button>
                 </div>
               ) : null}

@@ -5,6 +5,7 @@ import { EyeIcon, EyeOffIcon } from '@heroicons/react/outline'
 import Modal from './Modal'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import useMangoStore from '../stores/useMangoStore'
+import { formatUsdValue } from '../utils'
 import { LinkButton } from './Button'
 
 const StyledColumnHeader = styled.span`
@@ -107,7 +108,7 @@ const MarketsModal = ({
                 </Link>
                 <div className="flex justify-between">
                   <span className="text-th-fgd-2 text-right w-20">
-                    ${mangoGroup.getPrice(index, mangoCache).toFixed(2)}
+                    {formatUsdValue(mangoGroup.getPrice(index, mangoCache))}
                   </span>
                   {/* <span className="text-th-green text-right w-20">+2.44%</span>
                   <span className="text-th-fgd-3 text-right w-20">$233m</span> */}
