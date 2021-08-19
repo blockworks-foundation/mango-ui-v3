@@ -30,9 +30,9 @@ import { LAST_ACCOUNT_KEY } from '../components/AccountsModal'
 
 export const ENDPOINTS: EndpointInfo[] = [
   {
-    name: 'mainnet-beta',
-    url: 'https://mango.rpcpool.com/',
-    websocket: 'https://mango.rpcpool.com/',
+    name: 'mainnet',
+    url: process.env.NEXT_PUBLIC_ENDPOINT,
+    websocket: process.env.NEXT_PUBLIC_ENDPOINT,
     custom: false,
   },
   {
@@ -45,7 +45,7 @@ export const ENDPOINTS: EndpointInfo[] = [
   },
 ]
 
-type ClusterType = 'mainnet-beta' | 'devnet'
+type ClusterType = 'mainnet' | 'devnet'
 
 const CLUSTER = (process.env.NEXT_PUBLIC_CLUSTER as ClusterType) || 'devnet'
 const ENDPOINT = ENDPOINTS.find((e) => e.name === CLUSTER)
