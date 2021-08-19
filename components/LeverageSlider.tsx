@@ -52,6 +52,10 @@ type SliderProps = {
   maxButtonTransition?: boolean
 }
 
+const percentToClose = (size, total) => {
+  return (size / total) * 100
+}
+
 export default function LeverageSlider({
   onChange,
   onAfterChange,
@@ -74,33 +78,34 @@ export default function LeverageSlider({
     marketConfig.baseSymbol
   )
 
-  const max = useMemo(() => {
+  const { max, deposits, borrows } = useMemo(() => {
     if (!mangoAccount) return 0
     const priceOrDefault = price
       ? I80F48.fromNumber(price)
       : mangoGroup.getPrice(marketIndex, mangoCache)
-    console.log('price', priceOrDefault.toFixed())
 
-    const maxQuote = mangoAccount
-      .getMaxLeverageForMarket(
-        mangoGroup,
-        mangoCache,
-        marketIndex,
-        market,
-        side,
-        priceOrDefault
-      )
-      .toNumber()
+    const {
+      max: maxQuote,
+      deposits,
+      borrows,
+    } = mangoAccount.getMaxLeverageForMarket(
+      mangoGroup,
+      mangoCache,
+      marketIndex,
+      market,
+      side,
+      priceOrDefault
+    )
 
-    if (maxQuote <= 0) return 0
+    if (maxQuote.toNumber() <= 0) return 0
     // multiply the maxQuote by a scaler value to account for
     // srm fees or rounding issues in getMaxLeverageForMarket
     const maxScaler = market instanceof PerpMarket ? 0.99 : 0.95
-    const max =
-      (maxQuote * maxScaler) /
+    const scaledMax =
+      (maxQuote.toNumber() * maxScaler) /
       mangoGroup.getPrice(marketIndex, mangoCache).toNumber()
 
-    return max
+    return { max: scaledMax, deposits, borrows }
   }, [mangoAccount, mangoGroup, mangoCache, marketIndex, market, side, price])
 
   useEffect(() => {
@@ -118,17 +123,44 @@ export default function LeverageSlider({
     }
   }, [enableTransition])
 
+  if (!mangoAccount || !step) return null
+
+  const decimalCount = step.toString().split('.')[1].length
+  const roundedDeposits = parseFloat(deposits?.toFixed(decimalCount))
+  const roundedBorrows = parseFloat(borrows?.toFixed(decimalCount))
+
+  const closeDepositString =
+    percentToClose(value, roundedDeposits) > 100
+      ? '100% Close Position + Leverage'
+      : `${percentToClose(value, roundedDeposits).toFixed(2)}% Close Position`
+
+  const closeBorrowString =
+    percentToClose(value, roundedBorrows) > 100
+      ? '100% Close Position + Leverage'
+      : `${percentToClose(value, roundedDeposits).toFixed(2)}% Close Position`
+
   return (
-    <div className="relative mt-4 pl-2 pr-0">
-      <StyledSlider
-        min={0}
-        max={max}
-        value={value || 0}
-        onChange={onChange}
-        onAfterChange={onAfterChange}
-        step={step}
-        disabled={disabled}
-      />
-    </div>
+    <>
+      <div className="relative mt-4 pl-1 pr-0">
+        <StyledSlider
+          min={0}
+          max={max}
+          value={value || 0}
+          onChange={onChange}
+          onAfterChange={onAfterChange}
+          step={step}
+          disabled={disabled}
+        />
+      </div>
+      {side === 'sell' ? (
+        <div className="text-th-fgd-4 text-xs tracking-normal mt-2.5">
+          <span>{roundedDeposits > 0 ? closeDepositString : null}</span>
+        </div>
+      ) : (
+        <div className="text-th-fgd-4 text-xs tracking-normal mt-2.5">
+          <span>{roundedBorrows > 0 ? closeBorrowString : null}</span>
+        </div>
+      )}
+    </>
   )
 }

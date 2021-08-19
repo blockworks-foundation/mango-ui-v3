@@ -397,7 +397,7 @@ export default function TradeForm() {
             )}
           />
           {tradeType !== 'Market' ? (
-            <div className="flex mt-4">
+            <div className="flex mt-2">
               <Switch checked={postOnly} onChange={postOnChange}>
                 POST
               </Switch>
@@ -409,7 +409,7 @@ export default function TradeForm() {
             </div>
           ) : null}
         </div>
-        <div className={`flex pt-6`}>
+        <div className={`flex pt-4`}>
           {ipAllowed ? (
             side === 'buy' ? (
               <Button
@@ -450,7 +450,7 @@ export default function TradeForm() {
             </Button>
           )}
         </div>
-        <div className="flex text-xs text-th-fgd-4 px-6 mt-4">
+        <div className="flex text-xs text-th-fgd-4 px-6 mt-2.5">
           <MarketFee />
         </div>
       </div>
