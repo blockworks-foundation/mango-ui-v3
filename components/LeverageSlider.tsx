@@ -50,6 +50,7 @@ type SliderProps = {
   disabled?: boolean
   max?: number
   maxButtonTransition?: boolean
+  decimalCount: number
 }
 
 const percentToClose = (size, total) => {
@@ -65,6 +66,7 @@ export default function LeverageSlider({
   maxButtonTransition,
   side,
   price,
+  decimalCount,
 }: SliderProps) {
   const [enableTransition, setEnableTransition] = useState(false)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
@@ -123,9 +125,8 @@ export default function LeverageSlider({
     }
   }, [enableTransition])
 
-  if (!mangoAccount || !step) return null
+  if (!mangoAccount) return null
 
-  const decimalCount = step.toString().split('.')[1].length
   const roundedDeposits = parseFloat(deposits?.toFixed(decimalCount))
   const roundedBorrows = parseFloat(borrows?.toFixed(decimalCount))
 
