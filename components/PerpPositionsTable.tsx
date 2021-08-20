@@ -9,7 +9,6 @@ import {
   ZERO_BN,
   ZERO_I80F48,
 } from '@blockworks-foundation/mango-client'
-import { useMemo } from 'react'
 import Button from './Button'
 import { notify } from '../utils/notifications'
 
@@ -78,15 +77,6 @@ const PositionsTable = () => {
   const [settlingPerpAcc, setSettlingPerpAcc] = useState(null)
   const tradeHistory = useTradeHistory()
 
-  const perpMarkets = useMemo(
-    () =>
-      mangoGroup
-        ? groupConfig.perpMarkets.map(
-            (m) => mangoGroup.perpMarkets[m.marketIndex]
-          )
-        : [],
-    [mangoGroup]
-  )
   const perpAccounts = mangoAccount
     ? groupConfig.perpMarkets.map((m) => {
         return {
@@ -180,7 +170,7 @@ const PositionsTable = () => {
                 <Tbody>
                   {filteredPerpAccounts.map(
                     ({ perpAccount, marketIndex }, index) => {
-                      const perpMarketInfo = perpMarkets[marketIndex]
+                      const perpMarketInfo = mangoGroup.perpMarkets[marketIndex]
                       const marketConfig = getMarketByPublicKey(
                         groupConfig,
                         perpMarketInfo.perpMarket
@@ -237,12 +227,14 @@ const PositionsTable = () => {
                             className="px-2 py-2 text-left font-normal"
                           >
                             {usdFormatter(
-                              perpMarket.baseLotsToNumber(
-                                perpAccount.basePosition
-                              ) *
-                                mangoGroup
-                                  .getPrice(marketIndex, mangoCache)
-                                  .toNumber()
+                              Math.abs(
+                                perpMarket.baseLotsToNumber(
+                                  perpAccount.basePosition
+                                ) *
+                                  mangoGroup
+                                    .getPrice(marketIndex, mangoCache)
+                                    .toNumber()
+                              )
                             )}
                           </Th>
                           <Td className="px-2 py-2 whitespace-nowrap text-sm text-th-fgd-1">
