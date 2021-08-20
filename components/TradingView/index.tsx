@@ -57,11 +57,7 @@ const TVChartContainer = () => {
 
   useEffect(() => {
     const widgetOptions: ChartingLibraryWidgetOptions = {
-      // TODO: stop trading view from not crash looping on perp
-      symbol:
-        selectedMarketConfig.kind == 'perp'
-          ? 'BTC/USDC'
-          : selectedMarketConfig.name,
+      symbol: selectedMarketConfig.name,
       // BEWARE: no trailing slash is expected in feed URL
       // tslint:disable-next-line:no-any
       datafeed: new (window as any).Datafeeds.UDFCompatibleDatafeed(
