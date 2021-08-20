@@ -4,13 +4,13 @@ import FloatingElement from './FloatingElement'
 import useInterval from '../hooks/useInterval'
 import ChartApi from '../utils/chartDataConnector'
 import { ElementTitle } from './styles'
-import { isEqual } from '../utils/index'
+import { getDecimalCount, isEqual } from '../utils/index'
 import useMangoStore from '../stores/useMangoStore'
 
 export default function RecentMarketTrades() {
   const mangoConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
-  // const market = useMangoStore((s) => s.selectedMarket.current)
+  const market = useMangoStore((s) => s.selectedMarket.current)
   const [trades, setTrades] = useState([])
 
   const fetchTradesForChart = useCallback(async () => {
@@ -50,7 +50,7 @@ export default function RecentMarketTrades() {
         <div>
           {trades.map((trade: ChartTradeType, i: number) => (
             <div key={i} className={`leading-7 grid grid-cols-3`}>
-              {/* <div
+              <div
                 className={`${
                   trade.side === 'buy' ? `text-th-green` : `text-th-red`
                 }`}
@@ -67,7 +67,7 @@ export default function RecentMarketTrades() {
                       getDecimalCount(market.minOrderSize)
                     )
                   : trade.size}
-              </div> */}
+              </div>
               <div className={`text-right text-th-fgd-3`}>
                 {trade.time && new Date(trade.time).toLocaleTimeString()}
               </div>
