@@ -281,7 +281,7 @@ export default function AccountOverview() {
           <div className="flex items-center pb-4">
             <HeartIcon className="flex-shrink-0 h-7 w-7 mr-1.5 text-th-primary" />
             <StyledAccountValue className="font-bold text-th-fgd-1">
-              {maintHealthRatio.toFixed(2)}%
+              {maintHealthRatio < 1000 ? maintHealthRatio.toFixed(2) : '>999%'}%
             </StyledAccountValue>
           </div>
           <div className="h-1.5 flex rounded bg-th-bkg-3">
