@@ -4,6 +4,7 @@ import 'rc-slider/assets/index.css'
 import useMangoStore from '../stores/useMangoStore'
 import {
   getMarketIndexBySymbol,
+  getWeights,
   I80F48,
   PerpMarket,
 } from '@blockworks-foundation/mango-client'
@@ -80,6 +81,11 @@ export default function LeverageSlider({
     marketConfig.baseSymbol
   )
 
+  const ws = getWeights(mangoGroup, marketConfig.marketIndex, 'Init')
+  const w =
+    marketConfig.kind === 'perp' ? ws.perpAssetWeight : ws.spotAssetWeight
+  const initLeverage = Math.round((100 * -1) / (w.toNumber() - 1)) / 100
+
   const { max, deposits, borrows } = useMemo(() => {
     if (!mangoAccount) return 0
     const priceOrDefault = price
@@ -142,7 +148,7 @@ export default function LeverageSlider({
 
   return (
     <>
-      <div className="relative mt-4 pl-1 pr-0">
+      <div className="flex mt-4 items-center pl-1 pr-1">
         <StyledSlider
           min={0}
           max={max}
@@ -152,6 +158,12 @@ export default function LeverageSlider({
           step={step}
           disabled={disabled}
         />
+        <button
+          className="bg-th-bkg-4 hover:brightness-[1.15] font-normal rounded text-th-fgd-1 text-xs p-2 ml-2"
+          onClick={() => onChange(max)}
+        >
+          {initLeverage}x
+        </button>
       </div>
       {side === 'sell' ? (
         <div className="text-th-fgd-4 text-xs tracking-normal mt-2.5">
