@@ -150,6 +150,10 @@ export default function LeverageSlider({
       ? '100% Close Position + Leverage'
       : `${percentToClose(value, roundedDeposits).toFixed(2)}% Close Position`
 
+  const setMaxLeverage = function () {
+    onChange(Math.round(max / step) * step)
+  }
+
   return (
     <>
       <div className="flex mt-4 items-center pl-1 pr-1">
@@ -164,7 +168,7 @@ export default function LeverageSlider({
         />
         <button
           className="bg-th-bkg-4 hover:brightness-[1.15] font-normal rounded text-th-fgd-1 text-xs p-2 ml-2"
-          onClick={() => onChange(max)}
+          onClick={setMaxLeverage}
         >
           {initLeverage}x
         </button>
