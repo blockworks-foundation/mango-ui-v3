@@ -16,7 +16,7 @@ export default function AccountBorrows() {
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const mangoConfig = useMangoStore((s) => s.selectedMangoGroup.config)
-  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
+  // const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const loadingMangoAccount = useMangoStore(
     (s) => s.selectedMangoAccount.initialLoad
   )
@@ -45,12 +45,13 @@ export default function AccountBorrows() {
     <>
       <div className="sm:flex sm:items-center sm:justify-between pb-4">
         <div className="pb-2 sm:pb-0 text-th-fgd-1 text-lg">Your Borrows</div>
+        {/* TODO: calculate LiabsVal without perp markets
         <div className="border border-th-red flex items-center justify-between p-2 rounded">
           <div className="pr-4 text-xs text-th-fgd-3">Total Borrow Value:</div>
           <span>
             {formatUsdValue(+mangoAccount.getLiabsVal(mangoGroup, mangoCache))}
           </span>
-        </div>
+        </div> */}
       </div>
       {mangoGroup ? (
         balances.find((b) => b.borrows.gt(ZERO_I80F48)) ? (
