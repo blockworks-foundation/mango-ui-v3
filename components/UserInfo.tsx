@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import FloatingElement from './FloatingElement'
 import OpenOrdersTable from './OpenOrdersTable'
 import BalancesTable from './BalancesTable'
 import PositionsTable from './PerpPositionsTable'
 import TradeHistoryTable from './TradeHistoryTable'
+import { useRouter } from 'next/router'
 // import FeeDiscountsTable from './FeeDiscountsTable'
 
 const TABS = [
@@ -81,7 +82,12 @@ const TabContent = ({ activeTab }) => {
 }
 
 const UserInfo = () => {
-  const [activeTab, setActiveTab] = useState(TABS[0])
+  const { asPath } = useRouter()
+  const [activeTab, setActiveTab] = useState('')
+
+  useEffect(() => {
+    asPath.includes('perp') ? setActiveTab(TABS[2]) : setActiveTab(TABS[0])
+  }, [asPath])
 
   return (
     <FloatingElement>

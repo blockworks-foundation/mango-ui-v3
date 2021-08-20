@@ -12,7 +12,7 @@ import SideBadge from './SideBadge'
 import { useSortableData } from '../hooks/useSortableData'
 import { Order, Market } from '@project-serum/serum/lib/market'
 import { PerpOrder, PerpMarket } from '@blockworks-foundation/mango-client'
-import { usdFormatter } from '../utils'
+import { formatUsdValue } from '../utils'
 
 const OpenOrdersTable = () => {
   const { asPath } = useRouter()
@@ -185,7 +185,7 @@ const OpenOrdersTable = () => {
                       <Td
                         className={`px-6 py-2 whitespace-nowrap text-th-fgd-1`}
                       >
-                        {usdFormatter(order.price)}
+                        {formatUsdValue(order.price)}
                       </Td>
                       <Td className={`px-6 py-2 whitespace-nowrap`}>
                         <div className={`flex justify-end`}>

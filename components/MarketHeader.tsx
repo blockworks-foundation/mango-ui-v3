@@ -206,7 +206,7 @@ const MarketHeader = () => {
                   Avg Funding Rate (1h)
                 </div>
                 <div className="font-semibold text-th-fgd-1 text-xs">
-                  {calculateFundingRate(perpStats, selectedMarket)?.toFixed(6)}%
+                  {calculateFundingRate(perpStats, selectedMarket)?.toFixed(4)}%
                 </div>
               </div>
               <div className="pr-6">

@@ -84,6 +84,7 @@ export default function MarketPosition() {
   const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const connected = useMangoStore((s) => s.wallet.connected)
+  const setMangoStore = useMangoStore((s) => s.set)
   const baseSymbol = marketConfig.baseSymbol
   const marketName = marketConfig.name
   const tradeHistory = useTradeHistory()
@@ -101,6 +102,12 @@ export default function MarketPosition() {
     }
   }, [marketName, mangoAccount, marketIndex])
 
+  const handleSizeClick = (size) => {
+    setMangoStore((state) => {
+      state.tradeForm.baseSize = size
+    })
+  }
+
   if (!mangoGroup) return null
 
   return selectedMarket instanceof PerpMarket ? (
@@ -114,7 +121,7 @@ export default function MarketPosition() {
               side={perpAccount.basePosition.gt(ZERO_BN) ? 'long' : 'short'}
             />
           ) : (
-            '-'
+            '--'
           )}
         </div>
         <div className={`flex justify-between pt-2 pb-2`}>
@@ -122,12 +129,27 @@ export default function MarketPosition() {
             Position size
           </div>
           <div className={`text-th-fgd-1`}>
-            {perpAccount
-              ? Math.abs(
+            {perpAccount &&
+            Math.abs(
+              selectedMarket.baseLotsToNumber(perpAccount.basePosition)
+            ) > 0 ? (
+              <span
+                className="cursor-pointer underline hover:no-underline"
+                onClick={() =>
+                  handleSizeClick(
+                    Math.abs(
+                      selectedMarket.baseLotsToNumber(perpAccount.basePosition)
+                    )
+                  )
+                }
+              >
+                {`${Math.abs(
                   selectedMarket.baseLotsToNumber(perpAccount.basePosition)
-                )
-              : 0}{' '}
-            {baseSymbol}
+                )} ${baseSymbol}`}
+              </span>
+            ) : (
+              `0 ${baseSymbol}`
+            )}
           </div>
         </div>
         <div className={`flex justify-between pt-2 pb-2`}>

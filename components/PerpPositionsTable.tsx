@@ -11,7 +11,6 @@ import {
 } from '@blockworks-foundation/mango-client'
 import Button from './Button'
 import { notify } from '../utils/notifications'
-
 import BN from 'bn.js'
 import SideBadge from './SideBadge'
 import { useState } from 'react'
@@ -76,6 +75,7 @@ const PositionsTable = () => {
   const allMarkets = useMangoStore((s) => s.selectedMangoGroup.markets)
   const [settlingPerpAcc, setSettlingPerpAcc] = useState(null)
   const tradeHistory = useTradeHistory()
+  const setMangoStore = useMangoStore((s) => s.set)
 
   const perpAccounts = mangoAccount
     ? groupConfig.perpMarkets.map((m) => {
@@ -128,6 +128,12 @@ const PositionsTable = () => {
     } finally {
       setSettlingPerpAcc(null)
     }
+  }
+
+  const handleSizeClick = (size) => {
+    setMangoStore((state) => {
+      state.tradeForm.baseSize = size
+    })
   }
 
   return (
@@ -216,10 +222,32 @@ const PositionsTable = () => {
                             )}
                           </Td>
                           <Td className="px-2 py-2 whitespace-nowrap text-sm text-th-fgd-1">
-                            {Math.abs(
+                            {perpAccount &&
+                            Math.abs(
                               perpMarket.baseLotsToNumber(
                                 perpAccount.basePosition
                               )
+                            ) > 0 ? (
+                              <span
+                                className="cursor-pointer underline hover:no-underline"
+                                onClick={() =>
+                                  handleSizeClick(
+                                    Math.abs(
+                                      perpMarket.baseLotsToNumber(
+                                        perpAccount.basePosition
+                                      )
+                                    )
+                                  )
+                                }
+                              >
+                                {`${Math.abs(
+                                  perpMarket.baseLotsToNumber(
+                                    perpAccount.basePosition
+                                  )
+                                )} ${marketConfig.baseSymbol}`}
+                              </span>
+                            ) : (
+                              `0 ${marketConfig.baseSymbol}`
                             )}
                           </Td>
                           <Th
