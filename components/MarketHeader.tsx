@@ -10,18 +10,27 @@ import DayHighLow from './DayHighLow'
 import { useEffect } from 'react'
 import { formatUsdValue } from '../utils'
 
-function calculateFundingRate(perpStats, perpMarket) {
+function calculateFundingRate(perpStats, perpMarket, oraclePrice) {
   const oldestStat = perpStats[perpStats.length - 1]
   const latestStat = perpStats[0]
 
   if (!latestStat || !perpMarket) return null
 
-  const fundingDifference = latestStat.longFunding - oldestStat.longFunding
+  // Averaging long and short funding excludes socialized loss
+  const startFunding =
+    (parseFloat(oldestStat.longFunding) + parseFloat(oldestStat.shortFunding)) /
+    2
+  const endFunding =
+    (parseFloat(latestStat.longFunding) + parseFloat(latestStat.shortFunding)) /
+    2
+  const fundingDifference = endFunding - startFunding
+
   const fundingInQuoteDecimals =
     fundingDifference / Math.pow(10, perpMarket.quoteDecimals)
-  const basePriceInBaseLots =
-    latestStat.baseOraclePrice * perpMarket.baseLotsToNumber(1)
 
+  // TODO - use avgPrice and discard oraclePrice once stats are better
+  // const avgPrice = (latestStat.baseOraclePrice + oldestStat.baseOraclePrice) / 2
+  const basePriceInBaseLots = oraclePrice * perpMarket.baseLotsToNumber(1)
   return (fundingInQuoteDecimals / basePriceInBaseLots) * 100
 }
 
@@ -203,7 +212,12 @@ const MarketHeader = () => {
                   Avg Funding Rate (1h)
                 </div>
                 <div className="font-semibold text-th-fgd-1 text-xs">
-                  {calculateFundingRate(perpStats, selectedMarket)?.toFixed(4)}%
+                  {calculateFundingRate(
+                    perpStats,
+                    selectedMarket,
+                    oraclePrice
+                  )?.toFixed(4)}
+                  %
                 </div>
               </div>
               <div className="pr-6">
