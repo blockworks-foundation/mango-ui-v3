@@ -38,6 +38,7 @@ const handleSettlePnl = async (
   try {
     const txid = await mangoClient.settlePnl(
       mangoGroup,
+      mangoCache,
       mangoAccount,
       perpMarket,
       mangoGroup.rootBankAccounts[QUOTE_INDEX],
@@ -226,6 +227,7 @@ export default function MarketPosition() {
                 +nativeI80F48ToUi(
                   perpAccount.getPnl(
                     mangoGroup.perpMarkets[marketIndex],
+                    mangoGroupCache.perpMarketCache[marketIndex],
                     mangoGroupCache.priceCache[marketIndex].price
                   ),
                   marketConfig.quoteDecimals
@@ -242,6 +244,7 @@ export default function MarketPosition() {
                   ? perpAccount
                       .getPnl(
                         mangoGroup.perpMarkets[marketIndex],
+                        mangoGroupCache.perpMarketCache[marketIndex],
                         mangoGroupCache.priceCache[marketIndex].price
                       )
                       .eq(ZERO_I80F48)

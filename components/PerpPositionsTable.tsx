@@ -105,6 +105,7 @@ const PositionsTable = () => {
     try {
       const txid = await mangoClient.settlePnl(
         mangoGroup,
+        mangoCache,
         mangoAccount,
         perpMarket,
         mangoGroup.rootBankAccounts[QUOTE_INDEX],
@@ -181,6 +182,8 @@ const PositionsTable = () => {
                         groupConfig,
                         perpMarketInfo.perpMarket
                       )
+                      const perpMarketCache =
+                        mangoCache.perpMarketCache[marketIndex]
                       const price = mangoCache.priceCache[marketIndex].price
                       const perpMarket = allMarkets[
                         marketConfig.publicKey.toString()
@@ -284,7 +287,11 @@ const PositionsTable = () => {
                           <Td className="px-2 py-2 whitespace-nowrap text-sm text-th-fgd-1">
                             {usdFormatter(
                               +nativeI80F48ToUi(
-                                perpAccount.getPnl(perpMarketInfo, price),
+                                perpAccount.getPnl(
+                                  perpMarketInfo,
+                                  perpMarketCache,
+                                  price
+                                ),
                                 marketConfig.quoteDecimals
                               )
                             )}
