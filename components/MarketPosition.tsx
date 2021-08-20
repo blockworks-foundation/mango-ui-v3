@@ -84,6 +84,7 @@ export default function MarketPosition() {
   const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const connected = useMangoStore((s) => s.wallet.connected)
+  const isLoading = useMangoStore((s) => s.selectedMangoAccount.initialLoad)
   const setMangoStore = useMangoStore((s) => s.set)
   const baseSymbol = marketConfig.baseSymbol
   const marketName = marketConfig.name
@@ -116,7 +117,9 @@ export default function MarketPosition() {
         <ElementTitle>Position</ElementTitle>
         <div className={`flex items-center justify-between pt-1 pb-2`}>
           <div className="font-normal text-th-fgd-3 leading-4">Side</div>
-          {perpAccount && !perpAccount.basePosition.eq(ZERO_BN) ? (
+          {isLoading ? (
+            <div className="animate-pulse bg-th-bkg-3 h-5 w-10 rounded-sm" />
+          ) : perpAccount && !perpAccount.basePosition.eq(ZERO_BN) ? (
             <SideBadge
               side={perpAccount.basePosition.gt(ZERO_BN) ? 'long' : 'short'}
             />
@@ -129,10 +132,12 @@ export default function MarketPosition() {
             Position size
           </div>
           <div className={`text-th-fgd-1`}>
-            {perpAccount &&
-            Math.abs(
-              selectedMarket.baseLotsToNumber(perpAccount.basePosition)
-            ) > 0 ? (
+            {isLoading ? (
+              <div className="animate-pulse bg-th-bkg-3 h-5 w-10 rounded-sm" />
+            ) : perpAccount &&
+              Math.abs(
+                selectedMarket.baseLotsToNumber(perpAccount.basePosition)
+              ) > 0 ? (
               <span
                 className="cursor-pointer underline hover:no-underline"
                 onClick={() =>
@@ -157,12 +162,16 @@ export default function MarketPosition() {
             Notional size
           </div>
           <div className={`text-th-fgd-1`}>
-            {perpAccount
-              ? formatUsdValue(
-                  selectedMarket.baseLotsToNumber(perpAccount.basePosition) *
-                    mangoGroup.getPrice(marketIndex, mangoGroupCache).toNumber()
-                )
-              : 0}
+            {isLoading ? (
+              <div className="animate-pulse bg-th-bkg-3 h-5 w-10 rounded-sm" />
+            ) : perpAccount ? (
+              formatUsdValue(
+                selectedMarket.baseLotsToNumber(perpAccount.basePosition) *
+                  mangoGroup.getPrice(marketIndex, mangoGroupCache).toNumber()
+              )
+            ) : (
+              0
+            )}
           </div>
         </div>
         <div className={`flex justify-between pt-2 pb-2`}>
@@ -170,14 +179,18 @@ export default function MarketPosition() {
             Avg entry price
           </div>
           <div className={`text-th-fgd-1`}>
-            {perpAccount
-              ? getAvgEntryPrice(
-                  mangoAccount,
-                  perpAccount,
-                  selectedMarket,
-                  perpTradeHistory
-                )
-              : 0}
+            {isLoading ? (
+              <div className="animate-pulse bg-th-bkg-3 h-5 w-10 rounded-sm" />
+            ) : perpAccount ? (
+              getAvgEntryPrice(
+                mangoAccount,
+                perpAccount,
+                selectedMarket,
+                perpTradeHistory
+              )
+            ) : (
+              0
+            )}
           </div>
         </div>
         <div className={`flex justify-between pt-2 pb-2`}>
@@ -185,14 +198,18 @@ export default function MarketPosition() {
             Break-even price
           </div>
           <div className={`text-th-fgd-1`}>
-            {perpAccount
-              ? getBreakEvenPrice(
-                  mangoAccount,
-                  perpAccount,
-                  selectedMarket,
-                  perpTradeHistory
-                )
-              : 0}
+            {isLoading ? (
+              <div className="animate-pulse bg-th-bkg-3 h-5 w-10 rounded-sm" />
+            ) : perpAccount ? (
+              getBreakEvenPrice(
+                mangoAccount,
+                perpAccount,
+                selectedMarket,
+                perpTradeHistory
+              )
+            ) : (
+              0
+            )}
           </div>
         </div>
         <div className={`flex justify-between pt-2 pb-2`}>
@@ -202,17 +219,21 @@ export default function MarketPosition() {
             </Tooltip.Content>
           </Tooltip>
           <div className={`flex items-center text-th-fgd-1`}>
-            {perpAccount
-              ? formatUsdValue(
-                  +nativeI80F48ToUi(
-                    perpAccount.getPnl(
-                      mangoGroup.perpMarkets[marketIndex],
-                      mangoGroupCache.priceCache[marketIndex].price
-                    ),
-                    marketConfig.quoteDecimals
-                  )
+            {isLoading ? (
+              <div className="animate-pulse bg-th-bkg-3 h-5 w-10 rounded-sm" />
+            ) : perpAccount ? (
+              formatUsdValue(
+                +nativeI80F48ToUi(
+                  perpAccount.getPnl(
+                    mangoGroup.perpMarkets[marketIndex],
+                    mangoGroupCache.priceCache[marketIndex].price
+                  ),
+                  marketConfig.quoteDecimals
                 )
-              : '0'}
+              )
+            ) : (
+              '0'
+            )}
             <LinkButton
               onClick={() => handleSettlePnl(selectedMarket, perpAccount)}
               className="ml-2 text-th-primary text-xs disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:underline"
@@ -263,39 +284,43 @@ export default function MarketPosition() {
                       <div className="pb-4">
                         <div className="pb-0.5 text-th-fgd-3">Deposits</div>
                         <div className={`text-th-fgd-1`}>
-                          {mangoAccount
-                            ? floorToDecimal(
-                                mangoAccount
-                                  .getUiDeposit(
-                                    mangoGroupCache.rootBankCache[tokenIndex],
-                                    mangoGroup,
-                                    tokenIndex
-                                  )
-                                  .toNumber(),
-                                mangoGroup.tokens[tokenIndex].decimals
-                              )
-                            : (0).toFixed(
-                                mangoGroup.tokens[tokenIndex].decimals
-                              )}
+                          {isLoading ? (
+                            <div className="animate-pulse bg-th-bkg-3 h-5 w-10 rounded-sm" />
+                          ) : mangoAccount ? (
+                            floorToDecimal(
+                              mangoAccount
+                                .getUiDeposit(
+                                  mangoGroupCache.rootBankCache[tokenIndex],
+                                  mangoGroup,
+                                  tokenIndex
+                                )
+                                .toNumber(),
+                              mangoGroup.tokens[tokenIndex].decimals
+                            )
+                          ) : (
+                            (0).toFixed(mangoGroup.tokens[tokenIndex].decimals)
+                          )}
                         </div>
                       </div>
                       <div className="pb-4">
                         <div className="pb-0.5 text-th-fgd-3">Borrows</div>
                         <div className={`text-th-fgd-1`}>
-                          {mangoAccount
-                            ? ceilToDecimal(
-                                mangoAccount
-                                  .getUiBorrow(
-                                    mangoGroupCache.rootBankCache[tokenIndex],
-                                    mangoGroup,
-                                    tokenIndex
-                                  )
-                                  .toNumber(),
-                                mangoGroup.tokens[tokenIndex].decimals
-                              )
-                            : (0).toFixed(
-                                mangoGroup.tokens[tokenIndex].decimals
-                              )}
+                          {isLoading ? (
+                            <div className="animate-pulse bg-th-bkg-3 h-5 w-10 rounded-sm" />
+                          ) : mangoAccount ? (
+                            ceilToDecimal(
+                              mangoAccount
+                                .getUiBorrow(
+                                  mangoGroupCache.rootBankCache[tokenIndex],
+                                  mangoGroup,
+                                  tokenIndex
+                                )
+                                .toNumber(),
+                              mangoGroup.tokens[tokenIndex].decimals
+                            )
+                          ) : (
+                            (0).toFixed(mangoGroup.tokens[tokenIndex].decimals)
+                          )}
                         </div>
                       </div>
                       <div>

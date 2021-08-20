@@ -19,6 +19,7 @@ import AccountOverview from '../components/account-page/AccountOverview'
 import AccountNameModal from '../components/AccountNameModal'
 import Button from '../components/Button'
 import EmptyState from '../components/EmptyState'
+import Loading from '../components/Loading'
 
 const TABS = [
   'Portfolio',
@@ -38,6 +39,7 @@ export default function Account() {
   const connected = useMangoStore((s) => s.wallet.connected)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const wallet = useMangoStore((s) => s.wallet.current)
+  const isLoading = useMangoStore((s) => s.selectedMangoAccount.initialLoad)
 
   const handleTabChange = (tabName) => {
     setActiveTab(tabName)
@@ -140,12 +142,18 @@ export default function Account() {
               <TabContent activeTab={activeTab} />
             </>
           ) : connected ? (
-            <EmptyState
-              buttonText="Create Account"
-              icon={<CurrencyDollarIcon />}
-              onClickButton={() => setShowAccountsModal(true)}
-              title="No Account Found"
-            />
+            isLoading ? (
+              <div className="flex justify-center py-10">
+                <Loading />
+              </div>
+            ) : (
+              <EmptyState
+                buttonText="Create Account"
+                icon={<CurrencyDollarIcon />}
+                onClickButton={() => setShowAccountsModal(true)}
+                title="No Account Found"
+              />
+            )
           ) : (
             <EmptyState
               buttonText="Connect"

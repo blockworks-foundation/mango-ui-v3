@@ -194,22 +194,22 @@ export const calculateMarketPrice = (
 export const tokenPrecision = {
   BTC: 4,
   ETH: 3,
+  MNGO: 2,
   SOL: 2,
   SRM: 2,
   USDC: 2,
   USDT: 2,
-  WUSDT: 2,
 }
 
 // Precision for depositing/withdrawing
 export const DECIMALS = {
   BTC: 5,
   ETH: 4,
+  MNGO: 2,
   SOL: 2,
   SRM: 2,
   USDC: 2,
   USDT: 2,
-  WUSDT: 2,
 }
 
 export const getSymbolForTokenMintAddress = (address: string): string => {

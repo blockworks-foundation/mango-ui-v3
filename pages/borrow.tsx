@@ -6,6 +6,7 @@ import TopBar from '../components/TopBar'
 import EmptyState from '../components/EmptyState'
 import AccountsModal from '../components/AccountsModal'
 import AccountBorrows from '../components/account-page/AccountBorrows'
+import Loading from '../components/Loading'
 
 export default function Borrow() {
   const [showAccountsModal, setShowAccountsModal] = useState(false)
@@ -14,6 +15,7 @@ export default function Borrow() {
     (s) => s.selectedMangoAccount.current
   )
   const wallet = useMangoStore((s) => s.wallet.current)
+  const isLoading = useMangoStore((s) => s.selectedMangoAccount.initialLoad)
 
   const handleCloseAccounts = useCallback(() => {
     setShowAccountsModal(false)
@@ -32,12 +34,18 @@ export default function Borrow() {
           {selectedMangoAccount ? (
             <AccountBorrows />
           ) : connected ? (
-            <EmptyState
-              buttonText="Create Account"
-              icon={<CurrencyDollarIcon />}
-              onClickButton={() => setShowAccountsModal(true)}
-              title="No Account Found"
-            />
+            isLoading ? (
+              <div className="flex justify-center py-10">
+                <Loading />
+              </div>
+            ) : (
+              <EmptyState
+                buttonText="Create Account"
+                icon={<CurrencyDollarIcon />}
+                onClickButton={() => setShowAccountsModal(true)}
+                title="No Account Found"
+              />
+            )
           ) : (
             <EmptyState
               buttonText="Connect"

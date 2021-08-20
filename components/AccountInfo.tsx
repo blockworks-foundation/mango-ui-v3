@@ -24,6 +24,7 @@ export default function MarginInfo() {
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
+  const isLoading = useMangoStore((s) => s.selectedMangoAccount.initialLoad)
   const actions = useMangoStore((s) => s.actions)
 
   const [showDepositModal, setShowDepositModal] = useState(false)
@@ -97,17 +98,28 @@ export default function MarginInfo() {
           <div>
             <div className="flex justify-between py-2">
               <div className="font-normal text-th-fgd-3 leading-4">Equity</div>
-              <div className="text-th-fgd-1">{formatUsdValue(+equity)}</div>
+              <div className="text-th-fgd-1">
+                {isLoading ? (
+                  <div className="animate-pulse bg-th-bkg-3 h-5 w-10 rounded-sm" />
+                ) : (
+                  formatUsdValue(+equity)
+                )}
+              </div>
             </div>
             <div className="flex justify-between py-2">
               <div className="font-normal text-th-fgd-3 leading-4">
                 Leverage
               </div>
               <div className="text-th-fgd-1">
-                {mangoAccount
-                  ? mangoAccount.getLeverage(mangoGroup, mangoCache).toFixed(2)
-                  : '0.00'}
-                x
+                {isLoading ? (
+                  <div className="animate-pulse bg-th-bkg-3 h-5 w-10 rounded-sm" />
+                ) : mangoAccount ? (
+                  `${mangoAccount
+                    .getLeverage(mangoGroup, mangoCache)
+                    .toFixed(2)}x`
+                ) : (
+                  '0.00x'
+                )}
               </div>
             </div>
             <div className={`flex justify-between py-2`}>
@@ -115,11 +127,15 @@ export default function MarginInfo() {
                 Total Assets Value
               </div>
               <div className={`text-th-fgd-1`}>
-                {mangoAccount
-                  ? formatUsdValue(
-                      +mangoAccount.getAssetsVal(mangoGroup, mangoCache)
-                    )
-                  : '--'}
+                {isLoading ? (
+                  <div className="animate-pulse bg-th-bkg-3 h-5 w-10 rounded-sm" />
+                ) : mangoAccount ? (
+                  formatUsdValue(
+                    +mangoAccount.getAssetsVal(mangoGroup, mangoCache)
+                  )
+                ) : (
+                  '--'
+                )}
               </div>
             </div>
             <div className={`flex justify-between py-2`}>
@@ -127,11 +143,15 @@ export default function MarginInfo() {
                 Total Liabilities Value
               </div>
               <div className={`text-th-fgd-1`}>
-                {mangoAccount
-                  ? formatUsdValue(
-                      +mangoAccount.getLiabsVal(mangoGroup, mangoCache)
-                    )
-                  : '--'}
+                {isLoading ? (
+                  <div className="animate-pulse bg-th-bkg-3 h-5 w-10 rounded-sm" />
+                ) : mangoAccount ? (
+                  formatUsdValue(
+                    +mangoAccount.getLiabsVal(mangoGroup, mangoCache)
+                  )
+                ) : (
+                  '--'
+                )}
               </div>
             </div>
             <div className={`flex justify-between py-2`}>
@@ -154,12 +174,16 @@ export default function MarginInfo() {
                 </div>
               </Tooltip>
               <div className={`flex items-center text-th-fgd-1`}>
-                {mangoGroup
-                  ? nativeToUi(
-                      mngoAccrued.toNumber(),
-                      mangoGroup.tokens[MNGO_INDEX].decimals
-                    )
-                  : 0}
+                {isLoading ? (
+                  <div className="animate-pulse bg-th-bkg-3 h-5 w-10 rounded-sm" />
+                ) : mangoGroup ? (
+                  nativeToUi(
+                    mngoAccrued.toNumber(),
+                    mangoGroup.tokens[MNGO_INDEX].decimals
+                  )
+                ) : (
+                  0
+                )}
                 <LinkButton
                   onClick={handleRedeemMngo}
                   className="ml-2 text-th-primary text-xs disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:underline"
