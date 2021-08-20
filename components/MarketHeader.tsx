@@ -33,11 +33,12 @@ function parseOpenInterest(perpStats, perpMarket) {
 
 const MarketHeader = () => {
   const oraclePrice = useOraclePrice()
+  const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
-  const mangoGroupName = useMangoStore((s) => s.selectedMangoGroup.name)
   const baseSymbol = marketConfig.baseSymbol
   const selectedMarketName = marketConfig.name
+  const isPerpMarket = marketConfig.kind === 'perp'
   const previousMarketName: string = usePrevious(selectedMarketName)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const connected = useMangoStore((s) => s.wallet.connected)
@@ -50,7 +51,7 @@ const MarketHeader = () => {
   const volume = ohlcv ? ohlcv.v[0] : '--'
 
   const fetchSpotStats = useCallback(async () => {
-    const urlParams = new URLSearchParams({ mangoGroup: mangoGroupName })
+    const urlParams = new URLSearchParams({ mangoGroup: groupConfig.name })
     urlParams.append('market', selectedMarketName)
     const spotStats = await fetch(
       'https://mango-stats-v3.herokuapp.com/spot/change/24?' + urlParams
@@ -58,7 +59,7 @@ const MarketHeader = () => {
 
     const parsedSpotStats = await spotStats.json()
     setSpotStats(parsedSpotStats)
-  }, [selectedMarketName, mangoGroupName])
+  }, [selectedMarketName, groupConfig])
 
   const fetchPerpStats = useCallback(async () => {
     const perpStats = await fetch(
@@ -69,16 +70,12 @@ const MarketHeader = () => {
   }, [selectedMarketName])
 
   useEffect(() => {
-    if (!selectedMarketName.includes('PERP')) {
+    if (isPerpMarket) {
+      fetchPerpStats()
+    } else {
       fetchSpotStats()
     }
-  }, [fetchSpotStats, selectedMarketName])
-
-  useEffect(() => {
-    if (selectedMarketName.includes('PERP')) {
-      fetchPerpStats()
-    }
-  }, [fetchPerpStats, selectedMarketName])
+  }, [marketConfig])
 
   const fetchOhlcv = useCallback(async () => {
     if (!selectedMarketName) return
@@ -143,10 +140,10 @@ const MarketHeader = () => {
 
             <div className="font-semibold pr-0.5 text-xl">{baseSymbol}</div>
             <span className="text-th-fgd-4 text-xl">
-              {selectedMarketName.includes('PERP') ? '–' : '/'}
+              {isPerpMarket ? '-' : '/'}
             </span>
             <div className="font-semibold pl-0.5 text-xl">
-              {selectedMarketName.split(/\/|-/)[1]}
+              {isPerpMarket ? 'PERP' : groupConfig.quoteSymbol}
             </div>
           </div>
         </div>
@@ -199,7 +196,7 @@ const MarketHeader = () => {
             low={spotStats?.low}
             latest={spotStats?.latest}
           />
-          {selectedMarketName.includes('PERP') ? (
+          {isPerpMarket ? (
             <>
               <div className="pr-6">
                 <div className="text-th-fgd-3 tiny-text pb-0.5">
