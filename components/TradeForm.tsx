@@ -17,7 +17,7 @@ import Switch from './Switch'
 import { Market } from '@project-serum/serum'
 import Big from 'big.js'
 import MarketFee from './MarketFee'
-// import LeverageSlider from './LeverageSlider'
+import LeverageSlider from './LeverageSlider'
 
 const StyledRightInput = styled(Input)`
   border-left: 1px solid transparent;
@@ -382,12 +382,13 @@ export default function TradeForm() {
               suffix={groupConfig.quoteSymbol}
             />
           </Input.Group>
-          {/* <LeverageSlider
+          <LeverageSlider
             onChange={(e) => onSetBaseSize(e)}
             value={baseSize ? baseSize : 0}
             step={parseFloat(minOrderSize)}
             disabled={false}
             side={side}
+            decimalCount={sizeDecimalCount}
             price={calculateTradePrice(
               tradeType,
               orderbook,
@@ -395,7 +396,7 @@ export default function TradeForm() {
               side,
               price
             )}
-          /> */}
+          />
           {tradeType !== 'Market' ? (
             <div className="flex mt-2">
               <Switch checked={postOnly} onChange={postOnChange}>

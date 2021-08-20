@@ -1,6 +1,7 @@
 import {
   I80F48,
   nativeToUi,
+  QUOTE_INDEX,
   ZERO_BN,
   ZERO_I80F48,
 } from '@blockworks-foundation/mango-client'
@@ -40,6 +41,11 @@ export default function MarginInfo() {
 
   const equity = mangoAccount
     ? mangoAccount.computeValue(mangoGroup, mangoCache)
+    : ZERO_I80F48
+
+  // TODO: correct calc
+  const marginAvailable = mangoAccount
+    ? mangoAccount.getMaxWithBorrowForToken(mangoGroup, mangoCache, QUOTE_INDEX)
     : ZERO_I80F48
 
   const mngoAccrued = mangoAccount
@@ -152,6 +158,14 @@ export default function MarginInfo() {
                 ) : (
                   '--'
                 )}
+              </div>
+            </div>
+            <div className={`flex justify-between py-2`}>
+              <div className="font-normal text-th-fgd-3 leading-4">
+                Margin Available
+              </div>
+              <div className={`text-th-fgd-1`}>
+                {mangoAccount ? formatUsdValue(marginAvailable) : '--'}
               </div>
             </div>
             <div className={`flex justify-between py-2`}>
