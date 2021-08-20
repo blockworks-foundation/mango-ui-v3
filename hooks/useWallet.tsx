@@ -9,7 +9,6 @@ import {
 } from '../utils/wallet-adapters'
 import { WalletAdapter } from '../@types/types'
 import useInterval from './useInterval'
-import { sleep } from '@blockworks-foundation/mango-client'
 
 const SECONDS = 1000
 const ASSET_URL =
@@ -93,12 +92,12 @@ export default function useWallet() {
   useEffect(() => {
     if (!wallet) return
     wallet.on('connect', async () => {
-      sleep(250)
-      await actions.fetchMangoAccounts()
       setMangoStore((state) => {
         state.wallet.connected = true
       })
       // set connected before fetching data
+
+      await actions.fetchMangoAccounts()
       actions.fetchTradeHistory()
       actions.fetchWalletTokens()
       notify({
