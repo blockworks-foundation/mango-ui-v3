@@ -31,8 +31,8 @@ import { LAST_ACCOUNT_KEY } from '../components/AccountsModal'
 export const ENDPOINTS: EndpointInfo[] = [
   {
     name: 'mainnet',
-    url: process.env.NEXT_PUBLIC_ENDPOINT,
-    websocket: process.env.NEXT_PUBLIC_ENDPOINT,
+    url: process.env.NEXT_PUBLIC_ENDPOINT || 'https://mango.rpcpool.com',
+    websocket: process.env.NEXT_PUBLIC_ENDPOINT || 'https://mango.rpcpool.com',
     custom: false,
   },
   {
@@ -47,7 +47,7 @@ export const ENDPOINTS: EndpointInfo[] = [
 
 type ClusterType = 'mainnet' | 'devnet'
 
-const CLUSTER = (process.env.NEXT_PUBLIC_CLUSTER as ClusterType) || 'devnet'
+const CLUSTER = (process.env.NEXT_PUBLIC_CLUSTER as ClusterType) || 'mainnet'
 const ENDPOINT = ENDPOINTS.find((e) => e.name === CLUSTER)
 export const DEFAULT_CONNECTION = new Connection(
   ENDPOINT.url,
@@ -58,7 +58,7 @@ export const WEBSOCKET_CONNECTION = new Connection(
   'processed' as Commitment
 )
 
-const DEFAULT_MANGO_GROUP_NAME = process.env.NEXT_PUBLIC_GROUP || 'devnet.1'
+const DEFAULT_MANGO_GROUP_NAME = process.env.NEXT_PUBLIC_GROUP || 'mainnet.0'
 const DEFAULT_MANGO_GROUP_CONFIG = Config.ids().getGroup(
   CLUSTER,
   DEFAULT_MANGO_GROUP_NAME
