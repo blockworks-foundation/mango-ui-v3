@@ -102,12 +102,13 @@ const TVChartContainer = () => {
       overrides: {
         'paneProperties.background':
           theme === 'Dark' ? '#1B1B1F' : theme === 'Light' ? '#fff' : '#1D1832',
+        'mainSeriesProperties.candleStyle.barColorsOnPrevClose': true,
+        'mainSeriesProperties.candleStyle.drawWick': true,
+        'mainSeriesProperties.candleStyle.drawBorder': true,
         'mainSeriesProperties.candleStyle.upColor':
           theme === 'Mango' ? '#AFD803' : '#5EBF4D',
         'mainSeriesProperties.candleStyle.downColor':
           theme === 'Mango' ? '#E54033' : '#CC2929',
-        'mainSeriesProperties.candleStyle.drawWick': true,
-        'mainSeriesProperties.candleStyle.drawBorder': true,
         'mainSeriesProperties.candleStyle.borderColor':
           theme === 'Mango' ? '#AFD803' : '#5EBF4D',
         'mainSeriesProperties.candleStyle.borderUpColor':

@@ -11,7 +11,6 @@ import AccountsModal from './AccountsModal'
 const TopBar = () => {
   const connected = useMangoStore((s) => s.wallet.connected)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
-  const isLoading = useMangoStore((s) => s.selectedMangoAccount.initialLoad)
   const wallet = useMangoStore((s) => s.wallet.current)
   const [showMenu, setShowMenu] = useState(false)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
@@ -75,11 +74,7 @@ const TopBar = () => {
               ) : null}
               <div className="flex">
                 <div className="hidden md:block pl-3">
-                  {isLoading ? (
-                    <div className="animate-pulse bg-th-bkg-3 h-10 w-10 rounded-full" />
-                  ) : (
-                    <ConnectWalletButton />
-                  )}
+                  <ConnectWalletButton />
                 </div>
               </div>
               <div className={`-mr-2 ml-2 flex items-center md:hidden`}>
