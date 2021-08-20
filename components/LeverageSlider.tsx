@@ -81,10 +81,14 @@ export default function LeverageSlider({
     marketConfig.baseSymbol
   )
 
-  const ws = getWeights(mangoGroup, marketConfig.marketIndex, 'Init')
-  const w =
-    marketConfig.kind === 'perp' ? ws.perpAssetWeight : ws.spotAssetWeight
-  const initLeverage = Math.round((100 * -1) / (w.toNumber() - 1)) / 100
+  const initLeverage = useMemo(() => {
+    if (!mangoGroup || !marketConfig) return 1
+
+    const ws = getWeights(mangoGroup, marketConfig.marketIndex, 'Init')
+    const w =
+      marketConfig.kind === 'perp' ? ws.perpAssetWeight : ws.spotAssetWeight
+    return Math.round((100 * -1) / (w.toNumber() - 1)) / 100
+  }, [mangoGroup, marketConfig])
 
   const { max, deposits, borrows } = useMemo(() => {
     if (!mangoAccount) return 0
@@ -131,7 +135,7 @@ export default function LeverageSlider({
     }
   }, [enableTransition])
 
-  if (!mangoAccount) return null
+  // if (!mangoAccount) return null
 
   const roundedDeposits = parseFloat(deposits?.toFixed(decimalCount))
   const roundedBorrows = parseFloat(borrows?.toFixed(decimalCount))
