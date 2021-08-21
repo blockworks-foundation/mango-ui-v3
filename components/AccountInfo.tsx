@@ -102,7 +102,7 @@ export default function MarginInfo() {
         <ElementTitle>Account</ElementTitle>
         <div>
           <div>
-            <div className="flex justify-between py-2">
+            <div className="flex justify-between pb-3">
               <div className="font-normal text-th-fgd-3 leading-4">Equity</div>
               <div className="text-th-fgd-1">
                 {isLoading ? (
@@ -112,7 +112,7 @@ export default function MarginInfo() {
                 )}
               </div>
             </div>
-            <div className="flex justify-between py-2">
+            <div className="flex justify-between pb-3">
               <div className="font-normal text-th-fgd-3 leading-4">
                 Leverage
               </div>
@@ -128,7 +128,7 @@ export default function MarginInfo() {
                 )}
               </div>
             </div>
-            <div className={`flex justify-between py-2`}>
+            <div className={`flex justify-between pb-3`}>
               <div className="font-normal text-th-fgd-3 leading-4">
                 Total Assets Value
               </div>
@@ -144,7 +144,7 @@ export default function MarginInfo() {
                 )}
               </div>
             </div>
-            <div className={`flex justify-between py-2`}>
+            <div className={`flex justify-between pb-3`}>
               <div className="font-normal text-th-fgd-3 leading-4">
                 Total Liabilities Value
               </div>
@@ -160,7 +160,7 @@ export default function MarginInfo() {
                 )}
               </div>
             </div>
-            <div className={`flex justify-between py-2`}>
+            <div className={`flex justify-between pb-3`}>
               <div className="font-normal text-th-fgd-3 leading-4">
                 Margin Available
               </div>
@@ -168,7 +168,7 @@ export default function MarginInfo() {
                 {mangoAccount ? formatUsdValue(marginAvailable) : '--'}
               </div>
             </div>
-            <div className={`flex justify-between py-2`}>
+            <div className={`flex justify-between pb-3`}>
               <Tooltip
                 content={
                   <div>
@@ -256,7 +256,7 @@ export default function MarginInfo() {
               %
             </div>
           </div>
-          <div className={`grid grid-cols-2 grid-rows-1 gap-4 pt-2`}>
+          <div className={`grid grid-cols-2 grid-rows-1 gap-4 pt-4`}>
             <Button
               onClick={() => setShowDepositModal(true)}
               className="w-full"

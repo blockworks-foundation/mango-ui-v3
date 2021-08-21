@@ -7,6 +7,7 @@ import {
   floorToDecimal,
   i80f48ToPercent,
   formatUsdValue,
+  tokenPrecision,
 } from '../utils/index'
 import { LinkButton } from './Button'
 import Tooltip from './Tooltip'
@@ -284,8 +285,10 @@ export default function MarketPosition() {
                           <span className="text-th-fgd-2">{symbol}</span>
                         </div>
                       </div>
-                      <div className="pb-4">
-                        <div className="pb-0.5 text-th-fgd-3">Deposits</div>
+                      <div className="pb-3">
+                        <div className="pb-0.5 text-th-fgd-3 text-xs">
+                          Deposits
+                        </div>
                         <div className={`text-th-fgd-1`}>
                           {isLoading ? (
                             <div className="animate-pulse bg-th-bkg-3 h-5 w-10 rounded-sm" />
@@ -298,15 +301,31 @@ export default function MarketPosition() {
                                   tokenIndex
                                 )
                                 .toNumber(),
-                              mangoGroup.tokens[tokenIndex].decimals
+                              tokenPrecision[symbol]
                             )
                           ) : (
-                            (0).toFixed(mangoGroup.tokens[tokenIndex].decimals)
+                            0
                           )}
                         </div>
                       </div>
-                      <div className="pb-4">
-                        <div className="pb-0.5 text-th-fgd-3">Borrows</div>
+                      <div className="pb-3">
+                        <div className="pb-0.5 text-th-fgd-3 text-xs">
+                          Available
+                        </div>
+                        <div className={`text-th-fgd-1`}>
+                          {isLoading ? (
+                            <div className="animate-pulse bg-th-bkg-3 h-5 w-10 rounded-sm" />
+                          ) : mangoAccount ? (
+                            '--'
+                          ) : (
+                            0
+                          )}
+                        </div>
+                      </div>
+                      <div className="pb-3">
+                        <div className="pb-0.5 text-th-fgd-3 text-xs">
+                          Borrows
+                        </div>
                         <div className={`text-th-fgd-1`}>
                           {isLoading ? (
                             <div className="animate-pulse bg-th-bkg-3 h-5 w-10 rounded-sm" />
@@ -319,17 +338,17 @@ export default function MarketPosition() {
                                   tokenIndex
                                 )
                                 .toNumber(),
-                              mangoGroup.tokens[tokenIndex].decimals
+                              tokenPrecision[symbol]
                             )
                           ) : (
-                            (0).toFixed(mangoGroup.tokens[tokenIndex].decimals)
+                            0
                           )}
                         </div>
                       </div>
                       <div>
                         <Tooltip content="Deposit APY and Borrow APR">
                           <div
-                            className={`cursor-help font-normal pb-0.5 text-th-fgd-3 default-transition hover:border-th-bkg-2 hover:text-th-fgd-3`}
+                            className={`cursor-help font-normal pb-0.5 text-th-fgd-3 default-transition text-xs hover:border-th-bkg-2 hover:text-th-fgd-3`}
                           >
                             Interest Rates
                           </div>
