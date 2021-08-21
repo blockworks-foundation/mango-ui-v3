@@ -398,7 +398,7 @@ export default function TradeForm() {
             )}
           />
           {tradeType !== 'Market' ? (
-            <div className="flex mt-2">
+            <div className="flex mt-2 text-xs">
               <Switch checked={postOnly} onChange={postOnChange}>
                 POST
               </Switch>

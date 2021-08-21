@@ -10,7 +10,6 @@ import {
 } from '@blockworks-foundation/mango-client'
 import tw from 'twin.macro'
 import styled from '@emotion/styled'
-import 'rc-slider/assets/index.css'
 
 type StyledSliderProps = {
   enableTransition?: boolean
@@ -19,11 +18,10 @@ type StyledSliderProps = {
 
 const StyledSlider = styled(Slider)<StyledSliderProps>`
   .rc-slider-rail {
-    ${tw`bg-th-primary  h-2 rounded-full`}
-    opacity: 0.6;
+    ${tw`bg-th-bkg-3 h-2.5 rounded-full`}
   }
   .rc-slider-track {
-    ${tw`bg-th-primary h-2 rounded-full ring-1 ring-th-primary ring-inset`}
+    ${tw`bg-th-primary h-2.5 rounded-full ring-1 ring-th-primary ring-inset`}
     ${({ enableTransition }) =>
       enableTransition && tw`transition-all duration-500`}
   }
@@ -31,14 +29,51 @@ const StyledSlider = styled(Slider)<StyledSliderProps>`
     ${tw`hidden`}
   }
   .rc-slider-handle {
-    ${tw`border-4 border-th-primary h-4 w-4 ring-white light:ring-gray-400 hover:ring-4 hover:ring-opacity-50 active:ring-8 active:ring-opacity-50`}
+    ${tw`border-4 border-th-primary h-4 w-4`}
     background: #fff;
-    margin-top: -4px;
+    box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.1);
+    margin-top: -3px;
     ${({ enableTransition }) =>
       enableTransition && tw`transition-all duration-500`}
     ${({ disabled }) => disabled && tw`bg-th-fgd-3 border-th-fgd-4`}
   }
   ${({ disabled }) => disabled && 'background-color: transparent'}
+`
+
+const StyledSliderButtonWrapper = styled.div`
+  ${tw`absolute left-0 top-5 w-full`}
+`
+
+type StyledSliderButtonProps = {
+  disabled: boolean
+}
+
+const StyledSliderButton = styled.button<StyledSliderButtonProps>`
+  ${tw`bg-none text-th-fgd-3 transition-all duration-300 hover:text-th-primary focus:outline-none`}
+  font-size: 0.65rem;
+  position: absolute;
+  display: inline-block;
+  vertical-align: middle;
+  text-align: center;
+  left: 0%;
+  :nth-of-type(2) {
+    left: 23%;
+    transform: translateX(-23%);
+  }
+  :nth-of-type(3) {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  :nth-of-type(4) {
+    left: 76%;
+    transform: translateX(-76%);
+  }
+  :nth-of-type(5) {
+    left: 100%;
+    transform: translateX(-100%);
+  }
+  ${({ disabled }) =>
+    disabled && tw`cursor-not-allowed text-th-fgd-4 hover:text-th-fgd-4`}
 `
 
 type SliderProps = {
@@ -150,28 +185,74 @@ export default function LeverageSlider({
       ? '100% Close Position + Leverage'
       : `${percentToClose(value, roundedDeposits).toFixed(2)}% Close Position`
 
-  const setMaxLeverage = function () {
-    onChange(Math.round(max / step) * step)
+  // const setMaxLeverage = function () {
+  //   onChange(Math.round(max / step) * step)
+  // }
+
+  const handleSliderButtonClick = (percentage) => {
+    const value = percentage * max
+    onChange(Math.round(value / step) * step)
+    setEnableTransition(true)
   }
 
   return (
     <>
-      <div className="flex mt-4 items-center pl-1 pr-1">
-        <StyledSlider
-          min={0}
-          max={max}
-          value={value || 0}
-          onChange={onChange}
-          onAfterChange={onAfterChange}
-          step={step}
-          disabled={disabled}
-        />
-        <button
-          className="bg-th-bkg-4 hover:brightness-[1.15] font-normal rounded text-th-fgd-1 text-xs p-2 ml-2"
-          onClick={setMaxLeverage}
+      <div className="flex h-8 pb-12 mt-4">
+        <div className="relative w-full">
+          <StyledSlider
+            min={0}
+            max={max}
+            value={value || 0}
+            onChange={onChange}
+            onAfterChange={onAfterChange}
+            step={step}
+            enableTransition={enableTransition}
+            disabled={disabled}
+          />
+          <StyledSliderButtonWrapper>
+            <StyledSliderButton
+              disabled={disabled}
+              onClick={() => handleSliderButtonClick(0)}
+            >
+              0%
+            </StyledSliderButton>
+            <StyledSliderButton
+              disabled={disabled}
+              onClick={() => handleSliderButtonClick(0.25)}
+            >
+              25%
+            </StyledSliderButton>
+            <StyledSliderButton
+              disabled={disabled}
+              onClick={() => handleSliderButtonClick(0.5)}
+            >
+              50%
+            </StyledSliderButton>
+            <StyledSliderButton
+              disabled={disabled}
+              onClick={() => handleSliderButtonClick(0.75)}
+            >
+              75%
+            </StyledSliderButton>
+            <StyledSliderButton
+              disabled={disabled}
+              onClick={() => handleSliderButtonClick(1)}
+            >
+              100%
+            </StyledSliderButton>
+          </StyledSliderButtonWrapper>
+        </div>
+        <div
+          className={`border flex font-semibold h-8 items-center justify-center ml-3 mt-1 px-2 rounded text-th-fgd-1 text-xs ${
+            value / max < 0.5
+              ? 'border-th-green text-th-green'
+              : value / max < 0.75
+              ? 'border-th-orange text-th-orange'
+              : 'border-th-red text-th-red'
+          }`}
         >
-          {initLeverage}x
-        </button>
+          {((value / max) * initLeverage).toFixed(2)}x
+        </div>
       </div>
       {side === 'sell' ? (
         <div className="text-th-fgd-4 text-xs tracking-normal mt-2.5">
