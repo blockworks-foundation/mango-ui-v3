@@ -17,6 +17,7 @@ import Tooltip from './Tooltip'
 import DepositModal from './DepositModal'
 import WithdrawModal from './WithdrawModal'
 import Button from './Button'
+import { DataLoader } from './MarketPosition'
 
 const I80F48_100 = I80F48.fromString('100')
 
@@ -105,11 +106,7 @@ export default function MarginInfo() {
             <div className="flex justify-between pb-3">
               <div className="font-normal text-th-fgd-3 leading-4">Equity</div>
               <div className="text-th-fgd-1">
-                {isLoading ? (
-                  <div className="animate-pulse bg-th-bkg-3 h-5 w-10 rounded-sm" />
-                ) : (
-                  formatUsdValue(+equity)
-                )}
+                {isLoading ? <DataLoader /> : formatUsdValue(+equity)}
               </div>
             </div>
             <div className="flex justify-between pb-3">
@@ -118,7 +115,7 @@ export default function MarginInfo() {
               </div>
               <div className="text-th-fgd-1">
                 {isLoading ? (
-                  <div className="animate-pulse bg-th-bkg-3 h-5 w-10 rounded-sm" />
+                  <DataLoader />
                 ) : mangoAccount ? (
                   `${mangoAccount
                     .getLeverage(mangoGroup, mangoCache)
@@ -134,7 +131,7 @@ export default function MarginInfo() {
               </div>
               <div className={`text-th-fgd-1`}>
                 {isLoading ? (
-                  <div className="animate-pulse bg-th-bkg-3 h-5 w-10 rounded-sm" />
+                  <DataLoader />
                 ) : mangoAccount ? (
                   formatUsdValue(
                     +mangoAccount.getAssetsVal(mangoGroup, mangoCache)
@@ -150,7 +147,7 @@ export default function MarginInfo() {
               </div>
               <div className={`text-th-fgd-1`}>
                 {isLoading ? (
-                  <div className="animate-pulse bg-th-bkg-3 h-5 w-10 rounded-sm" />
+                  <DataLoader />
                 ) : mangoAccount ? (
                   formatUsdValue(
                     +mangoAccount.getLiabsVal(mangoGroup, mangoCache)
@@ -165,7 +162,13 @@ export default function MarginInfo() {
                 Margin Available
               </div>
               <div className={`text-th-fgd-1`}>
-                {mangoAccount ? formatUsdValue(marginAvailable) : '--'}
+                {isLoading ? (
+                  <DataLoader />
+                ) : mangoAccount ? (
+                  formatUsdValue(marginAvailable)
+                ) : (
+                  '--'
+                )}
               </div>
             </div>
             <div className={`flex justify-between pb-3`}>
@@ -189,7 +192,7 @@ export default function MarginInfo() {
               </Tooltip>
               <div className={`flex items-center text-th-fgd-1`}>
                 {isLoading ? (
-                  <div className="animate-pulse bg-th-bkg-3 h-5 w-10 rounded-sm" />
+                  <DataLoader />
                 ) : mangoGroup ? (
                   nativeToUi(
                     mngoAccrued.toNumber(),

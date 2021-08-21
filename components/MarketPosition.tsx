@@ -120,7 +120,7 @@ export default function MarketPosition() {
         <div className={`flex items-center justify-between pb-3`}>
           <div className="font-normal text-th-fgd-3 leading-4">Side</div>
           {isLoading ? (
-            <div className="animate-pulse bg-th-bkg-3 h-5 w-10 rounded-sm" />
+            <DataLoader />
           ) : perpAccount && !perpAccount.basePosition.eq(ZERO_BN) ? (
             <SideBadge
               side={perpAccount.basePosition.gt(ZERO_BN) ? 'long' : 'short'}
@@ -135,7 +135,7 @@ export default function MarketPosition() {
           </div>
           <div className={`text-th-fgd-1`}>
             {isLoading ? (
-              <div className="animate-pulse bg-th-bkg-3 h-5 w-10 rounded-sm" />
+              <DataLoader />
             ) : perpAccount &&
               Math.abs(
                 selectedMarket.baseLotsToNumber(perpAccount.basePosition)
@@ -165,7 +165,7 @@ export default function MarketPosition() {
           </div>
           <div className={`text-th-fgd-1`}>
             {isLoading ? (
-              <div className="animate-pulse bg-th-bkg-3 h-5 w-10 rounded-sm" />
+              <DataLoader />
             ) : perpAccount ? (
               formatUsdValue(
                 selectedMarket.baseLotsToNumber(perpAccount.basePosition) *
@@ -182,7 +182,7 @@ export default function MarketPosition() {
           </div>
           <div className={`text-th-fgd-1`}>
             {isLoading ? (
-              <div className="animate-pulse bg-th-bkg-3 h-5 w-10 rounded-sm" />
+              <DataLoader />
             ) : perpAccount ? (
               getAvgEntryPrice(
                 mangoAccount,
@@ -201,7 +201,7 @@ export default function MarketPosition() {
           </div>
           <div className={`text-th-fgd-1`}>
             {isLoading ? (
-              <div className="animate-pulse bg-th-bkg-3 h-5 w-10 rounded-sm" />
+              <DataLoader />
             ) : perpAccount ? (
               getBreakEvenPrice(
                 mangoAccount,
@@ -222,7 +222,7 @@ export default function MarketPosition() {
           </Tooltip>
           <div className={`flex items-center text-th-fgd-1`}>
             {isLoading ? (
-              <div className="animate-pulse bg-th-bkg-3 h-5 w-10 rounded-sm" />
+              <DataLoader />
             ) : perpAccount ? (
               formatUsdValue(
                 +nativeI80F48ToUi(
@@ -291,7 +291,7 @@ export default function MarketPosition() {
                         </div>
                         <div className={`text-th-fgd-1`}>
                           {isLoading ? (
-                            <div className="animate-pulse bg-th-bkg-3 h-5 w-10 rounded-sm" />
+                            <DataLoader />
                           ) : mangoAccount ? (
                             floorToDecimal(
                               mangoAccount
@@ -313,13 +313,7 @@ export default function MarketPosition() {
                           Available
                         </div>
                         <div className={`text-th-fgd-1`}>
-                          {isLoading ? (
-                            <div className="animate-pulse bg-th-bkg-3 h-5 w-10 rounded-sm" />
-                          ) : mangoAccount ? (
-                            '--'
-                          ) : (
-                            0
-                          )}
+                          {isLoading ? <DataLoader /> : mangoAccount ? '--' : 0}
                         </div>
                       </div>
                       <div className="pb-3">
@@ -328,7 +322,7 @@ export default function MarketPosition() {
                         </div>
                         <div className={`text-th-fgd-1`}>
                           {isLoading ? (
-                            <div className="animate-pulse bg-th-bkg-3 h-5 w-10 rounded-sm" />
+                            <DataLoader />
                           ) : mangoAccount ? (
                             ceilToDecimal(
                               mangoAccount
@@ -379,3 +373,7 @@ export default function MarketPosition() {
     </>
   )
 }
+
+export const DataLoader = () => (
+  <div className="animate-pulse bg-th-bkg-3 h-5 w-10 rounded-sm" />
+)

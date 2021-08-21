@@ -1,4 +1,5 @@
 import { formatUsdValue } from '../utils'
+import { MarketDataLoader } from './MarketHeader'
 
 const DayHighLow = ({ high, low, latest }) => {
   let rangePercent = 0
@@ -18,7 +19,11 @@ const DayHighLow = ({ high, low, latest }) => {
       </div>
       <div className="flex items-center">
         <div className="pr-2 text-th-fgd-1 text-xs">
-          {low?.baseOraclePrice ? formatUsdValue(low.baseOraclePrice) : null}
+          {low?.baseOraclePrice ? (
+            formatUsdValue(low.baseOraclePrice)
+          ) : (
+            <MarketDataLoader />
+          )}
         </div>
         <div className="h-1.5 flex rounded bg-th-bkg-3 w-24">
           <div
@@ -29,7 +34,11 @@ const DayHighLow = ({ high, low, latest }) => {
           ></div>
         </div>
         <div className="pl-2 text-th-fgd-1 text-xs">
-          {high?.baseOraclePrice ? formatUsdValue(high.baseOraclePrice) : null}
+          {high?.baseOraclePrice ? (
+            formatUsdValue(high.baseOraclePrice)
+          ) : (
+            <MarketDataLoader />
+          )}
         </div>
       </div>
     </div>

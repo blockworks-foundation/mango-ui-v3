@@ -216,8 +216,15 @@ const MarketHeader = () => {
                     perpStats,
                     selectedMarket,
                     oraclePrice
-                  )?.toFixed(4)}
-                  %
+                  ) ? (
+                    `${calculateFundingRate(
+                      perpStats,
+                      selectedMarket,
+                      oraclePrice
+                    )?.toFixed(4)}%`
+                  ) : (
+                    <MarketDataLoader />
+                  )}
                 </div>
               </div>
               <div className="pr-6">
@@ -225,7 +232,14 @@ const MarketHeader = () => {
                   Open Interest
                 </div>
                 <div className="font-semibold text-th-fgd-1 text-xs">
-                  {parseOpenInterest(perpStats, selectedMarket)} {baseSymbol}
+                  {parseOpenInterest(perpStats, selectedMarket) ? (
+                    `${parseOpenInterest(
+                      perpStats,
+                      selectedMarket
+                    )} ${baseSymbol}`
+                  ) : (
+                    <MarketDataLoader />
+                  )}
                 </div>
               </div>
             </>
@@ -242,6 +256,6 @@ const MarketHeader = () => {
 
 export default MarketHeader
 
-const MarketDataLoader = () => (
+export const MarketDataLoader = () => (
   <div className="animate-pulse bg-th-bkg-3 h-3.5 mt-0.5 w-10 rounded-sm" />
 )
