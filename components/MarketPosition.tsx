@@ -117,7 +117,7 @@ export default function MarketPosition() {
     <FloatingElement showConnect>
       <div className={!connected ? 'filter blur-sm' : null}>
         <ElementTitle>Position</ElementTitle>
-        <div className={`flex items-center justify-between pt-1 pb-2`}>
+        <div className={`flex items-center justify-between pb-3`}>
           <div className="font-normal text-th-fgd-3 leading-4">Side</div>
           {isLoading ? (
             <div className="animate-pulse bg-th-bkg-3 h-5 w-10 rounded-sm" />
@@ -129,7 +129,7 @@ export default function MarketPosition() {
             '--'
           )}
         </div>
-        <div className={`flex justify-between pt-2 pb-2`}>
+        <div className={`flex justify-between pb-3`}>
           <div className="font-normal text-th-fgd-3 leading-4">
             Position size
           </div>
@@ -159,7 +159,7 @@ export default function MarketPosition() {
             )}
           </div>
         </div>
-        <div className={`flex justify-between pt-2 pb-2`}>
+        <div className={`flex justify-between pb-3`}>
           <div className="font-normal text-th-fgd-3 leading-4">
             Notional size
           </div>
@@ -176,7 +176,7 @@ export default function MarketPosition() {
             )}
           </div>
         </div>
-        <div className={`flex justify-between pt-2 pb-2`}>
+        <div className={`flex justify-between pb-3`}>
           <div className="font-normal text-th-fgd-3 leading-4">
             Avg entry price
           </div>
@@ -195,7 +195,7 @@ export default function MarketPosition() {
             )}
           </div>
         </div>
-        <div className={`flex justify-between pt-2 pb-2`}>
+        <div className={`flex justify-between pb-3`}>
           <div className="font-normal text-th-fgd-3 leading-4">
             Break-even price
           </div>
@@ -214,7 +214,7 @@ export default function MarketPosition() {
             )}
           </div>
         </div>
-        <div className={`flex justify-between pt-2 pb-2`}>
+        <div className={`flex justify-between pb-3`}>
           <Tooltip content={<SettlePnlTooltip />}>
             <Tooltip.Content className="font-normal text-th-fgd-3 leading-4">
               Unsettled PnL
