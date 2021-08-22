@@ -30,7 +30,6 @@ import useLocalStorageState from '../../hooks/useLocalStorageState'
 import { sleep, tokenPrecision, formatUsdValue } from '../../utils'
 import { notify } from '../../utils/notifications'
 import { Market } from '@project-serum/serum'
-import SideBadge from '../SideBadge'
 import Button, { LinkButton } from '../Button'
 import Switch from '../Switch'
 import PositionsTable from '../PerpPositionsTable'
@@ -69,37 +68,38 @@ export default function AccountOverview() {
     balances.forEach((b) => {
       const token = getTokenBySymbol(groupConfig, b.symbol)
       const tokenIndex = mangoGroup.getTokenIndex(token.mintKey)
-      if (+b.deposits > 0 || b.orders > 0) {
+      if (+b.deposits > 0) {
         spotPortfolio.push({
           market: b.symbol,
-          balance: +b.deposits + b.orders + b.unsettled,
+          balance: +b.deposits,
           borrowRate: mangoGroup
             .getBorrowRate(tokenIndex)
             .mul(I80F48.fromNumber(100)),
           depositRate: mangoGroup
             .getDepositRate(tokenIndex)
             .mul(I80F48.fromNumber(100)),
+          orders: b.orders ? b.orders : 0,
           price: mangoGroup.getPrice(tokenIndex, mangoCache).toNumber(),
           symbol: b.symbol,
           value:
-            (+b.deposits + b.orders + b.unsettled) *
+            +b.deposits *
             mangoGroup.getPrice(tokenIndex, mangoCache).toNumber(),
-          type: 'Deposit',
         })
       } else if (+b.borrows > 0) {
         spotPortfolio.push({
           market: b.symbol,
-          balance: +b.borrows,
+          balance: +b.borrows * -1,
           borrowRate: mangoGroup
             .getBorrowRate(tokenIndex)
             .mul(I80F48.fromNumber(100)),
           depositRate: mangoGroup
             .getDepositRate(tokenIndex)
             .mul(I80F48.fromNumber(100)),
+          orders: b.orders ? b.orders : 0,
           price: mangoGroup.getPrice(tokenIndex, mangoCache).toNumber(),
           symbol: b.symbol,
-          value: b.borrows.mul(mangoGroup.getPrice(tokenIndex, mangoCache)),
-          type: 'Borrow',
+          value:
+            +b.borrows.mul(mangoGroup.getPrice(tokenIndex, mangoCache)) * -1,
         })
       } else {
         spotPortfolio.push({
@@ -111,10 +111,10 @@ export default function AccountOverview() {
           depositRate: mangoGroup
             .getDepositRate(tokenIndex)
             .mul(I80F48.fromNumber(100)),
+          orders: b.orders ? b.orders : 0,
           price: mangoGroup.getPrice(tokenIndex, mangoCache).toNumber(),
           symbol: b.symbol,
           value: 0,
-          type: '–',
         })
       }
       if (b.unsettled > 0) {
@@ -132,9 +132,9 @@ export default function AccountOverview() {
     setFilteredSpotPortfolio(
       !showZeroBalances
         ? spotPortfolio
-            .filter((pos) => pos.balance > 0)
-            .sort((a, b) => b.value - a.value)
-        : spotPortfolio.sort((a, b) => b.value - a.value)
+            .filter((pos) => pos.balance !== 0)
+            .sort((a, b) => Math.abs(b.value) - Math.abs(a.value))
+        : spotPortfolio.sort((a, b) => Math.abs(b.value) - Math.abs(a.value))
     )
 
     setUnsettled(unsettled)
@@ -164,7 +164,7 @@ export default function AccountOverview() {
     if (checked) {
       setFilteredSpotPortfolio(spotPortfolio)
     } else {
-      setFilteredSpotPortfolio(spotPortfolio.filter((pos) => pos.balance > 0))
+      setFilteredSpotPortfolio(spotPortfolio.filter((pos) => pos.balance !== 0))
     }
     setShowZeroBalances(checked)
   }
@@ -418,12 +418,12 @@ export default function AccountOverview() {
               <Th scope="col" className={`px-6 py-2 text-left`}>
                 <LinkButton
                   className="flex font-normal items-center no-underline"
-                  onClick={() => requestSort('type')}
+                  onClick={() => requestSort('balance')}
                 >
-                  Type
+                  Balance
                   <ArrowSmDownIcon
                     className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
-                      sortConfig?.key === 'type'
+                      sortConfig?.key === 'balance'
                         ? sortConfig.direction === 'ascending'
                           ? 'transform rotate-180'
                           : 'transform rotate-360'
@@ -435,12 +435,12 @@ export default function AccountOverview() {
               <Th scope="col" className={`px-6 py-2 text-left`}>
                 <LinkButton
                   className="flex font-normal items-center no-underline"
-                  onClick={() => requestSort('balance')}
+                  onClick={() => requestSort('orders')}
                 >
-                  Balance
+                  In Orders
                   <ArrowSmDownIcon
                     className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
-                      sortConfig?.key === 'balance'
+                      sortConfig?.key === 'orders'
                         ? sortConfig.direction === 'ascending'
                           ? 'transform rotate-180'
                           : 'transform rotate-360'
@@ -544,17 +544,15 @@ export default function AccountOverview() {
                 <Td
                   className={`px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
                 >
-                  {pos.type === 'Long' || pos.type === 'Short' ? (
-                    <SideBadge side={pos.type} />
-                  ) : (
-                    pos.type
-                  )}
+                  {pos.balance !== 0
+                    ? pos.balance.toFixed(tokenPrecision[pos.symbol])
+                    : 0}
                 </Td>
                 <Td
                   className={`px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
                 >
-                  {pos.balance > 0
-                    ? pos.balance.toFixed(tokenPrecision[pos.symbol])
+                  {pos.orders !== 0
+                    ? pos.orders.toFixed(tokenPrecision[pos.symbol])
                     : 0}
                 </Td>
                 <Td

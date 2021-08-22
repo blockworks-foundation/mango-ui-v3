@@ -31,7 +31,7 @@ const parsedPerpEvent = (mangoAccountPk: PublicKey, event) => {
 
   return {
     ...event,
-    key: orderId.toString(),
+    key: orderId?.toString(),
     liquidity: maker ? 'Maker' : 'Taker',
     size: event.quantity,
     price: event.price,

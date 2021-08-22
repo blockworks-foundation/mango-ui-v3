@@ -262,7 +262,7 @@ export default function MarketPosition() {
     <>
       <FloatingElement showConnect>
         <div className={!connected ? 'filter blur' : null}>
-          <ElementTitle>Balance</ElementTitle>
+          <ElementTitle>Balances</ElementTitle>
           {mangoGroup ? (
             <div className="grid grid-cols-2 grid-rows-1 gap-4 pt-2">
               {mangoGroupConfig.tokens
@@ -287,7 +287,7 @@ export default function MarketPosition() {
                       </div>
                       <div className="pb-3">
                         <div className="pb-0.5 text-th-fgd-3 text-xs">
-                          Deposits
+                          Balance
                         </div>
                         <div className={`text-th-fgd-1`}>
                           {isLoading ? (
@@ -302,6 +302,39 @@ export default function MarketPosition() {
                                 )
                                 .toNumber(),
                               tokenPrecision[symbol]
+                            ) > 0 ? (
+                              floorToDecimal(
+                                mangoAccount
+                                  .getUiDeposit(
+                                    mangoGroupCache.rootBankCache[tokenIndex],
+                                    mangoGroup,
+                                    tokenIndex
+                                  )
+                                  .toNumber(),
+                                tokenPrecision[symbol]
+                              )
+                            ) : ceilToDecimal(
+                                mangoAccount
+                                  .getUiBorrow(
+                                    mangoGroupCache.rootBankCache[tokenIndex],
+                                    mangoGroup,
+                                    tokenIndex
+                                  )
+                                  .toNumber(),
+                                tokenPrecision[symbol]
+                              ) > 0 ? (
+                              `-${ceilToDecimal(
+                                mangoAccount
+                                  .getUiBorrow(
+                                    mangoGroupCache.rootBankCache[tokenIndex],
+                                    mangoGroup,
+                                    tokenIndex
+                                  )
+                                  .toNumber(),
+                                tokenPrecision[symbol]
+                              )}`
+                            ) : (
+                              0
                             )
                           ) : (
                             0
@@ -310,13 +343,13 @@ export default function MarketPosition() {
                       </div>
                       <div className="pb-3">
                         <div className="pb-0.5 text-th-fgd-3 text-xs">
-                          Available
+                          Available Balance
                         </div>
                         <div className={`text-th-fgd-1`}>
                           {isLoading ? <DataLoader /> : mangoAccount ? '--' : 0}
                         </div>
                       </div>
-                      <div className="pb-3">
+                      {/* <div className="pb-3">
                         <div className="pb-0.5 text-th-fgd-3 text-xs">
                           Borrows
                         </div>
@@ -338,7 +371,7 @@ export default function MarketPosition() {
                             0
                           )}
                         </div>
-                      </div>
+                      </div> */}
                       <div>
                         <Tooltip content="Deposit APY and Borrow APR">
                           <div
