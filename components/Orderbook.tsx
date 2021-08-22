@@ -322,12 +322,12 @@ const OrderbookRow = React.memo<any>(
 
     const formattedSize =
       market?.minOrderSize && !isNaN(size)
-        ? Number(size).toFixed(getDecimalCount(market.minOrderSize) + 1)
+        ? Number(size).toFixed(getDecimalCount(market.minOrderSize))
         : size
 
     const formattedPrice =
       market?.tickSize && !isNaN(price)
-        ? Number(price).toFixed(getDecimalCount(market.tickSize) + 1)
+        ? Number(price).toFixed(getDecimalCount(market.tickSize))
         : price
 
     const handlePriceClick = () => {
