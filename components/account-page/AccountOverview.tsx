@@ -356,12 +356,12 @@ export default function AccountOverview() {
         </div>
       ) : null}
       <div className="pb-8">
-        <div className="pb-4 text-th-fgd-1 text-lg">Perp Positions</div>
+        <div className="pb-2 text-th-fgd-1 text-lg">Perp Positions</div>
         <PositionsTable />
       </div>
       <div className="pb-4 text-th-fgd-1 text-lg">Assets & Liabilities</div>
 
-      <div className="grid grid-flow-col grid-cols-1 grid-rows-2 md:grid-cols-2 md:grid-rows-1 gap-4 pb-4">
+      <div className="grid grid-flow-col grid-cols-1 grid-rows-2 md:grid-cols-2 md:grid-rows-1 gap-4 pb-8">
         <div className="border border-th-bkg-4 p-4 rounded-lg">
           <div className="pb-0.5 text-xs text-th-fgd-3">Total Assets Value</div>
           <div className="flex items-center">
@@ -385,7 +385,8 @@ export default function AccountOverview() {
           </div>
         </div>
       </div>
-      <div className="flex justify-end pb-4">
+      <div className="flex justify-between pb-4">
+        <div className="text-th-fgd-1 text-lg">Balances</div>
         <Switch
           checked={showZeroBalances}
           className="text-xs"

@@ -7,11 +7,9 @@ import {
   PerpMarket,
   QUOTE_INDEX,
   ZERO_BN,
-  ZERO_I80F48,
 } from '@blockworks-foundation/mango-client'
 import Button from './Button'
 import { notify } from '../utils/notifications'
-import BN from 'bn.js'
 import SideBadge from './SideBadge'
 import { useState } from 'react'
 import Loading from './Loading'
@@ -19,6 +17,7 @@ import { formatUsdValue, usdFormatter } from '../utils'
 import useTradeHistory from '../hooks/useTradeHistory'
 import Tooltip from './Tooltip'
 import { SettlePnlTooltip } from './MarketPosition'
+import usePerpPositions from '../hooks/usePerpPositions'
 
 export function getAvgEntryPrice(
   mangoAccount,
@@ -76,22 +75,7 @@ const PositionsTable = () => {
   const [settlingPerpAcc, setSettlingPerpAcc] = useState(null)
   const tradeHistory = useTradeHistory()
   const setMangoStore = useMangoStore((s) => s.set)
-
-  const perpAccounts = mangoAccount
-    ? groupConfig.perpMarkets.map((m) => {
-        return {
-          perpAccount: mangoAccount.perpAccounts[m.marketIndex],
-          marketIndex: m.marketIndex,
-        }
-      })
-    : []
-  const filteredPerpAccounts = perpAccounts.filter(
-    ({ perpAccount }) =>
-      !(
-        perpAccount.quotePosition.eq(ZERO_I80F48) &&
-        perpAccount.basePosition.eq(new BN(0))
-      )
-  )
+  const perpPositions = usePerpPositions()
 
   const handleSettlePnl = async (
     perpMarket: PerpMarket,
@@ -141,7 +125,7 @@ const PositionsTable = () => {
     <div className="flex flex-col py-4">
       <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div className="align-middle inline-block min-w-full sm:px-6 lg:px-8">
-          {filteredPerpAccounts.length ? (
+          {perpPositions.length ? (
             <div className="overflow-hidden border-b border-th-bkg-2 sm:rounded-m">
               <Table className="min-w-full divide-y divide-th-bkg-2">
                 <Thead>
@@ -175,147 +159,145 @@ const PositionsTable = () => {
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {filteredPerpAccounts.map(
-                    ({ perpAccount, marketIndex }, index) => {
-                      const perpMarketInfo = mangoGroup.perpMarkets[marketIndex]
-                      const marketConfig = getMarketByPublicKey(
-                        groupConfig,
-                        perpMarketInfo.perpMarket
-                      )
-                      const perpMarketCache =
-                        mangoCache.perpMarketCache[marketIndex]
-                      const price = mangoCache.priceCache[marketIndex].price
-                      const perpMarket = allMarkets[
-                        marketConfig.publicKey.toString()
-                      ] as PerpMarket
-                      const perpTradeHistory = tradeHistory.filter(
-                        (t) => t.marketName === marketConfig.name
-                      )
+                  {perpPositions.map(({ perpAccount, marketIndex }, index) => {
+                    const perpMarketInfo = mangoGroup.perpMarkets[marketIndex]
+                    const marketConfig = getMarketByPublicKey(
+                      groupConfig,
+                      perpMarketInfo.perpMarket
+                    )
+                    const perpMarketCache =
+                      mangoCache.perpMarketCache[marketIndex]
+                    const price = mangoCache.priceCache[marketIndex].price
+                    const perpMarket = allMarkets[
+                      marketConfig.publicKey.toString()
+                    ] as PerpMarket
+                    const perpTradeHistory = tradeHistory.filter(
+                      (t) => t.marketName === marketConfig.name
+                    )
 
-                      return (
-                        <Tr
-                          key={`${marketIndex}`}
-                          className={`border-b border-th-bkg-3
+                    return (
+                      <Tr
+                        key={`${marketIndex}`}
+                        className={`border-b border-th-bkg-3
                         ${index % 2 === 0 ? `bg-th-bkg-3` : `bg-th-bkg-2`}
                       `}
+                      >
+                        <Td className="px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1">
+                          <div className="flex items-center">
+                            <img
+                              alt=""
+                              width="20"
+                              height="20"
+                              src={`/assets/icons/${marketConfig.baseSymbol.toLowerCase()}.svg`}
+                              className={`mr-2.5`}
+                            />
+                            <div>{marketConfig.name}</div>
+                          </div>
+                        </Td>
+                        <Td className="px-2 py-2 whitespace-nowrap text-sm text-th-fgd-1">
+                          {!perpAccount.basePosition.eq(ZERO_BN) ? (
+                            <SideBadge
+                              side={
+                                perpAccount.basePosition.gt(ZERO_BN)
+                                  ? 'long'
+                                  : 'short'
+                              }
+                            />
+                          ) : (
+                            '-'
+                          )}
+                        </Td>
+                        <Td className="px-2 py-2 whitespace-nowrap text-sm text-th-fgd-1">
+                          {perpAccount &&
+                          Math.abs(
+                            perpMarket.baseLotsToNumber(
+                              perpAccount.basePosition
+                            )
+                          ) > 0 ? (
+                            <span
+                              className="cursor-pointer underline hover:no-underline"
+                              onClick={() =>
+                                handleSizeClick(
+                                  Math.abs(
+                                    perpMarket.baseLotsToNumber(
+                                      perpAccount.basePosition
+                                    )
+                                  )
+                                )
+                              }
+                            >
+                              {`${Math.abs(
+                                perpMarket.baseLotsToNumber(
+                                  perpAccount.basePosition
+                                )
+                              )} ${marketConfig.baseSymbol}`}
+                            </span>
+                          ) : (
+                            `0 ${marketConfig.baseSymbol}`
+                          )}
+                        </Td>
+                        <Th
+                          scope="col"
+                          className="px-2 py-2 text-left font-normal"
                         >
-                          <Td className="px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1">
-                            <div className="flex items-center">
-                              <img
-                                alt=""
-                                width="20"
-                                height="20"
-                                src={`/assets/icons/${marketConfig.baseSymbol.toLowerCase()}.svg`}
-                                className={`mr-2.5`}
-                              />
-                              <div>{marketConfig.name}</div>
-                            </div>
-                          </Td>
-                          <Td className="px-2 py-2 whitespace-nowrap text-sm text-th-fgd-1">
-                            {!perpAccount.basePosition.eq(ZERO_BN) ? (
-                              <SideBadge
-                                side={
-                                  perpAccount.basePosition.gt(ZERO_BN)
-                                    ? 'long'
-                                    : 'short'
-                                }
-                              />
-                            ) : (
-                              '-'
-                            )}
-                          </Td>
-                          <Td className="px-2 py-2 whitespace-nowrap text-sm text-th-fgd-1">
-                            {perpAccount &&
+                          {usdFormatter(
                             Math.abs(
                               perpMarket.baseLotsToNumber(
                                 perpAccount.basePosition
-                              )
-                            ) > 0 ? (
-                              <span
-                                className="cursor-pointer underline hover:no-underline"
-                                onClick={() =>
-                                  handleSizeClick(
-                                    Math.abs(
-                                      perpMarket.baseLotsToNumber(
-                                        perpAccount.basePosition
-                                      )
-                                    )
-                                  )
-                                }
-                              >
-                                {`${Math.abs(
-                                  perpMarket.baseLotsToNumber(
-                                    perpAccount.basePosition
-                                  )
-                                )} ${marketConfig.baseSymbol}`}
-                              </span>
-                            ) : (
-                              `0 ${marketConfig.baseSymbol}`
-                            )}
-                          </Td>
-                          <Th
-                            scope="col"
-                            className="px-2 py-2 text-left font-normal"
-                          >
-                            {usdFormatter(
-                              Math.abs(
-                                perpMarket.baseLotsToNumber(
-                                  perpAccount.basePosition
-                                ) *
-                                  mangoGroup
-                                    .getPrice(marketIndex, mangoCache)
-                                    .toNumber()
-                              )
-                            )}
-                          </Th>
-                          <Td className="px-2 py-2 whitespace-nowrap text-sm text-th-fgd-1">
-                            {getAvgEntryPrice(
-                              mangoAccount,
-                              perpAccount,
-                              perpMarket,
-                              perpTradeHistory
-                            )}
-                          </Td>
-                          <Td className="px-2 py-2 whitespace-nowrap text-sm text-th-fgd-1">
-                            {getBreakEvenPrice(
-                              mangoAccount,
-                              perpAccount,
-                              perpMarket,
-                              perpTradeHistory
-                            )}
-                          </Td>
-                          <Td className="px-2 py-2 whitespace-nowrap text-sm text-th-fgd-1">
-                            {usdFormatter(
-                              +nativeI80F48ToUi(
-                                perpAccount.getPnl(
-                                  perpMarketInfo,
-                                  perpMarketCache,
-                                  price
-                                ),
-                                marketConfig.quoteDecimals
-                              )
-                            )}
-                          </Td>
-                          <Td className="px-2 py-2 whitespace-nowrap text-sm text-th-fgd-1">
-                            <div className="flex justify-end">
-                              <Button
-                                onClick={() =>
-                                  handleSettlePnl(perpMarket, perpAccount)
-                                }
-                                className="ml-3 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
-                              >
-                                {settlingPerpAcc == perpAccount ? (
-                                  <Loading />
-                                ) : (
-                                  <span>Settle PNL</span>
-                                )}
-                              </Button>
-                            </div>
-                          </Td>
-                        </Tr>
-                      )
-                    }
-                  )}
+                              ) *
+                                mangoGroup
+                                  .getPrice(marketIndex, mangoCache)
+                                  .toNumber()
+                            )
+                          )}
+                        </Th>
+                        <Td className="px-2 py-2 whitespace-nowrap text-sm text-th-fgd-1">
+                          {getAvgEntryPrice(
+                            mangoAccount,
+                            perpAccount,
+                            perpMarket,
+                            perpTradeHistory
+                          )}
+                        </Td>
+                        <Td className="px-2 py-2 whitespace-nowrap text-sm text-th-fgd-1">
+                          {getBreakEvenPrice(
+                            mangoAccount,
+                            perpAccount,
+                            perpMarket,
+                            perpTradeHistory
+                          )}
+                        </Td>
+                        <Td className="px-2 py-2 whitespace-nowrap text-sm text-th-fgd-1">
+                          {usdFormatter(
+                            +nativeI80F48ToUi(
+                              perpAccount.getPnl(
+                                perpMarketInfo,
+                                perpMarketCache,
+                                price
+                              ),
+                              marketConfig.quoteDecimals
+                            )
+                          )}
+                        </Td>
+                        <Td className="px-2 py-2 whitespace-nowrap text-sm text-th-fgd-1">
+                          <div className="flex justify-end">
+                            <Button
+                              onClick={() =>
+                                handleSettlePnl(perpMarket, perpAccount)
+                              }
+                              className="ml-3 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
+                            >
+                              {settlingPerpAcc == perpAccount ? (
+                                <Loading />
+                              ) : (
+                                <span>Settle PNL</span>
+                              )}
+                            </Button>
+                          </div>
+                        </Td>
+                      </Tr>
+                    )
+                  })}
                 </Tbody>
               </Table>
             </div>

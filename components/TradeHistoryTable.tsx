@@ -42,12 +42,9 @@ const TradeHistoryTable = () => {
               <Table className="min-w-full divide-y divide-th-bkg-2">
                 <Thead>
                   <Tr className="text-th-fgd-3 text-xs">
-                    <Th
-                      scope="col"
-                      className={`px-6 py-2 text-left font-normal`}
-                    >
+                    <Th scope="col" className={`px-6 py-2 text-left`}>
                       <LinkButton
-                        className="flex items-center no-underline"
+                        className="flex items-center no-underline font-normal"
                         onClick={() => requestSort('market')}
                       >
                         Market
@@ -62,9 +59,9 @@ const TradeHistoryTable = () => {
                         />
                       </LinkButton>
                     </Th>
-                    <Th scope="col" className="px-6 py-2 text-left font-normal">
+                    <Th scope="col" className="px-6 py-2 text-left">
                       <LinkButton
-                        className="flex items-center no-underline"
+                        className="flex items-center no-underline font-normal"
                         onClick={() => requestSort('side')}
                       >
                         Side
@@ -79,9 +76,9 @@ const TradeHistoryTable = () => {
                         />
                       </LinkButton>
                     </Th>
-                    <Th scope="col" className="px-6 py-2 text-left font-normal">
+                    <Th scope="col" className="px-6 py-2 text-left">
                       <LinkButton
-                        className="flex items-center no-underline"
+                        className="flex items-center no-underline font-normal"
                         onClick={() => requestSort('size')}
                       >
                         Size
@@ -96,9 +93,9 @@ const TradeHistoryTable = () => {
                         />
                       </LinkButton>
                     </Th>
-                    <Th scope="col" className="px-6 py-2 text-left font-normal">
+                    <Th scope="col" className="px-6 py-2 text-left">
                       <LinkButton
-                        className="flex items-center no-underline"
+                        className="flex items-center no-underline font-normal"
                         onClick={() => requestSort('price')}
                       >
                         Price
@@ -113,9 +110,9 @@ const TradeHistoryTable = () => {
                         />
                       </LinkButton>
                     </Th>
-                    <Th scope="col" className="px-6 py-2 text-left font-normal">
+                    <Th scope="col" className="px-6 py-2 text-left">
                       <LinkButton
-                        className="flex items-center no-underline"
+                        className="flex items-center no-underline font-normal"
                         onClick={() => requestSort('value')}
                       >
                         Value
@@ -130,9 +127,9 @@ const TradeHistoryTable = () => {
                         />
                       </LinkButton>
                     </Th>
-                    <Th scope="col" className="px-6 py-2 text-left font-normal">
+                    <Th scope="col" className="px-6 py-2 text-left">
                       <LinkButton
-                        className="flex items-center no-underline"
+                        className="flex items-center no-underline font-normal"
                         onClick={() => requestSort('liquidity')}
                       >
                         Liquidity
@@ -147,9 +144,9 @@ const TradeHistoryTable = () => {
                         />
                       </LinkButton>
                     </Th>
-                    <Th scope="col" className="px-6 py-2 text-left font-normal">
+                    <Th scope="col" className="px-6 py-2 text-left">
                       <LinkButton
-                        className="flex items-center no-underline"
+                        className="flex items-center no-underline font-normal"
                         onClick={() => requestSort('feeCost')}
                       >
                         Fee
@@ -164,9 +161,9 @@ const TradeHistoryTable = () => {
                         />
                       </LinkButton>
                     </Th>
-                    <Th scope="col" className="px-6 py-2 text-left font-normal">
+                    <Th scope="col" className="px-6 py-2 text-left">
                       <LinkButton
-                        className="flex items-center no-underline"
+                        className="flex items-center no-underline font-normal"
                         onClick={() => requestSort('loadTimestamp')}
                       >
                         Approx Time

@@ -14,7 +14,7 @@ const SideBadge: FunctionComponent<SideBadgeProps> = ({ side }) => {
       }
        px-2 py-1 text-xs`}
     >
-      {side.toUpperCase()}
+      {side?.toUpperCase()}
     </div>
   )
 }
