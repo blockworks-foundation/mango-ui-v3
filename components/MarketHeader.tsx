@@ -234,7 +234,9 @@ const MarketHeader = () => {
                 </div>
                 <div className="font-semibold text-th-fgd-1 text-xs">
                   {selectedMarket ? (
-                    `${parseOpenInterest(selectedMarket)} ${baseSymbol}`
+                    `${parseOpenInterest(
+                      selectedMarket as PerpMarket
+                    )} ${baseSymbol}`
                   ) : (
                     <MarketDataLoader />
                   )}

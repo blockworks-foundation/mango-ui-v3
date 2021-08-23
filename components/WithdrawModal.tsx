@@ -94,7 +94,9 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
       : getDepositsForSelectedAsset()
 
     if (maxWithdraw.gt(I80F48.fromNumber(0))) {
-      setMaxAmount(floorToDecimal(maxWithdraw.toNumber(), token.decimals))
+      setMaxAmount(
+        floorToDecimal(parseFloat(maxWithdraw.toFixed()), token.decimals)
+      )
     } else {
       setMaxAmount(0)
     }

@@ -182,17 +182,12 @@ const AccountInfo = ({
 }) => {
   const accountEquity = mangoAccount.computeValue(mangoGroup, mangoCache)
 
-  // const leverage = accountEquity.gt(ZERO_I80F48)
-  //   ? mangoAccount
-  //       .getLiabsVal(mangoGroup, mangoCache)
-  //       .div(accountEquity)
-  //       .toFixed(2)
-  //   : '0.00'
+  const leverage = mangoAccount.getLeverage(mangoGroup, mangoCache).toFixed(2)
 
   return (
     <div className="text-th-fgd-3 text-xs">
       {formatUsdValue(accountEquity)}
-      {/* <span className="px-1.5 text-th-fgd-4">|</span>
+      <span className="px-1.5 text-th-fgd-4">|</span>
       <span
         className={
           parseFloat(leverage) > 4
@@ -203,7 +198,7 @@ const AccountInfo = ({
         }
       >
         {leverage}x
-      </span> */}
+      </span>
     </div>
   )
 }
