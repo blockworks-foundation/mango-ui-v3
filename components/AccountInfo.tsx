@@ -1,5 +1,6 @@
 import {
   I80F48,
+  nativeI80F48ToUi,
   nativeToUi,
   QUOTE_INDEX,
   ZERO_BN,
@@ -8,7 +9,7 @@ import {
 import { useCallback, useMemo, useState } from 'react'
 import { HeartIcon } from '@heroicons/react/solid'
 import useMangoStore, { mangoClient, MNGO_INDEX } from '../stores/useMangoStore'
-import { formatUsdValue } from '../utils'
+import { formatUsdValue, usdFormatter } from '../utils'
 import { notify } from '../utils/notifications'
 import { LinkButton } from './Button'
 import FloatingElement from './FloatingElement'
@@ -21,12 +22,13 @@ import { DataLoader } from './MarketPosition'
 
 const I80F48_100 = I80F48.fromString('100')
 
-export default function MarginInfo() {
+export default function AccountInfo() {
   const connected = useMangoStore((s) => s.wallet.connected)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const isLoading = useMangoStore((s) => s.selectedMangoAccount.initialLoad)
+  const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const actions = useMangoStore((s) => s.actions)
 
   const [showDepositModal, setShowDepositModal] = useState(false)
@@ -42,11 +44,6 @@ export default function MarginInfo() {
 
   const equity = mangoAccount
     ? mangoAccount.computeValue(mangoGroup, mangoCache)
-    : ZERO_I80F48
-
-  // TODO: correct calc
-  const marginAvailable = mangoAccount
-    ? mangoAccount.getMaxWithBorrowForToken(mangoGroup, mangoCache, QUOTE_INDEX)
     : ZERO_I80F48
 
   const mngoAccrued = mangoAccount
@@ -159,16 +156,41 @@ export default function MarginInfo() {
             </div> */}
             <div className={`flex justify-between pb-3`}>
               <div className="font-normal text-th-fgd-3 leading-4">
-                Margin Available
+                Collateral Available
               </div>
               <div className={`text-th-fgd-1`}>
                 {isLoading ? (
                   <DataLoader />
                 ) : mangoAccount ? (
-                  formatUsdValue(marginAvailable)
+                  usdFormatter(
+                    nativeI80F48ToUi(
+                      mangoAccount.getHealth(mangoGroup, mangoCache, 'Init'),
+                      mangoGroup.tokens[QUOTE_INDEX].decimals
+                    ).toFixed()
+                  )
                 ) : (
                   '--'
                 )}
+              </div>
+            </div>
+            <div className={`flex justify-between pb-3`}>
+              <div className="font-normal text-th-fgd-3 leading-4">
+                {marketConfig.name} Margin Available
+              </div>
+              <div className={`text-th-fgd-1`}>
+                {mangoAccount
+                  ? usdFormatter(
+                      nativeI80F48ToUi(
+                        mangoAccount.getMarketMarginAvailable(
+                          mangoGroup,
+                          mangoCache,
+                          marketConfig.marketIndex,
+                          marketConfig.kind
+                        ),
+                        mangoGroup.tokens[marketConfig.marketIndex].decimals
+                      ).toFixed()
+                    )
+                  : '0.00'}
               </div>
             </div>
             <div className={`flex justify-between pb-3`}>

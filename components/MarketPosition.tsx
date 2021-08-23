@@ -347,32 +347,22 @@ export default function MarketPosition() {
                           Available Balance
                         </div>
                         <div className={`text-th-fgd-1`}>
-                          {isLoading ? <DataLoader /> : mangoAccount ? '--' : 0}
-                        </div>
-                      </div>
-                      {/* <div className="pb-3">
-                        <div className="pb-0.5 text-th-fgd-3 text-xs">
-                          Borrows
-                        </div>
-                        <div className={`text-th-fgd-1`}>
                           {isLoading ? (
                             <DataLoader />
                           ) : mangoAccount ? (
-                            ceilToDecimal(
-                              mangoAccount
-                                .getUiBorrow(
-                                  mangoGroupCache.rootBankCache[tokenIndex],
-                                  mangoGroup,
-                                  tokenIndex
-                                )
-                                .toNumber(),
-                              tokenPrecision[symbol]
-                            )
+                            nativeI80F48ToUi(
+                              mangoAccount.getAvailableBalance(
+                                mangoGroup,
+                                mangoGroupCache,
+                                tokenIndex
+                              ),
+                              mangoGroup.tokens[tokenIndex].decimals
+                            ).toFixed(tokenPrecision[symbol])
                           ) : (
                             0
                           )}
                         </div>
-                      </div> */}
+                      </div>
                       <div>
                         <Tooltip content="Deposit APY / Borrow APR">
                           <div

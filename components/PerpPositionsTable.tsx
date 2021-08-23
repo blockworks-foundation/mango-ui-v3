@@ -276,7 +276,8 @@ const PositionsTable = () => {
                                 price
                               ),
                               marketConfig.quoteDecimals
-                            )
+                            ),
+                            marketConfig.quoteDecimals
                           )}
                         </Td>
                         <Td className="px-2 py-2 whitespace-nowrap text-sm text-th-fgd-1">

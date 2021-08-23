@@ -11,11 +11,11 @@ const byTimestamp = (a, b) => {
 
 const reverseSide = (side) => (side === 'buy' ? 'sell' : 'buy')
 
-function getPerpMarketName(event) {
+function getMarketName(event) {
   const mangoGroupConfig = useMangoStore.getState().selectedMangoGroup.config
 
   let marketName
-  if (!event.marketName) {
+  if (!event.marketName && event.address) {
     const marketInfo = getMarketByPublicKey(mangoGroupConfig, event.address)
     marketName = marketInfo.name
   }
@@ -38,7 +38,7 @@ const parsedPerpEvent = (mangoAccountPk: PublicKey, event) => {
     value,
     feeCost: (feeRate * value).toFixed(4),
     side,
-    marketName: getPerpMarketName(event),
+    marketName: getMarketName(event),
   }
 }
 
@@ -49,6 +49,7 @@ const parsedSerumEvent = (event) => {
     liquidity: event?.eventFlags?.maker ? 'Maker' : 'Taker',
     value: event.price * event.size,
     side: event.side,
+    marketName: getMarketName(event),
   }
 }
 
@@ -56,7 +57,7 @@ const formatTradeHistory = (mangoAccountPk: PublicKey, newTradeHistory) => {
   return newTradeHistory
     .flat()
     .map((event) => {
-      if (event.eventFlags) {
+      if (event.eventFlags || event.nativeQuantityPaid) {
         return parsedSerumEvent(event)
       } else if (event.maker) {
         return parsedPerpEvent(mangoAccountPk, event)
