@@ -393,7 +393,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
       const serumHistory = await Promise.all(
         publicKeys.map(async (pk) => {
           const response = await fetch(
-            `https://stark-fjord-45757.herokuapp.com/trades/open_orders/${pk.toString()}`
+            `https://event-history-api.herokuapp.com/trades/open_orders/${pk.toString()}`
           )
           const parsedResponse = await response.json()
           return parsedResponse?.data ? parsedResponse.data : []

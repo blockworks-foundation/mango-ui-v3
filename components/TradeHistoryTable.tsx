@@ -8,10 +8,6 @@ import SideBadge from './SideBadge'
 import { LinkButton } from './Button'
 import { useSortableData } from '../hooks/useSortableData'
 
-function getTradeTimestamp(trade) {
-  return trade?.timestamp ? trade.timestamp.toNumber() : trade.loadTimestamp
-}
-
 const TradeHistoryTable = () => {
   const { asPath } = useRouter()
   const tradeHistory = useTradeHistory({ excludePerpLiquidations: true })
@@ -183,7 +179,7 @@ const TradeHistoryTable = () => {
                 <Tbody>
                   {items.map((trade: any, index) => (
                     <Tr
-                      key={`${getTradeTimestamp(trade)}`}
+                      key={`${trade.seqNum}${trade.marketName}`}
                       className={`border-b border-th-bkg-3
                         ${index % 2 === 0 ? `bg-th-bkg-3` : `bg-th-bkg-2`}
                       `}
