@@ -31,11 +31,11 @@ const OpenOrdersTable = () => {
     const selectedMangoAccount =
       useMangoStore.getState().selectedMangoAccount.current
     setCancelId(order.orderId)
-
+    let txid
     try {
       if (!selectedMangoGroup || !selectedMangoAccount) return
       if (market instanceof Market) {
-        await mangoClient.cancelSpotOrder(
+        txid = await mangoClient.cancelSpotOrder(
           selectedMangoGroup,
           selectedMangoAccount,
           wallet,
@@ -43,7 +43,7 @@ const OpenOrdersTable = () => {
           order as Order
         )
       } else if (market instanceof PerpMarket) {
-        await mangoClient.cancelPerpOrder(
+        txid = await mangoClient.cancelPerpOrder(
           selectedMangoGroup,
           selectedMangoAccount,
           wallet,
@@ -51,6 +51,7 @@ const OpenOrdersTable = () => {
           order as PerpOrder
         )
       }
+      notify({ title: 'Successfully cancelled order', txid })
     } catch (e) {
       notify({
         title: 'Error cancelling order',

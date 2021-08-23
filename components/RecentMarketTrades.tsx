@@ -59,14 +59,14 @@ export default function RecentMarketTrades() {
                   ? Number(trade.price).toFixed(
                       getDecimalCount(market.tickSize)
                     )
-                  : trade.price}
+                  : ''}
               </div>
               <div className={`text-right`}>
                 {market?.minOrderSize && !isNaN(trade.size)
                   ? Number(trade.size).toFixed(
                       getDecimalCount(market.minOrderSize)
                     )
-                  : trade.size}
+                  : ''}
               </div>
               <div className={`text-right text-th-fgd-3`}>
                 {trade.time && new Date(trade.time).toLocaleTimeString()}

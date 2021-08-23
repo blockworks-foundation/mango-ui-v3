@@ -43,10 +43,10 @@ const useHydrateStore = () => {
       (info, context) => {
         const lastSlot = useMangoStore.getState().connection.slot
         if (
-          !previousBidInfo ||
-          !previousBidInfo.data.equals(info.data) ||
-          (previousBidInfo.lamports !== info.lamports &&
-            context.slot > lastSlot)
+          (!previousBidInfo ||
+            !previousBidInfo.data.equals(info.data) ||
+            previousBidInfo.lamports !== info.lamports) &&
+          context.slot > lastSlot
         ) {
           previousBidInfo = info
           setMangoStore((state) => {
@@ -58,11 +58,13 @@ const useHydrateStore = () => {
     )
     const askSubscriptionId = WEBSOCKET_CONNECTION.onAccountChange(
       marketConfig.asksKey,
-      (info) => {
+      (info, context) => {
+        const lastSlot = useMangoStore.getState().connection.slot
         if (
-          !previousAskInfo ||
-          !previousAskInfo.data.equals(info.data) ||
-          previousAskInfo.lamports !== info.lamports
+          (!previousAskInfo ||
+            !previousAskInfo.data.equals(info.data) ||
+            previousAskInfo.lamports !== info.lamports) &&
+          context.slot > lastSlot
         ) {
           previousAskInfo = info
           setMangoStore((state) => {
