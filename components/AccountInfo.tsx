@@ -125,7 +125,7 @@ export default function MarginInfo() {
                 )}
               </div>
             </div>
-            <div className={`flex justify-between pb-3`}>
+            {/* <div className={`flex justify-between pb-3`}>
               <div className="font-normal text-th-fgd-3 leading-4">
                 Total Assets Value
               </div>
@@ -156,7 +156,7 @@ export default function MarginInfo() {
                   '--'
                 )}
               </div>
-            </div>
+            </div> */}
             <div className={`flex justify-between pb-3`}>
               <div className="font-normal text-th-fgd-3 leading-4">
                 Margin Available
