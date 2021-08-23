@@ -36,9 +36,9 @@ const SpotMarket = () => {
       )
 
       setMangoStore((state) => {
-        state.selectedMarket.current = null
         state.selectedMarket.kind = 'spot'
         if (newMarket.name !== marketConfig.name) {
+          state.selectedMarket.current = null
           state.selectedMarket.config = newMarket
           state.tradeForm.price =
             state.tradeForm.tradeType === 'Limit'
