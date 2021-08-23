@@ -4,14 +4,15 @@ import useMangoStore from '../stores/useMangoStore'
 import useMangoGroupConfig from './useMangoGroupConfig'
 
 const useMangoStats = () => {
-  const [stats] = useState([
+  const [stats, setStats] = useState([
     {
-      symbol: '',
+      name: '',
       hourly: '',
       depositInterest: 0,
       borrowInterest: 0,
       totalDeposits: 0,
       totalBorrows: 0,
+      baseOraclePrice: 0,
       utilization: '0',
     },
   ])
@@ -22,14 +23,14 @@ const useMangoStats = () => {
   const config = useMangoGroupConfig()
 
   useEffect(() => {
-    // const fetchHistoricalStats = async () => {
-    //   const response = await fetch(
-    //     `http://localhost:8000/v3?mangoGroup=${mangoGroupName}`
-    //   )
-    //   const stats = await response.json()
-    //   setStats(stats)
-    // }
-    // fetchHistoricalStats()
+    const fetchHistoricalStats = async () => {
+      const response = await fetch(
+        `https://mango-stats-v3.herokuapp.com/spot?mangoGroup=${mangoGroupName}`
+      )
+      const stats = await response.json()
+      setStats(stats)
+    }
+    fetchHistoricalStats()
   }, [mangoGroupName])
 
   useEffect(() => {
@@ -44,17 +45,11 @@ const useMangoStats = () => {
             return bank.publicKey.toBase58() == token.rootKey.toBase58()
           })
           const totalDeposits = rootBank.getUiTotalDeposit(mangoGroup)
-          console.log(
-            `total deposits for ${token.symbol}: `,
-            totalDeposits.toFixed(),
-            totalDeposits
-          )
-
           const totalBorrows = rootBank.getUiTotalBorrow(mangoGroup)
 
           return {
             time: new Date(),
-            symbol: token.symbol,
+            name: token.symbol,
             totalDeposits: totalDeposits.toFixed(2),
             totalBorrows: totalBorrows.toFixed(2),
             depositInterest: rootBank

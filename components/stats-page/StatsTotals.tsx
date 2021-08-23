@@ -1,8 +1,6 @@
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
 import { I80F48 } from '@blockworks-foundation/mango-client'
 import useMangoStats from '../../hooks/useMangoStats'
-import useHistoricPrices from '../../hooks/useHistoricPrices'
-import useMarketList from '../../hooks/useMarketList'
 import Chart from '../Chart'
 
 function formatNumberString(x: string): string {
@@ -11,10 +9,6 @@ function formatNumberString(x: string): string {
 
 export default function StatsTotals() {
   const { latestStats, stats } = useMangoStats()
-  const { prices } = useHistoricPrices()
-  // TODO: fix this
-  const backupPrices = [0, 0]
-  const { getTokenIndex, symbols } = useMarketList()
 
   const startTimestamp = 1622905200000
 
@@ -25,33 +19,27 @@ export default function StatsTotals() {
   // get deposit and borrow values from stats
   const depositValues = []
   const borrowValues = []
-  if (prices) {
-    for (let i = 0; i < trimmedStats.length; i++) {
-      // use the current price if no match for hour from the prices api
-      const price =
-        trimmedStats[i].symbol !== 'USDC' &&
-        prices[trimmedStats[i].symbol][trimmedStats[i].hourly]
-          ? prices[trimmedStats[i].symbol][trimmedStats[i].hourly]
-          : backupPrices[getTokenIndex(symbols[trimmedStats[i].symbol])]
 
-      const depositValue =
-        trimmedStats[i].symbol === 'USDC'
-          ? trimmedStats[i].totalDeposits
-          : trimmedStats[i].totalDeposits * price
+  for (let i = 0; i < trimmedStats.length; i++) {
+    const depositValue =
+      trimmedStats[i].name === 'USDC'
+        ? trimmedStats[i].totalDeposits
+        : trimmedStats[i].totalDeposits * trimmedStats[i].baseOraclePrice
 
-      const borrowValue =
-        trimmedStats[i].symbol === 'USDC'
-          ? trimmedStats[i].totalBorrows
-          : trimmedStats[i].totalBorrows * price
+    const borrowValue =
+      trimmedStats[i].name === 'USDC'
+        ? trimmedStats[i].totalBorrows
+        : trimmedStats[i].totalBorrows * trimmedStats[i].baseOraclePrice
 
-      depositValues.push({
-        symbol: trimmedStats[i].symbol,
-        value: depositValue,
-        time: trimmedStats[i].hourly,
-      })
+    depositValues.push({
+      name: trimmedStats[i].name,
+      value: depositValue,
+      time: trimmedStats[i].hourly,
+    })
 
+    if (borrowValue) {
       borrowValues.push({
-        symbol: trimmedStats[i].symbol,
+        name: trimmedStats[i].name,
         value: borrowValue,
         time: trimmedStats[i].hourly,
       })
@@ -61,10 +49,10 @@ export default function StatsTotals() {
   const formatValues = (values) => {
     // get value for each symbol every hour
     const hours = values.reduce((acc, d) => {
-      const found = acc.find((a) => a.time === d.time && a.symbol === d.symbol)
+      const found = acc.find((a) => a.time === d.time && a.name === d.name)
       const value = {
         value: d.value,
-        symbol: d.symbol,
+        name: d.name,
         time: d.time,
       }
       if (!found) {
@@ -157,7 +145,7 @@ export default function StatsTotals() {
           <Tbody>
             {latestStats.map((stat, index) => (
               <Tr
-                key={stat.symbol}
+                key={stat.name}
                 className={`border-b border-th-bkg-2
                   ${index % 2 === 0 ? `bg-th-bkg-3` : `bg-th-bkg-2`}
                 `}
@@ -168,10 +156,10 @@ export default function StatsTotals() {
                       alt=""
                       width="20"
                       height="20"
-                      src={`/assets/icons/${stat.symbol.toLowerCase()}.svg`}
+                      src={`/assets/icons/${stat.name.toLowerCase()}.svg`}
                       className={`mr-2.5`}
                     />
-                    {stat.symbol}
+                    {stat.name}
                   </div>
                 </Td>
                 <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
