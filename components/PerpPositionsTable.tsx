@@ -169,7 +169,7 @@ const PositionsTable = () => {
                       mangoCache.perpMarketCache[marketIndex]
                     const price = mangoCache.priceCache[marketIndex].price
                     const perpMarket = allMarkets[
-                      marketConfig.publicKey.toString()
+                      perpMarketInfo.perpMarket.toString()
                     ] as PerpMarket
                     const perpTradeHistory = tradeHistory.filter(
                       (t) => t.marketName === marketConfig.name
