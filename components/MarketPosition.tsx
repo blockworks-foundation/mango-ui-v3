@@ -373,7 +373,7 @@ export default function MarketPosition() {
                         </div>
                       </div> */}
                       <div>
-                        <Tooltip content="Deposit APY and Borrow APR">
+                        <Tooltip content="Deposit APY / Borrow APR">
                           <div
                             className={`cursor-help font-normal pb-0.5 text-th-fgd-3 default-transition text-xs hover:border-th-bkg-2 hover:text-th-fgd-3`}
                           >

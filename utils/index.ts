@@ -326,6 +326,13 @@ export const usdFormatter = (value, decimals = 2) =>
   }).format(value)
 
 export const formatUsdValue = (value) => {
-  const precision = value >= 1 || value <= -1 ? 2 : value === 0 ? 0 : 4
+  const precision =
+    value >= 1 || value <= -1
+      ? 2
+      : value === 0 ||
+        (value > 0 && value < 0.0001) ||
+        (value < 0 && value > -0.0001)
+      ? 0
+      : 4
   return usdFormatter(value, precision)
 }

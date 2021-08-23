@@ -2,13 +2,12 @@ import { useEffect, useState } from 'react'
 import styled from '@emotion/styled'
 import useMangoStore from '../stores/useMangoStore'
 import { useOpenOrders } from '../hooks/useOpenOrders'
-import usePerpPositions from '../hooks/usePerpPositions'
+// import usePerpPositions from '../hooks/usePerpPositions'
 import FloatingElement from './FloatingElement'
 import OpenOrdersTable from './OpenOrdersTable'
 import BalancesTable from './BalancesTable'
 import PositionsTable from './PerpPositionsTable'
 import TradeHistoryTable from './TradeHistoryTable'
-import { useRouter } from 'next/router'
 // import FeeDiscountsTable from './FeeDiscountsTable'
 
 const TABS = [
@@ -25,7 +24,7 @@ const StyledAlertCount = styled.span`
 
 const UserInfoTabs = ({ activeTab, setActiveTab }) => {
   const openOrders = useOpenOrders()
-  const perpPositions = usePerpPositions()
+  // const perpPositions = usePerpPositions()
   const handleTabChange = (tabName) => {
     setActiveTab(tabName)
   }
@@ -68,9 +67,10 @@ const UserInfoTabs = ({ activeTab, setActiveTab }) => {
                 {tabName === 'Open Orders' && openOrders?.length > 0 ? (
                   <Count count={openOrders?.length} />
                 ) : null}
-                {tabName === 'Perp Positions' && perpPositions?.length > 0 ? (
+                {/* Add back when more than one perp market */}
+                {/* {tabName === 'Perp Positions' && perpPositions?.length > 0 ? (
                   <Count count={perpPositions?.length} />
-                ) : null}
+                ) : null} */}
               </a>
             ))}
           </nav>
@@ -106,13 +106,14 @@ const TabContent = ({ activeTab }) => {
 }
 
 const UserInfo = () => {
-  const { asPath } = useRouter()
+  const marketConfig = useMangoStore((s) => s.selectedMarket.config)
+  const isPerpMarket = marketConfig.kind === 'perp'
   const connected = useMangoStore((s) => s.wallet.connected)
   const [activeTab, setActiveTab] = useState('')
 
   useEffect(() => {
-    asPath.includes('perp') ? setActiveTab(TABS[2]) : setActiveTab(TABS[0])
-  }, [asPath])
+    isPerpMarket ? setActiveTab(TABS[2]) : setActiveTab(TABS[0])
+  }, [isPerpMarket])
 
   return (
     <FloatingElement showConnect>

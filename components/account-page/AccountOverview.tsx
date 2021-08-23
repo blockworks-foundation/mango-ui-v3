@@ -1,17 +1,13 @@
 import { useEffect, useCallback, useMemo, useState } from 'react'
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
 import styled from '@emotion/styled'
-import { Menu } from '@headlessui/react'
-import Link from 'next/link'
 import {
   // ChartBarIcon,
   ScaleIcon,
   CurrencyDollarIcon,
   ExclamationIcon,
-  DotsHorizontalIcon,
   GiftIcon,
   HeartIcon,
-  XIcon,
 } from '@heroicons/react/outline'
 import { ArrowSmDownIcon } from '@heroicons/react/solid'
 import {
@@ -79,11 +75,12 @@ export default function AccountOverview() {
             .getDepositRate(tokenIndex)
             .mul(I80F48.fromNumber(100)),
           orders: b.orders ? b.orders : 0,
+          unsettled: b.unsettled ? b.unsettled : 0,
+          net: b.net ? b.net : 0,
           price: mangoGroup.getPrice(tokenIndex, mangoCache).toNumber(),
           symbol: b.symbol,
           value:
-            +b.deposits *
-            mangoGroup.getPrice(tokenIndex, mangoCache).toNumber(),
+            +b.net * mangoGroup.getPrice(tokenIndex, mangoCache).toNumber(),
         })
       } else if (+b.borrows > 0) {
         spotPortfolio.push({
@@ -96,10 +93,12 @@ export default function AccountOverview() {
             .getDepositRate(tokenIndex)
             .mul(I80F48.fromNumber(100)),
           orders: b.orders ? b.orders : 0,
+          unsettled: b.unsettled ? b.unsettled : 0,
+          net: b.net ? b.net : 0,
           price: mangoGroup.getPrice(tokenIndex, mangoCache).toNumber(),
           symbol: b.symbol,
           value:
-            +b.borrows.mul(mangoGroup.getPrice(tokenIndex, mangoCache)) * -1,
+            +b.net * mangoGroup.getPrice(tokenIndex, mangoCache).toNumber(),
         })
       } else {
         spotPortfolio.push({
@@ -112,6 +111,8 @@ export default function AccountOverview() {
             .getDepositRate(tokenIndex)
             .mul(I80F48.fromNumber(100)),
           orders: b.orders ? b.orders : 0,
+          unsettled: b.unsettled ? b.unsettled : 0,
+          net: b.net ? b.net : 0,
           price: mangoGroup.getPrice(tokenIndex, mangoCache).toNumber(),
           symbol: b.symbol,
           value: 0,
@@ -132,13 +133,13 @@ export default function AccountOverview() {
     setFilteredSpotPortfolio(
       !showZeroBalances
         ? spotPortfolio
-            .filter((pos) => pos.balance !== 0)
+            .filter((pos) => pos.balance !== 0 && Math.abs(pos.value) > 0.001)
             .sort((a, b) => Math.abs(b.value) - Math.abs(a.value))
         : spotPortfolio.sort((a, b) => Math.abs(b.value) - Math.abs(a.value))
     )
 
     setUnsettled(unsettled)
-  }, [mangoAccount])
+  }, [mangoAccount, showZeroBalances])
 
   const maintHealthRatio = useMemo(() => {
     return mangoAccount
@@ -321,40 +322,6 @@ export default function AccountOverview() {
           </LinkButton>
         </div>
       </div>
-      {unsettled.length > 0 ? (
-        <div className="border border-th-bkg-3 rounded-lg mb-8 p-6">
-          <div className="flex items-center justify-between pb-4">
-            <div className="flex items-center text-lg">
-              <ExclamationIcon className="h-5 mr-1.5 mt-0.5 text-th-primary w-5" />
-              Unsettled Balances
-            </div>
-            <Button
-              className="text-xs pt-0 pb-0 h-8 pl-3 pr-3"
-              onClick={handleSettleAll}
-            >
-              Settle All
-            </Button>
-          </div>
-          {unsettled.map((a) => (
-            <div
-              className="border-b border-th-bkg-4 flex items-center justify-between py-4 last:border-b-0 last:pb-0"
-              key={a.symbol}
-            >
-              <div className="flex items-center">
-                <img
-                  alt=""
-                  width="20"
-                  height="20"
-                  src={`/assets/icons/${a.symbol.toLowerCase()}.svg`}
-                  className={`mr-2.5`}
-                />
-                <div>{a.symbol}</div>
-              </div>
-              {a.balance.toFixed(tokenPrecision[a.symbol])}
-            </div>
-          ))}
-        </div>
-      ) : null}
       <div className="pb-8">
         <div className="pb-2 text-th-fgd-1 text-lg">Perp Positions</div>
         <PositionsTable />
@@ -395,248 +362,271 @@ export default function AccountOverview() {
           Show zero balances
         </Switch>
       </div>
+      {unsettled.length > 0 ? (
+        <div className="border border-th-bkg-3 rounded-lg mb-4 p-6">
+          <div className="flex items-center justify-between pb-4">
+            <div className="flex items-center text-lg">
+              <ExclamationIcon className="h-5 mr-1.5 mt-0.5 text-th-primary w-5" />
+              Unsettled Balances
+            </div>
+            <Button
+              className="text-xs pt-0 pb-0 h-8 pl-3 pr-3"
+              onClick={handleSettleAll}
+            >
+              Settle All
+            </Button>
+          </div>
+          {unsettled.map((a) => (
+            <div
+              className="border-b border-th-bkg-4 flex items-center justify-between py-4 last:border-b-0 last:pb-0"
+              key={a.symbol}
+            >
+              <div className="flex items-center">
+                <img
+                  alt=""
+                  width="20"
+                  height="20"
+                  src={`/assets/icons/${a.symbol.toLowerCase()}.svg`}
+                  className={`mr-2.5`}
+                />
+                <div>{a.symbol}</div>
+              </div>
+              {a.balance.toFixed(tokenPrecision[a.symbol])}
+            </div>
+          ))}
+        </div>
+      ) : null}
       {filteredSpotPortfolio.length > 0 ? (
-        <Table className="min-w-full divide-y divide-th-bkg-2">
-          <Thead>
-            <Tr className="text-th-fgd-3 text-xs">
-              <Th scope="col" className={`px-6 py-2 text-left`}>
-                <LinkButton
-                  className="flex font-normal items-center no-underline"
-                  onClick={() => requestSort('market')}
-                >
-                  Asset
-                  <ArrowSmDownIcon
-                    className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
-                      sortConfig?.key === 'market'
-                        ? sortConfig.direction === 'ascending'
-                          ? 'transform rotate-180'
-                          : 'transform rotate-360'
-                        : null
-                    }`}
-                  />
-                </LinkButton>
-              </Th>
-              <Th scope="col" className={`px-6 py-2 text-left`}>
-                <LinkButton
-                  className="flex font-normal items-center no-underline"
-                  onClick={() => requestSort('balance')}
-                >
-                  Balance
-                  <ArrowSmDownIcon
-                    className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
-                      sortConfig?.key === 'balance'
-                        ? sortConfig.direction === 'ascending'
-                          ? 'transform rotate-180'
-                          : 'transform rotate-360'
-                        : null
-                    }`}
-                  />
-                </LinkButton>
-              </Th>
-              <Th scope="col" className={`px-6 py-2 text-left`}>
-                <LinkButton
-                  className="flex font-normal items-center no-underline"
-                  onClick={() => requestSort('orders')}
-                >
-                  In Orders
-                  <ArrowSmDownIcon
-                    className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
-                      sortConfig?.key === 'orders'
-                        ? sortConfig.direction === 'ascending'
-                          ? 'transform rotate-180'
-                          : 'transform rotate-360'
-                        : null
-                    }`}
-                  />
-                </LinkButton>
-              </Th>
-              <Th scope="col" className={`px-6 py-2 text-left`}>
-                <LinkButton
-                  className="flex font-normal items-center no-underline"
-                  onClick={() => requestSort('price')}
-                >
-                  Price
-                  <ArrowSmDownIcon
-                    className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
-                      sortConfig?.key === 'price'
-                        ? sortConfig.direction === 'ascending'
-                          ? 'transform rotate-180'
-                          : 'transform rotate-360'
-                        : null
-                    }`}
-                  />
-                </LinkButton>
-              </Th>
-              <Th scope="col" className="px-6 py-2 text-left">
-                <LinkButton
-                  className="flex font-normal items-center no-underline"
-                  onClick={() => requestSort('value')}
-                >
-                  Value
-                  <ArrowSmDownIcon
-                    className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
-                      sortConfig?.key === 'value'
-                        ? sortConfig.direction === 'ascending'
-                          ? 'transform rotate-180'
-                          : 'transform rotate-360'
-                        : null
-                    }`}
-                  />
-                </LinkButton>
-              </Th>
-              <Th scope="col" className="px-6 py-2 text-left">
-                <LinkButton
-                  className="flex font-normal items-center no-underline"
-                  onClick={() => requestSort('depositRate')}
-                >
-                  Deposit Rate
-                  <ArrowSmDownIcon
-                    className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
-                      sortConfig?.key === 'depositRate'
-                        ? sortConfig.direction === 'ascending'
-                          ? 'transform rotate-180'
-                          : 'transform rotate-360'
-                        : null
-                    }`}
-                  />
-                </LinkButton>
-              </Th>
-              <Th scope="col" className="px-6 py-2 text-left">
-                <LinkButton
-                  className="flex font-normal items-center no-underline"
-                  onClick={() => requestSort('borrowRate')}
-                >
-                  Borrow Rate
-                  <ArrowSmDownIcon
-                    className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
-                      sortConfig?.key === 'borrowRate'
-                        ? sortConfig.direction === 'ascending'
-                          ? 'transform rotate-180'
-                          : 'transform rotate-360'
-                        : null
-                    }`}
-                  />
-                </LinkButton>
-              </Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {items.map((pos, i) => (
-              <Tr
-                key={i}
-                className={`border-b border-th-bkg-3
+        <div className="flex flex-col">
+          <div className="-mx-6">
+            <div className="align-middle inline-block min-w-full overflow-x-auto px-6">
+              <Table className="min-w-full divide-y divide-th-bkg-2">
+                <Thead>
+                  <Tr className="text-th-fgd-3 text-xs">
+                    <Th scope="col" className={`px-6 py-2 text-left`}>
+                      <LinkButton
+                        className="flex font-normal items-center no-underline"
+                        onClick={() => requestSort('market')}
+                      >
+                        Asset
+                        <ArrowSmDownIcon
+                          className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                            sortConfig?.key === 'market'
+                              ? sortConfig.direction === 'ascending'
+                                ? 'transform rotate-180'
+                                : 'transform rotate-360'
+                              : null
+                          }`}
+                        />
+                      </LinkButton>
+                    </Th>
+                    <Th scope="col" className={`px-6 py-2 text-left`}>
+                      <LinkButton
+                        className="flex font-normal items-center no-underline"
+                        onClick={() => requestSort('balance')}
+                      >
+                        Balance
+                        <ArrowSmDownIcon
+                          className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                            sortConfig?.key === 'balance'
+                              ? sortConfig.direction === 'ascending'
+                                ? 'transform rotate-180'
+                                : 'transform rotate-360'
+                              : null
+                          }`}
+                        />
+                      </LinkButton>
+                    </Th>
+                    <Th scope="col" className={`px-6 py-2 text-left`}>
+                      <LinkButton
+                        className="flex font-normal items-center no-underline"
+                        onClick={() => requestSort('orders')}
+                      >
+                        In Orders
+                        <ArrowSmDownIcon
+                          className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                            sortConfig?.key === 'orders'
+                              ? sortConfig.direction === 'ascending'
+                                ? 'transform rotate-180'
+                                : 'transform rotate-360'
+                              : null
+                          }`}
+                        />
+                      </LinkButton>
+                    </Th>
+                    <Th scope="col" className={`px-6 py-2 text-left`}>
+                      <LinkButton
+                        className="flex font-normal items-center no-underline"
+                        onClick={() => requestSort('unsettled')}
+                      >
+                        Unsettled
+                        <ArrowSmDownIcon
+                          className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                            sortConfig?.key === 'unsettled'
+                              ? sortConfig.direction === 'ascending'
+                                ? 'transform rotate-180'
+                                : 'transform rotate-360'
+                              : null
+                          }`}
+                        />
+                      </LinkButton>
+                    </Th>
+                    <Th scope="col" className={`px-6 py-2 text-left`}>
+                      <LinkButton
+                        className="flex font-normal items-center no-underline"
+                        onClick={() => requestSort('net')}
+                      >
+                        Net
+                        <ArrowSmDownIcon
+                          className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                            sortConfig?.key === 'net'
+                              ? sortConfig.direction === 'ascending'
+                                ? 'transform rotate-180'
+                                : 'transform rotate-360'
+                              : null
+                          }`}
+                        />
+                      </LinkButton>
+                    </Th>
+                    <Th scope="col" className="px-6 py-2 text-left">
+                      <LinkButton
+                        className="flex font-normal items-center no-underline"
+                        onClick={() => requestSort('value')}
+                      >
+                        Value
+                        <ArrowSmDownIcon
+                          className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                            sortConfig?.key === 'value'
+                              ? sortConfig.direction === 'ascending'
+                                ? 'transform rotate-180'
+                                : 'transform rotate-360'
+                              : null
+                          }`}
+                        />
+                      </LinkButton>
+                    </Th>
+                    <Th scope="col" className="px-6 py-2 text-left">
+                      <LinkButton
+                        className="flex font-normal items-center no-underline"
+                        onClick={() => requestSort('depositRate')}
+                      >
+                        Deposit Rate
+                        <ArrowSmDownIcon
+                          className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                            sortConfig?.key === 'depositRate'
+                              ? sortConfig.direction === 'ascending'
+                                ? 'transform rotate-180'
+                                : 'transform rotate-360'
+                              : null
+                          }`}
+                        />
+                      </LinkButton>
+                    </Th>
+                    <Th scope="col" className="px-6 py-2 text-left">
+                      <LinkButton
+                        className="flex font-normal items-center no-underline"
+                        onClick={() => requestSort('borrowRate')}
+                      >
+                        Borrow Rate
+                        <ArrowSmDownIcon
+                          className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                            sortConfig?.key === 'borrowRate'
+                              ? sortConfig.direction === 'ascending'
+                                ? 'transform rotate-180'
+                                : 'transform rotate-360'
+                              : null
+                          }`}
+                        />
+                      </LinkButton>
+                    </Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  {items.map((pos, i) => (
+                    <Tr
+                      key={i}
+                      className={`border-b border-th-bkg-3
                   ${i % 2 === 0 ? `bg-th-bkg-3` : `bg-th-bkg-2`}
                 `}
-              >
-                <Td
-                  className={`px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
-                >
-                  <div className="flex items-center">
-                    <img
-                      alt=""
-                      width="20"
-                      height="20"
-                      src={`/assets/icons/${pos.symbol.toLowerCase()}.svg`}
-                      className={`mr-2.5`}
-                    />
-                    <div>{pos.market}</div>
-                  </div>
-                </Td>
-                <Td
-                  className={`px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
-                >
-                  {pos.balance !== 0
-                    ? pos.balance.toFixed(tokenPrecision[pos.symbol])
-                    : 0}
-                </Td>
-                <Td
-                  className={`px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
-                >
-                  {pos.orders !== 0
-                    ? pos.orders.toFixed(tokenPrecision[pos.symbol])
-                    : 0}
-                </Td>
-                <Td
-                  className={`px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
-                >
-                  {formatUsdValue(pos.price)}
-                </Td>
-                <Td
-                  className={`px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
-                >
-                  {formatUsdValue(pos.value)}
-                </Td>
-                <Td
-                  className={`px-6 py-2 whitespace-nowrap text-sm text-th-green`}
-                >
-                  {pos.depositRate.toFixed(2)}%
-                </Td>
-                <Td
-                  className={`px-6 py-2 whitespace-nowrap text-sm text-th-red`}
-                >
-                  {pos.borrowRate.toFixed(2)}%
-                </Td>
-                <Td className={`px-6 py-2 flex justify-end`}>
-                  <Menu>
-                    {({ open }) => (
-                      <div className="relative h-full">
-                        <Menu.Button className="bg-th-bkg-4 flex items-center justify-center rounded-full w-8 h-8 text-th-fgd-1 focus:outline-none hover:text-th-primary">
-                          {open ? (
-                            <XIcon className="h-5 w-5" />
-                          ) : (
-                            <DotsHorizontalIcon className="h-5 w-5" />
-                          )}
-                        </Menu.Button>
-                        <Menu.Items className="bg-th-bkg-1 mt-2 p-1 absolute right-0 bottom-10 shadow-lg outline-none rounded-md w-32 z-20">
-                          <div className="border-b border-th-bkg-3 flex items-center p-2 text-th-fgd-3 text-xs">
-                            <img
-                              alt=""
-                              width="12"
-                              height="12"
-                              src={`/assets/icons/${pos.symbol.toLowerCase()}.svg`}
-                              className={`mr-1.5`}
-                            />
-                            {pos.symbol}
-                          </div>
-                          {pos.symbol !== 'USDC' ? (
-                            <Menu.Item>
-                              <Link
-                                href={`/spot/${pos.symbol}`}
-                                key={pos.symbol}
-                              >
-                                <a className="block font-normal p-2 rounded-none text-th-fgd-1 w-full hover:bg-th-bkg-2 hover:cursor-pointer hover:text-th-fgd-1 focus:outline-none">
-                                  <div className="text-left">Trade</div>
-                                </a>
-                              </Link>
-                            </Menu.Item>
-                          ) : null}
-                          <Menu.Item>
-                            <button
-                              className="font-normal rounded-none w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer focus:outline-none"
-                              onClick={() => handleOpenDepositModal(pos.symbol)}
-                            >
-                              <div className="text-left">Deposit</div>
-                            </button>
-                          </Menu.Item>
-                          <Menu.Item>
-                            <button
-                              className="font-normal rounded-none w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer focus:outline-none"
-                              onClick={() =>
-                                handleOpenWithdrawModal(pos.symbol)
-                              }
-                            >
-                              <div className="text-left">Withdraw</div>
-                            </button>
-                          </Menu.Item>
-                        </Menu.Items>
-                      </div>
-                    )}
-                  </Menu>
-                </Td>
-              </Tr>
-            ))}
-          </Tbody>
-        </Table>
+                    >
+                      <Td
+                        className={`px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
+                      >
+                        <div className="flex items-center">
+                          <img
+                            alt=""
+                            width="20"
+                            height="20"
+                            src={`/assets/icons/${pos.symbol.toLowerCase()}.svg`}
+                            className={`mr-2.5`}
+                          />
+                          <div>{pos.market}</div>
+                        </div>
+                      </Td>
+                      <Td
+                        className={`px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
+                      >
+                        {pos.balance !== 0
+                          ? pos.balance.toFixed(tokenPrecision[pos.symbol])
+                          : 0}
+                      </Td>
+                      <Td
+                        className={`px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
+                      >
+                        {pos.orders !== 0
+                          ? pos.orders.toFixed(tokenPrecision[pos.symbol])
+                          : 0}
+                      </Td>
+                      <Td
+                        className={`px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
+                      >
+                        {pos.unsettled !== 0
+                          ? pos.unsettled.toFixed(tokenPrecision[pos.symbol])
+                          : 0}
+                      </Td>
+                      <Td
+                        className={`px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
+                      >
+                        {pos.net !== 0
+                          ? pos.net.toFixed(tokenPrecision[pos.symbol])
+                          : 0}
+                      </Td>
+                      <Td
+                        className={`px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
+                      >
+                        {formatUsdValue(pos.value)}
+                      </Td>
+                      <Td
+                        className={`px-6 py-2 whitespace-nowrap text-sm text-th-green`}
+                      >
+                        {pos.depositRate.toFixed(2)}%
+                      </Td>
+                      <Td
+                        className={`px-6 py-2 whitespace-nowrap text-sm text-th-red`}
+                      >
+                        {pos.borrowRate.toFixed(2)}%
+                      </Td>
+                      <Td className={`px-6 py-2 flex justify-end`}>
+                        <Button
+                          className="text-xs pt-0 pb-0 h-8 pl-3 pr-3"
+                          onClick={() => handleOpenDepositModal(pos.symbol)}
+                        >
+                          Deposit
+                        </Button>
+                        <Button
+                          className="text-xs pt-0 pb-0 h-8 ml-4 pl-3 pr-3"
+                          onClick={() => handleOpenWithdrawModal(pos.symbol)}
+                        >
+                          Withdraw
+                        </Button>
+                      </Td>
+                    </Tr>
+                  ))}
+                </Tbody>
+              </Table>
+            </div>
+          </div>
+        </div>
       ) : (
         <div
           className={`w-full text-center py-6 bg-th-bkg-1 text-th-fgd-3 rounded-md`}
