@@ -116,6 +116,7 @@ interface MangoStore extends State {
     current: Connection
     websocket: Connection
     endpoint: string
+    slot: number
   }
   selectedMarket: {
     config: MarketConfig
@@ -173,6 +174,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
     current: DEFAULT_CONNECTION,
     websocket: WEBSOCKET_CONNECTION,
     endpoint: ENDPOINT.url,
+    slot: 0,
   },
   selectedMangoGroup: {
     config: DEFAULT_MANGO_GROUP_CONFIG,
@@ -352,8 +354,11 @@ const useMangoStore = create<MangoStore>((set, get) => ({
 
             allMarketAccountInfos
               .concat(allBidsAndAsksAccountInfos)
-              .forEach(({ publicKey, accountInfo }) => {
-                state.accountInfos[publicKey.toBase58()] = accountInfo
+              .forEach(({ publicKey, context, accountInfo }) => {
+                if (context.slot > state.connection.slot) {
+                  state.connection.slot = context.slot
+                  state.accountInfos[publicKey.toBase58()] = accountInfo
+                }
               })
           })
         })
@@ -400,22 +405,22 @@ const useMangoStore = create<MangoStore>((set, get) => ({
     },
     async updateOpenOrders() {
       const set = get().set
-      const mangoGroupConfig = get().selectedMangoGroup.config
-      const allMarketConfigs = getAllMarkets(mangoGroupConfig)
-
-      const allBidsAndAsksPks = allMarketConfigs
-        .map((m) => [m.bidsKey, m.asksKey])
-        .flat()
+      const marketConfig = get().selectedMarket.config
 
       const allBidsAndAsksAccountInfos = await getMultipleAccounts(
         DEFAULT_CONNECTION,
-        allBidsAndAsksPks
+        [marketConfig.bidsKey, marketConfig.asksKey]
       )
 
       set((state) => {
-        allBidsAndAsksAccountInfos.forEach(({ publicKey, accountInfo }) => {
-          state.accountInfos[publicKey.toBase58()] = accountInfo
-        })
+        allBidsAndAsksAccountInfos.forEach(
+          ({ publicKey, context, accountInfo }) => {
+            if (context.slot > state.connection.slot) {
+              state.connection.slot = context.slot
+              state.accountInfos[publicKey.toBase58()] = accountInfo
+            }
+          }
+        )
       })
     },
   },

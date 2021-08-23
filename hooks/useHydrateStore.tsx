@@ -40,11 +40,13 @@ const useHydrateStore = () => {
 
     const bidSubscriptionId = WEBSOCKET_CONNECTION.onAccountChange(
       marketConfig.bidsKey,
-      (info) => {
+      (info, context) => {
+        const lastSlot = useMangoStore.getState().connection.slot
         if (
           !previousBidInfo ||
           !previousBidInfo.data.equals(info.data) ||
-          previousBidInfo.lamports !== info.lamports
+          (previousBidInfo.lamports !== info.lamports &&
+            context.slot > lastSlot)
         ) {
           previousBidInfo = info
           setMangoStore((state) => {

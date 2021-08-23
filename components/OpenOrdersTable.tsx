@@ -12,7 +12,7 @@ import SideBadge from './SideBadge'
 import { useSortableData } from '../hooks/useSortableData'
 import { Order, Market } from '@project-serum/serum/lib/market'
 import { PerpOrder, PerpMarket } from '@blockworks-foundation/mango-client'
-import { formatUsdValue } from '../utils'
+import { formatUsdValue, sleep } from '../utils'
 
 const OpenOrdersTable = () => {
   const { asPath } = useRouter()
@@ -51,8 +51,6 @@ const OpenOrdersTable = () => {
           order as PerpOrder
         )
       }
-      actions.updateOpenOrders()
-      actions.fetchMangoAccounts()
     } catch (e) {
       notify({
         title: 'Error cancelling order',
@@ -64,6 +62,10 @@ const OpenOrdersTable = () => {
 
       return
     } finally {
+      sleep(500).then(() => {
+        actions.fetchMangoAccounts()
+        actions.updateOpenOrders()
+      })
       setCancelId(null)
     }
   }
