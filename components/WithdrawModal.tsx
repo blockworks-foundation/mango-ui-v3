@@ -84,14 +84,19 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
       tokenIndex
     )
 
+    const maxWithoutBorrows = getDepositsForSelectedAsset()
+    const maxWithBorrows = mangoAccount.getMaxWithBorrowForToken(
+      mangoGroup,
+      mangoCache,
+      tokenIndex
+    )
+
     // get max withdraw amount
     const maxWithdraw = includeBorrow
-      ? mangoAccount.getMaxWithBorrowForToken(
-          mangoGroup,
-          mangoCache,
-          tokenIndex
-        )
-      : getDepositsForSelectedAsset()
+      ? maxWithBorrows
+      : maxWithoutBorrows.gt(maxWithBorrows)
+      ? maxWithBorrows
+      : maxWithoutBorrows
 
     if (maxWithdraw.gt(I80F48.fromNumber(0))) {
       setMaxAmount(
@@ -415,7 +420,11 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                 suffix={withdrawTokenSymbol}
               />
               {simulation ? (
-                <Tooltip content="Projected Leverage" className="py-1">
+                <Tooltip
+                  placement="right"
+                  content="Projected Leverage"
+                  className="py-1"
+                >
                   <span
                     className={`${getAccountStatusColor(
                       simulation.initHealthRatio

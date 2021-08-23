@@ -66,7 +66,8 @@ const handleSettlePnl = async (
 export function SettlePnlTooltip() {
   return (
     <div>
-      Settling will update your USDC balance to reflect the PnL amount.{' '}
+      Settling will update your USDC balance to reflect the unsettled PnL
+      amount.{' '}
       <a
         href="https://docs.mango.markets/mango-v3/overview#settle-pnl"
         target="_blank"

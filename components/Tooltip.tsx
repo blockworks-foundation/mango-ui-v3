@@ -4,14 +4,21 @@ import 'tippy.js/animations/scale.css'
 
 type TooltipProps = {
   content: ReactNode
+  placement?: any
   className?: string
   children?: ReactNode
 }
 
-const Tooltip = ({ children, content, className }: TooltipProps) => {
+const Tooltip = ({
+  children,
+  content,
+  className,
+  placement = 'top',
+}: TooltipProps) => {
   return (
     <Tippy
       animation="scale"
+      placement={placement}
       appendTo={() => document.body}
       maxWidth="20rem"
       interactive
