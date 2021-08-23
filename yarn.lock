@@ -994,8 +994,8 @@
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
 "@blockworks-foundation/mango-client@git+https://github.com/blockworks-foundation/mango-client-v3.git":
-  version "3.0.6"
-  resolved "git+https://github.com/blockworks-foundation/mango-client-v3.git#06bf59ea10431297b5118977a4ca8944f77451f9"
+  version "3.0.9"
+  resolved "git+https://github.com/blockworks-foundation/mango-client-v3.git#d5d6820d4e9cbd441c42415f65971cf18b457d7d"
   dependencies:
     "@project-serum/serum" "0.13.55"
     "@project-serum/sol-wallet-adapter" "^0.2.0"
@@ -1003,7 +1003,7 @@
     "@solana/web3.js" "1.21.0"
     big.js "^6.1.1"
     bigint-buffer "^1.1.5"
-    bn.js "^5.1.2"
+    bn.js "^5.1.0"
     borsh "https://github.com/defactojob/borsh-js#field-mapper"
     buffer-layout "^1.2.1"
     yargs "^17.0.1"
