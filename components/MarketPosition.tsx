@@ -343,9 +343,11 @@ export default function MarketPosition() {
                         </div>
                       </div>
                       <div className="pb-3">
-                        <div className="pb-0.5 text-th-fgd-3 text-xs">
-                          Available Balance
-                        </div>
+                        <Tooltip content="Available to withdraw after accounting for collateral and open orders">
+                          <div className="pb-0.5 text-th-fgd-3 text-xs">
+                            Available Balance
+                          </div>
+                        </Tooltip>
                         <div className={`text-th-fgd-1`}>
                           {isLoading ? (
                             <DataLoader />
