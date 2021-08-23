@@ -9,6 +9,7 @@ import useOraclePrice from '../hooks/useOraclePrice'
 import DayHighLow from './DayHighLow'
 import { useEffect } from 'react'
 import { formatUsdValue } from '../utils'
+import { PerpMarket } from '@blockworks-foundation/mango-client'
 
 function calculateFundingRate(perpStats, perpMarket, oraclePrice) {
   const oldestStat = perpStats[perpStats.length - 1]
@@ -34,10 +35,10 @@ function calculateFundingRate(perpStats, perpMarket, oraclePrice) {
   return (fundingInQuoteDecimals / basePriceInBaseLots) * 100
 }
 
-function parseOpenInterest(perpStats, perpMarket) {
-  if (!perpStats?.length || !perpMarket) return 0
+function parseOpenInterest(perpMarket: PerpMarket) {
+  if (!perpMarket) return 0
 
-  return perpMarket.baseLotsToNumber(perpStats[0].openInterest / 2)
+  return perpMarket.baseLotsToNumber(perpMarket.openInterest) / 2
 }
 
 const MarketHeader = () => {
@@ -232,11 +233,8 @@ const MarketHeader = () => {
                   Open Interest
                 </div>
                 <div className="font-semibold text-th-fgd-1 text-xs">
-                  {parseOpenInterest(perpStats, selectedMarket) ? (
-                    `${parseOpenInterest(
-                      perpStats,
-                      selectedMarket
-                    )} ${baseSymbol}`
+                  {selectedMarket ? (
+                    `${parseOpenInterest(selectedMarket)} ${baseSymbol}`
                   ) : (
                     <MarketDataLoader />
                   )}
