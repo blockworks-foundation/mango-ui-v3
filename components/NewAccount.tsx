@@ -121,9 +121,6 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
     if (name.length >= 33) {
       setInvalidNameMessage('Account name must be 32 characters or less')
     }
-    if (name.length === 0) {
-      setInvalidNameMessage('Enter an account name')
-    }
   }
 
   const onChangeNameInput = (name) => {
