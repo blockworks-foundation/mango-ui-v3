@@ -74,11 +74,12 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
 
         onAccountCreation(response)
       })
-      .catch((err) => {
+      .catch((e) => {
         setSubmitting(false)
-        console.error(err)
+        console.error(e)
         notify({
           title: 'Could not perform init margin account and deposit operation',
+          description: e.message,
           type: 'error',
         })
         onAccountCreation()

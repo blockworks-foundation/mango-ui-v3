@@ -96,7 +96,10 @@ export default function useWallet() {
         state.wallet.connected = true
       })
       // set connected before fetching data
-
+      notify({
+        title: 'Connecting wallet...',
+        type: 'info',
+      })
       await actions.fetchMangoAccounts()
       actions.fetchTradeHistory()
       actions.fetchWalletTokens()

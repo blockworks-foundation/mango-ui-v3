@@ -248,14 +248,15 @@ const useMangoStore = create<MangoStore>((set, get) => ({
       }
     },
     async fetchMangoAccounts() {
+      const set = get().set
       const mangoGroup = get().selectedMangoGroup.current
       const wallet = get().wallet.current
-      const set = get().set
+      const walletPk = wallet?.publicKey
 
-      if (!wallet?.publicKey || !wallet.publicKey) return
+      if (!walletPk) return
 
       return mangoClient
-        .getMangoAccountsForOwner(mangoGroup, wallet.publicKey, true)
+        .getMangoAccountsForOwner(mangoGroup, walletPk, true)
         .then((mangoAccounts) => {
           if (mangoAccounts.length > 0) {
             const sortedAccounts = mangoAccounts

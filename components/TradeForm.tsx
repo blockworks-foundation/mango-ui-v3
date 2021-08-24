@@ -292,7 +292,7 @@ export default function TradeForm() {
         type: 'error',
       })
     } finally {
-      sleep(500).then(() => {
+      sleep(1000).then(() => {
         actions.fetchMangoAccounts()
         actions.updateOpenOrders()
       })

@@ -15,7 +15,7 @@ export function useAccountData(publicKey) {
 }
 
 function decodeBook(market, accInfo: AccountInfo<Buffer>): number[][] {
-  if (market && accInfo) {
+  if (market && accInfo?.data) {
     const depth = 20
     if (market instanceof Market) {
       const book = SpotOrderBook.decode(market, accInfo.data)

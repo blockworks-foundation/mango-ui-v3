@@ -50,7 +50,7 @@ const FloatingElement: FunctionComponent<FloatingElementProps> = ({
               <EmptyState
                 buttonText="Connect"
                 icon={<LinkIcon />}
-                onClickButton={() => wallet.connect()}
+                onClickButton={() => (wallet ? wallet.connect() : null)}
                 title="Connect Wallet"
               />
             </div>

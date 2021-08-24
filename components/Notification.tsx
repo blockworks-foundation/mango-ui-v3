@@ -6,10 +6,43 @@ import {
   XCircleIcon,
 } from '@heroicons/react/outline'
 import useMangoStore from '../stores/useMangoStore'
+import { notify } from '../utils/notifications'
 
 const NotificationList = () => {
   const setMangoStore = useMangoStore((s) => s.set)
   const notifications = useMangoStore((s) => s.notifications)
+  const walletTokens = useMangoStore((s) => s.wallet.tokens)
+
+  // if a notification is shown with {"InstructionError":[0,{"Custom":1}]} then
+  // add a notification letting the user know they may not have enough SOL
+  useEffect(() => {
+    if (notifications.length) {
+      const notEnoughSoLMessage =
+        'You may not have enough SOL for this transaction'
+      const customErrorNotification = notifications.find(
+        (n) => n.description && n.description.includes('"Custom":1')
+      )
+      const notEnoughSolNotification = notifications.find(
+        (n) => n.title && n.title.includes(notEnoughSoLMessage)
+      )
+      const solBalance = walletTokens.find(
+        (t) => t.config.symbol === 'SOL'
+      )?.uiBalance
+
+      if (
+        customErrorNotification &&
+        solBalance < 0.04 &&
+        !notEnoughSolNotification
+      ) {
+        notify({
+          title: notEnoughSoLMessage,
+          type: 'info',
+        })
+      }
+      console.log('notifications', notifications)
+      console.log('walletTokens', walletTokens)
+    }
+  }, [notifications, walletTokens])
 
   useEffect(() => {
     if (notifications.length > 0) {
@@ -61,10 +94,10 @@ const Notification = ({ type, title, description, txid }) => {
             <CheckCircleIcon className={`text-th-green h-7 w-7 mr-1`} />
           ) : null}
           {type === 'info' && (
-            <XCircleIcon className={`text-th-primary h-7 w-7 mr-1`} />
+            <InformationCircleIcon className={`text-th-primary h-7 w-7 mr-1`} />
           )}
           {type === 'error' && (
-            <InformationCircleIcon className={`text-th-red h-7 w-7 mr-1`} />
+            <XCircleIcon className={`text-th-red h-7 w-7 mr-1`} />
           )}
         </div>
         <div className={`ml-2 w-0 flex-1`}>
