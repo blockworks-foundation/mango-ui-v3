@@ -8,6 +8,8 @@ import {
 import useMangoStore from '../stores/useMangoStore'
 import { notify } from '../utils/notifications'
 
+const notEnoughSoLMessage = 'You may not have enough SOL for this transaction'
+
 const NotificationList = () => {
   const setMangoStore = useMangoStore((s) => s.set)
   const notifications = useMangoStore((s) => s.notifications)
@@ -17,8 +19,6 @@ const NotificationList = () => {
   // add a notification letting the user know they may not have enough SOL
   useEffect(() => {
     if (notifications.length) {
-      const notEnoughSoLMessage =
-        'You may not have enough SOL for this transaction'
       const customErrorNotification = notifications.find(
         (n) => n.description && n.description.includes('"Custom":1')
       )
@@ -39,8 +39,6 @@ const NotificationList = () => {
           type: 'info',
         })
       }
-      console.log('notifications', notifications)
-      console.log('walletTokens', walletTokens)
     }
   }, [notifications, walletTokens])
 
