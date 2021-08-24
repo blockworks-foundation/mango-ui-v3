@@ -271,6 +271,24 @@ export default function MarketPosition() {
                 .reverse()
                 .map(({ symbol, mintKey }) => {
                   const tokenIndex = mangoGroup.getTokenIndex(mintKey)
+                  const deposit = mangoAccount
+                    ? mangoAccount
+                        .getUiDeposit(
+                          mangoGroupCache.rootBankCache[tokenIndex],
+                          mangoGroup,
+                          tokenIndex
+                        )
+                        .toNumber()
+                    : null
+                  const borrow = mangoAccount
+                    ? mangoAccount
+                        .getUiBorrow(
+                          mangoGroupCache.rootBankCache[tokenIndex],
+                          mangoGroup,
+                          tokenIndex
+                        )
+                        .toNumber()
+                    : null
                   return (
                     <div
                       className="border border-th-bkg-4 p-4 rounded-md"
@@ -294,46 +312,16 @@ export default function MarketPosition() {
                           {isLoading ? (
                             <DataLoader />
                           ) : mangoAccount ? (
-                            floorToDecimal(
-                              mangoAccount
-                                .getUiDeposit(
-                                  mangoGroupCache.rootBankCache[tokenIndex],
-                                  mangoGroup,
-                                  tokenIndex
-                                )
-                                .toNumber(),
-                              tokenPrecision[symbol]
-                            ) > 0 ? (
+                            deposit > 0 ? (
                               floorToDecimal(
-                                mangoAccount
-                                  .getUiDeposit(
-                                    mangoGroupCache.rootBankCache[tokenIndex],
-                                    mangoGroup,
-                                    tokenIndex
-                                  )
-                                  .toNumber(),
-                                tokenPrecision[symbol]
-                              )
-                            ) : ceilToDecimal(
-                                mangoAccount
-                                  .getUiBorrow(
-                                    mangoGroupCache.rootBankCache[tokenIndex],
-                                    mangoGroup,
-                                    tokenIndex
-                                  )
-                                  .toNumber(),
-                                tokenPrecision[symbol]
-                              ) > 0 ? (
+                                deposit,
+                                mangoGroup.tokens[tokenIndex].decimals
+                              ).toFixed(tokenPrecision[symbol])
+                            ) : borrow > 0 ? (
                               `-${ceilToDecimal(
-                                mangoAccount
-                                  .getUiBorrow(
-                                    mangoGroupCache.rootBankCache[tokenIndex],
-                                    mangoGroup,
-                                    tokenIndex
-                                  )
-                                  .toNumber(),
-                                tokenPrecision[symbol]
-                              )}`
+                                borrow,
+                                mangoGroup.tokens[tokenIndex].decimals
+                              ).toFixed(tokenPrecision[symbol])}`
                             ) : (
                               0
                             )

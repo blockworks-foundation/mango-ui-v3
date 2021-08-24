@@ -340,3 +340,11 @@ export const formatUsdValue = (value) => {
       : 4
   return usdFormatter(value, precision)
 }
+
+export const countLeadingZeros = (x) => {
+  if (x % 1 == 0) {
+    return 0
+  } else {
+    return -1 - Math.floor(Math.log10(x % 1))
+  }
+}
