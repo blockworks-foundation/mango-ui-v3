@@ -23,7 +23,12 @@ import useMangoStore, {
 import { useBalances } from '../../hooks/useBalances'
 import { useSortableData } from '../../hooks/useSortableData'
 import useLocalStorageState from '../../hooks/useLocalStorageState'
-import { sleep, tokenPrecision, formatUsdValue } from '../../utils'
+import {
+  sleep,
+  tokenPrecision,
+  formatUsdValue,
+  floorToDecimal,
+} from '../../utils'
 import { notify } from '../../utils/notifications'
 import { Market } from '@project-serum/serum'
 import Button, { LinkButton } from '../Button'
@@ -54,6 +59,7 @@ export default function AccountOverview() {
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
+  const mangoGroupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const { items, requestSort, sortConfig } = useSortableData(
     filteredSpotPortfolio
   )
@@ -359,7 +365,7 @@ export default function AccountOverview() {
           className="text-xs"
           onChange={handleShowZeroBalances}
         >
-          Show zero balances
+          Show zero and dust balances
         </Switch>
       </div>
       {unsettled.length > 0 ? (
@@ -376,24 +382,27 @@ export default function AccountOverview() {
               Settle All
             </Button>
           </div>
-          {unsettled.map((a) => (
-            <div
-              className="border-b border-th-bkg-4 flex items-center justify-between py-4 last:border-b-0 last:pb-0"
-              key={a.symbol}
-            >
-              <div className="flex items-center">
-                <img
-                  alt=""
-                  width="20"
-                  height="20"
-                  src={`/assets/icons/${a.symbol.toLowerCase()}.svg`}
-                  className={`mr-2.5`}
-                />
-                <div>{a.symbol}</div>
+          {unsettled.map((a) => {
+            const tokenConfig = getTokenBySymbol(mangoGroupConfig, a.symbol)
+            return (
+              <div
+                className="border-b border-th-bkg-4 flex items-center justify-between py-4 last:border-b-0 last:pb-0"
+                key={a.symbol}
+              >
+                <div className="flex items-center">
+                  <img
+                    alt=""
+                    width="20"
+                    height="20"
+                    src={`/assets/icons/${a.symbol.toLowerCase()}.svg`}
+                    className={`mr-2.5`}
+                  />
+                  <div>{a.symbol}</div>
+                </div>
+                {floorToDecimal(parseFloat(a.balance), tokenConfig.decimals)}
               </div>
-              {a.balance.toFixed(tokenPrecision[a.symbol])}
-            </div>
-          ))}
+            )
+          })}
         </div>
       ) : null}
       {filteredSpotPortfolio.length > 0 ? (
@@ -542,86 +551,101 @@ export default function AccountOverview() {
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {items.map((pos, i) => (
-                    <Tr
-                      key={i}
-                      className={`border-b border-th-bkg-3
+                  {items.map((pos, i) => {
+                    const tokenConfig = getTokenBySymbol(
+                      mangoGroupConfig,
+                      pos.symbol
+                    )
+                    return (
+                      <Tr
+                        key={i}
+                        className={`border-b border-th-bkg-3
                   ${i % 2 === 0 ? `bg-th-bkg-3` : `bg-th-bkg-2`}
                 `}
-                    >
-                      <Td
-                        className={`px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
                       >
-                        <div className="flex items-center">
-                          <img
-                            alt=""
-                            width="20"
-                            height="20"
-                            src={`/assets/icons/${pos.symbol.toLowerCase()}.svg`}
-                            className={`mr-2.5`}
-                          />
-                          <div>{pos.market}</div>
-                        </div>
-                      </Td>
-                      <Td
-                        className={`px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
-                      >
-                        {pos.balance !== 0
-                          ? pos.balance.toFixed(tokenPrecision[pos.symbol])
-                          : 0}
-                      </Td>
-                      <Td
-                        className={`px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
-                      >
-                        {pos.orders !== 0
-                          ? pos.orders.toFixed(tokenPrecision[pos.symbol])
-                          : 0}
-                      </Td>
-                      <Td
-                        className={`px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
-                      >
-                        {pos.unsettled !== 0
-                          ? pos.unsettled.toFixed(tokenPrecision[pos.symbol])
-                          : 0}
-                      </Td>
-                      <Td
-                        className={`px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
-                      >
-                        {pos.net !== 0
-                          ? pos.net.toFixed(tokenPrecision[pos.symbol])
-                          : 0}
-                      </Td>
-                      <Td
-                        className={`px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
-                      >
-                        {formatUsdValue(pos.value)}
-                      </Td>
-                      <Td
-                        className={`px-6 py-2 whitespace-nowrap text-sm text-th-green`}
-                      >
-                        {pos.depositRate.toFixed(2)}%
-                      </Td>
-                      <Td
-                        className={`px-6 py-2 whitespace-nowrap text-sm text-th-red`}
-                      >
-                        {pos.borrowRate.toFixed(2)}%
-                      </Td>
-                      <Td className={`px-6 py-2 flex justify-end`}>
-                        <Button
-                          className="text-xs pt-0 pb-0 h-8 pl-3 pr-3"
-                          onClick={() => handleOpenDepositModal(pos.symbol)}
+                        <Td
+                          className={`px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
                         >
-                          Deposit
-                        </Button>
-                        <Button
-                          className="text-xs pt-0 pb-0 h-8 ml-4 pl-3 pr-3"
-                          onClick={() => handleOpenWithdrawModal(pos.symbol)}
+                          <div className="flex items-center">
+                            <img
+                              alt=""
+                              width="20"
+                              height="20"
+                              src={`/assets/icons/${pos.symbol.toLowerCase()}.svg`}
+                              className={`mr-2.5`}
+                            />
+                            <div>{pos.market}</div>
+                          </div>
+                        </Td>
+                        <Td
+                          className={`px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
                         >
-                          Withdraw
-                        </Button>
-                      </Td>
-                    </Tr>
-                  ))}
+                          {pos.balance !== 0
+                            ? floorToDecimal(
+                                parseFloat(pos.balance),
+                                tokenConfig.decimals
+                              )
+                            : 0}
+                        </Td>
+                        <Td
+                          className={`px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
+                        >
+                          {pos.orders !== 0
+                            ? pos.orders.toFixed(tokenPrecision[pos.symbol])
+                            : 0}
+                        </Td>
+                        <Td
+                          className={`px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
+                        >
+                          {pos.unsettled !== 0
+                            ? floorToDecimal(
+                                parseFloat(pos.unsettled),
+                                tokenConfig.decimals
+                              )
+                            : 0}
+                        </Td>
+                        <Td
+                          className={`px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
+                        >
+                          {pos.net !== 0
+                            ? floorToDecimal(
+                                parseFloat(pos.net),
+                                tokenConfig.decimals
+                              )
+                            : 0}
+                        </Td>
+                        <Td
+                          className={`px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
+                        >
+                          {formatUsdValue(pos.value)}
+                        </Td>
+                        <Td
+                          className={`px-6 py-2 whitespace-nowrap text-sm text-th-green`}
+                        >
+                          {pos.depositRate.toFixed(2)}%
+                        </Td>
+                        <Td
+                          className={`px-6 py-2 whitespace-nowrap text-sm text-th-red`}
+                        >
+                          {pos.borrowRate.toFixed(2)}%
+                        </Td>
+                        <Td className={`px-6 py-2 flex justify-end`}>
+                          <Button
+                            className="text-xs pt-0 pb-0 h-8 pl-3 pr-3"
+                            onClick={() => handleOpenDepositModal(pos.symbol)}
+                          >
+                            Deposit
+                          </Button>
+                          <Button
+                            className="text-xs pt-0 pb-0 h-8 ml-4 pl-3 pr-3"
+                            onClick={() => handleOpenWithdrawModal(pos.symbol)}
+                          >
+                            Withdraw
+                          </Button>
+                        </Td>
+                      </Tr>
+                    )
+                  })}
                 </Tbody>
               </Table>
             </div>

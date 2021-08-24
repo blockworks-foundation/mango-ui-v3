@@ -317,21 +317,25 @@ export async function getOrderBookAccountInfos(
   return await getMultipleAccounts(DEFAULT_CONNECTION, orderBookPks)
 }
 
-export const usdFormatter = (value, decimals = 2) =>
-  new Intl.NumberFormat('en-US', {
+export const usdFormatter = (value, decimals = 2) => {
+  if (decimals === 0) {
+    value = Math.abs(value)
+  }
+  return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
   }).format(value)
+}
 
 export const formatUsdValue = (value) => {
   const precision =
     value >= 1 || value <= -1
       ? 2
       : value === 0 ||
-        (value > 0 && value < 0.0001) ||
-        (value < 0 && value > -0.0001)
+        (value > 0 && value < 0.001) ||
+        (value < 0 && value > -0.001)
       ? 0
       : 4
   return usdFormatter(value, precision)
