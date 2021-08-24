@@ -25,6 +25,7 @@ import {
   ZERO_I80F48,
   I80F48,
   MangoAccount,
+  nativeI80F48ToUi,
 } from '@blockworks-foundation/mango-client'
 import { notify } from '../utils/notifications'
 
@@ -84,7 +85,10 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
       tokenIndex
     )
 
-    const maxWithoutBorrows = getDepositsForSelectedAsset()
+    const maxWithoutBorrows = nativeI80F48ToUi(
+      mangoAccount.getAvailableBalance(mangoGroup, mangoCache, tokenIndex),
+      mangoGroup.tokens[tokenIndex].decimals
+    )
     const maxWithBorrows = mangoAccount.getMaxWithBorrowForToken(
       mangoGroup,
       mangoCache,
@@ -92,11 +96,12 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
     )
 
     // get max withdraw amount
-    const maxWithdraw = includeBorrow
-      ? maxWithBorrows
-      : maxWithoutBorrows.gt(maxWithBorrows)
-      ? maxWithBorrows
-      : maxWithoutBorrows
+    let maxWithdraw = maxWithoutBorrows
+    if (includeBorrow) {
+      maxWithdraw = maxWithoutBorrows.gt(maxWithBorrows)
+        ? maxWithoutBorrows
+        : maxWithBorrows
+    }
 
     if (maxWithdraw.gt(I80F48.fromNumber(0))) {
       setMaxAmount(
