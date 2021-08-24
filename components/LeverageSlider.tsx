@@ -109,7 +109,7 @@ export default function LeverageSlider({
       priceOrDefault
     )
 
-    if (maxQuote.toNumber() <= 0) return 0
+    if (maxQuote.toNumber() <= 0) return { max: 0 }
     // multiply the maxQuote by a scaler value to account for
     // srm fees or rounding issues in getMaxLeverageForMarket
     const maxScaler = market instanceof PerpMarket ? 0.99 : 0.95
