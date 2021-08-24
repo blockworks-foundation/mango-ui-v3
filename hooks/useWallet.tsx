@@ -97,7 +97,7 @@ export default function useWallet() {
       })
       // set connected before fetching data
       notify({
-        title: 'Connecting wallet...',
+        title: 'Loading account...',
         type: 'info',
       })
       await actions.fetchMangoAccounts()
