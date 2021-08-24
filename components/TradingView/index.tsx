@@ -48,6 +48,7 @@ const TVChartContainer = () => {
     studiesOverrides: {
       'volume.volume.color.0': theme === 'Mango' ? '#E54033' : '#CC2929',
       'volume.volume.color.1': theme === 'Mango' ? '#AFD803' : '#5EBF4D',
+      'volume.precision': 4,
     },
   }
 
