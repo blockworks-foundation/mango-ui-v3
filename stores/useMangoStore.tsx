@@ -356,7 +356,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
             allMarketAccountInfos
               .concat(allBidsAndAsksAccountInfos)
               .forEach(({ publicKey, context, accountInfo }) => {
-                if (context.slot > state.connection.slot) {
+                if (context.slot >= state.connection.slot) {
                   state.connection.slot = context.slot
                   state.accountInfos[publicKey.toBase58()] = accountInfo
                 }
@@ -416,7 +416,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
       set((state) => {
         allBidsAndAsksAccountInfos.forEach(
           ({ publicKey, context, accountInfo }) => {
-            if (context.slot > state.connection.slot) {
+            if (context.slot >= state.connection.slot) {
               state.connection.slot = context.slot
               state.accountInfos[publicKey.toBase58()] = accountInfo
             }
