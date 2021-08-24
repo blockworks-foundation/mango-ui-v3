@@ -60,8 +60,6 @@ const OpenOrdersTable = () => {
         type: 'error',
       })
       console.log('error', `${e}`)
-
-      return
     } finally {
       sleep(500).then(() => {
         actions.fetchMangoAccounts()

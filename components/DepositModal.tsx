@@ -78,7 +78,6 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
           type: 'success',
           txid: response.toString(),
         })
-        console.log('deposit response', response)
         setSubmitting(false)
         onClose()
         actions.fetchMangoAccounts()

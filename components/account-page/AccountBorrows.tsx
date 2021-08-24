@@ -77,8 +77,6 @@ export default function AccountBorrows() {
                 .filter((assets) => assets.borrows.gt(ZERO_I80F48))
                 .map((asset, i) => {
                   const token = getTokenBySymbol(mangoConfig, asset.symbol)
-                  console.log('token', mangoConfig, asset.symbol)
-
                   const tokenIndex = mangoGroup.getTokenIndex(token.mintKey)
                   return (
                     <Tr

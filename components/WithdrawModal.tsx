@@ -252,7 +252,6 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   }
 
   const setMaxForSelectedAsset = async () => {
-    console.log('setting max borrow for selected', maxAmount)
     setInputAmount(maxAmount.toString())
     setSliderPercentage(100)
     setInvalidAmountMessage('')

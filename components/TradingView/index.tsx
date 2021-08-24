@@ -52,8 +52,6 @@ const TVChartContainer = () => {
   }
 
   const tvWidgetRef = useRef<IChartingLibraryWidget | null>(null)
-  // TODO: fetch market from store and wire up to chart
-  // const { market, marketName } = useMarket()
 
   useEffect(() => {
     const widgetOptions: ChartingLibraryWidgetOptions = {
@@ -144,9 +142,6 @@ const TVChartContainer = () => {
     })
     //eslint-disable-next-line
   }, [selectedMarketConfig, theme])
-
-  // TODO: add market back to dep array
-  // }, [market])
 
   return <div id={defaultProps.containerId} className="tradingview-chart" />
 }
