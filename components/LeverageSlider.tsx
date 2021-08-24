@@ -142,12 +142,12 @@ export default function LeverageSlider({
 
   const closeDepositString =
     percentToClose(value, roundedDeposits) > 100
-      ? '100% Close Position + Leverage'
+      ? '100% Close Position'
       : `${percentToClose(value, roundedDeposits).toFixed(2)}% Close Position`
 
   const closeBorrowString =
     percentToClose(value, roundedBorrows) > 100
-      ? '100% Close Position + Leverage'
+      ? '100% Close Position'
       : `${percentToClose(value, roundedBorrows).toFixed(2)}% Close Position`
 
   const setMaxLeverage = function () {
@@ -156,7 +156,7 @@ export default function LeverageSlider({
 
   return (
     <>
-      <div className="flex mt-4 items-center pl-1 pr-1">
+      <div className="flex mt-2 items-center pl-1 pr-1">
         <StyledSlider
           min={0}
           max={max}
@@ -174,11 +174,11 @@ export default function LeverageSlider({
         </button>
       </div>
       {side === 'sell' ? (
-        <div className="text-th-fgd-4 text-xs tracking-normal mt-2.5">
+        <div className="text-th-fgd-4 text-xs tracking-normal mt-1">
           <span>{roundedDeposits > 0 ? closeDepositString : null}</span>
         </div>
       ) : (
-        <div className="text-th-fgd-4 text-xs tracking-normal mt-2.5">
+        <div className="text-th-fgd-4 text-xs tracking-normal mt-1">
           <span>{roundedBorrows > 0 ? closeBorrowString : null}</span>
         </div>
       )}
