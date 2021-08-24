@@ -104,7 +104,7 @@ export function useBalances(): Balances[] {
           quoteCurrencyIndex
         ),
         borrows: mangoAccount.getUiBorrow(
-          mangoCache.rootBankCache[tokenIndex],
+          mangoCache.rootBankCache[quoteCurrencyIndex],
           mangoGroup,
           quoteCurrencyIndex
         ),
