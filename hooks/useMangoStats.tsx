@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { I80F48 } from '@blockworks-foundation/mango-client'
 import useMangoStore from '../stores/useMangoStore'
 import useMangoGroupConfig from './useMangoGroupConfig'
+import { tokenPrecision } from '../utils'
 
 const useMangoStats = () => {
   const [stats, setStats] = useState([
@@ -50,8 +51,12 @@ const useMangoStats = () => {
           return {
             time: new Date(),
             name: token.symbol,
-            totalDeposits: totalDeposits.toFixed(2),
-            totalBorrows: totalBorrows.toFixed(2),
+            totalDeposits: totalDeposits.toFixed(
+              tokenPrecision[token.symbol] || 2
+            ),
+            totalBorrows: totalBorrows.toFixed(
+              tokenPrecision[token.symbol] || 2
+            ),
             depositInterest: rootBank
               .getDepositRate(mangoGroup)
               .mul(I80F48.fromNumber(100)),
