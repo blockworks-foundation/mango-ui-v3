@@ -215,11 +215,7 @@ const MarketHeader = () => {
                   Avg Funding Rate (1h)
                 </div>
                 <div className="font-semibold text-th-fgd-1 text-xs">
-                  {calculateFundingRate(
-                    perpStats,
-                    selectedMarket,
-                    oraclePrice
-                  ) ? (
+                  {selectedMarket ? (
                     `${calculateFundingRate(
                       perpStats,
                       selectedMarket,
