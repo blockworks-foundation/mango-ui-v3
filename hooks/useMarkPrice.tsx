@@ -1,6 +1,12 @@
 import { useEffect } from 'react'
 import useMangoStore from '../stores/useMangoStore'
 
+function formatMarkPriceDecimals(price) {
+  if (price) {
+    return +parseFloat(price).toFixed(price < 2 ? 4 : 2)
+  }
+}
+
 export default function useMarkPrice() {
   const setMangoStore = useMangoStore((s) => s.set)
   const markPrice = useMangoStore((s) => s.selectedMarket.markPrice)
@@ -27,7 +33,7 @@ export default function useMarkPrice() {
         : null
     if (newMarkPrice !== markPrice) {
       setMangoStore((state) => {
-        state.selectedMarket.markPrice = newMarkPrice
+        state.selectedMarket.markPrice = formatMarkPriceDecimals(newMarkPrice)
       })
     }
   }, [orderbook, trades])
