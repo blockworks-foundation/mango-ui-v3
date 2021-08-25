@@ -33,6 +33,7 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
   const [maxButtonTransition, setMaxButtonTransition] = useState(false)
   const [invalidNameMessage, setInvalidNameMessage] = useState('')
   const [name, setName] = useState('')
+  const mangoAccounts = useMangoStore((s) => s.mangoAccounts)
   const walletTokens = useMangoStore((s) => s.wallet.tokens)
   const actions = useMangoStore((s) => s.actions)
 
@@ -138,7 +139,12 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
 
   return (
     <>
-      <ElementTitle className="pb-2">Create Account</ElementTitle>
+      <ElementTitle>
+        {mangoAccounts.length > 0 ? 'New Account' : 'Deposit Funds'}
+      </ElementTitle>
+      <div className="text-th-fgd-3 text-center pb-4">
+        Add funds to initialize your Mango Account
+      </div>
       <div className="pb-4">
         <div className="flex items-center pb-2 text-th-fgd-1">
           Account Name <span className="ml-1 text-th-fgd-3">(Optional)</span>

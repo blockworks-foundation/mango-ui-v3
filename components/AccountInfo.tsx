@@ -17,6 +17,7 @@ import { ElementTitle } from './styles'
 import Tooltip from './Tooltip'
 import DepositModal from './DepositModal'
 import WithdrawModal from './WithdrawModal'
+import AccountsModal from './AccountsModal'
 import Button from './Button'
 import { DataLoader } from './MarketPosition'
 
@@ -31,8 +32,21 @@ export default function AccountInfo() {
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const actions = useMangoStore((s) => s.actions)
 
+  const [showAccountModal, setShowAccountModal] = useState(false)
   const [showDepositModal, setShowDepositModal] = useState(false)
   const [showWithdrawModal, setShowWithdrawModal] = useState(false)
+
+  const handleOpenDeposit = useCallback(() => {
+    if (mangoAccount) {
+      setShowDepositModal(true)
+    } else {
+      setShowAccountModal(true)
+    }
+  }, [])
+
+  const handleCloseAccount = useCallback(() => {
+    setShowAccountModal(false)
+  }, [])
 
   const handleCloseDeposit = useCallback(() => {
     setShowDepositModal(false)
@@ -283,7 +297,7 @@ export default function AccountInfo() {
           </div>
           <div className={`grid grid-cols-2 grid-rows-1 gap-4 pt-4`}>
             <Button
-              onClick={() => setShowDepositModal(true)}
+              onClick={handleOpenDeposit}
               className="w-full"
               disabled={!connected}
             >
@@ -299,6 +313,9 @@ export default function AccountInfo() {
           </div>
         </div>
       </div>
+      {showAccountModal && (
+        <AccountsModal isOpen={showAccountModal} onClose={handleCloseAccount} />
+      )}
       {showDepositModal && (
         <DepositModal isOpen={showDepositModal} onClose={handleCloseDeposit} />
       )}
