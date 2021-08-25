@@ -203,11 +203,13 @@ const MarketHeader = () => {
               )}
             </div>
           </div>
-          <DayHighLow
-            high={spotStats?.high}
-            low={spotStats?.low}
-            latest={spotStats?.latest}
-          />
+          {!isPerpMarket ? (
+            <DayHighLow
+              high={spotStats?.high}
+              low={spotStats?.low}
+              latest={spotStats?.latest}
+            />
+          ) : null}
           {isPerpMarket ? (
             <>
               <div className="pr-6">
