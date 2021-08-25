@@ -139,7 +139,7 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
 
   return (
     <>
-      <ElementTitle className="pb-2">New Account</ElementTitle>
+      <ElementTitle className="pb-2">Create Account</ElementTitle>
       <div className="pb-4">
         <div className="flex items-center pb-2 text-th-fgd-1">
           Account Name <span className="ml-1 text-th-fgd-3">(Optional)</span>
@@ -212,7 +212,7 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
         >
           <div className={`flex items-center justify-center`}>
             {submitting && <Loading className="-ml-1 mr-3" />}
-            Create New Account
+            Let&apos;s Go
           </div>
         </Button>
       </div>

@@ -292,7 +292,7 @@ export default function AccountInfo() {
             <Button
               onClick={() => setShowWithdrawModal(true)}
               className="w-full"
-              disabled={!connected}
+              disabled={!connected || !mangoAccount}
             >
               <span>Withdraw</span>
             </Button>
