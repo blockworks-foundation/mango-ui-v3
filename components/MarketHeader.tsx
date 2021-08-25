@@ -56,20 +56,8 @@ const MarketHeader = () => {
   const [ohlcv, setOhlcv] = useState(null)
   const [loading, setLoading] = useState(false)
   const [perpStats, setPerpStats] = useState([])
-  const [spotStats, setSpotStats] = useState(null)
-  // const change = ohlcv ? ((ohlcv.c[0] - ohlcv.o[0]) / ohlcv.o[0]) * 100 : '--'
+  const change = ohlcv ? ((ohlcv.c[0] - ohlcv.o[0]) / ohlcv.o[0]) * 100 : ''
   const volume = ohlcv ? ohlcv.v[0] : '--'
-
-  const fetchSpotStats = useCallback(async () => {
-    const urlParams = new URLSearchParams({ mangoGroup: groupConfig.name })
-    urlParams.append('market', baseSymbol)
-    const spotStats = await fetch(
-      'https://mango-stats-v3.herokuapp.com/spot/change/24?' + urlParams
-    )
-
-    const parsedSpotStats = await spotStats.json()
-    setSpotStats(parsedSpotStats)
-  }, [selectedMarketName, groupConfig])
 
   const fetchPerpStats = useCallback(async () => {
     const urlParams = new URLSearchParams({ mangoGroup: groupConfig.name })
@@ -84,10 +72,8 @@ const MarketHeader = () => {
   useEffect(() => {
     if (isPerpMarket) {
       fetchPerpStats()
-    } else {
-      fetchSpotStats()
     }
-  }, [marketConfig])
+  }, [isPerpMarket, fetchPerpStats])
 
   const fetchOhlcv = useCallback(async () => {
     if (!selectedMarketName) return
@@ -168,17 +154,17 @@ const MarketHeader = () => {
           </div>
           <div className="pr-4">
             <div className="text-th-fgd-3 tiny-text pb-0.5">24h Change</div>
-            {spotStats?.change ? (
+            {change ? (
               <div
                 className={`font-semibold text-xs ${
-                  spotStats.change > 0
+                  change > 0
                     ? `text-th-green`
-                    : spotStats.change < 0
+                    : change < 0
                     ? `text-th-red`
                     : `text-th-fgd-1`
                 }`}
               >
-                {spotStats.change.toFixed(2) + '%'}
+                {change ? change.toFixed(2) + '%' : '--'}
               </div>
             ) : (
               <MarketDataLoader />
@@ -203,11 +189,11 @@ const MarketHeader = () => {
               )}
             </div>
           </div>
-          {!isPerpMarket ? (
+          {oraclePrice && ohlcv ? (
             <DayHighLow
-              high={spotStats?.high}
-              low={spotStats?.low}
-              latest={spotStats?.latest}
+              high={ohlcv?.h[0]}
+              low={ohlcv?.l[0]}
+              latest={oraclePrice.toNumber()}
             />
           ) : null}
           {isPerpMarket ? (

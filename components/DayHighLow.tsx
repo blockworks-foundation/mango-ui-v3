@@ -4,12 +4,10 @@ import { MarketDataLoader } from './MarketHeader'
 const DayHighLow = ({ high, low, latest }) => {
   let rangePercent = 0
 
-  if (high?.baseOraclePrice) {
+  if (high) {
     rangePercent =
-      ((parseFloat(latest?.baseOraclePrice) -
-        parseFloat(low?.baseOraclePrice)) *
-        100) /
-      (parseFloat(high?.baseOraclePrice) - parseFloat(low?.baseOraclePrice))
+      ((parseFloat(latest) - parseFloat(low)) * 100) /
+      (parseFloat(high) - parseFloat(low))
   }
 
   return (
@@ -19,11 +17,7 @@ const DayHighLow = ({ high, low, latest }) => {
       </div>
       <div className="flex items-center">
         <div className="pr-2 text-th-fgd-1 text-xs">
-          {low?.baseOraclePrice ? (
-            formatUsdValue(low.baseOraclePrice)
-          ) : (
-            <MarketDataLoader />
-          )}
+          {low ? formatUsdValue(low) : <MarketDataLoader />}
         </div>
         <div className="h-1.5 flex rounded bg-th-bkg-3 w-24">
           <div
@@ -34,11 +28,7 @@ const DayHighLow = ({ high, low, latest }) => {
           ></div>
         </div>
         <div className="pl-2 text-th-fgd-1 text-xs">
-          {high?.baseOraclePrice ? (
-            formatUsdValue(high.baseOraclePrice)
-          ) : (
-            <MarketDataLoader />
-          )}
+          {high ? formatUsdValue(high) : <MarketDataLoader />}
         </div>
       </div>
     </div>
