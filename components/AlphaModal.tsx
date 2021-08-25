@@ -37,7 +37,10 @@ const AlphaModal = ({
       </div>
       <div className="text-th-fgd-2 text-center my-4">
         Welcome to V3 Alpha. Mango Markets is unaudited software, use at your
-        own risk. Have fun, dont get liquidated, or do, we need to test that :)
+        own risk.
+      </div>
+      <div className="text-th-fgd-2 text-center my-2">
+        Have fun, dont get liquidated, or do, we need to test that :)
       </div>
       <div className={`text-th-fgd-2 text-center`}>
         <div className={`mt-4 flex justify-center`}>
