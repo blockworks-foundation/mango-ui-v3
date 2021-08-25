@@ -994,8 +994,8 @@
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
 "@blockworks-foundation/mango-client@git+https://github.com/blockworks-foundation/mango-client-v3.git":
-  version "3.0.11"
-  resolved "git+https://github.com/blockworks-foundation/mango-client-v3.git#727dad9f61fd65a78074c27b10c4389017a433a7"
+  version "3.0.12"
+  resolved "git+https://github.com/blockworks-foundation/mango-client-v3.git#5eeadbc3529af84db705951335cfe6592cd94683"
   dependencies:
     "@project-serum/serum" "0.13.55"
     "@project-serum/sol-wallet-adapter" "^0.2.0"
