@@ -15,7 +15,7 @@ function calculateFundingRate(perpStats, perpMarket, oraclePrice) {
   const oldestStat = perpStats[perpStats.length - 1]
   const latestStat = perpStats[0]
 
-  if (!latestStat || !perpMarket) return null
+  if (!latestStat || !perpMarket || !oraclePrice) return 0.0
 
   // Averaging long and short funding excludes socialized loss
   const startFunding =
@@ -189,13 +189,6 @@ const MarketHeader = () => {
               )}
             </div>
           </div>
-          {oraclePrice && ohlcv ? (
-            <DayHighLow
-              high={ohlcv?.h[0]}
-              low={ohlcv?.l[0]}
-              latest={oraclePrice.toNumber()}
-            />
-          ) : null}
           {isPerpMarket ? (
             <>
               <div className="pr-6">
@@ -230,6 +223,11 @@ const MarketHeader = () => {
               </div>
             </>
           ) : null}
+          <DayHighLow
+            high={ohlcv?.h[0]}
+            low={ohlcv?.l[0]}
+            latest={oraclePrice?.toNumber()}
+          />
         </div>
       </div>
       <div className="flex items-center">

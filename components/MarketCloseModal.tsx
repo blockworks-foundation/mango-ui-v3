@@ -1,6 +1,6 @@
 import { FunctionComponent, useEffect, useRef, useState } from 'react'
 import useMangoStore, { mangoClient } from '../stores/useMangoStore'
-import { PerpMarket } from '@blockworks-foundation/mango-client'
+import { PerpMarket, ZERO_BN } from '@blockworks-foundation/mango-client'
 import Button, { LinkButton } from './Button'
 import { notify } from '../utils/notifications'
 import Loading from './Loading'
@@ -12,22 +12,20 @@ interface MarketCloseModalProps {
   onClose: () => void
   isOpen: boolean
   market: PerpMarket
-  marketName: string
-  side: string
-  size: number
+  marketIndex: number
 }
 
 const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
   onClose,
   isOpen,
   market,
-  marketName,
-  side,
-  size,
+  marketIndex,
 }) => {
   const [submitting, setSubmitting] = useState(false)
   const actions = useMangoStore((s) => s.actions)
   const orderBookRef = useRef(useMangoStore.getState().selectedMarket.orderBook)
+  const config = useMangoStore.getState().selectedMarket.config
+
   const orderbook = orderBookRef.current
   //   const [hideMarketCloseWarning, setHideMarketCloseWarning] =
   //     useLocalStorageState('hideMarketCloseWarning', false)
@@ -40,11 +38,15 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
       ),
     []
   )
-  async function handleMarketClose(side, size) {
+
+  async function handleMarketClose() {
     const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
     const { askInfo, bidInfo } = useMangoStore.getState().selectedMarket
     const wallet = useMangoStore.getState().wallet.current
+    const perpAccount = mangoAccount.perpAccounts[marketIndex]
+    const side = perpAccount.basePosition.gt(ZERO_BN) ? 'sell' : 'buy'
+    const size = Math.abs(market.baseLotsToNumber(perpAccount.basePosition))
 
     if (!wallet || !mangoGroup || !mangoAccount) return
     setSubmitting(true)
@@ -99,13 +101,14 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
   return (
     <Modal onClose={onClose} isOpen={isOpen}>
       <div className="pb-2 text-th-fgd-1 text-lg">
-        Are you sure you want to market close your <br /> {marketName} position?
+        Are you sure you want to market close your <br /> {config.name}{' '}
+        position?
       </div>
       <div className="pb-6 text-th-fgd-3">
         The price you receive may be more or less than you expect.
       </div>
       <div className="flex items-center">
-        <Button onClick={() => handleMarketClose(side, size)}>
+        <Button onClick={handleMarketClose}>
           {submitting ? <Loading /> : <span>Close Position</span>}
         </Button>
         <LinkButton className="ml-4 text-th-fgd-1" onClick={onClose}>

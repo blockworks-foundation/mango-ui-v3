@@ -319,17 +319,7 @@ const PositionsTable = () => {
                             isOpen={showMarketCloseModal}
                             onClose={handleCloseWarning}
                             market={perpMarket}
-                            marketName={marketConfig.name}
-                            side={
-                              perpAccount.basePosition.gt(ZERO_BN)
-                                ? 'sell'
-                                : 'buy'
-                            }
-                            size={Math.abs(
-                              perpMarket.baseLotsToNumber(
-                                perpAccount.basePosition
-                              )
-                            )}
+                            marketIndex={marketIndex}
                           />
                         ) : null}
                       </Tr>

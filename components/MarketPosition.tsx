@@ -280,11 +280,7 @@ export default function MarketPosition() {
           isOpen={showMarketCloseModal}
           onClose={handleCloseWarning}
           market={selectedMarket}
-          marketName={marketName}
-          side={perpAccount.basePosition.gt(ZERO_BN) ? 'sell' : 'buy'}
-          size={Math.abs(
-            selectedMarket.baseLotsToNumber(perpAccount.basePosition)
-          )}
+          marketIndex={marketIndex}
         />
       ) : null}
     </FloatingElement>
