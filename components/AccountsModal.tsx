@@ -63,9 +63,6 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
     if (newAccPublicKey) {
       setNewAccPublicKey(newAccPublicKey)
     }
-    if (mangoAccounts.length <= 1) {
-      onClose()
-    }
     setShowNewAccountForm(false)
   }
 
