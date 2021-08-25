@@ -40,7 +40,9 @@ const AlphaModal = ({
         own risk.
       </div>
       <div className="text-th-fgd-2 text-center my-2">
-        Have fun, dont get liquidated, or do, we need to test that :)
+        Have fun, dont get liquidated, or do, we need to test that
+        <br />
+        &#x1F642; &#129389;&#129309;
       </div>
       <div className={`text-th-fgd-2 text-center`}>
         <div className={`mt-4 flex justify-center`}>
