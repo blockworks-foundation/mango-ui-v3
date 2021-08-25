@@ -302,7 +302,11 @@ export default function TradeForm() {
   }
 
   const disabledTradeButton =
-    (!price && tradeType === 'Limit') || !baseSize || !connected || submitting
+    (!price && tradeType === 'Limit') ||
+    !baseSize ||
+    !connected ||
+    submitting ||
+    !mangoAccount
 
   return (
     <FloatingElement showConnect>
@@ -413,7 +417,7 @@ export default function TradeForm() {
           ) : null}
         </div>
         <div className={`flex pt-4`}>
-          {ipAllowed && mangoAccount ? (
+          {ipAllowed ? (
             side === 'buy' ? (
               <Button
                 disabled={disabledTradeButton}
@@ -447,13 +451,9 @@ export default function TradeForm() {
                 }`}
               </Button>
             )
-          ) : mangoAccount ? (
-            <Button disabled className="flex-grow">
-              <span>Country Not Allowed</span>
-            </Button>
           ) : (
             <Button disabled className="flex-grow">
-              <span>Deposit funds to get started</span>
+              <span>Country Not Allowed</span>
             </Button>
           )}
         </div>
