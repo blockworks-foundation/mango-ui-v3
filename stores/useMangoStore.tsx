@@ -57,7 +57,7 @@ export const WEBSOCKET_CONNECTION = new Connection(
   'processed' as Commitment
 )
 
-const DEFAULT_MANGO_GROUP_NAME = process.env.NEXT_PUBLIC_GROUP || 'mainnet.0'
+const DEFAULT_MANGO_GROUP_NAME = process.env.NEXT_PUBLIC_GROUP || 'mainnet.1'
 const DEFAULT_MANGO_GROUP_CONFIG = Config.ids().getGroup(
   CLUSTER,
   DEFAULT_MANGO_GROUP_NAME
