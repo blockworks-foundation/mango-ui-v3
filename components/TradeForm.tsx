@@ -30,6 +30,7 @@ export default function TradeForm() {
   const actions = useMangoStore((s) => s.actions)
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
+  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const market = useMangoStore((s) => s.selectedMarket.current)
   const { side, baseSize, quoteSize, price, tradeType } = useMangoStore(
     (s) => s.tradeForm
@@ -412,7 +413,7 @@ export default function TradeForm() {
           ) : null}
         </div>
         <div className={`flex pt-4`}>
-          {ipAllowed ? (
+          {ipAllowed && mangoAccount ? (
             side === 'buy' ? (
               <Button
                 disabled={disabledTradeButton}
@@ -446,9 +447,13 @@ export default function TradeForm() {
                 }`}
               </Button>
             )
+          ) : mangoAccount ? (
+            <Button disabled className="flex-grow">
+              <span>Country Not Allowed</span>
+            </Button>
           ) : (
             <Button disabled className="flex-grow">
-              <span className="text-lg font-light">Country Not Allowed</span>
+              <span>Deposit funds to get started</span>
             </Button>
           )}
         </div>
