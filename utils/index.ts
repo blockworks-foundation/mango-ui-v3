@@ -59,23 +59,6 @@ export function getDecimalCount(value): number {
   return 0
 }
 
-export function divideBnToNumber(numerator: BN, denominator: BN): number {
-  const quotient = numerator.div(denominator).toNumber()
-  const rem = numerator.umod(denominator)
-  const gcd = rem.gcd(denominator)
-  return quotient + rem.div(gcd).toNumber() / denominator.div(gcd).toNumber()
-}
-
-export const formatBalanceDisplay = (balance, fixedDecimals) => {
-  // Get the decimal part
-  const dPart = balance - Math.trunc(balance)
-  return (
-    Math.trunc(balance) +
-    Math.floor(dPart * Math.pow(10, fixedDecimals)) /
-      Math.pow(10, fixedDecimals)
-  )
-}
-
 export function getTokenMultiplierFromDecimals(decimals: number): BN {
   return new BN(10).pow(new BN(decimals))
 }
