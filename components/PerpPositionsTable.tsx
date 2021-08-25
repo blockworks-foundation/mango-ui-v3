@@ -320,16 +320,6 @@ const PositionsTable = () => {
                             onClose={handleCloseWarning}
                             market={perpMarket}
                             marketName={marketConfig.name}
-                            pnl={
-                              +nativeI80F48ToUi(
-                                perpAccount.getPnl(
-                                  perpMarketInfo,
-                                  perpMarketCache,
-                                  price
-                                ),
-                                marketConfig.quoteDecimals
-                              )
-                            }
                             side={
                               perpAccount.basePosition.gt(ZERO_BN)
                                 ? 'sell'

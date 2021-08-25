@@ -13,7 +13,6 @@ interface MarketCloseModalProps {
   isOpen: boolean
   market: PerpMarket
   marketName: string
-  pnl: number
   side: string
   size: number
 }
@@ -23,7 +22,6 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
   isOpen,
   market,
   marketName,
-  pnl,
   side,
   size,
 }) => {
@@ -108,11 +106,7 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
       </div>
       <div className="flex items-center">
         <Button onClick={() => handleMarketClose(side, size)}>
-          {submitting ? (
-            <Loading />
-          ) : (
-            <span>{pnl <= 0 ? 'Dump It' : 'Cash In'}</span>
-          )}
+          {submitting ? <Loading /> : <span>Close Position</span>}
         </Button>
         <LinkButton className="ml-4 text-th-fgd-1" onClick={onClose}>
           Cancel

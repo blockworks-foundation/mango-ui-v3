@@ -281,16 +281,6 @@ export default function MarketPosition() {
           onClose={handleCloseWarning}
           market={selectedMarket}
           marketName={marketName}
-          pnl={
-            +nativeI80F48ToUi(
-              perpAccount.getPnl(
-                mangoGroup.perpMarkets[marketIndex],
-                mangoGroupCache.perpMarketCache[marketIndex],
-                mangoGroupCache.priceCache[marketIndex].price
-              ),
-              marketConfig.quoteDecimals
-            )
-          }
           side={perpAccount.basePosition.gt(ZERO_BN) ? 'sell' : 'buy'}
           size={Math.abs(
             selectedMarket.baseLotsToNumber(perpAccount.basePosition)
