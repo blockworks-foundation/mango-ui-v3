@@ -62,7 +62,7 @@ const MarketHeader = () => {
 
   const fetchSpotStats = useCallback(async () => {
     const urlParams = new URLSearchParams({ mangoGroup: groupConfig.name })
-    urlParams.append('market', selectedMarketName)
+    urlParams.append('market', baseSymbol)
     const spotStats = await fetch(
       'https://mango-stats-v3.herokuapp.com/spot/change/24?' + urlParams
     )
@@ -72,8 +72,10 @@ const MarketHeader = () => {
   }, [selectedMarketName, groupConfig])
 
   const fetchPerpStats = useCallback(async () => {
+    const urlParams = new URLSearchParams({ mangoGroup: groupConfig.name })
+    urlParams.append('market', selectedMarketName)
     const perpStats = await fetch(
-      `https://mango-stats-v3.herokuapp.com/perp/funding_rate?market=${selectedMarketName}`
+      `https://mango-stats-v3.herokuapp.com/perp/funding_rate?` + urlParams
     )
     const parsedPerpStats = await perpStats.json()
     setPerpStats(parsedPerpStats)
