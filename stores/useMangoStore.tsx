@@ -286,7 +286,12 @@ const useMangoStore = create<MangoStore>((set, get) => ({
           })
         })
         .catch((err) => {
-          console.error('Could not get margin accounts for wallet', err)
+          notify({
+            type: 'error',
+            title: 'Unable to load mango account',
+            description: err.message,
+          })
+          console.log('Could not get margin accounts for wallet', err)
         })
     },
     async fetchMangoGroup() {
