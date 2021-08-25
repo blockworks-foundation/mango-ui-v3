@@ -8,18 +8,6 @@ import { AccountInfo, PublicKey } from '@solana/web3.js'
 import BN from 'bn.js'
 import { DEFAULT_CONNECTION, Orderbook } from '../stores/useMangoStore'
 
-export function isValidPublicKey(key) {
-  if (!key) {
-    return false
-  }
-  try {
-    new PublicKey(key)
-    return true
-  } catch {
-    return false
-  }
-}
-
 export async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
@@ -29,26 +17,6 @@ export const percentFormat = new Intl.NumberFormat(undefined, {
   minimumFractionDigits: 2,
   maximumFractionDigits: 2,
 })
-
-export function displayDepositsForMangoAccount(
-  mangoAccount,
-  mangoGroup,
-  tokenIndex
-) {
-  const deposit = mangoAccount.getUiDeposit(mangoGroup, tokenIndex)
-  const decimals = mangoGroup.mintDecimals[tokenIndex]
-  return floorToDecimal(deposit, decimals)
-}
-
-export function displayBorrowsForMangoAccount(
-  mangoAccount,
-  mangoGroup,
-  tokenIndex
-) {
-  const borrow = mangoAccount.getUiBorrow(mangoGroup, tokenIndex)
-  const decimals = mangoGroup.mintDecimals[tokenIndex]
-  return ceilToDecimal(borrow, decimals)
-}
 
 export function floorToDecimal(
   value: number,
@@ -194,17 +162,6 @@ export const calculateMarketPrice = (
 export const tokenPrecision = {
   BTC: 4,
   ETH: 3,
-  MNGO: 2,
-  SOL: 2,
-  SRM: 2,
-  USDC: 2,
-  USDT: 2,
-}
-
-// Precision for depositing/withdrawing
-export const DECIMALS = {
-  BTC: 5,
-  ETH: 4,
   MNGO: 2,
   SOL: 2,
   SRM: 2,

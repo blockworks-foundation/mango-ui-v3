@@ -15,11 +15,5 @@
     "jsx": "preserve"
   },
   "exclude": ["node_modules", ".next", "out", "public/datafeeds"],
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    "**/*.js",
-    "components/MangoSrmAccountSelector.jsx"
-  ]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "**/*.js"]
 }

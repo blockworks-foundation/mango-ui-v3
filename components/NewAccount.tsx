@@ -9,7 +9,6 @@ import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
 import {
   getSymbolForTokenMintAddress,
-  DECIMALS,
   trimDecimals,
   sleep,
 } from '../utils/index'
@@ -110,7 +109,7 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
     if (percentage === 100) {
       setInputAmount(amount)
     } else {
-      setInputAmount(trimDecimals(amount, DECIMALS[symbol]))
+      setInputAmount(trimDecimals(amount, 6))
     }
     setSliderPercentage(percentage)
     setInvalidAmountMessage('')

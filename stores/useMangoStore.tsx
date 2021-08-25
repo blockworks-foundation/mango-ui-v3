@@ -21,7 +21,6 @@ import {
   getMultipleAccounts,
   PerpMarketLayout,
 } from '@blockworks-foundation/mango-client'
-// import { SRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
 import { AccountInfo, Commitment, Connection, PublicKey } from '@solana/web3.js'
 import { EndpointInfo, WalletAdapter } from '../@types/types'
 import { isDefined, zipDict } from '../utils'
@@ -298,15 +297,25 @@ const useMangoStore = create<MangoStore>((set, get) => ({
       return mangoClient
         .getMangoGroup(mangoGroupPk)
         .then(async (mangoGroup) => {
-          await mangoGroup.loadRootBanks(DEFAULT_CONNECTION)
-          const mangoCache = await mangoGroup.loadCache(DEFAULT_CONNECTION)
           const allMarketConfigs = getAllMarkets(mangoGroupConfig)
           const allMarketPks = allMarketConfigs.map((m) => m.publicKey)
 
-          const allMarketAccountInfos = await getMultipleAccounts(
-            DEFAULT_CONNECTION,
-            allMarketPks
-          )
+          let allMarketAccountInfos, mangoCache
+          try {
+            const resp = await Promise.all([
+              getMultipleAccounts(DEFAULT_CONNECTION, allMarketPks),
+              mangoGroup.loadCache(DEFAULT_CONNECTION),
+              mangoGroup.loadRootBanks(DEFAULT_CONNECTION),
+            ])
+            allMarketAccountInfos = resp[0]
+            mangoCache = resp[1]
+          } catch {
+            notify({
+              type: 'error',
+              title: 'Failed to load the mango group. Please refresh.',
+            })
+          }
+
           const allMarketAccounts = allMarketConfigs.map((config, i) => {
             if (config.kind == 'spot') {
               const decoded = Market.getLayout(programId).decode(

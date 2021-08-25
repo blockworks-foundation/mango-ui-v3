@@ -3,7 +3,7 @@ import Modal from './Modal'
 import Input from './Input'
 import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
-import { DECIMALS, floorToDecimal, tokenPrecision } from '../utils/index'
+import { floorToDecimal, tokenPrecision } from '../utils/index'
 import Loading from './Loading'
 import Slider from './Slider'
 import Button, { LinkButton } from './Button'
@@ -493,7 +493,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
               </div>
               {getBorrowAmount() > 0 ? (
                 <div className="pt-2 text-th-fgd-4">{`Includes borrow of ~${getBorrowAmount().toFixed(
-                  DECIMALS[withdrawTokenSymbol]
+                  mangoGroup.tokens[tokenIndex].decimals
                 )} ${withdrawTokenSymbol}`}</div>
               ) : null}
             </div>

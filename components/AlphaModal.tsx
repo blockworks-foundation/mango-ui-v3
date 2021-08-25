@@ -25,18 +25,8 @@ const AlphaModal = ({
         <div className="flex flex-col items-center">
           <div className="flex space-x-8 items-center justify-center ">
             <img
-              className={`h-8 w-auto mb-2`}
-              src="/assets/icons/sol.svg"
-              alt="next"
-            />
-            <img
               className={`h-12 w-auto mb-2`}
               src="/assets/icons/logo.svg"
-              alt="next"
-            />
-            <img
-              className={`h-10 w-auto mb-2`}
-              src="/assets/icons/srm.svg"
               alt="next"
             />
           </div>
