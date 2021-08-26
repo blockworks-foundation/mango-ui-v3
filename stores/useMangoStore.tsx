@@ -187,9 +187,9 @@ const useMangoStore = create<MangoStore>((set, get) => ({
     config: getMarketByBaseSymbolAndKind(
       DEFAULT_MANGO_GROUP_CONFIG,
       'BTC',
-      'spot'
+      'perp'
     ) as MarketConfig,
-    kind: 'spot',
+    kind: 'perp',
     current: null,
     markPrice: 0,
     askInfo: null,

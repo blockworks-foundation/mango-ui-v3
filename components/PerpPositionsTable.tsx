@@ -1,3 +1,4 @@
+import { useCallback, useState } from 'react'
 import useMangoStore, { mangoClient } from '../stores/useMangoStore'
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
 import {
@@ -11,13 +12,13 @@ import {
 import Button from './Button'
 import { notify } from '../utils/notifications'
 import SideBadge from './SideBadge'
-import { useState } from 'react'
 import Loading from './Loading'
 import { formatUsdValue, usdFormatter } from '../utils'
 import useTradeHistory from '../hooks/useTradeHistory'
 import Tooltip from './Tooltip'
 import { SettlePnlTooltip } from './MarketPosition'
 import usePerpPositions from '../hooks/usePerpPositions'
+import MarketCloseModal from './MarketCloseModal'
 
 export function getAvgEntryPrice(
   mangoAccount,
@@ -73,9 +74,14 @@ const PositionsTable = () => {
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const allMarkets = useMangoStore((s) => s.selectedMangoGroup.markets)
   const [settlingPerpAcc, setSettlingPerpAcc] = useState(null)
+  const [showMarketCloseModal, setShowMarketCloseModal] = useState(false)
   const tradeHistory = useTradeHistory()
   const setMangoStore = useMangoStore((s) => s.set)
   const perpPositions = usePerpPositions()
+
+  const handleCloseWarning = useCallback(() => {
+    setShowMarketCloseModal(false)
+  }, [])
 
   const handleSettlePnl = async (
     perpMarket: PerpMarket,
@@ -282,6 +288,18 @@ const PositionsTable = () => {
                         </Td>
                         <Td className="px-2 py-2 whitespace-nowrap text-sm text-th-fgd-1">
                           <div className="flex justify-end">
+                            {Math.abs(
+                              perpMarket.baseLotsToNumber(
+                                perpAccount.basePosition
+                              )
+                            ) > 0 ? (
+                              <Button
+                                onClick={() => setShowMarketCloseModal(true)}
+                                className="ml-3 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
+                              >
+                                <span>Market Close</span>
+                              </Button>
+                            ) : null}
                             <Button
                               onClick={() =>
                                 handleSettlePnl(perpMarket, perpAccount)
@@ -296,6 +314,14 @@ const PositionsTable = () => {
                             </Button>
                           </div>
                         </Td>
+                        {showMarketCloseModal ? (
+                          <MarketCloseModal
+                            isOpen={showMarketCloseModal}
+                            onClose={handleCloseWarning}
+                            market={perpMarket}
+                            marketIndex={marketIndex}
+                          />
+                        ) : null}
                       </Tr>
                     )
                   })}

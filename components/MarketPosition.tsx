@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import FloatingElement from './FloatingElement'
 import { ElementTitle } from './styles'
 import useMangoStore, { mangoClient } from '../stores/useMangoStore'
@@ -9,7 +9,7 @@ import {
   formatUsdValue,
   tokenPrecision,
 } from '../utils/index'
-import { LinkButton } from './Button'
+import Button, { LinkButton } from './Button'
 import Tooltip from './Tooltip'
 import SideBadge from './SideBadge'
 import {
@@ -24,6 +24,7 @@ import {
 import useTradeHistory from '../hooks/useTradeHistory'
 import { getAvgEntryPrice, getBreakEvenPrice } from './PerpPositionsTable'
 import { notify } from '../utils/notifications'
+import MarketCloseModal from './MarketCloseModal'
 
 const handleSettlePnl = async (
   perpMarket: PerpMarket,
@@ -95,6 +96,7 @@ export default function MarketPosition() {
   const perpTradeHistory = tradeHistory?.filter(
     (t) => t.marketName === marketName
   )
+  const [showMarketCloseModal, setShowMarketCloseModal] = useState(false)
 
   const marketIndex = useMemo(() => {
     return getMarketIndexBySymbol(mangoGroupConfig, baseSymbol)
@@ -111,6 +113,10 @@ export default function MarketPosition() {
       state.tradeForm.baseSize = size
     })
   }
+
+  const handleCloseWarning = useCallback(() => {
+    setShowMarketCloseModal(false)
+  }, [])
 
   if (!mangoGroup) return null
 
@@ -257,7 +263,26 @@ export default function MarketPosition() {
             </LinkButton>
           </div>
         </div>
+
+        {perpAccount &&
+        Math.abs(selectedMarket.baseLotsToNumber(perpAccount.basePosition)) >
+          0 ? (
+          <Button
+            onClick={() => setShowMarketCloseModal(true)}
+            className="mt-3 w-full"
+          >
+            <span>Market Close</span>
+          </Button>
+        ) : null}
       </div>
+      {showMarketCloseModal ? (
+        <MarketCloseModal
+          isOpen={showMarketCloseModal}
+          onClose={handleCloseWarning}
+          market={selectedMarket}
+          marketIndex={marketIndex}
+        />
+      ) : null}
     </FloatingElement>
   ) : (
     <>
