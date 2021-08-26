@@ -11,6 +11,8 @@ import {
 import tw from 'twin.macro'
 import styled from '@emotion/styled'
 import 'rc-slider/assets/index.css'
+import Tooltip from './Tooltip'
+import { DialIcon } from './icons'
 
 type StyledSliderProps = {
   enableTransition?: boolean
@@ -18,8 +20,9 @@ type StyledSliderProps = {
 }
 
 const StyledSlider = styled(Slider)<StyledSliderProps>`
+  height: 18px;
   .rc-slider-rail {
-    ${tw`bg-th-primary  h-2 rounded-full`}
+    ${tw`bg-th-fgd-4  h-2 rounded-full`}
     opacity: 0.6;
   }
   .rc-slider-track {
@@ -113,9 +116,10 @@ export default function LeverageSlider({
     // multiply the maxQuote by a scaler value to account for
     // srm fees or rounding issues in getMaxLeverageForMarket
     const maxScaler = market instanceof PerpMarket ? 0.99 : 0.95
-    const scaledMax =
+    const scaledMax = (
       (maxQuote.toNumber() * maxScaler) /
       mangoGroup.getPrice(marketIndex, mangoCache).toNumber()
+    ).toFixed(decimalCount)
 
     return { max: scaledMax, deposits, borrows }
   }, [mangoAccount, mangoGroup, mangoCache, marketIndex, market, side, price])
@@ -142,43 +146,56 @@ export default function LeverageSlider({
 
   const closeDepositString =
     percentToClose(value, roundedDeposits) > 100
-      ? '100% Close Position + Open Short'
-      : `${percentToClose(value, roundedDeposits).toFixed(1)}% Close Position`
+      ? `100% close position and open a ${(value - roundedDeposits).toFixed(
+          decimalCount
+        )} ${marketConfig.baseSymbol} short`
+      : `${percentToClose(value, roundedDeposits).toFixed(0)}% close position`
 
   const closeBorrowString =
     percentToClose(value, roundedBorrows) > 100
-      ? '100% Close Position + Open Long'
-      : `${percentToClose(value, roundedBorrows).toFixed(1)}% Close Position`
+      ? `100% close position and open a ${(value - roundedBorrows).toFixed(
+          decimalCount
+        )} ${marketConfig.baseSymbol} short`
+      : `${percentToClose(value, roundedBorrows).toFixed(0)}% close position`
 
   const setMaxLeverage = function () {
-    onChange(Math.round(max / step) * step)
+    setEnableTransition(true)
+    onChange(parseFloat(((max / step) * step).toFixed(decimalCount)))
   }
 
   return (
     <>
-      <div className="flex mt-2 items-center pl-1 pr-1">
-        <StyledSlider
-          min={0}
-          max={max}
-          value={value || 0}
-          onChange={onChange}
-          onAfterChange={onAfterChange}
-          step={step}
-          disabled={disabled}
-        />
-        <button
-          className="bg-th-bkg-4 hover:brightness-[1.15] font-normal rounded text-th-fgd-1 text-xs p-2 ml-2"
-          onClick={setMaxLeverage}
-        >
-          {initLeverage}x
-        </button>
+      <div className="flex items-center my-4">
+        <div className="bg-th-bkg-3 flex items-center h-10 px-4 rounded-l-md w-full">
+          <StyledSlider
+            min={0}
+            max={max}
+            value={value || 0}
+            onChange={onChange}
+            onAfterChange={onAfterChange}
+            step={step}
+            disabled={disabled}
+            enableTransition={enableTransition}
+          />
+        </div>
+        <Tooltip content={`Max Leverage – ${initLeverage}x`}>
+          <button
+            className="bg-th-bkg-4 flex items-center justify-center hover:brightness-[1.15] font-normal rounded-r-md rounded-l-none text-th-fgd-1 text-lg h-10 w-10"
+            onClick={setMaxLeverage}
+          >
+            <DialIcon
+              className="h-6 w-6 text-th-primary"
+              rotate={Math.round((value / max) * 270)}
+            />
+          </button>
+        </Tooltip>
       </div>
       {side === 'sell' ? (
-        <div className="text-th-fgd-4 text-xs tracking-normal mt-1">
+        <div className="h-6 text-center text-th-fgd-3 text-xs tracking-normal">
           <span>{roundedDeposits > 0 ? closeDepositString : null}</span>
         </div>
       ) : (
-        <div className="text-th-fgd-4 text-xs tracking-normal mt-1">
+        <div className="h-6 text-center text-th-fgd-3 text-xs tracking-normal">
           <span>{roundedBorrows > 0 ? closeBorrowString : null}</span>
         </div>
       )}
