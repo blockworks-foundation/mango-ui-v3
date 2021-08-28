@@ -66,6 +66,7 @@ const StyledFloatingElement = styled(FloatingElement)`
   animation: ${css`
     ${fadeIn} 1s linear
   `};
+  overflow: hidden;
 `
 
 const getCumulativeOrderbookSide = (
@@ -194,20 +195,20 @@ export default function Orderbook({ depth = 8 }) {
             <FlipCardFront>
               <StyledFloatingElement>
                 <div className="flex items-center justify-between pb-2.5">
-                  <div className="flex relative">
+                  <div className="relative flex">
                     <Tooltip
                       content={
                         displayCumulativeSize
                           ? 'Display Step Size'
                           : 'Display Cumulative Size'
                       }
-                      className="text-xs py-1"
+                      className="py-1 text-xs"
                     >
                       <button
                         onClick={() => {
                           setDisplayCumulativeSize(!displayCumulativeSize)
                         }}
-                        className="flex items-center justify-center rounded-full bg-th-bkg-3 w-8 h-8 hover:text-th-primary focus:outline-none"
+                        className="flex items-center justify-center w-8 h-8 rounded-full bg-th-bkg-3 hover:text-th-primary focus:outline-none"
                       >
                         {displayCumulativeSize ? (
                           <StepSizeIcon className="w-5 h-5" />
@@ -218,11 +219,11 @@ export default function Orderbook({ depth = 8 }) {
                     </Tooltip>
                   </div>
                   <ElementTitle noMarignBottom>Orderbook</ElementTitle>
-                  <div className="flex relative">
-                    <Tooltip content={'Switch Layout'} className="text-xs py-1">
+                  <div className="relative flex">
+                    <Tooltip content={'Switch Layout'} className="py-1 text-xs">
                       <button
                         onClick={handleLayoutChange}
-                        className="flex items-center justify-center rounded-full bg-th-bkg-3 w-8 h-8 hover:text-th-primary focus:outline-none"
+                        className="flex items-center justify-center w-8 h-8 rounded-full bg-th-bkg-3 hover:text-th-primary focus:outline-none"
                       >
                         <SwitchHorizontalIcon className="w-5 h-5" />
                       </button>
@@ -291,7 +292,7 @@ export default function Orderbook({ depth = 8 }) {
                     )}
                   </div>
                 </div>
-                <div className="flex justify-between bg-th-bkg-1 p-2 mt-4 rounded-md text-xs">
+                <div className="flex justify-between p-2 mt-4 text-xs rounded-md bg-th-bkg-1">
                   <div className="text-th-fgd-3">Spread</div>
                   <div className="text-th-fgd-1">
                     {orderbookData?.spread?.toFixed(2)}
@@ -306,20 +307,20 @@ export default function Orderbook({ depth = 8 }) {
             <FlipCardBack>
               <StyledFloatingElement>
                 <div className="flex items-center justify-between pb-2.5">
-                  <div className="flex relative">
+                  <div className="relative flex">
                     <Tooltip
                       content={
                         displayCumulativeSize
                           ? 'Display Step Size'
                           : 'Display Cumulative Size'
                       }
-                      className="text-xs py-1"
+                      className="py-1 text-xs"
                     >
                       <button
                         onClick={() => {
                           setDisplayCumulativeSize(!displayCumulativeSize)
                         }}
-                        className="flex items-center justify-center rounded-full bg-th-bkg-3 w-8 h-8 hover:text-th-primary focus:outline-none"
+                        className="flex items-center justify-center w-8 h-8 rounded-full bg-th-bkg-3 hover:text-th-primary focus:outline-none"
                       >
                         {displayCumulativeSize ? (
                           <StepSizeIcon className="w-5 h-5" />
@@ -330,11 +331,11 @@ export default function Orderbook({ depth = 8 }) {
                     </Tooltip>
                   </div>
                   <ElementTitle noMarignBottom>Orderbook</ElementTitle>
-                  <div className="flex relative">
-                    <Tooltip content={'Switch Layout'} className="text-xs py-1">
+                  <div className="relative flex">
+                    <Tooltip content={'Switch Layout'} className="py-1 text-xs">
                       <button
                         onClick={handleLayoutChange}
-                        className="flex items-center justify-center rounded-full bg-th-bkg-3 w-8 h-8 hover:text-th-primary focus:outline-none"
+                        className="flex items-center justify-center w-8 h-8 rounded-full bg-th-bkg-3 hover:text-th-primary focus:outline-none"
                       >
                         <SwitchHorizontalIcon className="w-5 h-5" />
                       </button>
@@ -370,7 +371,7 @@ export default function Orderbook({ depth = 8 }) {
                     />
                   )
                 )}
-                <div className="flex justify-between bg-th-bkg-1 p-2 my-2 rounded-md text-xs">
+                <div className="flex justify-between p-2 my-2 text-xs rounded-md bg-th-bkg-1">
                   <div className="text-th-fgd-3">Spread</div>
                   <div className="text-th-fgd-1">
                     {orderbookData?.spread.toFixed(2)}
@@ -462,7 +463,7 @@ const OrderbookRow = React.memo<any>(
               />
               <div
                 onClick={handlePriceClick}
-                className="z-30 relative text-th-fgd-1 px-1"
+                className="relative z-30 px-1 text-th-fgd-1"
               >
                 {formattedPrice}
               </div>

@@ -1,5 +1,6 @@
 import dynamic from 'next/dynamic'
 import { Responsive, WidthProvider } from 'react-grid-layout'
+import { round, max } from 'lodash'
 
 const TVChartContainer = dynamic(
   () => import('../components/TradingView/index'),
@@ -67,6 +68,7 @@ export const defaultLayouts = {
 }
 
 export const GRID_LAYOUT_KEY = 'mangoSavedLayouts-3.0.8'
+const breakpoints = { xl: 1600, lg: 1200, md: 1110, sm: 768, xs: 0 }
 
 const TradePageGrid = () => {
   const { uiLocked } = useMangoStore((s) => s.settings)
@@ -75,13 +77,41 @@ const TradePageGrid = () => {
     defaultLayouts
   )
 
+  const getCurrentBreakpoint = () => {
+    return Responsive.utils.getBreakpointFromWidth(
+      breakpoints,
+      window.innerWidth - 63
+    )
+  }
+
   const onLayoutChange = (layouts) => {
     if (layouts) {
       setSavedLayouts(layouts)
     }
   }
 
+  const onBreakpointChange = (newBreakpoint: string) => {
+    setCurrentBreakpoint(newBreakpoint)
+  }
+
+  const [orderbookDepth, setOrderbookDepth] = useState(8)
+  const [currentBreakpoint, setCurrentBreakpoint] = useState(null)
   const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    const adjustOrderBook = (layouts, breakpoint?: string | null) => {
+      const bp = breakpoint ? breakpoint : getCurrentBreakpoint()
+      const orderbookLayout = layouts[bp].find((obj) => {
+        return obj.i === 'orderbook'
+      })
+      let depth = orderbookLayout.h * 0.891 - 7.2
+      depth = round(max([1, depth]))
+      setOrderbookDepth(depth)
+    }
+
+    adjustOrderBook(savedLayouts, currentBreakpoint)
+  }, [currentBreakpoint, savedLayouts])
+
   useEffect(() => setMounted(true), [])
   if (!mounted) return null
 
@@ -89,11 +119,12 @@ const TradePageGrid = () => {
     <ResponsiveGridLayout
       className="layout"
       layouts={savedLayouts || defaultLayouts}
-      breakpoints={{ xl: 1600, lg: 1200, md: 1110, sm: 768, xs: 0 }}
+      breakpoints={breakpoints}
       cols={{ xl: 12, lg: 12, md: 12, sm: 12, xs: 1 }}
       rowHeight={15}
       isDraggable={!uiLocked}
       isResizable={!uiLocked}
+      onBreakpointChange={(newBreakpoint) => onBreakpointChange(newBreakpoint)}
       onLayoutChange={(layout, layouts) => onLayoutChange(layouts)}
     >
       <div key="tvChart">
@@ -102,7 +133,7 @@ const TradePageGrid = () => {
         </FloatingElement>
       </div>
       <div key="orderbook">
-        <Orderbook />
+        <Orderbook depth={orderbookDepth} />
       </div>
       <div key="tradeForm">
         <TradeForm />
