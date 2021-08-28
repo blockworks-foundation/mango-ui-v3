@@ -9,6 +9,7 @@ import {
   ArrowDownIcon,
   SwitchHorizontalIcon,
 } from '@heroicons/react/solid'
+import { CumulativeSizeIcon, StepSizeIcon } from './icons'
 import useMarkPrice from '../hooks/useMarkPrice'
 import useMarket from '../hooks/useMarket'
 import { ElementTitle } from './styles'
@@ -70,6 +71,7 @@ const StyledFloatingElement = styled(FloatingElement)`
 const getCumulativeOrderbookSide = (
   orders,
   totalSize,
+  maxSize,
   depth,
   backwards = false
 ) => {
@@ -82,6 +84,7 @@ const getCumulativeOrderbookSide = (
         size,
         cumulativeSize,
         sizePercent: Math.round((cumulativeSize / (totalSize || 1)) * 100),
+        maxSizePercent: Math.round((size / (maxSize || 1)) * 100),
       })
       return cumulative
     }, [])
@@ -102,6 +105,7 @@ export default function Orderbook({ depth = 8 }) {
 
   const [orderbookData, setOrderbookData] = useState(null)
   const [defaultLayout, setDefaultLayout] = useState(true)
+  const [displayCumulativeSize, setDisplayCumulativeSize] = useState(false)
 
   useInterval(() => {
     if (
@@ -115,16 +119,30 @@ export default function Orderbook({ depth = 8 }) {
       const sum = (total, [, size], index) =>
         index < depth ? total + size : total
       const totalSize = bids.reduce(sum, 0) + asks.reduce(sum, 0)
+      const maxSize =
+        Math.max(
+          ...asks.map(function (a) {
+            return a[1]
+          })
+        ) +
+        Math.max(
+          ...bids.map(function (b) {
+            return b[1]
+          })
+        )
 
-      const bidsToDisplay = getCumulativeOrderbookSide(
-        bids,
-        totalSize,
-        depth,
-        false
-      )
+      const bidsToDisplay = defaultLayout
+        ? getCumulativeOrderbookSide(bids, totalSize, maxSize, depth, false)
+        : getCumulativeOrderbookSide(bids, totalSize, maxSize, depth / 2, false)
       const asksToDisplay = defaultLayout
-        ? getCumulativeOrderbookSide(asks, totalSize, depth, false)
-        : getCumulativeOrderbookSide(asks, totalSize, depth, true)
+        ? getCumulativeOrderbookSide(asks, totalSize, maxSize, depth, false)
+        : getCumulativeOrderbookSide(
+            asks,
+            totalSize,
+            maxSize,
+            (depth + 1) / 2,
+            true
+          )
 
       currentOrderbookData.current = {
         bids: orderbook?.bids,
@@ -176,7 +194,29 @@ export default function Orderbook({ depth = 8 }) {
             <FlipCardFront>
               <StyledFloatingElement>
                 <div className="flex items-center justify-between pb-2.5">
-                  <div className="w-8 h-8" />
+                  <div className="flex relative">
+                    <Tooltip
+                      content={
+                        displayCumulativeSize
+                          ? 'Display Step Size'
+                          : 'Display Cumulative Size'
+                      }
+                      className="text-xs py-1"
+                    >
+                      <button
+                        onClick={() => {
+                          setDisplayCumulativeSize(!displayCumulativeSize)
+                        }}
+                        className="flex items-center justify-center rounded-full bg-th-bkg-3 w-8 h-8 hover:text-th-primary focus:outline-none"
+                      >
+                        {displayCumulativeSize ? (
+                          <StepSizeIcon className="w-5 h-5" />
+                        ) : (
+                          <CumulativeSizeIcon className="w-5 h-5" />
+                        )}
+                      </button>
+                    </Tooltip>
+                  </div>
                   <ElementTitle noMarignBottom>Orderbook</ElementTitle>
                   <div className="flex relative">
                     <Tooltip content={'Switch Layout'} className="text-xs py-1">
@@ -195,38 +235,60 @@ export default function Orderbook({ depth = 8 }) {
                   className={`text-th-fgd-4 flex justify-between mb-2 text-xs`}
                 >
                   <div className={`text-left`}>
-                    Size ({marketConfig.baseSymbol})
+                    {displayCumulativeSize ? 'Cumulative ' : ''}Size (
+                    {marketConfig.baseSymbol})
                   </div>
                   <div className={`text-center`}>
                     Price ({groupConfig.quoteSymbol})
                   </div>
                   <div className={`text-right`}>
-                    Size ({marketConfig.baseSymbol})
+                    {displayCumulativeSize ? 'Cumulative ' : ''}Size (
+                    {marketConfig.baseSymbol})
                   </div>
                 </div>
                 <div className="flex">
                   <div className="w-1/2">
-                    {orderbookData?.bids.map(({ price, size, sizePercent }) => (
-                      <OrderbookRow
-                        key={price + ''}
-                        price={price}
-                        size={size}
-                        side="buy"
-                        sizePercent={sizePercent}
-                      />
-                    ))}
+                    {orderbookData?.bids.map(
+                      ({
+                        price,
+                        size,
+                        cumulativeSize,
+                        sizePercent,
+                        maxSizePercent,
+                      }) => (
+                        <OrderbookRow
+                          key={price + ''}
+                          price={price}
+                          size={displayCumulativeSize ? cumulativeSize : size}
+                          side="buy"
+                          sizePercent={
+                            displayCumulativeSize ? maxSizePercent : sizePercent
+                          }
+                        />
+                      )
+                    )}
                   </div>
                   <div className="w-1/2">
-                    {orderbookData?.asks.map(({ price, size, sizePercent }) => (
-                      <OrderbookRow
-                        invert
-                        key={price + ''}
-                        price={price}
-                        size={size}
-                        side="sell"
-                        sizePercent={sizePercent}
-                      />
-                    ))}
+                    {orderbookData?.asks.map(
+                      ({
+                        price,
+                        size,
+                        cumulativeSize,
+                        sizePercent,
+                        maxSizePercent,
+                      }) => (
+                        <OrderbookRow
+                          invert
+                          key={price + ''}
+                          price={price}
+                          size={displayCumulativeSize ? cumulativeSize : size}
+                          side="sell"
+                          sizePercent={
+                            displayCumulativeSize ? maxSizePercent : sizePercent
+                          }
+                        />
+                      )
+                    )}
                   </div>
                 </div>
                 <div className="flex justify-between bg-th-bkg-1 p-2 mt-4 rounded-md text-xs">
@@ -244,7 +306,29 @@ export default function Orderbook({ depth = 8 }) {
             <FlipCardBack>
               <StyledFloatingElement>
                 <div className="flex items-center justify-between pb-2.5">
-                  <div className="w-8 h-8" />
+                  <div className="flex relative">
+                    <Tooltip
+                      content={
+                        displayCumulativeSize
+                          ? 'Display Step Size'
+                          : 'Display Cumulative Size'
+                      }
+                      className="text-xs py-1"
+                    >
+                      <button
+                        onClick={() => {
+                          setDisplayCumulativeSize(!displayCumulativeSize)
+                        }}
+                        className="flex items-center justify-center rounded-full bg-th-bkg-3 w-8 h-8 hover:text-th-primary focus:outline-none"
+                      >
+                        {displayCumulativeSize ? (
+                          <StepSizeIcon className="w-5 h-5" />
+                        ) : (
+                          <CumulativeSizeIcon className="w-5 h-5" />
+                        )}
+                      </button>
+                    </Tooltip>
+                  </div>
                   <ElementTitle noMarignBottom>Orderbook</ElementTitle>
                   <div className="flex relative">
                     <Tooltip content={'Switch Layout'} className="text-xs py-1">
@@ -260,21 +344,32 @@ export default function Orderbook({ depth = 8 }) {
                 <MarkPriceComponent markPrice={markPrice} />
                 <div className={`text-th-fgd-4 flex justify-between mb-2`}>
                   <div className={`text-left text-xs`}>
-                    Size ({marketConfig.baseSymbol})
+                    {displayCumulativeSize ? 'Cumulative ' : ''}Size (
+                    {marketConfig.baseSymbol})
                   </div>
                   <div className={`text-right text-xs`}>
                     Price ({groupConfig.quoteSymbol})
                   </div>
                 </div>
-                {orderbookData?.asks.map(({ price, size, sizePercent }) => (
-                  <OrderbookRow
-                    key={price + ''}
-                    price={price}
-                    size={size}
-                    side="sell"
-                    sizePercent={sizePercent}
-                  />
-                ))}
+                {orderbookData?.asks.map(
+                  ({
+                    price,
+                    size,
+                    cumulativeSize,
+                    sizePercent,
+                    maxSizePercent,
+                  }) => (
+                    <OrderbookRow
+                      key={price + ''}
+                      price={price}
+                      size={displayCumulativeSize ? cumulativeSize : size}
+                      side="sell"
+                      sizePercent={
+                        displayCumulativeSize ? maxSizePercent : sizePercent
+                      }
+                    />
+                  )
+                )}
                 <div className="flex justify-between bg-th-bkg-1 p-2 my-2 rounded-md text-xs">
                   <div className="text-th-fgd-3">Spread</div>
                   <div className="text-th-fgd-1">
@@ -284,15 +379,25 @@ export default function Orderbook({ depth = 8 }) {
                     {orderbookData?.spreadPercentage.toFixed(2)}%
                   </div>
                 </div>
-                {orderbookData?.bids.map(({ price, size, sizePercent }) => (
-                  <OrderbookRow
-                    key={price + ''}
-                    price={price}
-                    size={size}
-                    side="buy"
-                    sizePercent={sizePercent}
-                  />
-                ))}
+                {orderbookData?.bids.map(
+                  ({
+                    price,
+                    size,
+                    cumulativeSize,
+                    sizePercent,
+                    maxSizePercent,
+                  }) => (
+                    <OrderbookRow
+                      key={price + ''}
+                      price={price}
+                      size={displayCumulativeSize ? cumulativeSize : size}
+                      side="buy"
+                      sizePercent={
+                        displayCumulativeSize ? maxSizePercent : sizePercent
+                      }
+                    />
+                  )
+                )}
               </StyledFloatingElement>
             </FlipCardBack>
           )}
