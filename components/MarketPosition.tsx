@@ -118,7 +118,7 @@ export default function MarketPosition() {
     setShowMarketCloseModal(false)
   }, [])
 
-  if (!mangoGroup) return null
+  if (!mangoGroup || !selectedMarket) return null
 
   return selectedMarket instanceof PerpMarket ? (
     <FloatingElement showConnect>

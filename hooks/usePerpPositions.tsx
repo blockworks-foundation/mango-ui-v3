@@ -1,5 +1,4 @@
 import useMangoStore from '../stores/useMangoStore'
-import { ZERO_I80F48 } from '@blockworks-foundation/mango-client'
 import BN from 'bn.js'
 
 const usePerpPositions = () => {
@@ -15,11 +14,7 @@ const usePerpPositions = () => {
       })
     : []
   const filteredPerpAccounts = perpAccounts.filter(
-    ({ perpAccount }) =>
-      !(
-        perpAccount.quotePosition.eq(ZERO_I80F48) &&
-        perpAccount.basePosition.eq(new BN(0))
-      )
+    ({ perpAccount }) => !perpAccount.basePosition.eq(new BN(0))
   )
 
   return filteredPerpAccounts

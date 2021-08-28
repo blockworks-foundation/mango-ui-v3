@@ -265,6 +265,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
               )
 
             set((state) => {
+              state.selectedMangoAccount.initialLoad = false
               state.mangoAccounts = sortedAccounts
               if (state.selectedMangoAccount.current) {
                 state.selectedMangoAccount.current = mangoAccounts.find((ma) =>
@@ -280,10 +281,11 @@ const useMangoStore = create<MangoStore>((set, get) => ({
                   ) || sortedAccounts[0]
               }
             })
+          } else {
+            set((state) => {
+              state.selectedMangoAccount.initialLoad = false
+            })
           }
-          set((state) => {
-            state.selectedMangoAccount.initialLoad = false
-          })
         })
         .catch((err) => {
           notify({
