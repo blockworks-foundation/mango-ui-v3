@@ -46,7 +46,8 @@ export default function useOrderbook() {
   )
 
   useEffect(() => {
-    if (!mangoGroup || market?.publicKey !== marketConfig?.publicKey) return
+    if (!mangoGroup || !market?.publicKey.equals(marketConfig?.publicKey))
+      return
     const bids = decodeBook(market, bidInfo)
     const asks = decodeBook(market, askInfo)
 
