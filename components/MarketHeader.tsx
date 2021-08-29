@@ -154,7 +154,7 @@ const MarketHeader = () => {
           </div>
           <div className="pr-4">
             <div className="text-th-fgd-3 tiny-text pb-0.5">24h Change</div>
-            {change ? (
+            {change || change === 0 ? (
               <div
                 className={`font-semibold text-xs ${
                   change > 0
@@ -164,7 +164,7 @@ const MarketHeader = () => {
                     : `text-th-fgd-1`
                 }`}
               >
-                {change ? change.toFixed(2) + '%' : '--'}
+                {change.toFixed(2) + '%'}
               </div>
             ) : (
               <MarketDataLoader />
