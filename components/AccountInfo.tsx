@@ -97,7 +97,27 @@ export default function AccountInfo() {
   return (
     <FloatingElement showConnect>
       <div className={!connected ? 'filter blur-sm' : undefined}>
-        <ElementTitle>Account</ElementTitle>
+        <Tooltip
+          content={
+            mangoAccount ? (
+              <div>
+                Init Health:{' '}
+                {mangoAccount
+                  .getHealth(mangoGroup, mangoCache, 'Init')
+                  .toString()}
+                <br />
+                Maint Health:{' '}
+                {mangoAccount
+                  .getHealth(mangoGroup, mangoCache, 'Maint')
+                  .toString()}
+              </div>
+            ) : (
+              ''
+            )
+          }
+        >
+          <ElementTitle>Account</ElementTitle>
+        </Tooltip>
         <div>
           <div>
             <div className="flex justify-between pb-3">
@@ -122,38 +142,6 @@ export default function AccountInfo() {
                 )}
               </div>
             </div>
-            {/* <div className={`flex justify-between pb-3`}>
-              <div className="font-normal text-th-fgd-3 leading-4">
-                Total Assets Value
-              </div>
-              <div className={`text-th-fgd-1`}>
-                {isLoading ? (
-                  <DataLoader />
-                ) : mangoAccount ? (
-                  formatUsdValue(
-                    +mangoAccount.getAssetsVal(mangoGroup, mangoCache)
-                  )
-                ) : (
-                  '--'
-                )}
-              </div>
-            </div>
-            <div className={`flex justify-between pb-3`}>
-              <div className="font-normal text-th-fgd-3 leading-4">
-                Total Liabilities Value
-              </div>
-              <div className={`text-th-fgd-1`}>
-                {isLoading ? (
-                  <DataLoader />
-                ) : mangoAccount ? (
-                  formatUsdValue(
-                    +mangoAccount.getLiabsVal(mangoGroup, mangoCache)
-                  )
-                ) : (
-                  '--'
-                )}
-              </div>
-            </div> */}
             <div className={`flex justify-between pb-3`}>
               <div className="font-normal text-th-fgd-3 leading-4">
                 Collateral Available

@@ -5,17 +5,13 @@ import { notify } from '../utils/notifications'
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
 import { InformationCircleIcon } from '@heroicons/react/outline'
 import Tooltip from './Tooltip'
-import { ceilToDecimal, floorToDecimal, sleep } from '../utils'
+import { sleep } from '../utils'
 import { Market } from '@project-serum/serum'
-import {
-  getTokenBySymbol,
-  ZERO_I80F48,
-} from '@blockworks-foundation/mango-client'
+import { ZERO_I80F48 } from '@blockworks-foundation/mango-client'
 
 const BalancesTable = () => {
   const balances = useBalances()
   const actions = useMangoStore((s) => s.actions)
-  const mangoGroupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
 
   async function handleSettleAll() {
     const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
@@ -131,10 +127,6 @@ const BalancesTable = () => {
                 </Thead>
                 <Tbody>
                   {filteredBalances.map((balance, index) => {
-                    const tokenConfig = getTokenBySymbol(
-                      mangoGroupConfig,
-                      balance.symbol.toUpperCase()
-                    )
                     return (
                       <Tr
                         key={`${index}`}
@@ -158,18 +150,12 @@ const BalancesTable = () => {
                         <Td
                           className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
                         >
-                          {floorToDecimal(
-                            parseFloat(balance.deposits.floor().toFixed()),
-                            tokenConfig.decimals
-                          )}
+                          {balance.deposits.toFixed()}
                         </Td>
                         <Td
                           className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
                         >
-                          {ceilToDecimal(
-                            parseFloat(balance.borrows.ceil().toFixed()),
-                            tokenConfig.decimals
-                          )}
+                          {balance.borrows.toFixed()}
                         </Td>
                         <Td
                           className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
@@ -184,10 +170,7 @@ const BalancesTable = () => {
                         <Td
                           className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
                         >
-                          {floorToDecimal(
-                            parseFloat(balance.net.toFixed()),
-                            tokenConfig.decimals
-                          )}
+                          {balance.net.toFixed()}
                         </Td>
                       </Tr>
                     )

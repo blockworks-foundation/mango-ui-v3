@@ -2,13 +2,7 @@ import { useCallback, useMemo, useState } from 'react'
 import FloatingElement from './FloatingElement'
 import { ElementTitle } from './styles'
 import useMangoStore, { mangoClient } from '../stores/useMangoStore'
-import {
-  ceilToDecimal,
-  floorToDecimal,
-  i80f48ToPercent,
-  formatUsdValue,
-  tokenPrecision,
-} from '../utils/index'
+import { i80f48ToPercent, formatUsdValue, tokenPrecision } from '../utils/index'
 import Button, { LinkButton } from './Button'
 import Tooltip from './Tooltip'
 import SideBadge from './SideBadge'
@@ -297,22 +291,18 @@ export default function MarketPosition() {
                 .map(({ symbol, mintKey }) => {
                   const tokenIndex = mangoGroup.getTokenIndex(mintKey)
                   const deposit = mangoAccount
-                    ? mangoAccount
-                        .getUiDeposit(
-                          mangoGroupCache.rootBankCache[tokenIndex],
-                          mangoGroup,
-                          tokenIndex
-                        )
-                        .toNumber()
+                    ? mangoAccount.getUiDeposit(
+                        mangoGroupCache.rootBankCache[tokenIndex],
+                        mangoGroup,
+                        tokenIndex
+                      )
                     : null
                   const borrow = mangoAccount
-                    ? mangoAccount
-                        .getUiBorrow(
-                          mangoGroupCache.rootBankCache[tokenIndex],
-                          mangoGroup,
-                          tokenIndex
-                        )
-                        .toNumber()
+                    ? mangoAccount.getUiBorrow(
+                        mangoGroupCache.rootBankCache[tokenIndex],
+                        mangoGroup,
+                        tokenIndex
+                      )
                     : null
                   return (
                     <div
@@ -337,18 +327,10 @@ export default function MarketPosition() {
                           {isLoading ? (
                             <DataLoader />
                           ) : mangoAccount ? (
-                            deposit > 0 ? (
-                              floorToDecimal(
-                                deposit,
-                                mangoGroup.tokens[tokenIndex].decimals
-                              ).toFixed(tokenPrecision[symbol])
-                            ) : borrow > 0 ? (
-                              `-${ceilToDecimal(
-                                borrow,
-                                mangoGroup.tokens[tokenIndex].decimals
-                              ).toFixed(tokenPrecision[symbol])}`
+                            deposit.gt(borrow) ? (
+                              deposit.toFixed()
                             ) : (
-                              0
+                              borrow.toFixed()
                             )
                           ) : (
                             0
