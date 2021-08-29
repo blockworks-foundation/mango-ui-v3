@@ -153,7 +153,7 @@ const MarketHeader = () => {
             </div>
           </div>
           <div className="pr-4">
-            <div className="text-th-fgd-3 tiny-text pb-0.5">24h Change</div>
+            <div className="text-th-fgd-3 tiny-text pb-0.5">Daily Change</div>
             {change || change === 0 ? (
               <div
                 className={`font-semibold text-xs ${
@@ -171,7 +171,7 @@ const MarketHeader = () => {
             )}
           </div>
           <div className="pr-6">
-            <div className="text-th-fgd-3 tiny-text pb-0.5">24h Vol</div>
+            <div className="text-th-fgd-3 tiny-text pb-0.5">Daily Vol</div>
             <div className="font-semibold text-th-fgd-1 text-xs">
               {ohlcv && !loading && volume ? (
                 volume !== '--' ? (

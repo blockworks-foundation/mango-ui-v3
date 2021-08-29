@@ -13,7 +13,7 @@ const DayHighLow = ({ high, low, latest }) => {
   return (
     <div className="pr-6">
       <div className="text-center text-th-fgd-3 tiny-text pb-0.5">
-        24h Range
+        Daily Range
       </div>
       <div className="flex items-center">
         <div className="pr-2 text-th-fgd-1 text-xs">

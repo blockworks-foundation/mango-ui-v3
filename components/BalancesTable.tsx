@@ -185,7 +185,7 @@ const BalancesTable = () => {
                           className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
                         >
                           {floorToDecimal(
-                            parseFloat(balance.net.floor().toFixed()),
+                            parseFloat(balance.net.toFixed()),
                             tokenConfig.decimals
                           )}
                         </Td>
