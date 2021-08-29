@@ -159,7 +159,7 @@ const BalancesTable = () => {
                           className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
                         >
                           {floorToDecimal(
-                            parseFloat(balance.deposits.toFixed()),
+                            parseFloat(balance.deposits.floor().toFixed()),
                             tokenConfig.decimals
                           )}
                         </Td>
@@ -167,7 +167,7 @@ const BalancesTable = () => {
                           className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
                         >
                           {ceilToDecimal(
-                            parseFloat(balance.borrows.toFixed()),
+                            parseFloat(balance.borrows.ceil().toFixed()),
                             tokenConfig.decimals
                           )}
                         </Td>
@@ -185,7 +185,7 @@ const BalancesTable = () => {
                           className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
                         >
                           {floorToDecimal(
-                            parseFloat(balance.net.toFixed()),
+                            parseFloat(balance.net.floor().toFixed()),
                             tokenConfig.decimals
                           )}
                         </Td>

@@ -86,7 +86,9 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
     )
 
     const maxWithoutBorrows = nativeI80F48ToUi(
-      mangoAccount.getAvailableBalance(mangoGroup, mangoCache, tokenIndex),
+      mangoAccount
+        .getAvailableBalance(mangoGroup, mangoCache, tokenIndex)
+        .floor(),
       mangoGroup.tokens[tokenIndex].decimals
     )
     const maxWithBorrows = mangoAccount.getMaxWithBorrowForToken(
