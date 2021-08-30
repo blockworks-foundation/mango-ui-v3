@@ -91,11 +91,10 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
         .floor(),
       mangoGroup.tokens[tokenIndex].decimals
     )
-    const maxWithBorrows = mangoAccount.getMaxWithBorrowForToken(
-      mangoGroup,
-      mangoCache,
-      tokenIndex
-    )
+    const maxWithBorrows = mangoAccount
+      .getMaxWithBorrowForToken(mangoGroup, mangoCache, tokenIndex)
+      .add(maxWithoutBorrows)
+      .mul(I80F48.fromString('0.995')) // handle rounding errors when borrowing
 
     // get max withdraw amount
     let maxWithdraw = maxWithoutBorrows
@@ -106,7 +105,9 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
     }
 
     if (maxWithdraw.gt(I80F48.fromNumber(0))) {
-      setMaxAmount(parseFloat(maxWithdraw.toFixed()))
+      setMaxAmount(
+        floorToDecimal(parseFloat(maxWithdraw.toFixed()), token.decimals)
+      )
     } else {
       setMaxAmount(0)
     }
