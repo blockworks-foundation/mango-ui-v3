@@ -3,6 +3,8 @@ import Modal from './Modal'
 import Button from './Button'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 
+export const ALPHA_MODAL_KEY = 'mangoAlphaAccepted-3.01'
+
 const AlphaModal = ({
   isOpen,
   onClose,
@@ -10,10 +12,7 @@ const AlphaModal = ({
   isOpen: boolean
   onClose?: (x) => void
 }) => {
-  const [, setAlphaAccepted] = useLocalStorageState(
-    'mangoAlphaAccepted-3.0',
-    false
-  )
+  const [, setAlphaAccepted] = useLocalStorageState(ALPHA_MODAL_KEY, false)
 
   const handleAccept = () => {
     setAlphaAccepted(true)
@@ -36,12 +35,10 @@ const AlphaModal = ({
         Perps are now available!
       </div>
       <div className="text-th-fgd-2 text-center my-4">
-        Welcome to V3 Alpha. Mango Markets is unaudited software, use at your
-        own risk.
+        Welcome to V3. Mango Markets is unaudited software, use at your own
+        risk.
       </div>
       <div className="text-th-fgd-2 text-center my-2">
-        Have fun, dont get liquidated, or do, we need to test that
-        <br />
         &#x1F642; &#129389;&#129309;
       </div>
       <div className={`text-th-fgd-2 text-center`}>

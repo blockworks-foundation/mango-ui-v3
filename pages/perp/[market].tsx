@@ -11,10 +11,10 @@ import TradePageGrid from '../../components/TradePageGrid'
 import MarketSelect from '../../components/MarketSelect'
 import MarketHeader from '../../components/MarketHeader'
 import useLocalStorageState from '../../hooks/useLocalStorageState'
-import AlphaModal from '../../components/AlphaModal'
+import AlphaModal, { ALPHA_MODAL_KEY } from '../../components/AlphaModal'
 
 const PerpMarket = () => {
-  const [alphaAccepted] = useLocalStorageState('mangoAlphaAccepted-3.0', false)
+  const [alphaAccepted] = useLocalStorageState(ALPHA_MODAL_KEY, false)
   const groupConfig = useMangoGroupConfig()
   const setMangoStore = useMangoStore((s) => s.set)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
