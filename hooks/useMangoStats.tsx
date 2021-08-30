@@ -17,6 +17,18 @@ const useMangoStats = () => {
       utilization: '0',
     },
   ])
+  const [perpStats, setPerpStats] = useState([
+    {
+      name: '',
+      hourly: '',
+      oldestLongFunding: 0,
+      oldestShortFunding: 0,
+      latestLongFunding: 0,
+      latestShortFunding: 0,
+      openInterest: 0,
+      baseOraclePrice: 0,
+    },
+  ])
   const [latestStats, setLatestStats] = useState<any[]>([])
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoGroupName = useMangoStore((s) => s.selectedMangoGroup.name)
@@ -32,6 +44,17 @@ const useMangoStats = () => {
       setStats(stats)
     }
     fetchHistoricalStats()
+  }, [mangoGroupName])
+
+  useEffect(() => {
+    const fetchHistoricalPerpStats = async () => {
+      const response = await fetch(
+        `http://localhost:8080/perp?mangoGroup=${mangoGroupName}`
+      )
+      const stats = await response.json()
+      setPerpStats(stats)
+    }
+    fetchHistoricalPerpStats()
   }, [mangoGroupName])
 
   useEffect(() => {
@@ -75,7 +98,7 @@ const useMangoStats = () => {
     getLatestStats()
   }, [mangoGroup])
 
-  return { latestStats, stats }
+  return { latestStats, stats, perpStats }
 }
 
 export default useMangoStats

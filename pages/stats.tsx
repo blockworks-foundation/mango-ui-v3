@@ -9,13 +9,13 @@ import useMangoStats from '../hooks/useMangoStats'
 const TABS = [
   'Totals',
   'Assets',
-  // 'Perps',
+  'Perps',
   // 'Markets',
   // 'Liquidations',
 ]
 
 export default function StatsPage() {
-  const { latestStats, stats } = useMangoStats()
+  const { latestStats, stats, perpStats } = useMangoStats()
   const [activeTab, setActiveTab] = useState(TABS[0])
 
   const handleTabChange = (tabName) => {
@@ -53,6 +53,7 @@ export default function StatsPage() {
             activeTab={activeTab}
             latestStats={latestStats}
             stats={stats}
+            perpStats={perpStats}
           />
         </div>
       </PageBodyContainer>
@@ -60,14 +61,14 @@ export default function StatsPage() {
   )
 }
 
-const TabContent = ({ activeTab, latestStats, stats }) => {
+const TabContent = ({ activeTab, latestStats, stats, perpStats }) => {
   switch (activeTab) {
     case 'Totals':
       return <StatsTotals latestStats={latestStats} stats={stats} />
     case 'Assets':
       return <StatsAssets latestStats={latestStats} stats={stats} />
     case 'Perps':
-      return <StatsPerps />
+      return <StatsPerps perpStats={perpStats} />
     case 'Markets':
       return <div>Markets</div>
     case 'Liquidations':

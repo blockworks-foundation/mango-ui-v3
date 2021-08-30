@@ -1,41 +1,93 @@
+import { PerpMarket } from '@blockworks-foundation/mango-client'
 import { useState } from 'react'
-import useMangoStats from '../../hooks/useMangoStats'
+import useMangoGroupConfig from '../../hooks/useMangoGroupConfig'
+import useMangoStore from '../../stores/useMangoStore'
 import Chart from '../Chart'
 
 const icons = {
-  BTC: '/assets/icons/btc.svg',
-  ETH: '/assets/icons/eth.svg',
-  SOL: '/assets/icons/sol.svg',
-  SRM: '/assets/icons/srm.svg',
-  USDT: '/assets/icons/usdt.svg',
-  USDC: '/assets/icons/usdc.svg',
-  WUSDT: '/assets/icons/usdt.svg',
+  'BTC-PERP': '/assets/icons/btc.svg',
+  'ETH-PERP': '/assets/icons/eth.svg',
+  'SOL-PERP': '/assets/icons/sol.svg',
+  'SRM-PERP': '/assets/icons/srm.svg',
+  'USDT-PERP': '/assets/icons/usdt.svg',
+  'MNGO-PERP': '/assets/icons/mngo.svg',
 }
 
-export default function StatsPerps() {
-  const [selectedAsset, setSelectedAsset] = useState<string>('BTC')
-  const { latestStats, stats } = useMangoStats()
+function calculateFundingRate(
+  oldestLongFunding,
+  oldestShortFunding,
+  latestLongFunding,
+  latestShortFunding,
+  perpMarket,
+  oraclePrice
+) {
+  if (!perpMarket || !oraclePrice) return 0.0
 
-  const selectedStatsData = stats.filter((stat) => stat.name === selectedAsset)
+  // Averaging long and short funding excludes socialized loss
+  const startFunding =
+    (parseFloat(oldestLongFunding) + parseFloat(oldestShortFunding)) / 2
+  const endFunding =
+    (parseFloat(latestLongFunding) + parseFloat(latestShortFunding)) / 2
+  const fundingDifference = endFunding - startFunding
+
+  const fundingInQuoteDecimals =
+    fundingDifference / Math.pow(10, perpMarket.quoteDecimals)
+
+  // TODO - use avgPrice and discard oraclePrice once stats are better
+  // const avgPrice = (latestStat.baseOraclePrice + oldestStat.baseOraclePrice) / 2
+  const basePriceInBaseLots = oraclePrice * perpMarket.baseLotsToNumber(1)
+  return (fundingInQuoteDecimals / basePriceInBaseLots) * 100
+}
+
+export default function StatsPerps({ perpStats }) {
+  const [selectedAsset, setSelectedAsset] = useState<string>('BTC-PERP')
+  const marketConfigs = useMangoGroupConfig().perpMarkets
+  const selectedMarketConfig = marketConfigs.find(
+    (m) => m.name === selectedAsset
+  )
+  const markets = Object.values(
+    useMangoStore.getState().selectedMangoGroup.markets
+  ).filter((m) => m instanceof PerpMarket) as PerpMarket[]
+  const selectedMarket = markets.find((m) =>
+    m.publicKey.equals(selectedMarketConfig.publicKey)
+  )
+  const selectedStatsData = perpStats.filter(
+    (stat) => stat.name === selectedAsset
+  )
+  console.log(selectedStatsData)
+  const perpsData = selectedStatsData.map((x) => {
+    return {
+      fundingRate: calculateFundingRate(
+        x.oldestLongFunding,
+        x.oldestShortFunding,
+        x.latestLongFunding,
+        x.latestShortFunding,
+        selectedMarket,
+        x.baseOraclePrice
+      ),
+      openInterest: x.openInterest,
+      time: x.hourly,
+    }
+  })
 
   return (
     <>
       <div className="flex flex-col-reverse items-center sm:flex-row sm:justify-between sm:h-12 mb-4 w-full">
         <AssetHeader asset={selectedAsset} />
         <div className="flex pb-4 sm:pb-0">
-          {latestStats.map((stat) => (
+          {marketConfigs.map((market) => (
             <div
               className={`px-2 py-1 ml-2 rounded-md cursor-pointer default-transition bg-th-bkg-3
               ${
-                selectedAsset === stat.name
+                selectedAsset === market.name
                   ? `ring-1 ring-inset ring-th-primary text-th-primary`
                   : `text-th-fgd-1 opacity-50 hover:opacity-100`
               }
             `}
-              onClick={() => setSelectedAsset(stat.name)}
-              key={stat.name as string}
+              onClick={() => setSelectedAsset(market.name)}
+              key={market.name as string}
             >
-              {stat.name}
+              {market.name}
             </div>
           ))}
         </div>
@@ -49,9 +101,27 @@ export default function StatsPerps() {
             title="Funding Rate"
             xAxis="time"
             yAxis="fundingRate"
-            data={selectedStatsData}
+            data={perpsData}
             labelFormat={(x) => `${(x * 100).toFixed(5)}%`}
-            type="bar"
+            type="area"
+          />
+        </div>
+      </div>
+      <div className="grid grid-flow-col grid-cols-1 grid-rows-1 gap-4 pb-8">
+        <div
+          className="border border-th-bkg-3 relative p-4 rounded-md"
+          style={{ height: '300px' }}
+        >
+          <Chart
+            title="Open Interest"
+            xAxis="time"
+            yAxis="openInterest"
+            data={perpsData}
+            labelFormat={(x) =>
+              x &&
+              '$' + x.toLocaleString(undefined, { maximumFractionDigits: 0 })
+            }
+            type="area"
           />
         </div>
       </div>
@@ -61,7 +131,7 @@ export default function StatsPerps() {
 
 const AssetHeader = ({ asset }) => {
   switch (asset) {
-    case 'BTC':
+    case 'BTC-PERP':
       return (
         <div className="flex items-center text-xl text-th-fgd-1">
           <img
@@ -71,10 +141,10 @@ const AssetHeader = ({ asset }) => {
             height="24"
             className="mr-2.5"
           />
-          Bitcoin
+          Bitcoin Perp
         </div>
       )
-    case 'ETH':
+    case 'ETH-PERP':
       return (
         <div className="flex items-center text-xl text-th-fgd-1">
           <img
@@ -84,10 +154,10 @@ const AssetHeader = ({ asset }) => {
             height="24"
             className="mr-2.5"
           />
-          Ethereum
+          Ethereum Perp
         </div>
       )
-    case 'SOL':
+    case 'SOL-PERP':
       return (
         <div className="flex items-center text-xl text-th-fgd-1">
           <img
@@ -97,7 +167,7 @@ const AssetHeader = ({ asset }) => {
             height="24"
             className="mr-2.5"
           />
-          Solana
+          Solana Perp
         </div>
       )
     case 'SRM':
@@ -110,20 +180,7 @@ const AssetHeader = ({ asset }) => {
             height="24"
             className="mr-2.5"
           />
-          Serum
-        </div>
-      )
-    case 'USDC':
-      return (
-        <div className="flex items-center text-xl text-th-fgd-1">
-          <img
-            src={icons[asset]}
-            alt={icons[asset]}
-            width="24"
-            height="24"
-            className="mr-2.5"
-          />
-          USD Coin
+          Serum Perp
         </div>
       )
     default:
@@ -136,7 +193,7 @@ const AssetHeader = ({ asset }) => {
             height="24"
             className="mr-2.5"
           />
-          Bitcoin
+          Bitcoin Perp
         </div>
       )
   }
