@@ -92,7 +92,7 @@ export default function StatsPerps({ perpStats }) {
           ))}
         </div>
       </div>
-      <div className="grid grid-flow-col grid-cols-1 grid-rows-1 gap-4 pb-8">
+      <div className="grid grid-flow-col grid-cols-1 grid-rows-2 md:grid-cols-2 md:grid-rows-1 gap-4 pb-8">
         <div
           className="border border-th-bkg-3 relative p-4 rounded-md"
           style={{ height: '300px' }}
@@ -106,8 +106,6 @@ export default function StatsPerps({ perpStats }) {
             type="area"
           />
         </div>
-      </div>
-      <div className="grid grid-flow-col grid-cols-1 grid-rows-1 gap-4 pb-8">
         <div
           className="border border-th-bkg-3 relative p-4 rounded-md"
           style={{ height: '300px' }}
