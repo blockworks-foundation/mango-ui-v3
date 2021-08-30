@@ -66,6 +66,7 @@ const StyledFloatingElement = styled(FloatingElement)`
   animation: ${css`
     ${fadeIn} 1s linear
   `};
+  overflow: hidden;
 `
 
 const getCumulativeOrderbookSide = (
