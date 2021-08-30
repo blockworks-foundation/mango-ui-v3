@@ -14,7 +14,7 @@ import AlphaModal from '../../components/AlphaModal'
 import useLocalStorageState from '../../hooks/useLocalStorageState'
 
 const SpotMarket = () => {
-  const [alphaAccepted] = useLocalStorageState('mangoAlphaAccepted-2.0', false)
+  const [alphaAccepted] = useLocalStorageState('mangoAlphaAccepted-3.0', false)
   const groupConfig = useMangoGroupConfig()
   const setMangoStore = useMangoStore((s) => s.set)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)

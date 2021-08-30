@@ -11,7 +11,7 @@ const AlphaModal = ({
   onClose?: (x) => void
 }) => {
   const [, setAlphaAccepted] = useLocalStorageState(
-    'mangoAlphaAccepted-2.0',
+    'mangoAlphaAccepted-3.0',
     false
   )
 

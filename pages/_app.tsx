@@ -28,7 +28,7 @@ function App({ Component, pageProps }) {
         />
         <meta
           name="description"
-          content="Mango Markets - Decentralised, cross-margin trading up to 5x leverage with lightning speed and near-zero fees powered by Serum."
+          content="Mango Markets - Decentralised, cross-margin trading up to 10x leverage with lightning speed and near-zero fees."
         />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <meta name="msapplication-TileColor" content="#da532c" />
@@ -37,7 +37,7 @@ function App({ Component, pageProps }) {
         <meta name="twitter:title" content="Mango Markets" />
         <meta
           name="twitter:description"
-          content="Mango Markets - Decentralised, cross-margin trading up to 5x leverage with lightning speed and near-zero fees powered by Serum."
+          content="Mango Markets - Decentralised, cross-margin trading up to 10x leverage with lightning speed and near-zero fees."
         />
         <meta name="twitter:image" content="/twitter-image.png" />
 

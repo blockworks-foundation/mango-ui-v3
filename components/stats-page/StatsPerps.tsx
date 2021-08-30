@@ -16,9 +16,7 @@ export default function StatsPerps() {
   const [selectedAsset, setSelectedAsset] = useState<string>('BTC')
   const { latestStats, stats } = useMangoStats()
 
-  const selectedStatsData = stats.filter(
-    (stat) => stat.symbol === selectedAsset
-  )
+  const selectedStatsData = stats.filter((stat) => stat.name === selectedAsset)
 
   return (
     <>
@@ -29,15 +27,15 @@ export default function StatsPerps() {
             <div
               className={`px-2 py-1 ml-2 rounded-md cursor-pointer default-transition bg-th-bkg-3
               ${
-                selectedAsset === stat.symbol
+                selectedAsset === stat.name
                   ? `ring-1 ring-inset ring-th-primary text-th-primary`
                   : `text-th-fgd-1 opacity-50 hover:opacity-100`
               }
             `}
-              onClick={() => setSelectedAsset(stat.symbol)}
-              key={stat.symbol as string}
+              onClick={() => setSelectedAsset(stat.name)}
+              key={stat.name as string}
             >
-              {stat.symbol}
+              {stat.name}
             </div>
           ))}
         </div>

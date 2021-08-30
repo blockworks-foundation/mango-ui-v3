@@ -10,8 +10,11 @@ import TopBar from '../../components/TopBar'
 import TradePageGrid from '../../components/TradePageGrid'
 import MarketSelect from '../../components/MarketSelect'
 import MarketHeader from '../../components/MarketHeader'
+import useLocalStorageState from '../../hooks/useLocalStorageState'
+import AlphaModal from '../../components/AlphaModal'
 
 const PerpMarket = () => {
+  const [alphaAccepted] = useLocalStorageState('mangoAlphaAccepted-3.0', false)
   const groupConfig = useMangoGroupConfig()
   const setMangoStore = useMangoStore((s) => s.set)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
@@ -54,6 +57,9 @@ const PerpMarket = () => {
       <div className={`min-h-screen p-1 sm:px-2 sm:py-1 md:px-2 md:py-1`}>
         <TradePageGrid />
       </div>
+      {!alphaAccepted && (
+        <AlphaModal isOpen={!alphaAccepted} onClose={() => {}} />
+      )}
     </div>
   )
 }

@@ -186,7 +186,6 @@ export default function AccountOverview() {
       const spotMarkets = Object.values(markets).filter(
         (mkt) => mkt instanceof Market
       ) as Market[]
-      // @ts-ignore
       await mangoClient.settleAll(mangoGroup, mangoAccount, spotMarkets, wallet)
       notify({ title: 'Successfully settled funds' })
       await sleep(250)

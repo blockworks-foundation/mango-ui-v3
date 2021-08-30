@@ -16,9 +16,7 @@ export default function StatsAssets() {
   const [selectedAsset, setSelectedAsset] = useState<string>('BTC')
   const { latestStats, stats } = useMangoStats()
 
-  const selectedStatsData = stats.filter(
-    (stat) => stat.symbol === selectedAsset
-  )
+  const selectedStatsData = stats.filter((stat) => stat.name === selectedAsset)
 
   return (
     <>

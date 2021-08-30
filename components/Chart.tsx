@@ -4,7 +4,6 @@ import useDimensions from 'react-cool-dimensions'
 
 const Chart = ({ title, xAxis, yAxis, data, labelFormat, type }) => {
   const [mouseData, setMouseData] = useState<string | null>(null)
-  // @ts-ignore
   const { observe, width, height } = useDimensions()
 
   const handleMouseMove = (coords) => {

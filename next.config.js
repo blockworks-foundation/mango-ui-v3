@@ -1,24 +1,33 @@
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
-  enabled: process.env.ANALYZE === 'true',
-})
-
-module.exports = withBundleAnalyzer({
+module.exports = {
   target: 'serverless',
-  typescript: {
-    ignoreBuildErrors: true, // TODO: remove this before mainnet
-  },
-  webpack(config, { isServer }) {
-    // Fixes npm packages that depend on `fs` module
+  webpack: (config, { isServer }) => {
+    // Important: return the modified config
     if (!isServer) {
-      config.node = {
-        fs: 'empty',
-      }
+      config.resolve.fallback.fs = false
     }
     config.module.rules.push({
-      test: /\.svg$/,
-      use: ['@svgr/webpack'],
+      test: /\.svg?$/,
+      oneOf: [
+        {
+          use: [
+            {
+              loader: '@svgr/webpack',
+              options: {
+                prettier: false,
+                svgo: true,
+                svgoConfig: {
+                  plugins: [{ removeViewBox: false }],
+                },
+                titleProp: true,
+              },
+            },
+          ],
+          issuer: {
+            and: [/\.(ts|tsx|js|jsx|md|mdx)$/],
+          },
+        },
+      ],
     })
-
     return config
   },
   async redirects() {
@@ -30,4 +39,4 @@ module.exports = withBundleAnalyzer({
       },
     ]
   },
-})
+}
