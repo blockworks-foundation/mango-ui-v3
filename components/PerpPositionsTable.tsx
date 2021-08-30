@@ -124,23 +124,27 @@ const PositionsTable = () => {
                     const perpTradeHistory = tradeHistory.filter(
                       (t) => t.marketName === marketConfig.name
                     )
-                    const breakEvenPrice = getBreakEvenPrice(
-                      mangoAccount,
-                      perpAccount,
-                      perpMarket,
-                      perpTradeHistory
-                    )
+                    let breakEvenPrice
+                    try {
+                      breakEvenPrice = perpAccount.getBreakEvenPrice(
+                        mangoAccount,
+                        perpMarket,
+                        perpTradeHistory
+                      )
+                    } catch (e) {
+                      breakEvenPrice = null
+                    }
 
                     const pnl =
-                      perpMarket.baseLotsToNumber(perpAccount.basePosition) *
-                      (mangoGroup.getPrice(marketIndex, mangoCache).toNumber() -
-                        parseFloat(
-                          perpAccount.getBreakEvenPrice(
-                            mangoAccount,
-                            perpMarket,
-                            perpTradeHistory
-                          )
-                        ))
+                      breakEvenPrice !== null
+                        ? perpMarket.baseLotsToNumber(
+                            perpAccount.basePosition
+                          ) *
+                          (mangoGroup
+                            .getPrice(marketIndex, mangoCache)
+                            .toNumber() -
+                            parseFloat(breakEvenPrice))
+                        : null
 
                     return (
                       <Tr
@@ -227,14 +231,19 @@ const PositionsTable = () => {
                           )}
                         </Td>
                         <Td className="px-2 py-2 whitespace-nowrap text-sm text-th-fgd-1">
-                          {breakEvenPrice}
+                          {getBreakEvenPrice(
+                            mangoAccount,
+                            perpAccount,
+                            perpMarket,
+                            perpTradeHistory
+                          )}
                         </Td>
                         <Td
                           className={`px-2 py-2 whitespace-nowrap text-sm text-th-fgd-1 ${
-                            pnl > 0 ? 'text-th-green' : 'text-th-red'
+                            pnl >= 0 ? 'text-th-green' : 'text-th-red'
                           }`}
                         >
-                          {usdFormatter(pnl)}
+                          {pnl !== null ? usdFormatter(pnl) : '--'}
                         </Td>
                         {showMarketCloseModal ? (
                           <MarketCloseModal

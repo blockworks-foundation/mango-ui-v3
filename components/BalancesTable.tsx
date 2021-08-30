@@ -88,37 +88,37 @@ const BalancesTable = () => {
                   <Tr className="text-th-fgd-3 text-xs">
                     <Th
                       scope="col"
-                      className={`px-6 py-3 text-left font-normal`}
+                      className={`px-6 py-2 text-left font-normal`}
                     >
                       Asset
                     </Th>
                     <Th
                       scope="col"
-                      className={`px-6 py-3 text-left font-normal`}
+                      className={`px-6 py-2 text-left font-normal`}
                     >
                       Deposits
                     </Th>
                     <Th
                       scope="col"
-                      className={`px-6 py-3 text-left font-normal`}
+                      className={`px-6 py-2 text-left font-normal`}
                     >
                       Borrows
                     </Th>
                     <Th
                       scope="col"
-                      className={`px-6 py-3 text-left font-normal`}
+                      className={`px-6 py-2 text-left font-normal`}
                     >
                       In Orders
                     </Th>
                     <Th
                       scope="col"
-                      className={`px-6 py-3 text-left font-normal`}
+                      className={`px-6 py-2 text-left font-normal`}
                     >
                       Unsettled
                     </Th>
                     <Th
                       scope="col"
-                      className={`px-6 py-3 text-left font-normal`}
+                      className={`px-6 py-2 text-left font-normal`}
                     >
                       Net
                     </Th>
@@ -134,7 +134,7 @@ const BalancesTable = () => {
                       `}
                       >
                         <Td
-                          className={`flex items-center px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
+                          className={`flex items-center px-6 py-3.5 whitespace-nowrap text-sm text-th-fgd-1`}
                         >
                           <img
                             alt=""
@@ -147,27 +147,27 @@ const BalancesTable = () => {
                           {balance.symbol}
                         </Td>
                         <Td
-                          className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
+                          className={`px-6 py-3.5 whitespace-nowrap text-sm text-th-fgd-1`}
                         >
                           {balance.deposits.toFixed()}
                         </Td>
                         <Td
-                          className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
+                          className={`px-6 py-3.5 whitespace-nowrap text-sm text-th-fgd-1`}
                         >
                           {balance.borrows.toFixed()}
                         </Td>
                         <Td
-                          className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
+                          className={`px-6 py-3.5 whitespace-nowrap text-sm text-th-fgd-1`}
                         >
                           {balance.orders}
                         </Td>
                         <Td
-                          className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
+                          className={`px-6 py-3.5 whitespace-nowrap text-sm text-th-fgd-1`}
                         >
                           {balance.unsettled}
                         </Td>
                         <Td
-                          className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
+                          className={`px-6 py-3.5 whitespace-nowrap text-sm text-th-fgd-1`}
                         >
                           {balance.net.toFixed()}
                         </Td>
