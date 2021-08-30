@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import useMangoStats from '../../hooks/useMangoStats'
 import Chart from '../Chart'
 
 const icons = {
@@ -9,33 +8,68 @@ const icons = {
   SRM: '/assets/icons/srm.svg',
   USDT: '/assets/icons/usdt.svg',
   USDC: '/assets/icons/usdc.svg',
-  WUSDT: '/assets/icons/usdt.svg',
+  MNGO: '/assets/icons/mngo.svg',
 }
 
-export default function StatsAssets() {
+const dailyStartTime = new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).getTime()
+const weeklyStartTime = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).getTime()
+
+const getAverageStats = (stats, startFrom, type) => {
+  const timeFilteredStats = stats.filter(
+    (d) => new Date(d.time).getTime() > startFrom
+  )
+  const sum = timeFilteredStats.map((s) => s[type]).reduce((a, b) => a + b, 0)
+  const avg = sum / timeFilteredStats.length || 0
+
+  return (avg * 100).toFixed(4)
+}
+
+const AverageInterest = ({ periodLabel, statTypeLabel, interest }) => {
+  return (
+    <>
+      <div className="text-2xl font-bold text-center text-th-fgd-4">
+        {periodLabel}
+      </div>
+      <div className="text-center text-th-fgd-3 text-sm mt-1 font-extrabold">
+        {statTypeLabel}
+      </div>
+      <div className="text-center text-3xl mt-3">{interest}%</div>
+    </>
+  )
+}
+
+export default function StatsAssets({ latestStats, stats }) {
   const [selectedAsset, setSelectedAsset] = useState<string>('BTC')
-  const { latestStats, stats } = useMangoStats()
 
   const selectedStatsData = stats.filter((stat) => stat.name === selectedAsset)
 
   return (
     <>
       <div className="flex flex-col-reverse items-center sm:flex-row sm:justify-between sm:h-12 mb-4 w-full">
-        <AssetHeader asset={selectedAsset} />
+        <div className="flex items-center text-xl text-th-fgd-1">
+          <img
+            src={icons[selectedAsset]}
+            alt={icons[selectedAsset]}
+            width="24"
+            height="24"
+            className="mr-2.5"
+          />
+          {selectedAsset}
+        </div>
         <div className="flex pb-4 sm:pb-0">
           {latestStats.map((stat) => (
             <div
               className={`px-2 py-1 ml-2 rounded-md cursor-pointer default-transition bg-th-bkg-3
               ${
-                selectedAsset === stat.symbol
+                selectedAsset === stat.name
                   ? `ring-1 ring-inset ring-th-primary text-th-primary`
                   : `text-th-fgd-1 opacity-50 hover:opacity-100`
               }
             `}
-              onClick={() => setSelectedAsset(stat.symbol)}
-              key={stat.symbol as string}
+              onClick={() => setSelectedAsset(stat.name)}
+              key={stat.name as string}
             >
-              {stat.symbol}
+              {stat.name}
             </div>
           ))}
         </div>
@@ -51,7 +85,7 @@ export default function StatsAssets() {
             yAxis="totalDeposits"
             data={selectedStatsData}
             labelFormat={(x) =>
-              x && x.toLocaleString(undefined, { maximumFractionDigits: 2 })
+              x.toLocaleString(undefined, { maximumFractionDigits: 2 })
             }
             type="area"
           />
@@ -63,7 +97,7 @@ export default function StatsAssets() {
           <Chart
             title="Deposit Interest"
             xAxis="time"
-            yAxis="depositInterest"
+            yAxis="depositRate"
             data={selectedStatsData}
             labelFormat={(x) => `${(x * 100).toFixed(5)}%`}
             type="bar"
@@ -79,7 +113,7 @@ export default function StatsAssets() {
             yAxis="totalBorrows"
             data={selectedStatsData}
             labelFormat={(x) =>
-              x && x.toLocaleString(undefined, { maximumFractionDigits: 2 })
+              x.toLocaleString(undefined, { maximumFractionDigits: 2 })
             }
             type="area"
           />
@@ -91,96 +125,59 @@ export default function StatsAssets() {
           <Chart
             title="Borrow Interest"
             xAxis="time"
-            yAxis="borrowInterest"
+            yAxis="borrowRate"
             data={selectedStatsData}
             labelFormat={(x) => `${(x * 100).toFixed(5)}%`}
             type="bar"
           />
         </div>
       </div>
+      <div className="grid md:grid-flow-col gap-4">
+        <div className="border border-th-bkg-3 relative p-4 rounded-md">
+          <AverageInterest
+            periodLabel="24h Avg"
+            statTypeLabel="Deposit Interest"
+            interest={getAverageStats(
+              selectedStatsData,
+              dailyStartTime,
+              'depositRate'
+            )}
+          />
+        </div>
+        <div className="border border-th-bkg-3 relative p-4 rounded-md">
+          <AverageInterest
+            periodLabel="7d Avg"
+            statTypeLabel="Deposit Interest"
+            interest={getAverageStats(
+              selectedStatsData,
+              weeklyStartTime,
+              'depositRate'
+            )}
+          />
+        </div>
+        <div className="border border-th-bkg-3 relative p-4 rounded-md">
+          <AverageInterest
+            periodLabel="24h Avg"
+            statTypeLabel="Borrow Interest"
+            interest={getAverageStats(
+              selectedStatsData,
+              dailyStartTime,
+              'borrowRate'
+            )}
+          />
+        </div>
+        <div className="border border-th-bkg-3 relative p-4 rounded-md">
+          <AverageInterest
+            periodLabel="7d Avg"
+            statTypeLabel="Borrow Interest"
+            interest={getAverageStats(
+              selectedStatsData,
+              weeklyStartTime,
+              'borrowRate'
+            )}
+          />
+        </div>
+      </div>
     </>
   )
-}
-
-const AssetHeader = ({ asset }) => {
-  switch (asset) {
-    case 'BTC':
-      return (
-        <div className="flex items-center text-xl text-th-fgd-1">
-          <img
-            src={icons[asset]}
-            alt={icons[asset]}
-            width="24"
-            height="24"
-            className="mr-2.5"
-          />
-          Bitcoin
-        </div>
-      )
-    case 'ETH':
-      return (
-        <div className="flex items-center text-xl text-th-fgd-1">
-          <img
-            src={icons[asset]}
-            alt={icons[asset]}
-            width="24"
-            height="24"
-            className="mr-2.5"
-          />
-          Ethereum
-        </div>
-      )
-    case 'SOL':
-      return (
-        <div className="flex items-center text-xl text-th-fgd-1">
-          <img
-            src={icons[asset]}
-            alt={icons[asset]}
-            width="24"
-            height="24"
-            className="mr-2.5"
-          />
-          Solana
-        </div>
-      )
-    case 'SRM':
-      return (
-        <div className="flex items-center text-xl text-th-fgd-1">
-          <img
-            src={icons[asset]}
-            alt={icons[asset]}
-            width="24"
-            height="24"
-            className="mr-2.5"
-          />
-          Serum
-        </div>
-      )
-    case 'USDC':
-      return (
-        <div className="flex items-center text-xl text-th-fgd-1">
-          <img
-            src={icons[asset]}
-            alt={icons[asset]}
-            width="24"
-            height="24"
-            className="mr-2.5"
-          />
-          USD Coin
-        </div>
-      )
-    default:
-      return (
-        <div className="flex items-center text-xl text-th-fgd-1">
-          <img
-            src={icons[asset]}
-            alt={icons[asset]}
-            width="24"
-            height="24"
-            className="mr-2.5"
-          />
-          Bitcoin
-        </div>
-      )
-  }
 }

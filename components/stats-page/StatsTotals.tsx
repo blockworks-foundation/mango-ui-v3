@@ -1,15 +1,12 @@
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
 import { I80F48 } from '@blockworks-foundation/mango-client'
-import useMangoStats from '../../hooks/useMangoStats'
 import Chart from '../Chart'
 
 function formatNumberString(x: string): string {
   return x.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',')
 }
 
-export default function StatsTotals() {
-  const { latestStats, stats } = useMangoStats()
-
+export default function StatsTotals({ latestStats, stats }) {
   const startTimestamp = 1622905200000
 
   const trimmedStats = stats.filter(
