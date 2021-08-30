@@ -49,7 +49,7 @@ const useMangoStats = () => {
   useEffect(() => {
     const fetchHistoricalPerpStats = async () => {
       const response = await fetch(
-        `http://localhost:8080/perp?mangoGroup=${mangoGroupName}`
+        `https://mango-stats-v3.herokuapp.com/perp?mangoGroup=${mangoGroupName}`
       )
       const stats = await response.json()
       setPerpStats(stats)
