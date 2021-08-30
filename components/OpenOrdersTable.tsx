@@ -146,66 +146,90 @@ const OpenOrdersTable = () => {
                         />
                       </LinkButton>
                     </Th>
+                    <Th scope="col" className={`px-6 py-2`}>
+                      <LinkButton
+                        className="flex items-center no-underline font-normal"
+                        onClick={() => requestSort('price')}
+                      >
+                        Value
+                        <ArrowSmDownIcon
+                          className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                            sortConfig?.key === 'price'
+                              ? sortConfig.direction === 'ascending'
+                                ? 'transform rotate-180'
+                                : 'transform rotate-360'
+                              : null
+                          }`}
+                        />
+                      </LinkButton>
+                    </Th>
                     <Th scope="col" className={`relative px-6 py-2.5`}>
                       <span className={`sr-only`}>Edit</span>
                     </Th>
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {items.map(({ order, market }, index) => (
-                    <Tr
-                      key={`${order.orderId}${order.side}`}
-                      className={`border-b border-th-bkg-3
+                  {items.map(({ order, market }, index) => {
+                    return (
+                      <Tr
+                        key={`${order.orderId}${order.side}`}
+                        className={`border-b border-th-bkg-3
                         ${index % 2 === 0 ? `bg-th-bkg-3` : `bg-th-bkg-2`}
                       `}
-                    >
-                      <Td
-                        className={`px-6 py-2 whitespace-nowrap text-th-fgd-1`}
                       >
-                        <div className="flex items-center">
-                          <img
-                            alt=""
-                            width="20"
-                            height="20"
-                            src={`/assets/icons/${market.config.baseSymbol.toLowerCase()}.svg`}
-                            className={`mr-2.5`}
-                          />
-                          <div>{market.config.name}</div>
-                        </div>
-                      </Td>
-                      <Td
-                        className={`px-6 py-2 whitespace-nowrap text-th-fgd-1`}
-                      >
-                        <SideBadge side={order.side} />
-                      </Td>
-                      <Td
-                        className={`px-6 py-2 whitespace-nowrap text-th-fgd-1`}
-                      >
-                        {order.size}
-                      </Td>
-                      <Td
-                        className={`px-6 py-2 whitespace-nowrap text-th-fgd-1`}
-                      >
-                        {formatUsdValue(order.price)}
-                      </Td>
-                      <Td className={`px-6 py-2 whitespace-nowrap`}>
-                        <div className={`flex justify-end`}>
-                          <Button
-                            onClick={() =>
-                              handleCancelOrder(order, market.account)
-                            }
-                            className="ml-3 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
-                          >
-                            {cancelId + '' === order.orderId + '' ? (
-                              <Loading />
-                            ) : (
-                              <span>Cancel</span>
-                            )}
-                          </Button>
-                        </div>
-                      </Td>
-                    </Tr>
-                  ))}
+                        <Td
+                          className={`px-6 py-2 whitespace-nowrap text-th-fgd-1`}
+                        >
+                          <div className="flex items-center">
+                            <img
+                              alt=""
+                              width="20"
+                              height="20"
+                              src={`/assets/icons/${market.config.baseSymbol.toLowerCase()}.svg`}
+                              className={`mr-2.5`}
+                            />
+                            <div>{market.config.name}</div>
+                          </div>
+                        </Td>
+                        <Td
+                          className={`px-6 py-2 whitespace-nowrap text-th-fgd-1`}
+                        >
+                          <SideBadge side={order.side} />
+                        </Td>
+                        <Td
+                          className={`px-6 py-2 whitespace-nowrap text-th-fgd-1`}
+                        >
+                          {order.size}
+                        </Td>
+                        <Td
+                          className={`px-6 py-2 whitespace-nowrap text-th-fgd-1`}
+                        >
+                          {formatUsdValue(order.price)}
+                        </Td>
+                        <Td
+                          className={`px-6 py-2 whitespace-nowrap text-th-fgd-1`}
+                        >
+                          {formatUsdValue(order.price * order.size)}
+                        </Td>
+                        <Td className={`px-6 py-2 whitespace-nowrap`}>
+                          <div className={`flex justify-end`}>
+                            <Button
+                              onClick={() =>
+                                handleCancelOrder(order, market.account)
+                              }
+                              className="ml-3 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
+                            >
+                              {cancelId + '' === order.orderId + '' ? (
+                                <Loading />
+                              ) : (
+                                <span>Cancel</span>
+                              )}
+                            </Button>
+                          </div>
+                        </Td>
+                      </Tr>
+                    )
+                  })}
                 </Tbody>
               </Table>
             </div>
