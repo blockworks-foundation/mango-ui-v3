@@ -11,7 +11,6 @@ import {
 } from '@heroicons/react/solid'
 import { CumulativeSizeIcon, StepSizeIcon } from './icons'
 import useMarkPrice from '../hooks/useMarkPrice'
-import useMarket from '../hooks/useMarket'
 import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
 import Tooltip from './Tooltip'
@@ -410,7 +409,7 @@ export default function Orderbook({ depth = 8 }) {
 const OrderbookRow = React.memo<any>(
   ({ side, price, size, sizePercent, invert }) => {
     const element = useRef(null)
-    const { market } = useMarket()
+    const market = useMangoStore((s) => s.selectedMarket.current)
     const setMangoStore = useMangoStore((s) => s.set)
 
     useEffect(() => {
