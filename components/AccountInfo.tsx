@@ -97,27 +97,29 @@ export default function AccountInfo() {
   return (
     <FloatingElement showConnect>
       <div className={!connected ? 'filter blur-sm' : undefined}>
-        <Tooltip
-          content={
-            mangoAccount ? (
-              <div>
-                Init Health:{' '}
-                {mangoAccount
-                  .getHealth(mangoGroup, mangoCache, 'Init')
-                  .toString()}
-                <br />
-                Maint Health:{' '}
-                {mangoAccount
-                  .getHealth(mangoGroup, mangoCache, 'Maint')
-                  .toString()}
-              </div>
-            ) : (
-              ''
-            )
-          }
-        >
-          <ElementTitle>Account</ElementTitle>
-        </Tooltip>
+        <ElementTitle>
+          <Tooltip
+            content={
+              mangoAccount ? (
+                <div>
+                  Init Health:{' '}
+                  {mangoAccount
+                    .getHealth(mangoGroup, mangoCache, 'Init')
+                    .toFixed(4)}
+                  <br />
+                  Maint Health:{' '}
+                  {mangoAccount
+                    .getHealth(mangoGroup, mangoCache, 'Maint')
+                    .toFixed(4)}
+                </div>
+              ) : (
+                ''
+              )
+            }
+          >
+            Account
+          </Tooltip>
+        </ElementTitle>
         <div>
           <div>
             <div className="flex justify-between pb-3">

@@ -581,7 +581,9 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
               <Button
                 onClick={handleWithdraw}
                 disabled={
-                  Number(inputAmount) <= 0 || simulation.initHealthRatio < 0
+                  Number(inputAmount) <= 0 ||
+                  simulation.initHealthRatio < 0 ||
+                  submitting
                 }
                 className="w-full"
               >

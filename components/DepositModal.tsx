@@ -240,10 +240,14 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
             </div>
           </div>
           <div className={`mt-5 flex justify-center`}>
-            <Button onClick={handleDeposit} className="w-full">
+            <Button
+              onClick={handleDeposit}
+              className="w-full"
+              disabled={submitting}
+            >
               <div className={`flex items-center justify-center`}>
                 {submitting && <Loading className="-ml-1 mr-3" />}
-                Confirm
+                Deposit
               </div>
             </Button>
           </div>
