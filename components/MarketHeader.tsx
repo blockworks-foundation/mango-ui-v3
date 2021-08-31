@@ -11,6 +11,8 @@ import { useEffect } from 'react'
 import { formatUsdValue } from '../utils'
 import { PerpMarket } from '@blockworks-foundation/mango-client'
 
+const SECONDS = 1000
+
 function calculateFundingRate(perpStats, perpMarket, oraclePrice) {
   const oldestStat = perpStats[perpStats.length - 1]
   const latestStat = perpStats[0]
@@ -68,6 +70,12 @@ const MarketHeader = () => {
     const parsedPerpStats = await perpStats.json()
     setPerpStats(parsedPerpStats)
   }, [selectedMarketName])
+
+  useInterval(() => {
+    if (isPerpMarket) {
+      fetchPerpStats()
+    }
+  }, 120 * SECONDS)
 
   useEffect(() => {
     if (isPerpMarket) {
