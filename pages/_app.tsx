@@ -6,15 +6,28 @@ import '../styles/index.css'
 import useWallet from '../hooks/useWallet'
 import useHydrateStore from '../hooks/useHydrateStore'
 import Notifications from '../components/Notification'
+import useMangoStore from '../stores/useMangoStore'
+import useOraclePrice from '../hooks/useOraclePrice'
+import { formatUsdValue } from '../utils'
+import { useRouter } from 'next/router'
 
 function App({ Component, pageProps }) {
   useHydrateStore()
   useWallet()
+  const marketConfig = useMangoStore((s) => s.selectedMarket.config)
+  const oraclePrice = useOraclePrice()
+  const router = useRouter()
 
+  const marketTitleString =
+    marketConfig && router.query.market
+      ? ` - ${marketConfig.name} | ${
+          oraclePrice ? formatUsdValue(oraclePrice) : ''
+        } `
+      : ''
   return (
     <>
       <Head>
-        <title>Mango Markets</title>
+        <title>Mango Markets{marketTitleString}</title>
         <link rel="preconnect" href="https://fonts.gstatic.com" />
         <link
           href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap"
