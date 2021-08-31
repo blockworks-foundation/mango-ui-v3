@@ -164,8 +164,7 @@ export default function TradeForm() {
       return
     }
     const rawQuoteSize = baseSize * usePrice
-    const quoteSize = baseSize && floorToDecimal(rawQuoteSize, sizeDecimalCount)
-    setQuoteSize(quoteSize)
+    setQuoteSize(rawQuoteSize.toFixed(6))
   }
 
   const onSetQuoteSize = (quoteSize: number | '') => {
