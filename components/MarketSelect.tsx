@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import styled from '@emotion/styled'
+import { PlusCircleIcon } from '@heroicons/react/outline'
 import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
+import useMangoStore from '../stores/useMangoStore'
 import MarketMenuItem from './MarketMenuItem'
 import { LinkButton } from './Button'
 import MarketsModal from './MarketsModal'
@@ -28,6 +30,9 @@ const MarketSelect = () => {
   const [hiddenMarkets] = useLocalStorageState('hiddenMarkets', [])
   const [sortedMarkets, setSortedMarkets] = useState([])
   const groupConfig = useMangoGroupConfig()
+  const marketConfig = useMangoStore((s) => s.selectedMarket.config)
+  const baseSymbol = marketConfig.baseSymbol
+  const isPerpMarket = marketConfig.kind === 'perp'
 
   useEffect(() => {
     const markets = []
@@ -46,14 +51,9 @@ const MarketSelect = () => {
 
   return (
     <>
-      <StyledMarketSelectWrapper className="bg-th-bkg-3 flex h-10">
+      <StyledMarketSelectWrapper className="bg-th-bkg-3 flex h-10 hidden sm:flex">
         <div className="bg-th-bkg-4 flex items-center pl-6 md:pl-9 pr-1">
-          <LinkButton
-            className="font-normal text-th-fgd-2 text-xs"
-            onClick={() => setShowMarketsModal(true)}
-          >
-            MARKETS
-          </LinkButton>
+          <ShowMarketsButton onClick={() => setShowMarketsModal(true)} />
         </div>
         <StyledArrow className="border-l-[20px] border-th-bkg-4" />
         <div className="flex items-center justify-between w-full">
@@ -70,6 +70,26 @@ const MarketSelect = () => {
           </div>
         </div>
       </StyledMarketSelectWrapper>
+      <div className="bg-th-bkg-3 flex items-center justify-between py-3 px-6 sm:hidden">
+        <div className="flex items-center">
+          <img
+            alt=""
+            width="24"
+            height="24"
+            src={`/assets/icons/${baseSymbol.toLowerCase()}.svg`}
+            className={`mr-2.5`}
+          />
+
+          <div className="font-semibold pr-0.5 text-xl">{baseSymbol}</div>
+          <span className="text-th-fgd-4 text-xl">
+            {isPerpMarket ? '-' : '/'}
+          </span>
+          <div className="font-semibold pl-0.5 text-xl">
+            {isPerpMarket ? 'PERP' : groupConfig.quoteSymbol}
+          </div>
+        </div>
+        <ShowMarketsButton onClick={() => setShowMarketsModal(true)} />
+      </div>
       {showMarketsModal ? (
         <MarketsModal
           isOpen={showMarketsModal}
@@ -80,5 +100,15 @@ const MarketSelect = () => {
     </>
   )
 }
+
+const ShowMarketsButton = ({ onClick }) => (
+  <LinkButton
+    className="font-normal flex items-center text-th-fgd-2 text-xs"
+    onClick={onClick}
+  >
+    <PlusCircleIcon className="h-4 mr-1 w-4" />
+    MARKETS
+  </LinkButton>
+)
 
 export default MarketSelect

@@ -123,10 +123,10 @@ const MarketHeader = () => {
 
   return (
     <div
-      className={`flex items-end sm:items-center justify-between pt-4 px-6 md:pb-1 md:pt-8 md:px-6`}
+      className={`flex flex-col relative lg:flex-row lg:items-center lg:justify-between pt-4 px-6 lg:pb-1 lg:pt-8 lg:px-6`}
     >
-      <div className="flex flex-col sm:flex-row sm:items-center">
-        <div className="pb-3 sm:pb-0 pr-8">
+      <div className="flex flex-col lg:flex-row lg:items-center">
+        <div className="hidden sm:block sm:pb-4 lg:pb-0 sm:pr-6">
           <div className="flex items-center">
             <img
               alt=""
@@ -145,14 +145,14 @@ const MarketHeader = () => {
             </div>
           </div>
         </div>
-        <div className="flex items-center">
-          <div className="pr-6">
+        <div className="grid grid-flow-row grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-flow-col lg:grid-rows-1 lg:gap-6">
+          <div className="">
             <div className="text-th-fgd-3 tiny-text pb-0.5">Oracle price</div>
             <div className="font-semibold text-th-fgd-1 text-xs">
               {oraclePrice ? formatUsdValue(oraclePrice) : '--'}
             </div>
           </div>
-          <div className="pr-4">
+          <div className="">
             <div className="text-th-fgd-3 tiny-text pb-0.5">Daily Change</div>
             {change || change === 0 ? (
               <div
@@ -170,7 +170,7 @@ const MarketHeader = () => {
               <MarketDataLoader />
             )}
           </div>
-          <div className="pr-6">
+          <div className="">
             <div className="text-th-fgd-3 tiny-text pb-0.5">Daily Vol</div>
             <div className="font-semibold text-th-fgd-1 text-xs">
               {ohlcv && !loading && volume ? (
@@ -191,7 +191,7 @@ const MarketHeader = () => {
           </div>
           {isPerpMarket ? (
             <>
-              <div className="pr-6">
+              <div className="">
                 <div className="text-th-fgd-3 tiny-text pb-0.5">
                   Avg Funding Rate (1h)
                 </div>
@@ -207,7 +207,7 @@ const MarketHeader = () => {
                   )}
                 </div>
               </div>
-              <div className="pr-6">
+              <div className="">
                 <div className="text-th-fgd-3 tiny-text pb-0.5">
                   Open Interest
                 </div>
@@ -230,7 +230,7 @@ const MarketHeader = () => {
           />
         </div>
       </div>
-      <div className="flex items-center">
+      <div className="absolute right-4 bottom-0 sm:bottom-auto lg:right-6 flex items-center justify-end">
         <UiLock />
         {connected && mangoAccount ? <ManualRefresh className="pl-2" /> : null}
       </div>
