@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { ArrowSmDownIcon } from '@heroicons/react/solid'
 import { useRouter } from 'next/router'
@@ -17,9 +17,26 @@ import { formatUsdValue, sleep } from '../utils'
 const OpenOrdersTable = () => {
   const { asPath } = useRouter()
   const openOrders = useOpenOrders()
-  const { items, requestSort, sortConfig } = useSortableData(openOrders)
+  const [sortableOpenOrders, setSortableOpenOrders] = useState([])
+  const { items, requestSort, sortConfig } = useSortableData(sortableOpenOrders)
   const [cancelId, setCancelId] = useState(null)
   const actions = useMangoStore((s) => s.actions)
+
+  useEffect(() => {
+    const sortableOpenOrders = []
+    openOrders.forEach((o) => {
+      sortableOpenOrders.push({
+        baseSymbol: o.market.config.baseSymbol,
+        market: o.market.config.name,
+        orderId: o.order.orderId,
+        price: o.order.price,
+        side: o.order.side,
+        size: o.order.size,
+        value: o.order.size * o.order.price,
+      })
+    })
+    setSortableOpenOrders(sortableOpenOrders)
+  }, [openOrders.length])
 
   const handleCancelOrder = async (
     order: Order | PerpOrder,
@@ -73,7 +90,7 @@ const OpenOrdersTable = () => {
     <div className={`flex flex-col py-4`}>
       <div className={`-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8`}>
         <div className={`align-middle inline-block min-w-full sm:px-6 lg:px-8`}>
-          {openOrders && openOrders.length > 0 ? (
+          {openOrders && sortableOpenOrders.length > 0 ? (
             <div className={`shadow overflow-hidden border-b border-th-bkg-2`}>
               <Table className={`min-w-full divide-y divide-th-bkg-2`}>
                 <Thead>
@@ -81,12 +98,12 @@ const OpenOrdersTable = () => {
                     <Th scope="col" className={`px-6 py-2`}>
                       <LinkButton
                         className="flex items-center no-underline font-normal"
-                        onClick={() => requestSort('marketName')}
+                        onClick={() => requestSort('market')}
                       >
                         Market
                         <ArrowSmDownIcon
                           className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
-                            sortConfig?.key === 'marketName'
+                            sortConfig?.key === 'market'
                               ? sortConfig.direction === 'ascending'
                                 ? 'transform rotate-180'
                                 : 'transform rotate-360'
@@ -149,12 +166,12 @@ const OpenOrdersTable = () => {
                     <Th scope="col" className={`px-6 py-2`}>
                       <LinkButton
                         className="flex items-center no-underline font-normal"
-                        onClick={() => requestSort('price')}
+                        onClick={() => requestSort('value')}
                       >
                         Value
                         <ArrowSmDownIcon
                           className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
-                            sortConfig?.key === 'price'
+                            sortConfig?.key === 'value'
                               ? sortConfig.direction === 'ascending'
                                 ? 'transform rotate-180'
                                 : 'transform rotate-360'
@@ -169,7 +186,7 @@ const OpenOrdersTable = () => {
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {items.map(({ order, market }, index) => {
+                  {items.map((order, index) => {
                     return (
                       <Tr
                         key={`${order.orderId}${order.side}`}
@@ -185,10 +202,10 @@ const OpenOrdersTable = () => {
                               alt=""
                               width="20"
                               height="20"
-                              src={`/assets/icons/${market.config.baseSymbol.toLowerCase()}.svg`}
+                              src={`/assets/icons/${order.baseSymbol.toLowerCase()}.svg`}
                               className={`mr-2.5`}
                             />
-                            <div>{market.config.name}</div>
+                            <div>{order.market}</div>
                           </div>
                         </Td>
                         <Td
@@ -215,7 +232,10 @@ const OpenOrdersTable = () => {
                           <div className={`flex justify-end`}>
                             <Button
                               onClick={() =>
-                                handleCancelOrder(order, market.account)
+                                handleCancelOrder(
+                                  openOrders[index].order,
+                                  openOrders[index].market.account
+                                )
                               }
                               className="ml-3 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
                             >
