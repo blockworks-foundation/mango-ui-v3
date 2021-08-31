@@ -35,12 +35,12 @@ const AlphaModal = ({
         Welcome to Mango V3
       </div>
       <div className="text-th-fgd-2 text-center my-4">
-        The v3 protocol is in public beta. This is unaudited software, use at
+        The V3 protocol is in public beta. This is unaudited software, use at
         your own risk.
       </div>
       <div className="text-th-fgd-2 text-center my-4">
-        You can access V2 in the &quot;More&quot; section of the top bar or by
-        using this link:{' '}
+        V3 is a new program. You can access your V2 account in the
+        &quot;More&quot; section of the top bar or by using this link:{' '}
         <a
           href="https://v2.mango.markets"
           target="_blank"
