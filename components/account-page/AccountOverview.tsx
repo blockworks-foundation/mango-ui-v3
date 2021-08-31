@@ -42,13 +42,15 @@ const StyledAccountValue = styled.div`
   line-height: 1.2;
 `
 
+const SHOW_ZERO_BALANCE_KEY = 'showZeroAccountBalances'
+
 export default function AccountOverview() {
   const [spotPortfolio, setSpotPortfolio] = useState([])
   const [unsettled, setUnsettled] = useState([])
   const [filteredSpotPortfolio, setFilteredSpotPortfolio] = useState([])
   const [showZeroBalances, setShowZeroBalances] = useLocalStorageState(
-    'showZeroAccountBalances',
-    false
+    SHOW_ZERO_BALANCE_KEY,
+    true
   )
   const [showDepositModal, setShowDepositModal] = useState(false)
   const [showWithdrawModal, setShowWithdrawModal] = useState(false)
