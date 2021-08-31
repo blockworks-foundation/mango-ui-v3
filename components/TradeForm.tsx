@@ -18,6 +18,7 @@ import { Market } from '@project-serum/serum'
 import Big from 'big.js'
 import MarketFee from './MarketFee'
 import LeverageSlider from './LeverageSlider'
+import Loading from './Loading'
 
 const StyledRightInput = styled(Input)`
   border-left: 1px solid transparent;
@@ -292,8 +293,8 @@ export default function TradeForm() {
         type: 'error',
       })
     } finally {
-      sleep(1000).then(() => {
-        actions.fetchMangoAccounts()
+      sleep(500).then(() => {
+        actions.reloadMangoAccount()
         actions.updateOpenOrders()
       })
       setSubmitting(false)
@@ -427,11 +428,17 @@ export default function TradeForm() {
                     : 'border border-th-bkg-4'
                 } text-th-green hover:text-th-fgd-1 hover:bg-th-green-dark flex-grow`}
               >
-                {`${baseSize > 0 ? 'Buy ' + baseSize : 'Buy '} ${
-                  marketConfig.name.includes('PERP')
-                    ? marketConfig.name
-                    : marketConfig.baseSymbol
-                }`}
+                {submitting ? (
+                  <div className="w-full">
+                    <Loading className="mx-auto" />
+                  </div>
+                ) : (
+                  `${baseSize > 0 ? 'Buy ' + baseSize : 'Buy '} ${
+                    marketConfig.name.includes('PERP')
+                      ? marketConfig.name
+                      : marketConfig.baseSymbol
+                  }`
+                )}
               </Button>
             ) : (
               <Button
@@ -443,11 +450,17 @@ export default function TradeForm() {
                     : 'border border-th-bkg-4'
                 } text-th-red hover:text-th-fgd-1 hover:bg-th-red-dark flex-grow`}
               >
-                {`${baseSize > 0 ? 'Sell ' + baseSize : 'Sell '} ${
-                  marketConfig.name.includes('PERP')
-                    ? marketConfig.name
-                    : marketConfig.baseSymbol
-                }`}
+                {submitting ? (
+                  <div className="w-full">
+                    <Loading className="mx-auto" />
+                  </div>
+                ) : (
+                  `${baseSize > 0 ? 'Sell ' + baseSize : 'Sell '} ${
+                    marketConfig.name.includes('PERP')
+                      ? marketConfig.name
+                      : marketConfig.baseSymbol
+                  }`
+                )}
               </Button>
             )
           ) : (

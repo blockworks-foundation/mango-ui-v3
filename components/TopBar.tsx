@@ -42,13 +42,12 @@ const TopBar = () => {
                 <MenuItem href="https://docs.mango.markets/" newWindow>
                   Learn
                 </MenuItem>
-                {/* TODO: change v2 link before mainnet */}
                 <NavDropMenu
                   menuTitle="More"
                   // linksArray: [name: string, href: string, isExternal: boolean]
                   linksArray={[
                     ['Mango v1', 'https://usdt.mango.markets', true],
-                    ['Mango v2', 'https://trade.mango.markets', true],
+                    ['Mango v2', 'https://v2.mango.markets', true],
                   ]}
                 />
               </div>

@@ -420,6 +420,22 @@ const useMangoStore = create<MangoStore>((set, get) => ({
         state.tradeHistory = [...serumHistory, ...parsedPerpHistory]
       })
     },
+    async reloadMangoAccount() {
+      const set = get().set
+      const mangoAccount = get().selectedMangoAccount.current
+      const [reloadedMangoAccount, reloadedOpenOrders] = await Promise.all([
+        mangoAccount.reload(DEFAULT_CONNECTION),
+        mangoAccount.loadOpenOrders(
+          DEFAULT_CONNECTION,
+          new PublicKey(serumProgramId)
+        ),
+      ])
+      reloadedMangoAccount.spotOpenOrdersAccounts = reloadedOpenOrders
+
+      set((state) => {
+        state.selectedMangoAccount.current = reloadedMangoAccount
+      })
+    },
     async updateOpenOrders() {
       const set = get().set
       const marketConfig = get().selectedMarket.config

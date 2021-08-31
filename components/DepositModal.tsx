@@ -12,6 +12,7 @@ import Slider from './Slider'
 import InlineNotification from './InlineNotification'
 import { deposit } from '../utils/mango'
 import { notify } from '../utils/notifications'
+import { sleep } from '../utils'
 
 interface DepositModalProps {
   onClose: () => void
@@ -80,7 +81,9 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
         })
         setSubmitting(false)
         onClose()
-        actions.fetchMangoAccounts()
+        sleep(500).then(() => {
+          actions.reloadMangoAccount()
+        })
       })
       .catch((err) => {
         notify({

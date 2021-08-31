@@ -3,7 +3,7 @@ import Modal from './Modal'
 import Button from './Button'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 
-export const ALPHA_MODAL_KEY = 'mangoAlphaAccepted-3.01'
+export const ALPHA_MODAL_KEY = 'mangoAlphaAccepted-3.03'
 
 const AlphaModal = ({
   isOpen,
@@ -32,11 +32,11 @@ const AlphaModal = ({
         </div>
       </Modal.Header>
       <div className={`text-th-fgd-2 text-center text-xl text-strong`}>
-        Perps are now available!
+        Welcome to Mango V3
       </div>
       <div className="text-th-fgd-2 text-center my-4">
-        Welcome to V3. Mango Markets is unaudited software, use at your own
-        risk.
+        The v3 protocol is in public beta. This is unaudited software, use at
+        your own risk.
       </div>
       <div className="text-th-fgd-2 text-center my-2">
         &#x1F642; &#129389;&#129309;

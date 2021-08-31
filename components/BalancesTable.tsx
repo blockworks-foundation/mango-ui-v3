@@ -5,13 +5,15 @@ import { notify } from '../utils/notifications'
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
 import { InformationCircleIcon } from '@heroicons/react/outline'
 import Tooltip from './Tooltip'
-import { sleep } from '../utils'
 import { Market } from '@project-serum/serum'
 import { ZERO_I80F48 } from '@blockworks-foundation/mango-client'
+import { useState } from 'react'
+import Loading from './Loading'
 
 const BalancesTable = () => {
   const balances = useBalances()
   const actions = useMangoStore((s) => s.actions)
+  const [submitting, setSubmitting] = useState(false)
 
   async function handleSettleAll() {
     const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
@@ -20,13 +22,13 @@ const BalancesTable = () => {
     const wallet = useMangoStore.getState().wallet.current
 
     try {
+      setSubmitting(true)
       const spotMarkets = Object.values(markets).filter(
         (mkt) => mkt instanceof Market
       ) as Market[]
       await mangoClient.settleAll(mangoGroup, mangoAccount, spotMarkets, wallet)
+
       notify({ title: 'Successfully settled funds' })
-      await sleep(250)
-      actions.fetchMangoAccounts()
     } catch (e) {
       console.warn('Error settling all:', e)
       if (e.message === 'No unsettled funds') {
@@ -42,6 +44,9 @@ const BalancesTable = () => {
           type: 'error',
         })
       }
+    } finally {
+      await actions.reloadMangoAccount()
+      setSubmitting(false)
     }
   }
 
@@ -76,7 +81,11 @@ const BalancesTable = () => {
                   </div>
                 </Tooltip>
               </div>
-              <Button onClick={handleSettleAll}>Settle All</Button>
+              {submitting ? (
+                <Loading className="-ml-1 mr-3" />
+              ) : (
+                <Button onClick={handleSettleAll}>Settle All</Button>
+              )}
             </div>
           ) : null}
           {filteredBalances.length > 0 ? (
