@@ -3,7 +3,7 @@ import Modal from './Modal'
 import Button from './Button'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 
-export const ALPHA_MODAL_KEY = 'mangoAlphaAccepted-3.05'
+export const ALPHA_MODAL_KEY = 'mangoAlphaAccepted-3.06'
 
 const AlphaModal = ({
   isOpen,
@@ -39,8 +39,8 @@ const AlphaModal = ({
         your own risk.
       </div>
       <div className="text-th-fgd-2 text-center my-4">
-        V3 is a new program. You can access your V2 account in the
-        &quot;More&quot; section of the top bar or by using this link:{' '}
+        V3 is a new and separate program from V2. You can access your V2 account
+        in the &quot;More&quot; section of the top bar or by using this link:{' '}
         <a
           href="https://v2.mango.markets"
           target="_blank"
