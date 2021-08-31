@@ -96,11 +96,10 @@ export default function MarketPosition() {
     return getMarketIndexBySymbol(mangoGroupConfig, baseSymbol)
   }, [mangoGroupConfig, baseSymbol])
 
-  const perpAccount = useMemo(() => {
-    if (marketName.includes('PERP') && mangoAccount) {
-      return mangoAccount.perpAccounts[marketIndex]
-    }
-  }, [marketName, mangoAccount, marketIndex])
+  let perpAccount
+  if (marketName.includes('PERP') && mangoAccount) {
+    perpAccount = mangoAccount.perpAccounts[marketIndex]
+  }
 
   const handleSizeClick = (size) => {
     setMangoStore((state) => {
