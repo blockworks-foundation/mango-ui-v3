@@ -65,7 +65,7 @@ export default function StatsPerps({ perpStats }) {
         selectedMarket,
         x.baseOraclePrice
       ),
-      openInterest: x.openInterest,
+      openInterest: selectedMarket.baseLotsToNumber(x.openInterest) / 2,
       time: x.hourly,
     }
   })
@@ -102,7 +102,7 @@ export default function StatsPerps({ perpStats }) {
             xAxis="time"
             yAxis="fundingRate"
             data={perpsData}
-            labelFormat={(x) => `${(x * 100).toFixed(5)}%`}
+            labelFormat={(x) => `${(x * 100).toFixed(4)}%`}
             type="area"
           />
         </div>
@@ -117,7 +117,9 @@ export default function StatsPerps({ perpStats }) {
             data={perpsData}
             labelFormat={(x) =>
               x &&
-              '$' + x.toLocaleString(undefined, { maximumFractionDigits: 0 })
+              x.toLocaleString(undefined, {
+                maximumFractionDigits: selectedMarketConfig.baseDecimals,
+              }) + selectedMarketConfig.baseSymbol
             }
             type="area"
           />
@@ -139,7 +141,7 @@ const AssetHeader = ({ asset }) => {
             height="24"
             className="mr-2.5"
           />
-          Bitcoin Perp
+          Bitcoin Perpetual Futures
         </div>
       )
     case 'ETH-PERP':
@@ -152,7 +154,7 @@ const AssetHeader = ({ asset }) => {
             height="24"
             className="mr-2.5"
           />
-          Ethereum Perp
+          Ethereum Perpetual Futures
         </div>
       )
     case 'SOL-PERP':
@@ -165,7 +167,7 @@ const AssetHeader = ({ asset }) => {
             height="24"
             className="mr-2.5"
           />
-          Solana Perp
+          Solana Perpetual Futures
         </div>
       )
     case 'SRM':
@@ -178,7 +180,7 @@ const AssetHeader = ({ asset }) => {
             height="24"
             className="mr-2.5"
           />
-          Serum Perp
+          Serum Perpetual Futures
         </div>
       )
     default:
@@ -191,7 +193,7 @@ const AssetHeader = ({ asset }) => {
             height="24"
             className="mr-2.5"
           />
-          Bitcoin Perp
+          Bitcoin Perpetual Futures
         </div>
       )
   }
