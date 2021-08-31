@@ -42,7 +42,7 @@ const StyledAccountValue = styled.div`
   line-height: 1.2;
 `
 
-const SHOW_ZERO_BALANCE_KEY = 'showZeroAccountBalances'
+const SHOW_ZERO_BALANCE_KEY = 'showZeroAccountBalances-0.1'
 
 export default function AccountOverview() {
   const [spotPortfolio, setSpotPortfolio] = useState([])
