@@ -16,7 +16,7 @@ const TABS = [
 
 export default function StatsPage() {
   const { latestStats, stats } = useMangoStats()
-  const [activeTab, setActiveTab] = useState(TABS[0])
+  const [activeTab, setActiveTab] = useState(TABS[1])
 
   const handleTabChange = (tabName) => {
     setActiveTab(tabName)
