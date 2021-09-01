@@ -6,7 +6,12 @@ import {
 } from '@blockworks-foundation/mango-client'
 import useMangoStore from '../../stores/useMangoStore'
 import { useBalances } from '../../hooks/useBalances'
-import { formatUsdValue, tokenPrecision, usdFormatter } from '../../utils/index'
+import {
+  formatUsdValue,
+  i80f48ToPercent,
+  tokenPrecision,
+  usdFormatter,
+} from '../../utils/index'
 import WithdrawModal from '../WithdrawModal'
 import Button from '../Button'
 import DepositModal from '../DepositModal'
@@ -201,7 +206,10 @@ export default function AccountBorrows() {
                   className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
                 >
                   <span className={`text-th-red`}>
-                    {mangoGroup.getBorrowRate(tokenIndex).toFixed(2)}%
+                    {i80f48ToPercent(
+                      mangoGroup.getBorrowRate(tokenIndex)
+                    ).toFixed(2)}
+                    %
                   </span>
                 </Td>
                 <Td
