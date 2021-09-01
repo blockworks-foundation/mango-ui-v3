@@ -177,7 +177,7 @@ export default function AccountInfo() {
                           marketConfig.marketIndex,
                           marketConfig.kind
                         ),
-                        mangoGroup.tokens[marketConfig.marketIndex].decimals
+                        mangoGroup.tokens[QUOTE_INDEX].decimals
                       ).toFixed()
                     )
                   : '0.00'}
