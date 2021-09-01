@@ -49,9 +49,11 @@ const useMangoStats = () => {
   useEffect(() => {
     const fetchHistoricalPerpStats = async () => {
       const response = await fetch(
-        `https://mango-stats-v3.herokuapp.com/perp?mangoGroup=${mangoGroupName}`
+        `https://mango-stats-v3.herokuapp.com/perp/funding_rate?mangoGroup=${mangoGroupName}&market=BTC-PERP`
       )
       const stats = await response.json()
+      console.log('perp stats raw', stats)
+
       setPerpStats(stats)
     }
     fetchHistoricalPerpStats()
