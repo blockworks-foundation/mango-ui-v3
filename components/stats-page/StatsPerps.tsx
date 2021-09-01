@@ -51,11 +51,10 @@ export default function StatsPerps({ perpStats }) {
   const selectedMarket = markets.find((m) =>
     m.publicKey.equals(selectedMarketConfig.publicKey)
   )
-  // const selectedStatsData = perpStats.filter(
-  //   (stat) => stat.name === selectedAsset
-  // )
-  const selectedStatsData = perpStats
-  console.log('stats data', selectedStatsData)
+  const selectedStatsData = perpStats.filter(
+    (stat) => stat.name === selectedAsset
+  )
+  console.log(selectedStatsData)
   const perpsData = selectedStatsData.map((x) => {
     return {
       fundingRate: calculateFundingRate(
