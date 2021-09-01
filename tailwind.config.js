@@ -103,9 +103,24 @@ module.exports = {
             transform: 'rotate(-6deg)',
           },
         },
+        slideIn: {
+          '100%': {
+            transform: 'translateX(0%)',
+          },
+        },
+        slideOut: {
+          '0%': {
+            transform: 'translateX(0%)',
+          },
+          '100%': {
+            transform: 'translateX(100%)',
+          },
+        },
       },
       animation: {
         shake: 'shake 0.4s linear 4',
+        slideIn: 'slideIn 0.5s forwards',
+        slideOut: 'slideOut 0.5s forwards',
       },
     },
   },

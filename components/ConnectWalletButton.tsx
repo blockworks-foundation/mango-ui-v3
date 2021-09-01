@@ -54,14 +54,14 @@ const ConnectWalletButton = () => {
     <>
       {connected && wallet?.publicKey ? (
         <Menu>
-          <div className="relative h-full">
-            <Menu.Button className="bg-th-bkg-4 flex items-center justify-center rounded-full w-10 h-10 text-white focus:outline-none hover:bg-th-bkg-3 hover:text-th-fgd-3">
+          <div className="relative">
+            <Menu.Button className="bg-th-bkg-4 flex items-center justify-center rounded-full w-10 h-10 text-white focus:outline-none hover:bg-th-bkg-4 hover:text-th-fgd-3">
               <ProfileIcon className="h-6 w-6" />
             </Menu.Button>
             <Menu.Items className="bg-th-bkg-1 mt-2 p-1 absolute right-0 shadow-lg outline-none rounded-md w-48 z-20">
               <Menu.Item>
                 <button
-                  className="flex flex-row font-normal items-center rounded-none w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer focus:outline-none"
+                  className="hidden md:flex flex-row font-normal items-center rounded-none w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer focus:outline-none"
                   onClick={() => setShowAccountsModal(true)}
                 >
                   <CurrencyDollarIcon className="h-4 w-4" />
@@ -99,7 +99,7 @@ const ConnectWalletButton = () => {
           <button
             onClick={handleWalletConect}
             disabled={!wallet}
-            className="rounded-none text-th-primary hover:bg-th-bkg-3 focus:outline-none disabled:text-th-fgd-4 disabled:cursor-wait"
+            className="rounded-none text-th-primary hover:bg-th-bkg-4 focus:outline-none disabled:text-th-fgd-4 disabled:cursor-wait"
           >
             <div className="flex flex-row items-center px-3 justify-center h-full default-transition hover:text-th-fgd-1">
               <WalletIcon className="w-4 h-4 mr-2 fill-current" />
@@ -111,7 +111,7 @@ const ConnectWalletButton = () => {
               </div>
             </div>
           </button>
-          <div className="relative h-full">
+          <div className="relative">
             <WalletSelect isPrimary />
           </div>
         </div>
