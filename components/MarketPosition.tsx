@@ -2,12 +2,13 @@ import { useCallback, useMemo, useState } from 'react'
 import FloatingElement from './FloatingElement'
 import { ElementTitle } from './styles'
 import useMangoStore, { mangoClient } from '../stores/useMangoStore'
-import { i80f48ToPercent, formatUsdValue, tokenPrecision } from '../utils/index'
+import { i80f48ToPercent, formatUsdValue } from '../utils/index'
 import Button, { LinkButton } from './Button'
 import Tooltip from './Tooltip'
 import SideBadge from './SideBadge'
 import {
   getMarketIndexBySymbol,
+  getTokenBySymbol,
   nativeI80F48ToUi,
   PerpAccount,
   PerpMarket,
@@ -353,7 +354,10 @@ export default function MarketPosition() {
                                 tokenIndex
                               ),
                               mangoGroup.tokens[tokenIndex].decimals
-                            ).toFixed(tokenPrecision[symbol])
+                            ).toFixed(
+                              getTokenBySymbol(mangoGroupConfig, symbol)
+                                .decimals
+                            )
                           ) : (
                             0
                           )}
