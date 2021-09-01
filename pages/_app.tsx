@@ -6,16 +6,8 @@ import '../styles/index.css'
 import useWallet from '../hooks/useWallet'
 import useHydrateStore from '../hooks/useHydrateStore'
 import Notifications from '../components/Notification'
-import useLocalStorageState from '../hooks/useLocalStorageState'
-import { XIcon } from '@heroicons/react/solid'
-
-const SHOW_MESSAGE_KEY = 'v3Message-0.2'
 
 function App({ Component, pageProps }) {
-  const [showMessage, setShowMessage] = useLocalStorageState(
-    SHOW_MESSAGE_KEY,
-    true
-  )
   useHydrateStore()
   useWallet()
 
@@ -56,26 +48,6 @@ function App({ Component, pageProps }) {
       </Head>
       <ThemeProvider defaultTheme="Mango">
         <div className="bg-th-bkg-1">
-          {showMessage ? (
-            <div className="bg-th-bkg-4 p-3 mx-auto">
-              <div className="flex">
-                <button onClick={() => setShowMessage(false)}>
-                  <XIcon className={`h-5 w-5 text-th-primary`} />
-                </button>
-                <div className="ml-6 text-th-fgd-2">
-                  Mango Market V3 is in public beta. Please use{' '}
-                  <a
-                    href="https://v2.mango.markets"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    v2.mango.markets
-                  </a>{' '}
-                  to access your accounts in Mango V2.
-                </div>
-              </div>
-            </div>
-          ) : null}
           <Component {...pageProps} />
         </div>
         <Notifications />
