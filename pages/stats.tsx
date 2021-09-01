@@ -15,6 +15,7 @@ const TABS = [
 ]
 
 export default function StatsPage() {
+  console.log('stats loaded')
   const { latestStats, stats } = useMangoStats()
   const [activeTab, setActiveTab] = useState(TABS[1])
 
