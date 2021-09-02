@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Transition } from '@headlessui/react'
 import { MenuIcon, XIcon } from '@heroicons/react/outline'
 import MenuItem from './MenuItem'
 import ConnectWalletButton from './ConnectWalletButton'
@@ -18,27 +19,31 @@ const MobileMenu = () => {
         <span className="sr-only">Open main menu</span>
         <MenuIcon className="h-5 w-5" />
       </IconButton>
-      {showMenu ? (
-        <div
-          className={`${
-            showMenu ? 'animate-slideIn' : 'animate-slideOut'
-          } md:hidden fixed h-full right-0 top-0 w-[96%] bg-th-bkg-2 space-y-1 transform translate-x-full z-20`}
-        >
-          <div className="bg-th-bkg-3 flex h-14 items-center justify-between px-4">
-            <IconButton className="block" onClick={() => setShowMenu(false)}>
-              <XIcon className="h-5 w-5" />
-            </IconButton>
-            <ConnectWalletButton />
-          </div>
-          <div className="p-6">
-            <MenuItem href="/spot/BTC">Trade</MenuItem>
-            <MenuItem href="/account">Account</MenuItem>
-            <MenuItem href="/borrow">Borrow</MenuItem>
-            <MenuItem href="/stats">Stats</MenuItem>
-            <MenuItem href="https://docs.mango.markets/">Learn</MenuItem>
-          </div>
+      <Transition
+        appear={true}
+        show={showMenu}
+        enter="transition ease-in-out duration-500 transform"
+        enterFrom="translate-x-full"
+        enterTo="translate-x-0"
+        leave="transition ease-in-out duration-500 transform"
+        leaveFrom="translate-x-0"
+        leaveTo="translate-x-full"
+        className={`md:hidden fixed h-full right-0 top-0 w-[96%] bg-th-bkg-2 space-y-1 z-20`}
+      >
+        <div className="bg-th-bkg-3 flex h-14 items-center justify-between px-4">
+          <IconButton className="block" onClick={() => setShowMenu(false)}>
+            <XIcon className="h-5 w-5" />
+          </IconButton>
+          <ConnectWalletButton />
         </div>
-      ) : null}
+        <div className="p-6">
+          <MenuItem href="/spot/BTC">Trade</MenuItem>
+          <MenuItem href="/account">Account</MenuItem>
+          <MenuItem href="/borrow">Borrow</MenuItem>
+          <MenuItem href="/stats">Stats</MenuItem>
+          <MenuItem href="https://docs.mango.markets/">Learn</MenuItem>
+        </div>
+      </Transition>
       <div
         className={`${
           showMenu ? `visible` : `hidden`
