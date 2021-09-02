@@ -253,7 +253,6 @@ const useMangoStore = create<MangoStore>((set, get) => ({
       const walletPk = wallet?.publicKey
 
       if (!walletPk) return
-
       return mangoClient
         .getMangoAccountsForOwner(mangoGroup, walletPk, true)
         .then((mangoAccounts) => {
