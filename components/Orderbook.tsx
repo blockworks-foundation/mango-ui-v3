@@ -102,6 +102,7 @@ export default function Orderbook({ depth = 8 }) {
 
   const currentOrderbookData = useRef(null)
   const lastOrderbookData = useRef(null)
+  const previousDepth = usePrevious(depth)
 
   const [orderbookData, setOrderbookData] = useState(null)
   const [defaultLayout, setDefaultLayout] = useState(true)
@@ -111,7 +112,8 @@ export default function Orderbook({ depth = 8 }) {
     if (
       !currentOrderbookData.current ||
       JSON.stringify(currentOrderbookData.current) !==
-        JSON.stringify(lastOrderbookData.current)
+        JSON.stringify(lastOrderbookData.current) ||
+      previousDepth !== depth
     ) {
       const bids = orderbook?.bids || []
       const asks = orderbook?.asks || []
