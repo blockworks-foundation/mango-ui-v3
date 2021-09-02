@@ -20,11 +20,9 @@ import useTradeHistory from '../hooks/useTradeHistory'
 import { getAvgEntryPrice, getBreakEvenPrice } from './PerpPositionsTable'
 import { notify } from '../utils/notifications'
 import MarketCloseModal from './MarketCloseModal'
+import Loading from './Loading'
 
-const handleSettlePnl = async (
-  perpMarket: PerpMarket,
-  perpAccount: PerpAccount
-) => {
+const settlePnl = async (perpMarket: PerpMarket, perpAccount: PerpAccount) => {
   const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
   const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
   const mangoCache = useMangoStore.getState().selectedMangoGroup.cache
@@ -92,6 +90,7 @@ export default function MarketPosition() {
     (t) => t.marketName === marketName
   )
   const [showMarketCloseModal, setShowMarketCloseModal] = useState(false)
+  const [settling, setSettling] = useState(false)
 
   const marketIndex = useMemo(() => {
     return getMarketIndexBySymbol(mangoGroupConfig, baseSymbol)
@@ -111,6 +110,13 @@ export default function MarketPosition() {
   const handleCloseWarning = useCallback(() => {
     setShowMarketCloseModal(false)
   }, [])
+
+  const handleSettlePnl = (perpMarket, perpAccount) => {
+    setSettling(true)
+    settlePnl(perpMarket, perpAccount).then(() => {
+      setSettling(false)
+    })
+  }
 
   if (!mangoGroup || !selectedMarket) return null
 
@@ -238,23 +244,27 @@ export default function MarketPosition() {
             ) : (
               '0'
             )}
-            <LinkButton
-              onClick={() => handleSettlePnl(selectedMarket, perpAccount)}
-              className="ml-2 text-th-primary text-xs disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:underline"
-              disabled={
-                perpAccount
-                  ? perpAccount
-                      .getPnl(
-                        mangoGroup.perpMarkets[marketIndex],
-                        mangoGroupCache.perpMarketCache[marketIndex],
-                        mangoGroupCache.priceCache[marketIndex].price
-                      )
-                      .eq(ZERO_I80F48)
-                  : true
-              }
-            >
-              Settle
-            </LinkButton>
+            {settling ? (
+              <Loading className="ml-2" />
+            ) : (
+              <LinkButton
+                onClick={() => handleSettlePnl(selectedMarket, perpAccount)}
+                className="ml-2 text-th-primary text-xs disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:underline"
+                disabled={
+                  perpAccount
+                    ? perpAccount
+                        .getPnl(
+                          mangoGroup.perpMarkets[marketIndex],
+                          mangoGroupCache.perpMarketCache[marketIndex],
+                          mangoGroupCache.priceCache[marketIndex].price
+                        )
+                        .eq(ZERO_I80F48)
+                    : true
+                }
+              >
+                Settle
+              </LinkButton>
+            )}
           </div>
         </div>
 
