@@ -65,7 +65,7 @@ const PerpMarket = () => {
               <XIcon className={`h-5 w-5 text-th-primary`} />
             </button>
             <div className="ml-6 text-th-fgd-2">
-              Mango Market V3 is in public beta. Please use{' '}
+              Mango V3 is in public beta. Please use{' '}
               <a
                 href="https://v2.mango.markets"
                 target="_blank"
