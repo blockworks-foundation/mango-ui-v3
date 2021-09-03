@@ -8,7 +8,7 @@ import ManualRefresh from './ManualRefresh'
 import useOraclePrice from '../hooks/useOraclePrice'
 import DayHighLow from './DayHighLow'
 import { useEffect } from 'react'
-import { formatUsdValue } from '../utils'
+import { formatUsdValue, usdFormatter } from '../utils'
 import { PerpMarket } from '@blockworks-foundation/mango-client'
 import BN from 'bn.js'
 
@@ -61,6 +61,7 @@ const MarketHeader = () => {
   const [ohlcv, setOhlcv] = useState(null)
   const [, setLoading] = useState(false)
   const [perpStats, setPerpStats] = useState([])
+  const [perpVolume, setPerpVolume] = useState(0)
   const change = ohlcv ? ((ohlcv.c[0] - ohlcv.o[0]) / ohlcv.o[0]) * 100 : ''
   // const volume = ohlcv ? ohlcv.v[0] : '--'
 
@@ -71,6 +72,11 @@ const MarketHeader = () => {
       `https://mango-stats-v3.herokuapp.com/perp/funding_rate?` + urlParams
     )
     const parsedPerpStats = await perpStats.json()
+    const perpVolume = await fetch(
+      `https://event-history-api.herokuapp.com/stats/perps/${marketConfig.publicKey.toString()}`
+    )
+    const parsedPerpVolume = await perpVolume.json()
+    setPerpVolume(parsedPerpVolume?.data?.volume)
     setPerpStats(parsedPerpStats)
   }, [selectedMarketName])
 
@@ -181,25 +187,18 @@ const MarketHeader = () => {
               <MarketDataLoader />
             )}
           </div>
-          {/* <div className="">
-            <div className="text-th-fgd-3 tiny-text pb-0.5">Daily Volume</div>
-            <div className="font-semibold text-th-fgd-1 text-xs">
-              {ohlcv && !loading && volume ? (
-                volume !== '--' ? (
-                  <>
-                    {volume.toFixed(2)}
-                    <span className="ml-1 text-th-fgd-3 tiny-text pb-0.5">
-                      {baseSymbol}
-                    </span>
-                  </>
+          {isPerpMarket ? (
+            <div className="">
+              <div className="text-th-fgd-3 tiny-text pb-0.5">24hr Volume</div>
+              <div className="font-semibold text-th-fgd-1 text-xs">
+                {perpVolume ? (
+                  usdFormatter(perpVolume, 0)
                 ) : (
-                  volume
-                )
-              ) : (
-                <MarketDataLoader />
-              )}
+                  <MarketDataLoader />
+                )}
+              </div>
             </div>
-          </div> */}
+          ) : null}
           {isPerpMarket && selectedMarket instanceof PerpMarket ? (
             <>
               <div className="">
