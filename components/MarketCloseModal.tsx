@@ -6,7 +6,6 @@ import { notify } from '../utils/notifications'
 import Loading from './Loading'
 import { calculateTradePrice, sleep } from '../utils'
 import Modal from './Modal'
-// import useLocalStorageState from '../hooks/useLocalStorageState'
 
 interface MarketCloseModalProps {
   onClose: () => void
@@ -27,8 +26,6 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
   const config = useMangoStore.getState().selectedMarket.config
 
   const orderbook = orderBookRef.current
-  //   const [hideMarketCloseWarning, setHideMarketCloseWarning] =
-  //     useLocalStorageState('hideMarketCloseWarning', false)
   useEffect(
     () =>
       useMangoStore.subscribe(
@@ -91,9 +88,8 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
         type: 'error',
       })
     } finally {
-      sleep(500).then(() => {
-        actions.fetchMangoAccounts()
-      })
+      await sleep(500)
+      actions.fetchMangoAccounts()
       setSubmitting(false)
       onClose()
     }
@@ -115,16 +111,6 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
           Cancel
         </LinkButton>
       </div>
-      {/* <div className="pt-6">
-        <label className="cursor-pointer inline-flex items-center">
-          <input
-            type="checkbox"
-            checked={hideMarketCloseWarning}
-            onChange={() => setHideMarketCloseWarning(!hideMarketCloseWarning)}
-          />
-          <span className="ml-2 text-th-fgd-1">Don't show this again</span>
-        </label>
-      </div> */}
     </Modal>
   )
 }

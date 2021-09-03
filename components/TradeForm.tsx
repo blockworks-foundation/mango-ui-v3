@@ -293,10 +293,9 @@ export default function TradeForm() {
         type: 'error',
       })
     } finally {
-      sleep(500).then(() => {
-        actions.reloadMangoAccount()
-        actions.updateOpenOrders()
-      })
+      await sleep(500)
+      actions.reloadMangoAccount()
+      actions.updateOpenOrders()
       setSubmitting(false)
     }
   }

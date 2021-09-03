@@ -1,5 +1,4 @@
 import { useCallback, useState } from 'react'
-import styled from '@emotion/styled'
 import useMangoStore from '../stores/useMangoStore'
 import { Menu } from '@headlessui/react'
 import {
@@ -18,10 +17,6 @@ import WalletSelect from './WalletSelect'
 import { WalletIcon, ProfileIcon } from './icons'
 import AccountsModal from './AccountsModal'
 import { useEffect } from 'react'
-
-const StyledWalletTypeLabel = styled.div`
-  font-size: 0.65rem;
-`
 
 const ConnectWalletButton = () => {
   const wallet = useMangoStore((s) => s.wallet.current)
@@ -105,9 +100,9 @@ const ConnectWalletButton = () => {
               <WalletIcon className="w-4 h-4 mr-2 fill-current" />
               <div>
                 <div className="mb-0.5 whitespace-nowrap">Connect Wallet</div>
-                <StyledWalletTypeLabel className="font-normal text-th-fgd-3 text-left leading-3 tracking-wider">
+                <div className="font-normal text-th-fgd-3 text-left leading-3 tracking-wider text-xxs">
                   {WALLET_PROVIDERS.find((p) => p.url === selectedWallet)?.name}
-                </StyledWalletTypeLabel>
+                </div>
               </div>
             </div>
           </button>

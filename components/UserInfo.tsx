@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
-import styled from '@emotion/styled'
 import useMangoStore from '../stores/useMangoStore'
 import { useOpenOrders } from '../hooks/useOpenOrders'
-// import usePerpPositions from '../hooks/usePerpPositions'
+import usePerpPositions from '../hooks/usePerpPositions'
 import FloatingElement from './FloatingElement'
 import OpenOrdersTable from './OpenOrdersTable'
 import BalancesTable from './BalancesTable'
@@ -18,13 +17,9 @@ const TABS = [
   'Trade History',
 ]
 
-const StyledAlertCount = styled.span`
-  font-size: 0.6rem;
-`
-
 const UserInfoTabs = ({ activeTab, setActiveTab }) => {
   const openOrders = useOpenOrders()
-  // const perpPositions = usePerpPositions()
+  const perpPositions = usePerpPositions()
   const handleTabChange = (tabName) => {
     setActiveTab(tabName)
   }
@@ -67,10 +62,9 @@ const UserInfoTabs = ({ activeTab, setActiveTab }) => {
                 {tabName === 'Open Orders' && openOrders?.length > 0 ? (
                   <Count count={openOrders?.length} />
                 ) : null}
-                {/* Add back when more than one perp market */}
-                {/* {tabName === 'Perp Positions' && perpPositions?.length > 0 ? (
+                {tabName === 'Perp Positions' && perpPositions?.length > 0 ? (
                   <Count count={perpPositions?.length} />
-                ) : null} */}
+                ) : null}
               </a>
             ))}
           </nav>
@@ -82,9 +76,9 @@ const UserInfoTabs = ({ activeTab, setActiveTab }) => {
 
 const Count = ({ count }) => (
   <div className="absolute -top-2 -right-2 z-20">
-    <StyledAlertCount className="h-4 p-1 bg-th-bkg-4 inline-flex rounded-lg flex items-center justify-center text-th-fgd-2">
+    <span className="h-4 p-1 bg-th-bkg-4 inline-flex rounded-lg items-center justify-center text-th-fgd-2 text-xxs">
       {count}
-    </StyledAlertCount>
+    </span>
   </div>
 )
 
