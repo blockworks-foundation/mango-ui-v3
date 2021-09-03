@@ -123,7 +123,7 @@ export default function MarketPosition() {
   return selectedMarket instanceof PerpMarket ? (
     <FloatingElement showConnect>
       <div className={!connected ? 'filter blur-sm' : null}>
-        <ElementTitle>{marketConfig.name} Position</ElementTitle>
+        <ElementTitle>Position: {marketConfig.name} </ElementTitle>
         <div className={`flex items-center justify-between pb-3`}>
           <div className="font-normal text-th-fgd-3 leading-4">Side</div>
           {isLoading ? (
