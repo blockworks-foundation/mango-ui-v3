@@ -96,9 +96,14 @@ export default function MarketPosition() {
     return getMarketIndexBySymbol(mangoGroupConfig, baseSymbol)
   }, [mangoGroupConfig, baseSymbol])
 
-  let perpAccount
+  let perpAccount, perpPnl
   if (marketName.includes('PERP') && mangoAccount) {
     perpAccount = mangoAccount.perpAccounts[marketIndex]
+    perpPnl = perpAccount.getPnl(
+      mangoGroup.perpMarkets[marketIndex],
+      mangoGroupCache.perpMarketCache[marketIndex],
+      mangoGroupCache.priceCache[marketIndex].price
+    )
   }
 
   const handleSizeClick = (size) => {
@@ -229,19 +234,20 @@ export default function MarketPosition() {
               Unsettled PnL
             </Tooltip.Content>
           </Tooltip>
-          <div className={`flex items-center text-th-fgd-1`}>
+          <div
+            className={`flex items-center ${
+              perpPnl?.gt(ZERO_I80F48)
+                ? 'text-th-green'
+                : perpPnl?.lt(ZERO_I80F48)
+                ? 'text-th-red'
+                : 'text-th-fgd-1'
+            }`}
+          >
             {isLoading ? (
               <DataLoader />
             ) : perpAccount ? (
               formatUsdValue(
-                +nativeI80F48ToUi(
-                  perpAccount.getPnl(
-                    mangoGroup.perpMarkets[marketIndex],
-                    mangoGroupCache.perpMarketCache[marketIndex],
-                    mangoGroupCache.priceCache[marketIndex].price
-                  ),
-                  marketConfig.quoteDecimals
-                )
+                +nativeI80F48ToUi(perpPnl, marketConfig.quoteDecimals)
               )
             ) : (
               '0'
@@ -252,17 +258,7 @@ export default function MarketPosition() {
               <LinkButton
                 onClick={() => handleSettlePnl(selectedMarket, perpAccount)}
                 className="ml-2 text-th-primary text-xs disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:underline"
-                disabled={
-                  perpAccount
-                    ? perpAccount
-                        .getPnl(
-                          mangoGroup.perpMarkets[marketIndex],
-                          mangoGroupCache.perpMarketCache[marketIndex],
-                          mangoGroupCache.priceCache[marketIndex].price
-                        )
-                        .eq(ZERO_I80F48)
-                    : true
-                }
+                disabled={perpAccount ? perpPnl.eq(ZERO_I80F48) : true}
               >
                 Settle
               </LinkButton>
