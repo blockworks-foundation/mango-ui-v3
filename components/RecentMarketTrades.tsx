@@ -68,7 +68,7 @@ export default function RecentMarketTrades() {
                     )
                   : ''}
               </div>
-              <div className={`text-right text-th-fgd-3`}>
+              <div className={`text-right text-th-fgd-4`}>
                 {trade.time && new Date(trade.time).toLocaleTimeString()}
               </div>
             </div>
