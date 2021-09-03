@@ -27,7 +27,7 @@ const settlePnl = async (perpMarket: PerpMarket, perpAccount: PerpAccount) => {
   const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
   const mangoCache = useMangoStore.getState().selectedMangoGroup.cache
   const wallet = useMangoStore.getState().wallet.current
-  const actions = useMangoStore.getState().actions
+  // const actions = useMangoStore.getState().actions
   const marketIndex = mangoGroup.getPerpMarketIndex(perpMarket.publicKey)
 
   try {
@@ -40,7 +40,7 @@ const settlePnl = async (perpMarket: PerpMarket, perpAccount: PerpAccount) => {
       mangoCache.priceCache[marketIndex].price,
       wallet
     )
-    actions.reloadMangoAccount()
+    // actions.reloadMangoAccount()
     notify({
       title: 'Successfully settled PNL',
       description: '',
