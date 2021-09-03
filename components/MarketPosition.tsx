@@ -175,8 +175,10 @@ export default function MarketPosition() {
               <DataLoader />
             ) : perpAccount ? (
               formatUsdValue(
-                selectedMarket.baseLotsToNumber(perpAccount.basePosition) *
-                  mangoGroup.getPrice(marketIndex, mangoGroupCache).toNumber()
+                Math.abs(
+                  selectedMarket.baseLotsToNumber(perpAccount.basePosition) *
+                    mangoGroup.getPrice(marketIndex, mangoGroupCache).toNumber()
+                )
               )
             ) : (
               0
