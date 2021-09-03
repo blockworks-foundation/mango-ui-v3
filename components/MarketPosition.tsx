@@ -40,7 +40,7 @@ const settlePnl = async (perpMarket: PerpMarket, perpAccount: PerpAccount) => {
       mangoCache.priceCache[marketIndex].price,
       wallet
     )
-    actions.fetchMangoAccounts()
+    actions.reloadMangoAccount()
     notify({
       title: 'Successfully settled PNL',
       description: '',
