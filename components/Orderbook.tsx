@@ -101,7 +101,7 @@ export default function Orderbook({ depth = 8 }) {
   const orderbook = useMangoStore((s) => s.selectedMarket.orderBook)
   const markPrice = useMarkPrice()
   const openOrders = useOpenOrders()
-  const openOrderPrices = openOrders.length
+  const openOrderPrices = openOrders?.length
     ? openOrders.map(({ order }) => order.price)
     : []
 
