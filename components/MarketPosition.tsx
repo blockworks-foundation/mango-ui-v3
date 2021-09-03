@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from 'react'
 import FloatingElement from './FloatingElement'
 import { ElementTitle } from './styles'
 import useMangoStore, { mangoClient } from '../stores/useMangoStore'
-import { i80f48ToPercent, formatUsdValue } from '../utils/index'
+import { i80f48ToPercent, formatUsdValue, floorToDecimal } from '../utils/index'
 import Button, { LinkButton } from './Button'
 import Tooltip from './Tooltip'
 import SideBadge from './SideBadge'
@@ -123,7 +123,7 @@ export default function MarketPosition() {
   return selectedMarket instanceof PerpMarket ? (
     <FloatingElement showConnect>
       <div className={!connected ? 'filter blur-sm' : null}>
-        <ElementTitle>Position</ElementTitle>
+        <ElementTitle>{marketConfig.name} Position</ElementTitle>
         <div className={`flex items-center justify-between pb-3`}>
           <div className="font-normal text-th-fgd-3 leading-4">Side</div>
           {isLoading ? (
@@ -359,14 +359,15 @@ export default function MarketPosition() {
                           {isLoading ? (
                             <DataLoader />
                           ) : mangoAccount ? (
-                            nativeI80F48ToUi(
-                              mangoAccount.getAvailableBalance(
-                                mangoGroup,
-                                mangoGroupCache,
-                                tokenIndex
-                              ),
-                              mangoGroup.tokens[tokenIndex].decimals
-                            ).toFixed(
+                            floorToDecimal(
+                              nativeI80F48ToUi(
+                                mangoAccount.getAvailableBalance(
+                                  mangoGroup,
+                                  mangoGroupCache,
+                                  tokenIndex
+                                ),
+                                mangoGroup.tokens[tokenIndex].decimals
+                              ).toNumber(),
                               getTokenBySymbol(mangoGroupConfig, symbol)
                                 .decimals
                             )
