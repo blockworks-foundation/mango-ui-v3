@@ -61,10 +61,9 @@ const OpenOrdersTable = () => {
       })
       console.log('error', `${e}`)
     } finally {
-      sleep(500).then(() => {
-        actions.fetchMangoAccounts()
-        actions.updateOpenOrders()
-      })
+      await sleep(500)
+      actions.fetchMangoAccounts()
+      actions.updateOpenOrders()
       setCancelId(null)
     }
   }

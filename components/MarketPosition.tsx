@@ -338,7 +338,7 @@ export default function MarketPosition() {
                             deposit.gt(borrow) ? (
                               deposit.toFixed()
                             ) : (
-                              borrow.toFixed()
+                              `-${borrow.toFixed()}`
                             )
                           ) : (
                             0

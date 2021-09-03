@@ -99,6 +99,7 @@ export default function Orderbook({ depth = 8 }) {
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const orderbook = useMangoStore((s) => s.selectedMarket.orderBook)
+  const market = useMangoStore((s) => s.selectedMarket.current)
   const markPrice = useMarkPrice()
   const openOrders = useOpenOrders()
   const openOrderPrices = openOrders?.length
@@ -264,6 +265,7 @@ export default function Orderbook({ depth = 8 }) {
                         maxSizePercent,
                       }) => (
                         <OrderbookRow
+                          market={market}
                           hasOpenOrder={openOrderPrices.includes(price)}
                           key={price + ''}
                           price={price}
@@ -286,6 +288,7 @@ export default function Orderbook({ depth = 8 }) {
                         maxSizePercent,
                       }) => (
                         <OrderbookRow
+                          market={market}
                           hasOpenOrder={openOrderPrices.includes(price)}
                           invert
                           key={price + ''}
@@ -369,6 +372,7 @@ export default function Orderbook({ depth = 8 }) {
                     maxSizePercent,
                   }) => (
                     <OrderbookRow
+                      market={market}
                       hasOpenOrder={openOrderPrices.includes(price)}
                       key={price + ''}
                       price={price}
@@ -398,6 +402,7 @@ export default function Orderbook({ depth = 8 }) {
                     maxSizePercent,
                   }) => (
                     <OrderbookRow
+                      market={market}
                       hasOpenOrder={openOrderPrices.includes(price)}
                       key={price + ''}
                       price={price}
@@ -419,9 +424,8 @@ export default function Orderbook({ depth = 8 }) {
 }
 
 const OrderbookRow = React.memo<any>(
-  ({ side, price, size, sizePercent, invert, hasOpenOrder }) => {
+  ({ side, price, size, sizePercent, invert, hasOpenOrder, market }) => {
     const element = useRef(null)
-    const market = useMangoStore((s) => s.selectedMarket.current)
     const setMangoStore = useMangoStore((s) => s.set)
 
     useEffect(() => {
@@ -475,7 +479,7 @@ const OrderbookRow = React.memo<any>(
               />
               <div
                 onClick={handlePriceClick}
-                className={`z-30 filter brightness-110 relative text-th-fgd-1 px-2 ${
+                className={`z-30 filter brightness-110 relative text-th-fgd-1 px-4 ${
                   side === 'buy' ? `text-th-green` : `text-th-red`
                 }`}
               >
@@ -514,7 +518,7 @@ const OrderbookRow = React.memo<any>(
                 side={side}
               />
               <div
-                className={`z-30 filter brightness-110 relative px-2 ${
+                className={`z-30 filter brightness-110 relative px-4 ${
                   side === 'buy' ? `text-th-green` : `text-th-red`
                 }`}
                 onClick={handlePriceClick}
