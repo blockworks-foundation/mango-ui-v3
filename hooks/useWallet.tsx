@@ -154,7 +154,7 @@ export default function useWallet() {
     if (connected && mangoAccount) {
       actions.reloadMangoAccount()
     }
-  }, 15 * SECONDS)
+  }, 20 * SECONDS)
 
   return { connected, wallet }
 }
