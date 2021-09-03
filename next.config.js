@@ -1,5 +1,6 @@
 module.exports = {
   target: 'serverless',
+  productionBrowserSourceMaps: true,
   webpack: (config, { isServer }) => {
     // Important: return the modified config
     if (!isServer) {
