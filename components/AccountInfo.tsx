@@ -6,7 +6,7 @@ import {
   ZERO_BN,
   ZERO_I80F48,
 } from '@blockworks-foundation/mango-client'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { HeartIcon } from '@heroicons/react/solid'
 import useMangoStore, { mangoClient, MNGO_INDEX } from '../stores/useMangoStore'
 import { formatUsdValue, usdFormatter } from '../utils'
@@ -82,17 +82,13 @@ export default function AccountInfo() {
     }
   }
 
-  const maintHealthRatio = useMemo(() => {
-    return mangoAccount
-      ? mangoAccount.getHealthRatio(mangoGroup, mangoCache, 'Maint')
-      : I80F48_100
-  }, [mangoAccount, mangoGroup, mangoCache])
+  const maintHealthRatio = mangoAccount
+    ? mangoAccount.getHealthRatio(mangoGroup, mangoCache, 'Maint')
+    : I80F48_100
 
-  const initHealthRatio = useMemo(() => {
-    return mangoAccount
-      ? mangoAccount.getHealthRatio(mangoGroup, mangoCache, 'Init')
-      : I80F48_100
-  }, [mangoAccount, mangoGroup, mangoCache])
+  const initHealthRatio = mangoAccount
+    ? mangoAccount.getHealthRatio(mangoGroup, mangoCache, 'Init')
+    : I80F48_100
 
   return (
     <FloatingElement showConnect>
