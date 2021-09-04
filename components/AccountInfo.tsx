@@ -90,6 +90,13 @@ export default function AccountInfo() {
     ? mangoAccount.getHealthRatio(mangoGroup, mangoCache, 'Init')
     : I80F48_100
 
+  const maintHealth = mangoAccount
+    ? mangoAccount.getHealth(mangoGroup, mangoCache, 'Maint')
+    : I80F48_100
+  const initHealth = mangoAccount
+    ? mangoAccount.getHealth(mangoGroup, mangoCache, 'Init')
+    : I80F48_100
+
   return (
     <FloatingElement showConnect>
       <div className={!connected ? 'filter blur-sm' : undefined}>
@@ -98,15 +105,9 @@ export default function AccountInfo() {
             content={
               mangoAccount ? (
                 <div>
-                  Init Health:{' '}
-                  {mangoAccount
-                    .getHealth(mangoGroup, mangoCache, 'Init')
-                    .toFixed(4)}
+                  Init Health: {initHealth.toFixed(4)}
                   <br />
-                  Maint Health:{' '}
-                  {mangoAccount
-                    .getHealth(mangoGroup, mangoCache, 'Maint')
-                    .toFixed(4)}
+                  Maint Health: {maintHealth.toFixed(4)}
                 </div>
               ) : (
                 ''
@@ -150,7 +151,7 @@ export default function AccountInfo() {
                 ) : mangoAccount ? (
                   usdFormatter(
                     nativeI80F48ToUi(
-                      mangoAccount.getHealth(mangoGroup, mangoCache, 'Init'),
+                      initHealth,
                       mangoGroup.tokens[QUOTE_INDEX].decimals
                     ).toFixed()
                   )
