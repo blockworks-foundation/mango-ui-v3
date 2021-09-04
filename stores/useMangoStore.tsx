@@ -455,6 +455,24 @@ const useMangoStore = create<MangoStore>((set, get) => ({
         )
       })
     },
+    async loadMarketFills() {
+      const set = get().set
+      const selectedMarket = get().selectedMarket.current
+      if (!selectedMarket) {
+        return null
+      }
+      try {
+        const loadedFills = await selectedMarket.loadFills(
+          DEFAULT_CONNECTION,
+          10000
+        )
+        set((state) => {
+          state.selectedMarket.fills = loadedFills
+        })
+      } catch (err) {
+        console.log('Error fetching fills:', err)
+      }
+    },
   },
 }))
 

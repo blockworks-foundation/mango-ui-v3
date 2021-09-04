@@ -1,9 +1,6 @@
-import { useCallback, useEffect } from 'react'
+import { useEffect } from 'react'
 import { AccountInfo } from '@solana/web3.js'
-import useMangoStore, {
-  DEFAULT_CONNECTION,
-  WEBSOCKET_CONNECTION,
-} from '../stores/useMangoStore'
+import useMangoStore, { WEBSOCKET_CONNECTION } from '../stores/useMangoStore'
 import useInterval from './useInterval'
 import useOrderbook from './useOrderbook'
 
@@ -82,30 +79,13 @@ const useHydrateStore = () => {
   }, [selectedMarket])
 
   // fetch filled trades for selected market
-  const fetchFills = useCallback(async () => {
-    if (!selectedMarket) {
-      return null
-    }
-    try {
-      const loadedFills = await selectedMarket.loadFills(
-        DEFAULT_CONNECTION,
-        10000
-      )
-      setMangoStore((state) => {
-        state.selectedMarket.fills = loadedFills
-      })
-    } catch (err) {
-      console.log('Error fetching fills:', err)
-    }
-  }, [selectedMarket, setMangoStore])
-
   useInterval(() => {
-    fetchFills()
+    actions.loadMarketFills()
   }, _SLOW_REFRESH_INTERVAL)
 
   useEffect(() => {
-    fetchFills()
-  }, [fetchFills])
+    actions.loadMarketFills()
+  }, [selectedMarket])
 }
 
 export default useHydrateStore

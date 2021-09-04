@@ -81,11 +81,12 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
         size,
         'ioc',
         0,
-        side === 'buy' ? askInfo : bidInfo
+        side === 'buy' ? askInfo : bidInfo,
+        notify({ title: 'Sending transaction...', type: 'info' })
       )
       await sleep(500)
       actions.reloadMangoAccount()
-      notify({ title: 'Successfully placed trade', txid })
+      notify({ title: 'Transaction sent', txid })
     } catch (e) {
       notify({
         title: 'Error placing order',
@@ -98,6 +99,7 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
       onClose()
     }
   }
+
   return (
     <Modal onClose={onClose} isOpen={isOpen}>
       <div className="pb-2 text-th-fgd-1 text-lg">

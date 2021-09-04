@@ -40,7 +40,8 @@ const OpenOrdersTable = () => {
           selectedMangoAccount,
           wallet,
           market,
-          order as Order
+          order as Order,
+          notify({ title: 'Sending cancel order transaction...', type: 'info' })
         )
       } else if (market instanceof PerpMarket) {
         txid = await mangoClient.cancelPerpOrder(
@@ -48,7 +49,9 @@ const OpenOrdersTable = () => {
           selectedMangoAccount,
           wallet,
           market,
-          order as PerpOrder
+          order as PerpOrder,
+          false,
+          notify({ title: 'Sending cancel order transaction...', type: 'info' })
         )
       }
       notify({ title: 'Successfully cancelled order', txid })
