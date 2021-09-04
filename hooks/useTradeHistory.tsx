@@ -43,10 +43,16 @@ const parsedPerpEvent = (mangoAccountPk: PublicKey, event) => {
 }
 
 const parsedSerumEvent = (event) => {
+  let liquidity
+  if (event.eventFlags) {
+    liquidity = event?.eventFlags?.maker ? 'Maker' : 'Taker'
+  } else {
+    liquidity = event.maker ? 'Maker' : 'Taker'
+  }
   return {
     ...event,
+    liquidity,
     key: `${event.maker}-${event.price}`,
-    liquidity: event?.eventFlags?.maker ? 'Maker' : 'Taker',
     value: event.price * event.size,
     side: event.side,
     marketName: getMarketName(event),
