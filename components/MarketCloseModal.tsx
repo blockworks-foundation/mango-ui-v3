@@ -1,5 +1,8 @@
 import { FunctionComponent, useEffect, useRef, useState } from 'react'
-import useMangoStore, { mangoClient } from '../stores/useMangoStore'
+import useMangoStore, {
+  DEFAULT_CONNECTION,
+  mangoClient,
+} from '../stores/useMangoStore'
 import { PerpMarket, ZERO_BN } from '@blockworks-foundation/mango-client'
 import Button, { LinkButton } from './Button'
 import { notify } from '../utils/notifications'
@@ -41,14 +44,16 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
     const { askInfo, bidInfo } = useMangoStore.getState().selectedMarket
     const wallet = useMangoStore.getState().wallet.current
-    const perpAccount = mangoAccount.perpAccounts[marketIndex]
-    const side = perpAccount.basePosition.gt(ZERO_BN) ? 'sell' : 'buy'
-    const size = Math.abs(market.baseLotsToNumber(perpAccount.basePosition))
 
     if (!wallet || !mangoGroup || !mangoAccount) return
     setSubmitting(true)
 
     try {
+      const reloadedMangoAccount = await mangoAccount.reload(DEFAULT_CONNECTION)
+      const perpAccount = reloadedMangoAccount.perpAccounts[marketIndex]
+      const side = perpAccount.basePosition.gt(ZERO_BN) ? 'sell' : 'buy'
+      const size = Math.abs(market.baseLotsToNumber(perpAccount.basePosition))
+
       const orderPrice = calculateTradePrice(
         'Market',
         orderbook,
@@ -78,7 +83,8 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
         0,
         side === 'buy' ? askInfo : bidInfo
       )
-
+      await sleep(500)
+      actions.reloadMangoAccount()
       notify({ title: 'Successfully placed trade', txid })
     } catch (e) {
       notify({
@@ -88,8 +94,6 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
         type: 'error',
       })
     } finally {
-      await sleep(500)
-      actions.fetchMangoAccounts()
       setSubmitting(false)
       onClose()
     }
