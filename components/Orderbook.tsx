@@ -14,6 +14,7 @@ import useMarkPrice from '../hooks/useMarkPrice'
 import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
 import Tooltip from './Tooltip'
+import Input from './Input'
 import FloatingElement from './FloatingElement'
 import { useOpenOrders } from '../hooks/useOpenOrders'
 
@@ -69,14 +70,55 @@ const StyledFloatingElement = styled(FloatingElement)`
   overflow: hidden;
 `
 
+//ary=[0: {price: 50012.3, size: 0.6991, cumulativeSize: 0.6991, sizePercent: 5, maxSizePercent: 5}, 1: {price: 50012.3, size: 0.6991, cumulativeSize: 0.6991, sizePercent: 5, maxSizePercent: 5}]
+//loop through orders, find price group floor, if unique add as key to groupFloors object, sum size within key, repeat until Object.keys(groupFloors).length = depth
+const groupBy = (ordersToGroup, depth, grouping) => {
+  if (!grouping) {
+    return ordersToGroup
+  }
+  const groupFloors = {}
+  for (let i = 0; Object.keys(groupFloors).length < depth; i++) {
+    if (typeof ordersToGroup[i] == 'undefined') {
+      break
+    }
+    const floor = Math.floor(ordersToGroup[i][0] / grouping) * grouping
+    if (typeof groupFloors[floor] == 'undefined') {
+      groupFloors[floor] = [ordersToGroup[i][1]]
+    } else {
+      groupFloors[floor] = (
+        parseInt(ordersToGroup[i][1]) + parseInt(groupFloors[floor])
+      ).toString()
+    }
+  }
+  const groupedOrders = Object.entries(groupFloors).sort(function (a, b) {
+    if (!a || !b) {
+      return -1
+    }
+    return parseInt(a[0]) - parseInt(b[0])
+  })
+  return groupedOrders
+
+  // //groupCutoffs = {'50010': }
+  // groupCutoffs.forEach((group) => {
+  //   group.
+  // })
+  // const grouped = Object.keys(groupCutoffs).map((key) => {
+  //   return groupCutoffs[key];
+  // });
+  // return grouped.map((group) => {group.reduce((a,b) => {a+b}),0})
+  // debugger
+}
+
 const getCumulativeOrderbookSide = (
   orders,
   totalSize,
   maxSize,
   depth,
-  backwards = false
+  backwards = false,
+  grouping
 ) => {
-  let cumulative = orders
+  const groupedOrders = groupBy(orders, depth, grouping)
+  let cumulative = groupedOrders
     .slice(0, depth)
     .reduce((cumulative, [price, size], i) => {
       const cumulativeSize = (cumulative[i - 1]?.cumulativeSize || 0) + size
@@ -113,6 +155,7 @@ export default function Orderbook({ depth = 8 }) {
   const [orderbookData, setOrderbookData] = useState(null)
   const [defaultLayout, setDefaultLayout] = useState(true)
   const [displayCumulativeSize, setDisplayCumulativeSize] = useState(false)
+  const [grouping, setGrouping] = useState(undefined) //TODO default to ticksize
 
   useInterval(() => {
     if (
@@ -140,16 +183,38 @@ export default function Orderbook({ depth = 8 }) {
         )
 
       const bidsToDisplay = defaultLayout
-        ? getCumulativeOrderbookSide(bids, totalSize, maxSize, depth, false)
-        : getCumulativeOrderbookSide(bids, totalSize, maxSize, depth / 2, false)
+        ? getCumulativeOrderbookSide(
+            bids,
+            totalSize,
+            maxSize,
+            depth,
+            false,
+            grouping
+          )
+        : getCumulativeOrderbookSide(
+            bids,
+            totalSize,
+            maxSize,
+            depth / 2,
+            false,
+            grouping
+          )
       const asksToDisplay = defaultLayout
-        ? getCumulativeOrderbookSide(asks, totalSize, maxSize, depth, false)
+        ? getCumulativeOrderbookSide(
+            asks,
+            totalSize,
+            maxSize,
+            depth,
+            false,
+            grouping
+          )
         : getCumulativeOrderbookSide(
             asks,
             totalSize,
             maxSize,
             (depth + 1) / 2,
-            true
+            true,
+            grouping
           )
 
       currentOrderbookData.current = {
@@ -226,6 +291,15 @@ export default function Orderbook({ depth = 8 }) {
                     </Tooltip>
                   </div>
                   <ElementTitle noMarignBottom>Orderbook</ElementTitle>
+                  <div>Grouping</div>
+                  <Input //use select menu with ticksize*10.pow(x) as options
+                    type="number"
+                    min="0"
+                    onChange={(e) => setGrouping(e.target.value)}
+                    value={grouping}
+                    className="rounded-r-none"
+                    wrapperClassName="w-3/5"
+                  />
                   <div className="flex relative">
                     <Tooltip content={'Switch Layout'} className="text-xs py-1">
                       <button
