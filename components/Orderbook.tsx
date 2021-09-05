@@ -97,7 +97,7 @@ const groupBy = (ordersArray, grouping) => {
     return parseInt(a[0]) - parseInt(b[0])
   })
   groupedOrdersArray.forEach((entry) => {
-    return [parseInt(entry[0]), entry[1]]
+    return [entry[0], entry[1].toString()]
   })
   debugger
   return groupedOrdersArray
@@ -343,6 +343,7 @@ debugger
                           sizePercent={
                             displayCumulativeSize ? maxSizePercent : sizePercent
                           }
+                          grouping={grouping}
                         />
                       )
                     )}
@@ -367,6 +368,7 @@ debugger
                           sizePercent={
                             displayCumulativeSize ? maxSizePercent : sizePercent
                           }
+                          grouping={grouping}
                         />
                       )
                     )}
@@ -458,6 +460,7 @@ debugger
                       sizePercent={
                         displayCumulativeSize ? maxSizePercent : sizePercent
                       }
+                      grouping={grouping}
                     />
                   )
                 )}
@@ -488,6 +491,7 @@ debugger
                       sizePercent={
                         displayCumulativeSize ? maxSizePercent : sizePercent
                       }
+                      grouping={grouping}
                     />
                   )
                 )}
@@ -501,7 +505,7 @@ debugger
 }
 
 const OrderbookRow = React.memo<any>(
-  ({ side, price, size, sizePercent, invert, hasOpenOrder, market }) => {
+  ({ side, price, size, sizePercent, invert, hasOpenOrder, market, grouping }) => {
     const element = useRef(null)
     const setMangoStore = useMangoStore((s) => s.set)
 
@@ -562,7 +566,7 @@ const OrderbookRow = React.memo<any>(
               >
                 {usdFormatter(
                   formattedPrice,
-                  getDecimalCount(market.tickSize),
+                  getDecimalCount(grouping),
                   false
                 )}
               </div>
@@ -602,7 +606,7 @@ const OrderbookRow = React.memo<any>(
               >
                 {usdFormatter(
                   formattedPrice,
-                  getDecimalCount(market.tickSize),
+                  getDecimalCount(grouping),
                   false
                 )}
               </div>
