@@ -14,6 +14,7 @@ import useMarkPrice from '../hooks/useMarkPrice'
 import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
 import Tooltip from './Tooltip'
+import GroupSize from './GroupSize'
 import Input from './Input'
 import FloatingElement from './FloatingElement'
 import { useOpenOrders } from '../hooks/useOpenOrders'
@@ -72,12 +73,12 @@ const StyledFloatingElement = styled(FloatingElement)`
 
 //ary=[0: {price: 50012.3, size: 0.6991, cumulativeSize: 0.6991, sizePercent: 5, maxSizePercent: 5}, 1: {price: 50012.3, size: 0.6991, cumulativeSize: 0.6991, sizePercent: 5, maxSizePercent: 5}]
 //loop through orders, find price group floor, if unique add as key to groupFloors object, sum size within key, repeat until Object.keys(groupFloors).length = depth
-const groupBy = (ordersToGroup, depth, grouping) => {
-  if (!grouping) {
+const groupBy = (ordersToGroup, grouping) => {
+  if (!grouping || grouping <= 0) {
     return ordersToGroup
   }
   const groupFloors = {}
-  for (let i = 0; Object.keys(groupFloors).length < depth; i++) {
+  for (let i = 0; i < ordersToGroup.length; i++) {
     if (typeof ordersToGroup[i] == 'undefined') {
       break
     }
@@ -117,8 +118,7 @@ const getCumulativeOrderbookSide = (
   backwards = false,
   grouping
 ) => {
-  const groupedOrders = groupBy(orders, depth, grouping)
-  let cumulative = groupedOrders
+  let cumulative = orders
     .slice(0, depth)
     .reduce((cumulative, [price, size], i) => {
       const cumulativeSize = (cumulative[i - 1]?.cumulativeSize || 0) + size
@@ -155,8 +155,13 @@ export default function Orderbook({ depth = 8 }) {
   const [orderbookData, setOrderbookData] = useState(null)
   const [defaultLayout, setDefaultLayout] = useState(true)
   const [displayCumulativeSize, setDisplayCumulativeSize] = useState(false)
-  const [grouping, setGrouping] = useState(undefined) //TODO default to ticksize
-
+  const [grouping, setGrouping] = useState(1)
+  useEffect(() => {
+    if(market) {
+      setGrouping(market.tickSize)
+    }
+  }, [market])
+  
   useInterval(() => {
     if (
       !currentOrderbookData.current ||
@@ -164,8 +169,8 @@ export default function Orderbook({ depth = 8 }) {
         JSON.stringify(lastOrderbookData.current) ||
       previousDepth !== depth
     ) {
-      const bids = orderbook?.bids || []
-      const asks = orderbook?.asks || []
+      const bids = groupBy(orderbook?.bids, grouping) || []
+      const asks = groupBy(orderbook?.asks, grouping) || []
 
       const sum = (total, [, size], index) =>
         index < depth ? total + size : total
@@ -259,6 +264,10 @@ export default function Orderbook({ depth = 8 }) {
     }))
   }
 
+  const onGroupSizeChange = (groupSize) => {
+    setGrouping(groupSize)
+  }
+
   return (
     <>
       <FlipCard>
@@ -291,14 +300,11 @@ export default function Orderbook({ depth = 8 }) {
                     </Tooltip>
                   </div>
                   <ElementTitle noMarignBottom>Orderbook</ElementTitle>
-                  <div>Grouping</div>
-                  <Input //use select menu with ticksize*10.pow(x) as options
-                    type="number"
-                    min="0"
-                    onChange={(e) => setGrouping(e.target.value)}
+                  <GroupSize //use select menu with ticksize*10.pow(x) as options
+                    tickSize={market.tickSize}
+                    onChange={onGroupSizeChange}
                     value={grouping}
-                    className="rounded-r-none"
-                    wrapperClassName="w-3/5"
+                    className=""
                   />
                   <div className="flex relative">
                     <Tooltip content={'Switch Layout'} className="text-xs py-1">
