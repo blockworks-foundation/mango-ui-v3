@@ -288,12 +288,6 @@ debugger
                     </Tooltip>
                   </div>
                   <ElementTitle noMarignBottom>Orderbook</ElementTitle>
-                  <GroupSize
-                    tickSize={market?.tickSize}
-                    onChange={onGroupSizeChange}
-                    value={grouping}
-                    className=""
-                  />
                   <div className="flex relative">
                     <Tooltip content={'Switch Layout'} className="text-xs py-1">
                       <button
@@ -305,8 +299,15 @@ debugger
                     </Tooltip>
                   </div>
                 </div>
-                <MarkPriceComponent markPrice={markPrice} />
-
+                <div className="flex flex-row justify-end">
+                  <MarkPriceComponent markPrice={markPrice} />
+                  <GroupSize
+                      tickSize={market?.tickSize}
+                      onChange={onGroupSizeChange}
+                      value={grouping}
+                      className="relative flex flex-col w-1/3 items-end mb-1"
+                    />
+                </div>
                 <div
                   className={`text-th-fgd-4 flex justify-between mb-2 text-xs`}
                 >
@@ -421,7 +422,15 @@ debugger
                     </Tooltip>
                   </div>
                 </div>
-                <MarkPriceComponent markPrice={markPrice} />
+                <div className="flex flex-row justify-end">
+                  <MarkPriceComponent markPrice={markPrice} />
+                  <GroupSize
+                      tickSize={market?.tickSize}
+                      onChange={onGroupSizeChange}
+                      value={grouping}
+                      className="relative flex flex-col w-1/3 items-end mb-1"
+                    />
+                </div>
                 <div className={`text-th-fgd-4 flex justify-between mb-2`}>
                   <div className={`text-left text-xs`}>
                     {displayCumulativeSize ? 'Cumulative ' : ''}Size (
@@ -613,7 +622,7 @@ const MarkPriceComponent = React.memo<{ markPrice: number }>(
 
     return (
       <div
-        className={`flex justify-center items-center font-bold text-lg pb-4 ${
+        className={`flex justify-center items-center font-bold text-lg pb-4 w-1/3 ${
           markPrice > previousMarkPrice
             ? `text-th-green`
             : markPrice < previousMarkPrice
