@@ -15,7 +15,6 @@ import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
 import Tooltip from './Tooltip'
 import GroupSize from './GroupSize'
-import Input from './Input'
 import FloatingElement from './FloatingElement'
 import { useOpenOrders } from '../hooks/useOpenOrders'
 
@@ -73,41 +72,35 @@ const StyledFloatingElement = styled(FloatingElement)`
 
 //ary=[0: {price: 50012.3, size: 0.6991, cumulativeSize: 0.6991, sizePercent: 5, maxSizePercent: 5}, 1: {price: 50012.3, size: 0.6991, cumulativeSize: 0.6991, sizePercent: 5, maxSizePercent: 5}]
 //loop through orders, find price group floor, if unique add as key to groupFloors object, sum size within key, repeat until Object.keys(groupFloors).length = depth
-const groupBy = (ordersToGroup, grouping) => {
+const groupBy = (ordersArray, grouping) => {
   if (!grouping || grouping <= 0) {
-    return ordersToGroup
+    return ordersArray
   }
   const groupFloors = {}
-  for (let i = 0; i < ordersToGroup.length; i++) {
-    if (typeof ordersToGroup[i] == 'undefined') {
+  for (let i = 0; i < ordersArray.length; i++) {
+    if (typeof ordersArray[i] == 'undefined') {
       break
     }
-    const floor = Math.floor(ordersToGroup[i][0] / grouping) * grouping
+    const floor = Math.floor(ordersArray[i][0] / grouping) * grouping
     if (typeof groupFloors[floor] == 'undefined') {
-      groupFloors[floor] = [ordersToGroup[i][1]]
+      groupFloors[floor] = parseInt(ordersArray[i][1])
     } else {
       groupFloors[floor] = (
-        parseInt(ordersToGroup[i][1]) + parseInt(groupFloors[floor])
-      ).toString()
+        parseInt(ordersArray[i][1]) + groupFloors[floor]
+      )
     }
   }
-  const groupedOrders = Object.entries(groupFloors).sort(function (a, b) {
+  const groupedOrdersArray = Object.entries(groupFloors).sort(function (a, b) {
     if (!a || !b) {
       return -1
     }
     return parseInt(a[0]) - parseInt(b[0])
   })
-  return groupedOrders
-
-  // //groupCutoffs = {'50010': }
-  // groupCutoffs.forEach((group) => {
-  //   group.
-  // })
-  // const grouped = Object.keys(groupCutoffs).map((key) => {
-  //   return groupCutoffs[key];
-  // });
-  // return grouped.map((group) => {group.reduce((a,b) => {a+b}),0})
-  // debugger
+  groupedOrdersArray.forEach((entry) => {
+    return [parseInt(entry[0]), entry[1]]
+  })
+  debugger
+  return groupedOrdersArray
 }
 
 const getCumulativeOrderbookSide = (
@@ -115,8 +108,7 @@ const getCumulativeOrderbookSide = (
   totalSize,
   maxSize,
   depth,
-  backwards = false,
-  grouping
+  backwards = false
 ) => {
   let cumulative = orders
     .slice(0, depth)
@@ -160,7 +152,7 @@ export default function Orderbook({ depth = 8 }) {
     if(market) {
       setGrouping(market.tickSize)
     }
-  }, [market])
+  }, [market?.publicKey])
   
   useInterval(() => {
     if (
@@ -186,23 +178,21 @@ export default function Orderbook({ depth = 8 }) {
             return b[1]
           })
         )
-
+      debugger
       const bidsToDisplay = defaultLayout
         ? getCumulativeOrderbookSide(
             bids,
             totalSize,
             maxSize,
             depth,
-            false,
-            grouping
+            false
           )
         : getCumulativeOrderbookSide(
             bids,
             totalSize,
             maxSize,
             depth / 2,
-            false,
-            grouping
+            false
           )
       const asksToDisplay = defaultLayout
         ? getCumulativeOrderbookSide(
@@ -210,16 +200,14 @@ export default function Orderbook({ depth = 8 }) {
             totalSize,
             maxSize,
             depth,
-            false,
-            grouping
+            false
           )
         : getCumulativeOrderbookSide(
             asks,
             totalSize,
             maxSize,
             (depth + 1) / 2,
-            true,
-            grouping
+            true
           )
 
       currentOrderbookData.current = {
@@ -236,7 +224,7 @@ export default function Orderbook({ depth = 8 }) {
           spread = ask - bid
           spreadPercentage = (spread / ask) * 100
         }
-
+debugger
         setOrderbookData({
           bids: bidsToDisplay,
           asks: asksToDisplay,
@@ -300,8 +288,8 @@ export default function Orderbook({ depth = 8 }) {
                     </Tooltip>
                   </div>
                   <ElementTitle noMarignBottom>Orderbook</ElementTitle>
-                  <GroupSize //use select menu with ticksize*10.pow(x) as options
-                    tickSize={market.tickSize}
+                  <GroupSize
+                    tickSize={market?.tickSize}
                     onChange={onGroupSizeChange}
                     value={grouping}
                     className=""

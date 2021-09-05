@@ -2,9 +2,7 @@ import { Listbox } from '@headlessui/react'
 import styled from '@emotion/styled'
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid'
 
-const StyledListbox = styled(Listbox.Button)`
-  
-`
+const StyledListbox = styled(Listbox.Button)``
 
 const GroupSize = ({ tickSize, value, onChange, className = '' }) => {
   const sizes = []
