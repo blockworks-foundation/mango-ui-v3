@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react'
 import styled from '@emotion/styled'
+import Big from 'big.js'
 import { css, keyframes } from '@emotion/react'
 import useInterval from '../hooks/useInterval'
 import usePrevious from '../hooks/usePrevious'
@@ -70,18 +71,23 @@ const StyledFloatingElement = styled(FloatingElement)`
   overflow: hidden;
 `
 
-//ary=[0: {price: 50012.3, size: 0.6991, cumulativeSize: 0.6991, sizePercent: 5, maxSizePercent: 5}, 1: {price: 50012.3, size: 0.6991, cumulativeSize: 0.6991, sizePercent: 5, maxSizePercent: 5}]
-//loop through orders, find price group floor, if unique add as key to groupFloors object, sum size within key, repeat until Object.keys(groupFloors).length = depth
-const groupBy = (ordersArray, market, grouping, bids) => {
-  if (!grouping || grouping <= 0 || grouping == market?.tickSize) {
-    return ordersArray
+const groupBy = (
+  ordersArray, 
+  market, 
+  grouping, 
+  bids
+) => {
+  if (!ordersArray || !market || !grouping || grouping == market?.tickSize) {
+    return ordersArray || []
   }
   const groupFloors = {}
   for (let i = 0; i < ordersArray.length; i++) {
     if (typeof ordersArray[i] == 'undefined') {
       break
     }
-    const floor = Math.floor(ordersArray[i][0] / grouping) * grouping
+    const floor = bids ?
+     Big(ordersArray[i][0]).div(Big(grouping)).round(0,Big.roundDown).times(Big(grouping)) : 
+     Big(ordersArray[i][0]).div(Big(grouping)).round(0,Big.roundUp).times(Big(grouping))
     if (typeof groupFloors[floor] == 'undefined') {
       groupFloors[floor] = ordersArray[i][1]
     } else {
@@ -90,17 +96,13 @@ const groupBy = (ordersArray, market, grouping, bids) => {
       )
     }
   }
-  const groupedOrdersArray = Object.entries(groupFloors).sort(function (a, b) {
-    if (!a || !b) {
-      return -1
-    }
-    return bids ? parseInt(b[0]) - parseInt(a[0]) : parseInt(a[0]) - parseInt(b[0])
-  })
-  groupedOrdersArray.forEach((entry) => {
-    return [entry[0], entry[1]]
-  })
-  debugger
-  return groupedOrdersArray
+  const sortedGroups = Object.entries(groupFloors)
+    .map((entry) => {return [parseFloat(entry[0]), entry[1]]})
+    .sort(function (a: number[], b: number[]) {
+      if (!a || !b) {return -1}
+      return bids ? b[0] - a[0] : a[0] - b[0]
+    })
+  return sortedGroups
 }
 
 const getCumulativeOrderbookSide = (
@@ -147,12 +149,13 @@ export default function Orderbook({ depth = 8 }) {
   const [orderbookData, setOrderbookData] = useState(null)
   const [defaultLayout, setDefaultLayout] = useState(true)
   const [displayCumulativeSize, setDisplayCumulativeSize] = useState(false)
-  const [grouping, setGrouping] = useState(1)
+  const [grouping, setGrouping] = useState(.1)
+
   useEffect(() => {
     if(market) {
       setGrouping(market.tickSize)
     }
-  }, [market?.publicKey]) //TODO how to make this only reset grouping when the user manually changes markets?
+  }, []) //TODO how to make this only reset grouping when the user manually changes markets?
   
   useInterval(() => {
     if (
