@@ -72,8 +72,8 @@ const StyledFloatingElement = styled(FloatingElement)`
 
 //ary=[0: {price: 50012.3, size: 0.6991, cumulativeSize: 0.6991, sizePercent: 5, maxSizePercent: 5}, 1: {price: 50012.3, size: 0.6991, cumulativeSize: 0.6991, sizePercent: 5, maxSizePercent: 5}]
 //loop through orders, find price group floor, if unique add as key to groupFloors object, sum size within key, repeat until Object.keys(groupFloors).length = depth
-const groupBy = (ordersArray, grouping) => {
-  if (!grouping || grouping <= 0) {
+const groupBy = (ordersArray, market, grouping, bids) => {
+  if (!grouping || grouping <= 0 || grouping == market?.tickSize) {
     return ordersArray
   }
   const groupFloors = {}
@@ -83,10 +83,10 @@ const groupBy = (ordersArray, grouping) => {
     }
     const floor = Math.floor(ordersArray[i][0] / grouping) * grouping
     if (typeof groupFloors[floor] == 'undefined') {
-      groupFloors[floor] = parseInt(ordersArray[i][1])
+      groupFloors[floor] = ordersArray[i][1]
     } else {
       groupFloors[floor] = (
-        parseInt(ordersArray[i][1]) + groupFloors[floor]
+        ordersArray[i][1] + groupFloors[floor]
       )
     }
   }
@@ -94,10 +94,10 @@ const groupBy = (ordersArray, grouping) => {
     if (!a || !b) {
       return -1
     }
-    return parseInt(a[0]) - parseInt(b[0])
+    return bids ? parseInt(b[0]) - parseInt(a[0]) : parseInt(a[0]) - parseInt(b[0])
   })
   groupedOrdersArray.forEach((entry) => {
-    return [entry[0], entry[1].toString()]
+    return [entry[0], entry[1]]
   })
   debugger
   return groupedOrdersArray
@@ -152,7 +152,7 @@ export default function Orderbook({ depth = 8 }) {
     if(market) {
       setGrouping(market.tickSize)
     }
-  }, [market?.publicKey])
+  }, [market?.publicKey]) //TODO how to make this only reset grouping when the user manually changes markets?
   
   useInterval(() => {
     if (
@@ -161,8 +161,8 @@ export default function Orderbook({ depth = 8 }) {
         JSON.stringify(lastOrderbookData.current) ||
       previousDepth !== depth
     ) {
-      const bids = groupBy(orderbook?.bids, grouping) || []
-      const asks = groupBy(orderbook?.asks, grouping) || []
+      const bids = groupBy(orderbook?.bids, market, grouping, true) || []
+      const asks = groupBy(orderbook?.asks, market, grouping, false) || []
 
       const sum = (total, [, size], index) =>
         index < depth ? total + size : total

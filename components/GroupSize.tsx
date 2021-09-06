@@ -5,10 +5,10 @@ import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid'
 const StyledListbox = styled(Listbox.Button)``
 
 const GroupSize = ({ tickSize, value, onChange, className = '' }) => {
-  const sizes = []
-  for (let i = 0; i < 5; i++) {
-    sizes.push(tickSize * Math.pow(10,i))
-  }
+  const sizes = [tickSize, tickSize*2, tickSize*5, tickSize*10]
+  // for (let i = 0; i < 5; i++) {
+  //   sizes.push(tickSize * Math.pow(10,i))
+  // }
   return (
     <div className={`${className}`}>
       <div className={`text-xs`}>Grouping</div>
