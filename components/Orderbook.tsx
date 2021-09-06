@@ -152,7 +152,7 @@ export default function Orderbook({ depth = 8 }) {
   const [orderbookData, setOrderbookData] = useState(null)
   const [defaultLayout, setDefaultLayout] = useState(true)
   const [displayCumulativeSize, setDisplayCumulativeSize] = useState(false)
-  const [grouping, setGrouping] = useState(.1)
+  const [grouping, setGrouping] = useState(.01)
   const [tickSize, setTickSize] = useState(0)
 
   useEffect(() => {
