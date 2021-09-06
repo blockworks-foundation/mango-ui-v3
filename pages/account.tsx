@@ -7,7 +7,7 @@ import {
   PencilIcon,
 } from '@heroicons/react/outline'
 import useMangoStore from '../stores/useMangoStore'
-import { abbreviateAddress, copyToClipboard } from '../utils'
+import { copyToClipboard } from '../utils'
 import PageBodyContainer from '../components/PageBodyContainer'
 import TopBar from '../components/TopBar'
 import AccountAssets from '../components/account-page/AccountAssets'
@@ -69,15 +69,17 @@ export default function Account() {
     <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
       <TopBar />
       <PageBodyContainer>
-        <div className="flex flex-col sm:flex-row items-center justify-between pt-8 pb-3 sm:pb-6 md:pt-10">
+        <div className="flex flex-col sm:flex-row items-center justify-between pt-8 pb-3 sm:pb-3 md:pt-10">
           {mangoAccount ? (
             <>
-              <div className="flex flex-col sm:flex-row sm:items-end pb-4 md:pb-0">
+              <div className="flex flex-col md:flex-row md:items-end pb-2 md:pb-0">
                 <h1 className={`font-semibold mr-3 text-th-fgd-1 text-2xl`}>
                   {mangoAccount?.name || 'Account'}
                 </h1>
                 <div className="flex items-center pb-0.5 text-th-fgd-3 ">
-                  {abbreviateAddress(mangoAccount.publicKey)}
+                  <span className="text-xxs">
+                    {mangoAccount.publicKey.toString()}
+                  </span>
                   <DuplicateIcon
                     className="cursor-pointer default-transition h-4 w-4 ml-1.5 hover:text-th-fgd-1"
                     onClick={() => handleCopyPublicKey(mangoAccount.publicKey)}

@@ -1,5 +1,6 @@
 import { Balances } from '../@types/types'
 import {
+  getTokenBySymbol,
   nativeI80F48ToUi,
   nativeToUi,
   QUOTE_INDEX,
@@ -69,6 +70,14 @@ export function useBalances(): Balances[] {
       return amount
     }
 
+    const value = (nativeBaseLocked, tokenIndex) => {
+      const amount = mangoGroup
+        .getPrice(tokenIndex, mangoCache)
+        .mul(net(nativeBaseLocked, tokenIndex))
+
+      return amount
+    }
+
     const marketPair = [
       {
         market: null,
@@ -93,6 +102,7 @@ export function useBalances(): Balances[] {
           mangoGroup.tokens[tokenIndex].decimals
         ),
         net: net(nativeBaseLocked, tokenIndex),
+        value: value(nativeBaseLocked, tokenIndex),
       },
       {
         market: null,
@@ -117,6 +127,7 @@ export function useBalances(): Balances[] {
           mangoGroup.tokens[quoteCurrencyIndex].decimals
         ),
         net: net(nativeQuoteLocked, quoteCurrencyIndex),
+        value: value(nativeQuoteLocked, quoteCurrencyIndex),
       },
     ]
     balances.push(marketPair)
@@ -133,6 +144,11 @@ export function useBalances(): Balances[] {
     .sub(quoteMeta.borrows)
     .add(I80F48.fromNumber(quoteInOrders))
 
+  const token = getTokenBySymbol(mangoGroupConfig, quoteMeta.symbol)
+  const tokenIndex = mangoGroup.getTokenIndex(token.mintKey)
+
+  const value = net.mul(mangoGroup.getPrice(tokenIndex, mangoCache))
+
   return [
     {
       market: null,
@@ -143,6 +159,7 @@ export function useBalances(): Balances[] {
       orders: quoteInOrders,
       unsettled,
       net,
+      value,
     },
   ].concat(baseBalances)
 }

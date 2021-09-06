@@ -8,6 +8,7 @@ import BalancesTable from './BalancesTable'
 import PositionsTable from './PerpPositionsTable'
 import TradeHistoryTable from './TradeHistoryTable'
 // import FeeDiscountsTable from './FeeDiscountsTable'
+import Select from './Select'
 
 const TABS = [
   'Balances',
@@ -21,6 +22,7 @@ const UserInfoTabs = ({ activeTab, setActiveTab }) => {
   const openOrders = useOpenOrders()
   const perpPositions = usePerpPositions()
   const handleTabChange = (tabName) => {
+    console.log(tabName)
     setActiveTab(tabName)
   }
 
@@ -30,18 +32,13 @@ const UserInfoTabs = ({ activeTab, setActiveTab }) => {
         <label htmlFor="tabs" className={`sr-only`}>
           Select a tab
         </label>
-        <select
-          id="tabs"
-          name="tabs"
-          className={`block w-full pl-3 pr-10 py-2 bg-th-bkg-2 border border-th-fgd-4 focus:outline-none sm:text-sm rounded-md`}
-          onChange={(e) => handleTabChange(e.target.value)}
-        >
+        <Select onChange={(t) => handleTabChange(t)} value={activeTab}>
           {TABS.map((tabName) => (
-            <option key={tabName} value={tabName}>
+            <Select.Option key={tabName} value={tabName}>
               {tabName}
-            </option>
+            </Select.Option>
           ))}
-        </select>
+        </Select>
       </div>
       <div className={`hidden sm:block`}>
         <div className={`border-b border-th-fgd-4`}>

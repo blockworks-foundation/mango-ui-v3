@@ -68,7 +68,7 @@ export const defaultLayouts = {
 }
 
 export const GRID_LAYOUT_KEY = 'mangoSavedLayouts-3.0.8'
-const breakpoints = { xl: 1600, lg: 1200, md: 1110, sm: 768, xs: 0 }
+export const breakpoints = { xl: 1600, lg: 1200, md: 1110, sm: 768, xs: 0 }
 
 const TradePageGrid = () => {
   const { uiLocked } = useMangoStore((s) => s.settings)

@@ -6,6 +6,7 @@ import '../styles/index.css'
 import useWallet from '../hooks/useWallet'
 import useHydrateStore from '../hooks/useHydrateStore'
 import Notifications from '../components/Notification'
+import { ViewportProvider } from '../hooks/useViewport'
 
 function App({ Component, pageProps }) {
   useHydrateStore()
@@ -47,10 +48,12 @@ function App({ Component, pageProps }) {
         <link rel="manifest" href="/manifest.json"></link>
       </Head>
       <ThemeProvider defaultTheme="Mango">
-        <div className="bg-th-bkg-1">
-          <Component {...pageProps} />
-        </div>
-        <Notifications />
+        <ViewportProvider>
+          <div className="bg-th-bkg-1">
+            <Component {...pageProps} />
+          </div>
+          <Notifications />
+        </ViewportProvider>
       </ThemeProvider>
     </>
   )

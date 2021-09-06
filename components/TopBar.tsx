@@ -7,7 +7,7 @@ import useMangoStore from '../stores/useMangoStore'
 import ConnectWalletButton from './ConnectWalletButton'
 import NavDropMenu from './NavDropMenu'
 import AccountsModal from './AccountsModal'
-import MobileMenu from './MobileMenu'
+import MobileMenu from './mobile/MobileMenu'
 
 const TopBar = () => {
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
