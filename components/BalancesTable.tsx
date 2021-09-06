@@ -15,12 +15,13 @@ import { floorToDecimal, formatUsdValue } from '../utils'
 import { Table, Td, Th, TrBody, TrHead } from './TableElements'
 import { useSortableData } from '../hooks/useSortableData'
 
-const BalancesTable = () => {
+const BalancesTable = ({ showZeroBalances = false }) => {
   const balances = useBalances()
   const { items, requestSort, sortConfig } = useSortableData(
     balances
       .filter(
         (bal) =>
+          showZeroBalances ||
           +bal.deposits > 0 ||
           +bal.borrows > 0 ||
           bal.orders > 0 ||
@@ -33,7 +34,7 @@ const BalancesTable = () => {
   const mangoGroupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const { width } = useViewport()
   const [submitting, setSubmitting] = useState(false)
-  const isMobile = width < breakpoints.sm
+  const isMobile = width ? width < breakpoints.md : false
 
   async function handleSettleAll() {
     const mangoAccount = useMangoStore.getState().selectedMangoAccount.current

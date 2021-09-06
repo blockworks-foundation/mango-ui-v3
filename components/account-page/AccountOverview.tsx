@@ -17,17 +17,24 @@ import { notify } from '../../utils/notifications'
 import { LinkButton } from '../Button'
 import BalancesTable from '../BalancesTable'
 import PositionsTable from '../PerpPositionsTable'
+import Switch from '../Switch'
+import useLocalStorageState from '../../hooks/useLocalStorageState'
 
 const StyledAccountValue = styled.div`
   font-size: 1.8rem;
   line-height: 1.2;
 `
+const SHOW_ZERO_BALANCE_KEY = 'showZeroAccountBalances-0.2'
 
 export default function AccountOverview() {
   const actions = useMangoStore((s) => s.actions)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
+  const [showZeroBalances, setShowZeroBalances] = useLocalStorageState(
+    SHOW_ZERO_BALANCE_KEY,
+    true
+  )
 
   const maintHealthRatio = useMemo(() => {
     return mangoAccount
@@ -188,8 +195,17 @@ export default function AccountOverview() {
           </div>
         </div>
       </div>
-      <div className="text-th-fgd-1 text-lg">Balances</div>
-      <BalancesTable />
+      <div className="flex justify-between pb-4">
+        <div className="text-th-fgd-1 text-lg">Balances</div>
+        <Switch
+          checked={showZeroBalances}
+          className="text-xs"
+          onChange={() => setShowZeroBalances(!showZeroBalances)}
+        >
+          Show zero and dust balances
+        </Switch>
+      </div>
+      <BalancesTable showZeroBalances={showZeroBalances} />
     </>
   ) : null
 }
