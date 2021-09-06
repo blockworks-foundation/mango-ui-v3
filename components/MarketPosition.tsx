@@ -377,7 +377,7 @@ export default function MarketPosition() {
                           <div
                             className={`cursor-help font-normal pb-0.5 text-th-fgd-3 default-transition text-xs hover:border-th-bkg-2 hover:text-th-fgd-3`}
                           >
-                            Interest Rates
+                            Deposit/Borrow Rates
                           </div>
                           <div className={`text-th-fgd-1`}>
                             <span className={`text-th-green`}>

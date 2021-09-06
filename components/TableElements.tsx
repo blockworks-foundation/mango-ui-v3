@@ -12,7 +12,7 @@ export const Th = ({ children }) => (
   </th>
 )
 
-export const TrBody = ({ children, index, key }) => (
+export const TrBody = ({ children, index }) => (
   <tr
     className={`border-b border-th-bkg-3
     ${
@@ -21,7 +21,6 @@ export const TrBody = ({ children, index, key }) => (
         : `bg-[rgba(255,255,255,0.07)]`
     }
     `}
-    key={key}
   >
     {children}
   </tr>

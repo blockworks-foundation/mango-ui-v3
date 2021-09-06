@@ -22,7 +22,6 @@ const UserInfoTabs = ({ activeTab, setActiveTab }) => {
   const openOrders = useOpenOrders()
   const perpPositions = usePerpPositions()
   const handleTabChange = (tabName) => {
-    console.log(tabName)
     setActiveTab(tabName)
   }
 

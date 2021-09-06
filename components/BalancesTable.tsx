@@ -129,8 +129,8 @@ const BalancesTable = ({ showZeroBalances = false }) => {
           })}
         </div>
       ) : null}
-      <div className={`-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8`}>
-        <div className={`align-middle inline-block min-w-full sm:px-6 lg:px-8`}>
+      <div className={`-my-2 overflow-x-auto`}>
+        <div className={`align-middle inline-block min-w-full`}>
           {items.length > 0 ? (
             !isMobile ? (
               <Table>
@@ -255,6 +255,40 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                         />
                       </LinkButton>
                     </Th>
+                    <Th>
+                      <LinkButton
+                        className="flex items-center no-underline font-normal text-left"
+                        onClick={() => requestSort('depositRate')}
+                      >
+                        Deposit Rate
+                        <ArrowSmDownIcon
+                          className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                            sortConfig?.key === 'depositRate'
+                              ? sortConfig.direction === 'ascending'
+                                ? 'transform rotate-180'
+                                : 'transform rotate-360'
+                              : null
+                          }`}
+                        />
+                      </LinkButton>
+                    </Th>
+                    <Th>
+                      <LinkButton
+                        className="flex items-center no-underline font-normal text-left"
+                        onClick={() => requestSort('borrowRate')}
+                      >
+                        Borrow Rate
+                        <ArrowSmDownIcon
+                          className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                            sortConfig?.key === 'borrowRate'
+                              ? sortConfig.direction === 'ascending'
+                                ? 'transform rotate-180'
+                                : 'transform rotate-360'
+                              : null
+                          }`}
+                        />
+                      </LinkButton>
+                    </Th>
                   </TrHead>
                 </thead>
                 <tbody>
@@ -279,6 +313,16 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                       <Td>{balance.unsettled}</Td>
                       <Td>{balance.net.toFixed()}</Td>
                       <Td>{formatUsdValue(balance.value)}</Td>
+                      <Td>
+                        <span className="text-th-green">
+                          {balance.depositRate.toFixed(2)}%
+                        </span>
+                      </Td>
+                      <Td>
+                        <span className="text-th-red">
+                          {balance.borrowRate.toFixed(2)}%
+                        </span>
+                      </Td>
                       <Td>
                         <div className="flex justify-end">
                           <Button
@@ -320,8 +364,8 @@ const BalancesTable = ({ showZeroBalances = false }) => {
             ) : (
               <>
                 <div className="grid grid-cols-12 grid-rows-1 gap-4 pb-2 pt-4 px-3">
-                  <div className="col-span-7 text-fgd-3 text-xs">Asset</div>
-                  <div className="col-span-4 text-fgd-3 text-right text-xs">
+                  <div className="col-span-7 text-xs">Asset</div>
+                  <div className="col-span-4 text-right text-xs">
                     Net Balance
                   </div>
                 </div>
@@ -370,37 +414,48 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                           } px-4`}
                         >
                           <div className="border-t border-[rgba(255,255,255,0.1)] grid grid-cols-2 grid-rows-1 gap-4 py-4">
-                            <div className="col-span-1 text-fgd-3 text-left">
+                            <div className="col-span-1 text-left">
                               <div className="pb-0.5 text-th-fgd-3 text-xs">
                                 Deposits
                               </div>
                               {balance.deposits.toFixed()}
                             </div>
-                            <div className="col-span-1 text-fgd-3 text-left">
+                            <div className="col-span-1 text-left">
                               <div className="pb-0.5 text-th-fgd-3 text-xs">
                                 Borrows
                               </div>
                               {balance.borrows.toFixed()}
                             </div>
-                            <div className="col-span-1 text-fgd-3 text-left">
+                            <div className="col-span-1 text-left">
                               <div className="pb-0.5 text-th-fgd-3 text-xs">
                                 In Orders
                               </div>
                               {balance.orders.toFixed()}
                             </div>
-                            <div className="col-span-1 text-fgd-3 text-left">
+                            <div className="col-span-1 text-left">
                               <div className="pb-0.5 text-th-fgd-3 text-xs">
                                 Unsettled
                               </div>
                               {balance.unsettled.toFixed()}
                             </div>
-                            <div className="col-span-1 text-fgd-3 text-left">
+                            <div className="col-span-1 text-left">
                               <div className="pb-0.5 text-th-fgd-3 text-xs">
                                 Value
                               </div>
                               {formatUsdValue(balance.value)}
                             </div>
-                            <div className="col-span-1" />
+                            <div className="col-span-1 text-left text-th-fgd-4">
+                              <div className="pb-0.5 text-th-fgd-3 text-xs">
+                                Deposit/Borrow Rates
+                              </div>
+                              <span className="mr-1 text-th-green">
+                                {balance.depositRate.toFixed(2)}%
+                              </span>
+                              /
+                              <span className="ml-1 text-th-red">
+                                {balance.borrowRate.toFixed(2)}%
+                              </span>
+                            </div>
                             <Button
                               className="col-span-1 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
                               onClick={() =>
