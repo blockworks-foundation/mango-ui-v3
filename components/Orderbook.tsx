@@ -159,7 +159,6 @@ export default function Orderbook({ depth = 8 }) {
     if(market && market.tickSize !== tickSize) {
       setTickSize(market.tickSize)
       setGrouping(market.tickSize)
-      debugger
     }
   }, [market])
   
