@@ -72,10 +72,10 @@ const StyledFloatingElement = styled(FloatingElement)`
 `
 
 const groupBy = (
-  ordersArray, 
+  ordersArray,
   market, 
-  grouping, 
-  bids
+  grouping: number, 
+  isBids: boolean
 ) => {
   if (!ordersArray || !market || !grouping || grouping == market?.tickSize) {
     return ordersArray || []
@@ -85,9 +85,12 @@ const groupBy = (
     if (typeof ordersArray[i] == 'undefined') {
       break
     }
-    const floor = bids ?
-     Big(ordersArray[i][0]).div(Big(grouping)).round(0,Big.roundDown).times(Big(grouping)) : 
-     Big(ordersArray[i][0]).div(Big(grouping)).round(0,Big.roundUp).times(Big(grouping))
+    const bigGrouping = Big(grouping)
+    const bigOrder = Big(ordersArray[i][0])
+    
+    const floor = isBids ?
+    bigOrder.div(bigGrouping).round(0,Big.roundDown).times(bigGrouping) : 
+    bigOrder.div(bigGrouping).round(0,Big.roundUp).times(bigGrouping)
     if (typeof groupFloors[floor] == 'undefined') {
       groupFloors[floor] = ordersArray[i][1]
     } else {
@@ -100,7 +103,7 @@ const groupBy = (
     .map((entry) => {return [parseFloat(entry[0]), entry[1]]})
     .sort(function (a: number[], b: number[]) {
       if (!a || !b) {return -1}
-      return bids ? b[0] - a[0] : a[0] - b[0]
+      return isBids ? b[0] - a[0] : a[0] - b[0]
     })
   return sortedGroups
 }
@@ -155,7 +158,7 @@ export default function Orderbook({ depth = 8 }) {
     if(market) {
       setGrouping(market.tickSize)
     }
-  }, []) //TODO how to make this only reset grouping when the user manually changes markets?
+  }, [marketConfig])
   
   useInterval(() => {
     if (
