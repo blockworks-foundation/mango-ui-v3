@@ -158,7 +158,7 @@ export default function Orderbook({ depth = 8 }) {
     if(market) {
       setGrouping(market.tickSize)
     }
-  }, [marketConfig])
+  }, [market])
   
   useInterval(() => {
     if (
@@ -184,7 +184,6 @@ export default function Orderbook({ depth = 8 }) {
             return b[1]
           })
         )
-      debugger
       const bidsToDisplay = defaultLayout
         ? getCumulativeOrderbookSide(
             bids,
@@ -230,7 +229,6 @@ export default function Orderbook({ depth = 8 }) {
           spread = ask - bid
           spreadPercentage = (spread / ask) * 100
         }
-debugger
         setOrderbookData({
           bids: bidsToDisplay,
           asks: asksToDisplay,

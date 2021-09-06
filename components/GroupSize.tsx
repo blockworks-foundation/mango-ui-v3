@@ -13,7 +13,7 @@ const GroupSize = ({ tickSize, value, onChange, className = '' }) => {
         {({ open }) => (
           <>
             <StyledListbox
-              className={`font-normal h-full bg-th-bkg-1 border border-th-fgd-4 hover:border-th-primary rounded focus:outline-none focus:border-th-primary`}
+              className={`w-2/3 font-normal h-full bg-th-bkg-1 border border-th-fgd-4 hover:border-th-primary rounded focus:outline-none focus:border-th-primary`}
             >
               <div
                 className={`flex items-center justify-between space-x-4 pl-2 pr-1`}
