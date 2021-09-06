@@ -153,10 +153,13 @@ export default function Orderbook({ depth = 8 }) {
   const [defaultLayout, setDefaultLayout] = useState(true)
   const [displayCumulativeSize, setDisplayCumulativeSize] = useState(false)
   const [grouping, setGrouping] = useState(.1)
+  const [tickSize, setTickSize] = useState(0)
 
   useEffect(() => {
-    if(market && market.tickSize !== grouping) {
+    if(market && market.tickSize !== tickSize) {
+      setTickSize(market.tickSize)
       setGrouping(market.tickSize)
+      debugger
     }
   }, [market])
   
