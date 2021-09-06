@@ -3,6 +3,7 @@ import { useState } from 'react'
 import useMangoGroupConfig from '../../hooks/useMangoGroupConfig'
 import useMangoStore from '../../stores/useMangoStore'
 import Chart from '../Chart'
+import BN from 'bn.js'
 
 const icons = {
   'BTC-PERP': '/assets/icons/btc.svg',
@@ -35,7 +36,8 @@ function calculateFundingRate(
 
   // TODO - use avgPrice and discard oraclePrice once stats are better
   // const avgPrice = (latestStat.baseOraclePrice + oldestStat.baseOraclePrice) / 2
-  const basePriceInBaseLots = oraclePrice * perpMarket.baseLotsToNumber(1)
+  const basePriceInBaseLots =
+    oraclePrice * perpMarket.baseLotsToNumber(new BN(1))
   return (fundingInQuoteDecimals / basePriceInBaseLots) * 100
 }
 
@@ -54,7 +56,7 @@ export default function StatsPerps({ perpStats }) {
   const selectedStatsData = perpStats.filter(
     (stat) => stat.name === selectedAsset
   )
-  console.log(selectedStatsData)
+
   const perpsData = selectedStatsData.map((x) => {
     return {
       fundingRate: calculateFundingRate(
@@ -98,11 +100,11 @@ export default function StatsPerps({ perpStats }) {
           style={{ height: '300px' }}
         >
           <Chart
-            title="Funding Rate"
+            title="Avg. Hourly Funding Rate"
             xAxis="time"
             yAxis="fundingRate"
             data={perpsData}
-            labelFormat={(x) => `${(x * 100).toFixed(4)}%`}
+            labelFormat={(x) => `${x.toFixed(4)}%`}
             type="area"
           />
         </div>
