@@ -1,9 +1,13 @@
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
 import { I80F48 } from '@blockworks-foundation/mango-client'
 import Chart from '../Chart'
+import { tokenPrecision } from '../../utils'
 
-function formatNumberString(x: string): string {
-  return x.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',')
+function formatNumberString(x: number, decimals): string {
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  }).format(x)
 }
 
 export default function StatsTotals({ latestStats, stats }) {
@@ -160,20 +164,27 @@ export default function StatsTotals({ latestStats, stats }) {
                   </div>
                 </Td>
                 <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
-                  {formatNumberString(stat.totalDeposits)}
-                </Td>
-                <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
-                  {formatNumberString(stat.totalBorrows)}
-                </Td>
-                <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
-                  {formatNumberString(stat.depositInterest.toFixed(2))}%
-                </Td>
-                <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
-                  {formatNumberString(stat.borrowInterest.toFixed(2))}%
+                  {formatNumberString(
+                    stat.totalDeposits,
+                    tokenPrecision[stat.name]
+                  )}
                 </Td>
                 <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
                   {formatNumberString(
-                    stat.utilization.mul(I80F48.fromNumber(100)).toFixed(2)
+                    stat.totalBorrows,
+                    tokenPrecision[stat.name]
+                  )}
+                </Td>
+                <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
+                  {formatNumberString(stat.depositInterest.toNumber(), 2)}%
+                </Td>
+                <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
+                  {formatNumberString(stat.borrowInterest.toNumber(), 2)}%
+                </Td>
+                <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
+                  {formatNumberString(
+                    stat.utilization.mul(I80F48.fromNumber(100)).toNumber(),
+                    2
                   )}
                   %
                 </Td>
