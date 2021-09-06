@@ -1,3 +1,4 @@
+import { useCallback } from 'react'
 import { useBalances } from '../hooks/useBalances'
 import useMangoStore, { mangoClient } from '../stores/useMangoStore'
 import Button, { LinkButton } from '../components/Button'
@@ -14,8 +15,13 @@ import { Disclosure } from '@headlessui/react'
 import { floorToDecimal, formatUsdValue } from '../utils'
 import { Table, Td, Th, TrBody, TrHead } from './TableElements'
 import { useSortableData } from '../hooks/useSortableData'
+import DepositModal from './DepositModal'
+import WithdrawModal from './WithdrawModal'
 
 const BalancesTable = ({ showZeroBalances = false }) => {
+  const [showDepositModal, setShowDepositModal] = useState(false)
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false)
+  const [actionSymbol, setActionSymbol] = useState('')
   const balances = useBalances()
   const { items, requestSort, sortConfig } = useSortableData(
     balances
@@ -35,6 +41,16 @@ const BalancesTable = ({ showZeroBalances = false }) => {
   const { width } = useViewport()
   const [submitting, setSubmitting] = useState(false)
   const isMobile = width ? width < breakpoints.md : false
+
+  const handleOpenDepositModal = useCallback((symbol) => {
+    setActionSymbol(symbol)
+    setShowDepositModal(true)
+  }, [])
+
+  const handleOpenWithdrawModal = useCallback((symbol) => {
+    setActionSymbol(symbol)
+    setShowWithdrawModal(true)
+  }, [])
 
   async function handleSettleAll() {
     const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
@@ -263,9 +279,43 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                       <Td>{balance.unsettled}</Td>
                       <Td>{balance.net.toFixed()}</Td>
                       <Td>{formatUsdValue(balance.value)}</Td>
+                      <Td>
+                        <div className="flex justify-end">
+                          <Button
+                            className="text-xs pt-0 pb-0 h-8 pl-3 pr-3"
+                            onClick={() =>
+                              handleOpenDepositModal(balance.symbol)
+                            }
+                          >
+                            Deposit
+                          </Button>
+                          <Button
+                            className="text-xs pt-0 pb-0 h-8 ml-4 pl-3 pr-3"
+                            onClick={() =>
+                              handleOpenWithdrawModal(balance.symbol)
+                            }
+                          >
+                            Withdraw
+                          </Button>
+                        </div>
+                      </Td>
                     </TrBody>
                   ))}
                 </tbody>
+                {showDepositModal && (
+                  <DepositModal
+                    isOpen={showDepositModal}
+                    onClose={() => setShowDepositModal(false)}
+                    tokenSymbol={actionSymbol}
+                  />
+                )}
+                {showWithdrawModal && (
+                  <WithdrawModal
+                    isOpen={showWithdrawModal}
+                    onClose={() => setShowWithdrawModal(false)}
+                    tokenSymbol={actionSymbol}
+                  />
+                )}
               </Table>
             ) : (
               <>
@@ -281,8 +331,10 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                       <>
                         <Disclosure.Button
                           className={`${
-                            index % 2 === 0 ? `bg-th-bkg-4` : `bg-th-bkg-3`
-                          } default-transition font-normal p-3 rounded-none text-th-fgd-1 w-full hover:filter hover:brightness-105 focus:outline-none`}
+                            index % 2 === 0
+                              ? `bg-[rgba(255,255,255,0.03)]`
+                              : `bg-[rgba(255,255,255,0.07)]`
+                          } default-transition font-normal p-4 rounded-none text-th-fgd-1 w-full hover:bg-th-bkg-4 focus:outline-none`}
                         >
                           <div className="grid grid-cols-12 grid-rows-1 gap-4">
                             <div className="col-span-7 flex items-center text-fgd-1">
@@ -312,10 +364,12 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                         </Disclosure.Button>
                         <Disclosure.Panel
                           className={`${
-                            index % 2 === 0 ? `bg-th-bkg-4` : `bg-th-bkg-3`
-                          } px-3`}
+                            index % 2 === 0
+                              ? `bg-[rgba(255,255,255,0.03)]`
+                              : `bg-[rgba(255,255,255,0.07)]`
+                          } px-4`}
                         >
-                          <div className="border-t border-[rgba(255,255,255,0.2)] grid grid-cols-2 grid-rows-1 gap-4 py-3">
+                          <div className="border-t border-[rgba(255,255,255,0.1)] grid grid-cols-2 grid-rows-1 gap-4 py-4">
                             <div className="col-span-1 text-fgd-3 text-left">
                               <div className="pb-0.5 text-th-fgd-3 text-xs">
                                 Deposits
@@ -346,8 +400,39 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                               </div>
                               {formatUsdValue(balance.value)}
                             </div>
+                            <div className="col-span-1" />
+                            <Button
+                              className="col-span-1 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
+                              onClick={() =>
+                                handleOpenDepositModal(balance.symbol)
+                              }
+                            >
+                              Deposit
+                            </Button>
+                            <Button
+                              className="col-span-1 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
+                              onClick={() =>
+                                handleOpenWithdrawModal(balance.symbol)
+                              }
+                            >
+                              Withdraw
+                            </Button>
                           </div>
                         </Disclosure.Panel>
+                        {showDepositModal && (
+                          <DepositModal
+                            isOpen={showDepositModal}
+                            onClose={() => setShowDepositModal(false)}
+                            tokenSymbol={actionSymbol}
+                          />
+                        )}
+                        {showWithdrawModal && (
+                          <WithdrawModal
+                            isOpen={showWithdrawModal}
+                            onClose={() => setShowWithdrawModal(false)}
+                            tokenSymbol={actionSymbol}
+                          />
+                        )}
                       </>
                     )}
                   </Disclosure>

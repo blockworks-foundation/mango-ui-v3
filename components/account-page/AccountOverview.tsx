@@ -195,14 +195,14 @@ export default function AccountOverview() {
           </div>
         </div>
       </div>
-      <div className="flex justify-between pb-4">
+      <div className="flex justify-between">
         <div className="text-th-fgd-1 text-lg">Balances</div>
         <Switch
           checked={showZeroBalances}
           className="text-xs"
           onChange={() => setShowZeroBalances(!showZeroBalances)}
         >
-          Show zero and dust balances
+          Show zero balances
         </Switch>
       </div>
       <BalancesTable showZeroBalances={showZeroBalances} />
