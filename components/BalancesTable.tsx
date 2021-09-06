@@ -331,8 +331,10 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                       <>
                         <Disclosure.Button
                           className={`${
-                            index % 2 === 0 ? `bg-th-bkg-1` : `bg-th-bkg-3`
-                          } default-transition font-normal p-4 rounded-none text-th-fgd-1 w-full hover:filter hover:brightness-125 focus:outline-none`}
+                            index % 2 === 0
+                              ? `bg-[rgba(255,255,255,0.03)]`
+                              : `bg-[rgba(255,255,255,0.07)]`
+                          } default-transition font-normal p-4 rounded-none text-th-fgd-1 w-full hover:bg-th-bkg-4 focus:outline-none`}
                         >
                           <div className="grid grid-cols-12 grid-rows-1 gap-4">
                             <div className="col-span-7 flex items-center text-fgd-1">
@@ -362,10 +364,12 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                         </Disclosure.Button>
                         <Disclosure.Panel
                           className={`${
-                            index % 2 === 0 ? `bg-th-bkg-1` : `bg-th-bkg-3`
+                            index % 2 === 0
+                              ? `bg-[rgba(255,255,255,0.03)]`
+                              : `bg-[rgba(255,255,255,0.07)]`
                           } px-4`}
                         >
-                          <div className="border-t border-[rgba(255,255,255,0.2)] grid grid-cols-2 grid-rows-1 gap-4 py-4">
+                          <div className="border-t border-[rgba(255,255,255,0.1)] grid grid-cols-2 grid-rows-1 gap-4 py-4">
                             <div className="col-span-1 text-fgd-3 text-left">
                               <div className="pb-0.5 text-th-fgd-3 text-xs">
                                 Deposits
