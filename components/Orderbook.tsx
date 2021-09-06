@@ -184,29 +184,12 @@ export default function Orderbook({ depth = 8 }) {
             return b[1]
           })
         )
+        
       const bidsToDisplay = defaultLayout
-        ? getCumulativeOrderbookSide(
-            bids,
-            totalSize,
-            maxSize,
-            depth,
-            false
-          )
-        : getCumulativeOrderbookSide(
-            bids,
-            totalSize,
-            maxSize,
-            depth / 2,
-            false
-          )
+        ? getCumulativeOrderbookSide(bids, totalSize, maxSize, depth, false)
+        : getCumulativeOrderbookSide(bids, totalSize, maxSize, depth / 2, false)
       const asksToDisplay = defaultLayout
-        ? getCumulativeOrderbookSide(
-            asks,
-            totalSize,
-            maxSize,
-            depth,
-            false
-          )
+        ? getCumulativeOrderbookSide(asks, totalSize, maxSize, depth, false)
         : getCumulativeOrderbookSide(
             asks,
             totalSize,
@@ -229,6 +212,7 @@ export default function Orderbook({ depth = 8 }) {
           spread = ask - bid
           spreadPercentage = (spread / ask) * 100
         }
+
         setOrderbookData({
           bids: bidsToDisplay,
           asks: asksToDisplay,
