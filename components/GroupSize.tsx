@@ -16,7 +16,7 @@ const GroupSize = ({ tickSize, value, onChange, className = '' }) => {
               className={`w-2/3 font-normal h-full bg-th-bkg-1 border border-th-fgd-4 hover:border-th-primary rounded focus:outline-none focus:border-th-primary`}
             >
               <div
-                className={`flex items-center justify-start space-x-3 pr-2 pl-1`}
+                className={`flex items-center justify-between space-x-3 pr-2 pl-1`}
               >
                 {open ? (
                   <ChevronUpIcon className={`h-5 w-5 text-th-primary`} />
