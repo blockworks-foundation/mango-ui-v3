@@ -155,7 +155,7 @@ export default function Orderbook({ depth = 8 }) {
   const [grouping, setGrouping] = useState(.1)
 
   useEffect(() => {
-    if(market) {
+    if(market && market.tickSize !== grouping) {
       setGrouping(market.tickSize)
     }
   }, [market])
@@ -184,7 +184,7 @@ export default function Orderbook({ depth = 8 }) {
             return b[1]
           })
         )
-        
+
       const bidsToDisplay = defaultLayout
         ? getCumulativeOrderbookSide(bids, totalSize, maxSize, depth, false)
         : getCumulativeOrderbookSide(bids, totalSize, maxSize, depth / 2, false)
