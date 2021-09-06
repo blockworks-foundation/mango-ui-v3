@@ -1,31 +1,40 @@
+import React, { useMemo } from 'react'
 import { Listbox } from '@headlessui/react'
-// import styled from '@emotion/styled'
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid'
-
-const StyledListbox = Listbox.Button
+import { isEqual } from '../utils'
 
 const GroupSize = ({ tickSize, value, onChange, className = '' }) => {
-  const sizes = [tickSize, tickSize*5, tickSize*10, tickSize*50, tickSize*100]
+  const sizes = useMemo(
+    () => [
+      tickSize,
+      tickSize * 5,
+      tickSize * 10,
+      tickSize * 50,
+      tickSize * 100,
+    ],
+    [tickSize]
+  )
+
   return (
     <div className={`${className}`}>
-      <div className={`text-xs pr-2`}>Grouping</div>
       <Listbox value={value} onChange={onChange}>
         {({ open }) => (
           <>
-            <StyledListbox
-              className={`w-2/3 font-normal h-full bg-th-bkg-1 border border-th-fgd-4 hover:border-th-primary rounded focus:outline-none focus:border-th-primary`}
+            <Listbox.Button
+              className={`font-normal border border-th-bkg-4 hover:border-th-primary rounded focus:outline-none focus:border-th-primary`}
             >
               <div
-                className={`flex items-center justify-between space-x-3 pr-2 pl-1`}
+                className={`flex items-center justify-between space-x-1 pr-1 pl-2`}
               >
+                <span>{value}</span>
+
                 {open ? (
                   <ChevronUpIcon className={`h-5 w-5 text-th-primary`} />
                 ) : (
                   <ChevronDownIcon className={`h-5 w-5 text-th-primary`} />
                 )}
-                <span>{value}</span>
               </div>
-            </StyledListbox>
+            </Listbox.Button>
             {open ? (
               <Listbox.Options
                 static
@@ -53,4 +62,6 @@ const GroupSize = ({ tickSize, value, onChange, className = '' }) => {
   )
 }
 
-export default GroupSize
+export default React.memo(GroupSize, (prevProps, nextProps) =>
+  isEqual(prevProps, nextProps, ['tickSize', 'value'])
+)

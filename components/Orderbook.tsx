@@ -71,12 +71,7 @@ const StyledFloatingElement = styled(FloatingElement)`
   overflow: hidden;
 `
 
-const groupBy = (
-  ordersArray,
-  market, 
-  grouping: number, 
-  isBids: boolean
-) => {
+const groupBy = (ordersArray, market, grouping: number, isBids: boolean) => {
   if (!ordersArray || !market || !grouping || grouping == market?.tickSize) {
     return ordersArray || []
   }
@@ -87,22 +82,24 @@ const groupBy = (
     }
     const bigGrouping = Big(grouping)
     const bigOrder = Big(ordersArray[i][0])
-    
-    const floor = isBids ?
-    bigOrder.div(bigGrouping).round(0,Big.roundDown).times(bigGrouping) : 
-    bigOrder.div(bigGrouping).round(0,Big.roundUp).times(bigGrouping)
+
+    const floor = isBids
+      ? bigOrder.div(bigGrouping).round(0, Big.roundDown).times(bigGrouping)
+      : bigOrder.div(bigGrouping).round(0, Big.roundUp).times(bigGrouping)
     if (typeof groupFloors[floor] == 'undefined') {
       groupFloors[floor] = ordersArray[i][1]
     } else {
-      groupFloors[floor] = (
-        ordersArray[i][1] + groupFloors[floor]
-      )
+      groupFloors[floor] = ordersArray[i][1] + groupFloors[floor]
     }
   }
   const sortedGroups = Object.entries(groupFloors)
-    .map((entry) => {return [parseFloat(entry[0]), entry[1]]})
+    .map((entry) => {
+      return [parseFloat(entry[0]), entry[1]]
+    })
     .sort(function (a: number[], b: number[]) {
-      if (!a || !b) {return -1}
+      if (!a || !b) {
+        return -1
+      }
       return isBids ? b[0] - a[0] : a[0] - b[0]
     })
   return sortedGroups
@@ -152,22 +149,24 @@ export default function Orderbook({ depth = 8 }) {
   const [orderbookData, setOrderbookData] = useState(null)
   const [defaultLayout, setDefaultLayout] = useState(true)
   const [displayCumulativeSize, setDisplayCumulativeSize] = useState(false)
-  const [grouping, setGrouping] = useState(.01)
+  const [grouping, setGrouping] = useState(0.01)
   const [tickSize, setTickSize] = useState(0)
+  const previousGrouping = usePrevious(grouping)
 
   useEffect(() => {
-    if(market && market.tickSize !== tickSize) {
+    if (market && market.tickSize !== tickSize) {
       setTickSize(market.tickSize)
       setGrouping(market.tickSize)
     }
   }, [market])
-  
+
   useInterval(() => {
     if (
       !currentOrderbookData.current ||
       JSON.stringify(currentOrderbookData.current) !==
         JSON.stringify(lastOrderbookData.current) ||
-      previousDepth !== depth
+      previousDepth !== depth ||
+      previousGrouping !== grouping
     ) {
       const bids = groupBy(orderbook?.bids, market, grouping, true) || []
       const asks = groupBy(orderbook?.asks, market, grouping, false) || []
@@ -289,14 +288,14 @@ export default function Orderbook({ depth = 8 }) {
                     </Tooltip>
                   </div>
                 </div>
-                <div className="flex flex-row justify-end">
+                <div className="flex justify-end items-center mb-4">
                   <MarkPriceComponent markPrice={markPrice} />
                   <GroupSize
-                      tickSize={market?.tickSize}
-                      onChange={onGroupSizeChange}
-                      value={grouping}
-                      className="relative flex flex-col w-1/3 items-end mb-1"
-                    />
+                    tickSize={market?.tickSize}
+                    onChange={onGroupSizeChange}
+                    value={grouping}
+                    className="relative flex flex-col w-1/3 items-end"
+                  />
                 </div>
                 <div
                   className={`text-th-fgd-4 flex justify-between mb-2 text-xs`}
@@ -417,11 +416,11 @@ export default function Orderbook({ depth = 8 }) {
                 <div className="flex flex-row justify-end">
                   <MarkPriceComponent markPrice={markPrice} />
                   <GroupSize
-                      tickSize={market?.tickSize}
-                      onChange={onGroupSizeChange}
-                      value={grouping}
-                      className="relative flex flex-col w-1/3 items-end mb-1"
-                    />
+                    tickSize={market?.tickSize}
+                    onChange={onGroupSizeChange}
+                    value={grouping}
+                    className="relative flex flex-col w-1/3 items-end mb-1"
+                  />
                 </div>
                 <div className={`text-th-fgd-4 flex justify-between mb-2`}>
                   <div className={`text-left text-xs`}>
@@ -495,7 +494,16 @@ export default function Orderbook({ depth = 8 }) {
 }
 
 const OrderbookRow = React.memo<any>(
-  ({ side, price, size, sizePercent, invert, hasOpenOrder, market, grouping }) => {
+  ({
+    side,
+    price,
+    size,
+    sizePercent,
+    invert,
+    hasOpenOrder,
+    market,
+    grouping,
+  }) => {
     const element = useRef(null)
     const setMangoStore = useMangoStore((s) => s.set)
 
@@ -554,11 +562,7 @@ const OrderbookRow = React.memo<any>(
                   side === 'buy' ? `text-th-green` : `text-th-red`
                 }`}
               >
-                {usdFormatter(
-                  formattedPrice,
-                  getDecimalCount(grouping),
-                  false
-                )}
+                {usdFormatter(formattedPrice, getDecimalCount(grouping), false)}
               </div>
             </div>
             <div
@@ -594,11 +598,7 @@ const OrderbookRow = React.memo<any>(
                 }`}
                 onClick={handlePriceClick}
               >
-                {usdFormatter(
-                  formattedPrice,
-                  getDecimalCount(grouping),
-                  false
-                )}
+                {usdFormatter(formattedPrice, getDecimalCount(grouping), false)}
               </div>
             </div>
           </>
@@ -616,7 +616,7 @@ const MarkPriceComponent = React.memo<{ markPrice: number }>(
 
     return (
       <div
-        className={`flex justify-center items-center font-bold text-lg pb-4 w-1/3 ${
+        className={`flex justify-center items-center font-bold text-lg w-1/3 ${
           markPrice > previousMarkPrice
             ? `text-th-green`
             : markPrice < previousMarkPrice
