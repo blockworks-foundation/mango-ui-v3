@@ -4,19 +4,19 @@ import useMangoStore, { mangoClient } from '../stores/useMangoStore'
 import Button, { LinkButton } from '../components/Button'
 import { notify } from '../utils/notifications'
 import { ArrowSmDownIcon, ExclamationIcon } from '@heroicons/react/outline'
-import { ChevronDownIcon } from '@heroicons/react/solid'
 import { Market } from '@project-serum/serum'
 import { getTokenBySymbol } from '@blockworks-foundation/mango-client'
 import { useState } from 'react'
 import Loading from './Loading'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
-import { Disclosure } from '@headlessui/react'
 import { floorToDecimal, formatUsdValue } from '../utils'
 import { Table, Td, Th, TrBody, TrHead } from './TableElements'
 import { useSortableData } from '../hooks/useSortableData'
 import DepositModal from './DepositModal'
 import WithdrawModal from './WithdrawModal'
+import { ExpandableRow } from './TableElements'
+import MobileTableHeader from './mobile/MobileTableHeader'
 
 const BalancesTable = ({ showZeroBalances = false }) => {
   const [showDepositModal, setShowDepositModal] = useState(false)
@@ -363,134 +363,97 @@ const BalancesTable = ({ showZeroBalances = false }) => {
               </Table>
             ) : (
               <>
-                <div className="grid grid-cols-12 grid-rows-1 gap-4 pb-2 pt-4 px-3">
-                  <div className="col-span-7 text-xs">Asset</div>
-                  <div className="col-span-4 text-right text-xs">
-                    Net Balance
-                  </div>
-                </div>
+                <MobileTableHeader
+                  headerTemplate={
+                    <>
+                      <div className="col-span-7">Asset</div>
+                      <div className="col-span-4 text-right">Net Balance</div>
+                    </>
+                  }
+                />
                 {items.map((balance, index) => (
-                  <Disclosure key={balance.symbol}>
-                    {({ open }) => (
+                  <ExpandableRow
+                    buttonTemplate={
                       <>
-                        <Disclosure.Button
-                          className={`${
-                            index % 2 === 0
-                              ? `bg-[rgba(255,255,255,0.03)]`
-                              : `bg-[rgba(255,255,255,0.07)]`
-                          } default-transition font-normal p-4 rounded-none text-th-fgd-1 w-full hover:bg-th-bkg-4 focus:outline-none`}
-                        >
-                          <div className="grid grid-cols-12 grid-rows-1 gap-4">
-                            <div className="col-span-7 flex items-center text-fgd-1">
-                              <img
-                                alt=""
-                                width="20"
-                                height="20"
-                                src={`/assets/icons/${balance.symbol.toLowerCase()}.svg`}
-                                className={`mr-2.5`}
-                              />
+                        <div className="col-span-7 flex items-center text-fgd-1">
+                          <img
+                            alt=""
+                            width="20"
+                            height="20"
+                            src={`/assets/icons/${balance.symbol.toLowerCase()}.svg`}
+                            className={`mr-2.5`}
+                          />
 
-                              {balance.symbol}
-                            </div>
-                            <div className="col-span-4 text-fgd-1 text-right">
-                              {balance.net.toFixed()}
-                            </div>
-                            <div className="flex justify-end">
-                              <ChevronDownIcon
-                                className={`${
-                                  open
-                                    ? 'transform rotate-180'
-                                    : 'transform rotate-360'
-                                } default-transition h-5 flex-shrink-0 w-5 text-th-primary`}
-                              />
-                            </div>
-                          </div>
-                        </Disclosure.Button>
-                        <Disclosure.Panel
-                          className={`${
-                            index % 2 === 0
-                              ? `bg-[rgba(255,255,255,0.03)]`
-                              : `bg-[rgba(255,255,255,0.07)]`
-                          } px-4`}
-                        >
-                          <div className="border-t border-[rgba(255,255,255,0.1)] grid grid-cols-2 grid-rows-1 gap-4 py-4">
-                            <div className="col-span-1 text-left">
-                              <div className="pb-0.5 text-th-fgd-3 text-xs">
-                                Deposits
-                              </div>
-                              {balance.deposits.toFixed()}
-                            </div>
-                            <div className="col-span-1 text-left">
-                              <div className="pb-0.5 text-th-fgd-3 text-xs">
-                                Borrows
-                              </div>
-                              {balance.borrows.toFixed()}
-                            </div>
-                            <div className="col-span-1 text-left">
-                              <div className="pb-0.5 text-th-fgd-3 text-xs">
-                                In Orders
-                              </div>
-                              {balance.orders.toFixed()}
-                            </div>
-                            <div className="col-span-1 text-left">
-                              <div className="pb-0.5 text-th-fgd-3 text-xs">
-                                Unsettled
-                              </div>
-                              {balance.unsettled.toFixed()}
-                            </div>
-                            <div className="col-span-1 text-left">
-                              <div className="pb-0.5 text-th-fgd-3 text-xs">
-                                Value
-                              </div>
-                              {formatUsdValue(balance.value)}
-                            </div>
-                            <div className="col-span-1 text-left text-th-fgd-4">
-                              <div className="pb-0.5 text-th-fgd-3 text-xs">
-                                Deposit/Borrow Rates
-                              </div>
-                              <span className="mr-1 text-th-green">
-                                {balance.depositRate.toFixed(2)}%
-                              </span>
-                              /
-                              <span className="ml-1 text-th-red">
-                                {balance.borrowRate.toFixed(2)}%
-                              </span>
-                            </div>
-                            <Button
-                              className="col-span-1 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
-                              onClick={() =>
-                                handleOpenDepositModal(balance.symbol)
-                              }
-                            >
-                              Deposit
-                            </Button>
-                            <Button
-                              className="col-span-1 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
-                              onClick={() =>
-                                handleOpenWithdrawModal(balance.symbol)
-                              }
-                            >
-                              Withdraw
-                            </Button>
-                          </div>
-                        </Disclosure.Panel>
-                        {showDepositModal && (
-                          <DepositModal
-                            isOpen={showDepositModal}
-                            onClose={() => setShowDepositModal(false)}
-                            tokenSymbol={actionSymbol}
-                          />
-                        )}
-                        {showWithdrawModal && (
-                          <WithdrawModal
-                            isOpen={showWithdrawModal}
-                            onClose={() => setShowWithdrawModal(false)}
-                            tokenSymbol={actionSymbol}
-                          />
-                        )}
+                          {balance.symbol}
+                        </div>
+                        <div className="col-span-4 text-fgd-1 text-right">
+                          {balance.net.toFixed()}
+                        </div>
                       </>
-                    )}
-                  </Disclosure>
+                    }
+                    key={`${balance.symbol}${index}`}
+                    index={index}
+                    panelTemplate={
+                      <>
+                        <div className="col-span-1 text-left">
+                          <div className="pb-0.5 text-th-fgd-3 text-xs">
+                            Deposits
+                          </div>
+                          {balance.deposits.toFixed()}
+                        </div>
+                        <div className="col-span-1 text-left">
+                          <div className="pb-0.5 text-th-fgd-3 text-xs">
+                            Borrows
+                          </div>
+                          {balance.borrows.toFixed()}
+                        </div>
+                        <div className="col-span-1 text-left">
+                          <div className="pb-0.5 text-th-fgd-3 text-xs">
+                            In Orders
+                          </div>
+                          {balance.orders.toFixed()}
+                        </div>
+                        <div className="col-span-1 text-left">
+                          <div className="pb-0.5 text-th-fgd-3 text-xs">
+                            Unsettled
+                          </div>
+                          {balance.unsettled.toFixed()}
+                        </div>
+                        <div className="col-span-1 text-left">
+                          <div className="pb-0.5 text-th-fgd-3 text-xs">
+                            Value
+                          </div>
+                          {formatUsdValue(balance.value)}
+                        </div>
+                        <div className="col-span-1 text-left text-th-fgd-4">
+                          <div className="pb-0.5 text-th-fgd-3 text-xs">
+                            Deposit/Borrow Rates
+                          </div>
+                          <span className="mr-1 text-th-green">
+                            {balance.depositRate.toFixed(2)}%
+                          </span>
+                          /
+                          <span className="ml-1 text-th-red">
+                            {balance.borrowRate.toFixed(2)}%
+                          </span>
+                        </div>
+                        <Button
+                          className="col-span-1 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
+                          onClick={() => handleOpenDepositModal(balance.symbol)}
+                        >
+                          Deposit
+                        </Button>
+                        <Button
+                          className="col-span-1 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
+                          onClick={() =>
+                            handleOpenWithdrawModal(balance.symbol)
+                          }
+                        >
+                          Withdraw
+                        </Button>
+                      </>
+                    }
+                  />
                 ))}
               </>
             )

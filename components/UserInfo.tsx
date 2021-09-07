@@ -27,7 +27,7 @@ const UserInfoTabs = ({ activeTab, setActiveTab }) => {
 
   return (
     <div>
-      <div className={`sm:hidden`}>
+      <div className={`pb-4 sm:hidden`}>
         <label htmlFor="tabs" className={`sr-only`}>
           Select a tab
         </label>
@@ -40,7 +40,7 @@ const UserInfoTabs = ({ activeTab, setActiveTab }) => {
         </Select>
       </div>
       <div className={`hidden sm:block`}>
-        <div className={`border-b border-th-fgd-4`}>
+        <div className={`border-b border-th-fgd-4 mb-3`}>
           <nav className={`-mb-px flex space-x-6`} aria-label="Tabs">
             {TABS.map((tabName) => (
               <a
