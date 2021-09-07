@@ -94,7 +94,7 @@ const groupBy = (ordersArray, market, grouping: number, isBids: boolean) => {
   }
   const sortedGroups = Object.entries(groupFloors)
     .map((entry) => {
-      return [parseFloat(entry[0]), entry[1]]
+      return [parseFloat(entry[0]).toFixed(getDecimalCount(grouping)), entry[1]]
     })
     .sort(function (a: number[], b: number[]) {
       if (!a || !b) {
