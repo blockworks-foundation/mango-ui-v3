@@ -989,8 +989,8 @@
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
 "@blockworks-foundation/mango-client@git+https://github.com/blockworks-foundation/mango-client-v3.git":
-  version "3.0.13"
-  resolved "git+https://github.com/blockworks-foundation/mango-client-v3.git#5329036b4efab47a2ccf60aca3ad355b01f1daa3"
+  version "3.0.16"
+  resolved "git+https://github.com/blockworks-foundation/mango-client-v3.git#f0abd8fdabb25379dc2c94193ab9286f13f3b0ec"
   dependencies:
     "@project-serum/serum" "0.13.55"
     "@project-serum/sol-wallet-adapter" "^0.2.0"
@@ -1000,7 +1000,6 @@
     big.js "^6.1.1"
     bigint-buffer "^1.1.5"
     bn.js "^5.1.0"
-    borsh "https://github.com/defactojob/borsh-js#field-mapper"
     buffer-layout "^1.2.1"
     yargs "^17.0.1"
 
@@ -1568,7 +1567,7 @@
     superstruct "^0.14.2"
     tweetnacl "^1.0.0"
 
-"@solana/web3.js@^1.17.0", "@solana/web3.js@^1.21.0":
+"@solana/web3.js@^1.17.0":
   version "1.24.1"
   resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.24.1.tgz#1fb29f344454669183206f452ab3b8792567cade"
   integrity sha512-XImMWAvjcXteMQwe1FFjoe6u72xmcu+UYobPIxLEMX29XXWVTalyYRKBXvcOXwz6DliTYnFXmncNEwUDEFFHGg==
@@ -1599,6 +1598,26 @@
     bs58 "^4.0.1"
     buffer "6.0.1"
     buffer-layout "^1.2.0"
+    crypto-hash "^1.2.2"
+    jayson "^3.4.4"
+    js-sha3 "^0.8.0"
+    node-fetch "^2.6.1"
+    rpc-websockets "^7.4.2"
+    secp256k1 "^4.0.2"
+    superstruct "^0.14.2"
+    tweetnacl "^1.0.0"
+
+"@solana/web3.js@^1.21.0":
+  version "1.24.2"
+  resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.24.2.tgz#ff98c635effac3c49bfe757bf182792feb973fc6"
+  integrity sha512-zpW/QumeNBg8BfXB4LWFjrRlutWhwCKOaffP0+V0SF47pJsH/eShTOCl0I3Dibv6KeVgJzauNyKug6wnZVtXVQ==
+  dependencies:
+    "@babel/runtime" "^7.12.5"
+    "@solana/buffer-layout" "^3.0.0"
+    bn.js "^5.0.0"
+    borsh "^0.4.0"
+    bs58 "^4.0.1"
+    buffer "6.0.1"
     crypto-hash "^1.2.2"
     jayson "^3.4.4"
     js-sha3 "^0.8.0"
@@ -1875,14 +1894,14 @@
   integrity sha512-/BHF5HAx3em7/KkzVKm3LrsD6HZAXuXO1AJZQ3cRRBZj4oHZDviWPYu0aEplAqDFNHZPW6d3G7KN+ONcCCC7pw==
 
 "@types/node@*":
-  version "16.7.10"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.7.10.tgz#7aa732cc47341c12a16b7d562f519c2383b6d4fc"
-  integrity sha512-S63Dlv4zIPb8x6MMTgDq5WWRJQe56iBEY0O3SOFA9JrRienkOVDXSXBjjJw6HTNQYSE2JI6GMCR6LVbIMHJVvA==
+  version "16.7.13"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.7.13.tgz#86fae356b03b5a12f2506c6cf6cd9287b205973f"
+  integrity sha512-pLUPDn+YG3FYEt/pHI74HmnJOWzeR+tOIQzUx93pi9M7D8OE7PSLr97HboXwk5F+JS+TLtWuzCOW97AHjmOXXA==
 
 "@types/node@^12.12.54":
-  version "12.20.23"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.20.23.tgz#d0d5885bb885ee9b1ed114a04ea586540a1b2e2a"
-  integrity sha512-FW0q7NI8UnjbKrJK8NGr6QXY69ATw9IFe6ItIo5yozPwA9DU/xkhiPddctUVyrmFXvyFYerYgQak/qu200UBDw==
+  version "12.20.24"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.20.24.tgz#c37ac69cb2948afb4cef95f424fa0037971a9a5c"
+  integrity sha512-yxDeaQIAJlMav7fH5AQqPH1u8YIuhYJXYBzxaQ4PifsU0GDO38MSdmEDeRlIxrKbC6NbEaaEHDanWb+y30U8SQ==
 
 "@types/node@^14.14.25":
   version "14.17.3"
@@ -2336,9 +2355,9 @@ available-typed-arrays@^1.0.2:
   integrity sha512-SA5mXJWrId1TaQjfxUYghbqQ/hYioKmLJvPJyDuYRtXXenFNMjj4hSSt1Cf1xsuXSXrtxrVC5Ot4eU6cOtBDdA==
 
 axios@^0.21.1:
-  version "0.21.3"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-0.21.3.tgz#f85d9b747f9b66d59ca463605cedf1844872b82e"
-  integrity sha512-JtoZ3Ndke/+Iwt5n+BgSli/3idTvpt5OjKyoCmz4LX5+lPiY5l7C1colYezhlxThjNa/NhngCUWZSZFypIFuaA==
+  version "0.21.4"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.21.4.tgz#c67b90dc0568e5c1cf2b0b858c43ba28e2eda575"
+  integrity sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==
   dependencies:
     follow-redirects "^1.14.0"
 
@@ -2553,15 +2572,6 @@ borsh@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/borsh/-/borsh-0.4.0.tgz#9dd6defe741627f1315eac2a73df61421f6ddb9f"
   integrity sha512-aX6qtLya3K0AkT66CmYWCCDr77qsE9arV05OmdFpmat9qu8Pg9J5tBUPDztAW5fNh/d/MyVG/OYziP52Ndzx1g==
-  dependencies:
-    "@types/bn.js" "^4.11.5"
-    bn.js "^5.0.0"
-    bs58 "^4.0.0"
-    text-encoding-utf-8 "^1.0.2"
-
-"borsh@https://github.com/defactojob/borsh-js#field-mapper":
-  version "0.3.1"
-  resolved "https://github.com/defactojob/borsh-js#33a0d24af281112c0a48efb3fa503f3212443de9"
   dependencies:
     "@types/bn.js" "^4.11.5"
     bn.js "^5.0.0"
@@ -6197,10 +6207,15 @@ node-emoji@^1.8.1:
   dependencies:
     lodash.toarray "^4.4.0"
 
-node-fetch@2.6.1, node-fetch@^2.6.1:
+node-fetch@2.6.1:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.1.tgz#045bd323631f76ed2e2b55573394416b639a0052"
   integrity sha512-V4aYg89jEoVRxRb2fJdAg8FHvI7cEyYdVAh94HH0UIK8oJxUfkjlDQN9RbMx+bEjP7+ggMiFRprSti032Oipxw==
+
+node-fetch@^2.6.1:
+  version "2.6.2"
+  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.2.tgz#986996818b73785e47b1965cc34eb093a1d464d0"
+  integrity sha512-aLoxToI6RfZ+0NOjmWAgn9+LEd30YCkJKFSyWacNZdEKTit/ZMcKjGkTRo8uWEsnIb/hfKecNPEbln02PdWbcA==
 
 node-gyp-build@^4.2.0:
   version "4.2.3"

@@ -81,8 +81,7 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
         size,
         'ioc',
         0,
-        side === 'buy' ? askInfo : bidInfo,
-        notify({ title: 'Sending transaction...', type: 'info' })
+        side === 'buy' ? askInfo : bidInfo
       )
       await sleep(500)
       actions.reloadMangoAccount()

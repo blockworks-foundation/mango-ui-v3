@@ -264,8 +264,7 @@ export default function TradeForm() {
           side,
           orderPrice,
           baseSize,
-          orderType,
-          notify({ title: 'Sending place order transaction...', type: 'info' })
+          orderType
         )
       } else {
         txid = await mangoClient.placePerpOrder(
@@ -279,8 +278,7 @@ export default function TradeForm() {
           baseSize,
           orderType,
           0,
-          side === 'buy' ? askInfo : bidInfo,
-          notify({ title: 'Sending place order transaction...', type: 'info' })
+          side === 'buy' ? askInfo : bidInfo
         )
       }
       await sleep(500)
