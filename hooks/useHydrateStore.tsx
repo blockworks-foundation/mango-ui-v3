@@ -21,7 +21,11 @@ const useHydrateStore = () => {
 
   useInterval(() => {
     actions.fetchMangoGroup()
-  }, 60 * SECONDS)
+  }, 120 * SECONDS)
+
+  useInterval(() => {
+    actions.fetchMangoGroupCache()
+  }, 30 * SECONDS)
 
   useEffect(() => {
     setMangoStore((state) => {

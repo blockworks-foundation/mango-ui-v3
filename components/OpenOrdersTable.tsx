@@ -65,14 +65,12 @@ const OpenOrdersTable = () => {
       })
       console.log('error', `${e}`)
     } finally {
-      await sleep(500)
-      actions.fetchMangoAccounts()
+      await sleep(300)
+      actions.reloadMangoAccount()
       actions.updateOpenOrders()
       setCancelId(null)
     }
   }
-
-  console.log(openOrders)
 
   return (
     <div className={`flex flex-col py-4`}>

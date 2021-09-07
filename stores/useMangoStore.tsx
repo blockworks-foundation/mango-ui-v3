@@ -473,6 +473,17 @@ const useMangoStore = create<MangoStore>((set, get) => ({
         console.log('Error fetching fills:', err)
       }
     },
+    async fetchMangoGroupCache() {
+      const set = get().set
+      const mangoGroup = get().selectedMangoGroup.current
+      if (mangoGroup) {
+        const mangoCache = await mangoGroup.loadCache(DEFAULT_CONNECTION)
+
+        set((state) => {
+          state.selectedMangoGroup.cache = mangoCache
+        })
+      }
+    },
   },
 }))
 
