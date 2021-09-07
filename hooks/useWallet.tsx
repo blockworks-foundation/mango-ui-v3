@@ -144,7 +144,7 @@ export default function useWallet() {
     if (connected && mangoAccount) {
       actions.fetchMangoAccounts()
     }
-  }, 60 * SECONDS)
+  }, 120 * SECONDS)
 
   useInterval(() => {
     if (connected && mangoAccount) {
