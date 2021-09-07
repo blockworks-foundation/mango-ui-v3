@@ -38,13 +38,13 @@ const GroupSize = ({ tickSize, value, onChange, className = '' }) => {
             {open ? (
               <Listbox.Options
                 static
-                className={`w-2/3 z-40 p-1 absolute top-full right-0 mt-1 bg-th-bkg-1 origin-top-left divide-y divide-th-bkg-3 shadow-lg outline-none rounded-md`}
+                className={`z-40 p-1 absolute top-full right-0 mt-1 bg-th-bkg-1 origin-top-left divide-y divide-th-bkg-3 shadow-lg outline-none rounded-md`}
               >
                 {sizes.map((size) => (
                   <Listbox.Option key={size} value={size}>
                     {({ selected }) => (
                       <div
-                        className={`p-1 text-right hover:bg-th-bkg-2 hover:cursor-pointer tracking-wider ${
+                        className={`pl-6 p-1 text-right hover:bg-th-bkg-2 hover:cursor-pointer tracking-wider ${
                           selected && `text-th-primary`
                         }`}
                       >
