@@ -10,7 +10,6 @@ import {
   formatUsdValue,
   i80f48ToPercent,
   tokenPrecision,
-  usdFormatter,
 } from '../../utils/index'
 import WithdrawModal from '../WithdrawModal'
 import Button from '../Button'
@@ -215,12 +214,14 @@ export default function AccountBorrows() {
                 <Td
                   className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
                 >
-                  {usdFormatter(
-                    mangoGroup
-                      .getUiTotalDeposit(tokenIndex)
-                      .sub(mangoGroup.getUiTotalBorrow(tokenIndex)),
-                    0
-                  )}
+                  {mangoGroup
+                    .getUiTotalDeposit(tokenIndex)
+                    .sub(mangoGroup.getUiTotalBorrow(tokenIndex))
+                    .toNumber()
+                    .toLocaleString(undefined, {
+                      maximumFractionDigits: tokenPrecision[token.symbol],
+                    })}{' '}
+                  <span className="text-th-fgd-4">{token.symbol}</span>
                 </Td>
                 <Td
                   className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
