@@ -1,7 +1,6 @@
 import { useCallback, useState } from 'react'
 import {
   getTokenBySymbol,
-  nativeI80F48ToUi,
   ZERO_I80F48,
   I80F48,
 } from '@blockworks-foundation/mango-client'
@@ -288,12 +287,6 @@ export default function AccountBorrows() {
                 <tbody>
                   {mangoConfig.tokens.map((token, i) => {
                     const tokenIndex = mangoGroup.getTokenIndex(token.mintKey)
-                    const maxWithoutBorrows = nativeI80F48ToUi(
-                      mangoAccount
-                        .getAvailableBalance(mangoGroup, mangoCache, tokenIndex)
-                        .floor(),
-                      mangoGroup.tokens[tokenIndex].decimals
-                    )
                     return (
                       <TrBody index={i} key={`${token.symbol}${i}`}>
                         <Td>
@@ -328,7 +321,6 @@ export default function AccountBorrows() {
                               mangoCache,
                               tokenIndex
                             )
-                            .add(maxWithoutBorrows)
                             .mul(I80F48.fromString('0.995'))
                             .toNumber()
                             .toLocaleString(undefined, {
@@ -380,12 +372,6 @@ export default function AccountBorrows() {
                 />
                 {mangoConfig.tokens.map((token, i) => {
                   const tokenIndex = mangoGroup.getTokenIndex(token.mintKey)
-                  const maxWithoutBorrows = nativeI80F48ToUi(
-                    mangoAccount
-                      .getAvailableBalance(mangoGroup, mangoCache, tokenIndex)
-                      .floor(),
-                    mangoGroup.tokens[tokenIndex].decimals
-                  )
                   return (
                     <ExpandableRow
                       buttonTemplate={
@@ -433,7 +419,6 @@ export default function AccountBorrows() {
                                 mangoCache,
                                 tokenIndex
                               )
-                              .add(maxWithoutBorrows)
                               .mul(I80F48.fromString('0.995'))
                               .toNumber()
                               .toLocaleString(undefined, {
