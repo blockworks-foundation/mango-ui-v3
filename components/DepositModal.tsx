@@ -36,6 +36,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
   const walletTokens = useMangoStore((s) => s.wallet.tokens)
   const actions = useMangoStore((s) => s.actions)
   const [selectedAccount, setSelectedAccount] = useState(walletTokens[0])
+  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
 
   useEffect(() => {
     if (tokenSymbol) {
@@ -228,6 +229,13 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
               Next
             </Button>
           </div>
+          {!mangoAccount ? (
+            <div className="flex text-th-fgd-4 text-xxs mt-1">
+              <div className="mx-auto">
+                You need 0.035 SOL to create a mango account.
+              </div>
+            </div>
+          ) : null}
         </>
       ) : (
         <>
