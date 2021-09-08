@@ -281,7 +281,7 @@ export default function TradeForm() {
           side === 'buy' ? askInfo : bidInfo
         )
       }
-      await sleep(500)
+      await sleep(600)
       actions.reloadMangoAccount()
       actions.updateOpenOrders()
       actions.loadMarketFills()
