@@ -207,7 +207,7 @@ const TradeHistoryTable = () => {
                         <SideBadge side={trade.side} />
                       </Td>
                       <Td>{trade.size}</Td>
-                      <Td>{trade.price}</Td>
+                      <Td>{formatUsdValue(trade.price)}</Td>
                       <Td>{formatUsdValue(trade.value)}</Td>
                       <Td>{trade.liquidity}</Td>
                       <Td>{formatUsdValue(trade.feeCost)}</Td>
