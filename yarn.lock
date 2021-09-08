@@ -990,7 +990,7 @@
 
 "@blockworks-foundation/mango-client@git+https://github.com/blockworks-foundation/mango-client-v3.git":
   version "3.0.16"
-  resolved "git+https://github.com/blockworks-foundation/mango-client-v3.git#f0abd8fdabb25379dc2c94193ab9286f13f3b0ec"
+  resolved "git+https://github.com/blockworks-foundation/mango-client-v3.git#14d218bb11a7f1e93b3a0e540398a0c422436874"
   dependencies:
     "@project-serum/serum" "0.13.55"
     "@project-serum/sol-wallet-adapter" "^0.2.0"
@@ -1608,9 +1608,9 @@
     tweetnacl "^1.0.0"
 
 "@solana/web3.js@^1.21.0":
-  version "1.24.2"
-  resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.24.2.tgz#ff98c635effac3c49bfe757bf182792feb973fc6"
-  integrity sha512-zpW/QumeNBg8BfXB4LWFjrRlutWhwCKOaffP0+V0SF47pJsH/eShTOCl0I3Dibv6KeVgJzauNyKug6wnZVtXVQ==
+  version "1.25.0"
+  resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.25.0.tgz#6677259badf105dc19f4be522edd1e6af117e511"
+  integrity sha512-GH0dzLfbiD8L68qujEhVCshSAcLpQpenHr1quwU8gybphmZsHUe5FIEyd7g7mpLMC7WEHEiEuFKEZnLOAx/TaA==
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@solana/buffer-layout" "^3.0.0"
@@ -1618,10 +1618,10 @@
     borsh "^0.4.0"
     bs58 "^4.0.1"
     buffer "6.0.1"
+    cross-fetch "^3.1.4"
     crypto-hash "^1.2.2"
     jayson "^3.4.4"
     js-sha3 "^0.8.0"
-    node-fetch "^2.6.1"
     rpc-websockets "^7.4.2"
     secp256k1 "^4.0.2"
     superstruct "^0.14.2"
@@ -3189,6 +3189,13 @@ create-hmac@^1.1.0, create-hmac@^1.1.4, create-hmac@^1.1.7:
     ripemd160 "^2.0.0"
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
+
+cross-fetch@^3.1.4:
+  version "3.1.4"
+  resolved "https://registry.yarnpkg.com/cross-fetch/-/cross-fetch-3.1.4.tgz#9723f3a3a247bf8b89039f3a380a9244e8fa2f39"
+  integrity sha512-1eAtFWdIubi6T4XPy6ei9iUFoKpUkIF971QLN8lIvvvwueI65+Nw5haMNKUwfJxabqlIIDODJKGrQ66gxC0PbQ==
+  dependencies:
+    node-fetch "2.6.1"
 
 cross-spawn@^6.0.0:
   version "6.0.5"
