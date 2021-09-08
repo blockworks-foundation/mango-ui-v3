@@ -94,7 +94,10 @@ const groupBy = (ordersArray, market, grouping: number, isBids: boolean) => {
   }
   const sortedGroups = Object.entries(groupFloors)
     .map((entry) => {
-      return [parseFloat(entry[0]).toFixed(getDecimalCount(grouping)), entry[1]]
+      return [
+        +parseFloat(entry[0]).toFixed(getDecimalCount(grouping)),
+        entry[1],
+      ]
     })
     .sort(function (a: number[], b: number[]) {
       if (!a || !b) {
@@ -129,6 +132,12 @@ const getCumulativeOrderbookSide = (
     cumulative = cumulative.reverse()
   }
   return cumulative
+}
+
+const hasOpenOrderForPriceGroup = (openOrderPrices, price, grouping) => {
+  return !!openOrderPrices.find((ooPrice) => {
+    return ooPrice >= parseFloat(price) && ooPrice < price + grouping
+  })
 }
 
 export default function Orderbook({ depth = 8 }) {
@@ -324,7 +333,11 @@ export default function Orderbook({ depth = 8 }) {
                       }) => (
                         <OrderbookRow
                           market={market}
-                          hasOpenOrder={openOrderPrices.includes(price)}
+                          hasOpenOrder={hasOpenOrderForPriceGroup(
+                            openOrderPrices,
+                            price,
+                            grouping
+                          )}
                           key={price + ''}
                           price={price}
                           size={displayCumulativeSize ? cumulativeSize : size}
@@ -348,7 +361,11 @@ export default function Orderbook({ depth = 8 }) {
                       }) => (
                         <OrderbookRow
                           market={market}
-                          hasOpenOrder={openOrderPrices.includes(price)}
+                          hasOpenOrder={hasOpenOrderForPriceGroup(
+                            openOrderPrices,
+                            price,
+                            grouping
+                          )}
                           invert
                           key={price + ''}
                           price={price}
@@ -441,7 +458,11 @@ export default function Orderbook({ depth = 8 }) {
                   }) => (
                     <OrderbookRow
                       market={market}
-                      hasOpenOrder={openOrderPrices.includes(price)}
+                      hasOpenOrder={hasOpenOrderForPriceGroup(
+                        openOrderPrices,
+                        price,
+                        grouping
+                      )}
                       key={price + ''}
                       price={price}
                       size={displayCumulativeSize ? cumulativeSize : size}
@@ -472,7 +493,11 @@ export default function Orderbook({ depth = 8 }) {
                   }) => (
                     <OrderbookRow
                       market={market}
-                      hasOpenOrder={openOrderPrices.includes(price)}
+                      hasOpenOrder={hasOpenOrderForPriceGroup(
+                        openOrderPrices,
+                        price,
+                        grouping
+                      )}
                       key={price + ''}
                       price={price}
                       size={displayCumulativeSize ? cumulativeSize : size}
