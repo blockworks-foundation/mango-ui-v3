@@ -1,7 +1,11 @@
-import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
 import { I80F48 } from '@blockworks-foundation/mango-client'
 import Chart from '../Chart'
 import { tokenPrecision } from '../../utils'
+import { useViewport } from '../../hooks/useViewport'
+import { breakpoints } from '../TradePageGrid'
+import { Table, Td, Th, TrBody, TrHead } from '../TableElements'
+import { ExpandableRow } from '../TableElements'
+import MobileTableHeader from '../mobile/MobileTableHeader'
 
 function formatNumberString(x: number, decimals): string {
   return new Intl.NumberFormat('en-US', {
@@ -12,6 +16,8 @@ function formatNumberString(x: number, decimals): string {
 
 export default function StatsTotals({ latestStats, stats }) {
   const startTimestamp = 1622905200000
+  const { width } = useViewport()
+  const isMobile = width ? width < breakpoints.sm : false
 
   const trimmedStats = stats.filter(
     (stat) => new Date(stat.hourly).getTime() >= startTimestamp
@@ -119,39 +125,22 @@ export default function StatsTotals({ latestStats, stats }) {
           />
         </div>
       </div>
-      <div className="md:flex md:flex-col min-w-full">
-        <Table className="min-w-full divide-y divide-th-bkg-2">
-          <Thead>
-            <Tr className="text-th-fgd-3 text-xs">
-              <Th scope="col" className="px-6 py-3 text-left font-normal">
-                Asset
-              </Th>
-              <Th scope="col" className="px-6 py-3 text-left font-normal">
-                Total Deposits
-              </Th>
-              <Th scope="col" className="px-6 py-3 text-left font-normal">
-                Total Borrows
-              </Th>
-              <Th scope="col" className="px-6 py-3 text-left font-normal">
-                Deposit Interest
-              </Th>
-              <Th scope="col" className="px-6 py-3 text-left font-normal">
-                Borrow Interest
-              </Th>
-              <Th scope="col" className="px-6 py-3 text-left font-normal">
-                Utilization
-              </Th>
-            </Tr>
-          </Thead>
-          <Tbody>
+      {!isMobile ? (
+        <Table>
+          <thead>
+            <TrHead>
+              <Th>Asset</Th>
+              <Th>Total Deposits</Th>
+              <Th>Total Borrows</Th>
+              <Th>Deposit Interest</Th>
+              <Th>Borrow Interest</Th>
+              <Th>Utilization</Th>
+            </TrHead>
+          </thead>
+          <tbody>
             {latestStats.map((stat, index) => (
-              <Tr
-                key={stat.name}
-                className={`border-b border-th-bkg-2
-                  ${index % 2 === 0 ? `bg-th-bkg-3` : `bg-th-bkg-2`}
-                `}
-              >
-                <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
+              <TrBody key={stat.name} index={index}>
+                <Td>
                   <div className="flex items-center">
                     <img
                       alt=""
@@ -163,36 +152,114 @@ export default function StatsTotals({ latestStats, stats }) {
                     {stat.name}
                   </div>
                 </Td>
-                <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
+                <Td>
                   {formatNumberString(
                     stat.totalDeposits,
                     tokenPrecision[stat.name]
                   )}
                 </Td>
-                <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
+                <Td>
                   {formatNumberString(
                     stat.totalBorrows,
                     tokenPrecision[stat.name]
                   )}
                 </Td>
-                <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
-                  {formatNumberString(stat.depositInterest.toNumber(), 2)}%
+                <Td>
+                  <span className="text-th-green">
+                    {formatNumberString(stat.depositInterest.toNumber(), 2)}%
+                  </span>
                 </Td>
-                <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
-                  {formatNumberString(stat.borrowInterest.toNumber(), 2)}%
+                <Td>
+                  <span className="text-th-red">
+                    {formatNumberString(stat.borrowInterest.toNumber(), 2)}%
+                  </span>
                 </Td>
-                <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
+                <Td>
                   {formatNumberString(
                     stat.utilization.mul(I80F48.fromNumber(100)).toNumber(),
                     2
                   )}
                   %
                 </Td>
-              </Tr>
+              </TrBody>
             ))}
-          </Tbody>
+          </tbody>
         </Table>
-      </div>
+      ) : (
+        <>
+          <MobileTableHeader
+            headerTemplate={<div className="col-span-11">Asset</div>}
+          />
+          {latestStats.map((stat, index) => (
+            <ExpandableRow
+              buttonTemplate={
+                <div className="col-span-11">
+                  <div className="col-span-11 flex items-center pb-3 text-fgd-1">
+                    <div className="flex items-center">
+                      <img
+                        alt=""
+                        width="20"
+                        height="20"
+                        src={`/assets/icons/${stat.name
+                          .split(/-|\//)[0]
+                          .toLowerCase()}.svg`}
+                        className={`mr-2.5`}
+                      />
+                      <div className="mb-0.5 text-left">{stat.name}</div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-11 grid-rows-1 gap-4">
+                    <div className="col-span-6 text-left">
+                      <div className="pb-0.5 text-th-fgd-3 text-xs">
+                        Total Deposits
+                      </div>
+                      {formatNumberString(stat.totalDeposits, 0)}
+                    </div>
+                    <div className="col-span-5 text-left">
+                      <div className="pb-0.5 text-th-fgd-3 text-xs">
+                        Total Borrows
+                      </div>
+                      {formatNumberString(stat.totalBorrows, 0)}
+                    </div>
+                  </div>
+                </div>
+              }
+              key={`${index}`}
+              index={index}
+              panelTemplate={
+                <>
+                  <div className="col-span-1 text-left">
+                    <div className="pb-0.5 text-th-fgd-3 text-xs">
+                      Deposit Rate
+                    </div>
+                    <span className="text-th-green">
+                      {formatNumberString(stat.depositInterest.toNumber(), 2)}%
+                    </span>
+                  </div>
+                  <div className="col-span-1 text-left">
+                    <div className="pb-0.5 text-th-fgd-3 text-xs">
+                      Borrow Rate
+                    </div>
+                    <span className="text-th-red">
+                      {formatNumberString(stat.borrowInterest.toNumber(), 2)}%
+                    </span>
+                  </div>
+                  <div className="col-span-1 text-left">
+                    <div className="pb-0.5 text-th-fgd-3 text-xs">
+                      Utilization
+                    </div>
+                    {formatNumberString(
+                      stat.utilization.mul(I80F48.fromNumber(100)).toNumber(),
+                      2
+                    )}
+                    %
+                  </div>
+                </>
+              }
+            />
+          ))}
+        </>
+      )}
     </>
   )
 }

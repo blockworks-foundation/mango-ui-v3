@@ -30,7 +30,7 @@ export default function Borrow() {
             Borrow Funds
           </h1>
         </div>
-        <div className="p-6 rounded-lg bg-th-bkg-2">
+        <div className="bg-th-bkg-2 overflow-none p-4 sm:p-6 rounded-lg">
           {selectedMangoAccount ? (
             <AccountBorrows />
           ) : connected ? (
