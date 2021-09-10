@@ -281,10 +281,6 @@ export default function TradeForm() {
           side === 'buy' ? askInfo : bidInfo
         )
       }
-      await sleep(600)
-      actions.reloadMangoAccount()
-      actions.updateOpenOrders()
-      actions.loadMarketFills()
       notify({ title: 'Successfully placed trade', txid })
       setPrice('')
       onSetBaseSize('')
@@ -296,6 +292,10 @@ export default function TradeForm() {
         type: 'error',
       })
     } finally {
+      await sleep(600)
+      actions.reloadMangoAccount()
+      actions.updateOpenOrders()
+      actions.loadMarketFills()
       setSubmitting(false)
     }
   }

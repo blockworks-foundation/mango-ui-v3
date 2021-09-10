@@ -583,7 +583,7 @@ const OrderbookRow = React.memo<any>(
               />
               <div
                 onClick={handlePriceClick}
-                className={`z-30 filter brightness-110 relative text-th-fgd-1 px-4 ${
+                className={`z-30 filter brightness-110 text-th-fgd-1 px-4 ${
                   side === 'buy' ? `text-th-green` : `text-th-red`
                 }`}
               >
@@ -591,7 +591,7 @@ const OrderbookRow = React.memo<any>(
               </div>
             </div>
             <div
-              className={`absolute right-3 ${
+              className={`absolute right-3 z-50 ${
                 hasOpenOrder ? 'text-th-primary' : 'text-th-fgd-1'
               }`}
               onClick={handleSizeClick}
@@ -602,7 +602,7 @@ const OrderbookRow = React.memo<any>(
         ) : (
           <>
             <div
-              className={`absolute left-3 flex-1 ${
+              className={`absolute left-3 z-50 ${
                 hasOpenOrder ? 'text-th-primary' : 'text-th-fgd-1'
               }`}
               onClick={handleSizeClick}
@@ -618,7 +618,7 @@ const OrderbookRow = React.memo<any>(
                 side={side}
               />
               <div
-                className={`z-30 filter brightness-110 relative px-4 ${
+                className={`z-30 filter brightness-110 px-4 flex-1 ${
                   side === 'buy' ? `text-th-green` : `text-th-red`
                 }`}
                 onClick={handlePriceClick}
