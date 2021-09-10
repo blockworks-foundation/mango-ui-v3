@@ -57,7 +57,7 @@ export const ExpandableRow = ({
                 : `bg-[rgba(255,255,255,0.07)]`
             } default-transition font-normal p-4 rounded-none text-th-fgd-1 w-full hover:bg-th-bkg-4 focus:outline-none`}
           >
-            <div className="grid grid-cols-12 grid-rows-1 gap-4">
+            <div className="grid grid-cols-12 grid-rows-1">
               {buttonTemplate}
               <div className="flex items-center justify-end">
                 <ChevronDownIcon

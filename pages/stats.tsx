@@ -29,7 +29,7 @@ export default function StatsPage() {
         <div className="flex flex-col sm:flex-row pt-8 pb-3 sm:pb-6 md:pt-10">
           <h1 className={`text-th-fgd-1 text-2xl font-semibold`}>Stats</h1>
         </div>
-        <div className="bg-th-bkg-2 overflow-none p-6 rounded-lg">
+        <div className="bg-th-bkg-2 overflow-none p-4 sm:p-6 rounded-lg">
           <div className="border-b border-th-fgd-4 mb-4">
             <nav className={`-mb-px flex space-x-6`} aria-label="Tabs">
               {TABS.map((tabName) => (

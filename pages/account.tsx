@@ -118,7 +118,7 @@ export default function Account() {
             </>
           ) : null}
         </div>
-        <div className="bg-th-bkg-2 overflow-none p-6 rounded-lg">
+        <div className="bg-th-bkg-2 overflow-none p-4 sm:p-6 rounded-lg">
           {mangoAccount ? (
             <>
               <div className="border-b border-th-fgd-4 mb-8">
