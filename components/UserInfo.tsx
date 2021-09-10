@@ -9,6 +9,7 @@ import PositionsTable from './PerpPositionsTable'
 import TradeHistoryTable from './TradeHistoryTable'
 // import FeeDiscountsTable from './FeeDiscountsTable'
 import Select from './Select'
+import ManualRefresh from './ManualRefresh'
 
 const TABS = [
   'Balances',
@@ -21,6 +22,8 @@ const TABS = [
 const UserInfoTabs = ({ activeTab, setActiveTab }) => {
   const openOrders = useOpenOrders()
   const perpPositions = usePerpPositions()
+  const connected = useMangoStore((s) => s.connection.current)
+  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const handleTabChange = (tabName) => {
     setActiveTab(tabName)
   }
@@ -40,7 +43,7 @@ const UserInfoTabs = ({ activeTab, setActiveTab }) => {
         </Select>
       </div>
       <div className={`hidden sm:block`}>
-        <div className={`border-b border-th-fgd-4 mb-3`}>
+        <div className={`border-b border-th-fgd-4 mb-3 flex justify-between`}>
           <nav className={`-mb-px flex space-x-6`} aria-label="Tabs">
             {TABS.map((tabName) => (
               <a
@@ -64,6 +67,11 @@ const UserInfoTabs = ({ activeTab, setActiveTab }) => {
               </a>
             ))}
           </nav>
+          <div>
+            {connected && mangoAccount ? (
+              <ManualRefresh className="pl-2" />
+            ) : null}
+          </div>
         </div>
       </div>
     </div>

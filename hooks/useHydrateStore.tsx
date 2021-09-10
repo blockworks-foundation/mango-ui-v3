@@ -5,7 +5,7 @@ import useInterval from './useInterval'
 import useOrderbook from './useOrderbook'
 
 const SECONDS = 1000
-const _SLOW_REFRESH_INTERVAL = 12 * SECONDS
+const _SLOW_REFRESH_INTERVAL = 20 * SECONDS
 
 const useHydrateStore = () => {
   const setMangoStore = useMangoStore((s) => s.set)

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { RefreshClockwiseIcon } from './icons'
 import useMangoStore from '../stores/useMangoStore'
 import Tooltip from './Tooltip'
@@ -10,16 +10,27 @@ const ManualRefresh = ({ className = '' }) => {
 
   const handleRefreshData = async () => {
     setSpin(true)
-    await actions.fetchMangoAccounts()
-    actions.fetchWalletTokens()
+    await actions.fetchMangoGroup()
+    await actions.reloadMangoAccount()
     actions.fetchTradeHistory()
-    setSpin(false)
+    actions.updateOpenOrders()
   }
+
+  useEffect(() => {
+    let timer
+    if (spin) {
+      timer = setTimeout(() => setSpin(false), 8000)
+    }
+
+    return () => {
+      clearTimeout(timer)
+    }
+  }, [spin])
 
   return (
     <div className={`inline-flex relative ${className}`}>
       <Tooltip content="Refresh Data" className="text-xs py-1">
-        <IconButton onClick={handleRefreshData}>
+        <IconButton onClick={handleRefreshData} disabled={spin}>
           <RefreshClockwiseIcon
             className={`w-4 h-4 ${spin ? 'animate-spin' : null}`}
           />
