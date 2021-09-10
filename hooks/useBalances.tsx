@@ -1,10 +1,12 @@
 import { Balances } from '../@types/types'
 import {
+  getTokenBySymbol,
   nativeI80F48ToUi,
   nativeToUi,
   QUOTE_INDEX,
 } from '@blockworks-foundation/mango-client'
 import useMangoStore from '../stores/useMangoStore'
+import { i80f48ToPercent } from '../utils/index'
 import { sumBy } from 'lodash'
 import { I80F48 } from '@blockworks-foundation/mango-client/lib/src/fixednum'
 
@@ -69,6 +71,14 @@ export function useBalances(): Balances[] {
       return amount
     }
 
+    const value = (nativeBaseLocked, tokenIndex) => {
+      const amount = mangoGroup
+        .getPrice(tokenIndex, mangoCache)
+        .mul(net(nativeBaseLocked, tokenIndex))
+
+      return amount
+    }
+
     const marketPair = [
       {
         market: null,
@@ -93,6 +103,9 @@ export function useBalances(): Balances[] {
           mangoGroup.tokens[tokenIndex].decimals
         ),
         net: net(nativeBaseLocked, tokenIndex),
+        value: value(nativeBaseLocked, tokenIndex),
+        depositRate: i80f48ToPercent(mangoGroup.getDepositRate(tokenIndex)),
+        borrowRate: i80f48ToPercent(mangoGroup.getBorrowRate(tokenIndex)),
       },
       {
         market: null,
@@ -117,6 +130,9 @@ export function useBalances(): Balances[] {
           mangoGroup.tokens[quoteCurrencyIndex].decimals
         ),
         net: net(nativeQuoteLocked, quoteCurrencyIndex),
+        value: value(nativeQuoteLocked, quoteCurrencyIndex),
+        depositRate: i80f48ToPercent(mangoGroup.getDepositRate(tokenIndex)),
+        borrowRate: i80f48ToPercent(mangoGroup.getBorrowRate(tokenIndex)),
       },
     ]
     balances.push(marketPair)
@@ -133,6 +149,15 @@ export function useBalances(): Balances[] {
     .sub(quoteMeta.borrows)
     .add(I80F48.fromNumber(quoteInOrders))
 
+  const token = getTokenBySymbol(mangoGroupConfig, quoteMeta.symbol)
+  const tokenIndex = mangoGroup.getTokenIndex(token.mintKey)
+
+  const value = net.mul(mangoGroup.getPrice(tokenIndex, mangoCache))
+
+  const depositRate = i80f48ToPercent(mangoGroup.getDepositRate(tokenIndex))
+
+  const borrowRate = i80f48ToPercent(mangoGroup.getBorrowRate(tokenIndex))
+
   return [
     {
       market: null,
@@ -143,6 +168,9 @@ export function useBalances(): Balances[] {
       orders: quoteInOrders,
       unsettled,
       net,
+      value,
+      depositRate,
+      borrowRate,
     },
   ].concat(baseBalances)
 }

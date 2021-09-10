@@ -1,5 +1,4 @@
 import React from 'react'
-// import styled from '@emotion/styled'
 import Link from 'next/link'
 import { EyeIcon, EyeOffIcon } from '@heroicons/react/outline'
 import { ChevronRightIcon } from '@heroicons/react/solid'
@@ -8,10 +7,6 @@ import useLocalStorageState from '../hooks/useLocalStorageState'
 import useMangoStore from '../stores/useMangoStore'
 import { formatUsdValue } from '../utils'
 import { LinkButton } from './Button'
-
-// const StyledColumnHeader = styled.span`
-//   font-size: 0.6rem;
-// `
 
 const MarketsModal = ({
   isOpen,

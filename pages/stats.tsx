@@ -9,13 +9,13 @@ import useMangoStats from '../hooks/useMangoStats'
 const TABS = [
   'Totals',
   'Assets',
-  // 'Perps',
+  'Perps',
   // 'Markets',
   // 'Liquidations',
 ]
 
 export default function StatsPage() {
-  const { latestStats, stats } = useMangoStats()
+  const { latestStats, stats, perpStats } = useMangoStats()
   const [activeTab, setActiveTab] = useState(TABS[0])
 
   const handleTabChange = (tabName) => {
@@ -29,7 +29,7 @@ export default function StatsPage() {
         <div className="flex flex-col sm:flex-row pt-8 pb-3 sm:pb-6 md:pt-10">
           <h1 className={`text-th-fgd-1 text-2xl font-semibold`}>Stats</h1>
         </div>
-        <div className="bg-th-bkg-2 overflow-none p-6 rounded-lg">
+        <div className="bg-th-bkg-2 overflow-none p-4 sm:p-6 rounded-lg">
           <div className="border-b border-th-fgd-4 mb-4">
             <nav className={`-mb-px flex space-x-6`} aria-label="Tabs">
               {TABS.map((tabName) => (
@@ -53,6 +53,7 @@ export default function StatsPage() {
             activeTab={activeTab}
             latestStats={latestStats}
             stats={stats}
+            perpStats={perpStats}
           />
         </div>
       </PageBodyContainer>
@@ -60,14 +61,14 @@ export default function StatsPage() {
   )
 }
 
-const TabContent = ({ activeTab, latestStats, stats }) => {
+const TabContent = ({ activeTab, latestStats, stats, perpStats }) => {
   switch (activeTab) {
     case 'Totals':
       return <StatsTotals latestStats={latestStats} stats={stats} />
     case 'Assets':
       return <StatsAssets latestStats={latestStats} stats={stats} />
     case 'Perps':
-      return <StatsPerps />
+      return <StatsPerps perpStats={perpStats} />
     case 'Markets':
       return <div>Markets</div>
     case 'Liquidations':

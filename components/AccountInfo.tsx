@@ -6,7 +6,7 @@ import {
   ZERO_BN,
   ZERO_I80F48,
 } from '@blockworks-foundation/mango-client'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { HeartIcon } from '@heroicons/react/solid'
 import useMangoStore, { mangoClient, MNGO_INDEX } from '../stores/useMangoStore'
 import { formatUsdValue, usdFormatter } from '../utils'
@@ -82,17 +82,20 @@ export default function AccountInfo() {
     }
   }
 
-  const maintHealthRatio = useMemo(() => {
-    return mangoAccount
-      ? mangoAccount.getHealthRatio(mangoGroup, mangoCache, 'Maint')
-      : I80F48_100
-  }, [mangoAccount, mangoGroup, mangoCache])
+  const maintHealthRatio = mangoAccount
+    ? mangoAccount.getHealthRatio(mangoGroup, mangoCache, 'Maint')
+    : I80F48_100
 
-  const initHealthRatio = useMemo(() => {
-    return mangoAccount
-      ? mangoAccount.getHealthRatio(mangoGroup, mangoCache, 'Init')
-      : I80F48_100
-  }, [mangoAccount, mangoGroup, mangoCache])
+  const initHealthRatio = mangoAccount
+    ? mangoAccount.getHealthRatio(mangoGroup, mangoCache, 'Init')
+    : I80F48_100
+
+  const maintHealth = mangoAccount
+    ? mangoAccount.getHealth(mangoGroup, mangoCache, 'Maint')
+    : I80F48_100
+  const initHealth = mangoAccount
+    ? mangoAccount.getHealth(mangoGroup, mangoCache, 'Init')
+    : I80F48_100
 
   return (
     <FloatingElement showConnect>
@@ -102,15 +105,9 @@ export default function AccountInfo() {
             content={
               mangoAccount ? (
                 <div>
-                  Init Health:{' '}
-                  {mangoAccount
-                    .getHealth(mangoGroup, mangoCache, 'Init')
-                    .toFixed(4)}
+                  Init Health: {initHealth.toFixed(4)}
                   <br />
-                  Maint Health:{' '}
-                  {mangoAccount
-                    .getHealth(mangoGroup, mangoCache, 'Maint')
-                    .toFixed(4)}
+                  Maint Health: {maintHealth.toFixed(4)}
                 </div>
               ) : (
                 ''
@@ -154,7 +151,7 @@ export default function AccountInfo() {
                 ) : mangoAccount ? (
                   usdFormatter(
                     nativeI80F48ToUi(
-                      mangoAccount.getHealth(mangoGroup, mangoCache, 'Init'),
+                      initHealth,
                       mangoGroup.tokens[QUOTE_INDEX].decimals
                     ).toFixed()
                   )
@@ -177,7 +174,7 @@ export default function AccountInfo() {
                           marketConfig.marketIndex,
                           marketConfig.kind
                         ),
-                        mangoGroup.tokens[marketConfig.marketIndex].decimals
+                        mangoGroup.tokens[QUOTE_INDEX].decimals
                       ).toFixed()
                     )
                   : '0.00'}

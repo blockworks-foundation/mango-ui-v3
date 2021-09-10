@@ -1,9 +1,3 @@
-import styled from '@emotion/styled'
-
-const StyledInput = styled.input`
-  padding-bottom: 1px;
-`
-
 interface InputProps {
   type: string
   value: any
@@ -40,11 +34,11 @@ const Input = ({
           {prefix}
         </div>
       ) : null}
-      <StyledInput
+      <input
         type={type}
         value={value}
         onChange={onChange}
-        className={`${className} px-2 w-full bg-th-bkg-1 rounded h-10 text-th-fgd-1 
+        className={`${className} pb-px px-2 w-full bg-th-bkg-1 rounded h-10 text-th-fgd-1 
           border ${
             error ? 'border-th-red' : 'border-th-fgd-4'
           } default-transition hover:border-th-primary 

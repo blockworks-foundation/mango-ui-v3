@@ -47,6 +47,9 @@ export interface Balances extends BalancesBase {
   deposits?: I80F48 | null | undefined
   borrows?: I80F48 | null | undefined
   net?: I80F48 | null | undefined
+  value?: I80F48 | null | undefined
+  depositRate?: I80F48 | null | undefined
+  borrowRate?: I80F48 | null | undefined
 }
 
 export interface OpenOrdersBalances extends BalancesBase {

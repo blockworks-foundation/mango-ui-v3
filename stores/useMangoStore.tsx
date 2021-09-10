@@ -253,7 +253,6 @@ const useMangoStore = create<MangoStore>((set, get) => ({
       const walletPk = wallet?.publicKey
 
       if (!walletPk) return
-
       return mangoClient
         .getMangoAccountsForOwner(mangoGroup, walletPk, true)
         .then((mangoAccounts) => {
@@ -393,7 +392,6 @@ const useMangoStore = create<MangoStore>((set, get) => ({
         mangoAccount || get().selectedMangoAccount.current
       const set = get().set
       if (!selectedMangoAccount) return
-      console.log('selectedMangoAccount', selectedMangoAccount)
 
       if (selectedMangoAccount.spotOpenOrdersAccounts.length === 0) return
       const openOrdersAccounts =
@@ -438,23 +436,52 @@ const useMangoStore = create<MangoStore>((set, get) => ({
     },
     async updateOpenOrders() {
       const set = get().set
-      const marketConfig = get().selectedMarket.config
+      const bidAskAccounts = Object.keys(get().accountInfos).map(
+        (pk) => new PublicKey(pk)
+      )
 
       const allBidsAndAsksAccountInfos = await getMultipleAccounts(
         DEFAULT_CONNECTION,
-        [marketConfig.bidsKey, marketConfig.asksKey]
+        bidAskAccounts
       )
 
       set((state) => {
         allBidsAndAsksAccountInfos.forEach(
           ({ publicKey, context, accountInfo }) => {
-            if (context.slot >= state.connection.slot) {
-              state.connection.slot = context.slot
-              state.accountInfos[publicKey.toBase58()] = accountInfo
-            }
+            state.connection.slot = context.slot
+            state.accountInfos[publicKey.toBase58()] = accountInfo
           }
         )
       })
+    },
+    async loadMarketFills() {
+      const set = get().set
+      const selectedMarket = get().selectedMarket.current
+      if (!selectedMarket) {
+        return null
+      }
+      try {
+        const loadedFills = await selectedMarket.loadFills(
+          DEFAULT_CONNECTION,
+          10000
+        )
+        set((state) => {
+          state.selectedMarket.fills = loadedFills
+        })
+      } catch (err) {
+        console.log('Error fetching fills:', err)
+      }
+    },
+    async fetchMangoGroupCache() {
+      const set = get().set
+      const mangoGroup = get().selectedMangoGroup.current
+      if (mangoGroup) {
+        const mangoCache = await mangoGroup.loadCache(DEFAULT_CONNECTION)
+
+        set((state) => {
+          state.selectedMangoGroup.cache = mangoCache
+        })
+      }
     },
   },
 }))

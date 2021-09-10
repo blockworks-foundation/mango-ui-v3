@@ -18,6 +18,9 @@ module.exports = {
       cursor: {
         help: 'help',
       },
+      fontSize: {
+        xxs: '.65rem',
+      },
       colors: {
         'light-theme': {
           orange: {

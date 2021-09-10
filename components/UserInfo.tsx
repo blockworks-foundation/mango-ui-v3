@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react'
-import styled from '@emotion/styled'
 import useMangoStore from '../stores/useMangoStore'
 import { useOpenOrders } from '../hooks/useOpenOrders'
-// import usePerpPositions from '../hooks/usePerpPositions'
+import usePerpPositions from '../hooks/usePerpPositions'
 import FloatingElement from './FloatingElement'
 import OpenOrdersTable from './OpenOrdersTable'
 import BalancesTable from './BalancesTable'
 import PositionsTable from './PerpPositionsTable'
 import TradeHistoryTable from './TradeHistoryTable'
 // import FeeDiscountsTable from './FeeDiscountsTable'
+import Select from './Select'
+import ManualRefresh from './ManualRefresh'
 
 const TABS = [
   'Balances',
@@ -18,38 +19,31 @@ const TABS = [
   'Trade History',
 ]
 
-const StyledAlertCount = styled.span`
-  font-size: 0.6rem;
-`
-
 const UserInfoTabs = ({ activeTab, setActiveTab }) => {
   const openOrders = useOpenOrders()
-  // const perpPositions = usePerpPositions()
+  const perpPositions = usePerpPositions()
+  const connected = useMangoStore((s) => s.connection.current)
+  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const handleTabChange = (tabName) => {
     setActiveTab(tabName)
   }
 
   return (
     <div>
-      <div className={`sm:hidden`}>
+      <div className={`pb-4 sm:hidden`}>
         <label htmlFor="tabs" className={`sr-only`}>
           Select a tab
         </label>
-        <select
-          id="tabs"
-          name="tabs"
-          className={`block w-full pl-3 pr-10 py-2 bg-th-bkg-2 border border-th-fgd-4 focus:outline-none sm:text-sm rounded-md`}
-          onChange={(e) => handleTabChange(e.target.value)}
-        >
+        <Select onChange={(t) => handleTabChange(t)} value={activeTab}>
           {TABS.map((tabName) => (
-            <option key={tabName} value={tabName}>
+            <Select.Option key={tabName} value={tabName}>
               {tabName}
-            </option>
+            </Select.Option>
           ))}
-        </select>
+        </Select>
       </div>
       <div className={`hidden sm:block`}>
-        <div className={`border-b border-th-fgd-4`}>
+        <div className={`border-b border-th-fgd-4 mb-3 flex justify-between`}>
           <nav className={`-mb-px flex space-x-6`} aria-label="Tabs">
             {TABS.map((tabName) => (
               <a
@@ -67,13 +61,17 @@ const UserInfoTabs = ({ activeTab, setActiveTab }) => {
                 {tabName === 'Open Orders' && openOrders?.length > 0 ? (
                   <Count count={openOrders?.length} />
                 ) : null}
-                {/* Add back when more than one perp market */}
-                {/* {tabName === 'Perp Positions' && perpPositions?.length > 0 ? (
+                {tabName === 'Perp Positions' && perpPositions?.length > 0 ? (
                   <Count count={perpPositions?.length} />
-                ) : null} */}
+                ) : null}
               </a>
             ))}
           </nav>
+          <div>
+            {connected && mangoAccount ? (
+              <ManualRefresh className="pl-2" />
+            ) : null}
+          </div>
         </div>
       </div>
     </div>
@@ -82,9 +80,9 @@ const UserInfoTabs = ({ activeTab, setActiveTab }) => {
 
 const Count = ({ count }) => (
   <div className="absolute -top-2 -right-2 z-20">
-    <StyledAlertCount className="h-4 p-1 bg-th-bkg-4 inline-flex rounded-lg flex items-center justify-center text-th-fgd-2">
+    <span className="h-4 p-1 bg-th-bkg-4 inline-flex rounded-lg items-center justify-center text-th-fgd-2 text-xxs">
       {count}
-    </StyledAlertCount>
+    </span>
   </div>
 )
 

@@ -8,16 +8,17 @@ import ManualRefresh from './ManualRefresh'
 import useOraclePrice from '../hooks/useOraclePrice'
 import DayHighLow from './DayHighLow'
 import { useEffect } from 'react'
-import { formatUsdValue } from '../utils'
+import { formatUsdValue, usdFormatter } from '../utils'
 import { PerpMarket } from '@blockworks-foundation/mango-client'
+import BN from 'bn.js'
 
 const SECONDS = 1000
 
-function calculateFundingRate(perpStats, perpMarket, oraclePrice) {
+function calculateFundingRate(perpStats, perpMarket) {
   const oldestStat = perpStats[perpStats.length - 1]
   const latestStat = perpStats[0]
 
-  if (!latestStat || !perpMarket || !oraclePrice) return 0.0
+  if (!latestStat || !(perpMarket instanceof PerpMarket)) return 0.0
 
   // Averaging long and short funding excludes socialized loss
   const startFunding =
@@ -31,14 +32,16 @@ function calculateFundingRate(perpStats, perpMarket, oraclePrice) {
   const fundingInQuoteDecimals =
     fundingDifference / Math.pow(10, perpMarket.quoteDecimals)
 
-  // TODO - use avgPrice and discard oraclePrice once stats are better
-  // const avgPrice = (latestStat.baseOraclePrice + oldestStat.baseOraclePrice) / 2
-  const basePriceInBaseLots = oraclePrice * perpMarket.baseLotsToNumber(1)
+  const avgPrice =
+    (parseFloat(latestStat.baseOraclePrice) +
+      parseFloat(oldestStat.baseOraclePrice)) /
+    2
+  const basePriceInBaseLots = avgPrice * perpMarket.baseLotsToNumber(new BN(1))
   return (fundingInQuoteDecimals / basePriceInBaseLots) * 100
 }
 
 function parseOpenInterest(perpMarket: PerpMarket) {
-  if (!perpMarket) return 0
+  if (!(perpMarket instanceof PerpMarket)) return 0
 
   return perpMarket.baseLotsToNumber(perpMarket.openInterest) / 2
 }
@@ -56,10 +59,11 @@ const MarketHeader = () => {
   const connected = useMangoStore((s) => s.wallet.connected)
 
   const [ohlcv, setOhlcv] = useState(null)
-  const [loading, setLoading] = useState(false)
+  const [, setLoading] = useState(false)
   const [perpStats, setPerpStats] = useState([])
+  const [perpVolume, setPerpVolume] = useState(0)
   const change = ohlcv ? ((ohlcv.c[0] - ohlcv.o[0]) / ohlcv.o[0]) * 100 : ''
-  const volume = ohlcv ? ohlcv.v[0] : '--'
+  // const volume = ohlcv ? ohlcv.v[0] : '--'
 
   const fetchPerpStats = useCallback(async () => {
     const urlParams = new URLSearchParams({ mangoGroup: groupConfig.name })
@@ -68,6 +72,11 @@ const MarketHeader = () => {
       `https://mango-stats-v3.herokuapp.com/perp/funding_rate?` + urlParams
     )
     const parsedPerpStats = await perpStats.json()
+    const perpVolume = await fetch(
+      `https://event-history-api.herokuapp.com/stats/perps/${marketConfig.publicKey.toString()}`
+    )
+    const parsedPerpVolume = await perpVolume.json()
+    setPerpVolume(parsedPerpVolume?.data?.volume)
     setPerpStats(parsedPerpStats)
   }, [selectedMarketName])
 
@@ -178,26 +187,19 @@ const MarketHeader = () => {
               <MarketDataLoader />
             )}
           </div>
-          <div className="">
-            <div className="text-th-fgd-3 tiny-text pb-0.5">Daily Vol</div>
-            <div className="font-semibold text-th-fgd-1 text-xs">
-              {ohlcv && !loading && volume ? (
-                volume !== '--' ? (
-                  <>
-                    {volume.toFixed(2)}
-                    <span className="ml-1 text-th-fgd-3 tiny-text pb-0.5">
-                      {baseSymbol}
-                    </span>
-                  </>
-                ) : (
-                  volume
-                )
-              ) : (
-                <MarketDataLoader />
-              )}
-            </div>
-          </div>
           {isPerpMarket ? (
+            <div className="">
+              <div className="text-th-fgd-3 tiny-text pb-0.5">24hr Volume</div>
+              <div className="font-semibold text-th-fgd-1 text-xs">
+                {perpVolume ? (
+                  usdFormatter(perpVolume, 0)
+                ) : (
+                  <MarketDataLoader />
+                )}
+              </div>
+            </div>
+          ) : null}
+          {isPerpMarket && selectedMarket instanceof PerpMarket ? (
             <>
               <div className="">
                 <div className="text-th-fgd-3 tiny-text pb-0.5">
@@ -205,11 +207,9 @@ const MarketHeader = () => {
                 </div>
                 <div className="font-semibold text-th-fgd-1 text-xs">
                   {selectedMarket ? (
-                    `${calculateFundingRate(
-                      perpStats,
-                      selectedMarket,
-                      oraclePrice
-                    )?.toFixed(4)}%`
+                    `${calculateFundingRate(perpStats, selectedMarket)?.toFixed(
+                      4
+                    )}%`
                   ) : (
                     <MarketDataLoader />
                   )}
