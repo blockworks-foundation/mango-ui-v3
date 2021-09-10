@@ -11,33 +11,6 @@ const icons = {
   MNGO: '/assets/icons/mngo.svg',
 }
 
-const dailyStartTime = new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).getTime()
-const weeklyStartTime = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).getTime()
-
-const getAverageStats = (stats, startFrom, type) => {
-  const timeFilteredStats = stats.filter(
-    (d) => new Date(d.time).getTime() > startFrom
-  )
-  const sum = timeFilteredStats.map((s) => s[type]).reduce((a, b) => a + b, 0)
-  const avg = sum / timeFilteredStats.length || 0
-
-  return (avg * 100).toFixed(4)
-}
-
-const AverageInterest = ({ periodLabel, statTypeLabel, interest }) => {
-  return (
-    <>
-      <div className="text-2xl font-bold text-center text-th-fgd-4">
-        {periodLabel}
-      </div>
-      <div className="text-center text-th-fgd-3 text-sm mt-1 font-extrabold">
-        {statTypeLabel}
-      </div>
-      <div className="text-center text-3xl mt-3">{interest}%</div>
-    </>
-  )
-}
-
 export default function StatsAssets({ latestStats, stats }) {
   const [selectedAsset, setSelectedAsset] = useState<string>('BTC')
 
@@ -129,52 +102,6 @@ export default function StatsAssets({ latestStats, stats }) {
             data={selectedStatsData}
             labelFormat={(x) => `${(x * 100).toFixed(5)}%`}
             type="bar"
-          />
-        </div>
-      </div>
-      <div className="grid md:grid-flow-col gap-4">
-        <div className="border border-th-bkg-3 relative p-4 rounded-md">
-          <AverageInterest
-            periodLabel="24h Avg"
-            statTypeLabel="Deposit Interest"
-            interest={getAverageStats(
-              selectedStatsData,
-              dailyStartTime,
-              'depositRate'
-            )}
-          />
-        </div>
-        <div className="border border-th-bkg-3 relative p-4 rounded-md">
-          <AverageInterest
-            periodLabel="7d Avg"
-            statTypeLabel="Deposit Interest"
-            interest={getAverageStats(
-              selectedStatsData,
-              weeklyStartTime,
-              'depositRate'
-            )}
-          />
-        </div>
-        <div className="border border-th-bkg-3 relative p-4 rounded-md">
-          <AverageInterest
-            periodLabel="24h Avg"
-            statTypeLabel="Borrow Interest"
-            interest={getAverageStats(
-              selectedStatsData,
-              dailyStartTime,
-              'borrowRate'
-            )}
-          />
-        </div>
-        <div className="border border-th-bkg-3 relative p-4 rounded-md">
-          <AverageInterest
-            periodLabel="7d Avg"
-            statTypeLabel="Borrow Interest"
-            interest={getAverageStats(
-              selectedStatsData,
-              weeklyStartTime,
-              'borrowRate'
-            )}
           />
         </div>
       </div>
