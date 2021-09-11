@@ -222,6 +222,7 @@ const TVChartContainer = () => {
           mangoGroup.mangoCache,
           market,
           wallet,
+          order,
           order.side,
           orderPrice,
           order.size,
@@ -235,76 +236,6 @@ const TVChartContainer = () => {
           market,
           wallet,
           order,
-          order.side,
-          orderPrice,
-          order.size,
-          orderType,
-          0,
-          order.side === 'buy' ? askInfo : bidInfo
-        )
-      }
-
-      notify({ title: 'Successfully placed trade', txid })
-    } catch (e) {
-      notify({
-        title: 'Error placing order',
-        description: e.message,
-        txid: e.txid,
-        type: 'error',
-      })
-    } finally {
-      sleep(1000).then(() => {
-        actions.fetchMangoAccounts()
-        actions.updateOpenOrders()
-      })
-    }
-  }
-
-
-  const handlePlaceOrder = async ( 
-    order: Order | PerpOrder,
-    market: Market | PerpMarket,
-    price: number
-  ) => {
-    const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
-    const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
-    const { askInfo, bidInfo } = useMangoStore.getState().selectedMarket
-    const wallet = useMangoStore.getState().wallet.current
-
-    if (!wallet || !mangoGroup || !mangoAccount || !market) return
-
-    try {
-      const orderPrice = price
-
-      if (!orderPrice) {
-        notify({
-          title: 'Price not available',
-          description: 'Please try again',
-          type: 'error',
-        })
-      }
-
-      const orderType = 'limit'
-      let txid
-      if (market instanceof Market) {
-        txid = await mangoClient.placeSpotOrder(
-          mangoGroup,
-          mangoAccount,
-          mangoGroup.mangoCache,
-          market,
-          wallet,
-          order.side,
-          orderPrice,
-          order.size,
-          orderType
-        )
-      } else {
-        txid = await mangoClient.placePerpOrder(
-          mangoGroup,
-          mangoAccount,
-          mangoGroup.mangoCache,
-          market,
-          wallet,
           order.side,
           orderPrice,
           order.size,
@@ -376,9 +307,7 @@ const TVChartContainer = () => {
           `,
             callback: (res) => {
               if (res) {
-//                handleModifyOrder(order, market.account, updatedOrderPrice)
-                handleCancelOrder(order, market.account)
-                handlePlaceOrder(order, market.account, updatedOrderPrice)
+                handleModifyOrder(order, market.account, updatedOrderPrice)
               } else {
                 this.setPrice(currentOrderPrice)
               }
