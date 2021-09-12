@@ -1,0 +1,38 @@
+/* orderbook flash */
+
+@keyframes highlight {
+  from {
+    background-color: var(--primary);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+
+@-webkit-keyframes highlight {
+  from {
+    background-color: var(--primary);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+@-moz-keyframes highlight {
+  from {
+    background-color: var(--primary);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+
+.flash {
+  -moz-animation: highlight 0.5s ease 0s 1 alternate;
+  -webkit-animation: highlight 0.5s ease 0s 1 alternate;
+  animation: highlight 0.5s ease 0s 1 alternate;
+}
+
+/* orderbook */
+.order-size {
+  z-index: 40;
+}
