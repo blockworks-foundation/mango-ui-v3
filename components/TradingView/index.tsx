@@ -8,6 +8,8 @@ import {
 } from '../charting_library' // Make sure to follow step 1 of the README
 import { CHART_DATA_FEED } from '../../utils/chartDataConnector'
 import useMangoStore from '../../stores/useMangoStore'
+import { useViewport } from '../../hooks/useViewport'
+import { breakpoints } from '../TradePageGrid'
 
 // This is a basic example of how to create a TV widget
 // You can add more feature such as storing charts in localStorage
@@ -33,6 +35,8 @@ export interface ChartContainerProps {
 const TVChartContainer = () => {
   const selectedMarketConfig = useMangoStore((s) => s.selectedMarket.config)
   const { theme } = useTheme()
+  const { width } = useViewport()
+  const isMobile = width ? width < breakpoints.sm : false
 
   // @ts-ignore
   const defaultProps: ChartContainerProps = {
@@ -71,7 +75,7 @@ const TVChartContainer = () => {
         'use_localstorage_for_settings',
         'timeframes_toolbar',
         // 'volume_force_overlay',
-        // 'left_toolbar',
+        isMobile && 'left_toolbar',
         'show_logo_on_all_charts',
         'caption_buttons_text_if_possible',
         'header_settings',
@@ -80,13 +84,12 @@ const TVChartContainer = () => {
         'compare_symbol',
         'header_screenshot',
         // 'header_widget_dom_node',
+        // 'header_widget',
         'header_saveload',
         'header_undo_redo',
         'header_interval_dialog_button',
         'show_interval_dialog_on_key_press',
         'header_symbol_search',
-        // 'header_resolutions',
-        // 'header_widget',
       ],
       load_last_chart: true,
       client_id: defaultProps.clientId,
@@ -141,7 +144,7 @@ const TVChartContainer = () => {
       // })
     })
     //eslint-disable-next-line
-  }, [selectedMarketConfig, theme])
+  }, [selectedMarketConfig, theme, isMobile])
 
   return <div id={defaultProps.containerId} className="tradingview-chart" />
 }

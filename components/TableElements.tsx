@@ -39,12 +39,14 @@ type ExpandableRowProps = {
   buttonTemplate: React.ReactNode
   index: number
   panelTemplate: React.ReactNode
+  rounded?: boolean
 }
 
 export const ExpandableRow = ({
   buttonTemplate,
   index,
   panelTemplate,
+  rounded,
 }: ExpandableRowProps) => {
   return (
     <Disclosure>
@@ -55,7 +57,13 @@ export const ExpandableRow = ({
               index % 2 === 0
                 ? `bg-[rgba(255,255,255,0.03)]`
                 : `bg-[rgba(255,255,255,0.07)]`
-            } default-transition font-normal p-4 rounded-none text-th-fgd-1 w-full hover:bg-th-bkg-4 focus:outline-none`}
+            } default-transition font-normal p-4 text-th-fgd-1 w-full hover:bg-th-bkg-4 focus:outline-none ${
+              rounded
+                ? open
+                  ? 'rounded-b-none'
+                  : 'rounded-lg'
+                : 'rounded-none'
+            }`}
           >
             <div className="grid grid-cols-12 grid-rows-1">
               {buttonTemplate}
@@ -73,7 +81,13 @@ export const ExpandableRow = ({
               index % 2 === 0
                 ? `bg-[rgba(255,255,255,0.03)]`
                 : `bg-[rgba(255,255,255,0.07)]`
-            } px-4`}
+            } px-4 ${
+              rounded
+                ? open
+                  ? 'rounded-b-lg'
+                  : 'rounded-none'
+                : 'rounded-none'
+            }`}
           >
             <div className="border-t border-[rgba(255,255,255,0.1)] grid grid-cols-2 grid-rows-1 gap-4 py-4">
               {panelTemplate}

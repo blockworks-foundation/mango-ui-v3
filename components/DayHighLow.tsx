@@ -1,7 +1,11 @@
 import { formatUsdValue } from '../utils'
 import { MarketDataLoader } from './MarketHeader'
+import { useViewport } from '../hooks/useViewport'
+import { breakpoints } from './TradePageGrid'
 
 const DayHighLow = ({ high, low, latest }) => {
+  const { width } = useViewport()
+  const isMobile = width ? width < breakpoints.sm : false
   let rangePercent = 0
 
   if (high) {
@@ -19,14 +23,18 @@ const DayHighLow = ({ high, low, latest }) => {
         <div className="pr-2 text-th-fgd-1 text-xs">
           {low ? formatUsdValue(low) : <MarketDataLoader />}
         </div>
-        <div className="h-1.5 flex rounded bg-th-bkg-3 w-24">
-          <div
-            style={{
-              width: `${rangePercent}%`,
-            }}
-            className="flex rounded bg-th-primary"
-          ></div>
-        </div>
+        {!isMobile ? (
+          <div className="h-1.5 flex rounded bg-th-bkg-3 w-24">
+            <div
+              style={{
+                width: `${rangePercent}%`,
+              }}
+              className="flex rounded bg-th-primary"
+            ></div>
+          </div>
+        ) : (
+          '–'
+        )}
         <div className="pl-2 text-th-fgd-1 text-xs">
           {high ? formatUsdValue(high) : <MarketDataLoader />}
         </div>

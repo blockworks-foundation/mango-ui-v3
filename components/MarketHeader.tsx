@@ -11,6 +11,8 @@ import { useEffect } from 'react'
 import { formatUsdValue, usdFormatter } from '../utils'
 import { PerpMarket } from '@blockworks-foundation/mango-client'
 import BN from 'bn.js'
+import { useViewport } from '../hooks/useViewport'
+import { breakpoints } from './TradePageGrid'
 
 const SECONDS = 1000
 
@@ -57,6 +59,8 @@ const MarketHeader = () => {
   const previousMarketName: string = usePrevious(selectedMarketName)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const connected = useMangoStore((s) => s.wallet.connected)
+  const { width } = useViewport()
+  const isMobile = width ? width < breakpoints.sm : false
 
   const [ohlcv, setOhlcv] = useState(null)
   const [, setLoading] = useState(false)
@@ -162,14 +166,14 @@ const MarketHeader = () => {
             </div>
           </div>
         </div>
-        <div className="grid grid-flow-row grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-flow-col lg:grid-rows-1 lg:gap-6">
-          <div className="">
+        <div className="grid grid-flow-row grid-cols-2 gap-4 lg:grid-flow-col lg:grid-rows-1 lg:gap-6">
+          <div>
             <div className="text-th-fgd-3 tiny-text pb-0.5">Oracle price</div>
             <div className="font-semibold text-th-fgd-1 text-xs">
               {oraclePrice ? formatUsdValue(oraclePrice) : '--'}
             </div>
           </div>
-          <div className="">
+          <div>
             <div className="text-th-fgd-3 tiny-text pb-0.5">Daily Change</div>
             {change || change === 0 ? (
               <div
@@ -188,7 +192,7 @@ const MarketHeader = () => {
             )}
           </div>
           {isPerpMarket ? (
-            <div className="">
+            <div>
               <div className="text-th-fgd-3 tiny-text pb-0.5">24hr Volume</div>
               <div className="font-semibold text-th-fgd-1 text-xs">
                 {perpVolume ? (
@@ -201,7 +205,7 @@ const MarketHeader = () => {
           ) : null}
           {isPerpMarket && selectedMarket instanceof PerpMarket ? (
             <>
-              <div className="">
+              <div>
                 <div className="text-th-fgd-3 tiny-text pb-0.5">
                   Avg Funding Rate (1h)
                 </div>
@@ -215,7 +219,7 @@ const MarketHeader = () => {
                   )}
                 </div>
               </div>
-              <div className="">
+              <div>
                 <div className="text-th-fgd-3 tiny-text pb-0.5">
                   Open Interest
                 </div>
@@ -238,8 +242,8 @@ const MarketHeader = () => {
           />
         </div>
       </div>
-      <div className="absolute right-4 bottom-0 sm:bottom-auto lg:right-6 flex items-center justify-end">
-        <UiLock />
+      <div className="absolute right-4 bottom-auto lg:right-6 flex items-center justify-end">
+        {!isMobile ? <UiLock /> : null}
         {connected && mangoAccount ? <ManualRefresh className="pl-2" /> : null}
       </div>
     </div>
