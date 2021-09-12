@@ -591,7 +591,7 @@ const OrderbookRow = React.memo<any>(
               </div>
             </div>
             <div
-              className={`absolute right-3 z-50 ${
+              className={`absolute right-3 z-30 ${
                 hasOpenOrder ? 'text-th-primary' : 'text-th-fgd-1'
               }`}
               onClick={handleSizeClick}
@@ -602,7 +602,7 @@ const OrderbookRow = React.memo<any>(
         ) : (
           <>
             <div
-              className={`absolute left-3 z-50 ${
+              className={`absolute left-3 z-30 ${
                 hasOpenOrder ? 'text-th-primary' : 'text-th-fgd-1'
               }`}
               onClick={handleSizeClick}
