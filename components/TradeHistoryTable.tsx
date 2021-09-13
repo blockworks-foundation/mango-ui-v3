@@ -13,7 +13,7 @@ import { ExpandableRow } from './TableElements'
 import MobileTableHeader from './mobile/MobileTableHeader'
 import { formatUsdValue } from '../utils'
 
-const TradeHistoryTable = ({ numTrades }) => {
+const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
   const { asPath } = useRouter()
   const tradeHistory = useTradeHistory({ excludePerpLiquidations: true })
   const { items, requestSort, sortConfig } = useSortableData(tradeHistory)
