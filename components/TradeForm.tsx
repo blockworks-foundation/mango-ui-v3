@@ -9,7 +9,7 @@ import { notify } from '../utils/notifications'
 import { calculateTradePrice, getDecimalCount, sleep } from '../utils'
 import FloatingElement from './FloatingElement'
 import { floorToDecimal } from '../utils/index'
-import useMangoStore, { mangoClient } from '../stores/useMangoStore'
+import useMangoStore from '../stores/useMangoStore'
 import Button from './Button'
 import TradeType from './TradeType'
 import Input from './Input'
@@ -32,6 +32,7 @@ export default function TradeForm() {
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
+  const mangoClient = useMangoStore((s) => s.connection.client)
   const market = useMangoStore((s) => s.selectedMarket.current)
   const { side, baseSize, quoteSize, price, tradeType } = useMangoStore(
     (s) => s.tradeForm
@@ -373,6 +374,7 @@ export default function TradeForm() {
               value={baseSize}
               className="rounded-r-none"
               wrapperClassName="w-3/5"
+              prefixClassName="w-12"
               prefix={'Size'}
               suffix={marketConfig.baseSymbol}
             />

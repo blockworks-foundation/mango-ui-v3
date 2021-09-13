@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 import { useOpenOrders } from '../hooks/useOpenOrders'
 import Button from './Button'
 import Loading from './Loading'
-import useMangoStore, { mangoClient } from '../stores/useMangoStore'
+import useMangoStore from '../stores/useMangoStore'
 import { notify } from '../utils/notifications'
 import SideBadge from './SideBadge'
 import { Order, Market } from '@project-serum/serum/lib/market'
@@ -33,6 +33,7 @@ const OpenOrdersTable = () => {
       useMangoStore.getState().selectedMangoGroup.current
     const selectedMangoAccount =
       useMangoStore.getState().selectedMangoAccount.current
+    const mangoClient = useMangoStore.getState().connection.client
     setCancelId(order.orderId)
     let txid
     try {
