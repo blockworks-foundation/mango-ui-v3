@@ -54,10 +54,8 @@ export const ExpandableRow = ({
         <>
           <Disclosure.Button
             className={`${
-              index % 2 === 0
-                ? `bg-[rgba(255,255,255,0.03)]`
-                : `bg-[rgba(255,255,255,0.07)]`
-            } default-transition font-normal p-4 text-th-fgd-1 w-full hover:bg-th-bkg-4 focus:outline-none ${
+              index % 2 === 0 ? `bg-th-bkg-3` : `bg-th-bkg-4`
+            } default-transition font-normal p-4 text-th-fgd-1 w-full hover:filter hover:brightness-90 focus:outline-none ${
               rounded
                 ? open
                   ? 'rounded-b-none'

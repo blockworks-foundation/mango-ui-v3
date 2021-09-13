@@ -155,27 +155,29 @@ const TradePageGrid = () => {
       </div>
     </ResponsiveGridLayout>
   ) : (
-    <div className="pt-4 px-4">
-      <div className="bg-th-bkg-2 h-96 mb-2 p-2 rounded-lg">
-        <TVChartContainer />
+    <>
+      <div className="pb-24 pt-4 px-4">
+        <div className="bg-th-bkg-2 h-96 mb-2 p-2 rounded-lg">
+          <TVChartContainer />
+        </div>
+        <div className="mb-2">
+          <UserMarketInfo />
+        </div>
+        <div className="mb-2">
+          <AccountInfo />
+        </div>
+        <div className="h-72 mb-2">
+          <Orderbook depth={orderbookDepth} />
+        </div>
+        <div className="h-72 mb-2">
+          <RecentMarketTrades />
+        </div>
+        <UserInfo />
       </div>
-      <div className="mb-2">
-        <UserMarketInfo />
-      </div>
-      <div className="mb-2">
-        <AccountInfo />
-      </div>
-      <div className="mb-2">
+      <div className="bg-th-bkg-2 bottom-0 left-0 fixed w-full z-50">
         <TradeForm />
       </div>
-      <div className="h-72 mb-2">
-        <Orderbook depth={orderbookDepth} />
-      </div>
-      <div className="h-72 mb-2">
-        <RecentMarketTrades />
-      </div>
-      <UserInfo />
-    </div>
+    </>
   )
 }
 
