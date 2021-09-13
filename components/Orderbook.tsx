@@ -322,7 +322,7 @@ export default function Orderbook({ depth = 8 }) {
                   </div>
                 </div>
                 <div className="flex">
-                  <div className="w-1/2 order-size">
+                  <div className="w-1/2 z-40">
                     {orderbookData?.bids.map(
                       ({
                         price,
@@ -350,7 +350,7 @@ export default function Orderbook({ depth = 8 }) {
                       )
                     )}
                   </div>
-                  <div className="w-1/2 order-size">
+                  <div className="w-1/2 z-40">
                     {orderbookData?.asks.map(
                       ({
                         price,
