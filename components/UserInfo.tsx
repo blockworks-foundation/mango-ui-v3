@@ -93,7 +93,7 @@ const TabContent = ({ activeTab }) => {
     case 'Balances':
       return <BalancesTable />
     case 'Trade History':
-      return <TradeHistoryTable />
+      return <TradeHistoryTable numTrades={100} />
     case 'Perp Positions':
       return <PositionsTable />
     // case 'Fees':

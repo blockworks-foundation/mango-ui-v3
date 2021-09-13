@@ -13,7 +13,7 @@ import { ExpandableRow } from './TableElements'
 import MobileTableHeader from './mobile/MobileTableHeader'
 import { formatUsdValue } from '../utils'
 
-const TradeHistoryTable = () => {
+const TradeHistoryTable = ({ numTrades }) => {
   const { asPath } = useRouter()
   const tradeHistory = useTradeHistory({ excludePerpLiquidations: true })
   const { items, requestSort, sortConfig } = useSortableData(tradeHistory)
@@ -35,6 +35,8 @@ const TradeHistoryTable = () => {
       </>
     )
   }
+
+  const filteredTrades = numTrades ? items.slice(0, numTrades) : items
 
   return (
     <div className="flex flex-col pb-2 pt-4">
@@ -184,7 +186,7 @@ const TradeHistoryTable = () => {
                   </TrHead>
                 </thead>
                 <tbody>
-                  {items.map((trade: any, index) => (
+                  {filteredTrades.map((trade: any, index) => (
                     <TrBody
                       index={index}
                       key={`${trade.seqNum}${trade.marketName}`}
@@ -315,6 +317,13 @@ const TradeHistoryTable = () => {
               ) : null}
             </div>
           )}
+        </div>
+        <div className="flex items-center">
+          {numTrades && items.length > numTrades ? (
+            <div className="mx-auto mt-4">
+              <Link href="/account">View all trades in the Account page</Link>
+            </div>
+          ) : null}
         </div>
       </div>
     </div>
