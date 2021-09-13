@@ -40,13 +40,13 @@ const FloatingElement: FunctionComponent<FloatingElementProps> = ({
   const connected = useMangoStore((s) => s.wallet.connected)
   const wallet = useMangoStore((s) => s.wallet.current)
   return (
-    <div className="m-1 p-1 bg-th-bkg-2 rounded-lg h-full">
+    <div className="md:m-1 md:p-1 bg-th-bkg-2 rounded-lg h-full">
       <div
         className={`thin-scroll p-2.5 overflow-auto overflow-x-hidden relative h-full ${className}`}
       >
         {!connected && showConnect ? (
-          <div className="absolute top-0 left-0 w-full h-full z-30">
-            <div className="flex flex-col h-full items-center justify-center relative z-30">
+          <div className="absolute top-0 left-0 w-full h-full z-10">
+            <div className="flex flex-col h-full items-center justify-center relative z-10">
               <EmptyState
                 buttonText="Connect"
                 icon={<LinkIcon />}

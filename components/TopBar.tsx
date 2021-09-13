@@ -59,7 +59,7 @@ const TopBar = () => {
                 <ThemeSwitch />
               </div>
               {mangoAccount ? (
-                <div className="pl-3">
+                <div className="pl-2">
                   <button
                     className="border border-th-bkg-4 py-1 px-2 rounded text-xs focus:outline-none hover:border-th-fgd-4"
                     onClick={() => setShowAccountsModal(true)}
@@ -74,7 +74,7 @@ const TopBar = () => {
                 </div>
               ) : null}
               <div className="flex">
-                <div className="hidden md:block pl-3">
+                <div className="hidden md:block pl-2">
                   <ConnectWalletButton />
                 </div>
               </div>

@@ -59,7 +59,7 @@ export const ExpandableRow = ({
               rounded
                 ? open
                   ? 'rounded-b-none'
-                  : 'rounded-lg'
+                  : 'rounded-md'
                 : 'rounded-none'
             }`}
           >
@@ -82,12 +82,12 @@ export const ExpandableRow = ({
             } px-4 ${
               rounded
                 ? open
-                  ? 'rounded-b-lg'
+                  ? 'rounded-b-md'
                   : 'rounded-none'
                 : 'rounded-none'
             }`}
           >
-            <div className="border-t border-[rgba(255,255,255,0.1)] grid grid-cols-2 grid-rows-1 gap-4 py-4">
+            <div className="grid grid-cols-2 grid-rows-1 gap-4 py-4">
               {panelTemplate}
             </div>
           </Disclosure.Panel>

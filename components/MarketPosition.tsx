@@ -143,26 +143,26 @@ export default function MarketPosition() {
                 {isLoading ? (
                   <DataLoader />
                 ) : perpAccount && !perpAccount.basePosition.eq(ZERO_BN) ? (
-                  <div className="flex items-center">
-                    <SideBadge
-                      side={
-                        perpAccount.basePosition.gt(ZERO_BN) ? 'long' : 'short'
-                      }
-                    />
-                    <div className="pl-2">
-                      {perpAccount &&
-                      Math.abs(
-                        selectedMarket.baseLotsToNumber(
-                          perpAccount.basePosition
-                        )
-                      ) > 0
-                        ? `${Math.abs(
-                            selectedMarket.baseLotsToNumber(
-                              perpAccount.basePosition
-                            )
-                          )} ${baseSymbol}`
-                        : `0 ${baseSymbol}`}
-                    </div>
+                  <div>
+                    <span
+                      className={`mr-1 ${
+                        perpAccount.basePosition.gt(ZERO_BN)
+                          ? 'text-th-green'
+                          : 'text-th-red'
+                      }`}
+                    >
+                      {perpAccount.basePosition.gt(ZERO_BN) ? 'LONG' : 'SHORT'}
+                    </span>
+                    {perpAccount &&
+                    Math.abs(
+                      selectedMarket.baseLotsToNumber(perpAccount.basePosition)
+                    ) > 0
+                      ? `${Math.abs(
+                          selectedMarket.baseLotsToNumber(
+                            perpAccount.basePosition
+                          )
+                        )} ${baseSymbol}`
+                      : `0 ${baseSymbol}`}
                   </div>
                 ) : (
                   '--'
@@ -254,6 +254,19 @@ export default function MarketPosition() {
                     </LinkButton>
                   )}
                 </div>
+              </div>
+              <div className="col-span-2">
+                {perpAccount &&
+                Math.abs(
+                  selectedMarket.baseLotsToNumber(perpAccount.basePosition)
+                ) > 0 ? (
+                  <Button
+                    onClick={() => setShowMarketCloseModal(true)}
+                    className="mt-3 w-full"
+                  >
+                    <span>Market Close</span>
+                  </Button>
+                ) : null}
               </div>
             </>
           ) : (
@@ -413,7 +426,6 @@ export default function MarketPosition() {
               )}
             </div>
           </div>
-
           {perpAccount &&
           Math.abs(selectedMarket.baseLotsToNumber(perpAccount.basePosition)) >
             0 ? (

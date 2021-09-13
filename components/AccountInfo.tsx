@@ -228,6 +228,82 @@ export default function AccountInfo() {
                 </LinkButton>
               </div>
             </div>
+            <div className="border border-th-bkg-4 rounded flex items-center my-2 p-2.5">
+              <div className="flex items-center pr-2">
+                <HeartIcon
+                  className="h-5 mr-1.5 w-5 text-th-primary"
+                  aria-hidden="true"
+                />
+                <span>
+                  <Tooltip
+                    content={
+                      <div>
+                        Account will be liquidated if Health Ratio reaches 0%.{' '}
+                        <a
+                          href="https://docs.mango.markets/mango-v3/overview#health"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Learn more
+                        </a>
+                      </div>
+                    }
+                  >
+                    <div className="cursor-help font-normal text-th-fgd-3 leading-4 border-b border-th-fgd-3 border-dashed border-opacity-20 default-transition hover:border-th-bkg-2">
+                      Health
+                    </div>
+                  </Tooltip>
+                </span>
+              </div>
+              <div className="h-1.5 flex flex-grow rounded bg-th-bkg-4">
+                <div
+                  style={{
+                    width: `${maintHealthRatio}%`,
+                  }}
+                  className={`flex rounded ${
+                    maintHealthRatio.toNumber() > 30
+                      ? 'bg-th-green'
+                      : initHealthRatio.toNumber() > 0
+                      ? 'bg-th-orange'
+                      : 'bg-th-red'
+                  }`}
+                ></div>
+              </div>
+              <div className="pl-2 text-right">
+                {maintHealthRatio.gt(I80F48_100)
+                  ? '>100'
+                  : maintHealthRatio.toFixed(2)}
+                %
+              </div>
+            </div>
+            <div className={`grid grid-cols-2 grid-rows-1 gap-4 pt-4`}>
+              <Button
+                onClick={() => setShowDepositModal(true)}
+                className="w-full"
+                disabled={!connected}
+              >
+                <span>Deposit</span>
+              </Button>
+              <Button
+                onClick={() => setShowWithdrawModal(true)}
+                className="w-full"
+                disabled={!connected || !mangoAccount}
+              >
+                <span>Withdraw</span>
+              </Button>
+            </div>
+            {showDepositModal && (
+              <DepositModal
+                isOpen={showDepositModal}
+                onClose={handleCloseDeposit}
+              />
+            )}
+            {showWithdrawModal && (
+              <WithdrawModal
+                isOpen={showWithdrawModal}
+                onClose={handleCloseWithdraw}
+              />
+            )}
           </div>
         ) : (
           <div className="col-span-2">
