@@ -8,7 +8,7 @@ import {
 } from '@blockworks-foundation/mango-client'
 import { useCallback, useState } from 'react'
 import { HeartIcon } from '@heroicons/react/solid'
-import useMangoStore, { mangoClient, MNGO_INDEX } from '../stores/useMangoStore'
+import useMangoStore, { MNGO_INDEX } from '../stores/useMangoStore'
 import { formatUsdValue, usdFormatter } from '../utils'
 import { notify } from '../utils/notifications'
 import { LinkButton } from './Button'
@@ -29,6 +29,7 @@ export default function AccountInfo() {
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const isLoading = useMangoStore((s) => s.selectedMangoAccount.initialLoad)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
+  const mangoClient = useMangoStore((s) => s.connection.client)
   const actions = useMangoStore((s) => s.actions)
 
   const [showDepositModal, setShowDepositModal] = useState(false)

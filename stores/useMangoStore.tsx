@@ -73,8 +73,6 @@ export const programId = new PublicKey(defaultMangoGroupIds.mangoProgramId)
 export const serumProgramId = new PublicKey(defaultMangoGroupIds.serumProgramId)
 const mangoGroupPk = new PublicKey(defaultMangoGroupIds.publicKey)
 
-export const mangoClient = new MangoClient(DEFAULT_CONNECTION, programId)
-
 export const INITIAL_STATE = {
   WALLET: {
     providerUrl: null,
@@ -115,6 +113,7 @@ interface MangoStore extends State {
     current: Connection
     websocket: Connection
     endpoint: string
+    client: MangoClient
     slot: number
   }
   selectedMarket: {
@@ -172,6 +171,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
     cluster: CLUSTER,
     current: DEFAULT_CONNECTION,
     websocket: WEBSOCKET_CONNECTION,
+    client: new MangoClient(DEFAULT_CONNECTION, programId),
     endpoint: ENDPOINT.url,
     slot: 0,
   },
@@ -221,11 +221,12 @@ const useMangoStore = create<MangoStore>((set, get) => ({
       const groupConfig = get().selectedMangoGroup.config
       const wallet = get().wallet.current
       const connected = get().wallet.connected
+      const connection = get().connection.current
       const set = get().set
 
       if (wallet?.publicKey && connected) {
         const ownedTokenAccounts = await getTokenAccountsByOwnerWithWrappedSol(
-          DEFAULT_CONNECTION,
+          connection,
           wallet.publicKey
         )
         const tokens = []
@@ -249,6 +250,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
     async fetchMangoAccounts() {
       const set = get().set
       const mangoGroup = get().selectedMangoGroup.current
+      const mangoClient = get().connection.client
       const wallet = get().wallet.current
       const walletPk = wallet?.publicKey
 
@@ -299,6 +301,8 @@ const useMangoStore = create<MangoStore>((set, get) => ({
       const set = get().set
       const mangoGroupConfig = get().selectedMangoGroup.config
       const selectedMarketConfig = get().selectedMarket.config
+      const mangoClient = get().connection.client
+      const connection = get().connection.current
 
       return mangoClient
         .getMangoGroup(mangoGroupPk)
@@ -309,9 +313,9 @@ const useMangoStore = create<MangoStore>((set, get) => ({
           let allMarketAccountInfos, mangoCache
           try {
             const resp = await Promise.all([
-              getMultipleAccounts(DEFAULT_CONNECTION, allMarketPks),
-              mangoGroup.loadCache(DEFAULT_CONNECTION),
-              mangoGroup.loadRootBanks(DEFAULT_CONNECTION),
+              getMultipleAccounts(connection, allMarketPks),
+              mangoGroup.loadCache(connection),
+              mangoGroup.loadRootBanks(connection),
             ])
             allMarketAccountInfos = resp[0]
             mangoCache = resp[1]
@@ -352,7 +356,7 @@ const useMangoStore = create<MangoStore>((set, get) => ({
             .map((m) => [m.bidsKey, m.asksKey])
             .flat()
           const allBidsAndAsksAccountInfos = await getMultipleAccounts(
-            DEFAULT_CONNECTION,
+            connection,
             allBidsAndAsksPks
           )
 
@@ -421,12 +425,10 @@ const useMangoStore = create<MangoStore>((set, get) => ({
     async reloadMangoAccount() {
       const set = get().set
       const mangoAccount = get().selectedMangoAccount.current
+      const connection = get().connection.current
       const [reloadedMangoAccount, reloadedOpenOrders] = await Promise.all([
-        mangoAccount.reload(DEFAULT_CONNECTION),
-        mangoAccount.loadOpenOrders(
-          DEFAULT_CONNECTION,
-          new PublicKey(serumProgramId)
-        ),
+        mangoAccount.reload(connection),
+        mangoAccount.loadOpenOrders(connection, new PublicKey(serumProgramId)),
       ])
       reloadedMangoAccount.spotOpenOrdersAccounts = reloadedOpenOrders
 
@@ -436,12 +438,13 @@ const useMangoStore = create<MangoStore>((set, get) => ({
     },
     async updateOpenOrders() {
       const set = get().set
+      const connection = get().connection.current
       const bidAskAccounts = Object.keys(get().accountInfos).map(
         (pk) => new PublicKey(pk)
       )
 
       const allBidsAndAsksAccountInfos = await getMultipleAccounts(
-        DEFAULT_CONNECTION,
+        connection,
         bidAskAccounts
       )
 
@@ -457,14 +460,12 @@ const useMangoStore = create<MangoStore>((set, get) => ({
     async loadMarketFills() {
       const set = get().set
       const selectedMarket = get().selectedMarket.current
+      const connection = get().connection.current
       if (!selectedMarket) {
         return null
       }
       try {
-        const loadedFills = await selectedMarket.loadFills(
-          DEFAULT_CONNECTION,
-          10000
-        )
+        const loadedFills = await selectedMarket.loadFills(connection, 10000)
         set((state) => {
           state.selectedMarket.fills = loadedFills
         })
@@ -475,13 +476,27 @@ const useMangoStore = create<MangoStore>((set, get) => ({
     async fetchMangoGroupCache() {
       const set = get().set
       const mangoGroup = get().selectedMangoGroup.current
+      const connection = get().connection.current
       if (mangoGroup) {
-        const mangoCache = await mangoGroup.loadCache(DEFAULT_CONNECTION)
+        const mangoCache = await mangoGroup.loadCache(connection)
 
         set((state) => {
           state.selectedMangoGroup.cache = mangoCache
         })
       }
+    },
+    async updateConnection(endpointUrl) {
+      const set = get().set
+
+      const newConnection = new Connection(endpointUrl, 'processed')
+
+      const newClient = new MangoClient(newConnection, programId)
+
+      set((state) => {
+        state.connection.endpoint = endpointUrl
+        state.connection.current = newConnection
+        state.connection.client = newClient
+      })
     },
   },
 }))

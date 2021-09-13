@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react'
 import FloatingElement from './FloatingElement'
 import { ElementTitle } from './styles'
-import useMangoStore, { mangoClient } from '../stores/useMangoStore'
+import useMangoStore from '../stores/useMangoStore'
 import { i80f48ToPercent, formatUsdValue, floorToDecimal } from '../utils/index'
 import Button, { LinkButton } from './Button'
 import Tooltip from './Tooltip'
@@ -29,6 +29,7 @@ const settlePnl = async (perpMarket: PerpMarket, perpAccount: PerpAccount) => {
   const wallet = useMangoStore.getState().wallet.current
   const actions = useMangoStore.getState().actions
   const marketIndex = mangoGroup.getPerpMarketIndex(perpMarket.publicKey)
+  const mangoClient = useMangoStore.getState().connection.client
 
   try {
     const txid = await mangoClient.settlePnl(
