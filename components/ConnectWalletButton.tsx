@@ -18,6 +18,7 @@ import { WalletIcon, ProfileIcon } from './icons'
 import AccountsModal from './AccountsModal'
 import { useEffect } from 'react'
 import SettingsModal from './SettingsModal'
+import { CogIcon } from '@heroicons/react/solid'
 
 const ConnectWalletButton = () => {
   const wallet = useMangoStore((s) => s.wallet.current)
@@ -70,7 +71,7 @@ const ConnectWalletButton = () => {
                   className="hidden md:flex flex-row font-normal items-center rounded-none w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer focus:outline-none"
                   onClick={() => setShowSettingsModal(true)}
                 >
-                  <CurrencyDollarIcon className="h-4 w-4" />
+                  <CogIcon className="h-4 w-4" />
                   <div className="pl-2 text-left">Settings</div>
                 </button>
               </Menu.Item>
