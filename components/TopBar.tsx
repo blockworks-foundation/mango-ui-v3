@@ -37,7 +37,7 @@ const TopBar = () => {
               <div
                 className={`hidden md:flex md:items-center md:space-x-6 md:ml-4`}
               >
-                <MenuItem href="/spot/BTC">Trade</MenuItem>
+                <MenuItem href="/perp/BTC">Trade</MenuItem>
                 <MenuItem href="/account">Account</MenuItem>
                 <MenuItem href="/borrow">Borrow</MenuItem>
                 <MenuItem href="/stats">Stats</MenuItem>
