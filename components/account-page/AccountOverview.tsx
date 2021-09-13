@@ -8,10 +8,7 @@ import {
   HeartIcon,
 } from '@heroicons/react/outline'
 import { nativeToUi, ZERO_BN } from '@blockworks-foundation/mango-client'
-import useMangoStore, {
-  mangoClient,
-  MNGO_INDEX,
-} from '../../stores/useMangoStore'
+import useMangoStore, { MNGO_INDEX } from '../../stores/useMangoStore'
 import { formatUsdValue } from '../../utils'
 import { notify } from '../../utils/notifications'
 import { LinkButton } from '../Button'
@@ -31,6 +28,7 @@ export default function AccountOverview() {
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
+  const mangoClient = useMangoStore((s) => s.connection.client)
   const [showZeroBalances, setShowZeroBalances] = useLocalStorageState(
     SHOW_ZERO_BALANCE_KEY,
     true
