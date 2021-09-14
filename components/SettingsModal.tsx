@@ -22,7 +22,7 @@ const NODE_URLS = [
 
 const CUSTOM_NODE = NODE_URLS.find((n) => n.label === 'Custom')
 
-const NODE_URL_KEY = 'node-url-key-0.4'
+export const NODE_URL_KEY = 'node-url-key-0.4'
 
 const SettingsModal = ({ isOpen, onClose }) => {
   const actions = useMangoStore((s) => s.actions)
