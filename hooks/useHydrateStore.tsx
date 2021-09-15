@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { AccountInfo } from '@solana/web3.js'
-import useMangoStore, { WEBSOCKET_CONNECTION } from '../stores/useMangoStore'
+import useMangoStore from '../stores/useMangoStore'
 import useInterval from './useInterval'
 import useOrderbook from './useOrderbook'
 
@@ -13,6 +13,7 @@ const useHydrateStore = () => {
   const markets = useMangoStore((s) => s.selectedMangoGroup.markets)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
+  const connection = useMangoStore((s) => s.connection.current)
   useOrderbook()
 
   useEffect(() => {
@@ -39,7 +40,7 @@ const useHydrateStore = () => {
     let previousAskInfo: AccountInfo<Buffer> | null = null
     if (!marketConfig) return
 
-    const bidSubscriptionId = WEBSOCKET_CONNECTION.onAccountChange(
+    const bidSubscriptionId = connection.onAccountChange(
       marketConfig.bidsKey,
       (info, context) => {
         const lastSlot = useMangoStore.getState().connection.slot
@@ -57,7 +58,7 @@ const useHydrateStore = () => {
         }
       }
     )
-    const askSubscriptionId = WEBSOCKET_CONNECTION.onAccountChange(
+    const askSubscriptionId = connection.onAccountChange(
       marketConfig.asksKey,
       (info, context) => {
         const lastSlot = useMangoStore.getState().connection.slot
@@ -77,8 +78,8 @@ const useHydrateStore = () => {
     )
 
     return () => {
-      WEBSOCKET_CONNECTION.removeAccountChangeListener(bidSubscriptionId)
-      WEBSOCKET_CONNECTION.removeAccountChangeListener(askSubscriptionId)
+      connection.removeAccountChangeListener(bidSubscriptionId)
+      connection.removeAccountChangeListener(askSubscriptionId)
     }
   }, [selectedMarket])
 

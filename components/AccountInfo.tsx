@@ -7,13 +7,11 @@ import {
   ZERO_I80F48,
 } from '@blockworks-foundation/mango-client'
 import { useCallback, useState } from 'react'
-import { LinkIcon } from '@heroicons/react/outline'
 import { HeartIcon } from '@heroicons/react/solid'
-import useMangoStore, { mangoClient, MNGO_INDEX } from '../stores/useMangoStore'
+import useMangoStore, { MNGO_INDEX } from '../stores/useMangoStore'
 import { formatUsdValue, usdFormatter } from '../utils'
 import { notify } from '../utils/notifications'
 import { LinkButton } from './Button'
-import FloatingElement from './FloatingElement'
 import { ElementTitle } from './styles'
 import Tooltip from './Tooltip'
 import DepositModal from './DepositModal'
@@ -22,8 +20,6 @@ import Button from './Button'
 import { DataLoader } from './MarketPosition'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
-import { ExpandableRow } from './TableElements'
-import EmptyState from './EmptyState'
 
 const I80F48_100 = I80F48.fromString('100')
 
@@ -32,9 +28,9 @@ export default function AccountInfo() {
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
-  const wallet = useMangoStore((s) => s.wallet.current)
   const isLoading = useMangoStore((s) => s.selectedMangoAccount.initialLoad)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
+  const mangoClient = useMangoStore((s) => s.connection.client)
   const actions = useMangoStore((s) => s.actions)
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
@@ -105,29 +101,30 @@ export default function AccountInfo() {
     ? mangoAccount.getHealth(mangoGroup, mangoCache, 'Init')
     : I80F48_100
 
-  return isMobile ? (
-    <ExpandableRow
-      buttonTemplate={
-        <div className="col-span-11 flex items-center justify-between">
-          <div className="text-fgd-1 text-left">Account</div>
-          {connected ? (
-            <div className="flex items-center text-fgd-1 text-right">
-              <HeartIcon
-                className="h-5 mr-1.5 w-5 text-th-primary"
-                aria-hidden="true"
-              />
-              {maintHealthRatio.gt(I80F48_100)
-                ? '>100'
-                : maintHealthRatio.toFixed(2)}
-              %
-            </div>
-          ) : null}
-        </div>
-      }
-      index={0}
-      panelTemplate={
-        connected ? (
-          <div className="col-span-2">
+  return (
+    <>
+      <div className={!connected && !isMobile ? 'filter blur-sm' : undefined}>
+        {!isMobile ? (
+          <ElementTitle>
+            <Tooltip
+              content={
+                mangoAccount ? (
+                  <div>
+                    Init Health: {initHealth.toFixed(4)}
+                    <br />
+                    Maint Health: {maintHealth.toFixed(4)}
+                  </div>
+                ) : (
+                  ''
+                )
+              }
+            >
+              Account
+            </Tooltip>
+          </ElementTitle>
+        ) : null}
+        <div>
+          <div>
             <div className="flex justify-between pb-3">
               <div className="font-normal text-th-fgd-3 leading-4">Equity</div>
               <div className="text-th-fgd-1">
@@ -228,279 +225,71 @@ export default function AccountInfo() {
                 </LinkButton>
               </div>
             </div>
-            <div className="border border-th-bkg-4 rounded flex items-center my-2 p-2.5">
-              <div className="flex items-center pr-2">
-                <HeartIcon
-                  className="h-5 mr-1.5 w-5 text-th-primary"
-                  aria-hidden="true"
-                />
-                <span>
-                  <Tooltip
-                    content={
-                      <div>
-                        Account will be liquidated if Health Ratio reaches 0%.{' '}
-                        <a
-                          href="https://docs.mango.markets/mango-v3/overview#health"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          Learn more
-                        </a>
-                      </div>
-                    }
-                  >
-                    <div className="cursor-help font-normal text-th-fgd-3 leading-4 border-b border-th-fgd-3 border-dashed border-opacity-20 default-transition hover:border-th-bkg-2">
-                      Health
+          </div>
+          <div className="border border-th-bkg-4 rounded flex items-center my-2 sm:my-3 p-2.5">
+            <div className="flex items-center pr-2">
+              <HeartIcon
+                className="h-5 mr-1.5 w-5 text-th-primary"
+                aria-hidden="true"
+              />
+              <span>
+                <Tooltip
+                  content={
+                    <div>
+                      Account will be liquidated if Health Ratio reaches 0%.{' '}
+                      <a
+                        href="https://docs.mango.markets/mango-v3/overview#health"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Learn more
+                      </a>
                     </div>
-                  </Tooltip>
-                </span>
-              </div>
-              <div className="h-1.5 flex flex-grow rounded bg-th-bkg-4">
-                <div
-                  style={{
-                    width: `${maintHealthRatio}%`,
-                  }}
-                  className={`flex rounded ${
-                    maintHealthRatio.toNumber() > 30
-                      ? 'bg-th-green'
-                      : initHealthRatio.toNumber() > 0
-                      ? 'bg-th-orange'
-                      : 'bg-th-red'
-                  }`}
-                ></div>
-              </div>
-              <div className="pl-2 text-right">
-                {maintHealthRatio.gt(I80F48_100)
-                  ? '>100'
-                  : maintHealthRatio.toFixed(2)}
-                %
-              </div>
-            </div>
-            <div className={`grid grid-cols-2 grid-rows-1 gap-4 pt-4`}>
-              <Button
-                onClick={() => setShowDepositModal(true)}
-                className="w-full"
-                disabled={!connected}
-              >
-                <span>Deposit</span>
-              </Button>
-              <Button
-                onClick={() => setShowWithdrawModal(true)}
-                className="w-full"
-                disabled={!connected || !mangoAccount}
-              >
-                <span>Withdraw</span>
-              </Button>
-            </div>
-            {showDepositModal && (
-              <DepositModal
-                isOpen={showDepositModal}
-                onClose={handleCloseDeposit}
-              />
-            )}
-            {showWithdrawModal && (
-              <WithdrawModal
-                isOpen={showWithdrawModal}
-                onClose={handleCloseWithdraw}
-              />
-            )}
-          </div>
-        ) : (
-          <div className="col-span-2">
-            <EmptyState
-              buttonText="Connect"
-              icon={<LinkIcon />}
-              onClickButton={() => wallet.connect()}
-              title="Connect Wallet"
-            />
-          </div>
-        )
-      }
-      rounded
-    />
-  ) : (
-    <FloatingElement showConnect>
-      <div className={!connected ? 'filter blur-sm' : undefined}>
-        <ElementTitle>
-          <Tooltip
-            content={
-              mangoAccount ? (
-                <div>
-                  Init Health: {initHealth.toFixed(4)}
-                  <br />
-                  Maint Health: {maintHealth.toFixed(4)}
-                </div>
-              ) : (
-                ''
-              )
-            }
-          >
-            Account
-          </Tooltip>
-        </ElementTitle>
-        <div>
-          <div className="flex justify-between pb-3">
-            <div className="font-normal text-th-fgd-3 leading-4">Equity</div>
-            <div className="text-th-fgd-1">
-              {isLoading ? <DataLoader /> : formatUsdValue(+equity)}
-            </div>
-          </div>
-          <div className="flex justify-between pb-3">
-            <div className="font-normal text-th-fgd-3 leading-4">Leverage</div>
-            <div className="text-th-fgd-1">
-              {isLoading ? (
-                <DataLoader />
-              ) : mangoAccount ? (
-                `${mangoAccount
-                  .getLeverage(mangoGroup, mangoCache)
-                  .toFixed(2)}x`
-              ) : (
-                '0.00x'
-              )}
-            </div>
-          </div>
-          <div className={`flex justify-between pb-3`}>
-            <div className="font-normal text-th-fgd-3 leading-4">
-              Collateral Available
-            </div>
-            <div className={`text-th-fgd-1`}>
-              {isLoading ? (
-                <DataLoader />
-              ) : mangoAccount ? (
-                usdFormatter(
-                  nativeI80F48ToUi(
-                    initHealth,
-                    mangoGroup.tokens[QUOTE_INDEX].decimals
-                  ).toFixed()
-                )
-              ) : (
-                '--'
-              )}
-            </div>
-          </div>
-          <div className={`flex justify-between pb-3`}>
-            <div className="font-normal text-th-fgd-3 leading-4">
-              {marketConfig.name} Margin Available
-            </div>
-            <div className={`text-th-fgd-1`}>
-              {mangoAccount
-                ? usdFormatter(
-                    nativeI80F48ToUi(
-                      mangoAccount.getMarketMarginAvailable(
-                        mangoGroup,
-                        mangoCache,
-                        marketConfig.marketIndex,
-                        marketConfig.kind
-                      ),
-                      mangoGroup.tokens[QUOTE_INDEX].decimals
-                    ).toFixed()
-                  )
-                : '0.00'}
-            </div>
-          </div>
-          <div className={`flex justify-between pb-3`}>
-            <Tooltip
-              content={
-                <div>
-                  Earn MNGO by market making on Perp markets.{' '}
-                  <a
-                    href="https://docs.mango.markets/mango-v3/liquidity-incentives"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Learn more
-                  </a>
-                </div>
-              }
-            >
-              <div className="cursor-help font-normal text-th-fgd-3 leading-4 border-b border-th-fgd-3 border-dashed border-opacity-20 default-transition hover:border-th-bkg-2">
-                MNGO Rewards
-              </div>
-            </Tooltip>
-            <div className={`flex items-center text-th-fgd-1`}>
-              {isLoading ? (
-                <DataLoader />
-              ) : mangoGroup ? (
-                nativeToUi(
-                  mngoAccrued.toNumber(),
-                  mangoGroup.tokens[MNGO_INDEX].decimals
-                )
-              ) : (
-                0
-              )}
-              <LinkButton
-                onClick={handleRedeemMngo}
-                className="ml-2 text-th-primary text-xs disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:underline"
-                disabled={mngoAccrued.eq(ZERO_BN)}
-              >
-                Claim
-              </LinkButton>
-            </div>
-          </div>
-        </div>
-        <div className="border border-th-bkg-4 rounded flex items-center my-3 p-2.5">
-          <div className="flex items-center pr-2">
-            <HeartIcon
-              className="h-5 mr-1.5 w-5 text-th-primary"
-              aria-hidden="true"
-            />
-            <span>
-              <Tooltip
-                content={
-                  <div>
-                    Account will be liquidated if Health Ratio reaches 0%.{' '}
-                    <a
-                      href="https://docs.mango.markets/mango-v3/overview#health"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Learn more
-                    </a>
+                  }
+                >
+                  <div className="cursor-help font-normal text-th-fgd-3 leading-4 border-b border-th-fgd-3 border-dashed border-opacity-20 default-transition hover:border-th-bkg-2">
+                    Health
                   </div>
-                }
-              >
-                <div className="cursor-help font-normal text-th-fgd-3 leading-4 border-b border-th-fgd-3 border-dashed border-opacity-20 default-transition hover:border-th-bkg-2">
-                  Health
-                </div>
-              </Tooltip>
-            </span>
+                </Tooltip>
+              </span>
+            </div>
+            <div className="h-1.5 flex flex-grow rounded bg-th-bkg-4">
+              <div
+                style={{
+                  width: `${maintHealthRatio}%`,
+                }}
+                className={`flex rounded ${
+                  maintHealthRatio.toNumber() > 30
+                    ? 'bg-th-green'
+                    : initHealthRatio.toNumber() > 0
+                    ? 'bg-th-orange'
+                    : 'bg-th-red'
+                }`}
+              ></div>
+            </div>
+            <div className="pl-2 text-right">
+              {maintHealthRatio.gt(I80F48_100)
+                ? '>100'
+                : maintHealthRatio.toFixed(2)}
+              %
+            </div>
           </div>
-          <div className="h-1.5 flex flex-grow rounded bg-th-bkg-4">
-            <div
-              style={{
-                width: `${maintHealthRatio}%`,
-              }}
-              className={`flex rounded ${
-                maintHealthRatio.toNumber() > 30
-                  ? 'bg-th-green'
-                  : initHealthRatio.toNumber() > 0
-                  ? 'bg-th-orange'
-                  : 'bg-th-red'
-              }`}
-            ></div>
+          <div className={`grid grid-cols-2 grid-rows-1 gap-4 pt-2 sm:pt-4`}>
+            <Button
+              onClick={() => setShowDepositModal(true)}
+              className="w-full"
+              disabled={!connected}
+            >
+              <span>Deposit</span>
+            </Button>
+            <Button
+              onClick={() => setShowWithdrawModal(true)}
+              className="w-full"
+              disabled={!connected || !mangoAccount}
+            >
+              <span>Withdraw</span>
+            </Button>
           </div>
-          <div className="pl-2 text-right">
-            {maintHealthRatio.gt(I80F48_100)
-              ? '>100'
-              : maintHealthRatio.toFixed(2)}
-            %
-          </div>
-        </div>
-        <div className={`grid grid-cols-2 grid-rows-1 gap-4 pt-4`}>
-          <Button
-            onClick={() => setShowDepositModal(true)}
-            className="w-full"
-            disabled={!connected}
-          >
-            <span>Deposit</span>
-          </Button>
-          <Button
-            onClick={() => setShowWithdrawModal(true)}
-            className="w-full"
-            disabled={!connected || !mangoAccount}
-          >
-            <span>Withdraw</span>
-          </Button>
         </div>
       </div>
       {showDepositModal && (
@@ -512,6 +301,6 @@ export default function AccountInfo() {
           onClose={handleCloseWithdraw}
         />
       )}
-    </FloatingElement>
+    </>
   )
 }

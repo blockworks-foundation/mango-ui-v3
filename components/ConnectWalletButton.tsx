@@ -17,12 +17,15 @@ import WalletSelect from './WalletSelect'
 import { WalletIcon, ProfileIcon } from './icons'
 import AccountsModal from './AccountsModal'
 import { useEffect } from 'react'
+import SettingsModal from './SettingsModal'
+import { CogIcon } from '@heroicons/react/solid'
 
 const ConnectWalletButton = () => {
   const wallet = useMangoStore((s) => s.wallet.current)
   const connected = useMangoStore((s) => s.wallet.connected)
   const set = useMangoStore((s) => s.set)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
+  const [showSettingsModal, setShowSettingsModal] = useState(false)
   const [selectedWallet, setSelectedWallet] = useState(DEFAULT_PROVIDER.url)
   const [savedProviderUrl] = useLocalStorageState(
     PROVIDER_LOCAL_STORAGE_KEY,
@@ -65,6 +68,15 @@ const ConnectWalletButton = () => {
               </Menu.Item>
               <Menu.Item>
                 <button
+                  className="hidden md:flex flex-row font-normal items-center rounded-none w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer focus:outline-none"
+                  onClick={() => setShowSettingsModal(true)}
+                >
+                  <CogIcon className="h-4 w-4" />
+                  <div className="pl-2 text-left">Settings</div>
+                </button>
+              </Menu.Item>
+              <Menu.Item>
+                <button
                   className="flex flex-row font-normal items-center rounded-none w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer focus:outline-none"
                   onClick={() => copyToClipboard(wallet?.publicKey)}
                 >
@@ -99,7 +111,7 @@ const ConnectWalletButton = () => {
             <div className="flex flex-row items-center px-3 justify-center h-full default-transition hover:text-th-fgd-1">
               <WalletIcon className="w-4 h-4 mr-2 fill-current" />
               <div>
-                <div className="mb-0.5 whitespace-nowrap">Connect Wallet</div>
+                <div className="mb-0.5 whitespace-nowrap">Connect</div>
                 <div className="font-normal text-th-fgd-3 text-left leading-3 tracking-wider text-xxs">
                   {WALLET_PROVIDERS.find((p) => p.url === selectedWallet)?.name}
                 </div>
@@ -115,6 +127,12 @@ const ConnectWalletButton = () => {
         <AccountsModal
           onClose={handleCloseAccounts}
           isOpen={showAccountsModal}
+        />
+      ) : null}
+      {showSettingsModal ? (
+        <SettingsModal
+          onClose={() => setShowSettingsModal(false)}
+          isOpen={showSettingsModal}
         />
       ) : null}
     </>

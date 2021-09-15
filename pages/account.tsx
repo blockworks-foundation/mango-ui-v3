@@ -28,7 +28,7 @@ const TABS = [
   // 'Stats',
   // 'Positions',
   'Orders',
-  'History',
+  'Trade History',
 ]
 
 export default function Account() {
@@ -198,7 +198,7 @@ const TabContent = ({ activeTab }) => {
       return <div>Positions</div>
     case 'Orders':
       return <AccountOrders />
-    case 'History':
+    case 'Trade History':
       return <AccountHistory />
     default:
       return <AccountOverview />

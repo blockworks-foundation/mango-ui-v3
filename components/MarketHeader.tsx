@@ -147,32 +147,37 @@ const MarketHeader = () => {
       className={`flex flex-col relative lg:flex-row lg:items-center lg:justify-between pt-4 px-6 lg:pb-1 lg:pt-8 lg:px-6`}
     >
       <div className="flex flex-col lg:flex-row lg:items-center">
-        <div className="hidden sm:block sm:pb-4 lg:pb-0 sm:pr-6">
+        <div className="flex items-center justify-between pb-4 lg:pb-0 sm:pr-6">
           <div className="flex items-center">
             <img
               alt=""
-              width="24"
-              height="24"
               src={`/assets/icons/${baseSymbol.toLowerCase()}.svg`}
-              className={`mr-2.5`}
+              className={`h-5 w-5 sm:h-6 sm:w-6 mr-2.5`}
             />
 
-            <div className="font-semibold pr-0.5 text-xl">{baseSymbol}</div>
-            <span className="text-th-fgd-4 text-xl">
+            <div className="font-semibold pr-0.5 text-base sm:text-xl">
+              {baseSymbol}
+            </div>
+            <span className="text-th-fgd-4 text-base sm:text-xl">
               {isPerpMarket ? '-' : '/'}
             </span>
-            <div className="font-semibold pl-0.5 text-xl">
+            <div className="font-semibold pl-0.5 text-base sm:text-xl">
               {isPerpMarket ? 'PERP' : groupConfig.quoteSymbol}
             </div>
           </div>
+          <div
+            className={`text-base md:mx-4 lg:mx-0 lg:ml-4 sm:text-xl ${
+              change > 0
+                ? `text-th-green`
+                : change < 0
+                ? `text-th-red`
+                : `text-th-fgd-1`
+            }`}
+          >
+            {oraclePrice ? formatUsdValue(oraclePrice) : '--'}
+          </div>
         </div>
         <div className="grid grid-flow-row grid-cols-2 gap-4 lg:grid-flow-col lg:grid-rows-1 lg:gap-6">
-          <div>
-            <div className="text-th-fgd-3 tiny-text pb-0.5">Oracle price</div>
-            <div className="font-semibold text-th-fgd-1 text-xs">
-              {oraclePrice ? formatUsdValue(oraclePrice) : '--'}
-            </div>
-          </div>
           <div>
             <div className="text-th-fgd-3 tiny-text pb-0.5">Daily Change</div>
             {change || change === 0 ? (

@@ -7,7 +7,6 @@ import useMangoStore from '../stores/useMangoStore'
 import ConnectWalletButton from './ConnectWalletButton'
 import NavDropMenu from './NavDropMenu'
 import AccountsModal from './AccountsModal'
-import MobileMenu from './mobile/MobileMenu'
 
 const TopBar = () => {
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
@@ -20,7 +19,7 @@ const TopBar = () => {
   return (
     <>
       <nav className={`bg-th-bkg-2 border-b border-th-bkg-2`}>
-        <div className={`px-6 md:px-9`}>
+        <div className={`pl-6 md:px-9`}>
           <div className={`flex justify-between h-14`}>
             <div className={`flex`}>
               <Link href="/spot/BTC">
@@ -74,11 +73,10 @@ const TopBar = () => {
                 </div>
               ) : null}
               <div className="flex">
-                <div className="hidden md:block pl-2">
+                <div className="pl-2">
                   <ConnectWalletButton />
                 </div>
               </div>
-              <MobileMenu />
             </div>
           </div>
         </div>
