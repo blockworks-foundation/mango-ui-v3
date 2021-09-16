@@ -13,7 +13,7 @@ import { useSortableData } from '../../hooks/useSortableData'
 import { Order, Market } from '@project-serum/serum/lib/market'
 import { PerpOrder, PerpMarket } from '@blockworks-foundation/mango-client'
 import { notify } from '../../utils/notifications'
-import { sleep } from '../../utils'
+import { sleep, formatUsdValue } from '../../utils'
 
 // This is a basic example of how to create a TV widget
 // You can add more feature such as storing charts in localStorage
@@ -51,7 +51,6 @@ const TVChartContainer = () => {
   const [lines, setLines] = useState(new Map())
   const [moveInProgress, toggleMoveInProgress] = useState(false)
 
-  
   // @ts-ignore
   const defaultProps: ChartContainerProps = {
     symbol: selectedMarketConfig.name,
@@ -142,8 +141,7 @@ const TVChartContainer = () => {
     tvWidgetRef.current = tvWidget
   }, [selectedMarketConfig, theme])
 
-  
-  const handleCancelOrder = async ( 
+  const handleCancelOrder = async (
     order: Order | PerpOrder,
     market: Market | PerpMarket
   ) => {
@@ -189,7 +187,6 @@ const TVChartContainer = () => {
       })
     }
   }
-
 
   const handleModifyOrder = async (
     order: Order | PerpOrder,
@@ -261,7 +258,6 @@ const TVChartContainer = () => {
     }
   }
 
-
   function getLine(order, market) {
     return tvWidgetRef.current
       .chart()
@@ -279,12 +275,12 @@ const TVChartContainer = () => {
           tvWidgetRef.current.showNoticeDialog({
             title: 'Order Price Outside Range',
             body:
-              `Your order price ($${updatedOrderPrice.toFixed(
-                2
+              `Your order price (${formatUsdValue(
+                updatedOrderPrice
               )}) is greater than 5% ${
                 order.side == 'buy' ? 'above' : 'below'
-              } the current market price ($${selectedMarketPrice.toFixed(
-                2
+              } the current market price (${formatUsdValue(
+                selectedMarketPrice
               )}). ` +
               ' indicating you might incur significant slippage. <p><p>Please use the trade input form if you wish to accept the potential slippage.',
             callback: () => {
@@ -295,15 +291,15 @@ const TVChartContainer = () => {
         } else {
           toggleMoveInProgress(true)
           tvWidgetRef.current.showConfirmDialog({
-            title: 'Change Order Price?',
+            title: 'Modify Your Order?',
             body: `Would you like to change your order from a 
            ${order.size} ${market.config.baseSymbol} ${
               order.side
-            } at $${currentOrderPrice} 
+            } at ${formatUsdValue(currentOrderPrice)} 
            to a 
-          ${order.size} ${market.config.baseSymbol} ${
+          ${order.size} ${market.config.baseSymbol} LIMIT ${
               order.side
-            } at $${updatedOrderPrice}? Current market price is ${selectedMarketPrice} 
+            } at ${formatUsdValue(updatedOrderPrice)}?
           `,
             callback: (res) => {
               if (res) {
@@ -323,7 +319,7 @@ const TVChartContainer = () => {
           body: `Would you like to cancel your order for 
        ${order.size} ${market.config.baseSymbol} ${
             order.side
-          } at $${order.price}  
+          } at ${formatUsdValue(order.price)}  
       `,
           callback: (res) => {
             if (res) {
@@ -333,9 +329,7 @@ const TVChartContainer = () => {
           },
         })
       })
-      .setText(
-        `${market.config.baseSymbol}`
-      )
+      .setText(`${market.config.baseSymbol} ${order.side.toUpperCase()}`)
       .setBodyBorderColor(order.side == 'buy' ? '#AFD803' : '#E54033')
       .setBodyBackgroundColor('#000000')
       .setBodyTextColor('#F2C94C')
@@ -352,7 +346,6 @@ const TVChartContainer = () => {
       .setPrice(order.price)
   }
 
-  
   useEffect(() => {
     if (!moveInProgress) {
       const tempLines = new Map()
@@ -363,7 +356,7 @@ const TVChartContainer = () => {
           })
         }
 
-        items.map(({order, market}, index) => {
+        items.map(({ order, market }) => {
           if (market.config.name == selectedMarketName) {
             tempLines.set(order.orderId.toString(), getLine(order, market))
           }
@@ -377,9 +370,6 @@ const TVChartContainer = () => {
     selectedMarketName,
     selectedMarketPrice,
   ])
-
-
-
 
   return <div id={defaultProps.containerId} className="tradingview-chart" />
 }
