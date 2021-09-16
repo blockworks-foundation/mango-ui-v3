@@ -131,7 +131,7 @@ const TabContent = ({ activeTab, orderbookDepth }) => {
     default:
       return (
         <>
-          <div className="bg-th-bkg-2 grid grid-cols-12 grid-rows-1 gap-4 mb-2 px-1 py-3 rounded-lg">
+          <div className="bg-th-bkg-2 grid grid-cols-12 grid-rows-1 gap-4 mb-2 px-2 py-3 rounded-lg">
             <div className="col-span-7">
               <TradeForm />
             </div>

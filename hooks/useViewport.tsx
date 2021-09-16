@@ -15,6 +15,7 @@ export const ViewportProvider = ({ children }) => {
   }
 
   useEffect(() => {
+    handleWindowResize()
     window.addEventListener('resize', handleWindowResize)
     return () => window.removeEventListener('resize', handleWindowResize)
   }, [])
