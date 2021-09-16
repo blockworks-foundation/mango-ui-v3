@@ -1,5 +1,7 @@
 import dynamic from 'next/dynamic'
 import { Responsive, WidthProvider } from 'react-grid-layout'
+import { Disclosure } from '@headlessui/react'
+import { XIcon } from '@heroicons/react/outline'
 import { round, max } from 'lodash'
 
 const TVChartContainer = dynamic(
@@ -20,7 +22,8 @@ import { useViewport } from '../hooks/useViewport'
 import MarketPosition from './MarketPosition'
 import { PerpMarket } from '@blockworks-foundation/mango-client'
 import OpenOrdersTable from './OpenOrdersTable'
-import BalancesTable from './BalancesTable'
+import MarketDetails from './MarketDetails'
+import { CandlesIcon } from './icons'
 
 const ResponsiveGridLayout = WidthProvider(Responsive)
 
@@ -76,42 +79,69 @@ export const GRID_LAYOUT_KEY = 'mangoSavedLayouts-3.0.8'
 export const breakpoints = { xl: 1600, lg: 1200, md: 1110, sm: 768, xs: 0 }
 
 const TabContent = ({ activeTab, orderbookDepth }) => {
+  const connected = useMangoStore((s) => s.wallet.connected)
   switch (activeTab) {
     case 'Trade':
       return (
-        <div className="bg-th-bkg-2 grid grid-cols-12 grid-rows-1 gap-4 px-1 py-3 rounded-lg">
-          <div className="col-span-7">
-            <TradeForm />
+        <>
+          <div className="bg-th-bkg-2 grid grid-cols-12 grid-rows-1 gap-4 mb-2 px-2 py-3 rounded-lg">
+            <div className="col-span-7">
+              <TradeForm />
+            </div>
+            <div className="col-span-5">
+              <Orderbook depth={orderbookDepth} />
+            </div>
           </div>
-          <div className="col-span-5">
-            <Orderbook depth={orderbookDepth} />
-          </div>
+          <RecentMarketTrades />
+        </>
+      )
+    case 'Details':
+      return (
+        <div className="bg-th-bkg-2 px-2 py-3 rounded-lg">
+          <MarketDetails />
         </div>
       )
     case 'Position':
       return (
-        <div className="bg-th-bkg-2 px-1 py-3 rounded-lg">
-          <MarketPosition />
-        </div>
-      )
-    case 'Account':
-      return (
-        <div className="bg-th-bkg-2 px-1 py-3 rounded-lg">
-          <div className="pb-4">
-            <AccountInfo />
+        <FloatingElement className="py-0" showConnect>
+          <div
+            className={`${
+              !connected ? 'filter blur-sm' : ''
+            } bg-th-bkg-2 py-3 rounded-lg`}
+          >
+            <MarketPosition />
           </div>
-          <div className="font-bold pb-4">Balances</div>
-          <BalancesTable />
-        </div>
+        </FloatingElement>
       )
     case 'Orders':
       return (
-        <div className="bg-th-bkg-2 p-2 rounded-lg">
-          <OpenOrdersTable />
-        </div>
+        <FloatingElement
+          className={`${!connected ? 'min-h-[216px]' : ''} py-0`}
+          showConnect
+        >
+          <div
+            className={`${
+              !connected ? 'filter blur-sm' : ''
+            } bg-th-bkg-2 py-3 rounded-lg`}
+          >
+            <OpenOrdersTable />
+          </div>
+        </FloatingElement>
       )
     default:
-      return <TradeForm />
+      return (
+        <>
+          <div className="bg-th-bkg-2 grid grid-cols-12 grid-rows-1 gap-4 mb-2 px-1 py-3 rounded-lg">
+            <div className="col-span-7">
+              <TradeForm />
+            </div>
+            <div className="col-span-5">
+              <Orderbook depth={orderbookDepth} />
+            </div>
+          </div>
+          <RecentMarketTrades />
+        </>
+      )
   }
 }
 
@@ -122,6 +152,10 @@ const TradePageGrid = () => {
     GRID_LAYOUT_KEY,
     defaultLayouts
   )
+  const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
+  const marketConfig = useMangoStore((s) => s.selectedMarket.config)
+  const baseSymbol = marketConfig.baseSymbol
+  const isPerpMarket = marketConfig.kind === 'perp'
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
 
@@ -166,66 +200,106 @@ const TradePageGrid = () => {
 
   const TABS =
     selectedMarket instanceof PerpMarket
-      ? ['Trade', 'Position', 'Orders', 'Account']
-      : ['Trade', 'Orders', 'Account']
+      ? ['Trade', 'Details', 'Position', 'Orders']
+      : ['Trade', 'Details', 'Orders']
 
   const handleTabChange = (tabName) => {
     setActiveTab(tabName)
   }
 
   return !isMobile ? (
-    <ResponsiveGridLayout
-      className="layout"
-      layouts={savedLayouts || defaultLayouts}
-      breakpoints={breakpoints}
-      cols={{ xl: 12, lg: 12, md: 12, sm: 12, xs: 1 }}
-      rowHeight={15}
-      isDraggable={!uiLocked}
-      isResizable={!uiLocked}
-      onBreakpointChange={(newBreakpoint) => onBreakpointChange(newBreakpoint)}
-      onLayoutChange={(layout, layouts) => onLayoutChange(layouts)}
-    >
-      <div key="tvChart">
-        <FloatingElement className="pl-0">
-          <TVChartContainer />
-        </FloatingElement>
-      </div>
-      <div key="orderbook">
-        <Orderbook depth={orderbookDepth} />
-      </div>
-      <div key="tradeForm">
-        <FloatingElement showConnect>
-          <TradeForm />
-        </FloatingElement>
-      </div>
-      <div key="accountInfo">
-        <FloatingElement showConnect>
-          <AccountInfo />
-        </FloatingElement>
-      </div>
-      <div key="userInfo">
-        <FloatingElement showConnect>
-          <UserInfo />
-        </FloatingElement>
-      </div>
-      <div key="userMarketInfo">
-        <FloatingElement showConnect>
-          <UserMarketInfo />
-        </FloatingElement>
-      </div>
-      <div key="marketTrades">
-        <RecentMarketTrades />
-      </div>
-    </ResponsiveGridLayout>
+    <>
+      <MarketDetails />
+      <ResponsiveGridLayout
+        className="layout"
+        layouts={savedLayouts || defaultLayouts}
+        breakpoints={breakpoints}
+        cols={{ xl: 12, lg: 12, md: 12, sm: 12, xs: 1 }}
+        rowHeight={15}
+        isDraggable={!uiLocked}
+        isResizable={!uiLocked}
+        onBreakpointChange={(newBreakpoint) =>
+          onBreakpointChange(newBreakpoint)
+        }
+        onLayoutChange={(layout, layouts) => onLayoutChange(layouts)}
+      >
+        <div key="tvChart">
+          <FloatingElement className="pl-0">
+            <TVChartContainer />
+          </FloatingElement>
+        </div>
+        <div key="orderbook">
+          <Orderbook depth={orderbookDepth} />
+        </div>
+        <div key="tradeForm">
+          <FloatingElement showConnect>
+            <TradeForm />
+          </FloatingElement>
+        </div>
+        <div key="accountInfo">
+          <FloatingElement showConnect>
+            <AccountInfo />
+          </FloatingElement>
+        </div>
+        <div key="userInfo">
+          <FloatingElement showConnect>
+            <UserInfo />
+          </FloatingElement>
+        </div>
+        <div key="userMarketInfo">
+          <FloatingElement showConnect>
+            <UserMarketInfo />
+          </FloatingElement>
+        </div>
+        <div key="marketTrades">
+          <RecentMarketTrades />
+        </div>
+      </ResponsiveGridLayout>
+    </>
   ) : (
     <>
-      <div className="pb-16 pt-4 ">
-        <div className="bg-th-bkg-2 h-72 mb-2 p-2 rounded-lg">
-          <TVChartContainer />
+      <div className="pb-12 pt-4">
+        <div className="pb-2 px-3 relative">
+          <div className="flex items-center">
+            <img
+              alt=""
+              width="30"
+              height="30"
+              src={`/assets/icons/${baseSymbol.toLowerCase()}.svg`}
+              className="mr-2"
+            />
+            <div className="flex items-center">
+              <div className="font-semibold pr-0.5 text-xl">{baseSymbol}</div>
+              <span className="text-th-fgd-4 text-xl">
+                {isPerpMarket ? '-' : '/'}
+              </span>
+              <div className="font-semibold pl-0.5 text-xl">
+                {isPerpMarket ? 'PERP' : groupConfig.quoteSymbol}
+              </div>
+            </div>
+          </div>
+          <Disclosure>
+            {({ open }) => (
+              <>
+                <Disclosure.Button className="absolute right-3 top-0 ml-2">
+                  <div className="bg-th-bkg-4 flex items-center justify-center rounded-full w-8 h-8 text-th-fgd-1 focus:outline-none hover:text-th-primary">
+                    {open ? (
+                      <XIcon className="h-4 w-4" />
+                    ) : (
+                      <CandlesIcon className="h-5 w-5" />
+                    )}
+                  </div>
+                </Disclosure.Button>
+                <Disclosure.Panel className="pt-3">
+                  <div className="bg-th-bkg-2 h-96 mb-2 p-2 rounded-lg">
+                    <TVChartContainer />
+                  </div>
+                </Disclosure.Panel>
+              </>
+            )}
+          </Disclosure>
         </div>
-        <div
-          className={`border-b border-th-fgd-4 mb-3 flex justify-between px-3`}
-        >
+        <div className={`border-b border-th-fgd-4 mb-4 px-3`}>
           <nav
             className={`-mb-px flex space-x-3 sm:space-x-6`}
             aria-label="Tabs"
@@ -234,7 +308,7 @@ const TradePageGrid = () => {
               <a
                 key={tabName}
                 onClick={() => handleTabChange(tabName)}
-                className={`whitespace-nowrap pt-2 pb-4 px-1 border-b-2 font-semibold cursor-pointer default-transition relative text-xs sm:text-sm hover:opacity-100
+                className={`whitespace-nowrap pt-2 pb-4 px-2 border-b-2 font-semibold cursor-pointer default-transition relative  hover:opacity-100
                   ${
                     activeTab === tabName
                       ? `border-th-primary text-th-primary`

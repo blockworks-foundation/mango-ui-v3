@@ -311,240 +311,236 @@ export default function TradeForm() {
     submitting ||
     !mangoAccount
 
-  return (
-    <div className="flex flex-col h-full">
-      {!isMobile ? (
-        <div>
-          <div className={`flex text-base text-th-fgd-4`}>
-            <button
-              onClick={() => setSide('buy')}
-              className={`flex-1 outline-none focus:outline-none`}
-            >
-              <div
-                className={`hover:text-th-green pb-1 transition-colors duration-500
+  return !isMobile ? (
+    <div className={!connected ? 'fliter blur-sm' : 'flex flex-col h-full'}>
+      <div className={`flex text-base text-th-fgd-4`}>
+        <button
+          onClick={() => setSide('buy')}
+          className={`flex-1 outline-none focus:outline-none`}
+        >
+          <div
+            className={`hover:text-th-green pb-1 transition-colors duration-500
                 ${
                   side === 'buy'
                     ? `text-th-green hover:text-th-green border-b-2 border-th-green`
                     : undefined
                 }`}
-              >
-                Buy
-              </div>
-            </button>
-            <button
-              onClick={() => setSide('sell')}
-              className={`flex-1 outline-none focus:outline-none`}
-            >
-              <div
-                className={`hover:text-th-red pb-1 transition-colors duration-500
+          >
+            Buy
+          </div>
+        </button>
+        <button
+          onClick={() => setSide('sell')}
+          className={`flex-1 outline-none focus:outline-none`}
+        >
+          <div
+            className={`hover:text-th-red pb-1 transition-colors duration-500
                 ${
                   side === 'sell'
                     ? `text-th-red hover:text-th-red border-b-2 border-th-red`
                     : undefined
                 }
               `}
-              >
-                Sell
-              </div>
-            </button>
+          >
+            Sell
           </div>
-          <Input.Group className="mt-4">
-            <Input
-              type="number"
-              min="0"
-              step={tickSize}
-              onChange={(e) => onSetPrice(e.target.value)}
-              value={price}
-              disabled={tradeType === 'Market'}
-              prefix={'Price'}
-              suffix={groupConfig.quoteSymbol}
-              className="rounded-r-none"
-              wrapperClassName="w-3/5"
-            />
-            <TradeType
-              onChange={onTradeTypeChange}
-              value={tradeType}
-              className="hover:border-th-primary flex-grow"
-            />
-          </Input.Group>
+        </button>
+      </div>
+      <Input.Group className="mt-4">
+        <Input
+          type="number"
+          min="0"
+          step={tickSize}
+          onChange={(e) => onSetPrice(e.target.value)}
+          value={price}
+          disabled={tradeType === 'Market'}
+          prefix={'Price'}
+          suffix={groupConfig.quoteSymbol}
+          className="rounded-r-none"
+          wrapperClassName="w-3/5"
+        />
+        <TradeType
+          onChange={onTradeTypeChange}
+          value={tradeType}
+          className="hover:border-th-primary flex-grow"
+        />
+      </Input.Group>
 
-          <Input.Group className="mt-4">
-            <Input
-              type="number"
-              min="0"
-              step={minOrderSize}
-              onChange={(e) => onSetBaseSize(e.target.value)}
-              value={baseSize}
-              className="rounded-r-none"
-              wrapperClassName="w-3/5"
-              prefixClassName="w-12"
-              prefix={'Size'}
-              suffix={marketConfig.baseSymbol}
-            />
-            <StyledRightInput
-              type="number"
-              min="0"
-              step={minOrderSize}
-              onChange={(e) => onSetQuoteSize(e.target.value)}
-              value={quoteSize}
-              className="rounded-l-none"
-              wrapperClassName="w-2/5"
-              suffix={groupConfig.quoteSymbol}
-            />
-          </Input.Group>
-          <LeverageSlider
-            onChange={(e) => onSetBaseSize(e)}
-            value={baseSize ? baseSize : 0}
-            step={parseFloat(minOrderSize)}
-            disabled={false}
-            side={side}
-            decimalCount={sizeDecimalCount}
-            price={calculateTradePrice(
-              tradeType,
-              orderbook,
-              baseSize ? baseSize : 0,
-              side,
-              price
-            )}
-          />
-          {tradeType !== 'Market' ? (
-            <div className="flex mt-2">
-              <Switch checked={postOnly} onChange={postOnChange}>
-                POST
-              </Switch>
-              <div className="ml-4">
-                <Switch checked={ioc} onChange={iocOnChange}>
-                  IOC
-                </Switch>
-              </div>
-            </div>
-          ) : null}
+      <Input.Group className="mt-4">
+        <Input
+          type="number"
+          min="0"
+          step={minOrderSize}
+          onChange={(e) => onSetBaseSize(e.target.value)}
+          value={baseSize}
+          className="rounded-r-none"
+          wrapperClassName="w-3/5"
+          prefixClassName="w-12"
+          prefix={'Size'}
+          suffix={marketConfig.baseSymbol}
+        />
+        <StyledRightInput
+          type="number"
+          min="0"
+          step={minOrderSize}
+          onChange={(e) => onSetQuoteSize(e.target.value)}
+          value={quoteSize}
+          className="rounded-l-none"
+          wrapperClassName="w-2/5"
+          suffix={groupConfig.quoteSymbol}
+        />
+      </Input.Group>
+      <LeverageSlider
+        onChange={(e) => onSetBaseSize(e)}
+        value={baseSize ? baseSize : 0}
+        step={parseFloat(minOrderSize)}
+        disabled={false}
+        side={side}
+        decimalCount={sizeDecimalCount}
+        price={calculateTradePrice(
+          tradeType,
+          orderbook,
+          baseSize ? baseSize : 0,
+          side,
+          price
+        )}
+      />
+      {tradeType !== 'Market' ? (
+        <div className="flex mt-2">
+          <Switch checked={postOnly} onChange={postOnChange}>
+            POST
+          </Switch>
+          <div className="ml-4">
+            <Switch checked={ioc} onChange={iocOnChange}>
+              IOC
+            </Switch>
+          </div>
         </div>
-      ) : (
-        <div>
-          <div className={`flex pb-3 text-base text-th-fgd-4`}>
-            <button
-              onClick={() => setSide('buy')}
-              className={`flex-1 outline-none focus:outline-none`}
-            >
-              <div
-                className={`hover:text-th-green pb-1 transition-colors duration-500
+      ) : null}
+    </div>
+  ) : (
+    <div className="flex flex-col h-full">
+      <div className={`flex pb-3 text-base text-th-fgd-4`}>
+        <button
+          onClick={() => setSide('buy')}
+          className={`flex-1 outline-none focus:outline-none`}
+        >
+          <div
+            className={`hover:text-th-green pb-1 transition-colors duration-500
             ${
               side === 'buy'
                 ? `text-th-green hover:text-th-green border-b-2 border-th-green`
                 : undefined
             }`}
-              >
-                Buy
-              </div>
-            </button>
-            <button
-              onClick={() => setSide('sell')}
-              className={`flex-1 outline-none focus:outline-none`}
-            >
-              <div
-                className={`hover:text-th-red pb-1 transition-colors duration-500
+          >
+            Buy
+          </div>
+        </button>
+        <button
+          onClick={() => setSide('sell')}
+          className={`flex-1 outline-none focus:outline-none`}
+        >
+          <div
+            className={`hover:text-th-red pb-1 transition-colors duration-500
             ${
               side === 'sell'
                 ? `text-th-red hover:text-th-red border-b-2 border-th-red`
                 : undefined
             }
           `}
-              >
-                Sell
-              </div>
-            </button>
+          >
+            Sell
           </div>
-          <div className="pb-3">
-            <label className="block mb-1 text-th-fgd-3 text-xs">Price</label>
-            <Input
-              type="number"
-              min="0"
-              step={tickSize}
-              onChange={(e) => onSetPrice(e.target.value)}
-              value={price}
-              disabled={tradeType === 'Market'}
-              suffix={
-                <img
-                  src={`/assets/icons/${groupConfig.quoteSymbol.toLowerCase()}.svg`}
-                  width="16"
-                  height="16"
-                />
-              }
+        </button>
+      </div>
+      <div className="pb-3">
+        <label className="block mb-1 text-th-fgd-3 text-xs">Price</label>
+        <Input
+          type="number"
+          min="0"
+          step={tickSize}
+          onChange={(e) => onSetPrice(e.target.value)}
+          value={price}
+          disabled={tradeType === 'Market'}
+          suffix={
+            <img
+              src={`/assets/icons/${groupConfig.quoteSymbol.toLowerCase()}.svg`}
+              width="16"
+              height="16"
             />
-          </div>
-          <div className="flex items-center justify-between pb-3">
-            <label className="text-th-fgd-3 text-xs">Type</label>
-            <TradeType
-              onChange={onTradeTypeChange}
-              value={tradeType}
-              className=""
-            />
-          </div>
-          <label className="block mb-1 text-th-fgd-3 text-xs">Size</label>
-          <div className="grid grid-cols-2 grid-rows-1 gap-2">
-            <div className="col-span-1">
-              <Input
-                type="number"
-                min="0"
-                step={minOrderSize}
-                onChange={(e) => onSetBaseSize(e.target.value)}
-                value={baseSize}
-                suffix={
-                  <img
-                    src={`/assets/icons/${marketConfig.baseSymbol.toLowerCase()}.svg`}
-                    width="16"
-                    height="16"
-                  />
-                }
+          }
+        />
+      </div>
+      <div className="flex items-center justify-between pb-3">
+        <label className="text-th-fgd-3 text-xs">Type</label>
+        <TradeType
+          onChange={onTradeTypeChange}
+          value={tradeType}
+          className=""
+        />
+      </div>
+      <label className="block mb-1 text-th-fgd-3 text-xs">Size</label>
+      <div className="grid grid-cols-2 grid-rows-1 gap-2">
+        <div className="col-span-1">
+          <Input
+            type="number"
+            min="0"
+            step={minOrderSize}
+            onChange={(e) => onSetBaseSize(e.target.value)}
+            value={baseSize}
+            suffix={
+              <img
+                src={`/assets/icons/${marketConfig.baseSymbol.toLowerCase()}.svg`}
+                width="16"
+                height="16"
               />
-            </div>
-            <div className="col-span-1">
-              <Input
-                type="number"
-                min="0"
-                step={minOrderSize}
-                onChange={(e) => onSetQuoteSize(e.target.value)}
-                value={quoteSize}
-                suffix={
-                  <img
-                    src={`/assets/icons/${groupConfig.quoteSymbol.toLowerCase()}.svg`}
-                    width="16"
-                    height="16"
-                  />
-                }
-              />
-            </div>
-          </div>
-          <LeverageSlider
-            onChange={(e) => onSetBaseSize(e)}
-            value={baseSize ? baseSize : 0}
-            step={parseFloat(minOrderSize)}
-            disabled={false}
-            side={side}
-            decimalCount={sizeDecimalCount}
-            price={calculateTradePrice(
-              tradeType,
-              orderbook,
-              baseSize ? baseSize : 0,
-              side,
-              price
-            )}
+            }
           />
-          {tradeType !== 'Market' ? (
-            <div className="flex mt-2">
-              <Switch checked={postOnly} onChange={postOnChange}>
-                POST
-              </Switch>
-              <div className="ml-4">
-                <Switch checked={ioc} onChange={iocOnChange}>
-                  IOC
-                </Switch>
-              </div>
-            </div>
-          ) : null}
         </div>
-      )}
+        <div className="col-span-1">
+          <Input
+            type="number"
+            min="0"
+            step={minOrderSize}
+            onChange={(e) => onSetQuoteSize(e.target.value)}
+            value={quoteSize}
+            suffix={
+              <img
+                src={`/assets/icons/${groupConfig.quoteSymbol.toLowerCase()}.svg`}
+                width="16"
+                height="16"
+              />
+            }
+          />
+        </div>
+      </div>
+      <LeverageSlider
+        onChange={(e) => onSetBaseSize(e)}
+        value={baseSize ? baseSize : 0}
+        step={parseFloat(minOrderSize)}
+        disabled={false}
+        side={side}
+        decimalCount={sizeDecimalCount}
+        price={calculateTradePrice(
+          tradeType,
+          orderbook,
+          baseSize ? baseSize : 0,
+          side,
+          price
+        )}
+      />
+      {tradeType !== 'Market' ? (
+        <div className="flex mt-2">
+          <Switch checked={postOnly} onChange={postOnChange}>
+            POST
+          </Switch>
+          <div className="ml-4">
+            <Switch checked={ioc} onChange={iocOnChange}>
+              IOC
+            </Switch>
+          </div>
+        </div>
+      ) : null}
       <div className={`flex py-4`}>
         {ipAllowed ? (
           side === 'buy' ? (

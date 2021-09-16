@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import useMangoStore from '../stores/useMangoStore'
 import { useOpenOrders } from '../hooks/useOpenOrders'
 import usePerpPositions from '../hooks/usePerpPositions'
-import FloatingElement from './FloatingElement'
 import OpenOrdersTable from './OpenOrdersTable'
 import BalancesTable from './BalancesTable'
 import PositionsTable from './PerpPositionsTable'
@@ -99,12 +98,10 @@ const UserInfo = () => {
   }, [isPerpMarket])
 
   return (
-    <FloatingElement showConnect>
-      <div className={!connected ? 'filter blur-sm' : null}>
-        <UserInfoTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-        <TabContent activeTab={activeTab} />
-      </div>
-    </FloatingElement>
+    <div className={!connected ? 'filter blur-sm' : null}>
+      <UserInfoTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+      <TabContent activeTab={activeTab} />
+    </div>
   )
 }
 

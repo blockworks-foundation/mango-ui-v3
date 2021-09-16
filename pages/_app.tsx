@@ -53,7 +53,7 @@ function App({ Component, pageProps }) {
           <div className="bg-th-bkg-1">
             <Component {...pageProps} />
           </div>
-          <div className="sm:hidden fixed bottom-0 left-0 w-full z-20">
+          <div className="md:hidden fixed bottom-0 left-0 w-full z-20">
             <BottomBar />
           </div>
           <Notifications />

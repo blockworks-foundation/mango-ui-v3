@@ -84,6 +84,10 @@ button {
 .tiny-text {
   font-size: 0.65rem;
   line-height: 1.5;
+
+  @media screen and (max-width: 767px) {
+    font-size: 14px;
+  }
 }
 
 /* Chart */

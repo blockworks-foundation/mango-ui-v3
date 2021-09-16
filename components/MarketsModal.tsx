@@ -38,7 +38,7 @@ const MarketsModal = ({
         <div className="font-bold text-lg text-th-fgd-1">Markets</div>
         {hiddenMarkets.length === 0 ? (
           <LinkButton
-            className="font-normal hidden sm:block mb-0.5 text-th-fgd-3 text-xs disabled:cursor-not-allowed disabled:no-underline disabled:text-th-fgd-4"
+            className="font-normal hidden md:block mb-0.5 text-th-fgd-3 text-xs disabled:cursor-not-allowed disabled:no-underline disabled:text-th-fgd-4"
             // disabled={hiddenMarkets.length === 0}
             onClick={() =>
               setHiddenMarkets(markets.map((mkt) => mkt.baseAsset))
@@ -48,7 +48,7 @@ const MarketsModal = ({
           </LinkButton>
         ) : (
           <LinkButton
-            className="font-normal hidden sm:block mb-0.5 text-th-fgd-3 text-xs disabled:cursor-not-allowed disabled:no-underline disabled:text-th-fgd-4"
+            className="font-normal hidden md:block mb-0.5 text-th-fgd-3 text-xs disabled:cursor-not-allowed disabled:no-underline disabled:text-th-fgd-4"
             // disabled={hiddenMarkets.length === 0}
             onClick={() => setHiddenMarkets([])}
           >
@@ -67,7 +67,7 @@ const MarketsModal = ({
               />
               <span className="text-th-fgd-2">{mkt.baseAsset}</span>
             </div>
-            <div className="hidden sm:flex">
+            <div className="hidden md:flex">
               {hiddenMarkets.includes(mkt.baseAsset) ? (
                 <EyeOffIcon
                   className="cursor-pointer default-transition h-4 text-th-fgd-4 w-4 hover:text-th-fgd-3"

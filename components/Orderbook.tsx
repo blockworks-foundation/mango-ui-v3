@@ -199,16 +199,46 @@ export default function Orderbook({ depth = 8 }) {
           })
         )
 
+      const bidsRowsLength = !defaultLayout
+        ? depth / 2
+        : isMobile
+        ? depth / 1.2
+        : depth
+
+      const asksRowsLength = !defaultLayout
+        ? (depth + 1) / 2
+        : isMobile
+        ? depth / 1.2
+        : depth
+
       const bidsToDisplay = defaultLayout
-        ? getCumulativeOrderbookSide(bids, totalSize, maxSize, depth, false)
-        : getCumulativeOrderbookSide(bids, totalSize, maxSize, depth / 2, false)
+        ? getCumulativeOrderbookSide(
+            bids,
+            totalSize,
+            maxSize,
+            bidsRowsLength,
+            false
+          )
+        : getCumulativeOrderbookSide(
+            bids,
+            totalSize,
+            maxSize,
+            bidsRowsLength,
+            false
+          )
       const asksToDisplay = defaultLayout
-        ? getCumulativeOrderbookSide(asks, totalSize, maxSize, depth, false)
+        ? getCumulativeOrderbookSide(
+            asks,
+            totalSize,
+            maxSize,
+            asksRowsLength,
+            false
+          )
         : getCumulativeOrderbookSide(
             asks,
             totalSize,
             maxSize,
-            (depth + 1) / 2,
+            asksRowsLength,
             true
           )
 
@@ -551,7 +581,7 @@ export default function Orderbook({ depth = 8 }) {
           className="relative flex flex-col w-1/3 items-end mb-1"
         />
       </div>
-      <div className={`text-th-fgd-4 flex justify-between mb-2`}>
+      <div className={`text-th-fgd-4 flex justify-between`}>
         <div className={`text-left text-xs`}>
           {displayCumulativeSize ? 'Cumulative ' : ''}Size
         </div>
@@ -669,7 +699,7 @@ const OrderbookRow = React.memo<any>(
               />
               <div
                 onClick={handlePriceClick}
-                className={`z-10 filter brightness-110 text-xs sm:text-sm leading-5 sm:leading-7 text-th-fgd-1 px-4 ${
+                className={`z-10 filter brightness-110 text-xs sm:text-sm leading-5 sm:leading-7 text-th-fgd-1 sm:px-4 ${
                   side === 'buy' ? `text-th-green` : `text-th-red`
                 }`}
               >
@@ -704,7 +734,7 @@ const OrderbookRow = React.memo<any>(
                 side={side}
               />
               <div
-                className={`z-10 filter brightness-110 px-4 flex-1 text-xs sm:text-sm leading-5 sm:leading-7 ${
+                className={`z-10 filter brightness-110 sm:px-4 flex-1 text-xs sm:text-sm leading-5 sm:leading-7 ${
                   side === 'buy' ? `text-th-green` : `text-th-red`
                 }`}
                 onClick={handlePriceClick}

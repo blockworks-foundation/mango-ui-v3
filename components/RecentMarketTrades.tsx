@@ -117,7 +117,7 @@ export default function RecentMarketTrades() {
         !!trades.length && (
           <div className="col-span-2 h-72 overflow-auto">
             {trades.map((trade: ChartTradeType, i: number) => (
-              <div key={i} className={`leading-7 grid grid-cols-3`}>
+              <div key={i} className={`leading-5 grid grid-cols-3 text-xs`}>
                 <div
                   className={`${
                     trade.side === 'buy' ? `text-th-green` : `text-th-red`

@@ -10,6 +10,7 @@ import AccountsModal from './AccountsModal'
 
 const TopBar = () => {
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
+  const connected = useMangoStore((s) => s.wallet.connected)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
 
   const handleCloseAccounts = useCallback(() => {
@@ -19,7 +20,7 @@ const TopBar = () => {
   return (
     <>
       <nav className={`bg-th-bkg-2 border-b border-th-bkg-2`}>
-        <div className={`pl-6 md:px-9`}>
+        <div className={`pl-3 md:px-9`}>
           <div className={`flex justify-between h-14`}>
             <div className={`flex`}>
               <Link href="/spot/BTC">
@@ -73,7 +74,7 @@ const TopBar = () => {
                 </div>
               ) : null}
               <div className="flex">
-                <div className="pl-2">
+                <div className={`${connected ? 'pr-2' : ''} pl-2`}>
                   <ConnectWalletButton />
                 </div>
               </div>

@@ -36,6 +36,13 @@ const BottomBar = () => {
   return (
     <>
       <div className="bg-th-bkg-4 grid grid-cols-4 grid-rows-1 py-2.5">
+        <div
+          className="col-span-1 cursor-pointer default-transition flex flex-col items-center text-th-fgd-3 hover:text-th-primary"
+          onClick={() => setShowMarketsModal(true)}
+        >
+          <BtcMonoIcon className="h-4 mb-1 w-4" />
+          <StyledBarItemLabel>Markets</StyledBarItemLabel>
+        </div>
         <Link href="/spot/btc">
           <div
             className={`${
@@ -44,17 +51,10 @@ const BottomBar = () => {
                 : 'text-th-fgd-3'
             } col-span-1 cursor-pointer default-transition flex flex-col items-center hover:text-th-primary`}
           >
-            <TradeIcon className="h-3 mb-1 w-3" />
+            <TradeIcon className="h-4 mb-1 w-4" />
             <StyledBarItemLabel>Trade</StyledBarItemLabel>
           </div>
         </Link>
-        <div
-          className="col-span-1 cursor-pointer default-transition flex flex-col items-center text-th-fgd-3 hover:text-th-primary"
-          onClick={() => setShowMarketsModal(true)}
-        >
-          <BtcMonoIcon className="h-4 mb-1 w-4" />
-          <StyledBarItemLabel>Markets</StyledBarItemLabel>
-        </div>
         <Link href="/account">
           <div
             className={`${
