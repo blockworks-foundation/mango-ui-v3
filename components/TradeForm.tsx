@@ -19,6 +19,7 @@ import Big from 'big.js'
 import MarketFee from './MarketFee'
 import LeverageSlider from './LeverageSlider'
 import Loading from './Loading'
+import Tooltip from './Tooltip'
 
 const StyledRightInput = styled(Input)`
   border-left: 1px solid transparent;
@@ -37,6 +38,7 @@ export default function TradeForm() {
   const { side, baseSize, quoteSize, price, tradeType } = useMangoStore(
     (s) => s.tradeForm
   )
+  const [reduceOnly, setReduceOnly] = useState(false)
 
   const [postOnly, setPostOnly] = useState(false)
   const [ioc, setIoc] = useState(false)
@@ -212,6 +214,12 @@ export default function TradeForm() {
     }
     setIoc(checked)
   }
+  const reduceOnChange = (checked) => {
+    if (checked) {
+      setReduceOnly(false)
+    }
+    setReduceOnly(checked)
+  }
 
   async function onSubmit() {
     if (!price && tradeType === 'Limit') {
@@ -256,7 +264,7 @@ export default function TradeForm() {
       const orderType = ioc ? 'ioc' : postOnly ? 'postOnly' : 'limit'
       let txid
       if (market instanceof Market) {
-        txid = await mangoClient.placeSpotOrder(
+        txid = await mangoClient.placeSpotOrder2(
           mangoGroup,
           mangoAccount,
           mangoGroup.mangoCache,
@@ -277,9 +285,10 @@ export default function TradeForm() {
           side,
           orderPrice,
           baseSize,
-          orderType,
+          tradeType === 'Market' ? 'market' : orderType,
           0,
-          side === 'buy' ? askInfo : bidInfo
+          side === 'buy' ? askInfo : bidInfo,
+          reduceOnly
         )
       }
       notify({ title: 'Successfully placed trade', txid })
@@ -404,18 +413,47 @@ export default function TradeForm() {
               price
             )}
           />
-          {tradeType !== 'Market' ? (
-            <div className="flex mt-2">
-              <Switch checked={postOnly} onChange={postOnChange}>
-                POST
-              </Switch>
-              <div className="ml-4">
-                <Switch checked={ioc} onChange={iocOnChange}>
-                  IOC
-                </Switch>
+          <div className="flex mt-2">
+            {tradeType !== 'Market' ? (
+              <>
+                <div className="mr-4">
+                  <Tooltip
+                    delay={250}
+                    placement="left"
+                    content="Post only orders are guaranteed to be the maker order or else it will be canceled."
+                  >
+                    <Switch checked={postOnly} onChange={postOnChange}>
+                      POST
+                    </Switch>
+                  </Tooltip>
+                </div>
+                <div className="mr-4">
+                  <Tooltip
+                    delay={250}
+                    placement="left"
+                    content="Immediate or cancel orders are guaranteed to be the taker."
+                  >
+                    <Switch checked={ioc} onChange={iocOnChange}>
+                      IOC
+                    </Switch>
+                  </Tooltip>
+                </div>
+              </>
+            ) : null}
+            {marketConfig.kind === 'perp' ? (
+              <div>
+                <Tooltip
+                  delay={250}
+                  placement="left"
+                  content="Reduce only orders will only reduce your overall position."
+                >
+                  <Switch checked={reduceOnly} onChange={reduceOnChange}>
+                    Reduce Only
+                  </Switch>
+                </Tooltip>
               </div>
-            </div>
-          ) : null}
+            ) : null}
+          </div>
         </div>
         <div className={`flex pt-4`}>
           {ipAllowed ? (
