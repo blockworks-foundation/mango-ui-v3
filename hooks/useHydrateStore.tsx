@@ -81,7 +81,7 @@ const useHydrateStore = () => {
       connection.removeAccountChangeListener(bidSubscriptionId)
       connection.removeAccountChangeListener(askSubscriptionId)
     }
-  }, [selectedMarket])
+  }, [marketConfig, connection, setMangoStore])
 
   // fetch filled trades for selected market
   useInterval(() => {
