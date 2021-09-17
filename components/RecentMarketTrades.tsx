@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
 import { ChartTradeType } from '../@types/types'
-import FloatingElement from './FloatingElement'
 import useInterval from '../hooks/useInterval'
 import ChartApi from '../utils/chartDataConnector'
 import { ElementTitle } from './styles'
@@ -44,7 +43,7 @@ export default function RecentMarketTrades() {
   }, 5000)
 
   return !isMobile ? (
-    <FloatingElement>
+    <>
       <ElementTitle>Recent Trades</ElementTitle>
       <div className={`grid grid-cols-3 text-th-fgd-4 mb-2 text-xs`}>
         <div>Price ({mangoConfig.quoteSymbol}) </div>
@@ -80,36 +79,12 @@ export default function RecentMarketTrades() {
           ))}
         </div>
       )}
-    </FloatingElement>
+    </>
   ) : (
     <ExpandableRow
       buttonTemplate={
         <div className="col-span-11 text-left">
           <div className="mb-0.5 text-fgd-1">Recent Trades</div>
-          {/* <div className="text-th-fgd-3 text-xs">
-            {!!trades.length && (
-              <>
-                <span
-                  className={`${
-                    trades[0].side === 'buy' ? 'text-th-green' : 'text-th-red'
-                  } mr-1 uppercase`}
-                >
-                  {trades[0].side}
-                </span>
-                {`${
-                  market?.minOrderSize && !isNaN(trades[0].size)
-                    ? Number(trades[0].size).toFixed(
-                        getDecimalCount(market.minOrderSize)
-                      )
-                    : ''
-                } at ${
-                  market?.tickSize && !isNaN(trades[0].price)
-                    ? usdFormatter(Number(trades[0].price))
-                    : ''
-                }`}
-              </>
-            )}
-          </div> */}
         </div>
       }
       index={0}

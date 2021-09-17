@@ -46,7 +46,9 @@ const BottomBar = () => {
         <Link href="/perp/btc">
           <div
             className={`${
-              asPath.includes('spot') || asPath.includes('perp')
+              asPath === '/' ||
+              asPath.includes('spot') ||
+              asPath.includes('perp')
                 ? 'text-th-primary'
                 : 'text-th-fgd-3'
             } col-span-1 cursor-pointer default-transition flex flex-col items-center hover:text-th-primary`}

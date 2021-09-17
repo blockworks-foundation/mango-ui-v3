@@ -160,7 +160,7 @@ const TradePageGrid = () => {
         onLayoutChange={(layout, layouts) => onLayoutChange(layouts)}
       >
         <div key="tvChart">
-          <FloatingElement className="pl-0">
+          <FloatingElement className="h-full pl-0">
             <TVChartContainer />
           </FloatingElement>
         </div>
@@ -168,27 +168,29 @@ const TradePageGrid = () => {
           <Orderbook depth={orderbookDepth} />
         </div>
         <div key="tradeForm">
-          <FloatingElement showConnect>
+          <FloatingElement className="h-full" showConnect>
             <TradeForm />
           </FloatingElement>
         </div>
         <div key="accountInfo">
-          <FloatingElement showConnect>
+          <FloatingElement className="h-full" showConnect>
             <AccountInfo />
           </FloatingElement>
         </div>
         <div key="userInfo">
-          <FloatingElement showConnect>
+          <FloatingElement className="h-full" showConnect>
             <UserInfo />
           </FloatingElement>
         </div>
         <div key="userMarketInfo">
-          <FloatingElement showConnect>
+          <FloatingElement className="h-full" showConnect>
             <UserMarketInfo />
           </FloatingElement>
         </div>
         <div key="marketTrades">
-          <RecentMarketTrades />
+          <FloatingElement className="h-full">
+            <RecentMarketTrades />
+          </FloatingElement>
         </div>
       </ResponsiveGridLayout>
     </>
@@ -268,7 +270,7 @@ const TradePageGrid = () => {
           onChangeIndex={handleChangeViewIndex}
         >
           <div>
-            <div className="bg-th-bkg-2 grid grid-cols-12 grid-rows-1 gap-4 mb-2 px-2 py-3 rounded-lg">
+            <div className="bg-th-bkg-2 grid grid-cols-12 grid-rows-1 gap-4 mb-2 mx-1 px-2 py-3 rounded-lg">
               <div className="col-span-7">
                 <TradeForm />
               </div>
@@ -278,11 +280,11 @@ const TradePageGrid = () => {
             </div>
             <RecentMarketTrades />
           </div>
-          <div className="bg-th-bkg-2 px-2 py-3 rounded-lg">
+          <div className="bg-th-bkg-2 mx-1 px-2 py-3 rounded-lg">
             <MarketDetails />
           </div>
           {selectedMarket instanceof PerpMarket ? (
-            <FloatingElement className="py-0" showConnect>
+            <FloatingElement className="mx-1 py-0" showConnect>
               <div
                 className={`${
                   !connected ? 'filter blur-sm' : ''
@@ -292,7 +294,7 @@ const TradePageGrid = () => {
               </div>
             </FloatingElement>
           ) : (
-            <FloatingElement className="py-0" showConnect>
+            <FloatingElement className="mx-1 py-0" showConnect>
               <div
                 className={`${
                   !connected ? 'filter blur-sm' : ''
@@ -303,7 +305,7 @@ const TradePageGrid = () => {
             </FloatingElement>
           )}
           <FloatingElement
-            className={`${!connected ? 'min-h-[216px]' : ''} py-0`}
+            className={`${!connected ? 'min-h-[216px]' : ''} mx-1 py-0`}
             showConnect
           >
             <div

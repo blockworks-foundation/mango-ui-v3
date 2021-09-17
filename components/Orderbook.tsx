@@ -199,46 +199,16 @@ export default function Orderbook({ depth = 8 }) {
           })
         )
 
-      const bidsRowsLength = !defaultLayout
-        ? depth / 2
-        : isMobile
-        ? depth / 1.2
-        : depth
-
-      const asksRowsLength = !defaultLayout
-        ? (depth + 1) / 2
-        : isMobile
-        ? depth / 1.2
-        : depth
-
       const bidsToDisplay = defaultLayout
-        ? getCumulativeOrderbookSide(
-            bids,
-            totalSize,
-            maxSize,
-            bidsRowsLength,
-            false
-          )
-        : getCumulativeOrderbookSide(
-            bids,
-            totalSize,
-            maxSize,
-            bidsRowsLength,
-            false
-          )
+        ? getCumulativeOrderbookSide(bids, totalSize, maxSize, depth, false)
+        : getCumulativeOrderbookSide(bids, totalSize, maxSize, depth / 2, false)
       const asksToDisplay = defaultLayout
-        ? getCumulativeOrderbookSide(
-            asks,
-            totalSize,
-            maxSize,
-            asksRowsLength,
-            false
-          )
+        ? getCumulativeOrderbookSide(asks, totalSize, maxSize, depth, false)
         : getCumulativeOrderbookSide(
             asks,
             totalSize,
             maxSize,
-            asksRowsLength,
+            (depth + 1) / 2,
             true
           )
 
@@ -293,7 +263,7 @@ export default function Orderbook({ depth = 8 }) {
       <FlipCardInner flip={defaultLayout}>
         {defaultLayout ? (
           <FlipCardFront>
-            <StyledFloatingElement>
+            <StyledFloatingElement className="h-full">
               <div className="flex items-center justify-between pb-2.5">
                 <div className="flex relative">
                   <Tooltip
@@ -426,7 +396,7 @@ export default function Orderbook({ depth = 8 }) {
           </FlipCardFront>
         ) : (
           <FlipCardBack>
-            <StyledFloatingElement>
+            <StyledFloatingElement className="h-full">
               <div className="flex items-center justify-between pb-2.5">
                 <div className="flex relative">
                   <Tooltip
