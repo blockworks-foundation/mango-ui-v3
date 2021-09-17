@@ -6,6 +6,8 @@ import {
   getTokenBySymbol,
   nativeI80F48ToUi,
 } from '@blockworks-foundation/mango-client'
+import { useViewport } from '../hooks/useViewport'
+import { breakpoints } from './TradePageGrid'
 
 export default function MarketBalances() {
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
@@ -17,12 +19,14 @@ export default function MarketBalances() {
   const connected = useMangoStore((s) => s.wallet.connected)
   const isLoading = useMangoStore((s) => s.selectedMangoAccount.initialLoad)
   const baseSymbol = marketConfig.baseSymbol
+  const { width } = useViewport()
+  const isMobile = width ? width < breakpoints.sm : false
 
   if (!mangoGroup || !selectedMarket) return null
 
   return (
     <div className={!connected ? 'filter blur' : null}>
-      <ElementTitle>Balances</ElementTitle>
+      {!isMobile ? <ElementTitle>Balances</ElementTitle> : null}
       {mangoGroup ? (
         <div className="grid grid-cols-2 grid-rows-1 gap-4 pt-2">
           {mangoGroupConfig.tokens

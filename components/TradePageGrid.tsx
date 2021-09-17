@@ -3,6 +3,7 @@ import { Responsive, WidthProvider } from 'react-grid-layout'
 import { Disclosure } from '@headlessui/react'
 import { XIcon } from '@heroicons/react/outline'
 import { round, max } from 'lodash'
+import SwipeableViews from 'react-swipeable-views'
 
 const TVChartContainer = dynamic(
   () => import('../components/TradingView/index'),
@@ -20,6 +21,7 @@ import useMangoStore from '../stores/useMangoStore'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import { useViewport } from '../hooks/useViewport'
 import MarketPosition from './MarketPosition'
+import MarketBalances from './MarketBalances'
 import { PerpMarket } from '@blockworks-foundation/mango-client'
 import OpenOrdersTable from './OpenOrdersTable'
 import MarketDetails from './MarketDetails'
@@ -78,73 +80,6 @@ export const defaultLayouts = {
 export const GRID_LAYOUT_KEY = 'mangoSavedLayouts-3.0.8'
 export const breakpoints = { xl: 1600, lg: 1200, md: 1110, sm: 768, xs: 0 }
 
-const TabContent = ({ activeTab, orderbookDepth }) => {
-  const connected = useMangoStore((s) => s.wallet.connected)
-  switch (activeTab) {
-    case 'Trade':
-      return (
-        <>
-          <div className="bg-th-bkg-2 grid grid-cols-12 grid-rows-1 gap-4 mb-2 px-2 py-3 rounded-lg">
-            <div className="col-span-7">
-              <TradeForm />
-            </div>
-            <div className="col-span-5">
-              <Orderbook depth={orderbookDepth} />
-            </div>
-          </div>
-          <RecentMarketTrades />
-        </>
-      )
-    case 'Details':
-      return (
-        <div className="bg-th-bkg-2 px-2 py-3 rounded-lg">
-          <MarketDetails />
-        </div>
-      )
-    case 'Position':
-      return (
-        <FloatingElement className="py-0" showConnect>
-          <div
-            className={`${
-              !connected ? 'filter blur-sm' : ''
-            } bg-th-bkg-2 py-3 rounded-lg`}
-          >
-            <MarketPosition />
-          </div>
-        </FloatingElement>
-      )
-    case 'Orders':
-      return (
-        <FloatingElement
-          className={`${!connected ? 'min-h-[216px]' : ''} py-0`}
-          showConnect
-        >
-          <div
-            className={`${
-              !connected ? 'filter blur-sm' : ''
-            } bg-th-bkg-2 py-3 rounded-lg`}
-          >
-            <OpenOrdersTable />
-          </div>
-        </FloatingElement>
-      )
-    default:
-      return (
-        <>
-          <div className="bg-th-bkg-2 grid grid-cols-12 grid-rows-1 gap-4 mb-2 px-2 py-3 rounded-lg">
-            <div className="col-span-7">
-              <TradeForm />
-            </div>
-            <div className="col-span-5">
-              <Orderbook depth={orderbookDepth} />
-            </div>
-          </div>
-          <RecentMarketTrades />
-        </>
-      )
-  }
-}
-
 const TradePageGrid = () => {
   const { uiLocked } = useMangoStore((s) => s.settings)
   const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
@@ -154,6 +89,7 @@ const TradePageGrid = () => {
   )
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
+  const connected = useMangoStore((s) => s.wallet.connected)
   const baseSymbol = marketConfig.baseSymbol
   const isPerpMarket = marketConfig.kind === 'perp'
   const { width } = useViewport()
@@ -179,7 +115,7 @@ const TradePageGrid = () => {
   const [orderbookDepth, setOrderbookDepth] = useState(8)
   const [currentBreakpoint, setCurrentBreakpoint] = useState(null)
   const [mounted, setMounted] = useState(false)
-  const [activeTab, setActiveTab] = useState('Trade')
+  const [viewIndex, setViewIndex] = useState(0)
 
   useEffect(() => {
     const adjustOrderBook = (layouts, breakpoint?: string | null) => {
@@ -201,10 +137,10 @@ const TradePageGrid = () => {
   const TABS =
     selectedMarket instanceof PerpMarket
       ? ['Trade', 'Details', 'Position', 'Orders']
-      : ['Trade', 'Details', 'Orders']
+      : ['Trade', 'Details', 'Balances', 'Orders']
 
-  const handleTabChange = (tabName) => {
-    setActiveTab(tabName)
+  const handleChangeViewIndex = (index) => {
+    setViewIndex(index)
   }
 
   return !isMobile ? (
@@ -299,31 +235,86 @@ const TradePageGrid = () => {
             )}
           </Disclosure>
         </div>
-        <div className={`border-b border-th-fgd-4 mb-4 px-3`}>
-          <nav
-            className={`-mb-px flex space-x-3 sm:space-x-6`}
-            aria-label="Tabs"
-          >
-            {TABS.map((tabName) => (
+        <div className={`border-b border-th-fgd-4 mb-4 relative`}>
+          <div
+            className={`absolute bg-th-primary bottom-[-1px] default-transition left-0 h-0.5 w-16`}
+            style={{
+              transform: `translateX(${viewIndex * 100}%)`,
+              width: `${100 / TABS.length}%`,
+            }}
+          />
+          <nav className="-mb-px flex" aria-label="Tabs">
+            {TABS.map((tabName, i) => (
               <a
                 key={tabName}
-                onClick={() => handleTabChange(tabName)}
-                className={`whitespace-nowrap pt-2 pb-4 px-2 border-b-2 font-semibold cursor-pointer default-transition relative  hover:opacity-100
+                onClick={() => handleChangeViewIndex(i)}
+                className={`cursor-pointer default-transition flex font-semibold justify-center pb-4 pt-2 relative whitespace-nowrap hover:opacity-100
                   ${
-                    activeTab === tabName
-                      ? `border-th-primary text-th-primary`
-                      : `border-transparent text-th-fgd-4 hover:text-th-primary`
+                    viewIndex === i
+                      ? `text-th-primary`
+                      : `text-th-fgd-4 hover:text-th-primary`
                   }
                 `}
+                style={{ width: `${100 / TABS.length}%` }}
               >
                 {tabName}
               </a>
             ))}
           </nav>
         </div>
-        <div className="mb-2">
-          <TabContent activeTab={activeTab} orderbookDepth={orderbookDepth} />
-        </div>
+        <SwipeableViews
+          enableMouseEvents
+          index={viewIndex}
+          onChangeIndex={handleChangeViewIndex}
+        >
+          <div>
+            <div className="bg-th-bkg-2 grid grid-cols-12 grid-rows-1 gap-4 mb-2 px-2 py-3 rounded-lg">
+              <div className="col-span-7">
+                <TradeForm />
+              </div>
+              <div className="col-span-5">
+                <Orderbook depth={orderbookDepth} />
+              </div>
+            </div>
+            <RecentMarketTrades />
+          </div>
+          <div className="bg-th-bkg-2 px-2 py-3 rounded-lg">
+            <MarketDetails />
+          </div>
+          {selectedMarket instanceof PerpMarket ? (
+            <FloatingElement className="py-0" showConnect>
+              <div
+                className={`${
+                  !connected ? 'filter blur-sm' : ''
+                } bg-th-bkg-2 py-3 rounded-lg`}
+              >
+                <MarketPosition />
+              </div>
+            </FloatingElement>
+          ) : (
+            <FloatingElement className="py-0" showConnect>
+              <div
+                className={`${
+                  !connected ? 'filter blur-sm' : ''
+                } bg-th-bkg-2 py-3 rounded-lg`}
+              >
+                <MarketBalances />
+              </div>
+            </FloatingElement>
+          )}
+          <FloatingElement
+            className={`${!connected ? 'min-h-[216px]' : ''} py-0`}
+            showConnect
+          >
+            <div
+              className={`${
+                !connected ? 'filter blur-sm' : ''
+              } bg-th-bkg-2 py-3 rounded-lg`}
+            >
+              <OpenOrdersTable />
+            </div>
+          </FloatingElement>
+        </SwipeableViews>
       </div>
     </>
   )

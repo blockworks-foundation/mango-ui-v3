@@ -43,7 +43,7 @@ const BottomBar = () => {
           <BtcMonoIcon className="h-4 mb-1 w-4" />
           <StyledBarItemLabel>Markets</StyledBarItemLabel>
         </div>
-        <Link href="/spot/btc">
+        <Link href="/perp/btc">
           <div
             className={`${
               asPath.includes('spot') || asPath.includes('perp')

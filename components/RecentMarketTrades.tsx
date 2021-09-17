@@ -115,7 +115,7 @@ export default function RecentMarketTrades() {
       index={0}
       panelTemplate={
         !!trades.length && (
-          <div className="col-span-2 h-72 overflow-auto">
+          <div className="col-span-2">
             {trades.map((trade: ChartTradeType, i: number) => (
               <div key={i} className={`leading-5 grid grid-cols-3 text-xs`}>
                 <div
