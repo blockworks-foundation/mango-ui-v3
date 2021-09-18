@@ -576,7 +576,7 @@ export default function Orderbook({ depth = 8 }) {
         )
       )}
       <div className="flex justify-between bg-th-bkg-1 p-2 my-2 rounded-md text-xs">
-        {/* <div className="text-th-fgd-3">Spread</div> */}
+        <div className="hidden sm:block text-th-fgd-3">Spread</div>
         <div className="text-th-fgd-1">{orderbookData?.spread.toFixed(2)}</div>
         <div className="text-th-fgd-1">
           {orderbookData?.spreadPercentage.toFixed(2)}%
@@ -669,7 +669,7 @@ const OrderbookRow = React.memo<any>(
               />
               <div
                 onClick={handlePriceClick}
-                className={`z-10 filter brightness-110 text-xs sm:text-sm leading-5 sm:leading-7 text-th-fgd-1 sm:px-4 ${
+                className={`z-10 filter brightness-110 text-xs md:text-sm leading-5 md:leading-7 text-th-fgd-1 sm:px-4 ${
                   side === 'buy' ? `text-th-green` : `text-th-red`
                 }`}
               >
@@ -688,7 +688,7 @@ const OrderbookRow = React.memo<any>(
         ) : (
           <>
             <div
-              className={`absolute md:left-3 z-10 text-xs sm:text-sm leading-5 sm:leading-7 ${
+              className={`absolute md:left-3 z-10 text-xs md:text-sm leading-5 md:leading-7 ${
                 hasOpenOrder ? 'text-th-primary' : 'text-th-fgd-1'
               }`}
               onClick={handleSizeClick}
@@ -704,7 +704,7 @@ const OrderbookRow = React.memo<any>(
                 side={side}
               />
               <div
-                className={`z-10 filter brightness-110 sm:px-4 flex-1 text-xs sm:text-sm leading-5 sm:leading-7 ${
+                className={`z-10 filter brightness-110 sm:px-4 flex-1 text-xs md:text-sm leading-5 md:leading-7 ${
                   side === 'buy' ? `text-th-green` : `text-th-red`
                 }`}
                 onClick={handlePriceClick}
