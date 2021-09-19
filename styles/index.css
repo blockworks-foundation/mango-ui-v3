@@ -309,3 +309,11 @@ input[type='number'] {
   -webkit-animation: highlight 0.5s ease 0s 1 alternate;
   animation: highlight 0.5s ease 0s 1 alternate;
 }
+
+.react-swipeable-view-container > div[aria-hidden='false'] {
+  height: 100%;
+}
+
+.react-swipeable-view-container > div[aria-hidden='true'] {
+  height: 0;
+}

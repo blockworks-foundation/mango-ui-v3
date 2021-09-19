@@ -1,9 +1,7 @@
 import dynamic from 'next/dynamic'
 import { Responsive, WidthProvider } from 'react-grid-layout'
-import { Disclosure } from '@headlessui/react'
-import { XIcon } from '@heroicons/react/outline'
 import { round, max } from 'lodash'
-import SwipeableViews from 'react-swipeable-views'
+import MobileTradePage from './mobile/MobileTradePage'
 
 const TVChartContainer = dynamic(
   () => import('../components/TradingView/index'),
@@ -20,13 +18,7 @@ import RecentMarketTrades from './RecentMarketTrades'
 import useMangoStore from '../stores/useMangoStore'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import { useViewport } from '../hooks/useViewport'
-import MarketPosition from './MarketPosition'
-import MarketBalances from './MarketBalances'
-import { PerpMarket } from '@blockworks-foundation/mango-client'
-import OpenOrdersTable from './OpenOrdersTable'
 import MarketDetails from './MarketDetails'
-import { CandlesIcon } from './icons'
-import SwipeableTabs from './SwipeableTabs'
 
 const ResponsiveGridLayout = WidthProvider(Responsive)
 
@@ -83,16 +75,10 @@ export const breakpoints = { xl: 1600, lg: 1200, md: 1110, sm: 768, xs: 0 }
 
 const TradePageGrid = () => {
   const { uiLocked } = useMangoStore((s) => s.settings)
-  const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
   const [savedLayouts, setSavedLayouts] = useLocalStorageState(
     GRID_LAYOUT_KEY,
     defaultLayouts
   )
-  const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
-  const marketConfig = useMangoStore((s) => s.selectedMarket.config)
-  const connected = useMangoStore((s) => s.wallet.connected)
-  const baseSymbol = marketConfig.baseSymbol
-  const isPerpMarket = marketConfig.kind === 'perp'
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
 
@@ -116,7 +102,6 @@ const TradePageGrid = () => {
   const [orderbookDepth, setOrderbookDepth] = useState(8)
   const [currentBreakpoint, setCurrentBreakpoint] = useState(null)
   const [mounted, setMounted] = useState(false)
-  const [viewIndex, setViewIndex] = useState(0)
 
   useEffect(() => {
     const adjustOrderBook = (layouts, breakpoint?: string | null) => {
@@ -134,15 +119,6 @@ const TradePageGrid = () => {
 
   useEffect(() => setMounted(true), [])
   if (!mounted) return null
-
-  const TABS =
-    selectedMarket instanceof PerpMarket
-      ? ['Trade', 'Details', 'Position', 'Orders']
-      : ['Trade', 'Details', 'Balances', 'Orders']
-
-  const handleChangeViewIndex = (index) => {
-    setViewIndex(index)
-  }
 
   return !isMobile ? (
     <>
@@ -196,108 +172,7 @@ const TradePageGrid = () => {
       </ResponsiveGridLayout>
     </>
   ) : (
-    <>
-      <div className="pb-12 pt-4 px-2">
-        <div className="pb-2 flex items-center justify-between">
-          <div className="flex items-center">
-            <img
-              alt=""
-              width="30"
-              height="30"
-              src={`/assets/icons/${baseSymbol.toLowerCase()}.svg`}
-              className="mr-2"
-            />
-            <div className="flex items-center">
-              <div className="font-semibold pr-0.5 text-xl">{baseSymbol}</div>
-              <span className="text-th-fgd-4 text-xl">
-                {isPerpMarket ? '-' : '/'}
-              </span>
-              <div className="font-semibold pl-0.5 text-xl">
-                {isPerpMarket ? 'PERP' : groupConfig.quoteSymbol}
-              </div>
-            </div>
-          </div>
-          <Disclosure>
-            {({ open }) => (
-              <>
-                <Disclosure.Button>
-                  <div className="bg-th-bkg-4 flex items-center justify-center rounded-full w-8 h-8 text-th-fgd-1 focus:outline-none hover:text-th-primary">
-                    {open ? (
-                      <XIcon className="h-4 w-4" />
-                    ) : (
-                      <CandlesIcon className="h-5 w-5" />
-                    )}
-                  </div>
-                </Disclosure.Button>
-                <Disclosure.Panel className="pt-3">
-                  <div className="bg-th-bkg-2 h-96 mb-2 p-2 rounded-lg">
-                    <TVChartContainer />
-                  </div>
-                </Disclosure.Panel>
-              </>
-            )}
-          </Disclosure>
-        </div>
-        <SwipeableTabs
-          onChange={handleChangeViewIndex}
-          tabs={TABS}
-          tabIndex={viewIndex}
-        />
-        <SwipeableViews
-          enableMouseEvents
-          index={viewIndex}
-          onChangeIndex={handleChangeViewIndex}
-        >
-          <div>
-            <div className="bg-th-bkg-2 grid grid-cols-12 grid-rows-1 gap-4 mb-2 px-2 py-3 rounded-lg">
-              <div className="col-span-7">
-                <TradeForm />
-              </div>
-              <div className="col-span-5">
-                <Orderbook depth={orderbookDepth} />
-              </div>
-            </div>
-            <RecentMarketTrades />
-          </div>
-          <div className="bg-th-bkg-2 px-2 py-3 rounded-lg">
-            <MarketDetails />
-          </div>
-          {selectedMarket instanceof PerpMarket ? (
-            <FloatingElement className="py-0" showConnect>
-              <div
-                className={`${
-                  !connected ? 'filter blur-sm' : ''
-                } bg-th-bkg-2 py-3 rounded-lg`}
-              >
-                <MarketPosition />
-              </div>
-            </FloatingElement>
-          ) : (
-            <FloatingElement className="py-0" showConnect>
-              <div
-                className={`${
-                  !connected ? 'filter blur-sm' : ''
-                } bg-th-bkg-2 py-3 rounded-lg`}
-              >
-                <MarketBalances />
-              </div>
-            </FloatingElement>
-          )}
-          <FloatingElement
-            className={`${!connected ? 'min-h-[216px]' : ''} py-0`}
-            showConnect
-          >
-            <div
-              className={`${
-                !connected ? 'filter blur-sm' : ''
-              } bg-th-bkg-2 py-3 rounded-lg`}
-            >
-              <OpenOrdersTable />
-            </div>
-          </FloatingElement>
-        </SwipeableViews>
-      </div>
-    </>
+    <MobileTradePage />
   )
 }
 

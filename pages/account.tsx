@@ -6,7 +6,6 @@ import {
   LinkIcon,
   PencilIcon,
 } from '@heroicons/react/outline'
-import SwipeableViews from 'react-swipeable-views'
 import useMangoStore from '../stores/useMangoStore'
 import { copyToClipboard } from '../utils'
 import PageBodyContainer from '../components/PageBodyContainer'
@@ -20,6 +19,7 @@ import Button from '../components/Button'
 import EmptyState from '../components/EmptyState'
 import Loading from '../components/Loading'
 import SwipeableTabs from '../components/SwipeableTabs'
+import Swipeable from '../components/mobile/Swipeable'
 
 const TABS = [
   'Portfolio',
@@ -65,22 +65,6 @@ export default function Account() {
   const handleChangeViewIndex = (index) => {
     setViewIndex(index)
   }
-
-  const [, setRef] = useState(null)
-
-  const onRefChange = useCallback((node: SwipeableViews & HTMLDivElement) => {
-    // hacky solution to update the height after the first render. Height is not set correctly on initial render
-    setRef(node) // e.g. change ref state to trigger re-render
-    if (node === null) {
-      return
-    } else {
-      const interval = setInterval(() => {
-        // @ts-ignore typings are not correct in this package
-        node.updateHeight()
-      }, 100)
-      return () => clearInterval(interval)
-    }
-  }, [])
 
   return (
     <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
@@ -146,13 +130,8 @@ export default function Account() {
         ) : null}
         <div className="bg-th-bkg-2 p-4 sm:p-6 rounded-lg">
           {mangoAccount ? (
-            <SwipeableViews
-              animateHeight
-              enableMouseEvents
-              index={viewIndex}
-              onChangeIndex={handleChangeViewIndex}
-              ref={onRefChange}
-            >
+            // @ts-ignore
+            <Swipeable index={viewIndex} onChangeIndex={handleChangeViewIndex}>
               <div>
                 <AccountOverview />
               </div>
@@ -162,7 +141,7 @@ export default function Account() {
               <div>
                 <AccountHistory />
               </div>
-            </SwipeableViews>
+            </Swipeable>
           ) : connected ? (
             isLoading ? (
               <div className="flex justify-center py-10">
