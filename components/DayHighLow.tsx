@@ -15,11 +15,11 @@ const DayHighLow = ({ high, low, latest }) => {
       <div className="text-left lg:text-center text-th-fgd-3 tiny-text pb-0.5">
         Daily Range
       </div>
-      <div className="flex items-center">
+      <div className="flex items-center font-semibold">
         <div className="pr-2 text-th-fgd-1 md:text-xs">
           {low ? formatUsdValue(low) : <MarketDataLoader />}
         </div>
-        <div className="h-1.5 flex rounded bg-th-bkg-3 w-20">
+        <div className="h-1.5 flex rounded bg-th-bkg-3 w-16 sm:w-20">
           <div
             style={{
               width: `${rangePercent}%`,

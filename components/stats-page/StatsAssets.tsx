@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Chart from '../Chart'
+import Select from '../Select'
 
 const icons = {
   BTC: '/assets/icons/btc.svg',
@@ -18,7 +19,7 @@ export default function StatsAssets({ latestStats, stats }) {
 
   return (
     <>
-      <div className="flex flex-col-reverse items-center sm:flex-row sm:justify-between sm:h-12 mb-4 w-full">
+      <div className="flex items-center justify-between mb-4 w-full">
         <div className="flex items-center text-xl text-th-fgd-1">
           <img
             src={icons[selectedAsset]}
@@ -29,7 +30,26 @@ export default function StatsAssets({ latestStats, stats }) {
           />
           {selectedAsset}
         </div>
-        <div className="flex pb-4 sm:pb-0">
+        <Select
+          value={selectedAsset}
+          onChange={(a) => setSelectedAsset(a)}
+          className="w-24 sm:hidden"
+        >
+          <div className="space-y-2">
+            {latestStats.map((stat) => (
+              <Select.Option
+                key={stat.name}
+                value={stat.name}
+                className={`bg-th-bkg-1 relative rounded-md w-full px-3 py-3 cursor-pointer default-transition flex hover:bg-th-bkg-3 focus:outline-none`}
+              >
+                <div className="flex items-center justify-between w-full">
+                  {stat.name}
+                </div>
+              </Select.Option>
+            ))}
+          </div>
+        </Select>
+        <div className="hidden sm:flex pb-4 sm:pb-0">
           {latestStats.map((stat) => (
             <div
               className={`px-2 py-1 ml-2 rounded-md cursor-pointer default-transition bg-th-bkg-3
@@ -47,7 +67,7 @@ export default function StatsAssets({ latestStats, stats }) {
           ))}
         </div>
       </div>
-      <div className="grid grid-flow-col grid-cols-1 grid-rows-4 md:grid-cols-2 md:grid-rows-2 gap-4 pb-8">
+      <div className="grid grid-flow-col grid-cols-1 grid-rows-4 md:grid-cols-2 md:grid-rows-2 gap-2 sm:gap-4">
         <div
           className="border border-th-bkg-3 relative md:mb-0 p-4 rounded-md"
           style={{ height: '300px' }}

@@ -5,7 +5,7 @@ import { XIcon } from '@heroicons/react/outline'
 import useMangoStore from '../../stores/useMangoStore'
 import { PerpMarket } from '@blockworks-foundation/mango-client'
 import { CandlesIcon } from '../icons'
-import SwipeableTabs from '../SwipeableTabs'
+import SwipeableTabs from './SwipeableTabs'
 import TradeForm from '../TradeForm'
 import Orderbook from '../Orderbook'
 import MarketBalances from '../MarketBalances'
@@ -101,11 +101,7 @@ const MobileTradePage = () => {
         tabs={TABS}
         tabIndex={viewIndex}
       />
-      <Swipeable
-        // @ts-ignore
-        index={viewIndex}
-        onChangeIndex={handleChangeViewIndex}
-      >
+      <Swipeable index={viewIndex} onChangeIndex={handleChangeViewIndex}>
         <div>
           <div className="bg-th-bkg-2 grid grid-cols-12 grid-rows-1 gap-4 mb-2 px-2 py-3 rounded-lg">
             <div className="col-span-7">

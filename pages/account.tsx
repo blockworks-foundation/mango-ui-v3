@@ -18,7 +18,7 @@ import AccountNameModal from '../components/AccountNameModal'
 import Button from '../components/Button'
 import EmptyState from '../components/EmptyState'
 import Loading from '../components/Loading'
-import SwipeableTabs from '../components/SwipeableTabs'
+import SwipeableTabs from '../components/mobile/SwipeableTabs'
 import Swipeable from '../components/mobile/Swipeable'
 
 const TABS = [
@@ -70,7 +70,7 @@ export default function Account() {
     <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
       <TopBar />
       <PageBodyContainer>
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between pb-6 pt-8 md:pb-4 md:pt-10">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between py-4 md:pb-4 md:pt-10">
           {mangoAccount ? (
             <>
               <div className="pb-3 md:pb-0">
@@ -130,7 +130,6 @@ export default function Account() {
         ) : null}
         <div className="bg-th-bkg-2 p-4 sm:p-6 rounded-lg">
           {mangoAccount ? (
-            // @ts-ignore
             <Swipeable index={viewIndex} onChangeIndex={handleChangeViewIndex}>
               <div>
                 <AccountOverview />

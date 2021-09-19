@@ -1,18 +1,21 @@
 import { Component } from 'react'
 import SwipeableViews from 'react-swipeable-views'
 
-// @ts-ignore
-class Swipeable extends Component {
+interface SwipeableProps {
+  index: number
+  onChangeIndex: (x) => void
+  children: React.ReactNode
+}
+
+class Swipeable extends Component<SwipeableProps> {
   componentDidUpdate() {
     // @ts-ignore
     this.swipeableActions.updateHeight()
   }
   render() {
-    // @ts-ignore
     const { children, index, onChangeIndex } = this.props
     return (
       <SwipeableViews
-        // animateHeight
         action={(actions) => {
           // @ts-ignore
           this.swipeableActions = actions
@@ -20,6 +23,7 @@ class Swipeable extends Component {
         enableMouseEvents
         index={index}
         onChangeIndex={onChangeIndex}
+        slideStyle={{ overflow: 'inherit' }}
         style={{ overflow: 'hidden' }}
       >
         {children}
