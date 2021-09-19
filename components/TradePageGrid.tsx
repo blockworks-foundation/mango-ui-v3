@@ -26,6 +26,7 @@ import { PerpMarket } from '@blockworks-foundation/mango-client'
 import OpenOrdersTable from './OpenOrdersTable'
 import MarketDetails from './MarketDetails'
 import { CandlesIcon } from './icons'
+import SwipeableTabs from './SwipeableTabs'
 
 const ResponsiveGridLayout = WidthProvider(Responsive)
 
@@ -196,8 +197,8 @@ const TradePageGrid = () => {
     </>
   ) : (
     <>
-      <div className="pb-12 pt-4">
-        <div className="pb-2 px-3 relative">
+      <div className="pb-12 pt-4 px-2">
+        <div className="pb-2 flex items-center justify-between">
           <div className="flex items-center">
             <img
               alt=""
@@ -219,7 +220,7 @@ const TradePageGrid = () => {
           <Disclosure>
             {({ open }) => (
               <>
-                <Disclosure.Button className="absolute right-3 top-0 ml-2">
+                <Disclosure.Button>
                   <div className="bg-th-bkg-4 flex items-center justify-center rounded-full w-8 h-8 text-th-fgd-1 focus:outline-none hover:text-th-primary">
                     {open ? (
                       <XIcon className="h-4 w-4" />
@@ -237,40 +238,18 @@ const TradePageGrid = () => {
             )}
           </Disclosure>
         </div>
-        <div className={`border-b border-th-fgd-4 mb-4 relative`}>
-          <div
-            className={`absolute bg-th-primary bottom-[-1px] default-transition left-0 h-0.5 w-16`}
-            style={{
-              transform: `translateX(${viewIndex * 100}%)`,
-              width: `${100 / TABS.length}%`,
-            }}
-          />
-          <nav className="-mb-px flex" aria-label="Tabs">
-            {TABS.map((tabName, i) => (
-              <a
-                key={tabName}
-                onClick={() => handleChangeViewIndex(i)}
-                className={`cursor-pointer default-transition flex font-semibold justify-center pb-4 pt-2 relative whitespace-nowrap hover:opacity-100
-                  ${
-                    viewIndex === i
-                      ? `text-th-primary`
-                      : `text-th-fgd-4 hover:text-th-primary`
-                  }
-                `}
-                style={{ width: `${100 / TABS.length}%` }}
-              >
-                {tabName}
-              </a>
-            ))}
-          </nav>
-        </div>
+        <SwipeableTabs
+          onChange={handleChangeViewIndex}
+          tabs={TABS}
+          tabIndex={viewIndex}
+        />
         <SwipeableViews
           enableMouseEvents
           index={viewIndex}
           onChangeIndex={handleChangeViewIndex}
         >
           <div>
-            <div className="bg-th-bkg-2 grid grid-cols-12 grid-rows-1 gap-4 mb-2 mx-1 px-2 py-3 rounded-lg">
+            <div className="bg-th-bkg-2 grid grid-cols-12 grid-rows-1 gap-4 mb-2 px-2 py-3 rounded-lg">
               <div className="col-span-7">
                 <TradeForm />
               </div>
@@ -280,11 +259,11 @@ const TradePageGrid = () => {
             </div>
             <RecentMarketTrades />
           </div>
-          <div className="bg-th-bkg-2 mx-1 px-2 py-3 rounded-lg">
+          <div className="bg-th-bkg-2 px-2 py-3 rounded-lg">
             <MarketDetails />
           </div>
           {selectedMarket instanceof PerpMarket ? (
-            <FloatingElement className="mx-1 py-0" showConnect>
+            <FloatingElement className="py-0" showConnect>
               <div
                 className={`${
                   !connected ? 'filter blur-sm' : ''
@@ -294,7 +273,7 @@ const TradePageGrid = () => {
               </div>
             </FloatingElement>
           ) : (
-            <FloatingElement className="mx-1 py-0" showConnect>
+            <FloatingElement className="py-0" showConnect>
               <div
                 className={`${
                   !connected ? 'filter blur-sm' : ''
@@ -305,7 +284,7 @@ const TradePageGrid = () => {
             </FloatingElement>
           )}
           <FloatingElement
-            className={`${!connected ? 'min-h-[216px]' : ''} mx-1 py-0`}
+            className={`${!connected ? 'min-h-[216px]' : ''} py-0`}
             showConnect
           >
             <div

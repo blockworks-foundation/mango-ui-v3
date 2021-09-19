@@ -144,7 +144,7 @@ const MarketDetails = () => {
 
   return (
     <div
-      className={`flex flex-col relative md:pt-6 md:px-4 lg:flex-row lg:items-center lg:justify-between lg:pb-1 lg:pt-8 lg:px-6`}
+      className={`flex flex-col relative md:pb-2 md:pt-6 md:px-3 lg:flex-row lg:items-center lg:justify-between`}
     >
       <div className="flex flex-col lg:flex-row lg:items-center">
         <div className="hidden md:block md:pb-4 md:pr-6 lg:pb-0">

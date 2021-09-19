@@ -20,7 +20,7 @@ const TopBar = () => {
   return (
     <>
       <nav className={`bg-th-bkg-2 border-b border-th-bkg-2`}>
-        <div className={`pl-3 md:px-9`}>
+        <div className={`pl-2 md:px-4`}>
           <div className={`flex justify-between h-14`}>
             <div className={`flex`}>
               <Link href="/spot/BTC">
@@ -64,7 +64,7 @@ const TopBar = () => {
                     className="border border-th-bkg-4 py-1 px-2 rounded text-xs focus:outline-none hover:border-th-fgd-4"
                     onClick={() => setShowAccountsModal(true)}
                   >
-                    <div className="font-normal text-th-primary tiny-text">
+                    <div className="font-normal text-th-primary text-xs">
                       Account
                     </div>
                     {mangoAccount.name
@@ -74,7 +74,7 @@ const TopBar = () => {
                 </div>
               ) : null}
               <div className="flex">
-                <div className={`${connected ? 'pr-2' : ''} pl-2`}>
+                <div className={`${connected ? 'pr-2 md:pr-0' : ''} pl-2`}>
                   <ConnectWalletButton />
                 </div>
               </div>
