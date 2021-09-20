@@ -41,7 +41,7 @@ const MobileTradePage = () => {
 
   return (
     <div className="pb-14 pt-4 px-2">
-      <div className="pb-2 flex items-center justify-between">
+      <div className="relative">
         <div className="flex items-center">
           <img
             alt=""
@@ -64,7 +64,7 @@ const MobileTradePage = () => {
           {({ open }) => (
             <>
               <Disclosure.Button>
-                <div className="bg-th-bkg-4 flex items-center justify-center rounded-full w-8 h-8 text-th-fgd-1 focus:outline-none hover:text-th-primary">
+                <div className="absolute right-0 top-0 bg-th-bkg-4 flex items-center justify-center rounded-full w-8 h-8 text-th-fgd-1 focus:outline-none hover:text-th-primary">
                   {open ? (
                     <XIcon className="h-4 w-4" />
                   ) : (
