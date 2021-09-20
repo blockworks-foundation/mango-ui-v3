@@ -38,9 +38,9 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
   const filteredTrades = numTrades ? items.slice(0, numTrades) : items
 
   return (
-    <div className="flex flex-col pb-2 pt-4">
-      <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-        <div className="align-middle inline-block min-w-full sm:px-6 lg:px-8">
+    <div className={`flex flex-col py-2 sm:pb-4 sm:pt-4`}>
+      <div className={`-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8`}>
+        <div className={`align-middle inline-block min-w-full sm:px-6 lg:px-8`}>
           {tradeHistory && tradeHistory.length ? (
             !isMobile ? (
               <Table>

@@ -1,25 +1,26 @@
 import { useEffect, useState } from 'react'
 import useMangoStore from '../stores/useMangoStore'
 import { useOpenOrders } from '../hooks/useOpenOrders'
-import usePerpPositions from '../hooks/usePerpPositions'
+// import usePerpPositions from '../hooks/usePerpPositions'
 import OpenOrdersTable from './OpenOrdersTable'
 import BalancesTable from './BalancesTable'
 import PositionsTable from './PerpPositionsTable'
 import TradeHistoryTable from './TradeHistoryTable'
 // import FeeDiscountsTable from './FeeDiscountsTable'
 import ManualRefresh from './ManualRefresh'
+import Tabs from './Tabs'
 
 const TABS = [
   'Balances',
   'Orders',
   'Positions',
   // 'Fees',
-  'History',
+  'Trade History',
 ]
 
 const UserInfoTabs = ({ activeTab, setActiveTab }) => {
   const openOrders = useOpenOrders()
-  const perpPositions = usePerpPositions()
+  // const perpPositions = usePerpPositions()
   const connected = useMangoStore((s) => s.connection.current)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const handleTabChange = (tabName) => {
@@ -27,48 +28,25 @@ const UserInfoTabs = ({ activeTab, setActiveTab }) => {
   }
 
   return (
-    <div>
-      <div className={`border-b border-th-fgd-4 mb-3 flex justify-between`}>
-        <nav className={`-mb-px flex space-x-3 sm:space-x-6`} aria-label="Tabs">
-          {TABS.map((tabName) => (
-            <a
-              key={tabName}
-              onClick={() => handleTabChange(tabName)}
-              className={`whitespace-nowrap pt-2 pb-4 px-1 border-b-2 font-semibold cursor-pointer default-transition relative text-xs sm:text-sm hover:opacity-100
-                  ${
-                    activeTab === tabName
-                      ? `border-th-primary text-th-primary`
-                      : `border-transparent text-th-fgd-4 hover:text-th-primary`
-                  }
-                `}
-            >
-              {tabName}{' '}
-              {tabName === 'Orders' && openOrders?.length > 0 ? (
-                <Count count={openOrders?.length} />
-              ) : null}
-              {tabName === 'Positions' && perpPositions?.length > 0 ? (
-                <Count count={perpPositions?.length} />
-              ) : null}
-            </a>
-          ))}
-        </nav>
-        <div>
-          {connected && mangoAccount ? (
-            <ManualRefresh className="pl-2" />
-          ) : null}
+    <div className="relative">
+      <Tabs
+        activeTab={activeTab}
+        onChange={handleTabChange}
+        showCount={
+          openOrders.length > 0
+            ? [{ tabName: 'Orders', count: openOrders.length }]
+            : null
+        }
+        tabs={TABS}
+      />
+      {connected && mangoAccount ? (
+        <div className="absolute right-0 top-0">
+          <ManualRefresh />
         </div>
-      </div>
+      ) : null}
     </div>
   )
 }
-
-const Count = ({ count }) => (
-  <div className="absolute -top-2 -right-2 z-10">
-    <span className="h-4 p-1 bg-th-bkg-4 inline-flex rounded-lg items-center justify-center text-th-fgd-2 text-xxs">
-      {count}
-    </span>
-  </div>
-)
 
 const TabContent = ({ activeTab }) => {
   switch (activeTab) {

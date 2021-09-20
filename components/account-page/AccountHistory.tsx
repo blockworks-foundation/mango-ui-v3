@@ -7,10 +7,9 @@ export default function AccountHistory() {
   const [view] = useState('Trades')
   return (
     <>
-      <div className="flex items-center justify-between mb-3 sm:mt-1">
-        <div className="text-th-fgd-1 text-base">Trade History</div>
-        {/* Todo: add this back when the data is available */}
-        {/* <div className="flex">
+      <div className="pb-3.5 text-th-fgd-1 text-base">Trade History</div>
+      {/* Todo: add this back when the data is available */}
+      {/* <div className="flex">
           {historyViews.map((section) => (
             <div
               className={`border px-3 py-1.5 mr-2 rounded cursor-pointer default-transition
@@ -27,7 +26,6 @@ export default function AccountHistory() {
             </div>
           ))}
         </div> */}
-      </div>
       <ViewContent view={view} />
     </>
   )

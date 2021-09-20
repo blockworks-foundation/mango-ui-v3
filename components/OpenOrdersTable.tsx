@@ -14,7 +14,6 @@ import { Table, Td, Th, TrBody, TrHead } from './TableElements'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { Row } from './TableElements'
-import MobileTableHeader from './mobile/MobileTableHeader'
 
 const OpenOrdersTable = () => {
   const { asPath } = useRouter()
@@ -140,9 +139,6 @@ const OpenOrdersTable = () => {
               </Table>
             ) : (
               <>
-                <MobileTableHeader
-                  headerTemplate={<div className="col-span-12">Order</div>}
-                />
                 {openOrders.map(({ market, order }, index) => (
                   <Row key={`${order.orderId}${order.side}`} index={index}>
                     <div className="col-span-12 flex items-center justify-between text-fgd-1 text-left">

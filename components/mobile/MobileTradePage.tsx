@@ -23,7 +23,6 @@ const TVChartContainer = dynamic(
 
 const MobileTradePage = () => {
   const [viewIndex, setViewIndex] = useState(0)
-  //   const [, setRef] = useState(null)
   const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const connected = useMangoStore((s) => s.wallet.connected)
@@ -39,20 +38,6 @@ const MobileTradePage = () => {
     selectedMarket instanceof PerpMarket
       ? ['Trade', 'Details', 'Position', 'Orders']
       : ['Trade', 'Details', 'Balances', 'Orders']
-
-  //   const onRefChange = useCallback((node: SwipeableViews & HTMLDivElement) => {
-  //     // hacky solution to update the height after the first render. Height is not set correctly on initial render
-  //     setRef(node) // e.g. change ref state to trigger re-render
-  //     if (node === null) {
-  //       return
-  //     } else {
-  //       const interval = setInterval(() => {
-  //         // @ts-ignore typings are not correct in this package
-  //         node.updateHeight()
-  //       }, 100)
-  //       return () => clearInterval(interval)
-  //     }
-  //   }, [])
 
   return (
     <div className="pb-14 pt-4 px-2">
@@ -114,6 +99,7 @@ const MobileTradePage = () => {
           <RecentMarketTrades />
         </div>
         <div className="bg-th-bkg-2 px-2 py-3 rounded-lg">
+          <div className="pb-3.5 text-th-fgd-1 text-base">Market Details</div>
           <MarketDetails />
         </div>
         {selectedMarket instanceof PerpMarket ? (
@@ -123,6 +109,9 @@ const MobileTradePage = () => {
                 !connected ? 'filter blur-sm' : ''
               } bg-th-bkg-2 py-3 rounded-lg`}
             >
+              <div className="pb-3.5 text-th-fgd-1 text-base">
+                {marketConfig.name} Position
+              </div>
               <MarketPosition />
             </div>
           </FloatingElement>
@@ -133,6 +122,7 @@ const MobileTradePage = () => {
                 !connected ? 'filter blur-sm' : ''
               } bg-th-bkg-2 py-3 rounded-lg`}
             >
+              <div className="pb-3.5 text-th-fgd-1 text-base">Balances</div>
               <MarketBalances />
             </div>
           </FloatingElement>
@@ -147,6 +137,7 @@ const MobileTradePage = () => {
                 !connected ? 'filter blur-sm' : ''
               } bg-th-bkg-2 py-3 rounded-lg`}
             >
+              <div className="pb-3.5 text-th-fgd-1 text-base">Open Orders</div>
               <OpenOrdersTable />
             </div>
           </FloatingElement>
