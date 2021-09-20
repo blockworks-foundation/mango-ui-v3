@@ -54,7 +54,7 @@ const TabContent = ({ activeTab }) => {
       return <OpenOrdersTable />
     case 'Balances':
       return <BalancesTable />
-    case 'History':
+    case 'Trade History':
       return <TradeHistoryTable numTrades={100} />
     case 'Positions':
       return <PositionsTable />
