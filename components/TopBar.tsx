@@ -20,7 +20,7 @@ const TopBar = () => {
   return (
     <>
       <nav className={`bg-th-bkg-2 border-b border-th-bkg-2`}>
-        <div className={`pl-2 md:px-4`}>
+        <div className={`pl-2 md:px-4 lg:px-10`}>
           <div className={`flex justify-between h-14`}>
             <div className={`flex`}>
               <Link href="/spot/BTC">
