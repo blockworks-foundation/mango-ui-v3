@@ -50,6 +50,8 @@ const TVChartContainer = () => {
   const selectedMarketPrice = useMangoStore((s) => s.selectedMarket.markPrice)
   const [lines, setLines] = useState(new Map())
   const [moveInProgress, toggleMoveInProgress] = useState(false)
+  const [openOrdersIntialized, toggleOpenOrdersIntialized] = useState(false)
+  const [orderInProgress, toggleOrderInProgress] = useState(false)
 
   // @ts-ignore
   const defaultProps: ChartContainerProps = {
@@ -184,6 +186,7 @@ const TVChartContainer = () => {
       sleep(500).then(() => {
         actions.fetchMangoAccounts()
         actions.updateOpenOrders()
+        toggleOrderInProgress(false)
       })
     }
   }
@@ -254,6 +257,7 @@ const TVChartContainer = () => {
       sleep(1000).then(() => {
         actions.fetchMangoAccounts()
         actions.updateOpenOrders()
+        toggleOrderInProgress(false)
       })
     }
   }
@@ -263,6 +267,8 @@ const TVChartContainer = () => {
       .chart()
       .createOrderLine({ disableUndo: false })
       .onMove(function () {
+        toggleMoveInProgress(true)
+        toggleOrderInProgress(true)
         const currentOrderPrice = order.price
         const updatedOrderPrice = this.getPrice()
         if (
@@ -271,7 +277,6 @@ const TVChartContainer = () => {
           (order.side === 'sell' &&
             updatedOrderPrice < 0.95 * selectedMarketPrice)
         ) {
-          toggleMoveInProgress(true)
           tvWidgetRef.current.showNoticeDialog({
             title: 'Order Price Outside Range',
             body:
@@ -286,10 +291,10 @@ const TVChartContainer = () => {
             callback: () => {
               this.setPrice(currentOrderPrice)
               toggleMoveInProgress(false)
+              toggleOrderInProgress(false)
             },
           })
         } else {
-          toggleMoveInProgress(true)
           tvWidgetRef.current.showConfirmDialog({
             title: 'Modify Your Order?',
             body: `Would you like to change your order from a 
@@ -306,6 +311,7 @@ const TVChartContainer = () => {
                 handleModifyOrder(order, market.account, updatedOrderPrice)
               } else {
                 this.setPrice(currentOrderPrice)
+                toggleOrderInProgress(false)
               }
               toggleMoveInProgress(false)
             },
@@ -313,7 +319,7 @@ const TVChartContainer = () => {
         }
       })
       .onCancel(function () {
-        toggleMoveInProgress(true)
+        toggleOrderInProgress(true)
         tvWidgetRef.current.showConfirmDialog({
           title: 'Cancel Your Order?',
           body: `Would you like to cancel your order for 
@@ -324,8 +330,9 @@ const TVChartContainer = () => {
           callback: (res) => {
             if (res) {
               handleCancelOrder(order, market.account)
+            } else {
+              toggleOrderInProgress(false)
             }
-            toggleMoveInProgress(false)
           },
         })
       })
@@ -347,7 +354,13 @@ const TVChartContainer = () => {
   }
 
   useEffect(() => {
-    if (!moveInProgress) {
+    if (openOrders != null && openOrdersIntialized === false) {
+      toggleOpenOrdersIntialized(true)
+    }
+  }, [openOrders])
+
+  useEffect(() => {
+    if (!moveInProgress && openOrdersIntialized && orderInProgress === false) {
       const tempLines = new Map()
       tvWidgetRef.current.onChartReady(() => {
         if (lines.size > 0) {
@@ -355,6 +368,7 @@ const TVChartContainer = () => {
             lines.get(key).remove()
           })
         }
+        setLines(lines)
 
         items.map(({ order, market }) => {
           if (market.config.name == selectedMarketName) {
@@ -369,6 +383,7 @@ const TVChartContainer = () => {
     connected,
     selectedMarketName,
     selectedMarketPrice,
+    openOrdersIntialized,
   ])
 
   return <div id={defaultProps.containerId} className="tradingview-chart" />
