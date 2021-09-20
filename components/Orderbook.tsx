@@ -669,7 +669,7 @@ const OrderbookRow = React.memo<any>(
               />
               <div
                 onClick={handlePriceClick}
-                className={`z-10 filter brightness-110 text-xs md:text-sm leading-5 md:leading-7 text-th-fgd-1 ${
+                className={`z-10 filter brightness-110 text-xs md:text-sm leading-5 md:leading-7 text-th-fgd-1 md:pl-2 ${
                   side === 'buy' ? `text-th-green` : `text-th-red`
                 }`}
               >
@@ -704,7 +704,7 @@ const OrderbookRow = React.memo<any>(
                 side={side}
               />
               <div
-                className={`z-10 filter brightness-110 flex-1 text-xs md:text-sm leading-5 md:leading-7 ${
+                className={`z-10 filter brightness-110 flex-1 text-xs md:text-sm leading-5 md:leading-7 md:pr-2 ${
                   side === 'buy' ? `text-th-green` : `text-th-red`
                 }`}
                 onClick={handlePriceClick}
