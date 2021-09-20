@@ -20,6 +20,9 @@ import EmptyState from '../components/EmptyState'
 import Loading from '../components/Loading'
 import SwipeableTabs from '../components/mobile/SwipeableTabs'
 import Swipeable from '../components/mobile/Swipeable'
+import Tabs from '../components/Tabs'
+import { useViewport } from '../hooks/useViewport'
+import { breakpoints } from '../components/TradePageGrid'
 
 const TABS = [
   'Portfolio',
@@ -40,6 +43,9 @@ export default function Account() {
   const wallet = useMangoStore((s) => s.wallet.current)
   const isLoading = useMangoStore((s) => s.selectedMangoAccount.initialLoad)
   const [viewIndex, setViewIndex] = useState(0)
+  const [activeTab, setActiveTab] = useState(TABS[0])
+  const { width } = useViewport()
+  const isMobile = width ? width < breakpoints.sm : false
 
   const handleCloseAccounts = useCallback(() => {
     setShowAccountsModal(false)
@@ -64,6 +70,10 @@ export default function Account() {
 
   const handleChangeViewIndex = (index) => {
     setViewIndex(index)
+  }
+
+  const handleTabChange = (tabName) => {
+    setActiveTab(tabName)
   }
 
   return (
@@ -122,25 +132,40 @@ export default function Account() {
           ) : null}
         </div>
         {mangoAccount ? (
-          <SwipeableTabs
-            onChange={handleChangeViewIndex}
-            tabs={TABS}
-            tabIndex={viewIndex}
-          />
+          !isMobile ? (
+            <Tabs
+              activeTab={activeTab}
+              onChange={handleTabChange}
+              tabs={TABS}
+            />
+          ) : (
+            <SwipeableTabs
+              onChange={handleChangeViewIndex}
+              tabs={TABS}
+              tabIndex={viewIndex}
+            />
+          )
         ) : null}
         <div className="bg-th-bkg-2 p-4 sm:p-6 rounded-lg">
           {mangoAccount ? (
-            <Swipeable index={viewIndex} onChangeIndex={handleChangeViewIndex}>
-              <div>
-                <AccountOverview />
-              </div>
-              <div>
-                <AccountOrders />
-              </div>
-              <div>
-                <AccountHistory />
-              </div>
-            </Swipeable>
+            !isMobile ? (
+              <TabContent activeTab={activeTab} />
+            ) : (
+              <Swipeable
+                index={viewIndex}
+                onChangeIndex={handleChangeViewIndex}
+              >
+                <div>
+                  <AccountOverview />
+                </div>
+                <div>
+                  <AccountOrders />
+                </div>
+                <div>
+                  <AccountHistory />
+                </div>
+              </Swipeable>
+            )
           ) : connected ? (
             isLoading ? (
               <div className="flex justify-center py-10">
@@ -180,4 +205,17 @@ export default function Account() {
       ) : null}
     </div>
   )
+}
+
+const TabContent = ({ activeTab }) => {
+  switch (activeTab) {
+    case 'Portfolio':
+      return <AccountOverview />
+    case 'Orders':
+      return <AccountOrders />
+    case 'Trade History':
+      return <AccountHistory />
+    default:
+      return <AccountOverview />
+  }
 }

@@ -1,7 +1,7 @@
 const SwipeableTabs = ({ onChange, tabs, tabIndex }) => (
   <div className={`border-b border-th-fgd-4 mb-4 relative`}>
     <div
-      className={`absolute bg-th-primary bottom-[-1px] default-transition left-0 h-0.5 w-16`}
+      className={`absolute bg-th-primary bottom-[-1px] default-transition left-0 h-0.5`}
       style={{
         maxWidth: '176px',
         transform: `translateX(${tabIndex * 100}%)`,
