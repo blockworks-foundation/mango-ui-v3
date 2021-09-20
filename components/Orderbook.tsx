@@ -433,13 +433,13 @@ export default function Orderbook({ depth = 8 }) {
                   </Tooltip>
                 </div>
               </div>
-              <div className="flex flex-row justify-end">
+              <div className="flex flex-row items-center justify-end pb-2">
                 <MarkPriceComponent markPrice={markPrice} />
                 <GroupSize
                   tickSize={market?.tickSize}
                   onChange={onGroupSizeChange}
                   value={grouping}
-                  className="relative flex flex-col w-1/3 items-end mb-1"
+                  className="relative flex flex-col w-1/3 items-end"
                 />
               </div>
               <div className={`text-th-fgd-4 flex justify-between mb-2`}>
@@ -669,7 +669,7 @@ const OrderbookRow = React.memo<any>(
               />
               <div
                 onClick={handlePriceClick}
-                className={`z-10 filter brightness-110 text-xs md:text-sm leading-5 md:leading-7 text-th-fgd-1 sm:px-4 ${
+                className={`z-10 filter brightness-110 text-xs md:text-sm leading-5 md:leading-7 text-th-fgd-1 ${
                   side === 'buy' ? `text-th-green` : `text-th-red`
                 }`}
               >
@@ -677,7 +677,7 @@ const OrderbookRow = React.memo<any>(
               </div>
             </div>
             <div
-              className={`absolute right-3 z-10 ${
+              className={`absolute right-4 z-10 ${
                 hasOpenOrder ? 'text-th-primary' : 'text-th-fgd-1'
               }`}
               onClick={handleSizeClick}
@@ -688,7 +688,7 @@ const OrderbookRow = React.memo<any>(
         ) : (
           <>
             <div
-              className={`absolute md:left-3 z-10 text-xs md:text-sm leading-5 md:leading-7 ${
+              className={`absolute md:left-4 z-10 text-xs md:text-sm leading-5 md:leading-7 ${
                 hasOpenOrder ? 'text-th-primary' : 'text-th-fgd-1'
               }`}
               onClick={handleSizeClick}
@@ -704,7 +704,7 @@ const OrderbookRow = React.memo<any>(
                 side={side}
               />
               <div
-                className={`z-10 filter brightness-110 sm:px-4 flex-1 text-xs md:text-sm leading-5 md:leading-7 ${
+                className={`z-10 filter brightness-110 flex-1 text-xs md:text-sm leading-5 md:leading-7 ${
                   side === 'buy' ? `text-th-green` : `text-th-red`
                 }`}
                 onClick={handlePriceClick}
