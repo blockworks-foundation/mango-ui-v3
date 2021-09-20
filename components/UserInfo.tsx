@@ -33,7 +33,7 @@ const UserInfoTabs = ({ activeTab, setActiveTab }) => {
         activeTab={activeTab}
         onChange={handleTabChange}
         showCount={
-          openOrders.length > 0
+          openOrders && openOrders.length > 0
             ? [{ tabName: 'Orders', count: openOrders.length }]
             : null
         }
