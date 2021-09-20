@@ -417,6 +417,59 @@ export default function TradeForm() {
           </div>
         </div>
       ) : null}
+      <div className={`flex py-4`}>
+        {ipAllowed ? (
+          side === 'buy' ? (
+            <Button
+              disabled={disabledTradeButton}
+              onClick={onSubmit}
+              className={`${
+                !disabledTradeButton
+                  ? 'bg-th-bkg-2 border border-th-green hover:border-th-green-dark'
+                  : 'border border-th-bkg-4'
+              } text-th-green hover:text-th-fgd-1 hover:bg-th-green-dark flex-grow`}
+            >
+              {submitting ? (
+                <div className="w-full">
+                  <Loading className="mx-auto" />
+                </div>
+              ) : (
+                `${baseSize > 0 ? 'Buy ' + baseSize : 'Buy '} ${
+                  marketConfig.name.includes('PERP')
+                    ? marketConfig.name
+                    : marketConfig.baseSymbol
+                }`
+              )}
+            </Button>
+          ) : (
+            <Button
+              disabled={disabledTradeButton}
+              onClick={onSubmit}
+              className={`${
+                !disabledTradeButton
+                  ? 'bg-th-bkg-2 border border-th-red hover:border-th-red-dark'
+                  : 'border border-th-bkg-4'
+              } text-th-red hover:text-th-fgd-1 hover:bg-th-red-dark flex-grow`}
+            >
+              {submitting ? (
+                <div className="w-full">
+                  <Loading className="mx-auto" />
+                </div>
+              ) : (
+                `${baseSize > 0 ? 'Sell ' + baseSize : 'Sell '} ${
+                  marketConfig.name.includes('PERP')
+                    ? marketConfig.name
+                    : marketConfig.baseSymbol
+                }`
+              )}
+            </Button>
+          )
+        ) : (
+          <Button disabled className="flex-grow">
+            <span>Country Not Allowed</span>
+          </Button>
+        )}
+      </div>
     </div>
   ) : (
     <div className="flex flex-col h-full">
