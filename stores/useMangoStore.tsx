@@ -31,8 +31,8 @@ import { NODE_URL_KEY } from '../components/SettingsModal'
 export const ENDPOINTS: EndpointInfo[] = [
   {
     name: 'mainnet',
-    url: 'https://mango.rpcpool.com',
-    websocket: 'https://mango.rpcpool.com',
+    url: process.env.NEXT_PUBLIC_ENDPOINT || 'https://mango.rpcpool.com',
+    websocket: process.env.NEXT_PUBLIC_ENDPOINT || 'https://mango.rpcpool.com',
     custom: false,
   },
   {
