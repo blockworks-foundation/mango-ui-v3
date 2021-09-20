@@ -34,11 +34,13 @@ function calculateFundingRate(perpStats, perpMarket) {
   const fundingInQuoteDecimals =
     fundingDifference / Math.pow(10, perpMarket.quoteDecimals)
 
-  const avgPrice =
-    (parseFloat(latestStat.baseOraclePrice) +
-      parseFloat(oldestStat.baseOraclePrice)) /
-    2
-  const basePriceInBaseLots = avgPrice * perpMarket.baseLotsToNumber(new BN(1))
+  // const avgPrice =
+  //   (parseFloat(latestStat.baseOraclePrice) +
+  //     parseFloat(oldestStat.baseOraclePrice)) /
+  //   2
+  const basePriceInBaseLots =
+    parseFloat(latestStat.baseOraclePrice) *
+    perpMarket.baseLotsToNumber(new BN(1))
   return (fundingInQuoteDecimals / basePriceInBaseLots) * 100
 }
 
