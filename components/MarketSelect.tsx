@@ -50,8 +50,8 @@ const MarketSelect = () => {
   }, [groupConfig])
 
   return (
-    <>
-      <StyledMarketSelectWrapper className="bg-th-bkg-3 flex h-10 hidden sm:flex">
+    <div className="hidden md:flex">
+      <StyledMarketSelectWrapper className="bg-th-bkg-3 flex h-10 w-full">
         <div className="bg-th-bkg-4 flex items-center pl-6 md:pl-9 pr-1">
           <ShowMarketsButton onClick={() => setShowMarketsModal(true)} />
         </div>
@@ -97,7 +97,7 @@ const MarketSelect = () => {
           markets={sortedMarkets}
         />
       ) : null}
-    </>
+    </div>
   )
 }
 

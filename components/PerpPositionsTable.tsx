@@ -14,7 +14,6 @@ import useTradeHistory from '../hooks/useTradeHistory'
 import usePerpPositions from '../hooks/usePerpPositions'
 import MarketCloseModal from './MarketCloseModal'
 import { ExpandableRow } from './TableElements'
-import MobileTableHeader from './mobile/MobileTableHeader'
 
 export function getAvgEntryPrice(
   mangoAccount,
@@ -251,150 +250,143 @@ const PositionsTable = () => {
                 </tbody>
               </Table>
             ) : (
-              <>
-                <MobileTableHeader
-                  headerTemplate={<div className="col-span-11">Position</div>}
-                />
-                {perpPositions.map(({ perpAccount, marketIndex }, index) => {
-                  const perpMarketInfo = mangoGroup.perpMarkets[marketIndex]
-                  const marketConfig = getMarketByPublicKey(
-                    groupConfig,
-                    perpMarketInfo.perpMarket
+              perpPositions.map(({ perpAccount, marketIndex }, index) => {
+                const perpMarketInfo = mangoGroup.perpMarkets[marketIndex]
+                const marketConfig = getMarketByPublicKey(
+                  groupConfig,
+                  perpMarketInfo.perpMarket
+                )
+                const perpMarket = allMarkets[
+                  perpMarketInfo.perpMarket.toString()
+                ] as PerpMarket
+                const perpTradeHistory = tradeHistory.filter(
+                  (t) => t.marketName === marketConfig.name
+                )
+                let breakEvenPrice
+                try {
+                  breakEvenPrice = perpAccount.getBreakEvenPrice(
+                    mangoAccount,
+                    perpMarket,
+                    perpTradeHistory
                   )
-                  const perpMarket = allMarkets[
-                    perpMarketInfo.perpMarket.toString()
-                  ] as PerpMarket
-                  const perpTradeHistory = tradeHistory.filter(
-                    (t) => t.marketName === marketConfig.name
-                  )
-                  let breakEvenPrice
-                  try {
-                    breakEvenPrice = perpAccount.getBreakEvenPrice(
-                      mangoAccount,
-                      perpMarket,
-                      perpTradeHistory
-                    )
-                  } catch (e) {
-                    breakEvenPrice = null
-                  }
+                } catch (e) {
+                  breakEvenPrice = null
+                }
 
-                  const pnl =
-                    breakEvenPrice !== null
-                      ? perpMarket.baseLotsToNumber(perpAccount.basePosition) *
-                        (mangoGroup
-                          .getPrice(marketIndex, mangoCache)
-                          .toNumber() -
-                          parseFloat(breakEvenPrice))
-                      : null
-                  return (
-                    <ExpandableRow
-                      buttonTemplate={
-                        <>
-                          <div className="col-span-11 flex items-center text-fgd-1">
-                            <div className="flex items-center">
-                              <img
-                                alt=""
-                                width="20"
-                                height="20"
-                                src={`/assets/icons/${marketConfig.baseSymbol.toLowerCase()}.svg`}
-                                className={`mr-2.5`}
-                              />
-                              <div>
-                                <div className="mb-0.5 text-left">
-                                  {marketConfig.name}
-                                </div>
-                                <div className="text-th-fgd-3 text-xs">
-                                  <span
-                                    className={`mr-1
+                const pnl =
+                  breakEvenPrice !== null
+                    ? perpMarket.baseLotsToNumber(perpAccount.basePosition) *
+                      (mangoGroup.getPrice(marketIndex, mangoCache).toNumber() -
+                        parseFloat(breakEvenPrice))
+                    : null
+                return (
+                  <ExpandableRow
+                    buttonTemplate={
+                      <>
+                        <div className="col-span-11 flex items-center text-fgd-1">
+                          <div className="flex items-center">
+                            <img
+                              alt=""
+                              width="20"
+                              height="20"
+                              src={`/assets/icons/${marketConfig.baseSymbol.toLowerCase()}.svg`}
+                              className={`mr-2.5`}
+                            />
+                            <div>
+                              <div className="mb-0.5 text-left">
+                                {marketConfig.name}
+                              </div>
+                              <div className="text-th-fgd-3 text-xs">
+                                <span
+                                  className={`mr-1
                                 ${
                                   perpAccount.basePosition.gt(ZERO_BN)
                                     ? 'text-th-green'
                                     : 'text-th-red'
                                 }
                               `}
-                                  >
-                                    {perpAccount.basePosition.gt(ZERO_BN)
-                                      ? 'LONG'
-                                      : 'SHORT'}
-                                  </span>
-                                  {`${
-                                    Math.abs(
-                                      perpMarket.baseLotsToNumber(
-                                        perpAccount.basePosition
-                                      )
-                                    ) > 0
-                                      ? Math.abs(
-                                          perpMarket.baseLotsToNumber(
-                                            perpAccount.basePosition
-                                          )
+                                >
+                                  {perpAccount.basePosition.gt(ZERO_BN)
+                                    ? 'LONG'
+                                    : 'SHORT'}
+                                </span>
+                                {`${
+                                  Math.abs(
+                                    perpMarket.baseLotsToNumber(
+                                      perpAccount.basePosition
+                                    )
+                                  ) > 0
+                                    ? Math.abs(
+                                        perpMarket.baseLotsToNumber(
+                                          perpAccount.basePosition
                                         )
-                                      : 0
-                                  } at ${getAvgEntryPrice(
-                                    mangoAccount,
-                                    perpAccount,
-                                    perpMarket,
-                                    perpTradeHistory
-                                  )}`}
-                                </div>
+                                      )
+                                    : 0
+                                } at ${getAvgEntryPrice(
+                                  mangoAccount,
+                                  perpAccount,
+                                  perpMarket,
+                                  perpTradeHistory
+                                )}`}
                               </div>
                             </div>
                           </div>
-                        </>
-                      }
-                      key={`${index}`}
-                      index={index}
-                      panelTemplate={
-                        <>
-                          <div className="col-span-1 text-left">
-                            <div className="pb-0.5 text-th-fgd-3 text-xs">
-                              Notional Size
-                            </div>
-                            {usdFormatter(
-                              Math.abs(
-                                perpMarket.baseLotsToNumber(
-                                  perpAccount.basePosition
-                                ) *
-                                  mangoGroup
-                                    .getPrice(marketIndex, mangoCache)
-                                    .toNumber()
-                              )
-                            )}
+                        </div>
+                      </>
+                    }
+                    key={`${index}`}
+                    index={index}
+                    panelTemplate={
+                      <>
+                        <div className="col-span-1 text-left">
+                          <div className="pb-0.5 text-th-fgd-3 text-xs">
+                            Notional Size
                           </div>
-                          <div className="col-span-1 text-left">
-                            <div className="pb-0.5 text-th-fgd-3 text-xs">
-                              Break-even Price
-                            </div>
-                            {getBreakEvenPrice(
-                              mangoAccount,
-                              perpAccount,
-                              perpMarket,
-                              perpTradeHistory
-                            )}
+                          {usdFormatter(
+                            Math.abs(
+                              perpMarket.baseLotsToNumber(
+                                perpAccount.basePosition
+                              ) *
+                                mangoGroup
+                                  .getPrice(marketIndex, mangoCache)
+                                  .toNumber()
+                            )
+                          )}
+                        </div>
+                        <div className="col-span-1 text-left">
+                          <div className="pb-0.5 text-th-fgd-3 text-xs">
+                            Break-even Price
                           </div>
-                          <div className="col-span-1 text-left">
-                            <div className="pb-0.5 text-th-fgd-3 text-xs">
-                              PnL
-                            </div>
-                            {pnl !== null ? (
-                              pnl > 0 ? (
-                                <span className="text-th-green">
-                                  {usdFormatter(pnl)}
-                                </span>
-                              ) : (
-                                <span className="text-th-red">
-                                  {usdFormatter(pnl)}
-                                </span>
-                              )
+                          {getBreakEvenPrice(
+                            mangoAccount,
+                            perpAccount,
+                            perpMarket,
+                            perpTradeHistory
+                          )}
+                        </div>
+                        <div className="col-span-1 text-left">
+                          <div className="pb-0.5 text-th-fgd-3 text-xs">
+                            PnL
+                          </div>
+                          {pnl !== null ? (
+                            pnl > 0 ? (
+                              <span className="text-th-green">
+                                {usdFormatter(pnl)}
+                              </span>
                             ) : (
-                              '--'
-                            )}
-                          </div>
-                        </>
-                      }
-                    />
-                  )
-                })}
-              </>
+                              <span className="text-th-red">
+                                {usdFormatter(pnl)}
+                              </span>
+                            )
+                          ) : (
+                            '--'
+                          )}
+                        </div>
+                      </>
+                    }
+                  />
+                )
+              })
             )
           ) : (
             <div

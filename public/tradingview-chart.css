@@ -719,3 +719,15 @@ html.theme-dark .item-stVdeCwG.interactive-3E0jwVyG:active {
   background-color: transparent;
   color: var(--primary);
 }
+
+@media screen and (max-width: 640px) {
+
+  .valuesWrapper-1ukbb5SP {
+    display: none!important;
+  }
+
+  .sourcesWrapper-2JcXD9TK {
+    display: none;
+  }
+
+}

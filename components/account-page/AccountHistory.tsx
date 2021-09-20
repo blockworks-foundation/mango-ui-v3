@@ -8,7 +8,7 @@ export default function AccountHistory() {
   return (
     <>
       <div className="flex items-center justify-between mb-3 sm:mt-1">
-        <div className="text-th-fgd-1 text-lg">Trade History</div>
+        <div className="text-th-fgd-1 text-base">Trade History</div>
         {/* Todo: add this back when the data is available */}
         {/* <div className="flex">
           {historyViews.map((section) => (

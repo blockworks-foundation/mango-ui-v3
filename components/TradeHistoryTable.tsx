@@ -10,7 +10,6 @@ import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { Table, Td, Th, TrBody, TrHead } from './TableElements'
 import { ExpandableRow } from './TableElements'
-import MobileTableHeader from './mobile/MobileTableHeader'
 import { formatUsdValue } from '../utils'
 
 const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
@@ -225,87 +224,80 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                 </tbody>
               </Table>
             ) : (
-              <>
-                <MobileTableHeader
-                  headerTemplate={<div className="col-span-11">Trade</div>}
-                />
-                {items.map((trade: any, index) => (
-                  <ExpandableRow
-                    buttonTemplate={
-                      <>
-                        <div className="col-span-11 flex items-center text-fgd-1">
-                          <div className="flex items-center">
-                            <img
-                              alt=""
-                              width="20"
-                              height="20"
-                              src={`/assets/icons/${trade.marketName
-                                .split(/-|\//)[0]
-                                .toLowerCase()}.svg`}
-                              className={`mr-2.5`}
-                            />
-                            <div>
-                              <div className="mb-0.5 text-left">
-                                {trade.marketName}
-                              </div>
-                              <div className="text-th-fgd-3 text-xs">
-                                <span
-                                  className={`mr-1
+              items.map((trade: any, index) => (
+                <ExpandableRow
+                  buttonTemplate={
+                    <>
+                      <div className="col-span-11 flex items-center text-fgd-1">
+                        <div className="flex items-center">
+                          <img
+                            alt=""
+                            width="20"
+                            height="20"
+                            src={`/assets/icons/${trade.marketName
+                              .split(/-|\//)[0]
+                              .toLowerCase()}.svg`}
+                            className={`mr-2.5`}
+                          />
+                          <div>
+                            <div className="mb-0.5 text-left">
+                              {trade.marketName}
+                            </div>
+                            <div className="text-th-fgd-3 text-xs">
+                              <span
+                                className={`mr-1
                                 ${
                                   trade.side === 'buy' || trade.side === 'long'
                                     ? 'text-th-green'
                                     : 'text-th-red'
                                 }
                               `}
-                                >
-                                  {trade.side.toUpperCase()}
-                                </span>
-                                {`${trade.size} at ${formatUsdValue(
-                                  trade.price
-                                )}`}
-                              </div>
+                              >
+                                {trade.side.toUpperCase()}
+                              </span>
+                              {`${trade.size} at ${formatUsdValue(
+                                trade.price
+                              )}`}
                             </div>
                           </div>
                         </div>
-                      </>
-                    }
-                    key={`${index}`}
-                    index={index}
-                    panelTemplate={
-                      <>
-                        <div className="col-span-1 text-left">
-                          <div className="pb-0.5 text-th-fgd-3 text-xs">
-                            Value
-                          </div>
-                          {formatUsdValue(trade.value)}
+                      </div>
+                    </>
+                  }
+                  key={`${index}`}
+                  index={index}
+                  panelTemplate={
+                    <>
+                      <div className="col-span-1 text-left">
+                        <div className="pb-0.5 text-th-fgd-3 text-xs">
+                          Value
                         </div>
-                        <div className="col-span-1 text-left">
-                          <div className="pb-0.5 text-th-fgd-3 text-xs">
-                            Liquidity
-                          </div>
-                          {trade.liquidity}
+                        {formatUsdValue(trade.value)}
+                      </div>
+                      <div className="col-span-1 text-left">
+                        <div className="pb-0.5 text-th-fgd-3 text-xs">
+                          Liquidity
                         </div>
-                        <div className="col-span-1 text-left">
-                          <div className="pb-0.5 text-th-fgd-3 text-xs">
-                            Fee
-                          </div>
-                          {formatUsdValue(trade.feeCost)}
+                        {trade.liquidity}
+                      </div>
+                      <div className="col-span-1 text-left">
+                        <div className="pb-0.5 text-th-fgd-3 text-xs">Fee</div>
+                        {formatUsdValue(trade.feeCost)}
+                      </div>
+                      <div className="col-span-1 text-left">
+                        <div className="pb-0.5 text-th-fgd-3 text-xs">
+                          Approx Time
                         </div>
-                        <div className="col-span-1 text-left">
-                          <div className="pb-0.5 text-th-fgd-3 text-xs">
-                            Approx Time
-                          </div>
-                          {trade.loadTimestamp || trade.timestamp
-                            ? renderTradeDateTime(
-                                trade.loadTimestamp || trade.timestamp
-                              )
-                            : 'Recent'}
-                        </div>
-                      </>
-                    }
-                  />
-                ))}
-              </>
+                        {trade.loadTimestamp || trade.timestamp
+                          ? renderTradeDateTime(
+                              trade.loadTimestamp || trade.timestamp
+                            )
+                          : 'Recent'}
+                      </div>
+                    </>
+                  }
+                />
+              ))
             )
           ) : (
             <div className="w-full text-center py-6 bg-th-bkg-1 text-th-fgd-3 rounded-md">

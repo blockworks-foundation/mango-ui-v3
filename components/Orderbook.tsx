@@ -18,6 +18,8 @@ import Tooltip from './Tooltip'
 import GroupSize from './GroupSize'
 import FloatingElement from './FloatingElement'
 import { useOpenOrders } from '../hooks/useOpenOrders'
+import { useViewport } from '../hooks/useViewport'
+import { breakpoints } from './TradePageGrid'
 
 const Line = styled.div<any>`
   text-align: ${(props) => (props.invert ? 'left' : 'right')};
@@ -150,6 +152,8 @@ export default function Orderbook({ depth = 8 }) {
   const openOrderPrices = openOrders?.length
     ? openOrders.map(({ order }) => order.price)
     : []
+  const { width } = useViewport()
+  const isMobile = width ? width < breakpoints.sm : false
 
   const currentOrderbookData = useRef(null)
   const lastOrderbookData = useRef(null)
@@ -254,267 +258,349 @@ export default function Orderbook({ depth = 8 }) {
     setGrouping(groupSize)
   }
 
-  return (
-    <>
-      <FlipCard>
-        <FlipCardInner flip={defaultLayout}>
-          {defaultLayout ? (
-            <FlipCardFront>
-              <StyledFloatingElement>
-                <div className="flex items-center justify-between pb-2.5">
-                  <div className="flex relative">
-                    <Tooltip
-                      content={
-                        displayCumulativeSize
-                          ? 'Display Step Size'
-                          : 'Display Cumulative Size'
-                      }
-                      className="text-xs py-1"
+  return !isMobile ? (
+    <FlipCard>
+      <FlipCardInner flip={defaultLayout}>
+        {defaultLayout ? (
+          <FlipCardFront>
+            <StyledFloatingElement className="h-full">
+              <div className="flex items-center justify-between pb-2.5">
+                <div className="flex relative">
+                  <Tooltip
+                    content={
+                      displayCumulativeSize
+                        ? 'Display Step Size'
+                        : 'Display Cumulative Size'
+                    }
+                    className="text-xs py-1"
+                  >
+                    <button
+                      onClick={() => {
+                        setDisplayCumulativeSize(!displayCumulativeSize)
+                      }}
+                      className="flex items-center justify-center rounded-full bg-th-bkg-3 w-8 h-8 hover:text-th-primary focus:outline-none"
                     >
-                      <button
-                        onClick={() => {
-                          setDisplayCumulativeSize(!displayCumulativeSize)
-                        }}
-                        className="flex items-center justify-center rounded-full bg-th-bkg-3 w-8 h-8 hover:text-th-primary focus:outline-none"
-                      >
-                        {displayCumulativeSize ? (
-                          <StepSizeIcon className="w-5 h-5" />
-                        ) : (
-                          <CumulativeSizeIcon className="w-5 h-5" />
-                        )}
-                      </button>
-                    </Tooltip>
-                  </div>
-                  <ElementTitle noMarignBottom>Orderbook</ElementTitle>
-                  <div className="flex relative">
-                    <Tooltip content={'Switch Layout'} className="text-xs py-1">
-                      <button
-                        onClick={handleLayoutChange}
-                        className="flex items-center justify-center rounded-full bg-th-bkg-3 w-8 h-8 hover:text-th-primary focus:outline-none"
-                      >
-                        <SwitchHorizontalIcon className="w-5 h-5" />
-                      </button>
-                    </Tooltip>
-                  </div>
+                      {displayCumulativeSize ? (
+                        <StepSizeIcon className="w-5 h-5" />
+                      ) : (
+                        <CumulativeSizeIcon className="w-5 h-5" />
+                      )}
+                    </button>
+                  </Tooltip>
                 </div>
-                <div className="flex justify-end items-center mb-4">
-                  <MarkPriceComponent markPrice={markPrice} />
-                  <GroupSize
-                    tickSize={market?.tickSize}
-                    onChange={onGroupSizeChange}
-                    value={grouping}
-                    className="relative flex flex-col w-1/3 items-end"
-                  />
-                </div>
-                <div
-                  className={`text-th-fgd-4 flex justify-between mb-2 text-xs`}
-                >
-                  <div className={`text-left`}>
-                    {displayCumulativeSize ? 'Cumulative ' : ''}Size (
-                    {marketConfig.baseSymbol})
-                  </div>
-                  <div className={`text-center`}>
-                    Price ({groupConfig.quoteSymbol})
-                  </div>
-                  <div className={`text-right`}>
-                    {displayCumulativeSize ? 'Cumulative ' : ''}Size (
-                    {marketConfig.baseSymbol})
-                  </div>
-                </div>
-                <div className="flex">
-                  <div className="w-1/2">
-                    {orderbookData?.bids.map(
-                      ({
-                        price,
-                        size,
-                        cumulativeSize,
-                        sizePercent,
-                        maxSizePercent,
-                      }) => (
-                        <OrderbookRow
-                          market={market}
-                          hasOpenOrder={hasOpenOrderForPriceGroup(
-                            openOrderPrices,
-                            price,
-                            grouping
-                          )}
-                          key={price + ''}
-                          price={price}
-                          size={displayCumulativeSize ? cumulativeSize : size}
-                          side="buy"
-                          sizePercent={
-                            displayCumulativeSize ? maxSizePercent : sizePercent
-                          }
-                          grouping={grouping}
-                        />
-                      )
-                    )}
-                  </div>
-                  <div className="w-1/2">
-                    {orderbookData?.asks.map(
-                      ({
-                        price,
-                        size,
-                        cumulativeSize,
-                        sizePercent,
-                        maxSizePercent,
-                      }) => (
-                        <OrderbookRow
-                          market={market}
-                          hasOpenOrder={hasOpenOrderForPriceGroup(
-                            openOrderPrices,
-                            price,
-                            grouping
-                          )}
-                          invert
-                          key={price + ''}
-                          price={price}
-                          size={displayCumulativeSize ? cumulativeSize : size}
-                          side="sell"
-                          sizePercent={
-                            displayCumulativeSize ? maxSizePercent : sizePercent
-                          }
-                          grouping={grouping}
-                        />
-                      )
-                    )}
-                  </div>
-                </div>
-                <div className="flex justify-between bg-th-bkg-1 p-2 mt-4 rounded-md text-xs">
-                  <div className="text-th-fgd-3">Spread</div>
-                  <div className="text-th-fgd-1">
-                    {orderbookData?.spread?.toFixed(2)}
-                  </div>
-                  <div className="text-th-fgd-1">
-                    {orderbookData?.spreadPercentage?.toFixed(2)}%
-                  </div>
-                </div>
-              </StyledFloatingElement>
-            </FlipCardFront>
-          ) : (
-            <FlipCardBack>
-              <StyledFloatingElement>
-                <div className="flex items-center justify-between pb-2.5">
-                  <div className="flex relative">
-                    <Tooltip
-                      content={
-                        displayCumulativeSize
-                          ? 'Display Step Size'
-                          : 'Display Cumulative Size'
-                      }
-                      className="text-xs py-1"
+                <ElementTitle noMarignBottom>Orderbook</ElementTitle>
+                <div className="flex relative">
+                  <Tooltip content={'Switch Layout'} className="text-xs py-1">
+                    <button
+                      onClick={handleLayoutChange}
+                      className="flex items-center justify-center rounded-full bg-th-bkg-3 w-8 h-8 hover:text-th-primary focus:outline-none"
                     >
-                      <button
-                        onClick={() => {
-                          setDisplayCumulativeSize(!displayCumulativeSize)
-                        }}
-                        className="flex items-center justify-center rounded-full bg-th-bkg-3 w-8 h-8 hover:text-th-primary focus:outline-none"
-                      >
-                        {displayCumulativeSize ? (
-                          <StepSizeIcon className="w-5 h-5" />
-                        ) : (
-                          <CumulativeSizeIcon className="w-5 h-5" />
+                      <SwitchHorizontalIcon className="w-5 h-5" />
+                    </button>
+                  </Tooltip>
+                </div>
+              </div>
+              <div className="flex justify-end items-center mb-4">
+                <MarkPriceComponent markPrice={markPrice} />
+                <GroupSize
+                  tickSize={market?.tickSize}
+                  onChange={onGroupSizeChange}
+                  value={grouping}
+                  className="relative flex flex-col w-1/3 items-end"
+                />
+              </div>
+              <div
+                className={`text-th-fgd-4 flex justify-between mb-2 text-xs`}
+              >
+                <div className={`text-left`}>
+                  {displayCumulativeSize ? 'Cumulative ' : ''}Size (
+                  {marketConfig.baseSymbol})
+                </div>
+                <div className={`text-center`}>
+                  Price ({groupConfig.quoteSymbol})
+                </div>
+                <div className={`text-right`}>
+                  {displayCumulativeSize ? 'Cumulative ' : ''}Size (
+                  {marketConfig.baseSymbol})
+                </div>
+              </div>
+              <div className="flex">
+                <div className="w-1/2">
+                  {orderbookData?.bids.map(
+                    ({
+                      price,
+                      size,
+                      cumulativeSize,
+                      sizePercent,
+                      maxSizePercent,
+                    }) => (
+                      <OrderbookRow
+                        market={market}
+                        hasOpenOrder={hasOpenOrderForPriceGroup(
+                          openOrderPrices,
+                          price,
+                          grouping
                         )}
-                      </button>
-                    </Tooltip>
-                  </div>
-                  <ElementTitle noMarignBottom>Orderbook</ElementTitle>
-                  <div className="flex relative">
-                    <Tooltip content={'Switch Layout'} className="text-xs py-1">
-                      <button
-                        onClick={handleLayoutChange}
-                        className="flex items-center justify-center rounded-full bg-th-bkg-3 w-8 h-8 hover:text-th-primary focus:outline-none"
-                      >
-                        <SwitchHorizontalIcon className="w-5 h-5" />
-                      </button>
-                    </Tooltip>
-                  </div>
+                        key={price + ''}
+                        price={price}
+                        size={displayCumulativeSize ? cumulativeSize : size}
+                        side="buy"
+                        sizePercent={
+                          displayCumulativeSize ? maxSizePercent : sizePercent
+                        }
+                        grouping={grouping}
+                      />
+                    )
+                  )}
                 </div>
-                <div className="flex flex-row justify-end">
-                  <MarkPriceComponent markPrice={markPrice} />
-                  <GroupSize
-                    tickSize={market?.tickSize}
-                    onChange={onGroupSizeChange}
-                    value={grouping}
-                    className="relative flex flex-col w-1/3 items-end mb-1"
+                <div className="w-1/2">
+                  {orderbookData?.asks.map(
+                    ({
+                      price,
+                      size,
+                      cumulativeSize,
+                      sizePercent,
+                      maxSizePercent,
+                    }) => (
+                      <OrderbookRow
+                        market={market}
+                        hasOpenOrder={hasOpenOrderForPriceGroup(
+                          openOrderPrices,
+                          price,
+                          grouping
+                        )}
+                        invert
+                        key={price + ''}
+                        price={price}
+                        size={displayCumulativeSize ? cumulativeSize : size}
+                        side="sell"
+                        sizePercent={
+                          displayCumulativeSize ? maxSizePercent : sizePercent
+                        }
+                        grouping={grouping}
+                      />
+                    )
+                  )}
+                </div>
+              </div>
+              <div className="flex justify-between bg-th-bkg-1 p-2 mt-4 rounded-md text-xs">
+                <div className="text-th-fgd-3">Spread</div>
+                <div className="text-th-fgd-1">
+                  {orderbookData?.spread?.toFixed(2)}
+                </div>
+                <div className="text-th-fgd-1">
+                  {orderbookData?.spreadPercentage?.toFixed(2)}%
+                </div>
+              </div>
+            </StyledFloatingElement>
+          </FlipCardFront>
+        ) : (
+          <FlipCardBack>
+            <StyledFloatingElement className="h-full">
+              <div className="flex items-center justify-between pb-2.5">
+                <div className="flex relative">
+                  <Tooltip
+                    content={
+                      displayCumulativeSize
+                        ? 'Display Step Size'
+                        : 'Display Cumulative Size'
+                    }
+                    className="text-xs py-1"
+                  >
+                    <button
+                      onClick={() => {
+                        setDisplayCumulativeSize(!displayCumulativeSize)
+                      }}
+                      className="flex items-center justify-center rounded-full bg-th-bkg-3 w-8 h-8 hover:text-th-primary focus:outline-none"
+                    >
+                      {displayCumulativeSize ? (
+                        <StepSizeIcon className="w-5 h-5" />
+                      ) : (
+                        <CumulativeSizeIcon className="w-5 h-5" />
+                      )}
+                    </button>
+                  </Tooltip>
+                </div>
+                <ElementTitle noMarignBottom>Orderbook</ElementTitle>
+                <div className="flex relative">
+                  <Tooltip content={'Switch Layout'} className="text-xs py-1">
+                    <button
+                      onClick={handleLayoutChange}
+                      className="flex items-center justify-center rounded-full bg-th-bkg-3 w-8 h-8 hover:text-th-primary focus:outline-none"
+                    >
+                      <SwitchHorizontalIcon className="w-5 h-5" />
+                    </button>
+                  </Tooltip>
+                </div>
+              </div>
+              <div className="flex flex-row justify-end">
+                <MarkPriceComponent markPrice={markPrice} />
+                <GroupSize
+                  tickSize={market?.tickSize}
+                  onChange={onGroupSizeChange}
+                  value={grouping}
+                  className="relative flex flex-col w-1/3 items-end mb-1"
+                />
+              </div>
+              <div className={`text-th-fgd-4 flex justify-between mb-2`}>
+                <div className={`text-left text-xs`}>
+                  {displayCumulativeSize ? 'Cumulative ' : ''}Size (
+                  {marketConfig.baseSymbol})
+                </div>
+                <div className={`text-right text-xs`}>
+                  Price ({groupConfig.quoteSymbol})
+                </div>
+              </div>
+              {orderbookData?.asks.map(
+                ({
+                  price,
+                  size,
+                  cumulativeSize,
+                  sizePercent,
+                  maxSizePercent,
+                }) => (
+                  <OrderbookRow
+                    market={market}
+                    hasOpenOrder={hasOpenOrderForPriceGroup(
+                      openOrderPrices,
+                      price,
+                      grouping
+                    )}
+                    key={price + ''}
+                    price={price}
+                    size={displayCumulativeSize ? cumulativeSize : size}
+                    side="sell"
+                    sizePercent={
+                      displayCumulativeSize ? maxSizePercent : sizePercent
+                    }
+                    grouping={grouping}
                   />
+                )
+              )}
+              <div className="flex justify-between bg-th-bkg-1 p-2 my-2 rounded-md text-xs">
+                <div className="text-th-fgd-3">Spread</div>
+                <div className="text-th-fgd-1">
+                  {orderbookData?.spread.toFixed(2)}
                 </div>
-                <div className={`text-th-fgd-4 flex justify-between mb-2`}>
-                  <div className={`text-left text-xs`}>
-                    {displayCumulativeSize ? 'Cumulative ' : ''}Size (
-                    {marketConfig.baseSymbol})
-                  </div>
-                  <div className={`text-right text-xs`}>
-                    Price ({groupConfig.quoteSymbol})
-                  </div>
+                <div className="text-th-fgd-1">
+                  {orderbookData?.spreadPercentage.toFixed(2)}%
                 </div>
-                {orderbookData?.asks.map(
-                  ({
-                    price,
-                    size,
-                    cumulativeSize,
-                    sizePercent,
-                    maxSizePercent,
-                  }) => (
-                    <OrderbookRow
-                      market={market}
-                      hasOpenOrder={hasOpenOrderForPriceGroup(
-                        openOrderPrices,
-                        price,
-                        grouping
-                      )}
-                      key={price + ''}
-                      price={price}
-                      size={displayCumulativeSize ? cumulativeSize : size}
-                      side="sell"
-                      sizePercent={
-                        displayCumulativeSize ? maxSizePercent : sizePercent
-                      }
-                      grouping={grouping}
-                    />
-                  )
-                )}
-                <div className="flex justify-between bg-th-bkg-1 p-2 my-2 rounded-md text-xs">
-                  <div className="text-th-fgd-3">Spread</div>
-                  <div className="text-th-fgd-1">
-                    {orderbookData?.spread.toFixed(2)}
-                  </div>
-                  <div className="text-th-fgd-1">
-                    {orderbookData?.spreadPercentage.toFixed(2)}%
-                  </div>
-                </div>
-                {orderbookData?.bids.map(
-                  ({
-                    price,
-                    size,
-                    cumulativeSize,
-                    sizePercent,
-                    maxSizePercent,
-                  }) => (
-                    <OrderbookRow
-                      market={market}
-                      hasOpenOrder={hasOpenOrderForPriceGroup(
-                        openOrderPrices,
-                        price,
-                        grouping
-                      )}
-                      key={price + ''}
-                      price={price}
-                      size={displayCumulativeSize ? cumulativeSize : size}
-                      side="buy"
-                      sizePercent={
-                        displayCumulativeSize ? maxSizePercent : sizePercent
-                      }
-                      grouping={grouping}
-                    />
-                  )
-                )}
-              </StyledFloatingElement>
-            </FlipCardBack>
-          )}
-        </FlipCardInner>
-      </FlipCard>
-    </>
+              </div>
+              {orderbookData?.bids.map(
+                ({
+                  price,
+                  size,
+                  cumulativeSize,
+                  sizePercent,
+                  maxSizePercent,
+                }) => (
+                  <OrderbookRow
+                    market={market}
+                    hasOpenOrder={hasOpenOrderForPriceGroup(
+                      openOrderPrices,
+                      price,
+                      grouping
+                    )}
+                    key={price + ''}
+                    price={price}
+                    size={displayCumulativeSize ? cumulativeSize : size}
+                    side="buy"
+                    sizePercent={
+                      displayCumulativeSize ? maxSizePercent : sizePercent
+                    }
+                    grouping={grouping}
+                  />
+                )
+              )}
+            </StyledFloatingElement>
+          </FlipCardBack>
+        )}
+      </FlipCardInner>
+    </FlipCard>
+  ) : (
+    <div>
+      <div className="flex items-center justify-between pb-2.5">
+        <div className="flex relative">
+          <Tooltip
+            content={
+              displayCumulativeSize
+                ? 'Display Step Size'
+                : 'Display Cumulative Size'
+            }
+            className="text-xs py-1"
+          >
+            <button
+              onClick={() => {
+                setDisplayCumulativeSize(!displayCumulativeSize)
+              }}
+              className="flex items-center justify-center rounded-full bg-th-bkg-3 w-8 h-8 hover:text-th-primary focus:outline-none"
+            >
+              {displayCumulativeSize ? (
+                <StepSizeIcon className="w-5 h-5" />
+              ) : (
+                <CumulativeSizeIcon className="w-5 h-5" />
+              )}
+            </button>
+          </Tooltip>
+        </div>
+
+        <GroupSize
+          tickSize={market?.tickSize}
+          onChange={onGroupSizeChange}
+          value={grouping}
+          className="relative flex flex-col w-1/3 items-end mb-1"
+        />
+      </div>
+      <div className={`text-th-fgd-4 flex justify-between`}>
+        <div className={`text-left text-xs`}>
+          {displayCumulativeSize ? 'Cumulative ' : ''}Size
+        </div>
+        <div className={`text-right text-xs`}>Price</div>
+      </div>
+      {orderbookData?.asks.map(
+        ({ price, size, cumulativeSize, sizePercent, maxSizePercent }) => (
+          <OrderbookRow
+            market={market}
+            hasOpenOrder={hasOpenOrderForPriceGroup(
+              openOrderPrices,
+              price,
+              grouping
+            )}
+            key={price + ''}
+            price={price}
+            size={displayCumulativeSize ? cumulativeSize : size}
+            side="sell"
+            sizePercent={displayCumulativeSize ? maxSizePercent : sizePercent}
+            grouping={grouping}
+          />
+        )
+      )}
+      <div className="flex justify-between bg-th-bkg-1 p-2 my-2 rounded-md text-xs">
+        <div className="hidden sm:block text-th-fgd-3">Spread</div>
+        <div className="text-th-fgd-1">{orderbookData?.spread.toFixed(2)}</div>
+        <div className="text-th-fgd-1">
+          {orderbookData?.spreadPercentage.toFixed(2)}%
+        </div>
+      </div>
+      {orderbookData?.bids.map(
+        ({ price, size, cumulativeSize, sizePercent, maxSizePercent }) => (
+          <OrderbookRow
+            market={market}
+            hasOpenOrder={hasOpenOrderForPriceGroup(
+              openOrderPrices,
+              price,
+              grouping
+            )}
+            key={price + ''}
+            price={price}
+            size={displayCumulativeSize ? cumulativeSize : size}
+            side="buy"
+            sizePercent={displayCumulativeSize ? maxSizePercent : sizePercent}
+            grouping={grouping}
+          />
+        )
+      )}
+    </div>
   )
 }
 
@@ -583,7 +669,7 @@ const OrderbookRow = React.memo<any>(
               />
               <div
                 onClick={handlePriceClick}
-                className={`z-30 filter brightness-110 text-th-fgd-1 px-4 ${
+                className={`z-10 filter brightness-110 text-xs md:text-sm leading-5 md:leading-7 text-th-fgd-1 sm:px-4 ${
                   side === 'buy' ? `text-th-green` : `text-th-red`
                 }`}
               >
@@ -591,7 +677,7 @@ const OrderbookRow = React.memo<any>(
               </div>
             </div>
             <div
-              className={`absolute right-3 z-30 ${
+              className={`absolute right-3 z-10 ${
                 hasOpenOrder ? 'text-th-primary' : 'text-th-fgd-1'
               }`}
               onClick={handleSizeClick}
@@ -602,7 +688,7 @@ const OrderbookRow = React.memo<any>(
         ) : (
           <>
             <div
-              className={`absolute left-3 z-30 ${
+              className={`absolute md:left-3 z-10 text-xs md:text-sm leading-5 md:leading-7 ${
                 hasOpenOrder ? 'text-th-primary' : 'text-th-fgd-1'
               }`}
               onClick={handleSizeClick}
@@ -618,7 +704,7 @@ const OrderbookRow = React.memo<any>(
                 side={side}
               />
               <div
-                className={`z-30 filter brightness-110 px-4 flex-1 ${
+                className={`z-10 filter brightness-110 sm:px-4 flex-1 text-xs md:text-sm leading-5 md:leading-7 ${
                   side === 'buy' ? `text-th-green` : `text-th-red`
                 }`}
                 onClick={handlePriceClick}
@@ -641,7 +727,7 @@ const MarkPriceComponent = React.memo<{ markPrice: number }>(
 
     return (
       <div
-        className={`flex justify-center items-center font-bold text-lg w-1/3 ${
+        className={`flex justify-center items-center font-bold md:text-lg md:w-1/3 ${
           markPrice > previousMarkPrice
             ? `text-th-green`
             : markPrice < previousMarkPrice

@@ -74,12 +74,12 @@ export default function StatsPerps({ perpStats }) {
 
   return (
     <>
-      <div className="flex flex-col-reverse items-center sm:flex-row sm:justify-between sm:h-12 mb-4 w-full">
+      <div className="flex items-center justify-between mb-4 w-full">
         <AssetHeader asset={selectedAsset} />
-        <div className="flex pb-4 sm:pb-0">
+        <div className="flex">
           {marketConfigs.map((market) => (
             <div
-              className={`px-2 py-1 ml-2 rounded-md cursor-pointer default-transition bg-th-bkg-3
+              className={`bg-th-bkg-3 cursor-pointer default-transition ml-2 px-2 py-1 rounded-md whitespace-nowrap
               ${
                 selectedAsset === market.name
                   ? `ring-1 ring-inset ring-th-primary text-th-primary`
@@ -94,7 +94,7 @@ export default function StatsPerps({ perpStats }) {
           ))}
         </div>
       </div>
-      <div className="grid grid-flow-col grid-cols-1 grid-rows-2 md:grid-cols-2 md:grid-rows-1 gap-4 pb-8">
+      <div className="grid grid-flow-col grid-cols-1 grid-rows-2 md:grid-cols-2 md:grid-rows-1 gap-2 sm:gap-4">
         <div
           className="border border-th-bkg-3 relative p-4 rounded-md"
           style={{ height: '300px' }}

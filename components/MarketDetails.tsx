@@ -11,6 +11,8 @@ import { useEffect } from 'react'
 import { formatUsdValue, usdFormatter } from '../utils'
 import { PerpMarket } from '@blockworks-foundation/mango-client'
 import BN from 'bn.js'
+import { useViewport } from '../hooks/useViewport'
+import { breakpoints } from './TradePageGrid'
 
 const SECONDS = 1000
 
@@ -46,7 +48,7 @@ function parseOpenInterest(perpMarket: PerpMarket) {
   return perpMarket.baseLotsToNumber(perpMarket.openInterest) / 2
 }
 
-const MarketHeader = () => {
+const MarketDetails = () => {
   const oraclePrice = useOraclePrice()
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
@@ -57,6 +59,8 @@ const MarketHeader = () => {
   const previousMarketName: string = usePrevious(selectedMarketName)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const connected = useMangoStore((s) => s.wallet.connected)
+  const { width } = useViewport()
+  const isMobile = width ? width < breakpoints.sm : false
 
   const [ohlcv, setOhlcv] = useState(null)
   const [, setLoading] = useState(false)
@@ -140,10 +144,10 @@ const MarketHeader = () => {
 
   return (
     <div
-      className={`flex flex-col relative lg:flex-row lg:items-center lg:justify-between pt-4 px-6 lg:pb-1 lg:pt-8 lg:px-6`}
+      className={`flex flex-col relative md:pb-2 md:pt-6 md:px-3 lg:flex-row lg:items-center lg:justify-between`}
     >
       <div className="flex flex-col lg:flex-row lg:items-center">
-        <div className="hidden sm:block sm:pb-4 lg:pb-0 sm:pr-6">
+        <div className="hidden md:block md:pb-4 md:pr-6 lg:pb-0">
           <div className="flex items-center">
             <img
               alt=""
@@ -162,18 +166,18 @@ const MarketHeader = () => {
             </div>
           </div>
         </div>
-        <div className="grid grid-flow-row grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-flow-col lg:grid-rows-1 lg:gap-6">
-          <div className="">
+        <div className="grid grid-flow-row grid-cols-1 md:grid-cols-2 gap-3 lg:grid-flow-col lg:grid-rows-1 lg:gap-6">
+          <div className="flex items-center justify-between md:block">
             <div className="text-th-fgd-3 tiny-text pb-0.5">Oracle price</div>
-            <div className="font-semibold text-th-fgd-1 text-xs">
+            <div className="font-semibold text-th-fgd-1 md:text-xs">
               {oraclePrice ? formatUsdValue(oraclePrice) : '--'}
             </div>
           </div>
-          <div className="">
+          <div className="flex items-center justify-between md:block">
             <div className="text-th-fgd-3 tiny-text pb-0.5">Daily Change</div>
             {change || change === 0 ? (
               <div
-                className={`font-semibold text-xs ${
+                className={`font-semibold md:text-xs ${
                   change > 0
                     ? `text-th-green`
                     : change < 0
@@ -188,9 +192,9 @@ const MarketHeader = () => {
             )}
           </div>
           {isPerpMarket ? (
-            <div className="">
+            <div className="flex items-center justify-between md:block">
               <div className="text-th-fgd-3 tiny-text pb-0.5">24hr Volume</div>
-              <div className="font-semibold text-th-fgd-1 text-xs">
+              <div className="font-semibold text-th-fgd-1 md:text-xs">
                 {perpVolume ? (
                   usdFormatter(perpVolume, 0)
                 ) : (
@@ -201,11 +205,11 @@ const MarketHeader = () => {
           ) : null}
           {isPerpMarket && selectedMarket instanceof PerpMarket ? (
             <>
-              <div className="">
+              <div className="flex items-center justify-between md:block">
                 <div className="text-th-fgd-3 tiny-text pb-0.5">
                   Avg Funding Rate (1h)
                 </div>
-                <div className="font-semibold text-th-fgd-1 text-xs">
+                <div className="font-semibold text-th-fgd-1 md:text-xs">
                   {selectedMarket ? (
                     `${calculateFundingRate(perpStats, selectedMarket)?.toFixed(
                       4
@@ -215,11 +219,11 @@ const MarketHeader = () => {
                   )}
                 </div>
               </div>
-              <div className="">
+              <div className="flex items-center justify-between md:block">
                 <div className="text-th-fgd-3 tiny-text pb-0.5">
                   Open Interest
                 </div>
-                <div className="font-semibold text-th-fgd-1 text-xs">
+                <div className="font-semibold text-th-fgd-1 md:text-xs">
                   {selectedMarket ? (
                     `${parseOpenInterest(
                       selectedMarket as PerpMarket
@@ -239,14 +243,16 @@ const MarketHeader = () => {
         </div>
       </div>
       <div className="absolute right-4 bottom-0 sm:bottom-auto lg:right-6 flex items-center justify-end">
-        <UiLock />
-        {connected && mangoAccount ? <ManualRefresh className="pl-2" /> : null}
+        {!isMobile ? <UiLock /> : null}
+        {!isMobile && connected && mangoAccount ? (
+          <ManualRefresh className="pl-2" />
+        ) : null}
       </div>
     </div>
   )
 }
 
-export default MarketHeader
+export default MarketDetails
 
 export const MarketDataLoader = () => (
   <div className="animate-pulse bg-th-bkg-3 h-3.5 mt-0.5 w-10 rounded-sm" />

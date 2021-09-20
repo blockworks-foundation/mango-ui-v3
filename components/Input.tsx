@@ -40,7 +40,7 @@ const Input = ({
         type={type}
         value={value}
         onChange={onChange}
-        className={`${className} pb-px px-2 flex-1 bg-th-bkg-1 rounded h-10 text-th-fgd-1 
+        className={`${className} pb-px px-2 flex-1 bg-th-bkg-1 rounded h-10 text-th-fgd-1 w-full
           border ${
             error ? 'border-th-red' : 'border-th-fgd-4'
           } default-transition hover:border-th-primary 

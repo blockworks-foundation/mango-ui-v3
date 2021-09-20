@@ -111,7 +111,7 @@ const ConnectWalletButton = () => {
             <div className="flex flex-row items-center px-3 justify-center h-full default-transition hover:text-th-fgd-1">
               <WalletIcon className="w-4 h-4 mr-2 fill-current" />
               <div>
-                <div className="mb-0.5 whitespace-nowrap">Connect Wallet</div>
+                <div className="mb-0.5 whitespace-nowrap">Connect</div>
                 <div className="font-normal text-th-fgd-3 text-left leading-3 tracking-wider text-xxs">
                   {WALLET_PROVIDERS.find((p) => p.url === selectedWallet)?.name}
                 </div>

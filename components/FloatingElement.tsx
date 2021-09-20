@@ -40,34 +40,32 @@ const FloatingElement: FunctionComponent<FloatingElementProps> = ({
   const connected = useMangoStore((s) => s.wallet.connected)
   const wallet = useMangoStore((s) => s.wallet.current)
   return (
-    <div className="m-1 p-1 bg-th-bkg-2 rounded-lg h-full">
-      <div
-        className={`thin-scroll p-2.5 overflow-auto overflow-x-hidden relative h-full ${className}`}
-      >
-        {!connected && showConnect ? (
-          <div className="absolute top-0 left-0 w-full h-full z-30">
-            <div className="flex flex-col h-full items-center justify-center relative z-30">
-              <EmptyState
-                buttonText="Connect"
-                icon={<LinkIcon />}
-                onClickButton={() => (wallet ? wallet.connect() : null)}
-                title="Connect Wallet"
-              />
-            </div>
-            <div className="absolute top-0 left-0 rounded-lg opacity-50 w-full h-full bg-th-bkg-2" />
+    <div
+      className={`thin-scroll bg-th-bkg-2 rounded-lg p-2.5 overflow-auto overflow-x-hidden relative  ${className}`}
+    >
+      {!connected && showConnect ? (
+        <div className="absolute top-0 left-0 w-full h-full z-10">
+          <div className="flex flex-col h-full items-center justify-center relative z-10">
+            <EmptyState
+              buttonText="Connect"
+              icon={<LinkIcon />}
+              onClickButton={() => (wallet ? wallet.connect() : null)}
+              title="Connect Wallet"
+            />
           </div>
-        ) : null}
-        {!uiLocked ? (
-          <StyledDragWrapper className="absolute top-0 left-0 w-full h-full cursor-move z-50">
-            <StyledDragWrapperContent className="relative flex flex-col items-center justify-center text-th-fgd-3 h-full z-50">
-              <MoveIcon className="w-8 h-8" />
-              <div className="mt-2">Drag to reposition</div>
-            </StyledDragWrapperContent>
-            <StyledDragBkg className="absolute top-0 left-0 rounded-lg w-full h-full bg-th-bkg-3" />
-          </StyledDragWrapper>
-        ) : null}
-        {children}
-      </div>
+          <div className="absolute top-0 left-0 rounded-lg opacity-50 w-full h-full bg-th-bkg-2" />
+        </div>
+      ) : null}
+      {!uiLocked ? (
+        <StyledDragWrapper className="absolute top-0 left-0 w-full h-full cursor-move z-50">
+          <StyledDragWrapperContent className="relative flex flex-col items-center justify-center text-th-fgd-3 h-full z-50">
+            <MoveIcon className="w-8 h-8" />
+            <div className="mt-2">Drag to reposition</div>
+          </StyledDragWrapperContent>
+          <StyledDragBkg className="absolute top-0 left-0 rounded-lg w-full h-full bg-th-bkg-3" />
+        </StyledDragWrapper>
+      ) : null}
+      {children}
     </div>
   )
 }

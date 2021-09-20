@@ -1,14 +1,12 @@
 import { useCallback, useMemo, useState } from 'react'
-import FloatingElement from './FloatingElement'
 import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
-import { i80f48ToPercent, formatUsdValue, floorToDecimal } from '../utils/index'
+import { formatUsdValue } from '../utils/index'
 import Button, { LinkButton } from './Button'
 import Tooltip from './Tooltip'
 import SideBadge from './SideBadge'
 import {
   getMarketIndexBySymbol,
-  getTokenBySymbol,
   nativeI80F48ToUi,
   PerpAccount,
   PerpMarket,
@@ -21,6 +19,8 @@ import { getAvgEntryPrice, getBreakEvenPrice } from './PerpPositionsTable'
 import { notify } from '../utils/notifications'
 import MarketCloseModal from './MarketCloseModal'
 import Loading from './Loading'
+import { useViewport } from '../hooks/useViewport'
+import { breakpoints } from './TradePageGrid'
 
 const settlePnl = async (perpMarket: PerpMarket, perpAccount: PerpAccount) => {
   const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
@@ -92,6 +92,8 @@ export default function MarketPosition() {
   )
   const [showMarketCloseModal, setShowMarketCloseModal] = useState(false)
   const [settling, setSettling] = useState(false)
+  const { width } = useViewport()
+  const isMobile = width ? width < breakpoints.sm : false
 
   const marketIndex = useMemo(() => {
     return getMarketIndexBySymbol(mangoGroupConfig, baseSymbol)
@@ -127,9 +129,11 @@ export default function MarketPosition() {
   if (!mangoGroup || !selectedMarket) return null
 
   return selectedMarket instanceof PerpMarket ? (
-    <FloatingElement showConnect>
-      <div className={!connected ? 'filter blur-sm' : null}>
-        <ElementTitle>Position: {marketConfig.name} </ElementTitle>
+    <>
+      <div className={!connected && !isMobile ? 'filter blur-sm' : null}>
+        {!isMobile ? (
+          <ElementTitle>Position: {marketConfig.name} </ElementTitle>
+        ) : null}
         <div className={`flex items-center justify-between pb-3`}>
           <div className="font-normal text-th-fgd-3 leading-4">Side</div>
           {isLoading ? (
@@ -266,7 +270,6 @@ export default function MarketPosition() {
             )}
           </div>
         </div>
-
         {perpAccount &&
         Math.abs(selectedMarket.baseLotsToNumber(perpAccount.basePosition)) >
           0 ? (
@@ -286,126 +289,8 @@ export default function MarketPosition() {
           marketIndex={marketIndex}
         />
       ) : null}
-    </FloatingElement>
-  ) : (
-    <>
-      <FloatingElement showConnect>
-        <div className={!connected ? 'filter blur' : null}>
-          <ElementTitle>Balances</ElementTitle>
-          {mangoGroup ? (
-            <div className="grid grid-cols-2 grid-rows-1 gap-4 pt-2">
-              {mangoGroupConfig.tokens
-                .filter((t) => t.symbol === baseSymbol || t.symbol === 'USDC')
-                .reverse()
-                .map(({ symbol, mintKey }) => {
-                  const tokenIndex = mangoGroup.getTokenIndex(mintKey)
-                  const deposit = mangoAccount
-                    ? mangoAccount.getUiDeposit(
-                        mangoGroupCache.rootBankCache[tokenIndex],
-                        mangoGroup,
-                        tokenIndex
-                      )
-                    : null
-                  const borrow = mangoAccount
-                    ? mangoAccount.getUiBorrow(
-                        mangoGroupCache.rootBankCache[tokenIndex],
-                        mangoGroup,
-                        tokenIndex
-                      )
-                    : null
-                  return (
-                    <div
-                      className="border border-th-bkg-4 p-4 rounded-md"
-                      key={mintKey.toString()}
-                    >
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center">
-                          <img
-                            alt=""
-                            src={`/assets/icons/${symbol.toLowerCase()}.svg`}
-                            className={`h-5 mr-2.5 w-auto`}
-                          />
-                          <span className="text-th-fgd-2">{symbol}</span>
-                        </div>
-                      </div>
-                      <div className="pb-3">
-                        <div className="pb-0.5 text-th-fgd-3 text-xs">
-                          Balance
-                        </div>
-                        <div className={`text-th-fgd-1`}>
-                          {isLoading ? (
-                            <DataLoader />
-                          ) : mangoAccount ? (
-                            deposit.gt(borrow) ? (
-                              deposit.toFixed()
-                            ) : (
-                              `-${borrow.toFixed()}`
-                            )
-                          ) : (
-                            0
-                          )}
-                        </div>
-                      </div>
-                      <div className="pb-3">
-                        <Tooltip content="Available to withdraw after accounting for collateral and open orders">
-                          <div className="pb-0.5 text-th-fgd-3 text-xs">
-                            Available Balance
-                          </div>
-                        </Tooltip>
-                        <div className={`text-th-fgd-1`}>
-                          {isLoading ? (
-                            <DataLoader />
-                          ) : mangoAccount ? (
-                            floorToDecimal(
-                              nativeI80F48ToUi(
-                                mangoAccount.getAvailableBalance(
-                                  mangoGroup,
-                                  mangoGroupCache,
-                                  tokenIndex
-                                ),
-                                mangoGroup.tokens[tokenIndex].decimals
-                              ).toNumber(),
-                              getTokenBySymbol(mangoGroupConfig, symbol)
-                                .decimals
-                            )
-                          ) : (
-                            0
-                          )}
-                        </div>
-                      </div>
-                      <div>
-                        <Tooltip content="Deposit APY / Borrow APR">
-                          <div
-                            className={`cursor-help font-normal pb-0.5 text-th-fgd-3 default-transition text-xs hover:border-th-bkg-2 hover:text-th-fgd-3`}
-                          >
-                            Deposit/Borrow Rates
-                          </div>
-                          <div className={`text-th-fgd-1`}>
-                            <span className={`text-th-green`}>
-                              {i80f48ToPercent(
-                                mangoGroup.getDepositRate(tokenIndex)
-                              ).toFixed(2)}
-                              %
-                            </span>
-                            <span className={`text-th-fgd-4`}>{'  /  '}</span>
-                            <span className={`text-th-red`}>
-                              {i80f48ToPercent(
-                                mangoGroup.getBorrowRate(tokenIndex)
-                              ).toFixed(2)}
-                              %
-                            </span>
-                          </div>
-                        </Tooltip>
-                      </div>
-                    </div>
-                  )
-                })}
-            </div>
-          ) : null}
-        </div>
-      </FloatingElement>
     </>
-  )
+  ) : null
 }
 
 export const DataLoader = () => (
