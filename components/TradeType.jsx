@@ -8,15 +8,17 @@ const StyledListbox = styled(Listbox.Button)`
   border-left: 1px solid transparent;
 `
 
-
-
-const TradeType = ({ value, onChange, offerTriggers = false, className = '' }) => {
+const TradeType = ({
+  value,
+  onChange,
+  offerTriggers = false,
+  className = '',
+}) => {
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
 
   const TRADE_TYPES = ['Limit', 'Market']
-  if (offerTriggers)
-    TRADE_TYPES.push('Trigger Market', 'Trigger Limit')
+  if (offerTriggers) TRADE_TYPES.push('Trigger Market', 'Trigger Limit')
 
   return (
     <div className={`relative ${className}`}>
@@ -65,19 +67,19 @@ const TradeType = ({ value, onChange, offerTriggers = false, className = '' }) =
         </Listbox>
       ) : (
         <div className="flex">
-          { TRADE_TYPES.map( tradeType => {
-            <div
-            className={`px-2 py-1 ml-2 rounded-md cursor-pointer default-transition bg-th-bkg-4
+          {TRADE_TYPES.map((tradeType) => {
+            ;<div
+              className={`px-2 py-1 ml-2 rounded-md cursor-pointer default-transition bg-th-bkg-4
               ${
                 value === tradeType
                   ? `ring-1 ring-inset ring-th-primary text-th-primary`
                   : `text-th-fgd-1 opacity-50 hover:opacity-100`
               }
             `}
-            onClick={() => onChange(tradeType)}
-          >
-            {tradeType}
-          </div>
+              onClick={() => onChange(tradeType)}
+            >
+              {tradeType}
+            </div>
           })}
         </div>
       )}

@@ -61,19 +61,19 @@ const TriggerType = ({ value, onChange, className = '' }) => {
         </Listbox>
       ) : (
         <div className="flex">
-          { TRIGGER_TYPES.map( triggerType => {
-            <div
-            className={`px-2 py-1 ml-2 rounded-md cursor-pointer default-transition bg-th-bkg-4
+          {TRIGGER_TYPES.map((triggerType) => {
+            ;<div
+              className={`px-2 py-1 ml-2 rounded-md cursor-pointer default-transition bg-th-bkg-4
               ${
                 value === triggerType
                   ? `ring-1 ring-inset ring-th-primary text-th-primary`
                   : `text-th-fgd-1 opacity-50 hover:opacity-100`
               }
             `}
-            onClick={() => onChange(triggerType)}
-          >
-            {triggerType}
-          </div>
+              onClick={() => onChange(triggerType)}
+            >
+              {triggerType}
+            </div>
           })}
         </div>
       )}

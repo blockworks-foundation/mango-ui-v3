@@ -166,10 +166,9 @@ interface MangoStore extends State {
 
 const useMangoStore = create<MangoStore>((set, get) => {
   const rpcUrl =
-    typeof window !== 'undefined'
+    typeof window !== 'undefined' && CLUSTER === 'mainnet'
       ? JSON.parse(localStorage.getItem(NODE_URL_KEY)) || ENDPOINT.url
       : ENDPOINT.url
-  console.log('rpc url', rpcUrl, ENDPOINT.url, rpcUrl === ENDPOINT.url)
 
   const connection = new Connection(rpcUrl, 'processed' as Commitment)
   return {
