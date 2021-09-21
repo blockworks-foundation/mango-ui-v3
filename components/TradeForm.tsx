@@ -470,6 +470,9 @@ export default function TradeForm() {
           </Button>
         )}
       </div>
+      <div className="flex text-xs text-th-fgd-4 px-6 mt-2.5">
+        <MarketFee />
+      </div>
     </div>
   ) : (
     <div className="flex flex-col h-full">

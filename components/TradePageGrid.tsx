@@ -54,7 +54,7 @@ export const defaultLayouts = {
     { i: 'tvChart', x: 0, y: 0, w: 12, h: 25, minW: 6 },
     { i: 'marketPosition', x: 0, y: 1, w: 6, h: 15, minW: 2 },
     { i: 'accountInfo', x: 6, y: 1, w: 6, h: 15, minW: 2 },
-    { i: 'tradeForm', x: 0, y: 2, w: 12, h: 13, minW: 3 },
+    { i: 'tradeForm', x: 0, y: 2, w: 12, h: 15, minW: 3 },
     { i: 'orderbook', x: 0, y: 3, w: 6, h: 17, minW: 3 },
     { i: 'marketTrades', x: 6, y: 3, w: 6, h: 17, minW: 2 },
     { i: 'userInfo', x: 0, y: 4, w: 12, h: 19, minW: 6 },
