@@ -11,6 +11,7 @@ import { floorToDecimal } from '../utils/index'
 import useMangoStore from '../stores/useMangoStore'
 import Button from './Button'
 import TradeType from './TradeType'
+import TriggerType from './TriggerType'
 import Input from './Input'
 import Switch from './Switch'
 import { Market } from '@project-serum/serum'
@@ -35,9 +36,21 @@ export default function TradeForm() {
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const mangoClient = useMangoStore((s) => s.connection.client)
   const market = useMangoStore((s) => s.selectedMarket.current)
-  const { side, baseSize, quoteSize, price, tradeType } = useMangoStore(
-    (s) => s.tradeForm
-  )
+  const isPerpMarket = market instanceof PerpMarket
+
+  const {
+    side,
+    baseSize,
+    quoteSize,
+    price,
+    tradeType,
+    triggerPrice,
+    triggerType,
+  } = useMangoStore((s) => s.tradeForm)
+  const isLimitOrder = ['Limit', 'Trigger Limit'].includes(tradeType)
+  const isMarketOrder = ['Market', 'Trigger Market'].includes(tradeType)
+  const isTriggerOrder = ['Trigger Limit', 'Trigger Market'].includes(tradeType)
+
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
 
@@ -102,6 +115,24 @@ export default function TradeForm() {
       s.tradeForm.tradeType = type
     })
 
+  const setTriggerPrice = (price) => {
+    set((s) => {
+      if (!Number.isNaN(parseFloat(price))) {
+        s.tradeForm.triggerPrice = parseFloat(price)
+      } else {
+        s.tradeForm.triggerPrice = price
+      }
+    })
+    if (isMarketOrder) {
+      onSetPrice(price)
+    }
+  }
+
+  const setTriggerType = (type) =>
+    set((s) => {
+      s.tradeForm.triggerType = type
+    })
+
   const markPriceRef = useRef(useMangoStore.getState().selectedMarket.markPrice)
   const markPrice = markPriceRef.current
   useEffect(
@@ -131,7 +162,7 @@ export default function TradeForm() {
   let tickSize = 1
   if (market instanceof Market) {
     tickSize = market.tickSize
-  } else if (market instanceof PerpMarket) {
+  } else if (isPerpMarket) {
     const baseDecimals = getTokenBySymbol(
       groupConfig,
       marketConfig.baseSymbol
@@ -179,7 +210,7 @@ export default function TradeForm() {
       return
     }
 
-    if (!Number(price) && tradeType === 'Limit') {
+    if (!Number(price) && isLimitOrder) {
       setBaseSize('')
       return
     }
@@ -191,9 +222,11 @@ export default function TradeForm() {
 
   const onTradeTypeChange = (tradeType) => {
     setTradeType(tradeType)
-    if (tradeType === 'Market') {
+    if (isMarketOrder) {
       setIoc(true)
-      setPrice('')
+      if (isTriggerOrder) {
+        setPrice(triggerPrice)
+      }
     } else {
       const priceOnBook = side === 'buy' ? orderbook?.asks : orderbook?.bids
       if (priceOnBook && priceOnBook.length > 0 && priceOnBook[0].length > 0) {
@@ -217,7 +250,7 @@ export default function TradeForm() {
   }
 
   async function onSubmit() {
-    if (!price && tradeType === 'Limit') {
+    if (!price && isLimitOrder) {
       notify({
         title: 'Missing price',
         type: 'error',
@@ -245,7 +278,8 @@ export default function TradeForm() {
         orderbook,
         baseSize,
         side,
-        price
+        price,
+        triggerPrice
       )
 
       if (!orderPrice) {
@@ -305,7 +339,7 @@ export default function TradeForm() {
   }
 
   const disabledTradeButton =
-    (!price && tradeType === 'Limit') ||
+    (!price && isLimitOrder) ||
     !baseSize ||
     !connected ||
     submitting ||
@@ -353,7 +387,7 @@ export default function TradeForm() {
           step={tickSize}
           onChange={(e) => onSetPrice(e.target.value)}
           value={price}
-          disabled={tradeType === 'Market'}
+          disabled={isMarketOrder}
           prefix={'Price'}
           suffix={groupConfig.quoteSymbol}
           className="rounded-r-none"
@@ -362,6 +396,7 @@ export default function TradeForm() {
         <TradeType
           onChange={onTradeTypeChange}
           value={tradeType}
+          offerTriggers={isPerpMarket}
           className="hover:border-th-primary flex-grow"
         />
       </Input.Group>
@@ -402,10 +437,11 @@ export default function TradeForm() {
           orderbook,
           baseSize ? baseSize : 0,
           side,
-          price
+          price,
+          triggerPrice
         )}
       />
-      {tradeType !== 'Market' ? (
+      {isLimitOrder && (
         <div className="flex mt-2">
           <Switch checked={postOnly} onChange={postOnChange}>
             POST
@@ -416,7 +452,30 @@ export default function TradeForm() {
             </Switch>
           </div>
         </div>
-      ) : null}
+      )}
+
+      {isTriggerOrder && (
+        <Input.Group className="mt-4">
+          <TriggerType
+            onChange={setTriggerType}
+            value={triggerType}
+            className="hover:border-th-primary flex-grow"
+          />
+
+          <Input
+            type="number"
+            min="0"
+            step={tickSize}
+            onChange={(e) => setTriggerPrice(e.target.value)}
+            value={triggerPrice}
+            prefix={'Price'}
+            suffix={groupConfig.quoteSymbol}
+            className="rounded-l-none"
+            wrapperClassName="rounded-l-none w-3/5"
+          />
+        </Input.Group>
+      )}
+
       <div className={`flex py-4`}>
         {ipAllowed ? (
           side === 'buy' ? (
@@ -435,9 +494,7 @@ export default function TradeForm() {
                 </div>
               ) : (
                 `${baseSize > 0 ? 'Buy ' + baseSize : 'Buy '} ${
-                  marketConfig.name.includes('PERP')
-                    ? marketConfig.name
-                    : marketConfig.baseSymbol
+                  isPerpMarket ? marketConfig.name : marketConfig.baseSymbol
                 }`
               )}
             </Button>
@@ -457,9 +514,7 @@ export default function TradeForm() {
                 </div>
               ) : (
                 `${baseSize > 0 ? 'Sell ' + baseSize : 'Sell '} ${
-                  marketConfig.name.includes('PERP')
-                    ? marketConfig.name
-                    : marketConfig.baseSymbol
+                  isPerpMarket ? marketConfig.name : marketConfig.baseSymbol
                 }`
               )}
             </Button>
@@ -582,7 +637,8 @@ export default function TradeForm() {
           orderbook,
           baseSize ? baseSize : 0,
           side,
-          price
+          price,
+          triggerPrice
         )}
       />
       {tradeType !== 'Market' ? (

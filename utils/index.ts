@@ -101,10 +101,13 @@ export function calculateTradePrice(
   orderBook: Orderbook,
   baseSize: number,
   side: 'buy' | 'sell',
-  price: string | number
+  price: string | number,
+  triggerPrice?: string | number
 ): number {
   if (tradeType === 'Market') {
     return calculateMarketPrice(orderBook, baseSize, side)
+  } else if (tradeType === 'Trigger Market') {
+    return Number(triggerPrice)
   }
   return Number(price)
 }
