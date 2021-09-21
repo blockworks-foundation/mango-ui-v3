@@ -275,7 +275,7 @@ export default function MarketPosition() {
           0 ? (
           <Button
             onClick={() => setShowMarketCloseModal(true)}
-            className="mt-3 w-full"
+            className="mt-2.5 w-full"
           >
             <span>Market Close</span>
           </Button>
