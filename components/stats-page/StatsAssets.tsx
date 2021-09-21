@@ -10,6 +10,8 @@ const icons = {
   USDT: '/assets/icons/usdt.svg',
   USDC: '/assets/icons/usdc.svg',
   MNGO: '/assets/icons/mngo.svg',
+  RAY: '/assets/icons/ray.svg',
+  COPE: '/assets/icons/cope.svg',
 }
 
 export default function StatsAssets({ latestStats, stats }) {
