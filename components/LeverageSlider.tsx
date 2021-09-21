@@ -114,8 +114,7 @@ export default function LeverageSlider({
     // srm fees or rounding issues in getMaxLeverageForMarket
     const maxScaler = market instanceof PerpMarket ? 0.99 : 0.95
     const scaledMax =
-      (maxQuote.toNumber() * maxScaler) /
-      mangoGroup.getPrice(marketIndex, mangoCache).toNumber()
+      (maxQuote.toNumber() * maxScaler) / priceOrDefault.toNumber()
 
     return { max: scaledMax, deposits, borrows }
   }, [mangoAccount, mangoGroup, mangoCache, marketIndex, market, side, price])
