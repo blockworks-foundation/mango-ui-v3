@@ -13,7 +13,30 @@ function formatNumberString(x: number, decimals): string {
   }).format(x)
 }
 
+const getAverageStats = (
+  stats,
+  daysAgo: number,
+  symbol: string,
+  type: string
+) => {
+  const selectedStatsData = stats.filter((s) => s.name === symbol)
+  const timeFilteredStats = selectedStatsData.filter(
+    (d) =>
+      new Date(d.time).getTime() >
+      new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000).getTime()
+  )
+
+  const oldestStat = timeFilteredStats[0]
+  const latestStat = timeFilteredStats[timeFilteredStats.length - 1]
+  const avg =
+    Math.pow(latestStat[type] / oldestStat[type], 365 / daysAgo) * 100 - 100
+
+  return avg.toFixed(4)
+}
+
 export default function StatsTotals({ latestStats, stats }) {
+  console.log('latest stats', latestStats)
+
   const startTimestamp = 1622905200000
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
@@ -86,27 +109,6 @@ export default function StatsTotals({ latestStats, stats }) {
       points.push({ time: prop, value: holder[prop] })
     }
     return points
-  }
-
-  const dailyStartTime = new Date(
-    Date.now() - 1 * 24 * 60 * 60 * 1000
-  ).getTime()
-  const weeklyStartTime = new Date(
-    Date.now() - 7 * 24 * 60 * 60 * 1000
-  ).getTime()
-  const monthlyStartTime = new Date(
-    Date.now() - 30 * 24 * 60 * 60 * 1000
-  ).getTime()
-
-  const getAverageStats = (stats, startFrom, symbol, type) => {
-    const selectedStatsData = stats.filter((s) => s.name === symbol)
-    const timeFilteredStats = selectedStatsData.filter(
-      (d) => new Date(d.time).getTime() > startFrom
-    )
-    const sum = timeFilteredStats.map((s) => s[type]).reduce((a, b) => a + b, 0)
-    const avg = sum / timeFilteredStats.length || 0
-
-    return (avg * 100).toFixed(4)
   }
 
   return (
@@ -257,31 +259,13 @@ export default function StatsTotals({ latestStats, stats }) {
                         </div>
                       </Td>
                       <Td>
-                        {getAverageStats(
-                          stats,
-                          dailyStartTime,
-                          stat.name,
-                          'depositRate'
-                        )}
-                        %
+                        {getAverageStats(stats, 1, stat.name, 'depositIndex')}%
                       </Td>
                       <Td>
-                        {getAverageStats(
-                          stats,
-                          weeklyStartTime,
-                          stat.name,
-                          'depositRate'
-                        )}
-                        %
+                        {getAverageStats(stats, 7, stat.name, 'depositIndex')}%
                       </Td>
                       <Td>
-                        {getAverageStats(
-                          stats,
-                          monthlyStartTime,
-                          stat.name,
-                          'depositRate'
-                        )}
-                        %
+                        {getAverageStats(stats, 30, stat.name, 'depositIndex')}%
                       </Td>
                     </TrBody>
                   ))}
@@ -322,31 +306,13 @@ export default function StatsTotals({ latestStats, stats }) {
                       </div>
                     </Td>
                     <Td>
-                      {getAverageStats(
-                        stats,
-                        dailyStartTime,
-                        stat.name,
-                        'borrowRate'
-                      )}
-                      %
+                      {getAverageStats(stats, 1, stat.name, 'borrowIndex')}%
                     </Td>
                     <Td>
-                      {getAverageStats(
-                        stats,
-                        weeklyStartTime,
-                        stat.name,
-                        'borrowRate'
-                      )}
-                      %
+                      {getAverageStats(stats, 7, stat.name, 'borrowIndex')}%
                     </Td>
                     <Td>
-                      {getAverageStats(
-                        stats,
-                        monthlyStartTime,
-                        stat.name,
-                        'borrowRate'
-                      )}
-                      %
+                      {getAverageStats(stats, 30, stat.name, 'borrowIndex')}%
                     </Td>
                   </TrBody>
                 ))}
