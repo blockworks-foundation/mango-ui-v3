@@ -19,11 +19,10 @@ const getAverageStats = (
   symbol: string,
   type: string
 ) => {
+  const priorDate = new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000)
   const selectedStatsData = stats.filter((s) => s.name === symbol)
   const timeFilteredStats = selectedStatsData.filter(
-    (d) =>
-      new Date(d.time).getTime() >
-      new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000).getTime()
+    (d) => new Date(d.time).getTime() >= priorDate.getTime()
   )
 
   const oldestStat = timeFilteredStats[0]
@@ -31,7 +30,18 @@ const getAverageStats = (
   const avg =
     Math.pow(latestStat[type] / oldestStat[type], 365 / daysAgo) * 100 - 100
 
-  return avg.toFixed(4)
+  priorDate.setHours(priorDate.getHours() + 1)
+  if (symbol === 'MNGO') {
+    console.log('symbol', symbol, daysAgo)
+    console.log('oldestStat', new Date(oldestStat.time))
+    console.log('days ago', priorDate)
+  }
+
+  if (new Date(oldestStat.time).getTime() > priorDate.getTime()) {
+    return '-'
+  } else {
+    return `${avg.toFixed(4)}%`
+  }
 }
 
 export default function StatsTotals({ latestStats, stats }) {
@@ -259,13 +269,13 @@ export default function StatsTotals({ latestStats, stats }) {
                         </div>
                       </Td>
                       <Td>
-                        {getAverageStats(stats, 1, stat.name, 'depositIndex')}%
+                        {getAverageStats(stats, 1, stat.name, 'depositIndex')}
                       </Td>
                       <Td>
-                        {getAverageStats(stats, 7, stat.name, 'depositIndex')}%
+                        {getAverageStats(stats, 7, stat.name, 'depositIndex')}
                       </Td>
                       <Td>
-                        {getAverageStats(stats, 30, stat.name, 'depositIndex')}%
+                        {getAverageStats(stats, 30, stat.name, 'depositIndex')}
                       </Td>
                     </TrBody>
                   ))}
@@ -306,13 +316,13 @@ export default function StatsTotals({ latestStats, stats }) {
                       </div>
                     </Td>
                     <Td>
-                      {getAverageStats(stats, 1, stat.name, 'borrowIndex')}%
+                      {getAverageStats(stats, 1, stat.name, 'borrowIndex')}
                     </Td>
                     <Td>
-                      {getAverageStats(stats, 7, stat.name, 'borrowIndex')}%
+                      {getAverageStats(stats, 7, stat.name, 'borrowIndex')}
                     </Td>
                     <Td>
-                      {getAverageStats(stats, 30, stat.name, 'borrowIndex')}%
+                      {getAverageStats(stats, 30, stat.name, 'borrowIndex')}
                     </Td>
                   </TrBody>
                 ))}
@@ -426,33 +436,15 @@ export default function StatsTotals({ latestStats, stats }) {
                   <div className="grid grid-cols-12 grid-rows-1 gap-4">
                     <div className="col-span-4 text-left">
                       <div className="pb-0.5 text-th-fgd-3 text-xs">24h</div>
-                      {getAverageStats(
-                        stats,
-                        dailyStartTime,
-                        stat.name,
-                        'depositRate'
-                      )}
-                      %
+                      {getAverageStats(stats, 1, stat.name, 'depositRate')}
                     </div>
                     <div className="col-span-4 text-left">
                       <div className="pb-0.5 text-th-fgd-3 text-xs">7d</div>
-                      {getAverageStats(
-                        stats,
-                        weeklyStartTime,
-                        stat.name,
-                        'depositRate'
-                      )}
-                      %
+                      {getAverageStats(stats, 7, stat.name, 'depositRate')}
                     </div>
                     <div className="col-span-4 text-left">
                       <div className="pb-0.5 text-th-fgd-3 text-xs">30d</div>
-                      {getAverageStats(
-                        stats,
-                        monthlyStartTime,
-                        stat.name,
-                        'depositRate'
-                      )}
-                      %
+                      {getAverageStats(stats, 30, stat.name, 'depositRate')}
                     </div>
                   </div>
                 </div>
@@ -481,33 +473,15 @@ export default function StatsTotals({ latestStats, stats }) {
                 <div className="grid grid-cols-12 grid-rows-1 gap-4">
                   <div className="col-span-4 text-left">
                     <div className="pb-0.5 text-th-fgd-3 text-xs">24h</div>
-                    {getAverageStats(
-                      stats,
-                      dailyStartTime,
-                      stat.name,
-                      'borrowRate'
-                    )}
-                    %
+                    {getAverageStats(stats, 1, stat.name, 'borrowRate')}
                   </div>
                   <div className="col-span-4 text-left">
                     <div className="pb-0.5 text-th-fgd-3 text-xs">7d</div>
-                    {getAverageStats(
-                      stats,
-                      weeklyStartTime,
-                      stat.name,
-                      'borrowRate'
-                    )}
-                    %
+                    {getAverageStats(stats, 7, stat.name, 'borrowRate')}
                   </div>
                   <div className="col-span-4 text-left">
                     <div className="pb-0.5 text-th-fgd-3 text-xs">30d</div>
-                    {getAverageStats(
-                      stats,
-                      monthlyStartTime,
-                      stat.name,
-                      'borrowRate'
-                    )}
-                    %
+                    {getAverageStats(stats, 30, stat.name, 'borrowRate')}
                   </div>
                 </div>
               </div>
