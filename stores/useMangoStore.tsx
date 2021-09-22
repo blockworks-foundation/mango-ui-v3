@@ -145,6 +145,7 @@ interface MangoStore extends State {
     baseSize: number | ''
     quoteSize: number | ''
     tradeType: 'Market' | 'Limit'
+    stopPrice: number | ''
   }
   wallet: {
     providerUrl: string
@@ -215,6 +216,7 @@ const useMangoStore = create<MangoStore>((set, get) => {
       quoteSize: '',
       tradeType: 'Limit',
       price: '',
+      stopPrice: '',
     },
     wallet: INITIAL_STATE.WALLET,
     settings: {

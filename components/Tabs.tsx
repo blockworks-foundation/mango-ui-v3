@@ -2,6 +2,7 @@ import { FunctionComponent } from 'react'
 
 interface TabsProps {
   activeTab: string
+  fullWidth?: boolean
   onChange: (x) => void
   showCount?: Array<ShowCount>
   tabs: Array<string>
@@ -14,6 +15,7 @@ interface ShowCount {
 
 const Tabs: FunctionComponent<TabsProps> = ({
   activeTab,
+  fullWidth,
   onChange,
   showCount,
   tabs,
@@ -23,7 +25,7 @@ const Tabs: FunctionComponent<TabsProps> = ({
       <div
         className={`absolute bg-th-primary bottom-[-1px] default-transition left-0 h-0.5`}
         style={{
-          maxWidth: '176px',
+          maxWidth: fullWidth ? '100%' : '176px',
           transform: `translateX(${
             tabs.findIndex((v) => v === activeTab) * 100
           }%)`,
@@ -32,7 +34,7 @@ const Tabs: FunctionComponent<TabsProps> = ({
       />
       <nav className="-mb-px flex" aria-label="Tabs">
         {tabs.map((tabName) => (
-          <a
+          <button
             key={tabName}
             onClick={() => onChange(tabName)}
             className={`cursor-pointer default-transition flex font-semibold justify-center pb-4 pt-2 relative whitespace-nowrap hover:opacity-100
@@ -42,7 +44,10 @@ const Tabs: FunctionComponent<TabsProps> = ({
                         : `text-th-fgd-4 hover:text-th-primary`
                     }
                   `}
-            style={{ width: `${100 / tabs.length}%`, maxWidth: '176px' }}
+            style={{
+              width: `${100 / tabs.length}%`,
+              maxWidth: fullWidth ? '100%' : '176px',
+            }}
           >
             {tabName}
             {showCount && showCount.find((e) => e.tabName === tabName) ? (
@@ -50,7 +55,7 @@ const Tabs: FunctionComponent<TabsProps> = ({
                 count={showCount.find((e) => e.tabName === tabName).count}
               />
             ) : null}
-          </a>
+          </button>
         ))}
       </nav>
     </div>

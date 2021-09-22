@@ -31,7 +31,7 @@ const Input = ({
       {prefix ? (
         <div
           className={`flex items-center justify-end p-2 border border-r-0 
-          border-th-fgd-4 bg-th-bkg-2 h-full text-xs rounded rounded-r-none text-right ${prefixClassName}`}
+          border-th-fgd-4 bg-th-bkg-3 rounded rounded-r-none text-right text-xs ${prefixClassName}`}
         >
           {prefix}
         </div>
