@@ -31,11 +31,6 @@ const getAverageStats = (
     Math.pow(latestStat[type] / oldestStat[type], 365 / daysAgo) * 100 - 100
 
   priorDate.setHours(priorDate.getHours() + 1)
-  if (symbol === 'MNGO') {
-    console.log('symbol', symbol, daysAgo)
-    console.log('oldestStat', new Date(oldestStat.time))
-    console.log('days ago', priorDate)
-  }
 
   if (new Date(oldestStat.time).getTime() > priorDate.getTime()) {
     return '-'
