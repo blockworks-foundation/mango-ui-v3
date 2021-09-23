@@ -2,7 +2,9 @@ import { useState, useEffect, useRef, useMemo } from 'react'
 import useIpAddress from '../hooks/useIpAddress'
 import {
   getTokenBySymbol,
+  getMarketIndexBySymbol,
   getWeights,
+  I80F48,
   PerpMarket,
 } from '@blockworks-foundation/mango-client'
 import { notify } from '../utils/notifications'
@@ -34,6 +36,11 @@ export default function TradeForm() {
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoClient = useMangoStore((s) => s.connection.client)
+  const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
+  const marketIndex = getMarketIndexBySymbol(
+    groupConfig,
+    marketConfig.baseSymbol
+  )
   const market = useMangoStore((s) => s.selectedMarket.current)
   const { side, baseSize, quoteSize, price, stopPrice, tradeType } =
     useMangoStore((s) => s.tradeForm)
@@ -43,7 +50,7 @@ export default function TradeForm() {
   const [postOnly, setPostOnly] = useState(false)
   const [ioc, setIoc] = useState(false)
   const [submitting, setSubmitting] = useState(false)
-  const [positionSizePercent, setPositionSizePercent] = useState('10%')
+  const [positionSizePercent, setPositionSizePercent] = useState('')
   const [showStopForm, setShowStopForm] = useState(false)
   const [stopSizePercent, setStopSizePercent] = useState('5%')
 
@@ -169,6 +176,7 @@ export default function TradeForm() {
 
   const onSetBaseSize = (baseSize: number | '') => {
     const { price } = useMangoStore.getState().tradeForm
+    setPositionSizePercent('')
     setBaseSize(baseSize)
     if (!baseSize) {
       setQuoteSize('')
@@ -184,6 +192,7 @@ export default function TradeForm() {
   }
 
   const onSetQuoteSize = (quoteSize: number | '') => {
+    setPositionSizePercent('')
     setQuoteSize(quoteSize)
     if (!quoteSize) {
       setBaseSize('')
@@ -202,6 +211,7 @@ export default function TradeForm() {
 
   const onTradeTypeChange = (tradeType) => {
     setTradeType(tradeType)
+    setPositionSizePercent('')
     if (tradeType === 'Market') {
       setIoc(true)
       setPrice('')
@@ -324,6 +334,76 @@ export default function TradeForm() {
     return Math.round((100 * -1) / (w.toNumber() - 1)) / 100
   }, [mangoGroup, marketConfig])
 
+  const { max, deposits, borrows } = useMemo(() => {
+    if (!mangoAccount) return { max: 0 }
+    const priceOrDefault = price
+      ? I80F48.fromNumber(price)
+      : mangoGroup.getPrice(marketIndex, mangoCache)
+
+    const {
+      max: maxQuote,
+      deposits,
+      borrows,
+    } = mangoAccount.getMaxLeverageForMarket(
+      mangoGroup,
+      mangoCache,
+      marketIndex,
+      market,
+      side,
+      priceOrDefault
+    )
+
+    if (maxQuote.toNumber() <= 0) return { max: 0 }
+    // multiply the maxQuote by a scaler value to account for
+    // srm fees or rounding issues in getMaxLeverageForMarket
+    const maxScaler = market instanceof PerpMarket ? 0.99 : 0.95
+    const scaledMax = price
+      ? (maxQuote.toNumber() * maxScaler) / price
+      : (maxQuote.toNumber() * maxScaler) /
+        mangoGroup.getPrice(marketIndex, mangoCache).toNumber()
+
+    return { max: scaledMax, deposits, borrows }
+  }, [mangoAccount, mangoGroup, mangoCache, marketIndex, market, side, price])
+
+  const handleSetPositionSize = (percent) => {
+    setPositionSizePercent(percent)
+    const baseSize = max * (parseInt(percent) / 100)
+    const step = parseFloat(minOrderSize)
+    const roundedSize = (Math.round(baseSize / step) * step).toFixed(
+      sizeDecimalCount
+    )
+    setBaseSize(parseFloat(roundedSize))
+    const usePrice = Number(price) || markPrice
+    if (!usePrice) {
+      setQuoteSize('')
+    }
+    const rawQuoteSize = parseFloat(roundedSize) * usePrice
+    setQuoteSize(rawQuoteSize.toFixed(6))
+  }
+
+  const percentToClose = (size, total) => {
+    return (size / total) * 100
+  }
+
+  const roundedDeposits = parseFloat(deposits?.toFixed(sizeDecimalCount))
+  const roundedBorrows = parseFloat(borrows?.toFixed(sizeDecimalCount))
+
+  const closeDepositString =
+    percentToClose(baseSize, roundedDeposits) > 100
+      ? `100% close position and open a ${(+baseSize - roundedDeposits).toFixed(
+          sizeDecimalCount
+        )} ${marketConfig.baseSymbol} short`
+      : `${percentToClose(baseSize, roundedDeposits).toFixed(
+          0
+        )}% close position`
+
+  const closeBorrowString =
+    percentToClose(baseSize, roundedBorrows) > 100
+      ? `100% close position and open a ${(+baseSize - roundedBorrows).toFixed(
+          sizeDecimalCount
+        )} ${marketConfig.baseSymbol} short`
+      : `${percentToClose(baseSize, roundedBorrows).toFixed(0)}% close position`
+
   const disabledTradeButton =
     (!price && tradeType === 'Limit') ||
     !baseSize ||
@@ -358,7 +438,7 @@ export default function TradeForm() {
                     }
                   `}
           >
-            Buy
+            {market instanceof PerpMarket ? 'Long' : 'Buy'}
           </button>
           <button
             onClick={() => setSide('sell')}
@@ -370,7 +450,7 @@ export default function TradeForm() {
                     }
                   `}
           >
-            Sell
+            {market instanceof PerpMarket ? 'Short' : 'Sell'}
           </button>
         </nav>
       </div>
@@ -392,6 +472,7 @@ export default function TradeForm() {
             onChange={(e) => onSetPrice(e.target.value)}
             value={price}
             disabled={tradeType === 'Market'}
+            placeholder={tradeType === 'Market' ? 'Market Price' : null}
             prefix={
               <img
                 src={`/assets/icons/${groupConfig.quoteSymbol.toLowerCase()}.svg`}
@@ -441,9 +522,19 @@ export default function TradeForm() {
         <div className="col-span-10 col-start-3">
           <ButtonGroup
             activeValue={positionSizePercent}
-            onChange={(p) => setPositionSizePercent(p)}
-            values={['10%', '25%', '50%', '75%', '100%']}
+            onChange={(p) => handleSetPositionSize(p)}
+            unit="%"
+            values={['10', '25', '50', '75', '100']}
           />
+          {side === 'sell' ? (
+            <div className="text-th-fgd-4 text-xs tracking-normal mt-2">
+              <span>{roundedDeposits > 0 ? closeDepositString : null}</span>
+            </div>
+          ) : (
+            <div className="text-th-fgd-4 text-xs tracking-normal mt-2">
+              <span>{roundedBorrows > 0 ? closeBorrowString : null}</span>
+            </div>
+          )}
           <div className="pt-3">
             <label className="cursor-pointer flex items-center">
               <Checkbox
@@ -500,11 +591,13 @@ export default function TradeForm() {
                   <div className="w-full">
                     <Loading className="mx-auto" />
                   </div>
+                ) : market instanceof PerpMarket ? (
+                  `${baseSize > 0 ? 'Long ' + baseSize : 'Long '} ${
+                    marketConfig.name
+                  }`
                 ) : (
                   `${baseSize > 0 ? 'Buy ' + baseSize : 'Buy '} ${
-                    marketConfig.name.includes('PERP')
-                      ? marketConfig.name
-                      : marketConfig.baseSymbol
+                    marketConfig.baseSymbol
                   }`
                 )}
               </Button>
@@ -522,11 +615,13 @@ export default function TradeForm() {
                   <div className="w-full">
                     <Loading className="mx-auto" />
                   </div>
+                ) : market instanceof PerpMarket ? (
+                  `${baseSize > 0 ? 'Short ' + baseSize : 'Short '} ${
+                    marketConfig.name
+                  }`
                 ) : (
                   `${baseSize > 0 ? 'Sell ' + baseSize : 'Sell '} ${
-                    marketConfig.name.includes('PERP')
-                      ? marketConfig.name
-                      : marketConfig.baseSymbol
+                    marketConfig.baseSymbol
                   }`
                 )}
               </Button>
@@ -584,7 +679,7 @@ export default function TradeForm() {
                 : undefined
             }`}
           >
-            Buy
+            {market instanceof PerpMarket ? 'Long' : 'Buy'}
           </div>
         </button>
         <button
@@ -600,7 +695,7 @@ export default function TradeForm() {
             }
           `}
           >
-            Sell
+            {market instanceof PerpMarket ? 'Short' : 'Sell'}
           </div>
         </button>
       </div>
