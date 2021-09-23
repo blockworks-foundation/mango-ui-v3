@@ -224,7 +224,7 @@ export default function TradeForm() {
 
   const onTradeTypeChange = (tradeType) => {
     setTradeType(tradeType)
-    if (isMarketOrder) {
+    if (['Market', 'Trigger Market'].includes(tradeType)) {
       setIoc(true)
       if (isTriggerOrder) {
         setPrice(triggerPrice)
@@ -267,6 +267,12 @@ export default function TradeForm() {
     } else if (!baseSize) {
       notify({
         title: 'Missing size',
+        type: 'error',
+      })
+      return
+    } else if (!triggerPrice && isTriggerOrder) {
+      notify({
+        title: 'Missing trigger price',
         type: 'error',
       })
       return
@@ -313,20 +319,37 @@ export default function TradeForm() {
           orderType
         )
       } else {
-        txid = await mangoClient.placePerpOrder(
-          mangoGroup,
-          mangoAccount,
-          mangoGroup.mangoCache,
-          market,
-          wallet,
-          side,
-          orderPrice,
-          baseSize,
-          tradeType === 'Market' ? 'market' : orderType,
-          0,
-          side === 'buy' ? askInfo : bidInfo,
-          reduceOnly
-        )
+        if (isTriggerOrder) {
+          txid = await mangoClient.addPerpTriggerOrder(
+            mangoGroup,
+            mangoAccount,
+            market,
+            wallet,
+            orderType,
+            side,
+            orderPrice,
+            baseSize,
+            side === 'buy' ? 'below' : 'above', // triggerCondition
+            triggerPrice,
+            reduceOnly,
+            0 // clientOrderId
+          )
+        } else {
+          txid = await mangoClient.placePerpOrder(
+            mangoGroup,
+            mangoAccount,
+            mangoGroup.mangoCache,
+            market,
+            wallet,
+            side,
+            orderPrice,
+            baseSize,
+            tradeType === 'Market' ? 'market' : orderType,
+            0,
+            side === 'buy' ? askInfo : bidInfo, // book side used for ConsumeEvents
+            reduceOnly
+          )
+        }
       }
       notify({ title: 'Successfully placed trade', txid })
       setPrice('')
