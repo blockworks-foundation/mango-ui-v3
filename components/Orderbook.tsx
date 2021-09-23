@@ -221,7 +221,8 @@ export default function Orderbook({ depth = 8 }) {
         const ask = defaultLayout
           ? asksToDisplay[0]?.price
           : asksToDisplay[asksToDisplay.length - 1]?.price
-        let spread, spreadPercentage
+        let spread = 0,
+          spreadPercentage = 0
         if (bid && ask) {
           spread = ask - bid
           spreadPercentage = (spread / ask) * 100

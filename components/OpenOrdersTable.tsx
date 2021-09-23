@@ -9,11 +9,12 @@ import { notify } from '../utils/notifications'
 import SideBadge from './SideBadge'
 import { Order, Market } from '@project-serum/serum/lib/market'
 import { PerpOrder, PerpMarket } from '@blockworks-foundation/mango-client'
-import { formatUsdValue, sleep } from '../utils'
+import { formatUsdValue } from '../utils'
 import { Table, Td, Th, TrBody, TrHead } from './TableElements'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { Row } from './TableElements'
+import { PerpTriggerOrder } from '../@types/types'
 
 const OpenOrdersTable = () => {
   const { asPath } = useRouter()
@@ -24,7 +25,7 @@ const OpenOrdersTable = () => {
   const isMobile = width ? width < breakpoints.md : false
 
   const handleCancelOrder = async (
-    order: Order | PerpOrder,
+    order: Order | PerpOrder | PerpTriggerOrder,
     market: Market | PerpMarket
   ) => {
     const wallet = useMangoStore.getState().wallet.current
@@ -46,14 +47,24 @@ const OpenOrdersTable = () => {
           order as Order
         )
       } else if (market instanceof PerpMarket) {
-        txid = await mangoClient.cancelPerpOrder(
-          selectedMangoGroup,
-          selectedMangoAccount,
-          wallet,
-          market,
-          order as PerpOrder,
-          false
-        )
+        // TODO: this is not ideal
+        if (order['triggerCondition']) {
+          txid = await mangoClient.removeAdvancedOrder(
+            selectedMangoGroup,
+            selectedMangoAccount,
+            wallet,
+            (order as PerpTriggerOrder).orderId
+          )
+        } else {
+          txid = await mangoClient.cancelPerpOrder(
+            selectedMangoGroup,
+            selectedMangoAccount,
+            wallet,
+            market,
+            order as PerpOrder,
+            false
+          )
+        }
       }
       notify({ title: 'Successfully cancelled order', txid })
     } catch (e) {
@@ -65,9 +76,8 @@ const OpenOrdersTable = () => {
       })
       console.log('error', `${e}`)
     } finally {
-      await sleep(600)
+      // await sleep(600)
       actions.reloadMangoAccount()
-      actions.updateOpenOrders()
       setCancelId(null)
     }
   }

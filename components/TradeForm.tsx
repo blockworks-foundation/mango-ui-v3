@@ -6,7 +6,7 @@ import {
   PerpMarket,
 } from '@blockworks-foundation/mango-client'
 import { notify } from '../utils/notifications'
-import { calculateTradePrice, getDecimalCount, sleep } from '../utils'
+import { calculateTradePrice, getDecimalCount } from '../utils'
 import { floorToDecimal } from '../utils/index'
 import useMangoStore from '../stores/useMangoStore'
 import Button from './Button'
@@ -330,9 +330,8 @@ export default function TradeForm() {
             orderPrice,
             baseSize,
             side === 'buy' ? 'below' : 'above', // triggerCondition
-            triggerPrice,
-            reduceOnly,
-            0 // clientOrderId
+            Number(triggerPrice),
+            reduceOnly
           )
         } else {
           txid = await mangoClient.placePerpOrder(
@@ -362,9 +361,9 @@ export default function TradeForm() {
         type: 'error',
       })
     } finally {
-      await sleep(600)
+      // TODO: should be removed, main issue are newly created OO accounts
+      // await sleep(600)
       actions.reloadMangoAccount()
-      actions.updateOpenOrders()
       actions.loadMarketFills()
       setSubmitting(false)
     }
