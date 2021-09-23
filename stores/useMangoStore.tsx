@@ -37,8 +37,8 @@ export const ENDPOINTS: EndpointInfo[] = [
   },
   {
     name: 'devnet',
-    // url: "https://mango.devnet.rpcpool.com",
-    // websocket: "https://mango.devnet.rpcpool.com",
+    // url: 'https://mango.devnet.rpcpool.com',
+    // websocket: 'https://mango.devnet.rpcpool.com',
     url: 'https://api.devnet.solana.com',
     websocket: 'https://api.devnet.solana.com',
     custom: false,
@@ -47,7 +47,7 @@ export const ENDPOINTS: EndpointInfo[] = [
 
 type ClusterType = 'mainnet' | 'devnet'
 
-const CLUSTER = (process.env.NEXT_PUBLIC_CLUSTER as ClusterType) || 'mainnet'
+const CLUSTER = (process.env.NEXT_PUBLIC_CLUSTER as ClusterType) || 'devnet'
 const ENDPOINT = ENDPOINTS.find((e) => e.name === CLUSTER)
 
 export const WEBSOCKET_CONNECTION = new Connection(
@@ -55,7 +55,7 @@ export const WEBSOCKET_CONNECTION = new Connection(
   'processed' as Commitment
 )
 
-const DEFAULT_MANGO_GROUP_NAME = process.env.NEXT_PUBLIC_GROUP || 'mainnet.1'
+const DEFAULT_MANGO_GROUP_NAME = process.env.NEXT_PUBLIC_GROUP || 'devnet.2'
 const DEFAULT_MANGO_GROUP_CONFIG = Config.ids().getGroup(
   CLUSTER,
   DEFAULT_MANGO_GROUP_NAME
