@@ -440,7 +440,15 @@ const useMangoStore = create<MangoStore>((set, get) => {
         const connection = get().connection.current
 
         const reloadedMangoAccount = await mangoAccount.reload(connection)
+        await get().actions.reloadOrders()
 
+        set((state) => {
+          state.selectedMangoAccount.current = reloadedMangoAccount
+        })
+      },
+      async reloadOrders() {
+        const mangoAccount = get().selectedMangoAccount.current
+        const connection = get().connection.current
         await Promise.all([
           mangoAccount.loadOpenOrders(
             connection,
@@ -448,10 +456,6 @@ const useMangoStore = create<MangoStore>((set, get) => {
           ),
           mangoAccount.loadAdvancedOrders(connection),
         ])
-
-        set((state) => {
-          state.selectedMangoAccount.current = reloadedMangoAccount
-        })
       },
       // DEPRECATED
       async _updateOpenOrders() {
