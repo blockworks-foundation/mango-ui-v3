@@ -18,17 +18,18 @@ function App({ Component, pageProps }) {
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const oraclePrice = useOraclePrice()
   const router = useRouter()
-
+  const selectedMarketName = marketConfig.name
   const marketTitleString =
-    marketConfig && router.query.market
-      ? ` - ${marketConfig.name} | ${
-          oraclePrice ? formatUsdValue(oraclePrice) : ''
-        } `
+    marketConfig && router.pathname.includes('[market]')
+      ? `${
+          oraclePrice ? formatUsdValue(oraclePrice) + ' | ' : ''
+        }${selectedMarketName} - `
       : ''
+
   return (
     <>
       <Head>
-        <title>Mango Markets{marketTitleString}</title>
+        <title>{marketTitleString}Mango Markets</title>
         <link rel="preconnect" href="https://fonts.gstatic.com" />
         <link
           href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap"
