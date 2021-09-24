@@ -411,6 +411,10 @@ export default function TradeForm() {
     submitting ||
     !mangoAccount
 
+  const hideStopLoss =
+    (side === 'sell' && baseSize === roundedDeposits) ||
+    (side === 'buy' && baseSize === roundedBorrows)
+
   return !isMobile ? (
     <div className={!connected ? 'fliter blur-sm' : 'flex flex-col h-full'}>
       <ElementTitle>
@@ -527,25 +531,29 @@ export default function TradeForm() {
             values={['10', '25', '50', '75', '100']}
           />
           {side === 'sell' ? (
-            <div className="text-th-fgd-4 text-xs tracking-normal mt-2">
+            <div className="text-th-fgd-3 text-xs tracking-normal mt-2">
               <span>{roundedDeposits > 0 ? closeDepositString : null}</span>
             </div>
           ) : (
-            <div className="text-th-fgd-4 text-xs tracking-normal mt-2">
+            <div className="text-th-fgd-3 text-xs tracking-normal mt-2">
               <span>{roundedBorrows > 0 ? closeBorrowString : null}</span>
             </div>
           )}
-          <div className="pt-3">
-            <label className="cursor-pointer flex items-center">
-              <Checkbox
-                checked={showStopForm}
-                onChange={(e) => setShowStopForm(e.target.checked)}
-              />
-              <span className="ml-2 text-xs text-th-fgd-3">Set Stop Loss</span>
-            </label>
-          </div>
+          {hideStopLoss ? null : (
+            <div className="pt-3">
+              <label className="cursor-pointer flex items-center">
+                <Checkbox
+                  checked={showStopForm}
+                  onChange={(e) => setShowStopForm(e.target.checked)}
+                />
+                <span className="ml-2 text-xs text-th-fgd-3">
+                  Set Stop Loss
+                </span>
+              </label>
+            </div>
+          )}
         </div>
-        {showStopForm ? (
+        {showStopForm && !hideStopLoss ? (
           <>
             <div className="col-span-2 flex items-center">
               <label className="text-xs text-th-fgd-3">Stop Price</label>
@@ -632,9 +640,11 @@ export default function TradeForm() {
             </Button>
           )}
         </div>
-        <div className="col-span-10 col-start-3 flex text-xs text-th-fgd-4">
-          <MarketFee />
-        </div>
+        {!showStopForm ? (
+          <div className="col-span-10 col-start-3 flex text-xs text-th-fgd-4">
+            <MarketFee />
+          </div>
+        ) : null}
       </div>
       {/* <LeverageSlider
         onChange={(e) => onSetBaseSize(e)}
