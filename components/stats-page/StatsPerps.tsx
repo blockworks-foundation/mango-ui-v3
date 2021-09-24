@@ -53,9 +53,16 @@ export default function StatsPerps({ perpStats }) {
   const selectedMarket = markets.find((m) =>
     m.publicKey.equals(selectedMarketConfig.publicKey)
   )
-  const selectedStatsData = perpStats.filter(
+  let selectedStatsData = perpStats.filter(
     (stat) => stat.name === selectedAsset
   )
+
+  if (selectedAsset == 'SOL-PERP') {
+    const startTimestamp = 1632160800000
+    selectedStatsData = selectedStatsData.filter(
+      (stat) => new Date(stat.hourly).getTime() >= startTimestamp
+    )
+  }
 
   const perpsData = selectedStatsData.map((x) => {
     return {
