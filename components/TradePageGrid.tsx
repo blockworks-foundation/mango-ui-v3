@@ -145,9 +145,7 @@ const TradePageGrid = () => {
           <Orderbook depth={orderbookDepth} />
         </div>
         <div key="tradeForm">
-          <FloatingElement className="h-full" showConnect>
-            <TradeForm />
-          </FloatingElement>
+          <TradeForm />
         </div>
         <div key="accountInfo">
           <FloatingElement className="h-full" showConnect>
