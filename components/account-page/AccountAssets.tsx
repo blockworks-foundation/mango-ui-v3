@@ -1,8 +1,7 @@
 import { useCallback, useState } from 'react'
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
 import { InformationCircleIcon } from '@heroicons/react/outline'
-import useMangoStore, { mangoClient } from '../../stores/useMangoStore'
-// import { settleAllTrades } from '../../utils/mango'
+import useMangoStore from '../../stores/useMangoStore'
 import { useBalances } from '../../hooks/useBalances'
 import { tokenPrecision } from '../../utils/index'
 import DepositModal from '../DepositModal'
@@ -24,6 +23,7 @@ export default function AccountAssets() {
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
+  const mangoClient = useMangoStore((s) => s.connection.client)
   const loadingMangoAccount = useMangoStore(
     (s) => s.selectedMangoAccount.initialLoad
   )

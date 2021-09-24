@@ -1,45 +1,50 @@
 import { useEffect, useState } from 'react'
 
 const SANCTIONED_COUNTRIES = [
-  { country: 'Antigua and Barbuda', code: 'AG' },
-  { country: 'Algeria', code: 'DZ' },
-  { country: 'Bangladesh', code: 'BD' },
-  { country: 'Bolivia', code: 'BO' },
-  { country: 'Belarus', code: 'BY' },
-  { country: 'Burundi', code: 'BI' },
-  { country: 'Burma (Myanmar)', code: 'MM' },
-  { country: "Cote D'Ivoire (Ivory Coast)", code: 'CI' },
-  { country: 'Cuba', code: 'CU' },
-  { country: 'Democratic Republic of Congo', code: 'CD' },
-  { country: 'Ecuador', code: 'EC' },
-  { country: 'Iran', code: 'IR' },
-  { country: 'Iraq', code: 'IQ' },
-  { country: 'Liberia', code: 'LR' },
-  { country: 'Libya', code: 'LY' },
-  { country: 'Mali', code: 'ML' },
-  { country: 'Morocco', code: 'MA' },
-  { country: 'Nepal', code: 'NP' },
-  { country: 'North Korea', code: 'KP' },
-  { country: 'Somalia', code: 'SO' },
-  { country: 'Sudan', code: 'SD' },
-  { country: 'Syria', code: 'SY' },
-  { country: 'Venezuela', code: 'VE' },
-  { country: 'Yemen', code: 'YE' },
-  { country: 'Zimbabwe', code: 'ZW' },
-  { country: 'United States', code: 'US' },
+  ['AG', 'Antigua and Barbuda'],
+  ['DZ', 'Algeria'],
+  ['BD', 'Bangladesh'],
+  ['BO', 'Bolivia'],
+  ['BY', 'Belarus'],
+  ['BI', 'Burundi'],
+  ['MM', 'Burma (Myanmar)'],
+  ['CI', "Cote D'Ivoire (Ivory Coast)"],
+  ['CU', 'Cuba'],
+  ['CD', 'Democratic Republic of Congo'],
+  ['EC', 'Ecuador'],
+  ['IR', 'Iran'],
+  ['IQ', 'Iraq'],
+  ['LR', 'Liberia'],
+  ['LY', 'Libya'],
+  ['ML', 'Mali'],
+  ['MA', 'Morocco'],
+  ['NP', 'Nepal'],
+  ['KP', 'North Korea'],
+  ['SO', 'Somalia'],
+  ['SD', 'Sudan'],
+  ['SY', 'Syria'],
+  ['VE', 'Venezuela'],
+  ['YE', 'Yemen'],
+  ['ZW', 'Zimbabwe'],
+  ['US', 'United States'],
 ]
 
-const SANCTIONED_COUNTRY_CODES = SANCTIONED_COUNTRIES.map(({ code }) => code)
+const SANCTIONED_COUNTRY_CODES = SANCTIONED_COUNTRIES.map(
+  (country) => country[0]
+)
 
 export default function useIpAddress() {
-  const [ipAllowed, setIpAllowed] = useState(true)
+  const [ipAllowed, setIpAllowed] = useState(false)
 
   useEffect(() => {
     const checkIpLocation = async () => {
-      const response = await fetch(`https://www.cloudflare.com/cdn-cgi/trace`)
-      const parsedResponse = await response.text()
-      const ipLocation = parsedResponse.match(/loc=(.+)/)
-      const ipCountryCode = ipLocation ? ipLocation[1] : ''
+      const response = await fetch(
+        `https://country-code.mangomarkets.workers.dev`
+      )
+      const parsedResponse = await response.json()
+      console.log('response', parsedResponse)
+
+      const ipCountryCode = parsedResponse ? parsedResponse?.country : ''
 
       if (ipCountryCode) {
         setIpAllowed(!SANCTIONED_COUNTRY_CODES.includes(ipCountryCode))

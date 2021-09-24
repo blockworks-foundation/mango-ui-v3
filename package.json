@@ -60,6 +60,7 @@
     "react-phone-input-2": "^2.14.0",
     "react-portal": "^4.2.1",
     "react-super-responsive-table": "^5.2.0",
+    "react-swipeable-views": "^0.14.0",
     "recharts": "^2.0.9",
     "zustand": "^3.3.3"
   },

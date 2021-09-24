@@ -11,6 +11,7 @@ import useOraclePrice from '../hooks/useOraclePrice'
 import { formatUsdValue } from '../utils'
 import { useRouter } from 'next/router'
 import { ViewportProvider } from '../hooks/useViewport'
+import BottomBar from '../components/mobile/BottomBar'
 
 function App({ Component, pageProps }) {
   useHydrateStore()
@@ -65,6 +66,9 @@ function App({ Component, pageProps }) {
         <ViewportProvider>
           <div className="bg-th-bkg-1">
             <Component {...pageProps} />
+          </div>
+          <div className="md:hidden fixed bottom-0 left-0 w-full z-20">
+            <BottomBar />
           </div>
           <Notifications />
         </ViewportProvider>

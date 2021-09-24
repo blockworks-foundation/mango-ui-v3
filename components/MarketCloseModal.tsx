@@ -1,8 +1,5 @@
 import { FunctionComponent, useEffect, useRef, useState } from 'react'
-import useMangoStore, {
-  DEFAULT_CONNECTION,
-  mangoClient,
-} from '../stores/useMangoStore'
+import useMangoStore from '../stores/useMangoStore'
 import { PerpMarket, ZERO_BN } from '@blockworks-foundation/mango-client'
 import Button, { LinkButton } from './Button'
 import { notify } from '../utils/notifications'
@@ -25,6 +22,7 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
 }) => {
   const [submitting, setSubmitting] = useState(false)
   const actions = useMangoStore((s) => s.actions)
+  const mangoClient = useMangoStore((s) => s.connection.client)
   const orderBookRef = useRef(useMangoStore.getState().selectedMarket.orderBook)
   const config = useMangoStore.getState().selectedMarket.config
 
@@ -44,12 +42,13 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
     const { askInfo, bidInfo } = useMangoStore.getState().selectedMarket
     const wallet = useMangoStore.getState().wallet.current
+    const connection = useMangoStore.getState().connection.current
 
     if (!wallet || !mangoGroup || !mangoAccount) return
     setSubmitting(true)
 
     try {
-      const reloadedMangoAccount = await mangoAccount.reload(DEFAULT_CONNECTION)
+      const reloadedMangoAccount = await mangoAccount.reload(connection)
       const perpAccount = reloadedMangoAccount.perpAccounts[marketIndex]
       const side = perpAccount.basePosition.gt(ZERO_BN) ? 'sell' : 'buy'
       const size = Math.abs(market.baseLotsToNumber(perpAccount.basePosition))

@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 import { useOpenOrders } from '../hooks/useOpenOrders'
 import Button from './Button'
 import Loading from './Loading'
-import useMangoStore, { mangoClient } from '../stores/useMangoStore'
+import useMangoStore from '../stores/useMangoStore'
 import { notify } from '../utils/notifications'
 import SideBadge from './SideBadge'
 import { Order, Market } from '@project-serum/serum/lib/market'
@@ -14,7 +14,6 @@ import { Table, Td, Th, TrBody, TrHead } from './TableElements'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { Row } from './TableElements'
-import MobileTableHeader from './mobile/MobileTableHeader'
 
 const OpenOrdersTable = () => {
   const { asPath } = useRouter()
@@ -33,6 +32,7 @@ const OpenOrdersTable = () => {
       useMangoStore.getState().selectedMangoGroup.current
     const selectedMangoAccount =
       useMangoStore.getState().selectedMangoAccount.current
+    const mangoClient = useMangoStore.getState().connection.client
     setCancelId(order.orderId)
     let txid
     try {
@@ -73,7 +73,7 @@ const OpenOrdersTable = () => {
   }
 
   return (
-    <div className={`flex flex-col py-4`}>
+    <div className={`flex flex-col py-2 sm:pb-4 sm:pt-4`}>
       <div className={`-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8`}>
         <div className={`align-middle inline-block min-w-full sm:px-6 lg:px-8`}>
           {openOrders && openOrders.length > 0 ? (
@@ -139,9 +139,6 @@ const OpenOrdersTable = () => {
               </Table>
             ) : (
               <>
-                <MobileTableHeader
-                  headerTemplate={<div className="col-span-12">Order</div>}
-                />
                 {openOrders.map(({ market, order }, index) => (
                   <Row key={`${order.orderId}${order.side}`} index={index}>
                     <div className="col-span-12 flex items-center justify-between text-fgd-1 text-left">

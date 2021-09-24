@@ -31,10 +31,10 @@ export default function MarketFee() {
   }
 
   return (
-    <div className="flex mx-auto">
+    <div className="block sm:flex mx-auto text-center">
       <>
         <div>Maker Fee: {percentFormat.format(makerFee)}</div>
-        <div className="px-2">|</div>
+        <div className="hidden sm:block px-2">|</div>
         <div>Taker Fee: {percentFormat.format(takerFee)}</div>
       </>
     </div>

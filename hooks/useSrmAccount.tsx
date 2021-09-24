@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import useMangoStore, { DEFAULT_CONNECTION } from '../stores/useMangoStore'
+import useMangoStore from '../stores/useMangoStore'
 import { nativeToUi } from '@blockworks-foundation/mango-client'
 import { SRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
 import { getFeeTier, getFeeRates } from '@project-serum/serum'
@@ -8,6 +8,7 @@ import { useEffect } from 'react'
 
 const useSrmAccount = () => {
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  const connection = useMangoStore((s) => s.connection.current)
   const [srmAccount, setSrmAccount] = useState(null)
   // const [msrmAccount, setMsrmAccount] = useState(null)
 
@@ -15,7 +16,7 @@ const useSrmAccount = () => {
     if (mangoGroup) {
       const srmPk = mangoGroup.srmVault
       const fetchAccounts = async () => {
-        const srmAccountInfo = await DEFAULT_CONNECTION.getAccountInfo(srmPk)
+        const srmAccountInfo = await connection.getAccountInfo(srmPk)
 
         setSrmAccount(srmAccountInfo)
       }
