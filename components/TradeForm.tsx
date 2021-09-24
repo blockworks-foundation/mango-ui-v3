@@ -11,7 +11,6 @@ import { floorToDecimal } from '../utils/index'
 import useMangoStore from '../stores/useMangoStore'
 import Button from './Button'
 import TradeType from './TradeType'
-import TriggerType from './TriggerType'
 import Input from './Input'
 import Switch from './Switch'
 import { Market } from '@project-serum/serum'
@@ -47,11 +46,20 @@ export default function TradeForm() {
     price,
     tradeType,
     triggerPrice,
-    triggerType,
+    triggerCondition,
   } = useMangoStore((s) => s.tradeForm)
-  const isLimitOrder = ['Limit', 'Trigger Limit'].includes(tradeType)
-  const isMarketOrder = ['Market', 'Trigger Market'].includes(tradeType)
-  const isTriggerOrder = ['Trigger Limit', 'Trigger Market'].includes(tradeType)
+  const isLimitOrder = ['Limit', 'Stop Limit', 'Take Profit Limit'].includes(
+    tradeType
+  )
+  const isMarketOrder = ['Market', 'Stop Loss', 'Take Profit'].includes(
+    tradeType
+  )
+  const isTriggerOrder = [
+    'Stop Loss',
+    'Stop Limit',
+    'Take Profit',
+    'Take Profit Limit',
+  ].includes(tradeType)
 
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
@@ -80,10 +88,30 @@ export default function TradeForm() {
     }
   }, [tradeType, set])
 
-  const setSide = (side) =>
+  useEffect(() => {
+    let condition
+    switch (tradeType) {
+      case 'Stop Loss':
+      case 'Stop Limit':
+        condition = side == 'buy' ? 'above' : 'below'
+        break
+      case 'Take Profit':
+      case 'Take Profit Limit':
+        condition = side == 'buy' ? 'below' : 'above'
+        break
+    }
+    if (condition) {
+      set((s) => {
+        s.tradeForm.triggerCondition = condition
+      })
+    }
+  }, [set, tradeType, side])
+
+  const setSide = (side) => {
     set((s) => {
       s.tradeForm.side = side
     })
+  }
 
   const setBaseSize = (baseSize) =>
     set((s) => {
@@ -112,10 +140,11 @@ export default function TradeForm() {
       }
     })
 
-  const setTradeType = (type) =>
+  const setTradeType = (type) => {
     set((s) => {
       s.tradeForm.tradeType = type
     })
+  }
 
   const setTriggerPrice = (price) => {
     set((s) => {
@@ -129,11 +158,6 @@ export default function TradeForm() {
       onSetPrice(price)
     }
   }
-
-  const setTriggerType = (type) =>
-    set((s) => {
-      s.tradeForm.triggerType = type
-    })
 
   const markPriceRef = useRef(useMangoStore.getState().selectedMarket.markPrice)
   const markPrice = markPriceRef.current
@@ -224,7 +248,7 @@ export default function TradeForm() {
 
   const onTradeTypeChange = (tradeType) => {
     setTradeType(tradeType)
-    if (['Market', 'Trigger Market'].includes(tradeType)) {
+    if (['Market', 'Stop Loss', 'Take Profit'].includes(tradeType)) {
       setIoc(true)
       if (isTriggerOrder) {
         setPrice(triggerPrice)
@@ -329,9 +353,8 @@ export default function TradeForm() {
             side,
             orderPrice,
             baseSize,
-            side === 'buy' ? 'below' : 'above', // triggerCondition
-            Number(triggerPrice),
-            reduceOnly
+            triggerCondition,
+            Number(triggerPrice)
           )
         } else {
           txid = await mangoClient.placePerpOrder(
@@ -344,7 +367,7 @@ export default function TradeForm() {
             orderPrice,
             baseSize,
             tradeType === 'Market' ? 'market' : orderType,
-            0,
+            Date.now(),
             side === 'buy' ? askInfo : bidInfo, // book side used for ConsumeEvents
             reduceOnly
           )
@@ -431,7 +454,21 @@ export default function TradeForm() {
           className="hover:border-th-primary flex-grow"
         />
       </Input.Group>
-
+      {isTriggerOrder && (
+        <Input.Group className="mt-4">
+          <Input
+            type="number"
+            min="0"
+            step={tickSize}
+            onChange={(e) => setTriggerPrice(e.target.value)}
+            value={triggerPrice}
+            prefix={'Trigger Price'}
+            suffix={groupConfig.quoteSymbol}
+            className="rounded-r-none"
+            // wrapperClassName="w-3/5"
+          />
+        </Input.Group>
+      )}
       <Input.Group className="mt-4">
         <Input
           type="number"
@@ -473,7 +510,7 @@ export default function TradeForm() {
         )}
       />
       <div className="flex mt-2">
-        {tradeType !== 'Market' ? (
+        {isLimitOrder ? (
           <>
             <div className="mr-4">
               <Tooltip
@@ -499,7 +536,7 @@ export default function TradeForm() {
             </div>
           </>
         ) : null}
-        {marketConfig.kind === 'perp' ? (
+        {marketConfig.kind === 'perp' && !isTriggerOrder ? (
           <div>
             <Tooltip
               delay={250}
@@ -513,28 +550,6 @@ export default function TradeForm() {
           </div>
         ) : null}
       </div>
-
-      {isTriggerOrder && (
-        <Input.Group className="mt-4">
-          <TriggerType
-            onChange={setTriggerType}
-            value={triggerType}
-            className="hover:border-th-primary flex-grow"
-          />
-
-          <Input
-            type="number"
-            min="0"
-            step={tickSize}
-            onChange={(e) => setTriggerPrice(e.target.value)}
-            value={triggerPrice}
-            prefix={'Price'}
-            suffix={groupConfig.quoteSymbol}
-            className="rounded-l-none"
-            wrapperClassName="rounded-l-none w-3/5"
-          />
-        </Input.Group>
-      )}
 
       <div className={`flex py-4`}>
         {ipAllowed ? (
@@ -650,6 +665,7 @@ export default function TradeForm() {
           className=""
         />
       </div>
+
       <label className="block mb-1 text-th-fgd-3 text-xs">Size</label>
       <div className="grid grid-cols-2 grid-rows-1 gap-2">
         <div className="col-span-1">

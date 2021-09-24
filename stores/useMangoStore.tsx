@@ -144,9 +144,15 @@ interface MangoStore extends State {
     price: number | ''
     baseSize: number | ''
     quoteSize: number | ''
-    tradeType: 'Market' | 'Limit' | 'Trigger Market' | 'Trigger Limit'
+    tradeType:
+      | 'Market'
+      | 'Limit'
+      | 'Stop Loss'
+      | 'Take Profit'
+      | 'Stop Limit'
+      | 'Take Profit Limit'
     triggerPrice: number | ''
-    triggerType: 'Above' | 'Below'
+    triggerCondition: 'above' | 'below'
   }
   wallet: {
     providerUrl: string
@@ -217,7 +223,7 @@ const useMangoStore = create<MangoStore>((set, get) => {
       tradeType: 'Limit',
       price: '',
       triggerPrice: '',
-      triggerType: 'Above',
+      triggerCondition: 'above',
     },
     wallet: INITIAL_STATE.WALLET,
     settings: {
