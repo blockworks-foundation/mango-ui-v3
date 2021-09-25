@@ -320,7 +320,6 @@ export default function SimpleTradeForm({ initLeverage }) {
     } finally {
       await sleep(600)
       actions.reloadMangoAccount()
-      actions.updateOpenOrders()
       actions.loadMarketFills()
       setSubmitting(false)
     }
