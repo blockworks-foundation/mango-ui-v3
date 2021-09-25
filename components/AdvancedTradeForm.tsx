@@ -1,9 +1,8 @@
-import { useMemo, useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import styled from '@emotion/styled'
 import useIpAddress from '../hooks/useIpAddress'
 import {
   getTokenBySymbol,
-  getWeights,
   PerpMarket,
 } from '@blockworks-foundation/mango-client'
 import { notify } from '../utils/notifications'
@@ -12,7 +11,6 @@ import { floorToDecimal } from '../utils/index'
 import useMangoStore from '../stores/useMangoStore'
 import Button from './Button'
 import TradeType from './TradeType'
-import TriggerType from './TriggerType'
 import Input from './Input'
 import Switch from './Switch'
 import { Market } from '@project-serum/serum'
@@ -23,19 +21,19 @@ import Loading from './Loading'
 import Tooltip from './Tooltip'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
+import OrderSideTabs from './OrderSideTabs'
 import { ElementTitle } from './styles'
 
 const StyledRightInput = styled(Input)`
   border-left: 1px solid transparent;
 `
 
-export default function AdvancedTradeForm() {
+export default function AdvancedTradeForm({ initLeverage }) {
   const set = useMangoStore((s) => s.set)
   const { ipAllowed } = useIpAddress()
   const connected = useMangoStore((s) => s.wallet.connected)
   const actions = useMangoStore((s) => s.actions)
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
-  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const mangoClient = useMangoStore((s) => s.connection.client)
@@ -50,11 +48,20 @@ export default function AdvancedTradeForm() {
     price,
     tradeType,
     triggerPrice,
-    triggerType,
+    triggerCondition,
   } = useMangoStore((s) => s.tradeForm)
-  const isLimitOrder = ['Limit', 'Trigger Limit'].includes(tradeType)
-  const isMarketOrder = ['Market', 'Trigger Market'].includes(tradeType)
-  const isTriggerOrder = ['Trigger Limit', 'Trigger Market'].includes(tradeType)
+  const isLimitOrder = ['Limit', 'Stop Limit', 'Take Profit Limit'].includes(
+    tradeType
+  )
+  const isMarketOrder = ['Market', 'Stop Loss', 'Take Profit'].includes(
+    tradeType
+  )
+  const isTriggerOrder = [
+    'Stop Loss',
+    'Stop Limit',
+    'Take Profit',
+    'Take Profit Limit',
+  ].includes(tradeType)
 
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
@@ -83,10 +90,30 @@ export default function AdvancedTradeForm() {
     }
   }, [tradeType, set])
 
-  const setSide = (side) =>
+  useEffect(() => {
+    let condition
+    switch (tradeType) {
+      case 'Stop Loss':
+      case 'Stop Limit':
+        condition = side == 'buy' ? 'above' : 'below'
+        break
+      case 'Take Profit':
+      case 'Take Profit Limit':
+        condition = side == 'buy' ? 'below' : 'above'
+        break
+    }
+    if (condition) {
+      set((s) => {
+        s.tradeForm.triggerCondition = condition
+      })
+    }
+  }, [set, tradeType, side])
+
+  const setSide = (side) => {
     set((s) => {
       s.tradeForm.side = side
     })
+  }
 
   const setBaseSize = (baseSize) =>
     set((s) => {
@@ -115,10 +142,11 @@ export default function AdvancedTradeForm() {
       }
     })
 
-  const setTradeType = (type) =>
+  const setTradeType = (type) => {
     set((s) => {
       s.tradeForm.tradeType = type
     })
+  }
 
   const setTriggerPrice = (price) => {
     set((s) => {
@@ -132,11 +160,6 @@ export default function AdvancedTradeForm() {
       onSetPrice(price)
     }
   }
-
-  const setTriggerType = (type) =>
-    set((s) => {
-      s.tradeForm.triggerType = type
-    })
 
   const markPriceRef = useRef(useMangoStore.getState().selectedMarket.markPrice)
   const markPrice = markPriceRef.current
@@ -227,7 +250,7 @@ export default function AdvancedTradeForm() {
 
   const onTradeTypeChange = (tradeType) => {
     setTradeType(tradeType)
-    if (['Market', 'Trigger Market'].includes(tradeType)) {
+    if (['Market', 'Stop Loss', 'Take Profit'].includes(tradeType)) {
       setIoc(true)
       if (isTriggerOrder) {
         setPrice(triggerPrice)
@@ -332,9 +355,8 @@ export default function AdvancedTradeForm() {
             side,
             orderPrice,
             baseSize,
-            side === 'buy' ? 'below' : 'above', // triggerCondition
-            Number(triggerPrice),
-            reduceOnly
+            triggerCondition,
+            Number(triggerPrice)
           )
         } else {
           txid = await mangoClient.placePerpOrder(
@@ -347,7 +369,7 @@ export default function AdvancedTradeForm() {
             orderPrice,
             baseSize,
             tradeType === 'Market' ? 'market' : orderType,
-            0,
+            Date.now(),
             side === 'buy' ? askInfo : bidInfo, // book side used for ConsumeEvents
             reduceOnly
           )
@@ -372,15 +394,6 @@ export default function AdvancedTradeForm() {
     }
   }
 
-  const initLeverage = useMemo(() => {
-    if (!mangoGroup || !marketConfig) return 1
-
-    const ws = getWeights(mangoGroup, marketConfig.marketIndex, 'Init')
-    const w =
-      marketConfig.kind === 'perp' ? ws.perpAssetWeight : ws.spotAssetWeight
-    return Math.round((100 * -1) / (w.toNumber() - 1)) / 100
-  }, [mangoGroup, marketConfig])
-
   const disabledTradeButton =
     (!price && isLimitOrder) ||
     !baseSize ||
@@ -391,44 +404,12 @@ export default function AdvancedTradeForm() {
   return !isMobile ? (
     <div className={!connected ? 'fliter blur-sm' : 'flex flex-col h-full'}>
       <ElementTitle>
-        Trade {marketConfig.name}
+        {marketConfig.name}
         <span className="border border-th-primary ml-2 px-1 py-0.5 rounded text-xs text-th-primary">
           {initLeverage}x
         </span>
       </ElementTitle>
-      <div className={`flex text-base text-th-fgd-4`}>
-        <button
-          onClick={() => setSide('buy')}
-          className={`flex-1 outline-none focus:outline-none`}
-        >
-          <div
-            className={`hover:text-th-green pb-1 transition-colors duration-500
-                ${
-                  side === 'buy'
-                    ? `text-th-green hover:text-th-green border-b-2 border-th-green`
-                    : undefined
-                }`}
-          >
-            Buy
-          </div>
-        </button>
-        <button
-          onClick={() => setSide('sell')}
-          className={`flex-1 outline-none focus:outline-none`}
-        >
-          <div
-            className={`hover:text-th-red pb-1 transition-colors duration-500
-                ${
-                  side === 'sell'
-                    ? `text-th-red hover:text-th-red border-b-2 border-th-red`
-                    : undefined
-                }
-              `}
-          >
-            Sell
-          </div>
-        </button>
-      </div>
+      <OrderSideTabs onChange={setSide} side={side} />
       <Input.Group className="mt-4">
         <Input
           type="number"
@@ -449,7 +430,21 @@ export default function AdvancedTradeForm() {
           className="hover:border-th-primary flex-grow"
         />
       </Input.Group>
-
+      {isTriggerOrder && (
+        <Input.Group className="mt-4">
+          <Input
+            type="number"
+            min="0"
+            step={tickSize}
+            onChange={(e) => setTriggerPrice(e.target.value)}
+            value={triggerPrice}
+            prefix={'Trigger Price'}
+            suffix={groupConfig.quoteSymbol}
+            className="rounded-r-none"
+            // wrapperClassName="w-3/5"
+          />
+        </Input.Group>
+      )}
       <Input.Group className="mt-4">
         <Input
           type="number"
@@ -491,7 +486,7 @@ export default function AdvancedTradeForm() {
         )}
       />
       <div className="flex mt-2">
-        {tradeType !== 'Market' ? (
+        {isLimitOrder ? (
           <>
             <div className="mr-4">
               <Tooltip
@@ -517,7 +512,7 @@ export default function AdvancedTradeForm() {
             </div>
           </>
         ) : null}
-        {marketConfig.kind === 'perp' ? (
+        {marketConfig.kind === 'perp' && !isTriggerOrder ? (
           <div>
             <Tooltip
               delay={250}
@@ -531,72 +526,41 @@ export default function AdvancedTradeForm() {
           </div>
         ) : null}
       </div>
-
-      {isTriggerOrder && (
-        <Input.Group className="mt-4">
-          <TriggerType
-            onChange={setTriggerType}
-            value={triggerType}
-            className="hover:border-th-primary flex-grow"
-          />
-
-          <Input
-            type="number"
-            min="0"
-            step={tickSize}
-            onChange={(e) => setTriggerPrice(e.target.value)}
-            value={triggerPrice}
-            prefix={'Price'}
-            suffix={groupConfig.quoteSymbol}
-            className="rounded-l-none"
-            wrapperClassName="rounded-l-none w-3/5"
-          />
-        </Input.Group>
-      )}
-
       <div className={`flex py-4`}>
         {ipAllowed ? (
-          side === 'buy' ? (
-            <Button
-              disabled={disabledTradeButton}
-              onClick={onSubmit}
-              className={`${
-                !disabledTradeButton
-                  ? 'bg-th-bkg-2 border border-th-green hover:border-th-green-dark'
-                  : 'border border-th-bkg-4'
-              } text-th-green hover:text-th-fgd-1 hover:bg-th-green-dark flex-grow`}
-            >
-              {submitting ? (
-                <div className="w-full">
-                  <Loading className="mx-auto" />
-                </div>
+          <Button
+            disabled={disabledTradeButton}
+            onClick={onSubmit}
+            className={`${
+              !disabledTradeButton
+                ? 'bg-th-bkg-2 border border-th-green hover:border-th-green-dark'
+                : 'border border-th-bkg-4'
+            } text-th-green hover:text-th-fgd-1 hover:bg-th-green-dark flex-grow`}
+          >
+            {submitting ? (
+              <div className="w-full">
+                <Loading className="mx-auto" />
+              </div>
+            ) : side.toLowerCase() === 'buy' ? (
+              market instanceof PerpMarket ? (
+                `${baseSize > 0 ? 'Long ' + baseSize : 'Long '} ${
+                  marketConfig.name
+                }`
               ) : (
                 `${baseSize > 0 ? 'Buy ' + baseSize : 'Buy '} ${
-                  isPerpMarket ? marketConfig.name : marketConfig.baseSymbol
+                  marketConfig.baseSymbol
                 }`
-              )}
-            </Button>
-          ) : (
-            <Button
-              disabled={disabledTradeButton}
-              onClick={onSubmit}
-              className={`${
-                !disabledTradeButton
-                  ? 'bg-th-bkg-2 border border-th-red hover:border-th-red-dark'
-                  : 'border border-th-bkg-4'
-              } text-th-red hover:text-th-fgd-1 hover:bg-th-red-dark flex-grow`}
-            >
-              {submitting ? (
-                <div className="w-full">
-                  <Loading className="mx-auto" />
-                </div>
-              ) : (
-                `${baseSize > 0 ? 'Sell ' + baseSize : 'Sell '} ${
-                  isPerpMarket ? marketConfig.name : marketConfig.baseSymbol
-                }`
-              )}
-            </Button>
-          )
+              )
+            ) : market instanceof PerpMarket ? (
+              `${baseSize > 0 ? 'Short ' + baseSize : 'Short '} ${
+                marketConfig.name
+              }`
+            ) : (
+              `${baseSize > 0 ? 'Sell ' + baseSize : 'Sell '} ${
+                marketConfig.baseSymbol
+              }`
+            )}
+          </Button>
         ) : (
           <Button disabled className="flex-grow">
             <span>Country Not Allowed</span>
@@ -668,6 +632,7 @@ export default function AdvancedTradeForm() {
           className=""
         />
       </div>
+
       <label className="block mb-1 text-th-fgd-3 text-xs">Size</label>
       <div className="grid grid-cols-2 grid-rows-1 gap-2">
         <div className="col-span-1">

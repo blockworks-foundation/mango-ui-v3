@@ -1,5 +1,7 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { SwitchHorizontalIcon } from '@heroicons/react/outline'
+import { getWeights } from '@blockworks-foundation/mango-client'
+import useMangoStore from '../stores/useMangoStore'
 import AdvancedTradeForm from './AdvancedTradeForm'
 import SimpleTradeForm from './SimpleTradeForm'
 import {
@@ -12,10 +14,21 @@ import {
 
 export default function TradeForm() {
   const [showAdvancedFrom, setShowAdvancedForm] = useState(true)
+  const marketConfig = useMangoStore((s) => s.selectedMarket.config)
+  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
 
   const handleFormChange = () => {
     setShowAdvancedForm(!showAdvancedFrom)
   }
+
+  const initLeverage = useMemo(() => {
+    if (!mangoGroup || !marketConfig) return 1
+
+    const ws = getWeights(mangoGroup, marketConfig.marketIndex, 'Init')
+    const w =
+      marketConfig.kind === 'perp' ? ws.perpAssetWeight : ws.spotAssetWeight
+    return Math.round((100 * -1) / (w.toNumber() - 1)) / 100
+  }, [mangoGroup, marketConfig])
 
   return (
     <FlipCard>
@@ -29,7 +42,7 @@ export default function TradeForm() {
               >
                 <SwitchHorizontalIcon className="w-5 h-5" />
               </button>
-              <AdvancedTradeForm />
+              <AdvancedTradeForm initLeverage={initLeverage} />
             </StyledFloatingElement>
           </FlipCardFront>
         ) : (
@@ -41,7 +54,7 @@ export default function TradeForm() {
               >
                 <SwitchHorizontalIcon className="w-5 h-5" />
               </button>
-              <SimpleTradeForm />
+              <SimpleTradeForm initLeverage={initLeverage} />
             </StyledFloatingElement>
           </FlipCardBack>
         )}

@@ -3,7 +3,6 @@ import useIpAddress from '../hooks/useIpAddress'
 import {
   getTokenBySymbol,
   getMarketIndexBySymbol,
-  getWeights,
   I80F48,
   PerpMarket,
 } from '@blockworks-foundation/mango-client'
@@ -25,8 +24,9 @@ import { breakpoints } from './TradePageGrid'
 import { ElementTitle } from './styles'
 import ButtonGroup from './ButtonGroup'
 import Checkbox from './Checkbox'
+import OrderSideTabs from './OrderSideTabs'
 
-export default function SimpleTradeForm() {
+export default function SimpleTradeForm({ initLeverage }) {
   const set = useMangoStore((s) => s.set)
   const { ipAllowed } = useIpAddress()
   const connected = useMangoStore((s) => s.wallet.connected)
@@ -52,6 +52,7 @@ export default function SimpleTradeForm() {
   const [submitting, setSubmitting] = useState(false)
   const [positionSizePercent, setPositionSizePercent] = useState('')
   const [showStopForm, setShowStopForm] = useState(false)
+  const [showTakeProfitForm, setShowTakeProfitForm] = useState(false)
   const [stopSizePercent, setStopSizePercent] = useState('5%')
 
   const orderBookRef = useRef(useMangoStore.getState().selectedMarket.orderBook)
@@ -325,15 +326,6 @@ export default function SimpleTradeForm() {
     }
   }
 
-  const initLeverage = useMemo(() => {
-    if (!mangoGroup || !marketConfig) return 1
-
-    const ws = getWeights(mangoGroup, marketConfig.marketIndex, 'Init')
-    const w =
-      marketConfig.kind === 'perp' ? ws.perpAssetWeight : ws.spotAssetWeight
-    return Math.round((100 * -1) / (w.toNumber() - 1)) / 100
-  }, [mangoGroup, marketConfig])
-
   const { max, deposits, borrows } = useMemo(() => {
     if (!mangoAccount) return { max: 0 }
     const priceOrDefault = price
@@ -411,53 +403,19 @@ export default function SimpleTradeForm() {
     submitting ||
     !mangoAccount
 
-  const hideStopLoss =
+  const hideProfitStop =
     (side === 'sell' && baseSize === roundedDeposits) ||
     (side === 'buy' && baseSize === roundedBorrows)
 
   return !isMobile ? (
     <div className={!connected ? 'fliter blur-sm' : 'flex flex-col h-full'}>
       <ElementTitle>
-        Trade {marketConfig.name}
+        {marketConfig.name}
         <span className="border border-th-primary ml-2 px-1 py-0.5 rounded text-xs text-th-primary">
           {initLeverage}x
         </span>
       </ElementTitle>
-      <div className={`border-b border-th-fgd-4 mb-4 relative`}>
-        <div
-          className={`absolute ${
-            side === 'buy'
-              ? 'bg-th-green translate-x-0'
-              : 'bg-th-red translate-x-full'
-          } bottom-[-1px] default-transition left-0 h-0.5 transform w-1/2`}
-        />
-        <nav className="-mb-px flex" aria-label="Tabs">
-          <button
-            onClick={() => setSide('buy')}
-            className={`cursor-pointer default-transition flex font-semibold items-center justify-center p-2 relative text-base w-1/2 whitespace-nowrap hover:opacity-100
-                    ${
-                      side === 'buy'
-                        ? `text-th-green`
-                        : `text-th-fgd-4 hover:text-th-green`
-                    }
-                  `}
-          >
-            {market instanceof PerpMarket ? 'Long' : 'Buy'}
-          </button>
-          <button
-            onClick={() => setSide('sell')}
-            className={`cursor-pointer default-transition flex font-semibold items-center justify-center p-2 relative text-base w-1/2 whitespace-nowrap hover:opacity-100
-                    ${
-                      side === 'sell'
-                        ? `text-th-red`
-                        : `text-th-fgd-4 hover:text-th-red`
-                    }
-                  `}
-          >
-            {market instanceof PerpMarket ? 'Short' : 'Sell'}
-          </button>
-        </nav>
-      </div>
+      <OrderSideTabs onChange={setSide} side={side} />
       <div className="grid grid-cols-12 gap-2">
         <div className="col-span-2 flex items-center">
           <label className="text-xs text-th-fgd-3">Type</label>
@@ -543,21 +501,36 @@ export default function SimpleTradeForm() {
               <span>{roundedBorrows > 0 ? closeBorrowString : null}</span>
             </div>
           )}
-          {hideStopLoss ? null : (
-            <div className="pt-3">
-              <label className="cursor-pointer flex items-center">
-                <Checkbox
-                  checked={showStopForm}
-                  onChange={(e) => setShowStopForm(e.target.checked)}
-                />
-                <span className="ml-2 text-xs text-th-fgd-3">
-                  Set Stop Loss
-                </span>
-              </label>
-            </div>
-          )}
+          <div className="flex items-center">
+            {!hideProfitStop ? (
+              <div className="pr-4 pt-3">
+                <label className="cursor-pointer flex items-center">
+                  <Checkbox
+                    checked={showStopForm}
+                    onChange={(e) => setShowStopForm(e.target.checked)}
+                  />
+                  <span className="ml-2 text-xs text-th-fgd-3">
+                    Set Stop Loss
+                  </span>
+                </label>
+              </div>
+            ) : null}
+            {!hideProfitStop ? (
+              <div className="pt-3">
+                <label className="cursor-pointer flex items-center">
+                  <Checkbox
+                    checked={showTakeProfitForm}
+                    onChange={(e) => setShowTakeProfitForm(e.target.checked)}
+                  />
+                  <span className="ml-2 text-xs text-th-fgd-3">
+                    Set Take Profit
+                  </span>
+                </label>
+              </div>
+            ) : null}
+          </div>
         </div>
-        {showStopForm && !hideStopLoss ? (
+        {showStopForm && !hideProfitStop ? (
           <>
             <div className="col-span-2 flex items-center">
               <label className="text-xs text-th-fgd-3">Stop Price</label>
@@ -587,23 +560,55 @@ export default function SimpleTradeForm() {
             </div>
           </>
         ) : null}
+        {showTakeProfitForm && !hideProfitStop ? (
+          <>
+            <div className="col-span-2 flex items-center">
+              <label className="text-left text-xs text-th-fgd-3">
+                Take Profit Price
+              </label>
+            </div>
+            <div className="col-span-10 -mb-1">
+              <Input
+                type="number"
+                min="0"
+                step={tickSize}
+                onChange={(e) => setStopPrice(e.target.value)}
+                value={stopPrice}
+                prefix={
+                  <img
+                    src={`/assets/icons/${groupConfig.quoteSymbol.toLowerCase()}.svg`}
+                    width="16"
+                    height="16"
+                  />
+                }
+              />
+            </div>
+            <div className="col-span-10 col-start-3">
+              <ButtonGroup
+                activeValue={stopSizePercent}
+                onChange={(p) => setStopSizePercent(p)}
+                values={['5%', '10%', '15%', '20%', '25%']}
+              />
+            </div>
+          </>
+        ) : null}
         <div className={`col-span-10 col-start-3 flex py-3`}>
           {ipAllowed ? (
-            side.toLowerCase() === 'buy' ? (
-              <Button
-                disabled={disabledTradeButton}
-                onClick={onSubmit}
-                className={`${
-                  !disabledTradeButton
-                    ? 'bg-th-bkg-2 border border-th-green hover:border-th-green-dark'
-                    : 'border border-th-bkg-4'
-                } text-th-green hover:text-th-fgd-1 hover:bg-th-green-dark flex-grow`}
-              >
-                {submitting ? (
-                  <div className="w-full">
-                    <Loading className="mx-auto" />
-                  </div>
-                ) : market instanceof PerpMarket ? (
+            <Button
+              disabled={disabledTradeButton}
+              onClick={onSubmit}
+              className={`${
+                !disabledTradeButton
+                  ? 'bg-th-bkg-2 border border-th-green hover:border-th-green-dark'
+                  : 'border border-th-bkg-4'
+              } text-th-green hover:text-th-fgd-1 hover:bg-th-green-dark flex-grow`}
+            >
+              {submitting ? (
+                <div className="w-full">
+                  <Loading className="mx-auto" />
+                </div>
+              ) : side.toLowerCase() === 'buy' ? (
+                market instanceof PerpMarket ? (
                   `${baseSize > 0 ? 'Long ' + baseSize : 'Long '} ${
                     marketConfig.name
                   }`
@@ -611,33 +616,17 @@ export default function SimpleTradeForm() {
                   `${baseSize > 0 ? 'Buy ' + baseSize : 'Buy '} ${
                     marketConfig.baseSymbol
                   }`
-                )}
-              </Button>
-            ) : (
-              <Button
-                disabled={disabledTradeButton}
-                onClick={onSubmit}
-                className={`${
-                  !disabledTradeButton
-                    ? 'bg-th-bkg-2 border border-th-red hover:border-th-red-dark'
-                    : 'border border-th-bkg-4'
-                } text-th-red hover:text-th-fgd-1 hover:bg-th-red-dark flex-grow`}
-              >
-                {submitting ? (
-                  <div className="w-full">
-                    <Loading className="mx-auto" />
-                  </div>
-                ) : market instanceof PerpMarket ? (
-                  `${baseSize > 0 ? 'Short ' + baseSize : 'Short '} ${
-                    marketConfig.name
-                  }`
-                ) : (
-                  `${baseSize > 0 ? 'Sell ' + baseSize : 'Sell '} ${
-                    marketConfig.baseSymbol
-                  }`
-                )}
-              </Button>
-            )
+                )
+              ) : market instanceof PerpMarket ? (
+                `${baseSize > 0 ? 'Short ' + baseSize : 'Short '} ${
+                  marketConfig.name
+                }`
+              ) : (
+                `${baseSize > 0 ? 'Sell ' + baseSize : 'Sell '} ${
+                  marketConfig.baseSymbol
+                }`
+              )}
+            </Button>
           ) : (
             <Button disabled className="flex-grow">
               <span>Country Not Allowed</span>

@@ -18,7 +18,13 @@ const TradeType = ({
   const isMobile = width ? width < breakpoints.sm : false
 
   const TRADE_TYPES = ['Limit', 'Market']
-  if (offerTriggers) TRADE_TYPES.push('Trigger Market', 'Trigger Limit')
+  if (offerTriggers)
+    TRADE_TYPES.push(
+      'Stop Loss',
+      'Stop Limit',
+      'Take Profit',
+      'Take Profit Limit'
+    )
 
   return (
     <div className={`relative ${className}`}>
@@ -67,9 +73,10 @@ const TradeType = ({
         </Listbox>
       ) : (
         <div className="flex">
-          {TRADE_TYPES.map((tradeType) => {
-            ;<div
-              className={`px-2 py-1 ml-2 rounded-md cursor-pointer default-transition bg-th-bkg-4
+          {TRADE_TYPES.slice(0, 2).map((tradeType) => (
+            <div
+              key={tradeType}
+              className={`px-2 py-2 ml-2 rounded-md cursor-pointer default-transition bg-th-bkg-4
               ${
                 value === tradeType
                   ? `ring-1 ring-inset ring-th-primary text-th-primary`
@@ -80,7 +87,7 @@ const TradeType = ({
             >
               {tradeType}
             </div>
-          })}
+          ))}
         </div>
       )}
     </div>
