@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef } from 'react'
-import styled from '@emotion/styled'
+import { useMemo, useState, useEffect, useRef } from 'react'
 import useIpAddress from '../hooks/useIpAddress'
 import {
+  getMarketIndexBySymbol,
   getTokenBySymbol,
+  I80F48,
   PerpMarket,
 } from '@blockworks-foundation/mango-client'
 import { notify } from '../utils/notifications'
@@ -23,10 +24,8 @@ import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import OrderSideTabs from './OrderSideTabs'
 import { ElementTitle } from './styles'
-
-const StyledRightInput = styled(Input)`
-  border-left: 1px solid transparent;
-`
+import ButtonGroup from './ButtonGroup'
+import SlippageWarning from './SlippageWarning'
 
 export default function AdvancedTradeForm({ initLeverage }) {
   const set = useMangoStore((s) => s.set)
@@ -40,6 +39,14 @@ export default function AdvancedTradeForm({ initLeverage }) {
   const market = useMangoStore((s) => s.selectedMarket.current)
   const isPerpMarket = market instanceof PerpMarket
   const [reduceOnly, setReduceOnly] = useState(false)
+  const [positionSizePercent, setPositionSizePercent] = useState('')
+
+  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
+  const marketIndex = getMarketIndexBySymbol(
+    groupConfig,
+    marketConfig.baseSymbol
+  )
 
   const {
     side,
@@ -108,6 +115,37 @@ export default function AdvancedTradeForm({ initLeverage }) {
       })
     }
   }, [set, tradeType, side])
+
+  const { max, deposits, borrows } = useMemo(() => {
+    if (!mangoAccount) return { max: 0 }
+    const priceOrDefault = price
+      ? I80F48.fromNumber(price)
+      : mangoGroup.getPrice(marketIndex, mangoCache)
+
+    const {
+      max: maxQuote,
+      deposits,
+      borrows,
+    } = mangoAccount.getMaxLeverageForMarket(
+      mangoGroup,
+      mangoCache,
+      marketIndex,
+      market,
+      side,
+      priceOrDefault
+    )
+
+    if (maxQuote.toNumber() <= 0) return { max: 0 }
+    // multiply the maxQuote by a scaler value to account for
+    // srm fees or rounding issues in getMaxLeverageForMarket
+    const maxScaler = market instanceof PerpMarket ? 0.99 : 0.95
+    const scaledMax = price
+      ? (maxQuote.toNumber() * maxScaler) / price
+      : (maxQuote.toNumber() * maxScaler) /
+        mangoGroup.getPrice(marketIndex, mangoCache).toNumber()
+
+    return { max: scaledMax, deposits, borrows }
+  }, [mangoAccount, mangoGroup, mangoCache, marketIndex, market, side, price])
 
   const setSide = (side) => {
     set((s) => {
@@ -283,6 +321,45 @@ export default function AdvancedTradeForm({ initLeverage }) {
     setReduceOnly(checked)
   }
 
+  const handleSetPositionSize = (percent) => {
+    setPositionSizePercent(percent)
+    const baseSize = max * (parseInt(percent) / 100)
+    const step = parseFloat(minOrderSize)
+    const roundedSize = (Math.round(baseSize / step) * step).toFixed(
+      sizeDecimalCount
+    )
+    setBaseSize(parseFloat(roundedSize))
+    const usePrice = Number(price) || markPrice
+    if (!usePrice) {
+      setQuoteSize('')
+    }
+    const rawQuoteSize = parseFloat(roundedSize) * usePrice
+    setQuoteSize(rawQuoteSize.toFixed(6))
+  }
+
+  const percentToClose = (size, total) => {
+    return (size / total) * 100
+  }
+
+  const roundedDeposits = parseFloat(deposits?.toFixed(sizeDecimalCount))
+  const roundedBorrows = parseFloat(borrows?.toFixed(sizeDecimalCount))
+
+  const closeDepositString =
+    percentToClose(baseSize, roundedDeposits) > 100
+      ? `100% close position and open a ${(+baseSize - roundedDeposits).toFixed(
+          sizeDecimalCount
+        )} ${marketConfig.baseSymbol} short`
+      : `${percentToClose(baseSize, roundedDeposits).toFixed(
+          0
+        )}% close position`
+
+  const closeBorrowString =
+    percentToClose(baseSize, roundedBorrows) > 100
+      ? `100% close position and open a ${(+baseSize - roundedBorrows).toFixed(
+          sizeDecimalCount
+        )} ${marketConfig.baseSymbol} short`
+      : `${percentToClose(baseSize, roundedBorrows).toFixed(0)}% close position`
+
   async function onSubmit() {
     if (!price && isLimitOrder) {
       notify({
@@ -402,7 +479,7 @@ export default function AdvancedTradeForm({ initLeverage }) {
     !mangoAccount
 
   return !isMobile ? (
-    <div className={!connected ? 'fliter blur-sm' : 'flex flex-col h-full'}>
+    <div className="flex flex-col h-full">
       <ElementTitle>
         {marketConfig.name}
         <span className="border border-th-primary ml-2 px-1 py-0.5 rounded text-xs text-th-primary">
@@ -410,66 +487,115 @@ export default function AdvancedTradeForm({ initLeverage }) {
         </span>
       </ElementTitle>
       <OrderSideTabs onChange={setSide} side={side} />
-      <Input.Group className="mt-4">
-        <Input
-          type="number"
-          min="0"
-          step={tickSize}
-          onChange={(e) => onSetPrice(e.target.value)}
-          value={price}
-          disabled={isMarketOrder}
-          prefix={'Price'}
-          suffix={groupConfig.quoteSymbol}
-          className="rounded-r-none"
-          wrapperClassName="w-3/5"
-        />
-        <TradeType
-          onChange={onTradeTypeChange}
-          value={tradeType}
-          offerTriggers={isPerpMarket}
-          className="hover:border-th-primary flex-grow"
-        />
-      </Input.Group>
-      {isTriggerOrder && (
-        <Input.Group className="mt-4">
+      <div className="grid grid-cols-12 gap-2 text-left">
+        <div className="col-span-2 flex items-center">
+          <label className="text-xs text-th-fgd-3">Type</label>
+        </div>
+        <div className="col-span-10">
+          <TradeType
+            onChange={onTradeTypeChange}
+            value={tradeType}
+            offerTriggers={isPerpMarket}
+          />
+        </div>
+        <div className="col-span-2 flex items-center">
+          <label className="text-xs text-th-fgd-3">Price</label>
+        </div>
+        <div className="col-span-10">
           <Input
             type="number"
             min="0"
             step={tickSize}
-            onChange={(e) => setTriggerPrice(e.target.value)}
-            value={triggerPrice}
-            prefix={'Trigger Price'}
-            suffix={groupConfig.quoteSymbol}
-            className="rounded-r-none"
-            // wrapperClassName="w-3/5"
+            onChange={(e) => onSetPrice(e.target.value)}
+            value={price}
+            disabled={isMarketOrder}
+            placeholder={tradeType === 'Market' ? 'Market Price' : null}
+            prefix={
+              <img
+                src={`/assets/icons/${groupConfig.quoteSymbol.toLowerCase()}.svg`}
+                width="16"
+                height="16"
+              />
+            }
           />
-        </Input.Group>
-      )}
-      <Input.Group className="mt-4">
-        <Input
-          type="number"
-          min="0"
-          step={minOrderSize}
-          onChange={(e) => onSetBaseSize(e.target.value)}
-          value={baseSize}
-          className="rounded-r-none"
-          wrapperClassName="w-3/5"
-          prefixClassName="w-12"
-          prefix={'Size'}
-          suffix={marketConfig.baseSymbol}
-        />
-        <StyledRightInput
-          type="number"
-          min="0"
-          step={minOrderSize}
-          onChange={(e) => onSetQuoteSize(e.target.value)}
-          value={quoteSize}
-          className="rounded-l-none"
-          wrapperClassName="w-2/5"
-          suffix={groupConfig.quoteSymbol}
-        />
-      </Input.Group>
-      <LeverageSlider
+        </div>
+        {isTriggerOrder && (
+          <>
+            <div className="col-span-2 flex items-center">
+              <label className="text-xs text-th-fgd-3">Trigger Price</label>
+            </div>
+            <div className="col-span-10">
+              <Input
+                type="number"
+                min="0"
+                step={tickSize}
+                onChange={(e) => setTriggerPrice(e.target.value)}
+                value={triggerPrice}
+                prefix={
+                  <img
+                    src={`/assets/icons/${groupConfig.quoteSymbol.toLowerCase()}.svg`}
+                    width="16"
+                    height="16"
+                  />
+                }
+              />
+            </div>
+          </>
+        )}
+        <div className="col-span-2 flex items-center">
+          <label className="text-xs text-th-fgd-3">Size</label>
+        </div>
+        <div className="col-span-10">
+          <Input.Group className="-mb-1">
+            <Input
+              type="number"
+              min="0"
+              step={minOrderSize}
+              onChange={(e) => onSetBaseSize(e.target.value)}
+              value={baseSize}
+              wrapperClassName="mr-0.5 w-1/2"
+              prefix={
+                <img
+                  src={`/assets/icons/${marketConfig.baseSymbol.toLowerCase()}.svg`}
+                  width="16"
+                  height="16"
+                />
+              }
+            />
+            <Input
+              type="number"
+              min="0"
+              step={minOrderSize}
+              onChange={(e) => onSetQuoteSize(e.target.value)}
+              value={quoteSize}
+              wrapperClassName="ml-0.5 w-1/2"
+              prefix={
+                <img
+                  src={`/assets/icons/${groupConfig.quoteSymbol.toLowerCase()}.svg`}
+                  width="16"
+                  height="16"
+                />
+              }
+            />
+          </Input.Group>
+        </div>
+        <div className="col-span-10 col-start-3">
+          <ButtonGroup
+            activeValue={positionSizePercent}
+            onChange={(p) => handleSetPositionSize(p)}
+            unit="%"
+            values={['10', '25', '50', '75', '100']}
+          />
+          {side === 'sell' ? (
+            <div className="text-th-fgd-3 text-xs tracking-normal mt-2">
+              <span>{roundedDeposits > 0 ? closeDepositString : null}</span>
+            </div>
+          ) : (
+            <div className="text-th-fgd-3 text-xs tracking-normal mt-2">
+              <span>{roundedBorrows > 0 ? closeBorrowString : null}</span>
+            </div>
+          )}
+          {/* <LeverageSlider
         onChange={(e) => onSetBaseSize(e)}
         value={baseSize ? baseSize : 0}
         step={parseFloat(minOrderSize)}
@@ -484,91 +610,108 @@ export default function AdvancedTradeForm({ initLeverage }) {
           price,
           triggerPrice
         )}
-      />
-      <div className="flex mt-2">
-        {isLimitOrder ? (
-          <>
-            <div className="mr-4">
+      /> */}
+          <div className="flex">
+            {isLimitOrder ? (
+              <>
+                <div className="mr-4 mt-2">
+                  <Tooltip
+                    delay={250}
+                    placement="left"
+                    content="Post only orders are guaranteed to be the maker order or else it will be canceled."
+                  >
+                    <Switch
+                      className="text-th-fgd-3 text-xs"
+                      checked={postOnly}
+                      onChange={postOnChange}
+                    >
+                      POST
+                    </Switch>
+                  </Tooltip>
+                </div>
+                <div className="mr-4 mt-2">
+                  <Tooltip
+                    delay={250}
+                    placement="left"
+                    content="Immediate or cancel orders are guaranteed to be the taker or it will be canceled."
+                  >
+                    <Switch
+                      className="text-th-fgd-3 text-xs"
+                      checked={ioc}
+                      onChange={iocOnChange}
+                    >
+                      IOC
+                    </Switch>
+                  </Tooltip>
+                </div>
+              </>
+            ) : null}
+            {marketConfig.kind === 'perp' && !isTriggerOrder ? (
               <Tooltip
                 delay={250}
                 placement="left"
-                content="Post only orders are guaranteed to be the maker order or else it will be canceled."
+                content="Reduce only orders will only reduce your overall position."
               >
-                <Switch checked={postOnly} onChange={postOnChange}>
-                  POST
+                <Switch
+                  className="mt-2 text-th-fgd-3 text-xs"
+                  checked={reduceOnly}
+                  onChange={reduceOnChange}
+                >
+                  Reduce Only
                 </Switch>
               </Tooltip>
-            </div>
-            <div className="mr-4">
-              <Tooltip
-                delay={250}
-                placement="left"
-                content="Immediate or cancel orders are guaranteed to be the taker or it will be canceled."
-              >
-                <Switch checked={ioc} onChange={iocOnChange}>
-                  IOC
-                </Switch>
-              </Tooltip>
-            </div>
-          </>
-        ) : null}
-        {marketConfig.kind === 'perp' && !isTriggerOrder ? (
-          <div>
-            <Tooltip
-              delay={250}
-              placement="left"
-              content="Reduce only orders will only reduce your overall position."
-            >
-              <Switch checked={reduceOnly} onChange={reduceOnChange}>
-                Reduce Only
-              </Switch>
-            </Tooltip>
+            ) : null}
           </div>
-        ) : null}
-      </div>
-      <div className={`flex py-4`}>
-        {ipAllowed ? (
-          <Button
-            disabled={disabledTradeButton}
-            onClick={onSubmit}
-            className={`${
-              !disabledTradeButton
-                ? 'bg-th-bkg-2 border border-th-green hover:border-th-green-dark'
-                : 'border border-th-bkg-4'
-            } text-th-green hover:text-th-fgd-1 hover:bg-th-green-dark flex-grow`}
-          >
-            {submitting ? (
-              <div className="w-full">
-                <Loading className="mx-auto" />
-              </div>
-            ) : side.toLowerCase() === 'buy' ? (
-              market instanceof PerpMarket ? (
-                `${baseSize > 0 ? 'Long ' + baseSize : 'Long '} ${
-                  marketConfig.name
-                }`
-              ) : (
-                `${baseSize > 0 ? 'Buy ' + baseSize : 'Buy '} ${
-                  marketConfig.baseSymbol
-                }`
-              )
-            ) : market instanceof PerpMarket ? (
-              `${baseSize > 0 ? 'Short ' + baseSize : 'Short '} ${
-                marketConfig.name
-              }`
+          <div className={`flex pt-4`}>
+            {ipAllowed ? (
+              <Button
+                disabled={disabledTradeButton}
+                onClick={onSubmit}
+                className={`${
+                  !disabledTradeButton
+                    ? 'bg-th-bkg-2 border border-th-green hover:border-th-green-dark'
+                    : 'border border-th-bkg-4'
+                } text-th-green hover:text-th-fgd-1 hover:bg-th-green-dark flex-grow`}
+              >
+                {submitting ? (
+                  <div className="w-full">
+                    <Loading className="mx-auto" />
+                  </div>
+                ) : side.toLowerCase() === 'buy' ? (
+                  market instanceof PerpMarket ? (
+                    `${baseSize > 0 ? 'Long ' + baseSize : 'Long '} ${
+                      marketConfig.name
+                    }`
+                  ) : (
+                    `${baseSize > 0 ? 'Buy ' + baseSize : 'Buy '} ${
+                      marketConfig.baseSymbol
+                    }`
+                  )
+                ) : market instanceof PerpMarket ? (
+                  `${baseSize > 0 ? 'Short ' + baseSize : 'Short '} ${
+                    marketConfig.name
+                  }`
+                ) : (
+                  `${baseSize > 0 ? 'Sell ' + baseSize : 'Sell '} ${
+                    marketConfig.baseSymbol
+                  }`
+                )}
+              </Button>
             ) : (
-              `${baseSize > 0 ? 'Sell ' + baseSize : 'Sell '} ${
-                marketConfig.baseSymbol
-              }`
+              <Button disabled className="flex-grow">
+                <span>Country Not Allowed</span>
+              </Button>
             )}
-          </Button>
-        ) : (
-          <Button disabled className="flex-grow">
-            <span>Country Not Allowed</span>
-          </Button>
-        )}
-      </div>
-      <div className="flex text-xs text-th-fgd-4 px-6 mt-2.5">
-        <MarketFee />
+          </div>
+          {tradeType === 'Market' ? (
+            <div className="col-span-10 col-start-3 pt-2">
+              <SlippageWarning slippage={0.2} />
+            </div>
+          ) : null}
+          <div className="flex text-xs text-th-fgd-4 px-6 mt-2.5">
+            <MarketFee />
+          </div>
+        </div>
       </div>
     </div>
   ) : (

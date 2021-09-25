@@ -25,6 +25,8 @@ import { ElementTitle } from './styles'
 import ButtonGroup from './ButtonGroup'
 import Checkbox from './Checkbox'
 import OrderSideTabs from './OrderSideTabs'
+import Tooltip from './Tooltip'
+import SlippageWarning from './SlippageWarning'
 
 export default function SimpleTradeForm({ initLeverage }) {
   const set = useMangoStore((s) => s.set)
@@ -42,7 +44,7 @@ export default function SimpleTradeForm({ initLeverage }) {
     marketConfig.baseSymbol
   )
   const market = useMangoStore((s) => s.selectedMarket.current)
-  const { side, baseSize, quoteSize, price, stopPrice, tradeType } =
+  const { side, baseSize, quoteSize, price, triggerPrice, tradeType } =
     useMangoStore((s) => s.tradeForm)
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
@@ -54,6 +56,7 @@ export default function SimpleTradeForm({ initLeverage }) {
   const [showStopForm, setShowStopForm] = useState(false)
   const [showTakeProfitForm, setShowTakeProfitForm] = useState(false)
   const [stopSizePercent, setStopSizePercent] = useState('5%')
+  const [reduceOnly, setReduceOnly] = useState(false)
 
   const orderBookRef = useRef(useMangoStore.getState().selectedMarket.orderBook)
   const orderbook = orderBookRef.current
@@ -66,6 +69,12 @@ export default function SimpleTradeForm({ initLeverage }) {
       ),
     []
   )
+
+  useEffect(() => {
+    if (tradeType !== 'Market' && tradeType !== 'Limit') {
+      setTradeType('Limit')
+    }
+  }, [])
 
   useEffect(() => {
     if (tradeType === 'Market') {
@@ -110,9 +119,9 @@ export default function SimpleTradeForm({ initLeverage }) {
   const setStopPrice = (price) =>
     set((s) => {
       if (!Number.isNaN(parseFloat(price))) {
-        s.tradeForm.stopPrice = parseFloat(price)
+        s.tradeForm.triggerPrice = parseFloat(price)
       } else {
-        s.tradeForm.stopPrice = price
+        s.tradeForm.triggerPrice = price
       }
     })
 
@@ -236,6 +245,12 @@ export default function SimpleTradeForm({ initLeverage }) {
       setPostOnly(false)
     }
     setIoc(checked)
+  }
+  const reduceOnChange = (checked) => {
+    if (checked) {
+      setReduceOnly(false)
+    }
+    setReduceOnly(checked)
   }
 
   async function onSubmit() {
@@ -408,7 +423,7 @@ export default function SimpleTradeForm({ initLeverage }) {
     (side === 'buy' && baseSize === roundedBorrows)
 
   return !isMobile ? (
-    <div className={!connected ? 'fliter blur-sm' : 'flex flex-col h-full'}>
+    <div className="flex flex-col h-full">
       <ElementTitle>
         {marketConfig.name}
         <span className="border border-th-primary ml-2 px-1 py-0.5 rounded text-xs text-th-primary">
@@ -416,7 +431,7 @@ export default function SimpleTradeForm({ initLeverage }) {
         </span>
       </ElementTitle>
       <OrderSideTabs onChange={setSide} side={side} />
-      <div className="grid grid-cols-12 gap-2">
+      <div className="grid grid-cols-12 gap-2 text-left">
         <div className="col-span-2 flex items-center">
           <label className="text-xs text-th-fgd-3">Type</label>
         </div>
@@ -501,9 +516,13 @@ export default function SimpleTradeForm({ initLeverage }) {
               <span>{roundedBorrows > 0 ? closeBorrowString : null}</span>
             </div>
           )}
-          <div className="flex items-center">
+          <div className="flex items-center space-x-1">
             {!hideProfitStop ? (
-              <div className="pr-4 pt-3">
+              <div
+                className={`${
+                  showStopForm ? 'bg-th-bkg-4' : 'bg-th-bkg-3'
+                } mt-2 p-2 rounded-md w-1/2`}
+              >
                 <label className="cursor-pointer flex items-center">
                   <Checkbox
                     checked={showStopForm}
@@ -516,7 +535,11 @@ export default function SimpleTradeForm({ initLeverage }) {
               </div>
             ) : null}
             {!hideProfitStop ? (
-              <div className="pt-3">
+              <div
+                className={`${
+                  showTakeProfitForm ? 'bg-th-bkg-4' : 'bg-th-bkg-3'
+                } mt-2 p-2 rounded-md w-1/2`}
+              >
                 <label className="cursor-pointer flex items-center">
                   <Checkbox
                     checked={showTakeProfitForm}
@@ -541,7 +564,7 @@ export default function SimpleTradeForm({ initLeverage }) {
                 min="0"
                 step={tickSize}
                 onChange={(e) => setStopPrice(e.target.value)}
-                value={stopPrice}
+                value={triggerPrice}
                 prefix={
                   <img
                     src={`/assets/icons/${groupConfig.quoteSymbol.toLowerCase()}.svg`}
@@ -573,7 +596,7 @@ export default function SimpleTradeForm({ initLeverage }) {
                 min="0"
                 step={tickSize}
                 onChange={(e) => setStopPrice(e.target.value)}
-                value={stopPrice}
+                value={triggerPrice}
                 prefix={
                   <img
                     src={`/assets/icons/${groupConfig.quoteSymbol.toLowerCase()}.svg`}
@@ -592,7 +615,58 @@ export default function SimpleTradeForm({ initLeverage }) {
             </div>
           </>
         ) : null}
-        <div className={`col-span-10 col-start-3 flex py-3`}>
+        <div className="col-span-10 col-start-3 flex">
+          {tradeType === 'Limit' ? (
+            <>
+              <div className="mr-4 pt-2">
+                <Tooltip
+                  delay={250}
+                  placement="left"
+                  content="Post only orders are guaranteed to be the maker order or else it will be canceled."
+                >
+                  <Switch
+                    className="text-th-fgd-3 text-xs"
+                    checked={postOnly}
+                    onChange={postOnChange}
+                  >
+                    POST
+                  </Switch>
+                </Tooltip>
+              </div>
+              <div className="mr-4 pt-2">
+                <Tooltip
+                  delay={250}
+                  placement="left"
+                  content="Immediate or cancel orders are guaranteed to be the taker or it will be canceled."
+                >
+                  <Switch
+                    className="text-th-fgd-3 text-xs"
+                    checked={ioc}
+                    onChange={iocOnChange}
+                  >
+                    IOC
+                  </Switch>
+                </Tooltip>
+              </div>
+            </>
+          ) : null}
+          {marketConfig.kind === 'perp' ? (
+            <Tooltip
+              delay={250}
+              placement="left"
+              content="Reduce only orders will only reduce your overall position."
+            >
+              <Switch
+                className="pt-2 text-th-fgd-3 text-xs"
+                checked={reduceOnly}
+                onChange={reduceOnChange}
+              >
+                Reduce Only
+              </Switch>
+            </Tooltip>
+          ) : null}
+        </div>
+        <div className={`col-span-10 col-start-3 flex pt-2`}>
           {ipAllowed ? (
             <Button
               disabled={disabledTradeButton}
@@ -633,39 +707,15 @@ export default function SimpleTradeForm({ initLeverage }) {
             </Button>
           )}
         </div>
-        {!showStopForm ? (
-          <div className="col-span-10 col-start-3 flex text-xs text-th-fgd-4">
-            <MarketFee />
+        {tradeType === 'Market' ? (
+          <div className="col-span-10 col-start-3">
+            <SlippageWarning slippage={0.2} />
           </div>
         ) : null}
-      </div>
-      {/* <LeverageSlider
-        onChange={(e) => onSetBaseSize(e)}
-        value={baseSize ? baseSize : 0}
-        step={parseFloat(minOrderSize)}
-        disabled={false}
-        side={side}
-        decimalCount={sizeDecimalCount}
-        price={calculateTradePrice(
-          tradeType,
-          orderbook,
-          baseSize ? baseSize : 0,
-          side,
-          price
-        )}
-      /> */}
-      {/* {tradeType !== 'Market' ? (
-        <div className="flex mt-2">
-          <Switch checked={postOnly} onChange={postOnChange}>
-            POST
-          </Switch>
-          <div className="ml-4">
-            <Switch checked={ioc} onChange={iocOnChange}>
-              IOC
-            </Switch>
-          </div>
+        <div className="col-span-10 col-start-3 flex text-xs text-th-fgd-4">
+          <MarketFee />
         </div>
-      ) : null} */}
+      </div>
     </div>
   ) : (
     <div className="flex flex-col h-full">

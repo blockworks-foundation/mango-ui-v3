@@ -1,12 +1,7 @@
 import { Listbox } from '@headlessui/react'
-import styled from '@emotion/styled'
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
-
-const StyledListbox = styled(Listbox.Button)`
-  border-left: 1px solid transparent;
-`
 
 const TradeType = ({
   value,
@@ -32,12 +27,10 @@ const TradeType = ({
         <Listbox value={value} onChange={onChange}>
           {({ open }) => (
             <>
-              <StyledListbox
-                className={`font-normal h-full w-full bg-th-bkg-1 border border-th-fgd-4 hover:border-th-primary rounded rounded-l-none focus:outline-none focus:border-th-primary`}
+              <Listbox.Button
+                className={`font-normal h-full w-full bg-th-bkg-1 border border-th-fgd-4 p-2 hover:border-th-primary rounded-md focus:outline-none focus:border-th-primary`}
               >
-                <div
-                  className={`flex items-center justify-between space-x-4 pl-2 pr-1`}
-                >
+                <div className={`flex items-center justify-between space-x-4`}>
                   <span>{value}</span>
                   {open ? (
                     <ChevronUpIcon className={`h-5 w-5 mr-1 text-th-primary`} />
@@ -47,11 +40,11 @@ const TradeType = ({
                     />
                   )}
                 </div>
-              </StyledListbox>
+              </Listbox.Button>
               {open ? (
                 <Listbox.Options
                   static
-                  className={`z-20 w-full p-1 absolute left-0 mt-1 bg-th-bkg-1 origin-top-left divide-y divide-th-bkg-3 shadow-lg outline-none rounded-md`}
+                  className={`z-20 w-full p-1 absolute left-0 mt-1 bg-th-bkg-1 origin-top-left divide-y divide-th-bkg-3 shadow-lg outline-none rounded-md text-left`}
                 >
                   {TRADE_TYPES.map((type) => (
                     <Listbox.Option key={type} value={type}>

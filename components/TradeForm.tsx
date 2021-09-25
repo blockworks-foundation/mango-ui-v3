@@ -16,6 +16,7 @@ export default function TradeForm() {
   const [showAdvancedFrom, setShowAdvancedForm] = useState(true)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  const connected = useMangoStore((s) => s.wallet.connected)
 
   const handleFormChange = () => {
     setShowAdvancedForm(!showAdvancedFrom)
@@ -35,26 +36,30 @@ export default function TradeForm() {
       <FlipCardInner flip={showAdvancedFrom}>
         {showAdvancedFrom ? (
           <FlipCardFront>
-            <StyledFloatingElement className="h-full">
-              <button
-                onClick={handleFormChange}
-                className="absolute flex items-center justify-center right-4 top-4 rounded-full bg-th-bkg-3 w-8 h-8 hover:text-th-primary focus:outline-none"
-              >
-                <SwitchHorizontalIcon className="w-5 h-5" />
-              </button>
-              <AdvancedTradeForm initLeverage={initLeverage} />
+            <StyledFloatingElement className="h-full" showConnect>
+              <div className={`${!connected ? 'filter blur-sm' : ''}`}>
+                <button
+                  onClick={handleFormChange}
+                  className="absolute flex items-center justify-center right-4 rounded-full bg-th-bkg-3 w-8 h-8 hover:text-th-primary focus:outline-none"
+                >
+                  <SwitchHorizontalIcon className="w-5 h-5" />
+                </button>
+                <AdvancedTradeForm initLeverage={initLeverage} />
+              </div>
             </StyledFloatingElement>
           </FlipCardFront>
         ) : (
           <FlipCardBack>
-            <StyledFloatingElement className="h-full">
-              <button
-                onClick={handleFormChange}
-                className="absolute flex items-center justify-center right-4 top-4 rounded-full bg-th-bkg-3 w-8 h-8 hover:text-th-primary focus:outline-none"
-              >
-                <SwitchHorizontalIcon className="w-5 h-5" />
-              </button>
-              <SimpleTradeForm initLeverage={initLeverage} />
+            <StyledFloatingElement className="h-full" showConnect>
+              <div className={`${!connected ? 'filter blur-sm' : ''}`}>
+                <button
+                  onClick={handleFormChange}
+                  className="absolute flex items-center justify-center right-4 rounded-full bg-th-bkg-3 w-8 h-8 hover:text-th-primary focus:outline-none"
+                >
+                  <SwitchHorizontalIcon className="w-5 h-5" />
+                </button>
+                <SimpleTradeForm initLeverage={initLeverage} />
+              </div>
             </StyledFloatingElement>
           </FlipCardBack>
         )}
