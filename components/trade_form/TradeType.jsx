@@ -1,7 +1,5 @@
 import { Listbox } from '@headlessui/react'
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid'
-import { useViewport } from '../../hooks/useViewport'
-import { breakpoints } from '../TradePageGrid'
 
 const TradeType = ({
   value,
@@ -9,9 +7,6 @@ const TradeType = ({
   offerTriggers = false,
   className = '',
 }) => {
-  const { width } = useViewport()
-  const isMobile = width ? width < breakpoints.sm : false
-
   const TRADE_TYPES = ['Limit', 'Market']
   if (offerTriggers)
     TRADE_TYPES.push(

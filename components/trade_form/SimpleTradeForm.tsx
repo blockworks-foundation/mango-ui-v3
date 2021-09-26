@@ -328,7 +328,6 @@ export default function SimpleTradeForm({ initLeverage }) {
     } finally {
       await sleep(600)
       actions.reloadMangoAccount()
-      actions.updateOpenOrders()
       actions.loadMarketFills()
       setSubmitting(false)
     }
@@ -493,7 +492,7 @@ export default function SimpleTradeForm({ initLeverage }) {
             />
           </Input.Group>
         </div>
-        <div className="col-span-10 col-start-3">
+        <div className="col-span-10 col-start-3 pb-2">
           <ButtonGroup
             activeValue={positionSizePercent}
             onChange={(p) => handleSetPositionSize(p)}
@@ -561,7 +560,7 @@ export default function SimpleTradeForm({ initLeverage }) {
                 }
               />
             </div>
-            <div className="col-span-10 col-start-3">
+            <div className="col-span-10 col-start-3 pb-2">
               <ButtonGroup
                 activeValue={stopSizePercent}
                 onChange={(p) => setStopSizePercent(p)}
@@ -574,7 +573,7 @@ export default function SimpleTradeForm({ initLeverage }) {
           <>
             <div className="col-span-2 flex items-center">
               <label className="text-left text-xs text-th-fgd-3">
-                Take Profit Price
+                Profit Price
               </label>
             </div>
             <div className="col-span-10 -mb-1">
@@ -593,7 +592,7 @@ export default function SimpleTradeForm({ initLeverage }) {
                 }
               />
             </div>
-            <div className="col-span-10 col-start-3">
+            <div className="col-span-10 col-start-3 pb-2">
               <ButtonGroup
                 activeValue={stopSizePercent}
                 onChange={(p) => setStopSizePercent(p)}
@@ -605,7 +604,7 @@ export default function SimpleTradeForm({ initLeverage }) {
         <div className="col-span-10 col-start-3 flex">
           {tradeType === 'Limit' ? (
             <>
-              <div className="mr-4 mt-2">
+              <div className="mr-4">
                 <Tooltip
                   delay={250}
                   placement="left"
@@ -619,7 +618,7 @@ export default function SimpleTradeForm({ initLeverage }) {
                   </Checkbox>
                 </Tooltip>
               </div>
-              <div className="mr-4 mt-2">
+              <div className="mr-4">
                 <Tooltip
                   delay={250}
                   placement="left"
@@ -638,20 +637,18 @@ export default function SimpleTradeForm({ initLeverage }) {
             </>
           ) : null}
           {marketConfig.kind === 'perp' ? (
-            <div className="mt-2">
-              <Tooltip
-                delay={250}
-                placement="left"
-                content="Reduce only orders will only reduce your overall position."
+            <Tooltip
+              delay={250}
+              placement="left"
+              content="Reduce only orders will only reduce your overall position."
+            >
+              <Checkbox
+                checked={reduceOnly}
+                onChange={(e) => reduceOnChange(e.target.checked)}
               >
-                <Checkbox
-                  checked={reduceOnly}
-                  onChange={(e) => reduceOnChange(e.target.checked)}
-                >
-                  Reduce Only
-                </Checkbox>
-              </Tooltip>
-            </div>
+                Reduce Only
+              </Checkbox>
+            </Tooltip>
           ) : null}
         </div>
         <div className={`col-span-10 col-start-3 flex pt-2`}>
