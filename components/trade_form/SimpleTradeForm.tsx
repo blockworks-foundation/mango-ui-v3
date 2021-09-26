@@ -1,31 +1,26 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
-import useIpAddress from '../hooks/useIpAddress'
+import useIpAddress from '../../hooks/useIpAddress'
 import {
   getTokenBySymbol,
   getMarketIndexBySymbol,
   I80F48,
   PerpMarket,
 } from '@blockworks-foundation/mango-client'
-import { notify } from '../utils/notifications'
-import { calculateTradePrice, getDecimalCount, sleep } from '../utils'
-import { floorToDecimal } from '../utils/index'
-import useMangoStore from '../stores/useMangoStore'
-import Button from './Button'
-import TradeType from './TradeType'
-import Input from './Input'
-import Switch from './Switch'
+import { notify } from '../../utils/notifications'
+import { calculateTradePrice, getDecimalCount, sleep } from '../../utils'
+import { floorToDecimal } from '../../utils/index'
+import useMangoStore from '../../stores/useMangoStore'
+import Button from '../Button'
+import Input from '../Input'
 import { Market } from '@project-serum/serum'
 import Big from 'big.js'
-import MarketFee from './MarketFee'
-import LeverageSlider from './LeverageSlider'
-import Loading from './Loading'
-import { useViewport } from '../hooks/useViewport'
-import { breakpoints } from './TradePageGrid'
-import { ElementTitle } from './styles'
-import ButtonGroup from './ButtonGroup'
-import Checkbox from './Checkbox'
+import MarketFee from '../MarketFee'
+import Loading from '../Loading'
+import { ElementTitle } from '../styles'
+import ButtonGroup from '../ButtonGroup'
+import Checkbox from '../Checkbox'
 import OrderSideTabs from './OrderSideTabs'
-import Tooltip from './Tooltip'
+import Tooltip from '../Tooltip'
 import SlippageWarning from './SlippageWarning'
 
 export default function SimpleTradeForm({ initLeverage }) {
@@ -46,8 +41,6 @@ export default function SimpleTradeForm({ initLeverage }) {
   const market = useMangoStore((s) => s.selectedMarket.current)
   const { side, baseSize, quoteSize, price, triggerPrice, tradeType } =
     useMangoStore((s) => s.tradeForm)
-  const { width } = useViewport()
-  const isMobile = width ? width < breakpoints.sm : false
 
   const [postOnly, setPostOnly] = useState(false)
   const [ioc, setIoc] = useState(false)
@@ -422,7 +415,7 @@ export default function SimpleTradeForm({ initLeverage }) {
     (side === 'sell' && baseSize === roundedDeposits) ||
     (side === 'buy' && baseSize === roundedBorrows)
 
-  return !isMobile ? (
+  return (
     <div className="flex flex-col h-full">
       <ElementTitle>
         {marketConfig.name}
@@ -453,7 +446,7 @@ export default function SimpleTradeForm({ initLeverage }) {
             onChange={(e) => onSetPrice(e.target.value)}
             value={price}
             disabled={tradeType === 'Market'}
-            placeholder={tradeType === 'Market' ? 'Market Price' : null}
+            placeholder={tradeType === 'Market' ? markPrice : null}
             prefix={
               <img
                 src={`/assets/icons/${groupConfig.quoteSymbol.toLowerCase()}.svg`}
@@ -523,15 +516,12 @@ export default function SimpleTradeForm({ initLeverage }) {
                   showStopForm ? 'bg-th-bkg-4' : 'bg-th-bkg-3'
                 } mt-2 p-2 rounded-md w-1/2`}
               >
-                <label className="cursor-pointer flex items-center">
-                  <Checkbox
-                    checked={showStopForm}
-                    onChange={(e) => setShowStopForm(e.target.checked)}
-                  />
-                  <span className="ml-2 text-xs text-th-fgd-3">
-                    Set Stop Loss
-                  </span>
-                </label>
+                <Checkbox
+                  checked={showStopForm}
+                  onChange={(e) => setShowStopForm(e.target.checked)}
+                >
+                  Set Stop Loss
+                </Checkbox>
               </div>
             ) : null}
             {!hideProfitStop ? (
@@ -540,15 +530,12 @@ export default function SimpleTradeForm({ initLeverage }) {
                   showTakeProfitForm ? 'bg-th-bkg-4' : 'bg-th-bkg-3'
                 } mt-2 p-2 rounded-md w-1/2`}
               >
-                <label className="cursor-pointer flex items-center">
-                  <Checkbox
-                    checked={showTakeProfitForm}
-                    onChange={(e) => setShowTakeProfitForm(e.target.checked)}
-                  />
-                  <span className="ml-2 text-xs text-th-fgd-3">
-                    Set Take Profit
-                  </span>
-                </label>
+                <Checkbox
+                  checked={showTakeProfitForm}
+                  onChange={(e) => setShowTakeProfitForm(e.target.checked)}
+                >
+                  Set Take Profit
+                </Checkbox>
               </div>
             ) : null}
           </div>
@@ -618,52 +605,53 @@ export default function SimpleTradeForm({ initLeverage }) {
         <div className="col-span-10 col-start-3 flex">
           {tradeType === 'Limit' ? (
             <>
-              <div className="mr-4 pt-2">
+              <div className="mr-4 mt-2">
                 <Tooltip
                   delay={250}
                   placement="left"
                   content="Post only orders are guaranteed to be the maker order or else it will be canceled."
                 >
-                  <Switch
-                    className="text-th-fgd-3 text-xs"
+                  <Checkbox
                     checked={postOnly}
-                    onChange={postOnChange}
+                    onChange={(e) => postOnChange(e.target.checked)}
                   >
                     POST
-                  </Switch>
+                  </Checkbox>
                 </Tooltip>
               </div>
-              <div className="mr-4 pt-2">
+              <div className="mr-4 mt-2">
                 <Tooltip
                   delay={250}
                   placement="left"
                   content="Immediate or cancel orders are guaranteed to be the taker or it will be canceled."
                 >
-                  <Switch
-                    className="text-th-fgd-3 text-xs"
-                    checked={ioc}
-                    onChange={iocOnChange}
-                  >
-                    IOC
-                  </Switch>
+                  <div className="flex items-center text-th-fgd-3 text-xs">
+                    <Checkbox
+                      checked={ioc}
+                      onChange={(e) => iocOnChange(e.target.checked)}
+                    >
+                      IOC
+                    </Checkbox>
+                  </div>
                 </Tooltip>
               </div>
             </>
           ) : null}
           {marketConfig.kind === 'perp' ? (
-            <Tooltip
-              delay={250}
-              placement="left"
-              content="Reduce only orders will only reduce your overall position."
-            >
-              <Switch
-                className="pt-2 text-th-fgd-3 text-xs"
-                checked={reduceOnly}
-                onChange={reduceOnChange}
+            <div className="mt-2">
+              <Tooltip
+                delay={250}
+                placement="left"
+                content="Reduce only orders will only reduce your overall position."
               >
-                Reduce Only
-              </Switch>
-            </Tooltip>
+                <Checkbox
+                  checked={reduceOnly}
+                  onChange={(e) => reduceOnChange(e.target.checked)}
+                >
+                  Reduce Only
+                </Checkbox>
+              </Tooltip>
+            </div>
           ) : null}
         </div>
         <div className={`col-span-10 col-start-3 flex pt-2`}>
@@ -715,182 +703,6 @@ export default function SimpleTradeForm({ initLeverage }) {
         <div className="col-span-10 col-start-3 flex text-xs text-th-fgd-4">
           <MarketFee />
         </div>
-      </div>
-    </div>
-  ) : (
-    <div className="flex flex-col h-full">
-      <div className={`flex pb-3 text-base text-th-fgd-4`}>
-        <button
-          onClick={() => setSide('buy')}
-          className={`flex-1 outline-none focus:outline-none`}
-        >
-          <div
-            className={`hover:text-th-green pb-1 transition-colors duration-500
-            ${
-              side === 'buy'
-                ? `text-th-green hover:text-th-green border-b-2 border-th-green`
-                : undefined
-            }`}
-          >
-            {market instanceof PerpMarket ? 'Long' : 'Buy'}
-          </div>
-        </button>
-        <button
-          onClick={() => setSide('sell')}
-          className={`flex-1 outline-none focus:outline-none`}
-        >
-          <div
-            className={`hover:text-th-red pb-1 transition-colors duration-500
-            ${
-              side === 'sell'
-                ? `text-th-red hover:text-th-red border-b-2 border-th-red`
-                : undefined
-            }
-          `}
-          >
-            {market instanceof PerpMarket ? 'Short' : 'Sell'}
-          </div>
-        </button>
-      </div>
-      <div className="pb-3">
-        <label className="block mb-1 text-th-fgd-3 text-xs">Price</label>
-        <Input
-          type="number"
-          min="0"
-          step={tickSize}
-          onChange={(e) => onSetPrice(e.target.value)}
-          value={price}
-          disabled={tradeType === 'Market'}
-          suffix={
-            <img
-              src={`/assets/icons/${groupConfig.quoteSymbol.toLowerCase()}.svg`}
-              width="16"
-              height="16"
-            />
-          }
-        />
-      </div>
-      <div className="flex items-center justify-between pb-3">
-        <label className="text-th-fgd-3 text-xs">Type</label>
-        <TradeType onChange={onTradeTypeChange} value={tradeType} />
-      </div>
-      <label className="block mb-1 text-th-fgd-3 text-xs">Size</label>
-      <div className="grid grid-cols-2 grid-rows-1 gap-2">
-        <div className="col-span-1">
-          <Input
-            type="number"
-            min="0"
-            step={minOrderSize}
-            onChange={(e) => onSetBaseSize(e.target.value)}
-            value={baseSize}
-            suffix={
-              <img
-                src={`/assets/icons/${marketConfig.baseSymbol.toLowerCase()}.svg`}
-                width="16"
-                height="16"
-              />
-            }
-          />
-        </div>
-        <div className="col-span-1">
-          <Input
-            type="number"
-            min="0"
-            step={minOrderSize}
-            onChange={(e) => onSetQuoteSize(e.target.value)}
-            value={quoteSize}
-            suffix={
-              <img
-                src={`/assets/icons/${groupConfig.quoteSymbol.toLowerCase()}.svg`}
-                width="16"
-                height="16"
-              />
-            }
-          />
-        </div>
-      </div>
-      <LeverageSlider
-        onChange={(e) => onSetBaseSize(e)}
-        value={baseSize ? baseSize : 0}
-        step={parseFloat(minOrderSize)}
-        disabled={false}
-        side={side}
-        decimalCount={sizeDecimalCount}
-        price={calculateTradePrice(
-          tradeType,
-          orderbook,
-          baseSize ? baseSize : 0,
-          side,
-          price
-        )}
-      />
-      {tradeType !== 'Market' ? (
-        <div className="flex mt-2">
-          <Switch checked={postOnly} onChange={postOnChange}>
-            POST
-          </Switch>
-          <div className="ml-4">
-            <Switch checked={ioc} onChange={iocOnChange}>
-              IOC
-            </Switch>
-          </div>
-        </div>
-      ) : null}
-      <div className={`flex py-4`}>
-        {ipAllowed ? (
-          side === 'buy' ? (
-            <Button
-              disabled={disabledTradeButton}
-              onClick={onSubmit}
-              className={`${
-                !disabledTradeButton
-                  ? 'bg-th-bkg-2 border border-th-green hover:border-th-green-dark'
-                  : 'border border-th-bkg-4'
-              } text-th-green hover:text-th-fgd-1 hover:bg-th-green-dark flex-grow`}
-            >
-              {submitting ? (
-                <div className="w-full">
-                  <Loading className="mx-auto" />
-                </div>
-              ) : (
-                `${baseSize > 0 ? 'Buy ' + baseSize : 'Buy '} ${
-                  marketConfig.name.includes('PERP')
-                    ? marketConfig.name
-                    : marketConfig.baseSymbol
-                }`
-              )}
-            </Button>
-          ) : (
-            <Button
-              disabled={disabledTradeButton}
-              onClick={onSubmit}
-              className={`${
-                !disabledTradeButton
-                  ? 'bg-th-bkg-2 border border-th-red hover:border-th-red-dark'
-                  : 'border border-th-bkg-4'
-              } text-th-red hover:text-th-fgd-1 hover:bg-th-red-dark flex-grow`}
-            >
-              {submitting ? (
-                <div className="w-full">
-                  <Loading className="mx-auto" />
-                </div>
-              ) : (
-                `${baseSize > 0 ? 'Sell ' + baseSize : 'Sell '} ${
-                  marketConfig.name.includes('PERP')
-                    ? marketConfig.name
-                    : marketConfig.baseSymbol
-                }`
-              )}
-            </Button>
-          )
-        ) : (
-          <Button disabled className="flex-grow">
-            <span>Country Not Allowed</span>
-          </Button>
-        )}
-      </div>
-      <div className="flex text-xs text-th-fgd-4 px-6 mt-2.5">
-        <MarketFee />
       </div>
     </div>
   )

@@ -15,8 +15,8 @@ const HiddenCheckbox = styled.input`
   width: 1px;
 `
 
-const Checkbox = ({ checked, ...props }) => (
-  <>
+const Checkbox = ({ checked, children, ...props }) => (
+  <label className="cursor-pointer flex items-center">
     <HiddenCheckbox checked={checked} {...props} type="checkbox" />
     <div
       className={`${
@@ -27,7 +27,8 @@ const Checkbox = ({ checked, ...props }) => (
         className={`${checked ? 'block' : 'hidden'} h-4 w-4 text-th-primary`}
       />
     </div>
-  </>
+    <span className="ml-2 text-xs text-th-fgd-3">{children}</span>
+  </label>
 )
 
 export default Checkbox

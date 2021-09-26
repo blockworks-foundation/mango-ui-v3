@@ -1,5 +1,3 @@
-// import { useViewport } from '../hooks/useViewport'
-// import { breakpoints } from './TradePageGrid'
 import { FunctionComponent } from 'react'
 
 interface ButtonGroupProps {
@@ -15,8 +13,6 @@ const ButtonGroup: FunctionComponent<ButtonGroupProps> = ({
   values,
   onChange,
 }) => {
-  // const { width } = useViewport()
-  // const isMobile = width ? width < breakpoints.sm : false
   return (
     <div className="bg-th-bkg-3 rounded-md">
       <div className="flex relative">
@@ -37,7 +33,7 @@ const ButtonGroup: FunctionComponent<ButtonGroupProps> = ({
               ${
                 v === activeValue
                   ? `text-th-primary`
-                  : `text-th-fgd-1 opacity-50 hover:opacity-100`
+                  : `text-th-fgd-1 opacity-70 hover:opacity-100`
               }
             `}
             key={`${v}${i}`}

@@ -1,12 +1,12 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Disclosure } from '@headlessui/react'
 import dynamic from 'next/dynamic'
 import { XIcon } from '@heroicons/react/outline'
 import useMangoStore from '../../stores/useMangoStore'
-import { PerpMarket } from '@blockworks-foundation/mango-client'
+import { getWeights, PerpMarket } from '@blockworks-foundation/mango-client'
 import { CandlesIcon } from '../icons'
 import SwipeableTabs from './SwipeableTabs'
-import TradeForm from '../TradeForm'
+import AdvancedTradeForm from '../trade_form/AdvancedTradeForm'
 import Orderbook from '../Orderbook'
 import MarketBalances from '../MarketBalances'
 import MarketDetails from '../MarketDetails'
@@ -25,6 +25,7 @@ const MobileTradePage = () => {
   const [viewIndex, setViewIndex] = useState(0)
   const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
+  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const connected = useMangoStore((s) => s.wallet.connected)
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const baseSymbol = marketConfig.baseSymbol
@@ -33,6 +34,15 @@ const MobileTradePage = () => {
   const handleChangeViewIndex = (index) => {
     setViewIndex(index)
   }
+
+  const initLeverage = useMemo(() => {
+    if (!mangoGroup || !marketConfig) return 1
+
+    const ws = getWeights(mangoGroup, marketConfig.marketIndex, 'Init')
+    const w =
+      marketConfig.kind === 'perp' ? ws.perpAssetWeight : ws.spotAssetWeight
+    return Math.round((100 * -1) / (w.toNumber() - 1)) / 100
+  }, [mangoGroup, marketConfig])
 
   const TABS =
     selectedMarket instanceof PerpMarket
@@ -59,6 +69,9 @@ const MobileTradePage = () => {
               {isPerpMarket ? 'PERP' : groupConfig.quoteSymbol}
             </div>
           </div>
+          <span className="border border-th-primary ml-2 px-1 py-0.5 rounded text-xs text-th-primary">
+            {initLeverage}x
+          </span>
         </div>
         <Disclosure>
           {({ open }) => (
@@ -72,7 +85,7 @@ const MobileTradePage = () => {
                   )}
                 </div>
               </Disclosure.Button>
-              <Disclosure.Panel className="pt-3">
+              <Disclosure.Panel>
                 <div className="bg-th-bkg-2 h-96 mb-2 p-2 rounded-lg">
                   <TVChartContainer />
                 </div>
@@ -90,7 +103,7 @@ const MobileTradePage = () => {
         <div>
           <div className="bg-th-bkg-2 grid grid-cols-12 grid-rows-1 gap-4 mb-2 px-2 py-3 rounded-lg">
             <div className="col-span-7">
-              <TradeForm />
+              <AdvancedTradeForm />
             </div>
             <div className="col-span-5">
               <Orderbook depth={8} />

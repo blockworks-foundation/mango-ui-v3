@@ -29,9 +29,11 @@ export const FlipCardInner = styled.div<any>`
 `
 
 export const FlipCardFront = styled.div`
-  position: absolute;
   width: 100%;
-  height: 100%;
+  @media screen and (min-width: 768px) {
+    height: 100%;
+    position: absolute;
+  }
 `
 
 export const FlipCardBack = styled.div`
@@ -45,5 +47,4 @@ export const StyledFloatingElement = styled(FloatingElement)`
   animation: ${css`
     ${fadeIn} 1s linear
   `};
-  overflow: auto;
 `

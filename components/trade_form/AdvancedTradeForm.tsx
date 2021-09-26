@@ -1,33 +1,38 @@
 import { useMemo, useState, useEffect, useRef } from 'react'
-import useIpAddress from '../hooks/useIpAddress'
+import useIpAddress from '../../hooks/useIpAddress'
 import {
   getMarketIndexBySymbol,
   getTokenBySymbol,
   I80F48,
   PerpMarket,
 } from '@blockworks-foundation/mango-client'
-import { notify } from '../utils/notifications'
-import { calculateTradePrice, getDecimalCount } from '../utils'
-import { floorToDecimal } from '../utils/index'
-import useMangoStore from '../stores/useMangoStore'
-import Button from './Button'
+import { notify } from '../../utils/notifications'
+import { calculateTradePrice, getDecimalCount } from '../../utils'
+import { floorToDecimal } from '../../utils/index'
+import useMangoStore from '../../stores/useMangoStore'
+import Button from '../Button'
 import TradeType from './TradeType'
-import Input from './Input'
-import Switch from './Switch'
+import Input from '../Input'
 import { Market } from '@project-serum/serum'
 import Big from 'big.js'
-import MarketFee from './MarketFee'
-import LeverageSlider from './LeverageSlider'
-import Loading from './Loading'
-import Tooltip from './Tooltip'
-import { useViewport } from '../hooks/useViewport'
-import { breakpoints } from './TradePageGrid'
+import MarketFee from '../MarketFee'
+import Loading from '../Loading'
+import Tooltip from '../Tooltip'
 import OrderSideTabs from './OrderSideTabs'
-import { ElementTitle } from './styles'
-import ButtonGroup from './ButtonGroup'
+import { ElementTitle } from '../styles'
+import ButtonGroup from '../ButtonGroup'
 import SlippageWarning from './SlippageWarning'
+import Checkbox from '../Checkbox'
+import { useViewport } from '../../hooks/useViewport'
+import { breakpoints } from '../TradePageGrid'
 
-export default function AdvancedTradeForm({ initLeverage }) {
+interface AdvancedTradeFormProps {
+  initLeverage?: number
+}
+
+export default function AdvancedTradeForm({
+  initLeverage,
+}: AdvancedTradeFormProps) {
   const set = useMangoStore((s) => s.set)
   const { ipAllowed } = useIpAddress()
   const connected = useMangoStore((s) => s.wallet.connected)
@@ -47,6 +52,8 @@ export default function AdvancedTradeForm({ initLeverage }) {
     groupConfig,
     marketConfig.baseSymbol
   )
+  const { width } = useViewport()
+  const isMobile = width ? width < breakpoints.sm : false
 
   const {
     side,
@@ -69,9 +76,6 @@ export default function AdvancedTradeForm({ initLeverage }) {
     'Take Profit',
     'Take Profit Limit',
   ].includes(tradeType)
-
-  const { width } = useViewport()
-  const isMobile = width ? width < breakpoints.sm : false
 
   const [postOnly, setPostOnly] = useState(false)
   const [ioc, setIoc] = useState(false)
@@ -478,30 +482,30 @@ export default function AdvancedTradeForm({ initLeverage }) {
     submitting ||
     !mangoAccount
 
-  return !isMobile ? (
+  return (
     <div className="flex flex-col h-full">
-      <ElementTitle>
+      <ElementTitle className="hidden md:flex">
         {marketConfig.name}
         <span className="border border-th-primary ml-2 px-1 py-0.5 rounded text-xs text-th-primary">
           {initLeverage}x
         </span>
       </ElementTitle>
       <OrderSideTabs onChange={setSide} side={side} />
-      <div className="grid grid-cols-12 gap-2 text-left">
-        <div className="col-span-2 flex items-center">
-          <label className="text-xs text-th-fgd-3">Type</label>
+      <div className="grid grid-cols-12 md:gap-2 text-left">
+        <div className="col-span-12 md:col-span-2 flex items-center">
+          <label className="text-xxs md:text-xs text-th-fgd-3">Type</label>
         </div>
-        <div className="col-span-10">
+        <div className="col-span-12 md:col-span-10 pb-2 md:pb-0">
           <TradeType
             onChange={onTradeTypeChange}
             value={tradeType}
             offerTriggers={isPerpMarket}
           />
         </div>
-        <div className="col-span-2 flex items-center">
-          <label className="text-xs text-th-fgd-3">Price</label>
+        <div className="col-span-12 md:col-span-2 flex items-center">
+          <label className="text-xxs md:text-xs text-th-fgd-3">Price</label>
         </div>
-        <div className="col-span-10">
+        <div className="col-span-12 md:col-span-10 pb-2 md:pb-0">
           <Input
             type="number"
             min="0"
@@ -509,7 +513,7 @@ export default function AdvancedTradeForm({ initLeverage }) {
             onChange={(e) => onSetPrice(e.target.value)}
             value={price}
             disabled={isMarketOrder}
-            placeholder={tradeType === 'Market' ? 'Market Price' : null}
+            placeholder={tradeType === 'Market' ? markPrice : null}
             prefix={
               <img
                 src={`/assets/icons/${groupConfig.quoteSymbol.toLowerCase()}.svg`}
@@ -521,10 +525,12 @@ export default function AdvancedTradeForm({ initLeverage }) {
         </div>
         {isTriggerOrder && (
           <>
-            <div className="col-span-2 flex items-center">
-              <label className="text-xs text-th-fgd-3">Trigger Price</label>
+            <div className="col-span-12 md:col-span-2 flex items-center">
+              <label className="text-xxs md:text-xs text-th-fgd-3">
+                Trigger Price
+              </label>
             </div>
-            <div className="col-span-10">
+            <div className="col-span-12 md:col-span-10 pb-2 md:pb-0">
               <Input
                 type="number"
                 min="0"
@@ -542,10 +548,10 @@ export default function AdvancedTradeForm({ initLeverage }) {
             </div>
           </>
         )}
-        <div className="col-span-2 flex items-center">
-          <label className="text-xs text-th-fgd-3">Size</label>
+        <div className="col-span-12 md:col-span-2 flex items-center">
+          <label className="text-xxs md:text-xs text-th-fgd-3">Size</label>
         </div>
-        <div className="col-span-10">
+        <div className="col-span-12 md:col-span-10 pb-2 md:pb-0">
           <Input.Group className="-mb-1">
             <Input
               type="number"
@@ -579,87 +585,81 @@ export default function AdvancedTradeForm({ initLeverage }) {
             />
           </Input.Group>
         </div>
-        <div className="col-span-10 col-start-3">
+        <div className="col-span-12 md:col-span-10 md:col-start-3">
           <ButtonGroup
             activeValue={positionSizePercent}
             onChange={(p) => handleSetPositionSize(p)}
             unit="%"
-            values={['10', '25', '50', '75', '100']}
+            values={
+              isMobile
+                ? ['10', '25', '50', '75']
+                : ['10', '25', '50', '75', '100']
+            }
           />
           {side === 'sell' ? (
+            roundedDeposits > 0 ? (
+              <div className="text-th-fgd-3 text-xs tracking-normal mt-2">
+                <span>{closeDepositString}</span>
+              </div>
+            ) : null
+          ) : roundedBorrows > 0 ? (
             <div className="text-th-fgd-3 text-xs tracking-normal mt-2">
-              <span>{roundedDeposits > 0 ? closeDepositString : null}</span>
+              <span>{closeBorrowString}</span>
             </div>
-          ) : (
-            <div className="text-th-fgd-3 text-xs tracking-normal mt-2">
-              <span>{roundedBorrows > 0 ? closeBorrowString : null}</span>
-            </div>
-          )}
-          {/* <LeverageSlider
-        onChange={(e) => onSetBaseSize(e)}
-        value={baseSize ? baseSize : 0}
-        step={parseFloat(minOrderSize)}
-        disabled={false}
-        side={side}
-        decimalCount={sizeDecimalCount}
-        price={calculateTradePrice(
-          tradeType,
-          orderbook,
-          baseSize ? baseSize : 0,
-          side,
-          price,
-          triggerPrice
-        )}
-      /> */}
-          <div className="flex">
+          ) : null}
+          <div className="sm:flex">
             {isLimitOrder ? (
-              <>
-                <div className="mr-4 mt-2">
+              <div className="flex">
+                <div className="mr-4 mt-4">
                   <Tooltip
+                    className="hidden md:block"
                     delay={250}
                     placement="left"
                     content="Post only orders are guaranteed to be the maker order or else it will be canceled."
                   >
-                    <Switch
-                      className="text-th-fgd-3 text-xs"
+                    <Checkbox
                       checked={postOnly}
-                      onChange={postOnChange}
+                      onChange={(e) => postOnChange(e.target.checked)}
                     >
                       POST
-                    </Switch>
+                    </Checkbox>
                   </Tooltip>
                 </div>
-                <div className="mr-4 mt-2">
+                <div className="mr-4 mt-4">
                   <Tooltip
+                    className="hidden md:block"
                     delay={250}
                     placement="left"
                     content="Immediate or cancel orders are guaranteed to be the taker or it will be canceled."
                   >
-                    <Switch
-                      className="text-th-fgd-3 text-xs"
-                      checked={ioc}
-                      onChange={iocOnChange}
-                    >
-                      IOC
-                    </Switch>
+                    <div className="flex items-center text-th-fgd-3 text-xs">
+                      <Checkbox
+                        checked={ioc}
+                        onChange={(e) => iocOnChange(e.target.checked)}
+                      >
+                        IOC
+                      </Checkbox>
+                    </div>
                   </Tooltip>
                 </div>
-              </>
+              </div>
             ) : null}
             {marketConfig.kind === 'perp' && !isTriggerOrder ? (
-              <Tooltip
-                delay={250}
-                placement="left"
-                content="Reduce only orders will only reduce your overall position."
-              >
-                <Switch
-                  className="mt-2 text-th-fgd-3 text-xs"
-                  checked={reduceOnly}
-                  onChange={reduceOnChange}
+              <div className="mt-4">
+                <Tooltip
+                  className="hidden md:block"
+                  delay={250}
+                  placement="left"
+                  content="Reduce only orders will only reduce your overall position."
                 >
-                  Reduce Only
-                </Switch>
-              </Tooltip>
+                  <Checkbox
+                    checked={reduceOnly}
+                    onChange={(e) => reduceOnChange(e.target.checked)}
+                  >
+                    Reduce Only
+                  </Checkbox>
+                </Tooltip>
+              </div>
             ) : null}
           </div>
           <div className={`flex pt-4`}>
@@ -679,18 +679,24 @@ export default function AdvancedTradeForm({ initLeverage }) {
                   </div>
                 ) : side.toLowerCase() === 'buy' ? (
                   market instanceof PerpMarket ? (
-                    `${baseSize > 0 ? 'Long ' + baseSize : 'Long '} ${
-                      marketConfig.name
-                    }`
+                    <>
+                      {baseSize > 0 ? 'Long ' + baseSize : 'Long '}{' '}
+                      <span className="whitespace-nowrap">
+                        {marketConfig.name}
+                      </span>
+                    </>
                   ) : (
                     `${baseSize > 0 ? 'Buy ' + baseSize : 'Buy '} ${
                       marketConfig.baseSymbol
                     }`
                   )
                 ) : market instanceof PerpMarket ? (
-                  `${baseSize > 0 ? 'Short ' + baseSize : 'Short '} ${
-                    marketConfig.name
-                  }`
+                  <>
+                    {baseSize > 0 ? 'Short ' + baseSize : 'Short '}{' '}
+                    <span className="whitespace-nowrap">
+                      {marketConfig.name}
+                    </span>
+                  </>
                 ) : (
                   `${baseSize > 0 ? 'Sell ' + baseSize : 'Sell '} ${
                     marketConfig.baseSymbol
@@ -704,7 +710,7 @@ export default function AdvancedTradeForm({ initLeverage }) {
             )}
           </div>
           {tradeType === 'Market' ? (
-            <div className="col-span-10 col-start-3 pt-2">
+            <div className="col-span-12 md:col-span-10 md:col-start-3 pt-2">
               <SlippageWarning slippage={0.2} />
             </div>
           ) : null}
@@ -712,188 +718,6 @@ export default function AdvancedTradeForm({ initLeverage }) {
             <MarketFee />
           </div>
         </div>
-      </div>
-    </div>
-  ) : (
-    <div className="flex flex-col h-full">
-      <div className={`flex pb-3 text-base text-th-fgd-4`}>
-        <button
-          onClick={() => setSide('buy')}
-          className={`flex-1 outline-none focus:outline-none`}
-        >
-          <div
-            className={`hover:text-th-green pb-1 transition-colors duration-500
-            ${
-              side === 'buy'
-                ? `text-th-green hover:text-th-green border-b-2 border-th-green`
-                : undefined
-            }`}
-          >
-            Buy
-          </div>
-        </button>
-        <button
-          onClick={() => setSide('sell')}
-          className={`flex-1 outline-none focus:outline-none`}
-        >
-          <div
-            className={`hover:text-th-red pb-1 transition-colors duration-500
-            ${
-              side === 'sell'
-                ? `text-th-red hover:text-th-red border-b-2 border-th-red`
-                : undefined
-            }
-          `}
-          >
-            Sell
-          </div>
-        </button>
-      </div>
-      <div className="pb-3">
-        <label className="block mb-1 text-th-fgd-3 text-xs">Price</label>
-        <Input
-          type="number"
-          min="0"
-          step={tickSize}
-          onChange={(e) => onSetPrice(e.target.value)}
-          value={price}
-          disabled={tradeType === 'Market'}
-          suffix={
-            <img
-              src={`/assets/icons/${groupConfig.quoteSymbol.toLowerCase()}.svg`}
-              width="16"
-              height="16"
-            />
-          }
-        />
-      </div>
-      <div className="flex items-center justify-between pb-3">
-        <label className="text-th-fgd-3 text-xs">Type</label>
-        <TradeType
-          onChange={onTradeTypeChange}
-          value={tradeType}
-          className=""
-        />
-      </div>
-
-      <label className="block mb-1 text-th-fgd-3 text-xs">Size</label>
-      <div className="grid grid-cols-2 grid-rows-1 gap-2">
-        <div className="col-span-1">
-          <Input
-            type="number"
-            min="0"
-            step={minOrderSize}
-            onChange={(e) => onSetBaseSize(e.target.value)}
-            value={baseSize}
-            suffix={
-              <img
-                src={`/assets/icons/${marketConfig.baseSymbol.toLowerCase()}.svg`}
-                width="16"
-                height="16"
-              />
-            }
-          />
-        </div>
-        <div className="col-span-1">
-          <Input
-            type="number"
-            min="0"
-            step={minOrderSize}
-            onChange={(e) => onSetQuoteSize(e.target.value)}
-            value={quoteSize}
-            suffix={
-              <img
-                src={`/assets/icons/${groupConfig.quoteSymbol.toLowerCase()}.svg`}
-                width="16"
-                height="16"
-              />
-            }
-          />
-        </div>
-      </div>
-      <LeverageSlider
-        onChange={(e) => onSetBaseSize(e)}
-        value={baseSize ? baseSize : 0}
-        step={parseFloat(minOrderSize)}
-        disabled={false}
-        side={side}
-        decimalCount={sizeDecimalCount}
-        price={calculateTradePrice(
-          tradeType,
-          orderbook,
-          baseSize ? baseSize : 0,
-          side,
-          price,
-          triggerPrice
-        )}
-      />
-      {tradeType !== 'Market' ? (
-        <div className="flex mt-2">
-          <Switch checked={postOnly} onChange={postOnChange}>
-            POST
-          </Switch>
-          <div className="ml-4">
-            <Switch checked={ioc} onChange={iocOnChange}>
-              IOC
-            </Switch>
-          </div>
-        </div>
-      ) : null}
-      <div className={`flex py-4`}>
-        {ipAllowed ? (
-          side === 'buy' ? (
-            <Button
-              disabled={disabledTradeButton}
-              onClick={onSubmit}
-              className={`${
-                !disabledTradeButton
-                  ? 'bg-th-bkg-2 border border-th-green hover:border-th-green-dark'
-                  : 'border border-th-bkg-4'
-              } text-th-green hover:text-th-fgd-1 hover:bg-th-green-dark flex-grow`}
-            >
-              {submitting ? (
-                <div className="w-full">
-                  <Loading className="mx-auto" />
-                </div>
-              ) : (
-                `${baseSize > 0 ? 'Buy ' + baseSize : 'Buy '} ${
-                  marketConfig.name.includes('PERP')
-                    ? marketConfig.name
-                    : marketConfig.baseSymbol
-                }`
-              )}
-            </Button>
-          ) : (
-            <Button
-              disabled={disabledTradeButton}
-              onClick={onSubmit}
-              className={`${
-                !disabledTradeButton
-                  ? 'bg-th-bkg-2 border border-th-red hover:border-th-red-dark'
-                  : 'border border-th-bkg-4'
-              } text-th-red hover:text-th-fgd-1 hover:bg-th-red-dark flex-grow`}
-            >
-              {submitting ? (
-                <div className="w-full">
-                  <Loading className="mx-auto" />
-                </div>
-              ) : (
-                `${baseSize > 0 ? 'Sell ' + baseSize : 'Sell '} ${
-                  marketConfig.name.includes('PERP')
-                    ? marketConfig.name
-                    : marketConfig.baseSymbol
-                }`
-              )}
-            </Button>
-          )
-        ) : (
-          <Button disabled className="flex-grow">
-            <span>Country Not Allowed</span>
-          </Button>
-        )}
-      </div>
-      <div className="flex text-xs text-th-fgd-4 px-6 mt-2.5">
-        <MarketFee />
       </div>
     </div>
   )

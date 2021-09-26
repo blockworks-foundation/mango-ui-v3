@@ -1,8 +1,8 @@
 import { Listbox } from '@headlessui/react'
 import styled from '@emotion/styled'
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid'
-import { useViewport } from '../hooks/useViewport'
-import { breakpoints } from './TradePageGrid'
+import { useViewport } from '../../hooks/useViewport'
+import { breakpoints } from '../TradePageGrid'
 
 const StyledListbox = styled(Listbox.Button)`
   border-right: 1px solid transparent;
