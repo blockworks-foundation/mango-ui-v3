@@ -353,7 +353,8 @@ export default function AdvancedTradeForm({
 
   const handleSetPositionSize = (percent) => {
     setPositionSizePercent(percent)
-    const baseSizeMax = spotMargin ? max : spotMax
+    const baseSizeMax =
+      spotMargin || marketConfig.kind === 'perp' ? max : spotMax
     const baseSize = baseSizeMax * (parseInt(percent) / 100)
     const step = parseFloat(minOrderSize)
     const roundedSize = (Math.round(baseSize / step) * step).toFixed(
