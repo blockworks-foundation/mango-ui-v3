@@ -351,7 +351,7 @@ export default function AdvancedTradeForm({ initLeverage }) {
             mangoAccount,
             market,
             wallet,
-            orderType,
+            isMarketOrder ? 'market' : orderType,
             side,
             orderPrice,
             baseSize,
@@ -368,7 +368,7 @@ export default function AdvancedTradeForm({ initLeverage }) {
             side,
             orderPrice,
             baseSize,
-            tradeType === 'Market' ? 'market' : orderType,
+            isMarketOrder ? 'market' : orderType,
             Date.now(),
             side === 'buy' ? askInfo : bidInfo, // book side used for ConsumeEvents
             reduceOnly
@@ -385,6 +385,7 @@ export default function AdvancedTradeForm({ initLeverage }) {
         txid: e.txid,
         type: 'error',
       })
+      console.error(e)
     } finally {
       // TODO: should be removed, main issue are newly created OO accounts
       // await sleep(600)
