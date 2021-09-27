@@ -423,7 +423,7 @@ export default function SimpleTradeForm({ initLeverage }) {
           {initLeverage}x
         </span>
       </ElementTitle>
-      <OrderSideTabs onChange={setSide} side={side} />
+      <OrderSideTabs isSimpleForm onChange={setSide} side={side} />
       <div className="grid grid-cols-12 gap-2 text-left">
         <div className="col-span-2 flex items-center">
           <label className="text-xs text-th-fgd-3">Type</label>

@@ -3,13 +3,15 @@ import { PerpMarket } from '@blockworks-foundation/mango-client'
 import useMangoStore from '../../stores/useMangoStore'
 
 interface OrderSideTabsProps {
+  isSimpleForm?: boolean
   onChange: (x) => void
   side: string
 }
 
 const OrderSideTabs: FunctionComponent<OrderSideTabsProps> = ({
-  side,
+  isSimpleForm,
   onChange,
+  side,
 }) => {
   const market = useMangoStore((s) => s.selectedMarket.current)
   return (
@@ -32,7 +34,7 @@ const OrderSideTabs: FunctionComponent<OrderSideTabsProps> = ({
                     }
                   `}
         >
-          {market instanceof PerpMarket ? 'Long' : 'Buy'}
+          {market instanceof PerpMarket && isSimpleForm ? 'Long' : 'Buy'}
         </button>
         <button
           onClick={() => onChange('sell')}
@@ -44,7 +46,7 @@ const OrderSideTabs: FunctionComponent<OrderSideTabsProps> = ({
                     }
                   `}
         >
-          {market instanceof PerpMarket ? 'Short' : 'Sell'}
+          {market instanceof PerpMarket && isSimpleForm ? 'Short' : 'Sell'}
         </button>
       </nav>
     </div>
