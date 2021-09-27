@@ -40,8 +40,6 @@ const getAverageStats = (
 }
 
 export default function StatsTotals({ latestStats, stats }) {
-  console.log('latest stats', latestStats)
-
   const startTimestamp = 1622905200000
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
@@ -410,78 +408,89 @@ export default function StatsTotals({ latestStats, stats }) {
             <div className="pb-4 text-th-fgd-1 text-lg">
               Average Deposit Rates
             </div>
-            {latestStats.map((stat, index) => (
-              // stats.length > 1 ? (
-              <Row key={stat.name} index={index}>
-                <div className="col-span-12">
-                  <div className="col-span-12 flex items-center pb-4 text-fgd-1">
-                    <div className="flex items-center">
-                      <img
-                        alt=""
-                        width="20"
-                        height="20"
-                        src={`/assets/icons/${stat.name
-                          .split(/-|\//)[0]
-                          .toLowerCase()}.svg`}
-                        className={`mr-2.5`}
-                      />
-                      {stat.name}
+            {stats.length > 1
+              ? latestStats.map((stat, index) => (
+                  <Row key={stat.name} index={index}>
+                    <div className="col-span-12">
+                      <div className="col-span-12 flex items-center pb-4 text-fgd-1">
+                        <div className="flex items-center">
+                          <img
+                            alt=""
+                            width="20"
+                            height="20"
+                            src={`/assets/icons/${stat.name
+                              .split(/-|\//)[0]
+                              .toLowerCase()}.svg`}
+                            className={`mr-2.5`}
+                          />
+                          {stat.name}
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-12 grid-rows-1 gap-4">
+                        <div className="col-span-4 text-left">
+                          <div className="pb-0.5 text-th-fgd-3 text-xs">
+                            24h
+                          </div>
+                          {getAverageStats(stats, 1, stat.name, 'depositIndex')}
+                        </div>
+                        <div className="col-span-4 text-left">
+                          <div className="pb-0.5 text-th-fgd-3 text-xs">7d</div>
+                          {getAverageStats(stats, 7, stat.name, 'depositIndex')}
+                        </div>
+                        <div className="col-span-4 text-left">
+                          <div className="pb-0.5 text-th-fgd-3 text-xs">
+                            30d
+                          </div>
+                          {getAverageStats(
+                            stats,
+                            30,
+                            stat.name,
+                            'depositIndex'
+                          )}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                  <div className="grid grid-cols-12 grid-rows-1 gap-4">
-                    <div className="col-span-4 text-left">
-                      <div className="pb-0.5 text-th-fgd-3 text-xs">24h</div>
-                      {getAverageStats(stats, 1, stat.name, 'depositRate')}
-                    </div>
-                    <div className="col-span-4 text-left">
-                      <div className="pb-0.5 text-th-fgd-3 text-xs">7d</div>
-                      {getAverageStats(stats, 7, stat.name, 'depositRate')}
-                    </div>
-                    <div className="col-span-4 text-left">
-                      <div className="pb-0.5 text-th-fgd-3 text-xs">30d</div>
-                      {getAverageStats(stats, 30, stat.name, 'depositRate')}
-                    </div>
-                  </div>
-                </div>
-              </Row>
-            ))}
+                  </Row>
+                ))
+              : null}
           </div>
           <div className="pb-4 text-th-fgd-1 text-lg">Average Borrow Rates</div>
-          {latestStats.map((stat, index) => (
-            // stats.length > 1 ? (
-            <Row key={stat.name} index={index}>
-              <div className="col-span-12">
-                <div className="col-span-12 flex items-center pb-4 text-fgd-1">
-                  <div className="flex items-center">
-                    <img
-                      alt=""
-                      width="20"
-                      height="20"
-                      src={`/assets/icons/${stat.name
-                        .split(/-|\//)[0]
-                        .toLowerCase()}.svg`}
-                      className={`mr-2.5`}
-                    />
-                    {stat.name}
+          {stats.length > 1
+            ? latestStats.map((stat, index) => (
+                <Row key={stat.name} index={index}>
+                  <div className="col-span-12">
+                    <div className="col-span-12 flex items-center pb-4 text-fgd-1">
+                      <div className="flex items-center">
+                        <img
+                          alt=""
+                          width="20"
+                          height="20"
+                          src={`/assets/icons/${stat.name
+                            .split(/-|\//)[0]
+                            .toLowerCase()}.svg`}
+                          className={`mr-2.5`}
+                        />
+                        {stat.name}
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-12 grid-rows-1 gap-4">
+                      <div className="col-span-4 text-left">
+                        <div className="pb-0.5 text-th-fgd-3 text-xs">24h</div>
+                        {getAverageStats(stats, 1, stat.name, 'borrowIndex')}
+                      </div>
+                      <div className="col-span-4 text-left">
+                        <div className="pb-0.5 text-th-fgd-3 text-xs">7d</div>
+                        {getAverageStats(stats, 7, stat.name, 'borrowIndex')}
+                      </div>
+                      <div className="col-span-4 text-left">
+                        <div className="pb-0.5 text-th-fgd-3 text-xs">30d</div>
+                        {getAverageStats(stats, 30, stat.name, 'borrowIndex')}
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div className="grid grid-cols-12 grid-rows-1 gap-4">
-                  <div className="col-span-4 text-left">
-                    <div className="pb-0.5 text-th-fgd-3 text-xs">24h</div>
-                    {getAverageStats(stats, 1, stat.name, 'borrowRate')}
-                  </div>
-                  <div className="col-span-4 text-left">
-                    <div className="pb-0.5 text-th-fgd-3 text-xs">7d</div>
-                    {getAverageStats(stats, 7, stat.name, 'borrowRate')}
-                  </div>
-                  <div className="col-span-4 text-left">
-                    <div className="pb-0.5 text-th-fgd-3 text-xs">30d</div>
-                    {getAverageStats(stats, 30, stat.name, 'borrowRate')}
-                  </div>
-                </div>
-              </div>
-            </Row>
-          ))}
+                </Row>
+              ))
+            : null}
         </>
       )}
     </>
