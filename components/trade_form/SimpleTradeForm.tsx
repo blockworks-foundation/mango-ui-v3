@@ -50,6 +50,7 @@ export default function SimpleTradeForm({ initLeverage }) {
   const [showTakeProfitForm, setShowTakeProfitForm] = useState(false)
   const [stopSizePercent, setStopSizePercent] = useState('5%')
   const [reduceOnly, setReduceOnly] = useState(false)
+  const [spotMargin, setSpotMargin] = useState(false)
 
   const orderBookRef = useRef(useMangoStore.getState().selectedMarket.orderBook)
   const orderbook = orderBookRef.current
@@ -650,6 +651,20 @@ export default function SimpleTradeForm({ initLeverage }) {
               </Checkbox>
             </Tooltip>
           ) : null}
+          {marketConfig.kind === 'spot' ? (
+            <Tooltip
+              delay={250}
+              placement="left"
+              content="Enable spot margin for this trade"
+            >
+              <Checkbox
+                checked={spotMargin}
+                onChange={(e) => setSpotMargin(e.target.checked)}
+              >
+                Margin
+              </Checkbox>
+            </Tooltip>
+          ) : null}
         </div>
         <div className={`col-span-10 col-start-3 flex pt-2`}>
           {ipAllowed ? (
@@ -697,7 +712,7 @@ export default function SimpleTradeForm({ initLeverage }) {
             <SlippageWarning slippage={0.2} />
           </div>
         ) : null}
-        <div className="col-span-10 col-start-3 flex text-xs text-th-fgd-4">
+        <div className="col-span-10 col-start-3 flex pt-2 text-xs text-th-fgd-4">
           <MarketFee />
         </div>
       </div>

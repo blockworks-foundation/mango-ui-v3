@@ -4,6 +4,7 @@ import {
   getMarketIndexBySymbol,
   getTokenBySymbol,
   I80F48,
+  nativeI80F48ToUi,
   PerpMarket,
 } from '@blockworks-foundation/mango-client'
 import { notify } from '../../utils/notifications'
@@ -44,6 +45,7 @@ export default function AdvancedTradeForm({
   const market = useMangoStore((s) => s.selectedMarket.current)
   const isPerpMarket = market instanceof PerpMarket
   const [reduceOnly, setReduceOnly] = useState(false)
+  const [spotMargin, setSpotMargin] = useState(false)
   const [positionSizePercent, setPositionSizePercent] = useState('')
 
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
@@ -120,11 +122,30 @@ export default function AdvancedTradeForm({
     }
   }, [set, tradeType, side])
 
-  const { max, deposits, borrows } = useMemo(() => {
+  const { max, deposits, borrows, spotMax } = useMemo(() => {
     if (!mangoAccount) return { max: 0 }
     const priceOrDefault = price
       ? I80F48.fromNumber(price)
       : mangoGroup.getPrice(marketIndex, mangoCache)
+
+    const token =
+      side === 'buy'
+        ? getTokenBySymbol(groupConfig, 'USDC')
+        : getTokenBySymbol(groupConfig, marketConfig.baseSymbol)
+    const tokenIndex = mangoGroup.getTokenIndex(token.mintKey)
+
+    const availableBalance = floorToDecimal(
+      nativeI80F48ToUi(
+        mangoAccount.getAvailableBalance(mangoGroup, mangoCache, tokenIndex),
+        token.decimals
+      ).toNumber(),
+      token.decimals
+    )
+
+    const spotMax =
+      side === 'buy'
+        ? availableBalance / priceOrDefault.toNumber()
+        : availableBalance
 
     const {
       max: maxQuote,
@@ -148,10 +169,11 @@ export default function AdvancedTradeForm({
       : (maxQuote.toNumber() * maxScaler) /
         mangoGroup.getPrice(marketIndex, mangoCache).toNumber()
 
-    return { max: scaledMax, deposits, borrows }
+    return { max: scaledMax, deposits, borrows, spotMax }
   }, [mangoAccount, mangoGroup, mangoCache, marketIndex, market, side, price])
 
-  const setSide = (side) => {
+  const onChangeSide = (side) => {
+    setPositionSizePercent('')
     set((s) => {
       s.tradeForm.side = side
     })
@@ -324,10 +346,15 @@ export default function AdvancedTradeForm({
     }
     setReduceOnly(checked)
   }
+  const marginOnChange = (checked) => {
+    setPositionSizePercent('')
+    setSpotMargin(checked)
+  }
 
   const handleSetPositionSize = (percent) => {
     setPositionSizePercent(percent)
-    const baseSize = max * (parseInt(percent) / 100)
+    const baseSizeMax = spotMargin ? max : spotMax
+    const baseSize = baseSizeMax * (parseInt(percent) / 100)
     const step = parseFloat(minOrderSize)
     const roundedSize = (Math.round(baseSize / step) * step).toFixed(
       sizeDecimalCount
@@ -475,12 +502,22 @@ export default function AdvancedTradeForm({
     }
   }
 
+  const roundedMax = (
+    Math.round(max / parseFloat(minOrderSize)) * parseFloat(minOrderSize)
+  ).toFixed(sizeDecimalCount)
+
+  const sizeTooLarge =
+    spotMargin || marketConfig.kind === 'perp'
+      ? baseSize > roundedMax
+      : baseSize > spotMax
+
   const disabledTradeButton =
     (!price && isLimitOrder) ||
     !baseSize ||
     !connected ||
     submitting ||
-    !mangoAccount
+    !mangoAccount ||
+    sizeTooLarge
 
   return (
     <div className="flex flex-col h-full">
@@ -490,7 +527,7 @@ export default function AdvancedTradeForm({
           {initLeverage}x
         </span>
       </ElementTitle>
-      <OrderSideTabs onChange={setSide} side={side} />
+      <OrderSideTabs onChange={onChangeSide} side={side} />
       <div className="grid grid-cols-12 md:gap-2 text-left">
         <div className="col-span-12 md:col-span-2 flex items-center">
           <label className="text-xxs md:text-xs text-th-fgd-3">Type</label>
@@ -596,16 +633,18 @@ export default function AdvancedTradeForm({
                 : ['10', '25', '50', '75', '100']
             }
           />
-          {side === 'sell' ? (
-            roundedDeposits > 0 ? (
+          {marketConfig.kind === 'perp' ? (
+            side === 'sell' ? (
+              roundedDeposits > 0 ? (
+                <div className="text-th-fgd-3 text-xs tracking-normal mt-2">
+                  <span>{closeDepositString}</span>
+                </div>
+              ) : null
+            ) : roundedBorrows > 0 ? (
               <div className="text-th-fgd-3 text-xs tracking-normal mt-2">
-                <span>{closeDepositString}</span>
+                <span>{closeBorrowString}</span>
               </div>
             ) : null
-          ) : roundedBorrows > 0 ? (
-            <div className="text-th-fgd-3 text-xs tracking-normal mt-2">
-              <span>{closeBorrowString}</span>
-            </div>
           ) : null}
           <div className="sm:flex">
             {isLimitOrder ? (
@@ -661,23 +700,43 @@ export default function AdvancedTradeForm({
                 </Tooltip>
               </div>
             ) : null}
+            {marketConfig.kind === 'spot' ? (
+              <div className="mt-4">
+                <Tooltip
+                  delay={250}
+                  placement="left"
+                  content="Enable spot margin for this trade"
+                >
+                  <Checkbox
+                    checked={spotMargin}
+                    onChange={(e) => marginOnChange(e.target.checked)}
+                  >
+                    Margin
+                  </Checkbox>
+                </Tooltip>
+              </div>
+            ) : null}
           </div>
           <div className={`flex pt-4`}>
             {ipAllowed ? (
               <Button
                 disabled={disabledTradeButton}
                 onClick={onSubmit}
-                className={`${
+                className={`bg-th-bkg-2 border ${
                   !disabledTradeButton
-                    ? 'bg-th-bkg-2 border border-th-green hover:border-th-green-dark'
+                    ? side === 'buy'
+                      ? 'border-th-green hover:border-th-green-dark text-th-green hover:bg-th-green-dark'
+                      : 'border-th-red hover:border-th-red-dark text-th-red hover:bg-th-red-dark'
                     : 'border border-th-bkg-4'
-                } text-th-green hover:text-th-fgd-1 hover:bg-th-green-dark flex-grow`}
+                } hover:text-th-fgd-1 flex-grow`}
               >
                 {submitting ? (
                   <div className="w-full">
                     <Loading className="mx-auto" />
                   </div>
-                ) : side.toLowerCase() === 'buy' ? (
+                ) : sizeTooLarge ? (
+                  'Size Too Large'
+                ) : side === 'buy' ? (
                   market instanceof PerpMarket ? (
                     <>
                       {baseSize > 0 ? 'Long ' + baseSize : 'Long '}{' '}
@@ -691,12 +750,16 @@ export default function AdvancedTradeForm({
                     }`
                   )
                 ) : market instanceof PerpMarket ? (
-                  <>
-                    {baseSize > 0 ? 'Short ' + baseSize : 'Short '}{' '}
-                    <span className="whitespace-nowrap">
-                      {marketConfig.name}
-                    </span>
-                  </>
+                  sizeTooLarge ? (
+                    'Size Too Large'
+                  ) : (
+                    <>
+                      {baseSize > 0 ? 'Short ' + baseSize : 'Short '}{' '}
+                      <span className="whitespace-nowrap">
+                        {marketConfig.name}
+                      </span>
+                    </>
+                  )
                 ) : (
                   `${baseSize > 0 ? 'Sell ' + baseSize : 'Sell '} ${
                     marketConfig.baseSymbol
@@ -714,7 +777,7 @@ export default function AdvancedTradeForm({
               <SlippageWarning slippage={0.2} />
             </div>
           ) : null}
-          <div className="flex text-xs text-th-fgd-4 px-6 mt-2.5">
+          <div className="flex text-xs text-th-fgd-4 pt-4">
             <MarketFee />
           </div>
         </div>
