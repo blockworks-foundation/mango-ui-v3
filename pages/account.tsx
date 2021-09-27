@@ -7,11 +7,9 @@ import {
   PencilIcon,
 } from '@heroicons/react/outline'
 import useMangoStore from '../stores/useMangoStore'
-import { abbreviateAddress, copyToClipboard } from '../utils'
+import { copyToClipboard } from '../utils'
 import PageBodyContainer from '../components/PageBodyContainer'
 import TopBar from '../components/TopBar'
-import AccountAssets from '../components/account-page/AccountAssets'
-import AccountBorrows from '../components/account-page/AccountBorrows'
 import AccountOrders from '../components/account-page/AccountOrders'
 import AccountHistory from '../components/account-page/AccountHistory'
 import AccountsModal from '../components/AccountsModal'
@@ -20,6 +18,11 @@ import AccountNameModal from '../components/AccountNameModal'
 import Button from '../components/Button'
 import EmptyState from '../components/EmptyState'
 import Loading from '../components/Loading'
+import SwipeableTabs from '../components/mobile/SwipeableTabs'
+import Swipeable from '../components/mobile/Swipeable'
+import Tabs from '../components/Tabs'
+import { useViewport } from '../hooks/useViewport'
+import { breakpoints } from '../components/TradePageGrid'
 
 const TABS = [
   'Portfolio',
@@ -28,11 +31,10 @@ const TABS = [
   // 'Stats',
   // 'Positions',
   'Orders',
-  'History',
+  'Trade History',
 ]
 
 export default function Account() {
-  const [activeTab, setActiveTab] = useState(TABS[0])
   const [showAccountsModal, setShowAccountsModal] = useState(false)
   const [showNameModal, setShowNameModal] = useState(false)
   const [isCopied, setIsCopied] = useState(false)
@@ -40,10 +42,11 @@ export default function Account() {
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const wallet = useMangoStore((s) => s.wallet.current)
   const isLoading = useMangoStore((s) => s.selectedMangoAccount.initialLoad)
+  const [viewIndex, setViewIndex] = useState(0)
+  const [activeTab, setActiveTab] = useState(TABS[0])
+  const { width } = useViewport()
+  const isMobile = width ? width < breakpoints.sm : false
 
-  const handleTabChange = (tabName) => {
-    setActiveTab(tabName)
-  }
   const handleCloseAccounts = useCallback(() => {
     setShowAccountsModal(false)
   }, [])
@@ -65,19 +68,31 @@ export default function Account() {
     }
   }, [isCopied])
 
+  const handleChangeViewIndex = (index) => {
+    setViewIndex(index)
+  }
+
+  const handleTabChange = (tabName) => {
+    setActiveTab(tabName)
+  }
+
   return (
     <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
       <TopBar />
       <PageBodyContainer>
-        <div className="flex flex-col sm:flex-row items-center justify-between pt-8 pb-3 sm:pb-6 md:pt-10">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between py-4 md:pb-4 md:pt-10">
           {mangoAccount ? (
             <>
-              <div className="flex flex-col sm:flex-row sm:items-end pb-4 md:pb-0">
-                <h1 className={`font-semibold mr-3 text-th-fgd-1 text-2xl`}>
+              <div className="pb-3 md:pb-0">
+                <h1
+                  className={`font-semibold mb-1 mr-3 text-th-fgd-1 text-2xl`}
+                >
                   {mangoAccount?.name || 'Account'}
                 </h1>
                 <div className="flex items-center pb-0.5 text-th-fgd-3 ">
-                  {abbreviateAddress(mangoAccount.publicKey)}
+                  <span className="text-xxs sm:text-xs">
+                    {mangoAccount.publicKey.toString()}
+                  </span>
                   <DuplicateIcon
                     className="cursor-pointer default-transition h-4 w-4 ml-1.5 hover:text-th-fgd-1"
                     onClick={() => handleCopyPublicKey(mangoAccount.publicKey)}
@@ -87,9 +102,9 @@ export default function Account() {
                   ) : null}
                 </div>
               </div>
-              <div className="flex items-center">
+              <div className="grid grid-cols-3 grid-rows-1 gap-2">
                 <Button
-                  className="text-xs flex flex-grow items-center justify-center mr-2 pt-0 pb-0 h-8 pl-3 pr-3"
+                  className="col-span-1 flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs"
                   onClick={() => setShowNameModal(true)}
                 >
                   <div className="flex items-center">
@@ -98,7 +113,7 @@ export default function Account() {
                   </div>
                 </Button>
                 <a
-                  className="bg-th-bkg-4 default-transition flex flex-grow font-bold h-8 items-center justify-center pl-3 pr-3 rounded-full text-th-fgd-1 text-xs hover:text-th-fgd-1 hover:brightness-[1.15] focus:outline-none"
+                  className="bg-th-bkg-4 col-span-1 default-transition flex font-bold h-8 items-center justify-center pl-3 pr-3 rounded-full text-th-fgd-1 text-xs hover:text-th-fgd-1 hover:brightness-[1.15] focus:outline-none"
                   href={`https://explorer.solana.com/address/${mangoAccount?.publicKey}`}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -107,7 +122,7 @@ export default function Account() {
                   <ExternalLinkIcon className={`h-4 w-4 ml-1.5`} />
                 </a>
                 <Button
-                  className="text-xs flex flex-grow items-center justify-center ml-2 pt-0 pb-0 h-8 pl-3 pr-3"
+                  className="col-span-1 flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs"
                   onClick={() => setShowAccountsModal(true)}
                 >
                   Accounts
@@ -116,31 +131,41 @@ export default function Account() {
             </>
           ) : null}
         </div>
-        <div className="bg-th-bkg-2 overflow-none p-6 rounded-lg">
+        {mangoAccount ? (
+          !isMobile ? (
+            <Tabs
+              activeTab={activeTab}
+              onChange={handleTabChange}
+              tabs={TABS}
+            />
+          ) : (
+            <SwipeableTabs
+              onChange={handleChangeViewIndex}
+              tabs={TABS}
+              tabIndex={viewIndex}
+            />
+          )
+        ) : null}
+        <div className="bg-th-bkg-2 p-4 sm:p-6 rounded-lg">
           {mangoAccount ? (
-            <>
-              <div className="border-b border-th-fgd-4 mb-8">
-                <nav className={`-mb-px flex space-x-6`} aria-label="Tabs">
-                  {TABS.map((tabName) => (
-                    <a
-                      key={tabName}
-                      onClick={() => handleTabChange(tabName)}
-                      className={`whitespace-nowrap pb-4 px-1 border-b-2 font-semibold cursor-pointer default-transition hover:opacity-100
-                ${
-                  activeTab === tabName
-                    ? `border-th-primary text-th-primary`
-                    : `border-transparent text-th-fgd-4 hover:text-th-primary`
-                }
-              `}
-                    >
-                      {tabName}
-                    </a>
-                  ))}
-                </nav>
-              </div>
-
+            !isMobile ? (
               <TabContent activeTab={activeTab} />
-            </>
+            ) : (
+              <Swipeable
+                index={viewIndex}
+                onChangeIndex={handleChangeViewIndex}
+              >
+                <div>
+                  <AccountOverview />
+                </div>
+                <div>
+                  <AccountOrders />
+                </div>
+                <div>
+                  <AccountHistory />
+                </div>
+              </Swipeable>
+            )
           ) : connected ? (
             isLoading ? (
               <div className="flex justify-center py-10">
@@ -186,17 +211,9 @@ const TabContent = ({ activeTab }) => {
   switch (activeTab) {
     case 'Portfolio':
       return <AccountOverview />
-    case 'Assets':
-      return <AccountAssets />
-    case 'Borrows':
-      return <AccountBorrows />
-    case 'Stats':
-      return <div>Stats</div>
-    case 'Positions':
-      return <div>Positions</div>
     case 'Orders':
       return <AccountOrders />
-    case 'History':
+    case 'Trade History':
       return <AccountHistory />
     default:
       return <AccountOverview />

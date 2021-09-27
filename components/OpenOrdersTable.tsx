@@ -1,25 +1,27 @@
 import { useState } from 'react'
 import Link from 'next/link'
-import { ArrowSmDownIcon } from '@heroicons/react/solid'
 import { useRouter } from 'next/router'
 import { useOpenOrders } from '../hooks/useOpenOrders'
-import Button, { LinkButton } from './Button'
+import Button from './Button'
 import Loading from './Loading'
-import useMangoStore, { mangoClient } from '../stores/useMangoStore'
+import useMangoStore from '../stores/useMangoStore'
 import { notify } from '../utils/notifications'
-import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
 import SideBadge from './SideBadge'
-import { useSortableData } from '../hooks/useSortableData'
 import { Order, Market } from '@project-serum/serum/lib/market'
 import { PerpOrder, PerpMarket } from '@blockworks-foundation/mango-client'
 import { formatUsdValue, sleep } from '../utils'
+import { Table, Td, Th, TrBody, TrHead } from './TableElements'
+import { useViewport } from '../hooks/useViewport'
+import { breakpoints } from './TradePageGrid'
+import { Row } from './TableElements'
 
 const OpenOrdersTable = () => {
   const { asPath } = useRouter()
   const openOrders = useOpenOrders()
-  const { items, requestSort, sortConfig } = useSortableData(openOrders)
   const [cancelId, setCancelId] = useState(null)
   const actions = useMangoStore((s) => s.actions)
+  const { width } = useViewport()
+  const isMobile = width ? width < breakpoints.md : false
 
   const handleCancelOrder = async (
     order: Order | PerpOrder,
@@ -30,6 +32,7 @@ const OpenOrdersTable = () => {
       useMangoStore.getState().selectedMangoGroup.current
     const selectedMangoAccount =
       useMangoStore.getState().selectedMangoAccount.current
+    const mangoClient = useMangoStore.getState().connection.client
     setCancelId(order.orderId)
     let txid
     try {
@@ -48,7 +51,8 @@ const OpenOrdersTable = () => {
           selectedMangoAccount,
           wallet,
           market,
-          order as PerpOrder
+          order as PerpOrder,
+          false
         )
       }
       notify({ title: 'Successfully cancelled order', txid })
@@ -61,154 +65,124 @@ const OpenOrdersTable = () => {
       })
       console.log('error', `${e}`)
     } finally {
-      sleep(500).then(() => {
-        actions.fetchMangoAccounts()
-        actions.updateOpenOrders()
-      })
+      await sleep(600)
+      actions.reloadMangoAccount()
+      actions.updateOpenOrders()
       setCancelId(null)
     }
   }
 
   return (
-    <div className={`flex flex-col py-4`}>
+    <div className={`flex flex-col py-2 sm:pb-4 sm:pt-4`}>
       <div className={`-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8`}>
         <div className={`align-middle inline-block min-w-full sm:px-6 lg:px-8`}>
           {openOrders && openOrders.length > 0 ? (
-            <div className={`shadow overflow-hidden border-b border-th-bkg-2`}>
-              <Table className={`min-w-full divide-y divide-th-bkg-2`}>
-                <Thead>
-                  <Tr className="text-th-fgd-3 text-xs">
-                    <Th scope="col" className={`px-6 py-2`}>
-                      <LinkButton
-                        className="flex items-center no-underline font-normal"
-                        onClick={() => requestSort('marketName')}
-                      >
-                        Market
-                        <ArrowSmDownIcon
-                          className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
-                            sortConfig?.key === 'marketName'
-                              ? sortConfig.direction === 'ascending'
-                                ? 'transform rotate-180'
-                                : 'transform rotate-360'
-                              : null
-                          }`}
-                        />
-                      </LinkButton>
-                    </Th>
-                    <Th scope="col" className={`px-6 py-2`}>
-                      <LinkButton
-                        className="flex items-center no-underline font-normal"
-                        onClick={() => requestSort('side')}
-                      >
-                        Side
-                        <ArrowSmDownIcon
-                          className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
-                            sortConfig?.key === 'side'
-                              ? sortConfig.direction === 'ascending'
-                                ? 'transform rotate-180'
-                                : 'transform rotate-360'
-                              : null
-                          }`}
-                        />
-                      </LinkButton>
-                    </Th>
-                    <Th scope="col" className={`px-6 py-2`}>
-                      <LinkButton
-                        className="flex items-center no-underline font-normal"
-                        onClick={() => requestSort('size')}
-                      >
-                        Size
-                        <ArrowSmDownIcon
-                          className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
-                            sortConfig?.key === 'size'
-                              ? sortConfig.direction === 'ascending'
-                                ? 'transform rotate-180'
-                                : 'transform rotate-360'
-                              : null
-                          }`}
-                        />
-                      </LinkButton>
-                    </Th>
-                    <Th scope="col" className={`px-6 py-2`}>
-                      <LinkButton
-                        className="flex items-center no-underline font-normal"
-                        onClick={() => requestSort('price')}
-                      >
-                        Price
-                        <ArrowSmDownIcon
-                          className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
-                            sortConfig?.key === 'price'
-                              ? sortConfig.direction === 'ascending'
-                                ? 'transform rotate-180'
-                                : 'transform rotate-360'
-                              : null
-                          }`}
-                        />
-                      </LinkButton>
-                    </Th>
-                    <Th scope="col" className={`relative px-6 py-2.5`}>
+            !isMobile ? (
+              <Table>
+                <thead>
+                  <TrHead>
+                    <Th>Market</Th>
+                    <Th>Side</Th>
+                    <Th>Size</Th>
+                    <Th>Price</Th>
+                    <Th>Value</Th>
+                    <Th>
                       <span className={`sr-only`}>Edit</span>
                     </Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {items.map(({ order, market }, index) => (
-                    <Tr
-                      key={`${order.orderId}${order.side}`}
-                      className={`border-b border-th-bkg-3
-                        ${index % 2 === 0 ? `bg-th-bkg-3` : `bg-th-bkg-2`}
-                      `}
-                    >
-                      <Td
-                        className={`px-6 py-2 whitespace-nowrap text-th-fgd-1`}
+                  </TrHead>
+                </thead>
+                <tbody>
+                  {openOrders.map(({ order, market }, index) => {
+                    return (
+                      <TrBody
+                        index={index}
+                        key={`${order.orderId}${order.side}`}
                       >
-                        <div className="flex items-center">
-                          <img
-                            alt=""
-                            width="20"
-                            height="20"
-                            src={`/assets/icons/${market.config.baseSymbol.toLowerCase()}.svg`}
-                            className={`mr-2.5`}
-                          />
-                          <div>{market.config.name}</div>
-                        </div>
-                      </Td>
-                      <Td
-                        className={`px-6 py-2 whitespace-nowrap text-th-fgd-1`}
-                      >
-                        <SideBadge side={order.side} />
-                      </Td>
-                      <Td
-                        className={`px-6 py-2 whitespace-nowrap text-th-fgd-1`}
-                      >
-                        {order.size}
-                      </Td>
-                      <Td
-                        className={`px-6 py-2 whitespace-nowrap text-th-fgd-1`}
-                      >
-                        {formatUsdValue(order.price)}
-                      </Td>
-                      <Td className={`px-6 py-2 whitespace-nowrap`}>
-                        <div className={`flex justify-end`}>
-                          <Button
-                            onClick={() =>
-                              handleCancelOrder(order, market.account)
-                            }
-                            className="ml-3 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
-                          >
-                            {cancelId + '' === order.orderId + '' ? (
-                              <Loading />
-                            ) : (
-                              <span>Cancel</span>
-                            )}
-                          </Button>
-                        </div>
-                      </Td>
-                    </Tr>
-                  ))}
-                </Tbody>
+                        <Td>
+                          <div className="flex items-center">
+                            <img
+                              alt=""
+                              width="20"
+                              height="20"
+                              src={`/assets/icons/${market.config.baseSymbol.toLowerCase()}.svg`}
+                              className={`mr-2.5`}
+                            />
+                            <div>{market.config.name}</div>
+                          </div>
+                        </Td>
+                        <Td>
+                          <SideBadge side={order.side} />
+                        </Td>
+                        <Td>{order.size}</Td>
+                        <Td>{formatUsdValue(order.price)}</Td>
+                        <Td>{formatUsdValue(order.price * order.size)}</Td>
+                        <Td>
+                          <div className={`flex justify-end`}>
+                            <Button
+                              onClick={() =>
+                                handleCancelOrder(order, market.account)
+                              }
+                              className="ml-3 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
+                            >
+                              {cancelId + '' === order.orderId + '' ? (
+                                <Loading />
+                              ) : (
+                                <span>Cancel</span>
+                              )}
+                            </Button>
+                          </div>
+                        </Td>
+                      </TrBody>
+                    )
+                  })}
+                </tbody>
               </Table>
-            </div>
+            ) : (
+              <>
+                {openOrders.map(({ market, order }, index) => (
+                  <Row key={`${order.orderId}${order.side}`} index={index}>
+                    <div className="col-span-12 flex items-center justify-between text-fgd-1 text-left">
+                      <div className="flex items-center">
+                        <img
+                          alt=""
+                          width="20"
+                          height="20"
+                          src={`/assets/icons/${market.config.baseSymbol.toLowerCase()}.svg`}
+                          className={`mr-2.5`}
+                        />
+                        <div>
+                          <div className="mb-0.5">{market.config.name}</div>
+                          <div className="text-th-fgd-3 text-xs">
+                            <span
+                              className={`mr-1
+                                ${
+                                  order.side === 'buy'
+                                    ? 'text-th-green'
+                                    : 'text-th-red'
+                                }
+                              `}
+                            >
+                              {order.side.toUpperCase()}
+                            </span>
+                            {`${order.size} at ${formatUsdValue(order.price)}`}
+                          </div>
+                        </div>
+                      </div>
+                      <Button
+                        onClick={() => handleCancelOrder(order, market.account)}
+                        className="ml-3 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
+                      >
+                        {cancelId + '' === order.orderId + '' ? (
+                          <Loading />
+                        ) : (
+                          <span>Cancel</span>
+                        )}
+                      </Button>
+                    </div>
+                  </Row>
+                ))}
+              </>
+            )
           ) : (
             <div
               className={`w-full text-center py-6 bg-th-bkg-1 text-th-fgd-3 rounded-md`}

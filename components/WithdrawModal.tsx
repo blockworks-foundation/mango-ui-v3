@@ -86,14 +86,15 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
     )
 
     const maxWithoutBorrows = nativeI80F48ToUi(
-      mangoAccount.getAvailableBalance(mangoGroup, mangoCache, tokenIndex),
+      mangoAccount
+        .getAvailableBalance(mangoGroup, mangoCache, tokenIndex)
+        .floor(),
       mangoGroup.tokens[tokenIndex].decimals
     )
-    const maxWithBorrows = mangoAccount.getMaxWithBorrowForToken(
-      mangoGroup,
-      mangoCache,
-      tokenIndex
-    )
+    const maxWithBorrows = mangoAccount
+      .getMaxWithBorrowForToken(mangoGroup, mangoCache, tokenIndex)
+      .add(maxWithoutBorrows)
+      .mul(I80F48.fromString('0.995')) // handle rounding errors when borrowing
 
     // get max withdraw amount
     let maxWithdraw = maxWithoutBorrows
@@ -169,8 +170,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
     })
       .then((txid: string) => {
         setSubmitting(false)
-        actions.fetchMangoGroup()
-        actions.fetchMangoAccounts()
+        actions.reloadMangoAccount()
         actions.fetchWalletTokens()
         notify({
           title: 'Withdraw successful',
@@ -580,7 +580,9 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
               <Button
                 onClick={handleWithdraw}
                 disabled={
-                  Number(inputAmount) <= 0 || simulation.initHealthRatio < 0
+                  Number(inputAmount) <= 0 ||
+                  simulation.initHealthRatio < 0 ||
+                  submitting
                 }
                 className="w-full"
               >

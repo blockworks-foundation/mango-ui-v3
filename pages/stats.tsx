@@ -4,17 +4,31 @@ import PageBodyContainer from '../components/PageBodyContainer'
 import StatsTotals from '../components/stats-page/StatsTotals'
 import StatsAssets from '../components/stats-page/StatsAssets'
 import StatsPerps from '../components/stats-page/StatsPerps'
+import useMangoStats from '../hooks/useMangoStats'
+import Swipeable from '../components/mobile/Swipeable'
+import SwipeableTabs from '../components/mobile/SwipeableTabs'
+import Tabs from '../components/Tabs'
+import { useViewport } from '../hooks/useViewport'
+import { breakpoints } from '../components/TradePageGrid'
 
 const TABS = [
   'Totals',
-  // 'Assets',
-  // 'Perps',
+  'Assets',
+  'Perps',
   // 'Markets',
   // 'Liquidations',
 ]
 
 export default function StatsPage() {
+  const { latestStats, stats, perpStats } = useMangoStats()
+  const [viewIndex, setViewIndex] = useState(0)
   const [activeTab, setActiveTab] = useState(TABS[0])
+  const { width } = useViewport()
+  const isMobile = width ? width < breakpoints.sm : false
+
+  const handleChangeViewIndex = (index) => {
+    setViewIndex(index)
+  }
 
   const handleTabChange = (tabName) => {
     setActiveTab(tabName)
@@ -24,49 +38,48 @@ export default function StatsPage() {
     <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
       <TopBar />
       <PageBodyContainer>
-        <div className="flex flex-col sm:flex-row pt-8 pb-3 sm:pb-6 md:pt-10">
+        <div className="flex flex-col sm:flex-row py-4 md:pb-4 md:pt-10">
           <h1 className={`text-th-fgd-1 text-2xl font-semibold`}>Stats</h1>
         </div>
-        <div className="bg-th-bkg-2 overflow-none p-6 rounded-lg">
-          <div className="border-b border-th-fgd-4 mb-4">
-            <nav className={`-mb-px flex space-x-6`} aria-label="Tabs">
-              {TABS.map((tabName) => (
-                <a
-                  key={tabName}
-                  onClick={() => handleTabChange(tabName)}
-                  className={`whitespace-nowrap pb-4 px-1 border-b-2 font-semibold cursor-pointer default-transition hover:opacity-100
-                  ${
-                    activeTab === tabName
-                      ? `border-th-primary text-th-primary`
-                      : `border-transparent text-th-fgd-4 hover:text-th-primary`
-                  }
-                `}
-                >
-                  {tabName}
-                </a>
-              ))}
-            </nav>
-          </div>
-          <TabContent activeTab={activeTab} />
+        {!isMobile ? (
+          <Tabs activeTab={activeTab} onChange={handleTabChange} tabs={TABS} />
+        ) : (
+          <SwipeableTabs
+            onChange={handleChangeViewIndex}
+            tabs={TABS}
+            tabIndex={viewIndex}
+          />
+        )}
+        <div className="bg-th-bkg-2 p-4 sm:p-6 rounded-lg">
+          {!isMobile ? (
+            <TabContent
+              activeTab={activeTab}
+              latestStats={latestStats}
+              perpStats={perpStats}
+              stats={stats}
+            />
+          ) : (
+            <Swipeable index={viewIndex} onChangeIndex={handleChangeViewIndex}>
+              <StatsTotals latestStats={latestStats} stats={stats} />
+              <StatsAssets latestStats={latestStats} stats={stats} />
+              <StatsPerps perpStats={perpStats} />
+            </Swipeable>
+          )}
         </div>
       </PageBodyContainer>
     </div>
   )
 }
 
-const TabContent = ({ activeTab }) => {
+const TabContent = ({ activeTab, latestStats, perpStats, stats }) => {
   switch (activeTab) {
     case 'Totals':
-      return <StatsTotals />
+      return <StatsTotals latestStats={latestStats} stats={stats} />
     case 'Assets':
-      return <StatsAssets />
+      return <StatsAssets latestStats={latestStats} stats={stats} />
     case 'Perps':
-      return <StatsPerps />
-    case 'Markets':
-      return <div>Markets</div>
-    case 'Liquidations':
-      return <div>Liquidations</div>
+      return <StatsPerps perpStats={perpStats} />
     default:
-      return <StatsAssets />
+      return <StatsTotals latestStats={latestStats} stats={stats} />
   }
 }

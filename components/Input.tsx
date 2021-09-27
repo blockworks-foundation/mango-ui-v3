@@ -1,15 +1,10 @@
-import styled from '@emotion/styled'
-
-const StyledInput = styled.input`
-  padding-bottom: 1px;
-`
-
 interface InputProps {
   type: string
   value: any
   onChange: (e) => void
   className?: string
   disabled?: boolean
+  prefixClassname?: string
   error?: boolean
   [x: string]: any
 }
@@ -27,6 +22,7 @@ const Input = ({
   wrapperClassName = 'w-full',
   disabled,
   prefix,
+  prefixClassName,
   suffix,
   ...props
 }: InputProps) => {
@@ -34,17 +30,17 @@ const Input = ({
     <div className={`flex relative ${wrapperClassName}`}>
       {prefix ? (
         <div
-          className="flex items-center justify-end p-2 border border-r-0 
-          border-th-fgd-4 bg-th-bkg-2 h-full text-xs rounded rounded-r-none w-14 text-right"
+          className={`flex items-center justify-end p-2 border border-r-0 
+          border-th-fgd-4 bg-th-bkg-2 h-full text-xs rounded rounded-r-none text-right ${prefixClassName}`}
         >
           {prefix}
         </div>
       ) : null}
-      <StyledInput
+      <input
         type={type}
         value={value}
         onChange={onChange}
-        className={`${className} px-2 w-full bg-th-bkg-1 rounded h-10 text-th-fgd-1 
+        className={`${className} pb-px px-2 flex-1 bg-th-bkg-1 rounded h-10 text-th-fgd-1 w-full
           border ${
             error ? 'border-th-red' : 'border-th-fgd-4'
           } default-transition hover:border-th-primary 

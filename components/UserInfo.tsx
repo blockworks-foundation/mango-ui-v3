@@ -1,102 +1,62 @@
 import { useEffect, useState } from 'react'
-import styled from '@emotion/styled'
 import useMangoStore from '../stores/useMangoStore'
 import { useOpenOrders } from '../hooks/useOpenOrders'
 // import usePerpPositions from '../hooks/usePerpPositions'
-import FloatingElement from './FloatingElement'
 import OpenOrdersTable from './OpenOrdersTable'
 import BalancesTable from './BalancesTable'
 import PositionsTable from './PerpPositionsTable'
 import TradeHistoryTable from './TradeHistoryTable'
 // import FeeDiscountsTable from './FeeDiscountsTable'
+import ManualRefresh from './ManualRefresh'
+import Tabs from './Tabs'
 
 const TABS = [
   'Balances',
-  'Open Orders',
-  'Perp Positions',
+  'Orders',
+  'Positions',
   // 'Fees',
   'Trade History',
 ]
 
-const StyledAlertCount = styled.span`
-  font-size: 0.6rem;
-`
-
 const UserInfoTabs = ({ activeTab, setActiveTab }) => {
   const openOrders = useOpenOrders()
   // const perpPositions = usePerpPositions()
+  const connected = useMangoStore((s) => s.connection.current)
+  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const handleTabChange = (tabName) => {
     setActiveTab(tabName)
   }
 
   return (
-    <div>
-      <div className={`sm:hidden`}>
-        <label htmlFor="tabs" className={`sr-only`}>
-          Select a tab
-        </label>
-        <select
-          id="tabs"
-          name="tabs"
-          className={`block w-full pl-3 pr-10 py-2 bg-th-bkg-2 border border-th-fgd-4 focus:outline-none sm:text-sm rounded-md`}
-          onChange={(e) => handleTabChange(e.target.value)}
-        >
-          {TABS.map((tabName) => (
-            <option key={tabName} value={tabName}>
-              {tabName}
-            </option>
-          ))}
-        </select>
-      </div>
-      <div className={`hidden sm:block`}>
-        <div className={`border-b border-th-fgd-4`}>
-          <nav className={`-mb-px flex space-x-6`} aria-label="Tabs">
-            {TABS.map((tabName) => (
-              <a
-                key={tabName}
-                onClick={() => handleTabChange(tabName)}
-                className={`whitespace-nowrap pt-2 pb-4 px-1 border-b-2 font-semibold cursor-pointer default-transition relative hover:opacity-100
-                  ${
-                    activeTab === tabName
-                      ? `border-th-primary text-th-primary`
-                      : `border-transparent text-th-fgd-4 hover:text-th-primary`
-                  }
-                `}
-              >
-                {tabName}{' '}
-                {tabName === 'Open Orders' && openOrders?.length > 0 ? (
-                  <Count count={openOrders?.length} />
-                ) : null}
-                {/* Add back when more than one perp market */}
-                {/* {tabName === 'Perp Positions' && perpPositions?.length > 0 ? (
-                  <Count count={perpPositions?.length} />
-                ) : null} */}
-              </a>
-            ))}
-          </nav>
+    <div className="relative">
+      <Tabs
+        activeTab={activeTab}
+        onChange={handleTabChange}
+        showCount={
+          openOrders && openOrders.length > 0
+            ? [{ tabName: 'Orders', count: openOrders.length }]
+            : null
+        }
+        tabs={TABS}
+      />
+      {connected && mangoAccount ? (
+        <div className="absolute right-0 top-0">
+          <ManualRefresh />
         </div>
-      </div>
+      ) : null}
     </div>
   )
 }
 
-const Count = ({ count }) => (
-  <div className="absolute -top-2 -right-2 z-20">
-    <StyledAlertCount className="h-4 p-1 bg-th-bkg-4 inline-flex rounded-lg flex items-center justify-center text-th-fgd-2">
-      {count}
-    </StyledAlertCount>
-  </div>
-)
-
 const TabContent = ({ activeTab }) => {
   switch (activeTab) {
-    case 'Open Orders':
+    case 'Orders':
       return <OpenOrdersTable />
     case 'Balances':
       return <BalancesTable />
     case 'Trade History':
-      return <TradeHistoryTable />
-    case 'Perp Positions':
+      return <TradeHistoryTable numTrades={100} />
+    case 'Positions':
       return <PositionsTable />
     // case 'Fees':
     //   return <FeeDiscountsTable /> // now displayed in trade form. may add back when MRSRM deposits are supported
@@ -116,12 +76,10 @@ const UserInfo = () => {
   }, [isPerpMarket])
 
   return (
-    <FloatingElement showConnect>
-      <div className={!connected ? 'filter blur-sm' : null}>
-        <UserInfoTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-        <TabContent activeTab={activeTab} />
-      </div>
-    </FloatingElement>
+    <div className={!connected ? 'filter blur-sm' : null}>
+      <UserInfoTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+      <TabContent activeTab={activeTab} />
+    </div>
   )
 }
 

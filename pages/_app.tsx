@@ -6,15 +6,31 @@ import '../styles/index.css'
 import useWallet from '../hooks/useWallet'
 import useHydrateStore from '../hooks/useHydrateStore'
 import Notifications from '../components/Notification'
+import useMangoStore from '../stores/useMangoStore'
+import useOraclePrice from '../hooks/useOraclePrice'
+import { formatUsdValue } from '../utils'
+import { useRouter } from 'next/router'
+import { ViewportProvider } from '../hooks/useViewport'
+import BottomBar from '../components/mobile/BottomBar'
 
 function App({ Component, pageProps }) {
   useHydrateStore()
   useWallet()
+  const marketConfig = useMangoStore((s) => s.selectedMarket.config)
+  const oraclePrice = useOraclePrice()
+  const router = useRouter()
+  const selectedMarketName = marketConfig.name
+  const marketTitleString =
+    marketConfig && router.pathname.includes('[market]')
+      ? `${
+          oraclePrice ? formatUsdValue(oraclePrice) + ' | ' : ''
+        }${selectedMarketName} - `
+      : ''
 
   return (
     <>
       <Head>
-        <title>Mango Markets</title>
+        <title>{marketTitleString}Mango Markets</title>
         <link rel="preconnect" href="https://fonts.gstatic.com" />
         <link
           href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap"
@@ -28,7 +44,7 @@ function App({ Component, pageProps }) {
         />
         <meta
           name="description"
-          content="Mango Markets - Decentralised, cross-margin trading up to 5x leverage with lightning speed and near-zero fees powered by Serum."
+          content="Mango Markets - Decentralised, cross-margin trading up to 10x leverage with lightning speed and near-zero fees."
         />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <meta name="msapplication-TileColor" content="#da532c" />
@@ -37,7 +53,7 @@ function App({ Component, pageProps }) {
         <meta name="twitter:title" content="Mango Markets" />
         <meta
           name="twitter:description"
-          content="Mango Markets - Decentralised, cross-margin trading up to 5x leverage with lightning speed and near-zero fees powered by Serum."
+          content="Mango Markets - Decentralised, cross-margin trading up to 10x leverage with lightning speed and near-zero fees."
         />
         <meta name="twitter:image" content="/twitter-image.png" />
 
@@ -47,10 +63,15 @@ function App({ Component, pageProps }) {
         <link rel="manifest" href="/manifest.json"></link>
       </Head>
       <ThemeProvider defaultTheme="Mango">
-        <div className="bg-th-bkg-1">
-          <Component {...pageProps} />
-        </div>
-        <Notifications />
+        <ViewportProvider>
+          <div className="bg-th-bkg-1">
+            <Component {...pageProps} />
+          </div>
+          <div className="md:hidden fixed bottom-0 left-0 w-full z-20">
+            <BottomBar />
+          </div>
+          <Notifications />
+        </ViewportProvider>
       </ThemeProvider>
     </>
   )

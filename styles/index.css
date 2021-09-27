@@ -84,6 +84,10 @@ button {
 .tiny-text {
   font-size: 0.65rem;
   line-height: 1.5;
+
+  @media screen and (max-width: 767px) {
+    font-size: 14px;
+  }
 }
 
 /* Chart */
@@ -304,4 +308,12 @@ input[type='number'] {
   -moz-animation: highlight 0.5s ease 0s 1 alternate;
   -webkit-animation: highlight 0.5s ease 0s 1 alternate;
   animation: highlight 0.5s ease 0s 1 alternate;
+}
+
+.react-swipeable-view-container > div[aria-hidden='false'] {
+  height: 100%;
+}
+
+.react-swipeable-view-container > div[aria-hidden='true'] {
+  height: 0;
 }

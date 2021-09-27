@@ -6,19 +6,20 @@ import {
   ZERO_BN,
   ZERO_I80F48,
 } from '@blockworks-foundation/mango-client'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { HeartIcon } from '@heroicons/react/solid'
-import useMangoStore, { mangoClient, MNGO_INDEX } from '../stores/useMangoStore'
+import useMangoStore, { MNGO_INDEX } from '../stores/useMangoStore'
 import { formatUsdValue, usdFormatter } from '../utils'
 import { notify } from '../utils/notifications'
 import { LinkButton } from './Button'
-import FloatingElement from './FloatingElement'
 import { ElementTitle } from './styles'
 import Tooltip from './Tooltip'
 import DepositModal from './DepositModal'
 import WithdrawModal from './WithdrawModal'
 import Button from './Button'
 import { DataLoader } from './MarketPosition'
+import { useViewport } from '../hooks/useViewport'
+import { breakpoints } from './TradePageGrid'
 
 const I80F48_100 = I80F48.fromString('100')
 
@@ -29,7 +30,10 @@ export default function AccountInfo() {
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const isLoading = useMangoStore((s) => s.selectedMangoAccount.initialLoad)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
+  const mangoClient = useMangoStore((s) => s.connection.client)
   const actions = useMangoStore((s) => s.actions)
+  const { width } = useViewport()
+  const isMobile = width ? width < breakpoints.sm : false
 
   const [showDepositModal, setShowDepositModal] = useState(false)
   const [showWithdrawModal, setShowWithdrawModal] = useState(false)
@@ -82,22 +86,43 @@ export default function AccountInfo() {
     }
   }
 
-  const maintHealthRatio = useMemo(() => {
-    return mangoAccount
-      ? mangoAccount.getHealthRatio(mangoGroup, mangoCache, 'Maint')
-      : I80F48_100
-  }, [mangoAccount, mangoGroup, mangoCache])
+  const maintHealthRatio = mangoAccount
+    ? mangoAccount.getHealthRatio(mangoGroup, mangoCache, 'Maint')
+    : I80F48_100
 
-  const initHealthRatio = useMemo(() => {
-    return mangoAccount
-      ? mangoAccount.getHealthRatio(mangoGroup, mangoCache, 'Init')
-      : I80F48_100
-  }, [mangoAccount, mangoGroup, mangoCache])
+  const initHealthRatio = mangoAccount
+    ? mangoAccount.getHealthRatio(mangoGroup, mangoCache, 'Init')
+    : I80F48_100
+
+  const maintHealth = mangoAccount
+    ? mangoAccount.getHealth(mangoGroup, mangoCache, 'Maint')
+    : I80F48_100
+  const initHealth = mangoAccount
+    ? mangoAccount.getHealth(mangoGroup, mangoCache, 'Init')
+    : I80F48_100
 
   return (
-    <FloatingElement showConnect>
-      <div className={!connected ? 'filter blur-sm' : undefined}>
-        <ElementTitle>Account</ElementTitle>
+    <>
+      <div className={!connected && !isMobile ? 'filter blur-sm' : undefined}>
+        {!isMobile ? (
+          <ElementTitle>
+            <Tooltip
+              content={
+                mangoAccount ? (
+                  <div>
+                    Init Health: {initHealth.toFixed(4)}
+                    <br />
+                    Maint Health: {maintHealth.toFixed(4)}
+                  </div>
+                ) : (
+                  ''
+                )
+              }
+            >
+              Account
+            </Tooltip>
+          </ElementTitle>
+        ) : null}
         <div>
           <div>
             <div className="flex justify-between pb-3">
@@ -122,38 +147,6 @@ export default function AccountInfo() {
                 )}
               </div>
             </div>
-            {/* <div className={`flex justify-between pb-3`}>
-              <div className="font-normal text-th-fgd-3 leading-4">
-                Total Assets Value
-              </div>
-              <div className={`text-th-fgd-1`}>
-                {isLoading ? (
-                  <DataLoader />
-                ) : mangoAccount ? (
-                  formatUsdValue(
-                    +mangoAccount.getAssetsVal(mangoGroup, mangoCache)
-                  )
-                ) : (
-                  '--'
-                )}
-              </div>
-            </div>
-            <div className={`flex justify-between pb-3`}>
-              <div className="font-normal text-th-fgd-3 leading-4">
-                Total Liabilities Value
-              </div>
-              <div className={`text-th-fgd-1`}>
-                {isLoading ? (
-                  <DataLoader />
-                ) : mangoAccount ? (
-                  formatUsdValue(
-                    +mangoAccount.getLiabsVal(mangoGroup, mangoCache)
-                  )
-                ) : (
-                  '--'
-                )}
-              </div>
-            </div> */}
             <div className={`flex justify-between pb-3`}>
               <div className="font-normal text-th-fgd-3 leading-4">
                 Collateral Available
@@ -164,7 +157,7 @@ export default function AccountInfo() {
                 ) : mangoAccount ? (
                   usdFormatter(
                     nativeI80F48ToUi(
-                      mangoAccount.getHealth(mangoGroup, mangoCache, 'Init'),
+                      initHealth,
                       mangoGroup.tokens[QUOTE_INDEX].decimals
                     ).toFixed()
                   )
@@ -187,7 +180,7 @@ export default function AccountInfo() {
                           marketConfig.marketIndex,
                           marketConfig.kind
                         ),
-                        mangoGroup.tokens[marketConfig.marketIndex].decimals
+                        mangoGroup.tokens[QUOTE_INDEX].decimals
                       ).toFixed()
                     )
                   : '0.00'}
@@ -233,7 +226,7 @@ export default function AccountInfo() {
               </div>
             </div>
           </div>
-          <div className="border border-th-bkg-4 rounded flex items-center my-3 p-2.5">
+          <div className="border border-th-bkg-4 rounded flex items-center my-2 sm:my-3 p-2.5">
             <div className="flex items-center pr-2">
               <HeartIcon
                 className="h-5 mr-1.5 w-5 text-th-primary"
@@ -281,7 +274,7 @@ export default function AccountInfo() {
               %
             </div>
           </div>
-          <div className={`grid grid-cols-2 grid-rows-1 gap-4 pt-4`}>
+          <div className={`grid grid-cols-2 grid-rows-1 gap-4 pt-2 sm:pt-4`}>
             <Button
               onClick={() => setShowDepositModal(true)}
               className="w-full"
@@ -308,6 +301,6 @@ export default function AccountInfo() {
           onClose={handleCloseWithdraw}
         />
       )}
-    </FloatingElement>
+    </>
   )
 }

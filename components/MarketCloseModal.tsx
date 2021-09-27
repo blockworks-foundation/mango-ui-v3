@@ -1,12 +1,11 @@
 import { FunctionComponent, useEffect, useRef, useState } from 'react'
-import useMangoStore, { mangoClient } from '../stores/useMangoStore'
+import useMangoStore from '../stores/useMangoStore'
 import { PerpMarket, ZERO_BN } from '@blockworks-foundation/mango-client'
 import Button, { LinkButton } from './Button'
 import { notify } from '../utils/notifications'
 import Loading from './Loading'
 import { calculateTradePrice, sleep } from '../utils'
 import Modal from './Modal'
-// import useLocalStorageState from '../hooks/useLocalStorageState'
 
 interface MarketCloseModalProps {
   onClose: () => void
@@ -23,12 +22,11 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
 }) => {
   const [submitting, setSubmitting] = useState(false)
   const actions = useMangoStore((s) => s.actions)
+  const mangoClient = useMangoStore((s) => s.connection.client)
   const orderBookRef = useRef(useMangoStore.getState().selectedMarket.orderBook)
   const config = useMangoStore.getState().selectedMarket.config
 
   const orderbook = orderBookRef.current
-  //   const [hideMarketCloseWarning, setHideMarketCloseWarning] =
-  //     useLocalStorageState('hideMarketCloseWarning', false)
   useEffect(
     () =>
       useMangoStore.subscribe(
@@ -44,14 +42,17 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
     const { askInfo, bidInfo } = useMangoStore.getState().selectedMarket
     const wallet = useMangoStore.getState().wallet.current
-    const perpAccount = mangoAccount.perpAccounts[marketIndex]
-    const side = perpAccount.basePosition.gt(ZERO_BN) ? 'sell' : 'buy'
-    const size = Math.abs(market.baseLotsToNumber(perpAccount.basePosition))
+    const connection = useMangoStore.getState().connection.current
 
     if (!wallet || !mangoGroup || !mangoAccount) return
     setSubmitting(true)
 
     try {
+      const reloadedMangoAccount = await mangoAccount.reload(connection)
+      const perpAccount = reloadedMangoAccount.perpAccounts[marketIndex]
+      const side = perpAccount.basePosition.gt(ZERO_BN) ? 'sell' : 'buy'
+      const size = Math.abs(market.baseLotsToNumber(perpAccount.basePosition))
+
       const orderPrice = calculateTradePrice(
         'Market',
         orderbook,
@@ -81,8 +82,9 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
         0,
         side === 'buy' ? askInfo : bidInfo
       )
-
-      notify({ title: 'Successfully placed trade', txid })
+      await sleep(500)
+      actions.reloadMangoAccount()
+      notify({ title: 'Transaction sent', txid })
     } catch (e) {
       notify({
         title: 'Error placing order',
@@ -91,13 +93,11 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
         type: 'error',
       })
     } finally {
-      sleep(500).then(() => {
-        actions.fetchMangoAccounts()
-      })
       setSubmitting(false)
       onClose()
     }
   }
+
   return (
     <Modal onClose={onClose} isOpen={isOpen}>
       <div className="pb-2 text-th-fgd-1 text-lg">
@@ -115,16 +115,6 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
           Cancel
         </LinkButton>
       </div>
-      {/* <div className="pt-6">
-        <label className="cursor-pointer inline-flex items-center">
-          <input
-            type="checkbox"
-            checked={hideMarketCloseWarning}
-            onChange={() => setHideMarketCloseWarning(!hideMarketCloseWarning)}
-          />
-          <span className="ml-2 text-th-fgd-1">Don't show this again</span>
-        </label>
-      </div> */}
     </Modal>
   )
 }

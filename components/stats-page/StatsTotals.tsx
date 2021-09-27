@@ -1,16 +1,48 @@
-import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
 import { I80F48 } from '@blockworks-foundation/mango-client'
-import useMangoStats from '../../hooks/useMangoStats'
 import Chart from '../Chart'
+import { tokenPrecision } from '../../utils'
+import { useViewport } from '../../hooks/useViewport'
+import { breakpoints } from '../TradePageGrid'
+import { Table, Td, Th, TrBody, TrHead } from '../TableElements'
+import { ExpandableRow, Row } from '../TableElements'
 
-function formatNumberString(x: string): string {
-  return x.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',')
+function formatNumberString(x: number, decimals): string {
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  }).format(x)
 }
 
-export default function StatsTotals() {
-  const { latestStats, stats } = useMangoStats()
+const getAverageStats = (
+  stats,
+  daysAgo: number,
+  symbol: string,
+  type: string
+) => {
+  const priorDate = new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000)
+  const selectedStatsData = stats.filter((s) => s.name === symbol)
+  const timeFilteredStats = selectedStatsData.filter(
+    (d) => new Date(d.time).getTime() >= priorDate.getTime()
+  )
 
+  const oldestStat = timeFilteredStats[0]
+  const latestStat = timeFilteredStats[timeFilteredStats.length - 1]
+  const avg =
+    Math.pow(latestStat[type] / oldestStat[type], 365 / daysAgo) * 100 - 100
+
+  priorDate.setHours(priorDate.getHours() + 1)
+
+  if (new Date(oldestStat.time).getTime() > priorDate.getTime()) {
+    return '-'
+  } else {
+    return `${avg.toFixed(4)}%`
+  }
+}
+
+export default function StatsTotals({ latestStats, stats }) {
   const startTimestamp = 1622905200000
+  const { width } = useViewport()
+  const isMobile = width ? width < breakpoints.sm : false
 
   const trimmedStats = stats.filter(
     (stat) => new Date(stat.hourly).getTime() >= startTimestamp
@@ -84,7 +116,7 @@ export default function StatsTotals() {
 
   return (
     <>
-      <div className="grid grid-flow-col grid-cols-1 grid-rows-2 md:grid-cols-2 md:grid-rows-1 gap-4 pb-8">
+      <div className="grid grid-flow-col grid-cols-1 grid-rows-2 md:grid-cols-2 md:grid-rows-1 gap-2 sm:gap-4 pb-8">
         <div
           className="border border-th-bkg-3 relative md:mb-0 p-4 rounded-md"
           style={{ height: '300px' }}
@@ -118,73 +150,349 @@ export default function StatsTotals() {
           />
         </div>
       </div>
-      <div className="md:flex md:flex-col min-w-full">
-        <Table className="min-w-full divide-y divide-th-bkg-2">
-          <Thead>
-            <Tr className="text-th-fgd-3 text-xs">
-              <Th scope="col" className="px-6 py-3 text-left font-normal">
-                Asset
-              </Th>
-              <Th scope="col" className="px-6 py-3 text-left font-normal">
-                Total Deposits
-              </Th>
-              <Th scope="col" className="px-6 py-3 text-left font-normal">
-                Total Borrows
-              </Th>
-              <Th scope="col" className="px-6 py-3 text-left font-normal">
-                Deposit Interest
-              </Th>
-              <Th scope="col" className="px-6 py-3 text-left font-normal">
-                Borrow Interest
-              </Th>
-              <Th scope="col" className="px-6 py-3 text-left font-normal">
-                Utilization
-              </Th>
-            </Tr>
-          </Thead>
-          <Tbody>
+      {!isMobile ? (
+        <>
+          <div className="pb-8">
+            <div className="pb-4 text-th-fgd-1 text-lg">Current Stats</div>
+            {latestStats.length > 0 ? (
+              <Table>
+                <thead>
+                  <TrHead>
+                    <Th>Asset</Th>
+                    <Th>Total Deposits</Th>
+                    <Th>Total Borrows</Th>
+                    <Th>Deposit Rate</Th>
+                    <Th>Borrow Rate</Th>
+                    <Th>Utilization</Th>
+                  </TrHead>
+                </thead>
+                <tbody>
+                  {latestStats.map((stat, index) => (
+                    <TrBody key={stat.name} index={index}>
+                      <Td>
+                        <div className="flex items-center">
+                          <img
+                            alt=""
+                            width="20"
+                            height="20"
+                            src={`/assets/icons/${stat.name.toLowerCase()}.svg`}
+                            className={`mr-2.5`}
+                          />
+                          {stat.name}
+                        </div>
+                      </Td>
+                      <Td>
+                        {formatNumberString(
+                          stat.totalDeposits,
+                          tokenPrecision[stat.name]
+                        )}
+                      </Td>
+                      <Td>
+                        {formatNumberString(
+                          stat.totalBorrows,
+                          tokenPrecision[stat.name]
+                        )}
+                      </Td>
+                      <Td>
+                        <span className="text-th-green">
+                          {formatNumberString(
+                            stat.depositInterest.toNumber(),
+                            2
+                          )}
+                          %
+                        </span>
+                      </Td>
+                      <Td>
+                        <span className="text-th-red">
+                          {formatNumberString(
+                            stat.borrowInterest.toNumber(),
+                            2
+                          )}
+                          %
+                        </span>
+                      </Td>
+                      <Td>
+                        {formatNumberString(
+                          stat.utilization
+                            .mul(I80F48.fromNumber(100))
+                            .toNumber(),
+                          2
+                        )}
+                        %
+                      </Td>
+                    </TrBody>
+                  ))}
+                </tbody>
+              </Table>
+            ) : (
+              <>
+                <div className="animate-pulse bg-th-bkg-3 h-8 rounded w-full" />
+                <div className="animate-pulse bg-th-bkg-3 h-8 mt-1 rounded w-full" />
+                <div className="animate-pulse bg-th-bkg-3 h-8 mt-1 rounded w-full" />
+              </>
+            )}
+          </div>
+          <div className="pb-8">
+            <div className="pb-4 text-th-fgd-1 text-lg">
+              Average Deposit Rates
+            </div>
+            {stats.length > 1 ? (
+              <Table>
+                <thead>
+                  <TrHead>
+                    <Th>Asset</Th>
+                    <Th>24h</Th>
+                    <Th>7d</Th>
+                    <Th>30d</Th>
+                  </TrHead>
+                </thead>
+                <tbody>
+                  {latestStats.map((stat, index) => (
+                    <TrBody key={stat.name} index={index}>
+                      <Td>
+                        <div className="flex items-center">
+                          <img
+                            alt=""
+                            width="20"
+                            height="20"
+                            src={`/assets/icons/${stat.name.toLowerCase()}.svg`}
+                            className={`mr-2.5`}
+                          />
+                          {stat.name}
+                        </div>
+                      </Td>
+                      <Td>
+                        {getAverageStats(stats, 1, stat.name, 'depositIndex')}
+                      </Td>
+                      <Td>
+                        {getAverageStats(stats, 7, stat.name, 'depositIndex')}
+                      </Td>
+                      <Td>
+                        {getAverageStats(stats, 30, stat.name, 'depositIndex')}
+                      </Td>
+                    </TrBody>
+                  ))}
+                </tbody>
+              </Table>
+            ) : (
+              <>
+                <div className="animate-pulse bg-th-bkg-3 h-8 rounded w-full" />
+                <div className="animate-pulse bg-th-bkg-3 h-8 mt-1 rounded w-full" />
+                <div className="animate-pulse bg-th-bkg-3 h-8 mt-1 rounded w-full" />
+              </>
+            )}
+          </div>
+          <div className="pb-4 text-th-fgd-1 text-lg">Average Borrow Rates</div>
+          {stats.length > 1 ? (
+            <Table>
+              <thead>
+                <TrHead>
+                  <Th>Asset</Th>
+                  <Th>24h</Th>
+                  <Th>7d</Th>
+                  <Th>30d</Th>
+                </TrHead>
+              </thead>
+              <tbody>
+                {latestStats.map((stat, index) => (
+                  <TrBody key={stat.name} index={index}>
+                    <Td>
+                      <div className="flex items-center">
+                        <img
+                          alt=""
+                          width="20"
+                          height="20"
+                          src={`/assets/icons/${stat.name.toLowerCase()}.svg`}
+                          className={`mr-2.5`}
+                        />
+                        {stat.name}
+                      </div>
+                    </Td>
+                    <Td>
+                      {getAverageStats(stats, 1, stat.name, 'borrowIndex')}
+                    </Td>
+                    <Td>
+                      {getAverageStats(stats, 7, stat.name, 'borrowIndex')}
+                    </Td>
+                    <Td>
+                      {getAverageStats(stats, 30, stat.name, 'borrowIndex')}
+                    </Td>
+                  </TrBody>
+                ))}
+              </tbody>
+            </Table>
+          ) : (
+            <>
+              <div className="animate-pulse bg-th-bkg-3 h-8 rounded w-full" />
+              <div className="animate-pulse bg-th-bkg-3 h-8 mt-1 rounded w-full" />
+              <div className="animate-pulse bg-th-bkg-3 h-8 mt-1 rounded w-full" />
+            </>
+          )}
+        </>
+      ) : (
+        <>
+          <div className="pb-8">
+            <div className="pb-4 text-th-fgd-1 text-lg">Current Stats</div>
             {latestStats.map((stat, index) => (
-              <Tr
-                key={stat.name}
-                className={`border-b border-th-bkg-2
-                  ${index % 2 === 0 ? `bg-th-bkg-3` : `bg-th-bkg-2`}
-                `}
-              >
-                <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
-                  <div className="flex items-center">
-                    <img
-                      alt=""
-                      width="20"
-                      height="20"
-                      src={`/assets/icons/${stat.name.toLowerCase()}.svg`}
-                      className={`mr-2.5`}
-                    />
-                    {stat.name}
+              // latestStats.length > 0 ? (
+              <ExpandableRow
+                buttonTemplate={
+                  <div className="col-span-11">
+                    <div className="col-span-11 flex items-center pb-4 text-fgd-1">
+                      <div className="flex items-center">
+                        <img
+                          alt=""
+                          width="20"
+                          height="20"
+                          src={`/assets/icons/${stat.name
+                            .split(/-|\//)[0]
+                            .toLowerCase()}.svg`}
+                          className={`mr-2.5`}
+                        />
+                        {stat.name}
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-11 grid-rows-1 gap-4">
+                      <div className="col-span-6 text-left">
+                        <div className="pb-0.5 text-th-fgd-3 text-xs">
+                          Total Deposits
+                        </div>
+                        {formatNumberString(stat.totalDeposits, 0)}
+                      </div>
+                      <div className="col-span-5 text-left">
+                        <div className="pb-0.5 text-th-fgd-3 text-xs">
+                          Total Borrows
+                        </div>
+                        {formatNumberString(stat.totalBorrows, 0)}
+                      </div>
+                    </div>
                   </div>
-                </Td>
-                <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
-                  {formatNumberString(stat.totalDeposits)}
-                </Td>
-                <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
-                  {formatNumberString(stat.totalBorrows)}
-                </Td>
-                <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
-                  {formatNumberString(stat.depositInterest.toFixed(2))}%
-                </Td>
-                <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
-                  {formatNumberString(stat.borrowInterest.toFixed(2))}%
-                </Td>
-                <Td className="px-6 py-4 whitespace-nowrap text-sm text-th-fgd-1">
-                  {formatNumberString(
-                    stat.utilization.mul(I80F48.fromNumber(100)).toFixed(2)
-                  )}
-                  %
-                </Td>
-              </Tr>
+                }
+                key={stat.name}
+                index={index}
+                panelTemplate={
+                  <>
+                    <div className="col-span-1 text-left">
+                      <div className="pb-0.5 text-th-fgd-3 text-xs">
+                        Deposit Rate
+                      </div>
+                      <span className="text-th-green">
+                        {formatNumberString(stat.depositInterest.toNumber(), 2)}
+                        %
+                      </span>
+                    </div>
+                    <div className="col-span-1 text-left">
+                      <div className="pb-0.5 text-th-fgd-3 text-xs">
+                        Borrow Rate
+                      </div>
+                      <span className="text-th-red">
+                        {formatNumberString(stat.borrowInterest.toNumber(), 2)}%
+                      </span>
+                    </div>
+                    <div className="col-span-1 text-left">
+                      <div className="pb-0.5 text-th-fgd-3 text-xs">
+                        Utilization
+                      </div>
+                      {formatNumberString(
+                        stat.utilization.mul(I80F48.fromNumber(100)).toNumber(),
+                        2
+                      )}
+                      %
+                    </div>
+                  </>
+                }
+              />
             ))}
-          </Tbody>
-        </Table>
-      </div>
+          </div>
+          <div className="pb-8">
+            <div className="pb-4 text-th-fgd-1 text-lg">
+              Average Deposit Rates
+            </div>
+            {stats.length > 1
+              ? latestStats.map((stat, index) => (
+                  <Row key={stat.name} index={index}>
+                    <div className="col-span-12">
+                      <div className="col-span-12 flex items-center pb-4 text-fgd-1">
+                        <div className="flex items-center">
+                          <img
+                            alt=""
+                            width="20"
+                            height="20"
+                            src={`/assets/icons/${stat.name
+                              .split(/-|\//)[0]
+                              .toLowerCase()}.svg`}
+                            className={`mr-2.5`}
+                          />
+                          {stat.name}
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-12 grid-rows-1 gap-4">
+                        <div className="col-span-4 text-left">
+                          <div className="pb-0.5 text-th-fgd-3 text-xs">
+                            24h
+                          </div>
+                          {getAverageStats(stats, 1, stat.name, 'depositIndex')}
+                        </div>
+                        <div className="col-span-4 text-left">
+                          <div className="pb-0.5 text-th-fgd-3 text-xs">7d</div>
+                          {getAverageStats(stats, 7, stat.name, 'depositIndex')}
+                        </div>
+                        <div className="col-span-4 text-left">
+                          <div className="pb-0.5 text-th-fgd-3 text-xs">
+                            30d
+                          </div>
+                          {getAverageStats(
+                            stats,
+                            30,
+                            stat.name,
+                            'depositIndex'
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </Row>
+                ))
+              : null}
+          </div>
+          <div className="pb-4 text-th-fgd-1 text-lg">Average Borrow Rates</div>
+          {stats.length > 1
+            ? latestStats.map((stat, index) => (
+                <Row key={stat.name} index={index}>
+                  <div className="col-span-12">
+                    <div className="col-span-12 flex items-center pb-4 text-fgd-1">
+                      <div className="flex items-center">
+                        <img
+                          alt=""
+                          width="20"
+                          height="20"
+                          src={`/assets/icons/${stat.name
+                            .split(/-|\//)[0]
+                            .toLowerCase()}.svg`}
+                          className={`mr-2.5`}
+                        />
+                        {stat.name}
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-12 grid-rows-1 gap-4">
+                      <div className="col-span-4 text-left">
+                        <div className="pb-0.5 text-th-fgd-3 text-xs">24h</div>
+                        {getAverageStats(stats, 1, stat.name, 'borrowIndex')}
+                      </div>
+                      <div className="col-span-4 text-left">
+                        <div className="pb-0.5 text-th-fgd-3 text-xs">7d</div>
+                        {getAverageStats(stats, 7, stat.name, 'borrowIndex')}
+                      </div>
+                      <div className="col-span-4 text-left">
+                        <div className="pb-0.5 text-th-fgd-3 text-xs">30d</div>
+                        {getAverageStats(stats, 30, stat.name, 'borrowIndex')}
+                      </div>
+                    </div>
+                  </div>
+                </Row>
+              ))
+            : null}
+        </>
+      )}
     </>
   )
 }

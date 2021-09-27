@@ -16,7 +16,7 @@ export function useAccountData(publicKey) {
 
 function decodeBook(market, accInfo: AccountInfo<Buffer>): number[][] {
   if (market && accInfo?.data) {
-    const depth = 20
+    const depth = 40
     if (market instanceof Market) {
       const book = SpotOrderBook.decode(market, accInfo.data)
       return book.getL2(depth).map(([price, size]) => [price, size])
@@ -46,7 +46,8 @@ export default function useOrderbook() {
   )
 
   useEffect(() => {
-    if (!mangoGroup || market?.publicKey !== marketConfig?.publicKey) return
+    if (!mangoGroup || !market?.publicKey.equals(marketConfig?.publicKey))
+      return
     const bids = decodeBook(market, bidInfo)
     const asks = decodeBook(market, askInfo)
 

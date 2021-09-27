@@ -3,15 +3,21 @@ import BN from 'bn.js'
 import useTradeHistory from '../hooks/useTradeHistory'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
 import SideBadge from './SideBadge'
 import { LinkButton } from './Button'
 import { useSortableData } from '../hooks/useSortableData'
+import { useViewport } from '../hooks/useViewport'
+import { breakpoints } from './TradePageGrid'
+import { Table, Td, Th, TrBody, TrHead } from './TableElements'
+import { ExpandableRow } from './TableElements'
+import { formatUsdValue } from '../utils'
 
-const TradeHistoryTable = () => {
+const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
   const { asPath } = useRouter()
   const tradeHistory = useTradeHistory({ excludePerpLiquidations: true })
   const { items, requestSort, sortConfig } = useSortableData(tradeHistory)
+  const { width } = useViewport()
+  const isMobile = width ? width < breakpoints.md : false
 
   const renderTradeDateTime = (timestamp: BN | string) => {
     let date
@@ -29,16 +35,18 @@ const TradeHistoryTable = () => {
     )
   }
 
+  const filteredTrades = numTrades ? items.slice(0, numTrades) : items
+
   return (
-    <div className="flex flex-col py-4">
-      <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-        <div className="align-middle inline-block min-w-full sm:px-6 lg:px-8">
+    <div className={`flex flex-col py-2 sm:pb-4 sm:pt-4`}>
+      <div className={`-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8`}>
+        <div className={`align-middle inline-block min-w-full sm:px-6 lg:px-8`}>
           {tradeHistory && tradeHistory.length ? (
-            <div className="shadow overflow-hidden border-b border-th-bkg-2">
-              <Table className="min-w-full divide-y divide-th-bkg-2">
-                <Thead>
-                  <Tr className="text-th-fgd-3 text-xs">
-                    <Th scope="col" className={`px-6 py-2 text-left`}>
+            !isMobile ? (
+              <Table>
+                <thead>
+                  <TrHead>
+                    <Th>
                       <LinkButton
                         className="flex items-center no-underline font-normal"
                         onClick={() => requestSort('market')}
@@ -55,7 +63,7 @@ const TradeHistoryTable = () => {
                         />
                       </LinkButton>
                     </Th>
-                    <Th scope="col" className="px-6 py-2 text-left">
+                    <Th>
                       <LinkButton
                         className="flex items-center no-underline font-normal"
                         onClick={() => requestSort('side')}
@@ -72,7 +80,7 @@ const TradeHistoryTable = () => {
                         />
                       </LinkButton>
                     </Th>
-                    <Th scope="col" className="px-6 py-2 text-left">
+                    <Th>
                       <LinkButton
                         className="flex items-center no-underline font-normal"
                         onClick={() => requestSort('size')}
@@ -89,7 +97,7 @@ const TradeHistoryTable = () => {
                         />
                       </LinkButton>
                     </Th>
-                    <Th scope="col" className="px-6 py-2 text-left">
+                    <Th>
                       <LinkButton
                         className="flex items-center no-underline font-normal"
                         onClick={() => requestSort('price')}
@@ -106,7 +114,7 @@ const TradeHistoryTable = () => {
                         />
                       </LinkButton>
                     </Th>
-                    <Th scope="col" className="px-6 py-2 text-left">
+                    <Th>
                       <LinkButton
                         className="flex items-center no-underline font-normal"
                         onClick={() => requestSort('value')}
@@ -123,7 +131,7 @@ const TradeHistoryTable = () => {
                         />
                       </LinkButton>
                     </Th>
-                    <Th scope="col" className="px-6 py-2 text-left">
+                    <Th>
                       <LinkButton
                         className="flex items-center no-underline font-normal"
                         onClick={() => requestSort('liquidity')}
@@ -140,7 +148,7 @@ const TradeHistoryTable = () => {
                         />
                       </LinkButton>
                     </Th>
-                    <Th scope="col" className="px-6 py-2 text-left">
+                    <Th>
                       <LinkButton
                         className="flex items-center no-underline font-normal"
                         onClick={() => requestSort('feeCost')}
@@ -157,7 +165,7 @@ const TradeHistoryTable = () => {
                         />
                       </LinkButton>
                     </Th>
-                    <Th scope="col" className="px-6 py-2 text-left">
+                    <Th>
                       <LinkButton
                         className="flex items-center no-underline font-normal"
                         onClick={() => requestSort('loadTimestamp')}
@@ -174,17 +182,15 @@ const TradeHistoryTable = () => {
                         />
                       </LinkButton>
                     </Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {items.map((trade: any, index) => (
-                    <Tr
+                  </TrHead>
+                </thead>
+                <tbody>
+                  {filteredTrades.map((trade: any, index) => (
+                    <TrBody
+                      index={index}
                       key={`${trade.seqNum}${trade.marketName}`}
-                      className={`border-b border-th-bkg-3
-                        ${index % 2 === 0 ? `bg-th-bkg-3` : `bg-th-bkg-2`}
-                      `}
                     >
-                      <Td className="px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1">
+                      <Td>
                         <div className="flex items-center">
                           <img
                             alt=""
@@ -198,36 +204,101 @@ const TradeHistoryTable = () => {
                           <div>{trade.marketName}</div>
                         </div>
                       </Td>
-                      <Td className="px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1">
+                      <Td>
                         <SideBadge side={trade.side} />
                       </Td>
-                      <Td className="px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1">
-                        {trade.size}
-                      </Td>
-                      <Td className="px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1">
-                        {trade.price}
-                      </Td>
-                      <Td className="px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1">
-                        ${trade.value.toFixed(2)}
-                      </Td>
-                      <Td className="px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1">
-                        {trade.liquidity}
-                      </Td>
-                      <Td className="px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1">
-                        ${trade.feeCost}
-                      </Td>
-                      <Td className="px-6 py-2 whitespace-nowrap text-sm text-th-fgd-1">
+                      <Td>{trade.size}</Td>
+                      <Td>{formatUsdValue(trade.price)}</Td>
+                      <Td>{formatUsdValue(trade.value)}</Td>
+                      <Td>{trade.liquidity}</Td>
+                      <Td>{formatUsdValue(trade.feeCost)}</Td>
+                      <Td>
                         {trade.loadTimestamp || trade.timestamp
                           ? renderTradeDateTime(
                               trade.loadTimestamp || trade.timestamp
                             )
                           : 'Recent'}
                       </Td>
-                    </Tr>
+                    </TrBody>
                   ))}
-                </Tbody>
+                </tbody>
               </Table>
-            </div>
+            ) : (
+              items.map((trade: any, index) => (
+                <ExpandableRow
+                  buttonTemplate={
+                    <>
+                      <div className="col-span-11 flex items-center text-fgd-1">
+                        <div className="flex items-center">
+                          <img
+                            alt=""
+                            width="20"
+                            height="20"
+                            src={`/assets/icons/${trade.marketName
+                              .split(/-|\//)[0]
+                              .toLowerCase()}.svg`}
+                            className={`mr-2.5`}
+                          />
+                          <div>
+                            <div className="mb-0.5 text-left">
+                              {trade.marketName}
+                            </div>
+                            <div className="text-th-fgd-3 text-xs">
+                              <span
+                                className={`mr-1
+                                ${
+                                  trade.side === 'buy' || trade.side === 'long'
+                                    ? 'text-th-green'
+                                    : 'text-th-red'
+                                }
+                              `}
+                              >
+                                {trade.side.toUpperCase()}
+                              </span>
+                              {`${trade.size} at ${formatUsdValue(
+                                trade.price
+                              )}`}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  }
+                  key={`${index}`}
+                  index={index}
+                  panelTemplate={
+                    <>
+                      <div className="col-span-1 text-left">
+                        <div className="pb-0.5 text-th-fgd-3 text-xs">
+                          Value
+                        </div>
+                        {formatUsdValue(trade.value)}
+                      </div>
+                      <div className="col-span-1 text-left">
+                        <div className="pb-0.5 text-th-fgd-3 text-xs">
+                          Liquidity
+                        </div>
+                        {trade.liquidity}
+                      </div>
+                      <div className="col-span-1 text-left">
+                        <div className="pb-0.5 text-th-fgd-3 text-xs">Fee</div>
+                        {formatUsdValue(trade.feeCost)}
+                      </div>
+                      <div className="col-span-1 text-left">
+                        <div className="pb-0.5 text-th-fgd-3 text-xs">
+                          Approx Time
+                        </div>
+                        {trade.loadTimestamp || trade.timestamp
+                          ? renderTradeDateTime(
+                              trade.loadTimestamp || trade.timestamp
+                            )
+                          : 'Recent'}
+                      </div>
+                    </>
+                  }
+                />
+              ))
+            )
           ) : (
             <div className="w-full text-center py-6 bg-th-bkg-1 text-th-fgd-3 rounded-md">
               No trade history
@@ -238,6 +309,13 @@ const TradeHistoryTable = () => {
               ) : null}
             </div>
           )}
+        </div>
+        <div className="flex items-center">
+          {numTrades && items.length > numTrades ? (
+            <div className="mx-auto mt-4">
+              <Link href="/account">View all trades in the Account page</Link>
+            </div>
+          ) : null}
         </div>
       </div>
     </div>

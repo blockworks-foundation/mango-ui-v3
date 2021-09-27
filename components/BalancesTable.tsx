@@ -1,37 +1,71 @@
+import { useCallback } from 'react'
 import { useBalances } from '../hooks/useBalances'
-import useMangoStore, { mangoClient } from '../stores/useMangoStore'
-import Button from '../components/Button'
+import useMangoStore from '../stores/useMangoStore'
+import Button, { LinkButton } from '../components/Button'
 import { notify } from '../utils/notifications'
-import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
-import { InformationCircleIcon } from '@heroicons/react/outline'
-import Tooltip from './Tooltip'
-import { ceilToDecimal, floorToDecimal, sleep } from '../utils'
+import { ArrowSmDownIcon, ExclamationIcon } from '@heroicons/react/outline'
 import { Market } from '@project-serum/serum'
-import {
-  getTokenBySymbol,
-  ZERO_I80F48,
-} from '@blockworks-foundation/mango-client'
+import { getTokenBySymbol } from '@blockworks-foundation/mango-client'
+import { useState } from 'react'
+import Loading from './Loading'
+import { useViewport } from '../hooks/useViewport'
+import { breakpoints } from './TradePageGrid'
+import { floorToDecimal, formatUsdValue } from '../utils'
+import { Table, Td, Th, TrBody, TrHead } from './TableElements'
+import { useSortableData } from '../hooks/useSortableData'
+import DepositModal from './DepositModal'
+import WithdrawModal from './WithdrawModal'
+import { ExpandableRow } from './TableElements'
+import MobileTableHeader from './mobile/MobileTableHeader'
 
-const BalancesTable = () => {
+const BalancesTable = ({ showZeroBalances = false }) => {
+  const [showDepositModal, setShowDepositModal] = useState(false)
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false)
+  const [actionSymbol, setActionSymbol] = useState('')
   const balances = useBalances()
+  const { items, requestSort, sortConfig } = useSortableData(
+    balances
+      .filter(
+        (bal) =>
+          showZeroBalances ||
+          +bal.deposits > 0 ||
+          +bal.borrows > 0 ||
+          bal.orders > 0 ||
+          bal.unsettled > 0
+      )
+      .sort((a, b) => Math.abs(+b.value) - Math.abs(+a.value))
+  )
   const actions = useMangoStore((s) => s.actions)
+  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoGroupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
+  const mangoClient = useMangoStore((s) => s.connection.client)
+  const { width } = useViewport()
+  const [submitting, setSubmitting] = useState(false)
+  const isMobile = width ? width < breakpoints.md : false
+
+  const handleOpenDepositModal = useCallback((symbol) => {
+    setActionSymbol(symbol)
+    setShowDepositModal(true)
+  }, [])
+
+  const handleOpenWithdrawModal = useCallback((symbol) => {
+    setActionSymbol(symbol)
+    setShowWithdrawModal(true)
+  }, [])
 
   async function handleSettleAll() {
     const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
-    const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
     const markets = useMangoStore.getState().selectedMangoGroup.markets
     const wallet = useMangoStore.getState().wallet.current
 
     try {
+      setSubmitting(true)
       const spotMarkets = Object.values(markets).filter(
         (mkt) => mkt instanceof Market
       ) as Market[]
-      // @ts-ignore
       await mangoClient.settleAll(mangoGroup, mangoAccount, spotMarkets, wallet)
+
       notify({ title: 'Successfully settled funds' })
-      await sleep(250)
-      actions.fetchMangoAccounts()
     } catch (e) {
       console.warn('Error settling all:', e)
       if (e.message === 'No unsettled funds') {
@@ -47,104 +81,222 @@ const BalancesTable = () => {
           type: 'error',
         })
       }
+    } finally {
+      await actions.reloadMangoAccount()
+      setSubmitting(false)
     }
   }
 
-  const filteredBalances = balances.filter(
-    (bal) =>
-      +bal.deposits > 0 ||
-      +bal.borrows > 0 ||
-      bal.orders > 0 ||
-      bal.unsettled > 0
-  )
+  const unsettledBalances = balances.filter((bal) => bal.unsettled > 0)
 
   return (
-    <div className={`flex flex-col py-4`}>
-      <div className={`-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8`}>
-        <div className={`align-middle inline-block min-w-full sm:px-6 lg:px-8`}>
-          {balances.length > 0 &&
-          (balances.find(({ unsettled }) => unsettled > 0) ||
-            balances.find(
-              ({ borrows, deposits }) =>
-                borrows.gt(ZERO_I80F48) && deposits.gt(ZERO_I80F48)
-            )) ? (
-            <div
-              className={`flex items-center justify-between px-6 py-3 mb-2 rounded-md bg-th-bkg-1`}
-            >
-              <div className="flex items-center text-fgd-1 font-semibold pr-4">
-                You have unsettled funds
-                <Tooltip content="Use the Settle All button to move unsettled funds to your deposits. If you have borrows, settling will use deposits for that asset to reduce your borrows.">
-                  <div>
-                    <InformationCircleIcon
-                      className={`h-5 w-5 ml-2 text-th-primary cursor-help`}
-                    />
-                  </div>
-                </Tooltip>
-              </div>
-              <Button onClick={handleSettleAll}>Settle All</Button>
+    <div className={`flex flex-col pb-2 sm:pb-4 sm:pt-4`}>
+      {unsettledBalances.length > 0 ? (
+        <div className="border border-th-bkg-4 rounded-lg mb-6 p-4 sm:p-6">
+          <div className="flex items-center justify-between pb-4">
+            <div className="flex items-center sm:text-lg">
+              <ExclamationIcon className="flex-shrink-0 h-5 mr-1.5 mt-0.5 text-th-primary w-5" />
+              Unsettled Balances
             </div>
-          ) : null}
-          {filteredBalances.length > 0 ? (
-            <div
-              className={`overflow-hidden border-b border-th-bkg-2 sm:rounded-md`}
+            <Button
+              className="text-xs pt-0 pb-0 h-8 pl-3 pr-3 whitespace-nowrap"
+              onClick={handleSettleAll}
             >
-              <Table className={`min-w-full divide-y divide-th-bkg-2`}>
-                <Thead>
-                  <Tr className="text-th-fgd-3 text-xs">
-                    <Th
-                      scope="col"
-                      className={`px-6 py-3 text-left font-normal`}
-                    >
-                      Asset
-                    </Th>
-                    <Th
-                      scope="col"
-                      className={`px-6 py-3 text-left font-normal`}
-                    >
-                      Deposits
-                    </Th>
-                    <Th
-                      scope="col"
-                      className={`px-6 py-3 text-left font-normal`}
-                    >
-                      Borrows
-                    </Th>
-                    <Th
-                      scope="col"
-                      className={`px-6 py-3 text-left font-normal`}
-                    >
-                      In Orders
-                    </Th>
-                    <Th
-                      scope="col"
-                      className={`px-6 py-3 text-left font-normal`}
-                    >
-                      Unsettled
-                    </Th>
-                    <Th
-                      scope="col"
-                      className={`px-6 py-3 text-left font-normal`}
-                    >
-                      Net
-                    </Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {filteredBalances.map((balance, index) => {
-                    const tokenConfig = getTokenBySymbol(
-                      mangoGroupConfig,
-                      balance.symbol.toUpperCase()
-                    )
-                    return (
-                      <Tr
-                        key={`${index}`}
-                        className={`border-b border-th-bkg-3
-                        ${index % 2 === 0 ? `bg-th-bkg-3` : `bg-th-bkg-2`}
-                      `}
+              {submitting ? <Loading /> : 'Settle All'}
+            </Button>
+          </div>
+          {unsettledBalances.map((bal) => {
+            const tokenConfig = getTokenBySymbol(mangoGroupConfig, bal.symbol)
+            return (
+              <div
+                className="border-b border-th-bkg-4 flex items-center justify-between py-4 last:border-b-0 last:pb-0"
+                key={bal.symbol}
+              >
+                <div className="flex items-center">
+                  <img
+                    alt=""
+                    width="20"
+                    height="20"
+                    src={`/assets/icons/${bal.symbol.toLowerCase()}.svg`}
+                    className={`mr-2.5`}
+                  />
+                  <div>{bal.symbol}</div>
+                </div>
+                {`${floorToDecimal(bal.unsettled, tokenConfig.decimals)} ${
+                  bal.symbol
+                }`}
+              </div>
+            )
+          })}
+        </div>
+      ) : null}
+      <div className={`-my-2 overflow-x-auto`}>
+        <div className={`align-middle inline-block min-w-full`}>
+          {items.length > 0 ? (
+            !isMobile ? (
+              <Table>
+                <thead>
+                  <TrHead>
+                    <Th>
+                      <LinkButton
+                        className="flex items-center no-underline font-normal text-left"
+                        onClick={() => requestSort('symbol')}
                       >
-                        <Td
-                          className={`flex items-center px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
-                        >
+                        Asset
+                        <ArrowSmDownIcon
+                          className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                            sortConfig?.key === 'symbol'
+                              ? sortConfig.direction === 'ascending'
+                                ? 'transform rotate-180'
+                                : 'transform rotate-360'
+                              : null
+                          }`}
+                        />
+                      </LinkButton>
+                    </Th>
+                    <Th>
+                      <LinkButton
+                        className="flex items-center no-underline font-normal text-left"
+                        onClick={() => requestSort('deposits')}
+                      >
+                        Deposits
+                        <ArrowSmDownIcon
+                          className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                            sortConfig?.key === 'deposits'
+                              ? sortConfig.direction === 'ascending'
+                                ? 'transform rotate-180'
+                                : 'transform rotate-360'
+                              : null
+                          }`}
+                        />
+                      </LinkButton>
+                    </Th>
+                    <Th>
+                      <LinkButton
+                        className="flex items-center no-underline font-normal text-left"
+                        onClick={() => requestSort('borrows')}
+                      >
+                        Borrows
+                        <ArrowSmDownIcon
+                          className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                            sortConfig?.key === 'borrows'
+                              ? sortConfig.direction === 'ascending'
+                                ? 'transform rotate-180'
+                                : 'transform rotate-360'
+                              : null
+                          }`}
+                        />
+                      </LinkButton>
+                    </Th>
+                    <Th>
+                      <LinkButton
+                        className="flex items-center no-underline font-normal text-left"
+                        onClick={() => requestSort('orders')}
+                      >
+                        In Orders
+                        <ArrowSmDownIcon
+                          className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                            sortConfig?.key === 'orders'
+                              ? sortConfig.direction === 'ascending'
+                                ? 'transform rotate-180'
+                                : 'transform rotate-360'
+                              : null
+                          }`}
+                        />
+                      </LinkButton>
+                    </Th>
+                    <Th>
+                      <LinkButton
+                        className="flex items-center no-underline font-normal text-left"
+                        onClick={() => requestSort('unsettled')}
+                      >
+                        Unsettled
+                        <ArrowSmDownIcon
+                          className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                            sortConfig?.key === 'unsettled'
+                              ? sortConfig.direction === 'ascending'
+                                ? 'transform rotate-180'
+                                : 'transform rotate-360'
+                              : null
+                          }`}
+                        />
+                      </LinkButton>
+                    </Th>
+                    <Th>
+                      <LinkButton
+                        className="flex items-center no-underline font-normal text-left"
+                        onClick={() => requestSort('net')}
+                      >
+                        Net Balance
+                        <ArrowSmDownIcon
+                          className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                            sortConfig?.key === 'net'
+                              ? sortConfig.direction === 'ascending'
+                                ? 'transform rotate-180'
+                                : 'transform rotate-360'
+                              : null
+                          }`}
+                        />
+                      </LinkButton>
+                    </Th>
+                    <Th>
+                      <LinkButton
+                        className="flex items-center no-underline font-normal text-left"
+                        onClick={() => requestSort('value')}
+                      >
+                        Value
+                        <ArrowSmDownIcon
+                          className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                            sortConfig?.key === 'value'
+                              ? sortConfig.direction === 'ascending'
+                                ? 'transform rotate-180'
+                                : 'transform rotate-360'
+                              : null
+                          }`}
+                        />
+                      </LinkButton>
+                    </Th>
+                    <Th>
+                      <LinkButton
+                        className="flex items-center no-underline font-normal text-left"
+                        onClick={() => requestSort('depositRate')}
+                      >
+                        Deposit Rate
+                        <ArrowSmDownIcon
+                          className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                            sortConfig?.key === 'depositRate'
+                              ? sortConfig.direction === 'ascending'
+                                ? 'transform rotate-180'
+                                : 'transform rotate-360'
+                              : null
+                          }`}
+                        />
+                      </LinkButton>
+                    </Th>
+                    <Th>
+                      <LinkButton
+                        className="flex items-center no-underline font-normal text-left"
+                        onClick={() => requestSort('borrowRate')}
+                      >
+                        Borrow Rate
+                        <ArrowSmDownIcon
+                          className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                            sortConfig?.key === 'borrowRate'
+                              ? sortConfig.direction === 'ascending'
+                                ? 'transform rotate-180'
+                                : 'transform rotate-360'
+                              : null
+                          }`}
+                        />
+                      </LinkButton>
+                    </Th>
+                  </TrHead>
+                </thead>
+                <tbody>
+                  {items.map((balance, index) => (
+                    <TrBody index={index} key={`${balance.symbol}${index}`}>
+                      <Td>
+                        <div className="flex items-center">
                           <img
                             alt=""
                             width="20"
@@ -154,47 +306,158 @@ const BalancesTable = () => {
                           />
 
                           {balance.symbol}
-                        </Td>
-                        <Td
-                          className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
-                        >
-                          {floorToDecimal(
-                            parseFloat(balance.deposits.toFixed()),
-                            tokenConfig.decimals
-                          )}
-                        </Td>
-                        <Td
-                          className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
-                        >
-                          {ceilToDecimal(
-                            parseFloat(balance.borrows.toFixed()),
-                            tokenConfig.decimals
-                          )}
-                        </Td>
-                        <Td
-                          className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
-                        >
-                          {balance.orders}
-                        </Td>
-                        <Td
-                          className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
-                        >
-                          {balance.unsettled}
-                        </Td>
-                        <Td
-                          className={`px-6 py-3 whitespace-nowrap text-sm text-th-fgd-1`}
-                        >
-                          {floorToDecimal(
-                            parseFloat(balance.net.toFixed()),
-                            tokenConfig.decimals
-                          )}
-                        </Td>
-                      </Tr>
-                    )
-                  })}
-                </Tbody>
+                        </div>
+                      </Td>
+                      <Td>{balance.deposits.toFixed()}</Td>
+                      <Td>{balance.borrows.toFixed()}</Td>
+                      <Td>{balance.orders}</Td>
+                      <Td>{balance.unsettled}</Td>
+                      <Td>{balance.net.toFixed()}</Td>
+                      <Td>{formatUsdValue(balance.value)}</Td>
+                      <Td>
+                        <span className="text-th-green">
+                          {balance.depositRate.toFixed(2)}%
+                        </span>
+                      </Td>
+                      <Td>
+                        <span className="text-th-red">
+                          {balance.borrowRate.toFixed(2)}%
+                        </span>
+                      </Td>
+                      <Td>
+                        <div className="flex justify-end">
+                          <Button
+                            className="text-xs pt-0 pb-0 h-8 pl-3 pr-3"
+                            onClick={() =>
+                              handleOpenDepositModal(balance.symbol)
+                            }
+                          >
+                            Deposit
+                          </Button>
+                          <Button
+                            className="text-xs pt-0 pb-0 h-8 ml-4 pl-3 pr-3"
+                            onClick={() =>
+                              handleOpenWithdrawModal(balance.symbol)
+                            }
+                          >
+                            Withdraw
+                          </Button>
+                        </div>
+                      </Td>
+                    </TrBody>
+                  ))}
+                </tbody>
+                {showDepositModal && (
+                  <DepositModal
+                    isOpen={showDepositModal}
+                    onClose={() => setShowDepositModal(false)}
+                    tokenSymbol={actionSymbol}
+                  />
+                )}
+                {showWithdrawModal && (
+                  <WithdrawModal
+                    isOpen={showWithdrawModal}
+                    onClose={() => setShowWithdrawModal(false)}
+                    tokenSymbol={actionSymbol}
+                  />
+                )}
               </Table>
-            </div>
+            ) : (
+              <>
+                <MobileTableHeader
+                  headerTemplate={
+                    <>
+                      <div className="col-span-7">Asset</div>
+                      <div className="col-span-4 text-right">Net Balance</div>
+                    </>
+                  }
+                />
+                {items.map((balance, index) => (
+                  <ExpandableRow
+                    buttonTemplate={
+                      <>
+                        <div className="col-span-7 flex items-center text-fgd-1">
+                          <img
+                            alt=""
+                            width="20"
+                            height="20"
+                            src={`/assets/icons/${balance.symbol.toLowerCase()}.svg`}
+                            className={`mr-2.5`}
+                          />
+
+                          {balance.symbol}
+                        </div>
+                        <div className="col-span-4 text-fgd-1 text-right">
+                          {balance.net.toFixed()}
+                        </div>
+                      </>
+                    }
+                    key={`${balance.symbol}${index}`}
+                    index={index}
+                    panelTemplate={
+                      <>
+                        <div className="col-span-1 text-left">
+                          <div className="pb-0.5 text-th-fgd-3 text-xs">
+                            Deposits
+                          </div>
+                          {balance.deposits.toFixed()}
+                        </div>
+                        <div className="col-span-1 text-left">
+                          <div className="pb-0.5 text-th-fgd-3 text-xs">
+                            Borrows
+                          </div>
+                          {balance.borrows.toFixed()}
+                        </div>
+                        <div className="col-span-1 text-left">
+                          <div className="pb-0.5 text-th-fgd-3 text-xs">
+                            In Orders
+                          </div>
+                          {balance.orders.toFixed()}
+                        </div>
+                        <div className="col-span-1 text-left">
+                          <div className="pb-0.5 text-th-fgd-3 text-xs">
+                            Unsettled
+                          </div>
+                          {balance.unsettled.toFixed()}
+                        </div>
+                        <div className="col-span-1 text-left">
+                          <div className="pb-0.5 text-th-fgd-3 text-xs">
+                            Value
+                          </div>
+                          {formatUsdValue(balance.value)}
+                        </div>
+                        <div className="col-span-1 text-left text-th-fgd-4">
+                          <div className="pb-0.5 text-th-fgd-3 text-xs">
+                            Deposit/Borrow Rates
+                          </div>
+                          <span className="mr-1 text-th-green">
+                            {balance.depositRate.toFixed(2)}%
+                          </span>
+                          /
+                          <span className="ml-1 text-th-red">
+                            {balance.borrowRate.toFixed(2)}%
+                          </span>
+                        </div>
+                        <Button
+                          className="col-span-1 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
+                          onClick={() => handleOpenDepositModal(balance.symbol)}
+                        >
+                          Deposit
+                        </Button>
+                        <Button
+                          className="col-span-1 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
+                          onClick={() =>
+                            handleOpenWithdrawModal(balance.symbol)
+                          }
+                        >
+                          Withdraw
+                        </Button>
+                      </>
+                    }
+                  />
+                ))}
+              </>
+            )
           ) : (
             <div
               className={`w-full text-center py-6 bg-th-bkg-1 text-th-fgd-3 rounded-md`}

@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router'
 import Link from 'next/link'
+import { ChevronRightIcon } from '@heroicons/react/solid'
 
 const MenuItem = ({ href, children, newWindow = false }) => {
   const { asPath } = useRouter()
@@ -7,18 +8,14 @@ const MenuItem = ({ href, children, newWindow = false }) => {
   return (
     <Link href={href}>
       <a
-        className={`block text-th-fgd-1 font-bold items-center pl-3 pr-4 py-2 
-          md:inline-flex md:ml-4 md:px-1 md:py-0 hover:text-th-primary hover:opacity-100
-          ${
-            asPath === href
-              ? `text-th-primary`
-              : `border-transparent hover:border-th-primary`
-          }
+        className={`border-b border-th-bkg-4 md:border-none flex justify-between text-th-fgd-1 font-bold items-center md:px-1 py-3 md:py-0 hover:text-th-primary
+          ${asPath === href ? `text-th-primary` : `border-transparent`}
         `}
         target={newWindow ? '_blank' : ''}
         rel={newWindow ? 'noopener noreferrer' : ''}
       >
         {children}
+        <ChevronRightIcon className="md:hidden h-5 w-5" />
       </a>
     </Link>
   )

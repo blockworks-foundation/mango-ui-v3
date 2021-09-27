@@ -215,6 +215,11 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
           </div>
         </Button>
       </div>
+      <div className="flex text-th-fgd-4 text-xxs mt-1 -mb-1">
+        <div className="mx-auto">
+          You need 0.035 SOL to create a mango account.
+        </div>
+      </div>
     </>
   )
 }

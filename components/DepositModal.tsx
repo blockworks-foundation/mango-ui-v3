@@ -12,6 +12,7 @@ import Slider from './Slider'
 import InlineNotification from './InlineNotification'
 import { deposit } from '../utils/mango'
 import { notify } from '../utils/notifications'
+import { sleep } from '../utils'
 
 interface DepositModalProps {
   onClose: () => void
@@ -35,6 +36,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
   const walletTokens = useMangoStore((s) => s.wallet.tokens)
   const actions = useMangoStore((s) => s.actions)
   const [selectedAccount, setSelectedAccount] = useState(walletTokens[0])
+  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
 
   useEffect(() => {
     if (tokenSymbol) {
@@ -80,7 +82,12 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
         })
         setSubmitting(false)
         onClose()
-        actions.fetchMangoAccounts()
+        sleep(500).then(() => {
+          mangoAccount
+            ? actions.reloadMangoAccount()
+            : actions.fetchMangoAccounts()
+          actions.fetchWalletTokens()
+        })
       })
       .catch((err) => {
         notify({
@@ -222,6 +229,13 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
               Next
             </Button>
           </div>
+          {!mangoAccount ? (
+            <div className="flex text-th-fgd-4 text-xxs mt-1">
+              <div className="mx-auto">
+                You need 0.035 SOL to create a mango account.
+              </div>
+            </div>
+          ) : null}
         </>
       ) : (
         <>
@@ -240,10 +254,14 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
             </div>
           </div>
           <div className={`mt-5 flex justify-center`}>
-            <Button onClick={handleDeposit} className="w-full">
+            <Button
+              onClick={handleDeposit}
+              className="w-full"
+              disabled={submitting}
+            >
               <div className={`flex items-center justify-center`}>
                 {submitting && <Loading className="-ml-1 mr-3" />}
-                Confirm
+                Deposit
               </div>
             </Button>
           </div>

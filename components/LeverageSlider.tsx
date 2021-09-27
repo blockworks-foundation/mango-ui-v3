@@ -46,7 +46,7 @@ type SliderProps = {
   onAfterChange?: (x) => void
   step: number
   value: number
-  side: string
+  side: 'buy' | 'sell'
   price: number
   disabled?: boolean
   max?: number
@@ -91,7 +91,7 @@ export default function LeverageSlider({
   }, [mangoGroup, marketConfig])
 
   const { max, deposits, borrows } = useMemo(() => {
-    if (!mangoAccount) return 0
+    if (!mangoAccount) return { max: 0 }
     const priceOrDefault = price
       ? I80F48.fromNumber(price)
       : mangoGroup.getPrice(marketIndex, mangoCache)
