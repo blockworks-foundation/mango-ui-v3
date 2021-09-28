@@ -71,8 +71,10 @@ export default function MarketBalances() {
                       ) : mangoAccount ? (
                         deposit.gt(borrow) ? (
                           deposit.toFixed()
-                        ) : (
+                        ) : borrow.toNumber() > 0 ? (
                           `-${borrow.toFixed()}`
+                        ) : (
+                          0
                         )
                       ) : (
                         0
