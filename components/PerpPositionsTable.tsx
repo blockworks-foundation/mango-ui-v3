@@ -283,7 +283,7 @@ const PositionsTable = () => {
                   <ExpandableRow
                     buttonTemplate={
                       <>
-                        <div className="col-span-11 flex items-center text-fgd-1">
+                        <div className="col-span-11 flex items-center justify-between text-fgd-1">
                           <div className="flex items-center">
                             <img
                               alt=""
@@ -322,15 +322,21 @@ const PositionsTable = () => {
                                         )
                                       )
                                     : 0
-                                } at ${getAvgEntryPrice(
-                                  mangoAccount,
-                                  perpAccount,
-                                  perpMarket,
-                                  perpTradeHistory
-                                )}`}
+                                }`}
                               </div>
                             </div>
                           </div>
+                          {pnl !== null ? (
+                            <span
+                              className={`mr-1.5 ${
+                                pnl > 0 ? 'text-th-green' : 'text-th-red'
+                              }`}
+                            >
+                              {usdFormatter(pnl)}
+                            </span>
+                          ) : (
+                            '--'
+                          )}
                         </div>
                       </>
                     }
@@ -338,6 +344,17 @@ const PositionsTable = () => {
                     index={index}
                     panelTemplate={
                       <>
+                        <div className="col-span-1 text-left">
+                          <div className="pb-0.5 text-th-fgd-3 text-xs">
+                            Ave Entry Price
+                          </div>
+                          {getAvgEntryPrice(
+                            mangoAccount,
+                            perpAccount,
+                            perpMarket,
+                            perpTradeHistory
+                          )}
+                        </div>
                         <div className="col-span-1 text-left">
                           <div className="pb-0.5 text-th-fgd-3 text-xs">
                             Notional Size
@@ -369,15 +386,13 @@ const PositionsTable = () => {
                             PnL
                           </div>
                           {pnl !== null ? (
-                            pnl > 0 ? (
-                              <span className="text-th-green">
-                                {usdFormatter(pnl)}
-                              </span>
-                            ) : (
-                              <span className="text-th-red">
-                                {usdFormatter(pnl)}
-                              </span>
-                            )
+                            <span
+                              className={
+                                pnl > 0 ? 'text-th-green' : 'text-th-red'
+                              }
+                            >
+                              {usdFormatter(pnl)}
+                            </span>
                           ) : (
                             '--'
                           )}
