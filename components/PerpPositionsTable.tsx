@@ -1,7 +1,9 @@
 import { useCallback, useState } from 'react'
+import { useRouter } from 'next/router'
 import useMangoStore from '../stores/useMangoStore'
 import {
   getMarketByPublicKey,
+  getMarketIndexBySymbol,
   PerpMarket,
   ZERO_BN,
 } from '@blockworks-foundation/mango-client'
@@ -67,20 +69,36 @@ const PositionsTable = () => {
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const allMarkets = useMangoStore((s) => s.selectedMangoGroup.markets)
+  const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
+  const marketConfig = useMangoStore((s) => s.selectedMarket.config)
+  const price = useMangoStore((s) => s.tradeForm.price)
   const [showMarketCloseModal, setShowMarketCloseModal] = useState(false)
   const tradeHistory = useTradeHistory()
   const setMangoStore = useMangoStore((s) => s.set)
   const perpPositions = usePerpPositions()
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.md : false
+  const { asPath } = useRouter()
 
   const handleCloseWarning = useCallback(() => {
     setShowMarketCloseModal(false)
   }, [])
 
-  const handleSizeClick = (size) => {
+  const handleSizeClick = (size, side) => {
+    const step = selectedMarket.minOrderSize
+    const marketIndex = getMarketIndexBySymbol(
+      groupConfig,
+      marketConfig.baseSymbol
+    )
+    const priceOrDefault = price
+      ? price
+      : mangoGroup.getPrice(marketIndex, mangoCache).toNumber()
+    const roundedSize = Math.round(size / step) * step
+    const quoteSize = roundedSize * priceOrDefault
     setMangoStore((state) => {
-      state.tradeForm.baseSize = size
+      state.tradeForm.baseSize = roundedSize
+      state.tradeForm.quoteSize = quoteSize.toFixed(2)
+      state.tradeForm.side = side === 'buy' ? 'sell' : 'buy'
     })
   }
 
@@ -137,6 +155,10 @@ const PositionsTable = () => {
                             parseFloat(breakEvenPrice))
                         : null
 
+                    const basePosition = Math.abs(
+                      perpMarket.baseLotsToNumber(perpAccount.basePosition)
+                    )
+
                     return (
                       <TrBody index={index} key={`${marketIndex}`}>
                         <Td>
@@ -165,30 +187,25 @@ const PositionsTable = () => {
                           )}
                         </Td>
                         <Td>
-                          {perpAccount &&
-                          Math.abs(
-                            perpMarket.baseLotsToNumber(
-                              perpAccount.basePosition
-                            )
-                          ) > 0 ? (
-                            <span
-                              className="cursor-pointer underline hover:no-underline"
-                              onClick={() =>
-                                handleSizeClick(
-                                  Math.abs(
-                                    perpMarket.baseLotsToNumber(
-                                      perpAccount.basePosition
-                                    )
+                          {perpAccount && basePosition > 0 ? (
+                            marketConfig.kind === 'perp' &&
+                            asPath.includes(marketConfig.baseSymbol) ? (
+                              <span
+                                className="cursor-pointer underline hover:no-underline"
+                                onClick={() =>
+                                  handleSizeClick(
+                                    basePosition,
+                                    perpAccount.basePosition.gt(ZERO_BN)
+                                      ? 'buy'
+                                      : 'sell'
                                   )
-                                )
-                              }
-                            >
-                              {`${Math.abs(
-                                perpMarket.baseLotsToNumber(
-                                  perpAccount.basePosition
-                                )
-                              )} ${marketConfig.baseSymbol}`}
-                            </span>
+                                }
+                              >
+                                {`${basePosition} ${marketConfig.baseSymbol}`}
+                              </span>
+                            ) : (
+                              `${basePosition} ${marketConfig.baseSymbol}`
+                            )
                           ) : (
                             `0 ${marketConfig.baseSymbol}`
                           )}

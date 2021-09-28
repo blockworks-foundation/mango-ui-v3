@@ -3,7 +3,7 @@ import useMangoStore from '../stores/useMangoStore'
 import { i80f48ToPercent, floorToDecimal } from '../utils/index'
 import Tooltip from './Tooltip'
 import {
-  getTokenBySymbol,
+  getMarketIndexBySymbol,
   nativeI80F48ToUi,
 } from '@blockworks-foundation/mango-client'
 import { useViewport } from '../hooks/useViewport'
@@ -16,11 +16,40 @@ export default function MarketBalances() {
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
+  const setMangoStore = useMangoStore((s) => s.set)
+  const price = useMangoStore((s) => s.tradeForm.price)
   const connected = useMangoStore((s) => s.wallet.connected)
   const isLoading = useMangoStore((s) => s.selectedMangoAccount.initialLoad)
   const baseSymbol = marketConfig.baseSymbol
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
+
+  const handleSizeClick = (size, symbol) => {
+    const step = selectedMarket.minOrderSize
+    const marketIndex = getMarketIndexBySymbol(
+      mangoGroupConfig,
+      marketConfig.baseSymbol
+    )
+    const priceOrDefault = price
+      ? price
+      : mangoGroup.getPrice(marketIndex, mangoGroupCache).toNumber()
+    if (symbol === 'USDC') {
+      const baseSize = Math.floor(size / priceOrDefault / step) * step
+      setMangoStore((state) => {
+        state.tradeForm.baseSize = baseSize
+        state.tradeForm.quoteSize = (baseSize * priceOrDefault).toFixed(2)
+        state.tradeForm.side = 'buy'
+      })
+    } else {
+      const roundedSize = Math.round(size / step) * step
+      const quoteSize = roundedSize * priceOrDefault
+      setMangoStore((state) => {
+        state.tradeForm.baseSize = roundedSize
+        state.tradeForm.quoteSize = quoteSize.toFixed(2)
+        state.tradeForm.side = 'sell'
+      })
+    }
+  }
 
   if (!mangoGroup || !selectedMarket) return null
 
@@ -32,7 +61,7 @@ export default function MarketBalances() {
           {mangoGroupConfig.tokens
             .filter((t) => t.symbol === baseSymbol || t.symbol === 'USDC')
             .reverse()
-            .map(({ symbol, mintKey }) => {
+            .map(({ decimals, symbol, mintKey }) => {
               const tokenIndex = mangoGroup.getTokenIndex(mintKey)
               const deposit = mangoAccount
                 ? mangoAccount.getUiDeposit(
@@ -48,6 +77,21 @@ export default function MarketBalances() {
                     tokenIndex
                   )
                 : null
+
+              const availableBalance = mangoAccount
+                ? floorToDecimal(
+                    nativeI80F48ToUi(
+                      mangoAccount.getAvailableBalance(
+                        mangoGroup,
+                        mangoGroupCache,
+                        tokenIndex
+                      ),
+                      decimals
+                    ).toNumber(),
+                    decimals
+                  )
+                : 0
+
               return (
                 <div
                   className="border border-th-bkg-4 p-4 rounded-md"
@@ -87,21 +131,18 @@ export default function MarketBalances() {
                         Available Balance
                       </div>
                     </Tooltip>
-                    <div className={`text-th-fgd-1`}>
+                    <div
+                      className={`text-th-fgd-1 ${
+                        availableBalance > selectedMarket.minOrderSize
+                          ? 'cursor-pointer underline hover:no-underline'
+                          : ''
+                      }`}
+                      onClick={() => handleSizeClick(availableBalance, symbol)}
+                    >
                       {isLoading ? (
                         <DataLoader />
                       ) : mangoAccount ? (
-                        floorToDecimal(
-                          nativeI80F48ToUi(
-                            mangoAccount.getAvailableBalance(
-                              mangoGroup,
-                              mangoGroupCache,
-                              tokenIndex
-                            ),
-                            mangoGroup.tokens[tokenIndex].decimals
-                          ).toNumber(),
-                          getTokenBySymbol(mangoGroupConfig, symbol).decimals
-                        )
+                        availableBalance
                       ) : (
                         0
                       )}
