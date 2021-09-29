@@ -110,7 +110,9 @@ const MobileTable = ({ openOrders, cancelledOrderId, handleCancelOrder }) => {
                   >
                     {order.side.toUpperCase()}
                   </span>
-                  {`${order.size} at ${formatUsdValue(order.price)}`}
+                  {order.perpTrigger
+                    ? `${order.size} ${order.triggerCondition} ${order.triggerPrice}`
+                    : `${order.size} at ${formatUsdValue(order.price)}`}
                 </div>
               </div>
             </div>
