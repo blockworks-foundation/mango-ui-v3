@@ -167,7 +167,6 @@ const useMangoStore = create<MangoStore>((set, get) => {
     typeof window !== 'undefined'
       ? JSON.parse(localStorage.getItem(NODE_URL_KEY)) || ENDPOINT.url
       : ENDPOINT.url
-  console.log('rpc url', rpcUrl, ENDPOINT.url, rpcUrl === ENDPOINT.url)
 
   const connection = new Connection(rpcUrl, 'processed' as Commitment)
   return {
