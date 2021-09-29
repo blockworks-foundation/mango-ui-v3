@@ -997,7 +997,7 @@
 
 "@blockworks-foundation/mango-client@git+https://github.com/blockworks-foundation/mango-client-v3.git":
   version "3.0.24"
-  resolved "git+https://github.com/blockworks-foundation/mango-client-v3.git#75bb76675224658519b98951d4821966c41c8614"
+  resolved "git+https://github.com/blockworks-foundation/mango-client-v3.git#4cc24f3aec295ee93490eff2352bf98412927fc4"
   dependencies:
     "@project-serum/serum" "0.13.55"
     "@project-serum/sol-wallet-adapter" "^0.2.0"
@@ -1006,7 +1006,7 @@
     axios "^0.21.1"
     big.js "^6.1.1"
     bigint-buffer "^1.1.5"
-    bn.js "^5.1.0"
+    bn.js "^5.2.0"
     buffer-layout "^1.2.1"
     dotenv "^10.0.0"
     dotenv-expand "^5.1.0"
