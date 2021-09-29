@@ -65,7 +65,7 @@ export default function AccountAssets() {
 
     try {
       await mangoClient.settleAll(mangoGroup, mangoAccount, spotMarkets, wallet)
-      actions.fetchMangoAccounts()
+      actions.reloadMangoAccount()
     } catch (e) {
       if (e.message === 'No unsettled funds') {
         notify({

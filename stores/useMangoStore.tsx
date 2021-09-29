@@ -263,7 +263,7 @@ const useMangoStore = create<MangoStore>((set, get) => {
           })
         }
       },
-      async fetchMangoAccounts() {
+      async fetchAllMangoAccounts() {
         const set = get().set
         const mangoGroup = get().selectedMangoGroup.current
         const mangoClient = get().connection.client
@@ -284,14 +284,7 @@ const useMangoStore = create<MangoStore>((set, get) => {
               set((state) => {
                 state.selectedMangoAccount.initialLoad = false
                 state.mangoAccounts = sortedAccounts
-                if (state.selectedMangoAccount.current) {
-                  state.selectedMangoAccount.current = mangoAccounts.find(
-                    (ma) =>
-                      ma.publicKey.equals(
-                        state.selectedMangoAccount.current.publicKey
-                      )
-                  )
-                } else {
+                if (!state.selectedMangoAccount.current) {
                   const lastAccount = localStorage.getItem(LAST_ACCOUNT_KEY)
                   state.selectedMangoAccount.current =
                     mangoAccounts.find(
