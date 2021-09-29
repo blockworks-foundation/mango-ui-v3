@@ -42,7 +42,7 @@ export default function SimpleTradeForm({ initLeverage }) {
     marketConfig.baseSymbol
   )
   const market = useMangoStore((s) => s.selectedMarket.current)
-  const { side, baseSize, quoteSize, price, stopPrice, tradeType } =
+  const { side, baseSize, quoteSize, price, triggerPrice, tradeType } =
     useMangoStore((s) => s.tradeForm)
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
@@ -107,12 +107,12 @@ export default function SimpleTradeForm({ initLeverage }) {
       }
     })
 
-  const setStopPrice = (price) =>
+  const setTriggerPrice = (price) =>
     set((s) => {
       if (!Number.isNaN(parseFloat(price))) {
-        s.tradeForm.stopPrice = parseFloat(price)
+        s.tradeForm.tripperPrice = parseFloat(price)
       } else {
-        s.tradeForm.stopPrice = price
+        s.tradeForm.tripperPrice = price
       }
     })
 
@@ -539,8 +539,8 @@ export default function SimpleTradeForm({ initLeverage }) {
                 type="number"
                 min="0"
                 step={tickSize}
-                onChange={(e) => setStopPrice(e.target.value)}
-                value={stopPrice}
+                onChange={(e) => setTriggerPrice(e.target.value)}
+                value={triggerPrice}
                 prefix={
                   <img
                     src={`/assets/icons/${groupConfig.quoteSymbol.toLowerCase()}.svg`}
@@ -571,8 +571,8 @@ export default function SimpleTradeForm({ initLeverage }) {
                 type="number"
                 min="0"
                 step={tickSize}
-                onChange={(e) => setStopPrice(e.target.value)}
-                value={stopPrice}
+                onChange={(e) => setTriggerPrice(e.target.value)}
+                value={triggerPrice}
                 prefix={
                   <img
                     src={`/assets/icons/${groupConfig.quoteSymbol.toLowerCase()}.svg`}

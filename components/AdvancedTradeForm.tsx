@@ -532,11 +532,13 @@ export default function AdvancedTradeForm({ initLeverage }) {
           <Button
             disabled={disabledTradeButton}
             onClick={onSubmit}
-            className={`${
+            className={`border ${
               !disabledTradeButton
-                ? 'bg-th-bkg-2 border border-th-green hover:border-th-green-dark'
-                : 'border border-th-bkg-4'
-            } text-th-green hover:text-th-fgd-1 hover:bg-th-green-dark flex-grow`}
+                ? side === 'buy'
+                  ? 'bg-th-bkg-2 text-th-green border-th-green hover:border-th-green-dark hover:bg-th-green-dark'
+                  : 'bg-th-bkg-2 text-th-red border-th-red hover:border-th-red-dark hover:bg-th-red-dark'
+                : 'border-th-bkg-4'
+            } hover:text-th-fgd-1 flex-grow`}
           >
             {submitting ? (
               <div className="w-full">
@@ -699,51 +701,37 @@ export default function AdvancedTradeForm({ initLeverage }) {
       ) : null}
       <div className={`flex py-4`}>
         {ipAllowed ? (
-          side === 'buy' ? (
-            <Button
-              disabled={disabledTradeButton}
-              onClick={onSubmit}
-              className={`${
-                !disabledTradeButton
-                  ? 'bg-th-bkg-2 border border-th-green hover:border-th-green-dark'
-                  : 'border border-th-bkg-4'
-              } text-th-green hover:text-th-fgd-1 hover:bg-th-green-dark flex-grow`}
-            >
-              {submitting ? (
-                <div className="w-full">
-                  <Loading className="mx-auto" />
-                </div>
-              ) : (
-                `${baseSize > 0 ? 'Buy ' + baseSize : 'Buy '} ${
-                  marketConfig.name.includes('PERP')
-                    ? marketConfig.name
-                    : marketConfig.baseSymbol
-                }`
-              )}
-            </Button>
-          ) : (
-            <Button
-              disabled={disabledTradeButton}
-              onClick={onSubmit}
-              className={`${
-                !disabledTradeButton
-                  ? 'bg-th-bkg-2 border border-th-red hover:border-th-red-dark'
-                  : 'border border-th-bkg-4'
-              } text-th-red hover:text-th-fgd-1 hover:bg-th-red-dark flex-grow`}
-            >
-              {submitting ? (
-                <div className="w-full">
-                  <Loading className="mx-auto" />
-                </div>
-              ) : (
-                `${baseSize > 0 ? 'Sell ' + baseSize : 'Sell '} ${
-                  marketConfig.name.includes('PERP')
-                    ? marketConfig.name
-                    : marketConfig.baseSymbol
-                }`
-              )}
-            </Button>
-          )
+          <Button
+            disabled={disabledTradeButton}
+            onClick={onSubmit}
+            className={`${
+              !disabledTradeButton
+                ? 'bg-th-bkg-2 border '
+                : 'border border-th-bkg-4'
+            } ${
+              side === 'buy'
+                ? 'text-th-green border-th-green hover:border-th-green-dark hover:bg-th-green-dark'
+                : 'text-th-red border-th-red hover:border-th-red-dark hover:bg-th-red-dark'
+            } hover:text-th-fgd-1 hover:bg-th-red-dark flex-grow`}
+          >
+            {submitting ? (
+              <div className="w-full">
+                <Loading className="mx-auto" />
+              </div>
+            ) : (
+              `${
+                baseSize > 0
+                  ? (side === 'buy' ? 'Buy ' : 'Sell ') + baseSize
+                  : side === 'buy'
+                  ? 'Buy '
+                  : 'Sell '
+              } ${
+                marketConfig.name.includes('PERP')
+                  ? marketConfig.name
+                  : marketConfig.baseSymbol
+              }`
+            )}
+          </Button>
         ) : (
           <Button disabled className="flex-grow">
             <span>Country Not Allowed</span>
