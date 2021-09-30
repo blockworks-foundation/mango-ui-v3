@@ -25,6 +25,13 @@ const NODE_URLS = [
 const CUSTOM_NODE = NODE_URLS.find((n) => n.label === 'Custom')
 
 export const NODE_URL_KEY = 'node-url-key-0.4'
+export const DEFAULT_MARKET_KEY = 'defaultMarket'
+export const initialMarket = {
+  base: 'BTC',
+  kind: 'perp',
+  name: 'BTC-PERP',
+  path: '/perp/BTC',
+}
 
 const SettingsModal = ({ isOpen, onClose }) => {
   const [settingsView, setSettingsView] = useState('')
@@ -32,12 +39,10 @@ const SettingsModal = ({ isOpen, onClose }) => {
     NODE_URL_KEY,
     NODE_URLS[0].value
   )
-  const [defaultMarket] = useLocalStorageState('defaultMarket', {
-    base: 'BTC',
-    kind: 'perp',
-    name: 'BTC-PERP',
-    path: '/perp/BTC',
-  })
+  const [defaultMarket] = useLocalStorageState(
+    DEFAULT_MARKET_KEY,
+    initialMarket
+  )
   const rpcEndpoint =
     NODE_URLS.find((node) => node.value === rpcEndpointUrl) || CUSTOM_NODE
   return (
@@ -57,23 +62,23 @@ const SettingsModal = ({ isOpen, onClose }) => {
       {!settingsView ? (
         <div className="border-b border-th-bkg-4">
           <button
-            className="border-t border-th-bkg-4 flex items-center justify-between py-3 text-th-fgd-1 w-full focus:outline-none"
+            className="border-t border-th-bkg-4 default-transition flex font-normal items-center justify-between py-3 text-th-fgd-1 w-full hover:text-th-primary focus:outline-none"
             onClick={() => setSettingsView('Default Market')}
           >
             <span>Default Market</span>
             <div className="flex items-center text-th-fgd-3 text-xs">
               {defaultMarket.name}
-              <ChevronRightIcon className="h-5 w-5 text-th-primary" />
+              <ChevronRightIcon className="h-5 ml-1 w-5 text-th-primary" />
             </div>
           </button>
           <button
-            className="border-t border-th-bkg-4 flex items-center justify-between py-3 text-th-fgd-1 w-full focus:outline-none"
+            className="border-t border-th-bkg-4 default-transition flex font-normal items-center justify-between py-3 text-th-fgd-1 w-full hover:text-th-primary focus:outline-none"
             onClick={() => setSettingsView('RPC Endpoint')}
           >
             <span>RPC Endpoint</span>
             <div className="flex items-center text-th-fgd-3 text-xs">
               {rpcEndpoint.label}
-              <ChevronRightIcon className="h-5 w-5 text-th-primary" />
+              <ChevronRightIcon className="h-5 ml-1 w-5 text-th-primary" />
             </div>
           </button>
         </div>
@@ -82,6 +87,11 @@ const SettingsModal = ({ isOpen, onClose }) => {
         settingsView={settingsView}
         setSettingsView={setSettingsView}
       />
+      {!settingsView ? (
+        <div className="flex justify-center pt-6">
+          <Button onClick={onClose}>Done</Button>
+        </div>
+      ) : null}
     </Modal>
   )
 }
@@ -106,7 +116,7 @@ const DefaultMarketSettings = ({ setSettingsView }) => {
     ...groupConfig.perpMarkets,
   ].sort((a, b) => a.name.localeCompare(b.name))
   const [defaultMarket, setDefaultMarket] = useLocalStorageState(
-    'defaultMarket',
+    DEFAULT_MARKET_KEY,
     {
       base: 'BTC',
       kind: 'perp',
