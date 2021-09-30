@@ -9,6 +9,8 @@ import usePerpPositions from '../hooks/usePerpPositions'
 import MarketCloseModal from './MarketCloseModal'
 import { ExpandableRow } from './TableElements'
 import PerpSideBadge from './PerpSideBadge'
+import PnlText from './PnlText'
+import { BN } from 'bn.js'
 
 const PositionsTable = () => {
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
@@ -44,6 +46,7 @@ const PositionsTable = () => {
                     <Th>Notional Size</Th>
                     <Th>Avg entry Price</Th>
                     <Th>Break-even Price</Th>
+                    <Th>Unrealized PnL</Th>
                     <Th>Unsettled PnL</Th>
                   </TrHead>
                 </thead>
@@ -57,7 +60,8 @@ const PositionsTable = () => {
                         perpAccount,
                         avgEntryPrice,
                         breakEvenPrice,
-                        pnl,
+                        unrealizedPnl,
+                        unsettledPnl,
                       },
                       index
                     ) => {
@@ -124,19 +128,10 @@ const PositionsTable = () => {
                           <Td>{avgEntryPrice != 0 ? avgEntryPrice : '--'}</Td>
                           <Td>{breakEvenPrice != 0 ? breakEvenPrice : '--'}</Td>
                           <Td>
-                            {pnl !== null ? (
-                              pnl > 0 ? (
-                                <span className="text-th-green">
-                                  {usdFormatter(pnl)}
-                                </span>
-                              ) : (
-                                <span className="text-th-red">
-                                  {usdFormatter(pnl)}
-                                </span>
-                              )
-                            ) : (
-                              '--'
-                            )}
+                            <PnlText pnl={unrealizedPnl} />
+                          </Td>
+                          <Td>
+                            <PnlText pnl={unsettledPnl} />
                           </Td>
                           {showMarketCloseModal ? (
                             <MarketCloseModal
@@ -153,133 +148,115 @@ const PositionsTable = () => {
                 </tbody>
               </Table>
             ) : (
-              perpPositions.map(
-                (
-                  {
-                    marketIndex,
-                    marketConfig,
-                    perpMarket,
-                    perpAccount,
-                    avgEntryPrice,
-                    breakEvenPrice,
-                    pnl,
-                  },
-                  index
-                ) => {
-                  return (
-                    <ExpandableRow
-                      buttonTemplate={
-                        <>
-                          <div className="col-span-11 flex items-center justify-between text-fgd-1">
-                            <div className="flex items-center">
-                              <img
-                                alt=""
-                                width="20"
-                                height="20"
-                                src={`/assets/icons/${marketConfig.baseSymbol.toLowerCase()}.svg`}
-                                className={`mr-2.5`}
-                              />
-                              <div>
-                                <div className="mb-0.5 text-left">
-                                  {marketConfig.name}
-                                </div>
-                                <div className="text-th-fgd-3 text-xs">
-                                  <span
-                                    className={`mr-1
+              perpPositions
+                .filter((p) => !p.perpAccount.basePosition.eq(new BN(0)))
+                .map(
+                  (
+                    {
+                      marketIndex,
+                      marketConfig,
+                      perpMarket,
+                      perpAccount,
+                      avgEntryPrice,
+                      breakEvenPrice,
+                      unrealizedPnl,
+                    },
+                    index
+                  ) => {
+                    return (
+                      <ExpandableRow
+                        buttonTemplate={
+                          <>
+                            <div className="col-span-11 flex items-center justify-between text-fgd-1">
+                              <div className="flex items-center">
+                                <img
+                                  alt=""
+                                  width="20"
+                                  height="20"
+                                  src={`/assets/icons/${marketConfig.baseSymbol.toLowerCase()}.svg`}
+                                  className={`mr-2.5`}
+                                />
+                                <div>
+                                  <div className="mb-0.5 text-left">
+                                    {marketConfig.name}
+                                  </div>
+                                  <div className="text-th-fgd-3 text-xs">
+                                    <span
+                                      className={`mr-1
                                 ${
                                   perpAccount.basePosition.gt(ZERO_BN)
                                     ? 'text-th-green'
                                     : 'text-th-red'
                                 }
                               `}
-                                  >
-                                    {perpAccount.basePosition.gt(ZERO_BN)
-                                      ? 'LONG'
-                                      : 'SHORT'}
-                                  </span>
-                                  {`${
-                                    Math.abs(
-                                      perpMarket.baseLotsToNumber(
-                                        perpAccount.basePosition
-                                      )
-                                    ) > 0
-                                      ? Math.abs(
-                                          perpMarket.baseLotsToNumber(
-                                            perpAccount.basePosition
-                                          )
+                                    >
+                                      {perpAccount.basePosition.gt(ZERO_BN)
+                                        ? 'LONG'
+                                        : 'SHORT'}
+                                    </span>
+                                    {`${
+                                      Math.abs(
+                                        perpMarket.baseLotsToNumber(
+                                          perpAccount.basePosition
                                         )
-                                      : 0
-                                  }`}
+                                      ) > 0
+                                        ? Math.abs(
+                                            perpMarket.baseLotsToNumber(
+                                              perpAccount.basePosition
+                                            )
+                                          )
+                                        : 0
+                                    }`}
+                                  </div>
                                 </div>
                               </div>
+                              <PnlText className="mr-1.5" pnl={unrealizedPnl} />
                             </div>
-                            {pnl !== null ? (
-                              <span
-                                className={`mr-1.5 ${
-                                  pnl > 0 ? 'text-th-green' : 'text-th-red'
-                                }`}
-                              >
-                                {usdFormatter(pnl)}
-                              </span>
-                            ) : (
-                              '--'
-                            )}
-                          </div>
-                        </>
-                      }
-                      key={`${index}`}
-                      index={index}
-                      panelTemplate={
-                        <>
-                          <div className="col-span-1 text-left">
-                            <div className="pb-0.5 text-th-fgd-3 text-xs">
-                              Ave Entry Price
+                          </>
+                        }
+                        key={`${index}`}
+                        index={index}
+                        panelTemplate={
+                          <>
+                            <div className="col-span-1 text-left">
+                              <div className="pb-0.5 text-th-fgd-3 text-xs">
+                                Ave Entry Price
+                              </div>
+                              {avgEntryPrice != 0 ? avgEntryPrice : '--'}
                             </div>
-                            {avgEntryPrice != 0 ? avgEntryPrice : '--'}
-                          </div>
-                          <div className="col-span-1 text-left">
-                            <div className="pb-0.5 text-th-fgd-3 text-xs">
-                              Notional Size
+                            <div className="col-span-1 text-left">
+                              <div className="pb-0.5 text-th-fgd-3 text-xs">
+                                Notional Size
+                              </div>
+                              {usdFormatter(
+                                Math.abs(
+                                  perpMarket.baseLotsToNumber(
+                                    perpAccount.basePosition
+                                  ) *
+                                    mangoGroup
+                                      .getPrice(marketIndex, mangoCache)
+                                      .toNumber()
+                                )
+                              )}
                             </div>
-                            {usdFormatter(
-                              Math.abs(
-                                perpMarket.baseLotsToNumber(
-                                  perpAccount.basePosition
-                                ) *
-                                  mangoGroup
-                                    .getPrice(marketIndex, mangoCache)
-                                    .toNumber()
-                              )
-                            )}
-                          </div>
-                          <div className="col-span-1 text-left">
-                            <div className="pb-0.5 text-th-fgd-3 text-xs">
-                              Break-even Price
+                            <div className="col-span-1 text-left">
+                              <div className="pb-0.5 text-th-fgd-3 text-xs">
+                                Break-even Price
+                              </div>
+                              {breakEvenPrice != 0 ? avgEntryPrice : '--'}
                             </div>
-                            {breakEvenPrice != 0 ? avgEntryPrice : '--'}
-                          </div>
-                          <div className="col-span-1 text-left">
-                            <div className="pb-0.5 text-th-fgd-3 text-xs">
-                              PnL
+                            <div className="col-span-1 text-left">
+                              <div className="pb-0.5 text-th-fgd-3 text-xs">
+                                Unrealized PnL
+                              </div>
+                              <PnlText pnl={unrealizedPnl} />
                             </div>
-                            {pnl !== null ? (
-                              <span
-                                className={
-                                  pnl > 0 ? 'text-th-green' : 'text-th-red'
-                                }
-                              >
-                                {usdFormatter(pnl)}
-                              </span>
-                            ) : (
-                              '--'
-                            )}
-                          </div>
-                        </>
-                      }
-                    />
-                  )
-                }
-              )
+                          </>
+                        }
+                      />
+                    )
+                  }
+                )
             )
           ) : (
             <div

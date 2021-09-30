@@ -40,7 +40,12 @@ const usePerpPositions = () => {
           .getBreakEvenPrice(mangoAccount, perpMarket, perpTradeHistory)
           .toNumber()
 
-        const pnl = +nativeI80F48ToUi(
+        const unrealizedPnl =
+          perpMarket.baseLotsToNumber(perpAccount.basePosition) *
+          (mangoGroup.getPrice(marketIndex, mangoCache).toNumber() -
+            parseFloat(breakEvenPrice))
+
+        const unsettledPnl = +nativeI80F48ToUi(
           perpAccount.getPnl(
             mangoGroup.perpMarkets[marketIndex],
             mangoCache.perpMarketCache[marketIndex],
@@ -58,13 +63,15 @@ const usePerpPositions = () => {
           perpAccount,
           avgEntryPrice,
           breakEvenPrice,
-          pnl,
+          unrealizedPnl,
+          unsettledPnl,
         }
       })
     : []
+
   const filteredPerpAccounts = perpAccounts.filter(
-    ({ perpAccount, pnl }) =>
-      !perpAccount.basePosition.eq(new BN(0)) || pnl != 0
+    ({ perpAccount, unsettledPnl }) =>
+      !perpAccount.basePosition.eq(new BN(0)) || unsettledPnl != 0
   )
 
   return filteredPerpAccounts
