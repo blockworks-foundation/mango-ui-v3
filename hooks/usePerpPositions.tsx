@@ -32,6 +32,8 @@ const usePerpPositions = () => {
         )
 
         const perpAccount = mangoAccount.perpAccounts[marketIndex]
+
+        // TODO: catch exceptions
         const avgEntryPrice = perpAccount
           .getAverageOpenPrice(mangoAccount, perpMarket, perpTradeHistory)
           .toNumber()
