@@ -30,8 +30,7 @@ const Input = ({
     <div className={`flex relative ${wrapperClassName}`}>
       {prefix ? (
         <div
-          className={`flex items-center justify-end p-2 border border-r-0 
-          border-th-fgd-4 bg-th-bkg-2 text-xs rounded-md rounded-r-none text-right ${prefixClassName}`}
+          className={`absolute left-2 top-1/2 transform -translate-y-1/2 ${prefixClassName}`}
         >
           {prefix}
         </div>
@@ -40,7 +39,7 @@ const Input = ({
         type={type}
         value={value}
         onChange={onChange}
-        className={`${className} pb-px px-2 flex-1 bg-th-bkg-1 rounded-md h-10 text-th-fgd-1 w-full
+        className={`${className} bg-th-bkg-1 pb-px px-2 flex-1 rounded-md h-10 text-th-fgd-1 w-full
           border ${
             error ? 'border-th-red' : 'border-th-fgd-4'
           } default-transition hover:border-th-primary 
@@ -50,7 +49,7 @@ const Input = ({
               ? 'bg-th-bkg-3 cursor-not-allowed hover:border-th-fgd-4 text-th-fgd-3'
               : ''
           }
-            ${prefix ? 'rounded-l-none' : ''}`}
+          ${prefix ? 'pl-7' : ''}`}
         disabled={disabled}
         {...props}
       />

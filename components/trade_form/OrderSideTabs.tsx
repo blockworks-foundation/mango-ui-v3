@@ -1,19 +1,21 @@
 import { FunctionComponent } from 'react'
 import { PerpMarket } from '@blockworks-foundation/mango-client'
-import useMangoStore from '../stores/useMangoStore'
+import useMangoStore from '../../stores/useMangoStore'
 
 interface OrderSideTabsProps {
+  isSimpleForm?: boolean
   onChange: (x) => void
   side: string
 }
 
 const OrderSideTabs: FunctionComponent<OrderSideTabsProps> = ({
-  side,
+  isSimpleForm,
   onChange,
+  side,
 }) => {
   const market = useMangoStore((s) => s.selectedMarket.current)
   return (
-    <div className={`border-b border-th-fgd-4 mb-4 relative`}>
+    <div className={`border-b border-th-fgd-4 mb-2 md:mb-4 relative`}>
       <div
         className={`absolute ${
           side === 'buy'
@@ -24,7 +26,7 @@ const OrderSideTabs: FunctionComponent<OrderSideTabsProps> = ({
       <nav className="-mb-px flex" aria-label="Tabs">
         <button
           onClick={() => onChange('buy')}
-          className={`cursor-pointer default-transition flex font-semibold items-center justify-center p-2 relative text-base w-1/2 whitespace-nowrap hover:opacity-100
+          className={`cursor-pointer default-transition flex font-semibold items-center justify-center pb-2 md:py-2 relative text-base w-1/2 whitespace-nowrap hover:opacity-100
                     ${
                       side === 'buy'
                         ? `text-th-green`
@@ -32,11 +34,11 @@ const OrderSideTabs: FunctionComponent<OrderSideTabsProps> = ({
                     }
                   `}
         >
-          {market instanceof PerpMarket ? 'Long' : 'Buy'}
+          {market instanceof PerpMarket && isSimpleForm ? 'Long' : 'Buy'}
         </button>
         <button
           onClick={() => onChange('sell')}
-          className={`cursor-pointer default-transition flex font-semibold items-center justify-center p-2 relative text-base w-1/2 whitespace-nowrap hover:opacity-100
+          className={`cursor-pointer default-transition flex font-semibold items-center justify-center pb-2 relative text-base w-1/2 whitespace-nowrap hover:opacity-100
                     ${
                       side === 'sell'
                         ? `text-th-red`
@@ -44,7 +46,7 @@ const OrderSideTabs: FunctionComponent<OrderSideTabsProps> = ({
                     }
                   `}
         >
-          {market instanceof PerpMarket ? 'Short' : 'Sell'}
+          {market instanceof PerpMarket && isSimpleForm ? 'Short' : 'Sell'}
         </button>
       </nav>
     </div>
