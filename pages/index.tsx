@@ -1,3 +1,5 @@
+// import { useEffect } from 'react'
+// import { useRouter } from 'next/router'
 import TopBar from '../components/TopBar'
 import TradePageGrid from '../components/TradePageGrid'
 import MarketSelect from '../components/MarketSelect'
@@ -7,6 +9,24 @@ import { PageBodyWrapper } from '../components/styles'
 
 const Index = () => {
   const [alphaAccepted] = useLocalStorageState(ALPHA_MODAL_KEY, false)
+  // const [defaultMarket] = useLocalStorageState(
+  //   'defaultMarket',
+  //   JSON.stringify({
+  //     base: 'BTC',
+  //     kind: 'perp',
+  //     name: 'BTC-PERP',
+  //     path: '/perp/BTC',
+  //   })
+  // )
+  // const parsedDefaultMarket = JSON.parse(defaultMarket)
+  // const router = useRouter()
+
+  // useEffect(() => {
+  //   const { pathname } = router
+  //   if (pathname == '/') {
+  //     router.push(parsedDefaultMarket.path)
+  //   }
+  // }, [])
 
   return (
     <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all `}>

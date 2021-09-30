@@ -169,6 +169,18 @@ const useMangoStore = create<MangoStore>((set, get) => {
       : ENDPOINT.url
   console.log('rpc url', rpcUrl, ENDPOINT.url, rpcUrl === ENDPOINT.url)
 
+  const defaultMarket =
+    typeof window !== 'undefined'
+      ? JSON.parse(localStorage.getItem('defaultMarket')) || {
+          base: 'BTC',
+          kind: 'perp',
+          name: 'BTC-PERP',
+          path: '/perp/BTC',
+        }
+      : { base: 'BTC', kind: 'perp', name: 'BTC-PERP', path: '/perp/BTC' }
+
+  console.log(defaultMarket)
+
   const connection = new Connection(rpcUrl, 'processed' as Commitment)
   return {
     notifications: [],
@@ -192,10 +204,10 @@ const useMangoStore = create<MangoStore>((set, get) => {
     selectedMarket: {
       config: getMarketByBaseSymbolAndKind(
         DEFAULT_MANGO_GROUP_CONFIG,
-        'BTC',
-        'perp'
+        defaultMarket.base,
+        defaultMarket.kind
       ) as MarketConfig,
-      kind: 'perp',
+      kind: defaultMarket.kind,
       current: null,
       markPrice: 0,
       askInfo: null,
