@@ -22,10 +22,10 @@ import Tooltip from '../Tooltip'
 import OrderSideTabs from './OrderSideTabs'
 import { ElementTitle } from '../styles'
 import ButtonGroup from '../ButtonGroup'
-import SlippageWarning from './SlippageWarning'
 import Checkbox from '../Checkbox'
 import { useViewport } from '../../hooks/useViewport'
 import { breakpoints } from '../TradePageGrid'
+import EstPriceImpact from './EstPriceImpact'
 
 interface AdvancedTradeFormProps {
   initLeverage?: number
@@ -72,10 +72,12 @@ export default function AdvancedTradeForm({
   const isMarketOrder = ['Market', 'Stop Loss', 'Take Profit'].includes(
     tradeType
   )
+  const isTriggerLimit = ['Stop Limit', 'Take Profit Limit'].includes(tradeType)
+
   const isTriggerOrder = [
     'Stop Loss',
-    'Stop Limit',
     'Take Profit',
+    'Stop Limit',
     'Take Profit Limit',
   ].includes(tradeType)
 
@@ -530,46 +532,39 @@ export default function AdvancedTradeForm({
         </span>
       </ElementTitle>
       <OrderSideTabs onChange={onChangeSide} side={side} />
-      <div className="grid grid-cols-12 md:gap-2 text-left">
-        <div className="col-span-12 md:col-span-2 flex items-center">
-          <label className="text-xxs md:text-xs text-th-fgd-3">Type</label>
-        </div>
-        <div className="col-span-12 md:col-span-10 pb-2 md:pb-0">
+      <div className="grid grid-cols-12 gap-2 text-left">
+        <div className="col-span-12 md:col-span-6">
+          <label className="text-xxs text-th-fgd-3">Type</label>
           <TradeType
             onChange={onTradeTypeChange}
             value={tradeType}
             offerTriggers={isPerpMarket}
           />
         </div>
-        <div className="col-span-12 md:col-span-2 flex items-center">
-          <label className="text-xxs md:text-xs text-th-fgd-3">Price</label>
-        </div>
-        <div className="col-span-12 md:col-span-10 pb-2 md:pb-0">
-          <Input
-            type="number"
-            min="0"
-            step={tickSize}
-            onChange={(e) => onSetPrice(e.target.value)}
-            value={price}
-            disabled={isMarketOrder}
-            placeholder={tradeType === 'Market' ? markPrice : null}
-            prefix={
-              <img
-                src={`/assets/icons/${groupConfig.quoteSymbol.toLowerCase()}.svg`}
-                width="16"
-                height="16"
+        <div className="col-span-12 md:col-span-6">
+          {!isTriggerOrder ? (
+            <>
+              <label className="text-xxs text-th-fgd-3">Price</label>
+              <Input
+                type="number"
+                min="0"
+                step={tickSize}
+                onChange={(e) => onSetPrice(e.target.value)}
+                value={price}
+                disabled={isMarketOrder}
+                placeholder={tradeType === 'Market' ? markPrice : null}
+                prefix={
+                  <img
+                    src={`/assets/icons/${groupConfig.quoteSymbol.toLowerCase()}.svg`}
+                    width="16"
+                    height="16"
+                  />
+                }
               />
-            }
-          />
-        </div>
-        {isTriggerOrder && (
-          <>
-            <div className="col-span-12 md:col-span-2 flex items-center">
-              <label className="text-xxs md:text-xs text-th-fgd-3">
-                Trigger Price
-              </label>
-            </div>
-            <div className="col-span-12 md:col-span-10 pb-2 md:pb-0">
+            </>
+          ) : (
+            <>
+              <label className="text-xxs text-th-fgd-3">Trigger Price</label>
               <Input
                 type="number"
                 min="0"
@@ -584,47 +579,65 @@ export default function AdvancedTradeForm({
                   />
                 }
               />
+            </>
+          )}
+        </div>
+        {isTriggerLimit && (
+          <>
+            <div className="col-span-12">
+              <label className="text-xxs text-th-fgd-3">Price</label>
+              <Input
+                type="number"
+                min="0"
+                step={tickSize}
+                onChange={(e) => onSetPrice(e.target.value)}
+                value={price}
+                prefix={
+                  <img
+                    src={`/assets/icons/${groupConfig.quoteSymbol.toLowerCase()}.svg`}
+                    width="16"
+                    height="16"
+                  />
+                }
+              />
             </div>
           </>
         )}
-        <div className="col-span-12 md:col-span-2 flex items-center">
-          <label className="text-xxs md:text-xs text-th-fgd-3">Size</label>
+        <div className="col-span-6">
+          <label className="text-xxs text-th-fgd-3">Size</label>
+          <Input
+            type="number"
+            min="0"
+            step={minOrderSize}
+            onChange={(e) => onSetBaseSize(e.target.value)}
+            value={baseSize}
+            prefix={
+              <img
+                src={`/assets/icons/${marketConfig.baseSymbol.toLowerCase()}.svg`}
+                width="16"
+                height="16"
+              />
+            }
+          />
         </div>
-        <div className="col-span-12 md:col-span-10 pb-2 md:pb-0">
-          <Input.Group className="-mb-1">
-            <Input
-              type="number"
-              min="0"
-              step={minOrderSize}
-              onChange={(e) => onSetBaseSize(e.target.value)}
-              value={baseSize}
-              wrapperClassName="mr-0.5 w-1/2"
-              prefix={
-                <img
-                  src={`/assets/icons/${marketConfig.baseSymbol.toLowerCase()}.svg`}
-                  width="16"
-                  height="16"
-                />
-              }
-            />
-            <Input
-              type="number"
-              min="0"
-              step={minOrderSize}
-              onChange={(e) => onSetQuoteSize(e.target.value)}
-              value={quoteSize}
-              wrapperClassName="ml-0.5 w-1/2"
-              prefix={
-                <img
-                  src={`/assets/icons/${groupConfig.quoteSymbol.toLowerCase()}.svg`}
-                  width="16"
-                  height="16"
-                />
-              }
-            />
-          </Input.Group>
+        <div className="col-span-6">
+          <label className="text-xxs text-th-fgd-3">Quantity</label>
+          <Input
+            type="number"
+            min="0"
+            step={minOrderSize}
+            onChange={(e) => onSetQuoteSize(e.target.value)}
+            value={quoteSize}
+            prefix={
+              <img
+                src={`/assets/icons/${groupConfig.quoteSymbol.toLowerCase()}.svg`}
+                width="16"
+                height="16"
+              />
+            }
+          />
         </div>
-        <div className="col-span-12 md:col-span-10 md:col-start-3">
+        <div className="col-span-12 -mt-1">
           <ButtonGroup
             activeValue={positionSizePercent}
             onChange={(p) => handleSetPositionSize(p)}
@@ -719,6 +732,11 @@ export default function AdvancedTradeForm({
               </div>
             ) : null}
           </div>
+          {tradeType === 'Market' ? (
+            <div className="col-span-12 md:col-span-10 md:col-start-3 pt-2">
+              <EstPriceImpact />
+            </div>
+          ) : null}
           <div className={`flex pt-4`}>
             {ipAllowed ? (
               <Button
@@ -774,11 +792,6 @@ export default function AdvancedTradeForm({
               </Button>
             )}
           </div>
-          {tradeType === 'Market' ? (
-            <div className="col-span-12 md:col-span-10 md:col-start-3 pt-2">
-              <SlippageWarning slippage={0.2} />
-            </div>
-          ) : null}
           <div className="flex text-xs text-th-fgd-4 pt-4">
             <MarketFee />
           </div>

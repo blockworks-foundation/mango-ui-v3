@@ -15,7 +15,7 @@ const OrderSideTabs: FunctionComponent<OrderSideTabsProps> = ({
 }) => {
   const market = useMangoStore((s) => s.selectedMarket.current)
   return (
-    <div className={`border-b border-th-fgd-4 mb-2 md:mb-4 relative`}>
+    <div className={`border-b border-th-fgd-4 mb-3 relative`}>
       <div
         className={`absolute ${
           side === 'buy'

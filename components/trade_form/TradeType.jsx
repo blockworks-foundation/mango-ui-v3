@@ -22,7 +22,7 @@ const TradeType = ({
         {({ open }) => (
           <>
             <Listbox.Button
-              className={`font-normal h-full w-full bg-th-bkg-1 border border-th-fgd-4 p-2 hover:border-th-primary rounded-md focus:outline-none focus:border-th-primary`}
+              className={`font-normal w-full bg-th-bkg-1 border border-th-fgd-4 px-2 h-10 hover:border-th-primary rounded-md focus:outline-none focus:border-th-primary`}
             >
               <div className={`flex items-center justify-between space-x-4`}>
                 <span>{value}</span>

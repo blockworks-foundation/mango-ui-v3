@@ -21,7 +21,7 @@ import ButtonGroup from '../ButtonGroup'
 import Checkbox from '../Checkbox'
 import OrderSideTabs from './OrderSideTabs'
 import Tooltip from '../Tooltip'
-import SlippageWarning from './SlippageWarning'
+import EstPriceImpact from './EstPriceImpact'
 
 export default function SimpleTradeForm({ initLeverage }) {
   const set = useMangoStore((s) => s.set)
@@ -425,20 +425,17 @@ export default function SimpleTradeForm({ initLeverage }) {
       </ElementTitle>
       <OrderSideTabs isSimpleForm onChange={setSide} side={side} />
       <div className="grid grid-cols-12 gap-2 text-left">
-        <div className="col-span-2 flex items-center">
-          <label className="text-xs text-th-fgd-3">Type</label>
-        </div>
-        <div className="col-span-10">
+        <div className="col-span-6">
+          <label className="text-xxs text-th-fgd-3">Type</label>
           <ButtonGroup
             activeValue={tradeType}
+            className="h-10"
             onChange={(p) => onTradeTypeChange(p)}
             values={['Limit', 'Market']}
           />
         </div>
-        <div className="col-span-2 flex items-center">
-          <label className="text-xs text-th-fgd-3">Price</label>
-        </div>
-        <div className="col-span-10">
+        <div className="col-span-6">
+          <label className="text-xxs text-th-fgd-3">Price</label>
           <Input
             type="number"
             min="0"
@@ -456,50 +453,49 @@ export default function SimpleTradeForm({ initLeverage }) {
             }
           />
         </div>
-        <div className="col-span-2 flex items-center">
-          <label className="text-xs text-th-fgd-3">Size</label>
-        </div>
-        <div className="col-span-10">
-          <Input.Group className="-mb-1">
-            <Input
-              type="number"
-              min="0"
-              step={minOrderSize}
-              onChange={(e) => onSetBaseSize(e.target.value)}
-              value={baseSize}
-              wrapperClassName="mr-0.5 w-1/2"
-              prefix={
-                <img
-                  src={`/assets/icons/${marketConfig.baseSymbol.toLowerCase()}.svg`}
-                  width="16"
-                  height="16"
-                />
-              }
-            />
-            <Input
-              type="number"
-              min="0"
-              step={minOrderSize}
-              onChange={(e) => onSetQuoteSize(e.target.value)}
-              value={quoteSize}
-              wrapperClassName="ml-0.5 w-1/2"
-              prefix={
-                <img
-                  src={`/assets/icons/${groupConfig.quoteSymbol.toLowerCase()}.svg`}
-                  width="16"
-                  height="16"
-                />
-              }
-            />
-          </Input.Group>
-        </div>
-        <div className="col-span-10 col-start-3 pb-2">
-          <ButtonGroup
-            activeValue={positionSizePercent}
-            onChange={(p) => handleSetPositionSize(p)}
-            unit="%"
-            values={['10', '25', '50', '75', '100']}
+        <div className="col-span-6">
+          <label className="text-xxs text-th-fgd-3">Size</label>
+          <Input
+            type="number"
+            min="0"
+            step={minOrderSize}
+            onChange={(e) => onSetBaseSize(e.target.value)}
+            value={baseSize}
+            prefix={
+              <img
+                src={`/assets/icons/${marketConfig.baseSymbol.toLowerCase()}.svg`}
+                width="16"
+                height="16"
+              />
+            }
           />
+        </div>
+        <div className="col-span-6">
+          <label className="text-xxs text-th-fgd-3">Quantity</label>
+          <Input
+            type="number"
+            min="0"
+            step={minOrderSize}
+            onChange={(e) => onSetQuoteSize(e.target.value)}
+            value={quoteSize}
+            prefix={
+              <img
+                src={`/assets/icons/${groupConfig.quoteSymbol.toLowerCase()}.svg`}
+                width="16"
+                height="16"
+              />
+            }
+          />
+        </div>
+        <div className="col-span-12">
+          <div className="-mt-1">
+            <ButtonGroup
+              activeValue={positionSizePercent}
+              onChange={(p) => handleSetPositionSize(p)}
+              unit="%"
+              values={['10', '25', '50', '75', '100']}
+            />
+          </div>
           {side === 'sell' ? (
             <div className="text-th-fgd-3 text-xs tracking-normal mt-2">
               <span>{roundedDeposits > 0 ? closeDepositString : null}</span>
@@ -514,7 +510,7 @@ export default function SimpleTradeForm({ initLeverage }) {
               <div
                 className={`${
                   showStopForm ? 'bg-th-bkg-4' : 'bg-th-bkg-3'
-                } mt-2 p-2 rounded-md w-1/2`}
+                } mt-1 p-2 rounded-md w-1/2`}
               >
                 <Checkbox
                   checked={showStopForm}
@@ -528,7 +524,7 @@ export default function SimpleTradeForm({ initLeverage }) {
               <div
                 className={`${
                   showTakeProfitForm ? 'bg-th-bkg-4' : 'bg-th-bkg-3'
-                } mt-2 p-2 rounded-md w-1/2`}
+                } mt-1 p-2 rounded-md w-1/2`}
               >
                 <Checkbox
                   checked={showTakeProfitForm}
@@ -542,10 +538,8 @@ export default function SimpleTradeForm({ initLeverage }) {
         </div>
         {showStopForm && !hideProfitStop ? (
           <>
-            <div className="col-span-2 flex items-center">
-              <label className="text-xs text-th-fgd-3">Stop Price</label>
-            </div>
-            <div className="col-span-10 -mb-1">
+            <div className="col-span-12">
+              <label className="text-xxs text-th-fgd-3">Stop Price</label>
               <Input
                 type="number"
                 min="0"
@@ -561,7 +555,7 @@ export default function SimpleTradeForm({ initLeverage }) {
                 }
               />
             </div>
-            <div className="col-span-10 col-start-3 pb-2">
+            <div className="col-span-12 -mt-1">
               <ButtonGroup
                 activeValue={stopSizePercent}
                 onChange={(p) => setStopSizePercent(p)}
@@ -572,12 +566,10 @@ export default function SimpleTradeForm({ initLeverage }) {
         ) : null}
         {showTakeProfitForm && !hideProfitStop ? (
           <>
-            <div className="col-span-2 flex items-center">
+            <div className="col-span-12">
               <label className="text-left text-xs text-th-fgd-3">
                 Profit Price
               </label>
-            </div>
-            <div className="col-span-10 -mb-1">
               <Input
                 type="number"
                 min="0"
@@ -593,7 +585,7 @@ export default function SimpleTradeForm({ initLeverage }) {
                 }
               />
             </div>
-            <div className="col-span-10 col-start-3 pb-2">
+            <div className="col-span-12 -mt-1">
               <ButtonGroup
                 activeValue={stopSizePercent}
                 onChange={(p) => setStopSizePercent(p)}
@@ -602,7 +594,7 @@ export default function SimpleTradeForm({ initLeverage }) {
             </div>
           </>
         ) : null}
-        <div className="col-span-10 col-start-3 flex">
+        <div className="col-span-12 flex pt-2">
           {tradeType === 'Limit' ? (
             <>
               <div className="mr-4">
@@ -666,7 +658,12 @@ export default function SimpleTradeForm({ initLeverage }) {
             </Tooltip>
           ) : null}
         </div>
-        <div className={`col-span-10 col-start-3 flex pt-2`}>
+        {tradeType === 'Market' ? (
+          <div className="col-span-12">
+            <EstPriceImpact />
+          </div>
+        ) : null}
+        <div className={`col-span-12 flex pt-2`}>
           {ipAllowed ? (
             <Button
               disabled={disabledTradeButton}
@@ -707,12 +704,7 @@ export default function SimpleTradeForm({ initLeverage }) {
             </Button>
           )}
         </div>
-        {tradeType === 'Market' ? (
-          <div className="col-span-10 col-start-3">
-            <SlippageWarning slippage={0.2} />
-          </div>
-        ) : null}
-        <div className="col-span-10 col-start-3 flex pt-2 text-xs text-th-fgd-4">
+        <div className="col-span-12 flex pt-2 text-xs text-th-fgd-4">
           <MarketFee />
         </div>
       </div>

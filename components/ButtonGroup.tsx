@@ -2,6 +2,7 @@ import { FunctionComponent } from 'react'
 
 interface ButtonGroupProps {
   activeValue: string
+  className?: string
   onChange: (x) => void
   unit?: string
   values: Array<string>
@@ -9,6 +10,7 @@ interface ButtonGroupProps {
 
 const ButtonGroup: FunctionComponent<ButtonGroupProps> = ({
   activeValue,
+  className,
   unit,
   values,
   onChange,
@@ -29,7 +31,7 @@ const ButtonGroup: FunctionComponent<ButtonGroupProps> = ({
         ) : null}
         {values.map((v, i) => (
           <button
-            className={`cursor-pointer default-transition font-normal px-2 py-1.5 relative rounded-md text-center text-xs w-1/2
+            className={`${className} cursor-pointer default-transition font-normal px-2 py-1.5 relative rounded-md text-center text-xs w-1/2
               ${
                 v === activeValue
                   ? `text-th-primary`
