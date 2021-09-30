@@ -68,7 +68,7 @@ export default function AccountOverview() {
         mngoNodeBank.publicKey,
         mngoNodeBank.vault
       )
-      actions.fetchMangoAccounts()
+      actions.reloadMangoAccount()
       notify({
         title: 'Successfully redeemed MNGO',
         description: '',

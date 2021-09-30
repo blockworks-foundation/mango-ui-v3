@@ -110,12 +110,12 @@ export default function SimpleTradeForm({ initLeverage }) {
       }
     })
 
-  const setStopPrice = (price) =>
+  const setTriggerPrice = (price) =>
     set((s) => {
       if (!Number.isNaN(parseFloat(price))) {
-        s.tradeForm.triggerPrice = parseFloat(price)
+        s.tradeForm.tripperPrice = parseFloat(price)
       } else {
-        s.tradeForm.triggerPrice = price
+        s.tradeForm.tripperPrice = price
       }
     })
 
@@ -550,7 +550,7 @@ export default function SimpleTradeForm({ initLeverage }) {
                 type="number"
                 min="0"
                 step={tickSize}
-                onChange={(e) => setStopPrice(e.target.value)}
+                onChange={(e) => setTriggerPrice(e.target.value)}
                 value={triggerPrice}
                 prefix={
                   <img
@@ -582,7 +582,7 @@ export default function SimpleTradeForm({ initLeverage }) {
                 type="number"
                 min="0"
                 step={tickSize}
-                onChange={(e) => setStopPrice(e.target.value)}
+                onChange={(e) => setTriggerPrice(e.target.value)}
                 value={triggerPrice}
                 prefix={
                   <img

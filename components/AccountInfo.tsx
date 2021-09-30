@@ -70,7 +70,7 @@ export default function AccountInfo() {
         mngoNodeBank.publicKey,
         mngoNodeBank.vault
       )
-      actions.fetchMangoAccounts()
+      actions.reloadMangoAccount()
       notify({
         title: 'Successfully redeemed MNGO',
         description: '',
