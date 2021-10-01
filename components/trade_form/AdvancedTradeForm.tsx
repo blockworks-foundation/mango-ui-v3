@@ -836,9 +836,9 @@ export default function AdvancedTradeForm({
                 ) : side === 'buy' ? (
                   market instanceof PerpMarket ? (
                     <>
-                      {baseSize > 0 ? 'Long ' + baseSize : 'Long '}{' '}
+                      {baseSize > 0 ? 'Long ' + baseSize : 'Long '}
                       <span className="whitespace-nowrap">
-                        {marketConfig.name}
+                        {`  ${marketConfig.name}`}
                       </span>
                     </>
                   ) : (
@@ -851,9 +851,9 @@ export default function AdvancedTradeForm({
                     'Size Too Large'
                   ) : (
                     <>
-                      {baseSize > 0 ? 'Short ' + baseSize : 'Short '}{' '}
+                      {baseSize > 0 ? 'Short ' + baseSize : 'Short '}
                       <span className="whitespace-nowrap">
-                        {marketConfig.name}
+                        {` ${marketConfig.name}`}
                       </span>
                     </>
                   )
@@ -868,9 +868,6 @@ export default function AdvancedTradeForm({
                 <span>Country Not Allowed</span>
               </Button>
             )}
-          </div>
-          <div className="flex text-xs text-th-fgd-4 pt-4">
-            <MarketFee />
           </div>
         </div>
       </div>

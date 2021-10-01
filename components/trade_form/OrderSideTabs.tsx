@@ -15,7 +15,7 @@ const OrderSideTabs: FunctionComponent<OrderSideTabsProps> = ({
 }) => {
   const market = useMangoStore((s) => s.selectedMarket.current)
   return (
-    <div className={`border-b border-th-fgd-4 mb-3 relative`}>
+    <div className={`border-b border-th-fgd-4 mb-3 relative -mt-2.5`}>
       <div
         className={`absolute ${
           side === 'buy'
@@ -38,7 +38,7 @@ const OrderSideTabs: FunctionComponent<OrderSideTabsProps> = ({
         </button>
         <button
           onClick={() => onChange('sell')}
-          className={`cursor-pointer default-transition flex font-semibold items-center justify-center pb-2 relative text-base w-1/2 whitespace-nowrap hover:opacity-100
+          className={`cursor-pointer default-transition flex font-semibold items-center justify-center pb-2 md:py-2 relative text-base w-1/2 whitespace-nowrap hover:opacity-100
                     ${
                       side === 'sell'
                         ? `text-th-red`

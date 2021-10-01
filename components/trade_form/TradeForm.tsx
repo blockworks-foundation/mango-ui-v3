@@ -41,12 +41,12 @@ export default function TradeForm() {
               showConnect
             >
               <div className={`${!connected ? 'filter blur-sm' : ''}`}>
-                <button
+                {/* <button
                   onClick={handleFormChange}
                   className="absolute hidden md:flex items-center justify-center right-4 rounded-full bg-th-bkg-3 w-8 h-8 hover:text-th-primary focus:outline-none"
                 >
                   <SwitchHorizontalIcon className="w-5 h-5" />
-                </button>
+                </button> */}
                 <AdvancedTradeForm initLeverage={initLeverage} />
               </div>
             </StyledFloatingElement>
