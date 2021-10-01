@@ -10,7 +10,7 @@ import {
 import { notify } from '../../utils/notifications'
 import { calculateTradePrice, getDecimalCount } from '../../utils'
 import { floorToDecimal } from '../../utils/index'
-import useMangoStore from '../../stores/useMangoStore'
+import useMangoStore, { Orderbook } from '../../stores/useMangoStore'
 import Button from '../Button'
 import TradeType from './TradeType'
 import Input from '../Input'
@@ -394,6 +394,51 @@ export default function AdvancedTradeForm({
         )} ${marketConfig.baseSymbol} short`
       : `${percentToClose(baseSize, roundedBorrows).toFixed(0)}% close position`
 
+  let priceImpact = {}
+  let estimatedPrice = price
+  if (tradeType === 'Market') {
+    const estimateMarketPrice = (
+      orderBook: Orderbook,
+      size: number,
+      side: 'buy' | 'sell'
+    ): number => {
+      const orders = side === 'buy' ? orderBook.asks : orderBook.bids
+      let accSize = 0
+      let accPrice = 0
+      for (const [orderPrice, orderSize] of orders) {
+        const remainingSize = size - accSize
+        if (remainingSize <= orderSize) {
+          accSize += remainingSize
+          accPrice += remainingSize * orderPrice
+          break
+        }
+        accSize += orderSize
+        accPrice += orderSize * orderPrice
+      }
+
+      if (!accSize) {
+        console.error('Orderbook empty no market price available')
+        return markPrice
+      }
+
+      return accPrice / accSize
+    }
+
+    estimatedPrice = estimateMarketPrice(orderbook, baseSize, side)
+    const slippageAbs = Math.abs(estimatedPrice - markPrice)
+    const slippageRel = (100 * slippageAbs) / markPrice
+
+    const takerFeeRel = 0.13
+    const takerFeeAbs = 0.01 * takerFeeRel * estimatedPrice
+
+    priceImpact = {
+      slippage: [slippageAbs, slippageRel],
+      takerFee: [takerFeeAbs, takerFeeRel],
+    }
+
+    console.log('estimated price', estimatedPrice, priceImpact)
+  }
+
   async function onSubmit() {
     if (!price && isLimitOrder) {
       notify({
@@ -743,11 +788,14 @@ export default function AdvancedTradeForm({
               </div>
             ) : null}
           </div>
-          {tradeType === 'Market' ? (
-            <div className="col-span-12 md:col-span-10 md:col-start-3 pt-2">
-              <EstPriceImpact />
-            </div>
-          ) : null}
+          <div className="col-span-12 md:col-span-10 md:col-start-3 pt-2">
+            {tradeType === 'Market' ? (
+              <EstPriceImpact priceImpact={priceImpact} />
+            ) : (
+              <MarketFee />
+            )}
+          </div>
+
           <div className={`flex pt-4`}>
             {ipAllowed ? (
               <Button
