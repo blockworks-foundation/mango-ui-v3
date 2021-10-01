@@ -28,6 +28,12 @@ import { breakpoints } from '../TradePageGrid'
 import EstPriceImpact from './EstPriceImpact'
 import useFees from '../../hooks/useFees'
 
+export const TRIGGER_ORDER_TYPES = [
+  'Stop Loss',
+  'Take Profit',
+  'Stop Limit',
+  'Take Profit Limit',
+]
 interface AdvancedTradeFormProps {
   initLeverage?: number
 }
@@ -81,12 +87,7 @@ export default function AdvancedTradeForm({
   )
   const isTriggerLimit = ['Stop Limit', 'Take Profit Limit'].includes(tradeType)
 
-  const isTriggerOrder = [
-    'Stop Loss',
-    'Take Profit',
-    'Stop Limit',
-    'Take Profit Limit',
-  ].includes(tradeType)
+  const isTriggerOrder = TRIGGER_ORDER_TYPES.includes(tradeType)
 
   const [postOnly, setPostOnly] = useState(false)
   const [ioc, setIoc] = useState(false)
@@ -441,7 +442,7 @@ export default function AdvancedTradeForm({
             (market as PerpMarket).baseLotsToNumber(perpAccount.basePosition)
           )
         : baseSize
-    estimatedPrice = estimateMarketPrice(orderbook, estimatedSize, side)
+    estimatedPrice = estimateMarketPrice(orderbook, estimatedSize || 0, side)
     const slippageAbs =
       estimatedSize > 0 ? Math.abs(estimatedPrice - markPrice) : 0
     const slippageRel = slippageAbs / markPrice

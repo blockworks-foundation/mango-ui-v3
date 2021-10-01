@@ -2,6 +2,7 @@ import { I80F48 } from '@blockworks-foundation/mango-client/lib/src/fixednum'
 import { TOKEN_MINTS } from '@project-serum/serum'
 import { PublicKey } from '@solana/web3.js'
 import BN from 'bn.js'
+import { TRIGGER_ORDER_TYPES } from '../components/trade_form/AdvancedTradeForm'
 import { Orderbook } from '../stores/useMangoStore'
 
 export async function sleep(ms) {
@@ -106,7 +107,7 @@ export function calculateTradePrice(
 ): number {
   if (tradeType === 'Market') {
     return calculateMarketPrice(orderBook, baseSize, side)
-  } else if (tradeType === 'Trigger Market') {
+  } else if (TRIGGER_ORDER_TYPES.includes(tradeType)) {
     return Number(triggerPrice)
   }
   return Number(price)
