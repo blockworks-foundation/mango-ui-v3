@@ -1,6 +1,7 @@
 import { InformationCircleIcon } from '@heroicons/react/outline'
 import Tippy from '@tippyjs/react'
 import 'tippy.js/animations/scale.css'
+import { percentFormat } from '../../utils'
 
 const EstPriceImpact = ({
   priceImpact,
@@ -16,16 +17,16 @@ const EstPriceImpact = ({
       Est. Price Impact:
       <span
         className={`font-bold ml-2 ${
-          priceImpactRel <= 0.5
+          priceImpactRel <= 0.005
             ? 'text-th-green'
-            : priceImpactRel > 0.5 && priceImpactRel <= 1
+            : priceImpactRel > 0.005 && priceImpactRel <= 0.01
             ? 'text-th-orange'
             : 'text-th-red'
         }`}
       >
         ${priceImpactAbs.toFixed(2)}
         <span className="mx-2 text-th-fgd-4">|</span>
-        {priceImpactRel.toFixed(2)}%
+        {percentFormat.format(priceImpactRel)}
       </span>
       <Tippy
         animation="scale"
@@ -43,7 +44,7 @@ const EstPriceImpact = ({
               <span className="text-th-fgd-1">
                 ${priceImpact.slippage[0].toFixed(2)}
                 <span className="px-1 text-th-fgd-4">|</span>
-                {priceImpact.slippage[1].toFixed(2)}%
+                {percentFormat.format(priceImpact.slippage[1])}
               </span>
             </div>
             {/* <div className="flex justify-between">
@@ -59,7 +60,7 @@ const EstPriceImpact = ({
               <span className="text-th-fgd-1">
                 ${priceImpact.takerFee[0].toFixed(2)}
                 <span className="px-1 text-th-fgd-4">|</span>
-                {priceImpact.takerFee[1].toFixed(2)}%
+                {percentFormat.format(priceImpact.takerFee[1])}
               </span>
             </div>
           </div>

@@ -26,6 +26,7 @@ import Checkbox from '../Checkbox'
 import { useViewport } from '../../hooks/useViewport'
 import { breakpoints } from '../TradePageGrid'
 import EstPriceImpact from './EstPriceImpact'
+import useFees from '../../hooks/useFees'
 
 interface AdvancedTradeFormProps {
   initLeverage?: number
@@ -47,6 +48,7 @@ export default function AdvancedTradeForm({
   const [reduceOnly, setReduceOnly] = useState(false)
   const [spotMargin, setSpotMargin] = useState(false)
   const [positionSizePercent, setPositionSizePercent] = useState('')
+  const { takerFee } = useFees()
 
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
@@ -54,6 +56,11 @@ export default function AdvancedTradeForm({
     groupConfig,
     marketConfig.baseSymbol
   )
+  let perpAccount
+  if (isPerpMarket && mangoAccount) {
+    perpAccount = mangoAccount.perpAccounts[marketIndex]
+  }
+
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
 
@@ -424,19 +431,26 @@ export default function AdvancedTradeForm({
       return accPrice / accSize
     }
 
-    estimatedPrice = estimateMarketPrice(orderbook, baseSize, side)
-    const slippageAbs = Math.abs(estimatedPrice - markPrice)
-    const slippageRel = (100 * slippageAbs) / markPrice
+    const estimatedSize =
+      perpAccount && reduceOnly
+        ? Math.abs(
+            (market as PerpMarket).baseLotsToNumber(perpAccount.basePosition)
+          )
+        : baseSize
+    estimatedPrice = estimateMarketPrice(orderbook, estimatedSize, side)
+    const slippageAbs =
+      estimatedSize > 0 ? Math.abs(estimatedPrice - markPrice) : 0
+    const slippageRel = slippageAbs / markPrice
 
-    const takerFeeRel = 0.13
-    const takerFeeAbs = 0.01 * takerFeeRel * estimatedPrice
+    const takerFeeRel = takerFee
+    const takerFeeAbs = takerFeeRel * estimatedPrice
 
     priceImpact = {
       slippage: [slippageAbs, slippageRel],
       takerFee: [takerFeeAbs, takerFeeRel],
     }
 
-    console.log('estimated price', estimatedPrice, priceImpact)
+    console.log('estimated', estimatedSize, estimatedPrice, priceImpact)
   }
 
   async function onSubmit() {
