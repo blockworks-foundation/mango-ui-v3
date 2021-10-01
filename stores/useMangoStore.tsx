@@ -26,7 +26,11 @@ import { EndpointInfo, WalletAdapter } from '../@types/types'
 import { isDefined, zipDict } from '../utils'
 import { notify } from '../utils/notifications'
 import { LAST_ACCOUNT_KEY } from '../components/AccountsModal'
-import { NODE_URL_KEY } from '../components/SettingsModal'
+import {
+  DEFAULT_MARKET_KEY,
+  initialMarket,
+  NODE_URL_KEY,
+} from '../components/SettingsModal'
 
 export const ENDPOINTS: EndpointInfo[] = [
   {
@@ -168,6 +172,11 @@ const useMangoStore = create<MangoStore>((set, get) => {
       ? JSON.parse(localStorage.getItem(NODE_URL_KEY)) || ENDPOINT.url
       : ENDPOINT.url
 
+  const defaultMarket =
+    typeof window !== 'undefined'
+      ? JSON.parse(localStorage.getItem(DEFAULT_MARKET_KEY)) || initialMarket
+      : initialMarket
+
   const connection = new Connection(rpcUrl, 'processed' as Commitment)
   return {
     notifications: [],
@@ -191,10 +200,10 @@ const useMangoStore = create<MangoStore>((set, get) => {
     selectedMarket: {
       config: getMarketByBaseSymbolAndKind(
         DEFAULT_MANGO_GROUP_CONFIG,
-        'BTC',
-        'perp'
+        defaultMarket.base,
+        defaultMarket.kind
       ) as MarketConfig,
-      kind: 'perp',
+      kind: defaultMarket.kind,
       current: null,
       markPrice: 0,
       askInfo: null,

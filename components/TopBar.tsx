@@ -1,17 +1,23 @@
 import { useCallback, useState } from 'react'
 import Link from 'next/link'
 import { abbreviateAddress } from '../utils/index'
+import useLocalStorageState from '../hooks/useLocalStorageState'
 import MenuItem from './MenuItem'
 import ThemeSwitch from './ThemeSwitch'
 import useMangoStore from '../stores/useMangoStore'
 import ConnectWalletButton from './ConnectWalletButton'
 import NavDropMenu from './NavDropMenu'
 import AccountsModal from './AccountsModal'
+import { DEFAULT_MARKET_KEY, initialMarket } from './SettingsModal'
 
 const TopBar = () => {
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const connected = useMangoStore((s) => s.wallet.connected)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
+  const [defaultMarket] = useLocalStorageState(
+    DEFAULT_MARKET_KEY,
+    initialMarket
+  )
 
   const handleCloseAccounts = useCallback(() => {
     setShowAccountsModal(false)
@@ -23,7 +29,7 @@ const TopBar = () => {
         <div className={`pl-2 md:px-4 lg:px-10`}>
           <div className={`flex justify-between h-14`}>
             <div className={`flex`}>
-              <Link href="/spot/BTC">
+              <Link href={defaultMarket.path}>
                 <div
                   className={`cursor-pointer flex-shrink-0 flex items-center`}
                 >
@@ -37,7 +43,7 @@ const TopBar = () => {
               <div
                 className={`hidden md:flex md:items-center md:space-x-6 md:ml-4`}
               >
-                <MenuItem href="/perp/BTC">Trade</MenuItem>
+                <MenuItem href={defaultMarket.path}>Trade</MenuItem>
                 <MenuItem href="/account">Account</MenuItem>
                 <MenuItem href="/borrow">Borrow</MenuItem>
                 <MenuItem href="/stats">Stats</MenuItem>
