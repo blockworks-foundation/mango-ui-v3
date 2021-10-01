@@ -136,7 +136,11 @@ export default function MarketPosition() {
     })
   }
 
-  const side = perpAccount.basePosition.gt(ZERO_BN) ? 'long' : 'short'
+  const side = perpAccount
+    ? perpAccount.basePosition.gt(ZERO_BN)
+      ? 'long'
+      : 'short'
+    : null
 
   if (!mangoGroup || !selectedMarket) return null
 
