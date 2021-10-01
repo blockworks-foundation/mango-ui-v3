@@ -542,7 +542,8 @@ export default function AdvancedTradeForm({
             orderPrice,
             baseSize,
             triggerCondition,
-            Number(triggerPrice)
+            Number(triggerPrice),
+            true // reduceOnly
           )
         } else {
           txid = await mangoClient.placePerpOrder(
