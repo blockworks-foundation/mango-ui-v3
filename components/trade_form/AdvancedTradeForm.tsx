@@ -349,17 +349,17 @@ export default function AdvancedTradeForm({
     setReduceOnly(checked)
   }
   const marginOnChange = (checked) => {
-    setPositionSizePercent('')
     setSpotMargin(checked)
+    handleSetPositionSize(positionSizePercent, checked)
   }
 
-  const handleSetPositionSize = (percent) => {
+  const handleSetPositionSize = (percent, spotMargin) => {
     setPositionSizePercent(percent)
     const baseSizeMax =
       spotMargin || marketConfig.kind === 'perp' ? max : spotMax
     const baseSize = baseSizeMax * (parseInt(percent) / 100)
     const step = parseFloat(minOrderSize)
-    const roundedSize = (Math.round(baseSize / step) * step).toFixed(
+    const roundedSize = (Math.floor(baseSize / step) * step).toFixed(
       sizeDecimalCount
     )
     setBaseSize(parseFloat(roundedSize))
@@ -441,13 +441,24 @@ export default function AdvancedTradeForm({
         })
       }
 
+      // TODO: this has a race condition when switching between markets or buy & sell
+      // spot market orders will sometimes not be ioc but limit
       const orderType = ioc ? 'ioc' : postOnly ? 'postOnly' : 'limit'
+
+      console.log(
+        'submit',
+        side,
+        baseSize.toString(),
+        orderPrice.toString(),
+        orderType,
+        market instanceof Market && 'spot',
+        isTriggerOrder && 'trigger'
+      )
       let txid
       if (market instanceof Market) {
         txid = await mangoClient.placeSpotOrder2(
           mangoGroup,
           mangoAccount,
-          mangoGroup.mangoCache,
           market,
           wallet,
           side,
@@ -640,7 +651,7 @@ export default function AdvancedTradeForm({
         <div className="col-span-12 -mt-1">
           <ButtonGroup
             activeValue={positionSizePercent}
-            onChange={(p) => handleSetPositionSize(p)}
+            onChange={(p) => handleSetPositionSize(p, spotMargin)}
             unit="%"
             values={
               isMobile
