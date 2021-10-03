@@ -156,9 +156,7 @@ const PositionsTable = () => {
                             </div>
                           </Td>
                           <Td>
-                            <PerpSideBadge
-                              perpAccount={perpAccount}
-                            ></PerpSideBadge>
+                            <PerpSideBadge perpAccount={perpAccount} />
                           </Td>
                           <Td>
                             {perpAccount && basePosition > 0 ? (
