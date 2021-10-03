@@ -84,6 +84,7 @@ export default function MarketPosition() {
   const connected = useMangoStore((s) => s.wallet.connected)
   const isLoading = useMangoStore((s) => s.selectedMangoAccount.initialLoad)
   const setMangoStore = useMangoStore((s) => s.set)
+  const price = useMangoStore((s) => s.tradeForm.price)
   const baseSymbol = marketConfig.baseSymbol
   const marketName = marketConfig.name
   const tradeHistory = useTradeHistory()
@@ -109,9 +110,18 @@ export default function MarketPosition() {
     )
   }
 
-  const handleSizeClick = (size) => {
+  const handleSizeClick = (size, side) => {
+    const step = selectedMarket.minOrderSize
+
+    const priceOrDefault = price
+      ? price
+      : mangoGroup.getPrice(marketIndex, mangoGroupCache).toNumber()
+    const roundedSize = Math.round(size / step) * step
+    const quoteSize = roundedSize * priceOrDefault
     setMangoStore((state) => {
-      state.tradeForm.baseSize = size
+      state.tradeForm.baseSize = roundedSize
+      state.tradeForm.quoteSize = quoteSize.toFixed(2)
+      state.tradeForm.side = side === 'buy' ? 'sell' : 'buy'
     })
   }
 
@@ -126,6 +136,12 @@ export default function MarketPosition() {
     })
   }
 
+  const side = perpAccount
+    ? perpAccount.basePosition.gt(ZERO_BN)
+      ? 'long'
+      : 'short'
+    : null
+
   if (!mangoGroup || !selectedMarket) return null
 
   return selectedMarket instanceof PerpMarket ? (
@@ -139,9 +155,7 @@ export default function MarketPosition() {
           {isLoading ? (
             <DataLoader />
           ) : perpAccount && !perpAccount.basePosition.eq(ZERO_BN) ? (
-            <SideBadge
-              side={perpAccount.basePosition.gt(ZERO_BN) ? 'long' : 'short'}
-            />
+            <SideBadge side={side} />
           ) : (
             '--'
           )}
@@ -163,7 +177,8 @@ export default function MarketPosition() {
                   handleSizeClick(
                     Math.abs(
                       selectedMarket.baseLotsToNumber(perpAccount.basePosition)
-                    )
+                    ),
+                    side === 'long' ? 'buy' : 'sell'
                   )
                 }
               >
