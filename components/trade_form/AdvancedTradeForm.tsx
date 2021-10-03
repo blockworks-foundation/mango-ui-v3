@@ -836,32 +836,12 @@ export default function AdvancedTradeForm({
                 ) : sizeTooLarge ? (
                   'Size Too Large'
                 ) : side === 'buy' ? (
-                  market instanceof PerpMarket ? (
-                    <>
-                      {baseSize > 0 ? 'Long ' + baseSize : 'Long '}
-                      <span className="whitespace-nowrap">
-                        {`  ${marketConfig.name}`}
-                      </span>
-                    </>
-                  ) : (
-                    `${baseSize > 0 ? 'Buy ' + baseSize : 'Buy '} ${
-                      marketConfig.baseSymbol
-                    }`
-                  )
-                ) : market instanceof PerpMarket ? (
-                  sizeTooLarge ? (
-                    'Size Too Large'
-                  ) : (
-                    <>
-                      {baseSize > 0 ? 'Short ' + baseSize : 'Short '}
-                      <span className="whitespace-nowrap">
-                        {` ${marketConfig.name}`}
-                      </span>
-                    </>
-                  )
+                  `${baseSize > 0 ? 'Buy ' + baseSize : 'Buy '} ${
+                    isPerpMarket ? marketConfig.name : marketConfig.baseSymbol
+                  }`
                 ) : (
                   `${baseSize > 0 ? 'Sell ' + baseSize : 'Sell '} ${
-                    marketConfig.baseSymbol
+                    isPerpMarket ? marketConfig.name : marketConfig.baseSymbol
                   }`
                 )}
               </Button>

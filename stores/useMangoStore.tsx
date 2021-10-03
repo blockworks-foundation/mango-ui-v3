@@ -455,13 +455,15 @@ const useMangoStore = create<MangoStore>((set, get) => {
       async reloadOrders() {
         const mangoAccount = get().selectedMangoAccount.current
         const connection = get().connection.current
-        await Promise.all([
-          mangoAccount.loadOpenOrders(
-            connection,
-            new PublicKey(serumProgramId)
-          ),
-          mangoAccount.loadAdvancedOrders(connection),
-        ])
+        if (mangoAccount) {
+          await Promise.all([
+            mangoAccount.loadOpenOrders(
+              connection,
+              new PublicKey(serumProgramId)
+            ),
+            mangoAccount.loadAdvancedOrders(connection),
+          ])
+        }
       },
       // DEPRECATED
       async _updateOpenOrders() {
