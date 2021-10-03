@@ -1,23 +1,80 @@
+import { useEffect } from 'react'
+import { useRouter } from 'next/router'
+import { Responsive, WidthProvider } from 'react-grid-layout'
 import TopBar from '../components/TopBar'
-import TradePageGrid from '../components/TradePageGrid'
 import MarketSelect from '../components/MarketSelect'
-import AlphaModal, { ALPHA_MODAL_KEY } from '../components/AlphaModal'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import { PageBodyWrapper } from '../components/styles'
+import { DEFAULT_MARKET_KEY, initialMarket } from '../components/SettingsModal'
+import {
+  breakpoints,
+  defaultLayouts,
+  GRID_LAYOUT_KEY,
+} from '../components/TradePageGrid'
+
+const ResponsiveGridLayout = WidthProvider(Responsive)
 
 const Index = () => {
-  const [alphaAccepted] = useLocalStorageState(ALPHA_MODAL_KEY, false)
+  const [defaultMarket] = useLocalStorageState(
+    DEFAULT_MARKET_KEY,
+    initialMarket
+  )
+  const [savedLayouts] = useLocalStorageState(GRID_LAYOUT_KEY, defaultLayouts)
+  const router = useRouter()
+
+  useEffect(() => {
+    const { pathname } = router
+    if (pathname == '/') {
+      router.push(defaultMarket.path)
+    }
+  }, [])
 
   return (
     <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all `}>
       <TopBar />
       <MarketSelect />
       <PageBodyWrapper className="p-1 sm:px-2 sm:py-1 md:px-2 md:py-1">
-        <TradePageGrid />
+        <div className="animate animate-pulse bg-th-bkg-3 rounded-lg h-10 md:mb-1 mt-6 mx-2 md:mx-3" />
+        <ResponsiveGridLayout
+          className="layout"
+          layouts={savedLayouts || defaultLayouts}
+          breakpoints={breakpoints}
+          cols={{ xl: 12, lg: 12, md: 12, sm: 12, xs: 1 }}
+          rowHeight={15}
+          isDraggable={false}
+          isResizable={false}
+          useCSSTransforms={false}
+        >
+          <div
+            className="animate animate-pulse bg-th-bkg-3 rounded-lg"
+            key="tvChart"
+          ></div>
+          <div
+            className="animate animate-pulse bg-th-bkg-3 rounded-lg"
+            key="orderbook"
+          ></div>
+          <div
+            className="animate animate-pulse bg-th-bkg-3 rounded-lg"
+            key="tradeForm"
+          ></div>
+          <div
+            className="animate animate-pulse bg-th-bkg-3 rounded-lg"
+            key="accountInfo"
+          ></div>
+          <div
+            className="animate animate-pulse bg-th-bkg-3 rounded-lg"
+            key="userInfo"
+          ></div>
+          <div
+            className="animate animate-pulse bg-th-bkg-3 rounded-lg"
+            key="marketPosition"
+          ></div>
+          <div
+            className="animate animate-pulse bg-th-bkg-3 rounded-lg"
+            key="marketTrades"
+          ></div>
+        </ResponsiveGridLayout>
       </PageBodyWrapper>
-      {!alphaAccepted && (
-        <AlphaModal isOpen={!alphaAccepted} onClose={() => {}} />
-      )}
     </div>
   )
 }

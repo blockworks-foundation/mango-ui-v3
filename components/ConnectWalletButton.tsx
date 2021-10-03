@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react'
 import useMangoStore from '../stores/useMangoStore'
 import { Menu } from '@headlessui/react'
 import {
+  CogIcon,
   CurrencyDollarIcon,
   DuplicateIcon,
   LogoutIcon,
@@ -18,7 +19,6 @@ import { WalletIcon, ProfileIcon } from './icons'
 import AccountsModal from './AccountsModal'
 import { useEffect } from 'react'
 import SettingsModal from './SettingsModal'
-import { CogIcon } from '@heroicons/react/solid'
 
 const ConnectWalletButton = () => {
   const wallet = useMangoStore((s) => s.wallet.current)

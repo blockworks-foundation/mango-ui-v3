@@ -11,6 +11,7 @@ import {
   PerpAccount,
   PerpMarket,
   QUOTE_INDEX,
+  ZERO_BN,
   ZERO_I80F48,
 } from '@blockworks-foundation/mango-client'
 import useTradeHistory from '../hooks/useTradeHistory'
@@ -85,6 +86,7 @@ export default function MarketPosition() {
   const connected = useMangoStore((s) => s.wallet.connected)
   const isLoading = useMangoStore((s) => s.selectedMangoAccount.initialLoad)
   const setMangoStore = useMangoStore((s) => s.set)
+  const price = useMangoStore((s) => s.tradeForm.price)
   const baseSymbol = marketConfig.baseSymbol
   const marketName = marketConfig.name
   const tradeHistory = useTradeHistory()
@@ -110,9 +112,18 @@ export default function MarketPosition() {
     )
   }
 
-  const handleSizeClick = (size) => {
+  const handleSizeClick = (size, side) => {
+    const step = selectedMarket.minOrderSize
+
+    const priceOrDefault = price
+      ? price
+      : mangoGroup.getPrice(marketIndex, mangoGroupCache).toNumber()
+    const roundedSize = Math.round(size / step) * step
+    const quoteSize = roundedSize * priceOrDefault
     setMangoStore((state) => {
-      state.tradeForm.baseSize = size
+      state.tradeForm.baseSize = roundedSize
+      state.tradeForm.quoteSize = quoteSize.toFixed(2)
+      state.tradeForm.side = side === 'buy' ? 'sell' : 'buy'
     })
   }
 
@@ -126,6 +137,12 @@ export default function MarketPosition() {
       setSettling(false)
     })
   }
+
+  const side = perpAccount
+    ? perpAccount.basePosition.gt(ZERO_BN)
+      ? 'long'
+      : 'short'
+    : null
 
   if (!mangoGroup || !selectedMarket) return null
 
@@ -160,7 +177,8 @@ export default function MarketPosition() {
                   handleSizeClick(
                     Math.abs(
                       selectedMarket.baseLotsToNumber(perpAccount.basePosition)
-                    )
+                    ),
+                    side === 'long' ? 'buy' : 'sell'
                   )
                 }
               >

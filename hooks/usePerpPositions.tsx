@@ -42,8 +42,11 @@ const usePerpPositions = () => {
           .getBreakEvenPrice(mangoAccount, perpMarket, perpTradeHistory)
           .toNumber()
 
+        const basePosition = perpMarket.baseLotsToNumber(
+          perpAccount.basePosition
+        )
         const unrealizedPnl =
-          perpMarket.baseLotsToNumber(perpAccount.basePosition) *
+          basePosition *
           (mangoGroup.getPrice(marketIndex, mangoCache).toNumber() -
             parseFloat(breakEvenPrice))
 
@@ -63,6 +66,7 @@ const usePerpPositions = () => {
           perpMarket,
           perpTradeHistory,
           perpAccount,
+          basePosition,
           avgEntryPrice,
           breakEvenPrice,
           unrealizedPnl,
