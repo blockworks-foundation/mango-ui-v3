@@ -71,12 +71,14 @@ const usePerpPositions = () => {
       })
     : []
 
-  const filteredPerpAccounts = perpAccounts.filter(
-    ({ perpAccount, unsettledPnl }) =>
-      !perpAccount.basePosition.eq(new BN(0)) || unsettledPnl != 0
+  const openPositions = perpAccounts.filter(
+    ({ perpAccount }) => !perpAccount.basePosition.eq(new BN(0))
+  )
+  const unsettledPositions = perpAccounts.filter(
+    ({ unsettledPnl }) => unsettledPnl != 0
   )
 
-  return filteredPerpAccounts
+  return { openPositions, unsettledPositions }
 }
 
 export default usePerpPositions

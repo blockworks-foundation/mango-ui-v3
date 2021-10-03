@@ -20,7 +20,10 @@ import Loading from './Loading'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 
-const settlePnl = async (perpMarket: PerpMarket, perpAccount: PerpAccount) => {
+export const settlePnl = async (
+  perpMarket: PerpMarket,
+  perpAccount: PerpAccount
+) => {
   const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
   const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
   const mangoCache = useMangoStore.getState().selectedMangoGroup.cache
@@ -232,7 +235,7 @@ export default function MarketPosition() {
         <div className={`flex justify-between pb-3`}>
           <Tooltip content={<SettlePnlTooltip />}>
             <Tooltip.Content className="font-normal text-th-fgd-3 leading-4">
-              Unsettled PnL
+              Unsettled Balance
             </Tooltip.Content>
           </Tooltip>
           <div
