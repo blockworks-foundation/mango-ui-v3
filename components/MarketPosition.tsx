@@ -4,7 +4,7 @@ import useMangoStore from '../stores/useMangoStore'
 import { formatUsdValue } from '../utils/index'
 import Button, { LinkButton } from './Button'
 import Tooltip from './Tooltip'
-import SideBadge from './SideBadge'
+import PerpSideBadge from './PerpSideBadge'
 import {
   getMarketIndexBySymbol,
   nativeI80F48ToUi,
@@ -15,14 +15,16 @@ import {
   ZERO_I80F48,
 } from '@blockworks-foundation/mango-client'
 import useTradeHistory from '../hooks/useTradeHistory'
-import { getAvgEntryPrice, getBreakEvenPrice } from './PerpPositionsTable'
 import { notify } from '../utils/notifications'
 import MarketCloseModal from './MarketCloseModal'
 import Loading from './Loading'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 
-const settlePnl = async (perpMarket: PerpMarket, perpAccount: PerpAccount) => {
+export const settlePnl = async (
+  perpMarket: PerpMarket,
+  perpAccount: PerpAccount
+) => {
   const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
   const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
   const mangoCache = useMangoStore.getState().selectedMangoGroup.cache
@@ -154,10 +156,8 @@ export default function MarketPosition() {
           <div className="font-normal text-th-fgd-3 leading-4">Side</div>
           {isLoading ? (
             <DataLoader />
-          ) : perpAccount && !perpAccount.basePosition.eq(ZERO_BN) ? (
-            <SideBadge side={side} />
           ) : (
-            '--'
+            <PerpSideBadge perpAccount={perpAccount}></PerpSideBadge>
           )}
         </div>
         <div className={`flex justify-between pb-3`}>
@@ -218,12 +218,13 @@ export default function MarketPosition() {
             {isLoading ? (
               <DataLoader />
             ) : perpAccount ? (
-              getAvgEntryPrice(
-                mangoAccount,
-                perpAccount,
-                selectedMarket,
-                perpTradeHistory
-              )
+              perpAccount
+                .getAverageOpenPrice(
+                  mangoAccount,
+                  selectedMarket,
+                  perpTradeHistory
+                )
+                .toNumber()
             ) : (
               0
             )}
@@ -237,12 +238,13 @@ export default function MarketPosition() {
             {isLoading ? (
               <DataLoader />
             ) : perpAccount ? (
-              getBreakEvenPrice(
-                mangoAccount,
-                perpAccount,
-                selectedMarket,
-                perpTradeHistory
-              )
+              perpAccount
+                .getBreakEvenPrice(
+                  mangoAccount,
+                  selectedMarket,
+                  perpTradeHistory
+                )
+                .toNumber()
             ) : (
               0
             )}
@@ -251,7 +253,7 @@ export default function MarketPosition() {
         <div className={`flex justify-between pb-3`}>
           <Tooltip content={<SettlePnlTooltip />}>
             <Tooltip.Content className="font-normal text-th-fgd-3 leading-4">
-              Unsettled PnL
+              Unsettled Balance
             </Tooltip.Content>
           </Tooltip>
           <div
