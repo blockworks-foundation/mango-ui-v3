@@ -1,11 +1,81 @@
 import useMangoStore from '../stores/useMangoStore'
 import BN from 'bn.js'
 import {
-  getMarketByPublicKey,
+  MangoAccount,
+  MangoCache,
+  MangoGroup,
   nativeI80F48ToUi,
   PerpMarket,
+  PerpMarketConfig,
 } from '@blockworks-foundation/mango-client'
 import useTradeHistory from './useTradeHistory'
+
+export const collectPerpPosition = (
+  mangoAccount: MangoAccount,
+  mangoGroup: MangoGroup,
+  mangoCache: MangoCache,
+  marketConfig: PerpMarketConfig,
+  perpMarket: PerpMarket,
+  tradeHistory: any
+) => {
+  if (
+    !mangoAccount ||
+    !mangoGroup ||
+    !mangoCache ||
+    !perpMarket ||
+    !tradeHistory
+  )
+    return {}
+
+  const marketIndex = marketConfig.marketIndex
+  const perpMarketInfo = mangoGroup.perpMarkets[marketIndex]
+  const perpAccount = mangoAccount.perpAccounts[marketIndex]
+
+  let avgEntryPrice = 0,
+    breakEvenPrice = 0
+  try {
+    const perpTradeHistory = tradeHistory.filter(
+      (t) => t.marketName === marketConfig.name
+    )
+
+    avgEntryPrice = perpAccount
+      .getAverageOpenPrice(mangoAccount, perpMarket, perpTradeHistory)
+      .toNumber()
+    breakEvenPrice = perpAccount
+      .getBreakEvenPrice(mangoAccount, perpMarket, perpTradeHistory)
+      .toNumber()
+  } catch (e) {
+    console.error(e)
+  }
+
+  const basePosition = perpMarket.baseLotsToNumber(perpAccount.basePosition)
+  const indexPrice = mangoGroup.getPrice(marketIndex, mangoCache).toNumber()
+  const notionalSize = Math.abs(basePosition * indexPrice)
+  const unrealizedPnl = notionalSize * (indexPrice - breakEvenPrice)
+  const unsettledPnl = +nativeI80F48ToUi(
+    perpAccount.getPnl(
+      mangoGroup.perpMarkets[marketIndex],
+      mangoCache.perpMarketCache[marketIndex],
+      mangoCache.priceCache[marketIndex].price
+    ),
+    marketConfig.quoteDecimals
+  ).toNumber()
+
+  return {
+    marketIndex,
+    perpMarketInfo,
+    marketConfig,
+    perpMarket,
+    perpAccount,
+    basePosition,
+    indexPrice,
+    avgEntryPrice,
+    breakEvenPrice,
+    notionalSize,
+    unrealizedPnl,
+    unsettledPnl,
+  }
+}
 
 const usePerpPositions = () => {
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
@@ -16,70 +86,16 @@ const usePerpPositions = () => {
   const tradeHistory = useTradeHistory()
 
   const perpAccounts = mangoAccount
-    ? groupConfig.perpMarkets.map((m) => {
-        const marketIndex = m.marketIndex
-        const perpMarketInfo = mangoGroup.perpMarkets[marketIndex]
-        const marketConfig = getMarketByPublicKey(
-          groupConfig,
-          perpMarketInfo.perpMarket
+    ? groupConfig.perpMarkets.map((m) =>
+        collectPerpPosition(
+          mangoAccount,
+          mangoGroup,
+          mangoCache,
+          m,
+          allMarkets[m.publicKey.toBase58()] as PerpMarket,
+          tradeHistory
         )
-
-        const perpMarket = allMarkets[
-          perpMarketInfo.perpMarket.toString()
-        ] as PerpMarket
-        const perpTradeHistory = tradeHistory.filter(
-          (t) => t.marketName === marketConfig.name
-        )
-
-        const perpAccount = mangoAccount.perpAccounts[marketIndex]
-
-        let avgEntryPrice, breakEvenPrice
-        try {
-          avgEntryPrice = perpAccount
-            .getAverageOpenPrice(mangoAccount, perpMarket, perpTradeHistory)
-            .toNumber()
-        } catch (e) {
-          console.error(e)
-        }
-        try {
-          breakEvenPrice = perpAccount
-            .getBreakEvenPrice(mangoAccount, perpMarket, perpTradeHistory)
-            .toNumber()
-        } catch (e) {
-          console.error(e)
-        }
-
-        const basePosition = perpMarket.baseLotsToNumber(
-          perpAccount.basePosition
-        )
-        const unrealizedPnl =
-          basePosition *
-          (mangoGroup.getPrice(marketIndex, mangoCache).toNumber() -
-            parseFloat(breakEvenPrice))
-
-        const unsettledPnl = +nativeI80F48ToUi(
-          perpAccount.getPnl(
-            mangoGroup.perpMarkets[marketIndex],
-            mangoCache.perpMarketCache[marketIndex],
-            mangoCache.priceCache[marketIndex].price
-          ),
-          marketConfig.quoteDecimals
-        ).toNumber()
-
-        return {
-          marketIndex,
-          perpMarketInfo,
-          marketConfig,
-          perpMarket,
-          perpTradeHistory,
-          perpAccount,
-          basePosition,
-          avgEntryPrice,
-          breakEvenPrice,
-          unrealizedPnl,
-          unsettledPnl,
-        }
-      })
+      )
     : []
 
   const openPositions = perpAccounts.filter(

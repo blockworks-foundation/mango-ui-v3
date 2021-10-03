@@ -3,16 +3,10 @@ import { useRouter } from 'next/router'
 import useMangoStore from '../stores/useMangoStore'
 import { ExclamationIcon } from '@heroicons/react/outline'
 import Button from '../components/Button'
-
-import {
-  getMarketIndexBySymbol,
-  ZERO_BN,
-} from '@blockworks-foundation/mango-client'
-
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { Table, Td, Th, TrBody, TrHead } from './TableElements'
-import { usdFormatter } from '../utils'
+import { formatUsdValue } from '../utils'
 import Loading from './Loading'
 
 import usePerpPositions from '../hooks/usePerpPositions'
@@ -24,13 +18,10 @@ import { settlePnl } from './MarketPosition'
 
 const PositionsTable = () => {
   const { reloadMangoAccount } = useMangoStore((s) => s.actions)
-  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
-  const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
-  const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const [settling, setSettling] = useState(false)
 
   const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
-  const marketConfig = useMangoStore((s) => s.selectedMarket.config)
+  const selectedMarketConfig = useMangoStore((s) => s.selectedMarket.config)
   const price = useMangoStore((s) => s.tradeForm.price)
   const [showMarketCloseModal, setShowMarketCloseModal] = useState(false)
   const setMangoStore = useMangoStore((s) => s.set)
@@ -43,15 +34,9 @@ const PositionsTable = () => {
     setShowMarketCloseModal(false)
   }, [])
 
-  const handleSizeClick = (size, side) => {
+  const handleSizeClick = (size, side, indexPrice) => {
     const step = selectedMarket.minOrderSize
-    const marketIndex = getMarketIndexBySymbol(
-      groupConfig,
-      marketConfig.baseSymbol
-    )
-    const priceOrDefault = price
-      ? price
-      : mangoGroup.getPrice(marketIndex, mangoCache).toNumber()
+    const priceOrDefault = price ? price : indexPrice
     const roundedSize = Math.round(size / step) * step
     const quoteSize = roundedSize * priceOrDefault
     setMangoStore((state) => {
@@ -134,6 +119,8 @@ const PositionsTable = () => {
                         perpMarket,
                         perpAccount,
                         basePosition,
+                        notionalSize,
+                        indexPrice,
                         avgEntryPrice,
                         breakEvenPrice,
                         unrealizedPnl,
@@ -159,43 +146,41 @@ const PositionsTable = () => {
                             <PerpSideBadge perpAccount={perpAccount} />
                           </Td>
                           <Td>
-                            {perpAccount && basePosition > 0 ? (
-                              marketConfig.kind === 'perp' &&
-                              asPath.includes(marketConfig.baseSymbol) ? (
-                                <span
-                                  className="cursor-pointer underline hover:no-underline"
-                                  onClick={() =>
-                                    handleSizeClick(
-                                      basePosition,
-                                      perpAccount.basePosition.gt(ZERO_BN)
-                                        ? 'buy'
-                                        : 'sell'
-                                    )
-                                  }
-                                >
-                                  {`${basePosition} ${marketConfig.baseSymbol}`}
-                                </span>
-                              ) : (
-                                `${basePosition} ${marketConfig.baseSymbol}`
-                              )
+                            {basePosition &&
+                            selectedMarketConfig.kind === 'perp' &&
+                            asPath.includes(marketConfig.baseSymbol) ? (
+                              <span
+                                className="cursor-pointer underline hover:no-underline"
+                                onClick={() =>
+                                  handleSizeClick(
+                                    Math.abs(basePosition),
+                                    basePosition > 0 ? 'buy' : 'sell',
+                                    indexPrice
+                                  )
+                                }
+                              >
+                                {`${Math.abs(basePosition)} ${
+                                  marketConfig.baseSymbol
+                                }`}
+                              </span>
                             ) : (
-                              `0 ${marketConfig.baseSymbol}`
+                              <span>
+                                `${Math.abs(basePosition)} $
+                                {marketConfig.baseSymbol}`
+                              </span>
                             )}
+                          </Td>
+                          <Td>{formatUsdValue(Math.abs(notionalSize))}</Td>
+                          <Td>
+                            {avgEntryPrice
+                              ? formatUsdValue(avgEntryPrice)
+                              : '--'}
                           </Td>
                           <Td>
-                            {usdFormatter(
-                              Math.abs(
-                                perpMarket.baseLotsToNumber(
-                                  perpAccount.basePosition
-                                ) *
-                                  mangoGroup
-                                    .getPrice(marketIndex, mangoCache)
-                                    .toNumber()
-                              )
-                            )}
+                            {breakEvenPrice
+                              ? formatUsdValue(breakEvenPrice)
+                              : '--'}
                           </Td>
-                          <Td>{avgEntryPrice != 0 ? avgEntryPrice : '--'}</Td>
-                          <Td>{breakEvenPrice != 0 ? breakEvenPrice : '--'}</Td>
                           <Td>
                             <PnlText pnl={unrealizedPnl} />
                           </Td>
@@ -220,10 +205,9 @@ const PositionsTable = () => {
               openPositions.map(
                 (
                   {
-                    marketIndex,
                     marketConfig,
-                    perpMarket,
-                    perpAccount,
+                    basePosition,
+                    notionalSize,
                     avgEntryPrice,
                     breakEvenPrice,
                     unrealizedPnl,
@@ -249,31 +233,15 @@ const PositionsTable = () => {
                                 </div>
                                 <div className="text-th-fgd-3 text-xs">
                                   <span
-                                    className={`mr-1
-                                ${
-                                  perpAccount.basePosition.gt(ZERO_BN)
-                                    ? 'text-th-green'
-                                    : 'text-th-red'
-                                }
-                              `}
+                                    className={`mr-1 ${
+                                      basePosition > 0
+                                        ? 'text-th-green'
+                                        : 'text-th-red'
+                                    }`}
                                   >
-                                    {perpAccount.basePosition.gt(ZERO_BN)
-                                      ? 'LONG'
-                                      : 'SHORT'}
+                                    {basePosition > 0 ? 'LONG' : 'SHORT'}
                                   </span>
-                                  {`${
-                                    Math.abs(
-                                      perpMarket.baseLotsToNumber(
-                                        perpAccount.basePosition
-                                      )
-                                    ) > 0
-                                      ? Math.abs(
-                                          perpMarket.baseLotsToNumber(
-                                            perpAccount.basePosition
-                                          )
-                                        )
-                                      : 0
-                                  }`}
+                                  {Math.abs(basePosition)}
                                 </div>
                               </div>
                             </div>
@@ -289,28 +257,23 @@ const PositionsTable = () => {
                             <div className="pb-0.5 text-th-fgd-3 text-xs">
                               Ave Entry Price
                             </div>
-                            {avgEntryPrice != 0 ? avgEntryPrice : '--'}
+                            {avgEntryPrice
+                              ? formatUsdValue(avgEntryPrice)
+                              : '--'}
                           </div>
                           <div className="col-span-1 text-left">
                             <div className="pb-0.5 text-th-fgd-3 text-xs">
                               Notional Size
                             </div>
-                            {usdFormatter(
-                              Math.abs(
-                                perpMarket.baseLotsToNumber(
-                                  perpAccount.basePosition
-                                ) *
-                                  mangoGroup
-                                    .getPrice(marketIndex, mangoCache)
-                                    .toNumber()
-                              )
-                            )}
+                            {formatUsdValue(notionalSize)}
                           </div>
                           <div className="col-span-1 text-left">
                             <div className="pb-0.5 text-th-fgd-3 text-xs">
                               Break-even Price
                             </div>
-                            {breakEvenPrice != 0 ? avgEntryPrice : '--'}
+                            {breakEvenPrice
+                              ? formatUsdValue(breakEvenPrice)
+                              : '--'}
                           </div>
                           <div className="col-span-1 text-left">
                             <div className="pb-0.5 text-th-fgd-3 text-xs">
