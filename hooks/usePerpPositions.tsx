@@ -33,14 +33,21 @@ const usePerpPositions = () => {
 
         const perpAccount = mangoAccount.perpAccounts[marketIndex]
 
-        // TODO: catch exceptions
-        const avgEntryPrice = perpAccount
-          .getAverageOpenPrice(mangoAccount, perpMarket, perpTradeHistory)
-          .toNumber()
-
-        const breakEvenPrice = perpAccount
-          .getBreakEvenPrice(mangoAccount, perpMarket, perpTradeHistory)
-          .toNumber()
+        let avgEntryPrice, breakEvenPrice
+        try {
+          avgEntryPrice = perpAccount
+            .getAverageOpenPrice(mangoAccount, perpMarket, perpTradeHistory)
+            .toNumber()
+        } catch (e) {
+          console.error(e)
+        }
+        try {
+          breakEvenPrice = perpAccount
+            .getBreakEvenPrice(mangoAccount, perpMarket, perpTradeHistory)
+            .toNumber()
+        } catch (e) {
+          console.error(e)
+        }
 
         const basePosition = perpMarket.baseLotsToNumber(
           perpAccount.basePosition
