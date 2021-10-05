@@ -42,16 +42,16 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
     const { askInfo, bidInfo } = useMangoStore.getState().selectedMarket
     const wallet = useMangoStore.getState().wallet.current
-    const connection = useMangoStore.getState().connection.current
 
     if (!wallet || !mangoGroup || !mangoAccount) return
     setSubmitting(true)
 
     try {
-      const reloadedMangoAccount = await mangoAccount.reload(connection)
-      const perpAccount = reloadedMangoAccount.perpAccounts[marketIndex]
+      const perpAccount = mangoAccount.perpAccounts[marketIndex]
       const side = perpAccount.basePosition.gt(ZERO_BN) ? 'sell' : 'buy'
-      const size = Math.abs(market.baseLotsToNumber(perpAccount.basePosition))
+      // send a large size to ensure we are reducing the entire position
+      const size =
+        Math.abs(market.baseLotsToNumber(perpAccount.basePosition)) * 2
 
       const orderPrice = calculateTradePrice(
         'Market',
@@ -78,9 +78,10 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
         side,
         orderPrice,
         size,
-        'ioc',
-        0,
-        side === 'buy' ? askInfo : bidInfo
+        'market',
+        0, // client order id
+        side === 'buy' ? askInfo : bidInfo,
+        true // reduce only
       )
       await sleep(500)
       actions.reloadMangoAccount()
