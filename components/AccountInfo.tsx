@@ -274,7 +274,7 @@ export default function AccountInfo() {
               %
             </div>
           </div>
-          {mangoAccount.beingLiquidated ? (
+          {mangoAccount && mangoAccount.beingLiquidated ? (
             <div className="pt-0.5 text-xs sm:text-sm flex items-center justify-center">
               <ExclamationIcon className="flex-shrink-0 h-5 w-5 mr-1.5 text-th-red" />
               <span className="text-th-red">You are being liquidated!</span>
