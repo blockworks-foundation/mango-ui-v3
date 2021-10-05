@@ -5,7 +5,10 @@ import Button, { LinkButton } from '../components/Button'
 import { notify } from '../utils/notifications'
 import { ArrowSmDownIcon, ExclamationIcon } from '@heroicons/react/outline'
 import { Market } from '@project-serum/serum'
-import { getTokenBySymbol } from '@blockworks-foundation/mango-client'
+import {
+  getMarketIndexBySymbol,
+  getTokenBySymbol,
+} from '@blockworks-foundation/mango-client'
 import { useState } from 'react'
 import Loading from './Loading'
 import { useViewport } from '../hooks/useViewport'
@@ -39,9 +42,41 @@ const BalancesTable = ({ showZeroBalances = false }) => {
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoGroupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const mangoClient = useMangoStore((s) => s.connection.client)
+  const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
+  const marketConfig = useMangoStore((s) => s.selectedMarket.config)
+  const setMangoStore = useMangoStore((s) => s.set)
+  const price = useMangoStore((s) => s.tradeForm.price)
+  const mangoGroupCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const { width } = useViewport()
   const [submitting, setSubmitting] = useState(false)
   const isMobile = width ? width < breakpoints.md : false
+
+  const handleSizeClick = (size, symbol) => {
+    const step = selectedMarket.minOrderSize
+    const marketIndex = getMarketIndexBySymbol(
+      mangoGroupConfig,
+      marketConfig.baseSymbol
+    )
+    const priceOrDefault = price
+      ? price
+      : mangoGroup.getPrice(marketIndex, mangoGroupCache).toNumber()
+    if (symbol === 'USDC') {
+      const baseSize = Math.floor(size / priceOrDefault / step) * step
+      setMangoStore((state) => {
+        state.tradeForm.baseSize = baseSize
+        state.tradeForm.quoteSize = (baseSize * priceOrDefault).toFixed(2)
+        state.tradeForm.side = 'buy'
+      })
+    } else {
+      const roundedSize = Math.round(size / step) * step
+      const quoteSize = roundedSize * priceOrDefault
+      setMangoStore((state) => {
+        state.tradeForm.baseSize = roundedSize
+        state.tradeForm.quoteSize = quoteSize.toFixed(2)
+        state.tradeForm.side = 'sell'
+      })
+    }
+  }
 
   const handleOpenDepositModal = useCallback((symbol) => {
     setActionSymbol(symbol)
@@ -312,7 +347,26 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                       <Td>{balance.borrows.toFixed()}</Td>
                       <Td>{balance.orders}</Td>
                       <Td>{balance.unsettled}</Td>
-                      <Td>{balance.net.toFixed()}</Td>
+                      <Td>
+                        {marketConfig.kind === 'spot' &&
+                        marketConfig.name.includes(balance.symbol) &&
+                        selectedMarket ? (
+                          <span
+                            className={
+                              balance.net.toNumber() > 0
+                                ? 'cursor-pointer underline hover:no-underline'
+                                : ''
+                            }
+                            onClick={() =>
+                              handleSizeClick(balance.net, balance.symbol)
+                            }
+                          >
+                            {balance.net.toFixed()}
+                          </span>
+                        ) : (
+                          balance.net.toFixed()
+                        )}
+                      </Td>
                       <Td>{formatUsdValue(balance.value)}</Td>
                       <Td>
                         <span className="text-th-green">
@@ -375,8 +429,8 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                 {items.map((balance, index) => (
                   <ExpandableRow
                     buttonTemplate={
-                      <>
-                        <div className="col-span-7 flex items-center text-fgd-1">
+                      <div className="col-span-11 flex items-center justify-between text-fgd-1">
+                        <div className="flex items-center text-fgd-1">
                           <img
                             alt=""
                             width="20"
@@ -387,10 +441,10 @@ const BalancesTable = ({ showZeroBalances = false }) => {
 
                           {balance.symbol}
                         </div>
-                        <div className="col-span-4 text-fgd-1 text-right">
+                        <div className="mr-1.5 text-fgd-1 text-right">
                           {balance.net.toFixed()}
                         </div>
-                      </>
+                      </div>
                     }
                     key={`${balance.symbol}${index}`}
                     index={index}

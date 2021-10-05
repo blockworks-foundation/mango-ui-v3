@@ -190,7 +190,7 @@ export default function Orderbook({ depth = 8 }) {
 
         setOrderbookData({
           bids: bidsToDisplay,
-          asks: asksToDisplay,
+          asks: isMobile ? asksToDisplay.reverse() : asksToDisplay,
           spread,
           spreadPercentage,
         })

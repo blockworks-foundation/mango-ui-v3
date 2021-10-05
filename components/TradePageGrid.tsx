@@ -135,6 +135,7 @@ const TradePageGrid = () => {
           onBreakpointChange(newBreakpoint)
         }
         onLayoutChange={(layout, layouts) => onLayoutChange(layouts)}
+        useCSSTransforms={false}
       >
         <div key="tvChart">
           <FloatingElement className="h-full pl-0">
