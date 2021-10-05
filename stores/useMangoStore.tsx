@@ -41,8 +41,8 @@ export const ENDPOINTS: EndpointInfo[] = [
   },
   {
     name: 'devnet',
-    // url: "https://mango.devnet.rpcpool.com",
-    // websocket: "https://mango.devnet.rpcpool.com",
+    // url: 'https://mango.devnet.rpcpool.com',
+    // websocket: 'https://mango.devnet.rpcpool.com',
     url: 'https://api.devnet.solana.com',
     websocket: 'https://api.devnet.solana.com',
     custom: false,
@@ -168,7 +168,7 @@ interface MangoStore extends State {
 
 const useMangoStore = create<MangoStore>((set, get) => {
   const rpcUrl =
-    typeof window !== 'undefined'
+    typeof window !== 'undefined' && CLUSTER === 'mainnet'
       ? JSON.parse(localStorage.getItem(NODE_URL_KEY)) || ENDPOINT.url
       : ENDPOINT.url
 
