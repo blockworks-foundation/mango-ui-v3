@@ -7,7 +7,7 @@ import {
   ZERO_I80F48,
 } from '@blockworks-foundation/mango-client'
 import { useCallback, useState } from 'react'
-import { HeartIcon } from '@heroicons/react/solid'
+import { ExclamationIcon, HeartIcon } from '@heroicons/react/solid'
 import useMangoStore, { MNGO_INDEX } from '../stores/useMangoStore'
 import { formatUsdValue, usdFormatter } from '../utils'
 import { notify } from '../utils/notifications'
@@ -274,6 +274,12 @@ export default function AccountInfo() {
               %
             </div>
           </div>
+          {mangoAccount.beingLiquidated ? (
+            <div className="pt-0.5 text-xs sm:text-sm flex items-center justify-center">
+              <ExclamationIcon className="flex-shrink-0 h-5 w-5 mr-1.5 text-th-red" />
+              <span className="text-th-red">You are being liquidated!</span>
+            </div>
+          ) : null}
           <div className={`grid grid-cols-2 grid-rows-1 gap-4 pt-2 sm:pt-4`}>
             <Button
               onClick={() => setShowDepositModal(true)}
