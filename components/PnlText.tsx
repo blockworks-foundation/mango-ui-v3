@@ -1,4 +1,4 @@
-import { usdFormatter } from '../utils'
+import { formatUsdValue } from '../utils'
 
 const PnlText = ({ className, pnl }: { className?: string; pnl?: number }) => (
   <>
@@ -6,7 +6,7 @@ const PnlText = ({ className, pnl }: { className?: string; pnl?: number }) => (
       <span
         className={`${className} ${pnl > 0 ? 'text-th-green' : 'text-th-red'}`}
       >
-        {usdFormatter(pnl)}
+        {formatUsdValue(pnl)}
       </span>
     ) : (
       '--'

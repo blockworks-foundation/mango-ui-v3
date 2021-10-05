@@ -107,7 +107,6 @@ const PositionsTable = () => {
                     <Th>Avg entry Price</Th>
                     <Th>Break-even Price</Th>
                     <Th>Unrealized PnL</Th>
-                    <Th>Unsettled</Th>
                   </TrHead>
                 </thead>
                 <tbody>
@@ -124,7 +123,6 @@ const PositionsTable = () => {
                         avgEntryPrice,
                         breakEvenPrice,
                         unrealizedPnl,
-                        unsettledPnl,
                       },
                       index
                     ) => {
@@ -165,8 +163,9 @@ const PositionsTable = () => {
                               </span>
                             ) : (
                               <span>
-                                `${Math.abs(basePosition)} $
-                                {marketConfig.baseSymbol}`
+                                {`${Math.abs(basePosition)} ${
+                                  marketConfig.baseSymbol
+                                }`}
                               </span>
                             )}
                           </Td>
@@ -183,9 +182,6 @@ const PositionsTable = () => {
                           </Td>
                           <Td>
                             <PnlText pnl={unrealizedPnl} />
-                          </Td>
-                          <Td>
-                            <PnlText pnl={unsettledPnl} />
                           </Td>
                           {showMarketCloseModal ? (
                             <MarketCloseModal
