@@ -406,7 +406,7 @@ export default function AdvancedTradeForm({
         )} ${marketConfig.baseSymbol} short`
       : `${percentToClose(baseSize, roundedBorrows).toFixed(0)}% close position`
 
-  let priceImpact = {}
+  let priceImpact
   let estimatedPrice = price
   if (tradeType === 'Market') {
     const estimateMarketPrice = (
@@ -809,7 +809,7 @@ export default function AdvancedTradeForm({
             ) : null}
           </div>
           <div className="col-span-12 md:col-span-10 md:col-start-3 pt-2">
-            {tradeType === 'Market' ? (
+            {tradeType === 'Market' && priceImpact ? (
               <EstPriceImpact priceImpact={priceImpact} />
             ) : (
               <MarketFee />

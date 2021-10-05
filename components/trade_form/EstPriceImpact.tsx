@@ -6,7 +6,7 @@ import { percentFormat } from '../../utils'
 const EstPriceImpact = ({
   priceImpact,
 }: {
-  priceImpact: { slippage: number[]; takerFee: number[] }
+  priceImpact?: { slippage: number[]; takerFee: number[] }
 }) => {
   const priceImpactAbs = priceImpact.slippage[0] + priceImpact.takerFee[0]
   const priceImpactRel = priceImpact.slippage[1] + priceImpact.takerFee[1]
