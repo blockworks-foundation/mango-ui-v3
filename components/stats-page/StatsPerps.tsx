@@ -79,6 +79,13 @@ export default function StatsPerps({ perpStats }) {
     }
   })
 
+  if (selectedAsset === 'BTC-PERP') {
+    const index = perpsData.findIndex(
+      (x) => x.time === '2021-09-15T05:00:00.000Z'
+    )
+    perpsData.splice(index, 1)
+  }
+
   return (
     <>
       <div className="flex items-center justify-between mb-4 w-full">
