@@ -448,7 +448,9 @@ export default function AdvancedTradeForm({
     const slippageRel = slippageAbs / markPrice
 
     const takerFeeRel = takerFee
-    const takerFeeAbs = takerFeeRel * estimatedPrice
+    const takerFeeAbs = estimatedSize
+      ? takerFeeRel * estimatedPrice * estimatedSize
+      : 0
 
     priceImpact = {
       slippage: [slippageAbs, slippageRel],

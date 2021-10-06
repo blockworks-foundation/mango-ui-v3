@@ -4,7 +4,7 @@ import { PerpMarket, ZERO_BN } from '@blockworks-foundation/mango-client'
 import Button, { LinkButton } from './Button'
 import { notify } from '../utils/notifications'
 import Loading from './Loading'
-import { calculateTradePrice, sleep } from '../utils'
+import { sleep } from '../utils'
 import Modal from './Modal'
 
 interface MarketCloseModalProps {
@@ -26,7 +26,6 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
   const orderBookRef = useRef(useMangoStore.getState().selectedMarket.orderBook)
   const config = useMangoStore.getState().selectedMarket.config
 
-  const orderbook = orderBookRef.current
   useEffect(
     () =>
       useMangoStore.subscribe(
@@ -49,25 +48,10 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
     try {
       const perpAccount = mangoAccount.perpAccounts[marketIndex]
       const side = perpAccount.basePosition.gt(ZERO_BN) ? 'sell' : 'buy'
+      const price = 1
       // send a large size to ensure we are reducing the entire position
       const size =
         Math.abs(market.baseLotsToNumber(perpAccount.basePosition)) * 2
-
-      const orderPrice = calculateTradePrice(
-        'Market',
-        orderbook,
-        size,
-        side,
-        ''
-      )
-
-      if (!orderPrice) {
-        notify({
-          title: 'Price not available',
-          description: 'Please try again',
-          type: 'error',
-        })
-      }
 
       const txid = await mangoClient.placePerpOrder(
         mangoGroup,
@@ -76,7 +60,7 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
         market,
         wallet,
         side,
-        orderPrice,
+        price,
         size,
         'market',
         0, // client order id
