@@ -510,6 +510,21 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                     }
                   />
                 ))}
+
+                {showDepositModal && (
+                  <DepositModal
+                    isOpen={showDepositModal}
+                    onClose={() => setShowDepositModal(false)}
+                    tokenSymbol={actionSymbol}
+                  />
+                )}
+                {showWithdrawModal && (
+                  <WithdrawModal
+                    isOpen={showWithdrawModal}
+                    onClose={() => setShowWithdrawModal(false)}
+                    tokenSymbol={actionSymbol}
+                  />
+                )}
               </>
             )
           ) : (
