@@ -103,8 +103,8 @@ export default function StatsPerps({ perpStats }) {
       </div>
       <div className="grid grid-flow-col grid-cols-1 grid-rows-2 md:grid-cols-2 md:grid-rows-1 gap-2 sm:gap-4">
         <div
-          className="border border-th-bkg-3 relative p-4 rounded-md"
-          style={{ height: '300px' }}
+          className="border border-th-bkg-4 relative p-4 rounded-md"
+          style={{ height: '330px' }}
         >
           <Chart
             title="Avg. Hourly Funding Rate"
@@ -112,12 +112,15 @@ export default function StatsPerps({ perpStats }) {
             yAxis="fundingRate"
             data={perpsData}
             labelFormat={(x) => `${x.toFixed(4)}%`}
+            tickFormat={(x) =>
+              x.toLocaleString(undefined, { maximumFractionDigits: 4 })
+            }
             type="area"
           />
         </div>
         <div
-          className="border border-th-bkg-3 relative p-4 rounded-md"
-          style={{ height: '300px' }}
+          className="border border-th-bkg-4 relative p-4 rounded-md"
+          style={{ height: '330px' }}
         >
           <Chart
             title="Open Interest"

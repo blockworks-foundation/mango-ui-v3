@@ -258,3 +258,7 @@ export function getBrowserDocumentHiddenProp() {
 export function getIsDocumentHidden() {
   return !document[getBrowserDocumentHiddenProp()]
 }
+
+export const numberCompactFormatter = Intl.NumberFormat('en', {
+  notation: 'compact',
+})

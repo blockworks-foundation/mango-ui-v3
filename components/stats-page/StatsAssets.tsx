@@ -71,8 +71,8 @@ export default function StatsAssets({ latestStats, stats }) {
       </div>
       <div className="grid grid-flow-col grid-cols-1 grid-rows-4 md:grid-cols-2 md:grid-rows-2 gap-2 sm:gap-4">
         <div
-          className="border border-th-bkg-3 relative md:mb-0 p-4 rounded-md"
-          style={{ height: '300px' }}
+          className="border border-th-bkg-4 relative md:mb-0 p-4 rounded-md"
+          style={{ height: '330px' }}
         >
           <Chart
             title="Total Deposits"
@@ -86,8 +86,8 @@ export default function StatsAssets({ latestStats, stats }) {
           />
         </div>
         <div
-          className="border border-th-bkg-3 relative p-4 rounded-md"
-          style={{ height: '300px' }}
+          className="border border-th-bkg-4 relative p-4 rounded-md"
+          style={{ height: '330px' }}
         >
           <Chart
             title="Deposit Interest"
@@ -95,12 +95,15 @@ export default function StatsAssets({ latestStats, stats }) {
             yAxis="depositRate"
             data={selectedStatsData}
             labelFormat={(x) => `${(x * 100).toFixed(5)}%`}
+            tickFormat={(x) =>
+              (x * 100).toLocaleString(undefined, { maximumFractionDigits: 4 })
+            }
             type="bar"
           />
         </div>
         <div
-          className="border border-th-bkg-3 relative md:mb-0 p-4 rounded-md"
-          style={{ height: '300px' }}
+          className="border border-th-bkg-4 relative md:mb-0 p-4 rounded-md"
+          style={{ height: '330px' }}
         >
           <Chart
             title="Total Borrows"
@@ -114,8 +117,8 @@ export default function StatsAssets({ latestStats, stats }) {
           />
         </div>
         <div
-          className="border border-th-bkg-3 relative p-4 rounded-md"
-          style={{ height: '300px' }}
+          className="border border-th-bkg-4 relative p-4 rounded-md"
+          style={{ height: '330px' }}
         >
           <Chart
             title="Borrow Interest"
@@ -123,6 +126,9 @@ export default function StatsAssets({ latestStats, stats }) {
             yAxis="borrowRate"
             data={selectedStatsData}
             labelFormat={(x) => `${(x * 100).toFixed(5)}%`}
+            tickFormat={(x) =>
+              (x * 100).toLocaleString(undefined, { maximumFractionDigits: 4 })
+            }
             type="bar"
           />
         </div>
