@@ -118,8 +118,8 @@ export default function StatsTotals({ latestStats, stats }) {
     <>
       <div className="grid grid-flow-col grid-cols-1 grid-rows-2 md:grid-cols-2 md:grid-rows-1 gap-2 sm:gap-4 pb-8">
         <div
-          className="border border-th-bkg-3 relative md:mb-0 p-4 rounded-md"
-          style={{ height: '300px' }}
+          className="border border-th-bkg-4 h-56 relative md:mb-0 p-4 rounded-md"
+          style={{ height: '330px' }}
         >
           <Chart
             title="Total Deposit Value"
@@ -134,8 +134,8 @@ export default function StatsTotals({ latestStats, stats }) {
           />
         </div>
         <div
-          className="border border-th-bkg-3 relative p-4 rounded-md"
-          style={{ height: '300px' }}
+          className="border border-th-bkg-4 relative p-4 rounded-md"
+          style={{ height: '330px' }}
         >
           <Chart
             title="Total Borrow Value"
