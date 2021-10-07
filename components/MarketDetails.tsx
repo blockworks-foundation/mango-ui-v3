@@ -207,7 +207,7 @@ const MarketDetails = () => {
             <>
               <div className="flex items-center justify-between md:block">
                 <div className="text-th-fgd-3 tiny-text pb-0.5">
-                  Avg Funding Rate (1h)
+                  Avg. Funding Rate (1h)
                 </div>
                 <div className="font-semibold text-th-fgd-1 md:text-xs">
                   {selectedMarket ? (

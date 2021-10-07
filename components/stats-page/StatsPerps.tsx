@@ -4,6 +4,7 @@ import useMangoGroupConfig from '../../hooks/useMangoGroupConfig'
 import useMangoStore from '../../stores/useMangoStore'
 import Chart from '../Chart'
 import BN from 'bn.js'
+import { tokenPrecision } from '../../utils'
 
 const icons = {
   'BTC-PERP': '/assets/icons/btc.svg',
@@ -81,12 +82,12 @@ export default function StatsPerps({ perpStats }) {
 
   return (
     <>
-      <div className="flex items-center justify-between mb-4 w-full">
+      <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between mb-4 w-full">
         <AssetHeader asset={selectedAsset} />
-        <div className="flex">
+        <div className="flex mb-4 sm:mb-0 space-x-2">
           {marketConfigs.map((market) => (
             <div
-              className={`bg-th-bkg-3 cursor-pointer default-transition ml-2 px-2 py-1 rounded-md whitespace-nowrap
+              className={`bg-th-bkg-3 cursor-pointer default-transition px-2 py-1 rounded-md text-center w-full whitespace-nowrap
               ${
                 selectedAsset === market.name
                   ? `ring-1 ring-inset ring-th-primary text-th-primary`
@@ -107,7 +108,7 @@ export default function StatsPerps({ perpStats }) {
           style={{ height: '330px' }}
         >
           <Chart
-            title="Avg. Hourly Funding Rate"
+            title="Avg. Funding Rate (1hr)"
             xAxis="time"
             yAxis="fundingRate"
             data={perpsData}
@@ -130,7 +131,8 @@ export default function StatsPerps({ perpStats }) {
             labelFormat={(x) =>
               x &&
               x.toLocaleString(undefined, {
-                maximumFractionDigits: selectedMarketConfig.baseDecimals,
+                maximumFractionDigits:
+                  tokenPrecision[selectedMarketConfig.baseSymbol],
               }) + selectedMarketConfig.baseSymbol
             }
             type="area"
