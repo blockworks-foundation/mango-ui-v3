@@ -152,8 +152,8 @@ export default function Orderbook({ depth = 8 }) {
   const openOrderPrices = openOrders?.length
     ? openOrders.map(({ order }) => order.price)
     : []
-  const { width } = useViewport()
-  const isMobile = width ? width < breakpoints.sm : false
+  const { screenWidth } = useViewport()
+  const isMobile = screenWidth ? screenWidth < breakpoints.sm : false
 
   const currentOrderbookData = useRef(null)
   const lastOrderbookData = useRef(null)

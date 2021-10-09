@@ -11,8 +11,8 @@ const StyledListbox = styled(Listbox.Button)`
 const TRADE_TYPES = ['Limit', 'Market']
 
 const TradeType = ({ value, onChange, className = '' }) => {
-  const { width } = useViewport()
-  const isMobile = width ? width < breakpoints.sm : false
+  const { screenWidth } = useViewport()
+  const isMobile = screenWidth ? screenWidth < breakpoints.sm : false
   return (
     <div className={`relative ${className}`}>
       {!isMobile ? (

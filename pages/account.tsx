@@ -46,8 +46,8 @@ export default function Account() {
   const isLoading = useMangoStore((s) => s.selectedMangoAccount.initialLoad)
   const [viewIndex, setViewIndex] = useState(0)
   const [activeTab, setActiveTab] = useState(TABS[0])
-  const { width } = useViewport()
-  const isMobile = width ? width < breakpoints.sm : false
+  const { screenWidth } = useViewport()
+  const isMobile = screenWidth ? screenWidth < breakpoints.sm : false
 
   const handleCloseAccounts = useCallback(() => {
     setShowAccountsModal(false)

@@ -38,8 +38,8 @@ export default function TradeForm() {
   const { side, baseSize, quoteSize, price, tradeType } = useMangoStore(
     (s) => s.tradeForm
   )
-  const { width } = useViewport()
-  const isMobile = width ? width < breakpoints.sm : false
+  const { screenWidth } = useViewport()
+  const isMobile = screenWidth ? screenWidth < breakpoints.sm : false
 
   const [postOnly, setPostOnly] = useState(false)
   const [ioc, setIoc] = useState(false)

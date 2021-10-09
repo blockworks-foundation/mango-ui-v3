@@ -47,9 +47,9 @@ const BalancesTable = ({ showZeroBalances = false }) => {
   const setMangoStore = useMangoStore((s) => s.set)
   const price = useMangoStore((s) => s.tradeForm.price)
   const mangoGroupCache = useMangoStore((s) => s.selectedMangoGroup.cache)
-  const { width } = useViewport()
+  const { screenWidth } = useViewport()
   const [submitting, setSubmitting] = useState(false)
-  const isMobile = width ? width < breakpoints.md : false
+  const isMobile = screenWidth ? screenWidth < breakpoints.md : false
 
   const handleSizeClick = (size, symbol) => {
     const step = selectedMarket.minOrderSize

@@ -32,8 +32,8 @@ export default function AccountInfo() {
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const mangoClient = useMangoStore((s) => s.connection.client)
   const actions = useMangoStore((s) => s.actions)
-  const { width } = useViewport()
-  const isMobile = width ? width < breakpoints.sm : false
+  const { screenWidth } = useViewport()
+  const isMobile = screenWidth ? screenWidth < breakpoints.sm : false
 
   const [showDepositModal, setShowDepositModal] = useState(false)
   const [showWithdrawModal, setShowWithdrawModal] = useState(false)

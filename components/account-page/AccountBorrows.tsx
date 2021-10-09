@@ -36,8 +36,8 @@ export default function AccountBorrows() {
   const [depositToSettle, setDepositToSettle] = useState(null)
   const [showBorrowModal, setShowBorrowModal] = useState(false)
   const [showDepositModal, setShowDepositModal] = useState(false)
-  const { width } = useViewport()
-  const isMobile = width ? width < breakpoints.sm : false
+  const { screenWidth } = useViewport()
+  const isMobile = screenWidth ? screenWidth < breakpoints.sm : false
 
   const handleCloseWithdraw = useCallback(() => {
     setShowBorrowModal(false)

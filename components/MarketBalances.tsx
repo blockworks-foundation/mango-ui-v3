@@ -21,8 +21,8 @@ export default function MarketBalances() {
   const connected = useMangoStore((s) => s.wallet.connected)
   const isLoading = useMangoStore((s) => s.selectedMangoAccount.initialLoad)
   const baseSymbol = marketConfig.baseSymbol
-  const { width } = useViewport()
-  const isMobile = width ? width < breakpoints.sm : false
+  const { screenWidth } = useViewport()
+  const isMobile = screenWidth ? screenWidth < breakpoints.sm : false
 
   const handleSizeClick = (size, symbol) => {
     const step = selectedMarket.minOrderSize

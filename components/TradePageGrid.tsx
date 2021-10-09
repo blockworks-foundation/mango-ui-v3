@@ -79,8 +79,8 @@ const TradePageGrid = () => {
     GRID_LAYOUT_KEY,
     defaultLayouts
   )
-  const { width } = useViewport()
-  const isMobile = width ? width < breakpoints.sm : false
+  const { screenWidth } = useViewport()
+  const isMobile = screenWidth ? screenWidth < breakpoints.sm : false
 
   const getCurrentBreakpoint = () => {
     return Responsive.utils.getBreakpointFromWidth(

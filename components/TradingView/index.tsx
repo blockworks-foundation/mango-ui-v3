@@ -35,8 +35,8 @@ export interface ChartContainerProps {
 const TVChartContainer = () => {
   const selectedMarketConfig = useMangoStore((s) => s.selectedMarket.config)
   const { theme } = useTheme()
-  const { width } = useViewport()
-  const isMobile = width ? width < breakpoints.sm : false
+  const { screenWidth } = useViewport()
+  const isMobile = screenWidth ? screenWidth < breakpoints.sm : false
 
   // @ts-ignore
   const defaultProps: ChartContainerProps = {

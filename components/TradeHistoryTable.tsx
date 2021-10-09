@@ -16,8 +16,8 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
   const { asPath } = useRouter()
   const tradeHistory = useTradeHistory({ excludePerpLiquidations: true })
   const { items, requestSort, sortConfig } = useSortableData(tradeHistory)
-  const { width } = useViewport()
-  const isMobile = width ? width < breakpoints.md : false
+  const { screenWidth } = useViewport()
+  const isMobile = screenWidth ? screenWidth < breakpoints.md : false
 
   const renderTradeDateTime = (timestamp: BN | string) => {
     let date

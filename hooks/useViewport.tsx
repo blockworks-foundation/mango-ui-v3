@@ -1,17 +1,17 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 
 type ViewportContextProps = {
-  width: number
+  screenWidth: number
 }
 
 const ViewportContext = createContext({} as ViewportContextProps)
 
 export const ViewportProvider = ({ children }) => {
   const [mounted, setMounted] = useState(false)
-  const [width, setWidth] = useState(null)
+  const [screenWidth, setScreenWidth] = useState(null)
 
   const handleWindowResize = () => {
-    setWidth(window.innerWidth)
+    setScreenWidth(window.innerWidth)
   }
 
   useEffect(() => {
@@ -24,13 +24,13 @@ export const ViewportProvider = ({ children }) => {
   if (!mounted) return null
 
   return (
-    <ViewportContext.Provider value={{ width }}>
+    <ViewportContext.Provider value={{ screenWidth }}>
       {children}
     </ViewportContext.Provider>
   )
 }
 
 export const useViewport = () => {
-  const { width } = useContext(ViewportContext)
-  return { width }
+  const { screenWidth } = useContext(ViewportContext)
+  return { screenWidth }
 }

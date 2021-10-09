@@ -26,8 +26,8 @@ const PositionsTable = () => {
   const [showMarketCloseModal, setShowMarketCloseModal] = useState(false)
   const setMangoStore = useMangoStore((s) => s.set)
   const { openPositions, unsettledPositions } = usePerpPositions()
-  const { width } = useViewport()
-  const isMobile = width ? width < breakpoints.md : false
+  const { screenWidth } = useViewport()
+  const isMobile = screenWidth ? screenWidth < breakpoints.md : false
   const { asPath } = useRouter()
 
   const handleCloseWarning = useCallback(() => {

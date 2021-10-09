@@ -41,8 +41,8 @@ const getAverageStats = (
 
 export default function StatsTotals({ latestStats, stats }) {
   const startTimestamp = 1622905200000
-  const { width } = useViewport()
-  const isMobile = width ? width < breakpoints.sm : false
+  const { screenWidth } = useViewport()
+  const isMobile = screenWidth ? screenWidth < breakpoints.sm : false
 
   const trimmedStats = stats.filter(
     (stat) => new Date(stat.hourly).getTime() >= startTimestamp

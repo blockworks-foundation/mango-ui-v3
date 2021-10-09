@@ -1,9 +1,14 @@
 import { useCallback, useEffect, useState } from 'react'
+import { useTheme } from 'next-themes'
+import { XAxis, YAxis, Tooltip, BarChart, Bar } from 'recharts'
+import dayjs from 'dayjs'
+import { ChartBarIcon, XIcon } from '@heroicons/react/solid'
+import useDimensions from 'react-cool-dimensions'
 import { ChartTradeType } from '../@types/types'
 import useInterval from '../hooks/useInterval'
 import ChartApi from '../utils/chartDataConnector'
 import { ElementTitle } from './styles'
-import { getDecimalCount, isEqual } from '../utils/index'
+import { getDecimalCount, isEqual, numberCompactFormatter } from '../utils'
 import useMangoStore from '../stores/useMangoStore'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
@@ -13,9 +18,23 @@ export default function RecentMarketTrades() {
   const mangoConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const market = useMangoStore((s) => s.selectedMarket.current)
-  const { width } = useViewport()
-  const isMobile = width ? width < breakpoints.sm : false
+  const { screenWidth } = useViewport()
+  const isMobile = screenWidth ? screenWidth < breakpoints.sm : false
   const [trades, setTrades] = useState([])
+  const [showChart, setShowChart] = useState(false)
+  const [mouseData, setMouseData] = useState<string | null>(null)
+  const { observe, width, height } = useDimensions()
+  const { theme } = useTheme()
+
+  const handleMouseMove = (coords) => {
+    if (coords.activePayload) {
+      setMouseData(coords.activePayload[0].payload)
+    }
+  }
+
+  const handleMouseLeave = () => {
+    setMouseData(null)
+  }
 
   const fetchTradesForChart = useCallback(async () => {
     if (!marketConfig) return
@@ -42,9 +61,93 @@ export default function RecentMarketTrades() {
     fetchTradesForChart()
   }, 5000)
 
+  console.log(mouseData)
+
   return !isMobile ? (
-    <>
-      <ElementTitle>Recent Trades</ElementTitle>
+    <div>
+      <div className="flex items-center justify-between pb-3">
+        <div className="h-8 w-8" />
+        <ElementTitle noMarignBottom>Recent Trades</ElementTitle>
+        <button
+          onClick={() => setShowChart(!showChart)}
+          className="flex items-center justify-center rounded-full bg-th-bkg-3 w-8 h-8 hover:text-th-primary focus:outline-none"
+        >
+          {showChart ? (
+            <XIcon className="w-5 h-5" />
+          ) : (
+            <ChartBarIcon className="w-4 h-4" />
+          )}
+        </button>
+      </div>
+      {showChart ? (
+        <div
+          className="border border-th-bkg-4 relative mb-4 px-3 pb-2 pt-3 rounded-md"
+          ref={observe}
+          style={{ height: '144px' }}
+        >
+          <BarChart
+            width={width}
+            height={height}
+            data={trades}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+          >
+            <Tooltip
+              cursor={{
+                fill: '#fff',
+                opacity: 0.2,
+              }}
+              content={<></>}
+            />
+            <defs>
+              <linearGradient id="gradientBar" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#FF9C24" stopOpacity={1} />
+                <stop offset="100%" stopColor="#FF9C24" stopOpacity={0.5} />
+              </linearGradient>
+            </defs>
+            <Bar
+              isAnimationActive={false}
+              type="monotone"
+              dataKey="size"
+              fill="url(#gradientBar)"
+            />
+            <XAxis
+              dataKey="time"
+              axisLine={false}
+              hide={trades.length > 0 ? false : true}
+              dy={10}
+              minTickGap={20}
+              reversed
+              tick={{
+                fill:
+                  theme === 'Light'
+                    ? 'rgba(0,0,0,0.4)'
+                    : 'rgba(255,255,255,0.6)',
+                fontSize: 10,
+              }}
+              tickLine={false}
+              tickFormatter={(v) => dayjs(v).format('h:mma')}
+            />
+            <YAxis
+              dataKey="size"
+              axisLine={false}
+              hide={trades.length > 0 ? false : true}
+              dx={-10}
+              tick={{
+                fill:
+                  theme === 'Light'
+                    ? 'rgba(0,0,0,0.4)'
+                    : 'rgba(255,255,255,0.6)',
+                fontSize: 10,
+              }}
+              tickLine={false}
+              tickFormatter={(v) => numberCompactFormatter.format(v)}
+              type="number"
+              width={40}
+            />
+          </BarChart>
+        </div>
+      ) : null}
       <div className={`grid grid-cols-3 text-th-fgd-4 mb-2 text-xs`}>
         <div>Price ({mangoConfig.quoteSymbol}) </div>
         <div className={`text-right`}>Size ({marketConfig.baseSymbol})</div>
@@ -79,7 +182,7 @@ export default function RecentMarketTrades() {
           ))}
         </div>
       )}
-    </>
+    </div>
   ) : (
     <ExpandableRow
       buttonTemplate={

@@ -92,8 +92,8 @@ export default function MarketPosition() {
 
   const [showMarketCloseModal, setShowMarketCloseModal] = useState(false)
   const [settling, setSettling] = useState(false)
-  const { width } = useViewport()
-  const isMobile = width ? width < breakpoints.sm : false
+  const { screenWidth } = useViewport()
+  const isMobile = screenWidth ? screenWidth < breakpoints.sm : false
 
   const marketIndex = useMemo(() => {
     return getMarketIndexBySymbol(mangoGroupConfig, baseSymbol)

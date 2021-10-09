@@ -20,8 +20,8 @@ const OpenOrdersTable = () => {
   const openOrders = useOpenOrders()
   const [cancelId, setCancelId] = useState(null)
   const actions = useMangoStore((s) => s.actions)
-  const { width } = useViewport()
-  const isMobile = width ? width < breakpoints.md : false
+  const { screenWidth } = useViewport()
+  const isMobile = screenWidth ? screenWidth < breakpoints.md : false
 
   const handleCancelOrder = async (
     order: Order | PerpOrder,
