@@ -251,7 +251,7 @@ const PositionsTable = () => {
                         <>
                           <div className="col-span-1 text-left">
                             <div className="pb-0.5 text-th-fgd-3 text-xs">
-                              Ave Entry Price
+                              Avg Entry Price
                             </div>
                             {avgEntryPrice
                               ? formatUsdValue(avgEntryPrice)
