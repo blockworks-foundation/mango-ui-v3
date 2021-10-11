@@ -236,7 +236,8 @@ export default function AccountInfo() {
                 <Tooltip
                   content={
                     <div>
-                      Account will be liquidated if Health Ratio reaches 0%.{' '}
+                      Account will be liquidated if Health Ratio reaches 0% and
+                      will continue until Init Health is above 0.{' '}
                       <a
                         href="https://docs.mango.markets/mango-v3/overview#health"
                         target="_blank"
