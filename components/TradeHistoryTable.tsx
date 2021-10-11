@@ -21,10 +21,12 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
 
   const renderTradeDateTime = (timestamp: BN | string) => {
     let date
-    if (timestamp instanceof BN) {
-      date = new Date(timestamp.toNumber() * 1000)
-    } else {
+    // don't compare to BN because of npm maddness
+    // prototypes can be different due to multiple versions being imported
+    if (typeof timestamp === 'string') {
       date = new Date(timestamp)
+    } else {
+      date = new Date(timestamp.toNumber() * 1000)
     }
 
     return (

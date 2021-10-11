@@ -5,7 +5,7 @@ import PageBodyContainer from '../components/PageBodyContainer'
 import TopBar from '../components/TopBar'
 import EmptyState from '../components/EmptyState'
 import AccountsModal from '../components/AccountsModal'
-import AccountBorrows from '../components/account-page/AccountBorrows'
+import AccountBorrows from '../components/account_page/AccountBorrows'
 import Loading from '../components/Loading'
 
 export default function Borrow() {

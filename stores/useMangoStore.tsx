@@ -51,7 +51,7 @@ export const ENDPOINTS: EndpointInfo[] = [
 
 type ClusterType = 'mainnet' | 'devnet'
 
-const CLUSTER = (process.env.NEXT_PUBLIC_CLUSTER as ClusterType) || 'mainnet'
+const CLUSTER = (process.env.NEXT_PUBLIC_CLUSTER as ClusterType) || 'devnet'
 const ENDPOINT = ENDPOINTS.find((e) => e.name === CLUSTER)
 
 export const WEBSOCKET_CONNECTION = new Connection(
@@ -59,7 +59,7 @@ export const WEBSOCKET_CONNECTION = new Connection(
   'processed' as Commitment
 )
 
-const DEFAULT_MANGO_GROUP_NAME = process.env.NEXT_PUBLIC_GROUP || 'mainnet.1'
+const DEFAULT_MANGO_GROUP_NAME = process.env.NEXT_PUBLIC_GROUP || 'devnet.2'
 const DEFAULT_MANGO_GROUP_CONFIG = Config.ids().getGroup(
   CLUSTER,
   DEFAULT_MANGO_GROUP_NAME
@@ -148,7 +148,15 @@ interface MangoStore extends State {
     price: number | ''
     baseSize: number | ''
     quoteSize: number | ''
-    tradeType: 'Market' | 'Limit'
+    tradeType:
+      | 'Market'
+      | 'Limit'
+      | 'Stop Loss'
+      | 'Take Profit'
+      | 'Stop Limit'
+      | 'Take Profit Limit'
+    triggerPrice: number | ''
+    triggerCondition: 'above' | 'below'
   }
   wallet: {
     providerUrl: string
@@ -223,6 +231,8 @@ const useMangoStore = create<MangoStore>((set, get) => {
       quoteSize: '',
       tradeType: 'Limit',
       price: '',
+      triggerPrice: '',
+      triggerCondition: 'above',
     },
     wallet: INITIAL_STATE.WALLET,
     settings: {
@@ -262,7 +272,7 @@ const useMangoStore = create<MangoStore>((set, get) => {
           })
         }
       },
-      async fetchMangoAccounts() {
+      async fetchAllMangoAccounts() {
         const set = get().set
         const mangoGroup = get().selectedMangoGroup.current
         const mangoClient = get().connection.client
@@ -283,14 +293,7 @@ const useMangoStore = create<MangoStore>((set, get) => {
               set((state) => {
                 state.selectedMangoAccount.initialLoad = false
                 state.mangoAccounts = sortedAccounts
-                if (state.selectedMangoAccount.current) {
-                  state.selectedMangoAccount.current = mangoAccounts.find(
-                    (ma) =>
-                      ma.publicKey.equals(
-                        state.selectedMangoAccount.current.publicKey
-                      )
-                  )
-                } else {
+                if (!state.selectedMangoAccount.current) {
                   const lastAccount = localStorage.getItem(LAST_ACCOUNT_KEY)
                   state.selectedMangoAccount.current =
                     mangoAccounts.find(
@@ -443,20 +446,36 @@ const useMangoStore = create<MangoStore>((set, get) => {
         const set = get().set
         const mangoAccount = get().selectedMangoAccount.current
         const connection = get().connection.current
-        const [reloadedMangoAccount, reloadedOpenOrders] = await Promise.all([
-          mangoAccount.reload(connection),
-          mangoAccount.loadOpenOrders(
+
+        const reloadedMangoAccount = await mangoAccount.reload(connection)
+
+        await Promise.all([
+          reloadedMangoAccount.loadOpenOrders(
             connection,
             new PublicKey(serumProgramId)
           ),
+          reloadedMangoAccount.loadAdvancedOrders(connection),
         ])
-        reloadedMangoAccount.spotOpenOrdersAccounts = reloadedOpenOrders
 
         set((state) => {
           state.selectedMangoAccount.current = reloadedMangoAccount
         })
       },
-      async updateOpenOrders() {
+      async reloadOrders() {
+        const mangoAccount = get().selectedMangoAccount.current
+        const connection = get().connection.current
+        if (mangoAccount) {
+          await Promise.all([
+            mangoAccount.loadOpenOrders(
+              connection,
+              new PublicKey(serumProgramId)
+            ),
+            mangoAccount.loadAdvancedOrders(connection),
+          ])
+        }
+      },
+      // DEPRECATED
+      async _updateOpenOrders() {
         const set = get().set
         const connection = get().connection.current
         const bidAskAccounts = Object.keys(get().accountInfos).map(

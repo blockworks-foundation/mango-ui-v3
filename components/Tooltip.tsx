@@ -7,6 +7,7 @@ type TooltipProps = {
   placement?: any
   className?: string
   children?: ReactNode
+  delay?: number
 }
 
 const Tooltip = ({
@@ -14,6 +15,7 @@ const Tooltip = ({
   content,
   className,
   placement = 'top',
+  delay = 0,
 }: TooltipProps) => {
   return (
     <Tippy
@@ -22,9 +24,10 @@ const Tooltip = ({
       appendTo={() => document.body}
       maxWidth="20rem"
       interactive
+      delay={delay}
       content={
         <div
-          className={`rounded p-3 text-xs bg-th-bkg-3 leading-5 shadow-md text-th-fgd-3 outline-none focus:outline-none ${className}`}
+          className={`rounded p-2 text-xs bg-th-bkg-3 leading-4 shadow-md text-th-fgd-3 outline-none focus:outline-none border border-th-bkg-4 ${className}`}
         >
           {content}
         </div>
