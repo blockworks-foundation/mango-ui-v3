@@ -52,7 +52,7 @@ export default function AdvancedTradeForm({
   const market = useMangoStore((s) => s.selectedMarket.current)
   const isPerpMarket = market instanceof PerpMarket
   const [reduceOnly, setReduceOnly] = useState(false)
-  const [spotMargin, setSpotMargin] = useState(false)
+  const [spotMargin, setSpotMargin] = useState(true)
   const [positionSizePercent, setPositionSizePercent] = useState('')
   const { takerFee } = useFees()
 
@@ -134,6 +134,9 @@ export default function AdvancedTradeForm({
 
   useEffect(() => {
     handleSetPositionSize(positionSizePercent, spotMargin)
+    if (!isPerpMarket && isTriggerOrder) {
+      onTradeTypeChange('Limit')
+    }
   }, [market])
 
   const { max, deposits, borrows, spotMax } = useMemo(() => {
@@ -307,6 +310,7 @@ export default function AdvancedTradeForm({
     }
     const rawQuoteSize = baseSize * usePrice
     setQuoteSize(rawQuoteSize.toFixed(6))
+    setPositionSizePercent('')
   }
 
   const onSetQuoteSize = (quoteSize: number | '') => {
@@ -324,10 +328,14 @@ export default function AdvancedTradeForm({
     const rawBaseSize = quoteSize / usePrice
     const baseSize = quoteSize && floorToDecimal(rawBaseSize, sizeDecimalCount)
     setBaseSize(baseSize)
+    setPositionSizePercent('')
   }
 
   const onTradeTypeChange = (tradeType) => {
     setTradeType(tradeType)
+    if (TRIGGER_ORDER_TYPES.includes(tradeType)) {
+      setReduceOnly(true)
+    }
     if (['Market', 'Stop Loss', 'Take Profit'].includes(tradeType)) {
       setIoc(true)
       if (isTriggerOrder) {
@@ -362,7 +370,9 @@ export default function AdvancedTradeForm({
   }
   const marginOnChange = (checked) => {
     setSpotMargin(checked)
-    handleSetPositionSize(positionSizePercent, checked)
+    if (positionSizePercent) {
+      handleSetPositionSize(positionSizePercent, checked)
+    }
   }
 
   const handleSetPositionSize = (percent, spotMargin) => {
@@ -384,6 +394,7 @@ export default function AdvancedTradeForm({
   }
 
   const percentToClose = (size, total) => {
+    if (!size || !total) return 0
     return (size / total) * 100
   }
 
@@ -776,7 +787,7 @@ export default function AdvancedTradeForm({
                 </div>
               </div>
             ) : null}
-            {marketConfig.kind === 'perp' && !isTriggerOrder ? (
+            {marketConfig.kind === 'perp' ? (
               <div className="mt-4">
                 <Tooltip
                   className="hidden md:block"
@@ -787,6 +798,7 @@ export default function AdvancedTradeForm({
                   <Checkbox
                     checked={reduceOnly}
                     onChange={(e) => reduceOnChange(e.target.checked)}
+                    disabled={isTriggerOrder}
                   >
                     Reduce Only
                   </Checkbox>
@@ -810,7 +822,7 @@ export default function AdvancedTradeForm({
               </div>
             ) : null}
           </div>
-          <div className="col-span-12 md:col-span-10 md:col-start-3 pt-2">
+          <div className="col-span-12 md:col-span-10 md:col-start-3 pt-1">
             {tradeType === 'Market' && priceImpact ? (
               <EstPriceImpact priceImpact={priceImpact} />
             ) : (

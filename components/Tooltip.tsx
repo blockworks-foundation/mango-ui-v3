@@ -27,7 +27,7 @@ const Tooltip = ({
       delay={delay}
       content={
         <div
-          className={`rounded p-2 text-xs bg-th-bkg-3 leading-4 shadow-md text-th-fgd-3 outline-none focus:outline-none ${className}`}
+          className={`rounded p-2 text-xs bg-th-bkg-3 leading-4 shadow-md text-th-fgd-3 outline-none focus:outline-none border border-th-bkg-4 ${className}`}
         >
           {content}
         </div>

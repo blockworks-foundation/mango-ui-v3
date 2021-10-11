@@ -15,16 +15,23 @@ const HiddenCheckbox = styled.input`
   width: 1px;
 `
 
-const Checkbox = ({ checked, children, ...props }) => (
+const Checkbox = ({ checked, children, disabled = false, ...props }) => (
   <label className="cursor-pointer flex items-center">
-    <HiddenCheckbox checked={checked} {...props} type="checkbox" />
+    <HiddenCheckbox
+      checked={checked}
+      {...props}
+      disabled={disabled}
+      type="checkbox"
+    />
     <div
       className={`${
-        checked ? 'border-th-primary' : 'border-th-fgd-4'
+        checked && !disabled ? 'border-th-primary' : 'border-th-fgd-4'
       } border cursor-pointer default-transition flex items-center justify-center rounded h-4 w-4`}
     >
       <CheckIcon
-        className={`${checked ? 'block' : 'hidden'} h-4 w-4 text-th-primary`}
+        className={`${checked ? 'block' : 'hidden'} h-4 w-4 ${
+          disabled ? 'text-th-fgd-4' : 'text-th-primary'
+        }`}
       />
     </div>
     <span className="ml-2 text-xs text-th-fgd-3">{children}</span>
