@@ -8,15 +8,16 @@ const EstPriceImpact = ({
 }: {
   priceImpact?: { slippage: number[]; takerFee: number[] }
 }) => {
-  const priceImpactAbs = priceImpact.slippage[0] + priceImpact.takerFee[0]
-  const priceImpactRel = priceImpact.slippage[1] + priceImpact.takerFee[1]
+  const priceImpactAbs = priceImpact.slippage[0]
+  const priceImpactRel = priceImpact.slippage[1]
+
   return (
     <div
-      className={`border-t border-th-bkg-4 flex items-center justify-center mt-2 pt-2 text-th-fgd-3 text-xs`}
+      className={`border-t border-th-bkg-4 flex items-center justify-center mt-2 pt-2 text-th-fgd-4 text-xs`}
     >
       Est. Price Impact:
       <span
-        className={`font-bold ml-2 ${
+        className={`font-bold opacity-80 ml-2 ${
           priceImpactRel <= 0.005
             ? 'text-th-green'
             : priceImpactRel > 0.005 && priceImpactRel <= 0.01
@@ -25,7 +26,7 @@ const EstPriceImpact = ({
         }`}
       >
         ${priceImpactAbs.toFixed(2)}
-        <span className="mx-2 text-th-fgd-4">|</span>
+        <span className="mx-1 text-th-fgd-4">|</span>
         {percentFormat.format(priceImpactRel)}
       </span>
       <Tippy
@@ -67,7 +68,7 @@ const EstPriceImpact = ({
         }
       >
         <div className="outline-none focus:outline-none">
-          <InformationCircleIcon className="h-5 w-5 ml-2 text-th-primary" />
+          <InformationCircleIcon className="h-5 w-5 ml-2 text-th-primary opacity-70" />
         </div>
       </Tippy>
     </div>

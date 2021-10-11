@@ -403,7 +403,7 @@ export default function AdvancedTradeForm({
 
   const closeDepositString =
     percentToClose(baseSize, roundedDeposits) > 100
-      ? `100% close position and open a ${(+baseSize - roundedDeposits).toFixed(
+      ? `100% close position + Open a ${(+baseSize - roundedDeposits).toFixed(
           sizeDecimalCount
         )} ${marketConfig.baseSymbol} short`
       : `${percentToClose(baseSize, roundedDeposits).toFixed(
@@ -412,9 +412,9 @@ export default function AdvancedTradeForm({
 
   const closeBorrowString =
     percentToClose(baseSize, roundedBorrows) > 100
-      ? `100% close position and open a ${(+baseSize - roundedBorrows).toFixed(
+      ? `100% close position + Open a ${(+baseSize - roundedBorrows).toFixed(
           sizeDecimalCount
-        )} ${marketConfig.baseSymbol} short`
+        )} ${marketConfig.baseSymbol} long`
       : `${percentToClose(baseSize, roundedBorrows).toFixed(0)}% close position`
 
   let priceImpact
@@ -740,12 +740,12 @@ export default function AdvancedTradeForm({
           {marketConfig.kind === 'perp' ? (
             side === 'sell' ? (
               roundedDeposits > 0 ? (
-                <div className="text-th-fgd-3 text-xs tracking-normal mt-2">
+                <div className="text-th-fgd-4 text-xs tracking-normal mt-2">
                   <span>{closeDepositString}</span>
                 </div>
               ) : null
             ) : roundedBorrows > 0 ? (
-              <div className="text-th-fgd-3 text-xs tracking-normal mt-2">
+              <div className="text-th-fgd-4 text-xs tracking-normal mt-2">
                 <span>{closeBorrowString}</span>
               </div>
             ) : null
