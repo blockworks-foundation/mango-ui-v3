@@ -11,7 +11,10 @@
     "format": "prettier --write .",
     "lint": "eslint . --ext ts --ext tsx --ext js --quiet",
     "test": "jest",
-    "test-all": "yarn lint && yarn type-check && yarn test"
+    "test-all": "yarn lint && yarn type-check && yarn test",
+    "build-html": "yarn next build && yarn next export",
+    "start-html": "cd out && http-server",
+    "run-html": "yarn build-html && yarn start-html"
   },
   "husky": {
     "hooks": {

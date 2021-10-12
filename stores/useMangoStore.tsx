@@ -35,8 +35,9 @@ import {
 export const ENDPOINTS: EndpointInfo[] = [
   {
     name: 'mainnet',
-    url: process.env.NEXT_PUBLIC_ENDPOINT || 'https://mango.rpcpool.com',
-    websocket: process.env.NEXT_PUBLIC_ENDPOINT || 'https://mango.rpcpool.com',
+    url: process.env.NEXT_PUBLIC_ENDPOINT || IDS['cluster_urls']['mainnet'],
+    websocket:
+      process.env.NEXT_PUBLIC_ENDPOINT || IDS['cluster_urls']['mainnet'],
     custom: false,
   },
   {
@@ -342,7 +343,6 @@ const useMangoStore = create<MangoStore>((set, get) => {
                 title: 'Failed to load the mango group. Please refresh.',
               })
             }
-
             const allMarketAccounts = allMarketConfigs.map((config, i) => {
               if (config.kind == 'spot') {
                 const decoded = Market.getLayout(programId).decode(
@@ -376,12 +376,10 @@ const useMangoStore = create<MangoStore>((set, get) => {
               connection,
               allBidsAndAsksPks
             )
-
             const allMarkets = zipDict(
               allMarketPks.map((pk) => pk.toBase58()),
               allMarketAccounts
             )
-
             set((state) => {
               state.selectedMangoGroup.current = mangoGroup
               state.selectedMangoGroup.cache = mangoCache
