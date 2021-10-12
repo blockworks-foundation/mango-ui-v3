@@ -142,6 +142,14 @@ export const ProfileIcon = ({ className }) => {
   )
 }
 
+export const NewProfileIcon = ({ className, src }) => {
+  return (
+    <span className={`${className}`}>
+      <img src={src} />
+    </span>
+  )
+}
+
 export const AaveMonoIcon = ({ className }) => {
   return (
     <svg
