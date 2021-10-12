@@ -9,10 +9,11 @@ import {
 } from '@blockworks-foundation/mango-client'
 import { Market, Orderbook } from '@project-serum/serum'
 import { Order } from '@project-serum/serum/lib/market'
+import { PerpTriggerOrder } from '../@types/types'
 import useMangoStore from '../stores/useMangoStore'
 
 type OrderInfo = {
-  order: Order | PerpOrder
+  order: Order | PerpOrder | PerpTriggerOrder
   market: { account: Market | PerpMarket; config: MarketConfig }
 }
 
@@ -65,10 +66,33 @@ function parsePerpOpenOrders(
     o.owner.equals(mangoAccount.publicKey)
   )
 
-  return openOrdersForMarket.map<OrderInfo>((order) => ({
-    order,
-    market: { account: market, config: config },
-  }))
+  const advancedOrdersForMarket = mangoAccount.advancedOrders
+    .map((o, i) => {
+      const pto = o.perpTrigger
+      if (pto.isActive && pto.marketIndex == config.marketIndex) {
+        return {
+          ...o,
+          orderId: i,
+          marketIndex: pto.marketIndex,
+          orderType: pto.orderType,
+          side: pto.side,
+          price: market.priceLotsToNumber(pto.price),
+          size: market.baseLotsToNumber(pto.quantity),
+          triggerCondition: pto.triggerCondition,
+          triggerPrice: pto.triggerPrice.toNumber(),
+        }
+      } else {
+        return undefined
+      }
+    })
+    .filter((o) => !!o)
+
+  return openOrdersForMarket
+    .concat(advancedOrdersForMarket)
+    .map<OrderInfo>((order) => ({
+      order,
+      market: { account: market, config: config },
+    }))
 }
 
 export function useOpenOrders() {

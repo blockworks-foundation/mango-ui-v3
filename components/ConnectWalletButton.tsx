@@ -59,7 +59,7 @@ const ConnectWalletButton = () => {
             <Menu.Items className="bg-th-bkg-1 mt-2 p-1 absolute right-0 shadow-lg outline-none rounded-md w-48 z-20">
               <Menu.Item>
                 <button
-                  className="hidden md:flex flex-row font-normal items-center rounded-none w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer focus:outline-none"
+                  className="flex flex-row font-normal items-center rounded-none w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer focus:outline-none"
                   onClick={() => setShowAccountsModal(true)}
                 >
                   <CurrencyDollarIcon className="h-4 w-4" />
@@ -68,7 +68,7 @@ const ConnectWalletButton = () => {
               </Menu.Item>
               <Menu.Item>
                 <button
-                  className="hidden md:flex flex-row font-normal items-center rounded-none w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer focus:outline-none"
+                  className="flex flex-row font-normal items-center rounded-none w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer focus:outline-none"
                   onClick={() => setShowSettingsModal(true)}
                 >
                   <CogIcon className="h-4 w-4" />

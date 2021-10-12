@@ -41,7 +41,7 @@ const FloatingElement: FunctionComponent<FloatingElementProps> = ({
   const wallet = useMangoStore((s) => s.wallet.current)
   return (
     <div
-      className={`thin-scroll bg-th-bkg-2 rounded-lg p-2.5 sm:p-4 overflow-auto overflow-x-hidden relative ${className}`}
+      className={`thin-scroll bg-th-bkg-2 rounded-lg p-2.5 md:p-4 overflow-auto overflow-x-hidden relative ${className}`}
     >
       {!connected && showConnect ? (
         <div className="absolute top-0 left-0 w-full h-full z-10">
