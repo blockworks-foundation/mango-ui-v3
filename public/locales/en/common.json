@@ -211,7 +211,7 @@
   "taker-fee": "Taker Fee",
   "time": "Time",
   "token": "Token",
-  "tooltip-account-liquidated": "Account will be liquidated if Health Ratio reaches 0%.",
+  "tooltip-account-liquidated": "Account will be liquidated if Health Ratio reaches 0% and will continue until Init Health is above 0.",
   "tooltip-after-withdrawal": "The details of your account after this withdrawal.",
   "tooltip-apy-apr": "Deposit APY / Borrow APR",
   "tooltip-available-after": "Available to withdraw after accounting for collateral and open orders",
