@@ -37,6 +37,7 @@ function App({ Component, pageProps }) {
           rel="stylesheet"
         />
         <link rel="icon" href="/favicon.ico" />
+        <meta property="og:title" content="Mango Markets" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta
           name="keywords"
@@ -47,7 +48,6 @@ function App({ Component, pageProps }) {
           content="Mango Markets - Decentralised, cross-margin trading up to 10x leverage with lightning speed and near-zero fees."
         />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-        <meta property="og:title" content="Mango Markets" />
         <meta name="msapplication-TileColor" content="#da532c" />
         <meta name="theme-color" content="#ffffff" />
         <meta name="twitter:card" content="summary_large_image" />
