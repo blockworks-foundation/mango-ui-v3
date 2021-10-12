@@ -211,7 +211,7 @@
   "taker-fee": "吃單費率",
   "time": "時間",
   "token": "幣種",
-  "tooltip-account-liquidated": "若帳戶健康度降到０％您的帳戶會被清算了。",
+  "tooltip-account-liquidated": "若帳戶健康度降到０％您的帳戶會被清算直到初始健康度達到０以上了。",
   "tooltip-after-withdrawal": "取款後的帳戶狀態。",
   "tooltip-apy-apr": "存款APY/借貸APR",
   "tooltip-available-after": "算保證金與掛單後可取款數量",
