@@ -18,9 +18,6 @@ const Switch: FunctionComponent<SwitchProps> = ({
 
   return (
     <div className={`flex items-center ${className}`}>
-      <span className="mr-1">
-        <span className="">{children}</span>
-      </span>
       <button
         type="button"
         className={`${
@@ -41,6 +38,9 @@ const Switch: FunctionComponent<SwitchProps> = ({
           shadow transform ring-0 transition ease-in-out duration-200`}
         ></span>
       </button>
+      <span className="ml-2">
+        <span className="">{children}</span>
+      </span>
     </div>
   )
 }

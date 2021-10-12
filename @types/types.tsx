@@ -122,3 +122,14 @@ export interface WalletAdapter {
   disconnect: () => any
   on(event: string, fn: () => void): this
 }
+
+export interface PerpTriggerOrder {
+  orderId: number
+  marketIndex: number
+  orderType: 'limit' | 'ioc' | 'postOnly' | 'market'
+  side: 'buy' | 'sell'
+  price: number
+  size: number
+  triggerCondition: 'above' | 'below'
+  triggerPrice: number
+}

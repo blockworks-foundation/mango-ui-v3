@@ -84,7 +84,7 @@ const Notification = ({ type, title, description, txid }) => {
 
   return (
     <div
-      className={`max-w-sm w-full bg-th-bkg-3 shadow-lg rounded-md mt-2 pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden`}
+      className={`max-w-sm w-full bg-th-bkg-3 border border-th-bkg-4 shadow-lg rounded-md mt-2 pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden`}
     >
       <div className={`flex items-center p-4 relative`}>
         <div className={`flex-shrink-0`}>
