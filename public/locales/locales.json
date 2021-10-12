@@ -1,0 +1,14 @@
+{
+    "english":　{
+        "display-name": "English",
+        "path": "./en/common.json"
+    },
+    "chinese-traditional": {
+        "display-name": "繁體中文",
+        "path": "./zh_trad/common.json"
+    },
+    "chinese-simplified": {
+        "display-name": "简体中文",
+        "path": "./zh_simp/common.json"
+    }
+}
