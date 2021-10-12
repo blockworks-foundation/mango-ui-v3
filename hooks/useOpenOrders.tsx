@@ -6,6 +6,7 @@ import {
   MarketConfig,
   PerpMarket,
   MangoAccount,
+  I80F48,
 } from '@blockworks-foundation/mango-client'
 import { Market, Orderbook } from '@project-serum/serum'
 import { Order } from '@project-serum/serum/lib/market'
@@ -79,7 +80,11 @@ function parsePerpOpenOrders(
           price: market.priceLotsToNumber(pto.price),
           size: market.baseLotsToNumber(pto.quantity),
           triggerCondition: pto.triggerCondition,
-          triggerPrice: pto.triggerPrice.toNumber(),
+          triggerPrice: pto.triggerPrice.mul(
+            I80F48.fromNumber(
+              Math.pow(10, market.baseDecimals - market.quoteDecimals)
+            )
+          ),
         }
       } else {
         return undefined
