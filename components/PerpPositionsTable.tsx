@@ -59,7 +59,7 @@ const PositionsTable = () => {
     <div className="flex flex-col pb-2 pt-4">
       {unsettledPositions.length > 0 ? (
         <div className="border border-th-bkg-4 rounded-lg mb-6 p-4 sm:p-6">
-          <div className="flex items-center justify-between pb-4">
+          <div className="flex items-center justify-between pb-2">
             <div className="flex items-center sm:text-lg">
               <ExclamationIcon className="flex-shrink-0 h-5 mr-1.5 mt-0.5 text-th-primary w-5" />
               Unsettled Positions

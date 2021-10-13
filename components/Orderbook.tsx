@@ -1,7 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react'
 import styled from '@emotion/styled'
 import Big from 'big.js'
-import { css, keyframes } from '@emotion/react'
 import useInterval from '../hooks/useInterval'
 import usePrevious from '../hooks/usePrevious'
 import { isEqual, getDecimalCount, usdFormatter } from '../utils/'
@@ -16,61 +15,22 @@ import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
 import Tooltip from './Tooltip'
 import GroupSize from './GroupSize'
-import FloatingElement from './FloatingElement'
 import { useOpenOrders } from '../hooks/useOpenOrders'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
+import {
+  FlipCard,
+  FlipCardBack,
+  FlipCardFront,
+  FlipCardInner,
+  StyledFloatingElement,
+} from './FlipCard'
 
 const Line = styled.div<any>`
   text-align: ${(props) => (props.invert ? 'left' : 'right')};
   height: 100%;
   filter: opacity(40%);
   ${(props) => props['data-width'] && `width: ${props['data-width']};`}
-`
-const fadeIn = keyframes`
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-`
-
-const FlipCard = styled.div`
-  background-color: transparent;
-  height: 100%;
-  perspective: 1000px;
-`
-
-const FlipCardInner = styled.div<any>`
-  position: relative;
-  width: 100%;
-  height: 100%;
-  text-align: center;
-  transition: transform 0.8s ease-out;
-  transform-style: preserve-3d;
-  transform: ${({ flip }) => (flip ? 'rotateY(0deg)' : 'rotateY(180deg)')};
-`
-
-const FlipCardFront = styled.div`
-  position: absolute;
-  width: 100%;
-  height: 100%;
-`
-
-const FlipCardBack = styled.div`
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  transform: rotateY(180deg);
-`
-
-const StyledFloatingElement = styled(FloatingElement)`
-  animation: ${css`
-    ${fadeIn} 1s linear
-  `};
-  overflow: hidden;
 `
 
 const groupBy = (ordersArray, market, grouping: number, isBids: boolean) => {
@@ -221,7 +181,8 @@ export default function Orderbook({ depth = 8 }) {
         const ask = defaultLayout
           ? asksToDisplay[0]?.price
           : asksToDisplay[asksToDisplay.length - 1]?.price
-        let spread, spreadPercentage
+        let spread = 0,
+          spreadPercentage = 0
         if (bid && ask) {
           spread = ask - bid
           spreadPercentage = (spread / ask) * 100

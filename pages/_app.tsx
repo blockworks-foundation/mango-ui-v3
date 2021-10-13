@@ -37,6 +37,7 @@ function App({ Component, pageProps }) {
           rel="stylesheet"
         />
         <link rel="icon" href="/favicon.ico" />
+        <meta property="og:title" content="Mango Markets" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta
           name="keywords"

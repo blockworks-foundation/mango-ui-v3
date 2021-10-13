@@ -50,7 +50,7 @@ export default function RecentMarketTrades() {
     fetchTradesForChart()
   }, 5000)
 
-  const ChartTooltip = ({ active, payload, label }) => {
+  const ChartTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-th-bkg-3 p-2 rounded text-th-fgd-3">
