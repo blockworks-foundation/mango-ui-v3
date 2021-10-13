@@ -22,19 +22,8 @@ export default function RecentMarketTrades() {
   const isMobile = screenWidth ? screenWidth < breakpoints.sm : false
   const [trades, setTrades] = useState([])
   const [showChart, setShowChart] = useState(false)
-  const [mouseData, setMouseData] = useState<string | null>(null)
   const { observe, width, height } = useDimensions()
   const { theme } = useTheme()
-
-  const handleMouseMove = (coords) => {
-    if (coords.activePayload) {
-      setMouseData(coords.activePayload[0].payload)
-    }
-  }
-
-  const handleMouseLeave = () => {
-    setMouseData(null)
-  }
 
   const fetchTradesForChart = useCallback(async () => {
     if (!marketConfig) return
@@ -61,7 +50,23 @@ export default function RecentMarketTrades() {
     fetchTradesForChart()
   }, 5000)
 
-  console.log(mouseData)
+  const ChartTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-th-bkg-3 p-2 rounded text-th-fgd-3">
+          <span className="">{dayjs(label).format('h:mma')}</span>
+          <span className="mx-1.5 text-th-fgd-4">|</span>
+          <span>
+            {`${numberCompactFormatter.format(payload[0].value)}${
+              marketConfig.baseSymbol
+            }`}
+          </span>
+        </div>
+      )
+    }
+
+    return null
+  }
 
   return !isMobile ? (
     <div>
@@ -85,19 +90,13 @@ export default function RecentMarketTrades() {
           ref={observe}
           style={{ height: '144px' }}
         >
-          <BarChart
-            width={width}
-            height={height}
-            data={trades}
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
-          >
+          <BarChart width={width} height={height} data={trades}>
             <Tooltip
               cursor={{
                 fill: '#fff',
                 opacity: 0.2,
               }}
-              content={<></>}
+              content={<ChartTooltip />}
             />
             <defs>
               <linearGradient id="gradientBar" x1="0" y1="0" x2="0" y2="1">
