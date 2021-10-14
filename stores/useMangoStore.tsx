@@ -31,6 +31,11 @@ import {
   initialMarket,
   NODE_URL_KEY,
 } from '../components/SettingsModal'
+import { TOKEN_PROGRAM_ID } from '../utils/tokens'
+import { findProgramAddress } from '../utils/metaplex/utils'
+import * as borsh from 'borsh'
+import { Metadata, METADATA_SCHEMA } from '../utils/metaplex/models'
+import { METADATA_PREFIX } from '../utils/metaplex/types'
 
 export const ENDPOINTS: EndpointInfo[] = [
   {
@@ -43,8 +48,8 @@ export const ENDPOINTS: EndpointInfo[] = [
     name: 'devnet',
     // url: 'https://mango.devnet.rpcpool.com',
     // websocket: 'https://mango.devnet.rpcpool.com',
-    url: 'https://api.devnet.solana.com',
-    websocket: 'https://api.devnet.solana.com',
+    url: 'https://mango.rpcpool.com',
+    websocket: 'https://mango.rpcpool.com',
     custom: false,
   },
 ]
@@ -166,6 +171,7 @@ interface MangoStore extends State {
   }
   settings: {
     uiLocked: boolean
+    nfts: string[]
   }
   tradeHistory: any[]
   set: (x: any) => void
@@ -179,6 +185,8 @@ const useMangoStore = create<MangoStore>((set, get) => {
     typeof window !== 'undefined' && CLUSTER === 'mainnet'
       ? JSON.parse(localStorage.getItem(NODE_URL_KEY)) || ENDPOINT.url
       : ENDPOINT.url
+
+  console.log('RPC url: ', rpcUrl)
 
   const defaultMarket =
     typeof window !== 'undefined'
@@ -237,6 +245,7 @@ const useMangoStore = create<MangoStore>((set, get) => {
     wallet: INITIAL_STATE.WALLET,
     settings: {
       uiLocked: true,
+      nfts: [],
     },
     tradeHistory: [],
     set: (fn) => set(produce(fn)),
@@ -269,6 +278,64 @@ const useMangoStore = create<MangoStore>((set, get) => {
         } else {
           set((state) => {
             state.wallet.tokens = []
+          })
+        }
+      },
+      async fetchProfilePicture() {
+        const wallet = get().wallet.current
+        const connected = get().wallet.connected
+        const connection = get().connection.current
+        const set = get().set
+
+        if (wallet?.publicKey && connected) {
+          const tokenAccounts = await connection.getParsedTokenAccountsByOwner(
+            wallet.publicKey,
+            { programId: TOKEN_PROGRAM_ID }
+          )
+
+          const nftPublicKeys = []
+
+          for (const token of tokenAccounts.value) {
+            const tokenAccount = token.account.data.parsed.info
+
+            if (
+              parseFloat(tokenAccount.tokenAmount.amount) == 1 &&
+              tokenAccount.tokenAmount.decimals == 0
+            ) {
+              nftPublicKeys.push(new PublicKey(tokenAccount.mint))
+            }
+          }
+
+          if (nftPublicKeys.length == 0) return
+
+          const metadataProgramId = new PublicKey(METADATA_SCHEMA)
+          const uris = []
+
+          for (const nft of nftPublicKeys) {
+            const pda = await findProgramAddress(
+              [
+                Buffer.from(METADATA_PREFIX),
+                metadataProgramId.toBuffer(),
+                nft.toBuffer(),
+              ],
+              metadataProgramId
+            )[0]
+
+            const accountInfo = await connection.getAccountInfo(
+              pda,
+              'processed'
+            )
+            const metadata = borsh.deserializeUnchecked(
+              METADATA_SCHEMA,
+              Metadata,
+              accountInfo!.data
+            )
+            const uri = metadata.data.uri.replace(/\0/g, '')
+            uris.push(uri)
+          }
+
+          set((state) => {
+            state.settings.nfts = uris
           })
         }
       },

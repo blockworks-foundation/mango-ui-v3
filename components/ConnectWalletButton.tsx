@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import useMangoStore from '../stores/useMangoStore'
 import { Menu } from '@headlessui/react'
 import {
@@ -15,19 +15,20 @@ import {
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import { abbreviateAddress, copyToClipboard } from '../utils'
 import WalletSelect from './WalletSelect'
-import { WalletIcon } from './icons'
+import { ProfileIcon, WalletIcon } from './icons'
 import AccountsModal from './AccountsModal'
 import { useEffect } from 'react'
 import SettingsModal from './SettingsModal'
-import mango_hero from '../components/assets/mango_heroes.jpg'
 
 const ConnectWalletButton = () => {
   const wallet = useMangoStore((s) => s.wallet.current)
   const connected = useMangoStore((s) => s.wallet.connected)
+  const nfts = useMangoStore((s) => s.settings.nfts)
   const set = useMangoStore((s) => s.set)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
   const [showSettingsModal, setShowSettingsModal] = useState(false)
   const [selectedWallet, setSelectedWallet] = useState(DEFAULT_PROVIDER.url)
+  const [imageUrl, setImageUrl] = useState('')
   const [savedProviderUrl] = useLocalStorageState(
     PROVIDER_LOCAL_STORAGE_KEY,
     DEFAULT_PROVIDER.url
@@ -37,6 +38,24 @@ const ConnectWalletButton = () => {
   useEffect(() => {
     setSelectedWallet(savedProviderUrl)
   }, [savedProviderUrl])
+
+  useEffect(() => {
+    if (nfts.length == 0) return
+    const nft = nfts[0]
+
+    try {
+      fetch(nft).then(async (_) => {
+        try {
+          const data = await _.json()
+          setImageUrl(data['image'] as string)
+        } catch (ex) {
+          console.error('Error trying to parse JSON: ' + ex)
+        }
+      })
+    } catch (ex) {
+      console.error('Error trying to fetch Arweave metadata: ' + ex)
+    }
+  })
 
   const handleWalletConect = () => {
     wallet.connect()
@@ -56,12 +75,16 @@ const ConnectWalletButton = () => {
           <div className="relative">
             <Menu.Button
               className="bg-th-bkg-4 flex items-center justify-center rounded-full w-10 h-10 text-white focus:outline-none hover:bg-th-bkg-4 hover:text-th-fgd-3"
-              style={{
-                backgroundImage: `url(${mango_hero.src})`,
-                backgroundSize: 'cover',
-              }}
+              style={
+                imageUrl != ''
+                  ? {
+                      backgroundImage: `url(${imageUrl})`,
+                      backgroundSize: 'cover',
+                    }
+                  : null
+              }
             >
-              {/* <ProfileIcon className="h-6 w-6" /> */}
+              {imageUrl == '' ? <ProfileIcon className="h-6 w-6" /> : null}
               {/* <NewProfileIcon className="h-6 w-6" src={mango_hero.src} /> */}
             </Menu.Button>
             <Menu.Items className="bg-th-bkg-1 mt-2 p-1 absolute right-0 shadow-lg outline-none rounded-md w-48 z-20">
