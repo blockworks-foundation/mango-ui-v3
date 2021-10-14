@@ -108,7 +108,11 @@ export function calculateTradePrice(
   if (tradeType === 'Market') {
     return calculateMarketPrice(orderBook, baseSize, side)
   } else if (TRIGGER_ORDER_TYPES.includes(tradeType)) {
-    return Number(triggerPrice)
+    if( tradeType === 'Take Profit Limit' || tradeType === 'Stop Limit' ) {
+      return Number(price)
+    } else {
+      return Number(triggerPrice)
+    }
   }
   return Number(price)
 }
