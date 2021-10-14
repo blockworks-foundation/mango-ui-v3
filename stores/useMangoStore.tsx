@@ -312,6 +312,7 @@ const useMangoStore = create<MangoStore>((set, get) => {
           const uris = []
 
           for (const nft of nftPublicKeys) {
+            // The return value is [programDerivedAddress, bytes] but we only care about the address
             const pda = await findProgramAddress(
               [
                 Buffer.from(METADATA_PREFIX),
