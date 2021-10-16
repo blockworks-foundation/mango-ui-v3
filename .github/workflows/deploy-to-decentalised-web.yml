@@ -16,12 +16,12 @@ jobs:
     - run: npm install
     - run: npm run build-html
     - name: Deploy to Skynet
-        uses: SkynetLabs/deploy-to-skynet-action@v2
-        with:
-          upload-dir: out
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          registry-seed: ${{ secrets.REGISTRY_SEED || '' }}
-          registry-datakey: ${{ secrets.REGISTRY_DATAKEY || '' }}
+      uses: SkynetLabs/deploy-to-skynet-action@v2
+      with:
+        upload-dir: out
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        registry-seed: ${{ secrets.REGISTRY_SEED || '' }}
+        registry-datakey: ${{ secrets.REGISTRY_DATAKEY || '' }}
     - run: echo "🍏 This job's status is ${{ job.status }}."
 
     
