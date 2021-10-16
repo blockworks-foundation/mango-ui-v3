@@ -2,10 +2,10 @@ name: GitHub Actions Demo
 on: [push]
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     strategy:
       matrix:
-        node-version: [14.x]
+        node-version: [15.x]
 
     steps:
     - uses: actions/checkout@v2
