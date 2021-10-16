@@ -19,6 +19,8 @@ import { ProfileIcon, WalletIcon } from './icons'
 import AccountsModal from './AccountsModal'
 import { useEffect } from 'react'
 import SettingsModal from './SettingsModal'
+import { UserCircleIcon } from '@heroicons/react/solid'
+import ChangeAvatarModal from './ChangeAvatarModal'
 
 const ConnectWalletButton = () => {
   const wallet = useMangoStore((s) => s.wallet.current)
@@ -27,6 +29,7 @@ const ConnectWalletButton = () => {
   const set = useMangoStore((s) => s.set)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
   const [showSettingsModal, setShowSettingsModal] = useState(false)
+  const [showChangeAvatarModal, setChangeAvatarModal] = useState(false)
   const [selectedWallet, setSelectedWallet] = useState(DEFAULT_PROVIDER.url)
   const [imageUrl, setImageUrl] = useState('')
   const [savedProviderUrl] = useLocalStorageState(
@@ -100,6 +103,15 @@ const ConnectWalletButton = () => {
               <Menu.Item>
                 <button
                   className="flex flex-row font-normal items-center rounded-none w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer focus:outline-none"
+                  onClick={() => setChangeAvatarModal(true)}
+                >
+                  <UserCircleIcon className="h-4 w-4" />
+                  <div className="pl-2 text-left">Change Avatar</div>
+                </button>
+              </Menu.Item>
+              <Menu.Item>
+                <button
+                  className="flex flex-row font-normal items-center rounded-none w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer focus:outline-none"
                   onClick={() => setShowSettingsModal(true)}
                 >
                   <CogIcon className="h-4 w-4" />
@@ -164,6 +176,13 @@ const ConnectWalletButton = () => {
         <SettingsModal
           onClose={() => setShowSettingsModal(false)}
           isOpen={showSettingsModal}
+        />
+      ) : null}
+      {showChangeAvatarModal ? (
+        <ChangeAvatarModal
+          onClose={() => setChangeAvatarModal(false)}
+          isOpen={showChangeAvatarModal}
+          url={imageUrl}
         />
       ) : null}
     </>

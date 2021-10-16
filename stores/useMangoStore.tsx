@@ -35,7 +35,7 @@ import { TOKEN_PROGRAM_ID } from '../utils/tokens'
 import { findProgramAddress } from '../utils/metaplex/utils'
 import * as borsh from 'borsh'
 import { Metadata, METADATA_SCHEMA } from '../utils/metaplex/models'
-import { METADATA_PREFIX } from '../utils/metaplex/types'
+import { METADATA_KEY, METADATA_PREFIX } from '../utils/metaplex/types'
 
 export const ENDPOINTS: EndpointInfo[] = [
   {
@@ -295,7 +295,7 @@ const useMangoStore = create<MangoStore>((set, get) => {
 
           const nftPublicKeys = []
 
-          for (const token of tokenAccounts.value) {
+          tokenAccounts.value.forEach((token) => {
             const tokenAccount = token.account.data.parsed.info
 
             if (
@@ -304,23 +304,24 @@ const useMangoStore = create<MangoStore>((set, get) => {
             ) {
               nftPublicKeys.push(new PublicKey(tokenAccount.mint))
             }
-          }
+          })
 
           if (nftPublicKeys.length == 0) return
 
-          const metadataProgramId = new PublicKey(METADATA_SCHEMA)
+          const metadataProgramId = new PublicKey(METADATA_KEY)
           const uris = []
 
           for (const nft of nftPublicKeys) {
             // The return value is [programDerivedAddress, bytes] but we only care about the address
-            const pda = await findProgramAddress(
+
+            const [pda] = await findProgramAddress(
               [
                 Buffer.from(METADATA_PREFIX),
                 metadataProgramId.toBuffer(),
                 nft.toBuffer(),
               ],
               metadataProgramId
-            )[0]
+            )
 
             const accountInfo = await connection.getAccountInfo(
               pda,
