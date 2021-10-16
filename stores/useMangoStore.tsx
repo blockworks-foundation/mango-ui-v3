@@ -172,6 +172,7 @@ interface MangoStore extends State {
   settings: {
     uiLocked: boolean
     nfts: string[]
+    avatar: string
   }
   tradeHistory: any[]
   set: (x: any) => void
@@ -246,6 +247,7 @@ const useMangoStore = create<MangoStore>((set, get) => {
     settings: {
       uiLocked: true,
       nfts: [],
+      avatar: '',
     },
     tradeHistory: [],
     set: (fn) => set(produce(fn)),

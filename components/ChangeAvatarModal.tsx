@@ -1,9 +1,14 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { FunctionComponent } from 'react'
 import Modal from './Modal'
 import { ElementTitle } from './styles'
 import { Responsive, WidthProvider } from 'react-grid-layout'
-// import _ from "lodash";
+import _ from 'lodash'
+import Button from './Button'
+import useMangoStore from '../stores/useMangoStore'
+import mango_hero from '../public/mango_heroes.jpg'
+import mango_hero1 from '../public/mango_heroes1.jpeg'
+import mango_hero2 from '../public/mango_heroes2.jpeg'
 
 const ResponsiveGridLayout = WidthProvider(Responsive)
 
@@ -18,23 +23,33 @@ const ChangeAvatarModal: FunctionComponent<ChangeAvatarModalProps> = ({
   onClose,
   url,
 }) => {
-  const [items, setItems] = useState([])
+  const nfts = [mango_hero.src, mango_hero1.src, mango_hero2.src]
+  const currentIndex = nfts.indexOf(url)
+  if (currentIndex != -1) nfts.splice(currentIndex, 1)
 
-  useEffect(() => {
-    const testImageUrls = ['', '', '']
-
-    const items = testImageUrls.map((_, key) => {
+  const testImageUrls = [url, ...nfts]
+  const [selectedIndex, setSelectedIndex] = useState(0)
+  const set = useMangoStore((state) => state.set)
+  const [layouts] = useState(
+    testImageUrls.map((url, key) => {
       return {
-        i: key,
-        x: (key % 3) * 3,
-        y: key / 3,
-        w: 3,
+        i: String(key),
+        x: key % 3,
+        y: Math.floor(key / 3),
+        w: 1,
         h: 1,
+        url: url,
       }
     })
+  )
 
-    setItems(items)
-  }, [items])
+  const saveSelection = () => {
+    set((state) => {
+      state.settings.avatar = testImageUrls[selectedIndex]
+    })
+
+    onClose()
+  }
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -43,27 +58,41 @@ const ChangeAvatarModal: FunctionComponent<ChangeAvatarModalProps> = ({
       </Modal.Header>
       <div
         className="border border-th-bkg-4 bg-th-bkg-1"
-        style={{ height: 300, width: '100%' }}
+        style={{ height: 300, width: '100%', overflowY: 'auto' }}
       >
         <ResponsiveGridLayout
-          class="layout"
+          className="layout"
           cols={{ xl: 3, lg: 3, md: 3, sm: 3, xs: 1, xxs: 1 }}
-          rowHeight={150}
+          breakpoints={{ lg: 1200 }}
+          rowHeight={120}
           isDraggable={false}
           isResizable={false}
-          useCssTransforms={false}
         >
-          {/* {_.map(items, item => {
-                        return (
-                            <div key={item.i} className="hover:cursor-pointer">
-                                <NFTDisplay url={url} selected={true}/>
-                            </div>
-                        )
-                    })} */}
-          <div key="1">
-            <NFTDisplay url={url} selected={true} />
-          </div>
+          {_.map(layouts, (layout) => {
+            return (
+              <div
+                key={layout.i}
+                data-grid={layout}
+                className="hover:cursor-pointer"
+                onClick={() => setSelectedIndex(+layout.i)}
+              >
+                <NFTDisplay
+                  url={layout.url}
+                  selected={selectedIndex === +layout.i}
+                />
+              </div>
+            )
+          })}
         </ResponsiveGridLayout>
+      </div>
+      <div className="align-middle flex justify-center">
+        <Button
+          disabled={selectedIndex === 0}
+          className=" mt-4"
+          onClick={saveSelection}
+        >
+          <div className="flex items-center justify-center">Okay</div>
+        </Button>
       </div>
     </Modal>
   )
@@ -71,11 +100,11 @@ const ChangeAvatarModal: FunctionComponent<ChangeAvatarModalProps> = ({
 
 const NFTDisplay = ({ url, selected }) => {
   return (
-    <div>
+    <div className="hover:scale-110">
       <img
         className={`border ${
           selected ? 'border-th-primary' : 'border-th-bkg-4'
-        } h-2/6 w-2/6 rounded-lg`}
+        } h-full w-full rounded-lg`}
         src={url}
       ></img>
     </div>

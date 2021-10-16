@@ -26,12 +26,12 @@ const ConnectWalletButton = () => {
   const wallet = useMangoStore((s) => s.wallet.current)
   const connected = useMangoStore((s) => s.wallet.connected)
   const nfts = useMangoStore((s) => s.settings.nfts)
+  const imageUrl = useMangoStore((s) => s.settings.avatar)
   const set = useMangoStore((s) => s.set)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
   const [showSettingsModal, setShowSettingsModal] = useState(false)
   const [showChangeAvatarModal, setChangeAvatarModal] = useState(false)
   const [selectedWallet, setSelectedWallet] = useState(DEFAULT_PROVIDER.url)
-  const [imageUrl, setImageUrl] = useState('')
   const [savedProviderUrl] = useLocalStorageState(
     PROVIDER_LOCAL_STORAGE_KEY,
     DEFAULT_PROVIDER.url
@@ -42,15 +42,17 @@ const ConnectWalletButton = () => {
     setSelectedWallet(savedProviderUrl)
   }, [savedProviderUrl])
 
-  useEffect(() => {
-    if (nfts.length == 0) return
+  if (nfts.length != 0 && imageUrl == '') {
     const nft = nfts[0]
 
     try {
       fetch(nft).then(async (_) => {
         try {
           const data = await _.json()
-          setImageUrl(data['image'] as string)
+
+          set((state) => {
+            state.settings.avatar = data['image']
+          })
         } catch (ex) {
           console.error('Error trying to parse JSON: ' + ex)
         }
@@ -58,7 +60,7 @@ const ConnectWalletButton = () => {
     } catch (ex) {
       console.error('Error trying to fetch Arweave metadata: ' + ex)
     }
-  })
+  }
 
   const handleWalletConect = () => {
     wallet.connect()
