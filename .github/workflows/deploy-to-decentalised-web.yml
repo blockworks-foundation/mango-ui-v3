@@ -22,6 +22,6 @@ jobs:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         registry-seed: ${{ secrets.REGISTRY_SEED || '' }}
         registry-datakey: ${{ secrets.REGISTRY_DATAKEY || '' }}
-    - run: echo "🍏 This job's status is ${{ job.status }}."
+    - run: echo "🥭 The job's status is ${{ job.status }}."
 
     
