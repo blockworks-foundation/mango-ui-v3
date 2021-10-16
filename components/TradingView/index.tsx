@@ -172,7 +172,7 @@ const TVChartContainer = () => {
           order as Order
         )
       } else if (market instanceof PerpMarket) {
-        if (order.perpTrigger?.clientOrderId ) {
+        if (order['triggerCondition']) {
           txid = await mangoClient.removeAdvancedOrder(
             selectedMangoGroup,
             selectedMangoAccount,
