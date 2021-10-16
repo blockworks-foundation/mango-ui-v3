@@ -10,21 +10,34 @@ import SwipeableTabs from '../components/mobile/SwipeableTabs'
 import Tabs from '../components/Tabs'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from '../components/TradePageGrid'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { useTranslation } from 'next-i18next'
 
-const TABS = [
-  'Totals',
-  'Assets',
-  'Perps',
-  // 'Markets',
-  // 'Liquidations',
-]
+export async function getServerSideProps({ locale }) {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['common'])),
+      // Will be passed to the page component as props
+    },
+  };
+}
 
 export default function StatsPage() {
+  const { t } = useTranslation('common')
+  const TABS = [
+    'Totals',
+    t('assets'),
+    'Perps',
+    // 'Markets',
+    // 'Liquidations',
+  ]
   const { latestStats, stats, perpStats } = useMangoStats()
   const [viewIndex, setViewIndex] = useState(0)
   const [activeTab, setActiveTab] = useState(TABS[0])
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
+
+
 
   const handleChangeViewIndex = (index) => {
     setViewIndex(index)

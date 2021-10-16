@@ -11,8 +11,10 @@ import { breakpoints } from './TradePageGrid'
 import { Table, Td, Th, TrBody, TrHead } from './TableElements'
 import { ExpandableRow } from './TableElements'
 import { formatUsdValue } from '../utils'
+import { useTranslation } from 'next-i18next'
 
 const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
+  const { t } = useTranslation('common')
   const { asPath } = useRouter()
   const tradeHistory = useTradeHistory({ excludePerpLiquidations: true })
   const { items, requestSort, sortConfig } = useSortableData(tradeHistory)
@@ -155,7 +157,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                         className="flex items-center no-underline font-normal"
                         onClick={() => requestSort('feeCost')}
                       >
-                        Fee
+                        {t('fee')}
                         <ArrowSmDownIcon
                           className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                             sortConfig?.key === 'feeCost'
@@ -172,7 +174,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                         className="flex items-center no-underline font-normal"
                         onClick={() => requestSort('loadTimestamp')}
                       >
-                        Approx Time
+                        {t('approximate-time')}
                         <ArrowSmDownIcon
                           className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                             sortConfig?.key === 'loadTimestamp'
@@ -283,12 +285,12 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                         {trade.liquidity}
                       </div>
                       <div className="col-span-1 text-left">
-                        <div className="pb-0.5 text-th-fgd-3 text-xs">Fee</div>
+                        <div className="pb-0.5 text-th-fgd-3 text-xs">{t('fee')}</div>
                         {formatUsdValue(trade.feeCost)}
                       </div>
                       <div className="col-span-1 text-left">
                         <div className="pb-0.5 text-th-fgd-3 text-xs">
-                          Approx Time
+                          {t('approximate-time')}
                         </div>
                         {trade.loadTimestamp || trade.timestamp
                           ? renderTradeDateTime(

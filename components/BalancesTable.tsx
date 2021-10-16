@@ -20,8 +20,10 @@ import DepositModal from './DepositModal'
 import WithdrawModal from './WithdrawModal'
 import { ExpandableRow } from './TableElements'
 import MobileTableHeader from './mobile/MobileTableHeader'
+import { useTranslation } from 'next-i18next';
 
 const BalancesTable = ({ showZeroBalances = false }) => {
+  const { t } = useTranslation('common');  
   const [showDepositModal, setShowDepositModal] = useState(false)
   const [showWithdrawModal, setShowWithdrawModal] = useState(false)
   const [actionSymbol, setActionSymbol] = useState('')
@@ -177,7 +179,7 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                         className="flex items-center no-underline font-normal text-left"
                         onClick={() => requestSort('symbol')}
                       >
-                        Asset
+                        {t('asset')}
                         <ArrowSmDownIcon
                           className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                             sortConfig?.key === 'symbol'
@@ -194,7 +196,7 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                         className="flex items-center no-underline font-normal text-left"
                         onClick={() => requestSort('deposits')}
                       >
-                        Deposits
+                        {t('deposits')}
                         <ArrowSmDownIcon
                           className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                             sortConfig?.key === 'deposits'
@@ -211,7 +213,7 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                         className="flex items-center no-underline font-normal text-left"
                         onClick={() => requestSort('borrows')}
                       >
-                        Borrows
+                        {t('borrows')}
                         <ArrowSmDownIcon
                           className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                             sortConfig?.key === 'borrows'
@@ -228,7 +230,7 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                         className="flex items-center no-underline font-normal text-left"
                         onClick={() => requestSort('orders')}
                       >
-                        In Orders
+                        {t('in-orders')}
                         <ArrowSmDownIcon
                           className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                             sortConfig?.key === 'orders'
@@ -296,7 +298,7 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                         className="flex items-center no-underline font-normal text-left"
                         onClick={() => requestSort('depositRate')}
                       >
-                        Deposit Rate
+                        {t('deposit-rate')}
                         <ArrowSmDownIcon
                           className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                             sortConfig?.key === 'depositRate'
@@ -313,7 +315,7 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                         className="flex items-center no-underline font-normal text-left"
                         onClick={() => requestSort('borrowRate')}
                       >
-                        Borrow Rate
+                        {t('borrow-rate')}
                         <ArrowSmDownIcon
                           className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                             sortConfig?.key === 'borrowRate'
@@ -386,7 +388,7 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                               handleOpenDepositModal(balance.symbol)
                             }
                           >
-                            Deposit
+                            {t('deposit')}
                           </Button>
                           <Button
                             className="text-xs pt-0 pb-0 h-8 ml-4 pl-3 pr-3"
@@ -421,7 +423,7 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                 <MobileTableHeader
                   headerTemplate={
                     <>
-                      <div className="col-span-7">Asset</div>
+                      <div className="col-span-7">{t('asset')}</div>
                       <div className="col-span-4 text-right">Net Balance</div>
                     </>
                   }
@@ -452,19 +454,19 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                       <>
                         <div className="col-span-1 text-left">
                           <div className="pb-0.5 text-th-fgd-3 text-xs">
-                            Deposits
+                            {t('deposits')}
                           </div>
                           {balance.deposits.toFixed()}
                         </div>
                         <div className="col-span-1 text-left">
                           <div className="pb-0.5 text-th-fgd-3 text-xs">
-                            Borrows
+                            {t('borrows')}
                           </div>
                           {balance.borrows.toFixed()}
                         </div>
                         <div className="col-span-1 text-left">
                           <div className="pb-0.5 text-th-fgd-3 text-xs">
-                            In Orders
+                          {t('in-orders')}
                           </div>
                           {balance.orders.toFixed()}
                         </div>
@@ -496,7 +498,7 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                           className="col-span-1 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
                           onClick={() => handleOpenDepositModal(balance.symbol)}
                         >
-                          Deposit
+                          {t('deposit')}
                         </Button>
                         <Button
                           className="col-span-1 text-xs pt-0 pb-0 h-8 pl-3 pr-3"

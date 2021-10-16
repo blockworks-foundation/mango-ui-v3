@@ -13,6 +13,7 @@ import InlineNotification from './InlineNotification'
 import { deposit } from '../utils/mango'
 import { notify } from '../utils/notifications'
 import { sleep } from '../utils'
+import { useTranslation } from 'next-i18next';
 
 interface DepositModalProps {
   onClose: () => void
@@ -27,6 +28,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
   settleDeficit,
   tokenSymbol = '',
 }) => {
+  const { t } = useTranslation('common');
   const [inputAmount, setInputAmount] = useState<string>(settleDeficit || '')
   const [submitting, setSubmitting] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
@@ -76,7 +78,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
     })
       .then((response) => {
         notify({
-          title: 'Deposit successful',
+          title: t('deposit-successful'),
           type: 'success',
           txid: response.toString(),
         })
@@ -91,7 +93,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
       })
       .catch((err) => {
         notify({
-          title: 'Deposit failed',
+          title: t('deposit-failed'),
           description: err.message,
           type: 'error',
         })
@@ -100,11 +102,11 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
 
   const validateAmountInput = (amount) => {
     if (Number(amount) <= 0) {
-      setInvalidAmountMessage('Enter an amount to deposit')
+      setInvalidAmountMessage(t('enter-amount'))
     }
     if (selectedAccount && Number(amount) > selectedAccount.uiBalance) {
       setInvalidAmountMessage(
-        'Insufficient balance. Reduce the amount to deposit'
+        t('insufficient-balance-deposit')
       )
     }
   }
@@ -157,18 +159,18 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
       {!showConfirm ? (
         <>
           <Modal.Header>
-            <ElementTitle noMarignBottom>Deposit Funds</ElementTitle>
+            <ElementTitle noMarignBottom>{t('deposit-funds')}</ElementTitle>
           </Modal.Header>
           {tokenSymbol && !selectedAccount ? (
             <InlineNotification
-              desc={`Add ${tokenSymbol} to your wallet and fund it with ${tokenSymbol} to deposit.`}
-              title={`No ${tokenSymbol} wallet address found`}
+              desc={t('deposit-help', {tokenSymbol: tokenSymbol})}
+              title={t('no-address', {tokenSymbol: tokenSymbol})}
               type="error"
             />
           ) : null}
           {settleDeficit ? (
             <InlineNotification
-              desc={`Deposit ${settleDeficit} ${tokenSymbol} before settling your borrow.`}
+              desc={t('deposit-before', {settleDeficit: settleDeficit, tokenSymbol: tokenSymbol})}
               title="Not enough balance to settle"
               type="error"
             />
@@ -179,7 +181,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
             onSelectAccount={handleAccountSelect}
           />
           <div className="flex justify-between pb-2 pt-4">
-            <div className={`text-th-fgd-1`}>Amount</div>
+            <div className={`text-th-fgd-1`}>{t('amount')}</div>
             <div
               className="text-th-fgd-1 underline cursor-pointer default-transition hover:text-th-primary hover:no-underline"
               onClick={setMaxForSelectedAccount}
@@ -232,7 +234,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
           {!mangoAccount ? (
             <div className="flex text-th-fgd-4 text-xxs mt-1">
               <div className="mx-auto">
-                You need 0.035 SOL to create a mango account.
+                {t('insufficient-sol')}
               </div>
             </div>
           ) : null}
@@ -240,10 +242,10 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
       ) : (
         <>
           <Modal.Header>
-            <ElementTitle noMarignBottom>Confirm Deposit</ElementTitle>
+            <ElementTitle noMarignBottom>{t('confirm-deposit')}</ElementTitle>
           </Modal.Header>
           <div className="bg-th-bkg-1 p-4 rounded-lg text-th-fgd-1 text-center">
-            <div className="text-th-fgd-3 pb-1">{`You're about to deposit`}</div>
+            <div className="text-th-fgd-3 pb-1">{t('depositing')}</div>
             <div className="flex items-center justify-center">
               <div className="font-semibold relative text-xl">
                 {inputAmount}
@@ -261,7 +263,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
             >
               <div className={`flex items-center justify-center`}>
                 {submitting && <Loading className="-ml-1 mr-3" />}
-                Deposit
+                {t('deposit')}
               </div>
             </Button>
           </div>
@@ -270,7 +272,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
             onClick={() => setShowConfirm(false)}
           >
             <ChevronLeftIcon className="h-5 w-5 mr-1" />
-            Back
+            {t('back')}
           </LinkButton>
         </>
       )}

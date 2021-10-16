@@ -8,6 +8,7 @@ import Input from './Input'
 import useMangoStore from '../stores/useMangoStore'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import Select from './Select'
+import { useTranslation } from 'next-i18next'
 
 const NODE_URLS = [
   { label: 'Mango Node', value: 'https://mango.rpcpool.com' },
@@ -34,6 +35,7 @@ export const initialMarket = {
 }
 
 const SettingsModal = ({ isOpen, onClose }) => {
+  const { t } = useTranslation('common')
   const [settingsView, setSettingsView] = useState('')
   const [rpcEndpointUrl] = useLocalStorageState(
     NODE_URL_KEY,
@@ -53,7 +55,7 @@ const SettingsModal = ({ isOpen, onClose }) => {
           onClick={() => setSettingsView('')}
         >
           <ChevronLeftIcon className="h-4 w-4" />
-          <span>Back</span>
+          <span>{t('back')}</span>
         </button>
       ) : null}
       <Modal.Header>
@@ -65,7 +67,7 @@ const SettingsModal = ({ isOpen, onClose }) => {
             className="border-t border-th-bkg-4 default-transition flex font-normal items-center justify-between py-3 text-th-fgd-1 w-full hover:text-th-primary focus:outline-none"
             onClick={() => setSettingsView('Default Market')}
           >
-            <span>Default Market</span>
+            <span>{t('default-market')}</span>
             <div className="flex items-center text-th-fgd-3 text-xs">
               {defaultMarket.name}
               <ChevronRightIcon className="h-5 ml-1 w-5 text-th-primary" />
@@ -89,7 +91,7 @@ const SettingsModal = ({ isOpen, onClose }) => {
       />
       {!settingsView ? (
         <div className="flex justify-center pt-6">
-          <Button onClick={onClose}>Done</Button>
+          <Button onClick={onClose}>{t('done')}</Button>
         </div>
       ) : null}
     </Modal>
@@ -110,6 +112,7 @@ const SettingsContent = ({ settingsView, setSettingsView }) => {
 }
 
 const DefaultMarketSettings = ({ setSettingsView }) => {
+  const { t } = useTranslation('common')
   const groupConfig = useMangoGroupConfig()
   const allMarkets = [
     ...groupConfig.spotMarkets,
@@ -141,7 +144,7 @@ const DefaultMarketSettings = ({ setSettingsView }) => {
   return (
     <div>
       <label className="block font-semibold mb-1 text-th-fgd-1 text-xs">
-        Default Market
+        {t('default-market')}
       </label>
       <Select
         value={parsedDefaultMarket.name}

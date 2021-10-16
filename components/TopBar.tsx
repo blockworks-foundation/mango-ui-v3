@@ -9,8 +9,13 @@ import ConnectWalletButton from './ConnectWalletButton'
 import NavDropMenu from './NavDropMenu'
 import AccountsModal from './AccountsModal'
 import { DEFAULT_MARKET_KEY, initialMarket } from './SettingsModal'
+import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next';
 
 const TopBar = () => {
+  const { t } = useTranslation('common');
+  const router = useRouter();
+  const { pathname, asPath, query } = router;
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const connected = useMangoStore((s) => s.wallet.connected)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
@@ -18,6 +23,13 @@ const TopBar = () => {
     DEFAULT_MARKET_KEY,
     initialMarket
   )
+
+  const handleLocaleChange = (lang) => {
+    router.push({ pathname, query }, asPath, { locale: lang })
+    // router.locale = lang;
+    // i18n.changeLanguage(lang, (err, t) => {  if (err) return console.log('something went wrong loading', err);  t(lang); // -> same as i18next.t});
+    // })
+  }
 
   const handleCloseAccounts = useCallback(() => {
     setShowAccountsModal(false)
@@ -43,21 +55,47 @@ const TopBar = () => {
               <div
                 className={`hidden md:flex md:items-center md:space-x-6 md:ml-4`}
               >
-                <MenuItem href={defaultMarket.path}>Trade</MenuItem>
-                <MenuItem href="/account">Account</MenuItem>
-                <MenuItem href="/borrow">Borrow</MenuItem>
-                <MenuItem href="/stats">Stats</MenuItem>
+                <MenuItem href={defaultMarket.path}>{t('trade')}</MenuItem>
+                <MenuItem href="/account">{t('account')}</MenuItem>
+                <MenuItem href="/borrow">{t('borrow')}</MenuItem>
+                <MenuItem href="/stats">{t('stats')}</MenuItem>
                 <MenuItem href="https://docs.mango.markets/" newWindow>
-                  Learn
+                {t('learn')}
                 </MenuItem>
                 <NavDropMenu
-                  menuTitle="More"
+                  menuTitle={t('more')}
                   // linksArray: [name: string, href: string, isExternal: boolean]
                   linksArray={[
                     ['Mango v1', 'https://usdt.mango.markets', true],
                     ['Mango v2', 'https://v2.mango.markets', true],
                   ]}
                 />
+                {/* <Link
+                  href='/'
+                  locale={router.locale === 'en' ? 'zh_trad' : 'en'}
+                > */}
+                  <button
+                    onClick={() => {
+                      handleLocaleChange('en');
+                    }}
+                  >
+                    English
+                  </button>
+                  <button
+                    onClick={() => {
+                      handleLocaleChange('zh');
+                    }}
+                  >
+                    简体中文
+                  </button>
+                  <button
+                    onClick={() => {
+                      handleLocaleChange('zh_tw');
+                    }}
+                  >
+                    繁體中文
+                  </button>
+                {/* </Link> */}
               </div>
             </div>
             <div className="flex items-center">
@@ -71,7 +109,7 @@ const TopBar = () => {
                     onClick={() => setShowAccountsModal(true)}
                   >
                     <div className="font-normal text-th-primary text-xs">
-                      Account
+                      {t('account')}
                     </div>
                     {mangoAccount.name
                       ? mangoAccount.name

@@ -19,11 +19,13 @@ import Loading from './Loading'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { collectPerpPosition } from '../hooks/usePerpPositions'
+import { useTranslation } from 'next-i18next'
 
 export const settlePnl = async (
   perpMarket: PerpMarket,
   perpAccount: PerpAccount
 ) => {
+  // const { t } = useTranslation('common')
   const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
   const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
   const mangoCache = useMangoStore.getState().selectedMangoGroup.cache
@@ -59,23 +61,10 @@ export const settlePnl = async (
   }
 }
 
-export function SettlePnlTooltip() {
-  return (
-    <div>
-      Settling will update your USDC balance to reflect the unsettled PnL
-      amount.{' '}
-      <a
-        href="https://docs.mango.markets/mango-v3/overview#settle-pnl"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Learn more
-      </a>
-    </div>
-  )
-}
+
 
 export default function MarketPosition() {
+  const { t } = useTranslation('common')
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoGroupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
@@ -148,6 +137,22 @@ export default function MarketPosition() {
     tradeHistory
   )
 
+  function SettlePnlTooltip() {
+    return (
+      <div>
+        Settling will update your USDC balance to reflect the unsettled PnL
+        amount.{' '}
+        <a
+          href="https://docs.mango.markets/mango-v3/overview#settle-pnl"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {t('learn-more')}
+        </a>
+      </div>
+    )
+  }
+
   return (
     <>
       <div className={!connected && !isMobile ? 'filter blur-sm' : null}>
@@ -200,7 +205,7 @@ export default function MarketPosition() {
         </div>
         <div className="flex justify-between pb-3">
           <div className="font-normal text-th-fgd-3 leading-4">
-            Avg entry price
+            {t('average-entry')}
           </div>
           <div className="text-th-fgd-1">
             {isLoading ? <DataLoader /> : formatUsdValue(avgEntryPrice)}
@@ -208,7 +213,7 @@ export default function MarketPosition() {
         </div>
         <div className="flex justify-between pb-3">
           <div className="font-normal text-th-fgd-3 leading-4">
-            Break-even price
+            {t('break-even')}
           </div>
           <div className="text-th-fgd-1">
             {isLoading ? <DataLoader /> : formatUsdValue(breakEvenPrice)}

@@ -15,8 +15,10 @@ import {
   PerpMarket,
 } from '@blockworks-foundation/mango-client'
 import { notify } from '../../utils/notifications'
+import { useTranslation } from 'next-i18next'
 
 export default function AccountAssets() {
+  const { t } = useTranslation('common')
   const balances = useBalances()
   const actions = useMangoStore((s) => s.actions)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
@@ -127,7 +129,7 @@ export default function AccountAssets() {
                       scope="col"
                       className={`px-6 py-3 text-left font-normal`}
                     >
-                      Asset
+                      {t('asset')}
                     </Th>
                     <Th
                       scope="col"
@@ -139,7 +141,7 @@ export default function AccountAssets() {
                       scope="col"
                       className={`px-6 py-3 text-left font-normal`}
                     >
-                      In Orders
+                      {t('in-orders')}
                     </Th>
                     <Th
                       scope="col"
@@ -154,7 +156,7 @@ export default function AccountAssets() {
                       Value
                     </Th>
                     <Th scope="col" className="px-6 py-3 text-left font-normal">
-                      Interest APY
+                      {t('interest')} APY
                     </Th>
                   </Tr>
                 </Thead>
@@ -232,7 +234,7 @@ export default function AccountAssets() {
                               className="text-xs pt-0 pb-0 h-8 pl-3 pr-3"
                               disabled={!connected || loadingMangoAccount}
                             >
-                              <span>Deposit</span>
+                              <span>{t('deposit')}</span>
                             </Button>
                             <Button
                               onClick={() => handleShowWithdraw(bal.symbol)}

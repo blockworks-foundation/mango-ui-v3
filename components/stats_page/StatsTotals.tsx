@@ -5,6 +5,7 @@ import { useViewport } from '../../hooks/useViewport'
 import { breakpoints } from '../TradePageGrid'
 import { Table, Td, Th, TrBody, TrHead } from '../TableElements'
 import { ExpandableRow, Row } from '../TableElements'
+import { useTranslation } from 'next-i18next'
 
 function formatNumberString(x: number, decimals): string {
   return new Intl.NumberFormat('en-US', {
@@ -40,6 +41,7 @@ const getAverageStats = (
 }
 
 export default function StatsTotals({ latestStats, stats }) {
+  const { t } = useTranslation('common')
   const startTimestamp = 1622905200000
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
@@ -153,16 +155,16 @@ export default function StatsTotals({ latestStats, stats }) {
       {!isMobile ? (
         <>
           <div className="pb-8">
-            <div className="pb-4 text-th-fgd-1 text-lg">Current Stats</div>
+            <div className="pb-4 text-th-fgd-1 text-lg">{t('current-stats')}</div>
             {latestStats.length > 0 ? (
               <Table>
                 <thead>
                   <TrHead>
-                    <Th>Asset</Th>
+                    <Th>{t('asset')}</Th>
                     <Th>Total Deposits</Th>
                     <Th>Total Borrows</Th>
-                    <Th>Deposit Rate</Th>
-                    <Th>Borrow Rate</Th>
+                    <Th>{t('deposit-rate')}</Th>
+                    <Th>{t('borrow-rate')}</Th>
                     <Th>Utilization</Th>
                   </TrHead>
                 </thead>
@@ -234,13 +236,13 @@ export default function StatsTotals({ latestStats, stats }) {
           </div>
           <div className="pb-8">
             <div className="pb-4 text-th-fgd-1 text-lg">
-              Average Deposit Rates
+              {t('average-deposit')}
             </div>
             {stats.length > 1 ? (
               <Table>
                 <thead>
                   <TrHead>
-                    <Th>Asset</Th>
+                    <Th>{t('asset')}</Th>
                     <Th>24h</Th>
                     <Th>7d</Th>
                     <Th>30d</Th>
@@ -282,12 +284,12 @@ export default function StatsTotals({ latestStats, stats }) {
               </>
             )}
           </div>
-          <div className="pb-4 text-th-fgd-1 text-lg">Average Borrow Rates</div>
+          <div className="pb-4 text-th-fgd-1 text-lg">{t('average-borrow')}</div>
           {stats.length > 1 ? (
             <Table>
               <thead>
                 <TrHead>
-                  <Th>Asset</Th>
+                  <Th>{t('asset')}</Th>
                   <Th>24h</Th>
                   <Th>7d</Th>
                   <Th>30d</Th>
@@ -332,7 +334,7 @@ export default function StatsTotals({ latestStats, stats }) {
       ) : (
         <>
           <div className="pb-8">
-            <div className="pb-4 text-th-fgd-1 text-lg">Current Stats</div>
+            <div className="pb-4 text-th-fgd-1 text-lg">{t('current-stats')}</div>
             {latestStats.map((stat, index) => (
               // latestStats.length > 0 ? (
               <ExpandableRow
@@ -374,7 +376,7 @@ export default function StatsTotals({ latestStats, stats }) {
                   <>
                     <div className="col-span-1 text-left">
                       <div className="pb-0.5 text-th-fgd-3 text-xs">
-                        Deposit Rate
+                      {t('deposit-rate')}
                       </div>
                       <span className="text-th-green">
                         {formatNumberString(stat.depositInterest.toNumber(), 2)}
@@ -383,7 +385,7 @@ export default function StatsTotals({ latestStats, stats }) {
                     </div>
                     <div className="col-span-1 text-left">
                       <div className="pb-0.5 text-th-fgd-3 text-xs">
-                        Borrow Rate
+                        {t('borrow-rate')}
                       </div>
                       <span className="text-th-red">
                         {formatNumberString(stat.borrowInterest.toNumber(), 2)}%
@@ -406,7 +408,7 @@ export default function StatsTotals({ latestStats, stats }) {
           </div>
           <div className="pb-8">
             <div className="pb-4 text-th-fgd-1 text-lg">
-              Average Deposit Rates
+              {t('average-deposit')}
             </div>
             {stats.length > 1
               ? latestStats.map((stat, index) => (
@@ -454,7 +456,7 @@ export default function StatsTotals({ latestStats, stats }) {
                 ))
               : null}
           </div>
-          <div className="pb-4 text-th-fgd-1 text-lg">Average Borrow Rates</div>
+          <div className="pb-4 text-th-fgd-1 text-lg">{t('average-borrow')}</div>
           {stats.length > 1
             ? latestStats.map((stat, index) => (
                 <Row key={stat.name} index={index}>

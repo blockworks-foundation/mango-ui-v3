@@ -7,6 +7,7 @@ import {
 } from '@heroicons/react/outline'
 import useMangoStore from '../stores/useMangoStore'
 import { notify } from '../utils/notifications'
+import { useTranslation } from 'next-i18next'
 
 const notEnoughSoLMessage = 'You may not have enough SOL for this transaction'
 
@@ -78,6 +79,7 @@ const NotificationList = () => {
 }
 
 const Notification = ({ type, title, description, txid }) => {
+  const { t } = useTranslation('common')
   const [showNotification, setShowNotification] = useState(true)
 
   if (!showNotification) return null
@@ -121,7 +123,7 @@ const Notification = ({ type, title, description, txid }) => {
             onClick={() => setShowNotification(false)}
             className={`text-th-fgd-4 hover:text-th-primary focus:outline-none`}
           >
-            <span className={`sr-only`}>Close</span>
+            <span className={`sr-only`}>{t('close')}</span>
             <svg
               className={`h-5 w-5`}
               xmlns="http://www.w3.org/2000/svg"

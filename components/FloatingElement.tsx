@@ -4,6 +4,7 @@ import { LinkIcon } from '@heroicons/react/outline'
 import useMangoStore from '../stores/useMangoStore'
 import { MoveIcon } from './icons'
 import EmptyState from './EmptyState'
+import { useTranslation } from 'next-i18next'
 
 const StyledDragWrapperContent = styled.div`
   transition: all 0.25s ease-in;
@@ -36,6 +37,7 @@ const FloatingElement: FunctionComponent<FloatingElementProps> = ({
   children,
   showConnect,
 }) => {
+  const { t } = useTranslation('common')
   const { uiLocked } = useMangoStore((s) => s.settings)
   const connected = useMangoStore((s) => s.wallet.connected)
   const wallet = useMangoStore((s) => s.wallet.current)
@@ -47,10 +49,10 @@ const FloatingElement: FunctionComponent<FloatingElementProps> = ({
         <div className="absolute top-0 left-0 w-full h-full z-10">
           <div className="flex flex-col h-full items-center justify-center relative z-10">
             <EmptyState
-              buttonText="Connect"
+              buttonText={t('connect')}
               icon={<LinkIcon />}
               onClickButton={() => (wallet ? wallet.connect() : null)}
-              title="Connect Wallet"
+              title={t('connect-wallet')}
             />
           </div>
           <div className="absolute top-0 left-0 rounded-lg opacity-50 w-full h-full bg-th-bkg-2" />

@@ -2,6 +2,7 @@ import React from 'react'
 import Modal from './Modal'
 import Button from './Button'
 import useLocalStorageState from '../hooks/useLocalStorageState'
+import { useTranslation } from 'next-i18next';
 
 export const ALPHA_MODAL_KEY = 'mangoAlphaAccepted-3.06'
 
@@ -12,6 +13,7 @@ const AlphaModal = ({
   isOpen: boolean
   onClose?: (x) => void
 }) => {
+  const { t } = useTranslation('common');
   const [, setAlphaAccepted] = useLocalStorageState(ALPHA_MODAL_KEY, false)
 
   const handleAccept = () => {
@@ -55,7 +57,7 @@ const AlphaModal = ({
       <div className={`text-th-fgd-2 text-center`}>
         <div className={`mt-4 flex justify-center`}>
           <Button onClick={handleAccept}>
-            <div className={`flex items-center`}>Accept</div>
+            <div className={`flex items-center`}>{t('accept')}</div>
           </Button>
         </div>
       </div>

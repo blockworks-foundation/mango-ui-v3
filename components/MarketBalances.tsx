@@ -8,8 +8,10 @@ import {
 } from '@blockworks-foundation/mango-client'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
+import { useTranslation } from 'next-i18next'
 
 export default function MarketBalances() {
+  const { t } = useTranslation('common')
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoGroupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const mangoGroupCache = useMangoStore((s) => s.selectedMangoGroup.cache)
@@ -108,7 +110,7 @@ export default function MarketBalances() {
                     </div>
                   </div>
                   <div className="pb-3">
-                    <div className="pb-0.5 text-th-fgd-3 text-xs">Balance</div>
+                    <div className="pb-0.5 text-th-fgd-3 text-xs">{t('balance')}</div>
                     <div className={`text-th-fgd-1`}>
                       {isLoading ? (
                         <DataLoader />
@@ -128,7 +130,7 @@ export default function MarketBalances() {
                   <div className="pb-3">
                     <Tooltip content="Available to withdraw after accounting for collateral and open orders">
                       <div className="pb-0.5 text-th-fgd-3 text-xs">
-                        Available Balance
+                        {t('available-balance')}
                       </div>
                     </Tooltip>
                     <div

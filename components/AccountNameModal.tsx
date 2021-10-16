@@ -10,6 +10,7 @@ import Modal from './Modal'
 import { ElementTitle } from './styles'
 import Tooltip from './Tooltip'
 import { notify } from '../utils/notifications'
+import { useTranslation } from 'next-i18next';
 
 interface AccountNameModalProps {
   accountName?: string
@@ -22,6 +23,7 @@ const AccountNameModal: FunctionComponent<AccountNameModalProps> = ({
   isOpen,
   onClose,
 }) => {
+  const { t } = useTranslation('common');
   const [name, setName] = useState(accountName || '')
   const [invalidNameMessage, setInvalidNameMessage] = useState('')
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
@@ -59,10 +61,10 @@ const AccountNameModal: FunctionComponent<AccountNameModalProps> = ({
 
   const validateNameInput = () => {
     if (name.length >= 33) {
-      setInvalidNameMessage('Account name must be 32 characters or less')
+      setInvalidNameMessage(t('character-limit'))
     }
     if (name.length === 0) {
-      setInvalidNameMessage('Enter an account name')
+      setInvalidNameMessage(t('enter-name'))
     }
   }
 
@@ -81,7 +83,7 @@ const AccountNameModal: FunctionComponent<AccountNameModalProps> = ({
         </div>
       </Modal.Header>
       <div className="flex items-center justify-center text-th-fgd-3 pb-4">
-        Edit the public nickname for your account
+        {t('edit-nickname')}
         <Tooltip content="Account names are stored on-chain">
           <InformationCircleIcon className="h-5 w-5 ml-2 text-th-primary" />
         </Tooltip>

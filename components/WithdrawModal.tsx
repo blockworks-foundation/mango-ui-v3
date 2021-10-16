@@ -3,7 +3,7 @@ import Modal from './Modal'
 import Input from './Input'
 import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
-import { floorToDecimal, tokenPrecision } from '../utils/index'
+import { floorToDecimal, tokenPrecision, trimDecimals } from '../utils/index'
 import Loading from './Loading'
 import Slider from './Slider'
 import Button, { LinkButton } from './Button'
@@ -28,6 +28,7 @@ import {
   nativeI80F48ToUi,
 } from '@blockworks-foundation/mango-client'
 import { notify } from '../utils/notifications'
+import { useTranslation } from 'next-i18next'
 
 interface WithdrawModalProps {
   onClose: () => void
@@ -44,6 +45,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   borrow = false,
   title,
 }) => {
+  const { t } = useTranslation('common')
   const [withdrawTokenSymbol, setWithdrawTokenSymbol] = useState(
     tokenSymbol || 'USDC'
   )
@@ -219,7 +221,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   ) => {
     if (initHealthRatio < 1) {
       return isRisk ? (
-        <div className="text-th-red">High</div>
+        <div className="text-th-red">{t('high')}</div>
       ) : isStatus ? (
         'bg-th-red'
       ) : (
@@ -283,7 +285,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
         getDepositsForSelectedAsset().lt(I80F48.fromNumber(parsedAmount))) &&
       !includeBorrow
     ) {
-      setInvalidAmountMessage('Insufficient balance. Borrow funds to withdraw')
+      setInvalidAmountMessage(t('insufficient-balance-withdraw'))
     }
   }
 
@@ -333,7 +335,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                 {title ? title : 'Withdraw Funds'}
               </ElementTitle>
             </Modal.Header>
-            <div className="pb-2 text-th-fgd-1">Asset</div>
+            <div className="pb-2 text-th-fgd-1">{t('asset')}</div>
             <Select
               value={
                 withdrawTokenSymbol && mangoAccount ? (
@@ -382,7 +384,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
             </Select>
             <div className="flex items-center jusitfy-between text-th-fgd-1 mt-4 p-2 rounded-md bg-th-bkg-3">
               <div className="flex items-center text-fgd-1 pr-4">
-                <span>Borrow Funds</span>
+                <span>{t('borrow-funds')}</span>
                 <Tooltip content="Interest is charged on your borrowed balance and is subject to change.">
                   <InformationCircleIcon
                     className={`h-5 w-5 ml-2 text-th-fgd-3 cursor-help`}
@@ -396,7 +398,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
               />
             </div>
             <div className="flex justify-between pb-2 pt-4">
-              <div className="text-th-fgd-1">Amount</div>
+              <div className="text-th-fgd-1">{t('amount')}</div>
               <div className="flex space-x-4">
                 <button
                   className="font-normal text-th-fgd-1 underline cursor-pointer default-transition hover:text-th-primary hover:no-underline focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
@@ -470,7 +472,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
         {showSimulation && simulation ? (
           <>
             <Modal.Header>
-              <ElementTitle noMarignBottom>Confirm Withdraw</ElementTitle>
+              <ElementTitle noMarignBottom>{t('confirm-withdraw')}</ElementTitle>
             </Modal.Header>
             {simulation.initHealthRatio < 0 ? (
               <div className="border border-th-red mb-4 p-2 rounded">
@@ -523,7 +525,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                             )}`}
                           ></span>
                         </span>
-                        Account Health Check
+                        {t('health-check')}
                         <Tooltip content="The details of your account after this withdrawal.">
                           <InformationCircleIcon
                             className={`h-5 w-5 ml-2 text-th-fgd-3 cursor-help`}
@@ -543,13 +545,13 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                     {simulation ? (
                       <div>
                         <div className="flex justify-between pb-2">
-                          <div className="text-th-fgd-4">Account Value</div>
+                          <div className="text-th-fgd-4">{t('account-value')}</div>
                           <div className="text-th-fgd-1">
                             ${simulation.equity.toFixed(2)}
                           </div>
                         </div>
                         <div className="flex justify-between pb-2">
-                          <div className="text-th-fgd-4">Account Risk</div>
+                          <div className="text-th-fgd-4">{t('account-risk')}</div>
                           <div className="text-th-fgd-1">
                             {getAccountStatusColor(
                               simulation.initHealthRatio,
@@ -565,7 +567,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                         </div>
 
                         <div className="flex justify-between">
-                          <div className="text-th-fgd-4">Borrow Value</div>
+                          <div className="text-th-fgd-4">{t('borrow-value')}</div>
                           <div className="text-th-fgd-1">
                             ${simulation.liabsVal.toFixed(2)}
                           </div>
@@ -597,7 +599,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
               onClick={() => setShowSimulation(false)}
             >
               <ChevronLeftIcon className="h-5 w-5 mr-1" />
-              Back
+              {t('back')}
             </LinkButton>
           </>
         ) : null}

@@ -5,6 +5,7 @@ import useMangoStore from '../../stores/useMangoStore'
 import Chart from '../Chart'
 import BN from 'bn.js'
 import { tokenPrecision } from '../../utils'
+import { useTranslation } from 'next-i18next'
 
 const icons = {
   'BTC-PERP': '/assets/icons/btc.svg',
@@ -43,6 +44,7 @@ function calculateFundingRate(
 }
 
 export default function StatsPerps({ perpStats }) {
+  const { t } = useTranslation('common')
   const [selectedAsset, setSelectedAsset] = useState<string>('BTC-PERP')
   const marketConfigs = useMangoGroupConfig().perpMarkets
   const selectedMarketConfig = marketConfigs.find(
@@ -115,7 +117,7 @@ export default function StatsPerps({ perpStats }) {
           style={{ height: '330px' }}
         >
           <Chart
-            title="Avg. Funding Rate (1hr)"
+            title={t('average-funding')}
             xAxis="time"
             yAxis="fundingRate"
             data={perpsData}

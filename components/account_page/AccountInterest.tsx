@@ -2,6 +2,7 @@ import { getTokenBySymbol } from '@blockworks-foundation/mango-client'
 import { useEffect, useState } from 'react'
 import useMangoStore from '../../stores/useMangoStore'
 import { Table, Td, Th, TrBody, TrHead } from '../TableElements'
+import { useTranslation } from 'next-i18next'
 
 interface InterestStats {
   [key: string]: {
@@ -11,6 +12,7 @@ interface InterestStats {
 }
 
 const AccountInterest = () => {
+  const { t } = useTranslation('common')
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const [interestStats, setInterestStats] = useState<any>([])
@@ -31,7 +33,7 @@ const AccountInterest = () => {
   return (
     <>
       <div className="pb-3.5 text-th-fgd-1 text-base">
-        Total Interest Earned/Paid
+        {t('interest-earned')}
       </div>
       {mangoAccount ? (
         <Table>

@@ -20,8 +20,10 @@ import { breakpoints } from '../TradePageGrid'
 import { Table, Td, Th, TrBody, TrHead } from '../TableElements'
 import { ExpandableRow } from '../TableElements'
 import MobileTableHeader from '../mobile/MobileTableHeader'
+import { useTranslation } from 'next-i18next'
 
 export default function AccountBorrows() {
+  const { t } = useTranslation('common')
   const balances = useBalances()
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
@@ -77,10 +79,10 @@ export default function AccountBorrows() {
                   <Table>
                     <thead>
                       <TrHead>
-                        <Th>Asset</Th>
-                        <Th>Balance</Th>
+                        <Th>{t('asset')}</Th>
+                        <Th>{t('balance')}</Th>
                         <Th>Value</Th>
-                        <Th>Borrow Rate (APR)</Th>
+                        <Th>{t('borrow-rate')} (APR)</Th>
                       </TrHead>
                     </thead>
                     <tbody>
@@ -139,7 +141,7 @@ export default function AccountBorrows() {
                                     className="ml-3 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
                                     disabled={!connected || loadingMangoAccount}
                                   >
-                                    Deposit
+                                    {t('deposit')}
                                   </Button>
                                   <Button
                                     onClick={() =>
@@ -148,7 +150,7 @@ export default function AccountBorrows() {
                                     className="ml-3 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
                                     disabled={!connected || loadingMangoAccount}
                                   >
-                                    Borrow
+                                    {t('borrow')}
                                   </Button>
                                 </div>
                               </Td>
@@ -162,8 +164,8 @@ export default function AccountBorrows() {
                     <MobileTableHeader
                       headerTemplate={
                         <>
-                          <div className="col-span-7">Asset</div>
-                          <div className="col-span-4 text-right">Balance</div>
+                          <div className="col-span-7">{t('asset')}</div>
+                          <div className="col-span-4 text-right">{t('balance')}</div>
                         </>
                       }
                     />
@@ -218,7 +220,7 @@ export default function AccountBorrows() {
                                 </div>
                                 <div className="col-span-1 text-left">
                                   <div className="pb-0.5 text-th-fgd-3 text-xs">
-                                    Borrow Rate (APR)
+                                    {t('borrow-rate')} (APR)
                                   </div>
                                   <span className={`text-th-red`}>
                                     {(
@@ -238,7 +240,7 @@ export default function AccountBorrows() {
                                     className="text-xs pt-0 pb-0 h-8 w-full"
                                     disabled={!connected || loadingMangoAccount}
                                   >
-                                    Deposit
+                                    {t('deposit')}
                                   </Button>
                                 </div>
                                 <div className="col-span-1">
@@ -249,7 +251,7 @@ export default function AccountBorrows() {
                                     className="text-xs pt-0 pb-0 h-8 w-full"
                                     disabled={!connected || loadingMangoAccount}
                                   >
-                                    Borrow
+                                    {t('borrow')}
                                   </Button>
                                 </div>
                               </>
@@ -270,7 +272,7 @@ export default function AccountBorrows() {
           </div>
         </div>
       </div>
-      <div className="pb-2 pt-8 text-th-fgd-1 text-lg">All Assets</div>
+      <div className="pb-2 pt-8 text-th-fgd-1 text-lg">{t('all-assets')}</div>
       <div className="flex flex-col pb-2 pt-4">
         <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div className="align-middle inline-block min-w-full sm:px-6 lg:px-8">
@@ -278,9 +280,9 @@ export default function AccountBorrows() {
               <Table>
                 <thead>
                   <TrHead>
-                    <Th>Asset</Th>
+                    <Th>{t('asset')}</Th>
                     <Th>Price</Th>
-                    <Th>Borrow Rate (APR)</Th>
+                    <Th>{t('borrow-rate')} (APR)</Th>
                     <Th>Max Borrow Amount</Th>
                     <Th>Liquidity</Th>
                   </TrHead>
@@ -357,7 +359,7 @@ export default function AccountBorrows() {
                               className="text-xs pt-0 pb-0 h-8 pl-3 pr-3"
                               disabled={!connected || loadingMangoAccount}
                             >
-                              Borrow
+                              {t('borrow')}
                             </Button>
                           </div>
                         </Td>
@@ -371,9 +373,9 @@ export default function AccountBorrows() {
                 <MobileTableHeader
                   headerTemplate={
                     <>
-                      <div className="col-span-5">Asset</div>
+                      <div className="col-span-5">{t('asset')}</div>
                       <div className="col-span-6 text-right">
-                        Borrow Rate (APR)
+                        {t('borrow-rate')} (APR)
                       </div>
                     </>
                   }
@@ -458,7 +460,7 @@ export default function AccountBorrows() {
                               className="text-xs pt-0 pb-0 h-8 w-full"
                               disabled={!connected || loadingMangoAccount}
                             >
-                              Borrow
+                              {t('borrow')}
                             </Button>
                           </div>
                         </>

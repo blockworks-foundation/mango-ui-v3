@@ -22,8 +22,10 @@ import Checkbox from '../Checkbox'
 import OrderSideTabs from './OrderSideTabs'
 import Tooltip from '../Tooltip'
 import EstPriceImpact from './EstPriceImpact'
+import { useTranslation } from 'next-i18next'
 
 export default function SimpleTradeForm({ initLeverage }) {
+  const { t } = useTranslation('common')
   const set = useMangoStore((s) => s.set)
   const { ipAllowed } = useIpAddress()
   const connected = useMangoStore((s) => s.wallet.connected)
@@ -684,7 +686,7 @@ export default function SimpleTradeForm({ initLeverage }) {
                     marketConfig.name
                   }`
                 ) : (
-                  `${baseSize > 0 ? 'Buy ' + baseSize : 'Buy '} ${
+                  `${baseSize > 0 ? t('buy') + baseSize : t('buy')} ${
                     marketConfig.baseSymbol
                   }`
                 )
@@ -700,7 +702,7 @@ export default function SimpleTradeForm({ initLeverage }) {
             </Button>
           ) : (
             <Button disabled className="flex-grow">
-              <span>Country Not Allowed</span>
+              <span>{t('country-not-allowed')}</span>
             </Button>
           )}
         </div>

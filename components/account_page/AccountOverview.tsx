@@ -17,6 +17,7 @@ import PositionsTable from '../PerpPositionsTable'
 import Switch from '../Switch'
 import useLocalStorageState from '../../hooks/useLocalStorageState'
 import { ExclamationIcon } from '@heroicons/react/solid'
+import { useTranslation } from 'next-i18next'
 
 const div = styled.div`
   font-size: 1.8rem;
@@ -25,6 +26,7 @@ const div = styled.div`
 const SHOW_ZERO_BALANCE_KEY = 'showZeroAccountBalances-0.2'
 
 export default function AccountOverview() {
+  const { t } = useTranslation('common')
   const actions = useMangoStore((s) => s.actions)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
@@ -125,7 +127,7 @@ export default function AccountOverview() {
         </div>
         <div className="border border-th-bkg-4 p-3 sm:p-4 rounded-md sm:rounded-lg">
           <div className="pb-0.5 sm:pb-2 text-th-fgd-3 text-xs sm:text-sm">
-            Health Ratio
+            {t('health-ratio')}
           </div>
           <div className="flex items-center pb-3 sm:pb-4">
             <HeartIcon className="flex-shrink-0 h-5 w-5 sm:h-7 sm:w-7 mr-1.5 text-th-primary" />
@@ -150,7 +152,7 @@ export default function AccountOverview() {
           {mangoAccount.beingLiquidated ? (
             <div className="pt-0.5 sm:pt-2 text-xs sm:text-sm flex items-center">
               <ExclamationIcon className="flex-shrink-0 h-5 w-5 sm:h-7 sm:w-7 mr-1.5 text-th-red" />
-              <span className="text-th-red">You are being liquidated!</span>
+              <span className="text-th-red">{t('being-liquidated')}</span>
             </div>
           ) : null}
         </div>
@@ -174,7 +176,7 @@ export default function AccountOverview() {
             disabled={mngoAccrued.eq(ZERO_BN)}
             className="text-th-primary text-xs"
           >
-            Claim Reward
+            {t('claim-reward')}
           </LinkButton>
         </div>
       </div>
@@ -182,7 +184,7 @@ export default function AccountOverview() {
         <div className="pb-2 text-th-fgd-1 text-lg">Perp Positions</div>
         <PositionsTable />
       </div>
-      <div className="pb-4 text-th-fgd-1 text-lg">Assets & Liabilities</div>
+      <div className="pb-4 text-th-fgd-1 text-lg">{t('assets-liabilities')}</div>
 
       <div className="grid grid-flow-col grid-cols-1 grid-rows-2 md:grid-cols-2 md:grid-rows-1 gap-2 sm:gap-4 pb-8">
         <div className="border border-th-bkg-4 p-3 sm:p-4 rounded-md sm:rounded-lg">

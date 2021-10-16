@@ -15,8 +15,11 @@ import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { Row } from './TableElements'
 import { PerpTriggerOrder } from '../@types/types'
+import { useTranslation } from 'next-i18next'
+
 
 const DesktopTable = ({ openOrders, cancelledOrderId, handleCancelOrder }) => {
+  const { t } = useTranslation('common')
   return (
     <Table>
       <thead>
@@ -26,9 +29,9 @@ const DesktopTable = ({ openOrders, cancelledOrderId, handleCancelOrder }) => {
           <Th>Size</Th>
           <Th>Price</Th>
           <Th>Value</Th>
-          <Th>Condition</Th>
+          <Th>{t('condition')}</Th>
           <Th>
-            <span className={`sr-only`}>Edit</span>
+            <span className={`sr-only`}>{t('edit')}</span>
           </Th>
         </TrHead>
       </thead>
@@ -69,7 +72,7 @@ const DesktopTable = ({ openOrders, cancelledOrderId, handleCancelOrder }) => {
                     {cancelledOrderId + '' === order.orderId + '' ? (
                       <Loading />
                     ) : (
-                      <span>Cancel</span>
+                      <span>{t('cancel')}</span>
                     )}
                   </Button>
                 </div>
@@ -83,6 +86,7 @@ const DesktopTable = ({ openOrders, cancelledOrderId, handleCancelOrder }) => {
 }
 
 const MobileTable = ({ openOrders, cancelledOrderId, handleCancelOrder }) => {
+  const { t } = useTranslation('common')
   return (
     <>
       {openOrders.map(({ market, order }, index) => (
@@ -123,7 +127,7 @@ const MobileTable = ({ openOrders, cancelledOrderId, handleCancelOrder }) => {
               {cancelledOrderId + '' === order.orderId + '' ? (
                 <Loading />
               ) : (
-                <span>Cancel</span>
+                <span>{t('cancel')}</span>
               )}
             </Button>
           </div>
@@ -134,6 +138,7 @@ const MobileTable = ({ openOrders, cancelledOrderId, handleCancelOrder }) => {
 }
 
 const OpenOrdersTable = () => {
+  const { t } = useTranslation('common')
   const { asPath } = useRouter()
   const openOrders = useOpenOrders()
   const [cancelId, setCancelId] = useState(null)
@@ -183,10 +188,10 @@ const OpenOrdersTable = () => {
           )
         }
       }
-      notify({ title: 'Successfully cancelled order', txid })
+      notify({ title: t('cancel-success'), txid })
     } catch (e) {
       notify({
-        title: 'Error cancelling order',
+        title: t('cancel-error'),
         description: e.message,
         txid: e.txid,
         type: 'error',

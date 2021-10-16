@@ -24,6 +24,17 @@ import Tabs from '../components/Tabs'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from '../components/TradePageGrid'
 import AccountInterest from '../components/account_page/AccountInterest'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { useTranslation } from 'next-i18next'
+
+export async function getServerSideProps({ locale }) {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['common'])),
+      // Will be passed to the page component as props
+    },
+  };
+}
 
 const TABS = [
   'Portfolio',
@@ -37,6 +48,7 @@ const TABS = [
 ]
 
 export default function Account() {
+  const { t } = useTranslation('common')
   const [showAccountsModal, setShowAccountsModal] = useState(false)
   const [showNameModal, setShowNameModal] = useState(false)
   const [isCopied, setIsCopied] = useState(false)
@@ -111,7 +123,7 @@ export default function Account() {
                 >
                   <div className="flex items-center">
                     <PencilIcon className="h-4 w-4 mr-1.5" />
-                    {mangoAccount?.name ? 'Edit Name' : 'Add Name'}
+                    {mangoAccount?.name ? t('edit-name') : t('add-name')}
                   </div>
                 </Button>
                 <a
@@ -120,7 +132,7 @@ export default function Account() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <span>Explorer</span>
+                  <span>{t('explorer')}</span>
                   <ExternalLinkIcon className={`h-4 w-4 ml-1.5`} />
                 </a>
                 <Button
@@ -183,11 +195,11 @@ export default function Account() {
             )
           ) : (
             <EmptyState
-              buttonText="Connect"
-              desc="Connect a wallet to view your account"
+              buttonText={t('connect')}
+              desc={t('connect-view')}
               icon={<LinkIcon />}
               onClickButton={() => wallet.connect()}
-              title="Connect Wallet"
+              title={t('connect-wallet')}
             />
           )}
         </div>

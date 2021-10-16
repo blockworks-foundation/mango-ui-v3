@@ -27,6 +27,7 @@ import { useViewport } from '../../hooks/useViewport'
 import { breakpoints } from '../TradePageGrid'
 import EstPriceImpact from './EstPriceImpact'
 import useFees from '../../hooks/useFees'
+import { useTranslation } from 'next-i18next'
 
 export const TRIGGER_ORDER_TYPES = [
   'Stop Loss',
@@ -41,6 +42,7 @@ interface AdvancedTradeFormProps {
 export default function AdvancedTradeForm({
   initLeverage,
 }: AdvancedTradeFormProps) {
+  const { t } = useTranslation('common')
   const set = useMangoStore((s) => s.set)
   const { ipAllowed } = useIpAddress()
   const connected = useMangoStore((s) => s.wallet.connected)
@@ -403,18 +405,20 @@ export default function AdvancedTradeForm({
 
   const closeDepositString =
     percentToClose(baseSize, roundedDeposits) > 100
-      ? `100% close position + Open a ${(+baseSize - roundedDeposits).toFixed(
-          sizeDecimalCount
-        )} ${marketConfig.baseSymbol} short`
+      ? t('close-open-short', {
+        size: (+baseSize - roundedDeposits).toFixed(sizeDecimalCount), 
+        symbol: marketConfig.baseSymbol
+      })
       : `${percentToClose(baseSize, roundedDeposits).toFixed(
           0
         )}% close position`
 
   const closeBorrowString =
     percentToClose(baseSize, roundedBorrows) > 100
-      ? `100% close position + Open a ${(+baseSize - roundedBorrows).toFixed(
-          sizeDecimalCount
-        )} ${marketConfig.baseSymbol} long`
+      ? t('close-open-long', {
+        size: (+baseSize - roundedDeposits).toFixed(sizeDecimalCount), 
+        symbol: marketConfig.baseSymbol
+      })
       : `${percentToClose(baseSize, roundedBorrows).toFixed(0)}% close position`
 
   let priceImpact
@@ -850,7 +854,7 @@ export default function AdvancedTradeForm({
                 ) : sizeTooLarge ? (
                   'Size Too Large'
                 ) : side === 'buy' ? (
-                  `${baseSize > 0 ? 'Buy ' + baseSize : 'Buy '} ${
+                  `${baseSize > 0 ? t('buy') + baseSize : t('buy')} ${
                     isPerpMarket ? marketConfig.name : marketConfig.baseSymbol
                   }`
                 ) : (
@@ -861,7 +865,7 @@ export default function AdvancedTradeForm({
               </Button>
             ) : (
               <Button disabled className="flex-grow">
-                <span>Country Not Allowed</span>
+                <span>{t('country-not-allowed')}</span>
               </Button>
             )}
           </div>

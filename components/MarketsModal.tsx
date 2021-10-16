@@ -7,6 +7,7 @@ import useLocalStorageState from '../hooks/useLocalStorageState'
 import useMangoStore from '../stores/useMangoStore'
 import { formatUsdValue } from '../utils'
 import { LinkButton } from './Button'
+import { useTranslation } from 'next-i18next'
 
 const MarketsModal = ({
   isOpen,
@@ -17,6 +18,7 @@ const MarketsModal = ({
   markets: Array<any>
   onClose?: (x?) => void
 }) => {
+  const { t } = useTranslation('common')
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const [hiddenMarkets, setHiddenMarkets] = useLocalStorageState(
@@ -44,7 +46,7 @@ const MarketsModal = ({
               setHiddenMarkets(markets.map((mkt) => mkt.baseAsset))
             }
           >
-            Hide all from Nav
+            {t('hide-all')}
           </LinkButton>
         ) : (
           <LinkButton

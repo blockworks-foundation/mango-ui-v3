@@ -15,6 +15,7 @@ import Modal from './Modal'
 import { ElementTitle } from './styles'
 import Button, { LinkButton } from './Button'
 import NewAccount from './NewAccount'
+import { useTranslation } from 'next-i18next';
 
 export const LAST_ACCOUNT_KEY = 'lastAccountViewed-3.0'
 
@@ -27,6 +28,7 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
   isOpen,
   onClose,
 }) => {
+  const { t } = useTranslation('common');
   const [showNewAccountForm, setShowNewAccountForm] = useState(false)
   const [newAccPublicKey, setNewAccPublicKey] = useState(null)
   const mangoAccounts = useMangoStore((s) => s.mangoAccounts)
@@ -160,7 +162,7 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
               className="flex justify-center mt-4 text-th-fgd-3 w-full"
               onClick={() => setShowNewAccountForm(false)}
             >
-              Cancel
+              {t('cancel')}
             </LinkButton>
           </>
         )

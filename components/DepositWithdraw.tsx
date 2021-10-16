@@ -9,8 +9,10 @@ import DepositModal from './DepositModal'
 import WithdrawModal from './WithdrawModal'
 import Button from './Button'
 import AccountsModal from './AccountsModal'
+import { useTranslation } from 'next-i18next'
 
 export default function MarginBalances() {
+  const { t } = useTranslation('common')
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const loadingMangoAccount = useMangoStore(
     (s) => s.selectedMangoAccount.initialLoad
@@ -40,7 +42,7 @@ export default function MarginBalances() {
                     className="flex flex-row font-normal items-center rounded-none w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer focus:outline-none"
                     onClick={() => setShowAccountsModal(true)}
                   >
-                    <div className="pl-2 text-left">Change Account</div>
+                    <div className="pl-2 text-left">{t('change-account')}</div>
                   </button>
                 </Menu.Item>
               </Menu.Items>
@@ -56,7 +58,7 @@ export default function MarginBalances() {
             </Link>
           ) : connected ? (
             <div className="pt-1 text-th-fgd-3">
-              Deposit funds to get started
+              {t('get-started')}
             </div>
           ) : null}
         </div>
@@ -66,7 +68,7 @@ export default function MarginBalances() {
             className="w-1/2"
             disabled={!connected || loadingMangoAccount}
           >
-            <span>Deposit</span>
+            <span>{t('deposit')}</span>
           </Button>
           <Button
             onClick={() => setShowWithdrawModal(true)}

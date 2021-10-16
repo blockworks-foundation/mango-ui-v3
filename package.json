@@ -50,6 +50,7 @@
     "immutable-tuple": "^0.4.10",
     "lodash-es": "^4.17.21",
     "next": "^11.1.0",
+    "next-i18next": "^8.9.0",
     "next-themes": "^0.0.14",
     "postcss-preset-env": "^6.7.0",
     "rc-slider": "^9.7.2",
