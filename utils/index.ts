@@ -2,6 +2,7 @@ import { I80F48 } from '@blockworks-foundation/mango-client/lib/src/fixednum'
 import { TOKEN_MINTS } from '@project-serum/serum'
 import { PublicKey } from '@solana/web3.js'
 import BN from 'bn.js'
+import { TRIGGER_ORDER_TYPES } from '../components/trade_form/AdvancedTradeForm'
 import { Orderbook } from '../stores/useMangoStore'
 
 export async function sleep(ms) {
@@ -101,10 +102,13 @@ export function calculateTradePrice(
   orderBook: Orderbook,
   baseSize: number,
   side: 'buy' | 'sell',
-  price: string | number
+  price: string | number,
+  triggerPrice?: string | number
 ): number {
   if (tradeType === 'Market') {
     return calculateMarketPrice(orderBook, baseSize, side)
+  } else if (TRIGGER_ORDER_TYPES.includes(tradeType)) {
+    return Number(triggerPrice)
   }
   return Number(price)
 }
@@ -258,3 +262,7 @@ export function getBrowserDocumentHiddenProp() {
 export function getIsDocumentHidden() {
   return !document[getBrowserDocumentHiddenProp()]
 }
+
+export const numberCompactFormatter = Intl.NumberFormat('en', {
+  notation: 'compact',
+})

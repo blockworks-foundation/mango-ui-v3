@@ -9,11 +9,129 @@ import { notify } from '../utils/notifications'
 import SideBadge from './SideBadge'
 import { Order, Market } from '@project-serum/serum/lib/market'
 import { PerpOrder, PerpMarket } from '@blockworks-foundation/mango-client'
-import { formatUsdValue, sleep } from '../utils'
+import { formatUsdValue } from '../utils'
 import { Table, Td, Th, TrBody, TrHead } from './TableElements'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { Row } from './TableElements'
+import { PerpTriggerOrder } from '../@types/types'
+
+const DesktopTable = ({ openOrders, cancelledOrderId, handleCancelOrder }) => {
+  return (
+    <Table>
+      <thead>
+        <TrHead>
+          <Th>Market</Th>
+          <Th>Side</Th>
+          <Th>Size</Th>
+          <Th>Price</Th>
+          <Th>Value</Th>
+          <Th>Condition</Th>
+          <Th>
+            <span className={`sr-only`}>Edit</span>
+          </Th>
+        </TrHead>
+      </thead>
+      <tbody>
+        {openOrders.map(({ order, market }, index) => {
+          return (
+            <TrBody index={index} key={`${order.orderId}${order.side}`}>
+              <Td>
+                <div className="flex items-center">
+                  <img
+                    alt=""
+                    width="20"
+                    height="20"
+                    src={`/assets/icons/${market.config.baseSymbol.toLowerCase()}.svg`}
+                    className={`mr-2.5`}
+                  />
+                  <div>{market.config.name}</div>
+                </div>
+              </Td>
+              <Td>
+                <SideBadge side={order.side} />
+              </Td>
+              <Td>{order.size}</Td>
+              <Td>{formatUsdValue(order.price)}</Td>
+              <Td>{formatUsdValue(order.price * order.size)}</Td>
+              <Td>
+                {order.perpTrigger &&
+                  `${order.orderType} ${
+                    order.triggerCondition
+                  } ${order.triggerPrice.toFixed(2)}`}
+              </Td>
+              <Td>
+                <div className={`flex justify-end`}>
+                  <Button
+                    onClick={() => handleCancelOrder(order, market.account)}
+                    className="ml-3 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
+                  >
+                    {cancelledOrderId + '' === order.orderId + '' ? (
+                      <Loading />
+                    ) : (
+                      <span>Cancel</span>
+                    )}
+                  </Button>
+                </div>
+              </Td>
+            </TrBody>
+          )
+        })}
+      </tbody>
+    </Table>
+  )
+}
+
+const MobileTable = ({ openOrders, cancelledOrderId, handleCancelOrder }) => {
+  return (
+    <>
+      {openOrders.map(({ market, order }, index) => (
+        <Row key={`${order.orderId}${order.side}`} index={index}>
+          <div className="col-span-12 flex items-center justify-between text-fgd-1 text-left">
+            <div className="flex items-center">
+              <img
+                alt=""
+                width="20"
+                height="20"
+                src={`/assets/icons/${market.config.baseSymbol.toLowerCase()}.svg`}
+                className={`mr-2.5`}
+              />
+              <div>
+                <div className="mb-0.5">{market.config.name}</div>
+                <div className="text-th-fgd-3 text-xs">
+                  <span
+                    className={`mr-1
+                                ${
+                                  order.side === 'buy'
+                                    ? 'text-th-green'
+                                    : 'text-th-red'
+                                }
+                              `}
+                  >
+                    {order.side.toUpperCase()}
+                  </span>
+                  {order.perpTrigger
+                    ? `${order.size} ${order.triggerCondition} ${order.triggerPrice}`
+                    : `${order.size} at ${formatUsdValue(order.price)}`}
+                </div>
+              </div>
+            </div>
+            <Button
+              onClick={() => handleCancelOrder(order, market.account)}
+              className="ml-3 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
+            >
+              {cancelledOrderId + '' === order.orderId + '' ? (
+                <Loading />
+              ) : (
+                <span>Cancel</span>
+              )}
+            </Button>
+          </div>
+        </Row>
+      ))}
+    </>
+  )
+}
 
 const OpenOrdersTable = () => {
   const { asPath } = useRouter()
@@ -24,7 +142,7 @@ const OpenOrdersTable = () => {
   const isMobile = width ? width < breakpoints.md : false
 
   const handleCancelOrder = async (
-    order: Order | PerpOrder,
+    order: Order | PerpOrder | PerpTriggerOrder,
     market: Market | PerpMarket
   ) => {
     const wallet = useMangoStore.getState().wallet.current
@@ -46,14 +164,24 @@ const OpenOrdersTable = () => {
           order as Order
         )
       } else if (market instanceof PerpMarket) {
-        txid = await mangoClient.cancelPerpOrder(
-          selectedMangoGroup,
-          selectedMangoAccount,
-          wallet,
-          market,
-          order as PerpOrder,
-          false
-        )
+        // TODO: this is not ideal
+        if (order['triggerCondition']) {
+          txid = await mangoClient.removeAdvancedOrder(
+            selectedMangoGroup,
+            selectedMangoAccount,
+            wallet,
+            (order as PerpTriggerOrder).orderId
+          )
+        } else {
+          txid = await mangoClient.cancelPerpOrder(
+            selectedMangoGroup,
+            selectedMangoAccount,
+            wallet,
+            market,
+            order as PerpOrder,
+            false
+          )
+        }
       }
       notify({ title: 'Successfully cancelled order', txid })
     } catch (e) {
@@ -65,11 +193,16 @@ const OpenOrdersTable = () => {
       })
       console.log('error', `${e}`)
     } finally {
-      await sleep(600)
+      // await sleep(600)
       actions.reloadMangoAccount()
-      actions.updateOpenOrders()
       setCancelId(null)
     }
+  }
+
+  const tableProps = {
+    openOrders,
+    cancelledOrderId: cancelId,
+    handleCancelOrder,
   }
 
   return (
@@ -78,110 +211,9 @@ const OpenOrdersTable = () => {
         <div className={`align-middle inline-block min-w-full sm:px-6 lg:px-8`}>
           {openOrders && openOrders.length > 0 ? (
             !isMobile ? (
-              <Table>
-                <thead>
-                  <TrHead>
-                    <Th>Market</Th>
-                    <Th>Side</Th>
-                    <Th>Size</Th>
-                    <Th>Price</Th>
-                    <Th>Value</Th>
-                    <Th>
-                      <span className={`sr-only`}>Edit</span>
-                    </Th>
-                  </TrHead>
-                </thead>
-                <tbody>
-                  {openOrders.map(({ order, market }, index) => {
-                    return (
-                      <TrBody
-                        index={index}
-                        key={`${order.orderId}${order.side}`}
-                      >
-                        <Td>
-                          <div className="flex items-center">
-                            <img
-                              alt=""
-                              width="20"
-                              height="20"
-                              src={`/assets/icons/${market.config.baseSymbol.toLowerCase()}.svg`}
-                              className={`mr-2.5`}
-                            />
-                            <div>{market.config.name}</div>
-                          </div>
-                        </Td>
-                        <Td>
-                          <SideBadge side={order.side} />
-                        </Td>
-                        <Td>{order.size}</Td>
-                        <Td>{formatUsdValue(order.price)}</Td>
-                        <Td>{formatUsdValue(order.price * order.size)}</Td>
-                        <Td>
-                          <div className={`flex justify-end`}>
-                            <Button
-                              onClick={() =>
-                                handleCancelOrder(order, market.account)
-                              }
-                              className="ml-3 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
-                            >
-                              {cancelId + '' === order.orderId + '' ? (
-                                <Loading />
-                              ) : (
-                                <span>Cancel</span>
-                              )}
-                            </Button>
-                          </div>
-                        </Td>
-                      </TrBody>
-                    )
-                  })}
-                </tbody>
-              </Table>
+              <DesktopTable {...tableProps} />
             ) : (
-              <>
-                {openOrders.map(({ market, order }, index) => (
-                  <Row key={`${order.orderId}${order.side}`} index={index}>
-                    <div className="col-span-12 flex items-center justify-between text-fgd-1 text-left">
-                      <div className="flex items-center">
-                        <img
-                          alt=""
-                          width="20"
-                          height="20"
-                          src={`/assets/icons/${market.config.baseSymbol.toLowerCase()}.svg`}
-                          className={`mr-2.5`}
-                        />
-                        <div>
-                          <div className="mb-0.5">{market.config.name}</div>
-                          <div className="text-th-fgd-3 text-xs">
-                            <span
-                              className={`mr-1
-                                ${
-                                  order.side === 'buy'
-                                    ? 'text-th-green'
-                                    : 'text-th-red'
-                                }
-                              `}
-                            >
-                              {order.side.toUpperCase()}
-                            </span>
-                            {`${order.size} at ${formatUsdValue(order.price)}`}
-                          </div>
-                        </div>
-                      </div>
-                      <Button
-                        onClick={() => handleCancelOrder(order, market.account)}
-                        className="ml-3 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
-                      >
-                        {cancelId + '' === order.orderId + '' ? (
-                          <Loading />
-                        ) : (
-                          <span>Cancel</span>
-                        )}
-                      </Button>
-                    </div>
-                  </Row>
-                ))}
-              </>
+              <MobileTable {...tableProps} />
             )
           ) : (
             <div

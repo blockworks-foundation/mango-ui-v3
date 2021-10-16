@@ -10,10 +10,10 @@ import useMangoStore from '../stores/useMangoStore'
 import { copyToClipboard } from '../utils'
 import PageBodyContainer from '../components/PageBodyContainer'
 import TopBar from '../components/TopBar'
-import AccountOrders from '../components/account-page/AccountOrders'
-import AccountHistory from '../components/account-page/AccountHistory'
+import AccountOrders from '../components/account_page/AccountOrders'
+import AccountHistory from '../components/account_page/AccountHistory'
 import AccountsModal from '../components/AccountsModal'
-import AccountOverview from '../components/account-page/AccountOverview'
+import AccountOverview from '../components/account_page/AccountOverview'
 import AccountNameModal from '../components/AccountNameModal'
 import Button from '../components/Button'
 import EmptyState from '../components/EmptyState'
@@ -23,6 +23,7 @@ import Swipeable from '../components/mobile/Swipeable'
 import Tabs from '../components/Tabs'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from '../components/TradePageGrid'
+import AccountInterest from '../components/account_page/AccountInterest'
 
 const TABS = [
   'Portfolio',
@@ -32,6 +33,7 @@ const TABS = [
   // 'Positions',
   'Orders',
   'Trade History',
+  'Interest',
 ]
 
 export default function Account() {
@@ -215,6 +217,8 @@ const TabContent = ({ activeTab }) => {
       return <AccountOrders />
     case 'Trade History':
       return <AccountHistory />
+    case 'Interest':
+      return <AccountInterest />
     default:
       return <AccountOverview />
   }

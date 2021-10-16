@@ -12,7 +12,7 @@ import FloatingElement from '../components/FloatingElement'
 import Orderbook from '../components/Orderbook'
 import AccountInfo from './AccountInfo'
 import UserMarketInfo from './UserMarketInfo'
-import TradeForm from './TradeForm'
+import TradeForm from './trade_form/TradeForm'
 import UserInfo from './UserInfo'
 import RecentMarketTrades from './RecentMarketTrades'
 import useMangoStore from '../stores/useMangoStore'
@@ -26,7 +26,7 @@ export const defaultLayouts = {
   xl: [
     { i: 'tvChart', x: 0, y: 0, w: 6, h: 30 },
     { i: 'orderbook', x: 6, y: 0, w: 3, h: 17 },
-    { i: 'tradeForm', x: 9, y: 1, w: 3, h: 14 },
+    { i: 'tradeForm', x: 9, y: 1, w: 3, h: 19 },
     { i: 'marketTrades', x: 6, y: 1, w: 3, h: 13 },
     { i: 'accountInfo', x: 9, y: 3, w: 3, h: 15 },
     { i: 'userInfo', x: 0, y: 2, w: 9, h: 19 },
@@ -54,7 +54,7 @@ export const defaultLayouts = {
     { i: 'tvChart', x: 0, y: 0, w: 12, h: 25, minW: 6 },
     { i: 'marketPosition', x: 0, y: 1, w: 6, h: 15, minW: 2 },
     { i: 'accountInfo', x: 6, y: 1, w: 6, h: 15, minW: 2 },
-    { i: 'tradeForm', x: 0, y: 2, w: 12, h: 15, minW: 3 },
+    { i: 'tradeForm', x: 0, y: 2, w: 12, h: 18, minW: 3 },
     { i: 'orderbook', x: 0, y: 3, w: 6, h: 17, minW: 3 },
     { i: 'marketTrades', x: 6, y: 3, w: 6, h: 17, minW: 2 },
     { i: 'userInfo', x: 0, y: 4, w: 12, h: 19, minW: 6 },
@@ -63,14 +63,14 @@ export const defaultLayouts = {
     { i: 'tvChart', x: 0, y: 0, w: 12, h: 12, minW: 6 },
     { i: 'marketPosition', x: 0, y: 1, w: 6, h: 13, minW: 2 },
     { i: 'accountInfo', x: 0, y: 2, w: 6, h: 15, minW: 2 },
-    { i: 'tradeForm', x: 0, y: 3, w: 12, h: 13, minW: 3 },
+    { i: 'tradeForm', x: 0, y: 3, w: 12, h: 17, minW: 3 },
     { i: 'orderbook', x: 0, y: 4, w: 6, h: 17, minW: 3 },
     { i: 'marketTrades', x: 0, y: 5, w: 6, h: 17, minW: 2 },
     { i: 'userInfo', x: 0, y: 6, w: 12, h: 19, minW: 6 },
   ],
 }
 
-export const GRID_LAYOUT_KEY = 'mangoSavedLayouts-3.0.8'
+export const GRID_LAYOUT_KEY = 'mangoSavedLayouts-3.0.9'
 export const breakpoints = { xl: 1600, lg: 1200, md: 1110, sm: 768, xs: 0 }
 
 const TradePageGrid = () => {
@@ -135,6 +135,7 @@ const TradePageGrid = () => {
           onBreakpointChange(newBreakpoint)
         }
         onLayoutChange={(layout, layouts) => onLayoutChange(layouts)}
+        useCSSTransforms={false}
       >
         <div key="tvChart">
           <FloatingElement className="h-full pl-0">
@@ -145,9 +146,7 @@ const TradePageGrid = () => {
           <Orderbook depth={orderbookDepth} />
         </div>
         <div key="tradeForm">
-          <FloatingElement className="h-full" showConnect>
-            <TradeForm />
-          </FloatingElement>
+          <TradeForm />
         </div>
         <div key="accountInfo">
           <FloatingElement className="h-full" showConnect>

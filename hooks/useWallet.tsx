@@ -103,7 +103,8 @@ export default function useWallet() {
         state.wallet.connected = true
       })
       // set connected before fetching data
-      await actions.fetchMangoAccounts()
+      await actions.fetchAllMangoAccounts()
+      actions.reloadOrders()
       actions.fetchTradeHistory()
       actions.fetchWalletTokens()
       notify({
@@ -146,12 +147,6 @@ export default function useWallet() {
       actions.fetchTradeHistory()
     }
   }, 90 * SECONDS)
-
-  useInterval(() => {
-    if (connected && mangoAccount) {
-      actions.fetchMangoAccounts()
-    }
-  }, 180 * SECONDS)
 
   useInterval(() => {
     if (connected && mangoAccount) {

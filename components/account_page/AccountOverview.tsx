@@ -16,6 +16,7 @@ import BalancesTable from '../BalancesTable'
 import PositionsTable from '../PerpPositionsTable'
 import Switch from '../Switch'
 import useLocalStorageState from '../../hooks/useLocalStorageState'
+import { ExclamationIcon } from '@heroicons/react/solid'
 
 const div = styled.div`
   font-size: 1.8rem;
@@ -68,7 +69,7 @@ export default function AccountOverview() {
         mngoNodeBank.publicKey,
         mngoNodeBank.vault
       )
-      actions.fetchMangoAccounts()
+      actions.reloadMangoAccount()
       notify({
         title: 'Successfully redeemed MNGO',
         description: '',
@@ -129,7 +130,7 @@ export default function AccountOverview() {
           <div className="flex items-center pb-3 sm:pb-4">
             <HeartIcon className="flex-shrink-0 h-5 w-5 sm:h-7 sm:w-7 mr-1.5 text-th-primary" />
             <div className="font-bold text-th-fgd-1 text-xl sm:text-2xl">
-              {maintHealthRatio < 1000 ? maintHealthRatio.toFixed(2) : '>999'}%
+              {maintHealthRatio < 1000 ? maintHealthRatio.toFixed(2) : '>100'}%
             </div>
           </div>
           <div className="h-1.5 flex rounded bg-th-bkg-3">
@@ -146,6 +147,12 @@ export default function AccountOverview() {
               }`}
             ></div>
           </div>
+          {mangoAccount.beingLiquidated ? (
+            <div className="pt-0.5 sm:pt-2 text-xs sm:text-sm flex items-center">
+              <ExclamationIcon className="flex-shrink-0 h-5 w-5 sm:h-7 sm:w-7 mr-1.5 text-th-red" />
+              <span className="text-th-red">You are being liquidated!</span>
+            </div>
+          ) : null}
         </div>
         <div className="border border-th-bkg-4 p-3 sm:p-4 rounded-md sm:rounded-lg">
           <div className="pb-0.5 sm:pb-2 text-th-fgd-3 text-xs sm:text-sm">

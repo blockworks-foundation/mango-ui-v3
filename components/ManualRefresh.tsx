@@ -13,7 +13,6 @@ const ManualRefresh = ({ className = '' }) => {
     await actions.fetchMangoGroup()
     await actions.reloadMangoAccount()
     actions.fetchTradeHistory()
-    actions.updateOpenOrders()
   }
 
   useEffect(() => {
