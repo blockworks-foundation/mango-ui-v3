@@ -124,7 +124,7 @@ export default function StatsTotals({ latestStats, stats }) {
           style={{ height: '330px' }}
         >
           <Chart
-            title="Total Deposit Value"
+            title={t('total-deposit-value')}
             xAxis="time"
             yAxis="value"
             data={formatValues(depositValues)}
@@ -140,7 +140,7 @@ export default function StatsTotals({ latestStats, stats }) {
           style={{ height: '330px' }}
         >
           <Chart
-            title="Total Borrow Value"
+            title={t('total-borrow-value')}
             xAxis="time"
             yAxis="value"
             data={formatValues(borrowValues)}
@@ -155,17 +155,19 @@ export default function StatsTotals({ latestStats, stats }) {
       {!isMobile ? (
         <>
           <div className="pb-8">
-            <div className="pb-4 text-th-fgd-1 text-lg">{t('current-stats')}</div>
+            <div className="pb-4 text-th-fgd-1 text-lg">
+              {t('current-stats')}
+            </div>
             {latestStats.length > 0 ? (
               <Table>
                 <thead>
                   <TrHead>
                     <Th>{t('asset')}</Th>
-                    <Th>Total Deposits</Th>
-                    <Th>Total Borrows</Th>
+                    <Th>{t('total-deposits')}</Th>
+                    <Th>{t('total-borrows')}</Th>
                     <Th>{t('deposit-rate')}</Th>
                     <Th>{t('borrow-rate')}</Th>
-                    <Th>Utilization</Th>
+                    <Th>{t('utilization')}</Th>
                   </TrHead>
                 </thead>
                 <tbody>
@@ -284,7 +286,9 @@ export default function StatsTotals({ latestStats, stats }) {
               </>
             )}
           </div>
-          <div className="pb-4 text-th-fgd-1 text-lg">{t('average-borrow')}</div>
+          <div className="pb-4 text-th-fgd-1 text-lg">
+            {t('average-borrow')}
+          </div>
           {stats.length > 1 ? (
             <Table>
               <thead>
@@ -334,7 +338,9 @@ export default function StatsTotals({ latestStats, stats }) {
       ) : (
         <>
           <div className="pb-8">
-            <div className="pb-4 text-th-fgd-1 text-lg">{t('current-stats')}</div>
+            <div className="pb-4 text-th-fgd-1 text-lg">
+              {t('current-stats')}
+            </div>
             {latestStats.map((stat, index) => (
               // latestStats.length > 0 ? (
               <ExpandableRow
@@ -357,13 +363,13 @@ export default function StatsTotals({ latestStats, stats }) {
                     <div className="grid grid-cols-11 grid-rows-1 gap-4">
                       <div className="col-span-6 text-left">
                         <div className="pb-0.5 text-th-fgd-3 text-xs">
-                          Total Deposits
+                          {t('total-deposits')}
                         </div>
                         {formatNumberString(stat.totalDeposits, 0)}
                       </div>
                       <div className="col-span-5 text-left">
                         <div className="pb-0.5 text-th-fgd-3 text-xs">
-                          Total Borrows
+                          {t('total-borrows')}
                         </div>
                         {formatNumberString(stat.totalBorrows, 0)}
                       </div>
@@ -376,7 +382,7 @@ export default function StatsTotals({ latestStats, stats }) {
                   <>
                     <div className="col-span-1 text-left">
                       <div className="pb-0.5 text-th-fgd-3 text-xs">
-                      {t('deposit-rate')}
+                        {t('deposit-rate')}
                       </div>
                       <span className="text-th-green">
                         {formatNumberString(stat.depositInterest.toNumber(), 2)}
@@ -393,7 +399,7 @@ export default function StatsTotals({ latestStats, stats }) {
                     </div>
                     <div className="col-span-1 text-left">
                       <div className="pb-0.5 text-th-fgd-3 text-xs">
-                        Utilization
+                        {t('utilization')}
                       </div>
                       {formatNumberString(
                         stat.utilization.mul(I80F48.fromNumber(100)).toNumber(),
@@ -456,7 +462,9 @@ export default function StatsTotals({ latestStats, stats }) {
                 ))
               : null}
           </div>
-          <div className="pb-4 text-th-fgd-1 text-lg">{t('average-borrow')}</div>
+          <div className="pb-4 text-th-fgd-1 text-lg">
+            {t('average-borrow')}
+          </div>
           {stats.length > 1
             ? latestStats.map((stat, index) => (
                 <Row key={stat.name} index={index}>

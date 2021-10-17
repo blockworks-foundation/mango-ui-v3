@@ -166,7 +166,7 @@
     "post": "Post",
     "price": "价格",
     "price-expect": "成交前价格也许会有变化。",
-    "price-impact": "预计价格影响：",
+    "price-impact": "预计价格影响",
     "price-unavailable": "无法取价格",
     "prices-changed": "价格波动导致您的杠杆增加了。请减少取款数量。",
     "profit-price": "止盈价格",
@@ -198,7 +198,7 @@
     "show-zero": "显示零余额",
     "side": "方向",
     "size": "数量",
-    "slippage": "预计下滑：",
+    "slippage": "预计下滑",
     "spread": "点差",
     "stats": "统计",
     "stop-limit": "限价止损",
@@ -259,5 +259,12 @@
     "withdraw-funds": "取款",
     "withdraw-success": "已取款",
     "your-account": "您的帐户",
-    "your-borrows": "您的借入"
+    "your-borrows": "您的借入",
+    "market-detals": "市场细节",
+    "too-large": "数量太大",
+    "your-assets": "您的资产",
+    "borrow-withdraw": "借贷与取款",
+    "wallet-disconnected": "断开钱包连结",
+    "wallet-connected": "已连结钱包",
+    "connected-to": "连结钱包"
   }

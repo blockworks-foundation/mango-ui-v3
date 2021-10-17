@@ -39,10 +39,10 @@ const MobileMenu = () => {
           <ConnectWalletButton />
         </div>
         <div className="p-6">
-          <MenuItem href="/spot/BTC">Trade</MenuItem>
-          <MenuItem href="/account">Account</MenuItem>
-          <MenuItem href="/borrow">Borrow</MenuItem>
-          <MenuItem href="/stats">Stats</MenuItem>
+          <MenuItem href="/spot/BTC">{t('trade')}</MenuItem>
+          <MenuItem href="/account">{t('account')}</MenuItem>
+          <MenuItem href="/borrow">{t('borrow')}</MenuItem>
+          <MenuItem href="/stats">{t('stats')}</MenuItem>
           <MenuItem href="https://docs.mango.markets/">{t('learn')}</MenuItem>
         </div>
       </Transition>

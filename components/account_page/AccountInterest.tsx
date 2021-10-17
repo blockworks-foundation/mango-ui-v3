@@ -39,10 +39,10 @@ const AccountInterest = () => {
         <Table>
           <thead>
             <TrHead>
-              <Th>Token</Th>
+              <Th>{t('token')}</Th>
               <Th>Total Deposit Interest</Th>
               <Th>Total Borrow Interest</Th>
-              <Th>Net</Th>
+              <Th>{t('net')}</Th>
             </TrHead>
           </thead>
           <tbody>

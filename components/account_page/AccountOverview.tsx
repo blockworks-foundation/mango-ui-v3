@@ -73,13 +73,13 @@ export default function AccountOverview() {
       )
       actions.reloadMangoAccount()
       notify({
-        title: 'Successfully redeemed MNGO',
+        title: t('redeem-success'),
         description: '',
         txid,
       })
     } catch (e) {
       notify({
-        title: 'Error redeeming MNGO',
+        title: t('redeem-failure'),
         description: e.message,
         txid: e.txid,
         type: 'error',
@@ -92,7 +92,7 @@ export default function AccountOverview() {
       <div className="grid grid-flow-col grid-cols-2 grid-rows-2 lg:grid-cols-4 lg:grid-rows-1 gap-2 sm:gap-4 pb-8">
         <div className="border border-th-bkg-4 p-3 sm:p-4 rounded-md sm:rounded-lg">
           <div className="pb-0.5 sm:pb-2 text-th-fgd-3 text-xs sm:text-sm">
-            Account Value
+            {t('account-value')}
           </div>
           <div className="flex items-center pb-1 sm:pb-3">
             <CurrencyDollarIcon className="flex-shrink-0 h-5 w-5 sm:h-7 sm:w-7 mr-1.5 text-th-primary" />
@@ -116,7 +116,7 @@ export default function AccountOverview() {
         </div> */}
         <div className="border border-th-bkg-4 p-3 sm:p-4 rounded-md sm:rounded-lg">
           <div className="pb-0.5 sm:pb-2 text-th-fgd-3 text-xs sm:text-sm">
-            Leverage
+            {t('leverage')}
           </div>
           <div className="flex items-center pb-1 sm:pb-3">
             <ScaleIcon className="flex-shrink-0 h-5 w-5 sm:h-7 sm:w-7 mr-1.5 text-th-primary" />
@@ -158,7 +158,7 @@ export default function AccountOverview() {
         </div>
         <div className="border border-th-bkg-4 p-3 sm:p-4 rounded-md sm:rounded-lg">
           <div className="pb-0.5 sm:pb-2 text-th-fgd-3 text-xs sm:text-sm">
-            MNGO Rewards
+            {t('mngo-rewards')}
           </div>
           <div className="flex items-center pb-1 sm:pb-2">
             <GiftIcon className="flex-shrink-0 h-5 w-5 sm:h-7 sm:w-7 mr-1.5 text-th-primary" />
@@ -181,14 +181,18 @@ export default function AccountOverview() {
         </div>
       </div>
       <div className="pb-8">
-        <div className="pb-2 text-th-fgd-1 text-lg">Perp Positions</div>
+        <div className="pb-2 text-th-fgd-1 text-lg">{t('perp-positions')}</div>
         <PositionsTable />
       </div>
-      <div className="pb-4 text-th-fgd-1 text-lg">{t('assets-liabilities')}</div>
+      <div className="pb-4 text-th-fgd-1 text-lg">
+        {t('assets-liabilities')}
+      </div>
 
       <div className="grid grid-flow-col grid-cols-1 grid-rows-2 md:grid-cols-2 md:grid-rows-1 gap-2 sm:gap-4 pb-8">
         <div className="border border-th-bkg-4 p-3 sm:p-4 rounded-md sm:rounded-lg">
-          <div className="pb-0.5 text-xs text-th-fgd-3">Total Assets Value</div>
+          <div className="pb-0.5 text-xs text-th-fgd-3">
+            {t('total-assets')}
+          </div>
           <div className="flex items-center">
             <div className="text-lg text-th-fgd-1">
               {formatUsdValue(
@@ -199,7 +203,7 @@ export default function AccountOverview() {
         </div>
         <div className="border border-th-bkg-4 p-3 sm:p-4 rounded-md sm:rounded-lg">
           <div className="pb-0.5 text-xs text-th-fgd-3">
-            Total Liabilities Value
+            {t('total-liabilities')}
           </div>
           <div className="flex items-center">
             <div className="text-lg text-th-fgd-1">
@@ -217,7 +221,7 @@ export default function AccountOverview() {
           className="text-xs"
           onChange={() => setShowZeroBalances(!showZeroBalances)}
         >
-          Show zero balances
+          {t('show-zero')}
         </Switch>
       </div>
       <BalancesTable showZeroBalances={showZeroBalances} />

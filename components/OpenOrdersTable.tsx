@@ -17,18 +17,17 @@ import { Row } from './TableElements'
 import { PerpTriggerOrder } from '../@types/types'
 import { useTranslation } from 'next-i18next'
 
-
 const DesktopTable = ({ openOrders, cancelledOrderId, handleCancelOrder }) => {
   const { t } = useTranslation('common')
   return (
     <Table>
       <thead>
         <TrHead>
-          <Th>Market</Th>
-          <Th>Side</Th>
-          <Th>Size</Th>
-          <Th>Price</Th>
-          <Th>Value</Th>
+          <Th>{t('market')}</Th>
+          <Th>{t('size')}</Th>
+          <Th>{t('size')}</Th>
+          <Th>{t('price')}</Th>
+          <Th>{t('value')}</Th>
           <Th>{t('condition')}</Th>
           <Th>
             <span className={`sr-only`}>{t('edit')}</span>
@@ -224,14 +223,14 @@ const OpenOrdersTable = () => {
             <div
               className={`w-full text-center py-6 bg-th-bkg-1 text-th-fgd-3 rounded-md`}
             >
-              No open orders
+              {t('no-orders')}
               {asPath === '/account' ? (
                 <Link href={'/'}>
                   <a
                     className={`inline-flex ml-2 py-0
         `}
                   >
-                    Make a trade
+                    {t('make-trade')}
                   </a>
                 </Link>
               ) : null}

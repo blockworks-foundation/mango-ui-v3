@@ -5,11 +5,11 @@ import { useTranslation } from 'next-i18next'
 // const historyViews = ['Trades', 'Deposits', 'Withdrawals', 'Liquidations']
 
 export default function AccountHistory() {
-  // const { t } = useTranslation('common')
+  const { t } = useTranslation('common')
   const [view] = useState('Trades')
   return (
     <>
-      <div className="pb-3.5 text-th-fgd-1 text-base">Trade History</div>
+      <div className="pb-3.5 text-th-fgd-1 text-base">{t('trade-history')}</div>
       {/* Todo: add this back when the data is available */}
       {/* <div className="flex">
           {historyViews.map((section) => (

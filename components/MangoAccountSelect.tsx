@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import useMangoStore from '../stores/useMangoStore'
 import Select from './Select'
 import { abbreviateAddress } from '../utils'
+import { useTranslation } from 'next-i18next'
 
 type MangoAccountSelectProps = {
   className?: string
@@ -17,6 +18,7 @@ const MangoAccountSelect = ({
   disabled = false,
   className = '',
 }: MangoAccountSelectProps) => {
+  const { t } = useTranslation('common')
   const mangoAccounts = useMangoStore((s) => s.mangoAccounts)
   const [selectedMangoAccount, setSelectedMangoAccount] = useState(
     value || mangoAccounts[0]
@@ -47,7 +49,7 @@ const MangoAccountSelect = ({
         </div>
       }
       onChange={handleSelectMangoAccount}
-      placeholder="Select Margin Account"
+      placeholder={t('select-margin')}
       className={className}
     >
       {mangoAccounts.length ? (
@@ -58,7 +60,7 @@ const MangoAccountSelect = ({
         ))
       ) : (
         <Select.Option value className="text-th-fgd-4">
-          No Margin Accounts Found
+          {t('no-margin')}
         </Select.Option>
       )}
     </Select>

@@ -166,7 +166,7 @@
   "post": "Post",
   "price": "價格",
   "price-expect": "成交前價格也許會有變化。",
-  "price-impact": "預計價格影響：",
+  "price-impact": "預計價格影響",
   "price-unavailable": "無法取價格",
   "prices-changed": "價格波動導致您的槓桿增加了。請減少取款數量。",
   "profit-price": "止盈價格",
@@ -198,7 +198,7 @@
   "show-zero": "顯示零餘額",
   "side": "方向",
   "size": "數量",
-  "slippage": "預計下滑：",
+  "slippage": "預計下滑",
   "spread": "點差",
   "stats": "統計",
   "stop-limit": "限價止損",
@@ -259,5 +259,12 @@
   "withdraw-funds": "取款",
   "withdraw-success": "已取款",
   "your-account": "您的帳戶",
-  "your-borrows": "您的借入"
+  "your-borrows": "您的借入",
+  "market-details": "市場細節",
+  "too-large": "數量太大",
+  "your-assets": "您的資產",
+  "borrow-withdraw": "借貸與取款",
+  "wallet-disconnected": "段開錢包連結",
+  "wallet-connected": "已連結錢包",
+  "connected-to": "連結錢包"
 }

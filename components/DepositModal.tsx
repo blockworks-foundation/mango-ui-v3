@@ -13,7 +13,7 @@ import InlineNotification from './InlineNotification'
 import { deposit } from '../utils/mango'
 import { notify } from '../utils/notifications'
 import { sleep } from '../utils'
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next'
 
 interface DepositModalProps {
   onClose: () => void
@@ -28,7 +28,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
   settleDeficit,
   tokenSymbol = '',
 }) => {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation('common')
   const [inputAmount, setInputAmount] = useState<string>(settleDeficit || '')
   const [submitting, setSubmitting] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
@@ -105,9 +105,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
       setInvalidAmountMessage(t('enter-amount'))
     }
     if (selectedAccount && Number(amount) > selectedAccount.uiBalance) {
-      setInvalidAmountMessage(
-        t('insufficient-balance-deposit')
-      )
+      setInvalidAmountMessage(t('insufficient-balance-deposit'))
     }
   }
 
@@ -115,9 +113,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
     setInputAmount(amount)
 
     if (!selectedAccount) {
-      setInvalidAmountMessage(
-        'Please fund wallet with one of the supported assets.'
-      )
+      setInvalidAmountMessage(t('supported-assets'))
       return
     }
 
@@ -130,9 +126,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
     setSliderPercentage(percentage)
 
     if (!selectedAccount) {
-      setInvalidAmountMessage(
-        'Please fund wallet with one of the supported assets.'
-      )
+      setInvalidAmountMessage(t('supported-assets'))
       return
     }
 
@@ -163,15 +157,18 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
           </Modal.Header>
           {tokenSymbol && !selectedAccount ? (
             <InlineNotification
-              desc={t('deposit-help', {tokenSymbol: tokenSymbol})}
-              title={t('no-address', {tokenSymbol: tokenSymbol})}
+              desc={t('deposit-help', { tokenSymbol: tokenSymbol })}
+              title={t('no-address', { tokenSymbol: tokenSymbol })}
               type="error"
             />
           ) : null}
           {settleDeficit ? (
             <InlineNotification
-              desc={t('deposit-before', {settleDeficit: settleDeficit, tokenSymbol: tokenSymbol})}
-              title="Not enough balance to settle"
+              desc={t('deposit-before', {
+                settleDeficit: settleDeficit,
+                tokenSymbol: tokenSymbol,
+              })}
+              title={t('not-enough-balance')}
               type="error"
             />
           ) : null}
@@ -186,7 +183,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
               className="text-th-fgd-1 underline cursor-pointer default-transition hover:text-th-primary hover:no-underline"
               onClick={setMaxForSelectedAccount}
             >
-              Max
+              {t('max')}
             </div>
           </div>
           <div className="flex">
@@ -228,14 +225,12 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
                 parseFloat(inputAmount) > selectedAccount.uiBalance
               }
             >
-              Next
+              {t('next')}
             </Button>
           </div>
           {!mangoAccount ? (
             <div className="flex text-th-fgd-4 text-xxs mt-1">
-              <div className="mx-auto">
-                {t('insufficient-sol')}
-              </div>
+              <div className="mx-auto">{t('insufficient-sol')}</div>
             </div>
           ) : null}
         </>

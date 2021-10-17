@@ -170,13 +170,17 @@ const MarketDetails = () => {
         </div>
         <div className="grid grid-flow-row grid-cols-1 md:grid-cols-2 gap-3 lg:grid-flow-col lg:grid-rows-1 lg:gap-6">
           <div className="flex items-center justify-between md:block">
-            <div className="text-th-fgd-3 tiny-text pb-0.5">Oracle price</div>
+            <div className="text-th-fgd-3 tiny-text pb-0.5">
+              {t('oracle-price')}
+            </div>
             <div className="font-semibold text-th-fgd-1 md:text-xs">
               {oraclePrice ? formatUsdValue(oraclePrice) : '--'}
             </div>
           </div>
           <div className="flex items-center justify-between md:block">
-            <div className="text-th-fgd-3 tiny-text pb-0.5">{t('daily-change')}</div>
+            <div className="text-th-fgd-3 tiny-text pb-0.5">
+              {t('daily-change')}
+            </div>
             {change || change === 0 ? (
               <div
                 className={`font-semibold md:text-xs ${
@@ -195,7 +199,9 @@ const MarketDetails = () => {
           </div>
           {isPerpMarket ? (
             <div className="flex items-center justify-between md:block">
-              <div className="text-th-fgd-3 tiny-text pb-0.5">{t('daily-volume')}</div>
+              <div className="text-th-fgd-3 tiny-text pb-0.5">
+                {t('daily-volume')}
+              </div>
               <div className="font-semibold text-th-fgd-1 md:text-xs">
                 {perpVolume ? (
                   usdFormatter(perpVolume, 0)
@@ -209,7 +215,7 @@ const MarketDetails = () => {
             <>
               <div className="flex items-center justify-between md:block">
                 <div className="text-th-fgd-3 tiny-text pb-0.5">
-                  Avg. Funding Rate (1h)
+                  {t('average-funding')}
                 </div>
                 <div className="font-semibold text-th-fgd-1 md:text-xs">
                   {selectedMarket ? (
@@ -223,7 +229,7 @@ const MarketDetails = () => {
               </div>
               <div className="flex items-center justify-between md:block">
                 <div className="text-th-fgd-3 tiny-text pb-0.5">
-                  Open Interest
+                  {t('open-interest')}
                 </div>
                 <div className="font-semibold text-th-fgd-1 md:text-xs">
                   {selectedMarket ? (

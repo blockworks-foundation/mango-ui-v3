@@ -71,12 +71,12 @@ export default function AccountAssets() {
     } catch (e) {
       if (e.message === 'No unsettled funds') {
         notify({
-          title: 'There are no unsettled funds',
+          title: t('no-unsettled'),
           type: 'error',
         })
       } else {
         notify({
-          title: 'Error settling funds',
+          title: t('settle-error'),
           description: e.message,
           txid: e.txid,
           type: 'error',
@@ -88,10 +88,14 @@ export default function AccountAssets() {
   return mangoAccount ? (
     <>
       <div className="sm:flex sm:items-center sm:justify-between pb-2">
-        <div className="pb-2 sm:pb-0 text-th-fgd-1 text-lg">Your Assets</div>
+        <div className="pb-2 sm:pb-0 text-th-fgd-1 text-lg">
+          {t('your-assets')}
+        </div>
         {balances.length > 0 ? (
           <div className="border border-th-green flex items-center justify-between p-2 rounded">
-            <div className="pr-4 text-xs text-th-fgd-3">Total Asset Value:</div>
+            <div className="pr-4 text-xs text-th-fgd-3">
+              {t('total-assets')}:
+            </div>
             <span>
               $ {mangoAccount.getAssetsVal(mangoGroup, mangoCache).toFixed(2)}
             </span>
@@ -113,7 +117,7 @@ export default function AccountAssets() {
               </div>
             </Tooltip>
           </div>
-          <Button onClick={handleSettleAllTrades}>Settle All</Button>
+          <Button onClick={handleSettleAllTrades}>{t('settle-all')}</Button>
         </div>
       ) : null}
       {mangoGroup && balances.length > 0 ? (
@@ -147,13 +151,13 @@ export default function AccountAssets() {
                       scope="col"
                       className={`px-6 py-3 text-left font-normal`}
                     >
-                      Unsettled
+                      {t('unsettled')}
                     </Th>
                     <Th
                       scope="col"
                       className={`px-6 py-3 text-left font-normal`}
                     >
-                      Value
+                      {t('value')}
                     </Th>
                     <Th scope="col" className="px-6 py-3 text-left font-normal">
                       {t('interest')} APY
@@ -241,7 +245,7 @@ export default function AccountAssets() {
                               className="ml-3 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
                               disabled={!connected || loadingMangoAccount}
                             >
-                              <span>Withdraw</span>
+                              <span>{t('withdraw')}</span>
                             </Button>
                           </div>
                         </Td>

@@ -19,14 +19,14 @@ export async function getServerSideProps({ locale }) {
       ...(await serverSideTranslations(locale, ['common'])),
       // Will be passed to the page component as props
     },
-  };
+  }
 }
 
 export default function StatsPage() {
   const { t } = useTranslation('common')
   const TABS = [
     'Totals',
-    t('assets'),
+    'Assets',
     'Perps',
     // 'Markets',
     // 'Liquidations',
@@ -36,8 +36,6 @@ export default function StatsPage() {
   const [activeTab, setActiveTab] = useState(TABS[0])
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
-
-
 
   const handleChangeViewIndex = (index) => {
     setViewIndex(index)
@@ -52,7 +50,9 @@ export default function StatsPage() {
       <TopBar />
       <PageBodyContainer>
         <div className="flex flex-col sm:flex-row py-4 md:pb-4 md:pt-10">
-          <h1 className={`text-th-fgd-1 text-2xl font-semibold`}>Stats</h1>
+          <h1 className={`text-th-fgd-1 text-2xl font-semibold`}>
+            {t('stats')}
+          </h1>
         </div>
         {!isMobile ? (
           <Tabs activeTab={activeTab} onChange={handleTabChange} tabs={TABS} />

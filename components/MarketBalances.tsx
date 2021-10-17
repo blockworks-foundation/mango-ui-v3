@@ -110,7 +110,9 @@ export default function MarketBalances() {
                     </div>
                   </div>
                   <div className="pb-3">
-                    <div className="pb-0.5 text-th-fgd-3 text-xs">{t('balance')}</div>
+                    <div className="pb-0.5 text-th-fgd-3 text-xs">
+                      {t('balance')}
+                    </div>
                     <div className={`text-th-fgd-1`}>
                       {isLoading ? (
                         <DataLoader />
@@ -128,7 +130,7 @@ export default function MarketBalances() {
                     </div>
                   </div>
                   <div className="pb-3">
-                    <Tooltip content="Available to withdraw after accounting for collateral and open orders">
+                    <Tooltip content={t('tooltip-available-after')}>
                       <div className="pb-0.5 text-th-fgd-3 text-xs">
                         {t('available-balance')}
                       </div>
@@ -151,11 +153,11 @@ export default function MarketBalances() {
                     </div>
                   </div>
                   <div>
-                    <Tooltip content="Deposit APY / Borrow APR">
+                    <Tooltip content={t('tooltip-apy-apr')}>
                       <div
                         className={`cursor-help font-normal pb-0.5 text-th-fgd-3 default-transition text-xs hover:border-th-bkg-2 hover:text-th-fgd-3`}
                       >
-                        Deposit/Borrow Rates
+                        {t('rates')}
                       </div>
                       <div className={`text-th-fgd-1`}>
                         <span className={`text-th-green`}>

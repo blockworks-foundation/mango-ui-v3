@@ -62,10 +62,10 @@ export default function AccountBorrows() {
 
   return (
     <>
-      <div className="pb-2 text-th-fgd-1 text-lg">Your Borrows</div>
+      <div className="pb-2 text-th-fgd-1 text-lg">{t('your-borrows')}</div>
       {/* TODO: calculate LiabsVal without perp markets
         <div className="border border-th-red flex items-center justify-between p-2 rounded">
-          <div className="pr-4 text-xs text-th-fgd-3">Total Borrow Value:</div>
+          <div className="pr-4 text-xs text-th-fgd-3">{t('total-borrow-value')}:</div>
           <span>
             {formatUsdValue(+mangoAccount.getLiabsVal(mangoGroup, mangoCache))}
           </span>
@@ -81,7 +81,7 @@ export default function AccountBorrows() {
                       <TrHead>
                         <Th>{t('asset')}</Th>
                         <Th>{t('balance')}</Th>
-                        <Th>Value</Th>
+                        <Th>{t('value')}</Th>
                         <Th>{t('borrow-rate')} (APR)</Th>
                       </TrHead>
                     </thead>
@@ -165,7 +165,9 @@ export default function AccountBorrows() {
                       headerTemplate={
                         <>
                           <div className="col-span-7">{t('asset')}</div>
-                          <div className="col-span-4 text-right">{t('balance')}</div>
+                          <div className="col-span-4 text-right">
+                            {t('balance')}
+                          </div>
                         </>
                       }
                     />
@@ -207,7 +209,7 @@ export default function AccountBorrows() {
                               <>
                                 <div className="col-span-1 text-left">
                                   <div className="pb-0.5 text-th-fgd-3 text-xs">
-                                    Value
+                                    {t('value')}
                                   </div>
                                   {formatUsdValue(
                                     asset.borrows.mul(
@@ -265,7 +267,7 @@ export default function AccountBorrows() {
                 <div
                   className={`w-full text-center py-6 bg-th-bkg-1 text-th-fgd-3 rounded-md`}
                 >
-                  No borrows found.
+                  {t('no-borrows')}
                 </div>
               )
             ) : null}
@@ -281,10 +283,10 @@ export default function AccountBorrows() {
                 <thead>
                   <TrHead>
                     <Th>{t('asset')}</Th>
-                    <Th>Price</Th>
+                    <Th>{t('price')}</Th>
                     <Th>{t('borrow-rate')} (APR)</Th>
-                    <Th>Max Borrow Amount</Th>
-                    <Th>Liquidity</Th>
+                    <Th>{t('max-borrow')}</Th>
+                    <Th>{t('liquidity')}</Th>
                   </TrHead>
                 </thead>
                 <tbody>
@@ -413,7 +415,7 @@ export default function AccountBorrows() {
                         <>
                           <div className="col-span-1 text-left">
                             <div className="pb-0.5 text-th-fgd-3 text-xs">
-                              Price
+                              {t('price')}
                             </div>
                             {formatUsdValue(
                               mangoGroup.getPrice(tokenIndex, mangoCache)
@@ -421,7 +423,7 @@ export default function AccountBorrows() {
                           </div>
                           <div className="col-span-1 text-left">
                             <div className="pb-0.5 text-th-fgd-3 text-xs">
-                              Max Borrow Amount
+                              {t('max-borrow')}
                             </div>
                             {mangoAccount
                               .getMaxWithBorrowForToken(
@@ -440,7 +442,7 @@ export default function AccountBorrows() {
                           </div>
                           <div className="col-span-1 text-left">
                             <div className="pb-0.5 text-th-fgd-3 text-xs">
-                              Liquidity
+                              {t('liquidity')}
                             </div>
                             {mangoGroup
                               .getUiTotalDeposit(tokenIndex)
@@ -478,7 +480,7 @@ export default function AccountBorrows() {
           isOpen={showBorrowModal}
           onClose={handleCloseWithdraw}
           tokenSymbol={borrowSymbol}
-          title="Borrow and Withdraw"
+          title={t('borrow-withdraw')}
           borrow
         />
       )}

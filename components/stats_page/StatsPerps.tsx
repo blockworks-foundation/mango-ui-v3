@@ -133,7 +133,7 @@ export default function StatsPerps({ perpStats }) {
           style={{ height: '330px' }}
         >
           <Chart
-            title="Open Interest"
+            title={t('open-interest')}
             xAxis="time"
             yAxis="openInterest"
             data={perpsData}

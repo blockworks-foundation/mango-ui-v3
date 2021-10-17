@@ -92,9 +92,7 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
       setInvalidAmountMessage(t('enter-amount'))
     }
     if (Number(amount) > selectedAccount.uiBalance) {
-      setInvalidAmountMessage(
-        t('insufficient-balance-deposit')
-      )
+      setInvalidAmountMessage(t('insufficient-balance-deposit'))
     }
   }
 
@@ -143,8 +141,9 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
       <ElementTitle className="pb-2">Create Account</ElementTitle>
       <div className="pb-4">
         <div className="flex items-center pb-2 text-th-fgd-1">
-          {t('account-name')} <span className="ml-1 text-th-fgd-3">(Optional)</span>
-          <Tooltip content="Account names are stored on-chain">
+          {t('account-name')}{' '}
+          <span className="ml-1 text-th-fgd-3">{t('optional')}</span>
+          <Tooltip content={t('tooltip-name-onchain')}>
             <InformationCircleIcon className="h-5 w-5 ml-2 text-th-primary" />
           </Tooltip>
         </div>
@@ -175,7 +174,7 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
           className="text-th-fgd-1 underline cursor-pointer default-transition hover:text-th-primary hover:no-underline"
           onClick={setMaxForSelectedAccount}
         >
-          Max
+          {t('max')}
         </div>
       </div>
       <div className="flex">
@@ -218,9 +217,7 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
         </Button>
       </div>
       <div className="flex text-th-fgd-4 text-xxs mt-1 -mb-1">
-        <div className="mx-auto">
-          {t('insufficient-sol')}
-        </div>
+        <div className="mx-auto">{t('insufficient-sol')}</div>
       </div>
     </>
   )

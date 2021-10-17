@@ -2,6 +2,7 @@ import { FunctionComponent } from 'react'
 import { PerpMarket } from '@blockworks-foundation/mango-client'
 import useMangoStore from '../../stores/useMangoStore'
 import { useTranslation } from 'next-i18next'
+import { capitalize } from '../../utils'
 
 interface OrderSideTabsProps {
   isSimpleForm?: boolean
@@ -48,7 +49,9 @@ const OrderSideTabs: FunctionComponent<OrderSideTabsProps> = ({
                     }
                   `}
         >
-          {market instanceof PerpMarket && isSimpleForm ? 'Short' : 'Sell'}
+          {market instanceof PerpMarket && isSimpleForm
+            ? capitalize(t('short'))
+            : t('sell')}
         </button>
       </nav>
     </div>

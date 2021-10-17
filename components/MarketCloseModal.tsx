@@ -71,10 +71,10 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
       )
       await sleep(500)
       actions.reloadMangoAccount()
-      notify({ title: 'Transaction sent', txid })
+      notify({ title: t('transaction-sent'), txid })
     } catch (e) {
       notify({
-        title: 'Error placing order',
+        title: t('order-error'),
         description: e.message,
         txid: e.txid,
         type: 'error',
@@ -88,11 +88,9 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
   return (
     <Modal onClose={onClose} isOpen={isOpen}>
       <div className="pb-2 text-th-fgd-1 text-lg">
-        {t('close-confirm', {config_name: config.name})}
+        {t('close-confirm', { config_name: config.name })}
       </div>
-      <div className="pb-6 text-th-fgd-3">
-        The price you receive may be more or less than you expect.
-      </div>
+      <div className="pb-6 text-th-fgd-3">{t('price-expect')}</div>
       <div className="flex items-center">
         <Button onClick={handleMarketClose}>
           {submitting ? <Loading /> : <span>{t('close-position')}</span>}

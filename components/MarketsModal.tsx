@@ -37,7 +37,7 @@ const MarketsModal = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="flex items-end justify-between pb-3 pt-2">
-        <div className="font-bold text-lg text-th-fgd-1">Markets</div>
+        <div className="font-bold text-lg text-th-fgd-1">{t('markets')}</div>
         {hiddenMarkets.length === 0 ? (
           <LinkButton
             className="font-normal hidden md:block mb-0.5 text-th-fgd-3 text-xs disabled:cursor-not-allowed disabled:no-underline disabled:text-th-fgd-4"
@@ -54,7 +54,7 @@ const MarketsModal = ({
             // disabled={hiddenMarkets.length === 0}
             onClick={() => setHiddenMarkets([])}
           >
-            Show all in Nav
+            {t('show-all')}
           </LinkButton>
         )}
       </div>

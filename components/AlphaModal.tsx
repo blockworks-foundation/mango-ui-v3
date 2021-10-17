@@ -2,7 +2,7 @@ import React from 'react'
 import Modal from './Modal'
 import Button from './Button'
 import useLocalStorageState from '../hooks/useLocalStorageState'
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next'
 
 export const ALPHA_MODAL_KEY = 'mangoAlphaAccepted-3.06'
 
@@ -13,7 +13,7 @@ const AlphaModal = ({
   isOpen: boolean
   onClose?: (x) => void
 }) => {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation('common')
   const [, setAlphaAccepted] = useLocalStorageState(ALPHA_MODAL_KEY, false)
 
   const handleAccept = () => {
@@ -34,15 +34,11 @@ const AlphaModal = ({
         </div>
       </Modal.Header>
       <div className={`text-th-fgd-2 text-center text-xl text-strong`}>
-        Welcome to Mango V3
+        {t('v3-welcome')}
       </div>
+      <div className="text-th-fgd-2 text-center my-4">{t('v3-unaudited')}</div>
       <div className="text-th-fgd-2 text-center my-4">
-        The V3 protocol is in public beta. This is unaudited software, use at
-        your own risk.
-      </div>
-      <div className="text-th-fgd-2 text-center my-4">
-        V3 is a new and separate program from V2. You can access your V2 account
-        in the &quot;More&quot; section of the top bar or by using this link:{' '}
+        {t('v3-new')}{' '}
         <a
           href="https://v2.mango.markets"
           target="_blank"

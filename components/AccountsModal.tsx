@@ -15,7 +15,7 @@ import Modal from './Modal'
 import { ElementTitle } from './styles'
 import Button, { LinkButton } from './Button'
 import NewAccount from './NewAccount'
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next'
 
 export const LAST_ACCOUNT_KEY = 'lastAccountViewed-3.0'
 
@@ -28,7 +28,7 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation('common')
   const [showNewAccountForm, setShowNewAccountForm] = useState(false)
   const [newAccPublicKey, setNewAccPublicKey] = useState(null)
   const mangoAccounts = useMangoStore((s) => s.mangoAccounts)
@@ -79,13 +79,13 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
         !showNewAccountForm ? (
           <>
             <Modal.Header>
-              <ElementTitle noMarignBottom>Mango Accounts</ElementTitle>
+              <ElementTitle noMarignBottom>{t('mango-accounts')}</ElementTitle>
             </Modal.Header>
             <div className="flex items-center justify-between pb-3 text-th-fgd-1">
               <div className="font-semibold">
                 {mangoAccounts.length > 1
-                  ? 'Select an account'
-                  : 'Your Account'}
+                  ? t('select-account')
+                  : t('your-account')}
               </div>
               <Button
                 className="text-xs flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3"
@@ -93,7 +93,7 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
               >
                 <div className="flex items-center">
                   <PlusCircleIcon className="h-5 w-5 mr-1.5" />
-                  New
+                  {t('new-account')}
                 </div>
               </Button>
             </div>
@@ -102,7 +102,7 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
               onChange={(acc) => handleMangoAccountChange(acc)}
             >
               <RadioGroup.Label className="sr-only">
-                Select a Mango Account
+                {t('select-account')}
               </RadioGroup.Label>
               <div className="space-y-2">
                 {mangoAccounts.map((account) => (

@@ -77,7 +77,7 @@ export default function StatsAssets({ latestStats, stats }) {
           style={{ height: '330px' }}
         >
           <Chart
-            title="Total Deposits"
+            title={t('total-deposits')}
             xAxis="time"
             yAxis="totalDeposits"
             data={selectedStatsData}
@@ -108,7 +108,7 @@ export default function StatsAssets({ latestStats, stats }) {
           style={{ height: '330px' }}
         >
           <Chart
-            title="Total Borrows"
+            title={t('total-borrows')}
             xAxis="time"
             yAxis="totalBorrows"
             data={selectedStatsData}

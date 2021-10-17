@@ -8,7 +8,7 @@ import {
 } from '@blockworks-foundation/mango-client'
 import { notify } from '../../utils/notifications'
 import { calculateTradePrice, getDecimalCount, sleep } from '../../utils'
-import { floorToDecimal } from '../../utils/index'
+import { floorToDecimal, capitalize } from '../../utils/index'
 import useMangoStore from '../../stores/useMangoStore'
 import Button from '../Button'
 import Input from '../Input'
@@ -252,13 +252,13 @@ export default function SimpleTradeForm({ initLeverage }) {
   async function onSubmit() {
     if (!price && tradeType === 'Limit') {
       notify({
-        title: 'Missing price',
+        title: t('missing-price'),
         type: 'error',
       })
       return
     } else if (!baseSize) {
       notify({
-        title: 'Missing size',
+        title: t('missing-size'),
         type: 'error',
       })
       return
@@ -283,8 +283,8 @@ export default function SimpleTradeForm({ initLeverage }) {
 
       if (!orderPrice) {
         notify({
-          title: 'Price not available',
-          description: 'Please try again',
+          title: t('price-unavailable'),
+          description: t('try-again'),
           type: 'error',
         })
       }
@@ -318,12 +318,12 @@ export default function SimpleTradeForm({ initLeverage }) {
           side === 'buy' ? askInfo : bidInfo
         )
       }
-      notify({ title: 'Successfully placed trade', txid })
+      notify({ title: t('successfully-placed'), txid })
       setPrice('')
       onSetBaseSize('')
     } catch (e) {
       notify({
-        title: 'Error placing order',
+        title: t('order-error'),
         description: e.message,
         txid: e.txid,
         type: 'error',
@@ -392,19 +392,23 @@ export default function SimpleTradeForm({ initLeverage }) {
 
   const closeDepositString =
     percentToClose(baseSize, roundedDeposits) > 100
-      ? `100% close position and open a ${(+baseSize - roundedDeposits).toFixed(
-          sizeDecimalCount
-        )} ${marketConfig.baseSymbol} short`
-      : `${percentToClose(baseSize, roundedDeposits).toFixed(
-          0
-        )}% close position`
+      ? t('close-open-short', {
+          size: (+baseSize - roundedDeposits).toFixed(sizeDecimalCount),
+          symbol: marketConfig.baseSymbol,
+        })
+      : `${percentToClose(baseSize, roundedDeposits).toFixed(0)}% ${t(
+          'close-position'
+        ).toLowerCase()}`
 
   const closeBorrowString =
     percentToClose(baseSize, roundedBorrows) > 100
-      ? `100% close position and open a ${(+baseSize - roundedBorrows).toFixed(
-          sizeDecimalCount
-        )} ${marketConfig.baseSymbol} short`
-      : `${percentToClose(baseSize, roundedBorrows).toFixed(0)}% close position`
+      ? t('close-open-long', {
+          size: (+baseSize - roundedDeposits).toFixed(sizeDecimalCount),
+          symbol: marketConfig.baseSymbol,
+        })
+      : `${percentToClose(baseSize, roundedBorrows).toFixed(0)}% ${t(
+          'close-position'
+        ).toLowerCase()}`
 
   const disabledTradeButton =
     (!price && tradeType === 'Limit') ||
@@ -428,7 +432,7 @@ export default function SimpleTradeForm({ initLeverage }) {
       <OrderSideTabs isSimpleForm onChange={setSide} side={side} />
       <div className="grid grid-cols-12 gap-2 text-left">
         <div className="col-span-6">
-          <label className="text-xxs text-th-fgd-3">Type</label>
+          <label className="text-xxs text-th-fgd-3">{t('type')}</label>
           <ButtonGroup
             activeValue={tradeType}
             className="h-10"
@@ -437,7 +441,7 @@ export default function SimpleTradeForm({ initLeverage }) {
           />
         </div>
         <div className="col-span-6">
-          <label className="text-xxs text-th-fgd-3">Price</label>
+          <label className="text-xxs text-th-fgd-3">{t('price')}</label>
           <Input
             type="number"
             min="0"
@@ -456,7 +460,7 @@ export default function SimpleTradeForm({ initLeverage }) {
           />
         </div>
         <div className="col-span-6">
-          <label className="text-xxs text-th-fgd-3">Size</label>
+          <label className="text-xxs text-th-fgd-3">{t('size')}</label>
           <Input
             type="number"
             min="0"
@@ -473,7 +477,7 @@ export default function SimpleTradeForm({ initLeverage }) {
           />
         </div>
         <div className="col-span-6">
-          <label className="text-xxs text-th-fgd-3">Quantity</label>
+          <label className="text-xxs text-th-fgd-3">{t('quantity')}</label>
           <Input
             type="number"
             min="0"
@@ -518,7 +522,7 @@ export default function SimpleTradeForm({ initLeverage }) {
                   checked={showStopForm}
                   onChange={(e) => setShowStopForm(e.target.checked)}
                 >
-                  Set Stop Loss
+                  {t('set-stop-loss')}
                 </Checkbox>
               </div>
             ) : null}
@@ -532,7 +536,7 @@ export default function SimpleTradeForm({ initLeverage }) {
                   checked={showTakeProfitForm}
                   onChange={(e) => setShowTakeProfitForm(e.target.checked)}
                 >
-                  Set Take Profit
+                  {t('set-take-profit')}
                 </Checkbox>
               </div>
             ) : null}
@@ -541,7 +545,9 @@ export default function SimpleTradeForm({ initLeverage }) {
         {showStopForm && !hideProfitStop ? (
           <>
             <div className="col-span-12">
-              <label className="text-xxs text-th-fgd-3">Stop Price</label>
+              <label className="text-xxs text-th-fgd-3">
+                {t('stop-price')}
+              </label>
               <Input
                 type="number"
                 min="0"
@@ -570,7 +576,7 @@ export default function SimpleTradeForm({ initLeverage }) {
           <>
             <div className="col-span-12">
               <label className="text-left text-xs text-th-fgd-3">
-                Profit Price
+                {t('profit-price')}
               </label>
               <Input
                 type="number"
@@ -603,7 +609,7 @@ export default function SimpleTradeForm({ initLeverage }) {
                 <Tooltip
                   delay={250}
                   placement="left"
-                  content="Post only orders are guaranteed to be the maker order or else it will be canceled."
+                  content={t('tooltip-post')}
                 >
                   <Checkbox
                     checked={postOnly}
@@ -617,7 +623,7 @@ export default function SimpleTradeForm({ initLeverage }) {
                 <Tooltip
                   delay={250}
                   placement="left"
-                  content="Immediate or cancel orders are guaranteed to be the taker or it will be canceled."
+                  content={t('tooltip-ioc')}
                 >
                   <div className="flex items-center text-th-fgd-3 text-xs">
                     <Checkbox
@@ -632,11 +638,7 @@ export default function SimpleTradeForm({ initLeverage }) {
             </>
           ) : null}
           {marketConfig.kind === 'perp' ? (
-            <Tooltip
-              delay={250}
-              placement="left"
-              content="Reduce only orders will only reduce your overall position."
-            >
+            <Tooltip delay={250} placement="left" content={t('tooltip-reduce')}>
               <Checkbox
                 checked={reduceOnly}
                 onChange={(e) => reduceOnChange(e.target.checked)}
@@ -649,7 +651,7 @@ export default function SimpleTradeForm({ initLeverage }) {
             <Tooltip
               delay={250}
               placement="left"
-              content="Enable spot margin for this trade"
+              content={t('tooltip-enable-margin')}
             >
               <Checkbox
                 checked={spotMargin}
@@ -682,22 +684,26 @@ export default function SimpleTradeForm({ initLeverage }) {
                 </div>
               ) : side.toLowerCase() === 'buy' ? (
                 market instanceof PerpMarket ? (
-                  `${baseSize > 0 ? 'Long ' + baseSize : 'Long '} ${
-                    marketConfig.name
-                  }`
+                  `${
+                    baseSize > 0
+                      ? `${capitalize(t('long'))} ` + baseSize
+                      : `${capitalize(t('long'))} `
+                  } ${marketConfig.name}`
                 ) : (
-                  `${baseSize > 0 ? t('buy') + baseSize : t('buy')} ${
-                    marketConfig.baseSymbol
-                  }`
+                  `${
+                    baseSize > 0 ? `${t('buy')} ` + baseSize : `${t('buy')} `
+                  } ${marketConfig.baseSymbol}`
                 )
               ) : market instanceof PerpMarket ? (
-                `${baseSize > 0 ? 'Short ' + baseSize : 'Short '} ${
-                  marketConfig.name
-                }`
+                `${
+                  baseSize > 0
+                    ? `${capitalize(t('short'))} ` + baseSize
+                    : `${capitalize(t('short'))} `
+                } ${marketConfig.name}`
               ) : (
-                `${baseSize > 0 ? 'Sell ' + baseSize : 'Sell '} ${
-                  marketConfig.baseSymbol
-                }`
+                `${
+                  baseSize > 0 ? `${t('sell')} ` + baseSize : `${t('sell')} `
+                } ${marketConfig.baseSymbol}`
               )}
             </Button>
           ) : (

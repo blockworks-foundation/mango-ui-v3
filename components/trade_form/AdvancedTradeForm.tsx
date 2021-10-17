@@ -406,9 +406,9 @@ export default function AdvancedTradeForm({
   const closeDepositString =
     percentToClose(baseSize, roundedDeposits) > 100
       ? t('close-open-short', {
-        size: (+baseSize - roundedDeposits).toFixed(sizeDecimalCount), 
-        symbol: marketConfig.baseSymbol
-      })
+          size: (+baseSize - roundedDeposits).toFixed(sizeDecimalCount),
+          symbol: marketConfig.baseSymbol,
+        })
       : `${percentToClose(baseSize, roundedDeposits).toFixed(
           0
         )}% close position`
@@ -416,9 +416,9 @@ export default function AdvancedTradeForm({
   const closeBorrowString =
     percentToClose(baseSize, roundedBorrows) > 100
       ? t('close-open-long', {
-        size: (+baseSize - roundedDeposits).toFixed(sizeDecimalCount), 
-        symbol: marketConfig.baseSymbol
-      })
+          size: (+baseSize - roundedDeposits).toFixed(sizeDecimalCount),
+          symbol: marketConfig.baseSymbol,
+        })
       : `${percentToClose(baseSize, roundedBorrows).toFixed(0)}% close position`
 
   let priceImpact
@@ -478,19 +478,19 @@ export default function AdvancedTradeForm({
   async function onSubmit() {
     if (!price && isLimitOrder) {
       notify({
-        title: 'Missing price',
+        title: t('missing-price'),
         type: 'error',
       })
       return
     } else if (!baseSize) {
       notify({
-        title: 'Missing size',
+        title: t('missing-size'),
         type: 'error',
       })
       return
     } else if (!triggerPrice && isTriggerOrder) {
       notify({
-        title: 'Missing trigger price',
+        title: t('missing-trigger'),
         type: 'error',
       })
       return
@@ -516,8 +516,8 @@ export default function AdvancedTradeForm({
 
       if (!orderPrice) {
         notify({
-          title: 'Price not available',
-          description: 'Please try again',
+          title: t('price-unavailable'),
+          description: t('try-again'),
           type: 'error',
         })
       }
@@ -579,12 +579,12 @@ export default function AdvancedTradeForm({
           )
         }
       }
-      notify({ title: 'Successfully placed trade', txid })
+      notify({ title: t('successfully-placed'), txid })
       setPrice('')
       onSetBaseSize('')
     } catch (e) {
       notify({
-        title: 'Error placing order',
+        title: t('order-error'),
         description: e.message,
         txid: e.txid,
         type: 'error',
@@ -627,7 +627,7 @@ export default function AdvancedTradeForm({
       <OrderSideTabs onChange={onChangeSide} side={side} />
       <div className="grid grid-cols-12 gap-2 text-left">
         <div className="col-span-12 md:col-span-6">
-          <label className="text-xxs text-th-fgd-3">Type</label>
+          <label className="text-xxs text-th-fgd-3">{t('type')}</label>
           <TradeType
             onChange={onTradeTypeChange}
             value={tradeType}
@@ -637,7 +637,7 @@ export default function AdvancedTradeForm({
         <div className="col-span-12 md:col-span-6">
           {!isTriggerOrder ? (
             <>
-              <label className="text-xxs text-th-fgd-3">Price</label>
+              <label className="text-xxs text-th-fgd-3">{t('price')}</label>
               <Input
                 type="number"
                 min="0"
@@ -678,7 +678,7 @@ export default function AdvancedTradeForm({
         {isTriggerLimit && (
           <>
             <div className="col-span-12">
-              <label className="text-xxs text-th-fgd-3">Price</label>
+              <label className="text-xxs text-th-fgd-3">{t('price')}</label>
               <Input
                 type="number"
                 min="0"
@@ -697,7 +697,7 @@ export default function AdvancedTradeForm({
           </>
         )}
         <div className="col-span-6">
-          <label className="text-xxs text-th-fgd-3">Size</label>
+          <label className="text-xxs text-th-fgd-3">{t('size')}</label>
           <Input
             type="number"
             min="0"
@@ -714,7 +714,7 @@ export default function AdvancedTradeForm({
           />
         </div>
         <div className="col-span-6">
-          <label className="text-xxs text-th-fgd-3">Quantity</label>
+          <label className="text-xxs text-th-fgd-3">{t('quantity')}</label>
           <Input
             type="number"
             min="0"
@@ -762,7 +762,7 @@ export default function AdvancedTradeForm({
                     className="hidden md:block"
                     delay={250}
                     placement="left"
-                    content="Post only orders are guaranteed to be the maker order or else it will be canceled."
+                    content={t('tooltip-post')}
                   >
                     <Checkbox
                       checked={postOnly}
@@ -777,7 +777,7 @@ export default function AdvancedTradeForm({
                     className="hidden md:block"
                     delay={250}
                     placement="left"
-                    content="Immediate or cancel orders are guaranteed to be the taker or it will be canceled."
+                    content={t('tooltip-ioc')}
                   >
                     <div className="flex items-center text-th-fgd-3 text-xs">
                       <Checkbox
@@ -797,7 +797,7 @@ export default function AdvancedTradeForm({
                   className="hidden md:block"
                   delay={250}
                   placement="left"
-                  content="Reduce only orders will only reduce your overall position."
+                  content={t('tooltip-reduce')}
                 >
                   <Checkbox
                     checked={reduceOnly}
@@ -814,7 +814,7 @@ export default function AdvancedTradeForm({
                 <Tooltip
                   delay={250}
                   placement="left"
-                  content="Enable spot margin for this trade"
+                  content={t('tooltip-enable-margin')}
                 >
                   <Checkbox
                     checked={spotMargin}
@@ -852,13 +852,17 @@ export default function AdvancedTradeForm({
                     <Loading className="mx-auto" />
                   </div>
                 ) : sizeTooLarge ? (
-                  'Size Too Large'
+                  t('too-large')
                 ) : side === 'buy' ? (
-                  `${baseSize > 0 ? t('buy') + baseSize : t('buy')} ${
+                  `${
+                    baseSize > 0 ? `${t('buy')} ` + baseSize : `${t('buy')} `
+                  } ${
                     isPerpMarket ? marketConfig.name : marketConfig.baseSymbol
                   }`
                 ) : (
-                  `${baseSize > 0 ? 'Sell ' + baseSize : 'Sell '} ${
+                  `${
+                    baseSize > 0 ? `${t('sell')} ` + baseSize : `${t('sell')} `
+                  } ${
                     isPerpMarket ? marketConfig.name : marketConfig.baseSymbol
                   }`
                 )}

@@ -74,7 +74,7 @@ const ConnectWalletButton = () => {
                   onClick={() => setShowSettingsModal(true)}
                 >
                   <CogIcon className="h-4 w-4" />
-                  <div className="pl-2 text-left">Settings</div>
+                  <div className="pl-2 text-left">{t('settings')}</div>
                 </button>
               </Menu.Item>
               <Menu.Item>

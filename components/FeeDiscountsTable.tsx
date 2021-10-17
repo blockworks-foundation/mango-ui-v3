@@ -3,8 +3,10 @@ import useSrmAccount from '../hooks/useSrmAccount'
 import { SRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
 import Tooltip from './Tooltip'
 import { InformationCircleIcon } from '@heroicons/react/outline'
+import { useTranslation } from 'next-i18next'
 
 const FeeDiscountsTable = () => {
+  const { t } = useTranslation('common')
   const { totalSrm, rates } = useSrmAccount()
 
   return (
@@ -15,7 +17,7 @@ const FeeDiscountsTable = () => {
         className={`flex flex-col sm:flex-row justify-between text-th-fgd-4 text-center`}
       >
         <div className="px-4">
-          <div>Total SRM in Mango</div>
+          <div>{t('total-srm')}</div>
           <div className="text-th-fgd-1 text-lg font-semibold">
             {totalSrm.toLocaleString(undefined, {
               maximumFractionDigits: SRM_DECIMALS,
@@ -23,19 +25,19 @@ const FeeDiscountsTable = () => {
           </div>
         </div>
         <div className="px-4 mt-4 sm:mt-0">
-          <div>Maker Fee</div>
+          <div>{t('maker-fee')}</div>
           <div className="text-th-fgd-1 text-lg font-semibold">
             {rates ? percentFormat.format(rates.maker) : null}
           </div>
         </div>
         <div className="px-4 mt-4 sm:mt-0">
           <div className="flex items-center">
-            <div>Taker Fee</div>
+            <div>{t('taker-fee')}</div>
             <div className="flex items-center">
               <Tooltip
-                content={`Taker fee is ${percentFormat.format(
-                  rates.taker
-                )} before the 20% GUI hoster fee is rebated.`}
+                content={t('tooltip-gui-rebate', {
+                  taker_rate: percentFormat.format(rates.taker),
+                })}
               >
                 <div>
                   <InformationCircleIcon

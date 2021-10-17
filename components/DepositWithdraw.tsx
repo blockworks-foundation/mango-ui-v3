@@ -57,9 +57,7 @@ export default function MarginBalances() {
               </a>
             </Link>
           ) : connected ? (
-            <div className="pt-1 text-th-fgd-3">
-              {t('get-started')}
-            </div>
+            <div className="pt-1 text-th-fgd-3">{t('get-started')}</div>
           ) : null}
         </div>
         <div className="flex justify-center items-center mt-2">
@@ -75,7 +73,7 @@ export default function MarginBalances() {
             className="ml-4 w-1/2"
             disabled={!connected || !mangoAccount || loadingMangoAccount}
           >
-            <span>Withdraw</span>
+            <span>{t('withdraw')}</span>
           </Button>
         </div>
       </FloatingElement>

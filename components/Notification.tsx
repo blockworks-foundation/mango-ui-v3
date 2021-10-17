@@ -9,12 +9,12 @@ import useMangoStore from '../stores/useMangoStore'
 import { notify } from '../utils/notifications'
 import { useTranslation } from 'next-i18next'
 
-const notEnoughSoLMessage = 'You may not have enough SOL for this transaction'
-
 const NotificationList = () => {
+  const { t } = useTranslation('common')
   const setMangoStore = useMangoStore((s) => s.set)
   const notifications = useMangoStore((s) => s.notifications)
   const walletTokens = useMangoStore((s) => s.wallet.tokens)
+  const notEnoughSoLMessage = t('not-enough-sol')
 
   // if a notification is shown with {"InstructionError":[0,{"Custom":1}]} then
   // add a notification letting the user know they may not have enough SOL
