@@ -10,12 +10,12 @@ import NavDropMenu from './NavDropMenu'
 import AccountsModal from './AccountsModal'
 import { DEFAULT_MARKET_KEY, initialMarket } from './SettingsModal'
 import { useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next'
 
 const TopBar = () => {
-  const { t } = useTranslation('common');
-  const router = useRouter();
-  const { pathname, asPath, query } = router;
+  const { t } = useTranslation('common')
+  const router = useRouter()
+  const { pathname, asPath, query } = router
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const connected = useMangoStore((s) => s.wallet.connected)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
@@ -60,7 +60,7 @@ const TopBar = () => {
                 <MenuItem href="/borrow">{t('borrow')}</MenuItem>
                 <MenuItem href="/stats">{t('stats')}</MenuItem>
                 <MenuItem href="https://docs.mango.markets/" newWindow>
-                {t('learn')}
+                  {t('learn')}
                 </MenuItem>
                 <NavDropMenu
                   menuTitle={t('more')}
@@ -74,27 +74,27 @@ const TopBar = () => {
                   href='/'
                   locale={router.locale === 'en' ? 'zh_trad' : 'en'}
                 > */}
-                  <button
-                    onClick={() => {
-                      handleLocaleChange('en');
-                    }}
-                  >
-                    English
-                  </button>
-                  <button
-                    onClick={() => {
-                      handleLocaleChange('zh');
-                    }}
-                  >
-                    简体中文
-                  </button>
-                  <button
-                    onClick={() => {
-                      handleLocaleChange('zh_tw');
-                    }}
-                  >
-                    繁體中文
-                  </button>
+                <button
+                  onClick={() => {
+                    handleLocaleChange('en')
+                  }}
+                >
+                  English
+                </button>
+                <button
+                  onClick={() => {
+                    handleLocaleChange('zh')
+                  }}
+                >
+                  简体中文
+                </button>
+                <button
+                  onClick={() => {
+                    handleLocaleChange('zh_tw')
+                  }}
+                >
+                  繁體中文
+                </button>
                 {/* </Link> */}
               </div>
             </div>

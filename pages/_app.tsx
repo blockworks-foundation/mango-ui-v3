@@ -12,7 +12,7 @@ import { formatUsdValue } from '../utils'
 import { useRouter } from 'next/router'
 import { ViewportProvider } from '../hooks/useViewport'
 import BottomBar from '../components/mobile/BottomBar'
-import { appWithTranslation } from 'next-i18next';
+import { appWithTranslation } from 'next-i18next'
 
 function App({ Component, pageProps }) {
   useHydrateStore()
@@ -79,4 +79,4 @@ function App({ Component, pageProps }) {
   )
 }
 
-export default appWithTranslation(App);
+export default appWithTranslation(App)

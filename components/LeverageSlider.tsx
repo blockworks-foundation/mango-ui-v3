@@ -145,12 +145,16 @@ export default function LeverageSlider({
   const closeDepositString =
     percentToClose(value, roundedDeposits) > 100
       ? `100% ${t('close-and-short')}`
-      : `${percentToClose(value, roundedDeposits).toFixed(1)}% ${t('close-position')}`
+      : `${percentToClose(value, roundedDeposits).toFixed(1)}% ${t(
+          'close-position'
+        )}`
 
   const closeBorrowString =
     percentToClose(value, roundedBorrows) > 100
       ? `100% ${t('close-and-long')}`
-      : `${percentToClose(value, roundedBorrows).toFixed(1)}% ${t('close-position')}`
+      : `${percentToClose(value, roundedBorrows).toFixed(1)}% ${t(
+          'close-position'
+        )}`
 
   const setMaxLeverage = function () {
     onChange(Math.round(max / step) * step)

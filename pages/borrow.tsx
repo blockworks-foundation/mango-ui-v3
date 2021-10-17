@@ -7,7 +7,7 @@ import EmptyState from '../components/EmptyState'
 import AccountsModal from '../components/AccountsModal'
 import AccountBorrows from '../components/account_page/AccountBorrows'
 import Loading from '../components/Loading'
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'next-i18next'
 
 export async function getServerSideProps({ locale }) {
@@ -16,7 +16,7 @@ export async function getServerSideProps({ locale }) {
       ...(await serverSideTranslations(locale, ['common'])),
       // Will be passed to the page component as props
     },
-  };
+  }
 }
 
 export default function Borrow() {
@@ -39,7 +39,7 @@ export default function Borrow() {
       <PageBodyContainer>
         <div className="pt-8 pb-3 sm:pb-4 md:pt-10">
           <h1 className={`mb-1 text-th-fgd-1 text-2xl font-semibold`}>
-          {t('borrow-funds')}
+            {t('borrow-funds')}
           </h1>
           <p>{t('borrow-notification')}</p>
         </div>

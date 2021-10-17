@@ -12,7 +12,7 @@ import MarketSelect from '../../components/MarketSelect'
 import AlphaModal, { ALPHA_MODAL_KEY } from '../../components/AlphaModal'
 import useLocalStorageState from '../../hooks/useLocalStorageState'
 import { PageBodyWrapper } from '../../components/styles'
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 
 export async function getServerSideProps({ locale }) {
   return {
@@ -20,7 +20,7 @@ export async function getServerSideProps({ locale }) {
       ...(await serverSideTranslations(locale, ['common'])),
       // Will be passed to the page component as props
     },
-  };
+  }
 }
 
 const SpotMarket = () => {
