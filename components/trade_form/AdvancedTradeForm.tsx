@@ -16,7 +16,6 @@ import TradeType from './TradeType'
 import Input from '../Input'
 import { Market } from '@project-serum/serum'
 import Big from 'big.js'
-import MarketFee from '../MarketFee'
 import Loading from '../Loading'
 import Tooltip from '../Tooltip'
 import OrderSideTabs from './OrderSideTabs'
@@ -27,6 +26,7 @@ import { useViewport } from '../../hooks/useViewport'
 import { breakpoints } from '../TradePageGrid'
 import EstPriceImpact from './EstPriceImpact'
 import useFees from '../../hooks/useFees'
+import useSrmAccount from '../../hooks/useSrmAccount'
 
 export const TRIGGER_ORDER_TYPES = [
   'Stop Loss',
@@ -55,6 +55,7 @@ export default function AdvancedTradeForm({
   const [spotMargin, setSpotMargin] = useState(true)
   const [positionSizePercent, setPositionSizePercent] = useState('')
   const { takerFee } = useFees()
+  const { totalMsrm } = useSrmAccount()
 
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
@@ -541,7 +542,9 @@ export default function AdvancedTradeForm({
           side,
           orderPrice,
           baseSize,
-          orderType
+          orderType,
+          null,
+          totalMsrm > 0 ? true : false
         )
       } else {
         if (isTriggerOrder) {
@@ -825,9 +828,7 @@ export default function AdvancedTradeForm({
           <div className="col-span-12 md:col-span-10 md:col-start-3 pt-1">
             {tradeType === 'Market' && priceImpact ? (
               <EstPriceImpact priceImpact={priceImpact} />
-            ) : (
-              <MarketFee />
-            )}
+            ) : null}
           </div>
 
           <div className={`flex pt-4`}>
