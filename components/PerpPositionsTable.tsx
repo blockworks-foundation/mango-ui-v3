@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react'
 import { useRouter } from 'next/router'
+import Link from 'next/link'
 import useMangoStore from '../stores/useMangoStore'
 import { ExclamationIcon } from '@heroicons/react/outline'
 import Button from '../components/Button'
@@ -137,7 +138,17 @@ const PositionsTable = () => {
                                 src={`/assets/icons/${marketConfig.baseSymbol.toLowerCase()}.svg`}
                                 className={`mr-2.5`}
                               />
-                              <div>{marketConfig.name}</div>
+                              {asPath.includes(
+                                `perp/${marketConfig.baseSymbol}`
+                              ) ? (
+                                <span>{marketConfig.name}</span>
+                              ) : (
+                                <Link href={`/perp/${marketConfig.baseSymbol}`}>
+                                  <a className="text-th-fgd-1 underline hover:no-underline hover:text-th-fgd-1">
+                                    {marketConfig.name}
+                                  </a>
+                                </Link>
+                              )}
                             </div>
                           </Td>
                           <Td>
