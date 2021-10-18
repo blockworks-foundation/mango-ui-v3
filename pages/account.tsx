@@ -139,7 +139,7 @@ export default function Account() {
                   className="col-span-1 flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs"
                   onClick={() => setShowAccountsModal(true)}
                 >
-                  Accounts
+                  {t('accounts')}
                 </Button>
               </div>
             </>

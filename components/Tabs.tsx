@@ -1,4 +1,5 @@
 import { FunctionComponent } from 'react'
+import { useTranslation } from 'next-i18next'
 
 interface TabsProps {
   activeTab: string
@@ -18,6 +19,8 @@ const Tabs: FunctionComponent<TabsProps> = ({
   showCount,
   tabs,
 }) => {
+  const { t } = useTranslation('common')
+
   return (
     <div className={`border-b border-th-fgd-4 mb-4 relative`}>
       <div
@@ -44,7 +47,7 @@ const Tabs: FunctionComponent<TabsProps> = ({
                   `}
             style={{ width: `${100 / tabs.length}%`, maxWidth: '176px' }}
           >
-            {tabName}
+            {t(tabName.toLowerCase().replace(' ', '-'))}
             {showCount && showCount.find((e) => e.tabName === tabName) ? (
               <Count
                 count={showCount.find((e) => e.tabName === tabName).count}

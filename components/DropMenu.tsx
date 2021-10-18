@@ -1,6 +1,7 @@
 import { Fragment, FunctionComponent, ReactNode } from 'react'
 import { Listbox, Transition } from '@headlessui/react'
 import Tooltip from './Tooltip'
+import { useTranslation } from 'next-i18next'
 
 type DropMenuProps = {
   button: ReactNode
@@ -21,6 +22,8 @@ const DropMenu: FunctionComponent<DropMenuProps> = ({
   options,
   toolTipContent,
 }) => {
+  const { t } = useTranslation('common')
+
   return (
     <div className={`relative`}>
       <Listbox value={value} onChange={onChange}>
@@ -63,7 +66,7 @@ const DropMenu: FunctionComponent<DropMenuProps> = ({
                         {option.icon ? (
                           <div className="mr-2">{option.icon}</div>
                         ) : null}
-                        {option.name}
+                        {t(option.name.toLowerCase())}
                       </div>
                     )}
                   </Listbox.Option>

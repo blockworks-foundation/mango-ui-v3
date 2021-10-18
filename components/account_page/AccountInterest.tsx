@@ -40,8 +40,8 @@ const AccountInterest = () => {
           <thead>
             <TrHead>
               <Th>{t('token')}</Th>
-              <Th>Total Deposit Interest</Th>
-              <Th>Total Borrow Interest</Th>
+              <Th>{t('total-deposit-interest')}</Th>
+              <Th>{t('total-borrow-interest')}</Th>
               <Th>{t('net')}</Th>
             </TrHead>
           </thead>
@@ -50,7 +50,9 @@ const AccountInterest = () => {
               <TrBody index={0}>
                 <td colSpan={4}>
                   <div className="flex">
-                    <div className="mx-auto py-4">No interest earned</div>
+                    <div className="mx-auto py-4">
+                      {t('no-interest-earned')}
+                    </div>
                   </div>
                 </td>
               </TrBody>

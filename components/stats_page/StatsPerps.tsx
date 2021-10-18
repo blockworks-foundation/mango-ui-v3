@@ -153,6 +153,8 @@ export default function StatsPerps({ perpStats }) {
 }
 
 const AssetHeader = ({ asset }) => {
+  const { t } = useTranslation('common')
+
   switch (asset) {
     case 'BTC-PERP':
       return (
@@ -164,7 +166,7 @@ const AssetHeader = ({ asset }) => {
             height="24"
             className="mr-2.5"
           />
-          Bitcoin Perpetual Futures
+          Bitcoin {t('perpetual-futures')}
         </div>
       )
     case 'ETH-PERP':
@@ -177,7 +179,7 @@ const AssetHeader = ({ asset }) => {
             height="24"
             className="mr-2.5"
           />
-          Ethereum Perpetual Futures
+          Ethereum {t('perpetual-futures')}
         </div>
       )
     case 'SOL-PERP':
@@ -190,7 +192,7 @@ const AssetHeader = ({ asset }) => {
             height="24"
             className="mr-2.5"
           />
-          Solana Perpetual Futures
+          Solana {t('perpetual-futures')}
         </div>
       )
     case 'SRM':
@@ -203,7 +205,7 @@ const AssetHeader = ({ asset }) => {
             height="24"
             className="mr-2.5"
           />
-          Serum Perpetual Futures
+          Serum {t('perpetual-futures')}
         </div>
       )
     default:
@@ -216,7 +218,7 @@ const AssetHeader = ({ asset }) => {
             height="24"
             className="mr-2.5"
           />
-          Bitcoin Perpetual Futures
+          Bitcoin {t('perpetual-futures')}
         </div>
       )
   }

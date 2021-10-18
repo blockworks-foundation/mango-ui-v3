@@ -88,7 +88,7 @@ const AccountNameModal: FunctionComponent<AccountNameModalProps> = ({
           <InformationCircleIcon className="h-5 w-5 ml-2 text-th-primary" />
         </Tooltip>
       </div>
-      <div className="pb-2 text-th-fgd-1">Account Name</div>
+      <div className="pb-2 text-th-fgd-1">{t('account-name')}</div>
       <Input
         type="text"
         className={`border border-th-fgd-4 flex-grow`}

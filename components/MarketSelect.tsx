@@ -105,7 +105,7 @@ const MarketSelect = () => {
 
 const ShowMarketsButton = ({ onClick, t }) => (
   <LinkButton
-    className="font-normal flex items-center text-th-fgd-2 text-xs"
+    className="font-normal flex items-center text-th-fgd-2 text-xs whitespace-nowrap"
     onClick={onClick}
   >
     <PlusCircleIcon className="h-4 mr-1 w-4" />

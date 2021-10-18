@@ -154,7 +154,9 @@ export default function MarketPosition() {
     <>
       <div className={!connected && !isMobile ? 'filter blur-sm' : null}>
         {!isMobile ? (
-          <ElementTitle>{marketConfig.name} Position</ElementTitle>
+          <ElementTitle>
+            {marketConfig.name} {t('position')}
+          </ElementTitle>
         ) : null}
         <div className="flex items-center justify-between pb-3">
           <div className="font-normal text-th-fgd-3 leading-4">{t('size')}</div>
