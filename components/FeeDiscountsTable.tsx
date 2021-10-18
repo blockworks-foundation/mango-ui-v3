@@ -8,16 +8,22 @@ import Tooltip from './Tooltip'
 import { InformationCircleIcon } from '@heroicons/react/outline'
 import Button from './Button'
 import useMangoStore from '../stores/useMangoStore'
-import { ZERO_BN } from '@blockworks-foundation/mango-client'
+import { msrmMints, ZERO_BN } from '@blockworks-foundation/mango-client'
 import DepositMsrmModal from './DepositMsrmModal'
 import WithdrawMsrmModal from './WithdrawMsrmModal'
 import { useState } from 'react'
 
 const FeeDiscountsTable = () => {
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
+  const walletTokens = useMangoStore((s) => s.wallet.tokens)
   const { totalSrm, totalMsrm, rates } = useSrmAccount()
   const [showDeposit, setShowDeposit] = useState(false)
   const [showWithdraw, setShowWithdraw] = useState(false)
+  const cluster = useMangoStore.getState().connection.cluster
+
+  const ownerMsrmAccount = walletTokens.find((t) =>
+    t.account.mint.equals(msrmMints[cluster])
+  )
 
   return (
     <div
@@ -70,7 +76,12 @@ const FeeDiscountsTable = () => {
         </div>
         {mangoAccount ? (
           <div className="flex justify-center mt-6">
-            <Button onClick={() => setShowDeposit(true)}>Deposit MSRM</Button>
+            <Button
+              onClick={() => setShowDeposit(true)}
+              disabled={!ownerMsrmAccount}
+            >
+              Deposit MSRM
+            </Button>
             {mangoAccount.msrmAmount.gt(ZERO_BN) ? (
               <Button onClick={() => setShowWithdraw(true)} className="ml-2">
                 Withdraw MSRM

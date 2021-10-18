@@ -26,7 +26,7 @@ const DepositMsrmModal = ({ onClose, isOpen }) => {
         mangoGroup,
         mangoAccount,
         wallet,
-        ownerMsrmAccount.account.publicKey,
+        ownerMsrmAccount?.account?.publicKey,
         1
       )
       notify({
