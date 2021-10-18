@@ -142,6 +142,11 @@ const MarketDetails = () => {
     }
   }, [selectedMarketName])
 
+  const funding1h = calculateFundingRate(perpStats, selectedMarket)
+  const [funding1hStr, fundingAprStr] = funding1h
+    ? [funding1h.toFixed(4), (funding1h * 24 * 365).toFixed(2)]
+    : ['-', '-']
+
   return (
     <div
       className={`flex flex-col relative md:pb-2 md:pt-6 md:px-3 lg:flex-row lg:items-center lg:justify-between`}
@@ -207,13 +212,11 @@ const MarketDetails = () => {
             <>
               <div className="flex items-center justify-between md:block">
                 <div className="text-th-fgd-3 tiny-text pb-0.5">
-                  Avg. Funding Rate (1h)
+                  Avg. 1h Funding Rate
                 </div>
                 <div className="font-semibold text-th-fgd-1 md:text-xs">
                   {selectedMarket ? (
-                    `${calculateFundingRate(perpStats, selectedMarket)?.toFixed(
-                      4
-                    )}%`
+                    `${funding1hStr}% (${fundingAprStr}% APR)`
                   ) : (
                     <MarketDataLoader />
                   )}
