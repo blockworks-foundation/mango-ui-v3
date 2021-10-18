@@ -14,6 +14,8 @@ import AccountOrders from '../components/account_page/AccountOrders'
 import AccountHistory from '../components/account_page/AccountHistory'
 import AccountsModal from '../components/AccountsModal'
 import AccountOverview from '../components/account_page/AccountOverview'
+import AccountInterest from '../components/account_page/AccountInterest'
+import AccountFunding from '../components/account_page/AccountFunding'
 import AccountNameModal from '../components/AccountNameModal'
 import Button from '../components/Button'
 import EmptyState from '../components/EmptyState'
@@ -23,7 +25,6 @@ import Swipeable from '../components/mobile/Swipeable'
 import Tabs from '../components/Tabs'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from '../components/TradePageGrid'
-import AccountInterest from '../components/account_page/AccountInterest'
 
 const TABS = [
   'Portfolio',
@@ -34,6 +35,7 @@ const TABS = [
   'Orders',
   'Trade History',
   'Interest',
+  'Funding',
 ]
 
 export default function Account() {
@@ -219,6 +221,8 @@ const TabContent = ({ activeTab }) => {
       return <AccountHistory />
     case 'Interest':
       return <AccountInterest />
+    case 'Funding':
+      return <AccountFunding />
     default:
       return <AccountOverview />
   }
