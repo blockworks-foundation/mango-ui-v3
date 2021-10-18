@@ -4,6 +4,7 @@ import Chart from '../Chart'
 import Loading from '../Loading'
 import Select from '../Select'
 import { Table, Td, Th, TrBody, TrHead } from '../TableElements'
+import { isEmpty } from 'lodash'
 
 const AccountFunding = () => {
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
@@ -109,7 +110,7 @@ const AccountFunding = () => {
           </Table>
 
           <>
-            {hourlyFunding && !loading ? (
+            {!isEmpty(hourlyFunding) && !loading ? (
               <>
                 <div className="flex items-center justify-between my-4 w-full">
                   <Select
@@ -149,20 +150,21 @@ const AccountFunding = () => {
                     ))}
                   </div>
                 </div>
-
-                <div
-                  className="border border-th-bkg-4 relative md:mb-0 p-4 rounded-md"
-                  style={{ height: '330px' }}
-                >
-                  <Chart
-                    title="Hourly Funding"
-                    xAxis="time"
-                    yAxis="total_funding"
-                    data={hourlyFunding[selectedAsset]}
-                    labelFormat={(x) => x.toFixed(6)}
-                    type="area"
-                  />
-                </div>
+                {hourlyFunding[selectedAsset].length ? (
+                  <div
+                    className="border border-th-bkg-4 relative md:mb-0 p-4 rounded-md"
+                    style={{ height: '330px' }}
+                  >
+                    <Chart
+                      title="Hourly Funding"
+                      xAxis="time"
+                      yAxis="total_funding"
+                      data={hourlyFunding[selectedAsset]}
+                      labelFormat={(x) => x.toFixed(6)}
+                      type="area"
+                    />
+                  </div>
+                ) : null}
               </>
             ) : loading ? (
               <div className="flex justify-center my-8">

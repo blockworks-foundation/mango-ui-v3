@@ -50,7 +50,6 @@ const useSrmAccount = () => {
     ? nativeToUi(msrmAccountData.amount, MSRM_DECIMALS)
     : 0
   const feeTier = getFeeTier(totalMsrm, totalSrm)
-  console.log('feeTier', feeTier)
 
   const { maker, taker } = getFeeRates(feeTier)
 

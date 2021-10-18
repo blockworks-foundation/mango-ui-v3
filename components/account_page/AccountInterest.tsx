@@ -5,6 +5,7 @@ import Chart from '../Chart'
 import Loading from '../Loading'
 import Select from '../Select'
 import { Table, Td, Th, TrBody, TrHead } from '../TableElements'
+import { isEmpty } from 'lodash'
 
 interface InterestStats {
   [key: string]: {
@@ -127,7 +128,7 @@ const AccountInterest = () => {
             </tbody>
           </Table>
           <>
-            {hourlyInterestStats && !loading ? (
+            {!isEmpty(hourlyInterestStats) && !loading ? (
               <>
                 <div className="flex items-center justify-between my-4 w-full">
                   <Select
