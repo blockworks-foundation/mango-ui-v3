@@ -8,14 +8,15 @@ import useMangoStore from '../stores/useMangoStore'
 import ConnectWalletButton from './ConnectWalletButton'
 import NavDropMenu from './NavDropMenu'
 import AccountsModal from './AccountsModal'
+import LanguageSwitch from './LanguageSwitch'
 import { DEFAULT_MARKET_KEY, initialMarket } from './SettingsModal'
-import { useRouter } from 'next/router'
+// import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 
 const TopBar = () => {
   const { t } = useTranslation('common')
-  const router = useRouter()
-  const { pathname, asPath, query } = router
+  // const router = useRouter()
+  // const { pathname, asPath, query } = router
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const connected = useMangoStore((s) => s.wallet.connected)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
@@ -24,12 +25,9 @@ const TopBar = () => {
     initialMarket
   )
 
-  const handleLocaleChange = (lang) => {
-    router.push({ pathname, query }, asPath, { locale: lang })
-    // router.locale = lang;
-    // i18n.changeLanguage(lang, (err, t) => {  if (err) return console.log('something went wrong loading', err);  t(lang); // -> same as i18next.t});
-    // })
-  }
+  // const handleLocaleChange = (lang) => {
+  //   router.push({ pathname, query }, asPath, { locale: lang })
+  // }
 
   const handleCloseAccounts = useCallback(() => {
     setShowAccountsModal(false)
@@ -70,11 +68,7 @@ const TopBar = () => {
                     ['Mango v2', 'https://v2.mango.markets', true],
                   ]}
                 />
-                {/* <Link
-                  href='/'
-                  locale={router.locale === 'en' ? 'zh_trad' : 'en'}
-                > */}
-                <button
+                {/* <button
                   onClick={() => {
                     handleLocaleChange('en')
                   }}
@@ -94,11 +88,13 @@ const TopBar = () => {
                   }}
                 >
                   繁體中文
-                </button>
-                {/* </Link> */}
+                </button> */}
               </div>
             </div>
             <div className="flex items-center">
+              <div className={`pl-2`}>
+                <LanguageSwitch />
+              </div>
               <div className={`pl-2`}>
                 <ThemeSwitch />
               </div>

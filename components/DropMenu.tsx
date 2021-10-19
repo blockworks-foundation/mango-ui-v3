@@ -56,7 +56,10 @@ const DropMenu: FunctionComponent<DropMenuProps> = ({
                 className={`absolute z-10 mt-4 p-1 right-0 w-24 bg-th-bkg-1 divide-y divide-th-bkg-3 shadow-lg outline-none rounded-md`}
               >
                 {options.map((option) => (
-                  <Listbox.Option key={option.name} value={option.name}>
+                  <Listbox.Option
+                    key={option.name}
+                    value={option.locale || option.name}
+                  >
                     {({ selected }) => (
                       <div
                         className={`p-2 hover:bg-th-bkg-2 hover:cursor-pointer tracking-wider ${

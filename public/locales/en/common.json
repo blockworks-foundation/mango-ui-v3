@@ -270,5 +270,7 @@
   "withdraw-success": "Withdraw successful",
   "your-account": "Your Account",
   "your-assets": "Your Assets",
-  "your-borrows": "Your Borrows"
+  "your-borrows": "Your Borrows",
+  "english": "English",
+  "change-language": "Change Language"
 }
