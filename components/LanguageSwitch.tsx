@@ -6,9 +6,9 @@ import useLocalStorageState from '../hooks/useLocalStorageState'
 import { useTranslation } from 'next-i18next'
 
 const LANGS = [
-  { locale: 'en', name: 'English' },
-  { locale: 'zh_tw', name: '繁體中文' },
-  { locale: 'zh', name: '简体中文' },
+  { locale: 'en', name: 'English', description: 'english' },
+  { locale: 'zh_tw', name: '繁體中文', description: 'traditional chinese' },
+  { locale: 'zh', name: '简体中文', description: 'simplified chinese' },
 ]
 
 const LanguageSwitch = () => {
