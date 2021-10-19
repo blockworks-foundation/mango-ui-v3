@@ -32,6 +32,7 @@ import {
   initialMarket,
   NODE_URL_KEY,
 } from '../components/SettingsModal'
+import { MSRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
 
 export const ENDPOINTS: EndpointInfo[] = [
   {
@@ -264,7 +265,15 @@ const useMangoStore = create<MangoStore>((set, get) => {
               tokens.push({ account, config, uiBalance })
             } else if (msrmMints[cluster].equals(account.mint)) {
               const uiBalance = nativeToUi(account.amount, 6)
-              tokens.push({ account, config, uiBalance })
+              tokens.push({
+                account,
+                config: {
+                  symbol: 'MSRM',
+                  mintKey: msrmMints[cluster],
+                  decimals: MSRM_DECIMALS,
+                },
+                uiBalance,
+              })
             }
           })
 
