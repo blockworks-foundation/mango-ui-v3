@@ -20,6 +20,7 @@ import {
   getAllMarkets,
   getMultipleAccounts,
   PerpMarketLayout,
+  msrmMints,
 } from '@blockworks-foundation/mango-client'
 import { AccountInfo, Commitment, Connection, PublicKey } from '@solana/web3.js'
 import { EndpointInfo, WalletAdapter } from '../@types/types'
@@ -31,6 +32,7 @@ import {
   initialMarket,
   NODE_URL_KEY,
 } from '../components/SettingsModal'
+import { MSRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
 
 export const ENDPOINTS: EndpointInfo[] = [
   {
@@ -246,6 +248,7 @@ const useMangoStore = create<MangoStore>((set, get) => {
         const wallet = get().wallet.current
         const connected = get().wallet.connected
         const connection = get().connection.current
+        const cluster = get().connection.cluster
         const set = get().set
 
         if (wallet?.publicKey && connected) {
@@ -260,6 +263,17 @@ const useMangoStore = create<MangoStore>((set, get) => {
             if (config) {
               const uiBalance = nativeToUi(account.amount, config.decimals)
               tokens.push({ account, config, uiBalance })
+            } else if (msrmMints[cluster].equals(account.mint)) {
+              const uiBalance = nativeToUi(account.amount, 6)
+              tokens.push({
+                account,
+                config: {
+                  symbol: 'MSRM',
+                  mintKey: msrmMints[cluster],
+                  decimals: MSRM_DECIMALS,
+                },
+                uiBalance,
+              })
             }
           })
 

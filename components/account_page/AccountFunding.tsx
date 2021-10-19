@@ -1,47 +1,36 @@
-import { getTokenBySymbol } from '@blockworks-foundation/mango-client'
 import { useEffect, useMemo, useState } from 'react'
 import useMangoStore from '../../stores/useMangoStore'
 import Chart from '../Chart'
 import Loading from '../Loading'
 import Select from '../Select'
 import { Table, Td, Th, TrBody, TrHead } from '../TableElements'
-import { useTranslation } from 'next-i18next'
 import { isEmpty } from 'lodash'
 
-interface InterestStats {
-  [key: string]: {
-    total_borrow_interest: number
-    total_deposit_interest: number
-  }
-}
-
-const AccountInterest = () => {
-  const { t } = useTranslation('common')
+const AccountFunding = () => {
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
-  const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
-  const [interestStats, setInterestStats] = useState<any>([])
-  const [hourlyInterestStats, setHourlyInterestStats] = useState<any>(null)
+  const [fundingStats, setFundingStats] = useState<any>([])
+  const [hourlyFunding, setHourlyFunding] = useState<any>(null)
+  const [selectedAsset, setSelectedAsset] = useState<string>('BTC')
   const [loading, setLoading] = useState(false)
-  const [selectedAsset, setSelectedAsset] = useState<string>('USDC')
 
   const mangoAccountPk = useMemo(() => {
     return mangoAccount.publicKey.toString()
   }, [mangoAccount])
 
   useEffect(() => {
-    const fetchInterestStats = async () => {
+    const fetchFundingStats = async () => {
       const response = await fetch(
-        `https://mango-transaction-log.herokuapp.com/v3/stats/total-interest-earned?mango-account=${mangoAccountPk}`
+        `https://mango-transaction-log.herokuapp.com/v3/stats/total-funding?mango-account=${mangoAccountPk}`
       )
-      const parsedResponse: InterestStats = await response.json()
+      const parsedResponse = await response.json()
 
-      setInterestStats(Object.entries(parsedResponse))
+      setFundingStats(Object.entries(parsedResponse))
     }
 
-    const fetchHourlyInterestStats = async () => {
+    const fetchHourlyFundingStats = async () => {
       setLoading(true)
       const response = await fetch(
-        `https://mango-transaction-log.herokuapp.com/v3/stats/hourly-interest?mango-account=${mangoAccountPk}`
+        `https://mango-transaction-log.herokuapp.com/v3/stats/hourly-funding?mango-account=${mangoAccountPk}`
       )
       const parsedResponse = await response.json()
 
@@ -56,46 +45,38 @@ const AccountInterest = () => {
         })
       }
       setLoading(false)
-      setHourlyInterestStats(stats)
+      setHourlyFunding(stats)
     }
 
-    fetchHourlyInterestStats()
-    fetchInterestStats()
+    fetchFundingStats()
+    fetchHourlyFundingStats()
   }, [mangoAccountPk])
 
   return (
     <>
       <div className="pb-3.5 text-th-fgd-1 text-base">
-        {t('interest-earned')}
+        Total Funding Earned/Paid
       </div>
       {mangoAccount ? (
         <div>
           <Table>
             <thead>
               <TrHead>
-                <Th>{t('token')}</Th>
-                <Th>{t('total-deposit-interest')}</Th>
-                <Th>{t('total-borrow-interest')}</Th>
-                <Th>{t('net')}</Th>
+                <Th>Token</Th>
+                <Th>Total Funding</Th>
               </TrHead>
             </thead>
             <tbody>
-              {interestStats.length === 0 ? (
+              {fundingStats.length === 0 ? (
                 <TrBody index={0}>
                   <td colSpan={4}>
                     <div className="flex">
-                      <div className="mx-auto py-4">
-                        {t('no-interest-earned')}
-                      </div>
+                      <div className="mx-auto py-4">No funding earned/paid</div>
                     </div>
                   </td>
                 </TrBody>
               ) : (
-                interestStats.map(([symbol, stats], index) => {
-                  const decimals = getTokenBySymbol(
-                    groupConfig,
-                    symbol
-                  ).decimals
+                fundingStats.map(([symbol, stats], index) => {
                   return (
                     <TrBody index={index} key={symbol}>
                       <Td>
@@ -107,23 +88,19 @@ const AccountInterest = () => {
                             src={`/assets/icons/${symbol.toLowerCase()}.svg`}
                             className={`mr-2.5`}
                           />
-
-                          {symbol}
+                          {symbol}-PERP
                         </div>
                       </Td>
                       <Td>
-                        {stats.total_deposit_interest.toFixed(decimals)}{' '}
-                        {symbol}
-                      </Td>
-                      <Td>
-                        {stats.total_borrow_interest.toFixed(decimals)} {symbol}
-                      </Td>
-                      <Td>
-                        {(
-                          stats.total_deposit_interest -
-                          stats.total_borrow_interest
-                        ).toFixed(decimals)}{' '}
-                        {symbol}
+                        <div
+                          className={`${
+                            stats.total_funding >= 0
+                              ? 'text-th-green'
+                              : 'text-th-red'
+                          }`}
+                        >
+                          ${stats.total_funding.toFixed(6)}
+                        </div>
                       </Td>
                     </TrBody>
                   )
@@ -131,8 +108,9 @@ const AccountInterest = () => {
               )}
             </tbody>
           </Table>
+
           <>
-            {!isEmpty(hourlyInterestStats) && !loading ? (
+            {!isEmpty(hourlyFunding) && !loading ? (
               <>
                 <div className="flex items-center justify-between my-4 w-full">
                   <Select
@@ -141,7 +119,7 @@ const AccountInterest = () => {
                     className="w-24 sm:hidden"
                   >
                     <div className="space-y-2">
-                      {Object.keys(hourlyInterestStats).map((token: string) => (
+                      {Object.keys(hourlyFunding).map((token: string) => (
                         <Select.Option
                           key={token}
                           value={token}
@@ -155,7 +133,7 @@ const AccountInterest = () => {
                     </div>
                   </Select>
                   <div className="hidden sm:flex pb-4 sm:pb-0">
-                    {Object.keys(hourlyInterestStats).map((token: string) => (
+                    {Object.keys(hourlyFunding).map((token: string) => (
                       <div
                         className={`px-2 py-1 ml-2 rounded-md cursor-pointer default-transition bg-th-bkg-3
                           ${
@@ -172,35 +150,21 @@ const AccountInterest = () => {
                     ))}
                   </div>
                 </div>
-
-                <div className="grid grid-flow-col grid-cols-1 grid-rows-4 gap-2 sm:gap-4">
+                {hourlyFunding[selectedAsset].length ? (
                   <div
                     className="border border-th-bkg-4 relative md:mb-0 p-4 rounded-md"
                     style={{ height: '330px' }}
                   >
                     <Chart
-                      title="Hourly Deposit Interest"
+                      title="Hourly Funding"
                       xAxis="time"
-                      yAxis="deposit_interest"
-                      data={hourlyInterestStats[selectedAsset]}
+                      yAxis="total_funding"
+                      data={hourlyFunding[selectedAsset]}
                       labelFormat={(x) => x.toFixed(6)}
                       type="area"
                     />
                   </div>
-                  <div
-                    className="border border-th-bkg-4 relative p-4 rounded-md"
-                    style={{ height: '330px' }}
-                  >
-                    <Chart
-                      title="Hourly Borrow Interest"
-                      xAxis="time"
-                      yAxis="borrow_interest"
-                      data={hourlyInterestStats[selectedAsset]}
-                      labelFormat={(x) => x.toFixed(6)}
-                      type="area"
-                    />
-                  </div>
-                </div>
+                ) : null}
               </>
             ) : loading ? (
               <div className="flex justify-center my-8">
@@ -218,4 +182,4 @@ const AccountInterest = () => {
   )
 }
 
-export default AccountInterest
+export default AccountFunding

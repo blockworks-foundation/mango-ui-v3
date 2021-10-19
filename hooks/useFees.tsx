@@ -25,7 +25,7 @@ export default function useFees() {
       mangoGroup.perpMarkets[marketIndex].makerFee.toFixed()
     )
   } else {
-    takerFee = rates.taker
+    takerFee = rates.takerWithRebate
     makerFee = rates.maker
   }
 
