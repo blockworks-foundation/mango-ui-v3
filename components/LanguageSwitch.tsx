@@ -3,6 +3,7 @@ import { TranslateIcon } from '@heroicons/react/outline'
 import DropMenu from './DropMenu'
 import { useRouter } from 'next/router'
 import useLocalStorageState from '../hooks/useLocalStorageState'
+import { useTranslation } from 'next-i18next'
 
 const LANGS = [
   { locale: 'en', name: 'English' },
@@ -11,6 +12,7 @@ const LANGS = [
 ]
 
 const LanguageSwitch = () => {
+  const { t } = useTranslation('common')
   const router = useRouter()
   const { pathname, asPath, query } = router
   const [mounted, setMounted] = useState(false)
