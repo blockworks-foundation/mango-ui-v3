@@ -179,7 +179,7 @@ const AccountInterest = () => {
                     style={{ height: '330px' }}
                   >
                     <Chart
-                      title="Hourly Deposit Interest"
+                      title={t('hourly-deposit-interest')}
                       xAxis="time"
                       yAxis="deposit_interest"
                       data={hourlyInterestStats[selectedAsset]}
@@ -192,7 +192,7 @@ const AccountInterest = () => {
                     style={{ height: '330px' }}
                   >
                     <Chart
-                      title="Hourly Borrow Interest"
+                      title={t('hourly-borrow-interest')}
                       xAxis="time"
                       yAxis="borrow_interest"
                       data={hourlyInterestStats[selectedAsset]}
@@ -212,7 +212,7 @@ const AccountInterest = () => {
           </>
         </div>
       ) : (
-        <div>Connect wallet</div>
+        <div>{t('connect-wallet')}</div>
       )}
     </>
   )

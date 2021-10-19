@@ -278,12 +278,14 @@
   "msrm-deposit-error": "Error depositing MSRM",
   "msrm-withdraw-error": "Error withdrawing MSRM",
   "serum-fees": "Serum Spot Fees",
-  "tooltip-serum-rebate": "20% of net fees on Serum go to the GUI host. Mango rebates this fee to you. The taker fee before the GUI rebate is {{percentFormat.format(rates.taker)}}",
+  "tooltip-serum-rebate": "20% of net fees on Serum go to the GUI host. Mango rebates this fee to you. The taker fee before the GUI rebate is {{taker_percent}}",
   "perp-fees": "Mango Perp Fees",
   "fee-discount": "Fee Discount",
   "total-funding-stats": "Total Funding Earned/Paid",
   "total-funding": "Total Funding",
+  "no-funding": "No funding earned/paid",
   "hourly-funding": "Hourly Funding",
   "hourly-deposit-interest": "Hourly Deposit Interest",
-  "hourly-borrow-interest": "Hourly Borrow Interest"
+  "hourly-borrow-interest": "Hourly Borrow Interest",
+  "funding": "Funding"
 }

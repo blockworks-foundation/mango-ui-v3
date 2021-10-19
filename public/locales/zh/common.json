@@ -281,9 +281,11 @@
     "tooltip-serum-rebate": "Serum的20%费率是交给介面提供者。Mango将此费率退还给您。退还前的吃单费率是{{taker_percent}}",
     "perp-fees": "Mango永续合约费率",
     "fee-discount": "费率折扣",
-    "total-funding-stats": "资金费统计",
+    "total-funding-stats": "资金费收/付统计",
     "total-funding": "资金费总数量",
+    "no-funding": "您未收/付过资金费",
     "hourly-funding": "1小时资金费",
     "hourly-deposit-interest": "1小时存款利息",
-    "hourly-borrow-interest": "1小时借贷利息"
+    "hourly-borrow-interest": "1小时借贷利息",
+    "funding": "资金费"
 }

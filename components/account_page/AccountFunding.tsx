@@ -5,8 +5,10 @@ import Loading from '../Loading'
 import Select from '../Select'
 import { Table, Td, Th, TrBody, TrHead } from '../TableElements'
 import { isEmpty } from 'lodash'
+import { useTranslation } from 'next-i18next'
 
 const AccountFunding = () => {
+  const { t } = useTranslation('common')
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const [fundingStats, setFundingStats] = useState<any>([])
   const [hourlyFunding, setHourlyFunding] = useState<any>(null)
@@ -55,15 +57,15 @@ const AccountFunding = () => {
   return (
     <>
       <div className="pb-3.5 text-th-fgd-1 text-base">
-        Total Funding Earned/Paid
+        {t('total-funding-stats')}
       </div>
       {mangoAccount ? (
         <div>
           <Table>
             <thead>
               <TrHead>
-                <Th>Token</Th>
-                <Th>Total Funding</Th>
+                <Th>{t('token')}</Th>
+                <Th>{t('total-funding')}</Th>
               </TrHead>
             </thead>
             <tbody>
@@ -71,7 +73,7 @@ const AccountFunding = () => {
                 <TrBody index={0}>
                   <td colSpan={4}>
                     <div className="flex">
-                      <div className="mx-auto py-4">No funding earned/paid</div>
+                      <div className="mx-auto py-4">{t('no-funding')}</div>
                     </div>
                   </td>
                 </TrBody>
@@ -156,7 +158,7 @@ const AccountFunding = () => {
                     style={{ height: '330px' }}
                   >
                     <Chart
-                      title="Hourly Funding"
+                      title={t('hourly-funding')}
                       xAxis="time"
                       yAxis="total_funding"
                       data={hourlyFunding[selectedAsset]}
@@ -176,7 +178,7 @@ const AccountFunding = () => {
           </>
         </div>
       ) : (
-        <div>Connect wallet</div>
+        <div>{t('connect-wallet')}</div>
       )}
     </>
   )
