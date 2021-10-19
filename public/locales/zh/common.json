@@ -270,5 +270,20 @@
     "withdraw-success": "已取款",
     "your-account": "您的帐户",
     "your-assets": "您的资产",
-    "your-borrows": "您的借入"
+    "your-borrows": "您的借入",
+    "english": "English",
+    "change-language": "切换语言",
+    "msrm-deposited": "成功存入MSRM",
+    "msrm-withdrawal": "成功取出MSRM",
+    "msrm-deposit-error": "存入MSRM出错了",
+    "msrm-withdraw-error": "取出MSRM出错了",
+    "serum-fees": "Serum市场费率",
+    "tooltip-serum-rebate": "Serum的20%费率是交给介面提供者。Mango将此费率退还给您。退还前的吃单费率是{{taker_percent}}",
+    "perp-fees": "Mango永续合约费率",
+    "fee-discount": "费率折扣",
+    "total-funding-stats": "资金费统计",
+    "total-funding": "资金费总数量",
+    "hourly-funding": "1小时资金费",
+    "hourly-deposit-interest": "1小时存款利息",
+    "hourly-borrow-interest": "1小时借贷利息"
 }

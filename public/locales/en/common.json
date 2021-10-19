@@ -17,7 +17,7 @@
   "average-borrow": "Average Borrow Rates",
   "average-deposit": "Average Deposit Rates",
   "average-entry": "Avg Entry Price",
-  "average-funding": "Avg. Funding Rate (1hr)",
+  "average-funding": "Avg. 1h Funding Rate",
   "back": "Back",
   "balance": "Balance",
   "balances": "Balances",
@@ -272,5 +272,18 @@
   "your-assets": "Your Assets",
   "your-borrows": "Your Borrows",
   "english": "English",
-  "change-language": "Change Language"
+  "change-language": "Change Language",
+  "msrm-deposited": "MSRM deposit successfull",
+  "msrm-withdrawal": "MSRM withdraw successfull",
+  "msrm-deposit-error": "Error depositing MSRM",
+  "msrm-withdraw-error": "Error withdrawing MSRM",
+  "serum-fees": "Serum Spot Fees",
+  "tooltip-serum-rebate": "20% of net fees on Serum go to the GUI host. Mango rebates this fee to you. The taker fee before the GUI rebate is {{percentFormat.format(rates.taker)}}",
+  "perp-fees": "Mango Perp Fees",
+  "fee-discount": "Fee Discount",
+  "total-funding-stats": "Total Funding Earned/Paid",
+  "total-funding": "Total Funding",
+  "hourly-funding": "Hourly Funding",
+  "hourly-deposit-interest": "Hourly Deposit Interest",
+  "hourly-borrow-interest": "Hourly Borrow Interest"
 }
