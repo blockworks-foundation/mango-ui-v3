@@ -298,6 +298,12 @@ export class WhitelistedCreator {
   }
 }
 
+export class NFT {
+  mintAddress: PublicKey
+  imageUri: string
+  metadataUri: string
+}
+
 // Required to properly serialize and deserialize pubKeyAsString types
 const extendBorsh = () => {
   ;(BinaryReader.prototype as any).readPubkey = function () {

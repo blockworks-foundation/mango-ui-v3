@@ -34,7 +34,7 @@ import {
 import { TOKEN_PROGRAM_ID } from '../utils/tokens'
 import { findProgramAddress } from '../utils/metaplex/utils'
 import * as borsh from 'borsh'
-import { Metadata, METADATA_SCHEMA } from '../utils/metaplex/models'
+import { Metadata, METADATA_SCHEMA, NFT } from '../utils/metaplex/models'
 import { METADATA_KEY, METADATA_PREFIX } from '../utils/metaplex/types'
 
 export const ENDPOINTS: EndpointInfo[] = [
@@ -171,7 +171,7 @@ interface MangoStore extends State {
   }
   settings: {
     uiLocked: boolean
-    nfts: string[]
+    nfts: NFT[]
     avatar: string
   }
   tradeHistory: any[]
@@ -295,7 +295,7 @@ const useMangoStore = create<MangoStore>((set, get) => {
             { programId: TOKEN_PROGRAM_ID }
           )
 
-          const nftPublicKeys = []
+          const nfts = []
 
           tokenAccounts.value.forEach((token) => {
             const tokenAccount = token.account.data.parsed.info
@@ -304,23 +304,24 @@ const useMangoStore = create<MangoStore>((set, get) => {
               parseFloat(tokenAccount.tokenAmount.amount) == 1 &&
               tokenAccount.tokenAmount.decimals == 0
             ) {
-              nftPublicKeys.push(new PublicKey(tokenAccount.mint))
+              const nft = new NFT()
+              nft.mintAddress = new PublicKey(tokenAccount.mint)
+              nfts.push(nft)
             }
           })
 
-          if (nftPublicKeys.length == 0) return
+          if (nfts.length == 0) return
 
           const metadataProgramId = new PublicKey(METADATA_KEY)
-          const uris = []
 
-          for (const nft of nftPublicKeys) {
+          for (const nft of nfts) {
             // The return value is [programDerivedAddress, bytes] but we only care about the address
 
             const [pda] = await findProgramAddress(
               [
                 Buffer.from(METADATA_PREFIX),
                 metadataProgramId.toBuffer(),
-                nft.toBuffer(),
+                nft.mintAddress.toBuffer(),
               ],
               metadataProgramId
             )
@@ -335,11 +336,11 @@ const useMangoStore = create<MangoStore>((set, get) => {
               accountInfo!.data
             )
             const uri = metadata.data.uri.replace(/\0/g, '')
-            uris.push(uri)
+            nft.metadataUri = uri
           }
 
           set((state) => {
-            state.settings.nfts = uris
+            state.settings.nfts = nfts
           })
         }
       },

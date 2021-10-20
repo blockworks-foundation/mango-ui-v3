@@ -6,28 +6,30 @@ import { Responsive, WidthProvider } from 'react-grid-layout'
 import _ from 'lodash'
 import Button from './Button'
 import useMangoStore from '../stores/useMangoStore'
-import mango_hero from '../public/mango_heroes.jpg'
-import mango_hero1 from '../public/mango_heroes1.jpeg'
-import mango_hero2 from '../public/mango_heroes2.jpeg'
+// import mango_hero from '../public/mango_heroes.jpg'
+// import mango_hero1 from '../public/mango_heroes1.jpeg'
+// import mango_hero2 from '../public/mango_heroes2.jpeg'
+import { notify } from '../utils/notifications'
+import { NFT } from '../utils/metaplex/models'
 
 const ResponsiveGridLayout = WidthProvider(Responsive)
 
 interface ChangeAvatarModalProps {
   isOpen: boolean
   onClose: () => void
-  url: string
+  currentAvatar: NFT
 }
 
 const ChangeAvatarModal: FunctionComponent<ChangeAvatarModalProps> = ({
   isOpen,
   onClose,
-  url,
+  currentAvatar,
 }) => {
-  const nfts = [mango_hero.src, mango_hero1.src, mango_hero2.src]
-  const currentIndex = nfts.indexOf(url)
+  const nfts = useMangoStore((s) => s.settings.nfts)
+  const currentIndex = nfts.indexOf(currentAvatar)
   if (currentIndex != -1) nfts.splice(currentIndex, 1)
 
-  const testImageUrls = [url, ...nfts]
+  const testImageUrls = [nfts]
   const [selectedIndex, setSelectedIndex] = useState(0)
   const set = useMangoStore((state) => state.set)
   const [layouts] = useState(
@@ -46,6 +48,10 @@ const ChangeAvatarModal: FunctionComponent<ChangeAvatarModalProps> = ({
   const saveSelection = () => {
     set((state) => {
       state.settings.avatar = testImageUrls[selectedIndex]
+    })
+
+    notify({
+      title: 'Avatar changed successfully',
     })
 
     onClose()
@@ -77,7 +83,7 @@ const ChangeAvatarModal: FunctionComponent<ChangeAvatarModalProps> = ({
                 onClick={() => setSelectedIndex(+layout.i)}
               >
                 <NFTDisplay
-                  url={layout.url}
+                  nft={layout.url}
                   selected={selectedIndex === +layout.i}
                 />
               </div>
@@ -88,7 +94,7 @@ const ChangeAvatarModal: FunctionComponent<ChangeAvatarModalProps> = ({
       <div className="align-middle flex justify-center">
         <Button
           disabled={selectedIndex === 0}
-          className=" mt-4"
+          className="mt-4"
           onClick={saveSelection}
         >
           <div className="flex items-center justify-center">Okay</div>
@@ -98,14 +104,14 @@ const ChangeAvatarModal: FunctionComponent<ChangeAvatarModalProps> = ({
   )
 }
 
-const NFTDisplay = ({ url, selected }) => {
+const NFTDisplay = ({ nft, selected }) => {
   return (
     <div className="hover:scale-110">
       <img
         className={`border ${
           selected ? 'border-th-primary' : 'border-th-bkg-4'
         } h-full w-full rounded-lg`}
-        src={url}
+        src={nft.imageUri}
       ></img>
     </div>
   )
