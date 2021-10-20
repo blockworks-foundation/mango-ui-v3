@@ -25,6 +25,7 @@ import {
   FlipCardInner,
   StyledFloatingElement,
 } from './FlipCard'
+import { useTranslation } from 'next-i18next'
 
 const Line = styled.div<any>`
   text-align: ${(props) => (props.invert ? 'left' : 'right')};
@@ -103,6 +104,7 @@ const hasOpenOrderForPriceGroup = (openOrderPrices, price, grouping) => {
 }
 
 export default function Orderbook({ depth = 8 }) {
+  const { t } = useTranslation('common')
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const orderbook = useMangoStore((s) => s.selectedMarket.orderBook)
@@ -230,8 +232,8 @@ export default function Orderbook({ depth = 8 }) {
                   <Tooltip
                     content={
                       displayCumulativeSize
-                        ? 'Display Step Size'
-                        : 'Display Cumulative Size'
+                        ? t('tooltip-display-step')
+                        : t('tooltip-display-cumulative')
                     }
                     className="text-xs py-1"
                   >
@@ -249,9 +251,12 @@ export default function Orderbook({ depth = 8 }) {
                     </button>
                   </Tooltip>
                 </div>
-                <ElementTitle noMarignBottom>Orderbook</ElementTitle>
+                <ElementTitle noMarignBottom>{t('orderbook')}</ElementTitle>
                 <div className="flex relative">
-                  <Tooltip content={'Switch Layout'} className="text-xs py-1">
+                  <Tooltip
+                    content={t('tooltip-switch-layout')}
+                    className="text-xs py-1"
+                  >
                     <button
                       onClick={handleLayoutChange}
                       className="flex items-center justify-center rounded-full bg-th-bkg-3 w-8 h-8 hover:text-th-primary focus:outline-none"
@@ -274,15 +279,15 @@ export default function Orderbook({ depth = 8 }) {
                 className={`text-th-fgd-4 flex justify-between mb-2 text-xs`}
               >
                 <div className={`text-left`}>
-                  {displayCumulativeSize ? 'Cumulative ' : ''}Size (
-                  {marketConfig.baseSymbol})
+                  {displayCumulativeSize ? 'Cumulative ' : ''}
+                  {t('size')} ({marketConfig.baseSymbol})
                 </div>
                 <div className={`text-center`}>
-                  Price ({groupConfig.quoteSymbol})
+                  {`${t('price')} (${groupConfig.quoteSymbol})`}
                 </div>
                 <div className={`text-right`}>
-                  {displayCumulativeSize ? 'Cumulative ' : ''}Size (
-                  {marketConfig.baseSymbol})
+                  {displayCumulativeSize ? 'Cumulative ' : ''}
+                  {t('size')} ({marketConfig.baseSymbol})
                 </div>
               </div>
               <div className="flex">
@@ -345,7 +350,7 @@ export default function Orderbook({ depth = 8 }) {
                 </div>
               </div>
               <div className="flex justify-between bg-th-bkg-1 p-2 mt-4 rounded-md text-xs">
-                <div className="text-th-fgd-3">Spread</div>
+                <div className="text-th-fgd-3">{t('spread')}</div>
                 <div className="text-th-fgd-1">
                   {orderbookData?.spread?.toFixed(2)}
                 </div>
@@ -363,8 +368,8 @@ export default function Orderbook({ depth = 8 }) {
                   <Tooltip
                     content={
                       displayCumulativeSize
-                        ? 'Display Step Size'
-                        : 'Display Cumulative Size'
+                        ? t('tooltip-display-step')
+                        : t('tooltip-display-cumulative')
                     }
                     className="text-xs py-1"
                   >
@@ -382,9 +387,12 @@ export default function Orderbook({ depth = 8 }) {
                     </button>
                   </Tooltip>
                 </div>
-                <ElementTitle noMarignBottom>Orderbook</ElementTitle>
+                <ElementTitle noMarignBottom>{t('orderbook')}</ElementTitle>
                 <div className="flex relative">
-                  <Tooltip content={'Switch Layout'} className="text-xs py-1">
+                  <Tooltip
+                    content={t('tooltip-switch-layout')}
+                    className="text-xs py-1"
+                  >
                     <button
                       onClick={handleLayoutChange}
                       className="flex items-center justify-center rounded-full bg-th-bkg-3 w-8 h-8 hover:text-th-primary focus:outline-none"
@@ -405,11 +413,11 @@ export default function Orderbook({ depth = 8 }) {
               </div>
               <div className={`text-th-fgd-4 flex justify-between mb-2`}>
                 <div className={`text-left text-xs`}>
-                  {displayCumulativeSize ? 'Cumulative ' : ''}Size (
-                  {marketConfig.baseSymbol})
+                  {displayCumulativeSize ? 'Cumulative ' : ''}
+                  {t('size')} ({marketConfig.baseSymbol})
                 </div>
                 <div className={`text-right text-xs`}>
-                  Price ({groupConfig.quoteSymbol})
+                  {`${t('price')} (${groupConfig.quoteSymbol})`}
                 </div>
               </div>
               {orderbookData?.asks.map(
@@ -439,7 +447,7 @@ export default function Orderbook({ depth = 8 }) {
                 )
               )}
               <div className="flex justify-between bg-th-bkg-1 p-2 my-2 rounded-md text-xs">
-                <div className="text-th-fgd-3">Spread</div>
+                <div className="text-th-fgd-3">{t('spread')}</div>
                 <div className="text-th-fgd-1">
                   {orderbookData?.spread.toFixed(2)}
                 </div>
@@ -485,8 +493,8 @@ export default function Orderbook({ depth = 8 }) {
           <Tooltip
             content={
               displayCumulativeSize
-                ? 'Display Step Size'
-                : 'Display Cumulative Size'
+                ? t('tooltip-display-step')
+                : t('tooltip-display-cumulative')
             }
             className="text-xs py-1"
           >
@@ -514,9 +522,10 @@ export default function Orderbook({ depth = 8 }) {
       </div>
       <div className={`text-th-fgd-4 flex justify-between`}>
         <div className={`text-left text-xs`}>
-          {displayCumulativeSize ? 'Cumulative ' : ''}Size
+          {displayCumulativeSize ? 'Cumulative ' : ''}
+          {t('size')}
         </div>
-        <div className={`text-right text-xs`}>Price</div>
+        <div className={`text-right text-xs`}>{t('price')}</div>
       </div>
       {orderbookData?.asks.map(
         ({ price, size, cumulativeSize, sizePercent, maxSizePercent }) => (
@@ -537,7 +546,7 @@ export default function Orderbook({ depth = 8 }) {
         )
       )}
       <div className="flex justify-between bg-th-bkg-1 p-2 my-2 rounded-md text-xs">
-        <div className="hidden sm:block text-th-fgd-3">Spread</div>
+        <div className="hidden sm:block text-th-fgd-3">{t('spread')}</div>
         <div className="text-th-fgd-1">{orderbookData?.spread.toFixed(2)}</div>
         <div className="text-th-fgd-1">
           {orderbookData?.spreadPercentage.toFixed(2)}%

@@ -1,6 +1,8 @@
 import { FunctionComponent } from 'react'
 import { PerpMarket } from '@blockworks-foundation/mango-client'
 import useMangoStore from '../../stores/useMangoStore'
+import { useTranslation } from 'next-i18next'
+import { capitalize } from '../../utils'
 
 interface OrderSideTabsProps {
   isSimpleForm?: boolean
@@ -13,6 +15,7 @@ const OrderSideTabs: FunctionComponent<OrderSideTabsProps> = ({
   onChange,
   side,
 }) => {
+  const { t } = useTranslation('common')
   const market = useMangoStore((s) => s.selectedMarket.current)
   return (
     <div className={`border-b border-th-fgd-4 mb-3 relative -mt-2.5`}>
@@ -34,7 +37,7 @@ const OrderSideTabs: FunctionComponent<OrderSideTabsProps> = ({
                     }
                   `}
         >
-          {market instanceof PerpMarket && isSimpleForm ? 'Long' : 'Buy'}
+          {market instanceof PerpMarket && isSimpleForm ? 'Long' : t('buy')}
         </button>
         <button
           onClick={() => onChange('sell')}
@@ -46,7 +49,9 @@ const OrderSideTabs: FunctionComponent<OrderSideTabsProps> = ({
                     }
                   `}
         >
-          {market instanceof PerpMarket && isSimpleForm ? 'Short' : 'Sell'}
+          {market instanceof PerpMarket && isSimpleForm
+            ? capitalize(t('short'))
+            : t('sell')}
         </button>
       </nav>
     </div>

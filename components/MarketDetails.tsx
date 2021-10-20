@@ -13,6 +13,7 @@ import { PerpMarket } from '@blockworks-foundation/mango-client'
 import BN from 'bn.js'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
+import { useTranslation } from 'next-i18next'
 
 const SECONDS = 1000
 
@@ -49,6 +50,7 @@ function parseOpenInterest(perpMarket: PerpMarket) {
 }
 
 const MarketDetails = () => {
+  const { t } = useTranslation('common')
   const oraclePrice = useOraclePrice()
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
@@ -173,13 +175,17 @@ const MarketDetails = () => {
         </div>
         <div className="grid grid-flow-row grid-cols-1 md:grid-cols-2 gap-3 lg:grid-flow-col lg:grid-rows-1 lg:gap-6">
           <div className="flex items-center justify-between md:block">
-            <div className="text-th-fgd-3 tiny-text pb-0.5">Oracle price</div>
+            <div className="text-th-fgd-3 tiny-text pb-0.5">
+              {t('oracle-price')}
+            </div>
             <div className="font-semibold text-th-fgd-1 md:text-xs">
               {oraclePrice ? formatUsdValue(oraclePrice) : '--'}
             </div>
           </div>
           <div className="flex items-center justify-between md:block">
-            <div className="text-th-fgd-3 tiny-text pb-0.5">Daily Change</div>
+            <div className="text-th-fgd-3 tiny-text pb-0.5">
+              {t('daily-change')}
+            </div>
             {change || change === 0 ? (
               <div
                 className={`font-semibold md:text-xs ${
@@ -198,7 +204,9 @@ const MarketDetails = () => {
           </div>
           {isPerpMarket ? (
             <div className="flex items-center justify-between md:block">
-              <div className="text-th-fgd-3 tiny-text pb-0.5">24hr Volume</div>
+              <div className="text-th-fgd-3 tiny-text pb-0.5">
+                {t('daily-volume')}
+              </div>
               <div className="font-semibold text-th-fgd-1 md:text-xs">
                 {perpVolume ? (
                   usdFormatter(perpVolume, 0)
@@ -212,7 +220,7 @@ const MarketDetails = () => {
             <>
               <div className="flex items-center justify-between md:block">
                 <div className="text-th-fgd-3 tiny-text pb-0.5">
-                  Avg. 1h Funding Rate
+                  {t('average-funding')}
                 </div>
                 <div className="font-semibold text-th-fgd-1 md:text-xs">
                   {selectedMarket ? (
@@ -224,7 +232,7 @@ const MarketDetails = () => {
               </div>
               <div className="flex items-center justify-between md:block">
                 <div className="text-th-fgd-3 tiny-text pb-0.5">
-                  Open Interest
+                  {t('open-interest')}
                 </div>
                 <div className="font-semibold text-th-fgd-1 md:text-xs">
                   {selectedMarket ? (

@@ -20,8 +20,10 @@ import DepositModal from './DepositModal'
 import WithdrawModal from './WithdrawModal'
 import { ExpandableRow } from './TableElements'
 import MobileTableHeader from './mobile/MobileTableHeader'
+import { useTranslation } from 'next-i18next'
 
 const BalancesTable = ({ showZeroBalances = false }) => {
+  const { t } = useTranslation('common')
   const [showDepositModal, setShowDepositModal] = useState(false)
   const [showWithdrawModal, setShowWithdrawModal] = useState(false)
   const [actionSymbol, setActionSymbol] = useState('')
@@ -100,17 +102,17 @@ const BalancesTable = ({ showZeroBalances = false }) => {
       ) as Market[]
       await mangoClient.settleAll(mangoGroup, mangoAccount, spotMarkets, wallet)
 
-      notify({ title: 'Successfully settled funds' })
+      notify({ title: t('settle-success') })
     } catch (e) {
       console.warn('Error settling all:', e)
       if (e.message === 'No unsettled funds') {
         notify({
-          title: 'There are no unsettled funds',
+          title: t('no-unsettled'),
           type: 'error',
         })
       } else {
         notify({
-          title: 'Error settling funds',
+          title: t('settle-error'),
           description: e.message,
           txid: e.txid,
           type: 'error',
@@ -131,13 +133,13 @@ const BalancesTable = ({ showZeroBalances = false }) => {
           <div className="flex items-center justify-between pb-4">
             <div className="flex items-center sm:text-lg">
               <ExclamationIcon className="flex-shrink-0 h-5 mr-1.5 mt-0.5 text-th-primary w-5" />
-              Unsettled Balances
+              {t('unsettled-balances')}
             </div>
             <Button
               className="text-xs pt-0 pb-0 h-8 pl-3 pr-3 whitespace-nowrap"
               onClick={handleSettleAll}
             >
-              {submitting ? <Loading /> : 'Settle All'}
+              {submitting ? <Loading /> : t('settle-all')}
             </Button>
           </div>
           {unsettledBalances.map((bal) => {
@@ -177,7 +179,7 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                         className="flex items-center no-underline font-normal text-left"
                         onClick={() => requestSort('symbol')}
                       >
-                        Asset
+                        {t('asset')}
                         <ArrowSmDownIcon
                           className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                             sortConfig?.key === 'symbol'
@@ -194,7 +196,7 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                         className="flex items-center no-underline font-normal text-left"
                         onClick={() => requestSort('deposits')}
                       >
-                        Deposits
+                        {t('deposits')}
                         <ArrowSmDownIcon
                           className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                             sortConfig?.key === 'deposits'
@@ -211,7 +213,7 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                         className="flex items-center no-underline font-normal text-left"
                         onClick={() => requestSort('borrows')}
                       >
-                        Borrows
+                        {t('borrows')}
                         <ArrowSmDownIcon
                           className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                             sortConfig?.key === 'borrows'
@@ -228,7 +230,7 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                         className="flex items-center no-underline font-normal text-left"
                         onClick={() => requestSort('orders')}
                       >
-                        In Orders
+                        {t('in-orders')}
                         <ArrowSmDownIcon
                           className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                             sortConfig?.key === 'orders'
@@ -245,7 +247,7 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                         className="flex items-center no-underline font-normal text-left"
                         onClick={() => requestSort('unsettled')}
                       >
-                        Unsettled
+                        {t('unsettled')}
                         <ArrowSmDownIcon
                           className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                             sortConfig?.key === 'unsettled'
@@ -262,7 +264,7 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                         className="flex items-center no-underline font-normal text-left"
                         onClick={() => requestSort('net')}
                       >
-                        Net Balance
+                        {t('net-balance')}
                         <ArrowSmDownIcon
                           className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                             sortConfig?.key === 'net'
@@ -279,7 +281,7 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                         className="flex items-center no-underline font-normal text-left"
                         onClick={() => requestSort('value')}
                       >
-                        Value
+                        {t('value')}
                         <ArrowSmDownIcon
                           className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                             sortConfig?.key === 'value'
@@ -296,7 +298,7 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                         className="flex items-center no-underline font-normal text-left"
                         onClick={() => requestSort('depositRate')}
                       >
-                        Deposit Rate
+                        {t('deposit-rate')}
                         <ArrowSmDownIcon
                           className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                             sortConfig?.key === 'depositRate'
@@ -313,7 +315,7 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                         className="flex items-center no-underline font-normal text-left"
                         onClick={() => requestSort('borrowRate')}
                       >
-                        Borrow Rate
+                        {t('borrow-rate')}
                         <ArrowSmDownIcon
                           className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                             sortConfig?.key === 'borrowRate'
@@ -386,7 +388,7 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                               handleOpenDepositModal(balance.symbol)
                             }
                           >
-                            Deposit
+                            {t('deposit')}
                           </Button>
                           <Button
                             className="text-xs pt-0 pb-0 h-8 ml-4 pl-3 pr-3"
@@ -394,7 +396,7 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                               handleOpenWithdrawModal(balance.symbol)
                             }
                           >
-                            Withdraw
+                            {t('withdraw')}
                           </Button>
                         </div>
                       </Td>
@@ -421,8 +423,10 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                 <MobileTableHeader
                   headerTemplate={
                     <>
-                      <div className="col-span-7">Asset</div>
-                      <div className="col-span-4 text-right">Net Balance</div>
+                      <div className="col-span-7">{t('asset')}</div>
+                      <div className="col-span-4 text-right">
+                        {t('net-balance')}
+                      </div>
                     </>
                   }
                 />
@@ -452,37 +456,37 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                       <>
                         <div className="col-span-1 text-left">
                           <div className="pb-0.5 text-th-fgd-3 text-xs">
-                            Deposits
+                            {t('deposits')}
                           </div>
                           {balance.deposits.toFixed()}
                         </div>
                         <div className="col-span-1 text-left">
                           <div className="pb-0.5 text-th-fgd-3 text-xs">
-                            Borrows
+                            {t('borrows')}
                           </div>
                           {balance.borrows.toFixed()}
                         </div>
                         <div className="col-span-1 text-left">
                           <div className="pb-0.5 text-th-fgd-3 text-xs">
-                            In Orders
+                            {t('in-orders')}
                           </div>
                           {balance.orders.toFixed()}
                         </div>
                         <div className="col-span-1 text-left">
                           <div className="pb-0.5 text-th-fgd-3 text-xs">
-                            Unsettled
+                            {t('unsettled')}
                           </div>
                           {balance.unsettled.toFixed()}
                         </div>
                         <div className="col-span-1 text-left">
                           <div className="pb-0.5 text-th-fgd-3 text-xs">
-                            Value
+                            {t('value')}
                           </div>
                           {formatUsdValue(balance.value)}
                         </div>
                         <div className="col-span-1 text-left text-th-fgd-4">
                           <div className="pb-0.5 text-th-fgd-3 text-xs">
-                            Deposit/Borrow Rates
+                            {t('rates')}
                           </div>
                           <span className="mr-1 text-th-green">
                             {balance.depositRate.toFixed(2)}%
@@ -496,7 +500,7 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                           className="col-span-1 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
                           onClick={() => handleOpenDepositModal(balance.symbol)}
                         >
-                          Deposit
+                          {t('deposit')}
                         </Button>
                         <Button
                           className="col-span-1 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
@@ -504,7 +508,7 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                             handleOpenWithdrawModal(balance.symbol)
                           }
                         >
-                          Withdraw
+                          {t('withdraw')}
                         </Button>
                       </>
                     }
@@ -531,7 +535,7 @@ const BalancesTable = ({ showZeroBalances = false }) => {
             <div
               className={`w-full text-center py-6 bg-th-bkg-1 text-th-fgd-3 rounded-md`}
             >
-              No balances
+              {t('no-balances')}
             </div>
           )}
         </div>

@@ -1,6 +1,7 @@
 import { Fragment, FunctionComponent, ReactNode } from 'react'
 import { Listbox, Transition } from '@headlessui/react'
 import Tooltip from './Tooltip'
+import { useTranslation } from 'next-i18next'
 
 type DropMenuProps = {
   button: ReactNode
@@ -21,6 +22,8 @@ const DropMenu: FunctionComponent<DropMenuProps> = ({
   options,
   toolTipContent,
 }) => {
+  const { t } = useTranslation('common')
+
   return (
     <div className={`relative`}>
       <Listbox value={value} onChange={onChange}>
@@ -53,7 +56,10 @@ const DropMenu: FunctionComponent<DropMenuProps> = ({
                 className={`absolute z-10 mt-4 p-1 right-0 w-24 bg-th-bkg-1 divide-y divide-th-bkg-3 shadow-lg outline-none rounded-md`}
               >
                 {options.map((option) => (
-                  <Listbox.Option key={option.name} value={option.name}>
+                  <Listbox.Option
+                    key={option.name}
+                    value={option.locale || option.name}
+                  >
                     {({ selected }) => (
                       <div
                         className={`p-2 hover:bg-th-bkg-2 hover:cursor-pointer tracking-wider ${
@@ -63,7 +69,7 @@ const DropMenu: FunctionComponent<DropMenuProps> = ({
                         {option.icon ? (
                           <div className="mr-2">{option.icon}</div>
                         ) : null}
-                        {option.name}
+                        {t(option.name.toLowerCase())}
                       </div>
                     )}
                   </Listbox.Option>

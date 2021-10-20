@@ -6,6 +6,7 @@ import { notify } from '../utils/notifications'
 import Loading from './Loading'
 import { sleep } from '../utils'
 import Modal from './Modal'
+import { useTranslation } from 'next-i18next'
 
 interface MarketCloseModalProps {
   onClose: () => void
@@ -20,6 +21,7 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
   market,
   marketIndex,
 }) => {
+  const { t } = useTranslation('common')
   const [submitting, setSubmitting] = useState(false)
   const actions = useMangoStore((s) => s.actions)
   const mangoClient = useMangoStore((s) => s.connection.client)
@@ -69,10 +71,10 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
       )
       await sleep(500)
       actions.reloadMangoAccount()
-      notify({ title: 'Transaction sent', txid })
+      notify({ title: t('transaction-sent'), txid })
     } catch (e) {
       notify({
-        title: 'Error placing order',
+        title: t('order-error'),
         description: e.message,
         txid: e.txid,
         type: 'error',
@@ -86,18 +88,15 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
   return (
     <Modal onClose={onClose} isOpen={isOpen}>
       <div className="pb-2 text-th-fgd-1 text-lg">
-        Are you sure you want to market close your <br /> {config.name}{' '}
-        position?
+        {t('close-confirm', { config_name: config.name })}
       </div>
-      <div className="pb-6 text-th-fgd-3">
-        The price you receive may be more or less than you expect.
-      </div>
+      <div className="pb-6 text-th-fgd-3">{t('price-expect')}</div>
       <div className="flex items-center">
         <Button onClick={handleMarketClose}>
-          {submitting ? <Loading /> : <span>Close Position</span>}
+          {submitting ? <Loading /> : <span>{t('close-position')}</span>}
         </Button>
         <LinkButton className="ml-4 text-th-fgd-1" onClick={onClose}>
-          Cancel
+          {t('cancel')}
         </LinkButton>
       </div>
     </Modal>

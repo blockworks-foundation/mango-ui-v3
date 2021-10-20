@@ -20,10 +20,12 @@ import Button from './Button'
 import { DataLoader } from './MarketPosition'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
+import { useTranslation } from 'next-i18next'
 
 const I80F48_100 = I80F48.fromString('100')
 
 export default function AccountInfo() {
+  const { t } = useTranslation('common')
   const connected = useMangoStore((s) => s.wallet.connected)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
@@ -72,13 +74,13 @@ export default function AccountInfo() {
       )
       actions.reloadMangoAccount()
       notify({
-        title: 'Successfully redeemed MNGO',
+        title: t('redeem-success'),
         description: '',
         txid,
       })
     } catch (e) {
       notify({
-        title: 'Error redeeming MNGO',
+        title: t('redeem-failure'),
         description: e.message,
         txid: e.txid,
         type: 'error',
@@ -110,30 +112,32 @@ export default function AccountInfo() {
               content={
                 mangoAccount ? (
                   <div>
-                    Init Health: {initHealth.toFixed(4)}
+                    {t('init-health')}: {initHealth.toFixed(4)}
                     <br />
-                    Maint Health: {maintHealth.toFixed(4)}
+                    {t('maint-helth')}: {maintHealth.toFixed(4)}
                   </div>
                 ) : (
                   ''
                 )
               }
             >
-              Account
+              {t('account')}
             </Tooltip>
           </ElementTitle>
         ) : null}
         <div>
           <div>
             <div className="flex justify-between pb-3">
-              <div className="font-normal text-th-fgd-3 leading-4">Equity</div>
+              <div className="font-normal text-th-fgd-3 leading-4">
+                {t('equity')}
+              </div>
               <div className="text-th-fgd-1">
                 {isLoading ? <DataLoader /> : formatUsdValue(+equity)}
               </div>
             </div>
             <div className="flex justify-between pb-3">
               <div className="font-normal text-th-fgd-3 leading-4">
-                Leverage
+                {t('leverage')}
               </div>
               <div className="text-th-fgd-1">
                 {isLoading ? (
@@ -149,7 +153,7 @@ export default function AccountInfo() {
             </div>
             <div className={`flex justify-between pb-3`}>
               <div className="font-normal text-th-fgd-3 leading-4">
-                Collateral Available
+                {t('collateral-available')}
               </div>
               <div className={`text-th-fgd-1`}>
                 {isLoading ? (
@@ -168,7 +172,7 @@ export default function AccountInfo() {
             </div>
             <div className={`flex justify-between pb-3`}>
               <div className="font-normal text-th-fgd-3 leading-4">
-                {marketConfig.name} Margin Available
+                {`${marketConfig.name} ${t('margin-available')}`}
               </div>
               <div className={`text-th-fgd-1`}>
                 {mangoAccount
@@ -190,19 +194,19 @@ export default function AccountInfo() {
               <Tooltip
                 content={
                   <div>
-                    Earn MNGO by market making on Perp markets.{' '}
+                    {t('tooltip-earn-mngo')}{' '}
                     <a
                       href="https://docs.mango.markets/mango-v3/liquidity-incentives"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      Learn more
+                      {t('learn-more')}
                     </a>
                   </div>
                 }
               >
                 <div className="cursor-help font-normal text-th-fgd-3 leading-4 border-b border-th-fgd-3 border-dashed border-opacity-20 default-transition hover:border-th-bkg-2">
-                  MNGO Rewards
+                  {t('mngo-rewards')}
                 </div>
               </Tooltip>
               <div className={`flex items-center text-th-fgd-1`}>
@@ -221,7 +225,7 @@ export default function AccountInfo() {
                   className="ml-2 text-th-primary text-xs disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:underline"
                   disabled={mngoAccrued.eq(ZERO_BN)}
                 >
-                  Claim
+                  {t('claim')}
                 </LinkButton>
               </div>
             </div>
@@ -236,20 +240,19 @@ export default function AccountInfo() {
                 <Tooltip
                   content={
                     <div>
-                      Account will be liquidated if Health Ratio reaches 0% and
-                      will continue until Init Health is above 0.{' '}
+                      {t('tooltip-account-liquidated')}{' '}
                       <a
                         href="https://docs.mango.markets/mango-v3/overview#health"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        Learn more
+                        {t('learn-more')}
                       </a>
                     </div>
                   }
                 >
                   <div className="cursor-help font-normal text-th-fgd-3 leading-4 border-b border-th-fgd-3 border-dashed border-opacity-20 default-transition hover:border-th-bkg-2">
-                    Health
+                    {t('health')}
                   </div>
                 </Tooltip>
               </span>
@@ -278,7 +281,7 @@ export default function AccountInfo() {
           {mangoAccount && mangoAccount.beingLiquidated ? (
             <div className="pt-0.5 text-xs sm:text-sm flex items-center justify-center">
               <ExclamationIcon className="flex-shrink-0 h-5 w-5 mr-1.5 text-th-red" />
-              <span className="text-th-red">You are being liquidated!</span>
+              <span className="text-th-red">{t('being-liquidated')}</span>
             </div>
           ) : null}
           <div className={`grid grid-cols-2 grid-rows-1 gap-4 pt-2 sm:pt-4`}>
@@ -287,14 +290,14 @@ export default function AccountInfo() {
               className="w-full"
               disabled={!connected}
             >
-              <span>Deposit</span>
+              <span>{t('deposit')}</span>
             </Button>
             <Button
               onClick={() => setShowWithdrawModal(true)}
               className="w-full"
               disabled={!connected || !mangoAccount}
             >
-              <span>Withdraw</span>
+              <span>{t('withdraw')}</span>
             </Button>
           </div>
         </div>

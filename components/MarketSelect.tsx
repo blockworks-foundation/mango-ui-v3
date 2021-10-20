@@ -7,6 +7,7 @@ import MarketMenuItem from './MarketMenuItem'
 import { LinkButton } from './Button'
 import MarketsModal from './MarketsModal'
 import useLocalStorageState from '../hooks/useLocalStorageState'
+import { useTranslation } from 'next-i18next'
 
 const StyledMarketSelectWrapper = styled.div`
   -ms-overflow-style: none;
@@ -26,6 +27,7 @@ const StyledArrow = styled.div`
 `
 
 const MarketSelect = () => {
+  const { t } = useTranslation('common')
   const [showMarketsModal, setShowMarketsModal] = useState(false)
   const [hiddenMarkets] = useLocalStorageState('hiddenMarkets', [])
   const [sortedMarkets, setSortedMarkets] = useState([])
@@ -53,7 +55,7 @@ const MarketSelect = () => {
     <div className="hidden md:flex">
       <StyledMarketSelectWrapper className="bg-th-bkg-3 flex h-10 w-full">
         <div className="bg-th-bkg-4 flex items-center pl-6 md:pl-9 pr-1">
-          <ShowMarketsButton onClick={() => setShowMarketsModal(true)} />
+          <ShowMarketsButton onClick={() => setShowMarketsModal(true)} t={t} />
         </div>
         <StyledArrow className="border-l-[20px] border-th-bkg-4" />
         <div className="flex items-center justify-between w-full">
@@ -88,7 +90,7 @@ const MarketSelect = () => {
             {isPerpMarket ? 'PERP' : groupConfig.quoteSymbol}
           </div>
         </div>
-        <ShowMarketsButton onClick={() => setShowMarketsModal(true)} />
+        <ShowMarketsButton onClick={() => setShowMarketsModal(true)} t={t} />
       </div>
       {showMarketsModal ? (
         <MarketsModal
@@ -101,13 +103,13 @@ const MarketSelect = () => {
   )
 }
 
-const ShowMarketsButton = ({ onClick }) => (
+const ShowMarketsButton = ({ onClick, t }) => (
   <LinkButton
-    className="font-normal flex items-center text-th-fgd-2 text-xs"
+    className="font-normal flex items-center text-th-fgd-2 text-xs whitespace-nowrap"
     onClick={onClick}
   >
     <PlusCircleIcon className="h-4 mr-1 w-4" />
-    MARKETS
+    {t('markets').toUpperCase()}
   </LinkButton>
 )
 

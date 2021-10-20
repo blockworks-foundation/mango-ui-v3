@@ -5,6 +5,7 @@ import useMangoStore from '../../stores/useMangoStore'
 import Chart from '../Chart'
 import BN from 'bn.js'
 import { tokenPrecision } from '../../utils'
+import { useTranslation } from 'next-i18next'
 
 const icons = {
   'BTC-PERP': '/assets/icons/btc.svg',
@@ -43,6 +44,7 @@ function calculateFundingRate(
 }
 
 export default function StatsPerps({ perpStats }) {
+  const { t } = useTranslation('common')
   const [selectedAsset, setSelectedAsset] = useState<string>('BTC-PERP')
   const marketConfigs = useMangoGroupConfig().perpMarkets
   const selectedMarketConfig = marketConfigs.find(
@@ -115,7 +117,7 @@ export default function StatsPerps({ perpStats }) {
           style={{ height: '330px' }}
         >
           <Chart
-            title="Avg. Funding Rate (1hr)"
+            title={t('average-funding')}
             xAxis="time"
             yAxis="fundingRate"
             data={perpsData}
@@ -131,7 +133,7 @@ export default function StatsPerps({ perpStats }) {
           style={{ height: '330px' }}
         >
           <Chart
-            title="Open Interest"
+            title={t('open-interest')}
             xAxis="time"
             yAxis="openInterest"
             data={perpsData}
@@ -151,6 +153,8 @@ export default function StatsPerps({ perpStats }) {
 }
 
 const AssetHeader = ({ asset }) => {
+  const { t } = useTranslation('common')
+
   switch (asset) {
     case 'BTC-PERP':
       return (
@@ -162,7 +166,7 @@ const AssetHeader = ({ asset }) => {
             height="24"
             className="mr-2.5"
           />
-          Bitcoin Perpetual Futures
+          Bitcoin {t('perpetual-futures')}
         </div>
       )
     case 'ETH-PERP':
@@ -175,7 +179,7 @@ const AssetHeader = ({ asset }) => {
             height="24"
             className="mr-2.5"
           />
-          Ethereum Perpetual Futures
+          Ethereum {t('perpetual-futures')}
         </div>
       )
     case 'SOL-PERP':
@@ -188,7 +192,7 @@ const AssetHeader = ({ asset }) => {
             height="24"
             className="mr-2.5"
           />
-          Solana Perpetual Futures
+          Solana {t('perpetual-futures')}
         </div>
       )
     case 'SRM':
@@ -201,7 +205,7 @@ const AssetHeader = ({ asset }) => {
             height="24"
             className="mr-2.5"
           />
-          Serum Perpetual Futures
+          Serum {t('perpetual-futures')}
         </div>
       )
     default:
@@ -214,7 +218,7 @@ const AssetHeader = ({ asset }) => {
             height="24"
             className="mr-2.5"
           />
-          Bitcoin Perpetual Futures
+          Bitcoin {t('perpetual-futures')}
         </div>
       )
   }

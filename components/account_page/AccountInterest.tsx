@@ -5,6 +5,7 @@ import Chart from '../Chart'
 import Loading from '../Loading'
 import Select from '../Select'
 import { Table, Td, Th, TrBody, TrHead } from '../TableElements'
+import { useTranslation } from 'next-i18next'
 import { isEmpty } from 'lodash'
 
 interface InterestStats {
@@ -15,6 +16,7 @@ interface InterestStats {
 }
 
 const AccountInterest = () => {
+  const { t } = useTranslation('common')
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const [interestStats, setInterestStats] = useState<any>([])
@@ -64,17 +66,17 @@ const AccountInterest = () => {
   return (
     <>
       <div className="pb-3.5 text-th-fgd-1 text-base">
-        Total Interest Earned/Paid
+        {t('interest-earned')}
       </div>
       {mangoAccount ? (
         <div>
           <Table>
             <thead>
               <TrHead>
-                <Th>Token</Th>
-                <Th>Total Deposit Interest</Th>
-                <Th>Total Borrow Interest</Th>
-                <Th>Net</Th>
+                <Th>{t('token')}</Th>
+                <Th>{t('total-deposit-interest')}</Th>
+                <Th>{t('total-borrow-interest')}</Th>
+                <Th>{t('net')}</Th>
               </TrHead>
             </thead>
             <tbody>
@@ -82,7 +84,9 @@ const AccountInterest = () => {
                 <TrBody index={0}>
                   <td colSpan={4}>
                     <div className="flex">
-                      <div className="mx-auto py-4">No interest earned</div>
+                      <div className="mx-auto py-4">
+                        {t('no-interest-earned')}
+                      </div>
                     </div>
                   </td>
                 </TrBody>
@@ -175,7 +179,7 @@ const AccountInterest = () => {
                     style={{ height: '330px' }}
                   >
                     <Chart
-                      title="Hourly Deposit Interest"
+                      title={t('hourly-deposit-interest')}
                       xAxis="time"
                       yAxis="deposit_interest"
                       data={hourlyInterestStats[selectedAsset]}
@@ -188,7 +192,7 @@ const AccountInterest = () => {
                     style={{ height: '330px' }}
                   >
                     <Chart
-                      title="Hourly Borrow Interest"
+                      title={t('hourly-borrow-interest')}
                       xAxis="time"
                       yAxis="borrow_interest"
                       data={hourlyInterestStats[selectedAsset]}
@@ -208,7 +212,7 @@ const AccountInterest = () => {
           </>
         </div>
       ) : (
-        <div>Connect wallet</div>
+        <div>{t('connect-wallet')}</div>
       )}
     </>
   )

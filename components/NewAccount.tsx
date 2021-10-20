@@ -18,6 +18,7 @@ import Slider from './Slider'
 import Tooltip from './Tooltip'
 import { notify } from '../utils/notifications'
 import { deposit } from '../utils/mango'
+import { useTranslation } from 'next-i18next'
 
 interface NewAccountProps {
   onAccountCreation?: (x?) => void
@@ -26,6 +27,7 @@ interface NewAccountProps {
 const NewAccount: FunctionComponent<NewAccountProps> = ({
   onAccountCreation,
 }) => {
+  const { t } = useTranslation('common')
   const [inputAmount, setInputAmount] = useState(null)
   const [submitting, setSubmitting] = useState(false)
   const [invalidAmountMessage, setInvalidAmountMessage] = useState('')
@@ -77,7 +79,7 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
         setSubmitting(false)
         console.error(e)
         notify({
-          title: 'Could not perform init margin account and deposit operation',
+          title: t('init-error'),
           description: e.message,
           type: 'error',
         })
@@ -87,12 +89,10 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
 
   const validateAmountInput = (amount) => {
     if (Number(amount) <= 0) {
-      setInvalidAmountMessage('Enter an amount to deposit')
+      setInvalidAmountMessage(t('enter-amount'))
     }
     if (Number(amount) > selectedAccount.uiBalance) {
-      setInvalidAmountMessage(
-        'Insufficient balance. Reduce the amount to deposit'
-      )
+      setInvalidAmountMessage(t('insufficient-balance-deposit'))
     }
   }
 
@@ -118,7 +118,7 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
 
   const validateNameInput = () => {
     if (name.length >= 33) {
-      setInvalidNameMessage('Account name must be 32 characters or less')
+      setInvalidNameMessage(t('character-limit'))
     }
   }
 
@@ -141,8 +141,9 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
       <ElementTitle className="pb-2">Create Account</ElementTitle>
       <div className="pb-4">
         <div className="flex items-center pb-2 text-th-fgd-1">
-          Account Name <span className="ml-1 text-th-fgd-3">(Optional)</span>
-          <Tooltip content="Account names are stored on-chain">
+          {t('account-name')}{' '}
+          <span className="ml-1 text-th-fgd-3">{t('optional')}</span>
+          <Tooltip content={t('tooltip-name-onchain')}>
             <InformationCircleIcon className="h-5 w-5 ml-2 text-th-primary" />
           </Tooltip>
         </div>
@@ -168,12 +169,12 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
         onSelectAccount={handleAccountSelect}
       />
       <div className="flex justify-between pb-2 pt-4">
-        <div className={`text-th-fgd-1`}>Amount</div>
+        <div className={`text-th-fgd-1`}>{t('amount')}</div>
         <div
           className="text-th-fgd-1 underline cursor-pointer default-transition hover:text-th-primary hover:no-underline"
           onClick={setMaxForSelectedAccount}
         >
-          Max
+          {t('max')}
         </div>
       </div>
       <div className="flex">
@@ -211,14 +212,12 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
         >
           <div className={`flex items-center justify-center`}>
             {submitting && <Loading className="-ml-1 mr-3" />}
-            Let&apos;s Go
+            {t('lets-go')}
           </div>
         </Button>
       </div>
       <div className="flex text-th-fgd-4 text-xxs mt-1 -mb-1">
-        <div className="mx-auto">
-          You need 0.035 SOL to create a mango account.
-        </div>
+        <div className="mx-auto">{t('insufficient-sol')}</div>
       </div>
     </>
   )

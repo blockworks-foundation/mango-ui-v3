@@ -1,13 +1,15 @@
 import { useState } from 'react'
 import TradeHistoryTable from '../TradeHistoryTable'
+import { useTranslation } from 'next-i18next'
 
 // const historyViews = ['Trades', 'Deposits', 'Withdrawals', 'Liquidations']
 
 export default function AccountHistory() {
+  const { t } = useTranslation('common')
   const [view] = useState('Trades')
   return (
     <>
-      <div className="pb-3.5 text-th-fgd-1 text-base">Trade History</div>
+      <div className="pb-3.5 text-th-fgd-1 text-base">{t('trade-history')}</div>
       {/* Todo: add this back when the data is available */}
       {/* <div className="flex">
           {historyViews.map((section) => (
@@ -32,11 +34,13 @@ export default function AccountHistory() {
 }
 
 const ViewContent = ({ view }) => {
+  const { t } = useTranslation('common')
+
   switch (view) {
     case 'Trades':
       return <TradeHistoryTable />
     case 'Deposits':
-      return <div>Deposits</div>
+      return <div>{t('deposits')}</div>
     case 'Withdrawals':
       return <div>Withdrawals</div>
     case 'Liquidations':

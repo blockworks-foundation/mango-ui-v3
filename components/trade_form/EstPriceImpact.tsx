@@ -2,12 +2,14 @@ import { InformationCircleIcon } from '@heroicons/react/outline'
 import Tippy from '@tippyjs/react'
 import 'tippy.js/animations/scale.css'
 import { percentFormat } from '../../utils'
+import { useTranslation } from 'next-i18next'
 
 const EstPriceImpact = ({
   priceImpact,
 }: {
   priceImpact?: { slippage: number[]; takerFee: number[] }
 }) => {
+  const { t } = useTranslation('common')
   const priceImpactAbs = priceImpact.slippage[0]
   const priceImpactRel = priceImpact.slippage[1]
 
@@ -15,7 +17,7 @@ const EstPriceImpact = ({
     <div
       className={`border-t border-th-bkg-4 flex items-center justify-center mt-2 pt-2 text-th-fgd-4 text-xs`}
     >
-      Est. Price Impact:
+      {t('price-impact')}:
       <span
         className={`font-bold opacity-80 ml-2 ${
           priceImpactRel <= 0.005
@@ -41,7 +43,7 @@ const EstPriceImpact = ({
             className={`rounded p-4 text-xs bg-th-bkg-3 leading-4 shadow-md text-th-fgd-3 outline-none space-y-1.5 w-56 focus:outline-none`}
           >
             <div className="flex justify-between">
-              Est. Slippage:
+              {t('slippage')}:
               <span className="text-th-fgd-1">
                 ${priceImpact.slippage[0].toFixed(2)}
                 <span className="px-1 text-th-fgd-4">|</span>
@@ -57,7 +59,7 @@ const EstPriceImpact = ({
               </span>
             </div> */}
             <div className="flex justify-between">
-              Taker Fee:
+              {t('taker-fee')}:
               <span className="text-th-fgd-1">
                 ${priceImpact.takerFee[0].toFixed(2)}
                 <span className="px-1 text-th-fgd-4">|</span>

@@ -15,6 +15,7 @@ import OpenOrdersTable from '../OpenOrdersTable'
 import RecentMarketTrades from '../RecentMarketTrades'
 import FloatingElement from '../FloatingElement'
 import Swipeable from './Swipeable'
+import { useTranslation } from 'next-i18next'
 
 const TVChartContainer = dynamic(
   () => import('../../components/TradingView/index'),
@@ -22,6 +23,7 @@ const TVChartContainer = dynamic(
 )
 
 const MobileTradePage = () => {
+  const { t } = useTranslation('common')
   const [viewIndex, setViewIndex] = useState(0)
   const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
@@ -112,7 +114,9 @@ const MobileTradePage = () => {
           <RecentMarketTrades />
         </div>
         <div className="bg-th-bkg-2 px-2 py-3 rounded-lg">
-          <div className="pb-3.5 text-th-fgd-1 text-base">Market Details</div>
+          <div className="pb-3.5 text-th-fgd-1 text-base">
+            {t('market-details')}
+          </div>
           <MarketDetails />
         </div>
         {selectedMarket instanceof PerpMarket ? (
@@ -123,7 +127,7 @@ const MobileTradePage = () => {
               } bg-th-bkg-2 py-3 rounded-lg`}
             >
               <div className="pb-3.5 text-th-fgd-1 text-base">
-                {marketConfig.name} Position
+                {`${marketConfig.name} ${t('position')}`}
               </div>
               <MarketPosition />
             </div>
@@ -150,7 +154,9 @@ const MobileTradePage = () => {
                 !connected ? 'filter blur-sm' : ''
               } bg-th-bkg-2 py-3 rounded-lg`}
             >
-              <div className="pb-3.5 text-th-fgd-1 text-base">Open Orders</div>
+              <div className="pb-3.5 text-th-fgd-1 text-base">
+                {t('open-orders')}
+              </div>
               <OpenOrdersTable />
             </div>
           </FloatingElement>

@@ -5,6 +5,7 @@ import { abbreviateAddress } from '../utils'
 import useMangoStore, { WalletToken } from '../stores/useMangoStore'
 import { RefreshClockwiseIcon } from './icons'
 import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
+import { useTranslation } from 'next-i18next'
 
 type AccountSelectProps = {
   accounts: WalletToken[]
@@ -19,6 +20,7 @@ const AccountSelect = ({
   onSelectAccount,
   hideAddress = false,
 }: AccountSelectProps) => {
+  const { t } = useTranslation('common')
   const groupConfig = useMangoGroupConfig()
   const tokenSymbols = useMemo(
     () => groupConfig.tokens.map((t) => t.symbol),
@@ -48,7 +50,7 @@ const AccountSelect = ({
   return (
     <div className={`relative inline-block w-full`}>
       <div className="flex justify-between pb-2">
-        <div className="text-th-fgd-1">Asset</div>
+        <div className="text-th-fgd-1">{t('asset')}</div>
         {missingTokenSymbols.length > 0 ? (
           <button
             className="ml-2 text-th-fgd-1 hover:text-th-primary outline-none focus:outline-none"
@@ -58,7 +60,7 @@ const AccountSelect = ({
               <RefreshClockwiseIcon
                 className={`h-4 w-4 mr-1 ${loading ? 'animate-spin' : ''}`}
               />
-              Refresh
+              {t('refresh')}
             </div>
           </button>
         ) : null}
@@ -100,7 +102,7 @@ const AccountSelect = ({
                       </div>
                     </div>
                   ) : (
-                    'Select an asset'
+                    t('select-asset')
                   )}
                   {open ? (
                     <ChevronUpIcon className="h-5 w-5 ml-2 text-th-primary" />
@@ -170,7 +172,7 @@ const AccountSelect = ({
                         className="mr-2"
                       />
                       <div className={`flex-grow text-left`}>{token}</div>
-                      <div className={`text-xs`}>No wallet address</div>
+                      <div className={`text-xs`}>{t('no-wallet')}</div>
                     </div>
                   </div>
                 </Listbox.Option>

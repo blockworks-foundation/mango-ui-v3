@@ -19,10 +19,12 @@ import Loading from './Loading'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { collectPerpPosition } from '../hooks/usePerpPositions'
+import { useTranslation } from 'next-i18next'
 
 export const settlePnl = async (
   perpMarket: PerpMarket,
-  perpAccount: PerpAccount
+  perpAccount: PerpAccount,
+  t
 ) => {
   const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
   const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
@@ -44,14 +46,14 @@ export const settlePnl = async (
     )
     actions.reloadMangoAccount()
     notify({
-      title: 'Successfully settled PNL',
+      title: t('pnl-success'),
       description: '',
       txid,
     })
   } catch (e) {
     console.log('Error settling PNL: ', `${e}`, `${perpAccount}`)
     notify({
-      title: 'Error settling PNL',
+      title: t('pnl-error'),
       description: e.message,
       txid: e.txid,
       type: 'error',
@@ -59,23 +61,8 @@ export const settlePnl = async (
   }
 }
 
-export function SettlePnlTooltip() {
-  return (
-    <div>
-      Settling will update your USDC balance to reflect the unsettled PnL
-      amount.{' '}
-      <a
-        href="https://docs.mango.markets/mango-v3/overview#settle-pnl"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Learn more
-      </a>
-    </div>
-  )
-}
-
 export default function MarketPosition() {
+  const { t } = useTranslation('common')
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoGroupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
@@ -125,7 +112,7 @@ export default function MarketPosition() {
 
   const handleSettlePnl = (perpMarket, perpAccount) => {
     setSettling(true)
-    settlePnl(perpMarket, perpAccount).then(() => {
+    settlePnl(perpMarket, perpAccount, t).then(() => {
       setSettling(false)
     })
   }
@@ -148,14 +135,31 @@ export default function MarketPosition() {
     tradeHistory
   )
 
+  function SettlePnlTooltip() {
+    return (
+      <div>
+        {t('pnl-help')}{' '}
+        <a
+          href="https://docs.mango.markets/mango-v3/overview#settle-pnl"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {t('learn-more')}
+        </a>
+      </div>
+    )
+  }
+
   return (
     <>
       <div className={!connected && !isMobile ? 'filter blur-sm' : null}>
         {!isMobile ? (
-          <ElementTitle>{marketConfig.name} Position</ElementTitle>
+          <ElementTitle>
+            {marketConfig.name} {t('position')}
+          </ElementTitle>
         ) : null}
         <div className="flex items-center justify-between pb-3">
-          <div className="font-normal text-th-fgd-3 leading-4">Side</div>
+          <div className="font-normal text-th-fgd-3 leading-4">{t('size')}</div>
           {isLoading ? (
             <DataLoader />
           ) : (
@@ -164,7 +168,7 @@ export default function MarketPosition() {
         </div>
         <div className="flex justify-between pb-3">
           <div className="font-normal text-th-fgd-3 leading-4">
-            Position size
+            {t('position-size')}
           </div>
           <div className="text-th-fgd-1">
             {isLoading ? (
@@ -188,7 +192,7 @@ export default function MarketPosition() {
         </div>
         <div className="flex justify-between pb-3">
           <div className="font-normal text-th-fgd-3 leading-4">
-            Notional size
+            {t('notional-size')}
           </div>
           <div className="text-th-fgd-1">
             {isLoading ? (
@@ -200,7 +204,7 @@ export default function MarketPosition() {
         </div>
         <div className="flex justify-between pb-3">
           <div className="font-normal text-th-fgd-3 leading-4">
-            Avg entry price
+            {t('average-entry')}
           </div>
           <div className="text-th-fgd-1">
             {isLoading ? <DataLoader /> : formatUsdValue(avgEntryPrice)}
@@ -208,7 +212,7 @@ export default function MarketPosition() {
         </div>
         <div className="flex justify-between pb-3">
           <div className="font-normal text-th-fgd-3 leading-4">
-            Break-even price
+            {t('break-even')}
           </div>
           <div className="text-th-fgd-1">
             {isLoading ? <DataLoader /> : formatUsdValue(breakEvenPrice)}
@@ -217,7 +221,7 @@ export default function MarketPosition() {
         <div className="flex justify-between pb-3">
           <Tooltip content={<SettlePnlTooltip />}>
             <Tooltip.Content className="font-normal text-th-fgd-3 leading-4">
-              Unsettled Balance
+              {t('unsettled-balance')}
             </Tooltip.Content>
           </Tooltip>
           <div className="flex items-center">
@@ -230,7 +234,7 @@ export default function MarketPosition() {
                 className="ml-2 text-th-primary text-xs disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:underline"
                 disabled={unsettledPnl === 0}
               >
-                Settle
+                {t('settle')}
               </LinkButton>
             )}
           </div>
@@ -240,7 +244,7 @@ export default function MarketPosition() {
             onClick={() => setShowMarketCloseModal(true)}
             className="mt-2.5 w-full"
           >
-            <span>Market Close</span>
+            <span>{t('market-close')}</span>
           </Button>
         ) : null}
       </div>

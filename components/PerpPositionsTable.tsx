@@ -15,8 +15,10 @@ import { ExpandableRow } from './TableElements'
 import PerpSideBadge from './PerpSideBadge'
 import PnlText from './PnlText'
 import { settlePnl } from './MarketPosition'
+import { useTranslation } from 'next-i18next'
 
 const PositionsTable = () => {
+  const { t } = useTranslation('common')
   const { reloadMangoAccount } = useMangoStore((s) => s.actions)
   const [settling, setSettling] = useState(false)
 
@@ -49,7 +51,7 @@ const PositionsTable = () => {
   const handleSettleAll = async () => {
     setSettling(true)
     await Promise.all(
-      unsettledPositions.map((p) => settlePnl(p.perpMarket, p.perpAccount))
+      unsettledPositions.map((p) => settlePnl(p.perpMarket, p.perpAccount, t))
     )
     await reloadMangoAccount()
     setSettling(false)
@@ -62,13 +64,13 @@ const PositionsTable = () => {
           <div className="flex items-center justify-between pb-2">
             <div className="flex items-center sm:text-lg">
               <ExclamationIcon className="flex-shrink-0 h-5 mr-1.5 mt-0.5 text-th-primary w-5" />
-              Unsettled Positions
+              {t('unsettled-positions')}
             </div>
             <Button
               className="text-xs pt-0 pb-0 h-8 pl-3 pr-3 whitespace-nowrap"
               onClick={handleSettleAll}
             >
-              {settling ? <Loading /> : 'Settle All'}
+              {settling ? <Loading /> : t('settle-all')}
             </Button>
           </div>
           {unsettledPositions.map((p) => {
@@ -100,13 +102,13 @@ const PositionsTable = () => {
               <Table>
                 <thead>
                   <TrHead>
-                    <Th>Market</Th>
-                    <Th>Side</Th>
-                    <Th>Position Size</Th>
-                    <Th>Notional Size</Th>
-                    <Th>Avg entry Price</Th>
-                    <Th>Break-even Price</Th>
-                    <Th>Unrealized PnL</Th>
+                    <Th>{t('market')}</Th>
+                    <Th>{t('side')}</Th>
+                    <Th>{t('position-size')}</Th>
+                    <Th>{t('notional-size')}</Th>
+                    <Th>{t('average-entry')}</Th>
+                    <Th>{t('break-even')}</Th>
+                    <Th>{t('unrealized-pnl')}</Th>
                   </TrHead>
                 </thead>
                 <tbody>
@@ -235,7 +237,9 @@ const PositionsTable = () => {
                                         : 'text-th-red'
                                     }`}
                                   >
-                                    {basePosition > 0 ? 'LONG' : 'SHORT'}
+                                    {basePosition > 0
+                                      ? t('long').toUpperCase()
+                                      : t('short').toUpperCase()}
                                   </span>
                                   {Math.abs(basePosition)}
                                 </div>
@@ -251,7 +255,7 @@ const PositionsTable = () => {
                         <>
                           <div className="col-span-1 text-left">
                             <div className="pb-0.5 text-th-fgd-3 text-xs">
-                              Ave Entry Price
+                              {t('average-entry')}
                             </div>
                             {avgEntryPrice
                               ? formatUsdValue(avgEntryPrice)
@@ -259,13 +263,13 @@ const PositionsTable = () => {
                           </div>
                           <div className="col-span-1 text-left">
                             <div className="pb-0.5 text-th-fgd-3 text-xs">
-                              Notional Size
+                              {t('notional-size')}
                             </div>
                             {formatUsdValue(notionalSize)}
                           </div>
                           <div className="col-span-1 text-left">
                             <div className="pb-0.5 text-th-fgd-3 text-xs">
-                              Break-even Price
+                              {t('break-even')}
                             </div>
                             {breakEvenPrice
                               ? formatUsdValue(breakEvenPrice)
@@ -273,7 +277,7 @@ const PositionsTable = () => {
                           </div>
                           <div className="col-span-1 text-left">
                             <div className="pb-0.5 text-th-fgd-3 text-xs">
-                              Unrealized PnL
+                              {t('unrealized-pnl')}
                             </div>
                             <PnlText pnl={unrealizedPnl} />
                           </div>
@@ -288,7 +292,7 @@ const PositionsTable = () => {
             <div
               className={`w-full text-center py-6 bg-th-bkg-1 text-th-fgd-3 rounded-md`}
             >
-              No perp positions
+              {t('no-perp')}
             </div>
           )}
         </div>

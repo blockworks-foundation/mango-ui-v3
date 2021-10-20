@@ -11,6 +11,7 @@ import {
 import tw from 'twin.macro'
 import styled from '@emotion/styled'
 import 'rc-slider/assets/index.css'
+import { useTranslation } from 'next-i18next'
 
 type StyledSliderProps = {
   enableTransition?: boolean
@@ -69,6 +70,7 @@ export default function LeverageSlider({
   price,
   decimalCount,
 }: SliderProps) {
+  const { t } = useTranslation('common')
   const [enableTransition, setEnableTransition] = useState(false)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
@@ -142,13 +144,17 @@ export default function LeverageSlider({
 
   const closeDepositString =
     percentToClose(value, roundedDeposits) > 100
-      ? '100% Close Position + Open Short'
-      : `${percentToClose(value, roundedDeposits).toFixed(1)}% Close Position`
+      ? `100% ${t('close-and-short')}`
+      : `${percentToClose(value, roundedDeposits).toFixed(1)}% ${t(
+          'close-position'
+        )}`
 
   const closeBorrowString =
     percentToClose(value, roundedBorrows) > 100
-      ? '100% Close Position + Open Long'
-      : `${percentToClose(value, roundedBorrows).toFixed(1)}% Close Position`
+      ? `100% ${t('close-and-long')}`
+      : `${percentToClose(value, roundedBorrows).toFixed(1)}% ${t(
+          'close-position'
+        )}`
 
   const setMaxLeverage = function () {
     onChange(Math.round(max / step) * step)

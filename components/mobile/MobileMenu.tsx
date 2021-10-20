@@ -4,8 +4,10 @@ import { MenuIcon, XIcon } from '@heroicons/react/outline'
 import MenuItem from '../MenuItem'
 import ConnectWalletButton from '../ConnectWalletButton'
 import { IconButton } from '../Button'
+import { useTranslation } from 'next-i18next'
 
 const MobileMenu = () => {
+  const { t } = useTranslation('common')
   const [showMenu, setShowMenu] = useState(false)
 
   return (
@@ -37,11 +39,11 @@ const MobileMenu = () => {
           <ConnectWalletButton />
         </div>
         <div className="p-6">
-          <MenuItem href="/spot/BTC">Trade</MenuItem>
-          <MenuItem href="/account">Account</MenuItem>
-          <MenuItem href="/borrow">Borrow</MenuItem>
-          <MenuItem href="/stats">Stats</MenuItem>
-          <MenuItem href="https://docs.mango.markets/">Learn</MenuItem>
+          <MenuItem href="/spot/BTC">{t('trade')}</MenuItem>
+          <MenuItem href="/account">{t('account')}</MenuItem>
+          <MenuItem href="/borrow">{t('borrow')}</MenuItem>
+          <MenuItem href="/stats">{t('stats')}</MenuItem>
+          <MenuItem href="https://docs.mango.markets/">{t('learn')}</MenuItem>
         </div>
       </Transition>
       <div

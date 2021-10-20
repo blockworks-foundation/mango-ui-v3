@@ -6,6 +6,7 @@ import {
 } from '@project-serum/serum/lib/token-instructions'
 import Tooltip from './Tooltip'
 import { InformationCircleIcon } from '@heroicons/react/outline'
+import { useTranslation } from 'next-i18next'
 import Button from './Button'
 import useMangoStore from '../stores/useMangoStore'
 import { msrmMints, ZERO_BN } from '@blockworks-foundation/mango-client'
@@ -14,6 +15,7 @@ import WithdrawMsrmModal from './WithdrawMsrmModal'
 import { useState } from 'react'
 
 const FeeDiscountsTable = () => {
+  const { t } = useTranslation('common')
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const walletTokens = useMangoStore((s) => s.wallet.tokens)
   const { totalSrm, totalMsrm, rates } = useSrmAccount()
@@ -30,12 +32,14 @@ const FeeDiscountsTable = () => {
       className={`flex justify-center bg-th-bkg-1 py-6 mt-6 rounded-md divide-x divide-gray-500`}
     >
       <div className="pr-10">
-        <div className="text-center text-lg">Serum Spot Fees</div>
+        <div className="text-center text-lg">{t('serum-fees')}</div>
         <div
           className={`flex flex-col sm:flex-row justify-between text-th-fgd-4 text-center mt-4`}
         >
           <div className="px-4">
-            <div>{totalMsrm > 0 ? 'MSRM' : 'SRM'} Deposits</div>
+            <div>
+              {totalMsrm > 0 ? 'MSRM' : 'SRM'} {t('deposits')}
+            </div>
             <div className="text-th-fgd-3 text-normal">
               {totalMsrm > 0
                 ? totalMsrm.toLocaleString(undefined, {
@@ -47,19 +51,19 @@ const FeeDiscountsTable = () => {
             </div>
           </div>
           <div className="px-4 mt-4 sm:mt-0">
-            <div>Maker Fee</div>
+            <div>{t('maker-fee')}</div>
             <div className="text-th-fgd-3 text-normal">
               {rates ? percentFormat.format(rates.maker) : null}
             </div>
           </div>
           <div className="px-4 mt-4 sm:mt-0">
             <div className="flex items-center">
-              <div>Taker Fee</div>
+              <div>{t('taker-fee')}</div>
               <div className="flex items-center">
                 <Tooltip
-                  content={`20% of net fees on Serum go to the GUI host. Mango rebates this fee to you. The taker fee before the GUI rebate is ${percentFormat.format(
-                    rates.taker
-                  )}`}
+                  content={t('tooltip-serum-rebate', {
+                    taker_percent: percentFormat.format(rates.taker),
+                  })}
                 >
                   <div>
                     <InformationCircleIcon
@@ -80,30 +84,30 @@ const FeeDiscountsTable = () => {
               onClick={() => setShowDeposit(true)}
               disabled={!ownerMsrmAccount}
             >
-              Deposit MSRM
+              {t('deposit')} MSRM
             </Button>
             {mangoAccount.msrmAmount.gt(ZERO_BN) ? (
               <Button onClick={() => setShowWithdraw(true)} className="ml-2">
-                Withdraw MSRM
+                {t('withdraw')} MSRM
               </Button>
             ) : null}
           </div>
         ) : null}
       </div>
       <div className="pl-10">
-        <div className="text-center text-lg">Mango Perp Fees</div>
+        <div className="text-center text-lg">{t('perp-fees')}</div>
         <div
           className={`flex flex-col sm:flex-row justify-between text-th-fgd-4 text-center mt-4`}
         >
           <div className="px-4 mt-4 sm:mt-0">
-            <div>Maker Fee</div>
+            <div>{t('maker-fee')}</div>
             <div className="text-th-fgd-3 text-normal">
               {percentFormat.format(0.0)}
             </div>
           </div>
           <div className="px-4 mt-4 sm:mt-0">
             <div className="flex items-center">
-              <div>Taker Fee</div>
+              <div>{t('taker-fee')}</div>
             </div>
             <div className="text-th-fgd-3 text-normal">
               {percentFormat.format(0.0005)}

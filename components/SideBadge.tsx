@@ -1,10 +1,13 @@
 import React, { FunctionComponent } from 'react'
+import { useTranslation } from 'next-i18next'
 
 type SideBadgeProps = {
   side: string
 }
 
 const SideBadge: FunctionComponent<SideBadgeProps> = ({ side }) => {
+  const { t } = useTranslation('common')
+
   return (
     <div
       className={`rounded inline-block ${
@@ -14,7 +17,7 @@ const SideBadge: FunctionComponent<SideBadgeProps> = ({ side }) => {
       }
        px-2 py-1 text-xs`}
     >
-      {side?.toUpperCase()}
+      {t(side)?.toUpperCase()}
     </div>
   )
 }
