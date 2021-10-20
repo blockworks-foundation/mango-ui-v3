@@ -66,7 +66,7 @@ const BottomBar = () => {
             } col-span-1 cursor-pointer default-transition flex flex-col items-center hover:text-th-primary`}
           >
             <CurrencyDollarIcon className="h-4 mb-1 w-4" />
-            <StyledBarItemLabel>Account</StyledBarItemLabel>
+            <StyledBarItemLabel>{t('account')}</StyledBarItemLabel>
           </div>
         </Link>
         <Link href="/stats">
