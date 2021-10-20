@@ -42,9 +42,9 @@ const ViewContent = ({ view }) => {
     case 'Deposits':
       return <div>{t('deposits')}</div>
     case 'Withdrawals':
-      return <div>Withdrawals</div>
+      return <div>{t('withdrawals')}</div>
     case 'Liquidations':
-      return <div>Liquidations</div>
+      return <div>{t('liquidations')}</div>
     default:
       return <TradeHistoryTable />
   }

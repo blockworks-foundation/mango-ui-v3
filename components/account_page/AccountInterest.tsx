@@ -84,9 +84,7 @@ const AccountInterest = () => {
                 <TrBody index={0}>
                   <td colSpan={4}>
                     <div className="flex">
-                      <div className="mx-auto py-4">
-                        {t('no-interest-earned')}
-                      </div>
+                      <div className="mx-auto py-4">{t('no-interest')}</div>
                     </div>
                   </td>
                 </TrBody>

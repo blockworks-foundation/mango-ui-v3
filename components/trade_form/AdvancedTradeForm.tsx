@@ -410,9 +410,9 @@ export default function AdvancedTradeForm({
           size: (+baseSize - roundedDeposits).toFixed(sizeDecimalCount),
           symbol: marketConfig.baseSymbol,
         })
-      : `${percentToClose(baseSize, roundedDeposits).toFixed(
-          0
-        )}% close position`
+      : `${percentToClose(baseSize, roundedDeposits).toFixed(0)}% ${t(
+          'close-position'
+        ).toLowerCase()}`
 
   const closeBorrowString =
     percentToClose(baseSize, roundedBorrows) > 100
@@ -420,7 +420,9 @@ export default function AdvancedTradeForm({
           size: (+baseSize - roundedDeposits).toFixed(sizeDecimalCount),
           symbol: marketConfig.baseSymbol,
         })
-      : `${percentToClose(baseSize, roundedBorrows).toFixed(0)}% close position`
+      : `${percentToClose(baseSize, roundedBorrows).toFixed(0)}% ${t(
+          'close-position'
+        ).toLowerCase()}`
 
   let priceImpact
   let estimatedPrice = price
@@ -660,7 +662,9 @@ export default function AdvancedTradeForm({
             </>
           ) : (
             <>
-              <label className="text-xxs text-th-fgd-3">Trigger Price</label>
+              <label className="text-xxs text-th-fgd-3">
+                {t('trigger-price')}
+              </label>
               <Input
                 type="number"
                 min="0"

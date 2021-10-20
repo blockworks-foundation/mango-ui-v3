@@ -139,7 +139,9 @@ const MobileTradePage = () => {
                 !connected ? 'filter blur-sm' : ''
               } bg-th-bkg-2 py-3 rounded-lg`}
             >
-              <div className="pb-3.5 text-th-fgd-1 text-base">Balances</div>
+              <div className="pb-3.5 text-th-fgd-1 text-base">
+                {t('balances')}
+              </div>
               <MarketBalances />
             </div>
           </FloatingElement>
