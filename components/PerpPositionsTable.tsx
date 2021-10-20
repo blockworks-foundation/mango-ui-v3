@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react'
 import { useRouter } from 'next/router'
 import useMangoStore from '../stores/useMangoStore'
 import { ExclamationIcon } from '@heroicons/react/outline'
-import Button from '../components/Button'
+import Button, { IconButton } from '../components/Button'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { Table, Td, Th, TrBody, TrHead } from './TableElements'
@@ -15,6 +15,8 @@ import { ExpandableRow } from './TableElements'
 import PerpSideBadge from './PerpSideBadge'
 import PnlText from './PnlText'
 import { settlePnl } from './MarketPosition'
+import ShareModal from './ShareModal'
+import { TwitterIcon } from './icons'
 
 const PositionsTable = () => {
   const { reloadMangoAccount } = useMangoStore((s) => s.actions)
@@ -24,6 +26,8 @@ const PositionsTable = () => {
   const selectedMarketConfig = useMangoStore((s) => s.selectedMarket.config)
   const price = useMangoStore((s) => s.tradeForm.price)
   const [showMarketCloseModal, setShowMarketCloseModal] = useState(false)
+  const [showShareModal, setShowShareModal] = useState(false)
+  const [sharePosition, setSharePosition] = useState(null)
   const setMangoStore = useMangoStore((s) => s.set)
   const { openPositions, unsettledPositions } = usePerpPositions()
   const { width } = useViewport()
@@ -33,6 +37,15 @@ const PositionsTable = () => {
   const handleCloseWarning = useCallback(() => {
     setShowMarketCloseModal(false)
   }, [])
+
+  const handleCloseShare = useCallback(() => {
+    setShowShareModal(false)
+  }, [])
+
+  const handleShowShareModal = (position) => {
+    setSharePosition(position)
+    setShowShareModal(true)
+  }
 
   const handleSizeClick = (size, side, indexPrice) => {
     const step = selectedMarket.minOrderSize
@@ -183,12 +196,34 @@ const PositionsTable = () => {
                           <Td>
                             <PnlText pnl={unrealizedPnl} />
                           </Td>
+                          <Td>
+                            <IconButton
+                              onClick={() =>
+                                handleShowShareModal({
+                                  marketConfig,
+                                  basePosition,
+                                  indexPrice,
+                                  avgEntryPrice,
+                                  breakEvenPrice,
+                                })
+                              }
+                            >
+                              <TwitterIcon className="h-4 w-4" />
+                            </IconButton>
+                          </Td>
                           {showMarketCloseModal ? (
                             <MarketCloseModal
                               isOpen={showMarketCloseModal}
                               onClose={handleCloseWarning}
                               market={perpMarket}
                               marketIndex={marketIndex}
+                            />
+                          ) : null}
+                          {showShareModal ? (
+                            <ShareModal
+                              isOpen={showShareModal}
+                              onClose={handleCloseShare}
+                              position={sharePosition}
                             />
                           ) : null}
                         </TrBody>
