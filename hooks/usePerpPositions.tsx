@@ -51,7 +51,12 @@ export const collectPerpPosition = (
   const basePosition = perpMarket.baseLotsToNumber(perpAccount.basePosition)
   const indexPrice = mangoGroup.getPrice(marketIndex, mangoCache).toNumber()
   const notionalSize = Math.abs(basePosition * indexPrice)
-  const unrealizedPnl = basePosition * (indexPrice - breakEvenPrice)
+  const urpnl = basePosition * (indexPrice - breakEvenPrice)
+  const unrealizedPnl = {
+    pnlamt: urpnl,
+    pnlpct: urpnl / basePosition,
+  }
+  const unrealizedPnl_percent = unrealizedPnl / basePosition
   const unsettledPnl = +nativeI80F48ToUi(
     perpAccount.getPnl(
       mangoGroup.perpMarkets[marketIndex],
@@ -73,6 +78,7 @@ export const collectPerpPosition = (
     breakEvenPrice,
     notionalSize,
     unrealizedPnl,
+    unrealizedPnl_percent,
     unsettledPnl,
   }
 }

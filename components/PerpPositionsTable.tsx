@@ -58,6 +58,9 @@ const PositionsTable = () => {
     setSettling(false)
   }
 
+  const pnlpct = openPositions.unrealizedPnl_percent
+  console.log(pnlpct)
+
   return (
     <div className="flex flex-col pb-2 pt-4">
       {unsettledPositions.length > 0 ? (
@@ -194,8 +197,12 @@ const PositionsTable = () => {
                               : '--'}
                           </Td>
                           <Td>
-                            <PnlText pnl={unrealizedPnl} />
+                            <PnlText
+                              pnl={unrealizedPnl.pnlamt}
+                              pnlpct={unrealizedPnl.pnlpct}
+                            />
                           </Td>
+
                           {showMarketCloseModal ? (
                             <MarketCloseModal
                               isOpen={showMarketCloseModal}
