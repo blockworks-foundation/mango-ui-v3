@@ -1,4 +1,5 @@
 {
+    "about-to-withdraw": "您正在存款",
     "above": "以上",
     "accept": "接受",
     "account": "帐户",
@@ -83,6 +84,7 @@
     "disconnect": "断开连结",
     "done": "完成",
     "edit": "编辑",
+    "edit-name": "编辑帐户标签",
     "edit-nickname": "编辑帐户标签",
     "english": "English",
     "enter-amount": "输入存款数量",
@@ -102,6 +104,7 @@
     "hourly-deposit-interest": "1小时存款利息",
     "hourly-funding": "1小时资金费",
     "in-orders": "在掛单中",
+    "includes-borrow": "包括存入",
     "init-error": "创建保证金帐户与存款出错了",
     "init-health": "初始健康度",
     "insufficient-balance-deposit": "帐户余额不够。请减少存入数量",

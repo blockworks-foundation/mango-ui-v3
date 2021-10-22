@@ -1,4 +1,5 @@
 {
+  "about-to-withdraw": "您正在存款",
   "above": "以上",
   "accept": "接受",
   "account": "帳戶",
@@ -83,6 +84,7 @@
   "disconnect": "斷開連結",
   "done": "完成",
   "edit": "編輯",
+  "edit-name": "編輯帳戶標籤",
   "edit-nickname": "編輯帳戶標籤",
   "english": "English",
   "enter-amount": "輸入存款數量",
@@ -102,6 +104,7 @@
   "hourly-deposit-interest": "1小時存款利息",
   "hourly-funding": "1小時資金費",
   "in-orders": "在掛單中",
+  "includes-borrow": "包括存入",
   "init-error": "創建保證金帳戶與存款出錯了",
   "init-health": "初始健康度",
   "insufficient-balance-deposit": "帳戶餘額不夠。請減少存入數量",

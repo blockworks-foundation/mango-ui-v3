@@ -483,7 +483,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
               </div>
             ) : null}
             <div className="bg-th-bkg-1 p-4 rounded-lg text-th-fgd-1 text-center">
-              <div className="text-th-fgd-3 pb-1">{`You're about to withdraw`}</div>
+              <div className="text-th-fgd-3 pb-1">{t('about-to-withdraw')}</div>
               <div className="flex items-center justify-center">
                 <div className="font-semibold relative text-xl">
                   {inputAmount}
@@ -493,7 +493,9 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                 </div>
               </div>
               {getBorrowAmount() > 0 ? (
-                <div className="pt-2 text-th-fgd-4">{`Includes borrow of ~${getBorrowAmount().toFixed(
+                <div className="pt-2 text-th-fgd-4">{`${t(
+                  'includes-borrow'
+                )} ~${getBorrowAmount().toFixed(
                   mangoGroup.tokens[tokenIndex].decimals
                 )} ${withdrawTokenSymbol}`}</div>
               ) : null}
