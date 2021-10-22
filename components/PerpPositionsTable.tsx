@@ -1,8 +1,10 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
+import Link from 'next/link'
+import { getWeights } from '@blockworks-foundation/mango-client'
 import useMangoStore from '../stores/useMangoStore'
 import { ExclamationIcon } from '@heroicons/react/outline'
-import Button, { IconButton } from '../components/Button'
+import Button from '../components/Button'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { Table, Td, Th, TrBody, TrHead } from './TableElements'
@@ -24,10 +26,12 @@ const PositionsTable = () => {
 
   const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
   const selectedMarketConfig = useMangoStore((s) => s.selectedMarket.config)
+  const marketConfig = useMangoStore((s) => s.selectedMarket.config)
+  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const price = useMangoStore((s) => s.tradeForm.price)
   const [showMarketCloseModal, setShowMarketCloseModal] = useState(false)
   const [showShareModal, setShowShareModal] = useState(false)
-  const [sharePosition, setSharePosition] = useState(null)
+  // const [sharePosition, setSharePosition] = useState(null)
   const setMangoStore = useMangoStore((s) => s.set)
   const { openPositions, unsettledPositions } = usePerpPositions()
   const { width } = useViewport()
@@ -42,10 +46,10 @@ const PositionsTable = () => {
     setShowShareModal(false)
   }, [])
 
-  const handleShowShareModal = (position) => {
-    setSharePosition(position)
-    setShowShareModal(true)
-  }
+  // const handleShowShareModal = (position) => {
+  //   setSharePosition(position)
+  //   setShowShareModal(true)
+  // }
 
   const handleSizeClick = (size, side, indexPrice) => {
     const step = selectedMarket.minOrderSize
@@ -67,6 +71,13 @@ const PositionsTable = () => {
     await reloadMangoAccount()
     setSettling(false)
   }
+
+  const initLeverage = useMemo(() => {
+    if (!mangoGroup || !marketConfig) return 1
+
+    const ws = getWeights(mangoGroup, marketConfig.marketIndex, 'Init')
+    return Math.round((100 * -1) / (ws.perpAssetWeight.toNumber() - 1)) / 100
+  }, [mangoGroup, marketConfig])
 
   return (
     <div className="flex flex-col pb-2 pt-4">
@@ -139,6 +150,10 @@ const PositionsTable = () => {
                       },
                       index
                     ) => {
+                      const positionPercentage =
+                        ((indexPrice - avgEntryPrice) / avgEntryPrice) *
+                        100 *
+                        initLeverage
                       return (
                         <TrBody index={index} key={`${marketIndex}`}>
                           <Td>
@@ -197,7 +212,7 @@ const PositionsTable = () => {
                             <PnlText pnl={unrealizedPnl} />
                           </Td>
                           <Td>
-                            <IconButton
+                            {/* <IconButton
                               onClick={() =>
                                 handleShowShareModal({
                                   marketConfig,
@@ -207,9 +222,17 @@ const PositionsTable = () => {
                                   breakEvenPrice,
                                 })
                               }
+                            > */}
+                            <Link
+                              href={`/share?market=${marketConfig.name}&side=${
+                                basePosition > 0 ? 'LONG' : 'SHORT'
+                              }&pnl=${positionPercentage}&avgEntry=${avgEntryPrice}&markPrice=${indexPrice}&leverage=${initLeverage}`}
                             >
-                              <TwitterIcon className="h-4 w-4" />
-                            </IconButton>
+                              <a>
+                                <TwitterIcon className="h-4 w-4" />
+                              </a>
+                            </Link>
+                            {/* </IconButton> */}
                           </Td>
                           {showMarketCloseModal ? (
                             <MarketCloseModal
@@ -223,7 +246,7 @@ const PositionsTable = () => {
                             <ShareModal
                               isOpen={showShareModal}
                               onClose={handleCloseShare}
-                              position={sharePosition}
+                              position={'sharePosition'}
                             />
                           ) : null}
                         </TrBody>

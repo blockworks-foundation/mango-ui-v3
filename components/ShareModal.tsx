@@ -32,13 +32,24 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
 
   const side = position.basePosition > 0 ? 'LONG' : 'SHORT'
 
+  console.log(position.avgEntryPrice)
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <Head>
-        <meta name="twitter:title" content={position.basePosition} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Trade on Mango Markets" />
+        <meta
+          name="twitter:description"
+          content="Mango Markets - Decentralised, cross-margin trading up to 10x leverage with lightning speed and near-zero fees."
+        />
         <meta
           name="twitter:image"
-          content="https://og-image-saml33.vercel.app/gfy.png"
+          content={`https://og-image-saml33.vercel.app/${side}.png?market=${
+            position.marketConfig.name
+          }&pnl=${positionPercentage.toFixed(1)}&avgEntry=${
+            position.avgEntryPrice
+          }&markPrice=${position.indexPrice}&md=1`}
         />
       </Head>
       <div id="share-image">
@@ -88,7 +99,7 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
         </div>
         <a
           className="bg-th-bkg-3 block mt-6 px-4 py-3 rounded-full text-center text-th-fgd-1 w-full"
-          href={`https://twitter.com/intent/tweet?text=I'm ${side} %24${position.marketConfig.baseSymbol} perp on %40mangomarkets&url=https://trade.mango.markets/perp/BTC`}
+          href={`https://twitter.com/intent/tweet?text=I'm ${side} %24${position.marketConfig.baseSymbol} perp on %40mangomarkets&url=https://deploy-preview-58--hardcore-williams-253780.netlify.app/perp/BTC`}
           target="_blank"
           rel="noreferrer"
         >
