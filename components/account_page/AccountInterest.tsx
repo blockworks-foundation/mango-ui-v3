@@ -1,12 +1,12 @@
 import { getTokenBySymbol } from '@blockworks-foundation/mango-client'
 import { useEffect, useMemo, useState } from 'react'
 import useMangoStore from '../../stores/useMangoStore'
-import Chart from '../Chart'
-import Loading from '../Loading'
-import Select from '../Select'
+// import Chart from '../Chart'
+// import Loading from '../Loading'
+// import Select from '../Select'
 import { Table, Td, Th, TrBody, TrHead } from '../TableElements'
 import { useTranslation } from 'next-i18next'
-import { isEmpty } from 'lodash'
+// import { isEmpty } from 'lodash'
 
 interface InterestStats {
   [key: string]: {
@@ -20,9 +20,9 @@ const AccountInterest = () => {
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const [interestStats, setInterestStats] = useState<any>([])
-  const [hourlyInterestStats, setHourlyInterestStats] = useState<any>(null)
-  const [loading, setLoading] = useState(false)
-  const [selectedAsset, setSelectedAsset] = useState<string>('USDC')
+  // const [hourlyInterestStats, setHourlyInterestStats] = useState<any>(null)
+  // const [loading, setLoading] = useState(false)
+  // const [selectedAsset, setSelectedAsset] = useState<string>('USDC')
 
   const mangoAccountPk = useMemo(() => {
     return mangoAccount.publicKey.toString()
@@ -38,28 +38,28 @@ const AccountInterest = () => {
       setInterestStats(Object.entries(parsedResponse))
     }
 
-    const fetchHourlyInterestStats = async () => {
-      setLoading(true)
-      const response = await fetch(
-        `https://mango-transaction-log.herokuapp.com/v3/stats/hourly-interest?mango-account=${mangoAccountPk}`
-      )
-      const parsedResponse = await response.json()
+    // const fetchHourlyInterestStats = async () => {
+    //   setLoading(true)
+    //   const response = await fetch(
+    //     `https://mango-transaction-log.herokuapp.com/v3/stats/hourly-interest?mango-account=${mangoAccountPk}`
+    //   )
+    //   const parsedResponse = await response.json()
 
-      const assets = Object.keys(parsedResponse)
+    //   const assets = Object.keys(parsedResponse)
 
-      const stats = {}
-      for (const asset of assets) {
-        const x = Object.entries(parsedResponse[asset])
-        stats[asset] = x.map(([key, value]) => {
-          // @ts-ignore
-          return { ...value, time: key }
-        })
-      }
-      setLoading(false)
-      setHourlyInterestStats(stats)
-    }
+    //   const stats = {}
+    //   for (const asset of assets) {
+    //     const x = Object.entries(parsedResponse[asset])
+    //     stats[asset] = x.map(([key, value]) => {
+    //       // @ts-ignore
+    //       return { ...value, time: key }
+    //     })
+    //   }
+    //   setLoading(false)
+    //   setHourlyInterestStats(stats)
+    // }
 
-    fetchHourlyInterestStats()
+    // fetchHourlyInterestStats()
     fetchInterestStats()
   }, [mangoAccountPk])
 
@@ -129,7 +129,7 @@ const AccountInterest = () => {
               )}
             </tbody>
           </Table>
-          <>
+          {/* <>
             {!isEmpty(hourlyInterestStats) && !loading ? (
               <>
                 <div className="flex items-center justify-between my-4 w-full">
@@ -207,7 +207,7 @@ const AccountInterest = () => {
                 </div>
               </div>
             ) : null}
-          </>
+          </> */}
         </div>
       ) : (
         <div>{t('connect-wallet')}</div>

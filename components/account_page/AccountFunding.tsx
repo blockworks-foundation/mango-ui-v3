@@ -1,19 +1,19 @@
 import { useEffect, useMemo, useState } from 'react'
 import useMangoStore from '../../stores/useMangoStore'
-import Chart from '../Chart'
-import Loading from '../Loading'
-import Select from '../Select'
+// import Chart from '../Chart'
+// import Loading from '../Loading'
+// import Select from '../Select'
 import { Table, Td, Th, TrBody, TrHead } from '../TableElements'
-import { isEmpty } from 'lodash'
+// import { isEmpty } from 'lodash'
 import { useTranslation } from 'next-i18next'
 
 const AccountFunding = () => {
   const { t } = useTranslation('common')
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const [fundingStats, setFundingStats] = useState<any>([])
-  const [hourlyFunding, setHourlyFunding] = useState<any>(null)
-  const [selectedAsset, setSelectedAsset] = useState<string>('BTC')
-  const [loading, setLoading] = useState(false)
+  // const [hourlyFunding, setHourlyFunding] = useState<any>(null)
+  // const [selectedAsset, setSelectedAsset] = useState<string>('BTC')
+  // const [loading, setLoading] = useState(false)
 
   const mangoAccountPk = useMemo(() => {
     return mangoAccount.publicKey.toString()
@@ -29,29 +29,29 @@ const AccountFunding = () => {
       setFundingStats(Object.entries(parsedResponse))
     }
 
-    const fetchHourlyFundingStats = async () => {
-      setLoading(true)
-      const response = await fetch(
-        `https://mango-transaction-log.herokuapp.com/v3/stats/hourly-funding?mango-account=${mangoAccountPk}`
-      )
-      const parsedResponse = await response.json()
+    // const fetchHourlyFundingStats = async () => {
+    //   setLoading(true)
+    //   const response = await fetch(
+    //     `https://mango-transaction-log.herokuapp.com/v3/stats/hourly-funding?mango-account=${mangoAccountPk}`
+    //   )
+    //   const parsedResponse = await response.json()
 
-      const assets = Object.keys(parsedResponse)
+    //   const assets = Object.keys(parsedResponse)
 
-      const stats = {}
-      for (const asset of assets) {
-        const x = Object.entries(parsedResponse[asset])
-        stats[asset] = x.map(([key, value]) => {
-          // @ts-ignore
-          return { ...value, time: key }
-        })
-      }
-      setLoading(false)
-      setHourlyFunding(stats)
-    }
+    //   const stats = {}
+    //   for (const asset of assets) {
+    //     const x = Object.entries(parsedResponse[asset])
+    //     stats[asset] = x.map(([key, value]) => {
+    //       // @ts-ignore
+    //       return { ...value, time: key }
+    //     })
+    //   }
+    //   setLoading(false)
+    //   setHourlyFunding(stats)
+    // }
 
     fetchFundingStats()
-    fetchHourlyFundingStats()
+    // fetchHourlyFundingStats()
   }, [mangoAccountPk])
 
   return (
@@ -111,7 +111,7 @@ const AccountFunding = () => {
             </tbody>
           </Table>
 
-          <>
+          {/* <>
             {!isEmpty(hourlyFunding) && !loading ? (
               <>
                 <div className="flex items-center justify-between my-4 w-full">
@@ -175,7 +175,7 @@ const AccountFunding = () => {
                 </div>
               </div>
             ) : null}
-          </>
+          </> */}
         </div>
       ) : (
         <div>{t('connect-wallet')}</div>
