@@ -14,7 +14,7 @@ import usePerpPositions from '../hooks/usePerpPositions'
 import MarketCloseModal from './MarketCloseModal'
 import { ExpandableRow } from './TableElements'
 import PerpSideBadge from './PerpSideBadge'
-import PnlText from './PnlText'
+import { PnlText, PnlPct } from './PnlText'
 import { settlePnl } from './MarketPosition'
 import { useTranslation } from 'next-i18next'
 
@@ -197,7 +197,7 @@ const PositionsTable = () => {
                               : '--'}
                           </Td>
                           <Td>
-                            <PnlText
+                            <PnlPct
                               pnl={unrealizedPnl.pnlamt}
                               pnlpct={unrealizedPnl.pnlpct}
                             />

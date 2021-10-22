@@ -1,6 +1,26 @@
 import { formatUsdValue } from '../utils'
 
-const PnlText = ({
+export const PnlText = ({
+  className,
+  pnl,
+}: {
+  className?: string
+  pnl?: number
+}) => (
+  <>
+    {pnl ? (
+      <span
+        className={`${className} ${pnl > 0 ? 'text-th-green' : 'text-th-red'}`}
+      >
+        {formatUsdValue(pnl)}
+      </span>
+    ) : (
+      '--'
+    )}
+  </>
+)
+
+export const PnlPct = ({
   className,
   pnl,
   pnlpct,
