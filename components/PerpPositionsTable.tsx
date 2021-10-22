@@ -58,9 +58,6 @@ const PositionsTable = () => {
     setSettling(false)
   }
 
-  const pnlpct = openPositions.unrealizedPnl_percent
-  console.log(pnlpct)
-
   return (
     <div className="flex flex-col pb-2 pt-4">
       {unsettledPositions.length > 0 ? (
@@ -263,7 +260,10 @@ const PositionsTable = () => {
                                 </div>
                               </div>
                             </div>
-                            <PnlText className="mr-1.5" pnl={unrealizedPnl} />
+                            <PnlPct
+                              pnl={unrealizedPnl.pnlamt}
+                              pnlpct={unrealizedPnl.pnlpct}
+                            />
                           </div>
                         </>
                       }
@@ -297,7 +297,9 @@ const PositionsTable = () => {
                             <div className="pb-0.5 text-th-fgd-3 text-xs">
                               {t('unrealized-pnl')}
                             </div>
-                            <PnlText pnl={unrealizedPnl} />
+                            <PnlPct
+                              pnl={(unrealizedPnl.pnlamt, unrealizedPnl.pnlpct)}
+                            />
                           </div>
                         </>
                       }

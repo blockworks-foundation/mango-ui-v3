@@ -56,7 +56,6 @@ export const collectPerpPosition = (
     pnlamt: urpnl,
     pnlpct: urpnl / basePosition,
   }
-  const unrealizedPnl_percent = unrealizedPnl / basePosition
   const unsettledPnl = +nativeI80F48ToUi(
     perpAccount.getPnl(
       mangoGroup.perpMarkets[marketIndex],
@@ -78,7 +77,6 @@ export const collectPerpPosition = (
     breakEvenPrice,
     notionalSize,
     unrealizedPnl,
-    unrealizedPnl_percent,
     unsettledPnl,
   }
 }
