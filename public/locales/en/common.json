@@ -1,4 +1,5 @@
 {
+  "about-to-withdraw": "You're about to withdraw",
   "above": "Above",
   "accept": "Accept",
   "account": "Account",
@@ -103,6 +104,7 @@
   "hourly-deposit-interest": "Hourly Deposit Interest",
   "hourly-funding": "Hourly Funding",
   "in-orders": "In Orders",
+  "includes-borrow": "Includes borrow of",
   "init-error": "Could not perform init margin account and deposit operation",
   "init-health": "Init Health",
   "insufficient-balance-deposit": "Insufficient balance. Reduce the amount to deposit",
