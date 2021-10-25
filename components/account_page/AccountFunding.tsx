@@ -207,7 +207,8 @@ const AccountFunding = () => {
                                 <Td>
                                   {stat.total_funding.toFixed(
                                     QUOTE_DECIMALS + 1
-                                  )}
+                                  )}{' '}
+                                  USDC
                                 </Td>
                               </TrBody>
                             )
