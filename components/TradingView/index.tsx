@@ -18,7 +18,6 @@ import { sleep, formatUsdValue } from '../../utils'
 import useInterval from '../../hooks/useInterval'
 import { PerpTriggerOrder } from '../../@types/types'
 import { useTranslation } from 'next-i18next'
-import { current } from 'immer'
 
 // This is a basic example of how to create a TV widget
 // You can add more feature such as storing charts in localStorage
