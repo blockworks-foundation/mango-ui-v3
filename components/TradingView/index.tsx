@@ -14,7 +14,7 @@ import { useOpenOrders } from '../../hooks/useOpenOrders'
 import { Order, Market } from '@project-serum/serum/lib/market'
 import { PerpOrder, PerpMarket } from '@blockworks-foundation/mango-client'
 import { notify } from '../../utils/notifications'
-import { sleep, formatUsdValue } from '../../utils'
+import { sleep, formatUsdValue, usdFormatter } from '../../utils'
 import useInterval from '../../hooks/useInterval'
 import { PerpTriggerOrder } from '../../@types/types'
 
@@ -395,17 +395,18 @@ const TVChartContainer = () => {
 
   function getLineText(order, market) {
     if (order.perpTrigger?.clientOrderId) {
+      const triggerPrice = order.perpTrigger.triggerPrice * Math.pow(10, market.config.baseDecimals - market.config.quoteDecimals)
       if (order.side === 'buy') {
         if (order.perpTrigger.triggerCondition === 'above') {
-          return (order.orderType === 'market' ? `Stop Loss ` : `Stop Limit `) + `(${order.orderType} ${order.side}) if price is ${order.perpTrigger.triggerCondition} $${Number(order.perpTrigger.triggerPrice)}`
+          return (order.orderType === 'market' ? `Stop Loss ` : `Stop Limit `) + `(${order.orderType} ${order.side}) if price is ${order.perpTrigger.triggerCondition} ${usdFormatter(triggerPrice)}`
         } else {
-          return `Take Profit (${order.orderType} ${order.side}) if price is ${order.perpTrigger.triggerCondition} $${Number(order.perpTrigger.triggerPrice)}`
+          return `Take Profit (${order.orderType} ${order.side}) if price is ${order.perpTrigger.triggerCondition} ${usdFormatter(triggerPrice)}`
         }
       } else {
         if (order.perpTrigger.triggerCondition === 'below') {
-          return (order.orderType === 'market' ? `Stop Loss ` : `Stop Limit `) + `(${order.orderType} ${order.side}) if price is ${order.perpTrigger.triggerCondition} $${Number(order.perpTrigger.triggerPrice)}`
+          return (order.orderType === 'market' ? `Stop Loss ` : `Stop Limit `) + `(${order.orderType} ${order.side}) if price is ${order.perpTrigger.triggerCondition} ${usdFormatter(triggerPrice)}`
         } else {
-          return `Take Profit (${order.orderType} ${order.side}) if price is ${order.perpTrigger.triggerCondition} $${Number(order.perpTrigger.triggerPrice)}`
+          return `Take Profit (${order.orderType} ${order.side}) if price is ${order.perpTrigger.triggerCondition} ${usdFormatter(triggerPrice)}`
         }
       }
     } else {
