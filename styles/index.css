@@ -64,6 +64,10 @@ body {
   @apply text-sm font-body tracking-wider;
 }
 
+h1 {
+  @apply font-bold text-th-fgd-1 text-xl;
+}
+
 p {
   @apply text-th-fgd-3 mb-2.5;
 }

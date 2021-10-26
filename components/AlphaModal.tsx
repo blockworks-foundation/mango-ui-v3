@@ -1,8 +1,10 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { CheckCircleIcon } from '@heroicons/react/solid'
 import Modal from './Modal'
 import Button from './Button'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import { useTranslation } from 'next-i18next'
+import Checkbox from './Checkbox'
 
 export const ALPHA_MODAL_KEY = 'mangoAlphaAccepted-3.06'
 
@@ -14,6 +16,7 @@ const AlphaModal = ({
   onClose?: (x) => void
 }) => {
   const { t } = useTranslation('common')
+  const [acceptRisks, setAcceptRisks] = useState(false)
   const [, setAlphaAccepted] = useLocalStorageState(ALPHA_MODAL_KEY, false)
 
   const handleAccept = () => {
@@ -24,7 +27,7 @@ const AlphaModal = ({
     <Modal isOpen={isOpen} onClose={onClose} hideClose>
       <Modal.Header>
         <div className="flex flex-col items-center">
-          <div className="flex space-x-8 items-center justify-center ">
+          <div className="flex space-x-8 items-center justify-center">
             <img
               className={`h-12 w-auto`}
               src="/assets/icons/logo.svg"
@@ -33,29 +36,45 @@ const AlphaModal = ({
           </div>
         </div>
       </Modal.Header>
-      <div className={`text-th-fgd-2 text-center text-xl text-strong`}>
+      <h1 className="m-auto mb-4 relative w-max">
         {t('v3-welcome')}
-      </div>
-      <div className="text-th-fgd-2 text-center my-4">{t('v3-unaudited')}</div>
-      <div className="text-th-fgd-2 text-center my-4">
-        {t('v3-new')}{' '}
-        <a
-          href="https://v2.mango.markets"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          https://v2.mango.markets
-        </a>
-      </div>
-      <div className="text-th-fgd-2 text-center my-2">
-        &#x1F642; &#129389;&#129309;
-      </div>
-      <div className={`text-th-fgd-2 text-center`}>
-        <div className={`mt-4 flex justify-center`}>
-          <Button onClick={handleAccept}>
-            <div className={`flex items-center`}>{t('accept')}</div>
-          </Button>
+        <span className="absolute bg-th-primary font-bold px-1.5 py-0.5 -right-8 rounded-full text-black text-xs -top-1 w-max">
+          V3
+        </span>
+      </h1>
+      <div className="bg-th-bkg-3 p-4 space-y-3 rounded-md">
+        <div className="flex items-center text-th-fgd-1">
+          <CheckCircleIcon className="flex-shrink-0 h-5 mr-2 text-th-green w-5" />
+          Cross‑collateralized leverage trading
         </div>
+        <div className="flex items-center text-th-fgd-1">
+          <CheckCircleIcon className="flex-shrink-0 h-5 mr-2 text-th-green w-5" />
+          All assets count as collateral to trade or borrow
+        </div>
+        <div className="flex items-center text-th-fgd-1">
+          <CheckCircleIcon className="flex-shrink-0 h-5 mr-2 text-th-green w-5" />
+          Deposit any asset and earn interest automatically
+        </div>
+        <div className="flex items-center text-th-fgd-1">
+          <CheckCircleIcon className="flex-shrink-0 h-5 mr-2 text-th-green w-5" />
+          Borrow against your assets for other DeFi activities
+        </div>
+      </div>
+      <div className="px-6 text-th-fgd-3 text-center mt-4">
+        {t('v3-unaudited')}
+      </div>
+      <div className="border border-th-fgd-4 mt-4 p-3 rounded-md">
+        <Checkbox
+          checked={acceptRisks}
+          onChange={(e) => setAcceptRisks(e.target.checked)}
+        >
+          I understand and accept the risks
+        </Checkbox>
+      </div>
+      <div className={`mt-6 flex justify-center`}>
+        <Button disabled={!acceptRisks} onClick={handleAccept}>
+          Let&apos;s Go
+        </Button>
       </div>
     </Modal>
   )
