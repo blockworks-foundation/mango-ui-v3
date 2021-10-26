@@ -102,7 +102,7 @@ const FeeDiscountsTable = () => {
           <div className="px-4 mt-4 sm:mt-0">
             <div>{t('maker-fee')}</div>
             <div className="text-th-fgd-3 text-normal">
-              {percentFormat.format(0.0)}
+              {percentFormat.format(-0.0004)}
             </div>
           </div>
           <div className="px-4 mt-4 sm:mt-0">
