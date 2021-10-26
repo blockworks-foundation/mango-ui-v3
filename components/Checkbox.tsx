@@ -1,27 +1,25 @@
 import React from 'react'
-import styled from '@emotion/styled'
 import { CheckIcon } from '@heroicons/react/solid'
-
-const HiddenCheckbox = styled.input`
-  border: 0;
-  clip: rect(0 0 0 0);
-  clippath: inset(50%);
-  height: 1px;
-  margin: -1px;
-  overflow: hidden;
-  padding: 0;
-  position: absolute;
-  white-space: nowrap;
-  width: 1px;
-`
 
 const Checkbox = ({ checked, children, disabled = false, ...props }) => (
   <label className="cursor-pointer flex items-center">
-    <HiddenCheckbox
+    <input
       checked={checked}
       {...props}
       disabled={disabled}
       type="checkbox"
+      style={{
+        border: '0',
+        clip: 'rect(0 0 0 0)',
+        clipPath: 'inset(50%)',
+        height: '1px',
+        margin: '-1px',
+        overflow: 'hidden',
+        padding: '0',
+        position: 'absolute',
+        whiteSpace: 'nowrap',
+        width: '1px',
+      }}
     />
     <div
       className={`${
