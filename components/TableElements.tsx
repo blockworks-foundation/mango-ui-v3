@@ -10,7 +10,7 @@ export const TrHead = ({ children }) => (
 )
 
 export const Th = ({ children }) => (
-  <th className="px-6 pb-2 text-left font-normal" scope="col">
+  <th className="px-4 pb-2 text-left font-normal" scope="col">
     {children}
   </th>
 )
@@ -30,7 +30,7 @@ export const TrBody = ({ children, index }) => (
 )
 
 export const Td = ({ children }) => (
-  <td className="px-6 py-3.5 whitespace-nowrap text-sm text-th-fgd-1">
+  <td className="px-4 py-3.5 whitespace-nowrap text-sm text-th-fgd-1">
     {children}
   </td>
 )
