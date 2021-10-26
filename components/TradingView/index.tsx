@@ -14,7 +14,7 @@ import { useOpenOrders } from '../../hooks/useOpenOrders'
 import { Order, Market } from '@project-serum/serum/lib/market'
 import { PerpOrder, PerpMarket } from '@blockworks-foundation/mango-client'
 import { notify } from '../../utils/notifications'
-import { sleep, formatUsdValue } from '../../utils'
+import { sleep, formatUsdValue, usdFormatter } from '../../utils'
 import useInterval from '../../hooks/useInterval'
 import { PerpTriggerOrder } from '../../@types/types'
 import { useTranslation } from 'next-i18next'
@@ -431,6 +431,9 @@ const TVChartContainer = () => {
   function getLineText(order, market) {
     const orderSideTranslated = t(order.side)
     if (order.perpTrigger?.clientOrderId) {
+      const triggerPrice =
+        order.perpTrigger.triggerPrice *
+        Math.pow(10, market.config.baseDecimals - market.config.quoteDecimals)
       const orderTypeTranslated = t(order.orderType)
       const triggerConditionTranslated = t(order.perpTrigger.triggerCondition)
       if (order.side === 'buy') {
@@ -441,7 +444,7 @@ const TVChartContainer = () => {
               orderType: orderTypeTranslated,
               orderSide: orderSideTranslated,
               triggerCondition: triggerConditionTranslated,
-              triggerPrice: Number(order.perpTrigger.triggerPrice),
+              triggerPrice: usdFormatter(triggerPrice),
             })
           )
         } else {
@@ -451,7 +454,7 @@ const TVChartContainer = () => {
               orderType: orderTypeTranslated,
               orderSide: orderSideTranslated,
               triggerCondition: triggerConditionTranslated,
-              triggerPrice: Number(order.perpTrigger.triggerPrice),
+              triggerPrice: usdFormatter(triggerPrice),
             })
           )
         }
@@ -463,7 +466,7 @@ const TVChartContainer = () => {
               orderType: orderTypeTranslated,
               orderSide: orderSideTranslated,
               triggerCondition: triggerConditionTranslated,
-              triggerPrice: Number(order.perpTrigger.triggerPrice),
+              triggerPrice: usdFormatter(triggerPrice),
             })
           )
         } else {
@@ -473,7 +476,7 @@ const TVChartContainer = () => {
               orderType: orderTypeTranslated,
               orderSide: orderSideTranslated,
               triggerCondition: triggerConditionTranslated,
-              triggerPrice: Number(order.perpTrigger.triggerPrice),
+              triggerPrice: usdFormatter(triggerPrice),
             })
           )
         }
