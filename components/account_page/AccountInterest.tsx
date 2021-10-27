@@ -1,12 +1,14 @@
 import { getTokenBySymbol } from '@blockworks-foundation/mango-client'
 import { useEffect, useMemo, useState } from 'react'
 import useMangoStore from '../../stores/useMangoStore'
-// import Chart from '../Chart'
-// import Loading from '../Loading'
-// import Select from '../Select'
+import Loading from '../Loading'
+import Select from '../Select'
 import { Table, Td, Th, TrBody, TrHead } from '../TableElements'
 import { useTranslation } from 'next-i18next'
-// import { isEmpty } from 'lodash'
+import { isEmpty } from 'lodash'
+import usePagination from '../../hooks/usePagination'
+import { roundToDecimal } from '../../utils/'
+import Pagination from '../Pagination'
 
 interface InterestStats {
   [key: string]: {
@@ -20,13 +22,33 @@ const AccountInterest = () => {
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const [interestStats, setInterestStats] = useState<any>([])
-  // const [hourlyInterestStats, setHourlyInterestStats] = useState<any>(null)
-  // const [loading, setLoading] = useState(false)
-  // const [selectedAsset, setSelectedAsset] = useState<string>('USDC')
+  const [hourlyInterestStats, setHourlyInterestStats] = useState<any>([])
+  const [loading, setLoading] = useState(false)
+  const [selectedAsset, setSelectedAsset] = useState<string>('USDC')
+  const {
+    paginated,
+    setData,
+    totalPages,
+    nextPage,
+    previousPage,
+    page,
+    firstPage,
+    lastPage,
+  } = usePagination(hourlyInterestStats[selectedAsset])
 
   const mangoAccountPk = useMemo(() => {
     return mangoAccount.publicKey.toString()
   }, [mangoAccount])
+
+  const token = useMemo(() => {
+    return getTokenBySymbol(groupConfig, selectedAsset)
+  }, [selectedAsset])
+
+  useEffect(() => {
+    if (!isEmpty(hourlyInterestStats)) {
+      setData(hourlyInterestStats[selectedAsset])
+    }
+  }, [selectedAsset, hourlyInterestStats])
 
   useEffect(() => {
     const fetchInterestStats = async () => {
@@ -38,28 +60,43 @@ const AccountInterest = () => {
       setInterestStats(Object.entries(parsedResponse))
     }
 
-    // const fetchHourlyInterestStats = async () => {
-    //   setLoading(true)
-    //   const response = await fetch(
-    //     `https://mango-transaction-log.herokuapp.com/v3/stats/hourly-interest?mango-account=${mangoAccountPk}`
-    //   )
-    //   const parsedResponse = await response.json()
+    const fetchHourlyInterestStats = async () => {
+      setLoading(true)
+      const response = await fetch(
+        `https://mango-transaction-log.herokuapp.com/v3/stats/hourly-interest?mango-account=${mangoAccountPk}`
+      )
+      const parsedResponse = await response.json()
+      const assets = Object.keys(parsedResponse)
 
-    //   const assets = Object.keys(parsedResponse)
+      const stats = {}
+      for (const asset of assets) {
+        const x: any = Object.entries(parsedResponse[asset])
+        const token = getTokenBySymbol(groupConfig, asset)
 
-    //   const stats = {}
-    //   for (const asset of assets) {
-    //     const x = Object.entries(parsedResponse[asset])
-    //     stats[asset] = x.map(([key, value]) => {
-    //       // @ts-ignore
-    //       return { ...value, time: key }
-    //     })
-    //   }
-    //   setLoading(false)
-    //   setHourlyInterestStats(stats)
-    // }
+        stats[asset] = x
+          .map(([key, value]) => {
+            const borrows = roundToDecimal(
+              value.borrow_interest,
+              token.decimals + 1
+            )
+            const deposits = roundToDecimal(
+              value.deposit_interest,
+              token.decimals + 1
+            )
+            if (borrows > 0 || deposits > 0) {
+              return { ...value, time: key }
+            } else {
+              return null
+            }
+          })
+          .filter((x) => x)
+          .reverse()
+      }
+      setLoading(false)
+      setHourlyInterestStats(stats)
+    }
 
-    // fetchHourlyInterestStats()
+    fetchHourlyInterestStats()
     fetchInterestStats()
   }, [mangoAccountPk])
 
@@ -129,7 +166,7 @@ const AccountInterest = () => {
               )}
             </tbody>
           </Table>
-          {/* <>
+          <>
             {!isEmpty(hourlyInterestStats) && !loading ? (
               <>
                 <div className="flex items-center justify-between my-4 w-full">
@@ -170,34 +207,55 @@ const AccountInterest = () => {
                     ))}
                   </div>
                 </div>
+                <div>
+                  <div>
+                    {paginated.length ? (
+                      <Table>
+                        <thead>
+                          <TrHead>
+                            <Th>{t('time')}</Th>
+                            <Th>{t('interest')}</Th>
+                          </TrHead>
+                        </thead>
+                        <tbody>
+                          {paginated.map((stat, index) => {
+                            const date = new Date(stat.time)
 
-                <div className="grid grid-flow-col grid-cols-1 grid-rows-4 gap-2 sm:gap-4">
-                  <div
-                    className="border border-th-bkg-4 relative md:mb-0 p-4 rounded-md"
-                    style={{ height: '330px' }}
-                  >
-                    <Chart
-                      title={t('hourly-deposit-interest')}
-                      xAxis="time"
-                      yAxis="deposit_interest"
-                      data={hourlyInterestStats[selectedAsset]}
-                      labelFormat={(x) => x.toFixed(6)}
-                      type="area"
-                    />
+                            return (
+                              <TrBody index={index} key={stat.time}>
+                                <Td>
+                                  {date.toLocaleDateString()}{' '}
+                                  {date.toLocaleTimeString()}
+                                </Td>
+                                <Td>
+                                  {stat.borrow_interest > 0
+                                    ? `-${stat.borrow_interest.toFixed(
+                                        token.decimals + 1
+                                      )}`
+                                    : stat.deposit_interest.toFixed(
+                                        token.decimals + 1
+                                      )}{' '}
+                                  {selectedAsset}
+                                </Td>
+                              </TrBody>
+                            )
+                          })}
+                        </tbody>
+                      </Table>
+                    ) : (
+                      <div className="flex justify-center w-full bg-th-bkg-3 py-4">
+                        No interest earned/paid
+                      </div>
+                    )}
                   </div>
-                  <div
-                    className="border border-th-bkg-4 relative p-4 rounded-md"
-                    style={{ height: '330px' }}
-                  >
-                    <Chart
-                      title={t('hourly-borrow-interest')}
-                      xAxis="time"
-                      yAxis="borrow_interest"
-                      data={hourlyInterestStats[selectedAsset]}
-                      labelFormat={(x) => x.toFixed(6)}
-                      type="area"
-                    />
-                  </div>
+                  <Pagination
+                    page={page}
+                    totalPages={totalPages}
+                    nextPage={nextPage}
+                    lastPage={lastPage}
+                    firstPage={firstPage}
+                    previousPage={previousPage}
+                  />
                 </div>
               </>
             ) : loading ? (
@@ -207,7 +265,7 @@ const AccountInterest = () => {
                 </div>
               </div>
             ) : null}
-          </> */}
+          </>
         </div>
       ) : (
         <div>{t('connect-wallet')}</div>
