@@ -53,8 +53,17 @@ const useHydrateStore = () => {
   }, 30 * SECONDS)
 
   useEffect(() => {
+    const market = markets[marketConfig.publicKey.toString()]
     setMangoStore((state) => {
-      state.selectedMarket.current = markets[marketConfig.publicKey.toString()]
+      state.selectedMarket.current = market
+      state.selectedMarket.orderBook.bids = decodeBook(
+        market,
+        state.accountInfos[marketConfig.bidsKey.toString()]
+      )
+      state.selectedMarket.orderBook.asks = decodeBook(
+        market,
+        state.accountInfos[marketConfig.asksKey.toString()]
+      )
     })
   }, [marketConfig, markets, setMangoStore])
 
