@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import styled from '@emotion/styled'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { ChartBarIcon, CurrencyDollarIcon } from '@heroicons/react/solid'
@@ -8,10 +7,11 @@ import useMangoGroupConfig from '../../hooks/useMangoGroupConfig'
 import MarketsModal from '../MarketsModal'
 import { useTranslation } from 'next-i18next'
 
-const StyledBarItemLabel = styled.div`
-  font-size: 0.6rem;
-  line-height: 1;
-`
+const StyledBarItemLabel = ({ children, ...props }) => (
+  <div style={{ fontSize: '0.6rem', lineHeight: 1 }} {...props}>
+    {children}
+  </div>
+)
 
 const BottomBar = () => {
   const { t } = useTranslation('common')

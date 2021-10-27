@@ -1,11 +1,15 @@
-import styled from '@emotion/styled'
+export const PageBodyWrapper = ({ children, ...props }) => (
+  <div style={{ minHeight: 'calc(100vh - 105px)' }} {...props}>
+    {children}
+  </div>
+)
 
-export const PageBodyWrapper = styled.div`
-  min-height: calc(100vh - 105px);
-  @media screen and (min-width: 768px) {
-    min-height: 100vh;
-  }
-`
+// export const PageBodyWrapper = styled.div`
+//   min-height: calc(100vh - 105px);
+//   @media screen and (min-width: 768px) {
+//     min-height: 100vh;
+//   }
+// `
 
 export const ElementTitle = ({
   children,

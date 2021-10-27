@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import styled from '@emotion/styled'
 import { PlusCircleIcon } from '@heroicons/react/outline'
 import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
 import useMangoStore from '../stores/useMangoStore'
@@ -9,22 +8,14 @@ import MarketsModal from './MarketsModal'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import { useTranslation } from 'next-i18next'
 
-const StyledMarketSelectWrapper = styled.div`
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+// const StyledMarketSelectWrapper = styled.div`
+//   -ms-overflow-style: none;
+//   scrollbar-width: none;
 
-  ::-webkit-scrollbar {
-    display: none;
-  }
-`
-
-const StyledArrow = styled.div`
-  width: 0;
-  height: 0;
-  border-top: 20px solid transparent;
-  border-bottom: 20px solid transparent;
-  padding-right: 0.5rem;
-`
+//   ::-webkit-scrollbar {
+//     display: none;
+//   }
+// `
 
 const MarketSelect = () => {
   const { t } = useTranslation('common')
@@ -53,11 +44,27 @@ const MarketSelect = () => {
 
   return (
     <div className="hidden md:flex">
-      <StyledMarketSelectWrapper className="bg-th-bkg-3 flex h-10 w-full">
+      <div
+        // style={{
+        //   '-ms-overflow-style': 'none',
+        //   scrollbarWidth: 'none',
+        //   '::-webkit-scrollbar': { display: 'none' },
+        // }}
+        className="bg-th-bkg-3 flex h-10 w-full"
+      >
         <div className="bg-th-bkg-4 flex items-center pl-6 md:pl-9 pr-1">
           <ShowMarketsButton onClick={() => setShowMarketsModal(true)} t={t} />
         </div>
-        <StyledArrow className="border-l-[20px] border-th-bkg-4" />
+        <div
+          style={{
+            width: '0',
+            height: '0',
+            borderTop: '20px solid transparent',
+            borderBottom: '20px solid transparent',
+            paddingRight: '0.5rem',
+          }}
+          className="border-l-[20px] border-th-bkg-4"
+        />
         <div className="flex items-center justify-between w-full">
           <div className="flex items-center">
             {sortedMarkets
@@ -71,7 +78,7 @@ const MarketSelect = () => {
               ))}
           </div>
         </div>
-      </StyledMarketSelectWrapper>
+      </div>
       <div className="bg-th-bkg-3 flex items-center justify-between py-3 px-6 sm:hidden">
         <div className="flex items-center">
           <img

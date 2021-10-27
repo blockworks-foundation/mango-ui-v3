@@ -1,5 +1,4 @@
 import { useMemo } from 'react'
-import styled from '@emotion/styled'
 import {
   // ChartBarIcon,
   ScaleIcon,
@@ -19,10 +18,6 @@ import useLocalStorageState from '../../hooks/useLocalStorageState'
 import { ExclamationIcon } from '@heroicons/react/solid'
 import { useTranslation } from 'next-i18next'
 
-const div = styled.div`
-  font-size: 1.8rem;
-  line-height: 1.2;
-`
 const SHOW_ZERO_BALANCE_KEY = 'showZeroAccountBalances-0.2'
 
 export default function AccountOverview() {

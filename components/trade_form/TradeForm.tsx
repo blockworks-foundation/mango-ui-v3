@@ -9,8 +9,8 @@ import {
   FlipCardBack,
   FlipCardFront,
   FlipCardInner,
-  StyledFloatingElement,
 } from '../FlipCard'
+import FloatingElement from '../FloatingElement'
 
 export default function TradeForm() {
   const [showAdvancedFrom, setShowAdvancedForm] = useState(true)
@@ -36,8 +36,8 @@ export default function TradeForm() {
       <FlipCardInner flip={showAdvancedFrom}>
         {showAdvancedFrom ? (
           <FlipCardFront>
-            <StyledFloatingElement
-              className="h-full px-1 py-0 md:px-4 md:py-4"
+            <FloatingElement
+              className="h-full px-1 py-0 md:px-4 md:py-4 fadein-floating-element"
               showConnect
             >
               <div className={`${!connected ? 'filter blur-sm' : ''}`}>
@@ -49,11 +49,14 @@ export default function TradeForm() {
                 </button> */}
                 <AdvancedTradeForm initLeverage={initLeverage} />
               </div>
-            </StyledFloatingElement>
+            </FloatingElement>
           </FlipCardFront>
         ) : (
           <FlipCardBack>
-            <StyledFloatingElement className="h-full px-1 md:px-4" showConnect>
+            <FloatingElement
+              className="h-full px-1 md:px-4 fadein-floating-element"
+              showConnect
+            >
               <div className={`${!connected ? 'filter blur-sm' : ''}`}>
                 <button
                   onClick={handleFormChange}
@@ -63,7 +66,7 @@ export default function TradeForm() {
                 </button>
                 <SimpleTradeForm initLeverage={initLeverage} />
               </div>
-            </StyledFloatingElement>
+            </FloatingElement>
           </FlipCardBack>
         )}
       </FlipCardInner>
