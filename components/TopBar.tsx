@@ -12,11 +12,10 @@ import LanguageSwitch from './LanguageSwitch'
 import { DEFAULT_MARKET_KEY, initialMarket } from './SettingsModal'
 // import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
+import Settings from './Settings'
 
 const TopBar = () => {
   const { t } = useTranslation('common')
-  // const router = useRouter()
-  // const { pathname, asPath, query } = router
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const connected = useMangoStore((s) => s.wallet.connected)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
@@ -24,10 +23,6 @@ const TopBar = () => {
     DEFAULT_MARKET_KEY,
     initialMarket
   )
-
-  // const handleLocaleChange = (lang) => {
-  //   router.push({ pathname, query }, asPath, { locale: lang })
-  // }
 
   const handleCloseAccounts = useCallback(() => {
     setShowAccountsModal(false)
@@ -97,6 +92,9 @@ const TopBar = () => {
               </div>
               <div className={`pl-2`}>
                 <ThemeSwitch />
+              </div>
+              <div className="pl-2">
+                <Settings />
               </div>
               {mangoAccount ? (
                 <div className="pl-2">
