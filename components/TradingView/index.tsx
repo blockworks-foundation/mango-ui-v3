@@ -149,7 +149,7 @@ const TVChartContainer = () => {
     setLines(deleteLines())
 
     tvWidgetRef.current.onChartReady(function () {
-      var button = tvWidgetRef.current.createButton()
+      const button = tvWidgetRef.current.createButton()
       button.textContent = 'OL'
       button.style.color = theme === 'Dark' || theme === 'Mango' ? 'rgb(242, 201, 76)' : 'rgb(255, 156, 36)'
       button.setAttribute('title', 'Toggle order line visibility')
