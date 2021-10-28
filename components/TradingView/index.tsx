@@ -151,14 +151,26 @@ const TVChartContainer = () => {
     tvWidgetRef.current.onChartReady(function () {
       const button = tvWidgetRef.current.createButton()
       button.textContent = 'OL'
-      button.style.color = theme === 'Dark' || theme === 'Mango' ? 'rgb(242, 201, 76)' : 'rgb(255, 156, 36)'
+      button.style.color =
+        theme === 'Dark' || theme === 'Mango'
+          ? 'rgb(242, 201, 76)'
+          : 'rgb(255, 156, 36)'
       button.setAttribute('title', 'Toggle order line visibility')
       button.addEventListener('click', function () {
         toggleShowOrderLines((showOrderLines) => !showOrderLines)
-        if (button.style.color === 'rgb(255, 156, 36)' || button.style.color === 'rgb(242, 201, 76)') {
-          button.style.color = theme === 'Dark' || theme === 'Mango' ? 'rgb(138, 138, 138)' : 'rgb(138, 138, 138)'
+        if (
+          button.style.color === 'rgb(255, 156, 36)' ||
+          button.style.color === 'rgb(242, 201, 76)'
+        ) {
+          button.style.color =
+            theme === 'Dark' || theme === 'Mango'
+              ? 'rgb(138, 138, 138)'
+              : 'rgb(138, 138, 138)'
         } else {
-          button.style.color = theme === 'Dark' || theme === 'Mango' ? 'rgb(242, 201, 76)' : 'rgb(255, 156, 36)'
+          button.style.color =
+            theme === 'Dark' || theme === 'Mango'
+              ? 'rgb(242, 201, 76)'
+              : 'rgb(255, 156, 36)'
         }
       })
     })
