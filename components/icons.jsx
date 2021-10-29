@@ -142,7 +142,7 @@ export const ProfileIcon = ({ className }) => {
   )
 }
 
-export const AaveMonoIcon = ({ className }) => {
+export const AdaMonoIcon = ({ className }) => {
   return (
     <svg
       className={`${className}`}
