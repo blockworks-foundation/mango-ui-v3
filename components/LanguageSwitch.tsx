@@ -36,20 +36,24 @@ const LanguageSwitch = () => {
     setSavedLanguage(e)
   }
 
-  return mounted ? (
-    <DropMenu
-      button={
-        <div className="bg-th-bkg-4 flex items-center justify-center rounded-full w-8 h-8 text-th-fgd-1 focus:outline-none hover:text-th-primary">
-          <TranslateIcon className="h-4 w-4" />
-        </div>
-      }
-      value={savedLanguage}
-      onChange={(lang) => handleLangChange(lang)}
-      options={LANGS}
-      toolTipContent={t('change-language')}
-    />
-  ) : (
-    <div className="bg-th-bkg-3 rounded-full w-8 h-8" />
+  return (
+    <div id="intro-step-3">
+      {mounted ? (
+        <DropMenu
+          button={
+            <div className="bg-th-bkg-4 flex items-center justify-center rounded-full w-8 h-8 text-th-fgd-1 focus:outline-none hover:text-th-primary">
+              <TranslateIcon className="h-4 w-4" />
+            </div>
+          }
+          value={savedLanguage}
+          onChange={(lang) => handleLangChange(lang)}
+          options={LANGS}
+          toolTipContent={t('change-language')}
+        />
+      ) : (
+        <div className="bg-th-bkg-3 rounded-full w-8 h-8" />
+      )}
+    </div>
   )
 }
 

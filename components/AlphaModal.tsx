@@ -5,6 +5,7 @@ import Button from './Button'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import { useTranslation } from 'next-i18next'
 import Checkbox from './Checkbox'
+import { SHOW_TOUR_KEY } from './IntroTips'
 
 export const ALPHA_MODAL_KEY = 'mangoAlphaAccepted-3.06'
 
@@ -18,9 +19,15 @@ const AlphaModal = ({
   const { t } = useTranslation('common')
   const [acceptRisks, setAcceptRisks] = useState(false)
   const [, setAlphaAccepted] = useLocalStorageState(ALPHA_MODAL_KEY, false)
+  const [, setShowTips] = useLocalStorageState(SHOW_TOUR_KEY, false)
 
-  const handleAccept = () => {
+  const handleGetStarted = () => {
     setAlphaAccepted(true)
+  }
+
+  const handleTakeTour = () => {
+    setAlphaAccepted(true)
+    setShowTips(true)
   }
 
   return (
@@ -71,9 +78,20 @@ const AlphaModal = ({
           I understand and accept the risks
         </Checkbox>
       </div>
-      <div className={`mt-6 flex justify-center`}>
-        <Button disabled={!acceptRisks} onClick={handleAccept}>
-          Let&apos;s Go
+      <div className={`mt-6 flex justify-center space-x-4`}>
+        <Button
+          className="w-40"
+          disabled={!acceptRisks}
+          onClick={handleGetStarted}
+        >
+          Get Started
+        </Button>
+        <Button
+          className="w-40"
+          disabled={!acceptRisks}
+          onClick={handleTakeTour}
+        >
+          Take a Tour
         </Button>
       </div>
     </Modal>

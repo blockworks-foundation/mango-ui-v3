@@ -254,10 +254,14 @@ const MarketDetails = () => {
         </div>
       </div>
       <div className="absolute right-4 bottom-0 sm:bottom-auto lg:right-6 flex items-center justify-end">
-        {!isMobile ? <UiLock /> : null}
-        {!isMobile && connected && mangoAccount ? (
-          <ManualRefresh className="pl-2" />
+        {!isMobile ? (
+          <div id="intro-step-5">
+            <UiLock />
+          </div>
         ) : null}
+        <div className="ml-2" id="intro-step-4">
+          {!isMobile && connected && mangoAccount ? <ManualRefresh /> : null}
+        </div>
       </div>
     </div>
   )

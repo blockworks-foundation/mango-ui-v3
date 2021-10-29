@@ -321,3 +321,79 @@ input[type='number'] {
 .react-swipeable-view-container > div[aria-hidden='true'] {
   height: 0;
 }
+
+/* Intro Tour */
+
+.introjs-tooltip {
+  @apply bg-transparent;
+}
+
+.introjs-arrow {
+  @apply border-0;
+}
+
+.intro-tooltip * {
+  @apply bg-th-bkg-1 font-body text-th-fgd-1;
+}
+
+.introjs-skipbutton {
+  @apply text-sm text-th-fgd-3;
+}
+
+.introjs-tooltip-header {
+  @apply rounded-t-md;
+  padding: 10px;
+}
+
+.introjs-tooltipbuttons {
+  @apply border-th-bkg-4 hidden font-bold rounded-b-md focus:outline-none;
+}
+
+.introjs-nextbutton {
+  @apply bg-th-bkg-4 border-th-bkg-4 flex h-4 items-center rounded-full text-sm text-th-fgd-1;
+  text-shadow: none;
+}
+
+.introjs-prevbutton {
+  @apply hidden;
+}
+
+.introjs-button:hover {
+  @apply bg-th-bkg-4 border-th-bkg-4 brightness-[1.15] text-th-fgd-1;
+}
+
+.introjs-button:focus {
+  @apply bg-th-bkg-4 border-th-bkg-4 shadow-none text-th-fgd-1;
+}
+
+.introjs-hidden {
+  @apply hidden;
+}
+
+.introjs-progressbar {
+  @apply bg-th-primary;
+}
+
+.intro-tooltip h4 {
+  @apply font-body font-bold mb-1 text-lg;
+}
+
+.intro-tooltip p {
+  @apply font-body text-sm text-th-fgd-3;
+}
+
+.introjs-bullets ul li a {
+  @apply bg-th-bkg-4;
+}
+
+.introjs-bullets ul li a:hover {
+  @apply bg-th-fgd-4;
+}
+
+.introjs-bullets ul li a.active {
+  @apply bg-th-primary;
+}
+
+.intro-highlight {
+  @apply border-0;
+}
