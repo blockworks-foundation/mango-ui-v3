@@ -39,6 +39,31 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
     )
   }
 
+  const renderMarketName = (trade: any) => {
+    let marketType, baseSymbol
+    if (trade.marketName.includes('PERP')) {
+      marketType = 'perp'
+      baseSymbol = trade.marketName.slice(0, trade.marketName.indexOf('-'))
+    } else if (trade.marketName.includes('USDC')) {
+      marketType = 'spot'
+      baseSymbol = trade.marketName.slice(0, trade.marketName.indexOf('/'))
+    } else {
+      return <span>{trade.marketName}</span>
+    }
+    const location = `/${marketType}/${baseSymbol}`
+    if (asPath.includes(location)) {
+      return <span>{trade.marketName}</span>
+    } else {
+      return (
+        <Link href={location}>
+          <a className="text-th-fgd-1 underline hover:no-underline hover:text-th-fgd-1">
+            {trade.marketName}
+          </a>
+        </Link>
+      )
+    }
+  }
+
   const filteredTrades = numTrades ? items.slice(0, numTrades) : items
 
   return (
@@ -205,7 +230,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                               .toLowerCase()}.svg`}
                             className={`mr-2.5`}
                           />
-                          <div>{trade.marketName}</div>
+                          {renderMarketName(trade)}
                         </div>
                       </Td>
                       <Td>
