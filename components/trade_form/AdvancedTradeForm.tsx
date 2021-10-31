@@ -148,24 +148,27 @@ export default function AdvancedTradeForm({
       ? I80F48.fromNumber(price)
       : mangoGroup.getPrice(marketIndex, mangoCache)
 
-    const token =
-      side === 'buy'
-        ? getTokenBySymbol(groupConfig, 'USDC')
-        : getTokenBySymbol(groupConfig, marketConfig.baseSymbol)
-    const tokenIndex = mangoGroup.getTokenIndex(token.mintKey)
+    let spotMax
+    if (marketConfig.kind === 'spot') {
+      const token =
+        side === 'buy'
+          ? getTokenBySymbol(groupConfig, 'USDC')
+          : getTokenBySymbol(groupConfig, marketConfig.baseSymbol)
+      const tokenIndex = mangoGroup.getTokenIndex(token.mintKey)
 
-    const availableBalance = floorToDecimal(
-      nativeI80F48ToUi(
-        mangoAccount.getAvailableBalance(mangoGroup, mangoCache, tokenIndex),
+      const availableBalance = floorToDecimal(
+        nativeI80F48ToUi(
+          mangoAccount.getAvailableBalance(mangoGroup, mangoCache, tokenIndex),
+          token.decimals
+        ).toNumber(),
         token.decimals
-      ).toNumber(),
-      token.decimals
-    )
+      )
 
-    const spotMax =
-      side === 'buy'
-        ? availableBalance / priceOrDefault.toNumber()
-        : availableBalance
+      spotMax =
+        side === 'buy'
+          ? availableBalance / priceOrDefault.toNumber()
+          : availableBalance
+    }
 
     const {
       max: maxQuote,
