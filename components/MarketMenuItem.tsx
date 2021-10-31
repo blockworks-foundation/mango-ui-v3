@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import {
-  AaveMonoIcon,
   BtcMonoIcon,
   CopeMonoIcon,
   DogeMonoIcon,
@@ -23,7 +22,6 @@ import {
 } from './icons'
 
 const symbolIcons = {
-  AaveMonoIcon,
   BtcMonoIcon,
   CopeMonoIcon,
   DogeMonoIcon,
