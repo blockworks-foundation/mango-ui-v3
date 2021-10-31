@@ -16,7 +16,7 @@ const HiddenCheckbox = styled.input`
 `
 
 const Checkbox = ({ checked, children, disabled = false, ...props }) => (
-  <label className="cursor-pointer flex items-center">
+  <label className="cursor-pointer default-transition flex items-center text-th-fgd-3 hover:text-th-fgd-1">
     <HiddenCheckbox
       checked={checked}
       {...props}
@@ -34,7 +34,7 @@ const Checkbox = ({ checked, children, disabled = false, ...props }) => (
         }`}
       />
     </div>
-    <span className="ml-2 text-xs text-th-fgd-3">{children}</span>
+    <span className="ml-2 text-xs">{children}</span>
   </label>
 )
 

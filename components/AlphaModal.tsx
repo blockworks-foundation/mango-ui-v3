@@ -6,6 +6,8 @@ import useLocalStorageState from '../hooks/useLocalStorageState'
 import { useTranslation } from 'next-i18next'
 import Checkbox from './Checkbox'
 import { SHOW_TOUR_KEY } from './IntroTips'
+import { useViewport } from '../hooks/useViewport'
+import { breakpoints } from './TradePageGrid'
 
 export const ALPHA_MODAL_KEY = 'mangoAlphaAccepted-3.06'
 
@@ -20,6 +22,8 @@ const AlphaModal = ({
   const [acceptRisks, setAcceptRisks] = useState(false)
   const [, setAlphaAccepted] = useLocalStorageState(ALPHA_MODAL_KEY, false)
   const [, setShowTips] = useLocalStorageState(SHOW_TOUR_KEY, false)
+  const { width } = useViewport()
+  const hideTips = width ? width < breakpoints.md : false
 
   const handleGetStarted = () => {
     setAlphaAccepted(true)
@@ -86,13 +90,15 @@ const AlphaModal = ({
         >
           Get Started
         </Button>
-        <Button
-          className="w-40"
-          disabled={!acceptRisks}
-          onClick={handleTakeTour}
-        >
-          Take a Tour
-        </Button>
+        {!hideTips ? (
+          <Button
+            className="w-40"
+            disabled={!acceptRisks}
+            onClick={handleTakeTour}
+          >
+            Show Tips
+          </Button>
+        ) : null}
       </div>
     </Modal>
   )

@@ -14,6 +14,8 @@ import AlphaModal, { ALPHA_MODAL_KEY } from '../../components/AlphaModal'
 import { PageBodyWrapper } from '../../components/styles'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import IntroTips, { SHOW_TOUR_KEY } from '../../components/IntroTips'
+import { useViewport } from '../../hooks/useViewport'
+import { breakpoints } from '../../components/TradePageGrid'
 
 export async function getServerSideProps({ locale }) {
   return {
@@ -35,6 +37,8 @@ const PerpMarket = () => {
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const router = useRouter()
   const { market } = router.query
+  const { width } = useViewport()
+  const hideTips = width ? width < breakpoints.md : false
 
   useEffect(() => {
     if (market && mangoGroup) {
@@ -64,7 +68,7 @@ const PerpMarket = () => {
 
   return (
     <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all `}>
-      <IntroTips connected={connected} showTour={showTour} />
+      {showTour && !hideTips ? <IntroTips connected={connected} /> : null}
       <TopBar />
       <MarketSelect />
       <PageBodyWrapper className="p-1 sm:px-2 sm:py-1 md:px-2 md:py-1">

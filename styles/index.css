@@ -342,15 +342,19 @@ input[type='number'] {
 
 .introjs-tooltip-header {
   @apply rounded-t-md;
-  padding: 10px;
+  padding: 10px 10px 0px;
+}
+
+.introjs-tooltiptext {
+  padding: 10px 20px 20px;
 }
 
 .introjs-tooltipbuttons {
-  @apply border-th-bkg-4 hidden font-bold rounded-b-md focus:outline-none;
+  @apply border-th-bkg-4 font-bold rounded-b-md focus:outline-none;
 }
 
 .introjs-nextbutton {
-  @apply bg-th-bkg-4 border-th-bkg-4 flex h-4 items-center rounded-full text-sm text-th-fgd-1;
+  @apply bg-th-bkg-4 border-th-bkg-4 flex h-4 items-center opacity-60 pointer-events-none rounded-full text-sm text-th-fgd-1;
   text-shadow: none;
 }
 
@@ -375,11 +379,11 @@ input[type='number'] {
 }
 
 .intro-tooltip h4 {
-  @apply font-body font-bold mb-1 text-lg;
+  @apply font-body font-bold mb-2 text-lg;
 }
 
 .intro-tooltip p {
-  @apply font-body text-sm text-th-fgd-3;
+  @apply font-body mb-1 text-sm text-th-fgd-3;
 }
 
 .introjs-bullets ul li a {
@@ -396,4 +400,8 @@ input[type='number'] {
 
 .intro-highlight {
   @apply border-0;
+}
+
+.introjs-progress {
+  @apply rounded-none h-0.5 m-0;
 }
