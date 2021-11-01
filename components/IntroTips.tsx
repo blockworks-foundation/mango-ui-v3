@@ -29,6 +29,7 @@ class IntroTips extends Component<Props, State> {
               <p>We&apos;ll show you around...</p>
             </div>
           ),
+          position: 'left',
           tooltipClass: 'intro-tooltip',
           highlightClass: 'intro-highlight',
         },
@@ -63,11 +64,8 @@ class IntroTips extends Component<Props, State> {
           element: '#intro-step-3',
           intro: (
             <div>
-              <h4>Multiple Languages</h4>
-              <p>
-                English not your preferred language? No problem, change it here.
-                More languages coming soon...
-              </p>
+              <h4>Multilingual?</h4>
+              <p>Choose another language here. More coming soon...</p>
             </div>
           ),
           tooltipClass: 'intro-tooltip',
@@ -78,7 +76,7 @@ class IntroTips extends Component<Props, State> {
           element: '#intro-step-4',
           intro: (
             <div>
-              <h4>Manual Refresh</h4>
+              <h4>Manual Data Refresh</h4>
               <p>
                 Data is refreshed automatically but you can manually refresh it
                 here.
@@ -109,18 +107,18 @@ class IntroTips extends Component<Props, State> {
           intro: (
             <div>
               <h4>Perp Position Details</h4>
-              <p>The details of your open perp position.</p>
               <p>
-                If you&apos;re unfamiliar with how settling PnL works,{' '}
+                Perp positions accrue Unsettled PnL as price changes. This can
+                be settled by anyone at anytime. Settling PnL adds or removes
+                that amount from your USDC balance.{' '}
                 <a
                   className="underline"
-                  href="https://docs.mango.markets/mango-v3/overview#settle-pnl"
+                  href="https://docs.mango.markets/mango-v3/perp-faq#what-is-my-unsettled-pnl"
                   rel="noopener noreferrer"
                   target="_blank"
                 >
-                  read up on it
-                </a>{' '}
-                before you get started.
+                  Read More
+                </a>
               </p>
             </div>
           ),
@@ -135,19 +133,50 @@ class IntroTips extends Component<Props, State> {
             <div>
               <h4>Account Details</h4>
               <p>
-                Don&apos;t have a Mango Account yet? One will be created for you
-                when you make your first deposit.
+                When you make your first deposit we&apos;ll set you up with a
+                Mango Account. You&apos;ll need at least 0.0035 SOL in your
+                wallet to cover the rent/cost of creating the account.
               </p>
+            </div>
+          ),
+          position: 'left',
+          tooltipClass: 'intro-tooltip',
+          highlightClass: 'intro-highlight',
+          disableInteraction: true,
+        },
+        {
+          element: '#intro-step-7',
+          intro: (
+            <div>
+              <h4>Collateral Available</h4>
               <p>
-                Understanding account health is important for a fruitful
-                experience.{' '}
+                This reflects the collateral value in your account that can be
+                used to take on leverage. Assets carry different collateral
+                weights depending on the risk they present to the platform.
+              </p>
+            </div>
+          ),
+          position: 'left',
+          tooltipClass: 'intro-tooltip',
+          highlightClass: 'intro-highlight',
+          disableInteraction: true,
+        },
+        {
+          element: '#intro-step-7',
+          intro: (
+            <div>
+              <h4>Account Health</h4>
+              <p>
+                To avoid liqudation you must keep your account health above 0%.
+                To increase the health of your account, reduce borrows or
+                deposit funds.{' '}
                 <a
                   className="underline"
                   href="https://docs.mango.markets/mango-v3/overview#health"
                   rel="noopener noreferrer"
                   target="_blank"
                 >
-                  Read more
+                  Read More
                 </a>
               </p>
             </div>
@@ -196,6 +225,8 @@ class IntroTips extends Component<Props, State> {
           exitOnOverlayClick: false,
           showProgress: true,
           showBullets: false,
+          doneLabel: 'Get Started',
+          overlayOpacity: 0.6,
         }}
         ref={(steps) => (this.steps = steps)}
       />

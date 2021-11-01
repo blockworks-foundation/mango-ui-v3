@@ -5,7 +5,7 @@ import { useRouter } from 'next/router'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import { useTranslation } from 'next-i18next'
 
-const LANGS = [
+export const LANGS = [
   { locale: 'en', name: 'english', description: 'english' },
   { locale: 'es', name: 'spanish', description: 'spanish' },
   {

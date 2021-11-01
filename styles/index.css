@@ -324,16 +324,16 @@ input[type='number'] {
 
 /* Intro Tour */
 
+.intro-tooltip * {
+  @apply bg-th-bkg-2 font-body text-th-fgd-1;
+}
+
 .introjs-tooltip {
   @apply bg-transparent;
 }
 
 .introjs-arrow {
   @apply border-0;
-}
-
-.intro-tooltip * {
-  @apply bg-th-bkg-1 font-body text-th-fgd-1;
 }
 
 .introjs-skipbutton {
