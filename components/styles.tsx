@@ -1,5 +1,5 @@
-export const PageBodyWrapper = ({ children, ...props }) => (
-  <div style={{ minHeight: 'calc(100vh - 105px)' }} {...props}>
+export const PageBodyWrapper = ({ children, className, ...props }) => (
+  <div className={`${className} min-h-screen`} {...props}>
     {children}
   </div>
 )
