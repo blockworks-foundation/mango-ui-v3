@@ -148,24 +148,27 @@ export default function AdvancedTradeForm({
       ? I80F48.fromNumber(price)
       : mangoGroup.getPrice(marketIndex, mangoCache)
 
-    const token =
-      side === 'buy'
-        ? getTokenBySymbol(groupConfig, 'USDC')
-        : getTokenBySymbol(groupConfig, marketConfig.baseSymbol)
-    const tokenIndex = mangoGroup.getTokenIndex(token.mintKey)
+    let spotMax
+    if (marketConfig.kind === 'spot') {
+      const token =
+        side === 'buy'
+          ? getTokenBySymbol(groupConfig, 'USDC')
+          : getTokenBySymbol(groupConfig, marketConfig.baseSymbol)
+      const tokenIndex = mangoGroup.getTokenIndex(token.mintKey)
 
-    const availableBalance = floorToDecimal(
-      nativeI80F48ToUi(
-        mangoAccount.getAvailableBalance(mangoGroup, mangoCache, tokenIndex),
+      const availableBalance = floorToDecimal(
+        nativeI80F48ToUi(
+          mangoAccount.getAvailableBalance(mangoGroup, mangoCache, tokenIndex),
+          token.decimals
+        ).toNumber(),
         token.decimals
-      ).toNumber(),
-      token.decimals
-    )
+      )
 
-    const spotMax =
-      side === 'buy'
-        ? availableBalance / priceOrDefault.toNumber()
-        : availableBalance
+      spotMax =
+        side === 'buy'
+          ? availableBalance / priceOrDefault.toNumber()
+          : availableBalance
+    }
 
     const {
       max: maxQuote,
@@ -260,10 +263,7 @@ export default function AdvancedTradeForm({
   if (market instanceof Market && market.minOrderSize) {
     minOrderSize = market.minOrderSize.toString()
   } else if (market instanceof PerpMarket) {
-    const baseDecimals = getTokenBySymbol(
-      groupConfig,
-      marketConfig.baseSymbol
-    ).decimals
+    const baseDecimals = marketConfig.baseDecimals
     minOrderSize = new Big(market.baseLotSize)
       .div(new Big(10).pow(baseDecimals))
       .toString()
@@ -275,14 +275,8 @@ export default function AdvancedTradeForm({
   if (market instanceof Market) {
     tickSize = market.tickSize
   } else if (isPerpMarket) {
-    const baseDecimals = getTokenBySymbol(
-      groupConfig,
-      marketConfig.baseSymbol
-    ).decimals
-    const quoteDecimals = getTokenBySymbol(
-      groupConfig,
-      groupConfig.quoteSymbol
-    ).decimals
+    const baseDecimals = marketConfig.baseDecimals
+    const quoteDecimals = marketConfig.quoteDecimals
 
     const nativeToUi = new Big(10).pow(baseDecimals - quoteDecimals)
     const lotsToNative = new Big(market.quoteLotSize).div(

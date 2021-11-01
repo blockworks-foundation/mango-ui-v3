@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import {
-  AaveMonoIcon,
   BtcMonoIcon,
   CopeMonoIcon,
   DogeMonoIcon,
@@ -19,10 +18,10 @@ import {
   SushiMonoIcon,
   UniMonoIcon,
   UsdtMonoIcon,
+  AdaMonoIcon,
 } from './icons'
 
 const symbolIcons = {
-  AaveMonoIcon,
   BtcMonoIcon,
   CopeMonoIcon,
   DogeMonoIcon,
@@ -39,6 +38,7 @@ const symbolIcons = {
   SushiMonoIcon,
   UniMonoIcon,
   UsdtMonoIcon,
+  AdaMonoIcon,
 }
 
 export default function MarketMenuItem({ menuTitle = '', linksArray = [] }) {
