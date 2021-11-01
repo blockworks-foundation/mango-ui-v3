@@ -22,7 +22,9 @@ const AccountInterest = () => {
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const [interestStats, setInterestStats] = useState<any>([])
-  const [hourlyInterestStats, setHourlyInterestStats] = useState<any>([])
+  const [hourlyInterestStats, setHourlyInterestStats] = useState<any>({
+    USDC: [],
+  })
   const [loading, setLoading] = useState(false)
   const [selectedAsset, setSelectedAsset] = useState<string>('USDC')
   const {
