@@ -91,7 +91,7 @@ export default function MarketMenuItem({ menuTitle = '', linksArray = [] }) {
                   key={m.name}
                 >
                   <a
-                    className={`block py-2 text-th-fgd-1 text-xs hover:text-th-primary ${
+                    className={`block py-2 text-th-fgd-1 text-xs hover:text-th-primary whitespace-nowrap ${
                       asPath.includes(menuTitle)
                         ? (asPath.includes('perp') &&
                             m.name.slice(-4) === 'PERP') ||

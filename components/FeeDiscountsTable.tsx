@@ -94,45 +94,6 @@ const FeeDiscountsTable = () => {
           </div>
         ) : null}
       </div>
-      <div className="pl-10">
-        <div className="text-center text-lg">{t('perp-fees')}</div>
-        <div
-          className={`flex flex-col sm:flex-row justify-between text-th-fgd-4 text-center mt-4`}
-        >
-          <div className="px-4 mt-4 sm:mt-0">
-            <div>{t('maker-fee')}</div>
-            <div className="text-th-fgd-3 text-normal">
-              {percentFormat.format(-0.0004)}
-            </div>
-          </div>
-          <div className="px-4 mt-4 sm:mt-0">
-            <div className="flex items-center">
-              <div>{t('taker-fee')}</div>
-            </div>
-            <div className="text-th-fgd-3 text-normal">
-              {percentFormat.format(0.0005)}
-            </div>
-          </div>
-        </div>
-        <div
-          className={`flex flex-col sm:flex-row justify-between text-th-fgd-4 text-center mt-4`}
-        >
-          <div className="px-4 mt-4 sm:mt-0">
-            <div>FTT {t('maker-fee')}</div>
-            <div className="text-th-fgd-3 text-normal">
-              {percentFormat.format(0.0)}
-            </div>
-          </div>
-          <div className="px-4 mt-4 sm:mt-0">
-            <div className="flex items-center">
-              <div>FTT {t('taker-fee')}</div>
-            </div>
-            <div className="text-th-fgd-3 text-normal">
-              {percentFormat.format(0.0005)}
-            </div>
-          </div>
-        </div>
-      </div>
       {showDeposit ? (
         <DepositMsrmModal
           isOpen={showDeposit}

@@ -56,7 +56,7 @@ export default function AdvancedTradeForm({
   const [reduceOnly, setReduceOnly] = useState(false)
   const [spotMargin, setSpotMargin] = useState(true)
   const [positionSizePercent, setPositionSizePercent] = useState('')
-  const { takerFee } = useFees()
+  const { takerFee, makerFee } = useFees()
   const { totalMsrm } = useSrmAccount()
 
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
@@ -832,7 +832,6 @@ export default function AdvancedTradeForm({
               <EstPriceImpact priceImpact={priceImpact} />
             ) : null}
           </div>
-
           <div className={`flex pt-4`}>
             {ipAllowed ? (
               <Button
@@ -871,6 +870,10 @@ export default function AdvancedTradeForm({
                 <span>{t('country-not-allowed')}</span>
               </Button>
             )}
+          </div>
+          <div className="flex text-xs text-th-fgd-4 px-6 mt-2.5 justify-center">
+            Maker fee: {(makerFee * 100).toFixed(2)}% | Taker fee:{' '}
+            {takerFee * 100}%
           </div>
         </div>
       </div>
