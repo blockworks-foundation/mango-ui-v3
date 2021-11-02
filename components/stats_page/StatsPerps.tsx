@@ -7,15 +7,6 @@ import BN from 'bn.js'
 import { tokenPrecision } from '../../utils'
 import { useTranslation } from 'next-i18next'
 
-const icons = {
-  'BTC-PERP': '/assets/icons/btc.svg',
-  'ETH-PERP': '/assets/icons/eth.svg',
-  'SOL-PERP': '/assets/icons/sol.svg',
-  'SRM-PERP': '/assets/icons/srm.svg',
-  'USDT-PERP': '/assets/icons/usdt.svg',
-  'MNGO-PERP': '/assets/icons/mngo.svg',
-}
-
 function calculateFundingRate(
   oldestLongFunding,
   oldestShortFunding,
@@ -92,7 +83,17 @@ export default function StatsPerps({ perpStats }) {
   return (
     <>
       <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between mb-4 w-full">
-        <AssetHeader asset={selectedAsset} />
+        <div className="flex items-center text-xl text-th-fgd-1">
+          <img
+            width="24"
+            height="24"
+            src={`/assets/icons/${selectedAsset
+              .split(/-|\//)[0]
+              .toLowerCase()}.svg`}
+            className="mr-2.5"
+          />
+          {selectedAsset.split(/-|\//)[0]} {t('perpetual-futures')}
+        </div>
         <div className="flex mb-4 sm:mb-0 space-x-2">
           {marketConfigs.map((market) => (
             <div
@@ -150,76 +151,4 @@ export default function StatsPerps({ perpStats }) {
       </div>
     </>
   )
-}
-
-const AssetHeader = ({ asset }) => {
-  const { t } = useTranslation('common')
-
-  switch (asset) {
-    case 'BTC-PERP':
-      return (
-        <div className="flex items-center text-xl text-th-fgd-1">
-          <img
-            src={icons[asset]}
-            alt={icons[asset]}
-            width="24"
-            height="24"
-            className="mr-2.5"
-          />
-          Bitcoin {t('perpetual-futures')}
-        </div>
-      )
-    case 'ETH-PERP':
-      return (
-        <div className="flex items-center text-xl text-th-fgd-1">
-          <img
-            src={icons[asset]}
-            alt={icons[asset]}
-            width="24"
-            height="24"
-            className="mr-2.5"
-          />
-          Ethereum {t('perpetual-futures')}
-        </div>
-      )
-    case 'SOL-PERP':
-      return (
-        <div className="flex items-center text-xl text-th-fgd-1">
-          <img
-            src={icons[asset]}
-            alt={icons[asset]}
-            width="24"
-            height="24"
-            className="mr-2.5"
-          />
-          Solana {t('perpetual-futures')}
-        </div>
-      )
-    case 'SRM':
-      return (
-        <div className="flex items-center text-xl text-th-fgd-1">
-          <img
-            src={icons[asset]}
-            alt={icons[asset]}
-            width="24"
-            height="24"
-            className="mr-2.5"
-          />
-          Serum {t('perpetual-futures')}
-        </div>
-      )
-    default:
-      return (
-        <div className="flex items-center text-xl text-th-fgd-1">
-          <img
-            src={icons[asset]}
-            alt={icons[asset]}
-            width="24"
-            height="24"
-            className="mr-2.5"
-          />
-          Bitcoin {t('perpetual-futures')}
-        </div>
-      )
-  }
 }

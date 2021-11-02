@@ -3,18 +3,6 @@ import Chart from '../Chart'
 import Select from '../Select'
 import { useTranslation } from 'next-i18next'
 
-const icons = {
-  BTC: '/assets/icons/btc.svg',
-  ETH: '/assets/icons/eth.svg',
-  SOL: '/assets/icons/sol.svg',
-  SRM: '/assets/icons/srm.svg',
-  USDT: '/assets/icons/usdt.svg',
-  USDC: '/assets/icons/usdc.svg',
-  MNGO: '/assets/icons/mngo.svg',
-  RAY: '/assets/icons/ray.svg',
-  COPE: '/assets/icons/cope.svg',
-}
-
 export default function StatsAssets({ latestStats, stats }) {
   const { t } = useTranslation('common')
   const [selectedAsset, setSelectedAsset] = useState<string>('BTC')
@@ -26,10 +14,11 @@ export default function StatsAssets({ latestStats, stats }) {
       <div className="flex items-center justify-between mb-4 w-full">
         <div className="flex items-center text-xl text-th-fgd-1">
           <img
-            src={icons[selectedAsset]}
-            alt={icons[selectedAsset]}
             width="24"
             height="24"
+            src={`/assets/icons/${selectedAsset
+              .split(/-|\//)[0]
+              .toLowerCase()}.svg`}
             className="mr-2.5"
           />
           {selectedAsset}
