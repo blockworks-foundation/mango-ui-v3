@@ -214,42 +214,46 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                   </TrHead>
                 </thead>
                 <tbody>
-                  {filteredTrades.map((trade: any, index) => (
-                    <TrBody
-                      index={index}
-                      key={`${trade.seqNum}${trade.marketName}`}
-                    >
-                      <Td>
-                        <div className="flex items-center">
-                          <img
-                            alt=""
-                            width="20"
-                            height="20"
-                            src={`/assets/icons/${trade.marketName
-                              .split(/-|\//)[0]
-                              .toLowerCase()}.svg`}
-                            className={`mr-2.5`}
-                          />
-                          {renderMarketName(trade)}
-                        </div>
-                      </Td>
-                      <Td>
-                        <SideBadge side={trade.side} />
-                      </Td>
-                      <Td>{trade.size}</Td>
-                      <Td>{formatUsdValue(trade.price)}</Td>
-                      <Td>{formatUsdValue(trade.value)}</Td>
-                      <Td>{trade.liquidity}</Td>
-                      <Td>{formatUsdValue(trade.feeCost)}</Td>
-                      <Td>
-                        {trade.loadTimestamp || trade.timestamp
-                          ? renderTradeDateTime(
-                              trade.loadTimestamp || trade.timestamp
-                            )
-                          : t('recent')}
-                      </Td>
-                    </TrBody>
-                  ))}
+                  {filteredTrades.map((trade: any, index) => {
+                    return (
+                      <TrBody
+                        index={index}
+                        key={`${trade.seqNum}${trade.marketName}`}
+                      >
+                        <Td>
+                          <div className="flex items-center">
+                            <img
+                              alt=""
+                              width="20"
+                              height="20"
+                              src={`/assets/icons/${trade.marketName
+                                .split(/-|\//)[0]
+                                .toLowerCase()}.svg`}
+                              className={`mr-2.5`}
+                            />
+                            {renderMarketName(trade)}
+                          </div>
+                        </Td>
+                        <Td>
+                          <SideBadge side={trade.side} />
+                        </Td>
+                        <Td>{trade.size}</Td>
+                        <Td>
+                          ${new Intl.NumberFormat('en-US').format(trade.price)}
+                        </Td>
+                        <Td>{formatUsdValue(trade.value)}</Td>
+                        <Td>{trade.liquidity}</Td>
+                        <Td>{formatUsdValue(trade.feeCost)}</Td>
+                        <Td>
+                          {trade.loadTimestamp || trade.timestamp
+                            ? renderTradeDateTime(
+                                trade.loadTimestamp || trade.timestamp
+                              )
+                            : t('recent')}
+                        </Td>
+                      </TrBody>
+                    )
+                  })}
                 </tbody>
               </Table>
             ) : (
