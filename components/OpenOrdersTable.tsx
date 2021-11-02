@@ -9,7 +9,7 @@ import { notify } from '../utils/notifications'
 import SideBadge from './SideBadge'
 import { Order, Market } from '@project-serum/serum/lib/market'
 import { PerpOrder, PerpMarket } from '@blockworks-foundation/mango-client'
-import { formatUsdValue } from '../utils'
+import { formatUsdValue, getDecimalCount, usdFormatter } from '../utils'
 import { Table, Td, Th, TrBody, TrHead } from './TableElements'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
@@ -36,6 +36,7 @@ const DesktopTable = ({ openOrders, cancelledOrderId, handleCancelOrder }) => {
       </thead>
       <tbody>
         {openOrders.map(({ order, market }, index) => {
+          const decimals = getDecimalCount(market.account.tickSize)
           return (
             <TrBody index={index} key={`${order.orderId}${order.side}`}>
               <Td>
@@ -54,7 +55,7 @@ const DesktopTable = ({ openOrders, cancelledOrderId, handleCancelOrder }) => {
                 <SideBadge side={order.side} />
               </Td>
               <Td>{order.size}</Td>
-              <Td>{formatUsdValue(order.price)}</Td>
+              <Td>{usdFormatter(order.price, decimals)}</Td>
               <Td>{formatUsdValue(order.price * order.size)}</Td>
               <Td>
                 {order.perpTrigger &&
