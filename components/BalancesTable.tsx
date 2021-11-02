@@ -369,7 +369,7 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                           balance.net.toFixed()
                         )}
                       </Td>
-                      <Td>{formatUsdValue(balance.value)}</Td>
+                      <Td>{formatUsdValue(balance.value.toNumber())}</Td>
                       <Td>
                         <span className="text-th-green">
                           {balance.depositRate.toFixed(2)}%
@@ -482,7 +482,7 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                           <div className="pb-0.5 text-th-fgd-3 text-xs">
                             {t('value')}
                           </div>
-                          {formatUsdValue(balance.value)}
+                          {formatUsdValue(balance.value.toNumber())}
                         </div>
                         <div className="col-span-1 text-left text-th-fgd-4">
                           <div className="pb-0.5 text-th-fgd-3 text-xs">
