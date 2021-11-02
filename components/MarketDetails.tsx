@@ -8,7 +8,7 @@ import ManualRefresh from './ManualRefresh'
 import useOraclePrice from '../hooks/useOraclePrice'
 import DayHighLow from './DayHighLow'
 import { useEffect } from 'react'
-import { formatUsdValue, usdFormatter } from '../utils'
+import { getDecimalCount, usdFormatter } from '../utils'
 import { PerpMarket } from '@blockworks-foundation/mango-client'
 import BN from 'bn.js'
 import { useViewport } from '../hooks/useViewport'
@@ -179,7 +179,9 @@ const MarketDetails = () => {
               {t('oracle-price')}
             </div>
             <div className="font-semibold text-th-fgd-1 md:text-xs">
-              {oraclePrice ? formatUsdValue(oraclePrice) : '--'}
+              {oraclePrice && selectedMarket
+                ? oraclePrice.toFixed(getDecimalCount(selectedMarket.tickSize))
+                : '--'}
             </div>
           </div>
           <div className="flex items-center justify-between md:block">

@@ -188,7 +188,7 @@ const AccountInfo = ({
 
   return (
     <div className="text-th-fgd-3 text-xs">
-      {formatUsdValue(accountEquity)}
+      {formatUsdValue(accountEquity.toNumber())}
       <span className="px-1.5 text-th-fgd-4">|</span>
       <span
         className={

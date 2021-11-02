@@ -117,9 +117,14 @@ export default function AccountBorrows() {
                               </Td>
                               <Td>
                                 {formatUsdValue(
-                                  asset.borrows.mul(
-                                    mangoGroup.getPrice(tokenIndex, mangoCache)
-                                  )
+                                  asset.borrows
+                                    .mul(
+                                      mangoGroup.getPrice(
+                                        tokenIndex,
+                                        mangoCache
+                                      )
+                                    )
+                                    .toNumber()
                                 )}
                               </Td>
                               <Td>
@@ -212,12 +217,14 @@ export default function AccountBorrows() {
                                     {t('value')}
                                   </div>
                                   {formatUsdValue(
-                                    asset.borrows.mul(
-                                      mangoGroup.getPrice(
-                                        tokenIndex,
-                                        mangoCache
+                                    asset.borrows
+                                      .mul(
+                                        mangoGroup.getPrice(
+                                          tokenIndex,
+                                          mangoCache
+                                        )
                                       )
-                                    )
+                                      .toNumber()
                                   )}
                                 </div>
                                 <div className="col-span-1 text-left">
@@ -308,7 +315,9 @@ export default function AccountBorrows() {
                         </Td>
                         <Td>
                           {formatUsdValue(
-                            mangoGroup.getPrice(tokenIndex, mangoCache)
+                            mangoGroup
+                              .getPrice(tokenIndex, mangoCache)
+                              .toNumber()
                           )}
                         </Td>
                         <Td>
@@ -418,7 +427,9 @@ export default function AccountBorrows() {
                               {t('price')}
                             </div>
                             {formatUsdValue(
-                              mangoGroup.getPrice(tokenIndex, mangoCache)
+                              mangoGroup
+                                .getPrice(tokenIndex, mangoCache)
+                                .toNumber()
                             )}
                           </div>
                           <div className="col-span-1 text-left">
