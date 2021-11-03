@@ -246,7 +246,7 @@ const AccountInterest = () => {
             {!isEmpty(hourlyInterestStats) && !loading ? (
               <>
                 <div className="flex items-center justify-between pb-4 pt-6 w-full">
-                  <div className="text-th-fgd-1 text-lg">History</div>
+                  <div className="text-th-fgd-1 text-lg">{t('history')}</div>
                   <Select
                     value={selectedAsset}
                     onChange={(a) => setSelectedAsset(a)}
