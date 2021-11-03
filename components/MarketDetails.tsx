@@ -100,7 +100,7 @@ const MarketDetails = () => {
 
   const fetchOhlcv = useCallback(async () => {
     if (!selectedMarketName) return
-
+    /*
     // calculate from and to date (0:00UTC to 23:59:59UTC)
     const date = new Date()
     const utcFrom = new Date(
@@ -127,11 +127,13 @@ const MarketDetails = () => {
     const from = utcFrom.getTime() / 1000
     const to = utcTo.getTime() / 1000
 
+
     const ohlcv = await ChartApi.getOhlcv(selectedMarketName, '1D', from, to)
     if (ohlcv) {
       setOhlcv(ohlcv)
       setLoading(false)
     }
+    */
   }, [selectedMarketName])
 
   useInterval(async () => {
