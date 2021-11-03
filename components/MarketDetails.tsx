@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react'
 import useMangoStore from '../stores/useMangoStore'
 import usePrevious from '../hooks/usePrevious'
 import useInterval from '../hooks/useInterval'
-import ChartApi from '../utils/chartDataConnector'
+// import ChartApi from '../utils/chartDataConnector'
 import UiLock from './UiLock'
 import ManualRefresh from './ManualRefresh'
 import useOraclePrice from '../hooks/useOraclePrice'
@@ -64,7 +64,7 @@ const MarketDetails = () => {
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
 
-  const [ohlcv, setOhlcv] = useState(null)
+  const [ohlcv] = useState(null)
   const [, setLoading] = useState(false)
   const [perpStats, setPerpStats] = useState([])
   const [perpVolume, setPerpVolume] = useState(0)
