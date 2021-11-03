@@ -55,7 +55,7 @@ export const ExpandableRow = ({
           <Disclosure.Button
             className={`${
               index % 2 === 0 ? `bg-th-bkg-3` : `bg-th-bkg-4`
-            } default-transition font-normal p-4 text-th-fgd-1 w-full hover:filter hover:brightness-90 focus:outline-none ${
+            } default-transition flex items-center justify-between font-normal p-4 text-th-fgd-1 w-full hover:filter hover:brightness-90 focus:outline-none ${
               rounded
                 ? open
                   ? 'rounded-b-none'
@@ -63,15 +63,13 @@ export const ExpandableRow = ({
                 : 'rounded-none'
             }`}
           >
-            <div className="grid grid-cols-12 grid-rows-1">
-              {buttonTemplate}
-              <div className="flex items-center justify-end">
-                <ChevronDownIcon
-                  className={`${
-                    open ? 'transform rotate-180' : 'transform rotate-360'
-                  } default-transition h-5 flex-shrink-0 w-5 text-th-primary`}
-                />
-              </div>
+            {buttonTemplate}
+            <div className="flex items-center justify-end pl-5">
+              <ChevronDownIcon
+                className={`${
+                  open ? 'transform rotate-180' : 'transform rotate-360'
+                } default-transition h-5 flex-shrink-0 w-5 text-th-primary`}
+              />
             </div>
           </Disclosure.Button>
           <Disclosure.Panel
@@ -87,9 +85,7 @@ export const ExpandableRow = ({
                 : 'rounded-none'
             }`}
           >
-            <div className="grid grid-cols-2 grid-rows-1 gap-4 py-4">
-              {panelTemplate}
-            </div>
+            <div className="py-4">{panelTemplate}</div>
           </Disclosure.Panel>
         </>
       )}
@@ -106,12 +102,10 @@ export const Row = ({ children, index }: RowProps) => {
   return (
     <div
       className={`${
-        index % 2 === 0
-          ? `bg-[rgba(255,255,255,0.03)]`
-          : `bg-[rgba(255,255,255,0.07)]`
+        index % 2 === 0 ? `bg-th-bkg-3` : `bg-th-bkg-4`
       } default-transition font-normal p-4 rounded-none text-th-fgd-1 w-full`}
     >
-      <div className="grid grid-cols-12 grid-rows-1 gap-4">{children}</div>
+      {children}
     </div>
   )
 }

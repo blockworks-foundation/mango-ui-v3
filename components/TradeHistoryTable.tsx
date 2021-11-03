@@ -261,7 +261,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                 <ExpandableRow
                   buttonTemplate={
                     <>
-                      <div className="col-span-11 flex items-center text-fgd-1">
+                      <div className="flex items-center justify-between text-fgd-1 w-full">
                         <div className="flex items-center">
                           <img
                             alt=""
@@ -300,26 +300,26 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                   key={`${index}`}
                   index={index}
                   panelTemplate={
-                    <>
-                      <div className="col-span-1 text-left">
+                    <div className="grid grid-cols-2 grid-flow-row gap-4">
+                      <div className="text-left">
                         <div className="pb-0.5 text-th-fgd-3 text-xs">
                           {t('value')}
                         </div>
                         {formatUsdValue(trade.value)}
                       </div>
-                      <div className="col-span-1 text-left">
+                      <div className="text-left">
                         <div className="pb-0.5 text-th-fgd-3 text-xs">
                           {t('liquidity')}
                         </div>
                         {trade.liquidity}
                       </div>
-                      <div className="col-span-1 text-left">
+                      <div className="text-left">
                         <div className="pb-0.5 text-th-fgd-3 text-xs">
                           {t('fee')}
                         </div>
                         {formatUsdValue(trade.feeCost)}
                       </div>
-                      <div className="col-span-1 text-left">
+                      <div className="text-left">
                         <div className="pb-0.5 text-th-fgd-3 text-xs">
                           {t('approximate-time')}
                         </div>
@@ -329,7 +329,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                             )
                           : t('recent')}
                       </div>
-                    </>
+                    </div>
                   }
                 />
               ))
