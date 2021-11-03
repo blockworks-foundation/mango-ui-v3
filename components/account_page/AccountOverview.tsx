@@ -209,7 +209,7 @@ export default function AccountOverview() {
           </div>
         </div>
       </div>
-      <div className="flex justify-between pb-4 sm:pb-0">
+      <div className="flex justify-between pb-4 md:pb-6">
         <div className="text-th-fgd-1 text-lg">Balances</div>
         <Switch
           checked={showZeroBalances}

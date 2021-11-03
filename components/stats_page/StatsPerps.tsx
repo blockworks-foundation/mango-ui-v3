@@ -6,6 +6,7 @@ import Chart from '../Chart'
 import BN from 'bn.js'
 import { tokenPrecision } from '../../utils'
 import { useTranslation } from 'next-i18next'
+import Select from '../Select'
 
 function calculateFundingRate(
   oldestLongFunding,
@@ -82,7 +83,7 @@ export default function StatsPerps({ perpStats }) {
 
   return (
     <>
-      <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between mb-4 w-full">
+      <div className="flex items-center justify-between mb-4 w-full">
         <div className="flex items-center text-xl text-th-fgd-1">
           <img
             width="24"
@@ -94,7 +95,26 @@ export default function StatsPerps({ perpStats }) {
           />
           {selectedAsset.split(/-|\//)[0]} {t('perpetual-futures')}
         </div>
-        <div className="flex mb-4 sm:mb-0 space-x-2">
+        <Select
+          value={selectedAsset}
+          onChange={(a) => setSelectedAsset(a)}
+          className="flex-shrink-0 ml-4 w-36 md:hidden"
+        >
+          <div className="space-y-2">
+            {marketConfigs.map((market) => (
+              <Select.Option
+                key={market.name}
+                value={market.name}
+                className={`bg-th-bkg-1 relative rounded-md w-full px-3 py-3 cursor-pointer default-transition flex hover:bg-th-bkg-3 focus:outline-none`}
+              >
+                <div className="flex items-center justify-between w-full">
+                  {market.name}
+                </div>
+              </Select.Option>
+            ))}
+          </div>
+        </Select>
+        <div className="hidden md:flex space-x-2">
           {marketConfigs.map((market) => (
             <div
               className={`bg-th-bkg-3 cursor-pointer default-transition px-2 py-1 rounded-md text-center w-full whitespace-nowrap
@@ -107,7 +127,7 @@ export default function StatsPerps({ perpStats }) {
               onClick={() => setSelectedAsset(market.name)}
               key={market.name as string}
             >
-              {market.name}
+              {market.name.slice(0, -5)}
             </div>
           ))}
         </div>

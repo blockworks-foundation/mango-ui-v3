@@ -104,7 +104,7 @@ const MobileTradePage = () => {
       <Swipeable index={viewIndex} onChangeIndex={handleChangeViewIndex}>
         <div>
           <div className="bg-th-bkg-2 grid grid-cols-12 grid-rows-1 gap-4 mb-2 px-2 py-3 rounded-lg">
-            <div className="col-span-7">
+            <div className="col-span-7 pt-2">
               <AdvancedTradeForm />
             </div>
             <div className="col-span-5">

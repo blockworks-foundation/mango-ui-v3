@@ -26,7 +26,7 @@ export default function StatsAssets({ latestStats, stats }) {
         <Select
           value={selectedAsset}
           onChange={(a) => setSelectedAsset(a)}
-          className="w-24 sm:hidden"
+          className="w-24 md:hidden"
         >
           <div className="space-y-2">
             {latestStats.map((stat) => (
@@ -42,7 +42,7 @@ export default function StatsAssets({ latestStats, stats }) {
             ))}
           </div>
         </Select>
-        <div className="hidden sm:flex pb-4 sm:pb-0">
+        <div className="hidden md:flex pb-4 sm:pb-0">
           {latestStats.map((stat) => (
             <div
               className={`px-2 py-1 ml-2 rounded-md cursor-pointer default-transition bg-th-bkg-3
