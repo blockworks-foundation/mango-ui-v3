@@ -87,7 +87,7 @@ export default function RecentMarketTrades() {
   ) : (
     <ExpandableRow
       buttonTemplate={
-        <div className="col-span-11 text-left">
+        <div className="flex justify-between text-left w-full">
           <div className="mb-0.5 text-fgd-1">{t('recent-trades')}</div>
         </div>
       }

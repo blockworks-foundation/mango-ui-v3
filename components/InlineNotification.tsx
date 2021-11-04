@@ -3,6 +3,7 @@ import {
   CheckCircleIcon,
   ExclamationCircleIcon,
   ExclamationIcon,
+  InformationCircleIcon,
 } from '@heroicons/react/outline'
 
 interface InlineNotificationProps {
@@ -22,8 +23,10 @@ const InlineNotification: FunctionComponent<InlineNotificationProps> = ({
         ? 'border-th-red'
         : type === 'success'
         ? 'border-th-green'
+        : type === 'info'
+        ? 'border-th-bkg-4'
         : 'border-th-orange'
-    } flex items-center mb-4 p-2.5 rounded-md`}
+    } flex items-center p-2 rounded-md`}
   >
     {type === 'error' ? (
       <ExclamationCircleIcon className="flex-shrink-0 h-5 w-5 mr-2 text-th-red" />
@@ -34,9 +37,18 @@ const InlineNotification: FunctionComponent<InlineNotificationProps> = ({
     {type === 'warning' ? (
       <ExclamationIcon className="flex-shrink-0 h-5 w-5 mr-2 text-th-orange" />
     ) : null}
+    {type === 'info' ? (
+      <InformationCircleIcon className="flex-shrink-0 h-5 w-5 mr-2 text-th-fgd-3" />
+    ) : null}
     <div>
-      <div className="pb-1 text-th-fgd-1">{title}</div>
-      <div className="font-normal text-th-fgd-3 text-xs">{desc}</div>
+      <div className="text-th-fgd-3">{title}</div>
+      <div
+        className={`${
+          title && desc && 'pt-1'
+        } font-normal text-xs text-th-fgd-3`}
+      >
+        {desc}
+      </div>
     </div>
   </div>
 )

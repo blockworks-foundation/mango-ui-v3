@@ -7,9 +7,13 @@ import {
   ZERO_I80F48,
 } from '@blockworks-foundation/mango-client'
 import { useCallback, useState } from 'react'
-import { ExclamationIcon, HeartIcon } from '@heroicons/react/solid'
+import {
+  ExclamationIcon,
+  ExternalLinkIcon,
+  HeartIcon,
+} from '@heroicons/react/solid'
 import useMangoStore, { MNGO_INDEX } from '../stores/useMangoStore'
-import { formatUsdValue, usdFormatter } from '../utils'
+import { abbreviateAddress, formatUsdValue, usdFormatter } from '../utils'
 import { notify } from '../utils/notifications'
 import { LinkButton } from './Button'
 import { ElementTitle } from './styles'
@@ -117,7 +121,7 @@ export default function AccountInfo() {
                   <div>
                     {t('init-health')}: {initHealth.toFixed(4)}
                     <br />
-                    {t('maint-helth')}: {maintHealth.toFixed(4)}
+                    {t('maint-health')}: {maintHealth.toFixed(4)}
                   </div>
                 ) : (
                   ''
@@ -129,6 +133,19 @@ export default function AccountInfo() {
           </ElementTitle>
         ) : null}
         <div>
+          {mangoAccount ? (
+            <div className="flex justify-center text-xs -mt-2">
+              <a
+                className="flex items-center text-th-fgd-4 hover:text-th-primary"
+                href={`https://explorer.solana.com/address/${mangoAccount?.publicKey}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {abbreviateAddress(mangoAccount.publicKey, 6)}
+                <ExternalLinkIcon className={`h-4 w-4 ml-1.5`} />
+              </a>
+            </div>
+          ) : null}
           <div>
             <div className="flex justify-between pb-3">
               <div className="font-normal text-th-fgd-3 leading-4">

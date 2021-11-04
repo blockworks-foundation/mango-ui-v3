@@ -405,3 +405,30 @@ input[type='number'] {
 .introjs-progress {
   @apply rounded-none h-0.5 m-0;
 }
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.flipcard {
+  background-color: transparent;
+  height: 100%;
+  perspective: 1000px;
+}
+
+.flipcard-front {
+  @media screen and (min-width: 768px) {
+    height: 100%;
+    position: absolute;
+  }
+}
+
+.fadein-floating-element {
+  animation: fadein 1s linear;
+}

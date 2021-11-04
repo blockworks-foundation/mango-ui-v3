@@ -1,11 +1,16 @@
 type MobileTableHeaderProps = {
-  headerTemplate: React.ReactNode
+  colOneHeader: string
+  colTwoHeader: string
 }
 
-const MobileTableHeader = ({ headerTemplate }: MobileTableHeaderProps) => {
+const MobileTableHeader = ({
+  colOneHeader,
+  colTwoHeader,
+}: MobileTableHeaderProps) => {
   return (
-    <div className="grid grid-cols-12 grid-rows-1 gap-4 pb-2 px-3 text-xs">
-      {headerTemplate}
+    <div className="flex justify-between pb-2 pl-4 pr-14 text-th-fgd-3 text-xs">
+      <div>{colOneHeader}</div>
+      <div>{colTwoHeader}</div>
     </div>
   )
 }

@@ -56,12 +56,15 @@ const TVChartContainer = () => {
   const [moveInProgress, toggleMoveInProgress] = useState(false)
   const [orderInProgress, toggleOrderInProgress] = useState(false)
   const [priceReset, togglePriceReset] = useState(false)
+  const [showOrderLines, toggleShowOrderLines] = useState(true)
   const mangoClient = useMangoStore.getState().connection.client
 
   // @ts-ignore
   const defaultProps: ChartContainerProps = {
     symbol: selectedMarketConfig.name,
-    interval: '60' as ResolutionString,
+    interval: (selectedMarketConfig.name.startsWith('SOL')
+      ? '1'
+      : '60') as ResolutionString,
     theme: 'Dark',
     containerId: 'tv_chart_container',
     datafeedUrl: CHART_DATA_FEED,
@@ -146,6 +149,33 @@ const TVChartContainer = () => {
     const tvWidget = new widget(widgetOptions)
     tvWidgetRef.current = tvWidget
     setLines(deleteLines())
+
+    tvWidgetRef.current.onChartReady(function () {
+      const button = tvWidgetRef.current.createButton()
+      button.textContent = 'OL'
+      button.style.color =
+        theme === 'Dark' || theme === 'Mango'
+          ? 'rgb(242, 201, 76)'
+          : 'rgb(255, 156, 36)'
+      button.setAttribute('title', 'Toggle order line visibility')
+      button.addEventListener('click', function () {
+        toggleShowOrderLines((showOrderLines) => !showOrderLines)
+        if (
+          button.style.color === 'rgb(255, 156, 36)' ||
+          button.style.color === 'rgb(242, 201, 76)'
+        ) {
+          button.style.color =
+            theme === 'Dark' || theme === 'Mango'
+              ? 'rgb(138, 138, 138)'
+              : 'rgb(138, 138, 138)'
+        } else {
+          button.style.color =
+            theme === 'Dark' || theme === 'Mango'
+              ? 'rgb(242, 201, 76)'
+              : 'rgb(255, 156, 36)'
+        }
+      })
+    })
     //eslint-disable-next-line
   }, [selectedMarketConfig, theme, isMobile])
 
@@ -483,43 +513,47 @@ const TVChartContainer = () => {
   }
 
   useInterval(() => {
-    if (
-      selectedMarginAccount &&
-      connected &&
-      !moveInProgress &&
-      !orderInProgress &&
-      openOrders?.length > 0
-    ) {
-      let matches = 0
-      let openOrdersInSelectedMarket = 0
-      lines?.forEach((value, key) => {
-        openOrders?.map(({ order }) => {
-          if (order.orderId == key) {
-            matches += 1
+    if (showOrderLines) {
+      if (
+        selectedMarginAccount &&
+        connected &&
+        !moveInProgress &&
+        !orderInProgress &&
+        openOrders?.length > 0
+      ) {
+        let matches = 0
+        let openOrdersInSelectedMarket = 0
+        lines?.forEach((value, key) => {
+          openOrders?.map(({ order }) => {
+            if (order.orderId == key) {
+              matches += 1
+            }
+          })
+        })
+
+        openOrders?.map(({ market }) => {
+          if (market.config.name == selectedMarketName) {
+            openOrdersInSelectedMarket += 1
           }
         })
-      })
 
-      openOrders?.map(({ market }) => {
-        if (market.config.name == selectedMarketName) {
-          openOrdersInSelectedMarket += 1
+        if (
+          lines?.size != openOrdersInSelectedMarket ||
+          matches != openOrdersInSelectedMarket ||
+          (lines?.size > 0 && lines?.size != matches) ||
+          (lines?.size > 0 && !selectedMarginAccount) ||
+          priceReset
+        ) {
+          if (priceReset) {
+            togglePriceReset(false)
+          }
+          setLines(deleteLines())
+          setLines(drawLines())
         }
-      })
-
-      if (
-        lines?.size != openOrdersInSelectedMarket ||
-        matches != openOrdersInSelectedMarket ||
-        (lines?.size > 0 && lines?.size != matches) ||
-        (lines?.size > 0 && !selectedMarginAccount) ||
-        priceReset
-      ) {
-        if (priceReset) {
-          togglePriceReset(false)
-        }
+      } else if (lines?.size > 0 && !moveInProgress && !orderInProgress) {
         setLines(deleteLines())
-        setLines(drawLines())
       }
-    } else if (lines?.size > 0 && !moveInProgress && !orderInProgress) {
+    } else if (lines?.size > 0) {
       setLines(deleteLines())
     }
   }, [100])

@@ -127,7 +127,7 @@ const BalancesTable = ({ showZeroBalances = false }) => {
   const unsettledBalances = balances.filter((bal) => bal.unsettled > 0)
 
   return (
-    <div className={`flex flex-col pb-2 sm:pb-4 sm:pt-4`}>
+    <div className={`flex flex-col pb-2 sm:pb-4`}>
       {unsettledBalances.length > 0 ? (
         <div className="border border-th-bkg-4 rounded-lg mb-6 p-4 sm:p-6">
           <div className="flex items-center justify-between pb-4">
@@ -167,7 +167,7 @@ const BalancesTable = ({ showZeroBalances = false }) => {
           })}
         </div>
       ) : null}
-      <div className={`-my-2 overflow-x-auto`}>
+      <div className={`md:-my-2 md:overflow-x-auto`}>
         <div className={`align-middle inline-block min-w-full`}>
           {items.length > 0 ? (
             !isMobile ? (
@@ -369,7 +369,7 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                           balance.net.toFixed()
                         )}
                       </Td>
-                      <Td>{formatUsdValue(balance.value)}</Td>
+                      <Td>{formatUsdValue(balance.value.toNumber())}</Td>
                       <Td>
                         <span className="text-th-green">
                           {balance.depositRate.toFixed(2)}%
@@ -421,19 +421,13 @@ const BalancesTable = ({ showZeroBalances = false }) => {
             ) : (
               <>
                 <MobileTableHeader
-                  headerTemplate={
-                    <>
-                      <div className="col-span-7">{t('asset')}</div>
-                      <div className="col-span-4 text-right">
-                        {t('net-balance')}
-                      </div>
-                    </>
-                  }
+                  colOneHeader={t('asset')}
+                  colTwoHeader={t('net-balance')}
                 />
                 {items.map((balance, index) => (
                   <ExpandableRow
                     buttonTemplate={
-                      <div className="col-span-11 flex items-center justify-between text-fgd-1">
+                      <div className="flex items-center justify-between text-fgd-1 w-full">
                         <div className="flex items-center text-fgd-1">
                           <img
                             alt=""
@@ -445,7 +439,7 @@ const BalancesTable = ({ showZeroBalances = false }) => {
 
                           {balance.symbol}
                         </div>
-                        <div className="mr-1.5 text-fgd-1 text-right">
+                        <div className="text-fgd-1 text-right">
                           {balance.net.toFixed()}
                         </div>
                       </div>
@@ -454,62 +448,68 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                     index={index}
                     panelTemplate={
                       <>
-                        <div className="col-span-1 text-left">
-                          <div className="pb-0.5 text-th-fgd-3 text-xs">
-                            {t('deposits')}
+                        <div className="grid grid-cols-2 grid-flow-row gap-4 pb-4">
+                          <div className="text-left">
+                            <div className="pb-0.5 text-th-fgd-3 text-xs">
+                              {t('deposits')}
+                            </div>
+                            {balance.deposits.toFixed()}
                           </div>
-                          {balance.deposits.toFixed()}
-                        </div>
-                        <div className="col-span-1 text-left">
-                          <div className="pb-0.5 text-th-fgd-3 text-xs">
-                            {t('borrows')}
+                          <div className="text-left">
+                            <div className="pb-0.5 text-th-fgd-3 text-xs">
+                              {t('borrows')}
+                            </div>
+                            {balance.borrows.toFixed()}
                           </div>
-                          {balance.borrows.toFixed()}
-                        </div>
-                        <div className="col-span-1 text-left">
-                          <div className="pb-0.5 text-th-fgd-3 text-xs">
-                            {t('in-orders')}
+                          <div className="text-left">
+                            <div className="pb-0.5 text-th-fgd-3 text-xs">
+                              {t('in-orders')}
+                            </div>
+                            {balance.orders.toFixed()}
                           </div>
-                          {balance.orders.toFixed()}
-                        </div>
-                        <div className="col-span-1 text-left">
-                          <div className="pb-0.5 text-th-fgd-3 text-xs">
-                            {t('unsettled')}
+                          <div className="text-left">
+                            <div className="pb-0.5 text-th-fgd-3 text-xs">
+                              {t('unsettled')}
+                            </div>
+                            {balance.unsettled.toFixed()}
                           </div>
-                          {balance.unsettled.toFixed()}
-                        </div>
-                        <div className="col-span-1 text-left">
-                          <div className="pb-0.5 text-th-fgd-3 text-xs">
-                            {t('value')}
+                          <div className="text-left">
+                            <div className="pb-0.5 text-th-fgd-3 text-xs">
+                              {t('value')}
+                            </div>
+                            {formatUsdValue(balance.value.toNumber())}
                           </div>
-                          {formatUsdValue(balance.value)}
-                        </div>
-                        <div className="col-span-1 text-left text-th-fgd-4">
-                          <div className="pb-0.5 text-th-fgd-3 text-xs">
-                            {t('rates')}
+                          <div className="text-left text-th-fgd-4">
+                            <div className="pb-0.5 text-th-fgd-3 text-xs">
+                              {t('rates')}
+                            </div>
+                            <span className="mr-1 text-th-green">
+                              {balance.depositRate.toFixed(2)}%
+                            </span>
+                            /
+                            <span className="ml-1 text-th-red">
+                              {balance.borrowRate.toFixed(2)}%
+                            </span>
                           </div>
-                          <span className="mr-1 text-th-green">
-                            {balance.depositRate.toFixed(2)}%
-                          </span>
-                          /
-                          <span className="ml-1 text-th-red">
-                            {balance.borrowRate.toFixed(2)}%
-                          </span>
                         </div>
-                        <Button
-                          className="col-span-1 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
-                          onClick={() => handleOpenDepositModal(balance.symbol)}
-                        >
-                          {t('deposit')}
-                        </Button>
-                        <Button
-                          className="col-span-1 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
-                          onClick={() =>
-                            handleOpenWithdrawModal(balance.symbol)
-                          }
-                        >
-                          {t('withdraw')}
-                        </Button>
+                        <div className="flex space-x-4">
+                          <Button
+                            className="text-xs pt-0 pb-0 h-8 pl-3 pr-3 w-1/2"
+                            onClick={() =>
+                              handleOpenDepositModal(balance.symbol)
+                            }
+                          >
+                            {t('deposit')}
+                          </Button>
+                          <Button
+                            className="text-xs pt-0 pb-0 h-8 pl-3 pr-3 w-1/2"
+                            onClick={() =>
+                              handleOpenWithdrawModal(balance.symbol)
+                            }
+                          >
+                            {t('withdraw')}
+                          </Button>
+                        </div>
                       </>
                     }
                   />

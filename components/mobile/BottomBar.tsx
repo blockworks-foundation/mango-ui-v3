@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import styled from '@emotion/styled'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { ChartBarIcon, CurrencyDollarIcon } from '@heroicons/react/solid'
@@ -8,10 +7,11 @@ import useMangoGroupConfig from '../../hooks/useMangoGroupConfig'
 import MarketsModal from '../MarketsModal'
 import { useTranslation } from 'next-i18next'
 
-const StyledBarItemLabel = styled.div`
-  font-size: 0.6rem;
-  line-height: 1;
-`
+const StyledBarItemLabel = ({ children, ...props }) => (
+  <div style={{ fontSize: '0.6rem', lineHeight: 1 }} {...props}>
+    {children}
+  </div>
+)
 
 const BottomBar = () => {
   const { t } = useTranslation('common')
@@ -37,7 +37,7 @@ const BottomBar = () => {
 
   return (
     <>
-      <div className="bg-th-bkg-4 default-transition grid grid-cols-4 grid-rows-1 py-2.5">
+      <div className="bg-th-bkg-1 default-transition grid grid-cols-4 grid-rows-1 py-2.5">
         <div
           className="col-span-1 cursor-pointer default-transition flex flex-col items-center text-th-fgd-3 hover:text-th-primary"
           onClick={() => setShowMarketsModal(true)}
