@@ -7,7 +7,6 @@ import {
 import useMangoStore from '../../stores/useMangoStore'
 import { useBalances } from '../../hooks/useBalances'
 import {
-  floorToDecimal,
   formatUsdValue,
   i80f48ToPercent,
   tokenPrecision,
@@ -331,19 +330,21 @@ export default function AccountBorrows() {
                             )
                             .mul(I80F48.fromString('0.995'))
                             .toNumber() > 0
-                            ? floorToDecimal(
-                                mangoAccount
-                                  .getMaxWithBorrowForToken(
-                                    mangoGroup,
-                                    mangoCache,
-                                    tokenIndex
-                                  )
-                                  .mul(I80F48.fromString('0.995'))
-                                  .toNumber(),
-                                mangoGroup.tokens[tokenIndex].decimals
-                              )
+                            ? mangoAccount
+                                .getMaxWithBorrowForToken(
+                                  mangoGroup,
+                                  mangoCache,
+                                  tokenIndex
+                                )
+                                .mul(I80F48.fromString('0.995'))
+                                .toNumber()
+                                .toLocaleString(undefined, {
+                                  minimumFractionDigits:
+                                    tokenPrecision[token.symbol],
+                                  maximumFractionDigits:
+                                    tokenPrecision[token.symbol],
+                                })
                             : 0}
-                          {/* floorToDecimal(parseFloat(maxWithdraw.toFixed()), token.decimals) */}
                         </Td>
                         <Td>
                           {mangoGroup
