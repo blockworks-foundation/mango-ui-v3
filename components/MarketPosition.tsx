@@ -154,7 +154,7 @@ export default function MarketPosition() {
     <>
       <div
         className={!connected && !isMobile ? 'filter blur-sm' : null}
-        id="intro-step-6"
+        id="perp-positions-tip"
       >
         {!isMobile ? (
           <ElementTitle>

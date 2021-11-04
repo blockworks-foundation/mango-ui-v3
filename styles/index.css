@@ -325,7 +325,7 @@ input[type='number'] {
 /* Intro Tour */
 
 .intro-tooltip * {
-  @apply bg-th-bkg-2 font-body text-th-fgd-1;
+  @apply bg-th-bkg-1 font-body text-th-fgd-1;
 }
 
 .introjs-tooltip {
@@ -337,7 +337,7 @@ input[type='number'] {
 }
 
 .introjs-skipbutton {
-  @apply text-sm text-th-fgd-3;
+  @apply text-xs text-th-fgd-4 hover:text-th-fgd-2;
 }
 
 .introjs-tooltip-header {

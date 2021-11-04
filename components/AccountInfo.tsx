@@ -111,7 +111,7 @@ export default function AccountInfo() {
     <>
       <div
         className={!connected && !isMobile ? 'filter blur-sm' : undefined}
-        id="intro-step-7"
+        id="account-details-tip"
       >
         {!isMobile ? (
           <ElementTitle>

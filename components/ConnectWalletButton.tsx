@@ -51,7 +51,7 @@ const ConnectWalletButton = () => {
     <>
       {connected && wallet?.publicKey ? (
         <Menu>
-          <div className="relative" id="intro-step-1">
+          <div className="relative" id="profile-menu-tip">
             <Menu.Button className="bg-th-bkg-4 flex items-center justify-center rounded-full w-10 h-10 text-white focus:outline-none hover:bg-th-bkg-4 hover:text-th-fgd-3">
               <ProfileIcon className="h-6 w-6" />
             </Menu.Button>
@@ -94,7 +94,7 @@ const ConnectWalletButton = () => {
       ) : (
         <div
           className="bg-th-bkg-1 h-14 flex divide-x divide-th-bkg-3 justify-between"
-          id="intro-step-0"
+          id="connect-wallet-tip"
         >
           <button
             onClick={handleWalletConect}

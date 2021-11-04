@@ -26,18 +26,13 @@ const LanguageSwitch = () => {
   // When mounted on client, now we can show the UI
   useEffect(() => setMounted(true), [])
 
-  useEffect(() => {
-    savedLanguage
-      ? router.push({ pathname, query }, asPath, { locale: savedLanguage })
-      : null
-  }, [savedLanguage])
-
   const handleLangChange = (e) => {
     setSavedLanguage(e)
+    router.push({ pathname, query }, asPath, { locale: e })
   }
 
   return (
-    <div id="intro-step-3">
+    <div id="languages-tip">
       {mounted ? (
         <DropMenu
           button={

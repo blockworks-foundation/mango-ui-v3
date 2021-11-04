@@ -20,7 +20,7 @@ const ThemeSwitch = () => {
   useEffect(() => setMounted(true), [])
 
   return (
-    <div id="intro-step-2">
+    <div id="themes-tip">
       {mounted ? (
         <DropMenu
           button={

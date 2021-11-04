@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { CheckCircleIcon } from '@heroicons/react/outline'
 import Modal from './Modal'
 import Button from './Button'
@@ -26,16 +26,16 @@ const AlphaModal = ({
   const [, setAlphaAccepted] = useLocalStorageState(ALPHA_MODAL_KEY, false)
   const [, setShowTips] = useLocalStorageState(SHOW_TOUR_KEY, false)
   const [savedLanguage, setSavedLanguage] = useLocalStorageState('language', '')
+  const [language, setLanguage] = useState('en')
   const router = useRouter()
   const { pathname, asPath, query } = router
   const { width } = useViewport()
   const hideTips = width ? width < breakpoints.md : false
 
-  useEffect(() => {
-    savedLanguage
-      ? router.push({ pathname, query }, asPath, { locale: savedLanguage })
-      : null
-  }, [savedLanguage])
+  const handleLanguageSelect = () => {
+    setSavedLanguage(language)
+    router.push({ pathname, query }, asPath, { locale: language })
+  }
 
   const handleGetStarted = () => {
     setAlphaAccepted(true)
@@ -70,19 +70,19 @@ const AlphaModal = ({
           <div className="bg-th-bkg-3 p-4 space-y-3 rounded-md">
             <div className="flex items-center text-th-fgd-1">
               <CheckCircleIcon className="flex-shrink-0 h-5 mr-2 text-th-green w-5" />
-              Cross‑collateralized leverage trading
+              {t('intro-feature-1')}
             </div>
             <div className="flex items-center text-th-fgd-1">
               <CheckCircleIcon className="flex-shrink-0 h-5 mr-2 text-th-green w-5" />
-              All assets count as collateral to trade or borrow
+              {t('intro-feature-2')}
             </div>
             <div className="flex items-center text-th-fgd-1">
               <CheckCircleIcon className="flex-shrink-0 h-5 mr-2 text-th-green w-5" />
-              Deposit any asset and earn interest automatically
+              {t('intro-feature-3')}
             </div>
             <div className="flex items-center text-th-fgd-1">
               <CheckCircleIcon className="flex-shrink-0 h-5 mr-2 text-th-green w-5" />
-              Borrow against your assets for other DeFi activities
+              {t('intro-feature-4')}
             </div>
           </div>
           <div className="px-6 text-th-fgd-3 text-center mt-4">
@@ -93,7 +93,7 @@ const AlphaModal = ({
               checked={acceptRisks}
               onChange={(e) => setAcceptRisks(e.target.checked)}
             >
-              I understand and accept the risks
+              {t('accept-terms')}
             </Checkbox>
           </div>
           <div className={`mt-6 flex justify-center space-x-4`}>
@@ -102,7 +102,7 @@ const AlphaModal = ({
               disabled={!acceptRisks}
               onClick={handleGetStarted}
             >
-              Get Started
+              {t('get-started')}
             </Button>
             {!hideTips ? (
               <Button
@@ -110,25 +110,25 @@ const AlphaModal = ({
                 disabled={!acceptRisks}
                 onClick={handleTakeTour}
               >
-                Show Tips
+                {t('show-tips')}
               </Button>
             ) : null}
           </div>
         </>
       ) : (
         <div className="pt-2">
-          <RadioGroup value={savedLanguage} onChange={setSavedLanguage}>
+          <RadioGroup value={language} onChange={setLanguage}>
             {LANGS.map((l) => (
-              <RadioGroup.Option
-                className="border border-th-fgd-4 cursor-pointer default-transition mb-2 p-3 rounded-md text-th-fgd-1 hover:border-th-primary"
-                key={l.locale}
-                value={l.locale}
-              >
+              <RadioGroup.Option className="" key={l.locale} value={l.locale}>
                 {({ checked }) => (
-                  <div className="flex items-center">
+                  <div
+                    className={`border ${
+                      checked ? 'border-th-primary' : 'border-th-fgd-4'
+                    } cursor-pointer default-transition flex items-center mb-2 p-3 rounded-md text-th-fgd-1 hover:border-th-primary`}
+                  >
                     <CheckCircleIcon
                       className={`h-5 mr-2 w-5 ${
-                        checked ? 'text-th-green' : 'text-th-fgd-4'
+                        checked ? 'text-th-primary' : 'text-th-fgd-4'
                       }`}
                     />
                     <span>{t(l.name.toLowerCase())}</span>
@@ -137,6 +137,9 @@ const AlphaModal = ({
               </RadioGroup.Option>
             ))}
           </RadioGroup>
+          <div className="flex justify-center pt-4">
+            <Button onClick={() => handleLanguageSelect()}>Save</Button>
+          </div>
         </div>
       )}
     </Modal>
