@@ -2,6 +2,7 @@ name: Build and Deploy to Skynet
 on: [push]
 jobs:
   build:
+    environment: dev
     runs-on: macos-latest
     strategy:
       matrix:
