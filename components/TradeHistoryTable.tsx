@@ -262,18 +262,25 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                   buttonTemplate={
                     <>
                       <div className="flex items-center justify-between text-fgd-1 w-full">
-                        <div className="flex items-center">
-                          <img
-                            alt=""
-                            width="20"
-                            height="20"
-                            src={`/assets/icons/${trade.marketName
-                              .split(/-|\//)[0]
-                              .toLowerCase()}.svg`}
-                            className={`mr-2.5`}
-                          />
-                          <div>
-                            <div className="mb-0.5 text-left">
+                        <div className="text-left">
+                          {trade.loadTimestamp || trade.timestamp
+                            ? renderTradeDateTime(
+                                trade.loadTimestamp || trade.timestamp
+                              )
+                            : t('recent')}
+                        </div>
+                        <div>
+                          <div className="text-right">
+                            <div className="flex items-center mb-0.5 text-left">
+                              <img
+                                alt=""
+                                width="16"
+                                height="16"
+                                src={`/assets/icons/${trade.marketName
+                                  .split(/-|\//)[0]
+                                  .toLowerCase()}.svg`}
+                                className={`mr-1.5`}
+                              />
                               {trade.marketName}
                             </div>
                             <div className="text-th-fgd-3 text-xs">
@@ -288,9 +295,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                               >
                                 {trade.side.toUpperCase()}
                               </span>
-                              {`${trade.size} at ${formatUsdValue(
-                                trade.price
-                              )}`}
+                              {trade.size}
                             </div>
                           </div>
                         </div>
@@ -301,6 +306,12 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                   index={index}
                   panelTemplate={
                     <div className="grid grid-cols-2 grid-flow-row gap-4">
+                      <div className="text-left">
+                        <div className="pb-0.5 text-th-fgd-3 text-xs">
+                          {t('price')}
+                        </div>
+                        {formatUsdValue(trade.price)}
+                      </div>
                       <div className="text-left">
                         <div className="pb-0.5 text-th-fgd-3 text-xs">
                           {t('value')}
@@ -318,16 +329,6 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                           {t('fee')}
                         </div>
                         {formatUsdValue(trade.feeCost)}
-                      </div>
-                      <div className="text-left">
-                        <div className="pb-0.5 text-th-fgd-3 text-xs">
-                          {t('approximate-time')}
-                        </div>
-                        {trade.loadTimestamp || trade.timestamp
-                          ? renderTradeDateTime(
-                              trade.loadTimestamp || trade.timestamp
-                            )
-                          : t('recent')}
                       </div>
                     </div>
                   }
