@@ -62,9 +62,7 @@ const TVChartContainer = () => {
   // @ts-ignore
   const defaultProps: ChartContainerProps = {
     symbol: selectedMarketConfig.name,
-    interval: (selectedMarketConfig.name.startsWith('SOL')
-      ? '1'
-      : '60') as ResolutionString,
+    interval: '60' as ResolutionString,
     theme: 'Dark',
     containerId: 'tv_chart_container',
     datafeedUrl: CHART_DATA_FEED,
