@@ -127,6 +127,7 @@ const MarketDetails = () => {
     const from = utcFrom.getTime() / 1000
     const to = utcTo.getTime() / 1000
 
+    console.log('requesting ohlcv', selectedMarketName)
     const ohlcv = await ChartApi.getOhlcv(selectedMarketName, '1D', from, to)
     if (ohlcv) {
       setOhlcv(ohlcv)
@@ -134,13 +135,15 @@ const MarketDetails = () => {
     }
   }, [selectedMarketName])
 
-  useInterval(async () => {
-    fetchOhlcv()
-  }, 5000)
+  // TODO: don't spam db
+  // useInterval(async () => {
+  //   fetchOhlcv()
+  // }, 5000)
 
   useMemo(() => {
     if (previousMarketName !== selectedMarketName) {
       setLoading(true)
+      fetchOhlcv()
     }
   }, [selectedMarketName])
 
