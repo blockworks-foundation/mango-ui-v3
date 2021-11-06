@@ -997,7 +997,7 @@
 
 "@blockworks-foundation/mango-client@git+https://github.com/blockworks-foundation/mango-client-v3.git":
   version "3.2.4"
-  resolved "git+https://github.com/blockworks-foundation/mango-client-v3.git#9d6f83761e39dc4f01e76b5502d797a33789f23e"
+  resolved "git+https://github.com/blockworks-foundation/mango-client-v3.git#5f82b9e2fc30e4c9a155527eb40491c748f05d4b"
   dependencies:
     "@project-serum/anchor" "^0.16.2"
     "@project-serum/serum" "0.13.55"
