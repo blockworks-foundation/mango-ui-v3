@@ -1,17 +1,24 @@
 import { getTokenBySymbol } from '@blockworks-foundation/mango-client'
 import { useEffect, useMemo, useState } from 'react'
+import dayjs from 'dayjs'
 import useMangoStore from '../../stores/useMangoStore'
 import Select from '../Select'
 import { Table, Td, Th, TrBody, TrHead } from '../TableElements'
 import { useTranslation } from 'next-i18next'
 import { isEmpty } from 'lodash'
 import usePagination from '../../hooks/usePagination'
-import { roundToDecimal } from '../../utils/'
+import { numberCompactFormatter, roundToDecimal } from '../../utils/'
 import Pagination from '../Pagination'
 import { useViewport } from '../../hooks/useViewport'
 import { breakpoints } from '../TradePageGrid'
 import { ExpandableRow } from '../TableElements'
 import MobileTableHeader from '../mobile/MobileTableHeader'
+import Chart from '../Chart'
+import Switch from '../Switch'
+import useLocalStorageState from '../../hooks/useLocalStorageState'
+
+const utc = require('dayjs/plugin/utc')
+dayjs.extend(utc)
 
 interface InterestStats {
   [key: string]: {
@@ -24,10 +31,13 @@ const AccountInterest = () => {
   const { t } = useTranslation('common')
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
+  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const [interestStats, setInterestStats] = useState<any>([])
   const [hourlyInterestStats, setHourlyInterestStats] = useState<any>({})
   const [loading, setLoading] = useState(false)
   const [selectedAsset, setSelectedAsset] = useState<string>('')
+  const [chartData, setChartData] = useState([])
   const {
     paginated,
     setData,
@@ -40,6 +50,10 @@ const AccountInterest = () => {
   } = usePagination(hourlyInterestStats[selectedAsset])
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.md : false
+  const [hideInterestDust, sethideInterestDust] = useLocalStorageState(
+    'hideInterestDust',
+    false
+  )
 
   const mangoAccountPk = useMemo(() => {
     return mangoAccount.publicKey.toString()
@@ -64,13 +78,31 @@ const AccountInterest = () => {
   }, [hourlyInterestStats])
 
   useEffect(() => {
+    const hideDust = []
     const fetchInterestStats = async () => {
       const response = await fetch(
         `https://mango-transaction-log.herokuapp.com/v3/stats/total-interest-earned?mango-account=${mangoAccountPk}`
       )
       const parsedResponse: InterestStats = await response.json()
 
-      setInterestStats(Object.entries(parsedResponse))
+      if (hideInterestDust) {
+        Object.entries(parsedResponse).forEach((r) => {
+          const tokens = groupConfig.tokens
+          const token = tokens.find((t) => t.symbol === r[0])
+          const tokenIndex = mangoGroup.getTokenIndex(token.mintKey)
+          const price = mangoGroup.getPrice(tokenIndex, mangoCache).toNumber()
+          const interest =
+            r[1].total_deposit_interest > 0
+              ? r[1].total_deposit_interest
+              : r[1].total_borrow_interest
+          if (price * interest > 1) {
+            hideDust.push(r)
+          }
+        })
+        setInterestStats(hideDust)
+      } else {
+        setInterestStats(Object.entries(parsedResponse))
+      }
     }
 
     const fetchHourlyInterestStats = async () => {
@@ -79,7 +111,16 @@ const AccountInterest = () => {
         `https://mango-transaction-log.herokuapp.com/v3/stats/hourly-interest?mango-account=${mangoAccountPk}`
       )
       const parsedResponse = await response.json()
-      const assets = Object.keys(parsedResponse)
+      let assets
+      if (hideInterestDust) {
+        const assetsToShow = hideDust.map((a) => a[0])
+        assets = Object.keys(parsedResponse).filter((a) =>
+          assetsToShow.includes(a)
+        )
+        setSelectedAsset(assetsToShow[0])
+      } else {
+        assets = Object.keys(parsedResponse)
+      }
 
       const stats = {}
       for (const asset of assets) {
@@ -109,13 +150,64 @@ const AccountInterest = () => {
       setHourlyInterestStats(stats)
     }
 
-    fetchHourlyInterestStats()
     fetchInterestStats()
-  }, [mangoAccountPk])
+    fetchHourlyInterestStats()
+  }, [mangoAccountPk, hideInterestDust])
+
+  useEffect(() => {
+    if (hourlyInterestStats[selectedAsset]) {
+      const start = new Date(
+        // @ts-ignore
+        dayjs().utc().hour(0).minute(0).subtract(31, 'day')
+      ).getTime()
+
+      const filtered = hourlyInterestStats[selectedAsset].filter(
+        (d) => new Date(d.time).getTime() > start
+      )
+
+      const dailyInterest = []
+      filtered.forEach((d) => {
+        const found = dailyInterest.find(
+          (x) =>
+            dayjs(x.time).format('DD-MMM') === dayjs(d.time).format('DD-MMM')
+        )
+        if (found) {
+          const newInterest =
+            d.borrow_interest > 0 ? d.borrow_interest * -1 : d.deposit_interest
+          found.interest = found.interest + newInterest
+        } else {
+          dailyInterest.push({
+            time: d.time,
+            interest:
+              d.borrow_interest > 0
+                ? d.borrow_interest * -1
+                : d.deposit_interest,
+          })
+        }
+      })
+      setChartData(dailyInterest.reverse())
+    }
+  }, [hourlyInterestStats, selectedAsset])
+
+  const handleDustTicks = (v) =>
+    v < 0.0000001
+      ? v === 0
+        ? 0
+        : v.toExponential()
+      : numberCompactFormatter.format(v)
 
   return (
     <>
-      <div className="pb-4 text-th-fgd-1 text-lg">{t('interest-earned')}</div>
+      <div className="flex items-center justify-between pb-4">
+        <div className="text-th-fgd-1 text-lg">{t('interest-earned')}</div>
+        <Switch
+          checked={hideInterestDust}
+          className="text-xs"
+          onChange={() => sethideInterestDust(!hideInterestDust)}
+        >
+          Hide dust
+        </Switch>
+      </div>
       {mangoAccount ? (
         <div>
           {!isMobile ? (
@@ -283,6 +375,27 @@ const AccountInterest = () => {
                       </div>
                     ))}
                   </div>
+                </div>
+                <div
+                  className="border border-th-bkg-4 relative mb-6 p-4 rounded-md"
+                  style={{ height: '330px' }}
+                >
+                  <Chart
+                    hideRangeFilters
+                    title={`${selectedAsset} Interest (Last 30 days)`}
+                    xAxis="time"
+                    yAxis="interest"
+                    data={chartData}
+                    labelFormat={(x) =>
+                      x &&
+                      x.toFixed(
+                        getTokenBySymbol(groupConfig, selectedAsset).decimals
+                      )
+                    }
+                    tickFormat={handleDustTicks}
+                    type="bar"
+                    yAxisWidth={60}
+                  />
                 </div>
                 <div>
                   <div>
