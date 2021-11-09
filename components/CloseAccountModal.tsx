@@ -5,7 +5,7 @@ import {
   useMemo,
   useState,
 } from 'react'
-import useMangoStore, { MNGO_INDEX, programId } from '../stores/useMangoStore'
+import useMangoStore, { MNGO_INDEX } from '../stores/useMangoStore'
 import { XCircleIcon } from '@heroicons/react/outline'
 import Button from './Button'
 import Modal from './Modal'
@@ -15,17 +15,12 @@ import { notify } from '../utils/notifications'
 import { CheckCircleIcon } from '@heroicons/react/solid'
 import {
   getMultipleAccounts,
-  makeCloseAdvancedOrdersInstruction,
-  makeCloseMangoAccountInstruction,
-  makeCloseSpotOpenOrdersInstruction,
   nativeToUi,
   zeroKey,
   ZERO_BN,
   ZERO_I80F48,
 } from '@blockworks-foundation/mango-client'
 import usePerpPositions from '../hooks/usePerpPositions'
-import { Transaction } from '@solana/web3.js'
-import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
 import { useOpenOrders } from '../hooks/useOpenOrders'
 
 interface CloseAccountModalProps {
@@ -50,7 +45,6 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
   const actions = useMangoStore((s) => s.actions)
   const connection = useMangoStore((s) => s.connection.current)
   const client = useMangoStore((s) => s.connection.client)
-  const groupConfig = useMangoGroupConfig()
   const openOrders = useOpenOrders()
   const setMangoStore = useMangoStore((s) => s.set)
   const mangoAccounts = useMangoStore((s) => s.mangoAccounts)
@@ -98,66 +92,22 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
 
   const closeAccount = async () => {
     const wallet = useMangoStore.getState().wallet.current
-
     try {
-      console.log('withdrawAll')
-      await client.withdrawAll(mangoGroup, mangoAccount, wallet)
-      console.log('resolveAllDust')
-      await client.resolveAllDust(mangoGroup, mangoAccount, mangoCache, wallet)
-      const tx = new Transaction()
-      for (let i = 0; i < mangoAccount.spotOpenOrders.length; i++) {
-        const openOrders = mangoAccount.spotOpenOrders[i]
-        const spotMarket = groupConfig.spotMarkets[i]
-        if (!openOrders.equals(zeroKey)) {
-          tx.add(
-            makeCloseSpotOpenOrdersInstruction(
-              programId,
-              mangoGroup.publicKey,
-              mangoAccount.publicKey,
-              wallet.publicKey,
-              mangoGroup.dexProgramId,
-              openOrders,
-              spotMarket.publicKey,
-              mangoGroup.signerKey
-            )
-          )
-        }
-      }
-      if (!mangoAccount.advancedOrdersKey.equals(zeroKey)) {
-        tx.add(
-          makeCloseAdvancedOrdersInstruction(
-            programId,
-            mangoGroup.publicKey,
-            mangoAccount.publicKey,
-            wallet.publicKey,
-            mangoAccount.advancedOrdersKey
-          )
-        )
-      }
-
-      tx.add(
-        makeCloseMangoAccountInstruction(
-          programId,
-          mangoGroup.publicKey,
-          mangoAccount.publicKey,
-          wallet.publicKey
-        )
+      await client.emptyAndCloseMangoAccount(
+        mangoGroup,
+        mangoAccount,
+        mangoCache,
+        wallet
       )
 
-      const txid = await client.sendTransaction(tx, wallet, [])
-
-      console.log('fetchAllMangoAccounts')
       actions.fetchAllMangoAccounts()
-      console.log('setSelectedAccount')
       setMangoStore((state) => {
         state.selectedMangoAccount.current = mangoAccounts[0]
       })
-      console.log('reloadMangoAccount')
       actions.reloadMangoAccount()
       onClose()
       notify({
         title: 'Account Deleted',
-        txid,
       })
     } catch (err) {
       console.warn('Error deleting account:', err)
