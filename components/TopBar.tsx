@@ -17,7 +17,7 @@ import Settings from './Settings'
 const TopBar = () => {
   const { t } = useTranslation('common')
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
-  const walletPubkey = useMangoStore((s) => s.wallet.current.publicKey)
+  const wallet = useMangoStore((s) => s.wallet.current)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
   const [defaultMarket] = useLocalStorageState(
     DEFAULT_MARKET_KEY,
@@ -97,7 +97,7 @@ const TopBar = () => {
                 <Settings />
               </div>
               {mangoAccount &&
-              mangoAccount.owner.toBase58() === walletPubkey.toBase58() ? (
+              mangoAccount.owner.toBase58() === wallet?.publicKey.toBase58() ? (
                 <div className="pl-2">
                   <button
                     className="border border-th-bkg-4 py-1 px-2 rounded text-xs focus:outline-none hover:border-th-fgd-4"
