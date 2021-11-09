@@ -1,4 +1,4 @@
-import React, {
+import {
   FunctionComponent,
   useCallback,
   useEffect,
@@ -43,7 +43,6 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
-  //const mangoClient = useMangoStore((s) => s.connection.client)
   const { openPositions, unsettledPositions } = usePerpPositions()
   const [hasBorrows, setHasBorrows] = useState(false)
   const [hasOpenPositions, setHasOpenPositions] = useState(false)
@@ -53,8 +52,8 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
   const client = useMangoStore((s) => s.connection.client)
   const groupConfig = useMangoGroupConfig()
   const openOrders = useOpenOrders()
-  const walletTokens = useMangoStore((s) => s.wallet.tokens)
-  const [, setSelectedAccount] = useState(walletTokens[0])
+  const setMangoStore = useMangoStore((s) => s.set)
+  const mangoAccounts = useMangoStore((s) => s.mangoAccounts)
 
   const fetchTotalAccountSOL = useCallback(async () => {
     if (!mangoAccount) {
@@ -150,7 +149,9 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
       console.log('fetchAllMangoAccounts')
       actions.fetchAllMangoAccounts()
       console.log('setSelectedAccount')
-      setSelectedAccount(walletTokens[0])
+      setMangoStore((state) => {
+        state.selectedMangoAccount.current = mangoAccounts[0]
+      })
       console.log('reloadMangoAccount')
       actions.reloadMangoAccount()
       onClose()
