@@ -12,7 +12,7 @@ const extractPage = (page, perPage, data) => {
   const from = page * perPage
   const to = (page + 1) * perPage
 
-  return data.slice(from, to)
+  return data ? data.slice(from, to) : []
 }
 
 const paginationReducer = (state, action) => {

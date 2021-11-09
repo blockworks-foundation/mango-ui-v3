@@ -39,6 +39,31 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
     )
   }
 
+  const renderMarketName = (trade: any) => {
+    let marketType, baseSymbol
+    if (trade.marketName.includes('PERP')) {
+      marketType = 'perp'
+      baseSymbol = trade.marketName.slice(0, trade.marketName.indexOf('-'))
+    } else if (trade.marketName.includes('USDC')) {
+      marketType = 'spot'
+      baseSymbol = trade.marketName.slice(0, trade.marketName.indexOf('/'))
+    } else {
+      return <span>{trade.marketName}</span>
+    }
+    const location = `/${marketType}/${baseSymbol}`
+    if (asPath.includes(location)) {
+      return <span>{trade.marketName}</span>
+    } else {
+      return (
+        <Link href={location}>
+          <a className="text-th-fgd-1 underline hover:no-underline hover:text-th-fgd-1">
+            {trade.marketName}
+          </a>
+        </Link>
+      )
+    }
+  }
+
   const filteredTrades = numTrades ? items.slice(0, numTrades) : items
 
   return (
@@ -189,42 +214,46 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                   </TrHead>
                 </thead>
                 <tbody>
-                  {filteredTrades.map((trade: any, index) => (
-                    <TrBody
-                      index={index}
-                      key={`${trade.seqNum}${trade.marketName}`}
-                    >
-                      <Td>
-                        <div className="flex items-center">
-                          <img
-                            alt=""
-                            width="20"
-                            height="20"
-                            src={`/assets/icons/${trade.marketName
-                              .split(/-|\//)[0]
-                              .toLowerCase()}.svg`}
-                            className={`mr-2.5`}
-                          />
-                          <div>{trade.marketName}</div>
-                        </div>
-                      </Td>
-                      <Td>
-                        <SideBadge side={trade.side} />
-                      </Td>
-                      <Td>{trade.size}</Td>
-                      <Td>{formatUsdValue(trade.price)}</Td>
-                      <Td>{formatUsdValue(trade.value)}</Td>
-                      <Td>{trade.liquidity}</Td>
-                      <Td>{formatUsdValue(trade.feeCost)}</Td>
-                      <Td>
-                        {trade.loadTimestamp || trade.timestamp
-                          ? renderTradeDateTime(
-                              trade.loadTimestamp || trade.timestamp
-                            )
-                          : t('recent')}
-                      </Td>
-                    </TrBody>
-                  ))}
+                  {filteredTrades.map((trade: any, index) => {
+                    return (
+                      <TrBody
+                        index={index}
+                        key={`${trade.seqNum}${trade.marketName}`}
+                      >
+                        <Td>
+                          <div className="flex items-center">
+                            <img
+                              alt=""
+                              width="20"
+                              height="20"
+                              src={`/assets/icons/${trade.marketName
+                                .split(/-|\//)[0]
+                                .toLowerCase()}.svg`}
+                              className={`mr-2.5`}
+                            />
+                            {renderMarketName(trade)}
+                          </div>
+                        </Td>
+                        <Td>
+                          <SideBadge side={trade.side} />
+                        </Td>
+                        <Td>{trade.size}</Td>
+                        <Td>
+                          ${new Intl.NumberFormat('en-US').format(trade.price)}
+                        </Td>
+                        <Td>{formatUsdValue(trade.value)}</Td>
+                        <Td>{trade.liquidity}</Td>
+                        <Td>{formatUsdValue(trade.feeCost)}</Td>
+                        <Td>
+                          {trade.loadTimestamp || trade.timestamp
+                            ? renderTradeDateTime(
+                                trade.loadTimestamp || trade.timestamp
+                              )
+                            : t('recent')}
+                        </Td>
+                      </TrBody>
+                    )
+                  })}
                 </tbody>
               </Table>
             ) : (
@@ -232,19 +261,26 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                 <ExpandableRow
                   buttonTemplate={
                     <>
-                      <div className="col-span-11 flex items-center text-fgd-1">
-                        <div className="flex items-center">
-                          <img
-                            alt=""
-                            width="20"
-                            height="20"
-                            src={`/assets/icons/${trade.marketName
-                              .split(/-|\//)[0]
-                              .toLowerCase()}.svg`}
-                            className={`mr-2.5`}
-                          />
-                          <div>
-                            <div className="mb-0.5 text-left">
+                      <div className="flex items-center justify-between text-fgd-1 w-full">
+                        <div className="text-left">
+                          {trade.loadTimestamp || trade.timestamp
+                            ? renderTradeDateTime(
+                                trade.loadTimestamp || trade.timestamp
+                              )
+                            : t('recent')}
+                        </div>
+                        <div>
+                          <div className="text-right">
+                            <div className="flex items-center mb-0.5 text-left">
+                              <img
+                                alt=""
+                                width="16"
+                                height="16"
+                                src={`/assets/icons/${trade.marketName
+                                  .split(/-|\//)[0]
+                                  .toLowerCase()}.svg`}
+                                className={`mr-1.5`}
+                              />
                               {trade.marketName}
                             </div>
                             <div className="text-th-fgd-3 text-xs">
@@ -259,9 +295,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                               >
                                 {trade.side.toUpperCase()}
                               </span>
-                              {`${trade.size} at ${formatUsdValue(
-                                trade.price
-                              )}`}
+                              {trade.size}
                             </div>
                           </div>
                         </div>
@@ -271,36 +305,32 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                   key={`${index}`}
                   index={index}
                   panelTemplate={
-                    <>
-                      <div className="col-span-1 text-left">
+                    <div className="grid grid-cols-2 grid-flow-row gap-4">
+                      <div className="text-left">
+                        <div className="pb-0.5 text-th-fgd-3 text-xs">
+                          {t('price')}
+                        </div>
+                        {formatUsdValue(trade.price)}
+                      </div>
+                      <div className="text-left">
                         <div className="pb-0.5 text-th-fgd-3 text-xs">
                           {t('value')}
                         </div>
                         {formatUsdValue(trade.value)}
                       </div>
-                      <div className="col-span-1 text-left">
+                      <div className="text-left">
                         <div className="pb-0.5 text-th-fgd-3 text-xs">
                           {t('liquidity')}
                         </div>
                         {trade.liquidity}
                       </div>
-                      <div className="col-span-1 text-left">
+                      <div className="text-left">
                         <div className="pb-0.5 text-th-fgd-3 text-xs">
                           {t('fee')}
                         </div>
                         {formatUsdValue(trade.feeCost)}
                       </div>
-                      <div className="col-span-1 text-left">
-                        <div className="pb-0.5 text-th-fgd-3 text-xs">
-                          {t('approximate-time')}
-                        </div>
-                        {trade.loadTimestamp || trade.timestamp
-                          ? renderTradeDateTime(
-                              trade.loadTimestamp || trade.timestamp
-                            )
-                          : t('recent')}
-                      </div>
-                    </>
+                    </div>
                   }
                 />
               ))

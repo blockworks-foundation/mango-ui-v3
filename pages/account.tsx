@@ -21,7 +21,6 @@ import AccountNameModal from '../components/AccountNameModal'
 import Button from '../components/Button'
 import EmptyState from '../components/EmptyState'
 import Loading from '../components/Loading'
-import SwipeableTabs from '../components/mobile/SwipeableTabs'
 import Swipeable from '../components/mobile/Swipeable'
 import Tabs from '../components/Tabs'
 import { useViewport } from '../hooks/useViewport'
@@ -29,6 +28,7 @@ import { breakpoints } from '../components/TradePageGrid'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'next-i18next'
 import CloseAccountModal from '../components/CloseAccountModal'
+import Select from '../components/Select'
 
 export async function getServerSideProps({ locale }) {
   return {
@@ -39,17 +39,7 @@ export async function getServerSideProps({ locale }) {
   }
 }
 
-const TABS = [
-  'Portfolio',
-  // 'Assets',
-  // 'Borrows',
-  // 'Stats',
-  // 'Positions',
-  'Orders',
-  'Trade History',
-  'Interest',
-  'Funding',
-]
+const TABS = ['Portfolio', 'Orders', 'Trade History', 'Interest', 'Funding']
 
 export default function Account() {
   const { t } = useTranslation('common')
@@ -170,11 +160,18 @@ export default function Account() {
               tabs={TABS}
             />
           ) : (
-            <SwipeableTabs
-              onChange={handleChangeViewIndex}
-              tabs={TABS}
-              tabIndex={viewIndex}
-            />
+            <div className="pb-2 pt-3">
+              <Select
+                value={TABS[viewIndex]}
+                onChange={(e) => handleChangeViewIndex(e)}
+              >
+                {TABS.map((tab, index) => (
+                  <Select.Option key={index + tab} value={index}>
+                    {tab}
+                  </Select.Option>
+                ))}
+              </Select>
+            </div>
           )
         ) : null}
         <div className="bg-th-bkg-2 p-4 sm:p-6 rounded-lg">
@@ -194,6 +191,12 @@ export default function Account() {
                 </div>
                 <div>
                   <AccountHistory />
+                </div>
+                <div>
+                  <AccountInterest />
+                </div>
+                <div>
+                  <AccountFunding />
                 </div>
               </Swipeable>
             )

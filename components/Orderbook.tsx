@@ -1,5 +1,4 @@
 import React, { useRef, useEffect, useState } from 'react'
-import styled from '@emotion/styled'
 import Big from 'big.js'
 import useInterval from '../hooks/useInterval'
 import usePrevious from '../hooks/usePrevious'
@@ -23,16 +22,23 @@ import {
   FlipCardBack,
   FlipCardFront,
   FlipCardInner,
-  StyledFloatingElement,
 } from './FlipCard'
 import { useTranslation } from 'next-i18next'
+import FloatingElement from './FloatingElement'
 
-const Line = styled.div<any>`
-  text-align: ${(props) => (props.invert ? 'left' : 'right')};
-  height: 100%;
-  filter: opacity(40%);
-  ${(props) => props['data-width'] && `width: ${props['data-width']};`}
-`
+const Line = (props) => {
+  return (
+    <div
+      {...props}
+      style={{
+        textAlign: `${props.invert ? 'left' : 'right'}`,
+        height: '100%',
+        filter: 'opacity(40%',
+        width: `${props['data-width'] ? props['data-width'] : ''}`,
+      }}
+    />
+  )
+}
 
 const groupBy = (ordersArray, market, grouping: number, isBids: boolean) => {
   if (!ordersArray || !market || !grouping || grouping == market?.tickSize) {
@@ -226,7 +232,7 @@ export default function Orderbook({ depth = 8 }) {
       <FlipCardInner flip={defaultLayout}>
         {defaultLayout ? (
           <FlipCardFront>
-            <StyledFloatingElement className="h-full">
+            <FloatingElement className="h-full fadein-floating-element">
               <div className="flex items-center justify-between pb-2.5">
                 <div className="flex relative">
                   <Tooltip
@@ -358,11 +364,11 @@ export default function Orderbook({ depth = 8 }) {
                   {orderbookData?.spreadPercentage?.toFixed(2)}%
                 </div>
               </div>
-            </StyledFloatingElement>
+            </FloatingElement>
           </FlipCardFront>
         ) : (
           <FlipCardBack>
-            <StyledFloatingElement className="h-full">
+            <FloatingElement className="h-full fadein-floating-element">
               <div className="flex items-center justify-between pb-2.5">
                 <div className="flex relative">
                   <Tooltip
@@ -481,7 +487,7 @@ export default function Orderbook({ depth = 8 }) {
                   />
                 )
               )}
-            </StyledFloatingElement>
+            </FloatingElement>
           </FlipCardBack>
         )}
       </FlipCardInner>
@@ -632,7 +638,6 @@ const OrderbookRow = React.memo<any>(
               <Line
                 invert
                 data-width={sizePercent + '%'}
-                side={side}
                 className={`absolute inset-y-0 left-0 ${
                   side === 'buy' ? `bg-th-green` : `bg-th-red`
                 }`}
@@ -671,7 +676,6 @@ const OrderbookRow = React.memo<any>(
                   side === 'buy' ? `bg-th-green` : `bg-th-red`
                 }`}
                 data-width={sizePercent + '%'}
-                side={side}
               />
               <div
                 className={`z-10 filter brightness-110 flex-1 text-xs md:text-sm leading-5 md:leading-7 md:pr-2 ${

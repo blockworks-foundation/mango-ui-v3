@@ -128,12 +128,16 @@ const AccountFunding = () => {
                       <Td>
                         <div
                           className={`${
-                            stats.total_funding >= 0
+                            stats.total_funding > 0
                               ? 'text-th-green'
-                              : 'text-th-red'
+                              : stats.total_funding < 0
+                              ? 'text-th-red'
+                              : 'text-th-fgd-3'
                           }`}
                         >
-                          ${stats.total_funding.toFixed(6)}
+                          {stats.total_funding
+                            ? `${stats.total_funding?.toFixed(6)}`
+                            : '-'}
                         </div>
                       </Td>
                     </TrBody>

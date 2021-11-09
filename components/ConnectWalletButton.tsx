@@ -2,7 +2,6 @@ import { useCallback, useState } from 'react'
 import useMangoStore from '../stores/useMangoStore'
 import { Menu } from '@headlessui/react'
 import {
-  CogIcon,
   CurrencyDollarIcon,
   DuplicateIcon,
   LogoutIcon,
@@ -18,7 +17,6 @@ import WalletSelect from './WalletSelect'
 import { WalletIcon, ProfileIcon } from './icons'
 import AccountsModal from './AccountsModal'
 import { useEffect } from 'react'
-import SettingsModal from './SettingsModal'
 import { useTranslation } from 'next-i18next'
 
 const ConnectWalletButton = () => {
@@ -27,7 +25,6 @@ const ConnectWalletButton = () => {
   const connected = useMangoStore((s) => s.wallet.connected)
   const set = useMangoStore((s) => s.set)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
-  const [showSettingsModal, setShowSettingsModal] = useState(false)
   const [selectedWallet, setSelectedWallet] = useState(DEFAULT_PROVIDER.url)
   const [savedProviderUrl] = useLocalStorageState(
     PROVIDER_LOCAL_STORAGE_KEY,
@@ -66,15 +63,6 @@ const ConnectWalletButton = () => {
                 >
                   <CurrencyDollarIcon className="h-4 w-4" />
                   <div className="pl-2 text-left">{t('accounts')}</div>
-                </button>
-              </Menu.Item>
-              <Menu.Item>
-                <button
-                  className="flex flex-row font-normal items-center rounded-none w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer focus:outline-none"
-                  onClick={() => setShowSettingsModal(true)}
-                >
-                  <CogIcon className="h-4 w-4" />
-                  <div className="pl-2 text-left">{t('settings')}</div>
                 </button>
               </Menu.Item>
               <Menu.Item>
@@ -129,12 +117,6 @@ const ConnectWalletButton = () => {
         <AccountsModal
           onClose={handleCloseAccounts}
           isOpen={showAccountsModal}
-        />
-      ) : null}
-      {showSettingsModal ? (
-        <SettingsModal
-          onClose={() => setShowSettingsModal(false)}
-          isOpen={showSettingsModal}
         />
       ) : null}
     </>

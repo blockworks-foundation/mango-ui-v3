@@ -8,7 +8,7 @@ import ManualRefresh from './ManualRefresh'
 import useOraclePrice from '../hooks/useOraclePrice'
 import DayHighLow from './DayHighLow'
 import { useEffect } from 'react'
-import { formatUsdValue, usdFormatter } from '../utils'
+import { getDecimalCount, usdFormatter } from '../utils'
 import { PerpMarket } from '@blockworks-foundation/mango-client'
 import BN from 'bn.js'
 import { useViewport } from '../hooks/useViewport'
@@ -127,6 +127,7 @@ const MarketDetails = () => {
     const from = utcFrom.getTime() / 1000
     const to = utcTo.getTime() / 1000
 
+    console.log('requesting ohlcv', selectedMarketName)
     const ohlcv = await ChartApi.getOhlcv(selectedMarketName, '1D', from, to)
     if (ohlcv) {
       setOhlcv(ohlcv)
@@ -134,13 +135,15 @@ const MarketDetails = () => {
     }
   }, [selectedMarketName])
 
-  useInterval(async () => {
-    fetchOhlcv()
-  }, 5000)
+  // TODO: don't spam db
+  // useInterval(async () => {
+  //   fetchOhlcv()
+  // }, 5000)
 
   useMemo(() => {
     if (previousMarketName !== selectedMarketName) {
       setLoading(true)
+      fetchOhlcv()
     }
   }, [selectedMarketName])
 
@@ -179,7 +182,9 @@ const MarketDetails = () => {
               {t('oracle-price')}
             </div>
             <div className="font-semibold text-th-fgd-1 md:text-xs">
-              {oraclePrice ? formatUsdValue(oraclePrice) : '--'}
+              {oraclePrice && selectedMarket
+                ? oraclePrice.toFixed(getDecimalCount(selectedMarket.tickSize))
+                : '--'}
             </div>
           </div>
           <div className="flex items-center justify-between md:block">

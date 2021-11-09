@@ -34,27 +34,30 @@ const Tabs: FunctionComponent<TabsProps> = ({
         }}
       />
       <nav className="-mb-px flex" aria-label="Tabs">
-        {tabs.map((tabName) => (
-          <a
-            key={tabName}
-            onClick={() => onChange(tabName)}
-            className={`cursor-pointer default-transition flex font-semibold justify-center pb-4 pt-2 relative whitespace-nowrap hover:opacity-100
+        {tabs.map((tabName) => {
+          const tabCount = showCount
+            ? showCount.find((e) => e.tabName === tabName)
+            : null
+          return (
+            <a
+              key={tabName}
+              onClick={() => onChange(tabName)}
+              className={`cursor-pointer default-transition flex font-semibold justify-center pb-4 pt-2 relative whitespace-nowrap hover:opacity-100
                     ${
                       activeTab === tabName
                         ? `text-th-primary`
                         : `text-th-fgd-4 hover:text-th-primary`
                     }
                   `}
-            style={{ width: `${100 / tabs.length}%`, maxWidth: '176px' }}
-          >
-            {t(tabName.toLowerCase().replace(' ', '-'))}
-            {showCount && showCount.find((e) => e.tabName === tabName) ? (
-              <Count
-                count={showCount.find((e) => e.tabName === tabName).count}
-              />
-            ) : null}
-          </a>
-        ))}
+              style={{ width: `${100 / tabs.length}%`, maxWidth: '176px' }}
+            >
+              {t(tabName.toLowerCase().replace(' ', '-'))}
+              {tabCount && tabCount.count > 0 ? (
+                <Count count={tabCount.count} />
+              ) : null}
+            </a>
+          )
+        })}
       </nav>
     </div>
   )
