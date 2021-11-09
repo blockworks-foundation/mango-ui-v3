@@ -6,27 +6,29 @@ import {
   LinkIcon,
   PencilIcon,
 } from '@heroicons/react/outline'
-import useMangoStore from '../stores/useMangoStore'
-import { copyToClipboard } from '../utils'
-import PageBodyContainer from '../components/PageBodyContainer'
-import TopBar from '../components/TopBar'
-import AccountOrders from '../components/account_page/AccountOrders'
-import AccountHistory from '../components/account_page/AccountHistory'
-import AccountsModal from '../components/AccountsModal'
-import AccountOverview from '../components/account_page/AccountOverview'
-import AccountInterest from '../components/account_page/AccountInterest'
-import AccountFunding from '../components/account_page/AccountFunding'
-import AccountNameModal from '../components/AccountNameModal'
-import Button from '../components/Button'
-import EmptyState from '../components/EmptyState'
-import Loading from '../components/Loading'
-import Swipeable from '../components/mobile/Swipeable'
-import Tabs from '../components/Tabs'
-import { useViewport } from '../hooks/useViewport'
-import { breakpoints } from '../components/TradePageGrid'
+import useMangoStore, { serumProgramId } from '../../stores/useMangoStore'
+import { copyToClipboard } from '../../utils'
+import PageBodyContainer from '../../components/PageBodyContainer'
+import TopBar from '../../components/TopBar'
+import AccountOrders from '../../components/account_page/AccountOrders'
+import AccountHistory from '../../components/account_page/AccountHistory'
+import AccountsModal from '../../components/AccountsModal'
+import AccountOverview from '../../components/account_page/AccountOverview'
+import AccountInterest from '../../components/account_page/AccountInterest'
+import AccountFunding from '../../components/account_page/AccountFunding'
+import AccountNameModal from '../../components/AccountNameModal'
+import Button from '../../components/Button'
+import EmptyState from '../../components/EmptyState'
+import Loading from '../../components/Loading'
+import Swipeable from '../../components/mobile/Swipeable'
+import Tabs from '../../components/Tabs'
+import { useViewport } from '../../hooks/useViewport'
+import { breakpoints } from '../../components/TradePageGrid'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'next-i18next'
-import Select from '../components/Select'
+import Select from '../../components/Select'
+import { useRouter } from 'next/router'
+import { PublicKey } from '@solana/web3.js'
 
 export async function getServerSideProps({ locale }) {
   return {
@@ -44,14 +46,21 @@ export default function Account() {
   const [showAccountsModal, setShowAccountsModal] = useState(false)
   const [showNameModal, setShowNameModal] = useState(false)
   const [isCopied, setIsCopied] = useState(false)
+  const [resetOnLeave, setResetOnLeave] = useState(false)
   const connected = useMangoStore((s) => s.wallet.connected)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
+  const mangoClient = useMangoStore((s) => s.connection.client)
+  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const wallet = useMangoStore((s) => s.wallet.current)
   const isLoading = useMangoStore((s) => s.selectedMangoAccount.initialLoad)
+  const actions = useMangoStore((s) => s.actions)
+  const setMangoStore = useMangoStore((s) => s.set)
   const [viewIndex, setViewIndex] = useState(0)
   const [activeTab, setActiveTab] = useState(TABS[0])
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
+  const router = useRouter()
+  const { pubkey } = router.query
 
   const handleCloseAccounts = useCallback(() => {
     setShowAccountsModal(false)
@@ -64,6 +73,49 @@ export default function Account() {
   const handleCloseNameModal = useCallback(() => {
     setShowNameModal(false)
   }, [])
+
+  useEffect(() => {
+    async function loadUnownedMangoAccount() {
+      try {
+        const unownedMangoAccountPubkey = new PublicKey(pubkey[0])
+        if (mangoGroup) {
+          const unOwnedMangoAccount = await mangoClient.getMangoAccount(
+            unownedMangoAccountPubkey,
+            serumProgramId
+          )
+          setMangoStore((state) => {
+            state.selectedMangoAccount.current = unOwnedMangoAccount
+          })
+          actions.fetchTradeHistory()
+          setResetOnLeave(true)
+        }
+      } catch (error) {
+        router.push('/account')
+      }
+    }
+
+    loadUnownedMangoAccount()
+  }, [pubkey, mangoGroup])
+
+  useEffect(() => {
+    if (connected) {
+      router.push('/account')
+    }
+  }, [connected])
+
+  useEffect(() => {
+    const handleRouteChange = () => {
+      if (resetOnLeave) {
+        setMangoStore((state) => {
+          state.selectedMangoAccount.current = undefined
+        })
+      }
+    }
+    router.events.on('routeChangeStart', handleRouteChange)
+    return () => {
+      router.events.off('routeChangeStart', handleRouteChange)
+    }
+  }, [resetOnLeave])
 
   useEffect(() => {
     if (isCopied) {
