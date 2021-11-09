@@ -141,6 +141,7 @@
     "markets": "市场",
     "max": "最多",
     "max-borrow": "最多借贷数量",
+    "max-with-borrow": "借用最大值",
     "missing-price": "没有价格",
     "missing-size": "没有数量",
     "missing-trigger": "没有触发价格",

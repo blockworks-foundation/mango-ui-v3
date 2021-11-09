@@ -141,6 +141,7 @@
   "markets": "Markets",
   "max": "Max",
   "max-borrow": "Max Borrow Amount",
+  "max-with-borrow": "Max With Borrow",
   "missing-price": "Missing price",
   "missing-size": "Missing size",
   "missing-trigger": "Missing trigger price",

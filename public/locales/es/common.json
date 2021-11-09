@@ -140,6 +140,7 @@
   "markets": "Mercados",
   "max": "Maximo",
   "max-borrow": "Monto máximo del préstamo",
+  "max-with-borrow": "Máximo con préstamo",
   "missing-price": "Falta el precio",
   "missing-size": "Falta el tamaño",
   "missing-trigger": "Falta el precio de activación",
