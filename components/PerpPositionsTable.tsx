@@ -96,8 +96,8 @@ const PositionsTable = () => {
           })}
         </div>
       ) : null}
-      <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-        <div className="align-middle inline-block min-w-full sm:px-6 lg:px-8">
+      <div className={`md:-my-2 md:overflow-x-auto`}>
+        <div className={`align-middle inline-block min-w-full`}>
           {openPositions.length ? (
             !isMobile ? (
               <Table>
