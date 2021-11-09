@@ -1284,10 +1284,9 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@blockworks-foundation/mango-client@^3.2.25":
-  version "3.2.25"
-  resolved "https://registry.yarnpkg.com/@blockworks-foundation/mango-client/-/mango-client-3.2.25.tgz#b3ce06a17ef2864bb0d8df75c9a4108d36ec2e3e"
-  integrity sha512-+iFMHcvoI+mCpwkABIUp2adOoa7EoIe7jBYpxtCT7q7mHRnuC2IyAqHfFT2FKeXvZyb93ljc4ZgAOWioPNGHPA==
+"@blockworks-foundation/mango-client@git+https://github.com/blockworks-foundation/mango-client-v3.git#pan/delete-account":
+  version "3.2.0"
+  resolved "git+https://github.com/blockworks-foundation/mango-client-v3.git#9ddb40b5fb5c4326f908bc94ab72b17222d38c45"
   dependencies:
     "@project-serum/anchor" "^0.16.2"
     "@project-serum/serum" "0.13.55"
