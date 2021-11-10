@@ -8,7 +8,11 @@ import useMangoStore from '../stores/useMangoStore'
 import { notify } from '../utils/notifications'
 import SideBadge from './SideBadge'
 import { Order, Market } from '@project-serum/serum/lib/market'
-import { PerpOrder, PerpMarket } from '@blockworks-foundation/mango-client'
+import {
+  PerpOrder,
+  PerpMarket,
+  MarketConfig,
+} from '@blockworks-foundation/mango-client'
 import { formatUsdValue, getDecimalCount, usdFormatter } from '../utils'
 import { Table, Td, Th, TrBody, TrHead } from './TableElements'
 import { useViewport } from '../hooks/useViewport'
@@ -19,6 +23,21 @@ import { useTranslation } from 'next-i18next'
 
 const DesktopTable = ({ openOrders, cancelledOrderId, handleCancelOrder }) => {
   const { t } = useTranslation('common')
+  const { asPath } = useRouter()
+  const renderMarketName = (market: MarketConfig) => {
+    const location = `/${market.kind}/${market.baseSymbol}`
+    if (!asPath.includes(location)) {
+      return (
+        <Link href={location}>
+          <a className="text-th-fgd-1 underline hover:no-underline hover:text-th-fgd-1">
+            {market.name}
+          </a>
+        </Link>
+      )
+    } else {
+      return <span>{market.name}</span>
+    }
+  }
   return (
     <Table>
       <thead>
@@ -48,7 +67,7 @@ const DesktopTable = ({ openOrders, cancelledOrderId, handleCancelOrder }) => {
                     src={`/assets/icons/${market.config.baseSymbol.toLowerCase()}.svg`}
                     className={`mr-2.5`}
                   />
-                  <div>{market.config.name}</div>
+                  {renderMarketName(market.config)}
                 </div>
               </Td>
               <Td>
