@@ -97,6 +97,7 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
         mangoGroup,
         mangoAccount,
         mangoCache,
+        MNGO_INDEX,
         wallet
       )
 
