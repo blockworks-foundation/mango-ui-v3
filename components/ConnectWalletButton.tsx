@@ -122,7 +122,7 @@ const ConnectWalletButton = () => {
                     onClick={() => setChangeAvatarModal(true)}
                   >
                     <UserCircleIcon className="h-4 w-4" />
-                    <div className="pl-2 text-left">Change Avatar</div>
+                    <div className="pl-2 text-left">{t('change-avatar')}</div>
                   </button>
                 </Menu.Item>
               ) : null}

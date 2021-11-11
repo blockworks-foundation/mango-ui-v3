@@ -46,15 +46,15 @@ const ChangeAvatarModal: FunctionComponent<ChangeAvatarModalProps> = ({
 
   // Save selected profile picture
   const saveSelection = () => {
-    const nft = listOfNFTs[selectedIndex]
+    const nftMintAddress = listOfNFTs[selectedIndex].mintAddress.toBase58()
 
     set((state) => {
-      state.settings.avatar = nft.mintAddress.toBase58()
+      state.settings.avatar = nftMintAddress
     })
-    localStorage.setItem('profilePic', nft.mintAddress.toBase58())
+    localStorage.setItem('profilePic', nftMintAddress)
 
     notify({
-      title: t('Avatar changed successfully'),
+      title: t('avatar-success'),
     })
 
     onClose()
@@ -63,7 +63,7 @@ const ChangeAvatarModal: FunctionComponent<ChangeAvatarModalProps> = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <Modal.Header>
-        <ElementTitle noMarignBottom>Change Avatar</ElementTitle>
+        <ElementTitle noMarignBottom>{t('change-avatar')}</ElementTitle>
       </Modal.Header>
       <div
         className="border border-th-bkg-4 bg-th-bkg-1"
@@ -100,7 +100,7 @@ const ChangeAvatarModal: FunctionComponent<ChangeAvatarModalProps> = ({
           className="mt-4"
           onClick={saveSelection}
         >
-          <div className="flex items-center justify-center">Okay</div>
+          <div className="flex items-center justify-center">{t('okay')}</div>
         </Button>
       </div>
     </Modal>
@@ -120,13 +120,12 @@ const NFTDisplay = ({ nft, selected }) => {
             const data = await _.json()
             nft.imageUri = data['image']
             setImageUri(nft.imageUri)
-            console.log('imageUri is: ', nft.imageUri)
           } catch (ex) {
             console.error('Error trying to parse JSON: ' + ex)
           }
         })
       } catch (ex) {
-        console.error('Error trying to fetch Arweave metadata: ' + ex)
+        console.error('Error trying to fetch metadata: ' + ex)
       }
     }
   }, [imageUri])
