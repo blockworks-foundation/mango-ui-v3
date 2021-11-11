@@ -4,8 +4,10 @@ import useMangoStore from '../stores/useMangoStore'
 import ResetLayout from './ResetLayout'
 import Tooltip from './Tooltip'
 import { IconButton } from './Button'
+import { useTranslation } from 'next-i18next'
 
 const UiLock = ({ className = '' }) => {
+  const { t } = useTranslation('common')
   const set = useMangoStore((s) => s.set)
   const uiLocked = useMangoStore((s) => s.settings.uiLocked)
 
@@ -34,7 +36,9 @@ const UiLock = ({ className = '' }) => {
       ) : null}
       <div className={`${className} flex relative cursor-pointer`}>
         <Tooltip
-          content={uiLocked ? 'Unlock Layout' : 'Lock Layout'}
+          content={
+            uiLocked ? t('tooltip-unlock-layout') : t('tooltip-lock-layout')
+          }
           className="text-xs py-1"
         >
           <IconButton onClick={handleClick}>

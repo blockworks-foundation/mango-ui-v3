@@ -1,18 +1,18 @@
 import React, { FunctionComponent, useEffect, useState } from 'react'
 import { ExclamationCircleIcon } from '@heroicons/react/outline'
-import { ChevronLeftIcon } from '@heroicons/react/solid'
 import Modal from './Modal'
 import Input from './Input'
 import AccountSelect from './AccountSelect'
 import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
 import Loading from './Loading'
-import Button, { LinkButton } from './Button'
-import Slider from './Slider'
+import Button from './Button'
 import InlineNotification from './InlineNotification'
 import { deposit } from '../utils/mango'
 import { notify } from '../utils/notifications'
-import { sleep } from '../utils'
+import { sleep, trimDecimals } from '../utils'
+import { useTranslation } from 'next-i18next'
+import ButtonGroup from './ButtonGroup'
 
 interface DepositModalProps {
   onClose: () => void
@@ -27,12 +27,11 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
   settleDeficit,
   tokenSymbol = '',
 }) => {
+  const { t } = useTranslation('common')
   const [inputAmount, setInputAmount] = useState<string>(settleDeficit || '')
   const [submitting, setSubmitting] = useState(false)
-  const [showConfirm, setShowConfirm] = useState(false)
   const [invalidAmountMessage, setInvalidAmountMessage] = useState('')
-  const [sliderPercentage, setSliderPercentage] = useState(0)
-  const [maxButtonTransition, setMaxButtonTransition] = useState(false)
+  const [depositPercentage, setDepositPercentage] = useState('')
   const walletTokens = useMangoStore((s) => s.wallet.tokens)
   const actions = useMangoStore((s) => s.actions)
   const [selectedAccount, setSelectedAccount] = useState(walletTokens[0])
@@ -53,16 +52,9 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
 
   const handleAccountSelect = (account) => {
     setInputAmount('')
-    setSliderPercentage(0)
+    setDepositPercentage('')
     setInvalidAmountMessage('')
     setSelectedAccount(account)
-  }
-
-  const setMaxForSelectedAccount = () => {
-    setInputAmount(selectedAccount.uiBalance.toString())
-    setSliderPercentage(100)
-    setInvalidAmountMessage('')
-    setMaxButtonTransition(true)
   }
 
   const handleDeposit = () => {
@@ -76,7 +68,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
     })
       .then((response) => {
         notify({
-          title: 'Deposit successful',
+          title: t('deposit-successful'),
           type: 'success',
           txid: response.toString(),
         })
@@ -91,7 +83,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
       })
       .catch((err) => {
         notify({
-          title: 'Deposit failed',
+          title: t('deposit-failed'),
           description: err.message,
           type: 'error',
         })
@@ -100,12 +92,10 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
 
   const validateAmountInput = (amount) => {
     if (Number(amount) <= 0) {
-      setInvalidAmountMessage('Enter an amount to deposit')
+      setInvalidAmountMessage(t('enter-amount'))
     }
     if (selectedAccount && Number(amount) > selectedAccount.uiBalance) {
-      setInvalidAmountMessage(
-        'Insufficient balance. Reduce the amount to deposit'
-      )
+      setInvalidAmountMessage(t('insufficient-balance-deposit'))
     }
   }
 
@@ -113,167 +103,116 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
     setInputAmount(amount)
 
     if (!selectedAccount) {
-      setInvalidAmountMessage(
-        'Please fund wallet with one of the supported assets.'
-      )
+      setInvalidAmountMessage(t('supported-assets'))
       return
     }
 
-    const max = selectedAccount.uiBalance
-    setSliderPercentage((amount / max) * 100)
+    setDepositPercentage('')
     setInvalidAmountMessage('')
   }
 
-  const onChangeSlider = async (percentage) => {
-    setSliderPercentage(percentage)
+  const onChangeAmountButtons = async (percentage) => {
+    setDepositPercentage(percentage)
 
     if (!selectedAccount) {
-      setInvalidAmountMessage(
-        'Please fund wallet with one of the supported assets.'
-      )
+      setInvalidAmountMessage(t('supported-assets'))
       return
     }
 
     const max = selectedAccount.uiBalance
-    const amount = (percentage / 100) * max
-    if (percentage === 100) {
-      setInputAmount(amount.toString())
+    const amount = ((parseInt(percentage) / 100) * max).toString()
+    if (percentage === '100') {
+      setInputAmount(amount)
     } else {
-      setInputAmount(amount.toString())
+      setInputAmount(trimDecimals(amount, 6).toString())
     }
     setInvalidAmountMessage('')
     validateAmountInput(amount)
   }
 
-  // turn off slider transition for dragging slider handle interaction
-  useEffect(() => {
-    if (maxButtonTransition) {
-      setMaxButtonTransition(false)
-    }
-  }, [maxButtonTransition])
-
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      {!showConfirm ? (
-        <>
-          <Modal.Header>
-            <ElementTitle noMarignBottom>Deposit Funds</ElementTitle>
-          </Modal.Header>
-          {tokenSymbol && !selectedAccount ? (
-            <InlineNotification
-              desc={`Add ${tokenSymbol} to your wallet and fund it with ${tokenSymbol} to deposit.`}
-              title={`No ${tokenSymbol} wallet address found`}
-              type="error"
-            />
-          ) : null}
-          {settleDeficit ? (
-            <InlineNotification
-              desc={`Deposit ${settleDeficit} ${tokenSymbol} before settling your borrow.`}
-              title="Not enough balance to settle"
-              type="error"
-            />
-          ) : null}
-          <AccountSelect
-            accounts={walletTokens}
-            selectedAccount={selectedAccount}
-            onSelectAccount={handleAccountSelect}
+      <Modal.Header>
+        <ElementTitle noMarignBottom>{t('deposit-funds')}</ElementTitle>
+      </Modal.Header>
+      {tokenSymbol && !selectedAccount ? (
+        <div className="mb-4">
+          <InlineNotification
+            desc={t('deposit-help', { tokenSymbol: tokenSymbol })}
+            title={t('no-address', { tokenSymbol: tokenSymbol })}
+            type="error"
           />
-          <div className="flex justify-between pb-2 pt-4">
-            <div className={`text-th-fgd-1`}>Amount</div>
-            <div
-              className="text-th-fgd-1 underline cursor-pointer default-transition hover:text-th-primary hover:no-underline"
-              onClick={setMaxForSelectedAccount}
-            >
-              Max
-            </div>
+        </div>
+      ) : null}
+      {settleDeficit ? (
+        <div className="mb-4">
+          <InlineNotification
+            desc={t('deposit-before', {
+              settleDeficit: settleDeficit,
+              tokenSymbol: tokenSymbol,
+            })}
+            title={t('not-enough-balance')}
+            type="error"
+          />
+        </div>
+      ) : null}
+      <AccountSelect
+        accounts={walletTokens}
+        selectedAccount={selectedAccount}
+        onSelectAccount={handleAccountSelect}
+      />
+      <div className="flex justify-between pb-2 pt-4">
+        <div className={`text-th-fgd-1`}>{t('amount')}</div>
+      </div>
+      <div className="flex">
+        <Input
+          type="number"
+          min="0"
+          className={`border border-th-fgd-4 flex-grow pr-11`}
+          placeholder="0.00"
+          error={!!invalidAmountMessage}
+          onBlur={(e) => validateAmountInput(e.target.value)}
+          value={inputAmount || ''}
+          onChange={(e) => onChangeAmountInput(e.target.value)}
+          suffix={selectedAccount?.config.symbol}
+        />
+      </div>
+      {invalidAmountMessage ? (
+        <div className="flex items-center pt-1.5 text-th-red">
+          <ExclamationCircleIcon className="h-4 w-4 mr-1.5" />
+          {invalidAmountMessage}
+        </div>
+      ) : null}
+      <div className="pt-1">
+        <ButtonGroup
+          activeValue={depositPercentage}
+          onChange={(v) => onChangeAmountButtons(v)}
+          unit="%"
+          values={['25', '50', '75', '100']}
+        />
+      </div>
+      <div className={`pt-6 flex justify-center`}>
+        <Button
+          onClick={handleDeposit}
+          className="w-full"
+          disabled={submitting}
+        >
+          <div className={`flex items-center justify-center`}>
+            {submitting && <Loading className="-ml-1 mr-3" />}
+            {t('deposit')}
           </div>
-          <div className="flex">
-            <Input
-              type="number"
-              min="0"
-              className={`border border-th-fgd-4 flex-grow pr-11`}
-              placeholder="0.00"
-              error={!!invalidAmountMessage}
-              onBlur={(e) => validateAmountInput(e.target.value)}
-              value={inputAmount}
-              onChange={(e) => onChangeAmountInput(e.target.value)}
-              suffix={selectedAccount?.config.symbol}
-            />
-          </div>
-          {invalidAmountMessage ? (
-            <div className="flex items-center pt-1.5 text-th-red">
-              <ExclamationCircleIcon className="h-4 w-4 mr-1.5" />
-              {invalidAmountMessage}
-            </div>
-          ) : null}
-          <div className="pt-3 pb-4">
-            <Slider
-              disabled={null}
-              value={sliderPercentage}
-              onChange={(v) => onChangeSlider(v)}
-              step={1}
-              maxButtonTransition={maxButtonTransition}
-            />
-          </div>
-          <div className={`pt-8 flex justify-center`}>
-            <Button
-              onClick={() => setShowConfirm(true)}
-              className="w-full"
-              disabled={
-                !inputAmount ||
-                parseFloat(inputAmount) <= 0 ||
-                !selectedAccount ||
-                parseFloat(inputAmount) > selectedAccount.uiBalance
-              }
-            >
-              Next
-            </Button>
-          </div>
-          {!mangoAccount ? (
-            <div className="flex text-th-fgd-4 text-xxs mt-1">
-              <div className="mx-auto">
-                You need 0.035 SOL to create a mango account.
-              </div>
-            </div>
-          ) : null}
-        </>
-      ) : (
-        <>
-          <Modal.Header>
-            <ElementTitle noMarignBottom>Confirm Deposit</ElementTitle>
-          </Modal.Header>
-          <div className="bg-th-bkg-1 p-4 rounded-lg text-th-fgd-1 text-center">
-            <div className="text-th-fgd-3 pb-1">{`You're about to deposit`}</div>
-            <div className="flex items-center justify-center">
-              <div className="font-semibold relative text-xl">
-                {inputAmount}
-                <span className="absolute bottom-0.5 font-normal ml-1.5 text-xs text-th-fgd-4">
-                  {selectedAccount?.config.symbol}
-                </span>
-              </div>
-            </div>
-          </div>
-          <div className={`mt-5 flex justify-center`}>
-            <Button
-              onClick={handleDeposit}
-              className="w-full"
-              disabled={submitting}
-            >
-              <div className={`flex items-center justify-center`}>
-                {submitting && <Loading className="-ml-1 mr-3" />}
-                Deposit
-              </div>
-            </Button>
-          </div>
-          <LinkButton
-            className="flex items-center mt-4 text-th-fgd-3"
-            onClick={() => setShowConfirm(false)}
-          >
-            <ChevronLeftIcon className="h-5 w-5 mr-1" />
-            Back
-          </LinkButton>
-        </>
-      )}
+        </Button>
+      </div>
+      {!settleDeficit ? (
+        <div className="pt-3">
+          <InlineNotification desc={t('interest-info')} type="info" />
+        </div>
+      ) : null}
+      {!mangoAccount ? (
+        <div className="flex text-th-fgd-4 text-xxs mt-1">
+          <div className="mx-auto">{t('insufficient-sol')}</div>
+        </div>
+      ) : null}
     </Modal>
   )
 }

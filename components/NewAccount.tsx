@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState } from 'react'
+import React, { FunctionComponent, useState } from 'react'
 import {
   ExclamationCircleIcon,
   InformationCircleIcon,
@@ -14,10 +14,12 @@ import {
 } from '../utils/index'
 import Loading from './Loading'
 import Button from './Button'
-import Slider from './Slider'
 import Tooltip from './Tooltip'
 import { notify } from '../utils/notifications'
 import { deposit } from '../utils/mango'
+import { useTranslation } from 'next-i18next'
+import ButtonGroup from './ButtonGroup'
+import InlineNotification from './InlineNotification'
 
 interface NewAccountProps {
   onAccountCreation?: (x?) => void
@@ -26,11 +28,11 @@ interface NewAccountProps {
 const NewAccount: FunctionComponent<NewAccountProps> = ({
   onAccountCreation,
 }) => {
-  const [inputAmount, setInputAmount] = useState(null)
+  const { t } = useTranslation('common')
+  const [inputAmount, setInputAmount] = useState<string>('')
   const [submitting, setSubmitting] = useState(false)
   const [invalidAmountMessage, setInvalidAmountMessage] = useState('')
-  const [sliderPercentage, setSliderPercentage] = useState(0)
-  const [maxButtonTransition, setMaxButtonTransition] = useState(false)
+  const [depositPercentage, setDepositPercentage] = useState('')
   const [invalidNameMessage, setInvalidNameMessage] = useState('')
   const [name, setName] = useState('')
   const walletTokens = useMangoStore((s) => s.wallet.tokens)
@@ -43,24 +45,16 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
   )
 
   const handleAccountSelect = (account) => {
-    setInputAmount(0)
-    setSliderPercentage(0)
+    setInputAmount('')
+    setDepositPercentage('')
     setInvalidAmountMessage('')
     setSelectedAccount(account)
-  }
-
-  const setMaxForSelectedAccount = () => {
-    const max = selectedAccount.uiBalance
-    setInputAmount(max)
-    setSliderPercentage(100)
-    setInvalidAmountMessage('')
-    setMaxButtonTransition(true)
   }
 
   const handleNewAccountDeposit = () => {
     setSubmitting(true)
     deposit({
-      amount: inputAmount,
+      amount: parseFloat(inputAmount),
       fromTokenAcc: selectedAccount.account,
       accountName: name,
     })
@@ -77,7 +71,7 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
         setSubmitting(false)
         console.error(e)
         notify({
-          title: 'Could not perform init margin account and deposit operation',
+          title: t('init-error'),
           description: e.message,
           type: 'error',
         })
@@ -87,38 +81,41 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
 
   const validateAmountInput = (amount) => {
     if (Number(amount) <= 0) {
-      setInvalidAmountMessage('Enter an amount to deposit')
+      setInvalidAmountMessage(t('enter-amount'))
     }
     if (Number(amount) > selectedAccount.uiBalance) {
-      setInvalidAmountMessage(
-        'Insufficient balance. Reduce the amount to deposit'
-      )
+      setInvalidAmountMessage(t('insufficient-balance-deposit'))
     }
   }
 
   const onChangeAmountInput = (amount) => {
-    const max = selectedAccount.uiBalance
     setInputAmount(amount)
-    setSliderPercentage((amount / max) * 100)
+    setDepositPercentage('')
     setInvalidAmountMessage('')
   }
 
-  const onChangeSlider = async (percentage) => {
+  const onChangeAmountButtons = async (percentage) => {
+    setDepositPercentage(percentage)
+
+    if (!selectedAccount) {
+      setInvalidAmountMessage(t('supported-assets'))
+      return
+    }
+
     const max = selectedAccount.uiBalance
-    const amount = (percentage / 100) * max
-    if (percentage === 100) {
+    const amount = ((parseInt(percentage) / 100) * max).toString()
+    if (percentage === '100') {
       setInputAmount(amount)
     } else {
-      setInputAmount(trimDecimals(amount, 6))
+      setInputAmount(trimDecimals(amount, 6).toString())
     }
-    setSliderPercentage(percentage)
     setInvalidAmountMessage('')
     validateAmountInput(amount)
   }
 
   const validateNameInput = () => {
     if (name.length >= 33) {
-      setInvalidNameMessage('Account name must be 32 characters or less')
+      setInvalidNameMessage(t('character-limit'))
     }
   }
 
@@ -129,20 +126,17 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
     }
   }
 
-  // turn off slider transition for dragging slider handle interaction
-  useEffect(() => {
-    if (maxButtonTransition) {
-      setMaxButtonTransition(false)
-    }
-  }, [maxButtonTransition])
-
   return (
     <>
-      <ElementTitle className="pb-2">Create Account</ElementTitle>
-      <div className="pb-4">
+      <ElementTitle>Create Account</ElementTitle>
+      <div className="mx-auto pb-4 text-center text-th-fgd-3 text-xs">
+        {t('insufficient-sol')}
+      </div>
+      <div className="border-b border-th-bkg-4 mb-4 pb-6">
         <div className="flex items-center pb-2 text-th-fgd-1">
-          Account Name <span className="ml-1 text-th-fgd-3">(Optional)</span>
-          <Tooltip content="Account names are stored on-chain">
+          {t('account-name')}{' '}
+          <span className="ml-1 text-th-fgd-3">{t('optional')}</span>
+          <Tooltip content={t('tooltip-name-onchain')}>
             <InformationCircleIcon className="h-5 w-5 ml-2 text-th-primary" />
           </Tooltip>
         </div>
@@ -162,20 +156,15 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
           </div>
         ) : null}
       </div>
+      <div className="font-bold pb-2 text-center text-th-fgd-2">
+        {t('initial-deposit')}
+      </div>
       <AccountSelect
         accounts={walletTokens}
         selectedAccount={selectedAccount}
         onSelectAccount={handleAccountSelect}
       />
-      <div className="flex justify-between pb-2 pt-4">
-        <div className={`text-th-fgd-1`}>Amount</div>
-        <div
-          className="text-th-fgd-1 underline cursor-pointer default-transition hover:text-th-primary hover:no-underline"
-          onClick={setMaxForSelectedAccount}
-        >
-          Max
-        </div>
-      </div>
+      <div className={`text-th-fgd-1 pb-2 pt-4`}>{t('amount')}</div>
       <div className="flex">
         <Input
           type="number"
@@ -195,30 +184,31 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
           {invalidAmountMessage}
         </div>
       ) : null}
-      <div className="pt-3 pb-4">
-        <Slider
-          value={sliderPercentage}
-          onChange={(v) => onChangeSlider(v)}
-          step={1}
-          maxButtonTransition={maxButtonTransition}
+      <div className="pt-1">
+        <ButtonGroup
+          activeValue={depositPercentage}
+          onChange={(v) => onChangeAmountButtons(v)}
+          unit="%"
+          values={['25', '50', '75', '100']}
         />
       </div>
-      <div className={`pt-8 flex justify-center`}>
+      <div className={`flex justify-center pt-6`}>
         <Button
-          disabled={inputAmount <= 0 || inputAmount > selectedAccount.uiBalance}
+          disabled={
+            parseFloat(inputAmount) <= 0 ||
+            parseFloat(inputAmount) > selectedAccount.uiBalance
+          }
           onClick={handleNewAccountDeposit}
           className="w-full"
         >
           <div className={`flex items-center justify-center`}>
             {submitting && <Loading className="-ml-1 mr-3" />}
-            Let&apos;s Go
+            {t('lets-go')}
           </div>
         </Button>
       </div>
-      <div className="flex text-th-fgd-4 text-xxs mt-1 -mb-1">
-        <div className="mx-auto">
-          You need 0.035 SOL to create a mango account.
-        </div>
+      <div className="pt-3">
+        <InlineNotification desc={t('interest-info')} type="info" />
       </div>
     </>
   )

@@ -8,8 +8,10 @@ import useMangoStore from '../stores/useMangoStore'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { ExpandableRow } from './TableElements'
+import { useTranslation } from 'next-i18next'
 
 export default function RecentMarketTrades() {
+  const { t } = useTranslation('common')
   const mangoConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const market = useMangoStore((s) => s.selectedMarket.current)
@@ -44,11 +46,13 @@ export default function RecentMarketTrades() {
 
   return !isMobile ? (
     <>
-      <ElementTitle>Recent Trades</ElementTitle>
+      <ElementTitle>{t('recent-trades')}</ElementTitle>
       <div className={`grid grid-cols-3 text-th-fgd-4 mb-2 text-xs`}>
-        <div>Price ({mangoConfig.quoteSymbol}) </div>
-        <div className={`text-right`}>Size ({marketConfig.baseSymbol})</div>
-        <div className={`text-right`}>Time</div>
+        <div>{`${t('price')} (${mangoConfig.quoteSymbol})`} </div>
+        <div className={`text-right`}>
+          {t('size')} ({marketConfig.baseSymbol})
+        </div>
+        <div className={`text-right`}>{t('time')}</div>
       </div>
       {!!trades.length && (
         <div>
@@ -83,8 +87,8 @@ export default function RecentMarketTrades() {
   ) : (
     <ExpandableRow
       buttonTemplate={
-        <div className="col-span-11 text-left">
-          <div className="mb-0.5 text-fgd-1">Recent Trades</div>
+        <div className="flex justify-between text-left w-full">
+          <div className="mb-0.5 text-fgd-1">{t('recent-trades')}</div>
         </div>
       }
       index={0}

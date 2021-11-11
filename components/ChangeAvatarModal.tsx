@@ -8,6 +8,7 @@ import Button from './Button'
 import useMangoStore from '../stores/useMangoStore'
 import { notify } from '../utils/notifications'
 import { NFT } from '../utils/metaplex/models'
+import { useTranslation } from 'next-i18next'
 
 const ResponsiveGridLayout = WidthProvider(Responsive)
 
@@ -22,9 +23,8 @@ const ChangeAvatarModal: FunctionComponent<ChangeAvatarModalProps> = ({
   onClose,
   currentAvatar,
 }) => {
-  const nfts = [...useMangoStore((s) => s.settings.nfts)].filter(
-    (nft) => nft.metadataUri
-  )
+  const { t } = useTranslation('common')
+  const nfts = [...useMangoStore((s) => s.settings.nfts)]
   const currentIndex = nfts.indexOf(currentAvatar)
   if (currentIndex != -1) nfts.splice(currentIndex, 1)
 
@@ -54,7 +54,7 @@ const ChangeAvatarModal: FunctionComponent<ChangeAvatarModalProps> = ({
     localStorage.setItem('profilePic', nft.mintAddress.toBase58())
 
     notify({
-      title: 'Avatar changed successfully',
+      title: t('Avatar changed successfully'),
     })
 
     onClose()

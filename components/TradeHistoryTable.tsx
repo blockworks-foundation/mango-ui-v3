@@ -11,8 +11,10 @@ import { breakpoints } from './TradePageGrid'
 import { Table, Td, Th, TrBody, TrHead } from './TableElements'
 import { ExpandableRow } from './TableElements'
 import { formatUsdValue } from '../utils'
+import { useTranslation } from 'next-i18next'
 
 const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
+  const { t } = useTranslation('common')
   const { asPath } = useRouter()
   const tradeHistory = useTradeHistory({ excludePerpLiquidations: true })
   const { items, requestSort, sortConfig } = useSortableData(tradeHistory)
@@ -37,6 +39,31 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
     )
   }
 
+  const renderMarketName = (trade: any) => {
+    let marketType, baseSymbol
+    if (trade.marketName.includes('PERP')) {
+      marketType = 'perp'
+      baseSymbol = trade.marketName.slice(0, trade.marketName.indexOf('-'))
+    } else if (trade.marketName.includes('USDC')) {
+      marketType = 'spot'
+      baseSymbol = trade.marketName.slice(0, trade.marketName.indexOf('/'))
+    } else {
+      return <span>{trade.marketName}</span>
+    }
+    const location = `/${marketType}/${baseSymbol}`
+    if (asPath.includes(location)) {
+      return <span>{trade.marketName}</span>
+    } else {
+      return (
+        <Link href={location}>
+          <a className="text-th-fgd-1 underline hover:no-underline hover:text-th-fgd-1">
+            {trade.marketName}
+          </a>
+        </Link>
+      )
+    }
+  }
+
   const filteredTrades = numTrades ? items.slice(0, numTrades) : items
 
   return (
@@ -53,7 +80,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                         className="flex items-center no-underline font-normal"
                         onClick={() => requestSort('market')}
                       >
-                        Market
+                        {t('market')}
                         <ArrowSmDownIcon
                           className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                             sortConfig?.key === 'market'
@@ -70,7 +97,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                         className="flex items-center no-underline font-normal"
                         onClick={() => requestSort('side')}
                       >
-                        Side
+                        {t('side')}
                         <ArrowSmDownIcon
                           className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                             sortConfig?.key === 'side'
@@ -87,7 +114,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                         className="flex items-center no-underline font-normal"
                         onClick={() => requestSort('size')}
                       >
-                        Size
+                        {t('size')}
                         <ArrowSmDownIcon
                           className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                             sortConfig?.key === 'size'
@@ -104,7 +131,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                         className="flex items-center no-underline font-normal"
                         onClick={() => requestSort('price')}
                       >
-                        Price
+                        {t('price')}
                         <ArrowSmDownIcon
                           className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                             sortConfig?.key === 'price'
@@ -121,7 +148,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                         className="flex items-center no-underline font-normal"
                         onClick={() => requestSort('value')}
                       >
-                        Value
+                        {t('value')}
                         <ArrowSmDownIcon
                           className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                             sortConfig?.key === 'value'
@@ -138,7 +165,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                         className="flex items-center no-underline font-normal"
                         onClick={() => requestSort('liquidity')}
                       >
-                        Liquidity
+                        {t('liquidity')}
                         <ArrowSmDownIcon
                           className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                             sortConfig?.key === 'liquidity'
@@ -155,7 +182,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                         className="flex items-center no-underline font-normal"
                         onClick={() => requestSort('feeCost')}
                       >
-                        Fee
+                        {t('fee')}
                         <ArrowSmDownIcon
                           className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                             sortConfig?.key === 'feeCost'
@@ -172,7 +199,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                         className="flex items-center no-underline font-normal"
                         onClick={() => requestSort('loadTimestamp')}
                       >
-                        Approx Time
+                        {t('approximate-time')}
                         <ArrowSmDownIcon
                           className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
                             sortConfig?.key === 'loadTimestamp'
@@ -187,42 +214,46 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                   </TrHead>
                 </thead>
                 <tbody>
-                  {filteredTrades.map((trade: any, index) => (
-                    <TrBody
-                      index={index}
-                      key={`${trade.seqNum}${trade.marketName}`}
-                    >
-                      <Td>
-                        <div className="flex items-center">
-                          <img
-                            alt=""
-                            width="20"
-                            height="20"
-                            src={`/assets/icons/${trade.marketName
-                              .split(/-|\//)[0]
-                              .toLowerCase()}.svg`}
-                            className={`mr-2.5`}
-                          />
-                          <div>{trade.marketName}</div>
-                        </div>
-                      </Td>
-                      <Td>
-                        <SideBadge side={trade.side} />
-                      </Td>
-                      <Td>{trade.size}</Td>
-                      <Td>{formatUsdValue(trade.price)}</Td>
-                      <Td>{formatUsdValue(trade.value)}</Td>
-                      <Td>{trade.liquidity}</Td>
-                      <Td>{formatUsdValue(trade.feeCost)}</Td>
-                      <Td>
-                        {trade.loadTimestamp || trade.timestamp
-                          ? renderTradeDateTime(
-                              trade.loadTimestamp || trade.timestamp
-                            )
-                          : 'Recent'}
-                      </Td>
-                    </TrBody>
-                  ))}
+                  {filteredTrades.map((trade: any, index) => {
+                    return (
+                      <TrBody
+                        index={index}
+                        key={`${trade.seqNum}${trade.marketName}`}
+                      >
+                        <Td>
+                          <div className="flex items-center">
+                            <img
+                              alt=""
+                              width="20"
+                              height="20"
+                              src={`/assets/icons/${trade.marketName
+                                .split(/-|\//)[0]
+                                .toLowerCase()}.svg`}
+                              className={`mr-2.5`}
+                            />
+                            {renderMarketName(trade)}
+                          </div>
+                        </Td>
+                        <Td>
+                          <SideBadge side={trade.side} />
+                        </Td>
+                        <Td>{trade.size}</Td>
+                        <Td>
+                          ${new Intl.NumberFormat('en-US').format(trade.price)}
+                        </Td>
+                        <Td>{formatUsdValue(trade.value)}</Td>
+                        <Td>{trade.liquidity}</Td>
+                        <Td>{formatUsdValue(trade.feeCost)}</Td>
+                        <Td>
+                          {trade.loadTimestamp || trade.timestamp
+                            ? renderTradeDateTime(
+                                trade.loadTimestamp || trade.timestamp
+                              )
+                            : t('recent')}
+                        </Td>
+                      </TrBody>
+                    )
+                  })}
                 </tbody>
               </Table>
             ) : (
@@ -230,19 +261,26 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                 <ExpandableRow
                   buttonTemplate={
                     <>
-                      <div className="col-span-11 flex items-center text-fgd-1">
-                        <div className="flex items-center">
-                          <img
-                            alt=""
-                            width="20"
-                            height="20"
-                            src={`/assets/icons/${trade.marketName
-                              .split(/-|\//)[0]
-                              .toLowerCase()}.svg`}
-                            className={`mr-2.5`}
-                          />
-                          <div>
-                            <div className="mb-0.5 text-left">
+                      <div className="flex items-center justify-between text-fgd-1 w-full">
+                        <div className="text-left">
+                          {trade.loadTimestamp || trade.timestamp
+                            ? renderTradeDateTime(
+                                trade.loadTimestamp || trade.timestamp
+                              )
+                            : t('recent')}
+                        </div>
+                        <div>
+                          <div className="text-right">
+                            <div className="flex items-center mb-0.5 text-left">
+                              <img
+                                alt=""
+                                width="16"
+                                height="16"
+                                src={`/assets/icons/${trade.marketName
+                                  .split(/-|\//)[0]
+                                  .toLowerCase()}.svg`}
+                                className={`mr-1.5`}
+                              />
                               {trade.marketName}
                             </div>
                             <div className="text-th-fgd-3 text-xs">
@@ -257,9 +295,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                               >
                                 {trade.side.toUpperCase()}
                               </span>
-                              {`${trade.size} at ${formatUsdValue(
-                                trade.price
-                              )}`}
+                              {trade.size}
                             </div>
                           </div>
                         </div>
@@ -269,44 +305,42 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                   key={`${index}`}
                   index={index}
                   panelTemplate={
-                    <>
-                      <div className="col-span-1 text-left">
+                    <div className="grid grid-cols-2 grid-flow-row gap-4">
+                      <div className="text-left">
                         <div className="pb-0.5 text-th-fgd-3 text-xs">
-                          Value
+                          {t('price')}
+                        </div>
+                        {formatUsdValue(trade.price)}
+                      </div>
+                      <div className="text-left">
+                        <div className="pb-0.5 text-th-fgd-3 text-xs">
+                          {t('value')}
                         </div>
                         {formatUsdValue(trade.value)}
                       </div>
-                      <div className="col-span-1 text-left">
+                      <div className="text-left">
                         <div className="pb-0.5 text-th-fgd-3 text-xs">
-                          Liquidity
+                          {t('liquidity')}
                         </div>
                         {trade.liquidity}
                       </div>
-                      <div className="col-span-1 text-left">
-                        <div className="pb-0.5 text-th-fgd-3 text-xs">Fee</div>
+                      <div className="text-left">
+                        <div className="pb-0.5 text-th-fgd-3 text-xs">
+                          {t('fee')}
+                        </div>
                         {formatUsdValue(trade.feeCost)}
                       </div>
-                      <div className="col-span-1 text-left">
-                        <div className="pb-0.5 text-th-fgd-3 text-xs">
-                          Approx Time
-                        </div>
-                        {trade.loadTimestamp || trade.timestamp
-                          ? renderTradeDateTime(
-                              trade.loadTimestamp || trade.timestamp
-                            )
-                          : 'Recent'}
-                      </div>
-                    </>
+                    </div>
                   }
                 />
               ))
             )
           ) : (
             <div className="w-full text-center py-6 bg-th-bkg-1 text-th-fgd-3 rounded-md">
-              No trade history
+              {t('no-history')}
               {asPath === '/account' ? (
                 <Link href={'/'}>
-                  <a className="inline-flex ml-2 py-0">Make a trade</a>
+                  <a className="inline-flex ml-2 py-0">{t('make-trade')}</a>
                 </Link>
               ) : null}
             </div>
@@ -315,7 +349,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
         <div className="flex items-center">
           {numTrades && items.length > numTrades ? (
             <div className="mx-auto mt-4">
-              <Link href="/account">View all trades in the Account page</Link>
+              <Link href="/account">{t('view-all-trades')}</Link>
             </div>
           ) : null}
         </div>

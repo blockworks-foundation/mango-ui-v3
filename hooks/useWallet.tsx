@@ -10,6 +10,7 @@ import {
 } from '../utils/wallet-adapters'
 import { WalletAdapter } from '../@types/types'
 import useInterval from './useInterval'
+import { useTranslation } from 'next-i18next'
 
 const SECONDS = 1000
 const ASSET_URL =
@@ -44,6 +45,7 @@ export const PROVIDER_LOCAL_STORAGE_KEY = 'walletProvider-0.1'
 export const DEFAULT_PROVIDER = WALLET_PROVIDERS[0]
 
 export default function useWallet() {
+  const { t } = useTranslation('common')
   const setMangoStore = useMangoStore((state) => state.set)
   const {
     current: wallet,
@@ -109,9 +111,9 @@ export default function useWallet() {
       actions.fetchWalletTokens()
       actions.fetchMangoHeroesNFTs()
       notify({
-        title: 'Wallet connected',
+        title: t('wallet-connected'),
         description:
-          'Connected to wallet ' +
+          t('connected-to') +
           wallet.publicKey.toString().substr(0, 5) +
           '...' +
           wallet.publicKey.toString().substr(-5),
@@ -127,7 +129,7 @@ export default function useWallet() {
       })
       notify({
         type: 'info',
-        title: 'Disconnected from wallet',
+        title: t('wallet-disconnected'),
       })
     })
     return () => {

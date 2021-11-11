@@ -12,6 +12,16 @@ import MarketSelect from '../../components/MarketSelect'
 import useLocalStorageState from '../../hooks/useLocalStorageState'
 import AlphaModal, { ALPHA_MODAL_KEY } from '../../components/AlphaModal'
 import { PageBodyWrapper } from '../../components/styles'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+
+export async function getServerSideProps({ locale }) {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['common'])),
+      // Will be passed to the page component as props
+    },
+  }
+}
 
 const PerpMarket = () => {
   const [alphaAccepted] = useLocalStorageState(ALPHA_MODAL_KEY, false)

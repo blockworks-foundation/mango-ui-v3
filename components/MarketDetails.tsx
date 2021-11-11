@@ -8,11 +8,12 @@ import ManualRefresh from './ManualRefresh'
 import useOraclePrice from '../hooks/useOraclePrice'
 import DayHighLow from './DayHighLow'
 import { useEffect } from 'react'
-import { formatUsdValue, usdFormatter } from '../utils'
+import { getDecimalCount, usdFormatter } from '../utils'
 import { PerpMarket } from '@blockworks-foundation/mango-client'
 import BN from 'bn.js'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
+import { useTranslation } from 'next-i18next'
 
 const SECONDS = 1000
 
@@ -49,6 +50,7 @@ function parseOpenInterest(perpMarket: PerpMarket) {
 }
 
 const MarketDetails = () => {
+  const { t } = useTranslation('common')
   const oraclePrice = useOraclePrice()
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
@@ -125,6 +127,7 @@ const MarketDetails = () => {
     const from = utcFrom.getTime() / 1000
     const to = utcTo.getTime() / 1000
 
+    console.log('requesting ohlcv', selectedMarketName)
     const ohlcv = await ChartApi.getOhlcv(selectedMarketName, '1D', from, to)
     if (ohlcv) {
       setOhlcv(ohlcv)
@@ -132,15 +135,22 @@ const MarketDetails = () => {
     }
   }, [selectedMarketName])
 
-  useInterval(async () => {
-    fetchOhlcv()
-  }, 5000)
+  // TODO: don't spam db
+  // useInterval(async () => {
+  //   fetchOhlcv()
+  // }, 5000)
 
   useMemo(() => {
     if (previousMarketName !== selectedMarketName) {
       setLoading(true)
+      fetchOhlcv()
     }
   }, [selectedMarketName])
+
+  const funding1h = calculateFundingRate(perpStats, selectedMarket)
+  const [funding1hStr, fundingAprStr] = funding1h
+    ? [funding1h.toFixed(4), (funding1h * 24 * 365).toFixed(2)]
+    : ['-', '-']
 
   return (
     <div
@@ -168,13 +178,19 @@ const MarketDetails = () => {
         </div>
         <div className="grid grid-flow-row grid-cols-1 md:grid-cols-2 gap-3 lg:grid-flow-col lg:grid-rows-1 lg:gap-6">
           <div className="flex items-center justify-between md:block">
-            <div className="text-th-fgd-3 tiny-text pb-0.5">Oracle price</div>
+            <div className="text-th-fgd-3 tiny-text pb-0.5">
+              {t('oracle-price')}
+            </div>
             <div className="font-semibold text-th-fgd-1 md:text-xs">
-              {oraclePrice ? formatUsdValue(oraclePrice) : '--'}
+              {oraclePrice && selectedMarket
+                ? oraclePrice.toFixed(getDecimalCount(selectedMarket.tickSize))
+                : '--'}
             </div>
           </div>
           <div className="flex items-center justify-between md:block">
-            <div className="text-th-fgd-3 tiny-text pb-0.5">Daily Change</div>
+            <div className="text-th-fgd-3 tiny-text pb-0.5">
+              {t('daily-change')}
+            </div>
             {change || change === 0 ? (
               <div
                 className={`font-semibold md:text-xs ${
@@ -193,7 +209,9 @@ const MarketDetails = () => {
           </div>
           {isPerpMarket ? (
             <div className="flex items-center justify-between md:block">
-              <div className="text-th-fgd-3 tiny-text pb-0.5">24hr Volume</div>
+              <div className="text-th-fgd-3 tiny-text pb-0.5">
+                {t('daily-volume')}
+              </div>
               <div className="font-semibold text-th-fgd-1 md:text-xs">
                 {perpVolume ? (
                   usdFormatter(perpVolume, 0)
@@ -207,13 +225,11 @@ const MarketDetails = () => {
             <>
               <div className="flex items-center justify-between md:block">
                 <div className="text-th-fgd-3 tiny-text pb-0.5">
-                  Avg. Funding Rate (1h)
+                  {t('average-funding')}
                 </div>
                 <div className="font-semibold text-th-fgd-1 md:text-xs">
                   {selectedMarket ? (
-                    `${calculateFundingRate(perpStats, selectedMarket)?.toFixed(
-                      4
-                    )}%`
+                    `${funding1hStr}% (${fundingAprStr}% APR)`
                   ) : (
                     <MarketDataLoader />
                   )}
@@ -221,7 +237,7 @@ const MarketDetails = () => {
               </div>
               <div className="flex items-center justify-between md:block">
                 <div className="text-th-fgd-3 tiny-text pb-0.5">
-                  Open Interest
+                  {t('open-interest')}
                 </div>
                 <div className="font-semibold text-th-fgd-1 md:text-xs">
                   {selectedMarket ? (

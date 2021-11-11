@@ -11,6 +11,16 @@ import {
   defaultLayouts,
   GRID_LAYOUT_KEY,
 } from '../components/TradePageGrid'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+
+export async function getServerSideProps({ locale }) {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['common'])),
+      // Will be passed to the page component as props
+    },
+  }
+}
 
 const ResponsiveGridLayout = WidthProvider(Responsive)
 

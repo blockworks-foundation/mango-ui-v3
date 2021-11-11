@@ -1,20 +1,10 @@
 import { useState } from 'react'
 import Chart from '../Chart'
 import Select from '../Select'
-
-const icons = {
-  BTC: '/assets/icons/btc.svg',
-  ETH: '/assets/icons/eth.svg',
-  SOL: '/assets/icons/sol.svg',
-  SRM: '/assets/icons/srm.svg',
-  USDT: '/assets/icons/usdt.svg',
-  USDC: '/assets/icons/usdc.svg',
-  MNGO: '/assets/icons/mngo.svg',
-  RAY: '/assets/icons/ray.svg',
-  COPE: '/assets/icons/cope.svg',
-}
+import { useTranslation } from 'next-i18next'
 
 export default function StatsAssets({ latestStats, stats }) {
+  const { t } = useTranslation('common')
   const [selectedAsset, setSelectedAsset] = useState<string>('BTC')
 
   const selectedStatsData = stats.filter((stat) => stat.name === selectedAsset)
@@ -24,10 +14,11 @@ export default function StatsAssets({ latestStats, stats }) {
       <div className="flex items-center justify-between mb-4 w-full">
         <div className="flex items-center text-xl text-th-fgd-1">
           <img
-            src={icons[selectedAsset]}
-            alt={icons[selectedAsset]}
             width="24"
             height="24"
+            src={`/assets/icons/${selectedAsset
+              .split(/-|\//)[0]
+              .toLowerCase()}.svg`}
             className="mr-2.5"
           />
           {selectedAsset}
@@ -35,7 +26,7 @@ export default function StatsAssets({ latestStats, stats }) {
         <Select
           value={selectedAsset}
           onChange={(a) => setSelectedAsset(a)}
-          className="w-24 sm:hidden"
+          className="w-24 md:hidden"
         >
           <div className="space-y-2">
             {latestStats.map((stat) => (
@@ -51,7 +42,7 @@ export default function StatsAssets({ latestStats, stats }) {
             ))}
           </div>
         </Select>
-        <div className="hidden sm:flex pb-4 sm:pb-0">
+        <div className="hidden md:flex pb-4 sm:pb-0">
           {latestStats.map((stat) => (
             <div
               className={`px-2 py-1 ml-2 rounded-md cursor-pointer default-transition bg-th-bkg-3
@@ -75,7 +66,7 @@ export default function StatsAssets({ latestStats, stats }) {
           style={{ height: '330px' }}
         >
           <Chart
-            title="Total Deposits"
+            title={t('total-deposits')}
             xAxis="time"
             yAxis="totalDeposits"
             data={selectedStatsData}
@@ -90,7 +81,7 @@ export default function StatsAssets({ latestStats, stats }) {
           style={{ height: '330px' }}
         >
           <Chart
-            title="Deposit Interest"
+            title={t('deposit-interest')}
             xAxis="time"
             yAxis="depositRate"
             data={selectedStatsData}
@@ -106,7 +97,7 @@ export default function StatsAssets({ latestStats, stats }) {
           style={{ height: '330px' }}
         >
           <Chart
-            title="Total Borrows"
+            title={t('total-borrows')}
             xAxis="time"
             yAxis="totalBorrows"
             data={selectedStatsData}
@@ -121,7 +112,7 @@ export default function StatsAssets({ latestStats, stats }) {
           style={{ height: '330px' }}
         >
           <Chart
-            title="Borrow Interest"
+            title={t('borrow-interest')}
             xAxis="time"
             yAxis="borrowRate"
             data={selectedStatsData}

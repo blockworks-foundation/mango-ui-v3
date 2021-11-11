@@ -1,10 +1,5 @@
 import { Listbox } from '@headlessui/react'
-import styled from '@emotion/styled'
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid'
-
-const StyledDiv = styled.div`
-  min-height: 2.5rem;
-`
 
 const Select = ({
   value,
@@ -22,7 +17,8 @@ const Select = ({
             <Listbox.Button
               className={`h-full w-full font-normal bg-th-bkg-1 ring-1 ring-th-fgd-4 ring-inset rounded hover:ring-th-primary focus:outline-none focus:border-th-primary`}
             >
-              <StyledDiv
+              <div
+                style={{ minHeight: '2.5rem' }}
                 className={`flex items-center justify-between space-x-4 p-2 text-th-fgd-1`}
               >
                 {value ? value : placeholder}
@@ -31,7 +27,7 @@ const Select = ({
                 ) : (
                   <ChevronDownIcon className={`h-5 w-5 mr-1 text-th-primary`} />
                 )}
-              </StyledDiv>
+              </div>
             </Listbox.Button>
             {open ? (
               <Listbox.Options

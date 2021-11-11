@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react'
 import { useRouter } from 'next/router'
+import Link from 'next/link'
 import useMangoStore from '../stores/useMangoStore'
 import { ExclamationIcon } from '@heroicons/react/outline'
 import Button from '../components/Button'
@@ -8,15 +9,17 @@ import { breakpoints } from './TradePageGrid'
 import { Table, Td, Th, TrBody, TrHead } from './TableElements'
 import { formatUsdValue } from '../utils'
 import Loading from './Loading'
-
 import usePerpPositions from '../hooks/usePerpPositions'
 import MarketCloseModal from './MarketCloseModal'
 import { ExpandableRow } from './TableElements'
 import PerpSideBadge from './PerpSideBadge'
 import PnlText from './PnlText'
 import { settlePnl } from './MarketPosition'
+import { useTranslation } from 'next-i18next'
+import MobileTableHeader from './mobile/MobileTableHeader'
 
 const PositionsTable = () => {
+  const { t } = useTranslation('common')
   const { reloadMangoAccount } = useMangoStore((s) => s.actions)
   const [settling, setSettling] = useState(false)
 
@@ -49,7 +52,7 @@ const PositionsTable = () => {
   const handleSettleAll = async () => {
     setSettling(true)
     await Promise.all(
-      unsettledPositions.map((p) => settlePnl(p.perpMarket, p.perpAccount))
+      unsettledPositions.map((p) => settlePnl(p.perpMarket, p.perpAccount, t))
     )
     await reloadMangoAccount()
     setSettling(false)
@@ -62,13 +65,13 @@ const PositionsTable = () => {
           <div className="flex items-center justify-between pb-2">
             <div className="flex items-center sm:text-lg">
               <ExclamationIcon className="flex-shrink-0 h-5 mr-1.5 mt-0.5 text-th-primary w-5" />
-              Unsettled Positions
+              {t('unsettled-positions')}
             </div>
             <Button
               className="text-xs pt-0 pb-0 h-8 pl-3 pr-3 whitespace-nowrap"
               onClick={handleSettleAll}
             >
-              {settling ? <Loading /> : 'Settle All'}
+              {settling ? <Loading /> : t('settle-all')}
             </Button>
           </div>
           {unsettledPositions.map((p) => {
@@ -93,20 +96,20 @@ const PositionsTable = () => {
           })}
         </div>
       ) : null}
-      <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-        <div className="align-middle inline-block min-w-full sm:px-6 lg:px-8">
+      <div className={`md:-my-2 md:overflow-x-auto`}>
+        <div className={`align-middle inline-block min-w-full`}>
           {openPositions.length ? (
             !isMobile ? (
               <Table>
                 <thead>
                   <TrHead>
-                    <Th>Market</Th>
-                    <Th>Side</Th>
-                    <Th>Position Size</Th>
-                    <Th>Notional Size</Th>
-                    <Th>Avg entry Price</Th>
-                    <Th>Break-even Price</Th>
-                    <Th>Unrealized PnL</Th>
+                    <Th>{t('market')}</Th>
+                    <Th>{t('side')}</Th>
+                    <Th>{t('position-size')}</Th>
+                    <Th>{t('notional-size')}</Th>
+                    <Th>{t('average-entry')}</Th>
+                    <Th>{t('break-even')}</Th>
+                    <Th>{t('unrealized-pnl')}</Th>
                   </TrHead>
                 </thead>
                 <tbody>
@@ -137,7 +140,17 @@ const PositionsTable = () => {
                                 src={`/assets/icons/${marketConfig.baseSymbol.toLowerCase()}.svg`}
                                 className={`mr-2.5`}
                               />
-                              <div>{marketConfig.name}</div>
+                              {asPath.includes(
+                                `perp/${marketConfig.baseSymbol}`
+                              ) ? (
+                                <span>{marketConfig.name}</span>
+                              ) : (
+                                <Link href={`/perp/${marketConfig.baseSymbol}`}>
+                                  <a className="text-th-fgd-1 underline hover:no-underline hover:text-th-fgd-1">
+                                    {marketConfig.name}
+                                  </a>
+                                </Link>
+                              )}
                             </div>
                           </Td>
                           <Td>
@@ -198,97 +211,99 @@ const PositionsTable = () => {
                 </tbody>
               </Table>
             ) : (
-              openPositions.map(
-                (
-                  {
-                    marketConfig,
-                    basePosition,
-                    notionalSize,
-                    avgEntryPrice,
-                    breakEvenPrice,
-                    unrealizedPnl,
-                  },
-                  index
-                ) => {
-                  return (
-                    <ExpandableRow
-                      buttonTemplate={
-                        <>
-                          <div className="col-span-11 flex items-center justify-between text-fgd-1">
-                            <div className="flex items-center">
-                              <img
-                                alt=""
-                                width="20"
-                                height="20"
-                                src={`/assets/icons/${marketConfig.baseSymbol.toLowerCase()}.svg`}
-                                className={`mr-2.5`}
-                              />
-                              <div>
-                                <div className="mb-0.5 text-left">
-                                  {marketConfig.name}
-                                </div>
-                                <div className="text-th-fgd-3 text-xs">
-                                  <span
-                                    className={`mr-1 ${
-                                      basePosition > 0
-                                        ? 'text-th-green'
-                                        : 'text-th-red'
-                                    }`}
-                                  >
-                                    {basePosition > 0 ? 'LONG' : 'SHORT'}
-                                  </span>
-                                  {Math.abs(basePosition)}
+              <>
+                <MobileTableHeader
+                  colOneHeader={t('market')}
+                  colTwoHeader={t('unrealized-pnl')}
+                />
+                {openPositions.map(
+                  (
+                    {
+                      marketConfig,
+                      basePosition,
+                      notionalSize,
+                      avgEntryPrice,
+                      breakEvenPrice,
+                      unrealizedPnl,
+                    },
+                    index
+                  ) => {
+                    return (
+                      <ExpandableRow
+                        buttonTemplate={
+                          <>
+                            <div className="flex items-center justify-between text-fgd-1 w-full">
+                              <div className="flex items-center">
+                                <img
+                                  alt=""
+                                  width="20"
+                                  height="20"
+                                  src={`/assets/icons/${marketConfig.baseSymbol.toLowerCase()}.svg`}
+                                  className={`mr-2.5`}
+                                />
+                                <div>
+                                  <div className="mb-0.5 text-left">
+                                    {marketConfig.name}
+                                  </div>
+                                  <div className="text-th-fgd-3 text-xs">
+                                    <span
+                                      className={`mr-1 ${
+                                        basePosition > 0
+                                          ? 'text-th-green'
+                                          : 'text-th-red'
+                                      }`}
+                                    >
+                                      {basePosition > 0
+                                        ? t('long').toUpperCase()
+                                        : t('short').toUpperCase()}
+                                    </span>
+                                    {Math.abs(basePosition)}
+                                  </div>
                                 </div>
                               </div>
+                              <PnlText pnl={unrealizedPnl} />
                             </div>
-                            <PnlText className="mr-1.5" pnl={unrealizedPnl} />
-                          </div>
-                        </>
-                      }
-                      key={`${index}`}
-                      index={index}
-                      panelTemplate={
-                        <>
-                          <div className="col-span-1 text-left">
-                            <div className="pb-0.5 text-th-fgd-3 text-xs">
-                              Ave Entry Price
+                          </>
+                        }
+                        key={`${index}`}
+                        index={index}
+                        panelTemplate={
+                          <div className="grid grid-cols-2 grid-flow-row gap-4">
+                            <div className="col-span-1 text-left">
+                              <div className="pb-0.5 text-th-fgd-3 text-xs">
+                                {t('average-entry')}
+                              </div>
+                              {avgEntryPrice
+                                ? formatUsdValue(avgEntryPrice)
+                                : '--'}
                             </div>
-                            {avgEntryPrice
-                              ? formatUsdValue(avgEntryPrice)
-                              : '--'}
-                          </div>
-                          <div className="col-span-1 text-left">
-                            <div className="pb-0.5 text-th-fgd-3 text-xs">
-                              Notional Size
+                            <div className="col-span-1 text-left">
+                              <div className="pb-0.5 text-th-fgd-3 text-xs">
+                                {t('notional-size')}
+                              </div>
+                              {formatUsdValue(notionalSize)}
                             </div>
-                            {formatUsdValue(notionalSize)}
-                          </div>
-                          <div className="col-span-1 text-left">
-                            <div className="pb-0.5 text-th-fgd-3 text-xs">
-                              Break-even Price
+                            <div className="col-span-1 text-left">
+                              <div className="pb-0.5 text-th-fgd-3 text-xs">
+                                {t('break-even')}
+                              </div>
+                              {breakEvenPrice
+                                ? formatUsdValue(breakEvenPrice)
+                                : '--'}
                             </div>
-                            {breakEvenPrice
-                              ? formatUsdValue(breakEvenPrice)
-                              : '--'}
                           </div>
-                          <div className="col-span-1 text-left">
-                            <div className="pb-0.5 text-th-fgd-3 text-xs">
-                              Unrealized PnL
-                            </div>
-                            <PnlText pnl={unrealizedPnl} />
-                          </div>
-                        </>
-                      }
-                    />
-                  )
-                }
-              )
+                        }
+                      />
+                    )
+                  }
+                )}
+              </>
             )
           ) : (
             <div
               className={`w-full text-center py-6 bg-th-bkg-1 text-th-fgd-3 rounded-md`}
             >
-              No perp positions
+              {t('no-perp')}
             </div>
           )}
         </div>

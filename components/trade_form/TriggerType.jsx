@@ -1,14 +1,11 @@
 import { Listbox } from '@headlessui/react'
-import styled from '@emotion/styled'
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid'
 import { useViewport } from '../../hooks/useViewport'
 import { breakpoints } from '../TradePageGrid'
-
-const StyledListbox = styled(Listbox.Button)`
-  border-right: 1px solid transparent;
-`
+// import { useTranslation } from 'next-i18next'
 
 const TriggerType = ({ value, onChange, className = '' }) => {
+  // const { t } = useTranslation('common')
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
 
@@ -20,7 +17,8 @@ const TriggerType = ({ value, onChange, className = '' }) => {
         <Listbox value={value} onChange={onChange}>
           {({ open }) => (
             <>
-              <StyledListbox
+              <Listbox.Button
+                style={{ borderRight: '1px solid transparent' }}
                 className={`font-normal h-full w-full bg-th-bkg-1 border border-th-fgd-4 hover:border-th-primary rounded rounded-r-none focus:outline-none focus:border-th-primary`}
               >
                 <div
@@ -35,7 +33,7 @@ const TriggerType = ({ value, onChange, className = '' }) => {
                     />
                   )}
                 </div>
-              </StyledListbox>
+              </Listbox.Button>
               {open ? (
                 <Listbox.Options
                   static

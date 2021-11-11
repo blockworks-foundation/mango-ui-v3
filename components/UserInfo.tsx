@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import useMangoStore from '../stores/useMangoStore'
 import { useOpenOrders } from '../hooks/useOpenOrders'
-// import usePerpPositions from '../hooks/usePerpPositions'
+import usePerpPositions from '../hooks/usePerpPositions'
 import OpenOrdersTable from './OpenOrdersTable'
 import BalancesTable from './BalancesTable'
 import PositionsTable from './PerpPositionsTable'
@@ -9,18 +9,19 @@ import TradeHistoryTable from './TradeHistoryTable'
 // import FeeDiscountsTable from './FeeDiscountsTable'
 import ManualRefresh from './ManualRefresh'
 import Tabs from './Tabs'
+import FeeDiscountsTable from './FeeDiscountsTable'
 
 const TABS = [
   'Balances',
   'Orders',
   'Positions',
-  // 'Fees',
   'Trade History',
+  'Fee Discount',
 ]
 
 const UserInfoTabs = ({ activeTab, setActiveTab }) => {
   const openOrders = useOpenOrders()
-  // const perpPositions = usePerpPositions()
+  const { openPositions } = usePerpPositions()
   const connected = useMangoStore((s) => s.connection.current)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const handleTabChange = (tabName) => {
@@ -33,8 +34,11 @@ const UserInfoTabs = ({ activeTab, setActiveTab }) => {
         activeTab={activeTab}
         onChange={handleTabChange}
         showCount={
-          openOrders && openOrders.length > 0
-            ? [{ tabName: 'Orders', count: openOrders.length }]
+          openOrders && openPositions
+            ? [
+                { tabName: 'Orders', count: openOrders.length },
+                { tabName: 'Positions', count: openPositions.length },
+              ]
             : null
         }
         tabs={TABS}
@@ -58,8 +62,8 @@ const TabContent = ({ activeTab }) => {
       return <TradeHistoryTable numTrades={100} />
     case 'Positions':
       return <PositionsTable />
-    // case 'Fees':
-    //   return <FeeDiscountsTable /> // now displayed in trade form. may add back when MRSRM deposits are supported
+    case 'Fee Discount':
+      return <FeeDiscountsTable />
     default:
       return <BalancesTable />
   }

@@ -10,6 +10,7 @@ import Modal from './Modal'
 import { ElementTitle } from './styles'
 import Tooltip from './Tooltip'
 import { notify } from '../utils/notifications'
+import { useTranslation } from 'next-i18next'
 
 interface AccountNameModalProps {
   accountName?: string
@@ -22,6 +23,7 @@ const AccountNameModal: FunctionComponent<AccountNameModalProps> = ({
   isOpen,
   onClose,
 }) => {
+  const { t } = useTranslation('common')
   const [name, setName] = useState(accountName || '')
   const [invalidNameMessage, setInvalidNameMessage] = useState('')
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
@@ -43,13 +45,13 @@ const AccountNameModal: FunctionComponent<AccountNameModalProps> = ({
       actions.reloadMangoAccount()
       onClose()
       notify({
-        title: 'Account name updated',
+        title: t('name-updated'),
         txid,
       })
     } catch (err) {
       console.warn('Error setting account name:', err)
       notify({
-        title: 'Could not set account name',
+        title: t('name-error'),
         description: `${err}`,
         txid: err.txid,
         type: 'error',
@@ -59,10 +61,10 @@ const AccountNameModal: FunctionComponent<AccountNameModalProps> = ({
 
   const validateNameInput = () => {
     if (name.length >= 33) {
-      setInvalidNameMessage('Account name must be 32 characters or less')
+      setInvalidNameMessage(t('character-limit'))
     }
     if (name.length === 0) {
-      setInvalidNameMessage('Enter an account name')
+      setInvalidNameMessage(t('enter-name'))
     }
   }
 
@@ -77,16 +79,16 @@ const AccountNameModal: FunctionComponent<AccountNameModalProps> = ({
     <Modal onClose={onClose} isOpen={isOpen}>
       <Modal.Header>
         <div className="flex items-center">
-          <ElementTitle noMarignBottom>Name your Account</ElementTitle>
+          <ElementTitle noMarignBottom>{t('name-your-account')}</ElementTitle>
         </div>
       </Modal.Header>
       <div className="flex items-center justify-center text-th-fgd-3 pb-4">
-        Edit the public nickname for your account
-        <Tooltip content="Account names are stored on-chain">
+        {t('edit-nickname')}
+        <Tooltip content={t('tooltip-name-onchain')}>
           <InformationCircleIcon className="h-5 w-5 ml-2 text-th-primary" />
         </Tooltip>
       </div>
-      <div className="pb-2 text-th-fgd-1">Account Name</div>
+      <div className="pb-2 text-th-fgd-1">{t('account-name')}</div>
       <Input
         type="text"
         className={`border border-th-fgd-4 flex-grow`}
@@ -107,7 +109,7 @@ const AccountNameModal: FunctionComponent<AccountNameModalProps> = ({
         disabled={name.length >= 33}
         className="mt-4 w-full"
       >
-        Save Name
+        {t('save-name')}
       </Button>
     </Modal>
   )

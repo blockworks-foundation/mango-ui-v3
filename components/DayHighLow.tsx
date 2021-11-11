@@ -1,7 +1,9 @@
 import { formatUsdValue } from '../utils'
 import { MarketDataLoader } from './MarketDetails'
+import { useTranslation } from 'next-i18next'
 
 const DayHighLow = ({ high, low, latest }) => {
+  const { t } = useTranslation('common')
   let rangePercent = 0
 
   if (high) {
@@ -13,7 +15,7 @@ const DayHighLow = ({ high, low, latest }) => {
   return (
     <div className="flex items-center justify-between md:block md:pr-6">
       <div className="text-left lg:text-center text-th-fgd-3 tiny-text pb-0.5">
-        Daily Range
+        {t('daily-range')}
       </div>
       <div className="flex items-center font-semibold">
         <div className="pr-2 text-th-fgd-1 md:text-xs">

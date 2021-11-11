@@ -1,5 +1,6 @@
 import { Listbox } from '@headlessui/react'
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid'
+import { useTranslation } from 'next-i18next'
 
 const TradeType = ({
   value,
@@ -7,6 +8,7 @@ const TradeType = ({
   offerTriggers = false,
   className = '',
 }) => {
+  const { t } = useTranslation('common')
   const TRADE_TYPES = ['Limit', 'Market']
   if (offerTriggers)
     TRADE_TYPES.push(
@@ -25,7 +27,7 @@ const TradeType = ({
               className={`font-normal w-full bg-th-bkg-1 border border-th-fgd-4 px-2 h-10 hover:border-th-primary rounded-md focus:outline-none focus:border-th-primary`}
             >
               <div className={`flex items-center justify-between space-x-4`}>
-                <span>{value}</span>
+                <span>{t(value.toLowerCase().replaceAll(' ', '-'))}</span>
                 {open ? (
                   <ChevronUpIcon className={`h-5 w-5 mr-1 text-th-primary`} />
                 ) : (
@@ -46,7 +48,7 @@ const TradeType = ({
                           selected && `text-th-primary`
                         }`}
                       >
-                        {type}
+                        {t(type.toLowerCase().replaceAll(' ', '-'))}
                       </div>
                     )}
                   </Listbox.Option>

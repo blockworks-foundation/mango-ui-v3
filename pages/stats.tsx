@@ -10,16 +10,27 @@ import SwipeableTabs from '../components/mobile/SwipeableTabs'
 import Tabs from '../components/Tabs'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from '../components/TradePageGrid'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { useTranslation } from 'next-i18next'
 
-const TABS = [
-  'Totals',
-  'Assets',
-  'Perps',
-  // 'Markets',
-  // 'Liquidations',
-]
+export async function getServerSideProps({ locale }) {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['common'])),
+      // Will be passed to the page component as props
+    },
+  }
+}
 
 export default function StatsPage() {
+  const { t } = useTranslation('common')
+  const TABS = [
+    'Totals',
+    'Assets',
+    'Perps',
+    // 'Markets',
+    // 'Liquidations',
+  ]
   const { latestStats, stats, perpStats } = useMangoStats()
   const [viewIndex, setViewIndex] = useState(0)
   const [activeTab, setActiveTab] = useState(TABS[0])
@@ -39,7 +50,9 @@ export default function StatsPage() {
       <TopBar />
       <PageBodyContainer>
         <div className="flex flex-col sm:flex-row py-4 md:pb-4 md:pt-10">
-          <h1 className={`text-th-fgd-1 text-2xl font-semibold`}>Stats</h1>
+          <h1 className={`text-th-fgd-1 text-2xl font-semibold`}>
+            {t('stats')}
+          </h1>
         </div>
         {!isMobile ? (
           <Tabs activeTab={activeTab} onChange={handleTabChange} tabs={TABS} />

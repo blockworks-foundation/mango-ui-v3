@@ -108,7 +108,11 @@ export function calculateTradePrice(
   if (tradeType === 'Market') {
     return calculateMarketPrice(orderBook, baseSize, side)
   } else if (TRIGGER_ORDER_TYPES.includes(tradeType)) {
-    return Number(triggerPrice)
+    if (tradeType === 'Take Profit Limit' || tradeType === 'Stop Limit') {
+      return Number(price)
+    } else {
+      return Number(triggerPrice)
+    }
   }
   return Number(price)
 }
@@ -148,6 +152,24 @@ export const tokenPrecision = {
   MNGO: 2,
   SOL: 2,
   SRM: 2,
+  RAY: 3,
+  COPE: 2,
+  FTT: 3,
+  ADA: 2,
+  USDC: 2,
+  USDT: 2,
+}
+
+const tokenPricePrecision = {
+  BTC: 1,
+  ETH: 1,
+  MNGO: 4,
+  SOL: 2,
+  SRM: 3,
+  RAY: 3,
+  COPE: 3,
+  FTT: 3,
+  ADA: 4,
   USDC: 2,
   USDT: 2,
 }
@@ -214,15 +236,16 @@ export const usdFormatter = (value, decimals = 2, currency = true) => {
   }).format(value)
 }
 
-export const formatUsdValue = (value) => {
-  const precision =
-    value >= 1 || value <= -1
-      ? 2
-      : value === 0 ||
-        (value > 0 && value < 0.001) ||
-        (value < 0 && value > -0.001)
-      ? 0
-      : 4
+export const formatUsdValue = (value: number, symbol?: string) => {
+  const precision = symbol
+    ? tokenPricePrecision[symbol]
+    : value >= 1 || value <= -1
+    ? 2
+    : value === 0 ||
+      (value > 0 && value < 0.001) ||
+      (value < 0 && value > -0.001)
+    ? 0
+    : 4
   return usdFormatter(value, precision)
 }
 

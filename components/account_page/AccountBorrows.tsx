@@ -7,7 +7,6 @@ import {
 import useMangoStore from '../../stores/useMangoStore'
 import { useBalances } from '../../hooks/useBalances'
 import {
-  floorToDecimal,
   formatUsdValue,
   i80f48ToPercent,
   tokenPrecision,
@@ -20,8 +19,10 @@ import { breakpoints } from '../TradePageGrid'
 import { Table, Td, Th, TrBody, TrHead } from '../TableElements'
 import { ExpandableRow } from '../TableElements'
 import MobileTableHeader from '../mobile/MobileTableHeader'
+import { useTranslation } from 'next-i18next'
 
 export default function AccountBorrows() {
+  const { t } = useTranslation('common')
   const balances = useBalances()
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
@@ -60,10 +61,10 @@ export default function AccountBorrows() {
 
   return (
     <>
-      <div className="pb-2 text-th-fgd-1 text-lg">Your Borrows</div>
+      <div className="pb-2 text-th-fgd-1 text-lg">{t('your-borrows')}</div>
       {/* TODO: calculate LiabsVal without perp markets
         <div className="border border-th-red flex items-center justify-between p-2 rounded">
-          <div className="pr-4 text-xs text-th-fgd-3">Total Borrow Value:</div>
+          <div className="pr-4 text-xs text-th-fgd-3">{t('total-borrow-value')}:</div>
           <span>
             {formatUsdValue(+mangoAccount.getLiabsVal(mangoGroup, mangoCache))}
           </span>
@@ -77,10 +78,10 @@ export default function AccountBorrows() {
                   <Table>
                     <thead>
                       <TrHead>
-                        <Th>Asset</Th>
-                        <Th>Balance</Th>
-                        <Th>Value</Th>
-                        <Th>Borrow Rate (APR)</Th>
+                        <Th>{t('asset')}</Th>
+                        <Th>{t('balance')}</Th>
+                        <Th>{t('value')}</Th>
+                        <Th>{t('borrow-rate')} (APR)</Th>
                       </TrHead>
                     </thead>
                     <tbody>
@@ -115,9 +116,14 @@ export default function AccountBorrows() {
                               </Td>
                               <Td>
                                 {formatUsdValue(
-                                  asset.borrows.mul(
-                                    mangoGroup.getPrice(tokenIndex, mangoCache)
-                                  )
+                                  asset.borrows
+                                    .mul(
+                                      mangoGroup.getPrice(
+                                        tokenIndex,
+                                        mangoCache
+                                      )
+                                    )
+                                    .toNumber()
                                 )}
                               </Td>
                               <Td>
@@ -139,7 +145,7 @@ export default function AccountBorrows() {
                                     className="ml-3 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
                                     disabled={!connected || loadingMangoAccount}
                                   >
-                                    Deposit
+                                    {t('deposit')}
                                   </Button>
                                   <Button
                                     onClick={() =>
@@ -148,7 +154,7 @@ export default function AccountBorrows() {
                                     className="ml-3 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
                                     disabled={!connected || loadingMangoAccount}
                                   >
-                                    Borrow
+                                    {t('borrow')}
                                   </Button>
                                 </div>
                               </Td>
@@ -160,12 +166,8 @@ export default function AccountBorrows() {
                 ) : (
                   <>
                     <MobileTableHeader
-                      headerTemplate={
-                        <>
-                          <div className="col-span-7">Asset</div>
-                          <div className="col-span-4 text-right">Balance</div>
-                        </>
-                      }
+                      colOneHeader={t('asset')}
+                      colTwoHeader={t('balance')}
                     />
                     {balances
                       .filter((assets) => assets.borrows.gt(ZERO_I80F48))
@@ -180,8 +182,8 @@ export default function AccountBorrows() {
                         return (
                           <ExpandableRow
                             buttonTemplate={
-                              <>
-                                <div className="col-span-7 flex items-center text-fgd-1">
+                              <div className="flex items-center justify-between text-fgd-1 w-full">
+                                <div className="flex items-center text-fgd-1">
                                   <img
                                     alt=""
                                     width="20"
@@ -192,45 +194,49 @@ export default function AccountBorrows() {
 
                                   {asset.symbol}
                                 </div>
-                                <div className="col-span-4 text-fgd-1 text-right">
+                                <div className="text-fgd-1 text-right">
                                   {asset.borrows.toFixed(
                                     tokenPrecision[asset.symbol]
                                   )}
                                 </div>
-                              </>
+                              </div>
                             }
                             key={`${asset.symbol}${i}`}
                             index={i}
                             panelTemplate={
                               <>
-                                <div className="col-span-1 text-left">
-                                  <div className="pb-0.5 text-th-fgd-3 text-xs">
-                                    Value
+                                <div className="grid grid-cols-2 grid-flow-row gap-4 pb-4">
+                                  <div className="text-left">
+                                    <div className="pb-0.5 text-th-fgd-3 text-xs">
+                                      {t('value')}
+                                    </div>
+                                    {formatUsdValue(
+                                      asset.borrows
+                                        .mul(
+                                          mangoGroup.getPrice(
+                                            tokenIndex,
+                                            mangoCache
+                                          )
+                                        )
+                                        .toNumber()
+                                    )}
                                   </div>
-                                  {formatUsdValue(
-                                    asset.borrows.mul(
-                                      mangoGroup.getPrice(
-                                        tokenIndex,
-                                        mangoCache
-                                      )
-                                    )
-                                  )}
-                                </div>
-                                <div className="col-span-1 text-left">
-                                  <div className="pb-0.5 text-th-fgd-3 text-xs">
-                                    Borrow Rate (APR)
+                                  <div className="text-left">
+                                    <div className="pb-0.5 text-th-fgd-3 text-xs">
+                                      {t('borrow-rate')} (APR)
+                                    </div>
+                                    <span className={`text-th-red`}>
+                                      {(
+                                        mangoGroup
+                                          .getBorrowRate(tokenIndex)
+                                          .toNumber() * 100
+                                      ).toFixed(2)}
+                                      %
+                                    </span>
                                   </div>
-                                  <span className={`text-th-red`}>
-                                    {(
-                                      mangoGroup
-                                        .getBorrowRate(tokenIndex)
-                                        .toNumber() * 100
-                                    ).toFixed(2)}
-                                    %
-                                  </span>
                                 </div>
 
-                                <div className="col-span-1">
+                                <div className="flex space-x-4">
                                   <Button
                                     onClick={() =>
                                       handleShowDeposit(asset.symbol)
@@ -238,10 +244,8 @@ export default function AccountBorrows() {
                                     className="text-xs pt-0 pb-0 h-8 w-full"
                                     disabled={!connected || loadingMangoAccount}
                                   >
-                                    Deposit
+                                    {t('deposit')}
                                   </Button>
-                                </div>
-                                <div className="col-span-1">
                                   <Button
                                     onClick={() =>
                                       handleShowBorrow(asset.symbol)
@@ -249,7 +253,7 @@ export default function AccountBorrows() {
                                     className="text-xs pt-0 pb-0 h-8 w-full"
                                     disabled={!connected || loadingMangoAccount}
                                   >
-                                    Borrow
+                                    {t('borrow')}
                                   </Button>
                                 </div>
                               </>
@@ -263,14 +267,14 @@ export default function AccountBorrows() {
                 <div
                   className={`w-full text-center py-6 bg-th-bkg-1 text-th-fgd-3 rounded-md`}
                 >
-                  No borrows found.
+                  {t('no-borrows')}
                 </div>
               )
             ) : null}
           </div>
         </div>
       </div>
-      <div className="pb-2 pt-8 text-th-fgd-1 text-lg">All Assets</div>
+      <div className="pb-2 pt-8 text-th-fgd-1 text-lg">{t('all-assets')}</div>
       <div className="flex flex-col pb-2 pt-4">
         <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div className="align-middle inline-block min-w-full sm:px-6 lg:px-8">
@@ -278,11 +282,11 @@ export default function AccountBorrows() {
               <Table>
                 <thead>
                   <TrHead>
-                    <Th>Asset</Th>
-                    <Th>Price</Th>
-                    <Th>Borrow Rate (APR)</Th>
-                    <Th>Max Borrow Amount</Th>
-                    <Th>Liquidity</Th>
+                    <Th>{t('asset')}</Th>
+                    <Th>{t('price')}</Th>
+                    <Th>{t('borrow-rate')} (APR)</Th>
+                    <Th>{t('max-borrow')}</Th>
+                    <Th>{t('liquidity')}</Th>
                   </TrHead>
                 </thead>
                 <tbody>
@@ -304,7 +308,9 @@ export default function AccountBorrows() {
                         </Td>
                         <Td>
                           {formatUsdValue(
-                            mangoGroup.getPrice(tokenIndex, mangoCache)
+                            mangoGroup
+                              .getPrice(tokenIndex, mangoCache)
+                              .toNumber()
                           )}
                         </Td>
                         <Td>
@@ -324,19 +330,21 @@ export default function AccountBorrows() {
                             )
                             .mul(I80F48.fromString('0.995'))
                             .toNumber() > 0
-                            ? floorToDecimal(
-                                mangoAccount
-                                  .getMaxWithBorrowForToken(
-                                    mangoGroup,
-                                    mangoCache,
-                                    tokenIndex
-                                  )
-                                  .mul(I80F48.fromString('0.995'))
-                                  .toNumber(),
-                                mangoGroup.tokens[tokenIndex].decimals
-                              )
+                            ? mangoAccount
+                                .getMaxWithBorrowForToken(
+                                  mangoGroup,
+                                  mangoCache,
+                                  tokenIndex
+                                )
+                                .mul(I80F48.fromString('0.995'))
+                                .toNumber()
+                                .toLocaleString(undefined, {
+                                  minimumFractionDigits:
+                                    tokenPrecision[token.symbol],
+                                  maximumFractionDigits:
+                                    tokenPrecision[token.symbol],
+                                })
                             : 0}
-                          {/* floorToDecimal(parseFloat(maxWithdraw.toFixed()), token.decimals) */}
                         </Td>
                         <Td>
                           {mangoGroup
@@ -357,7 +365,7 @@ export default function AccountBorrows() {
                               className="text-xs pt-0 pb-0 h-8 pl-3 pr-3"
                               disabled={!connected || loadingMangoAccount}
                             >
-                              Borrow
+                              {t('borrow')}
                             </Button>
                           </div>
                         </Td>
@@ -369,22 +377,16 @@ export default function AccountBorrows() {
             ) : (
               <>
                 <MobileTableHeader
-                  headerTemplate={
-                    <>
-                      <div className="col-span-5">Asset</div>
-                      <div className="col-span-6 text-right">
-                        Borrow Rate (APR)
-                      </div>
-                    </>
-                  }
+                  colOneHeader={t('asset')}
+                  colTwoHeader={`${t('borrow-rate')} (APR)`}
                 />
                 {mangoConfig.tokens.map((token, i) => {
                   const tokenIndex = mangoGroup.getTokenIndex(token.mintKey)
                   return (
                     <ExpandableRow
                       buttonTemplate={
-                        <>
-                          <div className="col-span-7 flex items-center text-fgd-1">
+                        <div className="flex items-center justify-between text-fgd-1 w-full">
+                          <div className="flex items-center">
                             <img
                               alt=""
                               width="20"
@@ -395,7 +397,7 @@ export default function AccountBorrows() {
 
                             {token.symbol}
                           </div>
-                          <div className="col-span-4 text-fgd-1 text-right">
+                          <div className="text-fgd-1 text-right">
                             <span className={`text-th-red`}>
                               {i80f48ToPercent(
                                 mangoGroup.getBorrowRate(tokenIndex)
@@ -403,23 +405,25 @@ export default function AccountBorrows() {
                               %
                             </span>
                           </div>
-                        </>
+                        </div>
                       }
                       key={`${token.symbol}${i}`}
                       index={i}
                       panelTemplate={
-                        <>
-                          <div className="col-span-1 text-left">
+                        <div className="grid grid-cols-2 grid-flow-row gap-4">
+                          <div className="text-left">
                             <div className="pb-0.5 text-th-fgd-3 text-xs">
-                              Price
+                              {t('price')}
                             </div>
                             {formatUsdValue(
-                              mangoGroup.getPrice(tokenIndex, mangoCache)
+                              mangoGroup
+                                .getPrice(tokenIndex, mangoCache)
+                                .toNumber()
                             )}
                           </div>
-                          <div className="col-span-1 text-left">
+                          <div className="text-left">
                             <div className="pb-0.5 text-th-fgd-3 text-xs">
-                              Max Borrow Amount
+                              {t('max-borrow')}
                             </div>
                             {mangoAccount
                               .getMaxWithBorrowForToken(
@@ -436,9 +440,9 @@ export default function AccountBorrows() {
                                   tokenPrecision[token.symbol],
                               })}
                           </div>
-                          <div className="col-span-1 text-left">
+                          <div className="text-left">
                             <div className="pb-0.5 text-th-fgd-3 text-xs">
-                              Liquidity
+                              {t('liquidity')}
                             </div>
                             {mangoGroup
                               .getUiTotalDeposit(tokenIndex)
@@ -451,17 +455,17 @@ export default function AccountBorrows() {
                                   tokenPrecision[token.symbol],
                               })}
                           </div>
-                          <div className="col-span-1" />
-                          <div className="col-span-1">
+                          <div className="" />
+                          <div className="">
                             <Button
                               onClick={() => handleShowBorrow(token.symbol)}
                               className="text-xs pt-0 pb-0 h-8 w-full"
                               disabled={!connected || loadingMangoAccount}
                             >
-                              Borrow
+                              {t('borrow')}
                             </Button>
                           </div>
-                        </>
+                        </div>
                       }
                     />
                   )
@@ -476,7 +480,7 @@ export default function AccountBorrows() {
           isOpen={showBorrowModal}
           onClose={handleCloseWithdraw}
           tokenSymbol={borrowSymbol}
-          title="Borrow and Withdraw"
+          title={t('borrow-withdraw')}
           borrow
         />
       )}

@@ -20,6 +20,7 @@ import {
   getAllMarkets,
   getMultipleAccounts,
   PerpMarketLayout,
+  msrmMints,
 } from '@blockworks-foundation/mango-client'
 import { AccountInfo, Commitment, Connection, PublicKey } from '@solana/web3.js'
 import { EndpointInfo, WalletAdapter } from '../@types/types'
@@ -40,6 +41,7 @@ import {
   METADATA_KEY,
   METADATA_PREFIX,
 } from '../utils/metaplex/types'
+import { MSRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
 
 export const ENDPOINTS: EndpointInfo[] = [
   {
@@ -60,7 +62,7 @@ export const ENDPOINTS: EndpointInfo[] = [
 
 type ClusterType = 'mainnet' | 'devnet'
 
-const CLUSTER = (process.env.NEXT_PUBLIC_CLUSTER as ClusterType) || 'devnet'
+const CLUSTER = (process.env.NEXT_PUBLIC_CLUSTER as ClusterType) || 'mainnet'
 const ENDPOINT = ENDPOINTS.find((e) => e.name === CLUSTER)
 
 export const WEBSOCKET_CONNECTION = new Connection(
@@ -68,7 +70,7 @@ export const WEBSOCKET_CONNECTION = new Connection(
   'processed' as Commitment
 )
 
-const DEFAULT_MANGO_GROUP_NAME = process.env.NEXT_PUBLIC_GROUP || 'devnet.2'
+const DEFAULT_MANGO_GROUP_NAME = process.env.NEXT_PUBLIC_GROUP || 'mainnet.1'
 const DEFAULT_MANGO_GROUP_CONFIG = Config.ids().getGroup(
   CLUSTER,
   DEFAULT_MANGO_GROUP_NAME
@@ -261,6 +263,7 @@ const useMangoStore = create<MangoStore>((set, get) => {
         const wallet = get().wallet.current
         const connected = get().wallet.connected
         const connection = get().connection.current
+        const cluster = get().connection.cluster
         const set = get().set
 
         if (wallet?.publicKey && connected) {
@@ -275,6 +278,17 @@ const useMangoStore = create<MangoStore>((set, get) => {
             if (config) {
               const uiBalance = nativeToUi(account.amount, config.decimals)
               tokens.push({ account, config, uiBalance })
+            } else if (msrmMints[cluster].equals(account.mint)) {
+              const uiBalance = nativeToUi(account.amount, 6)
+              tokens.push({
+                account,
+                config: {
+                  symbol: 'MSRM',
+                  mintKey: msrmMints[cluster],
+                  decimals: MSRM_DECIMALS,
+                },
+                uiBalance,
+              })
             }
           })
 

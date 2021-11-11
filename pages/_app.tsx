@@ -8,22 +8,26 @@ import useHydrateStore from '../hooks/useHydrateStore'
 import Notifications from '../components/Notification'
 import useMangoStore from '../stores/useMangoStore'
 import useOraclePrice from '../hooks/useOraclePrice'
-import { formatUsdValue } from '../utils'
+import { getDecimalCount } from '../utils'
 import { useRouter } from 'next/router'
 import { ViewportProvider } from '../hooks/useViewport'
 import BottomBar from '../components/mobile/BottomBar'
+import { appWithTranslation } from 'next-i18next'
 
 function App({ Component, pageProps }) {
   useHydrateStore()
   useWallet()
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
+  const market = useMangoStore((s) => s.selectedMarket.current)
   const oraclePrice = useOraclePrice()
   const router = useRouter()
   const selectedMarketName = marketConfig.name
   const marketTitleString =
     marketConfig && router.pathname.includes('[market]')
       ? `${
-          oraclePrice ? formatUsdValue(oraclePrice) + ' | ' : ''
+          oraclePrice
+            ? oraclePrice.toFixed(getDecimalCount(market?.tickSize)) + ' | '
+            : ''
         }${selectedMarketName} - `
       : ''
 
@@ -37,6 +41,7 @@ function App({ Component, pageProps }) {
           rel="stylesheet"
         />
         <link rel="icon" href="/favicon.ico" />
+        <meta property="og:title" content="Mango Markets" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta
           name="keywords"
@@ -46,8 +51,11 @@ function App({ Component, pageProps }) {
           name="description"
           content="Mango Markets - Decentralised, cross-margin trading up to 10x leverage with lightning speed and near-zero fees."
         />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-        <meta property="og:title" content="Mango Markets" />
+        <link
+          rel="apple-touch-icon"
+          sizes="192x192"
+          href="/apple-touch-icon.png"
+        />
         <meta name="msapplication-TileColor" content="#da532c" />
         <meta name="theme-color" content="#ffffff" />
         <meta name="twitter:card" content="summary_large_image" />
@@ -78,4 +86,4 @@ function App({ Component, pageProps }) {
   )
 }
 
-export default App
+export default appWithTranslation(App)

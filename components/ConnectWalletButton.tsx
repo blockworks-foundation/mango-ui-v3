@@ -2,7 +2,6 @@ import React, { useCallback, useState } from 'react'
 import useMangoStore from '../stores/useMangoStore'
 import { Menu } from '@headlessui/react'
 import {
-  CogIcon,
   CurrencyDollarIcon,
   DuplicateIcon,
   LogoutIcon,
@@ -22,8 +21,10 @@ import SettingsModal from './SettingsModal'
 import { UserCircleIcon } from '@heroicons/react/solid'
 import ChangeAvatarModal from './ChangeAvatarModal'
 import { NFT } from '../utils/metaplex/models'
+import { useTranslation } from 'next-i18next'
 
 const ConnectWalletButton = () => {
+  const { t } = useTranslation('common')
   const wallet = useMangoStore((s) => s.wallet.current)
   const connected = useMangoStore((s) => s.wallet.connected)
   const nfts = useMangoStore((s) => s.settings.nfts)
@@ -111,7 +112,7 @@ const ConnectWalletButton = () => {
                   onClick={() => setShowAccountsModal(true)}
                 >
                   <CurrencyDollarIcon className="h-4 w-4" />
-                  <div className="pl-2 text-left">Accounts</div>
+                  <div className="pl-2 text-left">{t('accounts')}</div>
                 </button>
               </Menu.Item>
               {imageUrl != '' ? (
@@ -128,19 +129,10 @@ const ConnectWalletButton = () => {
               <Menu.Item>
                 <button
                   className="flex flex-row font-normal items-center rounded-none w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer focus:outline-none"
-                  onClick={() => setShowSettingsModal(true)}
-                >
-                  <CogIcon className="h-4 w-4" />
-                  <div className="pl-2 text-left">Settings</div>
-                </button>
-              </Menu.Item>
-              <Menu.Item>
-                <button
-                  className="flex flex-row font-normal items-center rounded-none w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer focus:outline-none"
                   onClick={() => copyToClipboard(wallet?.publicKey)}
                 >
                   <DuplicateIcon className="h-4 w-4" />
-                  <div className="pl-2 text-left">Copy address</div>
+                  <div className="pl-2 text-left">{t('copy-address')}</div>
                 </button>
               </Menu.Item>
               <Menu.Item>
@@ -150,7 +142,7 @@ const ConnectWalletButton = () => {
                 >
                   <LogoutIcon className="h-4 w-4" />
                   <div className="pl-2 text-left">
-                    <div className="pb-0.5">Disconnect</div>
+                    <div className="pb-0.5">{t('disconnect')}</div>
                     <div className="text-th-fgd-4 text-xs">
                       {abbreviateAddress(wallet?.publicKey)}
                     </div>
@@ -170,7 +162,7 @@ const ConnectWalletButton = () => {
             <div className="flex flex-row items-center px-3 justify-center h-full default-transition hover:text-th-fgd-1">
               <WalletIcon className="w-4 h-4 mr-2 fill-current" />
               <div>
-                <div className="mb-0.5 whitespace-nowrap">Connect</div>
+                <div className="mb-0.5 whitespace-nowrap">{t('connect')}</div>
                 <div className="font-normal text-th-fgd-3 text-left leading-3 tracking-wider text-xxs">
                   {WALLET_PROVIDERS.find((p) => p.url === selectedWallet)?.name}
                 </div>
