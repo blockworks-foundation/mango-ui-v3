@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { FunctionComponent } from 'react'
 import Modal from './Modal'
 import { ElementTitle } from './styles'
@@ -6,9 +6,6 @@ import { Responsive, WidthProvider } from 'react-grid-layout'
 import _ from 'lodash'
 import Button from './Button'
 import useMangoStore from '../stores/useMangoStore'
-// import mango_hero from '../public/mango_heroes.jpg'
-// import mango_hero1 from '../public/mango_heroes1.jpeg'
-// import mango_hero2 from '../public/mango_heroes2.jpeg'
 import { notify } from '../utils/notifications'
 import { NFT } from '../utils/metaplex/models'
 
@@ -25,30 +22,36 @@ const ChangeAvatarModal: FunctionComponent<ChangeAvatarModalProps> = ({
   onClose,
   currentAvatar,
 }) => {
-  const nfts = useMangoStore((s) => s.settings.nfts)
+  const nfts = [...useMangoStore((s) => s.settings.nfts)].filter(
+    (nft) => nft.metadataUri
+  )
   const currentIndex = nfts.indexOf(currentAvatar)
   if (currentIndex != -1) nfts.splice(currentIndex, 1)
 
-  const testImageUrls = [nfts]
+  const listOfNFTs = [currentAvatar, ...nfts]
   const [selectedIndex, setSelectedIndex] = useState(0)
   const set = useMangoStore((state) => state.set)
   const [layouts] = useState(
-    testImageUrls.map((url, key) => {
+    listOfNFTs.map((nft, key) => {
       return {
         i: String(key),
         x: key % 3,
         y: Math.floor(key / 3),
         w: 1,
         h: 1,
-        url: url,
+        nft: nft,
       }
     })
   )
 
+  // Save selected profile picture
   const saveSelection = () => {
+    const nft = listOfNFTs[selectedIndex]
+
     set((state) => {
-      state.settings.avatar = testImageUrls[selectedIndex]
+      state.settings.avatar = nft.mintAddress.toBase58()
     })
+    localStorage.setItem('profilePic', nft.mintAddress.toBase58())
 
     notify({
       title: 'Avatar changed successfully',
@@ -83,7 +86,7 @@ const ChangeAvatarModal: FunctionComponent<ChangeAvatarModalProps> = ({
                 onClick={() => setSelectedIndex(+layout.i)}
               >
                 <NFTDisplay
-                  nft={layout.url}
+                  nft={layout.nft}
                   selected={selectedIndex === +layout.i}
                 />
               </div>
@@ -105,8 +108,37 @@ const ChangeAvatarModal: FunctionComponent<ChangeAvatarModalProps> = ({
 }
 
 const NFTDisplay = ({ nft, selected }) => {
+  const [imageUri, setImageUri] = useState()
+
+  useEffect(() => {
+    if (nft.imageUri) {
+      setImageUri(nft.imageUri)
+    } else {
+      try {
+        fetch(nft.metadataUri).then(async (_) => {
+          try {
+            const data = await _.json()
+            nft.imageUri = data['image']
+            setImageUri(nft.imageUri)
+            console.log('imageUri is: ', nft.imageUri)
+          } catch (ex) {
+            console.error('Error trying to parse JSON: ' + ex)
+          }
+        })
+      } catch (ex) {
+        console.error('Error trying to fetch Arweave metadata: ' + ex)
+      }
+    }
+  }, [imageUri])
+
   return (
-    <div className="hover:scale-110">
+    <div
+      className={`hover:scale-110 ${
+        nft.imageUri == undefined
+          ? 'bg-th-bkg-4 h-full w-full rounded-lg animate-pulse'
+          : ''
+      }`}
+    >
       <img
         className={`border ${
           selected ? 'border-th-primary' : 'border-th-bkg-4'

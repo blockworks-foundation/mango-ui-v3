@@ -21,48 +21,61 @@ import { useEffect } from 'react'
 import SettingsModal from './SettingsModal'
 import { UserCircleIcon } from '@heroicons/react/solid'
 import ChangeAvatarModal from './ChangeAvatarModal'
+import { NFT } from '../utils/metaplex/models'
 
 const ConnectWalletButton = () => {
   const wallet = useMangoStore((s) => s.wallet.current)
   const connected = useMangoStore((s) => s.wallet.connected)
   const nfts = useMangoStore((s) => s.settings.nfts)
-  const imageUrl = useMangoStore((s) => s.settings.avatar)
+  const profilePicMintAddress = useMangoStore((s) => s.settings.avatar)
   const set = useMangoStore((s) => s.set)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
   const [showSettingsModal, setShowSettingsModal] = useState(false)
   const [showChangeAvatarModal, setChangeAvatarModal] = useState(false)
   const [selectedWallet, setSelectedWallet] = useState(DEFAULT_PROVIDER.url)
+  const [profilePicture, setProfilePicture] = useState(new NFT())
+  const [imageUrl, setImageUrl] = useState('')
   const [savedProviderUrl] = useLocalStorageState(
     PROVIDER_LOCAL_STORAGE_KEY,
     DEFAULT_PROVIDER.url
   )
 
-  // update in useEffect to prevent SRR error from next.js
   useEffect(() => {
     setSelectedWallet(savedProviderUrl)
   }, [savedProviderUrl])
 
-  if (nfts.length != 0 && imageUrl == '') {
-    const nft = nfts[0]
-
-    try {
-      fetch(nft).then(async (_) => {
-        try {
-          const data = await _.json()
-
-          set((state) => {
-            state.settings.avatar = data['image']
-          })
-        } catch (ex) {
-          console.error('Error trying to parse JSON: ' + ex)
-        }
-      })
-    } catch (ex) {
-      console.error('Error trying to fetch Arweave metadata: ' + ex)
+  useEffect(() => {
+    if (!profilePicMintAddress && nfts.length == 0) {
+      return
     }
-  }
 
-  const handleWalletConect = () => {
+    const profilePics = nfts.filter(
+      (nft) => nft.mintAddress.toBase58() == profilePicMintAddress
+    )
+    const nft = profilePics.length == 1 ? profilePics[0] : nfts[0]
+
+    if (nft.imageUri) {
+      setImageUrl(nft.imageUri)
+    } else {
+      try {
+        fetch(nft.metadataUri).then(async (_) => {
+          try {
+            const data = await _.json()
+            nft.imageUri = data['image']
+            setImageUrl(nft.imageUri)
+          } catch (ex) {
+            console.error('Error trying to parse JSON: ' + ex)
+          }
+        })
+      } catch (ex) {
+        console.error('Error trying to fetch metadata: ' + ex)
+      }
+    }
+
+    setProfilePicture(nft)
+  }, [nfts, profilePicMintAddress])
+
+  const handleWalletConnect = () => {
     wallet.connect()
     set((state) => {
       state.selectedMangoAccount.initialLoad = true
@@ -90,7 +103,6 @@ const ConnectWalletButton = () => {
               }
             >
               {imageUrl == '' ? <ProfileIcon className="h-6 w-6" /> : null}
-              {/* <NewProfileIcon className="h-6 w-6" src={mango_hero.src} /> */}
             </Menu.Button>
             <Menu.Items className="bg-th-bkg-1 mt-2 p-1 absolute right-0 shadow-lg outline-none rounded-md w-48 z-20">
               <Menu.Item>
@@ -102,15 +114,17 @@ const ConnectWalletButton = () => {
                   <div className="pl-2 text-left">Accounts</div>
                 </button>
               </Menu.Item>
-              <Menu.Item>
-                <button
-                  className="flex flex-row font-normal items-center rounded-none w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer focus:outline-none"
-                  onClick={() => setChangeAvatarModal(true)}
-                >
-                  <UserCircleIcon className="h-4 w-4" />
-                  <div className="pl-2 text-left">Change Avatar</div>
-                </button>
-              </Menu.Item>
+              {imageUrl != '' ? (
+                <Menu.Item>
+                  <button
+                    className="flex flex-row font-normal items-center rounded-none w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer focus:outline-none"
+                    onClick={() => setChangeAvatarModal(true)}
+                  >
+                    <UserCircleIcon className="h-4 w-4" />
+                    <div className="pl-2 text-left">Change Avatar</div>
+                  </button>
+                </Menu.Item>
+              ) : null}
               <Menu.Item>
                 <button
                   className="flex flex-row font-normal items-center rounded-none w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer focus:outline-none"
@@ -149,7 +163,7 @@ const ConnectWalletButton = () => {
       ) : (
         <div className="bg-th-bkg-1 h-14 flex divide-x divide-th-bkg-3 justify-between">
           <button
-            onClick={handleWalletConect}
+            onClick={handleWalletConnect}
             disabled={!wallet}
             className="rounded-none text-th-primary hover:bg-th-bkg-4 focus:outline-none disabled:text-th-fgd-4 disabled:cursor-wait"
           >
@@ -184,7 +198,7 @@ const ConnectWalletButton = () => {
         <ChangeAvatarModal
           onClose={() => setChangeAvatarModal(false)}
           isOpen={showChangeAvatarModal}
-          url={imageUrl}
+          currentAvatar={profilePicture}
         />
       ) : null}
     </>

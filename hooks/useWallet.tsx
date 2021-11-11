@@ -107,7 +107,7 @@ export default function useWallet() {
       actions.reloadOrders()
       actions.fetchTradeHistory()
       actions.fetchWalletTokens()
-      actions.fetchProfilePicture()
+      actions.fetchMangoHeroesNFTs()
       notify({
         title: 'Wallet connected',
         description:
@@ -145,7 +145,7 @@ export default function useWallet() {
   useInterval(() => {
     if (connected && mangoAccount) {
       actions.fetchWalletTokens()
-      actions.fetchProfilePicture()
+      actions.fetchMangoHeroesNFTs()
       actions.fetchTradeHistory()
     }
   }, 90 * SECONDS)

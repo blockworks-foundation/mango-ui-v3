@@ -35,7 +35,11 @@ import { TOKEN_PROGRAM_ID } from '../utils/tokens'
 import { findProgramAddress } from '../utils/metaplex/utils'
 import * as borsh from 'borsh'
 import { Metadata, METADATA_SCHEMA, NFT } from '../utils/metaplex/models'
-import { METADATA_KEY, METADATA_PREFIX } from '../utils/metaplex/types'
+import {
+  MANGO_HEROES_MINT_AUTHORITY,
+  METADATA_KEY,
+  METADATA_PREFIX,
+} from '../utils/metaplex/types'
 
 export const ENDPOINTS: EndpointInfo[] = [
   {
@@ -283,7 +287,7 @@ const useMangoStore = create<MangoStore>((set, get) => {
           })
         }
       },
-      async fetchProfilePicture() {
+      async fetchMangoHeroesNFTs() {
         const wallet = get().wallet.current
         const connected = get().wallet.connected
         const connection = get().connection.current
@@ -295,7 +299,7 @@ const useMangoStore = create<MangoStore>((set, get) => {
             { programId: TOKEN_PROGRAM_ID }
           )
 
-          const nfts = []
+          const walletNFTs = []
 
           tokenAccounts.value.forEach((token) => {
             const tokenAccount = token.account.data.parsed.info
@@ -306,15 +310,17 @@ const useMangoStore = create<MangoStore>((set, get) => {
             ) {
               const nft = new NFT()
               nft.mintAddress = new PublicKey(tokenAccount.mint)
-              nfts.push(nft)
+              walletNFTs.push(nft)
             }
           })
 
-          if (nfts.length == 0) return
+          if (walletNFTs.length == 0) return
 
           const metadataProgramId = new PublicKey(METADATA_KEY)
 
-          for (const nft of nfts) {
+          const mangoHeroesNFTs = []
+
+          for (const nft of walletNFTs) {
             // The return value is [programDerivedAddress, bytes] but we only care about the address
 
             const [pda] = await findProgramAddress(
@@ -335,12 +341,17 @@ const useMangoStore = create<MangoStore>((set, get) => {
               Metadata,
               accountInfo!.data
             )
-            const uri = metadata.data.uri.replace(/\0/g, '')
-            nft.metadataUri = uri
+
+            if (metadata.updateAuthority == MANGO_HEROES_MINT_AUTHORITY) {
+              const uri = metadata.data.uri.replace(/\0/g, '')
+              nft.metadataUri = uri
+              mangoHeroesNFTs.push(nft)
+            }
           }
 
           set((state) => {
-            state.settings.nfts = nfts
+            ;(state.settings.nfts = mangoHeroesNFTs),
+              (state.settings.avatar = localStorage.getItem('profilePic'))
           })
         }
       },

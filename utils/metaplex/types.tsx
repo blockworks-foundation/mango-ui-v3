@@ -7,6 +7,8 @@ export type StringPublicKey = string
 export const EDITION = 'edition'
 export const METADATA_PREFIX = 'metadata'
 export const METADATA_KEY = 'metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s'
+export const MANGO_HEROES_MINT_AUTHORITY =
+  '3RVBxNcF1LBAVbxPz1KsueWspASJhqz4ZJGDbxy2mKE3'
 
 export const MAX_AUCTION_DATA_EXTENDED_SIZE = 8 + 9 + 2 + 200
 
