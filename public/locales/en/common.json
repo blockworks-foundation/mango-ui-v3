@@ -113,7 +113,7 @@
   "insufficient-balance-withdraw": "Insufficient balance. Borrow funds to withdraw",
   "insufficient-sol": "You need 0.035 SOL to create a Mango Account.",
   "interest": "Interest",
-  "interest-earned": "Total Interest Earned/Paid",
+  "interest-earned": "Total Interest",
   "interest-info": "Interest is earned continuously on all deposits.",
   "ioc": "IOC",
   "learn": "Learn",

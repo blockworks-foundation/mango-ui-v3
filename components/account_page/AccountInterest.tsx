@@ -1,13 +1,18 @@
 import { getTokenBySymbol } from '@blockworks-foundation/mango-client'
 import { useEffect, useMemo, useState } from 'react'
 import dayjs from 'dayjs'
+import { CurrencyDollarIcon } from '@heroicons/react/outline'
 import useMangoStore from '../../stores/useMangoStore'
 import Select from '../Select'
 import { Table, Td, Th, TrBody, TrHead } from '../TableElements'
 import { useTranslation } from 'next-i18next'
 import { isEmpty } from 'lodash'
 import usePagination from '../../hooks/usePagination'
-import { numberCompactFormatter, roundToDecimal } from '../../utils/'
+import {
+  formatUsdValue,
+  numberCompactFormatter,
+  roundToDecimal,
+} from '../../utils/'
 import Pagination from '../Pagination'
 import { useViewport } from '../../hooks/useViewport'
 import { breakpoints } from '../TradePageGrid'
@@ -35,6 +40,7 @@ const AccountInterest = () => {
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const [interestStats, setInterestStats] = useState<any>([])
   const [hourlyInterestStats, setHourlyInterestStats] = useState<any>({})
+  const [totalInterestValue, setTotalInterestValue] = useState(null)
   const [loading, setLoading] = useState(false)
   const [selectedAsset, setSelectedAsset] = useState<string>('')
   const [chartData, setChartData] = useState([])
@@ -108,7 +114,7 @@ const AccountInterest = () => {
     const fetchHourlyInterestStats = async () => {
       setLoading(true)
       const response = await fetch(
-        `https://mango-transaction-log.herokuapp.com/v3/stats/hourly-interest?mango-account=${mangoAccountPk}`
+        `https://mango-transaction-log.herokuapp.com/v3/stats/hourly-interest-prices?mango-account=${mangoAccountPk}`
       )
       const parsedResponse = await response.json()
       let assets
@@ -128,7 +134,7 @@ const AccountInterest = () => {
         const token = getTokenBySymbol(groupConfig, asset)
 
         stats[asset] = x
-          .map(([key, value]) => {
+          .map(([key, value, price]) => {
             const borrows = roundToDecimal(
               value.borrow_interest,
               token.decimals + 1
@@ -138,7 +144,7 @@ const AccountInterest = () => {
               token.decimals + 1
             )
             if (borrows > 0 || deposits > 0) {
-              return { ...value, time: key }
+              return { ...value, time: key, ...price }
             } else {
               return null
             }
@@ -153,6 +159,19 @@ const AccountInterest = () => {
     fetchInterestStats()
     fetchHourlyInterestStats()
   }, [mangoAccountPk, hideInterestDust])
+
+  useEffect(() => {
+    const totalInterestValue = Object.entries(hourlyInterestStats)
+      .flat(Infinity)
+      .reduce((a: number, c: any) => {
+        if (c.time) {
+          return (
+            a + (c.deposit_interest * c.price - c.borrow_interest * c.price)
+          )
+        } else return a
+      }, 0)
+    setTotalInterestValue(totalInterestValue)
+  }, [hourlyInterestStats])
 
   useEffect(() => {
     if (hourlyInterestStats[selectedAsset]) {
@@ -174,7 +193,12 @@ const AccountInterest = () => {
         if (found) {
           const newInterest =
             d.borrow_interest > 0 ? d.borrow_interest * -1 : d.deposit_interest
+          const newValue =
+            d.borrow_interest > 0
+              ? d.borrow_interest * -1 * d.price
+              : d.deposit_interest * d.price
           found.interest = found.interest + newInterest
+          found.value = found.value + newValue
         } else {
           dailyInterest.push({
             time: d.time,
@@ -182,6 +206,10 @@ const AccountInterest = () => {
               d.borrow_interest > 0
                 ? d.borrow_interest * -1
                 : d.deposit_interest,
+            value:
+              d.borrow_interest > 0
+                ? d.borrow_interest * d.price * -1
+                : d.deposit_interest * d.price,
           })
         }
       })
@@ -190,14 +218,32 @@ const AccountInterest = () => {
   }, [hourlyInterestStats, selectedAsset])
 
   const handleDustTicks = (v) =>
-    v < 0.0000001
+    v < 0.000001
       ? v === 0
         ? 0
         : v.toExponential()
       : numberCompactFormatter.format(v)
 
+  const handleUsdDustTicks = (v) =>
+    v < 0.000001
+      ? v === 0
+        ? '$0'
+        : `$${v.toExponential()}`
+      : `$${numberCompactFormatter.format(v)}`
+
   return (
     <>
+      <div className="border border-th-bkg-4 mb-8 p-3 sm:p-4 rounded-md sm:rounded-lg">
+        <div className="pb-0.5 sm:pb-2 text-th-fgd-3 text-xs sm:text-sm">
+          Net Interest Value
+        </div>
+        <div className="flex items-center">
+          <CurrencyDollarIcon className="flex-shrink-0 h-5 w-5 sm:h-7 sm:w-7 mr-1.5 text-th-primary" />
+          <div className="font-bold text-th-fgd-1 text-xl sm:text-2xl">
+            {formatUsdValue(totalInterestValue)}
+          </div>
+        </div>
+      </div>
       <div className="flex items-center justify-between pb-4">
         <div className="text-th-fgd-1 text-lg">{t('interest-earned')}</div>
         <Switch
@@ -337,7 +383,7 @@ const AccountInterest = () => {
           <>
             {!isEmpty(hourlyInterestStats) && !loading ? (
               <>
-                <div className="flex items-center justify-between pb-4 pt-6 w-full">
+                <div className="flex items-center justify-between pb-4 pt-8 w-full">
                   <div className="text-th-fgd-1 text-lg">{t('history')}</div>
                   <Select
                     value={selectedAsset}
@@ -376,27 +422,48 @@ const AccountInterest = () => {
                     ))}
                   </div>
                 </div>
-                <div
-                  className="border border-th-bkg-4 relative mb-6 p-4 rounded-md"
-                  style={{ height: '330px' }}
-                >
-                  <Chart
-                    hideRangeFilters
-                    title={`${selectedAsset} Interest (Last 30 days)`}
-                    xAxis="time"
-                    yAxis="interest"
-                    data={chartData}
-                    labelFormat={(x) =>
-                      x &&
-                      x.toFixed(
-                        getTokenBySymbol(groupConfig, selectedAsset).decimals
-                      )
-                    }
-                    tickFormat={handleDustTicks}
-                    type="bar"
-                    yAxisWidth={60}
-                  />
-                </div>
+                {selectedAsset ? (
+                  <div className="flex space-x-4 w-full">
+                    <div
+                      className="border border-th-bkg-4 relative mb-6 p-4 rounded-md w-full"
+                      style={{ height: '330px' }}
+                    >
+                      <Chart
+                        hideRangeFilters
+                        title={`${selectedAsset} Interest (Last 30 days)`}
+                        xAxis="time"
+                        yAxis="interest"
+                        data={chartData}
+                        labelFormat={(x) =>
+                          x &&
+                          x.toFixed(
+                            getTokenBySymbol(groupConfig, selectedAsset)
+                              .decimals
+                          )
+                        }
+                        tickFormat={handleDustTicks}
+                        type="bar"
+                        yAxisWidth={60}
+                      />
+                    </div>
+                    <div
+                      className="border border-th-bkg-4 relative mb-6 p-4 rounded-md w-full"
+                      style={{ height: '330px' }}
+                    >
+                      <Chart
+                        hideRangeFilters
+                        title={`${selectedAsset} Interest Value (Last 30 days)`}
+                        xAxis="time"
+                        yAxis="value"
+                        data={chartData}
+                        labelFormat={(x) => x && formatUsdValue(x)}
+                        tickFormat={handleUsdDustTicks}
+                        type="bar"
+                        yAxisWidth={60}
+                      />
+                    </div>
+                  </div>
+                ) : null}
                 <div>
                   <div>
                     {paginated.length ? (
