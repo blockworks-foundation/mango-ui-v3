@@ -185,6 +185,7 @@ const AccountInterest = () => {
       )
 
       const dailyInterest = []
+
       filtered.forEach((d) => {
         const found = dailyInterest.find(
           (x) =>
@@ -201,7 +202,8 @@ const AccountInterest = () => {
           found.value = found.value + newValue
         } else {
           dailyInterest.push({
-            time: d.time,
+            // @ts-ignore
+            time: new Date(d.time).getTime(),
             interest:
               d.borrow_interest > 0
                 ? d.borrow_interest * -1
@@ -478,11 +480,11 @@ const AccountInterest = () => {
                         </thead>
                         <tbody>
                           {paginated.map((stat, index) => {
+                            // @ts-ignore
+                            const utc = dayjs.utc(stat.time).format()
                             return (
                               <TrBody index={index} key={stat.time}>
-                                <Td>
-                                  {dayjs(stat.time).format('DD/MM/YY, h:mma')}
-                                </Td>
+                                <Td>{dayjs(utc).format('DD/MM/YY, h:mma')}</Td>
                                 <Td>
                                   {stat.borrow_interest > 0
                                     ? `-${stat.borrow_interest.toFixed(
