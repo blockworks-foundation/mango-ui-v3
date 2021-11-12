@@ -233,17 +233,6 @@ const AccountInterest = () => {
 
   return (
     <>
-      <div className="border border-th-bkg-4 mb-8 p-3 sm:p-4 rounded-md sm:rounded-lg">
-        <div className="pb-0.5 sm:pb-2 text-th-fgd-3 text-xs sm:text-sm">
-          Net Interest Value
-        </div>
-        <div className="flex items-center">
-          <CurrencyDollarIcon className="flex-shrink-0 h-5 w-5 sm:h-7 sm:w-7 mr-1.5 text-th-primary" />
-          <div className="font-bold text-th-fgd-1 text-xl sm:text-2xl">
-            {formatUsdValue(totalInterestValue)}
-          </div>
-        </div>
-      </div>
       <div className="flex items-center justify-between pb-4">
         <div className="text-th-fgd-1 text-lg">{t('interest-earned')}</div>
         <Switch
@@ -251,7 +240,7 @@ const AccountInterest = () => {
           className="text-xs"
           onChange={() => sethideInterestDust(!hideInterestDust)}
         >
-          Hide dust
+          {t('hide-dust')}
         </Switch>
       </div>
       {mangoAccount ? (
@@ -380,6 +369,20 @@ const AccountInterest = () => {
               })}
             </>
           )}
+          <div className="border border-th-bkg-4 mt-8 p-3 sm:p-4 rounded-md sm:rounded-lg">
+            <div className="font-bold pb-0.5 text-th-fgd-1 text-xs sm:text-sm">
+              {t('net-interest-value')}
+            </div>
+            <div className="pb-0.5 sm:pb-2 text-th-fgd-3 text-xs">
+              {t('net-interest-value-desc')}
+            </div>
+            <div className="flex items-center">
+              <CurrencyDollarIcon className="flex-shrink-0 h-5 w-5 sm:h-7 sm:w-7 mr-1.5 text-th-primary" />
+              <div className="font-bold text-th-fgd-1 text-xl sm:text-2xl">
+                {formatUsdValue(totalInterestValue)}
+              </div>
+            </div>
+          </div>
           <>
             {!isEmpty(hourlyInterestStats) && !loading ? (
               <>
@@ -423,40 +426,38 @@ const AccountInterest = () => {
                   </div>
                 </div>
                 {selectedAsset ? (
-                  <div className="flex space-x-4 w-full">
+                  <div className="flex flex-col sm:flex-row space-x-0 sm:space-x-4 w-full">
                     <div
-                      className="border border-th-bkg-4 relative mb-6 p-4 rounded-md w-full"
+                      className="border border-th-bkg-4 relative mb-6 p-4 rounded-md w-full sm:w-1/2"
                       style={{ height: '330px' }}
                     >
                       <Chart
                         hideRangeFilters
-                        title={`${selectedAsset} Interest (Last 30 days)`}
+                        title={t('interest-chart-title')}
                         xAxis="time"
                         yAxis="interest"
                         data={chartData}
-                        labelFormat={(x) =>
-                          x &&
-                          x.toFixed(
-                            getTokenBySymbol(groupConfig, selectedAsset)
-                              .decimals
-                          )
-                        }
+                        labelFormat={(x) => x && x.toFixed(token.decimals + 1)}
                         tickFormat={handleDustTicks}
                         type="bar"
                         yAxisWidth={60}
                       />
                     </div>
                     <div
-                      className="border border-th-bkg-4 relative mb-6 p-4 rounded-md w-full"
+                      className="border border-th-bkg-4 relative mb-6 p-4 rounded-md w-full sm:w-1/2"
                       style={{ height: '330px' }}
                     >
                       <Chart
                         hideRangeFilters
-                        title={`${selectedAsset} Interest Value (Last 30 days)`}
+                        title={t('interest-chart-value-title')}
                         xAxis="time"
                         yAxis="value"
                         data={chartData}
-                        labelFormat={(x) => x && formatUsdValue(x)}
+                        labelFormat={(x) =>
+                          x && x < 0
+                            ? `-$${Math.abs(x).toFixed(token.decimals + 1)}`
+                            : `$${x.toFixed(token.decimals + 1)}`
+                        }
                         tickFormat={handleUsdDustTicks}
                         type="bar"
                         yAxisWidth={60}
@@ -472,19 +473,15 @@ const AccountInterest = () => {
                           <TrHead>
                             <Th>{t('time')}</Th>
                             <Th>{t('interest')}</Th>
+                            <Th>{t('value')}</Th>
                           </TrHead>
                         </thead>
                         <tbody>
                           {paginated.map((stat, index) => {
-                            const date = new Date(stat.time)
-
                             return (
                               <TrBody index={index} key={stat.time}>
                                 <Td>
-                                  <div>{date.toLocaleDateString()}</div>
-                                  <div className="text-xs text-th-fgd-3">
-                                    {date.toLocaleTimeString()}
-                                  </div>
+                                  {dayjs(stat.time).format('DD/MM/YY, h:mma')}
                                 </Td>
                                 <Td>
                                   {stat.borrow_interest > 0
@@ -495,6 +492,15 @@ const AccountInterest = () => {
                                         token.decimals + 1
                                       )}{' '}
                                   {selectedAsset}
+                                </Td>
+                                <Td>
+                                  {stat.borrow_interest > 0
+                                    ? `-$${(
+                                        stat.borrow_interest * stat.price
+                                      ).toFixed(token.decimals + 1)}`
+                                    : `$${(
+                                        stat.deposit_interest * stat.price
+                                      ).toFixed(token.decimals + 1)}`}
                                 </Td>
                               </TrBody>
                             )
