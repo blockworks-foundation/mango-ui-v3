@@ -598,14 +598,16 @@ export default function AdvancedTradeForm({
     }
   }
 
+  /*
   const roundedMax = (
     Math.round(max / parseFloat(minOrderSize)) * parseFloat(minOrderSize)
   ).toFixed(sizeDecimalCount)
+  */
 
-  const sizeTooLarge =
+  const sizeTooLarge = false /*
     spotMargin || marketConfig.kind === 'perp'
       ? baseSize > roundedMax
-      : baseSize > spotMax
+      : baseSize > spotMax*/
 
   const disabledTradeButton =
     (!price && isLimitOrder) ||
