@@ -1,23 +1,43 @@
 import { useEffect, useMemo, useState } from 'react'
 import useMangoStore from '../../stores/useMangoStore'
-// import Chart from '../Chart'
-// import Loading from '../Loading'
-// import Select from '../Select'
 import { Table, Td, Th, TrBody, TrHead } from '../TableElements'
-// import { isEmpty } from 'lodash'
+import { isEmpty } from 'lodash'
 import { useTranslation } from 'next-i18next'
+import Select from '../Select'
+import Loading from '../Loading'
+import Pagination from '../Pagination'
+import usePagination from '../../hooks/usePagination'
+import { roundToDecimal } from '../../utils'
+
+const QUOTE_DECIMALS = 6
 
 const AccountFunding = () => {
   const { t } = useTranslation('common')
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const [fundingStats, setFundingStats] = useState<any>([])
-  // const [hourlyFunding, setHourlyFunding] = useState<any>(null)
-  // const [selectedAsset, setSelectedAsset] = useState<string>('BTC')
-  // const [loading, setLoading] = useState(false)
+  const [hourlyFunding, setHourlyFunding] = useState<any>([])
+  const [selectedAsset, setSelectedAsset] = useState<string>('BTC')
+  const [loading, setLoading] = useState(false)
+  const {
+    paginated,
+    setData,
+    totalPages,
+    nextPage,
+    previousPage,
+    page,
+    firstPage,
+    lastPage,
+  } = usePagination(hourlyFunding[selectedAsset])
 
   const mangoAccountPk = useMemo(() => {
     return mangoAccount.publicKey.toString()
   }, [mangoAccount])
+
+  useEffect(() => {
+    if (!isEmpty(hourlyFunding)) {
+      setData(hourlyFunding[selectedAsset])
+    }
+  }, [selectedAsset, hourlyFunding])
 
   useEffect(() => {
     const fetchFundingStats = async () => {
@@ -29,29 +49,41 @@ const AccountFunding = () => {
       setFundingStats(Object.entries(parsedResponse))
     }
 
-    // const fetchHourlyFundingStats = async () => {
-    //   setLoading(true)
-    //   const response = await fetch(
-    //     `https://mango-transaction-log.herokuapp.com/v3/stats/hourly-funding?mango-account=${mangoAccountPk}`
-    //   )
-    //   const parsedResponse = await response.json()
+    const fetchHourlyFundingStats = async () => {
+      setLoading(true)
+      const response = await fetch(
+        `https://mango-transaction-log.herokuapp.com/v3/stats/hourly-funding?mango-account=${mangoAccountPk}`
+      )
+      const parsedResponse = await response.json()
+      const assets = Object.keys(parsedResponse)
 
-    //   const assets = Object.keys(parsedResponse)
+      const stats = {}
+      for (const asset of assets) {
+        const x: any = Object.entries(parsedResponse[asset])
 
-    //   const stats = {}
-    //   for (const asset of assets) {
-    //     const x = Object.entries(parsedResponse[asset])
-    //     stats[asset] = x.map(([key, value]) => {
-    //       // @ts-ignore
-    //       return { ...value, time: key }
-    //     })
-    //   }
-    //   setLoading(false)
-    //   setHourlyFunding(stats)
-    // }
+        stats[asset] = x
+          .map(([key, value]) => {
+            const funding = roundToDecimal(
+              value.total_funding,
+              QUOTE_DECIMALS + 1
+            )
+            if (funding !== 0) {
+              return { ...value, time: key }
+            } else {
+              return null
+            }
+          })
+          .filter((x) => x)
+          .reverse()
+      }
+      console.log('stats', stats)
+
+      setLoading(false)
+      setHourlyFunding(stats)
+    }
 
     fetchFundingStats()
-    // fetchHourlyFundingStats()
+    fetchHourlyFundingStats()
   }, [mangoAccountPk])
 
   return (
@@ -96,12 +128,16 @@ const AccountFunding = () => {
                       <Td>
                         <div
                           className={`${
-                            stats.total_funding >= 0
+                            stats.total_funding > 0
                               ? 'text-th-green'
-                              : 'text-th-red'
+                              : stats.total_funding < 0
+                              ? 'text-th-red'
+                              : 'text-th-fgd-3'
                           }`}
                         >
-                          ${stats.total_funding.toFixed(6)}
+                          {stats.total_funding
+                            ? `${stats.total_funding?.toFixed(6)}`
+                            : '-'}
                         </div>
                       </Td>
                     </TrBody>
@@ -111,7 +147,7 @@ const AccountFunding = () => {
             </tbody>
           </Table>
 
-          {/* <>
+          <>
             {!isEmpty(hourlyFunding) && !loading ? (
               <>
                 <div className="flex items-center justify-between my-4 w-full">
@@ -147,26 +183,57 @@ const AccountFunding = () => {
                         onClick={() => setSelectedAsset(token)}
                         key={token}
                       >
-                        {token}
+                        {token}-PERP
                       </div>
                     ))}
                   </div>
                 </div>
-                {hourlyFunding[selectedAsset].length ? (
-                  <div
-                    className="border border-th-bkg-4 relative md:mb-0 p-4 rounded-md"
-                    style={{ height: '330px' }}
-                  >
-                    <Chart
-                      title={t('hourly-funding')}
-                      xAxis="time"
-                      yAxis="total_funding"
-                      data={hourlyFunding[selectedAsset]}
-                      labelFormat={(x) => x.toFixed(6)}
-                      type="area"
-                    />
+                <div>
+                  <div>
+                    {paginated.length ? (
+                      <Table>
+                        <thead>
+                          <TrHead>
+                            <Th>{t('time')}</Th>
+                            <Th>{t('funding')}</Th>
+                          </TrHead>
+                        </thead>
+                        <tbody>
+                          {paginated.map((stat, index) => {
+                            const date = new Date(stat.time)
+
+                            return (
+                              <TrBody index={index} key={stat.time}>
+                                <Td>
+                                  {date.toLocaleDateString()}{' '}
+                                  {date.toLocaleTimeString()}
+                                </Td>
+                                <Td>
+                                  {stat.total_funding.toFixed(
+                                    QUOTE_DECIMALS + 1
+                                  )}{' '}
+                                  USDC
+                                </Td>
+                              </TrBody>
+                            )
+                          })}
+                        </tbody>
+                      </Table>
+                    ) : (
+                      <div className="flex justify-center w-full bg-th-bkg-3 py-4">
+                        No funding earned/paid
+                      </div>
+                    )}
                   </div>
-                ) : null}
+                  <Pagination
+                    page={page}
+                    totalPages={totalPages}
+                    nextPage={nextPage}
+                    lastPage={lastPage}
+                    firstPage={firstPage}
+                    previousPage={previousPage}
+                  />
+                </div>
               </>
             ) : loading ? (
               <div className="flex justify-center my-8">
@@ -175,7 +242,7 @@ const AccountFunding = () => {
                 </div>
               </div>
             ) : null}
-          </> */}
+          </>
         </div>
       ) : (
         <div>{t('connect-wallet')}</div>

@@ -56,7 +56,7 @@ export default function AdvancedTradeForm({
   const [reduceOnly, setReduceOnly] = useState(false)
   const [spotMargin, setSpotMargin] = useState(true)
   const [positionSizePercent, setPositionSizePercent] = useState('')
-  const { takerFee } = useFees()
+  const { takerFee, makerFee } = useFees()
   const { totalMsrm } = useSrmAccount()
 
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
@@ -148,24 +148,27 @@ export default function AdvancedTradeForm({
       ? I80F48.fromNumber(price)
       : mangoGroup.getPrice(marketIndex, mangoCache)
 
-    const token =
-      side === 'buy'
-        ? getTokenBySymbol(groupConfig, 'USDC')
-        : getTokenBySymbol(groupConfig, marketConfig.baseSymbol)
-    const tokenIndex = mangoGroup.getTokenIndex(token.mintKey)
+    let spotMax
+    if (marketConfig.kind === 'spot') {
+      const token =
+        side === 'buy'
+          ? getTokenBySymbol(groupConfig, 'USDC')
+          : getTokenBySymbol(groupConfig, marketConfig.baseSymbol)
+      const tokenIndex = mangoGroup.getTokenIndex(token.mintKey)
 
-    const availableBalance = floorToDecimal(
-      nativeI80F48ToUi(
-        mangoAccount.getAvailableBalance(mangoGroup, mangoCache, tokenIndex),
+      const availableBalance = floorToDecimal(
+        nativeI80F48ToUi(
+          mangoAccount.getAvailableBalance(mangoGroup, mangoCache, tokenIndex),
+          token.decimals
+        ).toNumber(),
         token.decimals
-      ).toNumber(),
-      token.decimals
-    )
+      )
 
-    const spotMax =
-      side === 'buy'
-        ? availableBalance / priceOrDefault.toNumber()
-        : availableBalance
+      spotMax =
+        side === 'buy'
+          ? availableBalance / priceOrDefault.toNumber()
+          : availableBalance
+    }
 
     const {
       max: maxQuote,
@@ -260,10 +263,7 @@ export default function AdvancedTradeForm({
   if (market instanceof Market && market.minOrderSize) {
     minOrderSize = market.minOrderSize.toString()
   } else if (market instanceof PerpMarket) {
-    const baseDecimals = getTokenBySymbol(
-      groupConfig,
-      marketConfig.baseSymbol
-    ).decimals
+    const baseDecimals = marketConfig.baseDecimals
     minOrderSize = new Big(market.baseLotSize)
       .div(new Big(10).pow(baseDecimals))
       .toString()
@@ -275,14 +275,8 @@ export default function AdvancedTradeForm({
   if (market instanceof Market) {
     tickSize = market.tickSize
   } else if (isPerpMarket) {
-    const baseDecimals = getTokenBySymbol(
-      groupConfig,
-      marketConfig.baseSymbol
-    ).decimals
-    const quoteDecimals = getTokenBySymbol(
-      groupConfig,
-      groupConfig.quoteSymbol
-    ).decimals
+    const baseDecimals = marketConfig.baseDecimals
+    const quoteDecimals = marketConfig.quoteDecimals
 
     const nativeToUi = new Big(10).pow(baseDecimals - quoteDecimals)
     const lotsToNative = new Big(market.quoteLotSize).div(
@@ -604,14 +598,16 @@ export default function AdvancedTradeForm({
     }
   }
 
+  /*
   const roundedMax = (
     Math.round(max / parseFloat(minOrderSize)) * parseFloat(minOrderSize)
   ).toFixed(sizeDecimalCount)
+  */
 
-  const sizeTooLarge =
+  const sizeTooLarge = false /*
     spotMargin || marketConfig.kind === 'perp'
       ? baseSize > roundedMax
-      : baseSize > spotMax
+      : baseSize > spotMax*/
 
   const disabledTradeButton =
     (!price && isLimitOrder) ||
@@ -744,7 +740,7 @@ export default function AdvancedTradeForm({
             unit="%"
             values={
               isMobile
-                ? ['10', '25', '50', '75']
+                ? ['10', '25', '50', '100']
                 : ['10', '25', '50', '75', '100']
             }
           />
@@ -838,7 +834,6 @@ export default function AdvancedTradeForm({
               <EstPriceImpact priceImpact={priceImpact} />
             ) : null}
           </div>
-
           <div className={`flex pt-4`}>
             {ipAllowed ? (
               <Button
@@ -877,6 +872,11 @@ export default function AdvancedTradeForm({
                 <span>{t('country-not-allowed')}</span>
               </Button>
             )}
+          </div>
+          <div className="flex flex-col md:flex-row text-xs text-th-fgd-4 px-6 mt-2.5 items-center justify-center">
+            <div>Maker fee: {(makerFee * 100).toFixed(2)}% </div>
+            <span className="hidden md:block md:px-1">|</span>
+            <div> Taker fee: {takerFee * 100}%</div>
           </div>
         </div>
       </div>

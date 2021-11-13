@@ -9,7 +9,6 @@ import { breakpoints } from './TradePageGrid'
 import { Table, Td, Th, TrBody, TrHead } from './TableElements'
 import { formatUsdValue } from '../utils'
 import Loading from './Loading'
-
 import usePerpPositions from '../hooks/usePerpPositions'
 import MarketCloseModal from './MarketCloseModal'
 import { ExpandableRow } from './TableElements'
@@ -17,6 +16,7 @@ import PerpSideBadge from './PerpSideBadge'
 import PnlText from './PnlText'
 import { settlePnl } from './MarketPosition'
 import { useTranslation } from 'next-i18next'
+import MobileTableHeader from './mobile/MobileTableHeader'
 
 const PositionsTable = () => {
   const { t } = useTranslation('common')
@@ -96,8 +96,8 @@ const PositionsTable = () => {
           })}
         </div>
       ) : null}
-      <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-        <div className="align-middle inline-block min-w-full sm:px-6 lg:px-8">
+      <div className={`md:-my-2 md:overflow-x-auto`}>
+        <div className={`align-middle inline-block min-w-full`}>
           {openPositions.length ? (
             !isMobile ? (
               <Table>
@@ -211,93 +211,93 @@ const PositionsTable = () => {
                 </tbody>
               </Table>
             ) : (
-              openPositions.map(
-                (
-                  {
-                    marketConfig,
-                    basePosition,
-                    notionalSize,
-                    avgEntryPrice,
-                    breakEvenPrice,
-                    unrealizedPnl,
-                  },
-                  index
-                ) => {
-                  return (
-                    <ExpandableRow
-                      buttonTemplate={
-                        <>
-                          <div className="col-span-11 flex items-center justify-between text-fgd-1">
-                            <div className="flex items-center">
-                              <img
-                                alt=""
-                                width="20"
-                                height="20"
-                                src={`/assets/icons/${marketConfig.baseSymbol.toLowerCase()}.svg`}
-                                className={`mr-2.5`}
-                              />
-                              <div>
-                                <div className="mb-0.5 text-left">
-                                  {marketConfig.name}
-                                </div>
-                                <div className="text-th-fgd-3 text-xs">
-                                  <span
-                                    className={`mr-1 ${
-                                      basePosition > 0
-                                        ? 'text-th-green'
-                                        : 'text-th-red'
-                                    }`}
-                                  >
-                                    {basePosition > 0
-                                      ? t('long').toUpperCase()
-                                      : t('short').toUpperCase()}
-                                  </span>
-                                  {Math.abs(basePosition)}
+              <>
+                <MobileTableHeader
+                  colOneHeader={t('market')}
+                  colTwoHeader={t('unrealized-pnl')}
+                />
+                {openPositions.map(
+                  (
+                    {
+                      marketConfig,
+                      basePosition,
+                      notionalSize,
+                      avgEntryPrice,
+                      breakEvenPrice,
+                      unrealizedPnl,
+                    },
+                    index
+                  ) => {
+                    return (
+                      <ExpandableRow
+                        buttonTemplate={
+                          <>
+                            <div className="flex items-center justify-between text-fgd-1 w-full">
+                              <div className="flex items-center">
+                                <img
+                                  alt=""
+                                  width="20"
+                                  height="20"
+                                  src={`/assets/icons/${marketConfig.baseSymbol.toLowerCase()}.svg`}
+                                  className={`mr-2.5`}
+                                />
+                                <div>
+                                  <div className="mb-0.5 text-left">
+                                    {marketConfig.name}
+                                  </div>
+                                  <div className="text-th-fgd-3 text-xs">
+                                    <span
+                                      className={`mr-1 ${
+                                        basePosition > 0
+                                          ? 'text-th-green'
+                                          : 'text-th-red'
+                                      }`}
+                                    >
+                                      {basePosition > 0
+                                        ? t('long').toUpperCase()
+                                        : t('short').toUpperCase()}
+                                    </span>
+                                    {Math.abs(basePosition)}
+                                  </div>
                                 </div>
                               </div>
+                              <PnlText pnl={unrealizedPnl} />
                             </div>
-                            <PnlText className="mr-1.5" pnl={unrealizedPnl} />
-                          </div>
-                        </>
-                      }
-                      key={`${index}`}
-                      index={index}
-                      panelTemplate={
-                        <>
-                          <div className="col-span-1 text-left">
-                            <div className="pb-0.5 text-th-fgd-3 text-xs">
-                              {t('average-entry')}
+                          </>
+                        }
+                        key={`${index}`}
+                        index={index}
+                        panelTemplate={
+                          <div className="grid grid-cols-2 grid-flow-row gap-4">
+                            <div className="col-span-1 text-left">
+                              <div className="pb-0.5 text-th-fgd-3 text-xs">
+                                {t('average-entry')}
+                              </div>
+                              {avgEntryPrice
+                                ? formatUsdValue(avgEntryPrice)
+                                : '--'}
                             </div>
-                            {avgEntryPrice
-                              ? formatUsdValue(avgEntryPrice)
-                              : '--'}
-                          </div>
-                          <div className="col-span-1 text-left">
-                            <div className="pb-0.5 text-th-fgd-3 text-xs">
-                              {t('notional-size')}
+                            <div className="col-span-1 text-left">
+                              <div className="pb-0.5 text-th-fgd-3 text-xs">
+                                {t('notional-size')}
+                              </div>
+                              {formatUsdValue(notionalSize)}
                             </div>
-                            {formatUsdValue(notionalSize)}
-                          </div>
-                          <div className="col-span-1 text-left">
-                            <div className="pb-0.5 text-th-fgd-3 text-xs">
-                              {t('break-even')}
+                            <div className="col-span-1 text-left">
+                              <div className="pb-0.5 text-th-fgd-3 text-xs">
+                                {t('break-even')}
+                              </div>
+                              {breakEvenPrice
+                                ? formatUsdValue(breakEvenPrice)
+                                : '--'}
                             </div>
-                            {breakEvenPrice
-                              ? formatUsdValue(breakEvenPrice)
-                              : '--'}
                           </div>
-                          <div className="col-span-1 text-left">
-                            <div className="pb-0.5 text-th-fgd-3 text-xs">
-                              {t('unrealized-pnl')}
-                            </div>
-                            <PnlText pnl={unrealizedPnl} />
-                          </div>
-                        </>
-                      }
-                    />
-                  )
-                }
-              )
+                        }
+                      />
+                    )
+                  }
+                )}
+              </>
             )
           ) : (
             <div

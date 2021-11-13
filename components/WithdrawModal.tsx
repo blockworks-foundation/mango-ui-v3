@@ -5,7 +5,6 @@ import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
 import { floorToDecimal, tokenPrecision } from '../utils/index'
 import Loading from './Loading'
-import Slider from './Slider'
 import Button, { LinkButton } from './Button'
 import Switch from './Switch'
 import Tooltip from './Tooltip'
@@ -56,8 +55,6 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   const [includeBorrow, setIncludeBorrow] = useState(borrow)
   const [simulation, setSimulation] = useState(null)
   const [showSimulation, setShowSimulation] = useState(false)
-  const [sliderPercentage, setSliderPercentage] = useState(0)
-  const [maxButtonTransition, setMaxButtonTransition] = useState(false)
 
   const actions = useMangoStore((s) => s.actions)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
@@ -196,7 +193,6 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
 
   const handleSetSelectedAsset = (symbol) => {
     setInputAmount('')
-    setSliderPercentage(0)
     setWithdrawTokenSymbol(symbol)
   }
 
@@ -249,33 +245,12 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   const handleIncludeBorrowSwitch = (checked) => {
     setIncludeBorrow(checked)
     setInputAmount('')
-    setSliderPercentage(0)
     setInvalidAmountMessage('')
-  }
-
-  const setMaxForSelectedAsset = async () => {
-    setInputAmount(maxAmount.toString())
-    setSliderPercentage(100)
-    setInvalidAmountMessage('')
-    setMaxButtonTransition(true)
   }
 
   const onChangeAmountInput = (amount: string) => {
     setInputAmount(amount)
-    setSliderPercentage((Number(amount) / maxAmount) * 100)
     setInvalidAmountMessage('')
-  }
-
-  const onChangeSlider = async (percentage) => {
-    const amount = (percentage / 100) * maxAmount
-    if (percentage === 100) {
-      setInputAmount(maxAmount.toString())
-    } else {
-      setInputAmount(floorToDecimal(amount, token.decimals).toString())
-    }
-    setSliderPercentage(percentage)
-    setInvalidAmountMessage('')
-    validateAmountInput(amount)
   }
 
   const validateAmountInput = (amount) => {
@@ -313,13 +288,6 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
       }
     })
   }
-
-  // turn off slider transition for dragging slider handle interaction
-  useEffect(() => {
-    if (maxButtonTransition) {
-      setMaxButtonTransition(false)
-    }
-  }, [maxButtonTransition])
 
   if (!withdrawTokenSymbol) return null
 
@@ -385,7 +353,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                 <span>{t('borrow-funds')}</span>
                 <Tooltip content={t('tooltip-interest-charged')}>
                   <InformationCircleIcon
-                    className={`h-5 w-5 ml-2 text-th-fgd-3 cursor-help`}
+                    className={`h-5 w-5 ml-2 text-th-primary cursor-help`}
                   />
                 </Tooltip>
               </div>
@@ -397,18 +365,12 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
             </div>
             <div className="flex justify-between pb-2 pt-4">
               <div className="text-th-fgd-1">{t('amount')}</div>
-              <div className="flex space-x-4">
-                <button
-                  className="font-normal text-th-fgd-1 underline cursor-pointer default-transition hover:text-th-primary hover:no-underline focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
-                  disabled={
-                    !includeBorrow &&
-                    getDepositsForSelectedAsset().eq(ZERO_I80F48)
-                  }
-                  onClick={setMaxForSelectedAsset}
-                >
-                  {t('max')}
-                </button>
-              </div>
+              <LinkButton
+                className="text-th-primary text-xs"
+                onClick={() => setInputAmount(maxAmount.toString())}
+              >
+                {includeBorrow ? t('max-with-borrow') : t('max')}
+              </LinkButton>
             </div>
             <div className="flex">
               <Input
@@ -432,7 +394,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                   <span
                     className={`${getAccountStatusColor(
                       simulation.initHealthRatio
-                    )} bg-th-bkg-1 border flex font-semibold h-10 items-center justify-center ml-2 rounded text-th-fgd-1 w-14`}
+                    )} bg-th-bkg-1 border flex font-semibold h-10 items-center justify-center ml-1 rounded text-th-fgd-1 w-14`}
                   >
                     {simulation.leverage.toFixed(2)}x
                   </span>
@@ -445,16 +407,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                 {invalidAmountMessage}
               </div>
             ) : null}
-            <div className="pt-3 pb-4">
-              <Slider
-                disabled={!withdrawTokenSymbol}
-                value={sliderPercentage}
-                onChange={(v) => onChangeSlider(v)}
-                step={1}
-                maxButtonTransition={maxButtonTransition}
-              />
-            </div>
-            <div className={`pt-8 flex justify-center`}>
+            <div className={`flex justify-center pt-6`}>
               <Button
                 onClick={() => setShowSimulation(true)}
                 disabled={
@@ -529,7 +482,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                         {t('health-check')}
                         <Tooltip content={t('tooltip-after-withdrawal')}>
                           <InformationCircleIcon
-                            className={`h-5 w-5 ml-2 text-th-fgd-3 cursor-help`}
+                            className={`h-5 w-5 ml-2 text-th-primary cursor-help`}
                           />
                         </Tooltip>
                       </div>

@@ -6,15 +6,7 @@ import Chart from '../Chart'
 import BN from 'bn.js'
 import { tokenPrecision } from '../../utils'
 import { useTranslation } from 'next-i18next'
-
-const icons = {
-  'BTC-PERP': '/assets/icons/btc.svg',
-  'ETH-PERP': '/assets/icons/eth.svg',
-  'SOL-PERP': '/assets/icons/sol.svg',
-  'SRM-PERP': '/assets/icons/srm.svg',
-  'USDT-PERP': '/assets/icons/usdt.svg',
-  'MNGO-PERP': '/assets/icons/mngo.svg',
-}
+import Select from '../Select'
 
 function calculateFundingRate(
   oldestLongFunding,
@@ -91,9 +83,38 @@ export default function StatsPerps({ perpStats }) {
 
   return (
     <>
-      <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between mb-4 w-full">
-        <AssetHeader asset={selectedAsset} />
-        <div className="flex mb-4 sm:mb-0 space-x-2">
+      <div className="flex items-center justify-between mb-4 w-full">
+        <div className="flex items-center text-xl text-th-fgd-1">
+          <img
+            width="24"
+            height="24"
+            src={`/assets/icons/${selectedAsset
+              .split(/-|\//)[0]
+              .toLowerCase()}.svg`}
+            className="mr-2.5"
+          />
+          {selectedAsset.split(/-|\//)[0]} {t('perpetual-futures')}
+        </div>
+        <Select
+          value={selectedAsset}
+          onChange={(a) => setSelectedAsset(a)}
+          className="flex-shrink-0 ml-4 w-36 md:hidden"
+        >
+          <div className="space-y-2">
+            {marketConfigs.map((market) => (
+              <Select.Option
+                key={market.name}
+                value={market.name}
+                className={`bg-th-bkg-1 relative rounded-md w-full px-3 py-3 cursor-pointer default-transition flex hover:bg-th-bkg-3 focus:outline-none`}
+              >
+                <div className="flex items-center justify-between w-full">
+                  {market.name}
+                </div>
+              </Select.Option>
+            ))}
+          </div>
+        </Select>
+        <div className="hidden md:flex space-x-2">
           {marketConfigs.map((market) => (
             <div
               className={`bg-th-bkg-3 cursor-pointer default-transition px-2 py-1 rounded-md text-center w-full whitespace-nowrap
@@ -106,7 +127,7 @@ export default function StatsPerps({ perpStats }) {
               onClick={() => setSelectedAsset(market.name)}
               key={market.name as string}
             >
-              {market.name}
+              {market.name.slice(0, -5)}
             </div>
           ))}
         </div>
@@ -150,76 +171,4 @@ export default function StatsPerps({ perpStats }) {
       </div>
     </>
   )
-}
-
-const AssetHeader = ({ asset }) => {
-  const { t } = useTranslation('common')
-
-  switch (asset) {
-    case 'BTC-PERP':
-      return (
-        <div className="flex items-center text-xl text-th-fgd-1">
-          <img
-            src={icons[asset]}
-            alt={icons[asset]}
-            width="24"
-            height="24"
-            className="mr-2.5"
-          />
-          Bitcoin {t('perpetual-futures')}
-        </div>
-      )
-    case 'ETH-PERP':
-      return (
-        <div className="flex items-center text-xl text-th-fgd-1">
-          <img
-            src={icons[asset]}
-            alt={icons[asset]}
-            width="24"
-            height="24"
-            className="mr-2.5"
-          />
-          Ethereum {t('perpetual-futures')}
-        </div>
-      )
-    case 'SOL-PERP':
-      return (
-        <div className="flex items-center text-xl text-th-fgd-1">
-          <img
-            src={icons[asset]}
-            alt={icons[asset]}
-            width="24"
-            height="24"
-            className="mr-2.5"
-          />
-          Solana {t('perpetual-futures')}
-        </div>
-      )
-    case 'SRM':
-      return (
-        <div className="flex items-center text-xl text-th-fgd-1">
-          <img
-            src={icons[asset]}
-            alt={icons[asset]}
-            width="24"
-            height="24"
-            className="mr-2.5"
-          />
-          Serum {t('perpetual-futures')}
-        </div>
-      )
-    default:
-      return (
-        <div className="flex items-center text-xl text-th-fgd-1">
-          <img
-            src={icons[asset]}
-            alt={icons[asset]}
-            width="24"
-            height="24"
-            className="mr-2.5"
-          />
-          Bitcoin {t('perpetual-futures')}
-        </div>
-      )
-  }
 }
