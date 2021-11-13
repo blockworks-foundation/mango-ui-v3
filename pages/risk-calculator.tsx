@@ -109,8 +109,8 @@ export default function LiquidationCalculator() {
 
   // Retrieve the default scenario based on current account spot and perp market positions
   const initilizeScenario = () => {
-    // Set asset bars
-    const assetBarData = Object.entries(balances).map(([index, m]) => {
+    const assetBarData = Object.entries(balances).map((asset) => {
+      const m = asset[1]
       const marketIndex = getMarketIndexBySymbol(mangoConfig, m.symbol)
       const token = getTokenBySymbol(mangoConfig, m.symbol)
       const tokenIndex = mangoGroup.getTokenIndex(token.mintKey)
@@ -295,13 +295,10 @@ export default function LiquidationCalculator() {
 
   // Update price details
   const updatePriceValues = (name, price) => {
-    // let updatedAssetData
-    // let updatedPerpData
-
     const updatedAssetData = calculatorBars.balancesData.map((asset) => {
       let val
       asset.assetName === name
-        ? val = price
+        ? (val = price)
         : (val = asset.priceDisabled
             ? Math.abs(asset.price)
             : (Math.abs(asset.price) * sliderPercentage * 2) / 100)
