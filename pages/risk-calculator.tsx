@@ -110,20 +110,20 @@ export default function LiquidationCalculator() {
   // Retrieve the default scenario based on current account spot and perp market positions
   const initilizeScenario = () => {
     // Set asset bars
-    const assetBarData = Object.entries(balances).map((m) => {
-      const marketIndex = getMarketIndexBySymbol(mangoConfig, m[1].symbol)
-      const token = getTokenBySymbol(mangoConfig, m[1].symbol)
+    const assetBarData = Object.entries(balances).map(([index, m]) => {
+      const marketIndex = getMarketIndexBySymbol(mangoConfig, m.symbol)
+      const token = getTokenBySymbol(mangoConfig, m.symbol)
       const tokenIndex = mangoGroup.getTokenIndex(token.mintKey)
 
       return {
-        assetName: m[1].symbol,
-        symbolName: m[1].symbol,
+        assetName: m.symbol,
+        symbolName: m.symbol,
         net: floorToDecimal(
-          Number(m[1].deposits) - Number(m[1].borrows) + Number(m[1].orders),
+          Number(m.deposits) - Number(m.borrows) + Number(m.orders),
           token.decimals
         ),
         price:
-          m[1].symbol === 'USDC'
+          m.symbol === 'USDC'
             ? floorToDecimal(
                 Number(mangoGroup.getPrice(tokenIndex, mangoCache)),
                 4
@@ -132,30 +132,30 @@ export default function LiquidationCalculator() {
                 Number(mangoGroup.getPrice(marketIndex, mangoCache)),
                 4
               ),
-        deposit: floorToDecimal(Number(m[1].deposits), token.decimals),
-        borrow: floorToDecimal(Number(m[1].borrows), token.decimals),
-        inOrders: Number(m[1].orders),
+        deposit: floorToDecimal(Number(m.deposits), token.decimals),
+        borrow: floorToDecimal(Number(m.borrows), token.decimals),
+        inOrders: Number(m.orders),
         marketIndex: marketIndex,
-        publicKey: m[1].key,
+        publicKey: m.key,
         initAssetWeight:
-          m[1].symbol === 'USDC'
+          m.symbol === 'USDC'
             ? 1
             : mangoGroup.spotMarkets[marketIndex].initAssetWeight.toNumber(),
         initLiabWeight:
-          m[1].symbol === 'USDC'
+          m.symbol === 'USDC'
             ? 1
             : mangoGroup.spotMarkets[marketIndex].initLiabWeight.toNumber(),
         maintAssetWeight:
-          m[1].symbol === 'USDC'
+          m.symbol === 'USDC'
             ? 1
             : mangoGroup.spotMarkets[marketIndex].maintAssetWeight.toNumber(),
         maintLiabWeight:
-          m[1].symbol === 'USDC'
+          m.symbol === 'USDC'
             ? 1
             : mangoGroup.spotMarkets[marketIndex].maintLiabWeight.toNumber(),
         precision: token.decimals ? token.decimals : 6,
         priceDisabled:
-          m[1].symbol === 'USDC' || m[1].symbol === 'USDT' ? true : false,
+          m.symbol === 'USDC' || m.symbol === 'USDT' ? true : false,
       }
     })
 
@@ -299,9 +299,9 @@ export default function LiquidationCalculator() {
     // let updatedPerpData
 
     const updatedAssetData = calculatorBars.balancesData.map((asset) => {
-      let val: number
+      let val
       asset.assetName === name
-        ? (val = price)
+        ? val = price
         : (val = asset.priceDisabled
             ? Math.abs(asset.price)
             : (Math.abs(asset.price) * sliderPercentage * 2) / 100)
