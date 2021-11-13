@@ -51,6 +51,7 @@ const TopBar = () => {
                 <MenuItem href="/account">{t('account')}</MenuItem>
                 <MenuItem href="/borrow">{t('borrow')}</MenuItem>
                 <MenuItem href="/stats">{t('stats')}</MenuItem>
+                <MenuItem href="/risk-calculator">Calculator</MenuItem>
                 <MenuItem href="https://docs.mango.markets/" newWindow>
                   {t('learn')}
                 </MenuItem>

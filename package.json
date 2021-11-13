@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@blockworks-foundation/mango-client": "git+https://github.com/blockworks-foundation/mango-client-v3.git",
+    "@emotion/styled": "^11.3.0",
     "@headlessui/react": "^1.2.0",
     "@heroicons/react": "^1.0.0",
     "@project-serum/serum": "0.13.55",
