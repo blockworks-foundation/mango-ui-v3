@@ -431,29 +431,31 @@ const useMangoStore = create<MangoStore>((set, get) => {
         const set = get().set
         if (!selectedMangoAccount) return
 
-        if (selectedMangoAccount.spotOpenOrdersAccounts.length === 0) return
-        const openOrdersAccounts =
-          selectedMangoAccount.spotOpenOrdersAccounts.filter(isDefined)
-        const publicKeys = openOrdersAccounts.map((act) =>
-          act.publicKey.toString()
-        )
+        let serumTradeHistory = []
+        if (selectedMangoAccount.spotOpenOrdersAccounts.length) {
+          const openOrdersAccounts =
+            selectedMangoAccount.spotOpenOrdersAccounts.filter(isDefined)
+          const publicKeys = openOrdersAccounts.map((act) =>
+            act.publicKey.toString()
+          )
+          serumTradeHistory = await Promise.all(
+            publicKeys.map(async (pk) => {
+              const response = await fetch(
+                `https://event-history-api.herokuapp.com/trades/open_orders/${pk.toString()}`
+              )
+              const parsedResponse = await response.json()
+              return parsedResponse?.data ? parsedResponse.data : []
+            })
+          )
+        }
         const perpHistory = await fetch(
           `https://event-history-api.herokuapp.com/perp_trades/${selectedMangoAccount.publicKey.toString()}`
         )
         let parsedPerpHistory = await perpHistory.json()
         parsedPerpHistory = parsedPerpHistory?.data || []
 
-        const serumHistory = await Promise.all(
-          publicKeys.map(async (pk) => {
-            const response = await fetch(
-              `https://event-history-api.herokuapp.com/trades/open_orders/${pk.toString()}`
-            )
-            const parsedResponse = await response.json()
-            return parsedResponse?.data ? parsedResponse.data : []
-          })
-        )
         set((state) => {
-          state.tradeHistory = [...serumHistory, ...parsedPerpHistory]
+          state.tradeHistory = [...serumTradeHistory, ...parsedPerpHistory]
         })
       },
       async reloadMangoAccount() {
