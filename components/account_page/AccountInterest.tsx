@@ -156,8 +156,11 @@ const AccountInterest = () => {
       setHourlyInterestStats(stats)
     }
 
-    fetchInterestStats()
-    fetchHourlyInterestStats()
+    const getStats = async () => {
+      await fetchInterestStats()
+      fetchHourlyInterestStats()
+    }
+    getStats()
   }, [mangoAccountPk, hideInterestDust])
 
   useEffect(() => {
@@ -427,7 +430,7 @@ const AccountInterest = () => {
                     ))}
                   </div>
                 </div>
-                {selectedAsset ? (
+                {selectedAsset && chartData.length > 0 ? (
                   <div className="flex flex-col sm:flex-row space-x-0 sm:space-x-4 w-full">
                     <div
                       className="border border-th-bkg-4 relative mb-6 p-4 rounded-md w-full sm:w-1/2"
@@ -435,7 +438,9 @@ const AccountInterest = () => {
                     >
                       <Chart
                         hideRangeFilters
-                        title={t('interest-chart-title')}
+                        title={t('interest-chart-title', {
+                          symbol: selectedAsset,
+                        })}
                         xAxis="time"
                         yAxis="interest"
                         data={chartData}
@@ -451,7 +456,9 @@ const AccountInterest = () => {
                     >
                       <Chart
                         hideRangeFilters
-                        title={t('interest-chart-value-title')}
+                        title={t('interest-chart-value-title', {
+                          symbol: selectedAsset,
+                        })}
                         xAxis="time"
                         yAxis="value"
                         data={chartData}
