@@ -22,7 +22,7 @@
     ]
   },
   "dependencies": {
-    "@blockworks-foundation/mango-client": "https://github.com/blockworks-foundation/mango-client-v3#pan/delete-account",
+    "@blockworks-foundation/mango-client": "git+https://github.com/blockworks-foundation/mango-client-v3.git#pan/delete-account",
     "@headlessui/react": "^1.2.0",
     "@heroicons/react": "^1.0.0",
     "@jup-ag/react-hook": "^1.0.0-beta.4",
