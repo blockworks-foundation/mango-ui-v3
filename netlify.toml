@@ -4,15 +4,3 @@ publish = "out"
 
 [functions]
 included_files = ["public/locales/*/*.json", "next-i18next.config.js"]
-
-[[redirects]]
-from = "/perp/*"
-to = "/"
-status = 200
-force = true
-
-[[redirects]]
-from = "/spot/*"
-to = "/"
-status = 200
-force = true
