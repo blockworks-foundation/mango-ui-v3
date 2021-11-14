@@ -145,7 +145,10 @@ const PositionsTable = () => {
                               ) ? (
                                 <span>{marketConfig.name}</span>
                               ) : (
-                                <Link href={`/perp/${marketConfig.baseSymbol}`}>
+                                <Link
+                                  href={`/perp/${marketConfig.baseSymbol}`}
+                                  shallow={true}
+                                >
                                   <a className="text-th-fgd-1 underline hover:no-underline hover:text-th-fgd-1">
                                     {marketConfig.name}
                                   </a>

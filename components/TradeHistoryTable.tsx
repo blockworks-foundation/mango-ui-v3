@@ -55,7 +55,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
       return <span>{trade.marketName}</span>
     } else {
       return (
-        <Link href={location}>
+        <Link href={location} shallow={true}>
           <a className="text-th-fgd-1 underline hover:no-underline hover:text-th-fgd-1">
             {trade.marketName}
           </a>
@@ -339,7 +339,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
             <div className="w-full text-center py-6 bg-th-bkg-1 text-th-fgd-3 rounded-md">
               {t('no-history')}
               {asPath === '/account' ? (
-                <Link href={'/'}>
+                <Link href={'/'} shallow={true}>
                   <a className="inline-flex ml-2 py-0">{t('make-trade')}</a>
                 </Link>
               ) : null}
@@ -349,7 +349,9 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
         <div className="flex items-center">
           {numTrades && items.length > numTrades ? (
             <div className="mx-auto mt-4">
-              <Link href="/account">{t('view-all-trades')}</Link>
+              <Link href="/account" shallow={true}>
+                {t('view-all-trades')}
+              </Link>
             </div>
           ) : null}
         </div>

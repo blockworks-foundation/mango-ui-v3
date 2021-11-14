@@ -89,6 +89,7 @@ export default function MarketMenuItem({ menuTitle = '', linksArray = [] }) {
                     m.name.slice(-4) === 'PERP' ? 'perp' : 'spot'
                   }/${m.name.slice(0, -5)}`}
                   key={m.name}
+                  shallow={true}
                 >
                   <a
                     className={`block py-2 text-th-fgd-1 text-xs hover:text-th-primary whitespace-nowrap ${

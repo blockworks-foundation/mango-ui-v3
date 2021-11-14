@@ -28,7 +28,7 @@ const DesktopTable = ({ openOrders, cancelledOrderId, handleCancelOrder }) => {
     const location = `/${market.kind}/${market.baseSymbol}`
     if (!asPath.includes(location)) {
       return (
-        <Link href={location}>
+        <Link href={location} shallow={true}>
           <a className="text-th-fgd-1 underline hover:no-underline hover:text-th-fgd-1">
             {market.name}
           </a>
@@ -245,13 +245,8 @@ const OpenOrdersTable = () => {
             >
               {t('no-orders')}
               {asPath === '/account' ? (
-                <Link href={'/'}>
-                  <a
-                    className={`inline-flex ml-2 py-0
-        `}
-                  >
-                    {t('make-trade')}
-                  </a>
+                <Link href={'/'} shallow={true}>
+                  <a className={`inline-flex ml-2 py-0`}>{t('make-trade')}</a>
                 </Link>
               ) : null}
             </div>

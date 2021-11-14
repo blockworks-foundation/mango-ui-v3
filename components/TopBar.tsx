@@ -34,7 +34,7 @@ const TopBar = () => {
         <div className={`px-4 lg:px-10`}>
           <div className={`flex justify-between h-14`}>
             <div className={`flex`}>
-              <Link href={defaultMarket.path}>
+              <Link href={defaultMarket.path} shallow={true}>
                 <div
                   className={`cursor-pointer flex-shrink-0 flex items-center`}
                 >
