@@ -216,7 +216,7 @@ export default function AccountInfo() {
                   : '0.00'}
               </div>
             </div>
-            {liquidationPrice ? (
+            {liquidationPrice && liquidationPrice.gt(ZERO_I80F48) ? (
               <div className={`flex justify-between pb-3`}>
                 <div className="font-normal text-th-fgd-3 leading-4">
                   Est. Liq. Price
