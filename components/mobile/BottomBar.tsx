@@ -83,6 +83,16 @@ const BottomBar = () => {
             <StyledBarItemLabel>{t('stats')}</StyledBarItemLabel>
           </div>
         </Link>
+        <Link href="/risk-calculator">
+          <div
+            className={`${
+              asPath === '/risk-calculator' ? 'text-th-primary' : 'text-th-fgd-3'
+            } col-span-1 cursor-pointer default-transition flex flex-col items-center hover:text-th-primary`}
+          >
+            <ChartBarIcon className="h-4 mb-1 w-4" />
+            <StyledBarItemLabel>{t('calculator')}</StyledBarItemLabel>
+          </div>
+        </Link>
       </div>
       {showMarketsModal ? (
         <MarketsModal
