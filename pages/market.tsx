@@ -33,22 +33,18 @@ const PerpMarket = () => {
   const router = useRouter()
 
   useEffect(() => {
-    console.log('router', router, mangoGroup)
     const name = decodeURIComponent(router.asPath).split('name=')[1]
-    console.log('name: ', name)
 
     if (name && mangoGroup) {
       const marketQueryParam = name.toString().split(/-|\//)
       const marketBaseSymbol = marketQueryParam[0]
       const marketType = marketQueryParam[1] === 'PERP' ? 'perp' : 'spot'
-      console.log('marketType: ', marketType)
 
       const newMarket = getMarketByBaseSymbolAndKind(
         groupConfig,
         marketBaseSymbol.toUpperCase(),
         marketType
       )
-      console.log('newMarket', newMarket)
 
       const marketIndex = getMarketIndexBySymbol(
         groupConfig,

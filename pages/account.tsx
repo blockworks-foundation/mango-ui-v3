@@ -76,8 +76,6 @@ export default function Account() {
 
   useEffect(() => {
     async function loadUnownedMangoAccount() {
-      console.log('pubkey[0]', pubkey)
-
       try {
         const unownedMangoAccountPubkey = new PublicKey(pubkey)
         if (mangoGroup) {

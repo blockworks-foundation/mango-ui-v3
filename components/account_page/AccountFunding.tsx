@@ -76,7 +76,6 @@ const AccountFunding = () => {
           .filter((x) => x)
           .reverse()
       }
-      console.log('stats', stats)
 
       setLoading(false)
       setHourlyFunding(stats)

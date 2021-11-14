@@ -42,8 +42,6 @@ export default function useIpAddress() {
         `https://country-code.mangomarkets.workers.dev`
       )
       const parsedResponse = await response.json()
-      console.log('response', parsedResponse)
-
       const ipCountryCode = parsedResponse ? parsedResponse?.country : ''
 
       if (ipCountryCode) {

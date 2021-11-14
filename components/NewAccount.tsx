@@ -63,8 +63,6 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
         actions.fetchWalletTokens()
         actions.fetchAllMangoAccounts()
         setSubmitting(false)
-        console.log('response', response)
-
         onAccountCreation(response)
       })
       .catch((e) => {

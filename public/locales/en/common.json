@@ -107,7 +107,7 @@
   "in-orders": "In Orders",
   "includes-borrow": "Includes borrow of",
   "initial-deposit": "Initial Deposit",
-  "init-error": "Could not perform init margin account and deposit operation",
+  "init-error": "Could not perform init mango account and deposit operation",
   "init-health": "Init Health",
   "insufficient-balance-deposit": "Insufficient balance. Reduce the amount to deposit",
   "insufficient-balance-withdraw": "Insufficient balance. Borrow funds to withdraw",
