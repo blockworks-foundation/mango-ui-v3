@@ -17,18 +17,18 @@ import ButtonGroup from './ButtonGroup'
 interface DepositModalProps {
   onClose: () => void
   isOpen: boolean
-  settleDeficit?: string
+  repayAmount?: string
   tokenSymbol?: string
 }
 
 const DepositModal: FunctionComponent<DepositModalProps> = ({
   isOpen,
   onClose,
-  settleDeficit,
+  repayAmount,
   tokenSymbol = '',
 }) => {
   const { t } = useTranslation('common')
-  const [inputAmount, setInputAmount] = useState<string>(settleDeficit || '')
+  const [inputAmount, setInputAmount] = useState<string>(repayAmount || '')
   const [submitting, setSubmitting] = useState(false)
   const [invalidAmountMessage, setInvalidAmountMessage] = useState('')
   const [depositPercentage, setDepositPercentage] = useState('')
@@ -130,6 +130,20 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
     validateAmountInput(amount)
   }
 
+  const percentage = (parseFloat(inputAmount) / parseFloat(repayAmount)) * 100
+  const net = parseFloat(inputAmount) - parseFloat(repayAmount)
+  const repayMessage =
+    percentage === 100
+      ? t('repay-full')
+      : percentage > 100
+      ? t('repay-and-deposit', {
+          amount: trimDecimals(net, 6).toString(),
+          symbol: selectedAccount.config.symbol,
+        })
+      : t('repay-partial', {
+          percentage: percentage.toFixed(2),
+        })
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <Modal.Header>
@@ -144,15 +158,14 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
           />
         </div>
       ) : null}
-      {settleDeficit ? (
+      {repayAmount && selectedAccount.uiBalance < parseFloat(repayAmount) ? (
         <div className="mb-4">
           <InlineNotification
             desc={t('deposit-before', {
-              settleDeficit: settleDeficit,
               tokenSymbol: tokenSymbol,
             })}
             title={t('not-enough-balance')}
-            type="error"
+            type="warning"
           />
         </div>
       ) : null}
@@ -191,6 +204,11 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
           values={['25', '50', '75', '100']}
         />
       </div>
+      {repayAmount ? (
+        <div className="pt-3">
+          <InlineNotification desc={repayMessage} type="info" />
+        </div>
+      ) : null}
       <div className={`pt-6 flex justify-center`}>
         <Button
           onClick={handleDeposit}
@@ -203,7 +221,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
           </div>
         </Button>
       </div>
-      {!settleDeficit ? (
+      {!repayAmount ? (
         <div className="pt-3">
           <InlineNotification desc={t('interest-info')} type="info" />
         </div>
