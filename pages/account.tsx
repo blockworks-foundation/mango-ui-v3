@@ -6,27 +6,27 @@ import {
   LinkIcon,
   PencilIcon,
 } from '@heroicons/react/outline'
-import useMangoStore, { serumProgramId } from '../../stores/useMangoStore'
-import { copyToClipboard } from '../../utils'
-import PageBodyContainer from '../../components/PageBodyContainer'
-import TopBar from '../../components/TopBar'
-import AccountOrders from '../../components/account_page/AccountOrders'
-import AccountHistory from '../../components/account_page/AccountHistory'
-import AccountsModal from '../../components/AccountsModal'
-import AccountOverview from '../../components/account_page/AccountOverview'
-import AccountInterest from '../../components/account_page/AccountInterest'
-import AccountFunding from '../../components/account_page/AccountFunding'
-import AccountNameModal from '../../components/AccountNameModal'
-import Button from '../../components/Button'
-import EmptyState from '../../components/EmptyState'
-import Loading from '../../components/Loading'
-import Swipeable from '../../components/mobile/Swipeable'
-import Tabs from '../../components/Tabs'
-import { useViewport } from '../../hooks/useViewport'
-import { breakpoints } from '../../components/TradePageGrid'
+import useMangoStore, { serumProgramId } from '../stores/useMangoStore'
+import { copyToClipboard } from '../utils'
+import PageBodyContainer from '../components/PageBodyContainer'
+import TopBar from '../components/TopBar'
+import AccountOrders from '../components/account_page/AccountOrders'
+import AccountHistory from '../components/account_page/AccountHistory'
+import AccountsModal from '../components/AccountsModal'
+import AccountOverview from '../components/account_page/AccountOverview'
+import AccountInterest from '../components/account_page/AccountInterest'
+import AccountFunding from '../components/account_page/AccountFunding'
+import AccountNameModal from '../components/AccountNameModal'
+import Button from '../components/Button'
+import EmptyState from '../components/EmptyState'
+import Loading from '../components/Loading'
+import Swipeable from '../components/mobile/Swipeable'
+import Tabs from '../components/Tabs'
+import { useViewport } from '../hooks/useViewport'
+import { breakpoints } from '../components/TradePageGrid'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'next-i18next'
-import Select from '../../components/Select'
+import Select from '../components/Select'
 import { useRouter } from 'next/router'
 import { PublicKey } from '@solana/web3.js'
 
@@ -76,8 +76,10 @@ export default function Account() {
 
   useEffect(() => {
     async function loadUnownedMangoAccount() {
+      console.log('pubkey[0]', pubkey)
+
       try {
-        const unownedMangoAccountPubkey = new PublicKey(pubkey[0])
+        const unownedMangoAccountPubkey = new PublicKey(pubkey)
         if (mangoGroup) {
           const unOwnedMangoAccount = await mangoClient.getMangoAccount(
             unownedMangoAccountPubkey,

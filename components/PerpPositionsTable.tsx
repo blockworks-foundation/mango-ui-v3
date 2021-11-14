@@ -140,13 +140,16 @@ const PositionsTable = () => {
                                 src={`/assets/icons/${marketConfig.baseSymbol.toLowerCase()}.svg`}
                                 className={`mr-2.5`}
                               />
-                              {asPath.includes(
-                                `perp/${marketConfig.baseSymbol}`
+                              {decodeURIComponent(asPath).includes(
+                                marketConfig.name
                               ) ? (
                                 <span>{marketConfig.name}</span>
                               ) : (
                                 <Link
-                                  href={`/perp/${marketConfig.baseSymbol}`}
+                                  href={{
+                                    pathname: '/market',
+                                    query: { name: marketConfig.name },
+                                  }}
                                   shallow={true}
                                 >
                                   <a className="text-th-fgd-1 underline hover:no-underline hover:text-th-fgd-1">

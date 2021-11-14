@@ -58,6 +58,8 @@ const MarketDetails = () => {
   const baseSymbol = marketConfig.baseSymbol
   const selectedMarketName = marketConfig.name
   const isPerpMarket = marketConfig.kind === 'perp'
+  console.log('marketConfig: ', marketConfig)
+
   const previousMarketName: string = usePrevious(selectedMarketName)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const connected = useMangoStore((s) => s.wallet.connected)

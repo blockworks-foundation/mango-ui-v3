@@ -85,19 +85,17 @@ export default function MarketMenuItem({ menuTitle = '', linksArray = [] }) {
             <div className="relative bg-th-bkg-3 divide-y divide-th-fgd-4 px-3 rounded rounded-t-none">
               {linksArray.map((m) => (
                 <Link
-                  href={`/${
-                    m.name.slice(-4) === 'PERP' ? 'perp' : 'spot'
-                  }/${m.name.slice(0, -5)}`}
+                  href={{
+                    pathname: '/market',
+                    query: { name: m.name },
+                  }}
                   key={m.name}
                   shallow={true}
                 >
                   <a
                     className={`block py-2 text-th-fgd-1 text-xs hover:text-th-primary whitespace-nowrap ${
                       asPath.includes(menuTitle)
-                        ? (asPath.includes('perp') &&
-                            m.name.slice(-4) === 'PERP') ||
-                          (asPath.includes('spot') &&
-                            m.name.slice(-4) === 'USDC')
+                        ? asPath.includes(m.name.slice(-4))
                           ? 'text-th-primary'
                           : 'text-th-fgd-1'
                         : null
