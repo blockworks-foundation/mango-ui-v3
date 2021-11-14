@@ -290,10 +290,10 @@ export default function LiquidationCalculator() {
     const updatedAssetData = calculatorBars.balancesData.map((asset) => {
       let val
       asset.assetName === name
-        ? (val = price)
-        : (val = asset.priceDisabled
+        ? val = price
+        : val = asset.priceDisabled
             ? Math.abs(asset.price)
-            : Math.abs(asset.price) * ((sliderPercentage * 2) / 100))
+            : Math.abs(asset.price) * ((sliderPercentage * 2) / 100)
       return { ...asset, ['price']: Math.abs(val) }
     })
     const updatedPerpData = calculatorBars.perpsData.map((perp) => {
