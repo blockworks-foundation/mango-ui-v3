@@ -26,11 +26,6 @@ export const WALLET_PROVIDERS = [
   },
   {
     name: 'Solflare',
-    url: 'https://solflare.com/access-wallet',
-    icon: `${ASSET_URL}/solflare.svg`,
-  },
-  {
-    name: 'Solflare Extension',
     url: 'https://solflare.com',
     icon: `${ASSET_URL}/solflare.svg`,
     adapter: SolflareExtensionWalletAdapter,
