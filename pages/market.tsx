@@ -33,6 +33,14 @@ const PerpMarket = () => {
   const router = useRouter()
 
   useEffect(() => {
+    // @ts-ignore
+    if (window.solana) {
+      // @ts-ignore
+      window.solana.connect({ onlyIfTrusted: true })
+    }
+  }, [])
+
+  useEffect(() => {
     const name = decodeURIComponent(router.asPath).split('name=')[1]
 
     if (name && mangoGroup) {
