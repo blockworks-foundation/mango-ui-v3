@@ -14,7 +14,7 @@ const NODE_URLS = [
   { label: 'Mango Node', value: 'https://mango.rpcpool.com' },
   {
     label: 'Genesys Go',
-    value: 'https://lokidfxnwlabdq.main.genesysgo.net:8899/',
+    value: 'https://mango.genesysgo.net/',
   },
   {
     label: 'Project Serum',
