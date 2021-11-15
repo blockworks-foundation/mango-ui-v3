@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useState, useEffect } from 'react'
 import { CurrencyDollarIcon, LinkIcon } from '@heroicons/react/outline'
 import useMangoStore from '../stores/useMangoStore'
 import PageBodyContainer from '../components/PageBodyContainer'
@@ -31,6 +31,12 @@ export default function Borrow() {
 
   const handleCloseAccounts = useCallback(() => {
     setShowAccountsModal(false)
+  }, [])
+
+  useEffect(() => {
+    // Will either automatically connect to Phantom, or do nothing.
+    // @ts-ignore
+    window.solana.connect({ onlyIfTrusted: true })
   }, [])
 
   return (
