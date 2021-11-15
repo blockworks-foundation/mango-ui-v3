@@ -11,7 +11,7 @@ import Select from './Select'
 import { useTranslation } from 'next-i18next'
 
 const NODE_URLS = [
-  { label: 'Mango Node', value: 'https://mango.rpcpool.com' },
+  { label: 'Triton (RPC Pool)', value: 'https://mango.rpcpool.com' },
   {
     label: 'Genesys Go',
     value: 'https://mango.genesysgo.net/',
@@ -25,7 +25,7 @@ const NODE_URLS = [
 
 const CUSTOM_NODE = NODE_URLS.find((n) => n.label === 'Custom')
 
-export const NODE_URL_KEY = 'node-url-key-0.4'
+export const NODE_URL_KEY = 'node-url-key-0.5'
 export const DEFAULT_MARKET_KEY = 'defaultMarket'
 export const initialMarket = {
   base: 'BTC',
