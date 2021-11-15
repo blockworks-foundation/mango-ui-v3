@@ -75,9 +75,11 @@ export default function Account() {
   }, [])
 
   useEffect(() => {
-    // Will either automatically connect to Phantom, or do nothing.
     // @ts-ignore
-    window.solana.connect({ onlyIfTrusted: true })
+    if (window.solana) {
+      // @ts-ignore
+      window.solana.connect({ onlyIfTrusted: true })
+    }
   }, [])
 
   useEffect(() => {
