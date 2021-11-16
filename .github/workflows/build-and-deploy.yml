@@ -10,10 +10,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - run: brew tap SkynetLabs/skynet-cli https://github.com/SkynetLabs/skynet-cli.git
-      - run: brew uninstall go
-      - run: brew install go@1.17
-      - run: brew install skynet-cli
+      - run: go get -u github.com/NebulousLabs/skynet-cli
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
