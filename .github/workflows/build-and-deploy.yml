@@ -14,8 +14,8 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm install
-      - run: npm run build-html
+      - run: yarn install
+      - run: yarn build-html
       - name: Deploy to Skynet
         uses: SkynetLabs/deploy-to-skynet-action@v2
         with:
