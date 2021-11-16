@@ -10,7 +10,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - run: go get -u https://github.com/NebulousLabs/skynet-cli/releases/download/v2.0.1/skynet-cli-v2.0.1-linux-amd64.zip
+      - run: go get -u github.com/NebulousLabs/skynet-cli
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
