@@ -38,7 +38,7 @@ const PerpMarket = () => {
       // @ts-ignore
       window.solana.connect({ onlyIfTrusted: true })
     }
-  }, [])
+  }, [marketConfig])
 
   useEffect(() => {
     const name = decodeURIComponent(router.asPath).split('name=')[1]
