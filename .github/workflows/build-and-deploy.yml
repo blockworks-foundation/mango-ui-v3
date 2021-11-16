@@ -3,7 +3,7 @@ on: [push]
 jobs:
   build:
     environment: dev
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [15.x]
@@ -19,9 +19,9 @@ jobs:
       - name: "Deploy to Skynet"
         uses: SkynetLabs/deploy-to-skynet-action@v2
         with:
-          upload-dir: 'out'
+          upload-dir: out
           github-token: ${{ secrets.GITHUB_TOKEN }}
           registry-seed: ${{ secrets.REGISTRY_SEED || '' }}
           registry-datakey: ${{ secrets.REGISTRY_DATAKEY || '' }}
-          try-files: '/index.html'
+          try-files: /index.html
       - run: echo "🥭 The job's status is ${{ job.status }}."
