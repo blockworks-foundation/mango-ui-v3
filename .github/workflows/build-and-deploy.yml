@@ -10,13 +10,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - run: go get -u github.com/NebulousLabs/skynet-cli/cmd/skynet
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install
       - run: npm run build-html
-
-      - run: skynet upload "./out"
+      - name: "Deploy to Skynet"
+        uses: SkynetLabs/deploy-to-skynet-action@v2
+        with:
+          upload-dir: out
+          github-token: ${{ secrets.GITHUB_TOKEN }}
       - run: echo "🥭 The job's status is ${{ job.status }}."
