@@ -50,7 +50,7 @@ const Index = () => {
             key="tvChart"
           ></div>
           <div
-            className="animate animate-pulse bg-th-bkg-3   rounded-lg"
+            className="animate animate-pulse bg-th-bkg-3 rounded-lg"
             key="orderbook"
           ></div>
           <div
