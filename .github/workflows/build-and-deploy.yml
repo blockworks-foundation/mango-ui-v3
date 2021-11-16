@@ -17,6 +17,7 @@ jobs:
       - run: npm install
       - run: npm run build-html
       - run: brew tap SkynetLabs/skynet-cli https://github.com/SkynetLabs/skynet-cli.git
+      - run: brew link --overwrite go
       - run: brew install skynet-cli
       - run: skynet upload "./out"
       - run: echo "🥭 The job's status is ${{ job.status }}."
