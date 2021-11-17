@@ -107,6 +107,15 @@ export default function AccountInfo() {
     ? mangoAccount.getHealth(mangoGroup, mangoCache, 'Init')
     : I80F48_100
 
+  const liquidationPrice =
+    mangoGroup && mangoAccount && marketConfig
+      ? mangoAccount.getLiquidationPrice(
+          mangoGroup,
+          mangoCache,
+          marketConfig.marketIndex
+        )
+      : undefined
+
   return (
     <>
       <div className={!connected && !isMobile ? 'filter blur-sm' : undefined}>
@@ -207,6 +216,16 @@ export default function AccountInfo() {
                   : '0.00'}
               </div>
             </div>
+            {liquidationPrice && liquidationPrice.gt(ZERO_I80F48) ? (
+              <div className={`flex justify-between pb-3`}>
+                <div className="font-normal text-th-fgd-3 leading-4">
+                  Est. Liq. Price
+                </div>
+                <div className={`text-th-fgd-1`}>
+                  {usdFormatter(liquidationPrice)}
+                </div>
+              </div>
+            ) : null}
             <div className={`flex justify-between pb-3`}>
               <Tooltip
                 content={
