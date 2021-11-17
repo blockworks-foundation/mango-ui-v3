@@ -81,9 +81,11 @@ export default function AccountHistory() {
 const HistoryTable = ({ history, view }) => {
   const { t } = useTranslation('common')
   const filteredHistory = useMemo(() => {
-    return history
-      .filter((h) => h.activity_type === view)
-      .map((h) => h.activity_details)
+    return history.length
+      ? history
+          .filter((h) => h.activity_type === view)
+          .map((h) => h.activity_details)
+      : []
   }, [history, view])
   const { items, requestSort, sortConfig } = useSortableData(filteredHistory)
 
