@@ -12,6 +12,26 @@ import { Table, Td, Th, TrBody, TrHead } from './TableElements'
 import { ExpandableRow } from './TableElements'
 import { formatUsdValue } from '../utils'
 import { useTranslation } from 'next-i18next'
+import Pagination from './Pagination'
+import usePagination from '../hooks/usePagination'
+
+const renderTradeDateTime = (timestamp: BN | string) => {
+  let date
+  // don't compare to BN because of npm maddness
+  // prototypes can be different due to multiple versions being imported
+  if (typeof timestamp === 'string') {
+    date = new Date(timestamp)
+  } else {
+    date = new Date(timestamp.toNumber() * 1000)
+  }
+
+  return (
+    <>
+      <div>{date.toLocaleDateString()}</div>
+      <div className="text-xs text-th-fgd-3">{date.toLocaleTimeString()}</div>
+    </>
+  )
+}
 
 const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
   const { t } = useTranslation('common')
@@ -20,24 +40,17 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
   const { items, requestSort, sortConfig } = useSortableData(tradeHistory)
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.md : false
+  const filteredTrades = numTrades ? items.slice(0, numTrades) : items
 
-  const renderTradeDateTime = (timestamp: BN | string) => {
-    let date
-    // don't compare to BN because of npm maddness
-    // prototypes can be different due to multiple versions being imported
-    if (typeof timestamp === 'string') {
-      date = new Date(timestamp)
-    } else {
-      date = new Date(timestamp.toNumber() * 1000)
-    }
-
-    return (
-      <>
-        <div>{date.toLocaleDateString()}</div>
-        <div className="text-xs text-th-fgd-3">{date.toLocaleTimeString()}</div>
-      </>
-    )
-  }
+  const {
+    paginatedData,
+    totalPages,
+    nextPage,
+    previousPage,
+    page,
+    firstPage,
+    lastPage,
+  } = usePagination(filteredTrades, { perPage: 500 })
 
   const renderMarketName = (trade: any) => {
     let marketType, baseSymbol
@@ -63,8 +76,6 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
       )
     }
   }
-
-  const filteredTrades = numTrades ? items.slice(0, numTrades) : items
 
   return (
     <div className={`flex flex-col py-2 sm:pb-4 sm:pt-4`}>
@@ -214,7 +225,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                   </TrHead>
                 </thead>
                 <tbody>
-                  {filteredTrades.map((trade: any, index) => {
+                  {paginatedData.map((trade: any, index) => {
                     return (
                       <TrBody
                         index={index}
@@ -257,7 +268,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                 </tbody>
               </Table>
             ) : (
-              items.map((trade: any, index) => (
+              paginatedData.map((trade: any, index) => (
                 <ExpandableRow
                   buttonTemplate={
                     <>
@@ -345,15 +356,16 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
               ) : null}
             </div>
           )}
-        </div>
-        <div className="flex items-center">
-          {numTrades && items.length > numTrades ? (
-            <div className="mx-auto mt-4">
-              <Link href="/account" shallow={true}>
-                {t('view-all-trades')}
-              </Link>
-            </div>
-          ) : null}
+          <div className="flex items-center justify-end">
+            <Pagination
+              page={page}
+              totalPages={totalPages}
+              nextPage={nextPage}
+              lastPage={lastPage}
+              firstPage={firstPage}
+              previousPage={previousPage}
+            />
+          </div>
         </div>
       </div>
     </div>

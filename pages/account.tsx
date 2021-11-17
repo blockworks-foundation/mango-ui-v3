@@ -39,7 +39,7 @@ export async function getStaticProps({ locale }) {
   }
 }
 
-const TABS = ['Portfolio', 'Orders', 'Trade History', 'Interest', 'Funding']
+const TABS = ['Portfolio', 'Orders', 'History', 'Interest', 'Funding']
 
 export default function Account() {
   const { t } = useTranslation('common')
@@ -292,7 +292,7 @@ const TabContent = ({ activeTab }) => {
       return <AccountOverview />
     case 'Orders':
       return <AccountOrders />
-    case 'Trade History':
+    case 'History':
       return <AccountHistory />
     case 'Interest':
       return <AccountInterest />

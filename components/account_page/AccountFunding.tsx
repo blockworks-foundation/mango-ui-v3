@@ -19,7 +19,7 @@ const AccountFunding = () => {
   const [selectedAsset, setSelectedAsset] = useState<string>('BTC')
   const [loading, setLoading] = useState(false)
   const {
-    paginated,
+    paginatedData,
     setData,
     totalPages,
     nextPage,
@@ -189,7 +189,7 @@ const AccountFunding = () => {
                 </div>
                 <div>
                   <div>
-                    {paginated.length ? (
+                    {paginatedData.length ? (
                       <Table>
                         <thead>
                           <TrHead>
@@ -198,7 +198,7 @@ const AccountFunding = () => {
                           </TrHead>
                         </thead>
                         <tbody>
-                          {paginated.map((stat, index) => {
+                          {paginatedData.map((stat, index) => {
                             const date = new Date(stat.time)
 
                             return (

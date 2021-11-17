@@ -29,7 +29,7 @@ const AccountInterest = () => {
   const [loading, setLoading] = useState(false)
   const [selectedAsset, setSelectedAsset] = useState<string>('')
   const {
-    paginated,
+    paginatedData,
     setData,
     totalPages,
     nextPage,
@@ -115,7 +115,7 @@ const AccountInterest = () => {
 
   return (
     <>
-      <div className="pb-4 text-th-fgd-1 text-lg">{t('interest-earned')}</div>
+      <div className="pb-4 text-th-fgd-1 text-base">{t('interest-earned')}</div>
       {mangoAccount ? (
         <div>
           {!isMobile ? (
@@ -286,7 +286,7 @@ const AccountInterest = () => {
                 </div>
                 <div>
                   <div>
-                    {paginated.length ? (
+                    {paginatedData.length ? (
                       <Table>
                         <thead>
                           <TrHead>
@@ -295,7 +295,7 @@ const AccountInterest = () => {
                           </TrHead>
                         </thead>
                         <tbody>
-                          {paginated.map((stat, index) => {
+                          {paginatedData.map((stat, index) => {
                             const date = new Date(stat.time)
 
                             return (

@@ -68,6 +68,7 @@
   "daily-range": "Daily Range",
   "daily-volume": "24hr Volume",
   "dark": "Dark",
+  "date": "Date",
   "default-market": "Default Market",
   "deposit": "Deposit",
   "deposit-before": "You need more {{tokenSymbol}} in your wallet to fully repay your borrow",
