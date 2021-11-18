@@ -3,6 +3,7 @@ import {
   nativeI80F48ToUi,
   nativeToUi,
   QUOTE_INDEX,
+  sleep,
   ZERO_BN,
   ZERO_I80F48,
 } from '@blockworks-foundation/mango-client'
@@ -76,7 +77,6 @@ export default function AccountInfo() {
         mngoNodeBank.publicKey,
         mngoNodeBank.vault
       )
-      actions.reloadMangoAccount()
       notify({
         title: t('redeem-success'),
         description: '',
@@ -89,6 +89,9 @@ export default function AccountInfo() {
         txid: e.txid,
         type: 'error',
       })
+    } finally {
+      await sleep(500)
+      actions.reloadMangoAccount()
     }
   }
 

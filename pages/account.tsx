@@ -30,7 +30,7 @@ import Select from '../components/Select'
 import { useRouter } from 'next/router'
 import { PublicKey } from '@solana/web3.js'
 
-export async function getStaticProps({ locale }) {
+export async function getServerSideProps({ locale }) {
   return {
     props: {
       ...(await serverSideTranslations(locale, ['common'])),
@@ -102,7 +102,9 @@ export default function Account() {
       }
     }
 
-    loadUnownedMangoAccount()
+    if (pubkey) {
+      loadUnownedMangoAccount()
+    }
   }, [pubkey, mangoGroup])
 
   useEffect(() => {

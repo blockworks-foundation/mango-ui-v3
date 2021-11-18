@@ -356,16 +356,24 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
               ) : null}
             </div>
           )}
-          <div className="flex items-center justify-end">
-            <Pagination
-              page={page}
-              totalPages={totalPages}
-              nextPage={nextPage}
-              lastPage={lastPage}
-              firstPage={firstPage}
-              previousPage={previousPage}
-            />
-          </div>
+          {numTrades && items.length > numTrades ? (
+            <div className="flex items-center justify-center mt-4">
+              <Link href="/account" shallow={true}>
+                {t('view-all-trades')}
+              </Link>
+            </div>
+          ) : (
+            <div className="flex items-center justify-end">
+              <Pagination
+                page={page}
+                totalPages={totalPages}
+                nextPage={nextPage}
+                lastPage={lastPage}
+                firstPage={firstPage}
+                previousPage={previousPage}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>
