@@ -144,6 +144,10 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
           percentage: percentage.toFixed(2),
         })
 
+  const inputDisabled =
+    selectedAccount.config.symbol === 'SOL' &&
+    selectedAccount.uiBalance.toString() === inputAmount
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <Modal.Header>
@@ -204,6 +208,12 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
           values={['25', '50', '75', '100']}
         />
       </div>
+      {selectedAccount.config.symbol === 'SOL' &&
+      parseFloat(inputAmount) > selectedAccount.uiBalance - 0.01 ? (
+        <div className="tiny-text text-center text-th-red -mb-4">
+          You must leave enough SOL in your wallet to pay for the transaction
+        </div>
+      ) : null}
       {repayAmount ? (
         <div className="pt-3">
           <InlineNotification desc={repayMessage} type="info" />
@@ -213,7 +223,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
         <Button
           onClick={handleDeposit}
           className="w-full"
-          disabled={submitting}
+          disabled={submitting || inputDisabled}
         >
           <div className={`flex items-center justify-center`}>
             {submitting && <Loading className="-ml-1 mr-3" />}

@@ -631,7 +631,10 @@ const OrderbookRow = React.memo<any>(
     if (!market) return null
 
     return (
-      <div className={`flex text-sm leading-7 justify-between`} ref={element}>
+      <div
+        className={`flex text-sm leading-7 justify-between cursor-pointer`}
+        ref={element}
+      >
         {invert ? (
           <>
             <div className={`text-left relative flex-1`}>
