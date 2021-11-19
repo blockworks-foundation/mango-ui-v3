@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 26.0.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_2_00000158006285745761904810000000960975360931131825_"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 498 498"
+	 style="enable-background:new 0 0 498 498;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:url(#SVGID_1_);}
+	.st1{fill:#FFFFFF;}
+</style>
+<g>
+	<g>
+		<circle cx="249" cy="249" r="249"/>
+		
+			<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="88.5781" y1="84.8277" x2="415.3223" y2="411.5719" gradientTransform="matrix(1 0 0 -1 0 500)">
+			<stop  offset="0" style="stop-color:#7F7F7F"/>
+			<stop  offset="3.078728e-02" style="stop-color:#818181"/>
+			<stop  offset="0.1719" style="stop-color:#868686"/>
+			<stop  offset="0.304" style="stop-color:#898989"/>
+			<stop  offset="0.4227" style="stop-color:#8C8C8C"/>
+			<stop  offset="0.5161" style="stop-color:#8D8D8D"/>
+			<stop  offset="0.6074" style="stop-color:#8F8F8F"/>
+			<stop  offset="0.7504" style="stop-color:#949494"/>
+			<stop  offset="0.9262" style="stop-color:#9D9D9D"/>
+			<stop  offset="1" style="stop-color:#A2A2A2"/>
+		</linearGradient>
+		<path class="st0" d="M435.9,117.4l-61.2,60.3c-1,1-2.3,1.5-3.6,1.5H72.2c-5.3,0-7.9-6.4-4.2-10.1l61.2-60.3c1-1,2.3-1.5,3.6-1.5
+			h298.9C437,107.3,439.7,113.7,435.9,117.4z M435.9,277.6l-61.2-60.3c-1-1-2.3-1.5-3.6-1.5H72.2c-5.3,0-7.9,6.4-4.2,10.1l61.2,60.3
+			c1,1,2.3,1.5,3.6,1.5h298.9C437,287.7,439.7,281.3,435.9,277.6z M431.7,324.4H132.9c-1.4,0-2.7,0.5-3.6,1.5L68,386.2
+			c-3.8,3.7-1.1,10.1,4.2,10.1h298.9c1.4,0,2.7-0.5,3.6-1.5l61.2-60.3C439.7,330.8,437,324.4,431.7,324.4z"/>
+	</g>
+	<path class="st1" d="M275.3,373.7l34.2-157.3l-62.8,157.3h-47.1l0.7-141.2l-44.1,141.2h-27.5l74.5-229.2c-33.6,11-54.2,37-52.5,75
+		c0.7,15.7,4.1,20.1,5.3,23.1c-24.1,0.8-36.2-8.3-37.2-30c-1.9-43,53.9-89.1,105.5-89.1c10,0,18.6,0.9,26.9,3.9l0.1,192.4l73-191.7
+		h53l-52.5,245.5L275.3,373.7L275.3,373.7z"/>
+</g>
+</svg>
