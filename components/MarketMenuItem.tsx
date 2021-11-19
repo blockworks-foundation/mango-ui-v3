@@ -19,6 +19,7 @@ import {
   UniMonoIcon,
   UsdtMonoIcon,
   AdaMonoIcon,
+  MsolMonoIcon,
 } from './icons'
 
 const symbolIcons = {
@@ -39,6 +40,7 @@ const symbolIcons = {
   UniMonoIcon,
   UsdtMonoIcon,
   AdaMonoIcon,
+  MsolMonoIcon,
 }
 
 export default function MarketMenuItem({ menuTitle = '', linksArray = [] }) {
