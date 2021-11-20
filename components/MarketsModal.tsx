@@ -58,7 +58,7 @@ const MarketsModal = ({
           </LinkButton>
         )}
       </div>
-      {markets.map((mkt, index) => (
+      {markets.map((mkt) => (
         <div key={mkt.baseAsset}>
           <div className="bg-th-bkg-3 flex items-center justify-between px-2.5 py-2">
             <div className="flex items-center">
@@ -112,7 +112,9 @@ const MarketsModal = ({
                     <div className="flex items-center">
                       <span className="text-right w-20">
                         {formatUsdValue(
-                          mangoGroup.getPrice(index, mangoCache).toNumber()
+                          mangoGroup
+                            .getPrice(m.marketIndex, mangoCache)
+                            .toNumber()
                         )}
                       </span>
                       {/* <span className="text-th-green text-right w-20">
