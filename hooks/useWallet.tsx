@@ -121,10 +121,14 @@ export default function useWallet() {
     })
     wallet.on('disconnect', () => {
       console.log('disconnecting wallet')
+      localStorage.removeItem('profilePic')
+
       setMangoStore((state) => {
         state.wallet.connected = false
         state.mangoAccounts = []
         state.selectedMangoAccount.current = null
+        state.settings.nfts = []
+        state.settings.avatar = ''
         state.tradeHistory = []
       })
       notify({

@@ -9,6 +9,10 @@ import useMangoStore from '../stores/useMangoStore'
 import { notify } from '../utils/notifications'
 import { NFT } from '../utils/metaplex/models'
 import { useTranslation } from 'next-i18next'
+import {
+  IPFS_DEFAULT_GATEWAY,
+  MANGO_HEROES_IPFS_GATEWAY,
+} from '../utils/metaplex/types'
 
 const ResponsiveGridLayout = WidthProvider(Responsive)
 
@@ -118,7 +122,10 @@ const NFTDisplay = ({ nft, selected }) => {
         fetch(nft.metadataUri).then(async (_) => {
           try {
             const data = await _.json()
-            nft.imageUri = data['image']
+            nft.imageUri = data['image'].replace(
+              IPFS_DEFAULT_GATEWAY,
+              MANGO_HEROES_IPFS_GATEWAY
+            )
             setImageUri(nft.imageUri)
           } catch (ex) {
             console.error('Error trying to parse JSON: ' + ex)

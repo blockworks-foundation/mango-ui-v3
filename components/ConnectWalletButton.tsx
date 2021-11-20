@@ -22,6 +22,10 @@ import { UserCircleIcon } from '@heroicons/react/solid'
 import ChangeAvatarModal from './ChangeAvatarModal'
 import { NFT } from '../utils/metaplex/models'
 import { useTranslation } from 'next-i18next'
+import {
+  IPFS_DEFAULT_GATEWAY,
+  MANGO_HEROES_IPFS_GATEWAY,
+} from '../utils/metaplex/types'
 
 const ConnectWalletButton = () => {
   const { t } = useTranslation('common')
@@ -62,7 +66,12 @@ const ConnectWalletButton = () => {
         fetch(nft.metadataUri).then(async (_) => {
           try {
             const data = await _.json()
-            nft.imageUri = data['image']
+            console.log('Metadata: ', data)
+
+            nft.imageUri = data['image'].replace(
+              IPFS_DEFAULT_GATEWAY,
+              MANGO_HEROES_IPFS_GATEWAY
+            )
             setImageUrl(nft.imageUri)
           } catch (ex) {
             console.error('Error trying to parse JSON: ' + ex)
@@ -86,6 +95,11 @@ const ConnectWalletButton = () => {
   const handleCloseAccounts = useCallback(() => {
     setShowAccountsModal(false)
   }, [])
+
+  const disconnectWallet = () => {
+    setImageUrl('')
+    wallet.disconnect()
+  }
 
   return (
     <>
@@ -138,7 +152,7 @@ const ConnectWalletButton = () => {
               <Menu.Item>
                 <button
                   className="flex flex-row font-normal items-center rounded-none w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer focus:outline-none"
-                  onClick={() => wallet.disconnect()}
+                  onClick={() => disconnectWallet()}
                 >
                   <LogoutIcon className="h-4 w-4" />
                   <div className="pl-2 text-left">
