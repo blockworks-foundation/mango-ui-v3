@@ -33,7 +33,7 @@ export const defaultLayouts = {
     { i: 'marketPosition', x: 9, y: 4, w: 3, h: 13 },
   ],
   lg: [
-    { i: 'tvChart', x: 0, y: 0, w: 8, h: 28, minW: 2 },
+    { i: 'tvChart', x: 0, y: 0, w: 8, h: 29, minW: 2 },
     { i: 'marketPosition', x: 8, y: 0, w: 4, h: 13, minW: 2 },
     { i: 'accountInfo', x: 8, y: 1, w: 4, h: 16, minW: 2 },
     { i: 'orderbook', x: 0, y: 2, w: 4, h: 17, minW: 2 },
@@ -42,7 +42,7 @@ export const defaultLayouts = {
     { i: 'userInfo', x: 0, y: 3, w: 12, h: 19, minW: 6 },
   ],
   md: [
-    { i: 'tvChart', x: 0, y: 0, w: 8, h: 28, minW: 2 },
+    { i: 'tvChart', x: 0, y: 0, w: 8, h: 29, minW: 2 },
     { i: 'marketPosition', x: 8, y: 0, w: 4, h: 13, minW: 2 },
     { i: 'accountInfo', x: 8, y: 1, w: 4, h: 16, minW: 2 },
     { i: 'orderbook', x: 0, y: 2, w: 4, h: 17, minW: 2 },
