@@ -9,6 +9,7 @@ import useMangoStore from '../stores/useMangoStore'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import Select from './Select'
 import { useTranslation } from 'next-i18next'
+import Switch from './Switch'
 
 const NODE_URLS = [
   { label: 'Triton (RPC Pool)', value: 'https://mango.rpcpool.com' },
@@ -27,6 +28,7 @@ const CUSTOM_NODE = NODE_URLS.find((n) => n.label === 'Custom')
 
 export const NODE_URL_KEY = 'node-url-key-0.5'
 export const DEFAULT_MARKET_KEY = 'defaultMarket'
+export const ORDERBOOK_FLASH_KEY = 'showOrderbookFlash'
 export const initialMarket = {
   base: 'BTC',
   kind: 'perp',
@@ -44,6 +46,10 @@ const SettingsModal = ({ isOpen, onClose }) => {
   const [defaultMarket] = useLocalStorageState(
     DEFAULT_MARKET_KEY,
     initialMarket
+  )
+  const [showOrderbookFlash, setShowOrderbookFlash] = useLocalStorageState(
+    ORDERBOOK_FLASH_KEY,
+    true
   )
   const rpcEndpoint =
     NODE_URLS.find((node) => node.value === rpcEndpointUrl) || CUSTOM_NODE
@@ -83,6 +89,13 @@ const SettingsModal = ({ isOpen, onClose }) => {
               <ChevronRightIcon className="h-5 ml-1 w-5 text-th-primary" />
             </div>
           </button>
+          <div className="border-t border-th-bkg-4 flex items-center justify-between py-3 text-th-fgd-1">
+            <span>{t('orderbook-animation')}</span>
+            <Switch
+              checked={showOrderbookFlash}
+              onChange={(checked) => setShowOrderbookFlash(checked)}
+            />
+          </div>
         </div>
       ) : null}
       <SettingsContent

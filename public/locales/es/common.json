@@ -179,6 +179,7 @@
   "oracle-price": "Precio de Oracle",
   "order-error": "Error al realizar el pedido",
   "orderbook": "libro de ordenes",
+  "orderbook-animation": "Animación del libro de ordenes",
   "orders": "ordenes",
   "perp": "perpetuo",
   "perp-fees": "Tarifas de Mango Perp",

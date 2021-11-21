@@ -25,6 +25,8 @@ import {
 } from './FlipCard'
 import { useTranslation } from 'next-i18next'
 import FloatingElement from './FloatingElement'
+import useLocalStorageState from '../hooks/useLocalStorageState'
+import { ORDERBOOK_FLASH_KEY } from './SettingsModal'
 
 const Line = (props) => {
   return (
@@ -593,9 +595,11 @@ const OrderbookRow = React.memo<any>(
   }) => {
     const element = useRef(null)
     const setMangoStore = useMangoStore((s) => s.set)
+    const [showOrderbookFlash] = useLocalStorageState(ORDERBOOK_FLASH_KEY, true)
 
     useEffect(() => {
-      !element.current?.classList.contains('flash') &&
+      showOrderbookFlash &&
+        !element.current?.classList.contains('flash') &&
         element.current?.classList.add('flash')
       const id = setTimeout(
         () =>
