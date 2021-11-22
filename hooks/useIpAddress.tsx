@@ -34,8 +34,11 @@ const SANCTIONED_COUNTRY_CODES = SANCTIONED_COUNTRIES.map(
   (country) => country[0]
 )
 
+const SPOT_ALLOWED = ['GB']
+
 export default function useIpAddress() {
   const [ipAllowed, setIpAllowed] = useState(false)
+  const [spotAllowed, setSpotAllowed] = useState(false)
 
   useEffect(() => {
     const checkIpLocation = async () => {
@@ -47,11 +50,12 @@ export default function useIpAddress() {
 
       if (ipCountryCode) {
         setIpAllowed(!SANCTIONED_COUNTRY_CODES.includes(ipCountryCode))
+        setSpotAllowed(SPOT_ALLOWED.includes(ipCountryCode))
       }
     }
 
     checkIpLocation()
   }, [])
 
-  return { ipAllowed }
+  return { ipAllowed, spotAllowed }
 }
