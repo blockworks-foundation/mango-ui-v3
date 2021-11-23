@@ -12,7 +12,7 @@ const SANCTIONED_COUNTRIES = [
   ['CU', 'Cuba'],
   ['CD', 'Democratic Republic of Congo'],
   ['EC', 'Ecuador'],
-  ['GB', 'United Kingdom'],
+  //['GB', 'United Kingdom'],
   ['IR', 'Iran'],
   ['IQ', 'Iraq'],
   ['LR', 'Liberia'],
