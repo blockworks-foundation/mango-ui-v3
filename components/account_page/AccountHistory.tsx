@@ -125,7 +125,7 @@ const parseActivityDetails = (activity_details, activity_type, perpMarket) => {
       : activity_details.liab_amount
 
   const assetAmount =
-    perpMarket && assetSymbol !== 'USDC-PERP'
+    perpMarket && activity_type !== 'liquidate_token_and_perp'
       ? perpMarket.baseLotsToNumber(activity_details.asset_amount)
       : activity_details.asset_amount
 
