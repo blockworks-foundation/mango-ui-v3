@@ -124,10 +124,7 @@ const parseActivityDetails = (activity_details, activity_type, perpMarket) => {
       ? perpMarket.baseLotsToNumber(activity_details.liab_amount)
       : activity_details.liab_amount
 
-  const assetAmount =
-    perpMarket && activity_type !== 'liquidate_token_and_perp'
-      ? perpMarket.baseLotsToNumber(activity_details.asset_amount)
-      : activity_details.asset_amount
+  const assetAmount = activity_details.asset_amount
 
   const asset_amount = {
     amount: parseFloat(assetAmount),
