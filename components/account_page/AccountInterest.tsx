@@ -115,7 +115,7 @@ const AccountInterest = () => {
 
   return (
     <>
-      <div className="pb-4 text-th-fgd-1 text-base">{t('interest-earned')}</div>
+      <div className="pb-4 text-th-fgd-1 text-lg">{t('interest-earned')}</div>
       {mangoAccount ? (
         <div>
           {!isMobile ? (

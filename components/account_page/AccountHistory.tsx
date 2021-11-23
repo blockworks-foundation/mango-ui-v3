@@ -45,33 +45,41 @@ export default function AccountHistory() {
 
   return (
     <>
-      <div className="flex justify-between">
-        <div className="mb-4 text-th-fgd-1 text-base">{t('history')}</div>
-
-        <div className="tiny-text text-th-fgd-4 text-right">
-          <div>There may be a delay in displaying the latest activity.</div>
-          <div>
-            Click on Explorer above to view the most recent transactions.
+      <div className="flex flex-col md:flex-row md:items-end md:justify-between pb-4">
+        <div>
+          <div className="mb-1 text-th-fgd-1 text-lg">{t('history')}</div>
+          <div className="mr-4 text-xs text-th-fgd-3">
+            There may be a short delay in displaying your latest history. Use
+            the{' '}
+            <a
+              href={`https://explorer.solana.com/address/${mangoAccountPk}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Explorer
+            </a>{' '}
+            to verify any delayed transactions.
           </div>
         </div>
-      </div>
-
-      <div className="flex mb-4">
-        {historyViews.map(({ label, key }) => (
-          <div
-            className={`border border-th-bkg-3 px-3 py-1.5 mr-2 rounded cursor-pointer default-transition bg-th-bkg-3
-              ${
-                view === key
-                  ? `border-th-bkg-3 text-th-primary`
-                  : `text-th-fgd-1 opacity-80 hover:opacity-100`
-              }
-            `}
-            onClick={() => setView(key)}
-            key={key as string}
-          >
-            {label}
-          </div>
-        ))}
+        <div className="flex mb-1 mt-4 md:mt-0">
+          {historyViews.map(({ label, key }, index) => (
+            <div
+              className={`px-2 py-1 ${
+                index > 0 ? 'ml-2' : null
+              } rounded-md cursor-pointer default-transition bg-th-bkg-3
+                          ${
+                            view === key
+                              ? `ring-1 ring-inset ring-th-primary text-th-primary`
+                              : `text-th-fgd-1 opacity-50 hover:opacity-100`
+                          }
+                        `}
+              onClick={() => setView(key)}
+              key={key as string}
+            >
+              {label}
+            </div>
+          ))}
+        </div>
       </div>
       <ViewContent view={view} history={history} />
     </>

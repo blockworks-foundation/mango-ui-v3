@@ -87,7 +87,7 @@ const AccountFunding = () => {
 
   return (
     <>
-      <div className="pb-3.5 text-th-fgd-1 text-base">
+      <div className="pb-4 text-th-fgd-1 text-lg">
         {t('total-funding-stats')}
       </div>
       {mangoAccount ? (
@@ -149,7 +149,8 @@ const AccountFunding = () => {
           <>
             {!isEmpty(hourlyFunding) && !loading ? (
               <>
-                <div className="flex items-center justify-between my-4 w-full">
+                <div className="flex items-center justify-between pb-4 pt-6 w-full">
+                  <div className="text-th-fgd-1 text-lg">{t('history')}</div>
                   <Select
                     value={selectedAsset}
                     onChange={(a) => setSelectedAsset(a)}
