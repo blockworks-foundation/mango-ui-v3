@@ -149,15 +149,39 @@ const parseActivityDetails = (activity_details, activity_type, perpMarket) => {
     }),
   }
 
-  if (parseFloat(activity_details.asset_amount) > 0) {
-    assetGained = liab_amount
-    assetLost = asset_amount
-  } else {
-    assetGained = asset_amount
-    assetLost = liab_amount
-  }
+  // if (parseFloat(activity_details.asset_amount) > 0) {
+  //   assetGained = liab_amount
+  //   assetLost = asset_amount
+  // } else {
+  //   assetGained = asset_amount
+  //   assetLost = liab_amount
+  // }
 
-  return [assetGained, assetLost]
+  // switch activity_type
+
+  // return [assetGained, assetLost]
+
+  switch (activity_type) {
+    case 'liquidate_token_and_token':
+      return [liab_amount, asset_amount]
+    case 'liquidate_token_and_perp':
+      if (activity_details.asset_type === 'Token') {
+        return [liab_amount, asset_amount]
+      } else {
+        return [asset_amount, liab_amount]
+      }
+    case 'liquidate_perp_market':
+      if (parseFloat(activity_details.asset_amount) > 0) {
+        assetGained = asset_amount
+        assetLost = liab_amount
+      } else {
+        assetGained = liab_amount
+        assetLost = asset_amount
+      }
+      return [assetGained, assetLost]
+    default:
+      return []
+  }
 }
 
 const LiquidationHistoryTable = ({ history, view }) => {
@@ -165,7 +189,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
   const markets = useMangoStore((s) => s.selectedMangoGroup.markets)
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const filteredHistory = useMemo(() => {
-    return history.length
+    return history?.length
       ? history.filter((h) => h.activity_type.includes('liquidate'))
       : []
   }, [history, view])
