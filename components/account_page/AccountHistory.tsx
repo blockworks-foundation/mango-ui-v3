@@ -125,7 +125,7 @@ const parseActivityDetails = (activity_details, activity_type, perpMarket) => {
       : activity_details.liab_amount
 
   const assetAmount =
-    perpMarket && assetSymbol !== 'USDC'
+    perpMarket && assetSymbol !== 'USDC-PERP'
       ? perpMarket.baseLotsToNumber(activity_details.asset_amount)
       : activity_details.asset_amount
 
@@ -296,6 +296,8 @@ const LiquidationHistoryTable = ({ history, view }) => {
                 )
 
                 const date = new Date(activity_details.block_datetime)
+                const lostDecimals = assetLost.symbol === 'SOL' ? 9 : 6
+                const gainedDecimals = assetGained.symbol === 'SOL' ? 9 : 6
                 return (
                   <TrBody index={index} key={activity_details.signature}>
                     <Td>
@@ -308,14 +310,14 @@ const LiquidationHistoryTable = ({ history, view }) => {
                     <Td>
                       <span className="text-th-red">
                         {Math.abs(assetLost.amount).toLocaleString(undefined, {
-                          maximumFractionDigits: 10,
+                          maximumFractionDigits: lostDecimals,
                         })}{' '}
                       </span>
                       {assetLost.symbol}
                     </Td>
                     <Td>
                       {assetLost.price.toLocaleString(undefined, {
-                        maximumFractionDigits: 10,
+                        maximumFractionDigits: lostDecimals,
                       })}
                     </Td>
                     <Td>
@@ -323,7 +325,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
                         {Math.abs(assetGained.amount).toLocaleString(
                           undefined,
                           {
-                            maximumFractionDigits: 10,
+                            maximumFractionDigits: gainedDecimals,
                           }
                         )}{' '}
                       </span>
@@ -331,7 +333,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
                     </Td>
                     <Td>
                       {assetGained.price.toLocaleString(undefined, {
-                        maximumFractionDigits: 10,
+                        maximumFractionDigits: gainedDecimals,
                       })}
                     </Td>
                     <Td>
