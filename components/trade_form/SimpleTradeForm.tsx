@@ -27,7 +27,7 @@ import { useTranslation } from 'next-i18next'
 export default function SimpleTradeForm({ initLeverage }) {
   const { t } = useTranslation('common')
   const set = useMangoStore((s) => s.set)
-  const { ipAllowed } = useIpAddress()
+  const { ipAllowed, spotAllowed } = useIpAddress()
   const connected = useMangoStore((s) => s.wallet.connected)
   const actions = useMangoStore((s) => s.actions)
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
@@ -421,6 +421,8 @@ export default function SimpleTradeForm({ initLeverage }) {
     (side === 'sell' && baseSize === roundedDeposits) ||
     (side === 'buy' && baseSize === roundedBorrows)
 
+  const canTrade = ipAllowed || (market instanceof Market && spotAllowed)
+
   return (
     <div className="flex flex-col h-full">
       <ElementTitle>
@@ -668,7 +670,7 @@ export default function SimpleTradeForm({ initLeverage }) {
           </div>
         ) : null}
         <div className={`col-span-12 flex pt-2`}>
-          {ipAllowed ? (
+          {canTrade ? (
             <Button
               disabled={disabledTradeButton}
               onClick={onSubmit}
