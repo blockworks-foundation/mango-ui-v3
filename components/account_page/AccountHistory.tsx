@@ -130,36 +130,16 @@ const parseActivityDetails = (activity_details, activity_type, perpMarket) => {
       : activity_details.asset_amount
 
   const asset_amount = {
-    amount: parseFloat(assetAmount).toLocaleString(undefined, {
-      maximumFractionDigits: 10,
-    }),
+    amount: parseFloat(assetAmount),
     symbol: assetSymbol,
-    price: parseFloat(activity_details.asset_price).toLocaleString(undefined, {
-      maximumFractionDigits: 10,
-    }),
+    price: parseFloat(activity_details.asset_price),
   }
 
   const liab_amount = {
-    amount: parseFloat(liabAmount).toLocaleString(undefined, {
-      maximumFractionDigits: 10,
-    }),
+    amount: parseFloat(liabAmount),
     symbol: liabSymbol,
-    price: parseFloat(activity_details.liab_price).toLocaleString(undefined, {
-      maximumFractionDigits: 10,
-    }),
+    price: parseFloat(activity_details.liab_price),
   }
-
-  // if (parseFloat(activity_details.asset_amount) > 0) {
-  //   assetGained = liab_amount
-  //   assetLost = asset_amount
-  // } else {
-  //   assetGained = asset_amount
-  //   assetLost = liab_amount
-  // }
-
-  // switch activity_type
-
-  // return [assetGained, assetLost]
 
   switch (activity_type) {
     case 'liquidate_token_and_token':
@@ -326,17 +306,34 @@ const LiquidationHistoryTable = ({ history, view }) => {
                     </Td>
 
                     <Td>
-                      <span className="text-th-red">{assetLost.amount} </span>
+                      <span className="text-th-red">
+                        {Math.abs(assetLost.amount).toLocaleString(undefined, {
+                          maximumFractionDigits: 10,
+                        })}{' '}
+                      </span>
                       {assetLost.symbol}
                     </Td>
-                    <Td>{assetLost.price}</Td>
+                    <Td>
+                      {assetLost.price.toLocaleString(undefined, {
+                        maximumFractionDigits: 10,
+                      })}
+                    </Td>
                     <Td>
                       <span className="text-th-green">
-                        {assetGained.amount}{' '}
+                        {Math.abs(assetGained.amount).toLocaleString(
+                          undefined,
+                          {
+                            maximumFractionDigits: 10,
+                          }
+                        )}{' '}
                       </span>
                       {assetGained.symbol}
                     </Td>
-                    <Td>{assetGained.price}</Td>
+                    <Td>
+                      {assetGained.price.toLocaleString(undefined, {
+                        maximumFractionDigits: 10,
+                      })}
+                    </Td>
                     <Td>
                       <a
                         className="default-transition flex items-center justify-end text-th-fgd-2"
