@@ -160,6 +160,18 @@ export const tokenPrecision = {
   USDT: 2,
 }
 
+// Precision for 1 perp contract. -log10(baseLotSize) + baseDecimals
+export const perpContractPrecision = {
+  BTC: 4,
+  ETH: 3,
+  MNGO: 0,
+  SOL: 2,
+  SRM: 1,
+  RAY: 1,
+  FTT: 1,
+  ADA: 0,
+}
+
 const tokenPricePrecision = {
   BTC: 1,
   ETH: 1,

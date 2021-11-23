@@ -4,7 +4,7 @@ import useMangoGroupConfig from '../../hooks/useMangoGroupConfig'
 import useMangoStore from '../../stores/useMangoStore'
 import Chart from '../Chart'
 import BN from 'bn.js'
-import { tokenPrecision } from '../../utils'
+import { perpContractPrecision } from '../../utils'
 import { useTranslation } from 'next-i18next'
 import Select from '../Select'
 
@@ -92,7 +92,6 @@ export default function StatsPerps({ perpStats }) {
 
   const lmi = selectedMarket.liquidityMiningInfo
 
-  const selectedBaseAsset = selectedAsset.split('-')[0]
   const maxDepthUi =
     (lmi.maxDepthBps.toNumber() * selectedMarket.baseLotSize.toNumber()) /
     Math.pow(10, selectedMarket.baseDecimals)
@@ -178,8 +177,10 @@ export default function StatsPerps({ perpStats }) {
               x &&
               x.toLocaleString(undefined, {
                 maximumFractionDigits:
-                  tokenPrecision[selectedMarketConfig.baseSymbol],
-              }) + selectedMarketConfig.baseSymbol
+                  perpContractPrecision[selectedMarketConfig.baseSymbol],
+              }) +
+                ' ' +
+                selectedMarketConfig.baseSymbol
             }
             type="area"
           />
@@ -188,7 +189,11 @@ export default function StatsPerps({ perpStats }) {
           <div className="text-lg">Liquidity Mining</div>
           <div className="flex justify-between mt-4">
             <div>Depth Rewarded</div>
-            <div>{maxDepthUi.toString() + ' ' + selectedBaseAsset}</div>
+            <div>
+              {maxDepthUi.toLocaleString() +
+                ' ' +
+                selectedMarketConfig.baseSymbol}
+            </div>
           </div>
           <div className="flex justify-between mt-4">
             <div>Target Period Length</div>
