@@ -114,19 +114,25 @@ const parseActivityDetails = (activity_details, activity_type, perpMarket) => {
       : activity_details.asset_symbol
 
   const liabSymbol =
-    activity_type === 'liquidate_perp_market'
+    activity_type === 'liquidate_perp_market' ||
+    activity_details.liab_type === 'Perp'
       ? `${activity_details.liab_symbol}-PERP`
       : activity_details.liab_symbol
 
-  const liabAmount = perpMarket
-    ? perpMarket.baseLotsToNumber(activity_details.liab_amount)
-    : activity_details.liab_amount
+  const liabAmount =
+    perpMarket && liabSymbol !== 'USDC-PERP'
+      ? perpMarket.baseLotsToNumber(activity_details.liab_amount)
+      : activity_details.liab_amount
+
+  const assetAmount =
+    perpMarket && assetSymbol !== 'USDC'
+      ? perpMarket.baseLotsToNumber(activity_details.asset_amount)
+      : activity_details.asset_amount
 
   const asset_amount = {
-    amount: parseFloat(activity_details.asset_amount).toLocaleString(
-      undefined,
-      { maximumFractionDigits: 10 }
-    ),
+    amount: parseFloat(assetAmount).toLocaleString(undefined, {
+      maximumFractionDigits: 10,
+    }),
     symbol: assetSymbol,
     price: parseFloat(activity_details.asset_price).toLocaleString(undefined, {
       maximumFractionDigits: 10,
@@ -134,7 +140,7 @@ const parseActivityDetails = (activity_details, activity_type, perpMarket) => {
   }
 
   const liab_amount = {
-    amount: Math.abs(parseFloat(liabAmount)).toLocaleString(undefined, {
+    amount: parseFloat(liabAmount).toLocaleString(undefined, {
       maximumFractionDigits: 10,
     }),
     symbol: liabSymbol,
@@ -143,16 +149,12 @@ const parseActivityDetails = (activity_details, activity_type, perpMarket) => {
     }),
   }
 
-  if (activity_type === 'liquidate_token_and_token') {
-    return [liab_amount, asset_amount]
-  }
-
   if (parseFloat(activity_details.asset_amount) > 0) {
-    assetGained = asset_amount
-    assetLost = liab_amount
-  } else {
     assetGained = liab_amount
     assetLost = asset_amount
+  } else {
+    assetGained = asset_amount
+    assetLost = liab_amount
   }
 
   return [assetGained, assetLost]
