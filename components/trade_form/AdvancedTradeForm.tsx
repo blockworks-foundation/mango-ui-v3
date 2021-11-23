@@ -598,6 +598,16 @@ export default function AdvancedTradeForm({
     }
   }
 
+  const showReduceOnly = (basePosition: number) => {
+    if (basePosition > 0 && side === 'sell') {
+      return true
+    }
+    if (basePosition < 0 && side === 'buy') {
+      return true
+    }
+    return false
+  }
+
   /*
   const roundedMax = (
     Math.round(max / parseFloat(minOrderSize)) * parseFloat(minOrderSize)
@@ -796,7 +806,8 @@ export default function AdvancedTradeForm({
                 </div>
               </div>
             ) : null}
-            {marketConfig.kind === 'perp' ? (
+            {marketConfig.kind === 'perp' &&
+            showReduceOnly(perpAccount?.basePosition.toNumber()) ? (
               <div className="mt-4">
                 <Tooltip
                   className="hidden md:block"
