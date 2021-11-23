@@ -90,6 +90,13 @@ export default function StatsPerps({ perpStats }) {
   const elapsed = now - start
   const est = start + elapsed / progress
 
+  const lmi = selectedMarket.liquidityMiningInfo
+
+  const selectedBaseAsset = selectedAsset.split('-')[0]
+  const maxDepthUi =
+    (lmi.maxDepthBps.toNumber() * selectedMarket.baseLotSize.toNumber()) /
+    Math.pow(10, selectedMarket.baseDecimals)
+
   return (
     <>
       <div className="flex items-center justify-between mb-4 w-full">
@@ -180,19 +187,8 @@ export default function StatsPerps({ perpStats }) {
         <div className="border border-th-bkg-4 relative p-4 rounded-md">
           <div className="text-lg">Liquidity Mining</div>
           <div className="flex justify-between mt-4">
-            <div>Rate</div>
-            <div>
-              {(
-                selectedMarket.liquidityMiningInfo.rate.toNumber() * 100
-              ).toFixed(2)}
-              %
-            </div>
-          </div>
-          <div className="flex justify-between mt-4">
-            <div>Max Depth Bps</div>
-            <div>
-              {selectedMarket.liquidityMiningInfo.maxDepthBps.toString()}
-            </div>
+            <div>Depth Rewarded</div>
+            <div>{maxDepthUi.toString() + ' ' + selectedBaseAsset}</div>
           </div>
           <div className="flex justify-between mt-4">
             <div>Target Period Length</div>
