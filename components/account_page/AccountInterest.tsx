@@ -29,7 +29,7 @@ const AccountInterest = () => {
   const [loading, setLoading] = useState(false)
   const [selectedAsset, setSelectedAsset] = useState<string>('')
   const {
-    paginated,
+    paginatedData,
     setData,
     totalPages,
     nextPage,
@@ -286,7 +286,7 @@ const AccountInterest = () => {
                 </div>
                 <div>
                   <div>
-                    {paginated.length ? (
+                    {paginatedData.length ? (
                       <Table>
                         <thead>
                           <TrHead>
@@ -295,7 +295,7 @@ const AccountInterest = () => {
                           </TrHead>
                         </thead>
                         <tbody>
-                          {paginated.map((stat, index) => {
+                          {paginatedData.map((stat, index) => {
                             const date = new Date(stat.time)
 
                             return (

@@ -13,10 +13,10 @@ import {
 } from '../components/TradePageGrid'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 
-export async function getServerSideProps({ locale }) {
+export async function getStaticProps({ locale }) {
   return {
     props: {
-      ...(await serverSideTranslations(locale, ['common'])),
+      ...(await serverSideTranslations(locale, ['common', 'tv-chart'])),
       // Will be passed to the page component as props
     },
   }

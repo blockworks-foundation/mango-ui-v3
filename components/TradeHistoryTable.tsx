@@ -12,6 +12,26 @@ import { Table, Td, Th, TrBody, TrHead } from './TableElements'
 import { ExpandableRow } from './TableElements'
 import { formatUsdValue } from '../utils'
 import { useTranslation } from 'next-i18next'
+import Pagination from './Pagination'
+import usePagination from '../hooks/usePagination'
+
+const renderTradeDateTime = (timestamp: BN | string) => {
+  let date
+  // don't compare to BN because of npm maddness
+  // prototypes can be different due to multiple versions being imported
+  if (typeof timestamp === 'string') {
+    date = new Date(timestamp)
+  } else {
+    date = new Date(timestamp.toNumber() * 1000)
+  }
+
+  return (
+    <>
+      <div>{date.toLocaleDateString()}</div>
+      <div className="text-xs text-th-fgd-3">{date.toLocaleTimeString()}</div>
+    </>
+  )
+}
 
 const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
   const { t } = useTranslation('common')
@@ -20,24 +40,17 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
   const { items, requestSort, sortConfig } = useSortableData(tradeHistory)
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.md : false
+  const filteredTrades = numTrades ? items.slice(0, numTrades) : items
 
-  const renderTradeDateTime = (timestamp: BN | string) => {
-    let date
-    // don't compare to BN because of npm maddness
-    // prototypes can be different due to multiple versions being imported
-    if (typeof timestamp === 'string') {
-      date = new Date(timestamp)
-    } else {
-      date = new Date(timestamp.toNumber() * 1000)
-    }
-
-    return (
-      <>
-        <div>{date.toLocaleDateString()}</div>
-        <div className="text-xs text-th-fgd-3">{date.toLocaleTimeString()}</div>
-      </>
-    )
-  }
+  const {
+    paginatedData,
+    totalPages,
+    nextPage,
+    previousPage,
+    page,
+    firstPage,
+    lastPage,
+  } = usePagination(filteredTrades, { perPage: 500 })
 
   const renderMarketName = (trade: any) => {
     let marketType, baseSymbol
@@ -55,7 +68,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
       return <span>{trade.marketName}</span>
     } else {
       return (
-        <Link href={location}>
+        <Link href={location} shallow={true}>
           <a className="text-th-fgd-1 underline hover:no-underline hover:text-th-fgd-1">
             {trade.marketName}
           </a>
@@ -63,8 +76,6 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
       )
     }
   }
-
-  const filteredTrades = numTrades ? items.slice(0, numTrades) : items
 
   return (
     <div className={`flex flex-col py-2 sm:pb-4 sm:pt-4`}>
@@ -214,7 +225,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                   </TrHead>
                 </thead>
                 <tbody>
-                  {filteredTrades.map((trade: any, index) => {
+                  {paginatedData.map((trade: any, index) => {
                     return (
                       <TrBody
                         index={index}
@@ -257,23 +268,30 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                 </tbody>
               </Table>
             ) : (
-              items.map((trade: any, index) => (
+              paginatedData.map((trade: any, index) => (
                 <ExpandableRow
                   buttonTemplate={
                     <>
                       <div className="flex items-center justify-between text-fgd-1 w-full">
-                        <div className="flex items-center">
-                          <img
-                            alt=""
-                            width="20"
-                            height="20"
-                            src={`/assets/icons/${trade.marketName
-                              .split(/-|\//)[0]
-                              .toLowerCase()}.svg`}
-                            className={`mr-2.5`}
-                          />
-                          <div>
-                            <div className="mb-0.5 text-left">
+                        <div className="text-left">
+                          {trade.loadTimestamp || trade.timestamp
+                            ? renderTradeDateTime(
+                                trade.loadTimestamp || trade.timestamp
+                              )
+                            : t('recent')}
+                        </div>
+                        <div>
+                          <div className="text-right">
+                            <div className="flex items-center mb-0.5 text-left">
+                              <img
+                                alt=""
+                                width="16"
+                                height="16"
+                                src={`/assets/icons/${trade.marketName
+                                  .split(/-|\//)[0]
+                                  .toLowerCase()}.svg`}
+                                className={`mr-1.5`}
+                              />
                               {trade.marketName}
                             </div>
                             <div className="text-th-fgd-3 text-xs">
@@ -288,9 +306,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                               >
                                 {trade.side.toUpperCase()}
                               </span>
-                              {`${trade.size} at ${formatUsdValue(
-                                trade.price
-                              )}`}
+                              {trade.size}
                             </div>
                           </div>
                         </div>
@@ -301,6 +317,12 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                   index={index}
                   panelTemplate={
                     <div className="grid grid-cols-2 grid-flow-row gap-4">
+                      <div className="text-left">
+                        <div className="pb-0.5 text-th-fgd-3 text-xs">
+                          {t('price')}
+                        </div>
+                        {formatUsdValue(trade.price)}
+                      </div>
                       <div className="text-left">
                         <div className="pb-0.5 text-th-fgd-3 text-xs">
                           {t('value')}
@@ -319,16 +341,6 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                         </div>
                         {formatUsdValue(trade.feeCost)}
                       </div>
-                      <div className="text-left">
-                        <div className="pb-0.5 text-th-fgd-3 text-xs">
-                          {t('approximate-time')}
-                        </div>
-                        {trade.loadTimestamp || trade.timestamp
-                          ? renderTradeDateTime(
-                              trade.loadTimestamp || trade.timestamp
-                            )
-                          : t('recent')}
-                      </div>
                     </div>
                   }
                 />
@@ -338,19 +350,30 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
             <div className="w-full text-center py-6 bg-th-bkg-1 text-th-fgd-3 rounded-md">
               {t('no-history')}
               {asPath === '/account' ? (
-                <Link href={'/'}>
+                <Link href={'/'} shallow={true}>
                   <a className="inline-flex ml-2 py-0">{t('make-trade')}</a>
                 </Link>
               ) : null}
             </div>
           )}
-        </div>
-        <div className="flex items-center">
           {numTrades && items.length > numTrades ? (
-            <div className="mx-auto mt-4">
-              <Link href="/account">{t('view-all-trades')}</Link>
+            <div className="flex items-center justify-center mt-4">
+              <Link href="/account" shallow={true}>
+                {t('view-all-trades')}
+              </Link>
             </div>
-          ) : null}
+          ) : (
+            <div className="flex items-center justify-end">
+              <Pagination
+                page={page}
+                totalPages={totalPages}
+                nextPage={nextPage}
+                lastPage={lastPage}
+                firstPage={firstPage}
+                previousPage={previousPage}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>

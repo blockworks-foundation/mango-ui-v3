@@ -200,8 +200,10 @@ export default function MarketPosition() {
           <div className="text-th-fgd-1">
             {isLoading ? (
               <DataLoader />
-            ) : (
+            ) : notionalSize ? (
               formatUsdValue(Math.abs(notionalSize))
+            ) : (
+              '$0'
             )}
           </div>
         </div>
@@ -210,7 +212,13 @@ export default function MarketPosition() {
             {t('average-entry')}
           </div>
           <div className="text-th-fgd-1">
-            {isLoading ? <DataLoader /> : formatUsdValue(avgEntryPrice)}
+            {isLoading ? (
+              <DataLoader />
+            ) : avgEntryPrice ? (
+              formatUsdValue(avgEntryPrice)
+            ) : (
+              '$0'
+            )}
           </div>
         </div>
         <div className="flex justify-between pb-3">
@@ -218,7 +226,13 @@ export default function MarketPosition() {
             {t('break-even')}
           </div>
           <div className="text-th-fgd-1">
-            {isLoading ? <DataLoader /> : formatUsdValue(breakEvenPrice)}
+            {isLoading ? (
+              <DataLoader />
+            ) : breakEvenPrice ? (
+              formatUsdValue(breakEvenPrice)
+            ) : (
+              '$0'
+            )}
           </div>
         </div>
         <div className="flex justify-between pb-3">

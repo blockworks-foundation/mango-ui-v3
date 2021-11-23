@@ -4,7 +4,7 @@ import useMangoGroupConfig from '../../hooks/useMangoGroupConfig'
 import useMangoStore from '../../stores/useMangoStore'
 import Chart from '../Chart'
 import BN from 'bn.js'
-import { tokenPrecision } from '../../utils'
+import { perpContractPrecision } from '../../utils'
 import { useTranslation } from 'next-i18next'
 import Select from '../Select'
 
@@ -81,6 +81,21 @@ export default function StatsPerps({ perpStats }) {
     perpsData.splice(index, 1)
   }
 
+  const progress =
+    1 -
+    selectedMarket.liquidityMiningInfo.mngoLeft.toNumber() /
+      selectedMarket.liquidityMiningInfo.mngoPerPeriod.toNumber()
+  const start = selectedMarket.liquidityMiningInfo.periodStart.toNumber()
+  const now = Date.now() / 1000
+  const elapsed = now - start
+  const est = start + elapsed / progress
+
+  const lmi = selectedMarket.liquidityMiningInfo
+
+  const maxDepthUi =
+    (lmi.maxDepthBps.toNumber() * selectedMarket.baseLotSize.toNumber()) /
+    Math.pow(10, selectedMarket.baseDecimals)
+
   return (
     <>
       <div className="flex items-center justify-between mb-4 w-full">
@@ -132,7 +147,7 @@ export default function StatsPerps({ perpStats }) {
           ))}
         </div>
       </div>
-      <div className="grid grid-flow-col grid-cols-1 grid-rows-2 md:grid-cols-2 md:grid-rows-1 gap-2 sm:gap-4">
+      <div className="grid grid-flow-row grid-cols-1 grid-rows-2 md:grid-cols-2 md:grid-rows-2 gap-2 sm:gap-4">
         <div
           className="border border-th-bkg-4 relative p-4 rounded-md"
           style={{ height: '330px' }}
@@ -162,11 +177,61 @@ export default function StatsPerps({ perpStats }) {
               x &&
               x.toLocaleString(undefined, {
                 maximumFractionDigits:
-                  tokenPrecision[selectedMarketConfig.baseSymbol],
-              }) + selectedMarketConfig.baseSymbol
+                  perpContractPrecision[selectedMarketConfig.baseSymbol],
+              }) +
+                ' ' +
+                selectedMarketConfig.baseSymbol
             }
             type="area"
           />
+        </div>
+        <div className="border border-th-bkg-4 relative p-4 rounded-md">
+          <div className="text-lg">Liquidity Mining</div>
+          <div className="flex justify-between mt-4">
+            <div>Depth Rewarded</div>
+            <div>
+              {maxDepthUi.toLocaleString() +
+                ' ' +
+                selectedMarketConfig.baseSymbol}
+            </div>
+          </div>
+          <div className="flex justify-between mt-4">
+            <div>Target Period Length</div>
+            <div>
+              {(
+                selectedMarket.liquidityMiningInfo.targetPeriodLength.toNumber() /
+                60
+              ).toFixed()}{' '}
+              mins
+            </div>
+          </div>
+          <div className="flex justify-between mt-4">
+            <div>MNGO Per Period</div>
+            <div>
+              {(
+                selectedMarket.liquidityMiningInfo.mngoPerPeriod.toNumber() /
+                Math.pow(10, 6)
+              ).toFixed(2)}
+            </div>
+          </div>
+          <div className="flex justify-between mt-4">
+            <div>MNGO Left In Period</div>
+            <div>
+              {(
+                selectedMarket.liquidityMiningInfo.mngoLeft.toNumber() /
+                Math.pow(10, 6)
+              ).toFixed(2)}
+            </div>
+          </div>
+
+          <div className="flex justify-between mt-4">
+            <div>Est Period End</div>
+            <div>{new Date(est * 1000).toUTCString()}</div>
+          </div>
+          <div className="flex justify-between mt-4">
+            <div>Period Progress</div>
+            <div>{(progress * 100).toFixed(2)}%</div>
+          </div>
         </div>
       </div>
     </>

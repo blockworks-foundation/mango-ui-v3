@@ -96,8 +96,8 @@ const PositionsTable = () => {
           })}
         </div>
       ) : null}
-      <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-        <div className="align-middle inline-block min-w-full sm:px-6 lg:px-8">
+      <div className={`md:-my-2 md:overflow-x-auto`}>
+        <div className={`align-middle inline-block min-w-full`}>
           {openPositions.length ? (
             !isMobile ? (
               <Table>
@@ -140,12 +140,18 @@ const PositionsTable = () => {
                                 src={`/assets/icons/${marketConfig.baseSymbol.toLowerCase()}.svg`}
                                 className={`mr-2.5`}
                               />
-                              {asPath.includes(
-                                `perp/${marketConfig.baseSymbol}`
+                              {decodeURIComponent(asPath).includes(
+                                marketConfig.name
                               ) ? (
                                 <span>{marketConfig.name}</span>
                               ) : (
-                                <Link href={`/perp/${marketConfig.baseSymbol}`}>
+                                <Link
+                                  href={{
+                                    pathname: '/market',
+                                    query: { name: marketConfig.name },
+                                  }}
+                                  shallow={true}
+                                >
                                   <a className="text-th-fgd-1 underline hover:no-underline hover:text-th-fgd-1">
                                     {marketConfig.name}
                                   </a>

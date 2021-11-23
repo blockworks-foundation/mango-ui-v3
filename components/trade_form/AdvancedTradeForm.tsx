@@ -44,7 +44,7 @@ export default function AdvancedTradeForm({
 }: AdvancedTradeFormProps) {
   const { t } = useTranslation('common')
   const set = useMangoStore((s) => s.set)
-  const { ipAllowed } = useIpAddress()
+  const { ipAllowed, spotAllowed } = useIpAddress()
   const connected = useMangoStore((s) => s.wallet.connected)
   const actions = useMangoStore((s) => s.actions)
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
@@ -598,14 +598,16 @@ export default function AdvancedTradeForm({
     }
   }
 
+  /*
   const roundedMax = (
     Math.round(max / parseFloat(minOrderSize)) * parseFloat(minOrderSize)
   ).toFixed(sizeDecimalCount)
+  */
 
-  const sizeTooLarge =
+  const sizeTooLarge = false /*
     spotMargin || marketConfig.kind === 'perp'
       ? baseSize > roundedMax
-      : baseSize > spotMax
+      : baseSize > spotMax*/
 
   const disabledTradeButton =
     (!price && isLimitOrder) ||
@@ -614,6 +616,8 @@ export default function AdvancedTradeForm({
     submitting ||
     !mangoAccount ||
     sizeTooLarge
+
+  const canTrade = ipAllowed || (market instanceof Market && spotAllowed)
 
   return (
     <div className="flex flex-col h-full">
@@ -833,7 +837,7 @@ export default function AdvancedTradeForm({
             ) : null}
           </div>
           <div className={`flex pt-4`}>
-            {ipAllowed ? (
+            {canTrade ? (
               <Button
                 disabled={disabledTradeButton}
                 onClick={onSubmit}
