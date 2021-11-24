@@ -78,9 +78,9 @@ const DesktopTable = ({ openOrders, cancelledOrderId, handleCancelOrder }) => {
               <Td>{formatUsdValue(order.price * order.size)}</Td>
               <Td>
                 {order.perpTrigger &&
-                  `${order.orderType} ${
+                  `${t(order.orderType)} ${t(
                     order.triggerCondition
-                  } ${order.triggerPrice.toFixed(2)}`}
+                  )} ${order.triggerPrice.toFixed(2)}`}
               </Td>
               <Td>
                 <div className={`flex justify-end`}>

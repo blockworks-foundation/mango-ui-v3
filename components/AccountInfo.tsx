@@ -225,7 +225,7 @@ export default function AccountInfo() {
             {liquidationPrice && liquidationPrice.gt(ZERO_I80F48) ? (
               <div className={`flex justify-between pb-3`}>
                 <div className="font-normal text-th-fgd-3 leading-4">
-                  Est. Liq. Price
+                  {t('estimated-liq-price')}
                 </div>
                 <div className={`text-th-fgd-1`}>
                   {usdFormatter(liquidationPrice)}

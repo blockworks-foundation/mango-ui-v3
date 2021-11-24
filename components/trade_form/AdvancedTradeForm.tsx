@@ -887,9 +887,14 @@ export default function AdvancedTradeForm({
             )}
           </div>
           <div className="flex flex-col md:flex-row text-xs text-th-fgd-4 px-6 mt-2.5 items-center justify-center">
-            <div>Maker fee: {(makerFee * 100).toFixed(2)}% </div>
+            <div>
+              {t('maker-fee')}: {(makerFee * 100).toFixed(2)}%{' '}
+            </div>
             <span className="hidden md:block md:px-1">|</span>
-            <div> Taker fee: {takerFee * 100}%</div>
+            <div>
+              {' '}
+              {t('taker-fee')}: {takerFee * 100}%
+            </div>
           </div>
         </div>
       </div>

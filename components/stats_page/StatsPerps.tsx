@@ -186,9 +186,9 @@ export default function StatsPerps({ perpStats }) {
           />
         </div>
         <div className="border border-th-bkg-4 relative p-4 rounded-md">
-          <div className="text-lg">Liquidity Mining</div>
+          <div className="text-lg">{t('liquidity-mining')}</div>
           <div className="flex justify-between mt-4">
-            <div>Depth Rewarded</div>
+            <div>{t('depth-rewarded')}</div>
             <div>
               {maxDepthUi.toLocaleString() +
                 ' ' +
@@ -196,17 +196,17 @@ export default function StatsPerps({ perpStats }) {
             </div>
           </div>
           <div className="flex justify-between mt-4">
-            <div>Target Period Length</div>
+            <div>{t('target-period-length')}</div>
             <div>
               {(
                 selectedMarket.liquidityMiningInfo.targetPeriodLength.toNumber() /
                 60
               ).toFixed()}{' '}
-              mins
+              {t('minutes')}
             </div>
           </div>
           <div className="flex justify-between mt-4">
-            <div>MNGO Per Period</div>
+            <div>{t('mngo-per-period')}</div>
             <div>
               {(
                 selectedMarket.liquidityMiningInfo.mngoPerPeriod.toNumber() /
@@ -215,7 +215,7 @@ export default function StatsPerps({ perpStats }) {
             </div>
           </div>
           <div className="flex justify-between mt-4">
-            <div>MNGO Left In Period</div>
+            <div>{t('mngo-left-period')}</div>
             <div>
               {(
                 selectedMarket.liquidityMiningInfo.mngoLeft.toNumber() /
@@ -225,11 +225,11 @@ export default function StatsPerps({ perpStats }) {
           </div>
 
           <div className="flex justify-between mt-4">
-            <div>Est Period End</div>
+            <div>{t('est-period-end')}</div>
             <div>{new Date(est * 1000).toUTCString()}</div>
           </div>
           <div className="flex justify-between mt-4">
-            <div>Period Progress</div>
+            <div>{t('period-progress')}</div>
             <div>{(progress * 100).toFixed(2)}%</div>
           </div>
         </div>
