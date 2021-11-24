@@ -62,6 +62,7 @@
   "connected-to": "連結錢包",
   "copy-address": "複製地址",
   "country-not-allowed": "您的國家不允許",
+  "country-not-allowed-tooltip": "您正在使用由Mango DAO創建的開源介面。由於監管的不確定性，因此不得不限制了對某些地區的訪問。",
   "current-stats": "當前統計",
   "custom": "自定義",
   "daily-change": "24小時變動",
