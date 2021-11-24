@@ -1,23 +1,10 @@
 import { Menu } from '@headlessui/react'
-import {
-  ChevronDownIcon,
-  ChevronUpIcon,
-  CheckCircleIcon,
-} from '@heroicons/react/solid'
+import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid'
 import useMangoStore from '../stores/useMangoStore'
-import {
-  WALLET_PROVIDERS,
-  DEFAULT_PROVIDER,
-  PROVIDER_LOCAL_STORAGE_KEY,
-} from '../hooks/useWallet'
-import useLocalStorageState from '../hooks/useLocalStorageState'
+import { WALLET_PROVIDERS } from '../hooks/useWallet'
 
 export default function WalletSelect({ isPrimary = false }) {
   const setMangoStore = useMangoStore((s) => s.set)
-  const [savedProviderUrl] = useLocalStorageState(
-    PROVIDER_LOCAL_STORAGE_KEY,
-    DEFAULT_PROVIDER.url
-  )
 
   const handleSelectProvider = (url) => {
     setMangoStore((state) => {
@@ -42,20 +29,17 @@ export default function WalletSelect({ isPrimary = false }) {
               <ChevronDownIcon className="h-4 w-4" />
             )}
           </Menu.Button>
-          <Menu.Items className="absolute bg-th-bkg-1 divide-y divide-th-bkg-3 p-1 rounded-md right-0.5 mt-1 shadow-lg outline-none w-52 z-20">
+          <Menu.Items className="absolute bg-th-bkg-1 divide-y divide-th-bkg-3 p-1 rounded-md right-0.5 mt-1 shadow-lg outline-none w-36 z-20">
             {WALLET_PROVIDERS.map(({ name, url, icon }) => (
               <Menu.Item key={name}>
                 <button
-                  className="flex flex-row items-center justify-between rounded-none w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer font-normal focus:outline-none"
+                  className="flex flex-row items-center justify-between rounded-none text-xs w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer font-normal focus:outline-none"
                   onClick={() => handleSelectProvider(url)}
                 >
                   <div className="flex">
-                    <img src={icon} className="w-5 h-5 mr-2" />
+                    <img src={icon} className="w-4 h-4 mr-2" />
                     {name}
                   </div>
-                  {savedProviderUrl === url ? (
-                    <CheckCircleIcon className="h-4 w-4 text-th-green" />
-                  ) : null}{' '}
                 </button>
               </Menu.Item>
             ))}

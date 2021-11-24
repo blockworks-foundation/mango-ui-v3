@@ -121,7 +121,10 @@ export default function AccountInfo() {
 
   return (
     <>
-      <div className={!connected && !isMobile ? 'filter blur-sm' : undefined}>
+      <div
+        className={!connected && !isMobile ? 'filter blur-sm' : undefined}
+        id="account-details-tip"
+      >
         {!isMobile ? (
           <ElementTitle>
             <Tooltip

@@ -13,6 +13,9 @@ import useLocalStorageState from '../hooks/useLocalStorageState'
 import AlphaModal, { ALPHA_MODAL_KEY } from '../components/AlphaModal'
 import { PageBodyWrapper } from '../components/styles'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import IntroTips, { SHOW_TOUR_KEY } from '../components/IntroTips'
+import { useViewport } from '../hooks/useViewport'
+import { breakpoints } from '../components/TradePageGrid'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -25,12 +28,16 @@ export async function getStaticProps({ locale }) {
 
 const PerpMarket = () => {
   const [alphaAccepted] = useLocalStorageState(ALPHA_MODAL_KEY, false)
+  const [showTour] = useLocalStorageState(SHOW_TOUR_KEY, false)
   const groupConfig = useMangoGroupConfig()
   const setMangoStore = useMangoStore((s) => s.set)
+  const connected = useMangoStore((s) => s.wallet.connected)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const router = useRouter()
+  const { width } = useViewport()
+  const hideTips = width ? width < breakpoints.md : false
 
   useEffect(() => {
     // @ts-ignore
@@ -75,6 +82,7 @@ const PerpMarket = () => {
 
   return (
     <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all `}>
+      {showTour && !hideTips ? <IntroTips connected={connected} /> : null}
       <TopBar />
       <MarketSelect />
       <PageBodyWrapper className="p-1 sm:px-2 sm:py-1 md:px-2 md:py-1">

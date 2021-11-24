@@ -29,7 +29,7 @@ const Modal = ({ isOpen, onClose, children, hideClose = false }) => {
           {isOpen ? (
             <div
               className="inline-block bg-th-bkg-2 min-h-screen sm:min-h-full
-              sm:rounded-lg text-left px-8 pt-6 pb-6 shadow-lg transform transition-all align-middle sm:max-w-md w-full"
+              sm:rounded-lg text-left px-8 pt-6 pb-6 shadow-lg transform transition-all align-middle sm:max-w-lg w-full"
             >
               {!hideClose ? (
                 <div className="">

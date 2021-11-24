@@ -64,6 +64,10 @@ body {
   @apply text-sm font-body tracking-wider;
 }
 
+h1 {
+  @apply font-bold text-th-fgd-1 text-xl;
+}
+
 p {
   @apply text-th-fgd-3 mb-2.5;
 }
@@ -316,6 +320,90 @@ input[type='number'] {
 
 .react-swipeable-view-container > div[aria-hidden='true'] {
   height: 0;
+}
+
+/* Intro Tour */
+
+.intro-tooltip * {
+  @apply bg-th-bkg-1 font-body text-th-fgd-1;
+}
+
+.introjs-tooltip {
+  @apply bg-transparent;
+}
+
+.introjs-arrow {
+  @apply border-0;
+}
+
+.introjs-skipbutton {
+  @apply text-xs text-th-fgd-4 hover:text-th-fgd-2;
+}
+
+.introjs-tooltip-header {
+  @apply rounded-t-md;
+  padding: 10px 10px 0px;
+}
+
+.introjs-tooltiptext {
+  padding: 10px 20px 20px;
+}
+
+.introjs-tooltipbuttons {
+  @apply border-th-bkg-4 font-bold rounded-b-md focus:outline-none;
+}
+
+.introjs-nextbutton {
+  @apply bg-th-bkg-4 border-th-bkg-4 flex h-4 items-center opacity-60 pointer-events-none rounded-full text-sm text-th-fgd-1;
+  text-shadow: none;
+}
+
+.introjs-prevbutton {
+  @apply hidden;
+}
+
+.introjs-button:hover {
+  @apply bg-th-bkg-4 border-th-bkg-4 brightness-[1.15] text-th-fgd-1;
+}
+
+.introjs-button:focus {
+  @apply bg-th-bkg-4 border-th-bkg-4 shadow-none text-th-fgd-1;
+}
+
+.introjs-hidden {
+  @apply hidden;
+}
+
+.introjs-progressbar {
+  @apply bg-th-primary;
+}
+
+.intro-tooltip h4 {
+  @apply font-body font-bold mb-2 text-lg;
+}
+
+.intro-tooltip p {
+  @apply font-body mb-1 text-sm text-th-fgd-3;
+}
+
+.introjs-bullets ul li a {
+  @apply bg-th-bkg-4;
+}
+
+.introjs-bullets ul li a:hover {
+  @apply bg-th-fgd-4;
+}
+
+.introjs-bullets ul li a.active {
+  @apply bg-th-primary;
+}
+
+.intro-highlight {
+  @apply border-0;
+}
+
+.introjs-progress {
+  @apply rounded-none h-0.5 m-0;
 }
 
 @keyframes fadein {

@@ -152,7 +152,10 @@ export default function MarketPosition() {
 
   return (
     <>
-      <div className={!connected && !isMobile ? 'filter blur-sm' : null}>
+      <div
+        className={!connected && !isMobile ? 'filter blur-sm' : null}
+        id="perp-positions-tip"
+      >
         {!isMobile ? (
           <ElementTitle>
             {marketConfig.name} {t('position')}
