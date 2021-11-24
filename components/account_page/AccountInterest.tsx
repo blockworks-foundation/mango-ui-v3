@@ -107,7 +107,16 @@ const AccountInterest = () => {
         })
         setInterestStats(hideDust)
       } else {
-        setInterestStats(Object.entries(parsedResponse))
+        const stats = Object.entries(parsedResponse)
+        const filterMicroBalances = stats.filter(([symbol, stats]) => {
+          const decimals = getTokenBySymbol(groupConfig, symbol).decimals
+          const smallestValue = Math.pow(10, (decimals + 1) * -1)
+          return (
+            stats.total_borrow_interest > smallestValue ||
+            stats.total_deposit_interest > smallestValue
+          )
+        })
+        setInterestStats(filterMicroBalances)
       }
     }
 
@@ -151,6 +160,9 @@ const AccountInterest = () => {
           })
           .filter((x) => x)
           .reverse()
+        if (stats[asset].length === 0) {
+          delete stats[asset]
+        }
       }
       setLoading(false)
       setHourlyInterestStats(stats)
@@ -180,7 +192,7 @@ const AccountInterest = () => {
     if (hourlyInterestStats[selectedAsset]) {
       const start = new Date(
         // @ts-ignore
-        dayjs().utc().hour(0).minute(0).subtract(31, 'day')
+        dayjs().utc().hour(0).minute(0).subtract(29, 'day')
       ).getTime()
 
       const filtered = hourlyInterestStats[selectedAsset].filter(
@@ -235,6 +247,8 @@ const AccountInterest = () => {
         ? '$0'
         : `$${v.toExponential()}`
       : `$${numberCompactFormatter.format(v)}`
+
+  const increaseYAxisWidth = !!chartData.find((data) => data.value < 0.001)
 
   return (
     <>
@@ -449,7 +463,7 @@ const AccountInterest = () => {
                         labelFormat={(x) => x && x.toFixed(token.decimals + 1)}
                         tickFormat={handleDustTicks}
                         type="bar"
-                        yAxisWidth={60}
+                        yAxisWidth={increaseYAxisWidth ? 70 : 50}
                       />
                     </div>
                     <div
@@ -471,7 +485,7 @@ const AccountInterest = () => {
                         }
                         tickFormat={handleUsdDustTicks}
                         type="bar"
-                        yAxisWidth={60}
+                        yAxisWidth={increaseYAxisWidth ? 70 : 50}
                       />
                     </div>
                   </div>
@@ -519,8 +533,8 @@ const AccountInterest = () => {
                         </tbody>
                       </Table>
                     ) : (
-                      <div className="flex justify-center w-full bg-th-bkg-3 py-4">
-                        No interest earned/paid
+                      <div className="flex justify-center w-full bg-th-bkg-3 py-4 text-th-fgd-3">
+                        {t('no-interest')}
                       </div>
                     )}
                   </div>
