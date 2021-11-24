@@ -1,7 +1,7 @@
 import { getTokenBySymbol } from '@blockworks-foundation/mango-client'
 import { useEffect, useMemo, useState } from 'react'
 import dayjs from 'dayjs'
-import { CurrencyDollarIcon } from '@heroicons/react/outline'
+// import { CurrencyDollarIcon } from '@heroicons/react/outline'
 import useMangoStore from '../../stores/useMangoStore'
 import Select from '../Select'
 import { Table, Td, Th, TrBody, TrHead } from '../TableElements'
@@ -9,7 +9,7 @@ import { useTranslation } from 'next-i18next'
 import { isEmpty } from 'lodash'
 import usePagination from '../../hooks/usePagination'
 import {
-  formatUsdValue,
+  // formatUsdValue,
   numberCompactFormatter,
   roundToDecimal,
 } from '../../utils/'
@@ -40,7 +40,7 @@ const AccountInterest = () => {
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const [interestStats, setInterestStats] = useState<any>([])
   const [hourlyInterestStats, setHourlyInterestStats] = useState<any>({})
-  const [totalInterestValue, setTotalInterestValue] = useState(null)
+  // const [totalInterestValue, setTotalInterestValue] = useState(null)
   const [loading, setLoading] = useState(false)
   const [selectedAsset, setSelectedAsset] = useState<string>('')
   const [chartData, setChartData] = useState([])
@@ -175,18 +175,21 @@ const AccountInterest = () => {
     getStats()
   }, [mangoAccountPk, hideInterestDust])
 
-  useEffect(() => {
-    const totalInterestValue = Object.entries(hourlyInterestStats)
-      .flat(Infinity)
-      .reduce((a: number, c: any) => {
-        if (c.time) {
-          return (
-            a + (c.deposit_interest * c.price - c.borrow_interest * c.price)
-          )
-        } else return a
-      }, 0)
-    setTotalInterestValue(totalInterestValue)
-  }, [hourlyInterestStats])
+  // For net interest value to be useful we would need to filter on the dates of the user's financial year and convert the USD value below to the user's home currency.
+
+  // useEffect(() => {
+  //   console.log(Object.entries(hourlyInterestStats).flat(Infinity))
+  //   const totalInterestValue = Object.entries(hourlyInterestStats)
+  //     .flat(Infinity)
+  //     .reduce((a: number, c: any) => {
+  //       if (c.time) {
+  //         return (
+  //           a + (c.deposit_interest * c.price - c.borrow_interest * c.price)
+  //         )
+  //       } else return a
+  //     }, 0)
+  //   setTotalInterestValue(totalInterestValue)
+  // }, [hourlyInterestStats])
 
   useEffect(() => {
     if (hourlyInterestStats[selectedAsset]) {
@@ -388,7 +391,7 @@ const AccountInterest = () => {
               })}
             </>
           )}
-          {totalInterestValue > 0 ? (
+          {/* {totalInterestValue > 0 ? (
             <div className="border border-th-bkg-4 mt-8 p-3 sm:p-4 rounded-md sm:rounded-lg">
               <div className="font-bold pb-0.5 text-th-fgd-1 text-xs sm:text-sm">
                 {t('net-interest-value')}
@@ -403,7 +406,7 @@ const AccountInterest = () => {
                 </div>
               </div>
             </div>
-          ) : null}
+          ) : null} */}
           <>
             {!isEmpty(hourlyInterestStats) && !loading ? (
               <>
