@@ -17,6 +17,7 @@ import Settings from './Settings'
 const TopBar = () => {
   const { t } = useTranslation('common')
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
+  const wallet = useMangoStore((s) => s.wallet.current)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
   const [defaultMarket] = useLocalStorageState(
     DEFAULT_MARKET_KEY,
@@ -33,7 +34,7 @@ const TopBar = () => {
         <div className={`px-4 lg:px-10`}>
           <div className={`flex justify-between h-14`}>
             <div className={`flex`}>
-              <Link href={defaultMarket.path}>
+              <Link href={defaultMarket.path} shallow={true}>
                 <div
                   className={`cursor-pointer flex-shrink-0 flex items-center`}
                 >
@@ -95,7 +96,8 @@ const TopBar = () => {
               <div className="pl-2">
                 <Settings />
               </div>
-              {mangoAccount ? (
+              {mangoAccount &&
+              mangoAccount.owner.toBase58() === wallet?.publicKey.toBase58() ? (
                 <div className="pl-2">
                   <button
                     className="border border-th-bkg-4 py-1 px-2 rounded text-xs focus:outline-none hover:border-th-fgd-4"

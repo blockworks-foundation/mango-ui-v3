@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react'
 import useMangoStore from '../stores/useMangoStore'
 import usePrevious from '../hooks/usePrevious'
 import useInterval from '../hooks/useInterval'
-// import ChartApi from '../utils/chartDataConnector'
+import ChartApi from '../utils/chartDataConnector'
 import UiLock from './UiLock'
 import ManualRefresh from './ManualRefresh'
 import useOraclePrice from '../hooks/useOraclePrice'
@@ -58,13 +58,14 @@ const MarketDetails = () => {
   const baseSymbol = marketConfig.baseSymbol
   const selectedMarketName = marketConfig.name
   const isPerpMarket = marketConfig.kind === 'perp'
+
   const previousMarketName: string = usePrevious(selectedMarketName)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const connected = useMangoStore((s) => s.wallet.connected)
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
 
-  const [ohlcv] = useState(null)
+  const [ohlcv, setOhlcv] = useState(null)
   const [, setLoading] = useState(false)
   const [perpStats, setPerpStats] = useState([])
   const [perpVolume, setPerpVolume] = useState(0)
@@ -100,7 +101,7 @@ const MarketDetails = () => {
 
   const fetchOhlcv = useCallback(async () => {
     if (!selectedMarketName) return
-    /*
+
     // calculate from and to date (0:00UTC to 23:59:59UTC)
     const date = new Date()
     const utcFrom = new Date(
@@ -126,23 +127,22 @@ const MarketDetails = () => {
 
     const from = utcFrom.getTime() / 1000
     const to = utcTo.getTime() / 1000
-
-
     const ohlcv = await ChartApi.getOhlcv(selectedMarketName, '1D', from, to)
     if (ohlcv) {
       setOhlcv(ohlcv)
       setLoading(false)
     }
-    */
   }, [selectedMarketName])
 
-  useInterval(async () => {
-    fetchOhlcv()
-  }, 5000)
+  // TODO: don't spam db
+  // useInterval(async () => {
+  //   fetchOhlcv()
+  // }, 5000)
 
   useMemo(() => {
     if (previousMarketName !== selectedMarketName) {
       setLoading(true)
+      fetchOhlcv()
     }
   }, [selectedMarketName])
 

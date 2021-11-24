@@ -3,6 +3,7 @@ import {
   nativeI80F48ToUi,
   nativeToUi,
   QUOTE_INDEX,
+  sleep,
   ZERO_BN,
   ZERO_I80F48,
 } from '@blockworks-foundation/mango-client'
@@ -76,7 +77,6 @@ export default function AccountInfo() {
         mngoNodeBank.publicKey,
         mngoNodeBank.vault
       )
-      actions.reloadMangoAccount()
       notify({
         title: t('redeem-success'),
         description: '',
@@ -89,6 +89,9 @@ export default function AccountInfo() {
         txid: e.txid,
         type: 'error',
       })
+    } finally {
+      await sleep(500)
+      actions.reloadMangoAccount()
     }
   }
 
@@ -106,6 +109,15 @@ export default function AccountInfo() {
   const initHealth = mangoAccount
     ? mangoAccount.getHealth(mangoGroup, mangoCache, 'Init')
     : I80F48_100
+
+  const liquidationPrice =
+    mangoGroup && mangoAccount && marketConfig
+      ? mangoAccount.getLiquidationPrice(
+          mangoGroup,
+          mangoCache,
+          marketConfig.marketIndex
+        )
+      : undefined
 
   return (
     <>
@@ -207,6 +219,16 @@ export default function AccountInfo() {
                   : '0.00'}
               </div>
             </div>
+            {liquidationPrice && liquidationPrice.gt(ZERO_I80F48) ? (
+              <div className={`flex justify-between pb-3`}>
+                <div className="font-normal text-th-fgd-3 leading-4">
+                  Est. Liq. Price
+                </div>
+                <div className={`text-th-fgd-1`}>
+                  {usdFormatter(liquidationPrice)}
+                </div>
+              </div>
+            ) : null}
             <div className={`flex justify-between pb-3`}>
               <Tooltip
                 content={

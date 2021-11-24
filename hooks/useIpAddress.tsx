@@ -12,6 +12,7 @@ const SANCTIONED_COUNTRIES = [
   ['CU', 'Cuba'],
   ['CD', 'Democratic Republic of Congo'],
   ['EC', 'Ecuador'],
+  //['GB', 'United Kingdom'],
   ['IR', 'Iran'],
   ['IQ', 'Iraq'],
   ['LR', 'Liberia'],
@@ -33,8 +34,11 @@ const SANCTIONED_COUNTRY_CODES = SANCTIONED_COUNTRIES.map(
   (country) => country[0]
 )
 
+const SPOT_ALLOWED = ['GB']
+
 export default function useIpAddress() {
   const [ipAllowed, setIpAllowed] = useState(false)
+  const [spotAllowed, setSpotAllowed] = useState(false)
 
   useEffect(() => {
     const checkIpLocation = async () => {
@@ -42,17 +46,16 @@ export default function useIpAddress() {
         `https://country-code.mangomarkets.workers.dev`
       )
       const parsedResponse = await response.json()
-      console.log('response', parsedResponse)
-
       const ipCountryCode = parsedResponse ? parsedResponse?.country : ''
 
       if (ipCountryCode) {
         setIpAllowed(!SANCTIONED_COUNTRY_CODES.includes(ipCountryCode))
+        setSpotAllowed(SPOT_ALLOWED.includes(ipCountryCode))
       }
     }
 
     checkIpLocation()
   }, [])
 
-  return { ipAllowed }
+  return { ipAllowed, spotAllowed }
 }

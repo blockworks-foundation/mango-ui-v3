@@ -28,7 +28,6 @@ import {
 } from '@blockworks-foundation/mango-client'
 import { notify } from '../utils/notifications'
 import { useTranslation } from 'next-i18next'
-import ButtonGroup from './ButtonGroup'
 
 interface WithdrawModalProps {
   onClose: () => void
@@ -56,7 +55,6 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   const [includeBorrow, setIncludeBorrow] = useState(borrow)
   const [simulation, setSimulation] = useState(null)
   const [showSimulation, setShowSimulation] = useState(false)
-  const [withdrawPercentage, setWithdrawPercentage] = useState('')
 
   const actions = useMangoStore((s) => s.actions)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
@@ -195,7 +193,6 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
 
   const handleSetSelectedAsset = (symbol) => {
     setInputAmount('')
-    setWithdrawPercentage('')
     setWithdrawTokenSymbol(symbol)
   }
 
@@ -248,26 +245,12 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   const handleIncludeBorrowSwitch = (checked) => {
     setIncludeBorrow(checked)
     setInputAmount('')
-    setWithdrawPercentage('')
     setInvalidAmountMessage('')
   }
 
   const onChangeAmountInput = (amount: string) => {
     setInputAmount(amount)
-    setWithdrawPercentage('')
     setInvalidAmountMessage('')
-  }
-
-  const onChangeAmountButtons = async (percentage) => {
-    const amount = (percentage / 100) * maxAmount
-    if (percentage === '100') {
-      setInputAmount(maxAmount.toString())
-    } else {
-      setInputAmount(floorToDecimal(amount, token.decimals).toString())
-    }
-    setWithdrawPercentage(percentage)
-    setInvalidAmountMessage('')
-    validateAmountInput(amount)
   }
 
   const validateAmountInput = (amount) => {
@@ -382,6 +365,12 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
             </div>
             <div className="flex justify-between pb-2 pt-4">
               <div className="text-th-fgd-1">{t('amount')}</div>
+              <LinkButton
+                className="text-th-primary text-xs"
+                onClick={() => setInputAmount(maxAmount.toString())}
+              >
+                {includeBorrow ? t('max-with-borrow') : t('max')}
+              </LinkButton>
             </div>
             <div className="flex">
               <Input
@@ -418,15 +407,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                 {invalidAmountMessage}
               </div>
             ) : null}
-            <div className="pt-1 pb-6">
-              <ButtonGroup
-                activeValue={withdrawPercentage}
-                onChange={(v) => onChangeAmountButtons(v)}
-                unit="%"
-                values={['25', '50', '75', '100']}
-              />
-            </div>
-            <div className={`flex justify-center`}>
+            <div className={`flex justify-center pt-6`}>
               <Button
                 onClick={() => setShowSimulation(true)}
                 disabled={

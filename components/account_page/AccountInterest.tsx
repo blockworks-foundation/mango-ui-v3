@@ -45,7 +45,7 @@ const AccountInterest = () => {
   const [selectedAsset, setSelectedAsset] = useState<string>('')
   const [chartData, setChartData] = useState([])
   const {
-    paginated,
+    paginatedData,
     setData,
     totalPages,
     nextPage,
@@ -374,20 +374,22 @@ const AccountInterest = () => {
               })}
             </>
           )}
-          <div className="border border-th-bkg-4 mt-8 p-3 sm:p-4 rounded-md sm:rounded-lg">
-            <div className="font-bold pb-0.5 text-th-fgd-1 text-xs sm:text-sm">
-              {t('net-interest-value')}
-            </div>
-            <div className="pb-0.5 sm:pb-2 text-th-fgd-3 text-xs">
-              {t('net-interest-value-desc')}
-            </div>
-            <div className="flex items-center">
-              <CurrencyDollarIcon className="flex-shrink-0 h-5 w-5 sm:h-7 sm:w-7 mr-1.5 text-th-primary" />
-              <div className="font-bold text-th-fgd-1 text-xl sm:text-2xl">
-                {formatUsdValue(totalInterestValue)}
+          {totalInterestValue > 0 ? (
+            <div className="border border-th-bkg-4 mt-8 p-3 sm:p-4 rounded-md sm:rounded-lg">
+              <div className="font-bold pb-0.5 text-th-fgd-1 text-xs sm:text-sm">
+                {t('net-interest-value')}
+              </div>
+              <div className="pb-0.5 sm:pb-2 text-th-fgd-3 text-xs">
+                {t('net-interest-value-desc')}
+              </div>
+              <div className="flex items-center">
+                <CurrencyDollarIcon className="flex-shrink-0 h-5 w-5 sm:h-7 sm:w-7 mr-1.5 text-th-primary" />
+                <div className="font-bold text-th-fgd-1 text-xl sm:text-2xl">
+                  {formatUsdValue(totalInterestValue)}
+                </div>
               </div>
             </div>
-          </div>
+          ) : null}
           <>
             {!isEmpty(hourlyInterestStats) && !loading ? (
               <>
@@ -476,7 +478,7 @@ const AccountInterest = () => {
                 ) : null}
                 <div>
                   <div>
-                    {paginated.length ? (
+                    {paginatedData.length ? (
                       <Table>
                         <thead>
                           <TrHead>
@@ -486,7 +488,7 @@ const AccountInterest = () => {
                           </TrHead>
                         </thead>
                         <tbody>
-                          {paginated.map((stat, index) => {
+                          {paginatedData.map((stat, index) => {
                             // @ts-ignore
                             const utc = dayjs.utc(stat.time).format()
                             return (

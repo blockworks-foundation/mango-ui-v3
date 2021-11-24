@@ -1,23 +1,23 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/router'
-import useMangoGroupConfig from '../../hooks/useMangoGroupConfig'
-import useMangoStore from '../../stores/useMangoStore'
+import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
+import useMangoStore from '../stores/useMangoStore'
 import {
   getMarketByBaseSymbolAndKind,
   getMarketIndexBySymbol,
 } from '@blockworks-foundation/mango-client'
-import TopBar from '../../components/TopBar'
-import TradePageGrid from '../../components/TradePageGrid'
-import MarketSelect from '../../components/MarketSelect'
-import useLocalStorageState from '../../hooks/useLocalStorageState'
-import AlphaModal, { ALPHA_MODAL_KEY } from '../../components/AlphaModal'
-import { PageBodyWrapper } from '../../components/styles'
+import TopBar from '../components/TopBar'
+import TradePageGrid from '../components/TradePageGrid'
+import MarketSelect from '../components/MarketSelect'
+import useLocalStorageState from '../hooks/useLocalStorageState'
+import AlphaModal, { ALPHA_MODAL_KEY } from '../components/AlphaModal'
+import { PageBodyWrapper } from '../components/styles'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 
-export async function getServerSideProps({ locale }) {
+export async function getStaticProps({ locale }) {
   return {
     props: {
-      ...(await serverSideTranslations(locale, ['common'])),
+      ...(await serverSideTranslations(locale, ['common', 'tv-chart'])),
       // Will be passed to the page component as props
     },
   }
@@ -31,22 +31,36 @@ const PerpMarket = () => {
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const router = useRouter()
-  const { market } = router.query
 
   useEffect(() => {
-    if (market && mangoGroup) {
+    // @ts-ignore
+    if (window.solana) {
+      // @ts-ignore
+      window.solana.connect({ onlyIfTrusted: true })
+    }
+  }, [marketConfig])
+
+  useEffect(() => {
+    const name = decodeURIComponent(router.asPath).split('name=')[1]
+
+    if (name && mangoGroup) {
+      const marketQueryParam = name.toString().split(/-|\//)
+      const marketBaseSymbol = marketQueryParam[0]
+      const marketType = marketQueryParam[1] === 'PERP' ? 'perp' : 'spot'
+
       const newMarket = getMarketByBaseSymbolAndKind(
         groupConfig,
-        market.toString().toUpperCase(),
-        'perp'
+        marketBaseSymbol.toUpperCase(),
+        marketType
       )
+
       const marketIndex = getMarketIndexBySymbol(
         groupConfig,
-        market.toString().toUpperCase()
+        marketBaseSymbol.toUpperCase()
       )
 
       setMangoStore((state) => {
-        state.selectedMarket.kind = 'perp'
+        state.selectedMarket.kind = marketType
         if (newMarket.name !== marketConfig.name) {
           state.selectedMarket.current = null
           state.selectedMarket.config = newMarket
@@ -57,7 +71,7 @@ const PerpMarket = () => {
         }
       })
     }
-  }, [market, mangoGroup])
+  }, [router, mangoGroup])
 
   return (
     <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all `}>
