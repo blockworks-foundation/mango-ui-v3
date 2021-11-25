@@ -63,6 +63,7 @@
   "connected-to": "Connected to wallet ",
   "copy-address": "Copy address",
   "country-not-allowed": "Country Not Allowed",
+  "country-not-allowed-tooltip": "You are using an open-source frontend facilitated by the Mango DAO. As such, it restricts access to certain regions out of an abundance of caution, due to regulatory uncertainty.",
   "current-stats": "Current Stats",
   "custom": "Custom",
   "daily-change": "Daily Change",

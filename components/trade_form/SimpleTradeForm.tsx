@@ -709,9 +709,15 @@ export default function SimpleTradeForm({ initLeverage }) {
               )}
             </Button>
           ) : (
-            <Button disabled className="flex-grow">
-              <span>{t('country-not-allowed')}</span>
-            </Button>
+            <div className="flex-grow">
+              <Tooltip content={t('country-not-allowed-tooltip')}>
+                <div className="flex">
+                  <Button disabled className="flex-grow">
+                    <span>{t('country-not-allowed')}</span>
+                  </Button>
+                </div>
+              </Tooltip>
+            </div>
           )}
         </div>
         <div className="col-span-12 flex pt-2 text-xs text-th-fgd-4">

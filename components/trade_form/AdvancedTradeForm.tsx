@@ -881,9 +881,15 @@ export default function AdvancedTradeForm({
                 )}
               </Button>
             ) : (
-              <Button disabled className="flex-grow">
-                <span>{t('country-not-allowed')}</span>
-              </Button>
+              <div className="flex-grow">
+                <Tooltip content={t('country-not-allowed-tooltip')}>
+                  <div className="flex">
+                    <Button disabled className="flex-grow">
+                      <span>{t('country-not-allowed')}</span>
+                    </Button>
+                  </div>
+                </Tooltip>
+              </div>
             )}
           </div>
           <div className="flex flex-col md:flex-row text-xs text-th-fgd-4 px-6 mt-2.5 items-center justify-center">
