@@ -291,12 +291,12 @@ export default function RiskCalculator() {
   // Update price details
   const updatePriceValues = (name, price) => {
     const updatedAssetData = calculatorBars.balancesData.map((asset) => {
-      let val = 0
-      asset.assetName === name
-        ? (val = price)
-        : (val = asset.priceDisabled
-            ? Math.abs(asset.price)
-            : Math.abs(asset.price) * ((sliderPercentage * 2) / 100))
+      const val =
+        asset.assetName === name
+          ? price
+          : asset.priceDisabled
+          ? Math.abs(asset.price)
+          : Math.abs(asset.price) * ((sliderPercentage * 2) / 100)
       return { ...asset, ['price']: Math.abs(val) }
     })
     const updatedPerpData = calculatorBars.perpsData.map((perp) => {
