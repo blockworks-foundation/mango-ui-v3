@@ -22,10 +22,6 @@ import { UserCircleIcon } from '@heroicons/react/solid'
 import ChangeAvatarModal from './ChangeAvatarModal'
 import { NFT } from '../utils/metaplex/models'
 import { useTranslation } from 'next-i18next'
-import {
-  IPFS_DEFAULT_GATEWAY,
-  MANGO_HEROES_IPFS_GATEWAY,
-} from '../utils/metaplex/types'
 
 const ConnectWalletButton = () => {
   const { t } = useTranslation('common')
@@ -68,10 +64,7 @@ const ConnectWalletButton = () => {
             const data = await _.json()
             console.log('Metadata: ', data)
 
-            nft.imageUri = data['image'].replace(
-              IPFS_DEFAULT_GATEWAY,
-              MANGO_HEROES_IPFS_GATEWAY
-            )
+            nft.imageUri = data['image']
             setImageUrl(nft.imageUri)
           } catch (ex) {
             console.error('Error trying to parse JSON: ' + ex)

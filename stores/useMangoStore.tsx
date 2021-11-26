@@ -36,11 +36,7 @@ import { TOKEN_PROGRAM_ID } from '../utils/tokens'
 import { findProgramAddress } from '../utils/metaplex/utils'
 import * as borsh from 'borsh'
 import { Metadata, METADATA_SCHEMA, NFT } from '../utils/metaplex/models'
-import {
-  MANGO_HEROES_MINT_AUTHORITY,
-  METADATA_KEY,
-  METADATA_PREFIX,
-} from '../utils/metaplex/types'
+import { METADATA_KEY, METADATA_PREFIX } from '../utils/metaplex/types'
 import { MSRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
 
 export const ENDPOINTS: EndpointInfo[] = [
@@ -330,7 +326,7 @@ const useMangoStore = create<MangoStore>((set, get) => {
 
           const metadataProgramId = new PublicKey(METADATA_KEY)
 
-          const mangoHeroesNFTs = []
+          const nfts = []
 
           for (const nft of walletNFTs) {
             // The return value is [programDerivedAddress, bytes] but we only care about the address
@@ -354,15 +350,13 @@ const useMangoStore = create<MangoStore>((set, get) => {
               accountInfo!.data
             )
 
-            if (metadata.updateAuthority == MANGO_HEROES_MINT_AUTHORITY) {
-              const uri = metadata.data.uri.replace(/\0/g, '')
-              nft.metadataUri = uri
-              mangoHeroesNFTs.push(nft)
-            }
+            const uri = metadata.data.uri.replace(/\0/g, '')
+            nft.metadataUri = uri
+            nfts.push(nft)
           }
 
           set((state) => {
-            ;(state.settings.nfts = mangoHeroesNFTs),
+            ;(state.settings.nfts = nfts),
               (state.settings.avatar = localStorage.getItem('profilePic'))
           })
         }

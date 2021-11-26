@@ -9,8 +9,6 @@ export const METADATA_PREFIX = 'metadata'
 export const METADATA_KEY = 'metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s'
 export const MANGO_HEROES_MINT_AUTHORITY =
   '3RVBxNcF1LBAVbxPz1KsueWspASJhqz4ZJGDbxy2mKE3'
-export const IPFS_DEFAULT_GATEWAY = 'ipfs.io'
-export const MANGO_HEROES_IPFS_GATEWAY = 'mangoheroes.mypinata.cloud'
 
 export const MAX_AUCTION_DATA_EXTENDED_SIZE = 8 + 9 + 2 + 200
 
