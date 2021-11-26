@@ -32,6 +32,20 @@ interface InterestStats {
   }
 }
 
+export const handleDustTicks = (v) =>
+  v < 0.000001
+    ? v === 0
+      ? 0
+      : v.toExponential()
+    : numberCompactFormatter.format(v)
+
+const handleUsdDustTicks = (v) =>
+  v < 0.000001
+    ? v === 0
+      ? '$0'
+      : `$${v.toExponential()}`
+    : `$${numberCompactFormatter.format(v)}`
+
 const AccountInterest = () => {
   const { t } = useTranslation('common')
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
@@ -236,20 +250,6 @@ const AccountInterest = () => {
       setChartData(dailyInterest.reverse())
     }
   }, [hourlyInterestStats, selectedAsset])
-
-  const handleDustTicks = (v) =>
-    v < 0.000001
-      ? v === 0
-        ? 0
-        : v.toExponential()
-      : numberCompactFormatter.format(v)
-
-  const handleUsdDustTicks = (v) =>
-    v < 0.000001
-      ? v === 0
-        ? '$0'
-        : `$${v.toExponential()}`
-      : `$${numberCompactFormatter.format(v)}`
 
   const increaseYAxisWidth = !!chartData.find((data) => data.value < 0.001)
 
