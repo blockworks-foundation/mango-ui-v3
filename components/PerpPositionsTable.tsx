@@ -202,6 +202,16 @@ const PositionsTable = () => {
                           <Td>
                             <PnlText pnl={unrealizedPnl} />
                           </Td>
+                          <Td>
+                            <div className={`flex justify-end`}>
+                              <Button
+                                className="flex items-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs"
+                                onClick={() => setShowMarketCloseModal(true)}
+                              >
+                                {t('market-close')}
+                              </Button>
+                            </div>
+                          </Td>
                           {showMarketCloseModal ? (
                             <MarketCloseModal
                               isOpen={showMarketCloseModal}
