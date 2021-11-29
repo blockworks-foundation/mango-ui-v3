@@ -25,7 +25,10 @@ const DesktopTable = ({ openOrders, cancelledOrderId, handleCancelOrder }) => {
   const { t } = useTranslation('common')
   const { asPath } = useRouter()
   const renderMarketName = (market: MarketConfig) => {
-    const location = `/${market.kind}/${market.baseSymbol}`
+    const location =
+      market.kind === 'spot'
+        ? `/market?name=${market.baseSymbol}%2FUSDC`
+        : `/market?name=${market.name}`
     if (!asPath.includes(location)) {
       return (
         <Link href={location} shallow={true}>
