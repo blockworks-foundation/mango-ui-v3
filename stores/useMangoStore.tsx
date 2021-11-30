@@ -490,8 +490,7 @@ const useMangoStore = create<MangoStore>((set, get) => {
           ])
         }
       },
-      // DEPRECATED
-      async _updateOpenOrders() {
+      async updateOpenOrders() {
         const set = get().set
         const connection = get().connection.current
         const bidAskAccounts = Object.keys(get().accountInfos).map(

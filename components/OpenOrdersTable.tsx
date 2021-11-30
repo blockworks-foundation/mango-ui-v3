@@ -190,6 +190,7 @@ const OpenOrdersTable = () => {
           market,
           order as Order
         )
+        actions.reloadOrders()
       } else if (market instanceof PerpMarket) {
         // TODO: this is not ideal
         if (order['triggerCondition']) {
@@ -221,8 +222,8 @@ const OpenOrdersTable = () => {
       })
       console.log('error', `${e}`)
     } finally {
-      // await sleep(600)
       actions.reloadMangoAccount()
+      actions.updateOpenOrders()
       setCancelId(null)
     }
   }

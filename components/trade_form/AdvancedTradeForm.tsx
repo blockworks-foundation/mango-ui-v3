@@ -140,7 +140,7 @@ export default function AdvancedTradeForm({
     if (!isPerpMarket && isTriggerOrder) {
       onTradeTypeChange('Limit')
     }
-  }, [market])
+  }, [marketConfig])
 
   const { max, deposits, borrows, spotMax } = useMemo(() => {
     if (!mangoAccount) return { max: 0 }

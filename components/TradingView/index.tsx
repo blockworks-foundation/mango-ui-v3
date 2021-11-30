@@ -124,6 +124,7 @@ const TVChartContainer = () => {
       custom_css_url: '/tradingview-chart.css',
       loading_screen: { backgroundColor: 'rgba(0,0,0,0.1)' },
       overrides: {
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         'paneProperties.background':
           theme === 'Dark' ? '#1B1B1F' : theme === 'Light' ? '#fff' : '#1D1832',
         'mainSeriesProperties.candleStyle.barColorsOnPrevClose': true,
