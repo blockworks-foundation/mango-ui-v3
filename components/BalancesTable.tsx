@@ -21,10 +21,8 @@ import WithdrawModal from './WithdrawModal'
 import { ExpandableRow } from './TableElements'
 import MobileTableHeader from './mobile/MobileTableHeader'
 import { useTranslation } from 'next-i18next'
-import useMangoAccount from '../hooks/useMangoAccount'
 
 const BalancesTable = ({ showZeroBalances = false }) => {
-  useMangoAccount()
   const { t } = useTranslation('common')
   const [showDepositModal, setShowDepositModal] = useState(false)
   const [showWithdrawModal, setShowWithdrawModal] = useState(false)

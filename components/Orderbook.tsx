@@ -208,7 +208,7 @@ export default function Orderbook({ depth = 8 }) {
         setOrderbookData(null)
       }
     }
-  }, 250)
+  }, 500)
 
   useEffect(() => {
     lastOrderbookData.current = {

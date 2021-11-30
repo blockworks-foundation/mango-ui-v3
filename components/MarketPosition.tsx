@@ -67,11 +67,10 @@ export default function MarketPosition() {
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoGroupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
-  const mangoAccount = useMangoAccount()
+  const { mangoAccount, initialLoad } = useMangoAccount()
   const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const connected = useMangoStore((s) => s.wallet.connected)
-  const isLoading = useMangoStore((s) => s.selectedMangoAccount.initialLoad)
   const setMangoStore = useMangoStore((s) => s.set)
   const price = useMangoStore((s) => s.tradeForm.price)
   const baseSymbol = marketConfig.baseSymbol
@@ -164,7 +163,7 @@ export default function MarketPosition() {
         ) : null}
         <div className="flex items-center justify-between pb-3">
           <div className="font-normal text-th-fgd-3 leading-4">{t('size')}</div>
-          {isLoading ? (
+          {initialLoad ? (
             <DataLoader />
           ) : (
             <PerpSideBadge perpAccount={perpAccount}></PerpSideBadge>
@@ -175,7 +174,7 @@ export default function MarketPosition() {
             {t('position-size')}
           </div>
           <div className="text-th-fgd-1">
-            {isLoading ? (
+            {initialLoad ? (
               <DataLoader />
             ) : basePosition ? (
               <span
@@ -199,7 +198,7 @@ export default function MarketPosition() {
             {t('notional-size')}
           </div>
           <div className="text-th-fgd-1">
-            {isLoading ? (
+            {initialLoad ? (
               <DataLoader />
             ) : notionalSize ? (
               formatUsdValue(Math.abs(notionalSize))
@@ -213,7 +212,7 @@ export default function MarketPosition() {
             {t('average-entry')}
           </div>
           <div className="text-th-fgd-1">
-            {isLoading ? (
+            {initialLoad ? (
               <DataLoader />
             ) : avgEntryPrice ? (
               formatUsdValue(avgEntryPrice)
@@ -227,7 +226,7 @@ export default function MarketPosition() {
             {t('break-even')}
           </div>
           <div className="text-th-fgd-1">
-            {isLoading ? (
+            {initialLoad ? (
               <DataLoader />
             ) : breakEvenPrice ? (
               formatUsdValue(breakEvenPrice)
@@ -243,7 +242,7 @@ export default function MarketPosition() {
             </Tooltip.Content>
           </Tooltip>
           <div className="flex items-center">
-            {isLoading ? <DataLoader /> : <PnlText pnl={unsettledPnl} />}
+            {initialLoad ? <DataLoader /> : <PnlText pnl={unsettledPnl} />}
             {settling ? (
               <Loading className="ml-2" />
             ) : (

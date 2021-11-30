@@ -79,7 +79,7 @@ export const collectPerpPosition = (
 }
 
 const usePerpPositions = () => {
-  const mangoAccount = useMangoAccount()
+  const { mangoAccount } = useMangoAccount()
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)

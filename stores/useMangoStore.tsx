@@ -144,6 +144,7 @@ interface MangoStore extends State {
   selectedMangoAccount: {
     current: MangoAccount | null
     initialLoad: boolean
+    lastUpdatedAt: number
   }
   tradeForm: {
     side: 'buy' | 'sell'
@@ -226,6 +227,7 @@ const useMangoStore = create<MangoStore>((set, get) => {
     selectedMangoAccount: {
       current: null,
       initialLoad: true,
+      lastUpdatedAt: 0,
     },
     tradeForm: {
       side: 'buy',
@@ -468,9 +470,11 @@ const useMangoStore = create<MangoStore>((set, get) => {
           connection,
           mangoClient.lastSlot
         )
+        console.log('reloading mango account')
 
         set((state) => {
           state.selectedMangoAccount.current = reloadedMangoAccount
+          state.selectedMangoAccount.lastUpdatedAt = new Date().toISOString()
         })
       },
       async reloadOrders() {

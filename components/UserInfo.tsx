@@ -10,6 +10,7 @@ import TradeHistoryTable from './TradeHistoryTable'
 import ManualRefresh from './ManualRefresh'
 import Tabs from './Tabs'
 import FeeDiscountsTable from './FeeDiscountsTable'
+import useMangoAccount from '../hooks/useMangoAccount'
 
 const TABS = [
   'Balances',
@@ -22,8 +23,9 @@ const TABS = [
 const UserInfoTabs = ({ activeTab, setActiveTab }) => {
   const openOrders = useOpenOrders()
   const { openPositions } = usePerpPositions()
+  const { mangoAccount } = useMangoAccount()
   const connected = useMangoStore((s) => s.connection.current)
-  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
+
   const handleTabChange = (tabName) => {
     setActiveTab(tabName)
   }
