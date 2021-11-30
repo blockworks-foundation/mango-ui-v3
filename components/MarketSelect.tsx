@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
-import { PlusCircleIcon } from '@heroicons/react/outline'
+import { MenuIcon, PlusCircleIcon } from '@heroicons/react/outline'
 import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
-import useMangoStore from '../stores/useMangoStore'
 import MarketMenuItem from './MarketMenuItem'
 import { LinkButton } from './Button'
 import MarketsModal from './MarketsModal'
 import useLocalStorageState from '../hooks/useLocalStorageState'
+import { useViewport } from '../hooks/useViewport'
+import { breakpoints } from './TradePageGrid'
 import { useTranslation } from 'next-i18next'
 
 // const StyledMarketSelectWrapper = styled.div`
@@ -23,9 +24,8 @@ const MarketSelect = () => {
   const [hiddenMarkets] = useLocalStorageState('hiddenMarkets', [])
   const [sortedMarkets, setSortedMarkets] = useState([])
   const groupConfig = useMangoGroupConfig()
-  const marketConfig = useMangoStore((s) => s.selectedMarket.config)
-  const baseSymbol = marketConfig.baseSymbol
-  const isPerpMarket = marketConfig.kind === 'perp'
+  const { width } = useViewport()
+  const isMobile = width ? width < breakpoints.md : false
 
   useEffect(() => {
     const markets = []
@@ -52,8 +52,18 @@ const MarketSelect = () => {
         // }}
         className="bg-th-bkg-3 flex h-10 w-full"
       >
-        <div className="bg-th-bkg-4 flex items-center pl-6 md:pl-9 pr-1">
-          <ShowMarketsButton onClick={() => setShowMarketsModal(true)} t={t} />
+        <div className="bg-th-bkg-4 flex items-center pl-4 lg:pl-9 pr-1">
+          {isMobile ? (
+            <MenuIcon
+              className="cursor-pointer default-transition h-5 text-th-fgd-1 w-5 hover:text-th-primary"
+              onClick={() => setShowMarketsModal(true)}
+            />
+          ) : (
+            <ShowMarketsButton
+              onClick={() => setShowMarketsModal(true)}
+              t={t}
+            />
+          )}
         </div>
         <div
           style={{
@@ -65,8 +75,8 @@ const MarketSelect = () => {
           }}
           className="border-l-[20px] border-th-bkg-4"
         />
-        <div className="flex items-center justify-between w-full">
-          <div className="flex items-center">
+        <div className="flex items-center justify-between pl-3 w-full">
+          <div className="flex items-center space-x-6">
             {sortedMarkets
               .filter((m) => !hiddenMarkets.includes(m.baseAsset))
               .map((s) => (
@@ -78,26 +88,6 @@ const MarketSelect = () => {
               ))}
           </div>
         </div>
-      </div>
-      <div className="bg-th-bkg-3 flex items-center justify-between py-3 px-6 sm:hidden">
-        <div className="flex items-center">
-          <img
-            alt=""
-            width="24"
-            height="24"
-            src={`/assets/icons/${baseSymbol.toLowerCase()}.svg`}
-            className={`mr-2.5`}
-          />
-
-          <div className="font-semibold pr-0.5 text-xl">{baseSymbol}</div>
-          <span className="text-th-fgd-4 text-xl">
-            {isPerpMarket ? '-' : '/'}
-          </span>
-          <div className="font-semibold pl-0.5 text-xl">
-            {isPerpMarket ? 'PERP' : groupConfig.quoteSymbol}
-          </div>
-        </div>
-        <ShowMarketsButton onClick={() => setShowMarketsModal(true)} t={t} />
       </div>
       {showMarketsModal ? (
         <MarketsModal
