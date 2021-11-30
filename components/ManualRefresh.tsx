@@ -20,7 +20,7 @@ const ManualRefresh = ({ className = '' }) => {
   useEffect(() => {
     let timer
     if (spin) {
-      timer = setTimeout(() => setSpin(false), 8000)
+      timer = setTimeout(() => setSpin(false), 5000)
     }
 
     return () => {

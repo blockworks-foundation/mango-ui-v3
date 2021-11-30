@@ -20,6 +20,7 @@ import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { collectPerpPosition } from '../hooks/usePerpPositions'
 import { useTranslation } from 'next-i18next'
+import useMangoAccount from '../hooks/useMangoAccount'
 
 export const settlePnl = async (
   perpMarket: PerpMarket,
@@ -66,7 +67,7 @@ export default function MarketPosition() {
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoGroupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
-  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
+  const mangoAccount = useMangoAccount()
   const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const connected = useMangoStore((s) => s.wallet.connected)

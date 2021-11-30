@@ -199,6 +199,7 @@ const OpenOrdersTable = () => {
             wallet,
             (order as PerpTriggerOrder).orderId
           )
+          actions.reloadOrders()
         } else {
           txid = await mangoClient.cancelPerpOrder(
             selectedMangoGroup,

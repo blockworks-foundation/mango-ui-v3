@@ -462,16 +462,12 @@ const useMangoStore = create<MangoStore>((set, get) => {
         const set = get().set
         const mangoAccount = get().selectedMangoAccount.current
         const connection = get().connection.current
+        const mangoClient = get().connection.client
 
-        const reloadedMangoAccount = await mangoAccount.reload(connection)
-
-        await Promise.all([
-          reloadedMangoAccount.loadOpenOrders(
-            connection,
-            new PublicKey(serumProgramId)
-          ),
-          reloadedMangoAccount.loadAdvancedOrders(connection),
-        ])
+        const reloadedMangoAccount = await mangoAccount.reloadFromSlot(
+          connection,
+          mangoClient.lastSlot
+        )
 
         set((state) => {
           state.selectedMangoAccount.current = reloadedMangoAccount

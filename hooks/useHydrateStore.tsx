@@ -65,7 +65,7 @@ const useHydrateStore = () => {
         state.accountInfos[marketConfig.asksKey.toString()]
       )
     })
-  }, [marketConfig, markets, setMangoStore])
+  }, [marketConfig])
 
   // hydrate orderbook with all markets in mango group
   useEffect(() => {

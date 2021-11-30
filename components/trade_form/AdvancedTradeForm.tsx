@@ -442,7 +442,7 @@ export default function AdvancedTradeForm({
       }
 
       if (!accSize) {
-        console.error('Orderbook empty no market price available')
+        console.log('Orderbook empty no market price available')
         return markPrice
       }
 
@@ -470,7 +470,7 @@ export default function AdvancedTradeForm({
       takerFee: [takerFeeAbs, takerFeeRel],
     }
 
-    console.log('estimated', estimatedSize, estimatedPrice, priceImpact)
+    // console.log('estimated', estimatedSize, estimatedPrice, priceImpact)
   }
 
   async function onSubmit() {
@@ -496,7 +496,10 @@ export default function AdvancedTradeForm({
 
     const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
-    const { askInfo, bidInfo } = useMangoStore.getState().selectedMarket
+    const askInfo =
+      useMangoStore.getState().accountInfos[marketConfig.asksKey.toString()]
+    const bidInfo =
+      useMangoStore.getState().accountInfos[marketConfig.bidsKey.toString()]
     const wallet = useMangoStore.getState().wallet.current
 
     if (!wallet || !mangoGroup || !mangoAccount || !market) return
@@ -547,6 +550,7 @@ export default function AdvancedTradeForm({
           null,
           totalMsrm > 0 ? true : false
         )
+        actions.reloadOrders()
       } else {
         if (isTriggerOrder) {
           txid = await mangoClient.addPerpTriggerOrder(
@@ -562,6 +566,7 @@ export default function AdvancedTradeForm({
             Number(triggerPrice),
             true // reduceOnly
           )
+          actions.reloadOrders()
         } else {
           txid = await mangoClient.placePerpOrder(
             mangoGroup,

@@ -303,7 +303,7 @@ const TVChartContainer = () => {
       togglePriceReset(true)
     } finally {
       sleep(1000).then(() => {
-        actions.fetchAllMangoAccounts()
+        actions.reloadMangoAccount()
         actions.reloadOrders()
         toggleOrderInProgress(false)
         toggleMoveInProgress(false)
