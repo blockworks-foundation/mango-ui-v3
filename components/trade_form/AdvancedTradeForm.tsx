@@ -49,6 +49,7 @@ export default function AdvancedTradeForm({
   const actions = useMangoStore((s) => s.actions)
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
+  const walletTokens = useMangoStore((s) => s.wallet.tokens)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const mangoClient = useMangoStore((s) => s.connection.client)
   const market = useMangoStore((s) => s.selectedMarket.current)
@@ -56,6 +57,7 @@ export default function AdvancedTradeForm({
   const [reduceOnly, setReduceOnly] = useState(false)
   const [spotMargin, setSpotMargin] = useState(true)
   const [positionSizePercent, setPositionSizePercent] = useState('')
+  const [insufficientSol, setinsufficientSol] = useState(false)
   const { takerFee, makerFee } = useFees()
   const { totalMsrm } = useSrmAccount()
 
@@ -107,6 +109,11 @@ export default function AdvancedTradeForm({
       ),
     []
   )
+
+  useEffect(() => {
+    const walletSol = walletTokens.find((a) => a.config.symbol === 'SOL')
+    walletSol ? setinsufficientSol(walletSol.uiBalance < 0.01) : null
+  }, [walletTokens])
 
   useEffect(() => {
     if (tradeType === 'Market') {
@@ -624,7 +631,8 @@ export default function AdvancedTradeForm({
     !connected ||
     submitting ||
     !mangoAccount ||
-    sizeTooLarge
+    sizeTooLarge ||
+    insufficientSol
 
   const canTrade = ipAllowed || (market instanceof Market && spotAllowed)
 
@@ -891,6 +899,12 @@ export default function AdvancedTradeForm({
               </div>
             )}
           </div>
+          {insufficientSol ? (
+            <div className="tiny-text text-center text-th-red mt-1 -mb-3">
+              You must leave enough SOL in your wallet to pay for the
+              transaction
+            </div>
+          ) : null}
           <div className="flex flex-col md:flex-row text-xs text-th-fgd-4 px-6 mt-2.5 items-center justify-center">
             <div>
               {t('maker-fee')}: {(makerFee * 100).toFixed(2)}%{' '}
