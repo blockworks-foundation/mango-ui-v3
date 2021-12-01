@@ -74,7 +74,6 @@ const TabContent = ({ activeTab }) => {
 const UserInfo = () => {
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const isPerpMarket = marketConfig.kind === 'perp'
-  const connected = useMangoStore((s) => s.wallet.connected)
   const [activeTab, setActiveTab] = useState('')
 
   useEffect(() => {
@@ -82,7 +81,7 @@ const UserInfo = () => {
   }, [isPerpMarket])
 
   return (
-    <div className={!connected ? 'filter blur-sm' : null}>
+    <div>
       <UserInfoTabs activeTab={activeTab} setActiveTab={setActiveTab} />
       <TabContent activeTab={activeTab} />
     </div>

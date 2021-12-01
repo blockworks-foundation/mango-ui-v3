@@ -81,7 +81,7 @@ const TVChartContainer = () => {
   const tvWidgetRef = useRef<IChartingLibraryWidget | null>(null)
 
   useEffect(() => {
-    if (tvWidgetRef.current) {
+    if (tvWidgetRef.current instanceof widget && selectedMarketConfig.name) {
       tvWidgetRef.current.setSymbol(
         selectedMarketConfig.name,
         defaultProps.interval,

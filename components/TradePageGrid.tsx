@@ -138,7 +138,7 @@ const TradePageGrid = () => {
         useCSSTransforms={false}
       >
         <div key="tvChart">
-          <FloatingElement className="h-full pl-0">
+          <FloatingElement className="h-full pl-0 md:pl-0 md:pr-1 md:pb-1 md:pt-3">
             <TVChartContainer />
           </FloatingElement>
         </div>
@@ -154,7 +154,7 @@ const TradePageGrid = () => {
           </FloatingElement>
         </div>
         <div key="userInfo">
-          <FloatingElement className="h-full" showConnect>
+          <FloatingElement className="h-full">
             <UserInfo />
           </FloatingElement>
         </div>
