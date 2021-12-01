@@ -9,8 +9,10 @@
   --primary-dark: theme('colors.light-theme.orange.dark');
   --red: theme('colors.light-theme.red.DEFAULT');
   --red-dark: theme('colors.light-theme.red.dark');
+  --red-muted: theme('colors.light-theme.red.muted');
   --green: theme('colors.light-theme.green.DEFAULT');
   --green-dark: theme('colors.light-theme.green.dark');
+  --green-muted: theme('colors.light-theme.green.muted');
   --orange: theme('colors.light-theme.orange.DEFAULT');
   --bkg-1: theme('colors.light-theme["bkg-1"]');
   --bkg-2: theme('colors.light-theme["bkg-2"]');
@@ -27,8 +29,10 @@
   --primary-dark: theme('colors.dark-theme.yellow.dark');
   --red: theme('colors.dark-theme.red.DEFAULT');
   --red-dark: theme('colors.dark-theme.red.dark');
+  --red-muted: theme('colors.dark-theme.red.muted');
   --green: theme('colors.dark-theme.green.DEFAULT');
   --green-dark: theme('colors.dark-theme.green.dark');
+  --green-muted: theme('colors.dark-theme.green.muted');
   --orange: theme('colors.dark-theme.orange.DEFAULT');
   --bkg-1: theme('colors.dark-theme["bkg-1"]');
   --bkg-2: theme('colors.dark-theme["bkg-2"]');
@@ -45,8 +49,10 @@
   --primary-dark: theme('colors.mango-theme.yellow.dark');
   --red: theme('colors.mango-theme.red.DEFAULT');
   --red-dark: theme('colors.mango-theme.red.dark');
+  --red-muted: theme('colors.mango-theme.red.muted');
   --green: theme('colors.mango-theme.green.DEFAULT');
   --green-dark: theme('colors.mango-theme.green.dark');
+  --green-muted: theme('colors.mango-theme.green.muted');
   --orange: theme('colors.mango-theme.orange.DEFAULT');
   --bkg-1: theme('colors.mango-theme["bkg-1"]');
   --bkg-2: theme('colors.mango-theme["bkg-2"]');
@@ -61,7 +67,7 @@
 /* Base */
 
 body {
-  @apply text-sm font-body tracking-wider;
+  @apply text-sm tracking-wider;
 }
 
 h1 {

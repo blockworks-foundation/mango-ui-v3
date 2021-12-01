@@ -35,7 +35,6 @@ const Line = (props) => {
       style={{
         textAlign: props.invert ? 'left' : 'right',
         height: '100%',
-        filter: 'opacity(40%',
         width: `${props['data-width'] ? props['data-width'] : ''}`,
       }}
     />
@@ -636,56 +635,51 @@ const OrderbookRow = React.memo<any>(
 
     return (
       <div
-        className={`flex text-sm leading-7 justify-between cursor-pointer`}
+        className={`flex relative text-sm leading-7 justify-between cursor-pointer`}
         ref={element}
       >
         {invert ? (
           <>
-            <div className={`text-left relative flex-1`}>
-              <Line
-                invert
-                data-width={sizePercent + '%'}
-                className={`absolute inset-y-0 left-0 ${
-                  side === 'buy' ? `bg-th-green` : `bg-th-red`
-                }`}
-              />
+            <Line
+              invert
+              data-width={sizePercent + '%'}
+              className={`absolute left-0 ${
+                side === 'buy' ? `bg-th-green-muted` : `bg-th-red-muted`
+              }`}
+            />
+            <div className="flex justify-between w-full">
               <div
                 onClick={handlePriceClick}
-                className={`z-10 filter brightness-110 text-xs md:text-sm leading-5 md:leading-7 text-th-fgd-1 md:pl-2 ${
+                className={`z-10 text-xs md:text-sm leading-5 md:leading-7 text-th-fgd-1 md:pl-2 ${
                   side === 'buy' ? `text-th-green` : `text-th-red`
                 }`}
               >
                 {usdFormatter(formattedPrice, getDecimalCount(grouping), false)}
               </div>
-            </div>
-            <div
-              className={`absolute right-4 z-10 ${
-                hasOpenOrder ? 'text-th-primary' : 'text-th-fgd-1'
-              }`}
-              onClick={handleSizeClick}
-            >
-              {formattedSize}
+
+              <div
+                className={`z-10 ${
+                  hasOpenOrder ? 'text-th-primary' : 'text-th-fgd-3'
+                }`}
+                onClick={handleSizeClick}
+              >
+                {formattedSize}
+              </div>
             </div>
           </>
         ) : (
           <>
-            <div
-              className={`absolute md:left-4 z-10 text-xs md:text-sm leading-5 md:leading-7 ${
-                hasOpenOrder ? 'text-th-primary' : 'text-th-fgd-1'
-              }`}
-              onClick={handleSizeClick}
-            >
-              {formattedSize}
-            </div>
-            <div className={`text-right relative flex-1`}>
-              <Line
-                className={`absolute inset-y-0 right-0 ${
-                  side === 'buy' ? `bg-th-green` : `bg-th-red`
-                }`}
-                data-width={sizePercent + '%'}
-              />
+            <div className="flex justify-between w-full">
               <div
-                className={`z-10 filter brightness-110 flex-1 text-xs md:text-sm leading-5 md:leading-7 md:pr-2 ${
+                className={`z-10 text-xs md:text-sm leading-5 md:leading-7 ${
+                  hasOpenOrder ? 'text-th-primary' : 'text-th-fgd-3'
+                }`}
+                onClick={handleSizeClick}
+              >
+                {formattedSize}
+              </div>
+              <div
+                className={`z-10 text-xs md:text-sm leading-5 md:leading-7 md:pr-2 ${
                   side === 'buy' ? `text-th-green` : `text-th-red`
                 }`}
                 onClick={handlePriceClick}
@@ -693,6 +687,13 @@ const OrderbookRow = React.memo<any>(
                 {usdFormatter(formattedPrice, getDecimalCount(grouping), false)}
               </div>
             </div>
+
+            <Line
+              className={`absolute right-0 ${
+                side === 'buy' ? `bg-th-green-muted` : `bg-th-red-muted`
+              }`}
+              data-width={sizePercent + '%'}
+            />
           </>
         )}
       </div>
