@@ -109,17 +109,19 @@ const parseActivityDetails = (activity_details, activity_type, perpMarket) => {
 
   const assetSymbol =
     activity_type === 'liquidate_perp_market'
-      ? 'USDC-PERP'
+      ? 'USD (PERP)'
       : activity_details.asset_symbol
 
   const liabSymbol =
     activity_type === 'liquidate_perp_market' ||
     activity_details.liab_type === 'Perp'
-      ? `${activity_details.liab_symbol}-PERP`
+      ? activity_details.liab_symbol.includes('USDC')
+        ? 'USD (PERP)'
+        : `${activity_details.liab_symbol}-PERP`
       : activity_details.liab_symbol
 
   const liabAmount =
-    perpMarket && liabSymbol !== 'USDC-PERP'
+    perpMarket && liabSymbol !== 'USD (PERP)'
       ? perpMarket.baseLotsToNumber(activity_details.liab_amount)
       : activity_details.liab_amount
 

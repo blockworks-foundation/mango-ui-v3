@@ -135,13 +135,6 @@ export default function AdvancedTradeForm({
     }
   }, [set, tradeType, side])
 
-  useEffect(() => {
-    handleSetPositionSize(positionSizePercent, spotMargin)
-    if (!isPerpMarket && isTriggerOrder) {
-      onTradeTypeChange('Limit')
-    }
-  }, [market])
-
   const { max, deposits, borrows, spotMax } = useMemo(() => {
     if (!mangoAccount) return { max: 0 }
     const priceOrDefault = price
@@ -330,6 +323,7 @@ export default function AdvancedTradeForm({
 
   const onTradeTypeChange = (tradeType) => {
     setTradeType(tradeType)
+    setPostOnly(false)
     if (TRIGGER_ORDER_TYPES.includes(tradeType)) {
       setReduceOnly(true)
     }
@@ -441,7 +435,7 @@ export default function AdvancedTradeForm({
       }
 
       if (!accSize) {
-        console.error('Orderbook empty no market price available')
+        console.log('Orderbook empty no market price available')
         return markPrice
       }
 
@@ -469,7 +463,7 @@ export default function AdvancedTradeForm({
       takerFee: [takerFeeAbs, takerFeeRel],
     }
 
-    console.log('estimated', estimatedSize, estimatedPrice, priceImpact)
+    // console.log('estimated', estimatedSize, estimatedPrice, priceImpact)
   }
 
   async function onSubmit() {
@@ -495,7 +489,10 @@ export default function AdvancedTradeForm({
 
     const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
-    const { askInfo, bidInfo } = useMangoStore.getState().selectedMarket
+    const askInfo =
+      useMangoStore.getState().accountInfos[marketConfig.asksKey.toString()]
+    const bidInfo =
+      useMangoStore.getState().accountInfos[marketConfig.bidsKey.toString()]
     const wallet = useMangoStore.getState().wallet.current
 
     if (!wallet || !mangoGroup || !mangoAccount || !market) return
@@ -546,6 +543,7 @@ export default function AdvancedTradeForm({
           null,
           totalMsrm > 0 ? true : false
         )
+        actions.reloadOrders()
       } else {
         if (isTriggerOrder) {
           txid = await mangoClient.addPerpTriggerOrder(
@@ -561,6 +559,7 @@ export default function AdvancedTradeForm({
             Number(triggerPrice),
             true // reduceOnly
           )
+          actions.reloadOrders()
         } else {
           txid = await mangoClient.placePerpOrder(
             mangoGroup,
@@ -881,9 +880,15 @@ export default function AdvancedTradeForm({
                 )}
               </Button>
             ) : (
-              <Button disabled className="flex-grow">
-                <span>{t('country-not-allowed')}</span>
-              </Button>
+              <div className="flex-grow">
+                <Tooltip content={t('country-not-allowed-tooltip')}>
+                  <div className="flex">
+                    <Button disabled className="flex-grow">
+                      <span>{t('country-not-allowed')}</span>
+                    </Button>
+                  </div>
+                </Tooltip>
+              </div>
             )}
           </div>
           <div className="flex flex-col md:flex-row text-xs text-th-fgd-4 px-6 mt-2.5 items-center justify-center">

@@ -153,10 +153,10 @@ const MarketDetails = () => {
 
   return (
     <div
-      className={`flex flex-col relative md:pb-2 md:pt-6 md:px-3 lg:flex-row lg:items-center lg:justify-between`}
+      className={`flex flex-col relative pb-2 pt-3 md:px-3 xl:flex-row xl:items-center xl:justify-between`}
     >
-      <div className="flex flex-col lg:flex-row lg:items-center">
-        <div className="hidden md:block md:pb-4 md:pr-6 lg:pb-0">
+      <div className="flex flex-col xl:flex-row xl:items-center">
+        <div className="hidden md:block md:pb-4 md:pr-6 xl:pb-0">
           <div className="flex items-center">
             <img
               alt=""
@@ -175,7 +175,7 @@ const MarketDetails = () => {
             </div>
           </div>
         </div>
-        <div className="grid grid-flow-row grid-cols-1 md:grid-cols-2 gap-3 lg:grid-flow-col lg:grid-rows-1 lg:gap-6">
+        <div className="grid grid-flow-row grid-cols-1 md:grid-cols-3 gap-3 xl:grid-cols-none xl:grid-flow-col xl:grid-rows-1 xl:gap-6">
           <div className="flex items-center justify-between md:block">
             <div className="text-th-fgd-3 tiny-text pb-0.5">
               {t('oracle-price')}

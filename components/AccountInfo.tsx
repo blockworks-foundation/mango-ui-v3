@@ -3,7 +3,6 @@ import {
   nativeI80F48ToUi,
   nativeToUi,
   QUOTE_INDEX,
-  sleep,
   ZERO_BN,
   ZERO_I80F48,
 } from '@blockworks-foundation/mango-client'
@@ -26,6 +25,7 @@ import { DataLoader } from './MarketPosition'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { useTranslation } from 'next-i18next'
+import useMangoAccount from '../hooks/useMangoAccount'
 
 const I80F48_100 = I80F48.fromString('100')
 
@@ -34,8 +34,7 @@ export default function AccountInfo() {
   const connected = useMangoStore((s) => s.wallet.connected)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
-  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
-  const isLoading = useMangoStore((s) => s.selectedMangoAccount.initialLoad)
+  const { mangoAccount, initialLoad } = useMangoAccount()
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const mangoClient = useMangoStore((s) => s.connection.client)
   const actions = useMangoStore((s) => s.actions)
@@ -62,6 +61,7 @@ export default function AccountInfo() {
         return perpAcct.mngoAccrued.add(acc)
       }, ZERO_BN)
     : ZERO_BN
+  // console.log('rerendering account info', mangoAccount, mngoAccrued.toNumber())
 
   const handleRedeemMngo = async () => {
     const wallet = useMangoStore.getState().wallet.current
@@ -90,7 +90,6 @@ export default function AccountInfo() {
         type: 'error',
       })
     } finally {
-      await sleep(500)
       actions.reloadMangoAccount()
     }
   }
@@ -164,7 +163,7 @@ export default function AccountInfo() {
                 {t('equity')}
               </div>
               <div className="text-th-fgd-1">
-                {isLoading ? <DataLoader /> : formatUsdValue(+equity)}
+                {initialLoad ? <DataLoader /> : formatUsdValue(+equity)}
               </div>
             </div>
             <div className="flex justify-between pb-3">
@@ -172,7 +171,7 @@ export default function AccountInfo() {
                 {t('leverage')}
               </div>
               <div className="text-th-fgd-1">
-                {isLoading ? (
+                {initialLoad ? (
                   <DataLoader />
                 ) : mangoAccount ? (
                   `${mangoAccount
@@ -188,7 +187,7 @@ export default function AccountInfo() {
                 {t('collateral-available')}
               </div>
               <div className={`text-th-fgd-1`}>
-                {isLoading ? (
+                {initialLoad ? (
                   <DataLoader />
                 ) : mangoAccount ? (
                   usdFormatter(
@@ -252,7 +251,7 @@ export default function AccountInfo() {
                 </div>
               </Tooltip>
               <div className={`flex items-center text-th-fgd-1`}>
-                {isLoading ? (
+                {initialLoad ? (
                   <DataLoader />
                 ) : mangoGroup ? (
                   nativeToUi(
