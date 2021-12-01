@@ -31,9 +31,9 @@ import { ORDERBOOK_FLASH_KEY } from './SettingsModal'
 const Line = (props) => {
   return (
     <div
-      {...props}
+      className={props.className}
       style={{
-        textAlign: `${props.invert ? 'left' : 'right'}`,
+        textAlign: props.invert ? 'left' : 'right',
         height: '100%',
         filter: 'opacity(40%',
         width: `${props['data-width'] ? props['data-width'] : ''}`,

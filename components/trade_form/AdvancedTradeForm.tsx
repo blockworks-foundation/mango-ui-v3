@@ -135,13 +135,6 @@ export default function AdvancedTradeForm({
     }
   }, [set, tradeType, side])
 
-  useEffect(() => {
-    handleSetPositionSize(positionSizePercent, spotMargin)
-    if (!isPerpMarket && isTriggerOrder) {
-      onTradeTypeChange('Limit')
-    }
-  }, [marketConfig])
-
   const { max, deposits, borrows, spotMax } = useMemo(() => {
     if (!mangoAccount) return { max: 0 }
     const priceOrDefault = price
