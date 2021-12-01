@@ -44,7 +44,10 @@ const DesktopTable = ({
   }
 
   const renderMarketName = (market: MarketConfig) => {
-    const location = `/${market.kind}/${market.baseSymbol}`
+    const location =
+      market.kind === 'spot'
+        ? `/market?name=${market.baseSymbol}%2FUSDC`
+        : `/market?name=${market.name}`
     if (!asPath.includes(location)) {
       return (
         <Link href={location} shallow={true}>
@@ -125,9 +128,9 @@ const DesktopTable = ({
               </Td>
               <Td className="w-[14.286%]">
                 {order.perpTrigger &&
-                  `${order.orderType} ${
+                  `${t(order.orderType)} ${t(
                     order.triggerCondition
-                  } $${order.triggerPrice.toFixed(2)}`}
+                  )} $${order.triggerPrice.toFixed(2)}`}
               </Td>
               <Td className="w-[14.286%]">
                 <div className={`flex justify-end space-x-3`}>
@@ -359,6 +362,7 @@ const OpenOrdersTable = () => {
           market,
           order as Order
         )
+        actions.reloadOrders()
       } else if (market instanceof PerpMarket) {
         // TODO: this is not ideal
         if (order['triggerCondition']) {
@@ -368,6 +372,7 @@ const OpenOrdersTable = () => {
             wallet,
             (order as PerpTriggerOrder).orderId
           )
+          actions.reloadOrders()
         } else {
           txid = await mangoClient.cancelPerpOrder(
             selectedMangoGroup,
@@ -389,9 +394,8 @@ const OpenOrdersTable = () => {
       })
       console.log('error', `${e}`)
     } finally {
-      await actions.fetchMangoGroup()
-      await actions.reloadMangoAccount()
-      await actions.reloadOrders()
+      actions.reloadMangoAccount()
+      actions.reloadOrders()
       setCancelId(null)
     }
   }
@@ -460,9 +464,8 @@ const OpenOrdersTable = () => {
         type: 'error',
       })
     } finally {
-      await actions.fetchMangoGroup()
-      await actions.reloadMangoAccount()
-      await actions.reloadOrders()
+      actions.reloadMangoAccount()
+      actions.reloadOrders()
       setModifyId(null)
       setEditOrderIndex(null)
     }
