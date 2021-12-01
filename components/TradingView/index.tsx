@@ -81,6 +81,16 @@ const TVChartContainer = () => {
   const tvWidgetRef = useRef<IChartingLibraryWidget | null>(null)
 
   useEffect(() => {
+    if (tvWidgetRef.current) {
+      tvWidgetRef.current.setSymbol(
+        selectedMarketConfig.name,
+        defaultProps.interval,
+        () => {}
+      )
+    }
+  }, [selectedMarketConfig.name])
+
+  useEffect(() => {
     const widgetOptions: ChartingLibraryWidgetOptions = {
       symbol: selectedMarketConfig.name,
       // BEWARE: no trailing slash is expected in feed URL
@@ -178,7 +188,7 @@ const TVChartContainer = () => {
       })
     })
     //eslint-disable-next-line
-  }, [selectedMarketConfig, theme, isMobile])
+  }, [theme, isMobile])
 
   const handleCancelOrder = async (
     order: Order | PerpOrder | PerpTriggerOrder,
