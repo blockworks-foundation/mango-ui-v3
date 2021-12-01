@@ -168,7 +168,7 @@ const TVChartContainer = () => {
         theme === 'Dark' || theme === 'Mango'
           ? 'rgb(242, 201, 76)'
           : 'rgb(255, 156, 36)'
-      button.setAttribute('title', 'Toggle order line visibility')
+      button.setAttribute('title', t('tv-chart:toggle-order-line'))
       button.addEventListener('click', function () {
         toggleShowOrderLines((showOrderLines) => !showOrderLines)
         if (

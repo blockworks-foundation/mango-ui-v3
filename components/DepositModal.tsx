@@ -211,7 +211,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
       {selectedAccount.config.symbol === 'SOL' &&
       parseFloat(inputAmount) > selectedAccount.uiBalance - 0.01 ? (
         <div className="tiny-text text-center text-th-red -mb-4">
-          You must leave enough SOL in your wallet to pay for the transaction
+          {t('you-must-leave-enough-sol')}
         </div>
       ) : null}
       {repayAmount ? (

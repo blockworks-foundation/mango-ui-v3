@@ -323,7 +323,7 @@ const AccountInterest = () => {
                       </Table>
                     ) : (
                       <div className="flex justify-center w-full bg-th-bkg-3 py-4">
-                        No interest earned/paid
+                        {t('no-interest')}
                       </div>
                     )}
                   </div>
