@@ -5,7 +5,7 @@ import {
   ChartingLibraryWidgetOptions,
   IChartingLibraryWidget,
   ResolutionString,
-} from '../charting_library' // Make sure to follow step 1 of the README
+} from '../../public/charting_library'
 import { CHART_DATA_FEED } from '../../utils/chartDataConnector'
 import useMangoStore from '../../stores/useMangoStore'
 import { useViewport } from '../../hooks/useViewport'
