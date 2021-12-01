@@ -1,47 +1,8 @@
 import { useState } from 'react'
 import { useRouter } from 'next/router'
+import { QuestionMarkCircleIcon } from '@heroicons/react/outline'
 import Link from 'next/link'
-import {
-  BtcMonoIcon,
-  CopeMonoIcon,
-  DogeMonoIcon,
-  EthMonoIcon,
-  FidaMonoIcon,
-  FttMonoIcon,
-  MediaMonoIcon,
-  MerMonoIcon,
-  MngoMonoIcon,
-  RayMonoIcon,
-  SolMonoIcon,
-  SrmMonoIcon,
-  StepMonoIcon,
-  SushiMonoIcon,
-  UniMonoIcon,
-  UsdtMonoIcon,
-  AdaMonoIcon,
-  MsolMonoIcon,
-} from './icons'
-
-const symbolIcons = {
-  BtcMonoIcon,
-  CopeMonoIcon,
-  DogeMonoIcon,
-  EthMonoIcon,
-  FidaMonoIcon,
-  FttMonoIcon,
-  MediaMonoIcon,
-  MerMonoIcon,
-  MngoMonoIcon,
-  RayMonoIcon,
-  SolMonoIcon,
-  SrmMonoIcon,
-  StepMonoIcon,
-  SushiMonoIcon,
-  UniMonoIcon,
-  UsdtMonoIcon,
-  AdaMonoIcon,
-  MsolMonoIcon,
-}
+import * as MonoIcons from './icons'
 
 export default function MarketMenuItem({ menuTitle = '', linksArray = [] }) {
   const { asPath } = useRouter()
@@ -50,7 +11,8 @@ export default function MarketMenuItem({ menuTitle = '', linksArray = [] }) {
   const iconName = `${menuTitle.substr(0, 1)}${menuTitle
     .substr(1, 4)
     .toLowerCase()}MonoIcon`
-  const SymbolIcon = symbolIcons[iconName]
+
+  const SymbolIcon = MonoIcons[iconName] || QuestionMarkCircleIcon
 
   const onHover = (open, action) => {
     if (
