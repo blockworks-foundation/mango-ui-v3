@@ -67,7 +67,7 @@
 /* Base */
 
 body {
-  @apply text-sm tracking-wider;
+  @apply text-sm font-body tracking-wider;
 }
 
 h1 {
