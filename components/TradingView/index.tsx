@@ -87,8 +87,6 @@ const TVChartContainer = () => {
       tvWidgetRef.current._innerAPI() &&
       selectedMarketConfig.name !== tvWidgetRef.current.activeChart().symbol()
     ) {
-      console.log('hiiiiiii---------------------')
-
       tvWidgetRef.current.setSymbol(
         selectedMarketConfig.name,
         defaultProps.interval,
