@@ -6,6 +6,7 @@ import {
   I80F48,
   nativeI80F48ToUi,
   PerpMarket,
+  PerpOrderType,
 } from '@blockworks-foundation/mango-client'
 import { notify } from '../../utils/notifications'
 import { calculateTradePrice, getDecimalCount } from '../../utils'
@@ -527,6 +528,9 @@ export default function AdvancedTradeForm({
       // spot market orders will sometimes not be ioc but limit
       const orderType = ioc ? 'ioc' : postOnly ? 'postOnly' : 'limit'
 
+      // TODO saml - create component and set
+      const maxSlippage: number | undefined
+
       console.log(
         'submit',
         side,
@@ -548,19 +552,38 @@ export default function AdvancedTradeForm({
           baseSize,
           orderType,
           null,
-          totalMsrm > 0 ? true : false
+          totalMsrm > 0
         )
         actions.reloadOrders()
       } else {
+        // if isMarketOrder and maxSlippage is set
+        // Then orderPrice is mark * (1 + maxSlippage)
+        let perpOrderType: PerpOrderType
+        let perpOrderPrice: number = orderPrice
+        if (isMarketOrder) {
+          if (maxSlippage !== undefined) {
+            perpOrderType = 'ioc'
+            if (side === 'buy') {
+              perpOrderPrice = markPrice * (1 + maxSlippage)
+            } else {
+              perpOrderPrice = markPrice * (1 - maxSlippage)
+            }
+          } else {
+            perpOrderType = 'market'
+          }
+        } else {
+          perpOrderType = orderType
+        }
+
         if (isTriggerOrder) {
           txid = await mangoClient.addPerpTriggerOrder(
             mangoGroup,
             mangoAccount,
             market,
             wallet,
-            isMarketOrder ? 'market' : orderType,
+            perpOrderType,
             side,
-            orderPrice,
+            perpOrderPrice,
             baseSize,
             triggerCondition,
             Number(triggerPrice),
@@ -575,9 +598,9 @@ export default function AdvancedTradeForm({
             market,
             wallet,
             side,
-            orderPrice,
+            perpOrderPrice,
             baseSize,
-            isMarketOrder ? 'market' : orderType,
+            perpOrderType,
             Date.now(),
             side === 'buy' ? askInfo : bidInfo, // book side used for ConsumeEvents
             reduceOnly
@@ -605,13 +628,10 @@ export default function AdvancedTradeForm({
   }
 
   const showReduceOnly = (basePosition: number) => {
-    if (basePosition > 0 && side === 'sell') {
-      return true
-    }
-    if (basePosition < 0 && side === 'buy') {
-      return true
-    }
-    return false
+    return (
+      (basePosition > 0 && side === 'sell') ||
+      (basePosition < 0 && side === 'buy')
+    )
   }
 
   /*
