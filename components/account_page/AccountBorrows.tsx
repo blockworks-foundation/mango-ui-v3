@@ -54,8 +54,8 @@ export default function AccountBorrows() {
     setShowBorrowModal(true)
   }
 
-  const handleShowDeposit = (symbol) => {
-    setDepositToSettle({ symbol: symbol })
+  const handleShowDeposit = (symbol, amount) => {
+    setDepositToSettle({ symbol: symbol, amount: amount })
     setShowDepositModal(true)
   }
 
@@ -109,11 +109,7 @@ export default function AccountBorrows() {
                                   <div>{asset.symbol}</div>
                                 </div>
                               </Td>
-                              <Td>
-                                {asset.borrows.toFixed(
-                                  tokenPrecision[asset.symbol]
-                                )}
-                              </Td>
+                              <Td>{asset.borrows.toFixed()}</Td>
                               <Td>
                                 {formatUsdValue(
                                   asset.borrows
@@ -140,12 +136,15 @@ export default function AccountBorrows() {
                                 <div className={`flex justify-end`}>
                                   <Button
                                     onClick={() =>
-                                      handleShowDeposit(asset.symbol)
+                                      handleShowDeposit(
+                                        asset.symbol,
+                                        asset.borrows.toFixed()
+                                      )
                                     }
                                     className="ml-3 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
                                     disabled={!connected || loadingMangoAccount}
                                   >
-                                    {t('deposit')}
+                                    {t('repay')}
                                   </Button>
                                   <Button
                                     onClick={() =>
@@ -239,12 +238,15 @@ export default function AccountBorrows() {
                                 <div className="flex space-x-4">
                                   <Button
                                     onClick={() =>
-                                      handleShowDeposit(asset.symbol)
+                                      handleShowDeposit(
+                                        asset.symbol,
+                                        asset.borrows.toFixed()
+                                      )
                                     }
                                     className="text-xs pt-0 pb-0 h-8 w-full"
                                     disabled={!connected || loadingMangoAccount}
                                   >
-                                    {t('deposit')}
+                                    {t('repay')}
                                   </Button>
                                   <Button
                                     onClick={() =>
@@ -488,7 +490,7 @@ export default function AccountBorrows() {
         <DepositModal
           isOpen={showDepositModal}
           onClose={handleCloseDeposit}
-          // settleDeficit={depositToSettle.deficit.toString()}
+          repayAmount={depositToSettle.amount}
           tokenSymbol={depositToSettle.symbol}
         />
       )}

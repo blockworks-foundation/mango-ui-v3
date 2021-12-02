@@ -78,12 +78,18 @@ html .group-wWM3zP_M {
 
 .group-wWM3zP_M:last-child {
   border-bottom-right-radius: 50%;
+  margin-right: 6px;
 }
 
 /* Spacer between header buttons */
 
 .fill-2axUON87 {
   background-color: transparent !important;
+}
+
+/* Tooltip bottom center */
+.container-2yI8A9Vu {
+  display: none
 }
 
 /* menu items category label */

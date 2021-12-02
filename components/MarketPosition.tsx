@@ -20,6 +20,7 @@ import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { collectPerpPosition } from '../hooks/usePerpPositions'
 import { useTranslation } from 'next-i18next'
+import useMangoAccount from '../hooks/useMangoAccount'
 
 export const settlePnl = async (
   perpMarket: PerpMarket,
@@ -66,11 +67,10 @@ export default function MarketPosition() {
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoGroupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
-  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
+  const { mangoAccount, initialLoad } = useMangoAccount()
   const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const connected = useMangoStore((s) => s.wallet.connected)
-  const isLoading = useMangoStore((s) => s.selectedMangoAccount.initialLoad)
   const setMangoStore = useMangoStore((s) => s.set)
   const price = useMangoStore((s) => s.tradeForm.price)
   const baseSymbol = marketConfig.baseSymbol
@@ -152,7 +152,10 @@ export default function MarketPosition() {
 
   return (
     <>
-      <div className={!connected && !isMobile ? 'filter blur-sm' : null}>
+      <div
+        className={!connected && !isMobile ? 'filter blur-sm' : null}
+        id="perp-positions-tip"
+      >
         {!isMobile ? (
           <ElementTitle>
             {marketConfig.name} {t('position')}
@@ -160,7 +163,7 @@ export default function MarketPosition() {
         ) : null}
         <div className="flex items-center justify-between pb-3">
           <div className="font-normal text-th-fgd-3 leading-4">{t('size')}</div>
-          {isLoading ? (
+          {initialLoad ? (
             <DataLoader />
           ) : (
             <PerpSideBadge perpAccount={perpAccount}></PerpSideBadge>
@@ -171,7 +174,7 @@ export default function MarketPosition() {
             {t('position-size')}
           </div>
           <div className="text-th-fgd-1">
-            {isLoading ? (
+            {initialLoad ? (
               <DataLoader />
             ) : basePosition ? (
               <span
@@ -195,10 +198,12 @@ export default function MarketPosition() {
             {t('notional-size')}
           </div>
           <div className="text-th-fgd-1">
-            {isLoading ? (
+            {initialLoad ? (
               <DataLoader />
-            ) : (
+            ) : notionalSize ? (
               formatUsdValue(Math.abs(notionalSize))
+            ) : (
+              '$0'
             )}
           </div>
         </div>
@@ -207,7 +212,13 @@ export default function MarketPosition() {
             {t('average-entry')}
           </div>
           <div className="text-th-fgd-1">
-            {isLoading ? <DataLoader /> : formatUsdValue(avgEntryPrice)}
+            {initialLoad ? (
+              <DataLoader />
+            ) : avgEntryPrice ? (
+              formatUsdValue(avgEntryPrice)
+            ) : (
+              '$0'
+            )}
           </div>
         </div>
         <div className="flex justify-between pb-3">
@@ -215,7 +226,13 @@ export default function MarketPosition() {
             {t('break-even')}
           </div>
           <div className="text-th-fgd-1">
-            {isLoading ? <DataLoader /> : formatUsdValue(breakEvenPrice)}
+            {initialLoad ? (
+              <DataLoader />
+            ) : breakEvenPrice ? (
+              formatUsdValue(breakEvenPrice)
+            ) : (
+              '$0'
+            )}
           </div>
         </div>
         <div className="flex justify-between pb-3">
@@ -225,7 +242,7 @@ export default function MarketPosition() {
             </Tooltip.Content>
           </Tooltip>
           <div className="flex items-center">
-            {isLoading ? <DataLoader /> : <PnlText pnl={unsettledPnl} />}
+            {initialLoad ? <DataLoader /> : <PnlText pnl={unsettledPnl} />}
             {settling ? (
               <Loading className="ml-2" />
             ) : (

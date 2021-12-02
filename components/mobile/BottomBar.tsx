@@ -45,12 +45,16 @@ const BottomBar = () => {
           <BtcMonoIcon className="h-4 mb-1 w-4" />
           <StyledBarItemLabel>{t('markets')}</StyledBarItemLabel>
         </div>
-        <Link href="/perp/btc">
+        <Link
+          href={{
+            pathname: '/market',
+            query: { name: 'BTC-PERP' },
+          }}
+          shallow={true}
+        >
           <div
             className={`${
-              asPath === '/' ||
-              asPath.includes('spot') ||
-              asPath.includes('perp')
+              asPath === '/' || asPath.includes('market')
                 ? 'text-th-primary'
                 : 'text-th-fgd-3'
             } col-span-1 cursor-pointer default-transition flex flex-col items-center hover:text-th-primary`}
@@ -59,7 +63,7 @@ const BottomBar = () => {
             <StyledBarItemLabel>{t('trade')}</StyledBarItemLabel>
           </div>
         </Link>
-        <Link href="/account">
+        <Link href="/account" shallow={true}>
           <div
             className={`${
               asPath === '/account' ? 'text-th-primary' : 'text-th-fgd-3'
@@ -69,7 +73,7 @@ const BottomBar = () => {
             <StyledBarItemLabel>{t('account')}</StyledBarItemLabel>
           </div>
         </Link>
-        <Link href="/stats">
+        <Link href="/stats" shallow={true}>
           <div
             className={`${
               asPath === '/stats' ? 'text-th-primary' : 'text-th-fgd-3'

@@ -14,7 +14,7 @@ const DayHighLow = ({ high, low, latest }) => {
 
   return (
     <div className="flex items-center justify-between md:block md:pr-6">
-      <div className="text-left lg:text-center text-th-fgd-3 tiny-text pb-0.5">
+      <div className="text-left xl:text-center text-th-fgd-3 tiny-text pb-0.5">
         {t('daily-range')}
       </div>
       <div className="flex items-center font-semibold">

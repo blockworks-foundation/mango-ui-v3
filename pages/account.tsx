@@ -6,7 +6,7 @@ import {
   LinkIcon,
   PencilIcon,
 } from '@heroicons/react/outline'
-import useMangoStore from '../stores/useMangoStore'
+import useMangoStore, { serumProgramId } from '../stores/useMangoStore'
 import { copyToClipboard } from '../utils'
 import PageBodyContainer from '../components/PageBodyContainer'
 import TopBar from '../components/TopBar'
@@ -27,6 +27,8 @@ import { breakpoints } from '../components/TradePageGrid'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'next-i18next'
 import Select from '../components/Select'
+import { useRouter } from 'next/router'
+import { PublicKey } from '@solana/web3.js'
 
 export async function getServerSideProps({ locale }) {
   return {
@@ -37,21 +39,28 @@ export async function getServerSideProps({ locale }) {
   }
 }
 
-const TABS = ['Portfolio', 'Orders', 'Trade History', 'Interest', 'Funding']
+const TABS = ['Portfolio', 'Orders', 'History', 'Interest', 'Funding']
 
 export default function Account() {
   const { t } = useTranslation('common')
   const [showAccountsModal, setShowAccountsModal] = useState(false)
   const [showNameModal, setShowNameModal] = useState(false)
   const [isCopied, setIsCopied] = useState(false)
+  const [resetOnLeave, setResetOnLeave] = useState(false)
   const connected = useMangoStore((s) => s.wallet.connected)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
+  const mangoClient = useMangoStore((s) => s.connection.client)
+  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const wallet = useMangoStore((s) => s.wallet.current)
   const isLoading = useMangoStore((s) => s.selectedMangoAccount.initialLoad)
+  const actions = useMangoStore((s) => s.actions)
+  const setMangoStore = useMangoStore((s) => s.set)
   const [viewIndex, setViewIndex] = useState(0)
   const [activeTab, setActiveTab] = useState(TABS[0])
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
+  const router = useRouter()
+  const { pubkey } = router.query
 
   const handleCloseAccounts = useCallback(() => {
     setShowAccountsModal(false)
@@ -64,6 +73,59 @@ export default function Account() {
   const handleCloseNameModal = useCallback(() => {
     setShowNameModal(false)
   }, [])
+
+  useEffect(() => {
+    // @ts-ignore
+    if (window.solana) {
+      // @ts-ignore
+      window.solana.connect({ onlyIfTrusted: true })
+    }
+  }, [])
+
+  useEffect(() => {
+    async function loadUnownedMangoAccount() {
+      try {
+        const unownedMangoAccountPubkey = new PublicKey(pubkey)
+        if (mangoGroup) {
+          const unOwnedMangoAccount = await mangoClient.getMangoAccount(
+            unownedMangoAccountPubkey,
+            serumProgramId
+          )
+          setMangoStore((state) => {
+            state.selectedMangoAccount.current = unOwnedMangoAccount
+          })
+          actions.fetchTradeHistory()
+          setResetOnLeave(true)
+        }
+      } catch (error) {
+        router.push('/account')
+      }
+    }
+
+    if (pubkey) {
+      loadUnownedMangoAccount()
+    }
+  }, [pubkey, mangoGroup])
+
+  useEffect(() => {
+    if (connected) {
+      router.push('/account')
+    }
+  }, [connected])
+
+  useEffect(() => {
+    const handleRouteChange = () => {
+      if (resetOnLeave) {
+        setMangoStore((state) => {
+          state.selectedMangoAccount.current = undefined
+        })
+      }
+    }
+    router.events.on('routeChangeStart', handleRouteChange)
+    return () => {
+      router.events.off('routeChangeStart', handleRouteChange)
+    }
+  }, [resetOnLeave])
 
   useEffect(() => {
     if (isCopied) {
@@ -93,7 +155,7 @@ export default function Account() {
                 <h1
                   className={`font-semibold mb-1 mr-3 text-th-fgd-1 text-2xl`}
                 >
-                  {mangoAccount?.name || 'Account'}
+                  {mangoAccount?.name || t('account')}
                 </h1>
                 <div className="flex items-center pb-0.5 text-th-fgd-3 ">
                   <span className="text-xxs sm:text-xs">
@@ -147,12 +209,12 @@ export default function Account() {
           ) : (
             <div className="pb-2 pt-3">
               <Select
-                value={TABS[viewIndex]}
+                value={t(TABS[viewIndex].toLowerCase())}
                 onChange={(e) => handleChangeViewIndex(e)}
               >
                 {TABS.map((tab, index) => (
                   <Select.Option key={index + tab} value={index}>
-                    {tab}
+                    {t(tab.toLowerCase())}
                   </Select.Option>
                 ))}
               </Select>
@@ -192,10 +254,10 @@ export default function Account() {
               </div>
             ) : (
               <EmptyState
-                buttonText="Create Account"
+                buttonText={t('create-account')}
                 icon={<CurrencyDollarIcon />}
                 onClickButton={() => setShowAccountsModal(true)}
-                title="No Account Found"
+                title={t('no-account-found')}
               />
             )
           ) : (
@@ -232,7 +294,7 @@ const TabContent = ({ activeTab }) => {
       return <AccountOverview />
     case 'Orders':
       return <AccountOrders />
-    case 'Trade History':
+    case 'History':
       return <AccountHistory />
     case 'Interest':
       return <AccountInterest />

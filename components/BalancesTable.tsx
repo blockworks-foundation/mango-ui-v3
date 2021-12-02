@@ -388,7 +388,9 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                               handleOpenDepositModal(balance.symbol)
                             }
                           >
-                            {t('deposit')}
+                            {balance.borrows.toNumber() > 0
+                              ? t('repay')
+                              : t('deposit')}
                           </Button>
                           <Button
                             className="text-xs pt-0 pb-0 h-8 ml-4 pl-3 pr-3"
@@ -400,23 +402,28 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                           </Button>
                         </div>
                       </Td>
+                      {showDepositModal && (
+                        <DepositModal
+                          isOpen={showDepositModal}
+                          onClose={() => setShowDepositModal(false)}
+                          tokenSymbol={actionSymbol}
+                          repayAmount={
+                            balance.borrows.toNumber() > 0
+                              ? balance.borrows.toFixed()
+                              : ''
+                          }
+                        />
+                      )}
+                      {showWithdrawModal && (
+                        <WithdrawModal
+                          isOpen={showWithdrawModal}
+                          onClose={() => setShowWithdrawModal(false)}
+                          tokenSymbol={actionSymbol}
+                        />
+                      )}
                     </TrBody>
                   ))}
                 </tbody>
-                {showDepositModal && (
-                  <DepositModal
-                    isOpen={showDepositModal}
-                    onClose={() => setShowDepositModal(false)}
-                    tokenSymbol={actionSymbol}
-                  />
-                )}
-                {showWithdrawModal && (
-                  <WithdrawModal
-                    isOpen={showWithdrawModal}
-                    onClose={() => setShowWithdrawModal(false)}
-                    tokenSymbol={actionSymbol}
-                  />
-                )}
               </Table>
             ) : (
               <>
@@ -499,7 +506,9 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                               handleOpenDepositModal(balance.symbol)
                             }
                           >
-                            {t('deposit')}
+                            {balance.borrows.toNumber() > 0
+                              ? t('repay')
+                              : t('deposit')}
                           </Button>
                           <Button
                             className="text-xs pt-0 pb-0 h-8 pl-3 pr-3 w-1/2"
@@ -510,25 +519,30 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                             {t('withdraw')}
                           </Button>
                         </div>
+
+                        {showDepositModal && (
+                          <DepositModal
+                            isOpen={showDepositModal}
+                            onClose={() => setShowDepositModal(false)}
+                            tokenSymbol={actionSymbol}
+                            repayAmount={
+                              balance.borrows.toNumber() > 0
+                                ? balance.borrows.toFixed()
+                                : ''
+                            }
+                          />
+                        )}
+                        {showWithdrawModal && (
+                          <WithdrawModal
+                            isOpen={showWithdrawModal}
+                            onClose={() => setShowWithdrawModal(false)}
+                            tokenSymbol={actionSymbol}
+                          />
+                        )}
                       </>
                     }
                   />
                 ))}
-
-                {showDepositModal && (
-                  <DepositModal
-                    isOpen={showDepositModal}
-                    onClose={() => setShowDepositModal(false)}
-                    tokenSymbol={actionSymbol}
-                  />
-                )}
-                {showWithdrawModal && (
-                  <WithdrawModal
-                    isOpen={showWithdrawModal}
-                    onClose={() => setShowWithdrawModal(false)}
-                    tokenSymbol={actionSymbol}
-                  />
-                )}
               </>
             )
           ) : (

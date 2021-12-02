@@ -5,7 +5,7 @@ import {
   ChartingLibraryWidgetOptions,
   IChartingLibraryWidget,
   ResolutionString,
-} from '../charting_library' // Make sure to follow step 1 of the README
+} from '../../public/charting_library'
 import { CHART_DATA_FEED } from '../../utils/chartDataConnector'
 import useMangoStore from '../../stores/useMangoStore'
 import { useViewport } from '../../hooks/useViewport'
@@ -17,6 +17,7 @@ import { notify } from '../../utils/notifications'
 import { sleep, formatUsdValue, usdFormatter } from '../../utils'
 import useInterval from '../../hooks/useInterval'
 import { PerpTriggerOrder } from '../../@types/types'
+import { useTranslation } from 'next-i18next'
 
 // This is a basic example of how to create a TV widget
 // You can add more feature such as storing charts in localStorage
@@ -40,6 +41,7 @@ export interface ChartContainerProps {
 // export interface ChartContainerState {}
 
 const TVChartContainer = () => {
+  const { t } = useTranslation(['common', 'tv-chart'])
   const selectedMarketConfig = useMangoStore((s) => s.selectedMarket.config)
   const { theme } = useTheme()
   const { width } = useViewport()
@@ -77,6 +79,19 @@ const TVChartContainer = () => {
   }
 
   const tvWidgetRef = useRef<IChartingLibraryWidget | null>(null)
+
+  useEffect(() => {
+    if (
+      tvWidgetRef.current &&
+      selectedMarketConfig.name !== tvWidgetRef.current.activeChart().symbol()
+    ) {
+      tvWidgetRef.current.setSymbol(
+        selectedMarketConfig.name,
+        defaultProps.interval,
+        () => {}
+      )
+    }
+  }, [selectedMarketConfig.name])
 
   useEffect(() => {
     const widgetOptions: ChartingLibraryWidgetOptions = {
@@ -122,6 +137,7 @@ const TVChartContainer = () => {
       custom_css_url: '/tradingview-chart.css',
       loading_screen: { backgroundColor: 'rgba(0,0,0,0.1)' },
       overrides: {
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         'paneProperties.background':
           theme === 'Dark' ? '#1B1B1F' : theme === 'Light' ? '#fff' : '#1D1832',
         'mainSeriesProperties.candleStyle.barColorsOnPrevClose': true,
@@ -155,7 +171,7 @@ const TVChartContainer = () => {
         theme === 'Dark' || theme === 'Mango'
           ? 'rgb(242, 201, 76)'
           : 'rgb(255, 156, 36)'
-      button.setAttribute('title', 'Toggle order line visibility')
+      button.setAttribute('title', t('tv-chart:toggle-order-line'))
       button.addEventListener('click', function () {
         toggleShowOrderLines((showOrderLines) => !showOrderLines)
         if (
@@ -175,7 +191,7 @@ const TVChartContainer = () => {
       })
     })
     //eslint-disable-next-line
-  }, [selectedMarketConfig, theme, isMobile])
+  }, [theme, isMobile])
 
   const handleCancelOrder = async (
     order: Order | PerpOrder | PerpTriggerOrder,
@@ -217,11 +233,11 @@ const TVChartContainer = () => {
           )
         }
       }
-      notify({ title: 'Successfully cancelled order', txid })
+      notify({ title: t('cancel-success'), txid })
       toggleOrderInProgress(false)
     } catch (e) {
       notify({
-        title: 'Error cancelling order',
+        title: t('cancel-error'),
         description: e.message,
         txid: e.txid,
         type: 'error',
@@ -252,8 +268,8 @@ const TVChartContainer = () => {
 
       if (!orderPrice) {
         notify({
-          title: 'Price not available',
-          description: 'Please try again',
+          title: t('price-unavailable'),
+          description: t('try-again'),
           type: 'error',
         })
       }
@@ -289,11 +305,11 @@ const TVChartContainer = () => {
         )
       }
 
-      notify({ title: 'Successfully placed trade', txid })
+      notify({ title: t('successfully-placed'), txid })
       toggleOrderInProgress(false)
     } catch (e) {
       notify({
-        title: 'Error placing order',
+        title: t('order-error'),
         description: e.message,
         txid: e.txid,
         type: 'error',
@@ -301,7 +317,7 @@ const TVChartContainer = () => {
       togglePriceReset(true)
     } finally {
       sleep(1000).then(() => {
-        actions.fetchAllMangoAccounts()
+        actions.reloadMangoAccount()
         actions.reloadOrders()
         toggleOrderInProgress(false)
         toggleMoveInProgress(false)
@@ -326,16 +342,15 @@ const TVChartContainer = () => {
               updatedOrderPrice < 0.95 * selectedMarketPrice)
           ) {
             tvWidgetRef.current.showNoticeDialog({
-              title: 'Order Price Outside Range',
+              title: t('tv-chart:outside-range'),
               body:
-                `Your order price (${formatUsdValue(
-                  updatedOrderPrice
-                )}) is greater than 5% ${
-                  order.side == 'buy' ? 'above' : 'below'
-                } the current market price (${formatUsdValue(
-                  selectedMarketPrice
-                )}). ` +
-                ' indicating you might incur significant slippage. <p><p>Please use the trade input form if you wish to accept the potential slippage.',
+                t('tv-chart:slippage-warning', {
+                  updatedOrderPrice: formatUsdValue(updatedOrderPrice),
+                  aboveBelow: order.side == 'buy' ? t('above') : t('below'),
+                  selectedMarketPrice: formatUsdValue(selectedMarketPrice),
+                }) +
+                '<p><p>' +
+                t('tv-chart:slippage-accept'),
               callback: () => {
                 this.setPrice(currentOrderPrice)
                 toggleMoveInProgress(false)
@@ -344,12 +359,14 @@ const TVChartContainer = () => {
             })
           } else {
             tvWidgetRef.current.showConfirmDialog({
-              title: 'Modify Your Order?',
-              body: `Would you like to change your order from a 
-             ${order.size} ${market.config.baseSymbol} ${order.side} at $${currentOrderPrice} 
-             to a 
-            ${order.size} ${market.config.baseSymbol} LIMIT ${order.side} at $${updatedOrderPrice}?
-            `,
+              title: t('tv-chart:modify-order'),
+              body: t('tv-chart:modify-order-details', {
+                orderSize: order.size,
+                baseSymbol: market.config.baseSymbol,
+                orderSide: t(order.side),
+                currentOrderPrice: currentOrderPrice,
+                updatedOrderPrice: updatedOrderPrice,
+              }),
               callback: (res) => {
                 if (res) {
                   handleModifyOrder(order, market.account, updatedOrderPrice)
@@ -363,8 +380,8 @@ const TVChartContainer = () => {
           }
         } else {
           tvWidgetRef.current.showNoticeDialog({
-            title: 'Advanced Order Type',
-            body: 'Advanced order types in the chart window may only be cancelled. If new conditions are required, please cancel this order and use the Advanced Trade Form.',
+            title: t('tv-chart:advanced-order'),
+            body: t('tv-chart:advanced-order-details'),
             callback: () => {
               this.setPrice(currentOrderPrice)
               toggleMoveInProgress(false)
@@ -376,10 +393,13 @@ const TVChartContainer = () => {
       .onCancel(function () {
         toggleOrderInProgress(true)
         tvWidgetRef.current.showConfirmDialog({
-          title: 'Cancel Your Order?',
-          body: `Would you like to cancel your order for 
-       ${order.size} ${market.config.baseSymbol} ${order.side} at $${order.price}  
-      `,
+          title: t('tv-chart:cancel-order'),
+          body: t('tv-chart:cancel-order-details', {
+            orderSize: order.size,
+            baseSymbol: market.config.baseSymbol,
+            orderSide: t(order.side),
+            orderPrice: order.price,
+          }),
           callback: (res) => {
             if (res) {
               handleCancelOrder(order, market.account)
@@ -451,39 +471,60 @@ const TVChartContainer = () => {
   }
 
   function getLineText(order, market) {
+    const orderSideTranslated = t(order.side)
     if (order.perpTrigger?.clientOrderId) {
       const triggerPrice =
         order.perpTrigger.triggerPrice *
         Math.pow(10, market.config.baseDecimals - market.config.quoteDecimals)
+      const orderTypeTranslated = t(order.orderType)
+      const triggerConditionTranslated = t(order.perpTrigger.triggerCondition)
       if (order.side === 'buy') {
         if (order.perpTrigger.triggerCondition === 'above') {
           return (
-            (order.orderType === 'market' ? `Stop Loss ` : `Stop Limit `) +
-            `(${order.orderType} ${order.side}) if price is ${
-              order.perpTrigger.triggerCondition
-            } ${usdFormatter(triggerPrice)}`
+            (order.orderType === 'market' ? t('stop-loss') : t('stop-limit')) +
+            t('tv-chart:order-details', {
+              orderType: orderTypeTranslated,
+              orderSide: orderSideTranslated,
+              triggerCondition: triggerConditionTranslated,
+              triggerPrice: usdFormatter(triggerPrice),
+            })
           )
         } else {
-          return `Take Profit (${order.orderType} ${order.side}) if price is ${
-            order.perpTrigger.triggerCondition
-          } ${usdFormatter(triggerPrice)}`
+          return (
+            t('take-profit') +
+            t('tv-chart:order-details', {
+              orderType: orderTypeTranslated,
+              orderSide: orderSideTranslated,
+              triggerCondition: triggerConditionTranslated,
+              triggerPrice: usdFormatter(triggerPrice),
+            })
+          )
         }
       } else {
         if (order.perpTrigger.triggerCondition === 'below') {
           return (
-            (order.orderType === 'market' ? `Stop Loss ` : `Stop Limit `) +
-            `(${order.orderType} ${order.side}) if price is ${
-              order.perpTrigger.triggerCondition
-            } ${usdFormatter(triggerPrice)}`
+            (order.orderType === 'market' ? t('stop-loss') : t('stop-limit')) +
+            t('tv-chart:order-details', {
+              orderType: orderTypeTranslated,
+              orderSide: orderSideTranslated,
+              triggerCondition: triggerConditionTranslated,
+              triggerPrice: usdFormatter(triggerPrice),
+            })
           )
         } else {
-          return `Take Profit (${order.orderType} ${order.side}) if price is ${
-            order.perpTrigger.triggerCondition
-          } ${usdFormatter(triggerPrice)}`
+          return (
+            t('take-profit') +
+            t('tv-chart:order-details', {
+              orderType: orderTypeTranslated,
+              orderSide: orderSideTranslated,
+              triggerCondition: triggerConditionTranslated,
+              triggerPrice: usdFormatter(triggerPrice),
+            })
+          )
         }
       }
     } else {
-      return `${order.side} ${market.config.baseSymbol}`.toUpperCase()
+      return `${orderSideTranslated} ${market.config.baseSymbol}`.toUpperCase()
     }
   }
 

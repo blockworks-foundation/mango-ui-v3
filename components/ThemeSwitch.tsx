@@ -19,20 +19,24 @@ const ThemeSwitch = () => {
   // When mounted on client, now we can show the UI
   useEffect(() => setMounted(true), [])
 
-  return mounted ? (
-    <DropMenu
-      button={
-        <div className="bg-th-bkg-4 flex items-center justify-center rounded-full w-8 h-8 text-th-fgd-1 focus:outline-none hover:text-th-primary">
-          {THEMES.find((t) => t.name === theme).icon}
-        </div>
-      }
-      value={theme}
-      onChange={(theme) => setTheme(theme)}
-      options={THEMES}
-      toolTipContent={t('change-theme')}
-    />
-  ) : (
-    <div className="bg-th-bkg-3 rounded-full w-8 h-8" />
+  return (
+    <div id="themes-tip">
+      {mounted ? (
+        <DropMenu
+          button={
+            <div className="bg-th-bkg-4 flex items-center justify-center rounded-full w-8 h-8 text-th-fgd-1 focus:outline-none hover:text-th-primary">
+              {THEMES.find((t) => t.name === theme).icon}
+            </div>
+          }
+          value={theme}
+          onChange={(theme) => setTheme(theme)}
+          options={THEMES}
+          toolTipContent={t('change-theme')}
+        />
+      ) : (
+        <div className="bg-th-bkg-3 rounded-full w-8 h-8" />
+      )}
+    </div>
   )
 }
 

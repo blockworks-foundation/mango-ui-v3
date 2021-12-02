@@ -67,7 +67,7 @@ export const WEBSOCKET_CONNECTION = new Connection(
 )
 
 const DEFAULT_MANGO_GROUP_NAME = process.env.NEXT_PUBLIC_GROUP || 'mainnet.1'
-const DEFAULT_MANGO_GROUP_CONFIG = Config.ids().getGroup(
+export const DEFAULT_MANGO_GROUP_CONFIG = Config.ids().getGroup(
   CLUSTER,
   DEFAULT_MANGO_GROUP_NAME
 )
@@ -149,6 +149,7 @@ interface MangoStore extends State {
   selectedMangoAccount: {
     current: MangoAccount | null
     initialLoad: boolean
+    lastUpdatedAt: number
   }
   tradeForm: {
     side: 'buy' | 'sell'
@@ -233,6 +234,7 @@ const useMangoStore = create<MangoStore>((set, get) => {
     selectedMangoAccount: {
       current: null,
       initialLoad: true,
+      lastUpdatedAt: 0,
     },
     tradeForm: {
       side: 'buy',
@@ -506,48 +508,48 @@ const useMangoStore = create<MangoStore>((set, get) => {
         const set = get().set
         if (!selectedMangoAccount) return
 
-        if (selectedMangoAccount.spotOpenOrdersAccounts.length === 0) return
-        const openOrdersAccounts =
-          selectedMangoAccount.spotOpenOrdersAccounts.filter(isDefined)
-        const publicKeys = openOrdersAccounts.map((act) =>
-          act.publicKey.toString()
-        )
+        let serumTradeHistory = []
+        if (selectedMangoAccount.spotOpenOrdersAccounts.length) {
+          const openOrdersAccounts =
+            selectedMangoAccount.spotOpenOrdersAccounts.filter(isDefined)
+          const publicKeys = openOrdersAccounts.map((act) =>
+            act.publicKey.toString()
+          )
+          serumTradeHistory = await Promise.all(
+            publicKeys.map(async (pk) => {
+              const response = await fetch(
+                `https://event-history-api.herokuapp.com/trades/open_orders/${pk.toString()}`
+              )
+              const parsedResponse = await response.json()
+              return parsedResponse?.data ? parsedResponse.data : []
+            })
+          )
+        }
         const perpHistory = await fetch(
           `https://event-history-api.herokuapp.com/perp_trades/${selectedMangoAccount.publicKey.toString()}`
         )
         let parsedPerpHistory = await perpHistory.json()
         parsedPerpHistory = parsedPerpHistory?.data || []
 
-        const serumHistory = await Promise.all(
-          publicKeys.map(async (pk) => {
-            const response = await fetch(
-              `https://event-history-api.herokuapp.com/trades/open_orders/${pk.toString()}`
-            )
-            const parsedResponse = await response.json()
-            return parsedResponse?.data ? parsedResponse.data : []
-          })
-        )
         set((state) => {
-          state.tradeHistory = [...serumHistory, ...parsedPerpHistory]
+          state.tradeHistory = [...serumTradeHistory, ...parsedPerpHistory]
         })
       },
       async reloadMangoAccount() {
         const set = get().set
         const mangoAccount = get().selectedMangoAccount.current
         const connection = get().connection.current
+        const mangoClient = get().connection.client
 
-        const reloadedMangoAccount = await mangoAccount.reload(connection)
-
-        await Promise.all([
-          reloadedMangoAccount.loadOpenOrders(
-            connection,
-            new PublicKey(serumProgramId)
-          ),
-          reloadedMangoAccount.loadAdvancedOrders(connection),
-        ])
+        const reloadedMangoAccount = await mangoAccount.reloadFromSlot(
+          connection,
+          mangoClient.lastSlot
+        )
+        console.log('reloading mango account')
 
         set((state) => {
           state.selectedMangoAccount.current = reloadedMangoAccount
+          state.selectedMangoAccount.lastUpdatedAt = new Date().toISOString()
         })
       },
       async reloadOrders() {
@@ -563,8 +565,7 @@ const useMangoStore = create<MangoStore>((set, get) => {
           ])
         }
       },
-      // DEPRECATED
-      async _updateOpenOrders() {
+      async updateOpenOrders() {
         const set = get().set
         const connection = get().connection.current
         const bidAskAccounts = Object.keys(get().accountInfos).map(

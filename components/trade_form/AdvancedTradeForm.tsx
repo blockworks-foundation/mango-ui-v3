@@ -44,11 +44,12 @@ export default function AdvancedTradeForm({
 }: AdvancedTradeFormProps) {
   const { t } = useTranslation('common')
   const set = useMangoStore((s) => s.set)
-  const { ipAllowed } = useIpAddress()
+  const { ipAllowed, spotAllowed } = useIpAddress()
   const connected = useMangoStore((s) => s.wallet.connected)
   const actions = useMangoStore((s) => s.actions)
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
+  const walletTokens = useMangoStore((s) => s.wallet.tokens)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const mangoClient = useMangoStore((s) => s.connection.client)
   const market = useMangoStore((s) => s.selectedMarket.current)
@@ -56,6 +57,7 @@ export default function AdvancedTradeForm({
   const [reduceOnly, setReduceOnly] = useState(false)
   const [spotMargin, setSpotMargin] = useState(true)
   const [positionSizePercent, setPositionSizePercent] = useState('')
+  const [insufficientSol, setInsufficientSol] = useState(false)
   const { takerFee, makerFee } = useFees()
   const { totalMsrm } = useSrmAccount()
 
@@ -109,6 +111,11 @@ export default function AdvancedTradeForm({
   )
 
   useEffect(() => {
+    const walletSol = walletTokens.find((a) => a.config.symbol === 'SOL')
+    walletSol ? setInsufficientSol(walletSol.uiBalance < 0.01) : null
+  }, [walletTokens])
+
+  useEffect(() => {
     if (tradeType === 'Market') {
       set((s) => {
         s.tradeForm.price = ''
@@ -134,13 +141,6 @@ export default function AdvancedTradeForm({
       })
     }
   }, [set, tradeType, side])
-
-  useEffect(() => {
-    handleSetPositionSize(positionSizePercent, spotMargin)
-    if (!isPerpMarket && isTriggerOrder) {
-      onTradeTypeChange('Limit')
-    }
-  }, [market])
 
   const { max, deposits, borrows, spotMax } = useMemo(() => {
     if (!mangoAccount) return { max: 0 }
@@ -330,6 +330,7 @@ export default function AdvancedTradeForm({
 
   const onTradeTypeChange = (tradeType) => {
     setTradeType(tradeType)
+    setPostOnly(false)
     if (TRIGGER_ORDER_TYPES.includes(tradeType)) {
       setReduceOnly(true)
     }
@@ -441,7 +442,7 @@ export default function AdvancedTradeForm({
       }
 
       if (!accSize) {
-        console.error('Orderbook empty no market price available')
+        console.log('Orderbook empty no market price available')
         return markPrice
       }
 
@@ -469,7 +470,7 @@ export default function AdvancedTradeForm({
       takerFee: [takerFeeAbs, takerFeeRel],
     }
 
-    console.log('estimated', estimatedSize, estimatedPrice, priceImpact)
+    // console.log('estimated', estimatedSize, estimatedPrice, priceImpact)
   }
 
   async function onSubmit() {
@@ -495,7 +496,10 @@ export default function AdvancedTradeForm({
 
     const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
-    const { askInfo, bidInfo } = useMangoStore.getState().selectedMarket
+    const askInfo =
+      useMangoStore.getState().accountInfos[marketConfig.asksKey.toString()]
+    const bidInfo =
+      useMangoStore.getState().accountInfos[marketConfig.bidsKey.toString()]
     const wallet = useMangoStore.getState().wallet.current
 
     if (!wallet || !mangoGroup || !mangoAccount || !market) return
@@ -546,6 +550,7 @@ export default function AdvancedTradeForm({
           null,
           totalMsrm > 0 ? true : false
         )
+        actions.reloadOrders()
       } else {
         if (isTriggerOrder) {
           txid = await mangoClient.addPerpTriggerOrder(
@@ -561,6 +566,7 @@ export default function AdvancedTradeForm({
             Number(triggerPrice),
             true // reduceOnly
           )
+          actions.reloadOrders()
         } else {
           txid = await mangoClient.placePerpOrder(
             mangoGroup,
@@ -598,14 +604,26 @@ export default function AdvancedTradeForm({
     }
   }
 
+  const showReduceOnly = (basePosition: number) => {
+    if (basePosition > 0 && side === 'sell') {
+      return true
+    }
+    if (basePosition < 0 && side === 'buy') {
+      return true
+    }
+    return false
+  }
+
+  /*
   const roundedMax = (
     Math.round(max / parseFloat(minOrderSize)) * parseFloat(minOrderSize)
   ).toFixed(sizeDecimalCount)
+  */
 
-  const sizeTooLarge =
+  const sizeTooLarge = false /*
     spotMargin || marketConfig.kind === 'perp'
       ? baseSize > roundedMax
-      : baseSize > spotMax
+      : baseSize > spotMax*/
 
   const disabledTradeButton =
     (!price && isLimitOrder) ||
@@ -614,6 +632,8 @@ export default function AdvancedTradeForm({
     submitting ||
     !mangoAccount ||
     sizeTooLarge
+
+  const canTrade = ipAllowed || (market instanceof Market && spotAllowed)
 
   return (
     <div className="flex flex-col h-full">
@@ -792,7 +812,8 @@ export default function AdvancedTradeForm({
                 </div>
               </div>
             ) : null}
-            {marketConfig.kind === 'perp' ? (
+            {marketConfig.kind === 'perp' &&
+            showReduceOnly(perpAccount?.basePosition.toNumber()) ? (
               <div className="mt-4">
                 <Tooltip
                   className="hidden md:block"
@@ -833,7 +854,7 @@ export default function AdvancedTradeForm({
             ) : null}
           </div>
           <div className={`flex pt-4`}>
-            {ipAllowed ? (
+            {canTrade ? (
               <Button
                 disabled={disabledTradeButton}
                 onClick={onSubmit}
@@ -866,15 +887,32 @@ export default function AdvancedTradeForm({
                 )}
               </Button>
             ) : (
-              <Button disabled className="flex-grow">
-                <span>{t('country-not-allowed')}</span>
-              </Button>
+              <div className="flex-grow">
+                <Tooltip content={t('country-not-allowed-tooltip')}>
+                  <div className="flex">
+                    <Button disabled className="flex-grow">
+                      <span>{t('country-not-allowed')}</span>
+                    </Button>
+                  </div>
+                </Tooltip>
+              </div>
             )}
           </div>
+          {insufficientSol ? (
+            <div className="tiny-text text-center text-th-red mt-1 -mb-3">
+              You must leave enough SOL in your wallet to pay for the
+              transaction
+            </div>
+          ) : null}
           <div className="flex flex-col md:flex-row text-xs text-th-fgd-4 px-6 mt-2.5 items-center justify-center">
-            <div>Maker fee: {(makerFee * 100).toFixed(2)}% </div>
+            <div>
+              {t('maker-fee')}: {(makerFee * 100).toFixed(2)}%{' '}
+            </div>
             <span className="hidden md:block md:px-1">|</span>
-            <div> Taker fee: {takerFee * 100}%</div>
+            <div>
+              {' '}
+              {t('taker-fee')}: {takerFee * 100}%
+            </div>
           </div>
         </div>
       </div>

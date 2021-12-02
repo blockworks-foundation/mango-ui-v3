@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import TopBar from '../components/TopBar'
 import PageBodyContainer from '../components/PageBodyContainer'
 import StatsTotals from '../components/stats_page/StatsTotals'
@@ -13,7 +13,7 @@ import { breakpoints } from '../components/TradePageGrid'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'next-i18next'
 
-export async function getServerSideProps({ locale }) {
+export async function getStaticProps({ locale }) {
   return {
     props: {
       ...(await serverSideTranslations(locale, ['common'])),
@@ -44,6 +44,14 @@ export default function StatsPage() {
   const handleTabChange = (tabName) => {
     setActiveTab(tabName)
   }
+
+  useEffect(() => {
+    // @ts-ignore
+    if (window.solana) {
+      // @ts-ignore
+      window.solana.connect({ onlyIfTrusted: true })
+    }
+  }, [])
 
   return (
     <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
