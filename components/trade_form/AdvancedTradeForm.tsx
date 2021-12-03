@@ -591,12 +591,11 @@ export default function AdvancedTradeForm({
         )
         actions.reloadOrders()
       } else {
-        // if isMarketOrder and maxSlippage is set
-        // Then orderPrice is mark * (1 + maxSlippage)
         let perpOrderType: PerpOrderType
         let perpOrderPrice: number = orderPrice
+
         if (isMarketOrder) {
-          if (maxSlippage !== undefined) {
+          if (tradeType === 'Market' && maxSlippage !== undefined) {
             perpOrderType = 'ioc'
             if (side === 'buy') {
               perpOrderPrice = markPrice * (1 + parseFloat(maxSlippage))
@@ -609,11 +608,42 @@ export default function AdvancedTradeForm({
           } else {
             perpOrderType = 'market'
           }
-        } else {
-          perpOrderType = orderType
         }
 
         if (isTriggerOrder) {
+          // If stop loss or take profit, walk up the book and alert user if slippage will be high
+          if (isMarketOrder) {
+            let warnUserSlippage = false
+
+            const bookSide = side === 'buy' ? orderbook.asks : orderbook.bids
+            let base = 0
+            let quote = 0
+            for (const [p, q] of bookSide) {
+              base += q
+              quote += p * q
+
+              if (base >= baseSize) {
+                break
+              }
+            }
+
+            if (base < baseSize || (baseSize && base === 0)) {
+              warnUserSlippage = true
+            } else if (baseSize > 0) {
+              // only check if baseSize nonzero because this implies base nonzero
+              const avgPrice = quote / base
+              warnUserSlippage = Math.abs(avgPrice / referencePrice - 1) > 0.025
+            }
+
+            if (warnUserSlippage) {
+              // TODO tyler - add warning to user when this is set true
+              console.log(
+                'The requested stop loss order will likely have an extremely large slippage! Consider using Stop Limit or Take Profit Limit order instead.'
+              )
+              console.log(base, quote)
+            }
+          }
+
           txid = await mangoClient.addPerpTriggerOrder(
             mangoGroup,
             mangoAccount,
