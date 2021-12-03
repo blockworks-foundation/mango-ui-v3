@@ -1,4 +1,4 @@
-import { FunctionComponent, useEffect, useRef, useState } from 'react'
+import { FunctionComponent, useState } from 'react'
 import useMangoStore from '../stores/useMangoStore'
 import { PerpMarket, ZERO_BN } from '@blockworks-foundation/mango-client'
 import Button, { LinkButton } from './Button'
@@ -25,18 +25,7 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
   const [submitting, setSubmitting] = useState(false)
   const actions = useMangoStore((s) => s.actions)
   const mangoClient = useMangoStore((s) => s.connection.client)
-  const orderBookRef = useRef(useMangoStore.getState().selectedMarket.orderBook)
   const config = useMangoStore.getState().selectedMarket.config
-
-  useEffect(
-    () =>
-      useMangoStore.subscribe(
-        // @ts-ignore
-        (orderBook) => (orderBookRef.current = orderBook),
-        (state) => state.selectedMarket.orderBook
-      ),
-    []
-  )
 
   async function handleMarketClose() {
     const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
@@ -48,16 +37,26 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
       useMangoStore.getState().accountInfos[marketConfig.bidsKey.toString()]
     const wallet = useMangoStore.getState().wallet.current
 
+    const orderbook = useMangoStore.getState().selectedMarket.orderBook
+    const markPrice = useMangoStore.getState().selectedMarket.markPrice
+
+    // The reference price is the book mid if book is double sided; else mark price
+    const bb = orderbook?.bids?.length > 0 && Number(orderbook.bids[0][0])
+    const ba = orderbook?.asks?.length > 0 && Number(orderbook.asks[0][0])
+    const referencePrice = bb && ba ? (bb + ba) / 2 : markPrice
+
     if (!wallet || !mangoGroup || !mangoAccount) return
     setSubmitting(true)
 
     try {
       const perpAccount = mangoAccount.perpAccounts[marketIndex]
       const side = perpAccount.basePosition.gt(ZERO_BN) ? 'sell' : 'buy'
-      const price = 1
       // send a large size to ensure we are reducing the entire position
       const size =
         Math.abs(market.baseLotsToNumber(perpAccount.basePosition)) * 2
+
+      // hard coded for now; market orders are very dangerous and fault prone
+      const maxSlippage: number | undefined = 0.025
 
       const txid = await mangoClient.placePerpOrder(
         mangoGroup,
@@ -66,9 +65,9 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
         market,
         wallet,
         side,
-        price,
+        referencePrice * (1 + (side === 'buy' ? 1 : -1) * maxSlippage),
         size,
-        'market',
+        'ioc',
         0, // client order id
         side === 'buy' ? askInfo : bidInfo,
         true // reduce only

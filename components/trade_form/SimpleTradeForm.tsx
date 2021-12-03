@@ -282,6 +282,7 @@ export default function SimpleTradeForm({ initLeverage }) {
 
     try {
       const orderPrice = calculateTradePrice(
+        marketConfig.kind,
         tradeType,
         orderbook,
         baseSize,

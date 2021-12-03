@@ -234,7 +234,7 @@
   "positions": "Positions",
   "post": "Post",
   "price": "Price",
-  "price-expect": "The price you receive may be more or less than you expect.",
+  "price-expect": "The price you receive may be worse than you expect and full execution is not guaranteed. Max slippage is 2.5% for your safety. The part of your position with slippage beyond 2.5% will not be closed.",
   "price-impact": "Est. Price Impact",
   "price-unavailable": "Price not available",
   "prices-changed": "Prices have changed and increased your leverage. Reduce the withdrawal amount.",
