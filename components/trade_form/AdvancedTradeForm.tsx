@@ -662,13 +662,10 @@ export default function AdvancedTradeForm({
   }
 
   // const showReduceOnly = (basePosition: number) => {
-  //   if (basePosition > 0 && side === 'sell') {
-  //     return true
-  //   }
-  //   if (basePosition < 0 && side === 'buy') {
-  //     return true
-  //   }
-  //   return false
+  //   return (
+  //     (basePosition > 0 && side === 'sell') ||
+  //     (basePosition < 0 && side === 'buy')
+  //   )
   // }
 
   /*
