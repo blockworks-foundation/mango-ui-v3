@@ -26,6 +26,7 @@ import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { useTranslation } from 'next-i18next'
 import useMangoAccount from '../hooks/useMangoAccount'
+import Loading from './Loading'
 
 const I80F48_100 = I80F48.fromString('100')
 
@@ -40,6 +41,7 @@ export default function AccountInfo() {
   const actions = useMangoStore((s) => s.actions)
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
+  const [redeeming, setRedeeming] = useState(false)
 
   const [showDepositModal, setShowDepositModal] = useState(false)
   const [showWithdrawModal, setShowWithdrawModal] = useState(false)
@@ -69,6 +71,7 @@ export default function AccountInfo() {
       mangoGroup.rootBankAccounts[MNGO_INDEX].nodeBankAccounts[0]
 
     try {
+      setRedeeming(true)
       const txid = await mangoClient.redeemAllMngo(
         mangoGroup,
         mangoAccount,
@@ -91,6 +94,7 @@ export default function AccountInfo() {
       })
     } finally {
       actions.reloadMangoAccount()
+      setRedeeming(false)
     }
   }
 
@@ -261,13 +265,17 @@ export default function AccountInfo() {
                 ) : (
                   0
                 )}
-                <LinkButton
-                  onClick={handleRedeemMngo}
-                  className="ml-2 text-th-primary text-xs disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:underline"
-                  disabled={mngoAccrued.eq(ZERO_BN)}
-                >
-                  {t('claim')}
-                </LinkButton>
+                {redeeming ? (
+                  <Loading className="ml-2" />
+                ) : (
+                  <LinkButton
+                    onClick={handleRedeemMngo}
+                    className="ml-2 text-th-primary text-xs disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:underline"
+                    disabled={mngoAccrued.eq(ZERO_BN)}
+                  >
+                    {t('claim')}
+                  </LinkButton>
+                )}
               </div>
             </div>
           </div>
