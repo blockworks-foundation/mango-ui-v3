@@ -123,7 +123,7 @@ export default function useWallet() {
       actions.reloadOrders()
       actions.fetchTradeHistory()
       actions.fetchWalletTokens()
-
+      actions.fetchMangoHeroesNFTs()
       // notify({
       //   title: t('wallet-connected'),
       //   description:
@@ -135,10 +135,13 @@ export default function useWallet() {
     })
     wallet.on('disconnect', () => {
       console.log('disconnecting wallet')
+
       setMangoStore((state) => {
         state.wallet.connected = false
         state.mangoAccounts = []
         state.selectedMangoAccount.current = null
+        state.settings.nfts = []
+        state.settings.avatar = ''
         state.tradeHistory = []
       })
       notify({
@@ -151,6 +154,7 @@ export default function useWallet() {
   useInterval(() => {
     if (connected && mangoAccount) {
       actions.fetchWalletTokens()
+      actions.fetchMangoHeroesNFTs()
       actions.fetchTradeHistory()
     }
   }, 90 * SECONDS)

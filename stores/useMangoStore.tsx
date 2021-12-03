@@ -32,6 +32,11 @@ import {
   initialMarket,
   NODE_URL_KEY,
 } from '../components/SettingsModal'
+import { TOKEN_PROGRAM_ID } from '../utils/tokens'
+import { findProgramAddress } from '../utils/metaplex/utils'
+import * as borsh from 'borsh'
+import { Metadata, METADATA_SCHEMA, NFT } from '../utils/metaplex/models'
+import { METADATA_KEY, METADATA_PREFIX } from '../utils/metaplex/types'
 import { MSRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
 
 export const ENDPOINTS: EndpointInfo[] = [
@@ -169,6 +174,8 @@ interface MangoStore extends State {
   }
   settings: {
     uiLocked: boolean
+    nfts: NFT[]
+    avatar: string
   }
   tradeHistory: any[]
   set: (x: any) => void
@@ -241,6 +248,8 @@ const useMangoStore = create<MangoStore>((set, get) => {
     wallet: INITIAL_STATE.WALLET,
     settings: {
       uiLocked: true,
+      nfts: [],
+      avatar: '',
     },
     tradeHistory: [],
     set: (fn) => set(produce(fn)),
@@ -285,6 +294,72 @@ const useMangoStore = create<MangoStore>((set, get) => {
         } else {
           set((state) => {
             state.wallet.tokens = []
+          })
+        }
+      },
+      async fetchMangoHeroesNFTs() {
+        const wallet = get().wallet.current
+        const connected = get().wallet.connected
+        const connection = get().connection.current
+        const set = get().set
+
+        if (wallet?.publicKey && connected) {
+          const tokenAccounts = await connection.getParsedTokenAccountsByOwner(
+            wallet.publicKey,
+            { programId: TOKEN_PROGRAM_ID }
+          )
+
+          const walletNFTs = []
+
+          tokenAccounts.value.forEach((token) => {
+            const tokenAccount = token.account.data.parsed.info
+
+            if (
+              parseFloat(tokenAccount.tokenAmount.amount) == 1 &&
+              tokenAccount.tokenAmount.decimals == 0
+            ) {
+              const nft = new NFT()
+              nft.mintAddress = new PublicKey(tokenAccount.mint)
+              walletNFTs.push(nft)
+            }
+          })
+
+          if (walletNFTs.length == 0) return
+
+          const metadataProgramId = new PublicKey(METADATA_KEY)
+
+          const nfts = []
+
+          for (const nft of walletNFTs) {
+            // The return value is [programDerivedAddress, bytes] but we only care about the address
+
+            const [pda] = await findProgramAddress(
+              [
+                Buffer.from(METADATA_PREFIX),
+                metadataProgramId.toBuffer(),
+                nft.mintAddress.toBuffer(),
+              ],
+              metadataProgramId
+            )
+
+            const accountInfo = await connection.getAccountInfo(
+              pda,
+              'processed'
+            )
+            const metadata = borsh.deserializeUnchecked(
+              METADATA_SCHEMA,
+              Metadata,
+              accountInfo!.data
+            )
+
+            const uri = metadata.data.uri.replace(/\0/g, '')
+            nft.metadataUri = uri
+            nfts.push(nft)
+          }
+
+          set((state) => {
+            ;(state.settings.nfts = nfts),
+              (state.settings.avatar = localStorage.getItem('profilePic'))
           })
         }
       },
