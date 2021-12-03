@@ -1,4 +1,4 @@
-import { FunctionComponent, useEffect, useRef, useState } from 'react'
+import { FunctionComponent, useState } from 'react'
 import useMangoStore from '../stores/useMangoStore'
 import { PerpMarket, ZERO_BN } from '@blockworks-foundation/mango-client'
 import Button, { LinkButton } from './Button'
@@ -27,34 +27,6 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
   const mangoClient = useMangoStore((s) => s.connection.client)
   const config = useMangoStore.getState().selectedMarket.config
 
-  const orderBookRef = useRef(useMangoStore.getState().selectedMarket.orderBook)
-  const orderbook = orderBookRef.current
-  useEffect(
-    () =>
-      useMangoStore.subscribe(
-        // @ts-ignore
-        (orderBook) => (orderBookRef.current = orderBook),
-        (state) => state.selectedMarket.orderBook
-      ),
-    []
-  )
-
-  const markPriceRef = useRef(useMangoStore.getState().selectedMarket.markPrice)
-  const markPrice = markPriceRef.current
-  useEffect(
-    () =>
-      useMangoStore.subscribe(
-        (markPrice) => (markPriceRef.current = markPrice as number),
-        (state) => state.selectedMarket.markPrice
-      ),
-    []
-  )
-
-  // The reference price is the book mid if book is double sided; else mark price
-  const bb = orderbook?.bids?.length > 0 && Number(orderbook.bids[0][0])
-  const ba = orderbook?.asks?.length > 0 && Number(orderbook.asks[0][0])
-  const referencePrice = bb && ba ? (bb + ba) / 2 : markPrice
-
   async function handleMarketClose() {
     const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
@@ -64,6 +36,14 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
     const bidInfo =
       useMangoStore.getState().accountInfos[marketConfig.bidsKey.toString()]
     const wallet = useMangoStore.getState().wallet.current
+
+    const orderbook = useMangoStore.getState().selectedMarket.orderBook
+    const markPrice = useMangoStore.getState().selectedMarket.markPrice
+
+    // The reference price is the book mid if book is double sided; else mark price
+    const bb = orderbook?.bids?.length > 0 && Number(orderbook.bids[0][0])
+    const ba = orderbook?.asks?.length > 0 && Number(orderbook.asks[0][0])
+    const referencePrice = bb && ba ? (bb + ba) / 2 : markPrice
 
     if (!wallet || !mangoGroup || !mangoAccount) return
     setSubmitting(true)
