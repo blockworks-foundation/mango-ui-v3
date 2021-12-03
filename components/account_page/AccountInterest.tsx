@@ -12,6 +12,9 @@ import { useViewport } from '../../hooks/useViewport'
 import { breakpoints } from '../TradePageGrid'
 import { ExpandableRow } from '../TableElements'
 import MobileTableHeader from '../mobile/MobileTableHeader'
+import { exportDataToCSV } from '../../utils/export'
+import { SaveIcon } from '@heroicons/react/solid'
+import Button from '../Button'
 
 interface InterestStats {
   [key: string]: {
@@ -50,6 +53,35 @@ const AccountInterest = () => {
       return getTokenBySymbol(groupConfig, selectedAsset)
     }
   }, [selectedAsset])
+
+  const exportInterestDataToCSV = () => {
+    const assets = Object.keys(hourlyInterestStats)
+    let dataToExport = []
+
+    for (const asset of assets) {
+      dataToExport = [
+        ...dataToExport,
+        ...hourlyInterestStats[asset].map((interest) => {
+          return {
+            timestamp: interest.time,
+            asset: asset,
+            deposit_interest: interest.deposit_interest,
+            borrow_interest: interest.borrow_interest,
+          }
+        }),
+      ]
+    }
+
+    const title = 'Mango Markets - Interest History - ' + new Date().toString()
+    const headers = [
+      'Timestamp',
+      'Asset',
+      'Deposit Interest',
+      'Borrow Interest',
+    ]
+
+    exportDataToCSV(dataToExport, title, headers, t)
+  }
 
   useEffect(() => {
     if (!isEmpty(hourlyInterestStats)) {
@@ -115,7 +147,18 @@ const AccountInterest = () => {
 
   return (
     <>
-      <div className="pb-4 text-th-fgd-1 text-lg">{t('interest-earned')}</div>
+      <div className="pb-4 text-th-fgd-1 text-lg">
+        {t('interest-earned')}
+        <Button
+          className={`float-right text-sm`}
+          onClick={exportInterestDataToCSV}
+        >
+          <div className={`flex items-center`}>
+            {t('export-data')}
+            <SaveIcon className={`h-4 w-4 ml-1.5`} />
+          </div>
+        </Button>
+      </div>{' '}
       {mangoAccount ? (
         <div>
           {!isMobile ? (
