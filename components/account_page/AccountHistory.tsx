@@ -104,14 +104,15 @@ export default function AccountHistory() {
       return
     }
 
-    const title = historyViews.filter((v) => v.key == view)[0].label
+    const tab = historyViews.filter((v) => v.key == view)[0].label
+    const title = `Mango Markets - ${tab} - ' + ${new Date().toString()}`
 
     exportDataToCSV(dataToExport, title, headers, t)
   }
 
   return (
     <>
-      <div className="pb-4">
+      <div className=" pb-4">
         <div>
           <div className="flex justify-between mb-4 text-th-fgd-1 text-lg">
             <div className={`sm:w-3/4`}>
@@ -132,16 +133,17 @@ export default function AccountHistory() {
                 </div>
               </div>
             </div>
+
+            <Button
+              className={`flex-none float-right text-sm h-9`}
+              onClick={exportHistoryToCSV}
+            >
+              <div className={`flex items-center`}>
+                {t('export-data')}
+                <SaveIcon className={`h-4 w-4 ml-1.5`} />
+              </div>
+            </Button>
           </div>
-          <Button
-            className={`flex-none float-right text-sm h-9`}
-            onClick={exportHistoryToCSV}
-          >
-            <div className={`flex items-center`}>
-              {t('export-data')}
-              <SaveIcon className={`h-4 w-4 ml-1.5`} />
-            </div>
-          </Button>
         </div>
         <div className="mb-1 mt-4 md:mt-0">
           <div className="flex justify-end">
