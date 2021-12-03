@@ -10,7 +10,7 @@ import usePagination from '../../hooks/usePagination'
 import { roundToDecimal } from '../../utils'
 import { exportDataToCSV } from '../../utils/export'
 import Button from '../Button'
-import { SaveIcon } from '@heroicons/react/solid'
+import { SaveIcon } from '@heroicons/react/outline'
 
 const QUOTE_DECIMALS = 6
 
@@ -117,12 +117,12 @@ const AccountFunding = () => {
       <div className="pb-4 text-th-fgd-1 text-lg">
         {t('total-funding-stats')}
         <Button
-          className={`float-right text-sm`}
+          className={`float-right text-xs h-8 pt-0 pb-0 pl-3 pr-3`}
           onClick={exportFundingDataToCSV}
         >
           <div className={`flex items-center`}>
+            <SaveIcon className={`h-4 w-4 mr-1.5`} />
             {t('export-data')}
-            <SaveIcon className={`h-4 w-4 ml-1.5`} />
           </div>
         </Button>
       </div>

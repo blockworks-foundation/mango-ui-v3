@@ -15,7 +15,7 @@ import { exportDataToCSV } from '../../utils/export'
 import { notify } from '../../utils/notifications'
 import useTradeHistory from '../../hooks/useTradeHistory'
 import Button from '../Button'
-import { SaveIcon } from '@heroicons/react/solid'
+import { SaveIcon } from '@heroicons/react/outline'
 
 const historyViews = [
   { label: 'Trades', key: 'Trades' },
@@ -112,60 +112,51 @@ export default function AccountHistory() {
 
   return (
     <>
-      <div className=" pb-4">
+      <div className="flex flex-col md:flex-row md:items-end md:justify-between pb-2">
         <div>
-          <div className="flex justify-between mb-4 text-th-fgd-1 text-lg">
-            <div className={`sm:w-3/4`}>
-              <span>{t('history')}</span>
-              <div className="mr-4 text-xs text-th-fgd-3">
-                <div>
-                  <span>
-                    {t('delay-displaying-recent')} {t('use-explorer-one')}
-                    <a
-                      href={`https://explorer.solana.com/address/${mangoAccountPk}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {t('use-explorer-two')}
-                    </a>
-                    {t('use-explorer-three')}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <Button
-              className={`flex-none float-right text-sm h-9`}
-              onClick={exportHistoryToCSV}
+          <div className="mb-1 text-th-fgd-1 text-lg">{t('history')}</div>
+          <div className="mr-4 text-xs text-th-fgd-3">
+            {t('delay-displaying-recent')} {t('use-explorer-one')}
+            <a
+              href={`https://explorer.solana.com/address/${mangoAccountPk}`}
+              target="_blank"
+              rel="noopener noreferrer"
             >
-              <div className={`flex items-center`}>
-                {t('export-data')}
-                <SaveIcon className={`h-4 w-4 ml-1.5`} />
-              </div>
-            </Button>
+              {t('use-explorer-two')}
+            </a>
+            {t('use-explorer-three')}
           </div>
         </div>
-        <div className="mb-1 mt-4 md:mt-0">
-          <div className="flex justify-end">
-            {historyViews.map(({ label, key }, index) => (
-              <div
-                className={`px-2 py-1 ${
-                  index > 0 ? 'ml-2' : null
-                } rounded-md cursor-pointer default-transition bg-th-bkg-3
-                            ${
-                              view === key
-                                ? `ring-1 ring-inset ring-th-primary text-th-primary`
-                                : `text-th-fgd-1 opacity-50 hover:opacity-100`
-                            }
-                          `}
-                onClick={() => setView(key)}
-                key={key as string}
-              >
-                {t(label.toLowerCase())}
-              </div>
-            ))}
-          </div>
+        <div className="flex mb-1 mt-4 md:mt-0">
+          {historyViews.map(({ label, key }, index) => (
+            <div
+              className={`px-2 py-1 ${
+                index > 0 ? 'ml-2' : null
+              } rounded-md cursor-pointer default-transition bg-th-bkg-3
+                          ${
+                            view === key
+                              ? `ring-1 ring-inset ring-th-primary text-th-primary`
+                              : `text-th-fgd-1 opacity-50 hover:opacity-100`
+                          }
+                        `}
+              onClick={() => setView(key)}
+              key={key as string}
+            >
+              {t(label.toLowerCase())}
+            </div>
+          ))}
         </div>
+      </div>
+      <div className="flex justify-end w-full pb-4">
+        <Button
+          className={`text-xs h-8 pt-0 pb-0 pl-3 pr-3`}
+          onClick={exportHistoryToCSV}
+        >
+          <div className={`flex items-center`}>
+            <SaveIcon className={`h-4 w-4 mr-1.5`} />
+            {t('export-data')}
+          </div>
+        </Button>
       </div>
       <ViewContent view={view} history={history} />
     </>

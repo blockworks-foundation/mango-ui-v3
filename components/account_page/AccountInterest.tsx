@@ -13,7 +13,7 @@ import { breakpoints } from '../TradePageGrid'
 import { ExpandableRow } from '../TableElements'
 import MobileTableHeader from '../mobile/MobileTableHeader'
 import { exportDataToCSV } from '../../utils/export'
-import { SaveIcon } from '@heroicons/react/solid'
+import { SaveIcon } from '@heroicons/react/outline'
 import Button from '../Button'
 
 interface InterestStats {
@@ -150,12 +150,12 @@ const AccountInterest = () => {
       <div className="pb-4 text-th-fgd-1 text-lg">
         {t('interest-earned')}
         <Button
-          className={`float-right text-sm`}
+          className={`float-right text-xs h-8 pt-0 pb-0 pl-3 pr-3`}
           onClick={exportInterestDataToCSV}
         >
           <div className={`flex items-center`}>
+            <SaveIcon className={`h-4 w-4 mr-1.5`} />
             {t('export-data')}
-            <SaveIcon className={`h-4 w-4 ml-1.5`} />
           </div>
         </Button>
       </div>{' '}
