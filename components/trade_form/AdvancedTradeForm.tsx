@@ -331,6 +331,7 @@ export default function AdvancedTradeForm({
   const onTradeTypeChange = (tradeType) => {
     setTradeType(tradeType)
     setPostOnly(false)
+    setReduceOnly(false)
     if (TRIGGER_ORDER_TYPES.includes(tradeType)) {
       setReduceOnly(true)
     }
