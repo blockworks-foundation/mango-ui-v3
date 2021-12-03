@@ -596,8 +596,6 @@ export default function AdvancedTradeForm({
       })
       console.error(e)
     } finally {
-      // TODO: should be removed, main issue are newly created OO accounts
-      // await sleep(600)
       actions.reloadMangoAccount()
       actions.loadMarketFills()
       setSubmitting(false)
