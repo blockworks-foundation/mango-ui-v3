@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import useIpAddress from '../../hooks/useIpAddress'
 import {
   getMarketIndexBySymbol,
@@ -362,9 +362,6 @@ export default function AdvancedTradeForm({
     setIoc(checked)
   }
   const reduceOnChange = (checked) => {
-    if (checked) {
-      setReduceOnly(false)
-    }
     setReduceOnly(checked)
   }
   const marginOnChange = (checked) => {
@@ -457,9 +454,15 @@ export default function AdvancedTradeForm({
           )
         : baseSize
     estimatedPrice = estimateMarketPrice(orderbook, estimatedSize || 0, side)
+
+    // The reference price is the book mid if book is double sided; else mark price
+    const bb = orderbook?.bids?.length > 0 && Number(orderbook.bids[0][0])
+    const ba = orderbook?.asks?.length > 0 && Number(orderbook.asks[0][0])
+    const referencePrice = bb && ba ? (bb + ba) / 2 : markPrice
+
     const slippageAbs =
-      estimatedSize > 0 ? Math.abs(estimatedPrice - markPrice) : 0
-    const slippageRel = slippageAbs / markPrice
+      estimatedSize > 0 ? Math.abs(estimatedPrice - referencePrice) : 0
+    const slippageRel = slippageAbs / referencePrice
 
     const takerFeeRel = takerFee
     const takerFeeAbs = estimatedSize
@@ -508,11 +511,12 @@ export default function AdvancedTradeForm({
 
     try {
       const orderPrice = calculateTradePrice(
+        marketConfig.kind,
         tradeType,
         orderbook,
         baseSize,
         side,
-        price,
+        price || markPrice,
         triggerPrice
       )
 
@@ -529,8 +533,7 @@ export default function AdvancedTradeForm({
       const orderType = ioc ? 'ioc' : postOnly ? 'postOnly' : 'limit'
 
       // TODO saml - create component and set
-      const maxSlippage: number | undefined
-
+      const maxSlippage: number | undefined = 0.01
       console.log(
         'submit',
         side,
