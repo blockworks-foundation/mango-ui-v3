@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import useIpAddress from '../../hooks/useIpAddress'
 import {
+  clamp,
   getMarketIndexBySymbol,
   getTokenBySymbol,
   I80F48,
@@ -115,12 +116,12 @@ export default function AdvancedTradeForm({
     '0.025'
   )
   const [maxSlippagePercentage, setMaxSlippagePercentage] = useState(
-    parseFloat(maxSlippage) * 100
+    clamp(parseFloat(maxSlippage), 0, 1) * 100
   )
   const [editMaxSlippage, setEditMaxSlippage] = useState(false)
 
   const saveMaxSlippage = (slippage) => {
-    setMaxSlippage((slippage / 100).toString())
+    setMaxSlippage(clamp(slippage / 100, 0, 1).toString())
     setEditMaxSlippage(false)
   }
 
@@ -600,7 +601,10 @@ export default function AdvancedTradeForm({
             if (side === 'buy') {
               perpOrderPrice = markPrice * (1 + parseFloat(maxSlippage))
             } else {
-              perpOrderPrice = markPrice * (1 - parseFloat(maxSlippage))
+              perpOrderPrice = Math.max(
+                market.tickSize,
+                markPrice * (1 - parseFloat(maxSlippage))
+              )
             }
           } else {
             perpOrderType = 'market'
@@ -967,7 +971,7 @@ export default function AdvancedTradeForm({
                   <div className="mb-1 text-xs text-th-fgd-3">Max Slippage</div>
                   <div className="flex">
                     <Input
-                      type="text"
+                      type="number"
                       min="0"
                       max="100"
                       onChange={(e) => setMaxSlippagePercentage(e.target.value)}
