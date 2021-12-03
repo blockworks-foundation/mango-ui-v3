@@ -9,7 +9,10 @@ import {
   PerpMarket,
   PerpOrderType,
 } from '@blockworks-foundation/mango-client'
-import { InformationCircleIcon } from '@heroicons/react/outline'
+import {
+  ExclamationIcon,
+  InformationCircleIcon,
+} from '@heroicons/react/outline'
 import { notify } from '../../utils/notifications'
 import { calculateTradePrice, getDecimalCount } from '../../utils'
 import { floorToDecimal } from '../../utils/index'
@@ -612,39 +615,6 @@ export default function AdvancedTradeForm({
         }
 
         if (isTriggerOrder) {
-          // If stop loss or take profit, walk up the book and alert user if slippage will be high
-          if (isMarketOrder) {
-            let warnUserSlippage = false
-
-            const bookSide = side === 'buy' ? orderbook.asks : orderbook.bids
-            let base = 0
-            let quote = 0
-            for (const [p, q] of bookSide) {
-              base += q
-              quote += p * q
-
-              if (base >= baseSize) {
-                break
-              }
-            }
-
-            if (base < baseSize || (baseSize && base === 0)) {
-              warnUserSlippage = true
-            } else if (baseSize > 0) {
-              // only check if baseSize nonzero because this implies base nonzero
-              const avgPrice = quote / base
-              warnUserSlippage = Math.abs(avgPrice / referencePrice - 1) > 0.025
-            }
-
-            if (warnUserSlippage) {
-              // TODO tyler - add warning to user when this is set true
-              console.log(
-                'The requested stop loss order will likely have an extremely large slippage! Consider using Stop Limit or Take Profit Limit order instead.'
-              )
-              console.log(base, quote)
-            }
-          }
-
           txid = await mangoClient.addPerpTriggerOrder(
             mangoGroup,
             mangoAccount,
@@ -722,6 +692,30 @@ export default function AdvancedTradeForm({
     editMaxSlippage
 
   const canTrade = ipAllowed || (market instanceof Market && spotAllowed)
+
+  // If stop loss or take profit, walk up the book and alert user if slippage will be high
+  let warnUserSlippage = false
+  if (isMarketOrder && isTriggerOrder) {
+    const bookSide = side === 'buy' ? orderbook.asks : orderbook.bids
+    let base = 0
+    let quote = 0
+    for (const [p, q] of bookSide) {
+      base += q
+      quote += p * q
+
+      if (base >= baseSize) {
+        break
+      }
+    }
+
+    if (base < baseSize || (baseSize && base === 0)) {
+      warnUserSlippage = true
+    } else if (baseSize > 0) {
+      // only check if baseSize nonzero because this implies base nonzero
+      const avgPrice = quote / base
+      warnUserSlippage = Math.abs(avgPrice / referencePrice - 1) > 0.025
+    }
+  }
 
   return (
     <div className="flex flex-col h-full">
@@ -950,6 +944,17 @@ export default function AdvancedTradeForm({
               </div>
             ) : null}
           </div>
+          {warnUserSlippage ? (
+            <div className="text-th-red flex items-center mt-1">
+              <div>
+                <ExclamationIcon className="h-5 w-5 mr-2" />
+              </div>
+              <div className="text-xs">
+                This order will likely have extremely large slippage! Consider
+                using Stop Limit or Take Profit Limit order instead.
+              </div>
+            </div>
+          ) : null}
           <div className={`flex pt-4`}>
             {canTrade ? (
               <Button
