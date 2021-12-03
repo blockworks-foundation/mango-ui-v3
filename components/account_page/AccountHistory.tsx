@@ -293,7 +293,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
                   perpMarket
                 )
 
-                const date = new Date(activity_details.block_datetime + 'Z')
+                const date = new Date(activity_details.block_datetime)
                 const lostDecimals = assetLost.symbol === 'SOL' ? 9 : 6
                 const gainedDecimals = assetGained.symbol === 'SOL' ? 9 : 6
                 return (
@@ -453,7 +453,7 @@ const HistoryTable = ({ history, view }) => {
             </thead>
             <tbody>
               {items.map((activity_details: any, index) => {
-                const date = new Date(activity_details.block_datetime + 'Z')
+                const date = new Date(activity_details.block_datetime)
                 return (
                   <TrBody index={index} key={activity_details.signature}>
                     <Td>
