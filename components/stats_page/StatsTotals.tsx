@@ -33,7 +33,7 @@ const getAverageStats = (
 
   priorDate.setHours(priorDate.getHours() + 1)
 
-  if (new Date(oldestStat.time).getTime() > priorDate.getTime()) {
+  if (new Date(oldestStat.hourly).getDate() > priorDate.getDate()) {
     return '-'
   } else {
     return `${avg.toFixed(4)}%`
@@ -42,40 +42,35 @@ const getAverageStats = (
 
 export default function StatsTotals({ latestStats, stats }) {
   const { t } = useTranslation('common')
-  const startTimestamp = 1622905200000
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
-
-  const trimmedStats = stats.filter(
-    (stat) => new Date(stat.hourly).getTime() >= startTimestamp
-  )
 
   // get deposit and borrow values from stats
   const depositValues = []
   const borrowValues = []
 
-  for (let i = 0; i < trimmedStats.length; i++) {
+  for (let i = 0; i < stats.length; i++) {
     const depositValue =
-      trimmedStats[i].name === 'USDC'
-        ? trimmedStats[i].totalDeposits
-        : trimmedStats[i].totalDeposits * trimmedStats[i].baseOraclePrice
+      stats[i].name === 'USDC'
+        ? stats[i].totalDeposits
+        : stats[i].totalDeposits * stats[i].baseOraclePrice
 
     const borrowValue =
-      trimmedStats[i].name === 'USDC'
-        ? trimmedStats[i].totalBorrows
-        : trimmedStats[i].totalBorrows * trimmedStats[i].baseOraclePrice
+      stats[i].name === 'USDC'
+        ? stats[i].totalBorrows
+        : stats[i].totalBorrows * stats[i].baseOraclePrice
 
     depositValues.push({
-      name: trimmedStats[i].name,
+      name: stats[i].name,
       value: depositValue,
-      time: trimmedStats[i].hourly,
+      time: stats[i].hourly,
     })
 
     if (borrowValue) {
       borrowValues.push({
-        name: trimmedStats[i].name,
+        name: stats[i].name,
         value: borrowValue,
-        time: trimmedStats[i].hourly,
+        time: stats[i].hourly,
       })
     }
   }

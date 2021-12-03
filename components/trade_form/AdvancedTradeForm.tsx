@@ -661,12 +661,15 @@ export default function AdvancedTradeForm({
     }
   }
 
-  const showReduceOnly = (basePosition: number) => {
-    return (
-      (basePosition > 0 && side === 'sell') ||
-      (basePosition < 0 && side === 'buy')
-    )
-  }
+  // const showReduceOnly = (basePosition: number) => {
+  //   if (basePosition > 0 && side === 'sell') {
+  //     return true
+  //   }
+  //   if (basePosition < 0 && side === 'buy') {
+  //     return true
+  //   }
+  //   return false
+  // }
 
   /*
   const roundedMax = (
@@ -875,8 +878,12 @@ export default function AdvancedTradeForm({
                 </div>
               </div>
             ) : null}
-            {marketConfig.kind === 'perp' &&
-            showReduceOnly(perpAccount?.basePosition.toNumber()) ? (
+            {/*
+                Add the following line to the ternary below once we are
+                auto updating the reduceOnly state when doing a market order:
+                && showReduceOnly(perpAccount?.basePosition.toNumber())
+             */}
+            {marketConfig.kind === 'perp' ? (
               <div className="mt-4">
                 <Tooltip
                   className="hidden md:block"
