@@ -63,12 +63,9 @@ const AccountFunding = () => {
 
         stats[asset] = x
           .map(([key, value]) => {
-            const funding = roundToDecimal(
-              value.total_funding,
-              QUOTE_DECIMALS + 1
-            )
+            const funding = roundToDecimal(value.total_funding, QUOTE_DECIMALS)
             if (funding !== 0) {
-              return { ...value, time: key }
+              return { ...value, time: key + 'Z' }
             } else {
               return null
             }

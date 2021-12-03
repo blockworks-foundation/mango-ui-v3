@@ -97,7 +97,7 @@ const AccountInterest = () => {
               token.decimals + 1
             )
             if (borrows > 0 || deposits > 0) {
-              return { ...value, time: key }
+              return { ...value, time: key + 'Z' }
             } else {
               return null
             }
