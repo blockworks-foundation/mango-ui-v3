@@ -698,7 +698,9 @@ export default function AdvancedTradeForm({
         {isTriggerLimit && (
           <>
             <div className="col-span-12">
-              <label className="text-xxs text-th-fgd-3">{t('price')}</label>
+              <label className="text-xxs text-th-fgd-3">
+                {t('limit-price')}
+              </label>
               <Input
                 type="number"
                 min="0"

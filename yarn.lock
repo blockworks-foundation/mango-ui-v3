@@ -996,8 +996,8 @@
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
 "@blockworks-foundation/mango-client@git+https://github.com/blockworks-foundation/mango-client-v3.git":
-  version "3.2.10"
-  resolved "git+https://github.com/blockworks-foundation/mango-client-v3.git#846d0a7ef8022b5ab82e0471adc04476c796abd0"
+  version "3.2.13"
+  resolved "git+https://github.com/blockworks-foundation/mango-client-v3.git#d4a90b154d527f97961b122c8a32931381a34222"
   dependencies:
     "@project-serum/anchor" "^0.16.2"
     "@project-serum/serum" "0.13.55"
