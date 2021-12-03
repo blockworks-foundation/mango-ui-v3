@@ -95,6 +95,10 @@ export default function AdvancedTradeForm({
 
   const isTriggerOrder = TRIGGER_ORDER_TYPES.includes(tradeType)
 
+  // TODO saml - create a tick box on the UI; Only available on perps
+  // eslint-disable-next-line
+  const [postOnlySlide, setPostOnlySlide] = useState(false)
+
   const [postOnly, setPostOnly] = useState(false)
   const [ioc, setIoc] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -349,15 +353,27 @@ export default function AdvancedTradeForm({
     }
   }
 
+  // TODO saml - use
+  // eslint-disable-next-line
+  const postOnlySlideOnChange = (checked) => {
+    if (checked) {
+      setIoc(false)
+      setPostOnly(false)
+    }
+    setPostOnlySlide(checked)
+  }
+
   const postOnChange = (checked) => {
     if (checked) {
       setIoc(false)
+      setPostOnlySlide(false)
     }
     setPostOnly(checked)
   }
   const iocOnChange = (checked) => {
     if (checked) {
       setPostOnly(false)
+      setPostOnlySlide(false)
     }
     setIoc(checked)
   }
