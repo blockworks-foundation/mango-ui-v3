@@ -25,9 +25,10 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
   const [submitting, setSubmitting] = useState(false)
   const actions = useMangoStore((s) => s.actions)
   const mangoClient = useMangoStore((s) => s.connection.client)
-  const orderBookRef = useRef(useMangoStore.getState().selectedMarket.orderBook)
   const config = useMangoStore.getState().selectedMarket.config
 
+  const orderBookRef = useRef(useMangoStore.getState().selectedMarket.orderBook)
+  const orderbook = orderBookRef.current
   useEffect(
     () =>
       useMangoStore.subscribe(
@@ -37,6 +38,22 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
       ),
     []
   )
+
+  const markPriceRef = useRef(useMangoStore.getState().selectedMarket.markPrice)
+  const markPrice = markPriceRef.current
+  useEffect(
+    () =>
+      useMangoStore.subscribe(
+        (markPrice) => (markPriceRef.current = markPrice as number),
+        (state) => state.selectedMarket.markPrice
+      ),
+    []
+  )
+
+  // The reference price is the book mid if book is double sided; else mark price
+  const bb = orderbook?.bids?.length > 0 && Number(orderbook.bids[0][0])
+  const ba = orderbook?.asks?.length > 0 && Number(orderbook.asks[0][0])
+  const referencePrice = bb && ba ? (bb + ba) / 2 : markPrice
 
   async function handleMarketClose() {
     const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
@@ -54,10 +71,12 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
     try {
       const perpAccount = mangoAccount.perpAccounts[marketIndex]
       const side = perpAccount.basePosition.gt(ZERO_BN) ? 'sell' : 'buy'
-      const price = 1
       // send a large size to ensure we are reducing the entire position
       const size =
         Math.abs(market.baseLotsToNumber(perpAccount.basePosition)) * 2
+
+      // hard coded for now; market orders are very dangerous and fault prone
+      const maxSlippage: number | undefined = 0.025
 
       const txid = await mangoClient.placePerpOrder(
         mangoGroup,
@@ -66,9 +85,9 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
         market,
         wallet,
         side,
-        price,
+        referencePrice * (1 + (side === 'buy' ? 1 : -1) * maxSlippage),
         size,
-        'market',
+        'ioc',
         0, // client order id
         side === 'buy' ? askInfo : bidInfo,
         true // reduce only

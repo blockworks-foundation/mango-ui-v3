@@ -433,6 +433,11 @@ export default function AdvancedTradeForm({
           'close-position'
         ).toLowerCase()}`
 
+  // The reference price is the book mid if book is double sided; else mark price
+  const bb = orderbook?.bids?.length > 0 && Number(orderbook.bids[0][0])
+  const ba = orderbook?.asks?.length > 0 && Number(orderbook.asks[0][0])
+  const referencePrice = bb && ba ? (bb + ba) / 2 : markPrice
+
   let priceImpact
   let estimatedPrice = price
   if (tradeType === 'Market') {
@@ -470,11 +475,6 @@ export default function AdvancedTradeForm({
           )
         : baseSize
     estimatedPrice = estimateMarketPrice(orderbook, estimatedSize || 0, side)
-
-    // The reference price is the book mid if book is double sided; else mark price
-    const bb = orderbook?.bids?.length > 0 && Number(orderbook.bids[0][0])
-    const ba = orderbook?.asks?.length > 0 && Number(orderbook.asks[0][0])
-    const referencePrice = bb && ba ? (bb + ba) / 2 : markPrice
 
     const slippageAbs =
       estimatedSize > 0 ? Math.abs(estimatedPrice - referencePrice) : 0
@@ -549,7 +549,7 @@ export default function AdvancedTradeForm({
       const orderType = ioc ? 'ioc' : postOnly ? 'postOnly' : 'limit'
 
       // TODO saml - create component and set
-      const maxSlippage: number | undefined = 0.01
+      const maxSlippage: number | undefined = 0.025
       console.log(
         'submit',
         side,
