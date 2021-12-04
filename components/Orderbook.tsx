@@ -356,7 +356,7 @@ export default function Orderbook({ depth = 8 }) {
                   )}
                 </div>
               </div>
-              <div className="flex justify-between bg-th-bkg-1 p-2 mt-4 rounded-md text-xs">
+              <div className="flex justify-between bg-th-bkg-1 p-2 mt-3 rounded-md text-xs">
                 <div className="text-th-fgd-3">{t('spread')}</div>
                 <div className="text-th-fgd-1">
                   {orderbookData?.spread?.toFixed(2)}

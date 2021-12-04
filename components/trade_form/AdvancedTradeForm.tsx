@@ -9,10 +9,7 @@ import {
   PerpMarket,
   PerpOrderType,
 } from '@blockworks-foundation/mango-client'
-import {
-  ExclamationIcon,
-  InformationCircleIcon,
-} from '@heroicons/react/outline'
+import { InformationCircleIcon } from '@heroicons/react/outline'
 import { notify } from '../../utils/notifications'
 import { calculateTradePrice, getDecimalCount } from '../../utils'
 import { floorToDecimal } from '../../utils/index'
@@ -104,10 +101,7 @@ export default function AdvancedTradeForm({
 
   const isTriggerOrder = TRIGGER_ORDER_TYPES.includes(tradeType)
 
-  // TODO saml - create a tick box on the UI; Only available on perps
-  // eslint-disable-next-line
   const [postOnlySlide, setPostOnlySlide] = useState(false)
-
   const [postOnly, setPostOnly] = useState(false)
   const [ioc, setIoc] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -122,6 +116,8 @@ export default function AdvancedTradeForm({
     clamp(parseFloat(maxSlippage), 0, 1) * 100
   )
   const [editMaxSlippage, setEditMaxSlippage] = useState(false)
+  const [showCustomSlippageForm, setShowCustomSlippageForm] = useState(false)
+  const slippagePresets = ['1', '1.5', '2', '2.5', '3']
 
   const saveMaxSlippage = (slippage) => {
     setMaxSlippage(clamp(slippage / 100, 0, 1).toString())
@@ -910,21 +906,41 @@ export default function AdvancedTradeForm({
                 && showReduceOnly(perpAccount?.basePosition.toNumber())
              */}
             {marketConfig.kind === 'perp' ? (
-              <div className="mt-4">
-                <Tooltip
-                  className="hidden md:block"
-                  delay={250}
-                  placement="left"
-                  content={t('tooltip-reduce')}
-                >
-                  <Checkbox
-                    checked={reduceOnly}
-                    onChange={(e) => reduceOnChange(e.target.checked)}
-                    disabled={isTriggerOrder}
+              <div className="flex mt-4">
+                <div className="mr-4 w-max">
+                  <Tooltip
+                    className="hidden md:block"
+                    delay={250}
+                    placement="left"
+                    content={t('tooltip-reduce')}
                   >
-                    Reduce Only
-                  </Checkbox>
-                </Tooltip>
+                    <Checkbox
+                      checked={reduceOnly}
+                      onChange={(e) => reduceOnChange(e.target.checked)}
+                      disabled={isTriggerOrder}
+                    >
+                      Reduce Only
+                    </Checkbox>
+                  </Tooltip>
+                </div>
+                {/* Confirm checkbox label and if it should be hidden for certain order types */}
+                <div className="w-max">
+                  <Tooltip
+                    className="hidden md:block"
+                    delay={250}
+                    placement="left"
+                    // TODO: Need a functionality description
+                    content="Order type description..."
+                  >
+                    <Checkbox
+                      checked={postOnlySlide}
+                      onChange={(e) => postOnlySlideOnChange(e.target.checked)}
+                      disabled={isTriggerOrder}
+                    >
+                      POST Slide
+                    </Checkbox>
+                  </Tooltip>
+                </div>
               </div>
             ) : null}
             {marketConfig.kind === 'spot' ? (
@@ -945,14 +961,11 @@ export default function AdvancedTradeForm({
             ) : null}
           </div>
           {warnUserSlippage ? (
-            <div className="text-th-red flex items-center mt-1">
-              <div>
-                <ExclamationIcon className="h-5 w-5 mr-2" />
-              </div>
-              <div className="text-xs">
-                This order will likely have extremely large slippage! Consider
-                using Stop Limit or Take Profit Limit order instead.
-              </div>
+            <div className="mt-4">
+              <InlineNotification
+                desc="This order will likely have extremely large slippage! Consider using Stop Limit or Take Profit Limit order instead."
+                type="warning"
+              />
             </div>
           ) : null}
           <div className={`flex pt-4`}>
@@ -975,15 +988,11 @@ export default function AdvancedTradeForm({
                 ) : sizeTooLarge ? (
                   t('too-large')
                 ) : side === 'buy' ? (
-                  `${
-                    baseSize > 0 ? `${t('buy')} ` + baseSize : `${t('buy')} `
-                  } ${
+                  `${baseSize > 0 ? `${t('buy')} ` : `${t('buy')} `} ${
                     isPerpMarket ? marketConfig.name : marketConfig.baseSymbol
                   }`
                 ) : (
-                  `${
-                    baseSize > 0 ? `${t('sell')} ` + baseSize : `${t('sell')} `
-                  } ${
+                  `${baseSize > 0 ? `${t('sell')} ` : `${t('sell')} `} ${
                     isPerpMarket ? marketConfig.name : marketConfig.baseSymbol
                   }`
                 )}
@@ -1003,29 +1012,53 @@ export default function AdvancedTradeForm({
           {tradeType === 'Market' && priceImpact ? (
             <div className="col-span-12 md:col-span-10 md:col-start-3 mt-4">
               {editMaxSlippage ? (
-                <>
-                  <div className="mb-1 text-xs text-th-fgd-3">Max Slippage</div>
-                  <div className="flex">
-                    <Input
-                      type="number"
-                      min="0"
-                      max="100"
-                      onChange={(e) => setMaxSlippagePercentage(e.target.value)}
-                      suffix={
-                        <div className="font-bold text-base text-th-fgd-3">
-                          %
-                        </div>
-                      }
-                      value={maxSlippagePercentage}
-                    />
-                    <Button
-                      className="ml-2"
-                      onClick={() => saveMaxSlippage(maxSlippagePercentage)}
-                    >
-                      {t('save')}
-                    </Button>
+                <div className="flex items-end">
+                  <div className="w-full">
+                    <div className="flex justify-between mb-1">
+                      <div className="text-xs text-th-fgd-3">Max Slippage</div>
+                      {!isMobile ? (
+                        <LinkButton
+                          className="font-normal text-xs"
+                          onClick={() =>
+                            setShowCustomSlippageForm(!showCustomSlippageForm)
+                          }
+                        >
+                          {showCustomSlippageForm ? 'Presets' : 'Custom'}
+                        </LinkButton>
+                      ) : null}
+                    </div>
+                    {showCustomSlippageForm || isMobile ? (
+                      <Input
+                        type="number"
+                        min="0"
+                        max="100"
+                        onChange={(e) =>
+                          setMaxSlippagePercentage(e.target.value)
+                        }
+                        suffix={
+                          <div className="font-bold text-base text-th-fgd-3">
+                            %
+                          </div>
+                        }
+                        value={maxSlippagePercentage}
+                      />
+                    ) : (
+                      <ButtonGroup
+                        activeValue={maxSlippagePercentage.toString()}
+                        className="h-10"
+                        onChange={(p) => setMaxSlippagePercentage(p)}
+                        unit="%"
+                        values={slippagePresets}
+                      />
+                    )}
                   </div>
-                </>
+                  <Button
+                    className="h-10 ml-3"
+                    onClick={() => saveMaxSlippage(maxSlippagePercentage)}
+                  >
+                    {t('save')}
+                  </Button>
+                </div>
               ) : (
                 <>
                   {isPerpMarket ? (
