@@ -595,7 +595,7 @@ export default function AdvancedTradeForm({
         )
         actions.reloadOrders()
       } else {
-        let perpOrderType: PerpOrderType
+        let perpOrderType: PerpOrderType = orderType
         let perpOrderPrice: number = orderPrice
 
         if (isMarketOrder) {
