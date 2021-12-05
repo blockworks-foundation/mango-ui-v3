@@ -53,27 +53,24 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
   } = usePagination(filteredTrades, { perPage: 500 })
 
   const renderMarketName = (trade: any) => {
-    let marketType, baseSymbol
-    if (trade.marketName.includes('PERP')) {
-      marketType = 'perp'
-      baseSymbol = trade.marketName.slice(0, trade.marketName.indexOf('-'))
-    } else if (trade.marketName.includes('USDC')) {
-      marketType = 'spot'
-      baseSymbol = trade.marketName.slice(0, trade.marketName.indexOf('/'))
+    if (
+      trade.marketName.includes('PERP') ||
+      trade.marketName.includes('USDC')
+    ) {
+      const location = `/market?name=${trade.marketName}`
+      if (asPath.includes(location)) {
+        return <span>{trade.marketName}</span>
+      } else {
+        return (
+          <Link href={location} shallow={true}>
+            <a className="text-th-fgd-1 underline hover:no-underline hover:text-th-fgd-1">
+              {trade.marketName}
+            </a>
+          </Link>
+        )
+      }
     } else {
       return <span>{trade.marketName}</span>
-    }
-    const location = `/${marketType}/${baseSymbol}`
-    if (asPath.includes(location)) {
-      return <span>{trade.marketName}</span>
-    } else {
-      return (
-        <Link href={location} shallow={true}>
-          <a className="text-th-fgd-1 underline hover:no-underline hover:text-th-fgd-1">
-            {trade.marketName}
-          </a>
-        </Link>
-      )
     }
   }
 
@@ -83,190 +80,211 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
         <div className={`align-middle inline-block min-w-full sm:px-6 lg:px-8`}>
           {tradeHistory && tradeHistory.length ? (
             !isMobile ? (
-              <Table>
-                <thead>
-                  <TrHead>
-                    <Th>
-                      <LinkButton
-                        className="flex items-center no-underline font-normal"
-                        onClick={() => requestSort('market')}
-                      >
-                        {t('market')}
-                        <ArrowSmDownIcon
-                          className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
-                            sortConfig?.key === 'market'
-                              ? sortConfig.direction === 'ascending'
-                                ? 'transform rotate-180'
-                                : 'transform rotate-360'
-                              : null
-                          }`}
-                        />
-                      </LinkButton>
-                    </Th>
-                    <Th>
-                      <LinkButton
-                        className="flex items-center no-underline font-normal"
-                        onClick={() => requestSort('side')}
-                      >
-                        {t('side')}
-                        <ArrowSmDownIcon
-                          className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
-                            sortConfig?.key === 'side'
-                              ? sortConfig.direction === 'ascending'
-                                ? 'transform rotate-180'
-                                : 'transform rotate-360'
-                              : null
-                          }`}
-                        />
-                      </LinkButton>
-                    </Th>
-                    <Th>
-                      <LinkButton
-                        className="flex items-center no-underline font-normal"
-                        onClick={() => requestSort('size')}
-                      >
-                        {t('size')}
-                        <ArrowSmDownIcon
-                          className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
-                            sortConfig?.key === 'size'
-                              ? sortConfig.direction === 'ascending'
-                                ? 'transform rotate-180'
-                                : 'transform rotate-360'
-                              : null
-                          }`}
-                        />
-                      </LinkButton>
-                    </Th>
-                    <Th>
-                      <LinkButton
-                        className="flex items-center no-underline font-normal"
-                        onClick={() => requestSort('price')}
-                      >
-                        {t('price')}
-                        <ArrowSmDownIcon
-                          className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
-                            sortConfig?.key === 'price'
-                              ? sortConfig.direction === 'ascending'
-                                ? 'transform rotate-180'
-                                : 'transform rotate-360'
-                              : null
-                          }`}
-                        />
-                      </LinkButton>
-                    </Th>
-                    <Th>
-                      <LinkButton
-                        className="flex items-center no-underline font-normal"
-                        onClick={() => requestSort('value')}
-                      >
-                        {t('value')}
-                        <ArrowSmDownIcon
-                          className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
-                            sortConfig?.key === 'value'
-                              ? sortConfig.direction === 'ascending'
-                                ? 'transform rotate-180'
-                                : 'transform rotate-360'
-                              : null
-                          }`}
-                        />
-                      </LinkButton>
-                    </Th>
-                    <Th>
-                      <LinkButton
-                        className="flex items-center no-underline font-normal"
-                        onClick={() => requestSort('liquidity')}
-                      >
-                        {t('liquidity')}
-                        <ArrowSmDownIcon
-                          className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
-                            sortConfig?.key === 'liquidity'
-                              ? sortConfig.direction === 'ascending'
-                                ? 'transform rotate-180'
-                                : 'transform rotate-360'
-                              : null
-                          }`}
-                        />
-                      </LinkButton>
-                    </Th>
-                    <Th>
-                      <LinkButton
-                        className="flex items-center no-underline font-normal"
-                        onClick={() => requestSort('feeCost')}
-                      >
-                        {t('fee')}
-                        <ArrowSmDownIcon
-                          className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
-                            sortConfig?.key === 'feeCost'
-                              ? sortConfig.direction === 'ascending'
-                                ? 'transform rotate-180'
-                                : 'transform rotate-360'
-                              : null
-                          }`}
-                        />
-                      </LinkButton>
-                    </Th>
-                    <Th>
-                      <LinkButton
-                        className="flex items-center no-underline font-normal"
-                        onClick={() => requestSort('loadTimestamp')}
-                      >
-                        {t('approximate-time')}
-                        <ArrowSmDownIcon
-                          className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
-                            sortConfig?.key === 'loadTimestamp'
-                              ? sortConfig.direction === 'ascending'
-                                ? 'transform rotate-180'
-                                : 'transform rotate-360'
-                              : null
-                          }`}
-                        />
-                      </LinkButton>
-                    </Th>
-                  </TrHead>
-                </thead>
-                <tbody>
-                  {paginatedData.map((trade: any, index) => {
-                    return (
-                      <TrBody
-                        index={index}
-                        key={`${trade.seqNum}${trade.marketName}`}
-                      >
-                        <Td>
-                          <div className="flex items-center">
-                            <img
-                              alt=""
-                              width="20"
-                              height="20"
-                              src={`/assets/icons/${trade.marketName
-                                .split(/-|\//)[0]
-                                .toLowerCase()}.svg`}
-                              className={`mr-2.5`}
-                            />
-                            {renderMarketName(trade)}
-                          </div>
-                        </Td>
-                        <Td>
-                          <SideBadge side={trade.side} />
-                        </Td>
-                        <Td>{trade.size}</Td>
-                        <Td>
-                          ${new Intl.NumberFormat('en-US').format(trade.price)}
-                        </Td>
-                        <Td>{formatUsdValue(trade.value)}</Td>
-                        <Td>{trade.liquidity}</Td>
-                        <Td>{formatUsdValue(trade.feeCost)}</Td>
-                        <Td>
-                          {trade.loadTimestamp || trade.timestamp
-                            ? renderTradeDateTime(
-                                trade.loadTimestamp || trade.timestamp
-                              )
-                            : t('recent')}
-                        </Td>
-                      </TrBody>
-                    )
-                  })}
-                </tbody>
-              </Table>
+              <>
+                <Table>
+                  <thead>
+                    <TrHead>
+                      <Th>
+                        <LinkButton
+                          className="flex items-center no-underline font-normal"
+                          onClick={() => requestSort('market')}
+                        >
+                          {t('market')}
+                          <ArrowSmDownIcon
+                            className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                              sortConfig?.key === 'market'
+                                ? sortConfig.direction === 'ascending'
+                                  ? 'transform rotate-180'
+                                  : 'transform rotate-360'
+                                : null
+                            }`}
+                          />
+                        </LinkButton>
+                      </Th>
+                      <Th>
+                        <LinkButton
+                          className="flex items-center no-underline font-normal"
+                          onClick={() => requestSort('side')}
+                        >
+                          {t('side')}
+                          <ArrowSmDownIcon
+                            className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                              sortConfig?.key === 'side'
+                                ? sortConfig.direction === 'ascending'
+                                  ? 'transform rotate-180'
+                                  : 'transform rotate-360'
+                                : null
+                            }`}
+                          />
+                        </LinkButton>
+                      </Th>
+                      <Th>
+                        <LinkButton
+                          className="flex items-center no-underline font-normal"
+                          onClick={() => requestSort('size')}
+                        >
+                          {t('size')}
+                          <ArrowSmDownIcon
+                            className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                              sortConfig?.key === 'size'
+                                ? sortConfig.direction === 'ascending'
+                                  ? 'transform rotate-180'
+                                  : 'transform rotate-360'
+                                : null
+                            }`}
+                          />
+                        </LinkButton>
+                      </Th>
+                      <Th>
+                        <LinkButton
+                          className="flex items-center no-underline font-normal"
+                          onClick={() => requestSort('price')}
+                        >
+                          {t('price')}
+                          <ArrowSmDownIcon
+                            className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                              sortConfig?.key === 'price'
+                                ? sortConfig.direction === 'ascending'
+                                  ? 'transform rotate-180'
+                                  : 'transform rotate-360'
+                                : null
+                            }`}
+                          />
+                        </LinkButton>
+                      </Th>
+                      <Th>
+                        <LinkButton
+                          className="flex items-center no-underline font-normal"
+                          onClick={() => requestSort('value')}
+                        >
+                          {t('value')}
+                          <ArrowSmDownIcon
+                            className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                              sortConfig?.key === 'value'
+                                ? sortConfig.direction === 'ascending'
+                                  ? 'transform rotate-180'
+                                  : 'transform rotate-360'
+                                : null
+                            }`}
+                          />
+                        </LinkButton>
+                      </Th>
+                      <Th>
+                        <LinkButton
+                          className="flex items-center no-underline font-normal"
+                          onClick={() => requestSort('liquidity')}
+                        >
+                          {t('liquidity')}
+                          <ArrowSmDownIcon
+                            className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                              sortConfig?.key === 'liquidity'
+                                ? sortConfig.direction === 'ascending'
+                                  ? 'transform rotate-180'
+                                  : 'transform rotate-360'
+                                : null
+                            }`}
+                          />
+                        </LinkButton>
+                      </Th>
+                      <Th>
+                        <LinkButton
+                          className="flex items-center no-underline font-normal"
+                          onClick={() => requestSort('feeCost')}
+                        >
+                          {t('fee')}
+                          <ArrowSmDownIcon
+                            className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                              sortConfig?.key === 'feeCost'
+                                ? sortConfig.direction === 'ascending'
+                                  ? 'transform rotate-180'
+                                  : 'transform rotate-360'
+                                : null
+                            }`}
+                          />
+                        </LinkButton>
+                      </Th>
+                      <Th>
+                        <LinkButton
+                          className="flex items-center no-underline font-normal"
+                          onClick={() => requestSort('loadTimestamp')}
+                        >
+                          {t('approximate-time')}
+                          <ArrowSmDownIcon
+                            className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                              sortConfig?.key === 'loadTimestamp'
+                                ? sortConfig.direction === 'ascending'
+                                  ? 'transform rotate-180'
+                                  : 'transform rotate-360'
+                                : null
+                            }`}
+                          />
+                        </LinkButton>
+                      </Th>
+                    </TrHead>
+                  </thead>
+                  <tbody>
+                    {paginatedData.map((trade: any, index) => {
+                      return (
+                        <TrBody
+                          index={index}
+                          key={`${trade.seqNum}${trade.marketName}`}
+                        >
+                          <Td>
+                            <div className="flex items-center">
+                              <img
+                                alt=""
+                                width="20"
+                                height="20"
+                                src={`/assets/icons/${trade.marketName
+                                  .split(/-|\//)[0]
+                                  .toLowerCase()}.svg`}
+                                className={`mr-2.5`}
+                              />
+                              {renderMarketName(trade)}
+                            </div>
+                          </Td>
+                          <Td>
+                            <SideBadge side={trade.side} />
+                          </Td>
+                          <Td>{trade.size}</Td>
+                          <Td>
+                            $
+                            {new Intl.NumberFormat('en-US').format(trade.price)}
+                          </Td>
+                          <Td>{formatUsdValue(trade.value)}</Td>
+                          <Td>{trade.liquidity}</Td>
+                          <Td>{formatUsdValue(trade.feeCost)}</Td>
+                          <Td>
+                            {trade.loadTimestamp || trade.timestamp
+                              ? renderTradeDateTime(
+                                  trade.loadTimestamp || trade.timestamp
+                                )
+                              : t('recent')}
+                          </Td>
+                        </TrBody>
+                      )
+                    })}
+                  </tbody>
+                </Table>
+                {numTrades && items.length > numTrades ? (
+                  <div className="flex items-center justify-center mt-4">
+                    <Link href="/account" shallow={true}>
+                      {t('view-all-trades')}
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-end">
+                    <Pagination
+                      page={page}
+                      totalPages={totalPages}
+                      nextPage={nextPage}
+                      lastPage={lastPage}
+                      firstPage={firstPage}
+                      previousPage={previousPage}
+                    />
+                  </div>
+                )}
+              </>
             ) : (
               paginatedData.map((trade: any, index) => (
                 <ExpandableRow
@@ -354,24 +372,6 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                   <a className="inline-flex ml-2 py-0">{t('make-trade')}</a>
                 </Link>
               ) : null}
-            </div>
-          )}
-          {numTrades && items.length > numTrades ? (
-            <div className="flex items-center justify-center mt-4">
-              <Link href="/account" shallow={true}>
-                {t('view-all-trades')}
-              </Link>
-            </div>
-          ) : (
-            <div className="flex items-center justify-end">
-              <Pagination
-                page={page}
-                totalPages={totalPages}
-                nextPage={nextPage}
-                lastPage={lastPage}
-                firstPage={firstPage}
-                previousPage={previousPage}
-              />
             </div>
           )}
         </div>

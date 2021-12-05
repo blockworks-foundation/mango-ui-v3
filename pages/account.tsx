@@ -155,7 +155,7 @@ export default function Account() {
                 <h1
                   className={`font-semibold mb-1 mr-3 text-th-fgd-1 text-2xl`}
                 >
-                  {mangoAccount?.name || 'Account'}
+                  {mangoAccount?.name || t('account')}
                 </h1>
                 <div className="flex items-center pb-0.5 text-th-fgd-3 ">
                   <span className="text-xxs sm:text-xs">
@@ -209,12 +209,12 @@ export default function Account() {
           ) : (
             <div className="pb-2 pt-3">
               <Select
-                value={TABS[viewIndex]}
+                value={t(TABS[viewIndex].toLowerCase())}
                 onChange={(e) => handleChangeViewIndex(e)}
               >
                 {TABS.map((tab, index) => (
                   <Select.Option key={index + tab} value={index}>
-                    {tab}
+                    {t(tab.toLowerCase())}
                   </Select.Option>
                 ))}
               </Select>
@@ -254,10 +254,10 @@ export default function Account() {
               </div>
             ) : (
               <EmptyState
-                buttonText="Create Account"
+                buttonText={t('create-account')}
                 icon={<CurrencyDollarIcon />}
                 onClickButton={() => setShowAccountsModal(true)}
-                title="No Account Found"
+                title={t('no-account-found')}
               />
             )
           ) : (

@@ -8,5 +8,6 @@
   "order-details": " ({{orderType}} {{orderSide}}) if price is {{triggerCondition}} {{triggerPrice}}",
   "outside-range": "Order Price Outside Range",
   "slippage-accept": "Please use the trade input form if you wish to accept the potential slippage.",
-  "slippage-warning": "Your order price ({{updatedOrderPrice}}) is greater than 5% {{aboveBelow}} the current market price ({{selectedMarketPrice}}) indicating you might incur significant slippage."
+  "slippage-warning": "Your order price ({{updatedOrderPrice}}) is greater than 5% {{aboveBelow}} the current market price ({{selectedMarketPrice}}) indicating you might incur significant slippage.",
+  "toggle-order-line":　"Toggle order line visibility"
 }

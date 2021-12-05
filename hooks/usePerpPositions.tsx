@@ -9,6 +9,7 @@ import {
   PerpMarketConfig,
 } from '@blockworks-foundation/mango-client'
 import useTradeHistory from './useTradeHistory'
+import useMangoAccount from './useMangoAccount'
 
 export const collectPerpPosition = (
   mangoAccount: MangoAccount,
@@ -78,7 +79,7 @@ export const collectPerpPosition = (
 }
 
 const usePerpPositions = () => {
-  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
+  const { mangoAccount } = useMangoAccount()
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)

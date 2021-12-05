@@ -126,7 +126,7 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
 
   return (
     <>
-      <ElementTitle>Create Account</ElementTitle>
+      <ElementTitle>{t('create-account')}</ElementTitle>
       <div className="mx-auto pb-4 text-center text-th-fgd-3 text-xs">
         {t('insufficient-sol')}
       </div>

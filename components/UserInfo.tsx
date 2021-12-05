@@ -10,6 +10,7 @@ import TradeHistoryTable from './TradeHistoryTable'
 import ManualRefresh from './ManualRefresh'
 import Tabs from './Tabs'
 import FeeDiscountsTable from './FeeDiscountsTable'
+import useMangoAccount from '../hooks/useMangoAccount'
 
 const TABS = [
   'Balances',
@@ -22,8 +23,9 @@ const TABS = [
 const UserInfoTabs = ({ activeTab, setActiveTab }) => {
   const openOrders = useOpenOrders()
   const { openPositions } = usePerpPositions()
+  const { mangoAccount } = useMangoAccount()
   const connected = useMangoStore((s) => s.connection.current)
-  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
+
   const handleTabChange = (tabName) => {
     setActiveTab(tabName)
   }
@@ -72,7 +74,6 @@ const TabContent = ({ activeTab }) => {
 const UserInfo = () => {
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const isPerpMarket = marketConfig.kind === 'perp'
-  const connected = useMangoStore((s) => s.wallet.connected)
   const [activeTab, setActiveTab] = useState('')
 
   useEffect(() => {
@@ -80,7 +81,7 @@ const UserInfo = () => {
   }, [isPerpMarket])
 
   return (
-    <div className={!connected ? 'filter blur-sm' : null}>
+    <div>
       <UserInfoTabs activeTab={activeTab} setActiveTab={setActiveTab} />
       <TabContent activeTab={activeTab} />
     </div>

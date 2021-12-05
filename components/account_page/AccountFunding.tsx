@@ -135,7 +135,7 @@ const AccountFunding = () => {
                           }`}
                         >
                           {stats.total_funding
-                            ? `${stats.total_funding?.toFixed(6)}`
+                            ? `$${stats.total_funding?.toFixed(6)}`
                             : '-'}
                         </div>
                       </Td>
@@ -221,7 +221,7 @@ const AccountFunding = () => {
                       </Table>
                     ) : (
                       <div className="flex justify-center w-full bg-th-bkg-3 py-4">
-                        No funding earned/paid
+                        {t('no-funding')}
                       </div>
                     )}
                   </div>
