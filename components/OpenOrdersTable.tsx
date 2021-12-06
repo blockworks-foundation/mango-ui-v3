@@ -466,6 +466,7 @@ const OpenOrdersTable = () => {
     } finally {
       actions.reloadMangoAccount()
       actions.reloadOrders()
+      actions.updateOpenOrders()
       setModifyId(null)
       setEditOrderIndex(null)
     }
