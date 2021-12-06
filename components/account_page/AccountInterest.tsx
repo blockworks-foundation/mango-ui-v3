@@ -62,8 +62,9 @@ const AccountInterest = () => {
       dataToExport = [
         ...dataToExport,
         ...hourlyInterestStats[asset].map((interest) => {
+          const timestamp = new Date(interest.time)
           return {
-            timestamp: interest.time,
+            timestamp: `${timestamp.toLocaleDateString()} ${timestamp.toLocaleTimeString()}`,
             asset: asset,
             deposit_interest: interest.deposit_interest,
             borrow_interest: interest.borrow_interest,
@@ -72,7 +73,9 @@ const AccountInterest = () => {
       ]
     }
 
-    const title = 'Mango Markets - Interest History - ' + new Date().toString()
+    const title = `${
+      mangoAccount.name || mangoAccount.publicKey
+    }-Interest-${new Date().toLocaleDateString()}`
     const headers = [
       'Timestamp',
       'Asset',

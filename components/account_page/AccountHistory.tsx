@@ -57,7 +57,7 @@ export default function AccountHistory() {
 
     if (view == 'Trades') {
       dataToExport = tradeHistory.map((trade) => {
-        console.log(trade)
+        const timestamp = new Date(trade.loadTimestamp)
         return {
           asset: trade.marketName,
           orderType: trade.side.toUpperCase(),
@@ -66,7 +66,7 @@ export default function AccountHistory() {
           value: trade.value,
           liquidity: trade.liquidity,
           fee: trade.feeCost,
-          date: trade.loadTimestamp,
+          date: `${timestamp.toLocaleDateString()} ${timestamp.toLocaleTimeString()}`,
         }
       })
       headers = [
@@ -84,9 +84,10 @@ export default function AccountHistory() {
         .filter((val) => val.activity_type == view)
         .map((row) => {
           row = row.activity_details
+          const timestamp = new Date(row.block_datetime)
 
           return {
-            date: row.block_datetime,
+            date: `${timestamp.toLocaleDateString()} ${timestamp.toLocaleTimeString()}`,
             asset: row.symbol,
             quantity: row.quantity,
             value: row.usd_equivalent,
@@ -105,7 +106,9 @@ export default function AccountHistory() {
     }
 
     const tab = historyViews.filter((v) => v.key == view)[0].label
-    const title = `Mango Markets - ${tab} - ' + ${new Date().toString()}`
+    const title = `${
+      mangoAccount.name || mangoAccount.publicKey
+    }-${tab}-${new Date().toLocaleDateString()}`
 
     exportDataToCSV(dataToExport, title, headers, t)
   }

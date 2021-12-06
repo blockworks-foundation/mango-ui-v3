@@ -44,9 +44,9 @@ const AccountFunding = () => {
       dataToExport = [
         ...dataToExport,
         ...hourlyFunding[asset].map((funding) => {
-          console.log(funding)
+          const timestamp = new Date(funding.time)
           return {
-            timestamp: funding.time,
+            timestamp: `${timestamp.toLocaleDateString()} ${timestamp.toLocaleTimeString()}`,
             asset: asset,
             amount: funding.total_funding,
           }
@@ -54,7 +54,9 @@ const AccountFunding = () => {
       ]
     }
 
-    const title = 'Mango Markets - Funding History - ' + new Date().toString()
+    const title = `${
+      mangoAccount.name || mangoAccount.publicKey
+    }-Funding-${new Date().toLocaleDateString()}`
     const columns = ['Timestamp', 'Asset', 'Amount']
 
     exportDataToCSV(dataToExport, title, columns, t)
