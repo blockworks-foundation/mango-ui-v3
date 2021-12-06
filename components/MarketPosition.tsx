@@ -267,6 +267,7 @@ export default function MarketPosition() {
       </div>
       {showMarketCloseModal ? (
         <MarketCloseModal
+          baseSymbol={marketConfig.baseSymbol}
           isOpen={showMarketCloseModal}
           onClose={handleCloseWarning}
           market={selectedMarket}

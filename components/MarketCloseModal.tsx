@@ -1,6 +1,10 @@
 import { FunctionComponent, useState } from 'react'
 import useMangoStore from '../stores/useMangoStore'
-import { PerpMarket, ZERO_BN } from '@blockworks-foundation/mango-client'
+import {
+  getMarketByBaseSymbolAndKind,
+  PerpMarket,
+  ZERO_BN,
+} from '@blockworks-foundation/mango-client'
 import Button, { LinkButton } from './Button'
 import { notify } from '../utils/notifications'
 import Loading from './Loading'
@@ -9,15 +13,17 @@ import Modal from './Modal'
 import { useTranslation } from 'next-i18next'
 
 interface MarketCloseModalProps {
-  onClose: () => void
+  baseSymbol: string
   isOpen: boolean
+  onClose: () => void
   market: PerpMarket
   marketIndex: number
 }
 
 const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
-  onClose,
+  baseSymbol,
   isOpen,
+  onClose,
   market,
   marketIndex,
 }) => {
@@ -26,24 +32,47 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
   const actions = useMangoStore((s) => s.actions)
   const mangoClient = useMangoStore((s) => s.connection.client)
   const config = useMangoStore.getState().selectedMarket.config
+  const groupConfig = useMangoStore.getState().selectedMangoGroup.config
+  const marketConfig = getMarketByBaseSymbolAndKind(
+    groupConfig,
+    baseSymbol,
+    'perp'
+  )
 
   async function handleMarketClose() {
     const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
-    const marketConfig = useMangoStore.getState().selectedMarket.config
     const askInfo =
       useMangoStore.getState().accountInfos[marketConfig.asksKey.toString()]
     const bidInfo =
       useMangoStore.getState().accountInfos[marketConfig.bidsKey.toString()]
     const wallet = useMangoStore.getState().wallet.current
 
-    const orderbook = useMangoStore.getState().selectedMarket.orderBook
-    const markPrice = useMangoStore.getState().selectedMarket.markPrice
-
+    let referencePrice
     // The reference price is the book mid if book is double sided; else mark price
-    const bb = orderbook?.bids?.length > 0 && Number(orderbook.bids[0][0])
-    const ba = orderbook?.asks?.length > 0 && Number(orderbook.asks[0][0])
-    const referencePrice = bb && ba ? (bb + ba) / 2 : markPrice
+    if (config.baseSymbol === marketConfig.baseSymbol) {
+      const orderbook = useMangoStore.getState().selectedMarket.orderBook
+      const markPrice = useMangoStore.getState().selectedMarket.markPrice
+      const bb = orderbook?.bids?.length > 0 && Number(orderbook.bids[0][0])
+      const ba = orderbook?.asks?.length > 0 && Number(orderbook.asks[0][0])
+      referencePrice = bb && ba ? (bb + ba) / 2 : markPrice
+    } else {
+      const connection = useMangoStore.getState().connection.current
+      const perpMarket = await mangoGroup.loadPerpMarket(
+        connection,
+        marketConfig.marketIndex,
+        marketConfig.baseDecimals,
+        marketConfig.quoteDecimals
+      )
+
+      const bids = await perpMarket.loadBids(connection)
+      const asks = await perpMarket.loadAsks(connection)
+
+      const l2Bid = bids.getBest().price
+      const l2Ask = asks.getBest().price
+
+      referencePrice = l2Ask && l2Bid ? (l2Bid + l2Ask) / 2 : 0 // update to markprice if necessary or add a better fallback/handling
+    }
 
     if (!wallet || !mangoGroup || !mangoAccount) return
     setSubmitting(true)
@@ -91,7 +120,7 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
   return (
     <Modal onClose={onClose} isOpen={isOpen}>
       <div className="pb-2 text-th-fgd-1 text-lg">
-        {t('close-confirm', { config_name: config.name })}
+        {t('close-confirm', { config_name: marketConfig.name })}
       </div>
       <div className="pb-6 text-th-fgd-3">{t('price-expect')}</div>
       <div className="flex items-center">

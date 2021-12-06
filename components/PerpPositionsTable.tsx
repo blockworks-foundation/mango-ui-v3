@@ -32,6 +32,16 @@ const PositionsTable = () => {
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.md : false
   const { asPath } = useRouter()
+  const [closeOrderMarket, setCloseOrderMarket] = useState(null)
+
+  const handleShowCloseOrder = (perpMarketInfo) => {
+    setCloseOrderMarket({
+      baseSymbol: perpMarketInfo.baseSymbol,
+      market: perpMarketInfo.market,
+      marketIndex: perpMarketInfo.marketIndex,
+    })
+    setShowMarketCloseModal(true)
+  }
 
   const handleCloseWarning = useCallback(() => {
     setShowMarketCloseModal(false)
@@ -206,25 +216,32 @@ const PositionsTable = () => {
                             <div className={`flex justify-end`}>
                               <Button
                                 className="flex items-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs"
-                                onClick={() => setShowMarketCloseModal(true)}
+                                onClick={() =>
+                                  handleShowCloseOrder({
+                                    baseSymbol: marketConfig.baseSymbol,
+                                    market: perpMarket,
+                                    marketIndex: marketIndex,
+                                  })
+                                }
                               >
                                 {t('market-close')}
                               </Button>
                             </div>
                           </Td>
-                          {showMarketCloseModal ? (
-                            <MarketCloseModal
-                              isOpen={showMarketCloseModal}
-                              onClose={handleCloseWarning}
-                              market={perpMarket}
-                              marketIndex={marketIndex}
-                            />
-                          ) : null}
                         </TrBody>
                       )
                     }
                   )}
                 </tbody>
+                {showMarketCloseModal ? (
+                  <MarketCloseModal
+                    baseSymbol={closeOrderMarket.baseSymbol}
+                    isOpen={showMarketCloseModal}
+                    onClose={handleCloseWarning}
+                    market={closeOrderMarket.market}
+                    marketIndex={closeOrderMarket.marketIndex}
+                  />
+                ) : null}
               </Table>
             ) : (
               <>
