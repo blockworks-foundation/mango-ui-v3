@@ -1,0 +1,13 @@
+{
+  "advanced-order": "高級訂單類型",
+  "advanced-order-details": "在圖表窗口中高級訂單類型只能取消。如果需要新條件，請取消此訂單並使用高級交易表格進行。",
+  "cancel-order": "取消訂單嗎？",
+  "cancel-order-details": "您確定要取消{{orderSize}} {{baseSymbol}} {{orderSide}} 價格${{orderPrice}}的掛單嗎?",
+  "modify-order": "改您的訂單嗎？",
+  "modify-order-details": "您確定要把{{orderSize}} {{baseSymbol}}{{orderSide}} 價格${{currentOrderPrice}}的掛單改成{{orderSize}} {{baseSymbol}}限價{{orderSide}} 價格${{updatedOrderPrice}}嗎？",
+  "order-details": "({{orderType}}{{orderSide}})若價格{{triggerCondition}}{{triggerPrice}}",
+  "outside-range": "訂單價格在範圍之外",
+  "slippage-accept": "若您接受潛在的下滑請使用交易表格進行。",
+  "slippage-warning": "您的訂單價格({{updatedOrderPrice}})多餘5%{{aboveBelow}}市場價格({{selectedMarketPrice}})表是您也許遭受可觀的下滑。",
+  "toggle-order-line":　"切換訂單線可見性"
+}

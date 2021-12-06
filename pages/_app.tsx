@@ -2,6 +2,7 @@ import Head from 'next/head'
 import { ThemeProvider } from 'next-themes'
 import '../node_modules/react-grid-layout/css/styles.css'
 import '../node_modules/react-resizable/css/styles.css'
+import 'intro.js/introjs.css'
 import '../styles/index.css'
 import useWallet from '../hooks/useWallet'
 import useHydrateStore from '../hooks/useHydrateStore'
@@ -14,9 +15,14 @@ import { ViewportProvider } from '../hooks/useViewport'
 import BottomBar from '../components/mobile/BottomBar'
 import { appWithTranslation } from 'next-i18next'
 
-function App({ Component, pageProps }) {
+const MangoStoreUpdater = () => {
   useHydrateStore()
   useWallet()
+
+  return null
+}
+
+function App({ Component, pageProps }) {
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const market = useMangoStore((s) => s.selectedMarket.current)
   const oraclePrice = useOraclePrice()
@@ -71,6 +77,7 @@ function App({ Component, pageProps }) {
 
         <link rel="manifest" href="/manifest.json"></link>
       </Head>
+      <MangoStoreUpdater />
       <ThemeProvider defaultTheme="Mango">
         <ViewportProvider>
           <div className="bg-th-bkg-1">

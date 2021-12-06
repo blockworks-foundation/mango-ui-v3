@@ -4,6 +4,7 @@ import { PublicKey } from '@solana/web3.js'
 import BN from 'bn.js'
 import { TRIGGER_ORDER_TYPES } from '../components/trade_form/AdvancedTradeForm'
 import { Orderbook } from '../stores/useMangoStore'
+import { MarketKind } from '@blockworks-foundation/mango-client'
 
 export async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))
@@ -98,6 +99,7 @@ export function isDefined<T>(argument: T | undefined): argument is T {
 }
 
 export function calculateTradePrice(
+  kind: MarketKind,
   tradeType: string,
   orderBook: Orderbook,
   baseSize: number,
@@ -105,7 +107,7 @@ export function calculateTradePrice(
   price: string | number,
   triggerPrice?: string | number
 ): number {
-  if (tradeType === 'Market') {
+  if (tradeType === 'Market' && kind === 'spot') {
     return calculateMarketPrice(orderBook, baseSize, side)
   } else if (TRIGGER_ORDER_TYPES.includes(tradeType)) {
     if (tradeType === 'Take Profit Limit' || tradeType === 'Stop Limit') {
@@ -158,6 +160,18 @@ export const tokenPrecision = {
   ADA: 2,
   USDC: 2,
   USDT: 2,
+}
+
+// Precision for 1 perp contract. -log10(baseLotSize) + baseDecimals
+export const perpContractPrecision = {
+  BTC: 4,
+  ETH: 3,
+  MNGO: 0,
+  SOL: 2,
+  SRM: 1,
+  RAY: 1,
+  FTT: 1,
+  ADA: 0,
 }
 
 const tokenPricePrecision = {

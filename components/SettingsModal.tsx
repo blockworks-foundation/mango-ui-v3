@@ -9,12 +9,13 @@ import useMangoStore from '../stores/useMangoStore'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import Select from './Select'
 import { useTranslation } from 'next-i18next'
+import Switch from './Switch'
 
 const NODE_URLS = [
-  { label: 'Mango Node', value: 'https://mango.rpcpool.com' },
+  { label: 'Triton (RPC Pool)', value: 'https://mango.rpcpool.com' },
   {
     label: 'Genesys Go',
-    value: 'https://lokidfxnwlabdq.main.genesysgo.net:8899/',
+    value: 'https://mango.genesysgo.net/',
   },
   {
     label: 'Project Serum',
@@ -25,13 +26,14 @@ const NODE_URLS = [
 
 const CUSTOM_NODE = NODE_URLS.find((n) => n.label === 'Custom')
 
-export const NODE_URL_KEY = 'node-url-key-0.4'
+export const NODE_URL_KEY = 'node-url-key-0.5'
 export const DEFAULT_MARKET_KEY = 'defaultMarket'
+export const ORDERBOOK_FLASH_KEY = 'showOrderbookFlash'
 export const initialMarket = {
   base: 'BTC',
   kind: 'perp',
   name: 'BTC-PERP',
-  path: '/perp/BTC',
+  path: '/market?name=BTC-PERP',
 }
 
 const SettingsModal = ({ isOpen, onClose }) => {
@@ -44,6 +46,10 @@ const SettingsModal = ({ isOpen, onClose }) => {
   const [defaultMarket] = useLocalStorageState(
     DEFAULT_MARKET_KEY,
     initialMarket
+  )
+  const [showOrderbookFlash, setShowOrderbookFlash] = useLocalStorageState(
+    ORDERBOOK_FLASH_KEY,
+    true
   )
   const rpcEndpoint =
     NODE_URLS.find((node) => node.value === rpcEndpointUrl) || CUSTOM_NODE
@@ -83,6 +89,13 @@ const SettingsModal = ({ isOpen, onClose }) => {
               <ChevronRightIcon className="h-5 ml-1 w-5 text-th-primary" />
             </div>
           </button>
+          <div className="border-t border-th-bkg-4 flex items-center justify-between py-3 text-th-fgd-1">
+            <span>{t('orderbook-animation')}</span>
+            <Switch
+              checked={showOrderbookFlash}
+              onChange={(checked) => setShowOrderbookFlash(checked)}
+            />
+          </div>
         </div>
       ) : null}
       <SettingsContent
@@ -124,20 +137,18 @@ const DefaultMarketSettings = ({ setSettingsView }) => {
       base: 'BTC',
       kind: 'perp',
       name: 'BTC-PERP',
-      path: '/perp/BTC',
+      path: '/market?name=BTC-PERP',
     }
   )
   const handleSetDefaultMarket = (market) => {
     const base = market.slice(0, -5)
     const kind = market.includes('PERP') ? 'perp' : 'spot'
-    const defaultMarket = market.includes('PERP')
-      ? `/perp/${base}`
-      : `/spot/${base}`
+
     setDefaultMarket({
       base: base,
       kind: kind,
       name: market,
-      path: defaultMarket,
+      path: `/market?name=${market}`,
     })
   }
   const parsedDefaultMarket = defaultMarket

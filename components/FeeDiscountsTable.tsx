@@ -17,6 +17,7 @@ import { useState } from 'react'
 const FeeDiscountsTable = () => {
   const { t } = useTranslation('common')
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
+  const connected = useMangoStore((s) => s.wallet.connected)
   const walletTokens = useMangoStore((s) => s.wallet.tokens)
   const { totalSrm, totalMsrm, rates } = useSrmAccount()
   const [showDeposit, setShowDeposit] = useState(false)
@@ -78,7 +79,7 @@ const FeeDiscountsTable = () => {
             </div>
           </div>
         </div>
-        {mangoAccount ? (
+        {connected && mangoAccount ? (
           <div className="flex justify-center mt-6">
             <Button
               onClick={() => setShowDeposit(true)}

@@ -49,7 +49,7 @@ const NotificationList = () => {
         setMangoStore((state) => {
           state.notifications = notifications.slice(1, notifications.length)
         })
-      }, 6000)
+      }, 8000)
 
       return () => {
         clearInterval(id)
@@ -100,7 +100,7 @@ const Notification = ({ type, title, description, txid }) => {
             <XCircleIcon className={`text-th-red h-7 w-7 mr-1`} />
           )}
         </div>
-        <div className={`ml-2 w-0 flex-1`}>
+        <div className={`ml-2 flex-1`}>
           <div className={`font-bold text-base text-th-fgd-1`}>{title}</div>
           {description ? (
             <p className={`mb-0 mt-0.5 text-th-fgd-3`}>{description}</p>
@@ -108,12 +108,15 @@ const Notification = ({ type, title, description, txid }) => {
           {txid ? (
             <a
               href={'https://explorer.solana.com/tx/' + txid}
-              className="block flex items-center mt-0.5 text-sm"
+              className="flex items-center mt-0.5 text-sm"
               target="_blank"
               rel="noreferrer"
             >
-              {txid.slice(0, 8)}...
-              {txid.slice(txid.length - 8)}
+              <div className="break-all flex-1">
+                {type === 'error'
+                  ? txid
+                  : `${txid.slice(0, 14)}...${txid.slice(txid.length - 14)}`}
+              </div>
               <ExternalLinkIcon className="h-4 mb-0.5 ml-1 w-4" />
             </a>
           ) : null}

@@ -58,6 +58,7 @@ const MarketDetails = () => {
   const baseSymbol = marketConfig.baseSymbol
   const selectedMarketName = marketConfig.name
   const isPerpMarket = marketConfig.kind === 'perp'
+
   const previousMarketName: string = usePrevious(selectedMarketName)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const connected = useMangoStore((s) => s.wallet.connected)
@@ -126,8 +127,6 @@ const MarketDetails = () => {
 
     const from = utcFrom.getTime() / 1000
     const to = utcTo.getTime() / 1000
-
-    console.log('requesting ohlcv', selectedMarketName)
     const ohlcv = await ChartApi.getOhlcv(selectedMarketName, '1D', from, to)
     if (ohlcv) {
       setOhlcv(ohlcv)
@@ -154,10 +153,10 @@ const MarketDetails = () => {
 
   return (
     <div
-      className={`flex flex-col relative md:pb-2 md:pt-6 md:px-3 lg:flex-row lg:items-center lg:justify-between`}
+      className={`flex flex-col relative pb-2 pt-3 md:px-3 xl:flex-row xl:items-center xl:justify-between`}
     >
-      <div className="flex flex-col lg:flex-row lg:items-center">
-        <div className="hidden md:block md:pb-4 md:pr-6 lg:pb-0">
+      <div className="flex flex-col xl:flex-row xl:items-center">
+        <div className="hidden md:block md:pb-4 md:pr-6 xl:pb-0">
           <div className="flex items-center">
             <img
               alt=""
@@ -176,7 +175,7 @@ const MarketDetails = () => {
             </div>
           </div>
         </div>
-        <div className="grid grid-flow-row grid-cols-1 md:grid-cols-2 gap-3 lg:grid-flow-col lg:grid-rows-1 lg:gap-6">
+        <div className="grid grid-flow-row grid-cols-1 md:grid-cols-3 gap-3 xl:grid-cols-none xl:grid-flow-col xl:grid-rows-1 xl:gap-6">
           <div className="flex items-center justify-between md:block">
             <div className="text-th-fgd-3 tiny-text pb-0.5">
               {t('oracle-price')}
@@ -259,10 +258,14 @@ const MarketDetails = () => {
         </div>
       </div>
       <div className="absolute right-4 bottom-0 sm:bottom-auto lg:right-6 flex items-center justify-end">
-        {!isMobile ? <UiLock /> : null}
-        {!isMobile && connected && mangoAccount ? (
-          <ManualRefresh className="pl-2" />
+        {!isMobile ? (
+          <div id="layout-tip">
+            <UiLock />
+          </div>
         ) : null}
+        <div className="ml-2" id="data-refresh-tip">
+          {!isMobile && connected && mangoAccount ? <ManualRefresh /> : null}
+        </div>
       </div>
     </div>
   )

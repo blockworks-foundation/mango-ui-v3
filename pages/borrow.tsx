@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useState, useEffect } from 'react'
 import { CurrencyDollarIcon, LinkIcon } from '@heroicons/react/outline'
 import useMangoStore from '../stores/useMangoStore'
 import PageBodyContainer from '../components/PageBodyContainer'
@@ -10,7 +10,7 @@ import Loading from '../components/Loading'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'next-i18next'
 
-export async function getServerSideProps({ locale }) {
+export async function getStaticProps({ locale }) {
   return {
     props: {
       ...(await serverSideTranslations(locale, ['common'])),
@@ -31,6 +31,14 @@ export default function Borrow() {
 
   const handleCloseAccounts = useCallback(() => {
     setShowAccountsModal(false)
+  }, [])
+
+  useEffect(() => {
+    // @ts-ignore
+    if (window.solana) {
+      // @ts-ignore
+      window.solana.connect({ onlyIfTrusted: true })
+    }
   }, [])
 
   return (

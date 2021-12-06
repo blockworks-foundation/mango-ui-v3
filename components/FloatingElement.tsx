@@ -59,8 +59,8 @@ const FloatingElement: FunctionComponent<FloatingElementProps> = ({
         </div>
       ) : null}
       {!uiLocked ? (
-        <div className="absolute top-0 left-0 w-full h-full cursor-move z-50">
-          <div className="relative flex flex-col items-center justify-center text-th-fgd-3 h-full z-50">
+        <div className="absolute top-0 left-0 opacity-80 w-full h-full cursor-move z-50">
+          <div className="relative flex flex-col items-center justify-center text-th-fgd-1 h-full z-50">
             <MoveIcon className="w-8 h-8" />
             <div className="mt-2">{t('reposition')}</div>
           </div>

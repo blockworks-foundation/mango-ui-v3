@@ -3,6 +3,20 @@ const { i18n } = require('./next-i18next.config')
 module.exports = {
   i18n,
   target: 'experimental-serverless-trace',
+  async redirects() {
+    return [
+      {
+        source: '/spot/:name',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/perp/:name',
+        destination: '/',
+        permanent: true,
+      },
+    ]
+  },
   webpack: (config, { isServer }) => {
     // Important: return the modified config
     if (!isServer) {

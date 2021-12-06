@@ -62,7 +62,7 @@ const PositionsTable = () => {
     <div className="flex flex-col pb-2 pt-4">
       {unsettledPositions.length > 0 ? (
         <div className="border border-th-bkg-4 rounded-lg mb-6 p-4 sm:p-6">
-          <div className="flex items-center justify-between pb-2">
+          <div className="flex items-center justify-between">
             <div className="flex items-center sm:text-lg">
               <ExclamationIcon className="flex-shrink-0 h-5 mr-1.5 mt-0.5 text-th-primary w-5" />
               {t('unsettled-positions')}
@@ -140,12 +140,18 @@ const PositionsTable = () => {
                                 src={`/assets/icons/${marketConfig.baseSymbol.toLowerCase()}.svg`}
                                 className={`mr-2.5`}
                               />
-                              {asPath.includes(
-                                `perp/${marketConfig.baseSymbol}`
+                              {decodeURIComponent(asPath).includes(
+                                marketConfig.name
                               ) ? (
                                 <span>{marketConfig.name}</span>
                               ) : (
-                                <Link href={`/perp/${marketConfig.baseSymbol}`}>
+                                <Link
+                                  href={{
+                                    pathname: '/market',
+                                    query: { name: marketConfig.name },
+                                  }}
+                                  shallow={true}
+                                >
                                   <a className="text-th-fgd-1 underline hover:no-underline hover:text-th-fgd-1">
                                     {marketConfig.name}
                                   </a>

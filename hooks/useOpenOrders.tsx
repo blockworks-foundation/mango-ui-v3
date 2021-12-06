@@ -11,7 +11,14 @@ import {
 import { Market, Orderbook } from '@project-serum/serum'
 import { Order } from '@project-serum/serum/lib/market'
 import { PerpTriggerOrder } from '../@types/types'
+import {
+  accountInfosSelector,
+  mangoGroupConfigSelector,
+  mangoGroupSelector,
+  marketsSelector,
+} from '../stores/selectors'
 import useMangoStore from '../stores/useMangoStore'
+import useMangoAccount from './useMangoAccount'
 
 type OrderInfo = {
   order: Order | PerpOrder | PerpTriggerOrder
@@ -101,11 +108,11 @@ function parsePerpOpenOrders(
 }
 
 export function useOpenOrders() {
-  const markets = useMangoStore((s) => s.selectedMangoGroup.markets)
-  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
-  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
-  const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
-  const accountInfos = useMangoStore((s) => s.accountInfos)
+  const markets = useMangoStore(marketsSelector)
+  const { mangoAccount } = useMangoAccount()
+  const mangoGroup = useMangoStore(mangoGroupSelector)
+  const groupConfig = useMangoStore(mangoGroupConfigSelector)
+  const accountInfos = useMangoStore(accountInfosSelector)
 
   if (!mangoGroup || !mangoAccount || !accountInfos) return null
 

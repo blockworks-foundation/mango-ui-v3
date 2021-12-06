@@ -5,7 +5,7 @@ import { useRouter } from 'next/router'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import { useTranslation } from 'next-i18next'
 
-const LANGS = [
+export const LANGS = [
   { locale: 'en', name: 'english', description: 'english' },
   { locale: 'es', name: 'spanish', description: 'spanish' },
   {
@@ -26,30 +26,29 @@ const LanguageSwitch = () => {
   // When mounted on client, now we can show the UI
   useEffect(() => setMounted(true), [])
 
-  useEffect(() => {
-    savedLanguage
-      ? router.push({ pathname, query }, asPath, { locale: savedLanguage })
-      : null
-  }, [savedLanguage])
-
   const handleLangChange = (e) => {
     setSavedLanguage(e)
+    router.push({ pathname, query }, asPath, { locale: e })
   }
 
-  return mounted ? (
-    <DropMenu
-      button={
-        <div className="bg-th-bkg-4 flex items-center justify-center rounded-full w-8 h-8 text-th-fgd-1 focus:outline-none hover:text-th-primary">
-          <TranslateIcon className="h-4 w-4" />
-        </div>
-      }
-      value={savedLanguage}
-      onChange={(lang) => handleLangChange(lang)}
-      options={LANGS}
-      toolTipContent={t('change-language')}
-    />
-  ) : (
-    <div className="bg-th-bkg-3 rounded-full w-8 h-8" />
+  return (
+    <div id="languages-tip">
+      {mounted ? (
+        <DropMenu
+          button={
+            <div className="bg-th-bkg-4 flex items-center justify-center rounded-full w-8 h-8 text-th-fgd-1 focus:outline-none hover:text-th-primary">
+              <TranslateIcon className="h-4 w-4" />
+            </div>
+          }
+          value={savedLanguage}
+          onChange={(lang) => handleLangChange(lang)}
+          options={LANGS}
+          toolTipContent={t('change-language')}
+        />
+      ) : (
+        <div className="bg-th-bkg-3 rounded-full w-8 h-8" />
+      )}
+    </div>
   )
 }
 

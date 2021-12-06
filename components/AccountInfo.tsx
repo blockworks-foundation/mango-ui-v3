@@ -25,6 +25,8 @@ import { DataLoader } from './MarketPosition'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { useTranslation } from 'next-i18next'
+import useMangoAccount from '../hooks/useMangoAccount'
+import Loading from './Loading'
 
 const I80F48_100 = I80F48.fromString('100')
 
@@ -33,13 +35,13 @@ export default function AccountInfo() {
   const connected = useMangoStore((s) => s.wallet.connected)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
-  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
-  const isLoading = useMangoStore((s) => s.selectedMangoAccount.initialLoad)
+  const { mangoAccount, initialLoad } = useMangoAccount()
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const mangoClient = useMangoStore((s) => s.connection.client)
   const actions = useMangoStore((s) => s.actions)
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
+  const [redeeming, setRedeeming] = useState(false)
 
   const [showDepositModal, setShowDepositModal] = useState(false)
   const [showWithdrawModal, setShowWithdrawModal] = useState(false)
@@ -61,6 +63,7 @@ export default function AccountInfo() {
         return perpAcct.mngoAccrued.add(acc)
       }, ZERO_BN)
     : ZERO_BN
+  // console.log('rerendering account info', mangoAccount, mngoAccrued.toNumber())
 
   const handleRedeemMngo = async () => {
     const wallet = useMangoStore.getState().wallet.current
@@ -68,6 +71,7 @@ export default function AccountInfo() {
       mangoGroup.rootBankAccounts[MNGO_INDEX].nodeBankAccounts[0]
 
     try {
+      setRedeeming(true)
       const txid = await mangoClient.redeemAllMngo(
         mangoGroup,
         mangoAccount,
@@ -76,7 +80,6 @@ export default function AccountInfo() {
         mngoNodeBank.publicKey,
         mngoNodeBank.vault
       )
-      actions.reloadMangoAccount()
       notify({
         title: t('redeem-success'),
         description: '',
@@ -89,6 +92,9 @@ export default function AccountInfo() {
         txid: e.txid,
         type: 'error',
       })
+    } finally {
+      actions.reloadMangoAccount()
+      setRedeeming(false)
     }
   }
 
@@ -107,9 +113,21 @@ export default function AccountInfo() {
     ? mangoAccount.getHealth(mangoGroup, mangoCache, 'Init')
     : I80F48_100
 
+  const liquidationPrice =
+    mangoGroup && mangoAccount && marketConfig
+      ? mangoAccount.getLiquidationPrice(
+          mangoGroup,
+          mangoCache,
+          marketConfig.marketIndex
+        )
+      : undefined
+
   return (
     <>
-      <div className={!connected && !isMobile ? 'filter blur-sm' : undefined}>
+      <div
+        className={!connected && !isMobile ? 'filter blur-sm' : undefined}
+        id="account-details-tip"
+      >
         {!isMobile ? (
           <ElementTitle>
             <Tooltip
@@ -149,7 +167,7 @@ export default function AccountInfo() {
                 {t('equity')}
               </div>
               <div className="text-th-fgd-1">
-                {isLoading ? <DataLoader /> : formatUsdValue(+equity)}
+                {initialLoad ? <DataLoader /> : formatUsdValue(+equity)}
               </div>
             </div>
             <div className="flex justify-between pb-3">
@@ -157,7 +175,7 @@ export default function AccountInfo() {
                 {t('leverage')}
               </div>
               <div className="text-th-fgd-1">
-                {isLoading ? (
+                {initialLoad ? (
                   <DataLoader />
                 ) : mangoAccount ? (
                   `${mangoAccount
@@ -173,7 +191,7 @@ export default function AccountInfo() {
                 {t('collateral-available')}
               </div>
               <div className={`text-th-fgd-1`}>
-                {isLoading ? (
+                {initialLoad ? (
                   <DataLoader />
                 ) : mangoAccount ? (
                   usdFormatter(
@@ -189,7 +207,7 @@ export default function AccountInfo() {
             </div>
             <div className={`flex justify-between pb-3`}>
               <div className="font-normal text-th-fgd-3 leading-4">
-                {`${marketConfig.name} ${t('margin-available')}`}
+                {marketConfig.name} {t('margin-available')}
               </div>
               <div className={`text-th-fgd-1`}>
                 {mangoAccount
@@ -205,6 +223,16 @@ export default function AccountInfo() {
                       ).toFixed()
                     )
                   : '0.00'}
+              </div>
+            </div>
+            <div className={`flex justify-between pb-3`}>
+              <div className="font-normal text-th-fgd-3 leading-4">
+                {marketConfig.name} {t('estimated-liq-price')}
+              </div>
+              <div className={`text-th-fgd-1`}>
+                {liquidationPrice && liquidationPrice.gt(ZERO_I80F48)
+                  ? usdFormatter(liquidationPrice)
+                  : 'N/A'}
               </div>
             </div>
             <div className={`flex justify-between pb-3`}>
@@ -227,7 +255,7 @@ export default function AccountInfo() {
                 </div>
               </Tooltip>
               <div className={`flex items-center text-th-fgd-1`}>
-                {isLoading ? (
+                {initialLoad ? (
                   <DataLoader />
                 ) : mangoGroup ? (
                   nativeToUi(
@@ -237,13 +265,17 @@ export default function AccountInfo() {
                 ) : (
                   0
                 )}
-                <LinkButton
-                  onClick={handleRedeemMngo}
-                  className="ml-2 text-th-primary text-xs disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:underline"
-                  disabled={mngoAccrued.eq(ZERO_BN)}
-                >
-                  {t('claim')}
-                </LinkButton>
+                {redeeming ? (
+                  <Loading className="ml-2" />
+                ) : (
+                  <LinkButton
+                    onClick={handleRedeemMngo}
+                    className="ml-2 text-th-primary text-xs disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:underline"
+                    disabled={mngoAccrued.eq(ZERO_BN)}
+                  >
+                    {t('claim')}
+                  </LinkButton>
+                )}
               </div>
             </div>
           </div>

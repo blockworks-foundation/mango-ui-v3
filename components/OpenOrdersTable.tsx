@@ -25,10 +25,13 @@ const DesktopTable = ({ openOrders, cancelledOrderId, handleCancelOrder }) => {
   const { t } = useTranslation('common')
   const { asPath } = useRouter()
   const renderMarketName = (market: MarketConfig) => {
-    const location = `/${market.kind}/${market.baseSymbol}`
+    const location =
+      market.kind === 'spot'
+        ? `/market?name=${market.baseSymbol}%2FUSDC`
+        : `/market?name=${market.name}`
     if (!asPath.includes(location)) {
       return (
-        <Link href={location}>
+        <Link href={location} shallow={true}>
           <a className="text-th-fgd-1 underline hover:no-underline hover:text-th-fgd-1">
             {market.name}
           </a>
@@ -78,9 +81,9 @@ const DesktopTable = ({ openOrders, cancelledOrderId, handleCancelOrder }) => {
               <Td>{formatUsdValue(order.price * order.size)}</Td>
               <Td>
                 {order.perpTrigger &&
-                  `${order.orderType} ${
+                  `${t(order.orderType)} ${t(
                     order.triggerCondition
-                  } ${order.triggerPrice.toFixed(2)}`}
+                  )} ${order.triggerPrice.toFixed(2)}`}
               </Td>
               <Td>
                 <div className={`flex justify-end`}>
@@ -187,6 +190,7 @@ const OpenOrdersTable = () => {
           market,
           order as Order
         )
+        actions.reloadOrders()
       } else if (market instanceof PerpMarket) {
         // TODO: this is not ideal
         if (order['triggerCondition']) {
@@ -196,6 +200,7 @@ const OpenOrdersTable = () => {
             wallet,
             (order as PerpTriggerOrder).orderId
           )
+          actions.reloadOrders()
         } else {
           txid = await mangoClient.cancelPerpOrder(
             selectedMangoGroup,
@@ -217,8 +222,8 @@ const OpenOrdersTable = () => {
       })
       console.log('error', `${e}`)
     } finally {
-      // await sleep(600)
       actions.reloadMangoAccount()
+      actions.updateOpenOrders()
       setCancelId(null)
     }
   }
@@ -245,13 +250,8 @@ const OpenOrdersTable = () => {
             >
               {t('no-orders')}
               {asPath === '/account' ? (
-                <Link href={'/'}>
-                  <a
-                    className={`inline-flex ml-2 py-0
-        `}
-                  >
-                    {t('make-trade')}
-                  </a>
+                <Link href={'/'} shallow={true}>
+                  <a className={`inline-flex ml-2 py-0`}>{t('make-trade')}</a>
                 </Link>
               ) : null}
             </div>
