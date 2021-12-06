@@ -207,7 +207,7 @@ export default function AccountInfo() {
             </div>
             <div className={`flex justify-between pb-3`}>
               <div className="font-normal text-th-fgd-3 leading-4">
-                {`${marketConfig.name} ${t('margin-available')}`}
+                {marketConfig.name} {t('margin-available')}
               </div>
               <div className={`text-th-fgd-1`}>
                 {mangoAccount
@@ -225,16 +225,16 @@ export default function AccountInfo() {
                   : '0.00'}
               </div>
             </div>
-            {liquidationPrice && liquidationPrice.gt(ZERO_I80F48) ? (
-              <div className={`flex justify-between pb-3`}>
-                <div className="font-normal text-th-fgd-3 leading-4">
-                  {t('estimated-liq-price')}
-                </div>
-                <div className={`text-th-fgd-1`}>
-                  {usdFormatter(liquidationPrice)}
-                </div>
+            <div className={`flex justify-between pb-3`}>
+              <div className="font-normal text-th-fgd-3 leading-4">
+                {marketConfig.name} {t('estimated-liq-price')}
               </div>
-            ) : null}
+              <div className={`text-th-fgd-1`}>
+                {liquidationPrice && liquidationPrice.gt(ZERO_I80F48)
+                  ? usdFormatter(liquidationPrice)
+                  : 'N/A'}
+              </div>
+            </div>
             <div className={`flex justify-between pb-3`}>
               <Tooltip
                 content={

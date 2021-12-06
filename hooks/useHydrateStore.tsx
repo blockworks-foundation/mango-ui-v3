@@ -12,6 +12,7 @@ import {
 import {
   actionsSelector,
   connectionSelector,
+  mangoAccountSelector,
   marketConfigSelector,
   marketSelector,
   marketsSelector,
@@ -46,7 +47,7 @@ const useHydrateStore = () => {
   const marketConfig = useMangoStore(marketConfigSelector)
   const selectedMarket = useMangoStore(marketSelector)
   const connection = useMangoStore(connectionSelector)
-  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
+  const mangoAccount = useMangoStore(mangoAccountSelector)
 
   useEffect(() => {
     actions.fetchMangoGroup()

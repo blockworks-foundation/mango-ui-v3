@@ -33,3 +33,7 @@ export const setStoreSelector = (state) => state.set
 export const accountInfosSelector = (state) => state.accountInfos
 
 export const tradeHistorySelector = (state) => state.tradeHistory
+
+export const walletSelector = (state) => state.wallet.current
+
+export const walletConnectedSelector = (state) => state.wallet.connected
