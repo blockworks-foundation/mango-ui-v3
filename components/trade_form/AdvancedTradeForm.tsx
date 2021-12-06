@@ -919,7 +919,7 @@ export default function AdvancedTradeForm({
                       onChange={(e) => reduceOnChange(e.target.checked)}
                       disabled={isTriggerOrder}
                     >
-                      Reduce Only
+                      {t('reduce-only')}
                     </Checkbox>
                   </Tooltip>
                 </div>
@@ -954,7 +954,7 @@ export default function AdvancedTradeForm({
                     checked={spotMargin}
                     onChange={(e) => marginOnChange(e.target.checked)}
                   >
-                    Margin
+                    {t('margin')}
                   </Checkbox>
                 </Tooltip>
               </div>
@@ -1015,7 +1015,9 @@ export default function AdvancedTradeForm({
                 <div className="flex items-end">
                   <div className="w-full">
                     <div className="flex justify-between mb-1">
-                      <div className="text-xs text-th-fgd-3">Max Slippage</div>
+                      <div className="text-xs text-th-fgd-3">
+                        {t('max-slippage')}
+                      </div>
                       {!isMobile ? (
                         <LinkButton
                           className="font-normal text-xs"
@@ -1023,7 +1025,7 @@ export default function AdvancedTradeForm({
                             setShowCustomSlippageForm(!showCustomSlippageForm)
                           }
                         >
-                          {showCustomSlippageForm ? 'Presets' : 'Custom'}
+                          {showCustomSlippageForm ? t('presets') : t('custom')}
                         </LinkButton>
                       ) : null}
                     </div>
@@ -1064,7 +1066,7 @@ export default function AdvancedTradeForm({
                   {isPerpMarket ? (
                     <div className="flex justify-between mb-1 text-th-fgd-3 text-xs">
                       <div className="flex items-center">
-                        Max Slippage
+                        {t('max-slippage')}
                         <Tooltip content="If price slips more than your max slippage, your order will be partially filled up to that price.">
                           <div className="outline-none focus:outline-none">
                             <InformationCircleIcon className="h-4 w-4 ml-1.5 text-th-fgd-3" />
