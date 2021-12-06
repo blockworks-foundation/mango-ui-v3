@@ -2,34 +2,33 @@ import { useCallback, useState } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import useMangoStore from '../stores/useMangoStore'
-// import { ExclamationIcon } from '@heroicons/react/outline'
-// import Button from '../components/Button'
+import { ExclamationIcon } from '@heroicons/react/outline'
+import Button from '../components/Button'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { Table, Td, Th, TrBody, TrHead } from './TableElements'
 import { formatUsdValue } from '../utils'
-// import Loading from './Loading'
+import Loading from './Loading'
 import usePerpPositions from '../hooks/usePerpPositions'
 import MarketCloseModal from './MarketCloseModal'
 import { ExpandableRow } from './TableElements'
 import PerpSideBadge from './PerpSideBadge'
 import PnlText from './PnlText'
-// import { settlePnl } from './MarketPosition'
+import { settlePnl } from './MarketPosition'
 import { useTranslation } from 'next-i18next'
 import MobileTableHeader from './mobile/MobileTableHeader'
 
 const PositionsTable = () => {
   const { t } = useTranslation('common')
-  // const { reloadMangoAccount } = useMangoStore((s) => s.actions)
-  // const [settling, setSettling] = useState(false)
+  const { reloadMangoAccount } = useMangoStore((s) => s.actions)
+  const [settling, setSettling] = useState(false)
 
   const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
   const selectedMarketConfig = useMangoStore((s) => s.selectedMarket.config)
   const price = useMangoStore((s) => s.tradeForm.price)
   const [showMarketCloseModal, setShowMarketCloseModal] = useState(false)
   const setMangoStore = useMangoStore((s) => s.set)
-  // const { openPositions, unsettledPositions } = usePerpPositions()
-  const { openPositions } = usePerpPositions()
+  const { openPositions, unsettledPositions } = usePerpPositions()
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.md : false
   const { asPath } = useRouter()
@@ -50,18 +49,18 @@ const PositionsTable = () => {
     })
   }
 
-  // const handleSettleAll = async () => {
-  //   setSettling(true)
-  //   await Promise.all(
-  //     unsettledPositions.map((p) => settlePnl(p.perpMarket, p.perpAccount, t))
-  //   )
-  //   await reloadMangoAccount()
-  //   setSettling(false)
-  // }
+  const handleSettleAll = async () => {
+    setSettling(true)
+    await Promise.all(
+      unsettledPositions.map((p) => settlePnl(p.perpMarket, p.perpAccount, t))
+    )
+    await reloadMangoAccount()
+    setSettling(false)
+  }
 
   return (
     <div className="flex flex-col pb-2 pt-4">
-      {/* {unsettledPositions.length > 0 ? (
+      {unsettledPositions.length > 0 ? (
         <div className="border border-th-bkg-4 rounded-lg mb-6 p-4 sm:p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center sm:text-lg">
@@ -96,7 +95,7 @@ const PositionsTable = () => {
             )
           })}
         </div>
-      ) : null} */}
+      ) : null}
       <div className={`md:-my-2 md:overflow-x-auto`}>
         <div className={`align-middle inline-block min-w-full`}>
           {openPositions.length ? (
