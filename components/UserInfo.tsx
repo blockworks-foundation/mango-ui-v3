@@ -11,6 +11,7 @@ import ManualRefresh from './ManualRefresh'
 import Tabs from './Tabs'
 import FeeDiscountsTable from './FeeDiscountsTable'
 import useMangoAccount from '../hooks/useMangoAccount'
+import { connectionSelector, marketConfigSelector } from '../stores/selectors'
 
 const TABS = [
   'Balances',
@@ -24,7 +25,7 @@ const UserInfoTabs = ({ activeTab, setActiveTab }) => {
   const openOrders = useOpenOrders()
   const { openPositions } = usePerpPositions()
   const { mangoAccount } = useMangoAccount()
-  const connected = useMangoStore((s) => s.connection.current)
+  const connected = useMangoStore(connectionSelector)
 
   const handleTabChange = (tabName) => {
     setActiveTab(tabName)
@@ -72,7 +73,7 @@ const TabContent = ({ activeTab }) => {
 }
 
 const UserInfo = () => {
-  const marketConfig = useMangoStore((s) => s.selectedMarket.config)
+  const marketConfig = useMangoStore(marketConfigSelector)
   const isPerpMarket = marketConfig.kind === 'perp'
   const [activeTab, setActiveTab] = useState('')
 

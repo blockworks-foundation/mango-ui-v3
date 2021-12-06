@@ -1,5 +1,12 @@
 import { getMarketByPublicKey } from '@blockworks-foundation/mango-client'
 import { PublicKey } from '@solana/web3.js'
+import {
+  fillsSelector,
+  mangoAccountSelector,
+  mangoGroupSelector,
+  marketConfigSelector,
+  tradeHistorySelector,
+} from '../stores/selectors'
 import useMangoStore from '../stores/useMangoStore'
 
 const byTimestamp = (a, b) => {
@@ -77,11 +84,11 @@ const formatTradeHistory = (mangoAccountPk: PublicKey, newTradeHistory) => {
 export const useTradeHistory = (
   opts: { excludePerpLiquidations?: boolean } = {}
 ) => {
-  const marketConfig = useMangoStore((s) => s.selectedMarket.config)
-  const fills = useMangoStore((s) => s.selectedMarket.fills)
-  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
-  const selectedMangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
-  let tradeHistory = useMangoStore((s) => s.tradeHistory)
+  const marketConfig = useMangoStore(marketConfigSelector)
+  const fills = useMangoStore(fillsSelector)
+  const mangoAccount = useMangoStore(mangoAccountSelector)
+  const selectedMangoGroup = useMangoStore(mangoGroupSelector)
+  let tradeHistory = useMangoStore(tradeHistorySelector)
 
   if (!mangoAccount || !selectedMangoGroup) return null
   const openOrdersAccount =

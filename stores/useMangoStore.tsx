@@ -470,12 +470,12 @@ const useMangoStore = create<MangoStore>((set, get) => {
           connection,
           mangoClient.lastSlot
         )
-        console.log('reloading mango account')
 
         set((state) => {
           state.selectedMangoAccount.current = reloadedMangoAccount
           state.selectedMangoAccount.lastUpdatedAt = new Date().toISOString()
         })
+        console.log('reloaded mango account', reloadedMangoAccount)
       },
       async reloadOrders() {
         const mangoAccount = get().selectedMangoAccount.current

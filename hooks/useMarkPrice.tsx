@@ -1,13 +1,20 @@
 import { useEffect } from 'react'
+import {
+  fillsSelector,
+  marketSelector,
+  markPriceSelector,
+  orderbookSelector,
+  setStoreSelector,
+} from '../stores/selectors'
 import useMangoStore from '../stores/useMangoStore'
 import { getDecimalCount } from '../utils'
 
 export default function useMarkPrice() {
-  const setMangoStore = useMangoStore((s) => s.set)
-  const markPrice = useMangoStore((s) => s.selectedMarket.markPrice)
-  const orderbook = useMangoStore((s) => s.selectedMarket.orderBook)
-  const fills = useMangoStore((state) => state.selectedMarket.fills)
-  const market = useMangoStore((s) => s.selectedMarket.current)
+  const setMangoStore = useMangoStore(setStoreSelector)
+  const markPrice = useMangoStore(markPriceSelector)
+  const orderbook = useMangoStore(orderbookSelector)
+  const fills = useMangoStore(fillsSelector)
+  const market = useMangoStore(marketSelector)
 
   const trades = fills
     .filter((trade) => trade?.eventFlags?.maker || trade?.maker)

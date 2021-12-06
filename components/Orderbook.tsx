@@ -27,6 +27,13 @@ import { useTranslation } from 'next-i18next'
 import FloatingElement from './FloatingElement'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import { ORDERBOOK_FLASH_KEY } from './SettingsModal'
+import {
+  mangoGroupConfigSelector,
+  marketConfigSelector,
+  marketSelector,
+  orderbookSelector,
+  setStoreSelector,
+} from '../stores/selectors'
 
 const Line = (props) => {
   return (
@@ -112,10 +119,10 @@ const hasOpenOrderForPriceGroup = (openOrderPrices, price, grouping) => {
 
 export default function Orderbook({ depth = 8 }) {
   const { t } = useTranslation('common')
-  const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
-  const marketConfig = useMangoStore((s) => s.selectedMarket.config)
-  const orderbook = useMangoStore((s) => s.selectedMarket.orderBook)
-  const market = useMangoStore((s) => s.selectedMarket.current)
+  const groupConfig = useMangoStore(mangoGroupConfigSelector)
+  const marketConfig = useMangoStore(marketConfigSelector)
+  const orderbook = useMangoStore(orderbookSelector)
+  const market = useMangoStore(marketSelector)
   const markPrice = useMarkPrice()
   const openOrders = useOpenOrders()
   const openOrderPrices = openOrders?.length
@@ -593,7 +600,7 @@ const OrderbookRow = React.memo<any>(
     grouping,
   }) => {
     const element = useRef(null)
-    const setMangoStore = useMangoStore((s) => s.set)
+    const setMangoStore = useMangoStore(setStoreSelector)
     const [showOrderbookFlash] = useLocalStorageState(ORDERBOOK_FLASH_KEY, true)
 
     useEffect(() => {
