@@ -22,14 +22,13 @@ const MangoStoreUpdater = () => {
   return null
 }
 
-function App({ Component, pageProps }) {
+const PageTitle = ({ pathname }) => {
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const market = useMangoStore((s) => s.selectedMarket.current)
   const oraclePrice = useOraclePrice()
-  const router = useRouter()
   const selectedMarketName = marketConfig.name
   const marketTitleString =
-    marketConfig && router.pathname.includes('[market]')
+    marketConfig && pathname.includes('[market]')
       ? `${
           oraclePrice
             ? oraclePrice.toFixed(getDecimalCount(market?.tickSize)) + ' | '
@@ -37,10 +36,16 @@ function App({ Component, pageProps }) {
         }${selectedMarketName} - `
       : ''
 
+  return <title>{marketTitleString}Mango Markets</title>
+}
+
+function App({ Component, pageProps }) {
+  const router = useRouter()
+
   return (
     <>
       <Head>
-        <title>{marketTitleString}Mango Markets</title>
+        <PageTitle pathname={router.pathname} />
         <link rel="preconnect" href="https://fonts.gstatic.com" />
         <link
           href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap"
