@@ -150,17 +150,19 @@ export default function AccountHistory() {
           ))}
         </div>
       </div>
-      <div className="flex justify-end w-full pb-4">
-        <Button
-          className={`text-xs h-8 pt-0 pb-0 pl-3 pr-3`}
-          onClick={exportHistoryToCSV}
-        >
-          <div className={`flex items-center`}>
-            <SaveIcon className={`h-4 w-4 mr-1.5`} />
-            {t('export-data')}
-          </div>
-        </Button>
-      </div>
+      {view !== 'Trades' ? (
+        <div className="flex justify-end w-full pb-4">
+          <Button
+            className={`text-xs h-8 pt-0 pb-0 pl-3 pr-3`}
+            onClick={exportHistoryToCSV}
+          >
+            <div className={`flex items-center`}>
+              <SaveIcon className={`h-4 w-4 mr-1.5`} />
+              {t('export-data')}
+            </div>
+          </Button>
+        </div>
+      ) : null}
       <ViewContent view={view} history={history} />
     </>
   )
