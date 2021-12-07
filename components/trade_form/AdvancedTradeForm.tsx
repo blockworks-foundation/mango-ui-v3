@@ -373,8 +373,6 @@ export default function AdvancedTradeForm({
     }
   }
 
-  // TODO saml - use
-  // eslint-disable-next-line
   const postOnlySlideOnChange = (checked) => {
     if (checked) {
       setIoc(false)
@@ -923,24 +921,28 @@ export default function AdvancedTradeForm({
                     </Checkbox>
                   </Tooltip>
                 </div>
-                {/* Confirm checkbox label and if it should be hidden for certain order types */}
-                <div className="w-max">
-                  <Tooltip
-                    className="hidden md:block"
-                    delay={250}
-                    placement="left"
-                    // TODO: Need a functionality description
-                    content="Order type description..."
-                  >
-                    <Checkbox
-                      checked={postOnlySlide}
-                      onChange={(e) => postOnlySlideOnChange(e.target.checked)}
-                      disabled={isTriggerOrder}
+                {tradeType === 'Limit' ? (
+                  <div className="w-max">
+                    <Tooltip
+                      className="hidden md:block"
+                      delay={250}
+                      placement="left"
+                      // TODO: Need a functionality description.
+                      content="Order type description..."
                     >
-                      POST Slide
-                    </Checkbox>
-                  </Tooltip>
-                </div>
+                      <Checkbox
+                        checked={postOnlySlide}
+                        onChange={(e) =>
+                          postOnlySlideOnChange(e.target.checked)
+                        }
+                        disabled={isTriggerOrder}
+                      >
+                        {/* This label might not work but it would be preferable to keep the label short if possible. Will need to explain the details in the tooltip regardless */}
+                        Slide
+                      </Checkbox>
+                    </Tooltip>
+                  </div>
+                ) : null}
               </div>
             ) : null}
             {marketConfig.kind === 'spot' ? (
@@ -968,7 +970,7 @@ export default function AdvancedTradeForm({
               />
             </div>
           ) : null}
-          <div className={`flex pt-4`}>
+          <div className={`flex pt-6`}>
             {canTrade ? (
               <Button
                 disabled={disabledTradeButton}
