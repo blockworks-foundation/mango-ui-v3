@@ -144,6 +144,7 @@ interface MangoStore extends State {
   selectedMangoAccount: {
     current: MangoAccount | null
     initialLoad: boolean
+    lastUpdatedAt: number
   }
   tradeForm: {
     side: 'buy' | 'sell'
@@ -226,6 +227,7 @@ const useMangoStore = create<MangoStore>((set, get) => {
     selectedMangoAccount: {
       current: null,
       initialLoad: true,
+      lastUpdatedAt: 0,
     },
     tradeForm: {
       side: 'buy',
@@ -462,20 +464,18 @@ const useMangoStore = create<MangoStore>((set, get) => {
         const set = get().set
         const mangoAccount = get().selectedMangoAccount.current
         const connection = get().connection.current
+        const mangoClient = get().connection.client
 
-        const reloadedMangoAccount = await mangoAccount.reload(connection)
-
-        await Promise.all([
-          reloadedMangoAccount.loadOpenOrders(
-            connection,
-            new PublicKey(serumProgramId)
-          ),
-          reloadedMangoAccount.loadAdvancedOrders(connection),
-        ])
+        const reloadedMangoAccount = await mangoAccount.reloadFromSlot(
+          connection,
+          mangoClient.lastSlot
+        )
 
         set((state) => {
           state.selectedMangoAccount.current = reloadedMangoAccount
+          state.selectedMangoAccount.lastUpdatedAt = new Date().toISOString()
         })
+        console.log('reloaded mango account', reloadedMangoAccount)
       },
       async reloadOrders() {
         const mangoAccount = get().selectedMangoAccount.current
@@ -490,8 +490,7 @@ const useMangoStore = create<MangoStore>((set, get) => {
           ])
         }
       },
-      // DEPRECATED
-      async _updateOpenOrders() {
+      async updateOpenOrders() {
         const set = get().set
         const connection = get().connection.current
         const bidAskAccounts = Object.keys(get().accountInfos).map(

@@ -9,6 +9,13 @@ import {
   PerpMarketConfig,
 } from '@blockworks-foundation/mango-client'
 import useTradeHistory from './useTradeHistory'
+import useMangoAccount from './useMangoAccount'
+import {
+  mangoCacheSelector,
+  mangoGroupConfigSelector,
+  mangoGroupSelector,
+  marketsSelector,
+} from '../stores/selectors'
 
 export const collectPerpPosition = (
   mangoAccount: MangoAccount,
@@ -78,11 +85,11 @@ export const collectPerpPosition = (
 }
 
 const usePerpPositions = () => {
-  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
-  const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
-  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
-  const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
-  const allMarkets = useMangoStore((s) => s.selectedMangoGroup.markets)
+  const { mangoAccount } = useMangoAccount()
+  const groupConfig = useMangoStore(mangoGroupConfigSelector)
+  const mangoGroup = useMangoStore(mangoGroupSelector)
+  const mangoCache = useMangoStore(mangoCacheSelector)
+  const allMarkets = useMangoStore(marketsSelector)
   const tradeHistory = useTradeHistory()
 
   const perpAccounts = mangoAccount

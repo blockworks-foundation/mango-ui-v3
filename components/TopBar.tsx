@@ -97,7 +97,8 @@ const TopBar = () => {
                 <Settings />
               </div>
               {mangoAccount &&
-              mangoAccount.owner.toBase58() === wallet?.publicKey.toBase58() ? (
+              mangoAccount.owner.toBase58() ===
+                wallet?.publicKey?.toBase58() ? (
                 <div className="pl-2">
                   <button
                     className="border border-th-bkg-4 py-1 px-2 rounded text-xs focus:outline-none hover:border-th-fgd-4"

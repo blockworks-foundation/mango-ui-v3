@@ -179,7 +179,7 @@ const AccountFunding = () => {
             <thead>
               <TrHead>
                 <Th>{t('token')}</Th>
-                <Th>{t('total-funding')}</Th>
+                <Th>{t('total-funding')} (USDC)</Th>
               </TrHead>
             </thead>
             <tbody>
@@ -307,7 +307,7 @@ const AccountFunding = () => {
                         <thead>
                           <TrHead>
                             <Th>{t('time')}</Th>
-                            <Th>{t('funding')}</Th>
+                            <Th>{t('funding')} (USDC)</Th>
                           </TrHead>
                         </thead>
                         <tbody>
@@ -321,8 +321,7 @@ const AccountFunding = () => {
                                 <Td>
                                   {stat.total_funding.toFixed(
                                     QUOTE_DECIMALS + 1
-                                  )}{' '}
-                                  USDC
+                                  )}
                                 </Td>
                               </TrBody>
                             )

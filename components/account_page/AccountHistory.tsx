@@ -53,16 +53,15 @@ export default function AccountHistory() {
         <div>
           <div className="mb-1 text-th-fgd-1 text-lg">{t('history')}</div>
           <div className="mr-4 text-xs text-th-fgd-3">
-            There may be a short delay in displaying your latest history. Use
-            the{' '}
+            {t('delay-displaying-recent')} {t('use-explorer-one')}
             <a
               href={`https://explorer.solana.com/address/${mangoAccountPk}`}
               target="_blank"
               rel="noopener noreferrer"
             >
-              Explorer
-            </a>{' '}
-            to verify any delayed transactions.
+              {t('use-explorer-two')}
+            </a>
+            {t('use-explorer-three')}
           </div>
         </div>
         <div className="flex mb-1 mt-4 md:mt-0">
@@ -80,7 +79,7 @@ export default function AccountHistory() {
               onClick={() => setView(key)}
               key={key as string}
             >
-              {label}
+              {t(label.toLowerCase())}
             </div>
           ))}
         </div>
@@ -484,7 +483,7 @@ const HistoryTable = ({ history, view }) => {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        <span>View Transaction</span>
+                        <span>{t('view-transaction')}</span>
                         <ExternalLinkIcon className={`h-4 w-4 ml-1.5`} />
                       </a>
                     </Td>
@@ -496,7 +495,7 @@ const HistoryTable = ({ history, view }) => {
         </>
       ) : (
         <div className="w-full text-center py-6 bg-th-bkg-1 text-th-fgd-3 rounded-md">
-          History empty.
+          {t('history-empty')}
         </div>
       )}
     </>

@@ -1,17 +1,23 @@
-import { useMemo, useState, useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import useIpAddress from '../../hooks/useIpAddress'
 import {
+  clamp,
   getMarketIndexBySymbol,
   getTokenBySymbol,
   I80F48,
   nativeI80F48ToUi,
   PerpMarket,
+  PerpOrderType,
 } from '@blockworks-foundation/mango-client'
+import {
+  ExclamationIcon,
+  InformationCircleIcon,
+} from '@heroicons/react/outline'
 import { notify } from '../../utils/notifications'
 import { calculateTradePrice, getDecimalCount } from '../../utils'
 import { floorToDecimal } from '../../utils/index'
 import useMangoStore, { Orderbook } from '../../stores/useMangoStore'
-import Button from '../Button'
+import Button, { LinkButton } from '../Button'
 import TradeType from './TradeType'
 import Input from '../Input'
 import { Market } from '@project-serum/serum'
@@ -28,6 +34,10 @@ import EstPriceImpact from './EstPriceImpact'
 import useFees from '../../hooks/useFees'
 import { useTranslation } from 'next-i18next'
 import useSrmAccount from '../../hooks/useSrmAccount'
+import { useLocalStorageStringState } from '../../hooks/useLocalStorageState'
+import InlineNotification from '../InlineNotification'
+
+const MAX_SLIPPAGE_KEY = 'maxSlippage'
 
 export const TRIGGER_ORDER_TYPES = [
   'Stop Loss',
@@ -49,6 +59,7 @@ export default function AdvancedTradeForm({
   const actions = useMangoStore((s) => s.actions)
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
+  const walletTokens = useMangoStore((s) => s.wallet.tokens)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const mangoClient = useMangoStore((s) => s.connection.client)
   const market = useMangoStore((s) => s.selectedMarket.current)
@@ -56,6 +67,7 @@ export default function AdvancedTradeForm({
   const [reduceOnly, setReduceOnly] = useState(false)
   const [spotMargin, setSpotMargin] = useState(true)
   const [positionSizePercent, setPositionSizePercent] = useState('')
+  const [insufficientSol, setInsufficientSol] = useState(false)
   const { takerFee, makerFee } = useFees()
   const { totalMsrm } = useSrmAccount()
 
@@ -92,12 +104,30 @@ export default function AdvancedTradeForm({
 
   const isTriggerOrder = TRIGGER_ORDER_TYPES.includes(tradeType)
 
+  // TODO saml - create a tick box on the UI; Only available on perps
+  // eslint-disable-next-line
+  const [postOnlySlide, setPostOnlySlide] = useState(false)
+
   const [postOnly, setPostOnly] = useState(false)
   const [ioc, setIoc] = useState(false)
   const [submitting, setSubmitting] = useState(false)
 
   const orderBookRef = useRef(useMangoStore.getState().selectedMarket.orderBook)
   const orderbook = orderBookRef.current
+  const [maxSlippage, setMaxSlippage] = useLocalStorageStringState(
+    MAX_SLIPPAGE_KEY,
+    '0.025'
+  )
+  const [maxSlippagePercentage, setMaxSlippagePercentage] = useState(
+    clamp(parseFloat(maxSlippage), 0, 1) * 100
+  )
+  const [editMaxSlippage, setEditMaxSlippage] = useState(false)
+
+  const saveMaxSlippage = (slippage) => {
+    setMaxSlippage(clamp(slippage / 100, 0, 1).toString())
+    setEditMaxSlippage(false)
+  }
+
   useEffect(
     () =>
       useMangoStore.subscribe(
@@ -107,6 +137,11 @@ export default function AdvancedTradeForm({
       ),
     []
   )
+
+  useEffect(() => {
+    const walletSol = walletTokens.find((a) => a.config.symbol === 'SOL')
+    walletSol ? setInsufficientSol(walletSol.uiBalance < 0.01) : null
+  }, [walletTokens])
 
   useEffect(() => {
     if (tradeType === 'Market') {
@@ -134,13 +169,6 @@ export default function AdvancedTradeForm({
       })
     }
   }, [set, tradeType, side])
-
-  useEffect(() => {
-    handleSetPositionSize(positionSizePercent, spotMargin)
-    if (!isPerpMarket && isTriggerOrder) {
-      onTradeTypeChange('Limit')
-    }
-  }, [market])
 
   const { max, deposits, borrows, spotMax } = useMemo(() => {
     if (!mangoAccount) return { max: 0 }
@@ -330,6 +358,8 @@ export default function AdvancedTradeForm({
 
   const onTradeTypeChange = (tradeType) => {
     setTradeType(tradeType)
+    setPostOnly(false)
+    setReduceOnly(false)
     if (TRIGGER_ORDER_TYPES.includes(tradeType)) {
       setReduceOnly(true)
     }
@@ -347,22 +377,31 @@ export default function AdvancedTradeForm({
     }
   }
 
+  // TODO saml - use
+  // eslint-disable-next-line
+  const postOnlySlideOnChange = (checked) => {
+    if (checked) {
+      setIoc(false)
+      setPostOnly(false)
+    }
+    setPostOnlySlide(checked)
+  }
+
   const postOnChange = (checked) => {
     if (checked) {
       setIoc(false)
+      setPostOnlySlide(false)
     }
     setPostOnly(checked)
   }
   const iocOnChange = (checked) => {
     if (checked) {
       setPostOnly(false)
+      setPostOnlySlide(false)
     }
     setIoc(checked)
   }
   const reduceOnChange = (checked) => {
-    if (checked) {
-      setReduceOnly(false)
-    }
     setReduceOnly(checked)
   }
   const marginOnChange = (checked) => {
@@ -418,9 +457,14 @@ export default function AdvancedTradeForm({
           'close-position'
         ).toLowerCase()}`
 
+  // The reference price is the book mid if book is double sided; else mark price
+  const bb = orderbook?.bids?.length > 0 && Number(orderbook.bids[0][0])
+  const ba = orderbook?.asks?.length > 0 && Number(orderbook.asks[0][0])
+  const referencePrice = bb && ba ? (bb + ba) / 2 : markPrice
+
   let priceImpact
   let estimatedPrice = price
-  if (tradeType === 'Market') {
+  if (tradeType === 'Market' && baseSize > 0) {
     const estimateMarketPrice = (
       orderBook: Orderbook,
       size: number,
@@ -441,7 +485,7 @@ export default function AdvancedTradeForm({
       }
 
       if (!accSize) {
-        console.error('Orderbook empty no market price available')
+        console.log('Orderbook empty no market price available')
         return markPrice
       }
 
@@ -455,9 +499,10 @@ export default function AdvancedTradeForm({
           )
         : baseSize
     estimatedPrice = estimateMarketPrice(orderbook, estimatedSize || 0, side)
+
     const slippageAbs =
-      estimatedSize > 0 ? Math.abs(estimatedPrice - markPrice) : 0
-    const slippageRel = slippageAbs / markPrice
+      estimatedSize > 0 ? Math.abs(estimatedPrice - referencePrice) : 0
+    const slippageRel = slippageAbs / referencePrice
 
     const takerFeeRel = takerFee
     const takerFeeAbs = estimatedSize
@@ -468,8 +513,6 @@ export default function AdvancedTradeForm({
       slippage: [slippageAbs, slippageRel],
       takerFee: [takerFeeAbs, takerFeeRel],
     }
-
-    console.log('estimated', estimatedSize, estimatedPrice, priceImpact)
   }
 
   async function onSubmit() {
@@ -495,7 +538,10 @@ export default function AdvancedTradeForm({
 
     const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
-    const { askInfo, bidInfo } = useMangoStore.getState().selectedMarket
+    const askInfo =
+      useMangoStore.getState().accountInfos[marketConfig.asksKey.toString()]
+    const bidInfo =
+      useMangoStore.getState().accountInfos[marketConfig.bidsKey.toString()]
     const wallet = useMangoStore.getState().wallet.current
 
     if (!wallet || !mangoGroup || !mangoAccount || !market) return
@@ -503,11 +549,12 @@ export default function AdvancedTradeForm({
 
     try {
       const orderPrice = calculateTradePrice(
+        marketConfig.kind,
         tradeType,
         orderbook,
         baseSize,
         side,
-        price,
+        price || markPrice,
         triggerPrice
       )
 
@@ -544,23 +591,44 @@ export default function AdvancedTradeForm({
           baseSize,
           orderType,
           null,
-          totalMsrm > 0 ? true : false
+          totalMsrm > 0
         )
+        actions.reloadOrders()
       } else {
+        let perpOrderType: PerpOrderType = orderType
+        let perpOrderPrice: number = orderPrice
+
+        if (isMarketOrder) {
+          if (tradeType === 'Market' && maxSlippage !== undefined) {
+            perpOrderType = 'ioc'
+            if (side === 'buy') {
+              perpOrderPrice = markPrice * (1 + parseFloat(maxSlippage))
+            } else {
+              perpOrderPrice = Math.max(
+                market.tickSize,
+                markPrice * (1 - parseFloat(maxSlippage))
+              )
+            }
+          } else {
+            perpOrderType = 'market'
+          }
+        }
+
         if (isTriggerOrder) {
           txid = await mangoClient.addPerpTriggerOrder(
             mangoGroup,
             mangoAccount,
             market,
             wallet,
-            isMarketOrder ? 'market' : orderType,
+            perpOrderType,
             side,
-            orderPrice,
+            perpOrderPrice,
             baseSize,
             triggerCondition,
             Number(triggerPrice),
             true // reduceOnly
           )
+          actions.reloadOrders()
         } else {
           txid = await mangoClient.placePerpOrder(
             mangoGroup,
@@ -569,9 +637,9 @@ export default function AdvancedTradeForm({
             market,
             wallet,
             side,
-            orderPrice,
+            perpOrderPrice,
             baseSize,
-            isMarketOrder ? 'market' : orderType,
+            perpOrderType,
             Date.now(),
             side === 'buy' ? askInfo : bidInfo, // book side used for ConsumeEvents
             reduceOnly
@@ -590,23 +658,18 @@ export default function AdvancedTradeForm({
       })
       console.error(e)
     } finally {
-      // TODO: should be removed, main issue are newly created OO accounts
-      // await sleep(600)
       actions.reloadMangoAccount()
       actions.loadMarketFills()
       setSubmitting(false)
     }
   }
 
-  const showReduceOnly = (basePosition: number) => {
-    if (basePosition > 0 && side === 'sell') {
-      return true
-    }
-    if (basePosition < 0 && side === 'buy') {
-      return true
-    }
-    return false
-  }
+  // const showReduceOnly = (basePosition: number) => {
+  //   return (
+  //     (basePosition > 0 && side === 'sell') ||
+  //     (basePosition < 0 && side === 'buy')
+  //   )
+  // }
 
   /*
   const roundedMax = (
@@ -625,9 +688,34 @@ export default function AdvancedTradeForm({
     !connected ||
     submitting ||
     !mangoAccount ||
-    sizeTooLarge
+    sizeTooLarge ||
+    editMaxSlippage
 
   const canTrade = ipAllowed || (market instanceof Market && spotAllowed)
+
+  // If stop loss or take profit, walk up the book and alert user if slippage will be high
+  let warnUserSlippage = false
+  if (isMarketOrder && isTriggerOrder) {
+    const bookSide = side === 'buy' ? orderbook.asks : orderbook.bids
+    let base = 0
+    let quote = 0
+    for (const [p, q] of bookSide) {
+      base += q
+      quote += p * q
+
+      if (base >= baseSize) {
+        break
+      }
+    }
+
+    if (base < baseSize || (baseSize && base === 0)) {
+      warnUserSlippage = true
+    } else if (baseSize > 0) {
+      // only check if baseSize nonzero because this implies base nonzero
+      const avgPrice = quote / base
+      warnUserSlippage = Math.abs(avgPrice / referencePrice - 1) > 0.025
+    }
+  }
 
   return (
     <div className="flex flex-col h-full">
@@ -637,6 +725,14 @@ export default function AdvancedTradeForm({
           {initLeverage}x
         </span>
       </ElementTitle>
+      {insufficientSol ? (
+        <div className="pb-3 text-left">
+          <InlineNotification
+            desc="Add more SOL to your wallet to avoid failed transactions."
+            type="warning"
+          />
+        </div>
+      ) : null}
       <OrderSideTabs onChange={onChangeSide} side={side} />
       <div className="grid grid-cols-12 gap-2 text-left">
         <div className="col-span-12 md:col-span-6">
@@ -693,7 +789,9 @@ export default function AdvancedTradeForm({
         {isTriggerLimit && (
           <>
             <div className="col-span-12">
-              <label className="text-xxs text-th-fgd-3">{t('price')}</label>
+              <label className="text-xxs text-th-fgd-3">
+                {t('limit-price')}
+              </label>
               <Input
                 type="number"
                 min="0"
@@ -806,8 +904,12 @@ export default function AdvancedTradeForm({
                 </div>
               </div>
             ) : null}
-            {marketConfig.kind === 'perp' &&
-            showReduceOnly(perpAccount?.basePosition.toNumber()) ? (
+            {/*
+                Add the following line to the ternary below once we are
+                auto updating the reduceOnly state when doing a market order:
+                && showReduceOnly(perpAccount?.basePosition.toNumber())
+             */}
+            {marketConfig.kind === 'perp' ? (
               <div className="mt-4">
                 <Tooltip
                   className="hidden md:block"
@@ -842,11 +944,17 @@ export default function AdvancedTradeForm({
               </div>
             ) : null}
           </div>
-          <div className="col-span-12 md:col-span-10 md:col-start-3 pt-1">
-            {tradeType === 'Market' && priceImpact ? (
-              <EstPriceImpact priceImpact={priceImpact} />
-            ) : null}
-          </div>
+          {warnUserSlippage ? (
+            <div className="text-th-red flex items-center mt-1">
+              <div>
+                <ExclamationIcon className="h-5 w-5 mr-2" />
+              </div>
+              <div className="text-xs">
+                This order will likely have extremely large slippage! Consider
+                using Stop Limit or Take Profit Limit order instead.
+              </div>
+            </div>
+          ) : null}
           <div className={`flex pt-4`}>
             {canTrade ? (
               <Button
@@ -892,11 +1000,73 @@ export default function AdvancedTradeForm({
               </div>
             )}
           </div>
-          <div className="flex flex-col md:flex-row text-xs text-th-fgd-4 px-6 mt-2.5 items-center justify-center">
-            <div>Maker fee: {(makerFee * 100).toFixed(2)}% </div>
-            <span className="hidden md:block md:px-1">|</span>
-            <div> Taker fee: {takerFee * 100}%</div>
-          </div>
+          {tradeType === 'Market' && priceImpact ? (
+            <div className="col-span-12 md:col-span-10 md:col-start-3 mt-4">
+              {editMaxSlippage ? (
+                <>
+                  <div className="mb-1 text-xs text-th-fgd-3">Max Slippage</div>
+                  <div className="flex">
+                    <Input
+                      type="number"
+                      min="0"
+                      max="100"
+                      onChange={(e) => setMaxSlippagePercentage(e.target.value)}
+                      suffix={
+                        <div className="font-bold text-base text-th-fgd-3">
+                          %
+                        </div>
+                      }
+                      value={maxSlippagePercentage}
+                    />
+                    <Button
+                      className="ml-2"
+                      onClick={() => saveMaxSlippage(maxSlippagePercentage)}
+                    >
+                      {t('save')}
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  {isPerpMarket ? (
+                    <div className="flex justify-between mb-1 text-th-fgd-3 text-xs">
+                      <div className="flex items-center">
+                        Max Slippage
+                        <Tooltip content="If price slips more than your max slippage, your order will be partially filled up to that price.">
+                          <div className="outline-none focus:outline-none">
+                            <InformationCircleIcon className="h-4 w-4 ml-1.5 text-th-fgd-3" />
+                          </div>
+                        </Tooltip>
+                      </div>
+                      <div className="flex">
+                        <span className="text-th-fgd-1">
+                          {(parseFloat(maxSlippage) * 100).toFixed(2)}%
+                        </span>
+                        <LinkButton
+                          className="ml-2 text-xs"
+                          onClick={() => setEditMaxSlippage(true)}
+                        >
+                          {t('edit')}
+                        </LinkButton>
+                      </div>
+                    </div>
+                  ) : null}
+                  <EstPriceImpact priceImpact={priceImpact} />
+                </>
+              )}
+            </div>
+          ) : (
+            <div className="flex flex-col md:flex-row text-xs text-th-fgd-4 px-6 mt-2.5 items-center justify-center">
+              <div>
+                {t('maker-fee')}: {(makerFee * 100).toFixed(2)}%{' '}
+              </div>
+              <span className="hidden md:block md:px-1">|</span>
+              <div>
+                {' '}
+                {t('taker-fee')}: {takerFee * 100}%
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

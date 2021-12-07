@@ -4,6 +4,7 @@ import { PublicKey } from '@solana/web3.js'
 import BN from 'bn.js'
 import { TRIGGER_ORDER_TYPES } from '../components/trade_form/AdvancedTradeForm'
 import { Orderbook } from '../stores/useMangoStore'
+import { MarketKind } from '@blockworks-foundation/mango-client'
 
 export async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))
@@ -98,6 +99,7 @@ export function isDefined<T>(argument: T | undefined): argument is T {
 }
 
 export function calculateTradePrice(
+  kind: MarketKind,
   tradeType: string,
   orderBook: Orderbook,
   baseSize: number,
@@ -105,7 +107,7 @@ export function calculateTradePrice(
   price: string | number,
   triggerPrice?: string | number
 ): number {
-  if (tradeType === 'Market') {
+  if (tradeType === 'Market' && kind === 'spot') {
     return calculateMarketPrice(orderBook, baseSize, side)
   } else if (TRIGGER_ORDER_TYPES.includes(tradeType)) {
     if (tradeType === 'Take Profit Limit' || tradeType === 'Stop Limit') {

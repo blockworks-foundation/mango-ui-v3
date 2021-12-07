@@ -32,6 +32,7 @@ export default function SimpleTradeForm({ initLeverage }) {
   const actions = useMangoStore((s) => s.actions)
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
+  const walletTokens = useMangoStore((s) => s.wallet.tokens)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoClient = useMangoStore((s) => s.connection.client)
@@ -53,9 +54,11 @@ export default function SimpleTradeForm({ initLeverage }) {
   const [stopSizePercent, setStopSizePercent] = useState('5%')
   const [reduceOnly, setReduceOnly] = useState(false)
   const [spotMargin, setSpotMargin] = useState(false)
+  const [insufficientSol, setinsufficientSol] = useState(false)
 
   const orderBookRef = useRef(useMangoStore.getState().selectedMarket.orderBook)
   const orderbook = orderBookRef.current
+
   useEffect(
     () =>
       useMangoStore.subscribe(
@@ -65,6 +68,11 @@ export default function SimpleTradeForm({ initLeverage }) {
       ),
     []
   )
+
+  useEffect(() => {
+    const walletSol = walletTokens.find((a) => a.config.symbol === 'SOL')
+    walletSol ? setinsufficientSol(walletSol.uiBalance < 0.01) : null
+  }, [walletTokens])
 
   useEffect(() => {
     if (tradeType !== 'Market' && tradeType !== 'Limit') {
@@ -274,6 +282,7 @@ export default function SimpleTradeForm({ initLeverage }) {
 
     try {
       const orderPrice = calculateTradePrice(
+        marketConfig.kind,
         tradeType,
         orderbook,
         baseSize,
@@ -415,7 +424,8 @@ export default function SimpleTradeForm({ initLeverage }) {
     !baseSize ||
     !connected ||
     submitting ||
-    !mangoAccount
+    !mangoAccount ||
+    insufficientSol
 
   const hideProfitStop =
     (side === 'sell' && baseSize === roundedDeposits) ||
@@ -720,6 +730,11 @@ export default function SimpleTradeForm({ initLeverage }) {
             </div>
           )}
         </div>
+        {insufficientSol ? (
+          <div className="tiny-text text-center text-th-red mt-1 -mb-3">
+            You must leave enough SOL in your wallet to pay for the transaction
+          </div>
+        ) : null}
         <div className="col-span-12 flex pt-2 text-xs text-th-fgd-4">
           <MarketFee />
         </div>

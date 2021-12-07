@@ -119,7 +119,9 @@ const BalancesTable = ({ showZeroBalances = false }) => {
         })
       }
     } finally {
-      await actions.reloadMangoAccount()
+      actions.reloadMangoAccount()
+      actions.reloadOrders()
+
       setSubmitting(false)
     }
   }
