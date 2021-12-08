@@ -59,7 +59,7 @@ const useHydrateStore = () => {
 
   useInterval(() => {
     actions.fetchMangoGroupCache()
-  }, 30 * SECONDS)
+  }, 12 * SECONDS)
 
   useEffect(() => {
     const market = markets[marketConfig.publicKey.toString()]

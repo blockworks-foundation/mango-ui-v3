@@ -16,6 +16,10 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import IntroTips, { SHOW_TOUR_KEY } from '../components/IntroTips'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from '../components/TradePageGrid'
+import {
+  marketConfigSelector,
+  walletConnectedSelector,
+} from '../stores/selectors'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -31,10 +35,8 @@ const PerpMarket = () => {
   const [showTour] = useLocalStorageState(SHOW_TOUR_KEY, false)
   const groupConfig = useMangoGroupConfig()
   const setMangoStore = useMangoStore((s) => s.set)
-  const connected = useMangoStore((s) => s.wallet.connected)
-  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
-  const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
-  const marketConfig = useMangoStore((s) => s.selectedMarket.config)
+  const connected = useMangoStore(walletConnectedSelector)
+  const marketConfig = useMangoStore(marketConfigSelector)
   const router = useRouter()
   const { width } = useViewport()
   const hideTips = width ? width < breakpoints.md : false
@@ -49,6 +51,7 @@ const PerpMarket = () => {
 
   useEffect(() => {
     const name = decodeURIComponent(router.asPath).split('name=')[1]
+    const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
 
     if (name && mangoGroup) {
       const marketQueryParam = name.toString().split(/-|\//)
@@ -65,7 +68,7 @@ const PerpMarket = () => {
         groupConfig,
         marketBaseSymbol.toUpperCase()
       )
-
+      const mangoCache = useMangoStore.getState().selectedMangoGroup.cache
       setMangoStore((state) => {
         state.selectedMarket.kind = marketType
         if (newMarket.name !== marketConfig.name) {
@@ -78,7 +81,7 @@ const PerpMarket = () => {
         }
       })
     }
-  }, [router, mangoGroup])
+  }, [router, marketConfig])
 
   return (
     <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all `}>
