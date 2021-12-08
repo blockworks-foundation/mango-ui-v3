@@ -1063,7 +1063,7 @@ export default function AdvancedTradeForm({
               <span className="hidden md:block md:px-1">|</span>
               <div>
                 {' '}
-                {t('taker-fee')}: {takerFee * 100}%
+                {t('taker-fee')}: {(takerFee * 100).toFixed(3)}%
               </div>
             </div>
           )}

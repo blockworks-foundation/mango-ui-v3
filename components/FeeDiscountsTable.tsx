@@ -75,7 +75,13 @@ const FeeDiscountsTable = () => {
               </div>
             </div>
             <div className="text-th-fgd-3 text-normal">
-              {rates ? percentFormat.format(rates.takerWithRebate) : null}
+              {rates
+                ? new Intl.NumberFormat(undefined, {
+                    style: 'percent',
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 3,
+                  }).format(rates.takerWithRebate)
+                : null}
             </div>
           </div>
         </div>
