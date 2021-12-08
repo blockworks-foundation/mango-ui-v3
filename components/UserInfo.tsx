@@ -31,7 +31,7 @@ const UserInfoTabs = ({ activeTab, setActiveTab }) => {
   }
 
   return (
-    <div className="relative">
+    <div className="pb-2 relative">
       <Tabs
         activeTab={activeTab}
         onChange={handleTabChange}

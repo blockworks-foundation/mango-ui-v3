@@ -176,9 +176,7 @@ export default function AccountOverview() {
         </div>
       </div>
       <div className="pb-8">
-        <div className="text-th-fgd-1 text-lg md:pb-2">
-          {t('perp-positions')}
-        </div>
+        <div className="text-th-fgd-1 text-lg pb-4">{t('perp-positions')}</div>
         <PositionsTable />
       </div>
       <div className="pb-4 text-th-fgd-1 text-lg">
@@ -211,7 +209,7 @@ export default function AccountOverview() {
           </div>
         </div>
       </div>
-      <div className="flex justify-between pb-4 sm:pb-0 md:pb-2">
+      <div className="flex justify-between pb-4">
         <div className="text-th-fgd-1 text-lg">Balances</div>
         <Switch
           checked={showZeroBalances}

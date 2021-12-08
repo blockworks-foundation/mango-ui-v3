@@ -115,9 +115,30 @@ export default function AccountHistory() {
 
   return (
     <>
-      <div className="flex flex-col md:flex-row md:items-end md:justify-between pb-2">
-        <div>
-          <div className="mb-1 text-th-fgd-1 text-lg">{t('history')}</div>
+      <div className="bg-th-bkg-4 flex mb-4 md:mb-6 md:-mt-6 md:-mx-6 px-3 md:px-4 py-2 rounded-md md:rounded-none md:rounded-t-md">
+        {historyViews.map(({ label, key }, index) => (
+          <div
+            className={`md:px-2 py-1 text-xs md:text-sm ${
+              index > 0 ? 'ml-4 md:ml-2' : null
+            } rounded-md cursor-pointer default-transition
+                          ${
+                            view === key
+                              ? `text-th-primary`
+                              : `text-th-fgd-3 hover:text-th-fgd-1`
+                          }
+                        `}
+            onClick={() => setView(key)}
+            key={key as string}
+          >
+            {t(label.toLowerCase())}
+          </div>
+        ))}
+      </div>
+      <div className="flex flex-col pb-6 sm:flex-row sm:items-end sm:justify-between">
+        <div className="pb-4 sm:pb-0">
+          <div className="mb-1 text-th-fgd-1 text-lg">
+            {t(`${view.toLowerCase()}-history`)}
+          </div>
           <div className="mr-4 text-xs text-th-fgd-3">
             {t('delay-displaying-recent')} {t('use-explorer-one')}
             <a
@@ -130,30 +151,9 @@ export default function AccountHistory() {
             {t('use-explorer-three')}
           </div>
         </div>
-        <div className="flex mb-1 mt-4 md:mt-0">
-          {historyViews.map(({ label, key }, index) => (
-            <div
-              className={`px-2 py-1 ${
-                index > 0 ? 'ml-2' : null
-              } rounded-md cursor-pointer default-transition bg-th-bkg-3
-                          ${
-                            view === key
-                              ? `ring-1 ring-inset ring-th-primary text-th-primary`
-                              : `text-th-fgd-1 opacity-50 hover:opacity-100`
-                          }
-                        `}
-              onClick={() => setView(key)}
-              key={key as string}
-            >
-              {t(label.toLowerCase())}
-            </div>
-          ))}
-        </div>
-      </div>
-      {view !== 'Trades' ? (
-        <div className="flex justify-end w-full pb-4">
+        {view !== 'Trades' ? (
           <Button
-            className={`text-xs h-8 pt-0 pb-0 pl-3 pr-3`}
+            className={`flex items-center justify-center text-xs h-8 pt-0 pb-0 pl-3 pr-3 whitespace-nowrap`}
             onClick={exportHistoryToCSV}
           >
             <div className={`flex items-center`}>
@@ -161,8 +161,8 @@ export default function AccountHistory() {
               {t('export-data')}
             </div>
           </Button>
-        </div>
-      ) : null}
+        ) : null}
+      </div>
       <ViewContent view={view} history={history} />
     </>
   )
@@ -432,7 +432,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
         </>
       ) : (
         <div className="w-full text-center py-6 bg-th-bkg-1 text-th-fgd-3 rounded-md">
-          History empty.
+          History empty
         </div>
       )}
     </>

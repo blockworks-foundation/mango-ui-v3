@@ -129,7 +129,7 @@ const BalancesTable = ({ showZeroBalances = false }) => {
   const unsettledBalances = balances.filter((bal) => bal.unsettled > 0)
 
   return (
-    <div className={`flex flex-col pb-2 sm:pb-4 sm:pt-4`}>
+    <div className={`flex flex-col pb-2 sm:pb-4`}>
       {unsettledBalances.length > 0 ? (
         <div className="border border-th-bkg-4 rounded-lg mb-6 p-4 sm:p-6">
           <div className="flex items-center justify-between pb-4">
@@ -169,7 +169,7 @@ const BalancesTable = ({ showZeroBalances = false }) => {
           })}
         </div>
       ) : null}
-      <div className={`md:-my-2 md:overflow-x-auto`}>
+      <div className={`md:overflow-x-auto`}>
         <div className={`align-middle inline-block min-w-full`}>
           {items.length > 0 ? (
             !isMobile ? (

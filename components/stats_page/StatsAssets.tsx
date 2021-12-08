@@ -11,18 +11,7 @@ export default function StatsAssets({ latestStats, stats }) {
 
   return (
     <>
-      <div className="flex items-center justify-between mb-4 w-full">
-        <div className="flex items-center text-xl text-th-fgd-1">
-          <img
-            width="24"
-            height="24"
-            src={`/assets/icons/${selectedAsset
-              .split(/-|\//)[0]
-              .toLowerCase()}.svg`}
-            className="mr-2.5"
-          />
-          {selectedAsset}
-        </div>
+      <div className="flex flex-row-reverse items-center md:items-stretch justify-between md:flex-col mb-4">
         <Select
           value={selectedAsset}
           onChange={(a) => setSelectedAsset(a)}
@@ -42,22 +31,35 @@ export default function StatsAssets({ latestStats, stats }) {
             ))}
           </div>
         </Select>
-        <div className="hidden md:flex pb-4 sm:pb-0">
-          {latestStats.map((stat) => (
+        <div className="bg-th-bkg-4 hidden md:flex mb-4 md:mb-6 md:-mt-6 md:-mx-6 px-3 md:px-4 py-2 rounded-md md:rounded-none md:rounded-t-md">
+          {latestStats.map((stat, index) => (
             <div
-              className={`px-2 py-1 ml-2 rounded-md cursor-pointer default-transition bg-th-bkg-3
-              ${
-                selectedAsset === stat.name
-                  ? `ring-1 ring-inset ring-th-primary text-th-primary`
-                  : `text-th-fgd-1 opacity-50 hover:opacity-100`
-              }
-            `}
+              className={`md:px-2 py-1 text-xs md:text-sm ${
+                index > 0 ? 'ml-4 md:ml-2' : null
+              } rounded-md cursor-pointer default-transition
+                          ${
+                            selectedAsset === stat.name
+                              ? `text-th-primary`
+                              : `text-th-fgd-3 hover:text-th-fgd-1`
+                          }
+                        `}
               onClick={() => setSelectedAsset(stat.name)}
               key={stat.name as string}
             >
               {stat.name}
             </div>
           ))}
+        </div>
+        <div className="flex items-center text-xl text-th-fgd-1">
+          <img
+            width="24"
+            height="24"
+            src={`/assets/icons/${selectedAsset
+              .split(/-|\//)[0]
+              .toLowerCase()}.svg`}
+            className="mr-2.5"
+          />
+          {selectedAsset}
         </div>
       </div>
       <div className="grid grid-flow-col grid-cols-1 grid-rows-4 md:grid-cols-2 md:grid-rows-2 gap-2 sm:gap-4">

@@ -30,7 +30,7 @@ const FeeDiscountsTable = () => {
 
   return (
     <div
-      className={`flex justify-center bg-th-bkg-1 py-6 mt-6 rounded-md divide-x divide-gray-500`}
+      className={`flex justify-center bg-th-bkg-1 py-6 rounded-md divide-x divide-gray-500`}
     >
       <div className="pr-10">
         <div className="text-center text-lg">{t('serum-fees')}</div>

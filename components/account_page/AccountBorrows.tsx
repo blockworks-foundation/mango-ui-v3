@@ -70,7 +70,7 @@ export default function AccountBorrows() {
           </span>
         </div> */}
       <div className="flex flex-col pb-2 pt-4">
-        <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+        <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div className="align-middle inline-block min-w-full sm:px-6 lg:px-8">
             {mangoGroup ? (
               balances.find((b) => b.borrows.gt(ZERO_I80F48)) ? (
@@ -278,7 +278,7 @@ export default function AccountBorrows() {
       </div>
       <div className="pb-2 pt-8 text-th-fgd-1 text-lg">{t('all-assets')}</div>
       <div className="flex flex-col pb-2 pt-4">
-        <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+        <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div className="align-middle inline-block min-w-full sm:px-6 lg:px-8">
             {!isMobile ? (
               <Table>
