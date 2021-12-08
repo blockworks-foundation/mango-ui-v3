@@ -53,21 +53,24 @@ const PerpMarket = () => {
     const name = decodeURIComponent(router.asPath).split('name=')[1]
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
 
-    if (name && mangoGroup) {
-      const marketQueryParam = name.toString().split(/-|\//)
-      const marketBaseSymbol = marketQueryParam[0]
-      const marketType = marketQueryParam[1] === 'PERP' ? 'perp' : 'spot'
+    let marketQueryParam, marketBaseSymbol, marketType, newMarket, marketIndex
+    if (name) {
+      marketQueryParam = name.toString().split(/-|\//)
+      marketBaseSymbol = marketQueryParam[0]
+      marketType = marketQueryParam[1] === 'PERP' ? 'perp' : 'spot'
 
-      const newMarket = getMarketByBaseSymbolAndKind(
+      newMarket = getMarketByBaseSymbolAndKind(
         groupConfig,
         marketBaseSymbol.toUpperCase(),
         marketType
       )
-
-      const marketIndex = getMarketIndexBySymbol(
+      marketIndex = getMarketIndexBySymbol(
         groupConfig,
         marketBaseSymbol.toUpperCase()
       )
+    }
+
+    if (name && mangoGroup) {
       const mangoCache = useMangoStore.getState().selectedMangoGroup.cache
       setMangoStore((state) => {
         state.selectedMarket.kind = marketType
@@ -80,6 +83,14 @@ const PerpMarket = () => {
               : ''
         }
       })
+    } else if (name && marketConfig) {
+      // if mangoGroup hasn't loaded yet, set the marketConfig to the query param if different
+      if (newMarket.name !== marketConfig.name) {
+        setMangoStore((state) => {
+          state.selectedMarket.kind = marketType
+          state.selectedMarket.config = newMarket
+        })
+      }
     }
   }, [router, marketConfig])
 
