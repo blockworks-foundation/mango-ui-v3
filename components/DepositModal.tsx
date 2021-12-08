@@ -145,6 +145,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
         })
 
   const inputDisabled =
+    selectedAccount &&
     selectedAccount.config.symbol === 'SOL' &&
     selectedAccount.uiBalance.toString() === inputAmount
 
@@ -162,7 +163,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
           />
         </div>
       ) : null}
-      {repayAmount && selectedAccount.uiBalance < parseFloat(repayAmount) ? (
+      {repayAmount && selectedAccount?.uiBalance < parseFloat(repayAmount) ? (
         <div className="mb-4">
           <InlineNotification
             desc={t('deposit-before', {
@@ -208,8 +209,8 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
           values={['25', '50', '75', '100']}
         />
       </div>
-      {selectedAccount.config.symbol === 'SOL' &&
-      parseFloat(inputAmount) > selectedAccount.uiBalance - 0.01 ? (
+      {selectedAccount?.config.symbol === 'SOL' &&
+      parseFloat(inputAmount) > selectedAccount?.uiBalance - 0.01 ? (
         <div className="tiny-text text-center text-th-red -mb-4">
           {t('you-must-leave-enough-sol')}
         </div>
