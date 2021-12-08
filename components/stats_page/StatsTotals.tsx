@@ -60,11 +60,13 @@ export default function StatsTotals({ latestStats, stats }) {
         ? stats[i].totalBorrows
         : stats[i].totalBorrows * stats[i].baseOraclePrice
 
-    depositValues.push({
-      name: stats[i].name,
-      value: depositValue,
-      time: stats[i].hourly,
-    })
+    if (depositValue) {
+      depositValues.push({
+        name: stats[i].name,
+        value: depositValue,
+        time: stats[i].hourly,
+      })
+    }
 
     if (borrowValue) {
       borrowValues.push({
