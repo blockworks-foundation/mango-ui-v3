@@ -404,28 +404,28 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                           </Button>
                         </div>
                       </Td>
-                      {showDepositModal && (
-                        <DepositModal
-                          isOpen={showDepositModal}
-                          onClose={() => setShowDepositModal(false)}
-                          tokenSymbol={actionSymbol}
-                          repayAmount={
-                            balance.borrows.toNumber() > 0
-                              ? balance.borrows.toFixed()
-                              : ''
-                          }
-                        />
-                      )}
-                      {showWithdrawModal && (
-                        <WithdrawModal
-                          isOpen={showWithdrawModal}
-                          onClose={() => setShowWithdrawModal(false)}
-                          tokenSymbol={actionSymbol}
-                        />
-                      )}
                     </TrBody>
                   ))}
                 </tbody>
+                {showDepositModal && (
+                  <DepositModal
+                    isOpen={showDepositModal}
+                    onClose={() => setShowDepositModal(false)}
+                    tokenSymbol={actionSymbol}
+                    // repayAmount={
+                    //   balance.borrows.toNumber() > 0
+                    //     ? balance.borrows.toFixed()
+                    //     : ''
+                    // }
+                  />
+                )}
+                {showWithdrawModal && (
+                  <WithdrawModal
+                    isOpen={showWithdrawModal}
+                    onClose={() => setShowWithdrawModal(false)}
+                    tokenSymbol={actionSymbol}
+                  />
+                )}
               </Table>
             ) : (
               <>
