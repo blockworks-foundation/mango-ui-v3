@@ -16,6 +16,8 @@ export default function useFees() {
     marketConfig.baseSymbol
   )
 
+  if (!mangoGroup) return {}
+
   let takerFee, makerFee
   if (market instanceof PerpMarket) {
     takerFee = parseFloat(

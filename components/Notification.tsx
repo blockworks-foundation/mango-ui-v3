@@ -6,9 +6,9 @@ import {
   XCircleIcon,
 } from '@heroicons/react/outline'
 import useMangoStore from '../stores/useMangoStore'
-import { notify } from '../utils/notifications'
+import { Notification, notify } from '../utils/notifications'
 import { useTranslation } from 'next-i18next'
-import useInterval from '../hooks/useInterval'
+import Loading from './Loading'
 
 const NotificationList = () => {
   const { t } = useTranslation('common')
@@ -58,15 +58,28 @@ const NotificationList = () => {
   )
 }
 
-const Notification = ({ notification }) => {
+const Notification = ({ notification }: { notification: Notification }) => {
   const { t } = useTranslation('common')
   const setMangoStore = useMangoStore((s) => s.set)
   const { type, title, description, txid, show, id } = notification
 
+  // overwrite the title if of the error message if it is a time out error
   let parsedTitle
   if (description && description.includes('Timed out awaiting')) {
     parsedTitle = 'Unable to confirm transaction'
   }
+
+  // if the notification is a success, then hide the confirming tx notification with the same txid
+  useEffect(() => {
+    if ((type === 'error' || type === 'success') && txid) {
+      setMangoStore((s) => {
+        const newNotifications = s.notifications.map((n) =>
+          n.txid === txid && n.type === 'confirm' ? { ...n, show: false } : n
+        )
+        s.notifications = newNotifications
+      })
+    }
+  }, [type, txid])
 
   const hideNotification = () => {
     setMangoStore((s) => {
@@ -77,14 +90,21 @@ const Notification = ({ notification }) => {
     })
   }
 
-  useInterval(
-    () => {
-      if (show) {
-        hideNotification()
-      }
-    },
-    parsedTitle ? 20000 : 12000
-  )
+  // auto hide a notification after 10 seconds unless it is a confirming or time out notification
+  useEffect(() => {
+    const id = setTimeout(
+      () => {
+        if (show && type !== 'confirm') {
+          hideNotification()
+        }
+      },
+      parsedTitle || type === 'confirm' ? 30000 : 10000
+    )
+
+    return () => {
+      clearInterval(id)
+    }
+  })
 
   if (!show) return null
 
@@ -102,6 +122,9 @@ const Notification = ({ notification }) => {
           )}
           {type === 'error' && (
             <XCircleIcon className={`text-th-red h-7 w-7 mr-1`} />
+          )}
+          {type === 'confirm' && (
+            <Loading className={`text-th-fgd-3 h-7 w-7 mr-1`} />
           )}
         </div>
         <div className={`ml-2 flex-1`}>

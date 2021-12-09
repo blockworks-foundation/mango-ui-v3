@@ -9,7 +9,7 @@ export default function useOraclePrice(): I80F48 {
   const [oraclePrice, setOraclePrice] = useState(null)
 
   const fetchOraclePrice = useCallback(() => {
-    if (mangoGroup) {
+    if (mangoGroup && mangoCache) {
       setOraclePrice(null)
       let marketIndex = 0
       if (selectedMarket.kind === 'spot') {

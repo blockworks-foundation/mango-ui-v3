@@ -1,7 +1,16 @@
 import useMangoStore from '../stores/useMangoStore'
 
+export type Notification = {
+  type: 'success' | 'info' | 'error' | 'confirm'
+  title: string
+  description?: null | string
+  txid?: string
+  show: boolean
+  id: number
+}
+
 export function notify(newNotification: {
-  type?: 'success' | 'info' | 'error'
+  type?: 'success' | 'info' | 'error' | 'confirm'
   title: string
   description?: string
   txid?: string
@@ -11,11 +20,16 @@ export function notify(newNotification: {
   const lastId = useMangoStore.getState().notificationIdCounter
   const newId = lastId + 1
 
+  const newNotif: Notification = {
+    id: newId,
+    type: 'success',
+    show: true,
+    description: null,
+    ...newNotification,
+  }
+
   setMangoStore((state) => {
     state.notificationIdCounter = newId
-    state.notifications = [
-      ...notifications,
-      { id: newId, type: 'success', show: true, ...newNotification },
-    ]
+    state.notifications = [...notifications, newNotif]
   })
 }

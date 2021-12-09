@@ -25,7 +25,7 @@ import {
 import { AccountInfo, Commitment, Connection, PublicKey } from '@solana/web3.js'
 import { EndpointInfo, WalletAdapter } from '../@types/types'
 import { isDefined, zipDict } from '../utils'
-import { notify } from '../utils/notifications'
+import { Notification, notify } from '../utils/notifications'
 import { LAST_ACCOUNT_KEY } from '../components/AccountsModal'
 import {
   DEFAULT_MARKET_KEY,
@@ -106,14 +106,7 @@ export interface Orderbook {
 
 interface MangoStore extends State {
   notificationIdCounter: number
-  notifications: Array<{
-    type: string
-    title: string
-    description?: string
-    txid?: string
-    id: number
-    show?: boolean
-  }>
+  notifications: Array<Notification>
   accountInfos: AccountInfoList
   connection: {
     cluster: ClusterType
@@ -347,18 +340,27 @@ const useMangoStore = create<MangoStore>((set, get) => {
         return mangoClient
           .getMangoGroup(mangoGroupPk)
           .then(async (mangoGroup) => {
+            mangoGroup.loadRootBanks(connection).then(() => {
+              set((state) => {
+                state.selectedMangoGroup.current = mangoGroup
+              })
+            })
             const allMarketConfigs = getAllMarkets(mangoGroupConfig)
             const allMarketPks = allMarketConfigs.map((m) => m.publicKey)
+            const allBidsAndAsksPks = allMarketConfigs
+              .map((m) => [m.bidsKey, m.asksKey])
+              .flat()
 
-            let allMarketAccountInfos, mangoCache
+            let allMarketAccountInfos, mangoCache, allBidsAndAsksAccountInfos
             try {
               const resp = await Promise.all([
                 getMultipleAccounts(connection, allMarketPks),
                 mangoGroup.loadCache(connection),
-                mangoGroup.loadRootBanks(connection),
+                getMultipleAccounts(connection, allBidsAndAsksPks),
               ])
               allMarketAccountInfos = resp[0]
               mangoCache = resp[1]
+              allBidsAndAsksAccountInfos = resp[2]
             } catch {
               notify({
                 type: 'error',
@@ -392,26 +394,17 @@ const useMangoStore = create<MangoStore>((set, get) => {
               }
             })
 
-            const allBidsAndAsksPks = allMarketConfigs
-              .map((m) => [m.bidsKey, m.asksKey])
-              .flat()
-            const allBidsAndAsksAccountInfos = await getMultipleAccounts(
-              connection,
-              allBidsAndAsksPks
-            )
-
             const allMarkets = zipDict(
               allMarketPks.map((pk) => pk.toBase58()),
               allMarketAccounts
             )
 
             set((state) => {
-              state.selectedMangoGroup.current = mangoGroup
               state.selectedMangoGroup.cache = mangoCache
               state.selectedMangoGroup.markets = allMarkets
-              state.selectedMarket.current =
-                allMarkets[selectedMarketConfig.publicKey.toBase58()]
-
+              state.selectedMarket.current = allMarketAccounts.find((mkt) =>
+                mkt.publicKey.equals(selectedMarketConfig.publicKey)
+              )
               allMarketAccountInfos
                 .concat(allBidsAndAsksAccountInfos)
                 .forEach(({ publicKey, context, accountInfo }) => {
