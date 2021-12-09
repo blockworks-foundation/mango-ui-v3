@@ -1141,7 +1141,7 @@ export default function RiskCalculator() {
                       step={0.01}
                       value={sliderPercentage}
                       min={0}
-                      max={2.5}
+                      max={3.5}
                       defaultValue={defaultSliderVal}
                       trackStyle={{ backgroundColor: '#F2C94C' }}
                       handleStyle={{
@@ -1152,7 +1152,7 @@ export default function RiskCalculator() {
                     />
                   </div>
                   <div className="pl-4 text-th-fgd-1 text-xs w-16">
-                    {`${Number(sliderPercentage * 100).toFixed(0)}%`}
+                    {`${Number((sliderPercentage - 1) * 100).toFixed(0)}%`}
                   </div>
                   <div className="pl-4 text-th-fgd-1 text-xs w-16">
                     <LinkButton
