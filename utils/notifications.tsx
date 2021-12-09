@@ -8,11 +8,14 @@ export function notify(newNotification: {
 }) {
   const setMangoStore = useMangoStore.getState().set
   const notifications = useMangoStore.getState().notifications
+  const lastId = useMangoStore.getState().notificationIdCounter
+  const newId = lastId + 1
 
   setMangoStore((state) => {
+    state.notificationIdCounter = newId
     state.notifications = [
       ...notifications,
-      { type: 'success', ...newNotification },
+      { id: newId, type: 'success', show: true, ...newNotification },
     ]
   })
 }
