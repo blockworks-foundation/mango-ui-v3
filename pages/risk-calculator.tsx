@@ -8,65 +8,74 @@ import Button, { LinkButton } from '../components/Button'
 import Input from '../components/Input'
 import { useState, useEffect } from 'react'
 import Tooltip from '../components/Tooltip'
-import { floorToDecimal, ceilToDecimal, tokenPrecision } from '../utils/index'
-import { useBalances } from '../hooks/useBalances'
-import usePerpPositions from '../hooks/usePerpPositions'
-import { formatUsdValue } from '../utils'
+import {
+  floorToDecimal,
+  tokenPrecision,
+  perpContractPrecision,
+  roundToDecimal,
+} from '../utils/index'
+import { formatUsdValue, usdFormatter } from '../utils'
 import {
   getMarketIndexBySymbol,
   getTokenBySymbol,
-  getAllMarkets,
+  getMarketByPublicKey,
+  QUOTE_INDEX,
 } from '@blockworks-foundation/mango-client'
+import Switch from '../components/Switch'
 import Slider from 'rc-slider'
 import 'rc-slider/assets/index.css'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { useTranslation } from 'next-i18next'
 
-interface AssetBar {
-  assetName: string
+export async function getServerSideProps({ locale }) {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['common'])),
+    },
+  }
+}
+
+interface CalculatorRow {
   symbolName: string
-  net: number
-  deposit: number
-  borrow: number
+  oracleIndex: number
+  hasMarketSpot: boolean
+  hasMarketPerp: boolean
   price: number
-  inOrders: number
-  marketIndex: number
-  publicKey: string
-  initAssetWeight: number
-  initLiabWeight: number
-  maintAssetWeight: number
-  maintLiabWeight: number
+  spotNet: number
+  spotDeposit: number
+  spotBorrow: number
+  spotInOrders: number
+  spotMarketIndex: number
+  spotPublicKey: number
+  perpBasePosition: number
+  perpInOrders: number
+  perpAvgEntryPrice: number
+  perpScenarioPnL: number
+  perpPositionPnL: number
+  perpUnsettledFunding: number
+  perpPositionSide: string
+  perpBaseLotSize: number
+  perpQuoteLotSize: number
+  perpMarketIndex: number
+  perpPublicKey: number
+  initAssetWeightSpot: number
+  initLiabWeightSpot: number
+  maintAssetWeightSpot: number
+  maintLiabWeightSpot: number
+  initAssetWeightPerp: number
+  initLiabWeightPerp: number
+  maintAssetWeightPerp: number
+  maintLiabWeightPerp: number
   precision: number
   priceDisabled: boolean
 }
 
-interface PerpsBar {
-  perpsName: string
-  symbolName: string
-  basePosition: number
-  avgEntryPrice: number
-  price: number
-  pnL: number
-  positionSide: string
-  inOrders: number
-  marketIndex: number
-  publicKey: string
-  unsettledPnL: number
-  initAssetWeight: number
-  initLiabWeight: number
-  maintAssetWeight: number
-  maintLiabWeight: number
-  precision: number
-  priceDisabled: boolean
-}
-
-interface ScenarioDetailCalculator {
-  balancesData: AssetBar[]
-  perpsData: PerpsBar[]
+interface ScenarioCalculator {
+  rowData: CalculatorRow[]
 }
 
 export default function RiskCalculator() {
-  //Get spot balances and perp positions
-  const balances = useBalances()
-  const { openPositions } = usePerpPositions()
+  const { t } = useTranslation('common')
 
   // Get mango account data
   const selectedMarginAccount =
@@ -78,423 +87,655 @@ export default function RiskCalculator() {
   const connected = useMangoStore((s) => s.wallet.connected)
 
   // Set default state variables
-  const [calculatorBars, setCalculatorBars] =
-    useState<ScenarioDetailCalculator>()
   const [sliderPercentage, setSliderPercentage] = useState(0)
-  const [loading, setLoading] = useState(true)
-  const [editing, toggleEditing] = useState(false)
   const [scenarioInitialized, setScenarioInitialized] = useState(false)
+  const [blankScenarioInitialized, setBlankScenarioInitialized] =
+    useState(false)
+  const [scenarioBars, setScenarioBars] = useState<ScenarioCalculator>()
+  const [accountConnected, setAccountConnected] = useState(false)
+  const [showZeroBalances, setShowZeroBalances] = useState(true)
+  const [interimValue, setInterimValue] = useState(new Map())
+  const defaultSliderVal = 1
 
-  // Should this be on a timer or be set to a manual reset once initial load is done?
+  // Set rules for updating the scenario
   useEffect(() => {
-    if (!scenarioInitialized) {
-      if (balances.length > 0 && connected && selectedMarginAccount) {
-        setLoading(true)
-        setSliderPercentage(50)
-        initilizeScenario()
+    if (mangoGroup) {
+      if (selectedMarginAccount && !scenarioInitialized && connected) {
+        setSliderPercentage(defaultSliderVal)
+        createScenario('account')
         setScenarioInitialized(true)
+        setAccountConnected(true)
+        setBlankScenarioInitialized(false)
+      } else if (
+        !selectedMarginAccount &&
+        !scenarioInitialized &&
+        !blankScenarioInitialized
+      ) {
+        setSliderPercentage(defaultSliderVal)
+        createScenario('blank')
+        setBlankScenarioInitialized(true)
+      } else if (scenarioInitialized && accountConnected && !connected) {
+        setScenarioInitialized(false)
+        setAccountConnected(false)
+        setBlankScenarioInitialized(false)
       }
     }
-  }, [connected, selectedMarginAccount, scenarioInitialized])
+  }, [connected, selectedMarginAccount, scenarioInitialized, mangoGroup])
 
-  // Retrieve the default scenario based on current account spot and perp market positions
-  const initilizeScenario = () => {
-    // Set spot asset bars
-    const assetBarData = Object.entries(balances).map((asset) => {
-      const m = asset[1]
-      const marketIndex = getMarketIndexBySymbol(mangoConfig, m.symbol)
-      const token = getTokenBySymbol(mangoConfig, m.symbol)
-      const tokenIndex = mangoGroup.getTokenIndex(token.mintKey)
-
-      // Return the row data for the spot
-      return {
-        assetName: m.symbol,
-        symbolName: m.symbol,
-        net: floorToDecimal(
-          Number(m.deposits) - Number(m.borrows) + Number(m.orders),
-          token.decimals
-        ),
-        price:
-          m.symbol === 'USDC'
-            ? floorToDecimal(
-                Number(mangoGroup.getPrice(tokenIndex, mangoCache)),
-                6
-              )
-            : floorToDecimal(
-                Number(mangoGroup.getPrice(marketIndex, mangoCache)),
-                6
-              ),
-        deposit: floorToDecimal(Number(m.deposits), token.decimals),
-        borrow: floorToDecimal(Number(m.borrows), token.decimals),
-        inOrders: Number(m.orders),
-        marketIndex: marketIndex,
-        publicKey: m.key,
-        initAssetWeight:
-          m.symbol === 'USDC'
-            ? 1
-            : mangoGroup.spotMarkets[marketIndex].initAssetWeight.toNumber(),
-        initLiabWeight:
-          m.symbol === 'USDC'
-            ? 1
-            : mangoGroup.spotMarkets[marketIndex].initLiabWeight.toNumber(),
-        maintAssetWeight:
-          m.symbol === 'USDC'
-            ? 1
-            : mangoGroup.spotMarkets[marketIndex].maintAssetWeight.toNumber(),
-        maintLiabWeight:
-          m.symbol === 'USDC'
-            ? 1
-            : mangoGroup.spotMarkets[marketIndex].maintLiabWeight.toNumber(),
-        precision: token.decimals ? token.decimals : 6,
-        priceDisabled:
-          m.symbol === 'USDC' || m.symbol === 'USDT' ? true : false,
-      }
-    })
-
-    // Set perp asset bars
-    const perpsBarData = mangoConfig.perpMarkets.map((m) => {
-      // Retrieve open position
-      const openPosition = openPositions.filter(
-        (oP) => oP.marketConfig.baseSymbol === m.baseSymbol
-      )
-
-      // Return the row data for the perp
-      return {
-        perpsName: m.name,
-        symbolName: m.baseSymbol,
-        basePosition: openPosition[0]
-          ? floorToDecimal(
-              Number(openPosition[0].basePosition),
-              tokenPrecision[m.baseSymbol] ? tokenPrecision[m.baseSymbol] : 6
+  const createScenario = (type) => {
+    const rowData = []
+    let calculatorRowData
+    for (let i = -1; i < mangoGroup.numOracles; i++) {
+      // Get market configuration data
+      const spotMarketConfig =
+        i < 0
+          ? null
+          : getMarketByPublicKey(
+              mangoConfig,
+              mangoGroup.spotMarkets[i].spotMarket
             )
-          : 0,
-        avgEntryPrice: floorToDecimal(
-          Number(mangoGroup.getPrice(m.marketIndex, mangoCache)),
-          6
-        ),
-        price: floorToDecimal(
-          Number(mangoGroup.getPrice(m.marketIndex, mangoCache)),
-          6
-        ),
-        pnL: openPosition[0]
-          ? floorToDecimal(Number(openPosition[0].unsettledPnl), 4)
-          : 0,
-        positionSide: openPosition[0]
-          ? openPosition[0].basePosition < 0
-            ? 'short'
-            : 'long'
-          : 'long',
-        inOrders: 0,
-        marketIndex: m.marketIndex,
-        publicKey: m.publicKey.toString(),
-        unsettledPnL: openPosition[0]
-          ? Number(openPosition[0].unsettledPnl)
-          : 0,
-        initAssetWeight:
-          mangoGroup.perpMarkets[m.marketIndex].initAssetWeight.toNumber(),
-        initLiabWeight:
-          mangoGroup.perpMarkets[m.marketIndex].initLiabWeight.toNumber(),
-        maintAssetWeight:
-          mangoGroup.perpMarkets[m.marketIndex].maintAssetWeight.toNumber(),
-        maintLiabWeight:
-          mangoGroup.perpMarkets[m.marketIndex].maintLiabWeight.toNumber(),
-        precision: m.baseDecimals > 0 ? m.baseDecimals : 6,
-        priceDisabled: false,
-      }
-    })
+      const perpMarketConfig =
+        i < 0
+          ? null
+          : getMarketByPublicKey(
+              mangoConfig,
+              mangoGroup.perpMarkets[i].perpMarket
+            )
+      const symbol =
+        i < 0
+          ? 'USDC'
+          : spotMarketConfig?.baseSymbol
+          ? spotMarketConfig?.baseSymbol
+          : perpMarketConfig?.baseSymbol
 
-    // Update Scenario Calculator
-    const initScenarioData = updateScenario(assetBarData, perpsBarData)
-    setCalculatorBars(initScenarioData)
-    setLoading(false)
-  }
-
-  // Update the scenario details
-  const updateScenario = (balancesData: AssetBar[], perpsData: PerpsBar[]) => {
-    return {
-      balancesData: balancesData,
-      perpsData: perpsData,
-    } as ScenarioDetailCalculator
-  }
-
-  // Update scenario values
-  const updateScenarioValue = (name, type, field, val) => {
-    if (!Number.isNaN(val)) {
-      let updatedAssetData
-      let updatedPerpData
-
-      switch (type) {
-        case 'spot':
-          updatedAssetData = calculatorBars.balancesData.map((asset) => {
-            if (asset.assetName == name) {
-              if (field === 'net') {
-                return {
-                  ...asset,
-                  [field]: val,
-                  ['deposit']: val > 0 ? val : 0,
-                  ['borrow']: val < 0 ? val : 0,
-                }
-              } else {
-                return { ...asset, [field]: val }
-              }
-            } else {
-              return asset
-            }
-          })
-          updatedPerpData = calculatorBars.perpsData
-          break
-        case 'perp':
-          updatedPerpData = calculatorBars.perpsData.map((perp) => {
-            if (perp.symbolName == name) {
-              let updatedSide: string
-              let updatedPnL: number
-              switch (field) {
-                case 'basePosition':
-                  updatedSide = val < 0 ? 'short' : 'long'
-                  updatedPnL =
-                    (perp.price - perp.avgEntryPrice) * perp.basePosition
-                  break
-                case 'avgEntryPrice':
-                  updatedSide = perp.positionSide
-                  updatedPnL = (perp.price - val) * perp.basePosition
-                  break
-                case 'price':
-                  updatedSide = perp.positionSide
-                  updatedPnL =
-                    perp.positionSide === 'long'
-                      ? (perp.price - perp.avgEntryPrice) * perp.basePosition
-                      : (perp.avgEntryPrice - perp.price) * perp.basePosition
-                  break
-              }
-              return {
-                ...perp,
-                [field]: val,
-                positionSide: updatedSide,
-                pnL: updatedPnL,
-              }
-            } else {
-              return perp
-            }
-          })
-          updatedAssetData = calculatorBars.balancesData
-          break
-      }
-
-      const updatedScenarioData = updateScenario(
-        updatedAssetData,
-        updatedPerpData
-      )
-      setCalculatorBars(updatedScenarioData)
-    }
-  }
-
-  // Update price details
-  const updatePriceValues = (name, price) => {
-    const updatedAssetData = calculatorBars.balancesData.map((asset) => {
-      const val =
-        asset.assetName === name
-          ? price
-          : asset.priceDisabled
-          ? Math.abs(asset.price)
-          : Math.abs(asset.price) * ((sliderPercentage * 2) / 100)
-      return { ...asset, ['price']: Math.abs(val) }
-    })
-    const updatedPerpData = calculatorBars.perpsData.map((perp) => {
-      let val = 0
-      let updatedUnsettledPnL = 0
-      if (perp.priceDisabled || perp.symbolName != name) {
-        val = Math.abs(perp.price)
-        updatedUnsettledPnL = perp.unsettledPnL
+      // Retrieve spot balances if present
+      const spotDeposit =
+        Number(
+          mangoAccount && spotMarketConfig
+            ? mangoAccount.getUiDeposit(
+                mangoCache.rootBankCache[spotMarketConfig.marketIndex],
+                mangoGroup,
+                spotMarketConfig.marketIndex
+              )
+            : mangoAccount && symbol === 'USDC'
+            ? mangoAccount.getUiDeposit(
+                mangoCache.rootBankCache[QUOTE_INDEX],
+                mangoGroup,
+                QUOTE_INDEX
+              )
+            : 0
+        ) || 0
+      const spotBorrow =
+        Number(
+          mangoAccount && spotMarketConfig
+            ? mangoAccount.getUiBorrow(
+                mangoCache.rootBankCache[spotMarketConfig.marketIndex],
+                mangoGroup,
+                spotMarketConfig.marketIndex
+              )
+            : mangoAccount && symbol === 'USDC'
+            ? mangoAccount.getUiBorrow(
+                mangoCache.rootBankCache[QUOTE_INDEX],
+                mangoGroup,
+                QUOTE_INDEX
+              )
+            : 0
+        ) || 0
+      let inOrders = 0
+      if (symbol === 'USDC') {
+        for (let j = 0; j < mangoGroup.tokens.length; j++) {
+          const inOrder =
+            j !== QUOTE_INDEX &&
+            mangoConfig.spotMarkets[j]?.publicKey &&
+            mangoAccount?.spotOpenOrdersAccounts[j]?.quoteTokenTotal
+              ? mangoAccount.spotOpenOrdersAccounts[j].quoteTokenTotal
+              : 0
+          inOrders += Number(inOrder) / Math.pow(10, 6)
+        }
       } else {
-        val = Math.abs(price)
-        updatedUnsettledPnL = perp.unsettledPnL
+        inOrders =
+          spotMarketConfig &&
+          mangoAccount?.spotOpenOrdersAccounts[i]?.baseTokenTotal
+            ? Number(mangoAccount.spotOpenOrdersAccounts[i].baseTokenTotal) /
+              Math.pow(10, spotMarketConfig.baseDecimals)
+            : 0
       }
-      return { ...perp, ['price']: val, ['unsettledPnL']: updatedUnsettledPnL }
-    })
 
-    // Update scenario details
-    const updatedScenarioData = updateScenario(
-      updatedAssetData,
-      updatedPerpData
-    )
-    setCalculatorBars(updatedScenarioData)
+      // Retrieve perp positions if present
+      const perpPosition =
+        perpMarketConfig?.publicKey && mangoAccount
+          ? mangoAccount?.perpAccounts[i]
+          : null
+      const perpMarketIndex =
+        perpMarketConfig?.publicKey && mangoAccount
+          ? getMarketIndexBySymbol(mangoConfig, symbol)
+          : null
+      const perpAccount =
+        perpMarketConfig?.publicKey && mangoAccount
+          ? mangoAccount?.perpAccounts[perpMarketIndex]
+          : null
+      const perpMarketCache =
+        perpMarketConfig?.publicKey && mangoAccount
+          ? mangoCache?.perpMarketCache[perpMarketIndex]
+          : null
+      const perpMarketInfo =
+        perpMarketConfig?.publicKey && mangoAccount
+          ? mangoGroup?.perpMarkets[perpMarketIndex]
+          : null
+      const basePosition =
+        perpMarketConfig?.publicKey && mangoAccount
+          ? Number(perpAccount?.basePosition) /
+            Math.pow(10, perpContractPrecision[symbol])
+          : 0
+      const unsettledFunding =
+        perpMarketConfig?.publicKey && mangoAccount
+          ? (Number(perpAccount?.getUnsettledFunding(perpMarketCache)) *
+              basePosition) /
+            Math.pow(10, 6)
+          : 0
+      const positionPnL =
+        perpMarketConfig?.publicKey && mangoAccount
+          ? Number(
+              perpAccount?.getPnl(
+                perpMarketInfo,
+                perpMarketCache,
+                mangoCache.priceCache[perpMarketIndex].price
+              )
+            ) / Math.pow(10, 6)
+          : 0
+
+      if (
+        spotMarketConfig?.publicKey ||
+        perpMarketConfig?.publicKey ||
+        symbol === 'USDC'
+      ) {
+        calculatorRowData = {
+          symbolName: symbol,
+          oracleIndex: symbol === 'USDC' ? null : i,
+          hasMarketSpot: spotMarketConfig?.publicKey ? true : false,
+          hasMarketPerp: perpMarketConfig?.publicKey ? true : false,
+          priceDisabled: symbol === 'USDC' || symbol === 'USDT' ? true : false,
+          price: floorToDecimal(
+            Number(
+              mangoGroup.getPrice(
+                i < 0
+                  ? mangoGroup.getTokenIndex(
+                      getTokenBySymbol(mangoConfig, 'USDC').mintKey
+                    )
+                  : i,
+                mangoCache
+              )
+            ),
+            6
+          ),
+          spotNet:
+            type === 'account'
+              ? Number(
+                  floorToDecimal(
+                    spotDeposit - spotBorrow + inOrders,
+                    spotMarketConfig?.baseDecimals || 6
+                  )
+                )
+              : Number(0),
+          spotDeposit:
+            type === 'account'
+              ? Number(
+                  floorToDecimal(
+                    spotDeposit,
+                    spotMarketConfig?.baseDecimals || 6
+                  )
+                )
+              : Number(0),
+          spotBorrow:
+            type === 'account'
+              ? Number(
+                  floorToDecimal(
+                    spotBorrow,
+                    spotMarketConfig?.baseDecimals || 6
+                  )
+                )
+              : Number(0),
+          spotInOrders:
+            type === 'account'
+              ? Number(floorToDecimal(inOrders, 6))
+              : Number(0),
+          spotMarketIndex: mangoGroup.spotMarkets[i]?.spotMarket
+            ? spotMarketConfig?.marketIndex
+            : null,
+          spotPublicKey: mangoGroup.spotMarkets[i]?.spotMarket
+            ? mangoGroup.spotMarkets[i]?.spotMarket
+            : null,
+          perpAvgEntryPrice: floorToDecimal(
+            Number(
+              mangoGroup.getPrice(
+                i < 0
+                  ? mangoGroup.getTokenIndex(
+                      getTokenBySymbol(mangoConfig, 'USDC').mintKey
+                    )
+                  : i,
+                mangoCache
+              )
+            ),
+            6
+          ),
+          perpBasePosition:
+            type === 'account' && perpMarketConfig?.publicKey
+              ? Number(basePosition)
+              : Number(0),
+          perpScenarioPnL: 0,
+          perpPositionPnL:
+            type === 'account' && perpMarketConfig?.publicKey
+              ? Number(floorToDecimal(positionPnL, 6))
+              : Number(0),
+          perpUnsettledFunding:
+            type === 'account' && perpMarketConfig?.publicKey
+              ? Number(floorToDecimal(unsettledFunding, 6))
+              : Number(0),
+          perpInOrders:
+            type === 'account' && perpMarketConfig?.publicKey
+              ? Number(perpPosition?.bidsQuantity) >
+                Math.abs(Number(perpPosition?.asksQuantity))
+                ? floorToDecimal(
+                    Number(perpPosition?.bidsQuantity),
+                    tokenPrecision[perpMarketConfig?.baseSymbol] || 6
+                  )
+                : floorToDecimal(
+                    -1 * Number(perpPosition?.asksQuantity),
+                    tokenPrecision[perpMarketConfig?.baseSymbol] || 6
+                  )
+              : Number(0),
+          perpPositionSide:
+            type === 'account' &&
+            perpMarketConfig?.publicKey &&
+            basePosition < 0
+              ? 'short'
+              : 'long',
+          perpBaseLotSize: mangoGroup.perpMarkets[i]?.perpMarket
+            ? Number(mangoGroup.perpMarkets[i]?.baseLotSize)
+            : null,
+          perpQuoteLotSize: mangoGroup.perpMarkets[i]?.perpMarket
+            ? Number(mangoGroup.perpMarkets[i]?.quoteLotSize)
+            : null,
+          perpMarketIndex: mangoGroup.perpMarkets[i]?.perpMarket
+            ? mangoGroup.perpMarkets[i]?.perpMarket
+            : null,
+          perpPublicKey: mangoGroup.perpMarkets[i]?.perpMarket
+            ? mangoGroup.perpMarkets[i]?.perpMarket
+            : null,
+          initAssetWeightSpot:
+            symbol === 'USDC'
+              ? 1
+              : mangoGroup.spotMarkets[i]?.spotMarket
+              ? roundToDecimal(
+                  Number(mangoGroup.spotMarkets[i]?.initAssetWeight),
+                  2
+                )
+              : 1,
+          initLiabWeightSpot:
+            symbol === 'USDC'
+              ? 1
+              : mangoGroup.spotMarkets[i]?.spotMarket
+              ? roundToDecimal(
+                  Number(mangoGroup.spotMarkets[i]?.initLiabWeight),
+                  2
+                )
+              : 1,
+          maintAssetWeightSpot:
+            symbol === 'USDC'
+              ? 1
+              : mangoGroup.spotMarkets[i]?.spotMarket
+              ? roundToDecimal(
+                  Number(mangoGroup.spotMarkets[i]?.maintAssetWeight),
+                  2
+                )
+              : 1,
+          maintLiabWeightSpot:
+            symbol === 'USDC'
+              ? 1
+              : mangoGroup.spotMarkets[i]?.spotMarket
+              ? roundToDecimal(
+                  Number(mangoGroup.spotMarkets[i]?.maintLiabWeight),
+                  2
+                )
+              : 1,
+          initAssetWeightPerp:
+            symbol === 'USDC'
+              ? 1
+              : mangoGroup.perpMarkets[i]?.perpMarket
+              ? roundToDecimal(
+                  Number(mangoGroup.perpMarkets[i]?.initAssetWeight),
+                  2
+                )
+              : 1,
+          initLiabWeightPerp:
+            symbol === 'USDC'
+              ? 1
+              : mangoGroup.perpMarkets[i]?.perpMarket
+              ? roundToDecimal(
+                  Number(mangoGroup.perpMarkets[i]?.initLiabWeight),
+                  2
+                )
+              : 1,
+          maintAssetWeightPerp:
+            symbol === 'USDC'
+              ? 1
+              : mangoGroup.perpMarkets[i]?.perpMarket
+              ? roundToDecimal(
+                  Number(mangoGroup.perpMarkets[i]?.maintAssetWeight),
+                  2
+                )
+              : 1,
+          maintLiabWeightPerp:
+            symbol === 'USDC'
+              ? 1
+              : mangoGroup.perpMarkets[i]?.perpMarket
+              ? roundToDecimal(
+                  Number(mangoGroup.perpMarkets[i]?.maintLiabWeight),
+                  2
+                )
+              : 1,
+          precision:
+            symbol === 'USDC'
+              ? 4
+              : mangoGroup.spotMarkets[i]?.spotMarket
+              ? tokenPrecision[spotMarketConfig?.baseSymbol]
+              : tokenPrecision[perpMarketConfig?.baseSymbol] || 6,
+        }
+
+        rowData.push(calculatorRowData)
+      }
+    }
+
+    const calcData = updateCalculator(rowData)
+    setScenarioBars(calcData)
+  }
+
+  // Update the rows for the scenario
+  const updateCalculator = (rowData: CalculatorRow[]) => {
+    return {
+      rowData: rowData,
+    } as ScenarioCalculator
   }
 
   // Reset column details
   const resetScenarioColumn = (type, column) => {
-    let resetAssetData
-    let resetPerpData
-
-    switch (type) {
-      case 'spot':
-        resetAssetData = calculatorBars.balancesData.map((asset) => {
+    let resetRowData
+    mangoGroup
+      ? (resetRowData = scenarioBars.rowData.map((asset) => {
           let resetValue: number
           let resetDeposit: number
           let resetBorrow: number
-
-          const token = getTokenBySymbol(mangoConfig, asset.assetName)
-          const tokenIndex = mangoGroup.getTokenIndex(token.mintKey)
+          let resetInOrders: number
+          let resetPositionSide: string
+          let resetPerpPositionPnL: number
+          let resetPerpUnsettledFunding: number
+          let resetPerpInOrders: number
 
           switch (column) {
-            case 'deposit':
-              resetValue = connected
-                ? selectedMarginAccount
-                  ? floorToDecimal(
-                      Number(
-                        mangoAccount.getUiDeposit(
-                          mangoCache.rootBankCache[tokenIndex],
-                          mangoGroup,
-                          tokenIndex
-                        )
-                      ),
-                      tokenPrecision[asset.assetName]
-                        ? tokenPrecision[asset.assetName]
-                        : 6
-                    )
-                  : 0
-                : 0
-              break
-            case 'borrow':
-              resetValue = connected
-                ? selectedMarginAccount
-                  ? floorToDecimal(
-                      Number(
-                        mangoAccount.getUiBorrow(
-                          mangoCache.rootBankCache[tokenIndex],
-                          mangoGroup,
-                          tokenIndex
-                        )
-                      ),
-                      tokenPrecision[asset.assetName]
-                        ? tokenPrecision[asset.assetName]
-                        : 6
-                    )
-                  : 0
-                : 0
-              break
-            case 'net':
-              resetValue = connected
-                ? selectedMarginAccount
-                  ? floorToDecimal(
-                      Number(
-                        mangoAccount.getUiDeposit(
-                          mangoCache.rootBankCache[tokenIndex],
-                          mangoGroup,
-                          tokenIndex
-                        )
-                      ) -
-                        Number(
-                          mangoAccount.getUiBorrow(
-                            mangoCache.rootBankCache[tokenIndex],
-                            mangoGroup,
-                            tokenIndex
-                          )
-                        ),
-                      tokenPrecision[asset.assetName]
-                        ? tokenPrecision[asset.assetName]
-                        : 6
-                    )
-                  : 0
-                : 0
-              break
             case 'price':
-              setSliderPercentage(50)
-              resetValue = Number(mangoGroup.getPrice(tokenIndex, mangoCache))
+              setSliderPercentage(defaultSliderVal)
+              resetValue =
+                floorToDecimal(
+                  Number(
+                    mangoGroup?.getPrice(
+                      asset.oracleIndex === null
+                        ? mangoGroup.getTokenIndex(
+                            getTokenBySymbol(mangoConfig, 'USDC').mintKey
+                          )
+                        : asset.oracleIndex,
+                      mangoCache
+                    )
+                  ),
+                  6
+                ) || 0
+              break
+            case 'perpAvgEntryPrice':
+              setSliderPercentage(defaultSliderVal)
+              resetValue =
+                floorToDecimal(
+                  Number(
+                    mangoGroup?.getPrice(
+                      asset.oracleIndex === null
+                        ? mangoGroup.getTokenIndex(
+                            getTokenBySymbol(mangoConfig, 'USDC').mintKey
+                          )
+                        : asset.oracleIndex,
+                      mangoCache
+                    )
+                  ),
+                  6
+                ) || 0
+              break
+            case 'spotNet':
+              {
+                // Get market configuration data if present
+                const spotMarketConfig =
+                  asset.oracleIndex === null
+                    ? null
+                    : getMarketByPublicKey(
+                        mangoConfig,
+                        mangoGroup.spotMarkets[asset.oracleIndex].spotMarket
+                      )
+
+                // Retrieve spot balances if present
+                resetDeposit =
+                  Number(
+                    mangoAccount && spotMarketConfig
+                      ? mangoAccount.getUiDeposit(
+                          mangoCache.rootBankCache[
+                            spotMarketConfig.marketIndex
+                          ],
+                          mangoGroup,
+                          spotMarketConfig.marketIndex
+                        )
+                      : mangoAccount && asset.symbolName === 'USDC'
+                      ? mangoAccount.getUiDeposit(
+                          mangoCache.rootBankCache[QUOTE_INDEX],
+                          mangoGroup,
+                          QUOTE_INDEX
+                        )
+                      : 0
+                  ) || 0
+                resetBorrow =
+                  Number(
+                    mangoAccount && spotMarketConfig
+                      ? mangoAccount.getUiBorrow(
+                          mangoCache.rootBankCache[
+                            spotMarketConfig.marketIndex
+                          ],
+                          mangoGroup,
+                          spotMarketConfig.marketIndex
+                        )
+                      : mangoAccount && asset.symbolName === 'USDC'
+                      ? mangoAccount.getUiBorrow(
+                          mangoCache.rootBankCache[QUOTE_INDEX],
+                          mangoGroup,
+                          QUOTE_INDEX
+                        )
+                      : 0
+                  ) || 0
+                resetInOrders = 0
+
+                if (asset.symbolName === 'USDC') {
+                  for (let j = 0; j < mangoGroup.tokens.length; j++) {
+                    const inOrder =
+                      j !== QUOTE_INDEX &&
+                      mangoConfig.spotMarkets[j]?.publicKey &&
+                      mangoAccount?.spotOpenOrdersAccounts[j]?.quoteTokenTotal
+                        ? mangoAccount.spotOpenOrdersAccounts[j].quoteTokenTotal
+                        : 0
+                    resetInOrders += Number(inOrder) / Math.pow(10, 6)
+                  }
+                } else {
+                  resetInOrders =
+                    spotMarketConfig &&
+                    mangoAccount?.spotOpenOrdersAccounts[asset.oracleIndex]
+                      ?.baseTokenTotal
+                      ? Number(
+                          mangoAccount.spotOpenOrdersAccounts[asset.oracleIndex]
+                            .baseTokenTotal
+                        ) / Math.pow(10, spotMarketConfig.baseDecimals)
+                      : 0
+                }
+                resetValue = floorToDecimal(
+                  resetDeposit - resetBorrow + resetInOrders,
+                  spotMarketConfig?.baseDecimals || 6
+                )
+              }
+              break
+            case 'perpBasePosition':
+              {
+                // Get market configuration data
+                const symbol = asset.symbolName
+                const perpMarketConfig =
+                  asset.oracleIndex === null
+                    ? null
+                    : getMarketByPublicKey(
+                        mangoConfig,
+                        mangoGroup.perpMarkets[asset.oracleIndex].perpMarket
+                      )
+
+                // Retrieve perp positions if present
+                const perpPosition =
+                  perpMarketConfig?.publicKey && mangoAccount
+                    ? mangoAccount?.perpAccounts[asset.oracleIndex]
+                    : null
+                const perpMarketIndex =
+                  perpMarketConfig?.publicKey && mangoAccount
+                    ? getMarketIndexBySymbol(mangoConfig, symbol)
+                    : null
+                const perpAccount =
+                  perpMarketConfig?.publicKey && mangoAccount
+                    ? mangoAccount?.perpAccounts[perpMarketIndex]
+                    : null
+                const perpMarketCache =
+                  perpMarketConfig?.publicKey && mangoAccount
+                    ? mangoCache?.perpMarketCache[perpMarketIndex]
+                    : null
+                const perpMarketInfo =
+                  perpMarketConfig?.publicKey && mangoAccount
+                    ? mangoGroup?.perpMarkets[perpMarketIndex]
+                    : null
+                const basePosition =
+                  perpMarketConfig?.publicKey && mangoAccount
+                    ? Number(perpAccount?.basePosition) /
+                      Math.pow(10, perpContractPrecision[symbol])
+                    : 0
+                const unsettledFunding =
+                  perpMarketConfig?.publicKey && mangoAccount
+                    ? (Number(
+                        perpAccount?.getUnsettledFunding(perpMarketCache)
+                      ) *
+                        basePosition) /
+                      Math.pow(10, 6)
+                    : 0
+                const positionPnL =
+                  perpMarketConfig?.publicKey && mangoAccount
+                    ? Number(
+                        perpAccount?.getPnl(
+                          perpMarketInfo,
+                          perpMarketCache,
+                          mangoCache.priceCache[perpMarketIndex].price
+                        )
+                      ) / Math.pow(10, 6)
+                    : 0
+                const perpInOrders = perpMarketConfig?.publicKey
+                  ? Number(perpPosition?.bidsQuantity) >
+                    Math.abs(Number(perpPosition?.asksQuantity))
+                    ? floorToDecimal(
+                        Number(perpPosition?.bidsQuantity),
+                        tokenPrecision[perpMarketConfig?.baseSymbol] || 6
+                      )
+                    : floorToDecimal(
+                        -1 * Number(perpPosition?.asksQuantity),
+                        tokenPrecision[perpMarketConfig?.baseSymbol] || 6
+                      )
+                  : 0
+
+                resetValue = basePosition
+                resetPositionSide = resetValue < 0 ? 'short' : 'long'
+                resetPerpPositionPnL = positionPnL
+                resetPerpUnsettledFunding = unsettledFunding
+                resetPerpInOrders = perpInOrders
+              }
               break
           }
 
-          if (column === 'net') {
-            resetDeposit = connected
-              ? selectedMarginAccount
-                ? floorToDecimal(
-                    Number(
-                      mangoAccount.getUiDeposit(
-                        mangoCache.rootBankCache[tokenIndex],
-                        mangoGroup,
-                        tokenIndex
-                      )
-                    ),
-                    tokenPrecision[asset.assetName]
-                      ? tokenPrecision[asset.assetName]
-                      : 6
-                  )
-                : 0
-              : 0
-            resetBorrow = connected
-              ? selectedMarginAccount
-                ? floorToDecimal(
-                    Number(
-                      mangoAccount.getUiBorrow(
-                        mangoCache.rootBankCache[tokenIndex],
-                        mangoGroup,
-                        tokenIndex
-                      )
-                    ),
-                    tokenPrecision[asset.assetName]
-                      ? tokenPrecision[asset.assetName]
-                      : 6
-                  )
-                : 0
-              : 0
-
+          if (column === 'spotNet') {
             return {
               ...asset,
               [column]: resetValue,
-              ['deposit']: resetDeposit,
-              ['borrow']: resetBorrow,
+              ['spotDeposit']: resetDeposit,
+              ['spotBorrow']: resetBorrow,
+              ['spotInOrders']: resetInOrders,
+            }
+          } else if (column === 'perpBasePosition') {
+            return {
+              ...asset,
+              [column]: resetValue,
+              ['perpPositionSide']: resetPositionSide,
+              ['perpPositionPnL']: resetPerpPositionPnL,
+              ['perpUnsettledFunding']: resetPerpUnsettledFunding,
+              ['perpInOrders']: resetPerpInOrders,
             }
           } else {
             return { ...asset, [column]: resetValue }
           }
-        })
-        resetPerpData = calculatorBars.perpsData
-        break
-      case 'perp':
-        resetPerpData = calculatorBars.perpsData.map((perp) => {
-          let resetValue: number
+        }))
+      : (resetRowData = scenarioBars.rowData)
 
-          const openPosition = openPositions.filter(
-            (oP) => oP.marketConfig.baseSymbol === perp.symbolName
-          )
+    const updatedScenarioBarData = updateCalculator(resetRowData)
+    setScenarioBars(updatedScenarioBarData)
+  }
 
-          switch (column) {
-            case 'basePosition':
-              resetValue = connected
-                ? selectedMarginAccount
-                  ? floorToDecimal(
-                      Number(
-                        openPosition[0] ? openPosition[0].basePosition : 0
-                      ),
-                      tokenPrecision[perp.symbolName]
-                        ? tokenPrecision[perp.symbolName]
-                        : 6
-                    )
-                  : 0
-                : 0
-              break
+  // Update values based on user input
+  const updateValue = (symbol, field, val) => {
+    const updateValue = Number(val)
+    if (!Number.isNaN(val)) {
+      const updatedRowData = scenarioBars.rowData.map((asset) => {
+        if (asset.symbolName.toLowerCase() === symbol.toLowerCase()) {
+          switch (field) {
+            case 'spotNet':
+              return {
+                ...asset,
+                [field]: updateValue,
+                ['spotDeposit']: updateValue > 0 ? updateValue : 0,
+                ['spotBorrow']: updateValue < 0 ? updateValue : 0,
+              }
+            case 'perpBasePosition':
+              return {
+                ...asset,
+                [field]: updateValue,
+                ['perpPositionSide']: val < 0 ? 'short' : 'long',
+              }
+            case 'perpAvgEntryPrice':
+              return {
+                ...asset,
+                [field]: Math.abs(updateValue),
+              }
             case 'price':
-              setSliderPercentage(50)
-              resetValue = Number(
-                mangoGroup.getPrice(perp.marketIndex, mangoCache)
-              )
-              break
-            case 'avgEntryPrice':
-              setSliderPercentage(50)
-              resetValue = Number(
-                mangoGroup.getPrice(perp.marketIndex, mangoCache)
-              )
-              break
-            case 'unsettledPnL':
-              resetValue = Number(0)
+              return {
+                ...asset,
+                [field]: Math.abs(updateValue),
+              }
           }
-          return { ...perp, [column]: resetValue }
-        })
-        resetAssetData = calculatorBars.balancesData
-        break
-    }
+        } else {
+          if (field === 'price') {
+            return {
+              ...asset,
+              [field]:
+                Math.abs(asset.price) *
+                (asset.priceDisabled ? 1 : sliderPercentage),
+            }
+          } else {
+            return asset
+          }
+        }
+      })
 
-    const updatedScenarioData = updateScenario(resetAssetData, resetPerpData)
-    setCalculatorBars(updatedScenarioData)
+      const calcData = updateCalculator(updatedRowData)
+      setScenarioBars(calcData)
+    }
   }
 
   // Handle slider usage
@@ -513,155 +754,37 @@ export default function RiskCalculator() {
     let maintAssets = 0
     let initLiabilities = 0
     let maintLiabilities = 0
-    let percentToLiquidation: any
-    let posPercentToLiquidation: any
-
-    // Spot Assets and Liabilities variables
-    let quote = 0
-    let spotAssets = 0
-    let spotLiabilities = 0
-
-    // Perps Assets and Liabilities variables
-    let perpsAssets = 0
-    let perpsLiabilities = 0
+    let percentToLiquidation = 0
 
     // Detailed health scenario variables
     let equity = 0
     let leverage = 0
-    let initHealth = 0
-    let maintHealth = 0
+    let initHealth = 1
+    let maintHealth = 1
     let riskRanking = 'Not Set'
 
-    // Calculate health scenario
-    if (calculatorBars && balances.length > 0) {
-      // Calculate spot assets and liabilities
-      calculatorBars.balancesData.map((spot) => {
-        // Calculate spot quote
-        if (spot.assetName === 'USDC' && spot.net > 0) {
-          quote += spot.net
-        } else if (spot.assetName === 'USDC' && spot.net < 0) {
-          quote -= Math.abs(spot.net)
-        }
+    if (scenarioBars) {
+      // Return scenario health
+      const scenarioDetails = getHealthComponents(sliderPercentage)
 
-        // Calculate spot assets
-        spotAssets +=
-          spot.net > 0
-            ? spot.net *
-              spot.price *
-              (spot.priceDisabled ? 1 : (sliderPercentage * 2) / 100)
-            : 0
-        initAssets +=
-          spot.net > 0 && spot.assetName != 'USDC'
-            ? spot.initAssetWeight *
-              spot.net *
-              spot.price *
-              (spot.priceDisabled ? 1 : (sliderPercentage * 2) / 100)
-            : 0
-        maintAssets +=
-          spot.net > 0 && spot.assetName != 'USDC'
-            ? spot.maintAssetWeight *
-              spot.net *
-              spot.price *
-              (spot.priceDisabled ? 1 : (sliderPercentage * 2) / 100)
-            : 0
+      assets = scenarioDetails['assets']
+      liabilities = scenarioDetails['liabilities']
+      initAssets = scenarioDetails['initAssets']
+      maintAssets = scenarioDetails['maintAssets']
+      initLiabilities = scenarioDetails['initLiabilities']
+      maintLiabilities = scenarioDetails['maintLiabilities']
 
-        // Calculate spot liabilities
-        spotLiabilities +=
-          spot.net < 0
-            ? Math.abs(spot.net) *
-              spot.price *
-              (spot.priceDisabled ? 1 : (sliderPercentage * 2) / 100)
-            : 0
-        initLiabilities +=
-          spot.net < 0 && spot.assetName != 'USDC'
-            ? spot.initLiabWeight *
-              Math.abs(spot.net) *
-              spot.price *
-              (spot.priceDisabled ? 1 : (sliderPercentage * 2) / 100)
-            : 0
-        maintLiabilities +=
-          spot.net < 0 && spot.assetName != 'USDC'
-            ? spot.maintLiabWeight *
-              Math.abs(spot.net) *
-              spot.price *
-              (spot.priceDisabled ? 1 : (sliderPercentage * 2) / 100)
-            : 0
-      })
-
-      // Calculate perp assets, liabilities, and unsettled PnL
-      calculatorBars.perpsData.map((perp) => {
-        // Calculate perp quote
-        const realQuotePosition =
-          perp.unsettledPnL > 0
-            ? perp.positionSide === 'long'
-              ? -1 * perp.basePosition * perp.price + -1 * perp.unsettledPnL
-              : -1 * perp.basePosition * perp.price + perp.unsettledPnL
-            : perp.positionSide === 'long'
-            ? -1 * perp.basePosition * perp.price + perp.unsettledPnL
-            : -1 * perp.basePosition * perp.price + perp.unsettledPnL
-        quote += realQuotePosition
-        quote +=
-          perp.positionSide === 'long'
-            ? perp.basePosition *
-              ((perp.price * sliderPercentage * 2) / 100 - perp.avgEntryPrice)
-            : perp.basePosition *
-              (perp.avgEntryPrice - (perp.price * sliderPercentage * 2) / 100)
-
-        // Calculate perp assets
-        perpsAssets +=
-          Math.abs(perp.basePosition) *
-            ((perp.price * sliderPercentage * 2) / 100) +
-          (perp.basePosition < 0 ? perp.unsettledPnL : 0)
-        initAssets +=
-          perp.basePosition > 0
-            ? perp.initAssetWeight *
-              perp.basePosition *
-              ((perp.price * sliderPercentage * 2) / 100)
-            : 0
-        maintAssets +=
-          perp.basePosition > 0
-            ? perp.maintAssetWeight *
-              perp.basePosition *
-              ((perp.price * sliderPercentage * 2) / 100)
-            : 0
-
-        // Calculate perp liabilities
-        perpsLiabilities +=
-          Math.abs(perp.basePosition) *
-            ((perp.price * sliderPercentage * 2) / 100) +
-          (perp.basePosition > 0 ? -1 * perp.unsettledPnL : 0)
-        initLiabilities +=
-          perp.basePosition < 0
-            ? perp.initLiabWeight *
-              Math.abs(perp.basePosition) *
-              ((perp.price * sliderPercentage * 2) / 100)
-            : 0
-        maintLiabilities +=
-          perp.basePosition < 0
-            ? perp.maintLiabWeight *
-              Math.abs(perp.basePosition) *
-              ((perp.price * sliderPercentage * 2) / 100)
-            : 0
-      })
-
-      // Basic Scenario Overview
-      assets = spotAssets + perpsAssets
-
-      liabilities = spotLiabilities + perpsLiabilities
       equity = assets - liabilities
       if (equity > 0 && liabilities != 0) {
         leverage = Math.abs(liabilities / equity)
       }
 
-      // Calculate weighted assets and liabilities
-      initAssets += quote > 0 ? quote : 0
-      maintAssets += quote > 0 ? quote : 0
-      initLiabilities += quote < 0 ? Math.abs(quote) : 0
-      maintLiabilities += quote < 0 ? Math.abs(quote) : 0
-
       // Calculate health ratios and risk ranking
-      initHealth = initAssets / initLiabilities - 1
-      maintHealth = maintAssets / maintLiabilities - 1
+      if (liabilities > 0) {
+        initHealth = initAssets / initLiabilities - 1
+        maintHealth = maintAssets / maintLiabilities - 1
+      }
+
       riskRanking =
         maintHealth > 0.4
           ? 'Great'
@@ -673,17 +796,24 @@ export default function RiskCalculator() {
           ? 'Very Poor'
           : 'Rekt'
 
-      // Goal seek the percent price move required to liquidate the current account
+      // Calculate percent to liquidation
+      const scenarioBaseLine = getHealthComponents(1)
+      const scenarioBaseChange = getHealthComponents(1.01)
+      const maintEquity =
+        scenarioBaseLine['maintAssets'] - scenarioBaseLine['maintLiabilities']
+      const maintAssetsRateOfChange =
+        scenarioBaseChange['maintAssets'] - scenarioBaseLine['maintAssets']
+      const maintLiabsRateOfChange =
+        scenarioBaseChange['maintLiabilities'] -
+        scenarioBaseLine['maintLiabilities']
+      const maintRateOfChange = maintLiabsRateOfChange - maintAssetsRateOfChange
       percentToLiquidation =
-        getPriceMoveToLiquidation(quote, 0, 100) == 404
-          ? '>99'
-          : getPriceMoveToLiquidation(quote, 0, 100) -
-            (sliderPercentage * 2 - 100)
-      posPercentToLiquidation =
-        getPriceMoveToLiquidation(quote, 100, 200) == 404
-          ? '>99'
-          : getPriceMoveToLiquidation(quote, 100, 200) -
-            (sliderPercentage * 2 - 100)
+        maintHealth > 0
+          ? roundToDecimal(
+              100 + maintEquity / maintRateOfChange - sliderPercentage * 100,
+              1
+            )
+          : 0
     }
 
     // Add scenario details for display
@@ -700,281 +830,219 @@ export default function RiskCalculator() {
     scenarioHashMap.set('riskRanking', riskRanking)
     scenarioHashMap.set(
       'percentToLiquidation',
-      percentToLiquidation == '>99'
-        ? '>99'
-        : percentToLiquidation >= 0
-        ? 0
-        : Math.abs(percentToLiquidation)
-    )
-    scenarioHashMap.set(
-      'posPercentToLiquidation',
-      posPercentToLiquidation == '>99'
-        ? '>99'
-        : posPercentToLiquidation <= 0
-        ? 0
-        : Math.abs(posPercentToLiquidation)
+      Number.isFinite(percentToLiquidation) ? percentToLiquidation : 0
     )
 
     return scenarioHashMap
   }
 
-  // Function to goal seek the required percentage price change for maintenance health to fall below 0
-  function getPriceMoveToLiquidation(quote, boundLower, boundUpper) {
-    let priceMoveRequired = boundUpper
-    let endLoop = false
-    let i = 0
-    let iterations = 0
-    let weightedAssets = 0
-    let weightedLiabilities = 0
-    let lowerBound = boundLower
-    let upperBound = boundUpper
-    while (endLoop === false) {
-      // Set loop's priceMove test
-      i = Math.round(lowerBound + (upperBound - lowerBound) / 2)
+  // Calculate health components
+  function getHealthComponents(modPrice) {
+    // Standard scenario variables
+    let assets = 0
+    let liabilities = 0
+    let initAssets = 0
+    let maintAssets = 0
+    let initLiabilities = 0
+    let maintLiabilities = 0
 
-      // Add initial quote to assets or liabilities
-      if (quote >= 0) {
-        weightedAssets = quote
-      } else {
-        weightedLiabilities = Math.abs(quote)
-      }
-      let maintAssets = weightedAssets
-      let maintLiabilities = weightedLiabilities
+    // Spot Assets and Liabilities variables
+    let quoteCalc = 0
+    let spotAssets = 0
+    let spotLiabilities = 0
 
-      // Calculate spot market assets and liabilities with asset weighting
-      calculatorBars.balancesData.map((spot) => {
-        if (spot.assetName != 'USDC') {
-          if (spot.net > 0) {
-            maintAssets +=
-              spot.net *
-              (spot.price * (spot.assetName === 'USDT' ? 1 : i / 100)) *
-              spot.maintAssetWeight
-          }
-          if (spot.net < 0) {
-            maintLiabilities +=
-              Math.abs(spot.net) *
-              (spot.price * (spot.assetName === 'USDT' ? 1 : i / 100)) *
-              spot.maintLiabWeight
-          }
-        }
-      })
+    // Perps Assets and Liabilities variables
+    let perpsAssets = 0
+    let perpsLiabilities = 0
 
-      // Calculate perp market assets and liabilities with asset weighting
-      calculatorBars.perpsData.map((perp) => {
-        if (perp.basePosition > 0) {
-          maintAssets +=
-            perp.basePosition * ((perp.price * i) / 100) * perp.maintAssetWeight
-        } else {
-          maintLiabilities +=
-            Math.abs(perp.basePosition) *
-            ((perp.price * i) / 100) *
-            perp.maintLiabWeight
-        }
-      })
-
-      // Calculate heath ratio and set boundaries for the next loop
-      const liquidationHealth = maintAssets / maintLiabilities - 1
-      if (liquidationHealth > 0) {
-        upperBound = upperBound <= 100 ? i : upperBound
-        lowerBound = upperBound <= 100 ? lowerBound : i
-      } else {
-        upperBound = upperBound <= 100 ? upperBound : i
-        lowerBound = upperBound <= 100 ? i : lowerBound
+    scenarioBars.rowData.map((asset) => {
+      // SPOT
+      // Calculate spot quote
+      if (asset.symbolName === 'USDC' && Number(asset.spotNet) > 0) {
+        quoteCalc += asset.spotNet
+      } else if (asset.symbolName === 'USDC' && asset.spotNet < 0) {
+        quoteCalc -= Math.abs(asset.spotNet)
       }
 
-      // When loop has reached it's logical conclusion, calculate priceMoveRequired and end loop
-      // Or if a weird bug breaks maths as we know it, end loop after 9 iterations (Range of 100 = max 8 iterations required)
-      iterations++
-      if (lowerBound == upperBound || upperBound - lowerBound == 1) {
-        priceMoveRequired =
-          upperBound <= 100 ? lowerBound - 100 : upperBound - 100
-        if (Math.abs(priceMoveRequired) == 100) {
-          priceMoveRequired = 404
-        }
-        endLoop = true
-      } else if (iterations > 9) {
-        priceMoveRequired = 404
-        endLoop = true
+      // Calculate spot assets
+      const spotQuote =
+        asset.spotNet * asset.price * (asset.priceDisabled ? 1 : modPrice)
+      spotAssets += asset.spotNet > 0 ? spotQuote : 0
+      initAssets +=
+        asset.spotNet > 0 && asset.symbolName !== 'USDC'
+          ? spotQuote * asset.initAssetWeightSpot
+          : 0
+      maintAssets +=
+        asset.spotNet > 0 && asset.symbolName !== 'USDC'
+          ? spotQuote * asset.maintAssetWeightSpot
+          : 0
+
+      // Calculate spot liabilities
+      spotLiabilities += asset.spotNet < 0 ? Math.abs(spotQuote) : 0
+      initLiabilities +=
+        asset.spotNet <= 0 && asset.symbolName !== 'USDC'
+          ? Math.abs(spotQuote) * asset.initLiabWeightSpot
+          : 0
+      maintLiabilities +=
+        asset.spotNet <= 0 && asset.symbolName !== 'USDC'
+          ? Math.abs(spotQuote) * asset.maintLiabWeightSpot
+          : 0
+
+      // PERPS
+      // Calculate scenario profit and loss
+      const scenarioPnL =
+        asset.perpBasePosition > 0
+          ? asset.perpBasePosition *
+            (asset.price * modPrice - asset.perpAvgEntryPrice)
+          : Math.abs(asset.perpBasePosition) *
+            (asset.perpAvgEntryPrice - asset.price * modPrice)
+
+      // Get base position value
+      const basPosVal = asset.perpBasePosition * (asset.price * modPrice)
+
+      // Get perp quote position
+      const perpQuotePos = -1 * basPosVal + asset.perpPositionPnL + scenarioPnL
+
+      // Get initial perp asset and liability value
+      let assetVal = 0
+      let liabVal = 0
+      liabVal = asset.perpBasePosition < 0 ? basPosVal : 0
+      assetVal = asset.perpBasePosition > 0 ? basPosVal : 0
+
+      // Adjust for PnL and unsettled funding
+      const realQuotePosition =
+        -1 * asset.perpBasePosition * (asset.price * modPrice) +
+        asset.perpPositionPnL +
+        scenarioPnL -
+        asset.perpUnsettledFunding
+      if (realQuotePosition < 0) {
+        liabVal = Math.abs(liabVal + realQuotePosition)
+      } else if (realQuotePosition > 0) {
+        assetVal = Math.abs(assetVal + realQuotePosition)
       }
+      liabVal = Math.abs(liabVal)
+      assetVal = Math.abs(assetVal)
+
+      // Assign to quote, assets and liabilities
+      quoteCalc += perpQuotePos
+      perpsAssets += assetVal
+      perpsLiabilities += liabVal
+      initAssets +=
+        asset.perpBasePosition > 0 ? basPosVal * asset.initAssetWeightPerp : 0
+      initLiabilities +=
+        asset.perpBasePosition < 0
+          ? Math.abs(basPosVal) * asset.initLiabWeightPerp
+          : 0
+      maintAssets +=
+        asset.perpBasePosition > 0 ? basPosVal * asset.maintAssetWeightPerp : 0
+      maintLiabilities +=
+        asset.perpBasePosition < 0
+          ? Math.abs(basPosVal) * asset.maintLiabWeightPerp
+          : 0
+    })
+
+    // Calculate basic scenario details
+    assets = spotAssets + perpsAssets
+    liabilities = spotLiabilities + perpsLiabilities
+
+    // Calculate weighted assets and liabilities
+    initAssets += quoteCalc > 0 ? quoteCalc : 0
+    maintAssets += quoteCalc > 0 ? quoteCalc : 0
+    initLiabilities += quoteCalc <= 0 ? Math.abs(quoteCalc) : 0
+    maintLiabilities += quoteCalc <= 0 ? Math.abs(quoteCalc) : 0
+
+    return {
+      assets: assets,
+      liabilities: liabilities,
+      initAssets: initAssets,
+      maintAssets: maintAssets,
+      initLiabilities: initLiabilities,
+      maintLiabilities: maintLiabilities,
     }
-
-    return priceMoveRequired
   }
 
+  // Calculate single asset liquidation prices
   function getLiquidationPrices() {
     const liquidationHashMap = new Map()
 
-    if (calculatorBars) {
-      const marketSymbols = []
-      const allMarketConfigs = getAllMarkets(mangoConfig)
-      allMarketConfigs.map((m) => {
-        if (marketSymbols.indexOf(m.baseSymbol) === -1) {
-          marketSymbols.push(m.baseSymbol)
-        }
-      })
-      marketSymbols.push('USDC')
-
-      // For each market symbol, find the liquidation price if it exists
-      marketSymbols.map((symbol) => {
-        const max = 131072
-        const discretion = 1000
-        let liqPriceMod = max
-        let upperBound = max
-        let lowerBound = 0
-        let iterations = 0
-        let priceMod = 0
-        let endLoop = false
-        let reverse = false
-
-        // Loop through scenario to find a liquidation price
-        while (endLoop === false) {
-          let quote = 0
-          let maintAssets = 0
-          let maintLiabilities = 0
-
-          // Set loop price modification factor
-          // If reverse = true, the priceMod will trend upward, if false (default) priceMod will trend downward
-          priceMod = reverse
-            ? ceilToDecimal(upperBound - (upperBound - lowerBound) / 2, 0)
-            : floorToDecimal(lowerBound + (upperBound - lowerBound) / 2, 0)
+    if (scenarioBars) {
+      scenarioBars.rowData.map((assetToTest) => {
+        let liqPrice = 0
+        if (assetToTest.symbolName !== 'USDC') {
+          let quoteCalc = 0
+          let weightedAsset = 0
+          let partialHealth = 0
 
           // Calculate quote
-          calculatorBars.balancesData.map((asset) => {
-            if (asset.assetName === 'USDC' && asset.net > 0) {
-              quote += asset.net
-            } else if (asset.assetName === 'USDC' && asset.net < 0) {
-              quote -= Math.abs(asset.net)
-            }
-          })
-          calculatorBars.perpsData.map((perp) => {
-            quote -=
-              perp.basePosition *
-              (perp.price *
-                ((sliderPercentage * 2) / 100) *
-                (priceMod / discretion))
-
-            let perpsUnsettledPnL = perp.unsettledPnL
-            if (perp.positionSide === 'long') {
-              perpsUnsettledPnL +=
-                perp.basePosition *
-                (perp.price *
-                  ((sliderPercentage * 2) / 100) *
-                  (priceMod / discretion) -
-                  perp.avgEntryPrice)
-            } else {
-              perpsUnsettledPnL -=
-                perp.basePosition *
-                (perp.avgEntryPrice -
-                  perp.price *
-                    ((sliderPercentage * 2) / 100) *
-                    (priceMod / discretion))
+          scenarioBars.rowData.map((asset) => {
+            if (asset.symbolName === 'USDC' && Number(asset.spotNet) > 0) {
+              quoteCalc += asset.spotNet
+            } else if (asset.symbolName === 'USDC' && asset.spotNet < 0) {
+              quoteCalc -= Math.abs(asset.spotNet)
             }
 
-            quote += perpsUnsettledPnL
+            const scenarioPnL =
+              asset.perpBasePosition > 0
+                ? asset.perpBasePosition *
+                  (asset.price * sliderPercentage - asset.perpAvgEntryPrice)
+                : Math.abs(asset.perpBasePosition) *
+                  (asset.perpAvgEntryPrice - asset.price * sliderPercentage)
+            const basPosVal =
+              asset.perpBasePosition * (asset.price * sliderPercentage)
+            const perpQuotePos =
+              -1 * basPosVal + asset.perpPositionPnL + scenarioPnL
+            quoteCalc += perpQuotePos
           })
 
-          // Set quote to assets or liabilities depending on value
-          if (quote >= 0) {
-            maintAssets = quote
-          } else {
-            maintLiabilities = Math.abs(quote)
-          }
-
-          // Calculate spot and perps assets and liabilities with weighting, modifying the price if it matches the symbol passed in
-          calculatorBars.balancesData.map((spot) => {
-            const sPrice =
-              spot.price *
-              (spot.priceDisabled ? 1 : (sliderPercentage * 2) / 100) *
-              (spot.symbolName.toLowerCase() === symbol.toLowerCase()
-                ? priceMod / discretion
-                : 1)
-            if (spot.assetName != 'USDC') {
-              if (spot.net > 0) {
-                maintAssets += spot.net * sPrice * spot.maintAssetWeight
-              }
-              if (spot.net < 0) {
-                maintLiabilities +=
-                  Math.abs(spot.net) * sPrice * spot.maintLiabWeight
+          // Calculate weighted asset and partial health to draw from
+          partialHealth = quoteCalc
+          scenarioBars.rowData.map((asset) => {
+            if (asset.symbolName !== 'USDC') {
+              if (asset.symbolName === assetToTest.symbolName) {
+                const weightedSpot =
+                  asset.spotNet *
+                  (asset.spotNet > 0
+                    ? asset.maintAssetWeightSpot
+                    : asset.maintLiabWeightSpot)
+                const weightedPerp =
+                  asset.perpBasePosition *
+                  (asset.perpBasePosition > 0
+                    ? asset.maintAssetWeightPerp
+                    : asset.maintLiabWeightPerp)
+                weightedAsset += (weightedSpot + weightedPerp) * -1
+              } else {
+                const spotHealth =
+                  asset.spotNet *
+                  asset.price *
+                  (asset.priceDisabled ? 1 : sliderPercentage) *
+                  (asset.spotNet > 0
+                    ? asset.maintAssetWeightSpot
+                    : asset.maintLiabWeightSpot)
+                const perpHealth =
+                  asset.perpBasePosition *
+                  asset.price *
+                  (asset.priceDisabled ? 1 : sliderPercentage) *
+                  (asset.perpBasePosition > 0
+                    ? asset.maintAssetWeightPerp
+                    : asset.maintLiabWeightPerp)
+                partialHealth += spotHealth + perpHealth
               }
             }
           })
-          calculatorBars.perpsData.map((perp) => {
-            const pPrice =
-              perp.price *
-              ((sliderPercentage * 2) / 100) *
-              (perp.symbolName.toLowerCase() === symbol.toLowerCase()
-                ? priceMod / discretion
-                : 1)
-            if (perp.basePosition > 0) {
-              maintAssets += perp.basePosition * pPrice * perp.maintAssetWeight
-            } else {
-              maintLiabilities +=
-                Math.abs(perp.basePosition) * pPrice * perp.maintLiabWeight
-            }
-          })
 
-          // Check liquidation health
-          let liqHealth = maintAssets / maintLiabilities - 1
-
-          // If health < 0 and the upper/lower boundary are within 1 step, a liquidation price is considered found
-          // Else if iterations are exceeded, if a negative spot or perp balance is present, reverse the search
-          // and see if a positive price move will liquidate the position
-          if (Math.abs(upperBound - lowerBound) == 1 && liqHealth < 0) {
-            liqPriceMod = priceMod / discretion
-            if (liqPriceMod == (max - 1) / discretion && reverse == false) {
-              reverse = true
-              iterations = -1
-              upperBound = max
-              lowerBound = 0
-              priceMod = 0
-              liqHealth = 100
-            } else {
-              endLoop = true
-            }
-          } else if (iterations > 18) {
-            liqPriceMod = 0
-            endLoop = true
-          }
-
-          // If liquidation health is still above 0, reset the boundaries of the next test and iterate the iterator
-          iterations++
-          if (reverse == false) {
-            if (liqHealth > 0) {
-              upperBound = upperBound <= max ? priceMod : upperBound
-              lowerBound = upperBound <= max ? lowerBound : priceMod
-            } else {
-              upperBound = upperBound <= max ? upperBound : priceMod
-              lowerBound = upperBound <= max ? priceMod : lowerBound
-            }
+          // Calculate liquidation price
+          if (weightedAsset === 0) {
+            liqPrice = 0
           } else {
-            if (liqHealth > 0) {
-              upperBound = upperBound <= max ? upperBound : priceMod
-              lowerBound = upperBound <= max ? priceMod : lowerBound
-            } else {
-              upperBound = upperBound <= max ? priceMod : upperBound
-              lowerBound = upperBound <= max ? lowerBound : priceMod
+            liqPrice = partialHealth / weightedAsset
+            if (liqPrice < 0) {
+              liqPrice = 0
             }
           }
-        }
 
-        // Set liquidation price or null
-        if (liqPriceMod == 0 || liqPriceMod == (max - 1) / discretion) {
-          liquidationHashMap.set(symbol.toString(), '-')
+          liquidationHashMap.set(assetToTest.symbolName.toString(), liqPrice)
         } else {
-          const liqPrice = calculatorBars.balancesData.filter(
-            (m) => m.symbolName.toLowerCase() === symbol.toLowerCase()
-          )[0]?.publicKey
-            ? calculatorBars.balancesData.filter(
-                (m) => m.symbolName.toLowerCase() === symbol.toLowerCase()
-              )[0]?.price *
-              liqPriceMod *
-              ((sliderPercentage * 2) / 100)
-            : calculatorBars.perpsData.filter(
-                (m) => m.symbolName.toLowerCase() === symbol.toLowerCase()
-              )[0]?.price *
-              liqPriceMod *
-              ((sliderPercentage * 2) / 100)
-          liquidationHashMap.set(symbol.toString(), liqPrice)
+          liquidationHashMap.set(assetToTest.symbolName.toString(), liqPrice)
         }
       })
     }
@@ -982,255 +1050,46 @@ export default function RiskCalculator() {
     return liquidationHashMap
   }
 
+  // Get detailed scenario summary and liquidation prices
   const scenarioDetails = getScenarioDetails()
   const liquidationPrices = getLiquidationPrices()
 
-  // Retrieve scenario table row
-  function getScenarioTableRow(asset, perp, i, liquidationPrice) {
-    return (
-      <Tr
-        className={`${
-          i % 2 === 0 ? `bg-th-bkg-3 md:bg-th-bkg-2` : `bg-th-bkg-2`
-        }`}
-        key={`${i}`}
-      >
-        <Td
-          className={`px-3 py-2 whitespace-nowrap text-sm text-th-fgd-1 w-24`}
-        >
-          <div className="flex items-center">
-            <img
-              alt=""
-              width="20"
-              height="20"
-              src={`/assets/icons/${
-                asset?.assetName
-                  ? asset.symbolName.toLowerCase()
-                  : perp.symbolName.toLowerCase()
-              }.svg`}
-              className={`mr-2.5`}
-            />
-            <div>{asset?.assetName ? asset.assetName : perp.symbolName}</div>
-          </div>
-        </Td>
-        <Td className={`px-1 lg:px-3 py-2 text-sm text-th-fgd-1`}>
-          {editing ? (
-            <Input
-              type="number"
-              onFocus={() => {
-                toggleEditing(true)
-              }}
-              onChange={(e) =>
-                updateScenarioValue(
-                  asset?.assetName,
-                  'spot',
-                  'net',
-                  e.target.value
-                )
-              }
-              value={asset?.net}
-              onBlur={() => {
-                toggleEditing(false)
-              }}
-              disabled={asset?.assetName ? false : true}
-            />
-          ) : (
-            <Input
-              type="number"
-              onFocus={() => {
-                toggleEditing(true)
-              }}
-              readyOnly={true}
-              onChange={() => null}
-              value={
-                asset?.assetName
-                  ? Number(asset?.net).toFixed(asset?.precision)
-                  : 0
-              }
-              disabled={asset?.assetName ? false : true}
-            />
-          )}
-        </Td>
-        <Td className={`px-1 lg:px-3 py-2 text-sm text-th-fgd-1`}>
-          {editing ? (
-            <Input
-              type="number"
-              onFocus={() => {
-                toggleEditing(true)
-              }}
-              onChange={(e) =>
-                updateScenarioValue(
-                  perp?.symbolName,
-                  'perp',
-                  'basePosition',
-                  e.target.value
-                )
-              }
-              value={perp?.publicKey ? perp?.basePosition : 0.0}
-              onBlur={() => {
-                toggleEditing(false)
-              }}
-              disabled={perp?.publicKey ? false : true}
-            />
-          ) : (
-            <Input
-              type="number"
-              onFocus={() => {
-                toggleEditing(true)
-              }}
-              readyOnly={true}
-              onChange={() => null}
-              value={
-                perp?.publicKey
-                  ? Number(perp?.basePosition).toFixed(perp?.precision)
-                  : Number(0).toFixed(perp?.precision)
-              }
-              disabled={perp?.publicKey ? false : true}
-            />
-          )}
-        </Td>
-        <Td className={`px-1 lg:px-3 py-2 text-sm text-th-fgd-1`}>
-          {editing ? (
-            <Input
-              type="number"
-              onFocus={() => {
-                toggleEditing(true)
-              }}
-              onChange={(e) =>
-                updateScenarioValue(
-                  perp?.symbolName,
-                  'perp',
-                  'avgEntryPrice',
-                  e.target.value
-                )
-              }
-              value={perp?.publicKey ? perp?.avgEntryPrice : 0.0}
-              onBlur={() => {
-                toggleEditing(false)
-              }}
-              disabled={perp?.publicKey ? false : true}
-            />
-          ) : (
-            <Input
-              type="number"
-              onFocus={() => {
-                toggleEditing(true)
-              }}
-              readyOnly={true}
-              onChange={() => null}
-              value={
-                perp?.publicKey
-                  ? Number(perp?.avgEntryPrice).toFixed(4)
-                  : Number(0).toFixed(4)
-              }
-              disabled={perp?.publicKey ? false : true}
-            />
-          )}
-        </Td>
-        <Td
-          className={`px-1 lg:px-3 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
-        >
-          {editing ? (
-            <Input
-              type="number"
-              onFocus={() => {
-                toggleEditing(true)
-              }}
-              onChange={(e) => {
-                updatePriceValues(
-                  asset?.assetName ? asset?.assetName : perp.symbolName,
-                  e.target.value
-                )
-                setSliderPercentage(50)
-              }}
-              value={
-                asset?.assetName
-                  ? asset?.priceDisabled
-                    ? asset?.price || 0
-                    : (asset?.price * sliderPercentage * 2) / 100
-                  : (perp?.price * sliderPercentage * 2) / 100
-              }
-              onBlur={() => {
-                toggleEditing(false)
-              }}
-              disabled={asset?.assetName ? asset?.priceDisabled : false}
-            />
-          ) : (
-            <Input
-              type="number"
-              onFocus={() => {
-                toggleEditing(true)
-              }}
-              readyOnly={true}
-              onChange={() => null}
-              value={
-                asset?.assetName
-                  ? asset?.priceDisabled
-                    ? Number(asset?.price || 0).toFixed(4)
-                    : Number(
-                        (asset?.price * sliderPercentage * 2) / 100
-                      ).toFixed(4)
-                  : Number((perp?.price * sliderPercentage * 2) / 100).toFixed(
-                      4
-                    )
-              }
-              disabled={asset?.assetName ? asset?.priceDisabled : false}
-            />
-          )}
-        </Td>
-        <Td
-          className={`px-1 lg:px-3 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
-        >
-          <Input
-            type="number"
-            value={(asset && perp
-              ? asset?.net *
-                  asset?.price *
-                  (asset?.priceDisabled ? 1 : (sliderPercentage * 2) / 100) +
-                (perp?.positionSide == 'long'
-                  ? perp?.unsettledPnL +
-                    perp?.basePosition *
-                      ((perp?.price * sliderPercentage * 2) / 100 -
-                        perp?.avgEntryPrice)
-                  : perp?.unsettledPnL -
-                    perp?.basePosition *
-                      (perp?.avgEntryPrice -
-                        (perp?.price * sliderPercentage * 2) / 100))
-              : asset && !perp
-              ? asset?.net *
-                asset?.price *
-                (asset?.priceDisabled ? 1 : (sliderPercentage * 2) / 100)
-              : perp?.positionSide == 'long'
-              ? perp?.unsettledPnL +
-                perp?.basePosition *
-                  ((perp?.price * sliderPercentage * 2) / 100 -
-                    perp?.avgEntryPrice)
-              : perp?.unsettledPnL -
-                perp?.basePosition *
-                  (perp?.avgEntryPrice -
-                    (perp?.price * sliderPercentage * 2) / 100)
-            ).toFixed(4)}
-            onChange={null}
-            disabled
-          />
-        </Td>
-        <Td
-          className={`px-1 lg:px-3 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
-        >
-          <Input
-            type="text"
-            value={
-              isNaN(liquidationPrice)
-                ? '-'
-                : Number(liquidationPrice).toFixed(4)
-            }
-            onChange={null}
-            disabled
-          />
-        </Td>
-      </Tr>
-    )
+  // Update focused input and update scanerio if input is valid
+  const updateInterimValue = (symbol, field, type, identifier, val) => {
+    const interimVal = val
+    const interimIdentifier = identifier
+
+    switch (type) {
+      case 'focus':
+        setInterimValue(interimValue.set(interimIdentifier, interimVal))
+        break
+      case 'change':
+        if (Number(val) === 0 || Number.isNaN(val)) {
+          setInterimValue(interimValue.set(interimIdentifier, interimVal))
+          updateValue(symbol, field, 0)
+        } else {
+          updateValue(symbol, field, val)
+          setInterimValue(interimValue.set(interimIdentifier, val))
+        }
+        break
+      case 'blur':
+        if (Number(val) === 0 || Number.isNaN(val)) {
+          updateValue(symbol, field, 0)
+          interimValue.delete(interimIdentifier)
+          setInterimValue(new Map())
+        } else {
+          updateValue(symbol, field, val)
+          interimValue.delete(interimIdentifier)
+          setInterimValue(new Map())
+        }
+        if (field === 'price') {
+          setSliderPercentage(defaultSliderVal)
+        }
+        break
+    }
   }
 
+  // Display all
   return (
     <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
       <TopBar />
@@ -1244,14 +1103,10 @@ export default function RiskCalculator() {
             comments in our #dev-ui discord channel.
           </p>
           {/* <p className="mb-0">
-                            Stay healthy to keep the dream alive. We hear that one mango smoothie a day keeps the liquidators away!
-                        </p> */}
+                        Stay healthy to keep the dream alive. We hear that one mango smoothie a day keeps the liquidators away!
+                    </p> */}
         </div>
-        {!loading &&
-        calculatorBars &&
-        balances.length > 0 &&
-        calculatorBars.balancesData?.length > 0 &&
-        calculatorBars.perpsData?.length > 0 ? (
+        {scenarioBars?.rowData.length > 0 ? (
           <div className="rounded-lg bg-th-bkg-2">
             <div className="grid grid-cols-12">
               <div className="col-span-12 md:col-span-8 p-4">
@@ -1263,8 +1118,8 @@ export default function RiskCalculator() {
                     <Button
                       className={`text-xs flex items-center justify-center sm:ml-3 pt-0 pb-0 h-8 pl-3 pr-3 rounded`}
                       onClick={() => {
-                        setSliderPercentage(50)
-                        initilizeScenario()
+                        setSliderPercentage(defaultSliderVal)
+                        createScenario(accountConnected ? 'account' : 'blank')
                       }}
                     >
                       <div className="flex items-center">
@@ -1274,7 +1129,7 @@ export default function RiskCalculator() {
                     </Button>
                   </div>
                 </div>
-                <div className="bg-th-bkg-1 border border-th-fgd-4 flex items-center mb-6 lg:mx-3 px-3 h-8 rounded">
+                <div className="bg-th-bkg-1 border border-th-fgd-4 flex items-center mb-3 lg:mx-3 px-3 h-8 rounded">
                   <div className="pr-5 text-th-fgd-3 text-xs whitespace-nowrap">
                     Edit All Prices
                   </div>
@@ -1283,9 +1138,11 @@ export default function RiskCalculator() {
                       onChange={(e) => {
                         onChangeSlider(e)
                       }}
-                      step={0.5}
+                      step={0.01}
                       value={sliderPercentage}
-                      defaultValue={50}
+                      min={0}
+                      max={2.5}
+                      defaultValue={defaultSliderVal}
                       trackStyle={{ backgroundColor: '#F2C94C' }}
                       handleStyle={{
                         borderColor: '#F2C94C',
@@ -1295,15 +1152,26 @@ export default function RiskCalculator() {
                     />
                   </div>
                   <div className="pl-4 text-th-fgd-1 text-xs w-16">
-                    {`${sliderPercentage * 2 - 100}%`}
+                    {`${Number(sliderPercentage * 100).toFixed(0)}%`}
                   </div>
                   <div className="pl-4 text-th-fgd-1 text-xs w-16">
-                    <LinkButton onClick={() => setSliderPercentage(50)}>
+                    <LinkButton
+                      onClick={() => setSliderPercentage(defaultSliderVal)}
+                    >
                       Reset
                     </LinkButton>
                   </div>
                 </div>
-                {/*Balances (Spot Markets) */}
+                <div className="flex items-center mb-3 lg:mx-3 px-3 h-8 rounded">
+                  <Switch
+                    checked={showZeroBalances}
+                    className="text-xs"
+                    onChange={() => setShowZeroBalances(!showZeroBalances)}
+                  >
+                    {t('show-zero')}
+                  </Switch>
+                </div>
+                {/*Create scenario table for display*/}
                 <div className={`flex flex-col pb-2`}>
                   <div className={`-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8`}>
                     <div
@@ -1326,7 +1194,7 @@ export default function RiskCalculator() {
                                 <div className="pr-2">Spot</div>
                                 <LinkButton
                                   onClick={() =>
-                                    resetScenarioColumn('spot', 'net')
+                                    resetScenarioColumn('spot', 'spotNet')
                                   }
                                 >
                                   Reset
@@ -1341,7 +1209,10 @@ export default function RiskCalculator() {
                                 <div className="pr-2">Perp</div>
                                 <LinkButton
                                   onClick={() =>
-                                    resetScenarioColumn('perp', 'basePosition')
+                                    resetScenarioColumn(
+                                      'perp',
+                                      'perpBasePosition'
+                                    )
                                   }
                                 >
                                   Reset
@@ -1356,7 +1227,10 @@ export default function RiskCalculator() {
                                 <div className="pr-2">Perp Entry</div>
                                 <LinkButton
                                   onClick={() =>
-                                    resetScenarioColumn('perp', 'avgEntryPrice')
+                                    resetScenarioColumn(
+                                      'perp',
+                                      'perpAvgEntryPrice'
+                                    )
                                   }
                                 >
                                   Reset
@@ -1393,7 +1267,7 @@ export default function RiskCalculator() {
                               className={`px-1 lg:px-3 py-1 text-left font-normal`}
                             >
                               <div className="flex justify-start md:justify-between">
-                                <Tooltip content="Single asset liquidation price (within 0.1%) assuming all other asset prices remain constant if liquidation is within 100x of scenario price">
+                                <Tooltip content="Single asset liquidation price assuming all other asset prices remain constant">
                                   <div className="pr-2">Liq. Price</div>
                                 </Tooltip>
                               </div>
@@ -1401,46 +1275,314 @@ export default function RiskCalculator() {
                           </Tr>
                         </Thead>
                         <Tbody>
-                          {/* Display spot markets with perps */}
-                          {calculatorBars.balancesData.map((asset, i) =>
-                            calculatorBars.perpsData.filter(
-                              (m) => m.symbolName === asset.assetName
-                            )[0]?.publicKey
-                              ? getScenarioTableRow(
-                                  asset,
-                                  calculatorBars.perpsData.filter(
-                                    (m) => m.symbolName === asset.assetName
-                                  )[0],
-                                  i,
-                                  liquidationPrices.get(asset.assetName)
-                                )
-                              : null
-                          )}
-                          {/* Display spot markets without perps */}
-                          {calculatorBars.balancesData.map((asset, i) =>
-                            !calculatorBars.perpsData.filter(
-                              (m) => m.symbolName === asset.assetName
-                            )[0]?.publicKey
-                              ? getScenarioTableRow(
-                                  asset,
-                                  null,
-                                  i,
-                                  liquidationPrices.get(asset.assetName)
-                                )
-                              : null
-                          )}
-                          {/* Display perp markets without spot */}
-                          {calculatorBars.perpsData.map((perp, i) =>
-                            !calculatorBars.balancesData.filter(
-                              (m) => m.symbolName === perp.symbolName
-                            )[0]?.publicKey
-                              ? getScenarioTableRow(
-                                  null,
-                                  perp,
-                                  calculatorBars.balancesData?.length - 1 + i,
-                                  liquidationPrices.get(perp.symbolName)
-                                )
-                              : null
+                          {/*Populate scenario table with data*/}
+                          {scenarioBars.rowData.map((asset, i) =>
+                            asset.symbolName === 'USDC' ||
+                            (asset.spotNet != 0 && asset.hasMarketSpot) ||
+                            (asset.perpBasePosition != 0 &&
+                              asset.hasMarketPerp) ||
+                            showZeroBalances ? (
+                              <Tr
+                                className={`${
+                                  i % 2 === 0
+                                    ? `bg-th-bkg-3 md:bg-th-bkg-2`
+                                    : `bg-th-bkg-2`
+                                }`}
+                                key={`${i}`}
+                              >
+                                <Td
+                                  className={`px-3 py-2 whitespace-nowrap text-sm text-th-fgd-1 w-24`}
+                                >
+                                  <div className="flex items-center">
+                                    <img
+                                      alt=""
+                                      width="20"
+                                      height="20"
+                                      src={`/assets/icons/${asset.symbolName.toLowerCase()}.svg`}
+                                      className={`mr-2.5`}
+                                    />
+                                    <div>{asset.symbolName}</div>
+                                  </div>
+                                </Td>
+                                <Td
+                                  className={`px-1 lg:px-3 py-2 text-sm text-th-fgd-1`}
+                                >
+                                  <Input
+                                    id={'spotNet_' + i}
+                                    type="number"
+                                    onFocus={(e) =>
+                                      e.target.id === e.currentTarget.id
+                                        ? updateInterimValue(
+                                            asset.symbolName,
+                                            'spotNet',
+                                            'focus',
+                                            ('spotNet_' + i).toString(),
+                                            asset.spotNet !== 0
+                                              ? asset.spotNet
+                                              : ''
+                                          )
+                                        : null
+                                    }
+                                    onChange={(e) =>
+                                      updateInterimValue(
+                                        asset.symbolName,
+                                        'spotNet',
+                                        'change',
+                                        ('spotNet_' + i).toString(),
+                                        e.target.value
+                                      )
+                                    }
+                                    onBlur={(e) =>
+                                      updateInterimValue(
+                                        asset.symbolName,
+                                        'spotNet',
+                                        'blur',
+                                        ('spotNet_' + i).toString(),
+                                        e.target.value
+                                      )
+                                    }
+                                    placeholder={'0.0'}
+                                    value={
+                                      interimValue.has(
+                                        ('spotNet_' + i).toString()
+                                      )
+                                        ? interimValue.get(
+                                            ('spotNet_' + i).toString()
+                                          )
+                                        : asset.spotNet !== 0
+                                        ? asset.spotNet
+                                        : ''
+                                    }
+                                    disabled={
+                                      asset.hasMarketSpot ||
+                                      asset.symbolName === 'USDC'
+                                        ? false
+                                        : true
+                                    }
+                                  />
+                                </Td>
+                                <Td
+                                  className={`px-1 lg:px-3 py-2 text-sm text-th-fgd-1`}
+                                >
+                                  <Input
+                                    id={'perpBasePosition_' + i}
+                                    type="number"
+                                    onFocus={(e) =>
+                                      e.target.id === e.currentTarget.id
+                                        ? updateInterimValue(
+                                            asset.symbolName,
+                                            'perpBasePosition',
+                                            'focus',
+                                            (
+                                              'perpBasePosition_' + i
+                                            ).toString(),
+                                            asset.spotNet !== 0
+                                              ? asset.spotNet
+                                              : ''
+                                          )
+                                        : null
+                                    }
+                                    onChange={(e) =>
+                                      updateInterimValue(
+                                        asset.symbolName,
+                                        'perpBasePosition',
+                                        'change',
+                                        ('perpBasePosition_' + i).toString(),
+                                        e.target.value
+                                      )
+                                    }
+                                    onBlur={(e) =>
+                                      updateInterimValue(
+                                        asset.symbolName,
+                                        'perpBasePosition',
+                                        'blur',
+                                        ('perpBasePosition_' + i).toString(),
+                                        e.target.value
+                                      )
+                                    }
+                                    placeholder={'0.0'}
+                                    value={
+                                      interimValue.has(
+                                        ('perpBasePosition_' + i).toString()
+                                      )
+                                        ? interimValue.get(
+                                            ('perpBasePosition_' + i).toString()
+                                          )
+                                        : asset.perpBasePosition !== 0
+                                        ? asset.perpBasePosition
+                                        : ''
+                                    }
+                                    disabled={
+                                      asset.hasMarketPerp ? false : true
+                                    }
+                                  />
+                                </Td>
+                                <Td
+                                  className={`px-1 lg:px-3 py-2 text-sm text-th-fgd-1`}
+                                >
+                                  <Input
+                                    id={'perpAvgEntryPrice_' + i}
+                                    type="number"
+                                    onFocus={(e) =>
+                                      e.target.id === e.currentTarget.id
+                                        ? updateInterimValue(
+                                            asset.symbolName,
+                                            'perpAvgEntryPrice',
+                                            'focus',
+                                            (
+                                              'perpAvgEntryPrice_' + i
+                                            ).toString(),
+                                            asset.perpAvgEntryPrice !== 0
+                                              ? asset.perpAvgEntryPrice
+                                              : ''
+                                          )
+                                        : null
+                                    }
+                                    onChange={(e) =>
+                                      updateInterimValue(
+                                        asset.symbolName,
+                                        'perpAvgEntryPrice',
+                                        'change',
+                                        ('perpAvgEntryPrice_' + i).toString(),
+                                        e.target.value
+                                      )
+                                    }
+                                    onBlur={(e) =>
+                                      updateInterimValue(
+                                        asset.symbolName,
+                                        'perpAvgEntryPrice',
+                                        'blur',
+                                        ('perpAvgEntryPrice_' + i).toString(),
+                                        e.target.value
+                                      )
+                                    }
+                                    placeholder={'0.0'}
+                                    value={
+                                      interimValue.has(
+                                        ('perpAvgEntryPrice_' + i).toString()
+                                      )
+                                        ? interimValue.get(
+                                            (
+                                              'perpAvgEntryPrice_' + i
+                                            ).toString()
+                                          )
+                                        : asset.perpAvgEntryPrice !== 0
+                                        ? asset.perpAvgEntryPrice
+                                        : ''
+                                    }
+                                    disabled={
+                                      asset.hasMarketPerp ? false : true
+                                    }
+                                  />
+                                </Td>
+                                <Td
+                                  className={`px-1 lg:px-3 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
+                                >
+                                  <Input
+                                    id={'price_' + i}
+                                    type="number"
+                                    onFocus={(e) =>
+                                      e.target.id === e.currentTarget.id
+                                        ? updateInterimValue(
+                                            asset.symbolName,
+                                            'price',
+                                            'focus',
+                                            ('price_' + i).toString(),
+                                            asset.perpAvgEntryPrice !== 0
+                                              ? asset.perpAvgEntryPrice
+                                              : ''
+                                          )
+                                        : null
+                                    }
+                                    onChange={(e) => {
+                                      updateInterimValue(
+                                        asset.symbolName,
+                                        'price',
+                                        'change',
+                                        ('price_' + i).toString(),
+                                        e.target.value
+                                      )
+                                      setSliderPercentage(defaultSliderVal)
+                                    }}
+                                    onBlur={(e) =>
+                                      updateInterimValue(
+                                        asset.symbolName,
+                                        'price',
+                                        'blur',
+                                        ('price_' + i).toString(),
+                                        e.target.value
+                                      )
+                                    }
+                                    placeholder={'0.0'}
+                                    value={
+                                      asset.priceDisabled
+                                        ? interimValue.has(
+                                            ('price_' + i).toString()
+                                          )
+                                          ? interimValue.get(
+                                              ('price_' + i).toString()
+                                            )
+                                          : asset.price !== 0
+                                          ? asset.price
+                                          : ''
+                                        : interimValue.has(
+                                            ('price_' + i).toString()
+                                          )
+                                        ? interimValue.get(
+                                            ('price_' + i).toString()
+                                          )
+                                        : asset.price !== 0
+                                        ? asset.price * sliderPercentage
+                                        : ''
+                                    }
+                                    disabled={asset.priceDisabled}
+                                  />
+                                </Td>
+                                <Td
+                                  className={`px-1 lg:px-3 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
+                                >
+                                  <Input
+                                    type="text"
+                                    value={usdFormatter(
+                                      Number(
+                                        asset.spotNet *
+                                          asset.price *
+                                          (asset.priceDisabled
+                                            ? 1
+                                            : sliderPercentage)
+                                      ) +
+                                        Number(
+                                          asset.perpPositionSide === 'long'
+                                            ? asset.perpPositionPnL +
+                                                asset.perpBasePosition *
+                                                  (asset.price *
+                                                    sliderPercentage -
+                                                    asset.perpAvgEntryPrice)
+                                            : asset.perpPositionPnL -
+                                                asset.perpBasePosition *
+                                                  (asset.perpAvgEntryPrice -
+                                                    asset.price *
+                                                      sliderPercentage)
+                                        )
+                                    )}
+                                    onChange={null}
+                                    disabled
+                                  />
+                                </Td>
+                                <Td
+                                  className={`px-1 lg:px-3 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
+                                >
+                                  <Input
+                                    type="text"
+                                    value={usdFormatter(
+                                      liquidationPrices.get(asset.symbolName)
+                                    )}
+                                    onChange={null}
+                                    disabled
+                                  />
+                                </Td>
+                              </Tr>
+                            ) : null
                           )}
                         </Tbody>
                       </Table>
@@ -1448,13 +1590,25 @@ export default function RiskCalculator() {
                   </div>
                 </div>
               </div>
-              {!loading && calculatorBars && balances.length > 0 ? (
+              {/*Populate detailed scenario summary*/}
+              {scenarioBars?.rowData.length > 0 ? (
                 <div className="bg-th-bkg-3 col-span-4 hidden md:block p-4 relative rounded-r-lg">
                   <div className="pb-4 text-th-fgd-1 text-lg">
                     Scenario Details
                   </div>
                   {/* Joke Wrapper */}
                   <div className="relative col-span-4">
+                    {scenarioDetails.get('liabilities') === 0 &&
+                    scenarioDetails.get('equity') === 0 ? (
+                      <div className="bg-th-green-dark border border-th-green-dark flex flex-col items-center mb-6 p-3 rounded text-center text-th-fgd-1">
+                        <div className="pb-0.5 text-th-fgd-1">
+                          Let&apos;s get this party started
+                        </div>
+                        <div className="text-th-fgd-1 text-xs">
+                          The mangoes are ripe for the picking...
+                        </div>
+                      </div>
+                    ) : null}
                     {scenarioDetails.get('liabilities') === 0 &&
                     scenarioDetails.get('equity') > 0 ? (
                       <div className="border border-th-green flex flex-col items-center mb-6 p-3 rounded text-center text-th-fgd-1">
@@ -1471,7 +1625,7 @@ export default function RiskCalculator() {
                       <div className="border border-th-green flex flex-col items-center mb-6 p-3 rounded text-center text-th-fgd-1">
                         <div className="pb-0.5 text-th-fgd-1">Looking good</div>
                         <div className="text-th-fgd-3 text-xs">
-                          The sun is shining and the mangoes are ripe, yeah
+                          The sun is shining and the mangoes are ripe...
                         </div>
                       </div>
                     ) : null}
@@ -1556,7 +1710,7 @@ export default function RiskCalculator() {
                         : 'No'}
                     </div>
                   </div>
-                  <div className="flex items-center justify-between pb-3">
+                  <div className="flex items-center justify-between pb-3 mb-6">
                     <div className="text-th-fgd-3">Account Health</div>
                     {
                       <div
@@ -1578,7 +1732,6 @@ export default function RiskCalculator() {
                       </div>
                     }
                   </div>
-                  <div className="h-8" />
                   <div className="flex items-center justify-between pb-3">
                     <div className="text-th-fgd-3">Account Value</div>
                     <div className="font-bold">
@@ -1591,7 +1744,7 @@ export default function RiskCalculator() {
                       {formatUsdValue(scenarioDetails.get('assets'))}
                     </div>
                   </div>
-                  <div className="flex items-center justify-between pb-3">
+                  <div className="flex items-center justify-between pb-3 mb-6">
                     <div className="text-th-fgd-3">Liabilities</div>
                     <div className="font-bold">
                       {formatUsdValue(scenarioDetails.get('liabilities'))}
@@ -1623,7 +1776,7 @@ export default function RiskCalculator() {
                       {formatUsdValue(scenarioDetails.get('initWeightAssets'))}
                     </div>
                   </div>
-                  <div className="flex items-center justify-between pb-3">
+                  <div className="flex items-center justify-between pb-3 mb-6">
                     <div className="text-th-fgd-3">
                       Init. Weighted Liabilities Value
                     </div>
@@ -1640,19 +1793,13 @@ export default function RiskCalculator() {
                     </div>
                   </div>
                   <div className="flex items-center justify-between pb-3">
-                    <div className="text-th-fgd-3">
-                      Negative Price Move To Liquidation
-                    </div>
+                    <Tooltip content="Relative to the 'Edit All Prices' slider value">
+                      <div className="text-th-fgd-3">
+                        Percent Move To Liquidation
+                      </div>
+                    </Tooltip>
                     <div className="font-bold">
                       {scenarioDetails.get('percentToLiquidation')}%
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between pb-3">
-                    <div className="text-th-fgd-3">
-                      Positive Price Move To Liquidation
-                    </div>
-                    <div className="font-bold">
-                      {scenarioDetails.get('posPercentToLiquidation')}%
                     </div>
                   </div>
                 </div>
@@ -1663,7 +1810,7 @@ export default function RiskCalculator() {
           <div className="animate-pulse bg-th-bkg-3 h-64 rounded-lg w-full" />
         )}
       </PageBodyContainer>
-      {!loading && calculatorBars && balances.length > 0 ? (
+      {scenarioBars?.rowData.length > 0 ? (
         <div className="bg-th-bkg-3 bottom-0 md:hidden sticky w-full">
           <Disclosure>
             {({ open }) => (
