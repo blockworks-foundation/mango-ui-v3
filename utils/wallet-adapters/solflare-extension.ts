@@ -69,12 +69,12 @@ export class SolflareExtensionWalletAdapter
 
   get publicKey() {
     const instance = this._provider?.publicKey
-    
+
     if (instance) {
-      return new PublicKey(instance.toString());
+      return new PublicKey(instance.toString())
     }
 
-    return DEFAULT_PUBLIC_KEY;
+    return DEFAULT_PUBLIC_KEY
   }
 
   async signTransaction(transaction: Transaction) {
