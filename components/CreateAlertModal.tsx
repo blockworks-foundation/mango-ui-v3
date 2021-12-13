@@ -1,0 +1,220 @@
+import React, { FunctionComponent, useEffect, useState } from 'react'
+import { PlusCircleIcon, TrashIcon } from '@heroicons/react/outline'
+import Modal from './Modal'
+import Input from './Input'
+import { ElementTitle } from './styles'
+import useMangoStore from '../stores/useMangoStore'
+import Button, { LinkButton } from './Button'
+import { notify } from '../utils/notifications'
+import { useTranslation } from 'next-i18next'
+import ButtonGroup from './ButtonGroup'
+
+interface CreateAlertModalProps {
+  onClose: () => void
+  isOpen: boolean
+  repayAmount?: string
+  tokenSymbol?: string
+}
+
+const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
+  isOpen,
+  onClose,
+}) => {
+  const { t } = useTranslation('common')
+  const actions = useMangoStore((s) => s.actions)
+  const connected = useMangoStore((s) => s.wallet.connected)
+  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
+  const activeAlerts = useMangoStore((s) => s.alerts.activeAlerts)
+  const loading = useMangoStore((s) => s.alerts.loading)
+  const [email, setEmail] = useState<string>('')
+  const [invalidAmountMessage, setInvalidAmountMessage] = useState('')
+  const [health, setHealth] = useState('')
+  const [showCustomHealthForm, setShowCustomHealthForm] = useState(false)
+  const [showAlertForm, setShowAlertForm] = useState(false)
+
+  const healthPresets = ['5', '10', '15', '25', '30']
+
+  const validateEmailInput = (amount) => {
+    if (Number(amount) <= 0) {
+      setInvalidAmountMessage(t('enter-amount'))
+    }
+  }
+
+  const onChangeEmailInput = (amount) => {
+    setEmail(amount)
+    setInvalidAmountMessage('')
+  }
+
+  async function onCreateAlert() {
+    if (!connected) {
+      notify({
+        title: 'Please connect wallet',
+        type: 'error',
+      })
+      return
+    } else if (!email) {
+      notify({
+        title: 'Please provide e-mail',
+        type: 'error',
+      })
+      return
+    }
+    const body = {
+      mangoGroupPk: mangoGroup.publicKey.toString(),
+      mangoAccountPk: mangoAccount.publicKey.toString(),
+      health,
+      alertProvider: 'mail',
+      email,
+    }
+    await actions.createAlert(body)
+    setShowAlertForm(false)
+  }
+
+  const handleCancelCreateAlert = () => {
+    if (activeAlerts.length > 0) {
+      setShowAlertForm(false)
+    } else {
+      onClose()
+    }
+  }
+
+  // useEffect(() => {
+  //   if (activeAlerts.length === 0) {
+  //     setShowAlertForm(true)
+  //   }
+  // }, [activeAlerts])
+
+  useEffect(() => {
+    actions.loadAlerts(mangoAccount.publicKey)
+  }, [])
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose}>
+      {!loading ? (
+        <>
+          {activeAlerts.length > 0 && !showAlertForm ? (
+            <>
+              <Modal.Header>
+                <div className="flex items-center justify-between w-full">
+                  <div className="w-20" />
+                  <ElementTitle noMarignBottom>
+                    {t('active-alerts')}
+                  </ElementTitle>
+                  <Button
+                    className="col-span-1 flex items-center justify-center pt-0 pb-0 h-8 text-xs w-20"
+                    onClick={() => setShowAlertForm(true)}
+                  >
+                    <div className="flex items-center">
+                      <PlusCircleIcon className="h-4 w-4 mr-1.5" />
+                      {t('new')}
+                    </div>
+                  </Button>
+                </div>
+              </Modal.Header>
+              <div className="border-b border-th-fgd-4">
+                {activeAlerts.map((alert) => (
+                  <div
+                    className="border-t border-th-fgd-4 flex items-center justify-between p-4"
+                    key={alert._id}
+                  >
+                    <div className="text-th-fgd-1">{`Email when health <= ${alert.health}%`}</div>
+                    <TrashIcon
+                      className="cursor-pointer default-transition h-5 text-th-fgd-3 w-5 hover:text-th-primary"
+                      onClick={() => actions.deleteAlert(alert._id)}
+                    />
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : showAlertForm ? (
+            <>
+              <Modal.Header>
+                <ElementTitle noMarignBottom>{t('create-alert')}</ElementTitle>
+              </Modal.Header>
+              <div className="mb-1.5 text-th-fgd-1">Email Address</div>
+              <Input
+                type="email"
+                className={`border border-th-fgd-4 flex-grow pr-11`}
+                placeholder="wagmi@mango.markets"
+                error={!!invalidAmountMessage}
+                onBlur={(e) => validateEmailInput(e.target.value)}
+                value={email || ''}
+                onChange={(e) => onChangeEmailInput(e.target.value)}
+              />
+              <div className="flex items-end mt-4">
+                <div className="w-full">
+                  <div className="flex justify-between mb-1.5">
+                    <div className="text-th-fgd-1">{t('health')}</div>
+                    <LinkButton
+                      className="font-normal text-th-fgd-3 text-xs"
+                      onClick={() =>
+                        setShowCustomHealthForm(!showCustomHealthForm)
+                      }
+                    >
+                      {showCustomHealthForm ? t('presets') : t('custom')}
+                    </LinkButton>
+                  </div>
+                  {showCustomHealthForm ? (
+                    <Input
+                      type="number"
+                      min="0"
+                      max="100"
+                      onChange={(e) => setHealth(e.target.value)}
+                      suffix={
+                        <div className="font-bold text-base text-th-fgd-3">
+                          %
+                        </div>
+                      }
+                      value={health}
+                    />
+                  ) : (
+                    <ButtonGroup
+                      activeValue={health.toString()}
+                      onChange={(p) => setHealth(p)}
+                      unit="%"
+                      values={healthPresets}
+                    />
+                  )}
+                </div>
+              </div>
+              <div className="flex items-center mt-6">
+                <Button onClick={() => onCreateAlert()}>Create Alert</Button>
+                <LinkButton
+                  className="ml-4 text-th-fgd-3 hover:text-th-fgd-1"
+                  onClick={handleCancelCreateAlert}
+                >
+                  Cancel
+                </LinkButton>
+              </div>
+            </>
+          ) : (
+            <div>
+              <Modal.Header>
+                <ElementTitle noMarignBottom>{t('no-alerts')}</ElementTitle>
+              </Modal.Header>
+              <p className="mb-4 text-center">
+                No active alerts. Create an alert to be notified when your
+                account health is low.
+              </p>
+              <Button
+                className="flex justify-center m-auto"
+                onClick={() => setShowAlertForm(true)}
+              >
+                {t('new-alert')}
+              </Button>
+            </div>
+          )}
+        </>
+      ) : (
+        <div className="space-y-3">
+          <div className="animate-pulse bg-th-bkg-3 h-12 rounded-md w-full" />
+          <div className="animate-pulse bg-th-bkg-3 h-12 rounded-md w-full" />
+          <div className="animate-pulse bg-th-bkg-3 h-12 rounded-md w-full" />
+        </div>
+      )}
+    </Modal>
+  )
+}
+
+export default React.memo(CreateAlertModal)

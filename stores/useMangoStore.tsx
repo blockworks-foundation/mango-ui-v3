@@ -104,6 +104,24 @@ export interface Orderbook {
   asks: number[][]
 }
 
+export interface Alert {
+  acc: PublicKey
+  alertProvider: 'mail'
+  health: number
+  _id: string
+  open: boolean
+  timestamp: number
+  triggeredTimestamp: number | undefined
+}
+
+interface AlertRequest {
+  alertProvider: 'mail'
+  health: number
+  mangoGroupPk: string
+  mangoAccountPk: string
+  email: string | undefined
+}
+
 interface MangoStore extends State {
   notifications: Array<{
     type: string
@@ -175,6 +193,14 @@ interface MangoStore extends State {
   actions: {
     [key: string]: (args?) => void
   }
+  alerts: {
+    activeAlerts: Array<Alert>
+    triggeredAlerts: Array<Alert>
+    loading: boolean
+    error: string
+    submitting: boolean
+    success: string
+  }
 }
 
 const useMangoStore = create<MangoStore>((set, get) => {
@@ -241,6 +267,14 @@ const useMangoStore = create<MangoStore>((set, get) => {
     wallet: INITIAL_STATE.WALLET,
     settings: {
       uiLocked: true,
+    },
+    alerts: {
+      activeAlerts: [],
+      triggeredAlerts: [],
+      loading: false,
+      error: '',
+      submitting: false,
+      success: '',
     },
     tradeHistory: [],
     set: (fn) => set(produce(fn)),
@@ -550,6 +584,197 @@ const useMangoStore = create<MangoStore>((set, get) => {
           state.connection.endpoint = endpointUrl
           state.connection.current = newConnection
           state.connection.client = newClient
+        })
+      },
+      async createAlert(req: AlertRequest) {
+        const set = get().set
+        const alert = {
+          acc: new PublicKey(req.mangoAccountPk),
+          alertProvider: req.alertProvider,
+          health: req.health,
+          open: true,
+          timestamp: Date.now(),
+        }
+
+        set((state) => {
+          state.alerts.submitting = true
+          state.alerts.error = ''
+          state.alerts.success = ''
+        })
+
+        const fetchUrl = `http://localhost:3010/alerts`
+        const headers = { 'Content-Type': 'application/json' }
+
+        fetch(fetchUrl, {
+          method: 'POST',
+          headers: headers,
+          body: JSON.stringify(req),
+        })
+          .then((response: any) => {
+            if (!response.ok) {
+              throw response
+            }
+            return response.json()
+          })
+          .then(() => {
+            const alerts = get().alerts.activeAlerts
+
+            set((state) => {
+              state.alerts.activeAlerts = [alert as Alert].concat(alerts)
+              state.alerts.success = 'Alert saved'
+            })
+            notify({
+              title: 'Alert saved',
+              type: 'success',
+            })
+          })
+          .catch((err) => {
+            if (typeof err.text === 'function') {
+              err.text().then((errorMessage: string) => {
+                set((state) => {
+                  state.alerts.error = errorMessage
+                })
+                notify({
+                  title: errorMessage,
+                  type: 'error',
+                })
+              })
+            } else {
+              set((state) => {
+                state.alerts.error = 'Something went wrong'
+              })
+              notify({
+                title: 'Something went wrong',
+                type: 'error',
+              })
+            }
+          })
+          .finally(() => {
+            set((state) => {
+              state.alerts.submitting = false
+            })
+          })
+      },
+      async deleteAlert(id: string) {
+        const set = get().set
+
+        set((state) => {
+          state.alerts.submitting = true
+          state.alerts.error = ''
+          state.alerts.success = ''
+        })
+
+        const fetchUrl = `http://localhost:3010/delete-alert`
+        const headers = { 'Content-Type': 'application/json' }
+
+        fetch(fetchUrl, {
+          method: 'POST',
+          headers: headers,
+          body: JSON.stringify({ id: id }),
+        })
+          .then((response: any) => {
+            if (!response.ok) {
+              throw response
+            }
+            return response.json()
+          })
+          .then(() => {
+            const alerts = get().alerts.activeAlerts
+
+            set((state) => {
+              state.alerts.activeAlerts = alerts.filter(
+                (alert) => alert._id !== id
+              )
+              state.alerts.success = 'Alert deleted'
+            })
+            notify({
+              title: 'Alert deleted',
+              type: 'success',
+            })
+          })
+          .catch((err) => {
+            if (typeof err.text === 'function') {
+              err.text().then((errorMessage: string) => {
+                set((state) => {
+                  state.alerts.error = errorMessage
+                })
+                notify({
+                  title: errorMessage,
+                  type: 'error',
+                })
+              })
+            } else {
+              set((state) => {
+                state.alerts.error = 'Something went wrong'
+              })
+              notify({
+                title: 'Something went wrong',
+                type: 'error',
+              })
+            }
+          })
+          .finally(() => {
+            set((state) => {
+              state.alerts.submitting = false
+            })
+          })
+      },
+      async loadAlerts(mangoAccountPk: PublicKey) {
+        const set = get().set
+
+        set((state) => {
+          state.alerts.loading = true
+        })
+
+        const headers = { 'Content-Type': 'application/json' }
+        const response = await fetch(
+          `http://localhost:3010/alerts/${mangoAccountPk}`,
+          {
+            method: 'GET',
+            headers: headers,
+          }
+        )
+          .then((response: any) => {
+            if (!response.ok) {
+              throw response
+            }
+
+            return response.json()
+          })
+          .catch((err) => {
+            if (typeof err.text === 'function') {
+              err.text().then((errorMessage: string) => {
+                notify({
+                  title: errorMessage,
+                  type: 'error',
+                })
+              })
+            } else {
+              notify({
+                title: 'Something went wrong',
+                type: 'error',
+              })
+            }
+          })
+
+        // sort active by latest creation time first
+        const activeAlerts = response.alerts
+          .filter((alert) => alert.open)
+          .sort((a, b) => {
+            return b.timestamp - a.timestamp
+          })
+
+        // sort triggered by latest trigger time first
+        const triggeredAlerts = response.alerts
+          .filter((alert) => !alert.open)
+          .sort((a, b) => {
+            return b.triggeredTimestamp - a.triggeredTimestamp
+          })
+
+        set((state) => {
+          state.alerts.activeAlerts = activeAlerts
+          state.alerts.triggeredAlerts = triggeredAlerts
+          state.alerts.loading = false
         })
       },
     },
