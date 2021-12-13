@@ -45,8 +45,6 @@ const NotificationList = () => {
 
   const reversedNotifications = [...notifications].reverse()
 
-  console.log('reversedNotifs', reversedNotifications)
-
   return (
     <div
       className={`fixed inset-0 flex items-end px-4 py-6 pointer-events-none sm:p-6 text-th-fgd-1 z-50`}
