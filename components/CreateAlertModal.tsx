@@ -22,7 +22,6 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
 }) => {
   const { t } = useTranslation('common')
   const actions = useMangoStore((s) => s.actions)
-  const connected = useMangoStore((s) => s.wallet.connected)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const activeAlerts = useMangoStore((s) => s.alerts.activeAlerts)
@@ -47,15 +46,15 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
   }
 
   async function onCreateAlert() {
-    if (!connected) {
+    if (!email) {
       notify({
-        title: 'Please connect wallet',
+        title: 'An email address is required',
         type: 'error',
       })
       return
-    } else if (!email) {
+    } else if (!health) {
       notify({
-        title: 'Please provide e-mail',
+        title: 'Alert health is required',
         type: 'error',
       })
       return
@@ -78,12 +77,6 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
       onClose()
     }
   }
-
-  // useEffect(() => {
-  //   if (activeAlerts.length === 0) {
-  //     setShowAlertForm(true)
-  //   }
-  // }, [activeAlerts])
 
   useEffect(() => {
     actions.loadAlerts(mangoAccount.publicKey)
@@ -118,7 +111,9 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
                     className="border-t border-th-fgd-4 flex items-center justify-between p-4"
                     key={alert._id}
                   >
-                    <div className="text-th-fgd-1">{`Email when health <= ${alert.health}%`}</div>
+                    <div className="text-th-fgd-1">
+                      {t('alert-info', { health: alert.health })}
+                    </div>
                     <TrashIcon
                       className="cursor-pointer default-transition h-5 text-th-fgd-3 w-5 hover:text-th-primary"
                       onClick={() => actions.deleteAlert(alert._id)}
@@ -132,11 +127,10 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
               <Modal.Header>
                 <ElementTitle noMarignBottom>{t('create-alert')}</ElementTitle>
               </Modal.Header>
-              <div className="mb-1.5 text-th-fgd-1">Email Address</div>
+              <div className="mb-1.5 text-th-fgd-1">{t('email-address')}</div>
               <Input
                 type="email"
                 className={`border border-th-fgd-4 flex-grow pr-11`}
-                placeholder="wagmi@mango.markets"
                 error={!!invalidAmountMessage}
                 onBlur={(e) => validateEmailInput(e.target.value)}
                 value={email || ''}
@@ -145,7 +139,7 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
               <div className="flex items-end mt-4">
                 <div className="w-full">
                   <div className="flex justify-between mb-1.5">
-                    <div className="text-th-fgd-1">{t('health')}</div>
+                    <div className="text-th-fgd-1">{t('alert-health')}</div>
                     <LinkButton
                       className="font-normal text-th-fgd-3 text-xs"
                       onClick={() =>
@@ -179,12 +173,14 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
                 </div>
               </div>
               <div className="flex items-center mt-6">
-                <Button onClick={() => onCreateAlert()}>Create Alert</Button>
+                <Button onClick={() => onCreateAlert()}>
+                  {t('create-alert')}
+                </Button>
                 <LinkButton
                   className="ml-4 text-th-fgd-3 hover:text-th-fgd-1"
                   onClick={handleCancelCreateAlert}
                 >
-                  Cancel
+                  {t('cancel')}
                 </LinkButton>
               </div>
             </>
@@ -193,10 +189,7 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
               <Modal.Header>
                 <ElementTitle noMarignBottom>{t('no-alerts')}</ElementTitle>
               </Modal.Header>
-              <p className="mb-4 text-center">
-                No active alerts. Create an alert to be notified when your
-                account health is low.
-              </p>
+              <p className="mb-4 text-center">{t('no-alerts-desc')}</p>
               <Button
                 className="flex justify-center m-auto"
                 onClick={() => setShowAlertForm(true)}
