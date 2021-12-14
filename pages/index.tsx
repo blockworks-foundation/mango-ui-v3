@@ -40,7 +40,7 @@ const Index = () => {
   }, [])
 
   return (
-    <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all `}>
+    <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all min-h-screen`}>
       <TopBar />
       <MarketSelect />
       <PageBodyWrapper className="p-1 sm:px-2 sm:py-1 md:px-2 md:py-1">

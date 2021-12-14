@@ -1,5 +1,5 @@
 export const PageBodyWrapper = ({ children, className, ...props }) => (
-  <div className={`${className} min-h-screen`} {...props}>
+  <div className={`${className} h-full`} {...props}>
     {children}
   </div>
 )
