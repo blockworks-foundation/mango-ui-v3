@@ -95,7 +95,7 @@ const PerpMarket = () => {
   }, [router, marketConfig])
 
   return (
-    <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all min-h-screen`}>
+    <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
       {showTour && !hideTips ? <IntroTips connected={connected} /> : null}
       <TopBar />
       <MarketSelect />
