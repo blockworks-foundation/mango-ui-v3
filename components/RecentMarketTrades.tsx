@@ -22,9 +22,9 @@ export default function RecentMarketTrades() {
   const fetchTradesForChart = useCallback(async () => {
     if (!marketConfig) return
 
-    if (!market) {
-      setTrades([])
-    }
+    // if (!market) {
+    //   setTrades([])
+    // }
 
     const newTrades = await ChartApi.getRecentTrades(
       marketConfig.publicKey.toString()
