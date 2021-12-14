@@ -8,9 +8,45 @@ import {
   MSRM_DECIMALS,
   SRM_DECIMALS,
 } from '@project-serum/serum/lib/token-instructions'
-import { getFeeTier, getFeeRates } from '@project-serum/serum'
 import { parseTokenAccountData } from '../utils/tokens'
 import { useEffect } from 'react'
+
+export function getFeeRates(feeTier: number): { taker: number; maker: number } {
+  if (feeTier === 1) {
+    return { taker: 0.00039, maker: 0 }
+  } else if (feeTier === 2) {
+    return { taker: 0.00038, maker: 0 }
+  } else if (feeTier === 3) {
+    return { taker: 0.00036, maker: 0 }
+  } else if (feeTier === 4) {
+    return { taker: 0.00034, maker: 0 }
+  } else if (feeTier === 5) {
+    return { taker: 0.00032, maker: 0 }
+  } else if (feeTier === 6) {
+    // MSRM
+    return { taker: 0.0003, maker: 0 }
+  }
+  // Base
+  return { taker: 0.0004, maker: 0 }
+}
+
+export function getFeeTier(msrmBalance: number, srmBalance: number): number {
+  if (msrmBalance >= 1) {
+    return 6
+  } else if (srmBalance >= 1_000_000) {
+    return 5
+  } else if (srmBalance >= 100_000) {
+    return 4
+  } else if (srmBalance >= 10_000) {
+    return 3
+  } else if (srmBalance >= 1_000) {
+    return 2
+  } else if (srmBalance >= 100) {
+    return 1
+  } else {
+    return 0
+  }
+}
 
 const useSrmAccount = () => {
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)

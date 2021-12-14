@@ -19,7 +19,7 @@ const Button: FunctionComponent<ButtonProps> = ({
       disabled={disabled}
       className={`${className} px-6 py-2 bg-th-bkg-4 rounded-full text-th-fgd-1
       hover:brightness-[1.15] focus:outline-none disabled:bg-th-bkg-4 
-      disabled:text-th-fgd-4 disabled:cursor-not-allowed`}
+      disabled:text-th-fgd-4 disabled:cursor-not-allowed disabled:hover:brightness-100`}
       {...props}
     >
       {children}

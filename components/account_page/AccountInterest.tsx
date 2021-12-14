@@ -24,6 +24,9 @@ import useLocalStorageState from '../../hooks/useLocalStorageState'
 
 const utc = require('dayjs/plugin/utc')
 dayjs.extend(utc)
+import { exportDataToCSV } from '../../utils/export'
+import { SaveIcon } from '@heroicons/react/outline'
+import Button from '../Button'
 
 interface InterestStats {
   [key: string]: {
@@ -84,6 +87,38 @@ const AccountInterest = () => {
       return getTokenBySymbol(groupConfig, selectedAsset)
     }
   }, [selectedAsset])
+
+  const exportInterestDataToCSV = () => {
+    const assets = Object.keys(hourlyInterestStats)
+    let dataToExport = []
+
+    for (const asset of assets) {
+      dataToExport = [
+        ...dataToExport,
+        ...hourlyInterestStats[asset].map((interest) => {
+          const timestamp = new Date(interest.time)
+          return {
+            timestamp: `${timestamp.toLocaleDateString()} ${timestamp.toLocaleTimeString()}`,
+            asset: asset,
+            deposit_interest: interest.deposit_interest,
+            borrow_interest: interest.borrow_interest,
+          }
+        }),
+      ]
+    }
+
+    const title = `${
+      mangoAccount.name || mangoAccount.publicKey
+    }-Interest-${new Date().toLocaleDateString()}`
+    const headers = [
+      'Timestamp',
+      'Asset',
+      'Deposit Interest',
+      'Borrow Interest',
+    ]
+
+    exportDataToCSV(dataToExport, title, headers, t)
+  }
 
   useEffect(() => {
     if (!isEmpty(hourlyInterestStats)) {
@@ -257,13 +292,24 @@ const AccountInterest = () => {
     <>
       <div className="flex items-center justify-between pb-4">
         <div className="text-th-fgd-1 text-lg">{t('interest-earned')}</div>
-        <Switch
-          checked={hideInterestDust}
-          className="text-xs"
-          onChange={() => sethideInterestDust(!hideInterestDust)}
-        >
-          {t('hide-dust')}
-        </Switch>
+        <div className="flex items-center">
+          <Button
+            className={`float-right text-xs h-8 pt-0 pb-0 pl-3 pr-3`}
+            onClick={exportInterestDataToCSV}
+          >
+            <div className={`flex items-center whitespace-nowrap`}>
+              <SaveIcon className={`h-4 w-4 mr-1.5`} />
+              {t('export-data')}
+            </div>
+          </Button>
+          <Switch
+            checked={hideInterestDust}
+            className="ml-2 text-xs"
+            onChange={() => sethideInterestDust(!hideInterestDust)}
+          >
+            {t('hide-dust')}
+          </Switch>
+        </div>
       </div>
       {mangoAccount ? (
         <div>

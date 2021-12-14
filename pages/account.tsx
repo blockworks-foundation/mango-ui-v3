@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import {
   CurrencyDollarIcon,
   DuplicateIcon,
+  ExclamationCircleIcon,
   ExternalLinkIcon,
   LinkIcon,
   PencilIcon,
@@ -157,7 +158,7 @@ export default function Account() {
                 >
                   {mangoAccount?.name || t('account')}
                 </h1>
-                <div className="flex items-center pb-0.5 text-th-fgd-3 ">
+                <div className="flex items-center text-th-fgd-3 ">
                   <span className="text-xxs sm:text-xs">
                     {mangoAccount.publicKey.toString()}
                   </span>
@@ -168,6 +169,10 @@ export default function Account() {
                   {isCopied ? (
                     <div className="ml-2 text-th-fgd-2 text-xs">Copied!</div>
                   ) : null}
+                </div>
+                <div className="flex items-center text-th-red text-xxs">
+                  <ExclamationCircleIcon className="h-4 mr-1.5 w-4" />
+                  {t('account-address-warning')}
                 </div>
               </div>
               <div className="grid grid-cols-3 grid-rows-1 gap-2">

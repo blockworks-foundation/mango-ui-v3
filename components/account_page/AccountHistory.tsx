@@ -11,6 +11,11 @@ import {
   getMarketByBaseSymbolAndKind,
   PerpMarket,
 } from '@blockworks-foundation/mango-client'
+import { exportDataToCSV } from '../../utils/export'
+import { notify } from '../../utils/notifications'
+import useTradeHistory from '../../hooks/useTradeHistory'
+import Button from '../Button'
+import { SaveIcon } from '@heroicons/react/outline'
 
 const historyViews = [
   { label: 'Trades', key: 'Trades' },
@@ -24,6 +29,7 @@ export default function AccountHistory() {
   const [view, setView] = useState('Trades')
   const [history, setHistory] = useState(null)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
+  const tradeHistory = useTradeHistory({ excludePerpLiquidations: true })
 
   const mangoAccountPk = useMemo(() => {
     console.log('new mango account')
@@ -45,13 +51,94 @@ export default function AccountHistory() {
     }
   }, [mangoAccountPk])
 
-  console.log('history', history)
+  const exportHistoryToCSV = () => {
+    let dataToExport
+    let headers
+
+    if (view == 'Trades') {
+      dataToExport = tradeHistory.map((trade) => {
+        const timestamp = new Date(trade.loadTimestamp)
+        return {
+          asset: trade.marketName,
+          orderType: trade.side.toUpperCase(),
+          quantity: trade.size,
+          price: trade.price,
+          value: trade.value,
+          liquidity: trade.liquidity,
+          fee: trade.feeCost,
+          date: `${timestamp.toLocaleDateString()} ${timestamp.toLocaleTimeString()}`,
+        }
+      })
+      headers = [
+        'Market',
+        'Side',
+        'Size',
+        'Price',
+        'Value',
+        'Liquidity',
+        'Fee',
+        'Approx. Time',
+      ]
+    } else {
+      dataToExport = history
+        .filter((val) => val.activity_type == view)
+        .map((row) => {
+          row = row.activity_details
+          const timestamp = new Date(row.block_datetime)
+
+          return {
+            date: `${timestamp.toLocaleDateString()} ${timestamp.toLocaleTimeString()}`,
+            asset: row.symbol,
+            quantity: row.quantity,
+            value: row.usd_equivalent,
+          }
+        })
+      headers = ['Timestamp', 'Asset', 'Quantity', 'Value']
+    }
+
+    if (dataToExport.length == 0) {
+      notify({
+        title: t('export-data-empty'),
+        description: '',
+        type: 'info',
+      })
+      return
+    }
+
+    const tab = historyViews.filter((v) => v.key == view)[0].label
+    const title = `${
+      mangoAccount.name || mangoAccount.publicKey
+    }-${tab}-${new Date().toLocaleDateString()}`
+
+    exportDataToCSV(dataToExport, title, headers, t)
+  }
 
   return (
     <>
-      <div className="flex flex-col md:flex-row md:items-end md:justify-between pb-4">
-        <div>
-          <div className="mb-1 text-th-fgd-1 text-lg">{t('history')}</div>
+      <div className="bg-th-bkg-3 flex mb-4 md:mb-6 md:-mt-6 md:-mx-6 px-3 md:px-4 py-2 rounded-md md:rounded-none md:rounded-t-md">
+        {historyViews.map(({ label, key }, index) => (
+          <div
+            className={`md:px-2 py-1 text-xs md:text-sm ${
+              index > 0 ? 'ml-4 md:ml-2' : null
+            } rounded-md cursor-pointer default-transition
+                          ${
+                            view === key
+                              ? `text-th-primary`
+                              : `text-th-fgd-3 hover:text-th-fgd-1`
+                          }
+                        `}
+            onClick={() => setView(key)}
+            key={key as string}
+          >
+            {t(label.toLowerCase())}
+          </div>
+        ))}
+      </div>
+      <div className="flex flex-col pb-6 sm:flex-row sm:items-end sm:justify-between">
+        <div className="pb-4 sm:pb-0">
+          <div className="mb-1 text-th-fgd-1 text-lg">
+            {t(`${view.toLowerCase()}-history`)}
+          </div>
           <div className="mr-4 text-xs text-th-fgd-3">
             {t('delay-displaying-recent')} {t('use-explorer-one')}
             <a
@@ -64,25 +151,17 @@ export default function AccountHistory() {
             {t('use-explorer-three')}
           </div>
         </div>
-        <div className="flex mb-1 mt-4 md:mt-0">
-          {historyViews.map(({ label, key }, index) => (
-            <div
-              className={`px-2 py-1 ${
-                index > 0 ? 'ml-2' : null
-              } rounded-md cursor-pointer default-transition bg-th-bkg-3
-                          ${
-                            view === key
-                              ? `ring-1 ring-inset ring-th-primary text-th-primary`
-                              : `text-th-fgd-1 opacity-50 hover:opacity-100`
-                          }
-                        `}
-              onClick={() => setView(key)}
-              key={key as string}
-            >
-              {t(label.toLowerCase())}
+        {view !== 'Trades' ? (
+          <Button
+            className={`flex items-center justify-center text-xs h-8 pt-0 pb-0 pl-3 pr-3 whitespace-nowrap`}
+            onClick={exportHistoryToCSV}
+          >
+            <div className={`flex items-center`}>
+              <SaveIcon className={`h-4 w-4 mr-1.5`} />
+              {t('export-data')}
             </div>
-          ))}
-        </div>
+          </Button>
+        ) : null}
       </div>
       <ViewContent view={view} history={history} />
     </>
@@ -353,7 +432,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
         </>
       ) : (
         <div className="w-full text-center py-6 bg-th-bkg-1 text-th-fgd-3 rounded-md">
-          History empty.
+          History empty
         </div>
       )}
     </>
