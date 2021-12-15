@@ -395,7 +395,7 @@ const OpenOrdersTable = () => {
       console.log('error', `${e}`)
     } finally {
       actions.reloadMangoAccount()
-      actions.reloadOrders()
+      actions.updateOpenOrders()
       setCancelId(null)
     }
   }
