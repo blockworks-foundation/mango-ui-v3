@@ -297,20 +297,6 @@ export default function RiskCalculator() {
               Math.pow(10, perpContractPrecision[symbol]) || 0
           : Number(0)
 
-      if (mangoAccount?.perpAccounts[i]) {
-        console.log(
-          'Test Check' +
-            ':symbol:' +
-            symbol +
-            ':spotNet:' +
-            basePosition +
-            ':basePosition:' +
-            perpBids +
-            ':perpBids:' +
-            perpAsks
-        )
-      }
-
       if (
         spotMarketConfig?.publicKey ||
         perpMarketConfig?.publicKey ||
