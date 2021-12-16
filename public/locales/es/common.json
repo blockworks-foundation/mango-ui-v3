@@ -17,6 +17,7 @@
   "add-name": "Añadir nombre",
   "alert-health": "Alert when health is below",
   "alert-info": "Email when health <= {{health}}%",
+  "alerts-disclaimer": "Do not rely solely on alerts to protect your account. We can't guarantee they will be delivered.",
   "all-assets": "Todos los activos",
   "amount": "Monto",
   "approximate-time": "Tiempo aproximado",

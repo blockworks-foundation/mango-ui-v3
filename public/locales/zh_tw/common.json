@@ -17,6 +17,7 @@
   "add-name": "加標籤",
   "alert-health": "Alert when health is below",
   "alert-info": "Email when health <= {{health}}%",
+  "alerts-disclaimer": "Do not rely solely on alerts to protect your account. We can't guarantee they will be delivered.",
   "all-assets": "所有資產",
   "amount": "數量",
   "approximate-time": "大概時間",

@@ -8,6 +8,7 @@ import Button, { LinkButton } from './Button'
 import { notify } from '../utils/notifications'
 import { useTranslation } from 'next-i18next'
 import ButtonGroup from './ButtonGroup'
+import InlineNotification from './InlineNotification'
 
 interface CreateAlertModalProps {
   onClose: () => void
@@ -26,6 +27,8 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const activeAlerts = useMangoStore((s) => s.alerts.activeAlerts)
   const loading = useMangoStore((s) => s.alerts.loading)
+  const submitting = useMangoStore((s) => s.alerts.submitting)
+  const error = useMangoStore((s) => s.alerts.error)
   const [email, setEmail] = useState<string>('')
   const [invalidAmountMessage, setInvalidAmountMessage] = useState('')
   const [health, setHealth] = useState('')
@@ -66,8 +69,10 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
       alertProvider: 'mail',
       email,
     }
-    await actions.createAlert(body)
-    setShowAlertForm(false)
+    const success: any = await actions.createAlert(body)
+    if (success) {
+      setShowAlertForm(false)
+    }
   }
 
   const handleCancelCreateAlert = () => {
@@ -84,7 +89,7 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      {!loading ? (
+      {!loading && !submitting ? (
         <>
           {activeAlerts.length > 0 && !showAlertForm ? (
             <>
@@ -106,10 +111,10 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
                 </div>
               </Modal.Header>
               <div className="border-b border-th-fgd-4">
-                {activeAlerts.map((alert) => (
+                {activeAlerts.map((alert, index) => (
                   <div
                     className="border-t border-th-fgd-4 flex items-center justify-between p-4"
-                    key={alert._id}
+                    key={`${alert._id}${index}`}
                   >
                     <div className="text-th-fgd-1">
                       {t('alert-info', { health: alert.health })}
@@ -124,9 +129,17 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
             </>
           ) : showAlertForm ? (
             <>
-              <Modal.Header>
+              <div>
                 <ElementTitle noMarignBottom>{t('create-alert')}</ElementTitle>
-              </Modal.Header>
+                <p className="mt-1 text-center text-th-fgd-4">
+                  {t('alerts-disclaimer')}
+                </p>
+              </div>
+              {error ? (
+                <div className="my-4">
+                  <InlineNotification title={error} type="error" />
+                </div>
+              ) : null}
               <div className="mb-1.5 text-th-fgd-1">{t('email-address')}</div>
               <Input
                 type="email"
@@ -184,6 +197,16 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
                 </LinkButton>
               </div>
             </>
+          ) : error ? (
+            <div>
+              <InlineNotification title={error} type="error" />
+              <Button
+                className="flex justify-center mt-6 mx-auto"
+                onClick={() => actions.loadAlerts()}
+              >
+                {t('try-again')}
+              </Button>
+            </div>
           ) : (
             <div>
               <Modal.Header>

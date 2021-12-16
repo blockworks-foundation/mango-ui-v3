@@ -136,29 +136,33 @@ export default function AccountInfo() {
         id="account-details-tip"
       >
         {!isMobile ? (
-          <div className="flex items-center justify-between">
-            <div className="h-8 w-8" />
-            <ElementTitle>
-              <Tooltip
-                content={
-                  mangoAccount ? (
-                    <div>
-                      {t('init-health')}: {initHealth.toFixed(4)}
-                      <br />
-                      {t('maint-health')}: {maintHealth.toFixed(4)}
-                    </div>
-                  ) : (
-                    ''
-                  )
-                }
-              >
-                {t('account')}
-              </Tooltip>
-            </ElementTitle>
-            <IconButton onClick={() => setShowAlertsModal(true)}>
-              <BellIcon className={`w-4 h-4`} />
-            </IconButton>
-          </div>
+          mangoAccount ? (
+            <div className="flex items-center justify-between">
+              <div className="h-8 w-8" />
+              <ElementTitle>
+                <Tooltip
+                  content={
+                    mangoAccount ? (
+                      <div>
+                        {t('init-health')}: {initHealth.toFixed(4)}
+                        <br />
+                        {t('maint-health')}: {maintHealth.toFixed(4)}
+                      </div>
+                    ) : (
+                      ''
+                    )
+                  }
+                >
+                  {t('account')}
+                </Tooltip>
+              </ElementTitle>
+              <IconButton onClick={() => setShowAlertsModal(true)}>
+                <BellIcon className={`w-4 h-4`} />
+              </IconButton>
+            </div>
+          ) : (
+            <ElementTitle>{t('account')}</ElementTitle>
+          )
         ) : null}
         <div>
           {mangoAccount ? (

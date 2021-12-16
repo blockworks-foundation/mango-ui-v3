@@ -602,58 +602,56 @@ const useMangoStore = create<MangoStore>((set, get) => {
           state.alerts.success = ''
         })
 
-        const fetchUrl = `http://localhost:3010/alerts`
+        const mangoAccount = get().selectedMangoAccount.current
+        const mangoGroup = get().selectedMangoGroup.current
+        const mangoCache = get().selectedMangoGroup.cache
+        const currentAccHealth = await mangoAccount.getHealthRatio(
+          mangoGroup,
+          mangoCache,
+          'Maint'
+        )
+
+        if (currentAccHealth && currentAccHealth.toNumber() <= req.health) {
+          set((state) => {
+            state.alerts.submitting = false
+            state.alerts.error = `Current account health is already below ${req.health}%`
+          })
+          return false
+        }
+
+        const fetchUrl = `https://mango-alerts-v3.herokuapp.com/alerts`
         const headers = { 'Content-Type': 'application/json' }
 
-        fetch(fetchUrl, {
+        const response = await fetch(fetchUrl, {
           method: 'POST',
           headers: headers,
           body: JSON.stringify(req),
         })
-          .then((response: any) => {
-            if (!response.ok) {
-              throw response
-            }
-            return response.json()
-          })
-          .then(() => {
-            const alerts = get().alerts.activeAlerts
 
-            set((state) => {
-              state.alerts.activeAlerts = [alert as Alert].concat(alerts)
-              state.alerts.success = 'Alert saved'
-            })
-            notify({
-              title: 'Alert saved',
-              type: 'success',
-            })
+        if (response.ok) {
+          const alerts = get().alerts.activeAlerts
+
+          set((state) => {
+            state.alerts.activeAlerts = [alert as Alert].concat(alerts)
+            state.alerts.submitting = false
+            state.alerts.success = 'Alert saved'
           })
-          .catch((err) => {
-            if (typeof err.text === 'function') {
-              err.text().then((errorMessage: string) => {
-                set((state) => {
-                  state.alerts.error = errorMessage
-                })
-                notify({
-                  title: errorMessage,
-                  type: 'error',
-                })
-              })
-            } else {
-              set((state) => {
-                state.alerts.error = 'Something went wrong'
-              })
-              notify({
-                title: 'Something went wrong',
-                type: 'error',
-              })
-            }
+          notify({
+            title: 'Alert saved',
+            type: 'success',
           })
-          .finally(() => {
-            set((state) => {
-              state.alerts.submitting = false
-            })
+          return true
+        } else {
+          set((state) => {
+            state.alerts.error = 'Something went wrong'
+            state.alerts.submitting = false
           })
+          notify({
+            title: 'Something went wrong',
+            type: 'error',
+          })
+          return false
+        }
       },
       async deleteAlert(id: string) {
         const set = get().set
@@ -664,71 +662,50 @@ const useMangoStore = create<MangoStore>((set, get) => {
           state.alerts.success = ''
         })
 
-        const fetchUrl = `http://localhost:3010/delete-alert`
+        const fetchUrl = `https://mango-alerts-v3.herokuapp.com/delete-alert`
         const headers = { 'Content-Type': 'application/json' }
 
-        fetch(fetchUrl, {
+        const response = await fetch(fetchUrl, {
           method: 'POST',
           headers: headers,
-          body: JSON.stringify({ id: id }),
+          body: JSON.stringify({ id }),
         })
-          .then((response: any) => {
-            if (!response.ok) {
-              throw response
-            }
-            return response.json()
-          })
-          .then(() => {
-            const alerts = get().alerts.activeAlerts
 
-            set((state) => {
-              state.alerts.activeAlerts = alerts.filter(
-                (alert) => alert._id !== id
-              )
-              state.alerts.success = 'Alert deleted'
-            })
-            notify({
-              title: 'Alert deleted',
-              type: 'success',
-            })
+        if (response.ok) {
+          const alerts = get().alerts.activeAlerts
+          set((state) => {
+            state.alerts.activeAlerts = alerts.filter(
+              (alert) => alert._id !== id
+            )
+            state.alerts.submitting = false
+            state.alerts.success = 'Alert deleted'
           })
-          .catch((err) => {
-            if (typeof err.text === 'function') {
-              err.text().then((errorMessage: string) => {
-                set((state) => {
-                  state.alerts.error = errorMessage
-                })
-                notify({
-                  title: errorMessage,
-                  type: 'error',
-                })
-              })
-            } else {
-              set((state) => {
-                state.alerts.error = 'Something went wrong'
-              })
-              notify({
-                title: 'Something went wrong',
-                type: 'error',
-              })
-            }
+          notify({
+            title: 'Alert deleted',
+            type: 'success',
           })
-          .finally(() => {
-            set((state) => {
-              state.alerts.submitting = false
-            })
+        } else {
+          set((state) => {
+            state.alerts.error = 'Something went wrong'
+            state.alerts.submitting = false
           })
+          notify({
+            title: 'Something went wrong',
+            type: 'error',
+          })
+        }
       },
       async loadAlerts(mangoAccountPk: PublicKey) {
         const set = get().set
 
         set((state) => {
+          state.alerts.error = ''
           state.alerts.loading = true
         })
 
         const headers = { 'Content-Type': 'application/json' }
         const response = await fetch(
-          `http://localhost:3010/alerts/${mangoAccountPk}`,
+          `https://mango-alerts-v3.herokuapp.com/alerts/${mangoAccountPk}`,
           {
             method: 'GET',
             headers: headers,
@@ -744,38 +721,40 @@ const useMangoStore = create<MangoStore>((set, get) => {
           .catch((err) => {
             if (typeof err.text === 'function') {
               err.text().then((errorMessage: string) => {
-                notify({
-                  title: errorMessage,
-                  type: 'error',
+                set((state) => {
+                  state.alerts.error = errorMessage
+                  state.alerts.loading = false
                 })
               })
             } else {
-              notify({
-                title: 'Something went wrong',
-                type: 'error',
+              set((state) => {
+                state.alerts.error = 'Something went wrong'
+                state.alerts.loading = false
               })
             }
           })
 
-        // sort active by latest creation time first
-        const activeAlerts = response.alerts
-          .filter((alert) => alert.open)
-          .sort((a, b) => {
-            return b.timestamp - a.timestamp
-          })
+        if (response) {
+          // sort active by latest creation time first
+          const activeAlerts = response.alerts
+            .filter((alert) => alert.open)
+            .sort((a, b) => {
+              return b.timestamp - a.timestamp
+            })
 
-        // sort triggered by latest trigger time first
-        const triggeredAlerts = response.alerts
-          .filter((alert) => !alert.open)
-          .sort((a, b) => {
-            return b.triggeredTimestamp - a.triggeredTimestamp
-          })
+          // sort triggered by latest trigger time first
+          const triggeredAlerts = response.alerts
+            .filter((alert) => !alert.open)
+            .sort((a, b) => {
+              return b.triggeredTimestamp - a.triggeredTimestamp
+            })
 
-        set((state) => {
-          state.alerts.activeAlerts = activeAlerts
-          state.alerts.triggeredAlerts = triggeredAlerts
-          state.alerts.loading = false
-        })
+          set((state) => {
+            state.alerts.activeAlerts = activeAlerts
+            state.alerts.triggeredAlerts = triggeredAlerts
+            state.alerts.loading = false
+          })
+        }
       },
     },
   }
