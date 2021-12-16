@@ -122,6 +122,8 @@ export default function AdvancedTradeForm({
     clamp(parseFloat(maxSlippage), 0, 1) * 100
   )
   const [editMaxSlippage, setEditMaxSlippage] = useState(false)
+  const [showCustomSlippageForm, setShowCustomSlippageForm] = useState(false)
+  const slippagePresets = ['1', '1.5', '2', '2.5', '3']
 
   const saveMaxSlippage = (slippage) => {
     setMaxSlippage(clamp(slippage / 100, 0, 1).toString())
@@ -1003,35 +1005,61 @@ export default function AdvancedTradeForm({
           {tradeType === 'Market' && priceImpact ? (
             <div className="col-span-12 md:col-span-10 md:col-start-3 mt-4">
               {editMaxSlippage ? (
-                <>
-                  <div className="mb-1 text-xs text-th-fgd-3">Max Slippage</div>
-                  <div className="flex">
-                    <Input
-                      type="number"
-                      min="0"
-                      max="100"
-                      onChange={(e) => setMaxSlippagePercentage(e.target.value)}
-                      suffix={
-                        <div className="font-bold text-base text-th-fgd-3">
-                          %
-                        </div>
-                      }
-                      value={maxSlippagePercentage}
-                    />
-                    <Button
-                      className="ml-2"
-                      onClick={() => saveMaxSlippage(maxSlippagePercentage)}
-                    >
-                      {t('save')}
-                    </Button>
+                <div className="flex items-end">
+                  <div className="w-full">
+                    <div className="flex justify-between mb-1">
+                      <div className="text-xs text-th-fgd-3">
+                        {t('max-slippage')}
+                      </div>
+                      {!isMobile ? (
+                        <LinkButton
+                          className="font-normal text-xs"
+                          onClick={() =>
+                            setShowCustomSlippageForm(!showCustomSlippageForm)
+                          }
+                        >
+                          {showCustomSlippageForm ? t('presets') : t('custom')}
+                        </LinkButton>
+                      ) : null}
+                    </div>
+                    {showCustomSlippageForm || isMobile ? (
+                      <Input
+                        type="number"
+                        min="0"
+                        max="100"
+                        onChange={(e) =>
+                          setMaxSlippagePercentage(e.target.value)
+                        }
+                        suffix={
+                          <div className="font-bold text-base text-th-fgd-3">
+                            %
+                          </div>
+                        }
+                        value={maxSlippagePercentage}
+                      />
+                    ) : (
+                      <ButtonGroup
+                        activeValue={maxSlippagePercentage.toString()}
+                        className="h-10"
+                        onChange={(p) => setMaxSlippagePercentage(p)}
+                        unit="%"
+                        values={slippagePresets}
+                      />
+                    )}
                   </div>
-                </>
+                  <Button
+                    className="h-10 ml-3"
+                    onClick={() => saveMaxSlippage(maxSlippagePercentage)}
+                  >
+                    {t('save')}
+                  </Button>
+                </div>
               ) : (
                 <>
                   {isPerpMarket ? (
                     <div className="flex justify-between mb-1 text-th-fgd-3 text-xs">
                       <div className="flex items-center">
-                        Max Slippage
+                        {t('max-slippage')}
                         <Tooltip content="If price slips more than your max slippage, your order will be partially filled up to that price.">
                           <div className="outline-none focus:outline-none">
                             <InformationCircleIcon className="h-4 w-4 ml-1.5 text-th-fgd-3" />

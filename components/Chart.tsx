@@ -7,9 +7,11 @@ import { numberCompactFormatter } from '../utils'
 
 interface ChartProps {
   data: any
+  hideRangeFilters?: boolean
   title?: string
   xAxis: string
   yAxis: string
+  yAxisWidth?: number
   type: string
   labelFormat: (x) => ReactNode
   tickFormat?: (x) => any
@@ -23,6 +25,8 @@ const Chart: FunctionComponent<ChartProps> = ({
   labelFormat,
   tickFormat,
   type,
+  hideRangeFilters,
+  yAxisWidth,
 }) => {
   const [mouseData, setMouseData] = useState<string | null>(null)
   const [daysToShow, setDaysToShow] = useState(30)
@@ -87,32 +91,34 @@ const Chart: FunctionComponent<ChartProps> = ({
             </>
           )}
         </div>
-        <div className="flex h-5">
-          <button
-            className={`default-transition font-bold mx-3 text-th-fgd-1 text-xs hover:text-th-primary focus:outline-none ${
-              daysToShow === 1 && 'text-th-primary'
-            }`}
-            onClick={() => setDaysToShow(1)}
-          >
-            24H
-          </button>
-          <button
-            className={`default-transition font-bold mx-3 text-th-fgd-1 text-xs hover:text-th-primary focus:outline-none ${
-              daysToShow === 7 && 'text-th-primary'
-            }`}
-            onClick={() => setDaysToShow(7)}
-          >
-            7D
-          </button>
-          <button
-            className={`default-transition font-bold ml-3 text-th-fgd-1 text-xs hover:text-th-primary focus:outline-none ${
-              daysToShow === 30 && 'text-th-primary'
-            }`}
-            onClick={() => setDaysToShow(30)}
-          >
-            30D
-          </button>
-        </div>
+        {!hideRangeFilters ? (
+          <div className="flex h-5">
+            <button
+              className={`default-transition font-bold mx-3 text-th-fgd-1 text-xs hover:text-th-primary focus:outline-none ${
+                daysToShow === 1 && 'text-th-primary'
+              }`}
+              onClick={() => setDaysToShow(1)}
+            >
+              24H
+            </button>
+            <button
+              className={`default-transition font-bold mx-3 text-th-fgd-1 text-xs hover:text-th-primary focus:outline-none ${
+                daysToShow === 7 && 'text-th-primary'
+              }`}
+              onClick={() => setDaysToShow(7)}
+            >
+              7D
+            </button>
+            <button
+              className={`default-transition font-bold ml-3 text-th-fgd-1 text-xs hover:text-th-primary focus:outline-none ${
+                daysToShow === 30 && 'text-th-primary'
+              }`}
+              onClick={() => setDaysToShow(30)}
+            >
+              30D
+            </button>
+          </div>
+        ) : null}
       </div>
       {width > 0 && type === 'area' ? (
         <AreaChart
@@ -172,7 +178,7 @@ const Chart: FunctionComponent<ChartProps> = ({
                 : (v) => numberCompactFormatter.format(v)
             }
             type="number"
-            width={50}
+            width={yAxisWidth || 50}
           />
         </AreaChart>
       ) : null}
@@ -219,6 +225,7 @@ const Chart: FunctionComponent<ChartProps> = ({
           />
           <YAxis
             dataKey={yAxis}
+            interval="preserveStartEnd"
             axisLine={false}
             hide={data.length > 0 ? false : true}
             dx={-10}
@@ -234,7 +241,7 @@ const Chart: FunctionComponent<ChartProps> = ({
                 : (v) => numberCompactFormatter.format(v)
             }
             type="number"
-            width={50}
+            width={yAxisWidth || 50}
           />
         </BarChart>
       ) : null}

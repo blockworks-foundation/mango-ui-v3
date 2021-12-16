@@ -395,7 +395,7 @@ const OpenOrdersTable = () => {
       console.log('error', `${e}`)
     } finally {
       actions.reloadMangoAccount()
-      actions.reloadOrders()
+      actions.updateOpenOrders()
       setCancelId(null)
     }
   }
@@ -457,6 +457,8 @@ const OpenOrdersTable = () => {
       }
       notify({ title: t('successfully-placed'), txid })
     } catch (e) {
+      console.log('error: ', e.message, e.txid, e)
+
       notify({
         title: t('order-error'),
         description: e.message,

@@ -1,13 +1,20 @@
 import { useEffect, useMemo, useState } from 'react'
+import dayjs from 'dayjs'
 import useMangoStore from '../../stores/useMangoStore'
 import { Table, Td, Th, TrBody, TrHead } from '../TableElements'
 import { isEmpty } from 'lodash'
 import { useTranslation } from 'next-i18next'
 import Select from '../Select'
-import Loading from '../Loading'
 import Pagination from '../Pagination'
 import usePagination from '../../hooks/usePagination'
 import { roundToDecimal } from '../../utils'
+import Chart from '../Chart'
+import Switch from '../Switch'
+import useLocalStorageState from '../../hooks/useLocalStorageState'
+import { handleDustTicks } from './AccountInterest'
+
+const utc = require('dayjs/plugin/utc')
+dayjs.extend(utc)
 import { exportDataToCSV } from '../../utils/export'
 import Button from '../Button'
 import { SaveIcon } from '@heroicons/react/outline'
@@ -31,6 +38,11 @@ const AccountFunding = () => {
     firstPage,
     lastPage,
   } = usePagination(hourlyFunding[selectedAsset])
+  const [hideFundingDust, setHideFundingDust] = useLocalStorageState(
+    'hideFundingDust',
+    false
+  )
+  const [chartData, setChartData] = useState([])
 
   const mangoAccountPk = useMemo(() => {
     return mangoAccount.publicKey.toString()
@@ -69,13 +81,24 @@ const AccountFunding = () => {
   }, [selectedAsset, hourlyFunding])
 
   useEffect(() => {
+    const hideDust = []
     const fetchFundingStats = async () => {
       const response = await fetch(
         `https://mango-transaction-log.herokuapp.com/v3/stats/total-funding?mango-account=${mangoAccountPk}`
       )
       const parsedResponse = await response.json()
 
-      setFundingStats(Object.entries(parsedResponse))
+      if (hideFundingDust) {
+        Object.entries(parsedResponse).forEach((r: any) => {
+          const funding = r[1].total_funding
+          if (Math.abs(funding) > 1) {
+            hideDust.push(r)
+          }
+        })
+        setFundingStats(hideDust)
+      } else {
+        setFundingStats(Object.entries(parsedResponse))
+      }
     }
 
     const fetchHourlyFundingStats = async () => {
@@ -84,7 +107,17 @@ const AccountFunding = () => {
         `https://mango-transaction-log.herokuapp.com/v3/stats/hourly-funding?mango-account=${mangoAccountPk}`
       )
       const parsedResponse = await response.json()
-      const assets = Object.keys(parsedResponse)
+
+      let assets
+      if (hideFundingDust) {
+        const assetsToShow = hideDust.map((a) => a[0])
+        assets = Object.keys(parsedResponse).filter((a) =>
+          assetsToShow.includes(a)
+        )
+        setSelectedAsset(assetsToShow[0])
+      } else {
+        assets = Object.keys(parsedResponse)
+      }
 
       const stats = {}
       for (const asset of assets) {
@@ -110,23 +143,75 @@ const AccountFunding = () => {
       setHourlyFunding(stats)
     }
 
-    fetchFundingStats()
-    fetchHourlyFundingStats()
-  }, [mangoAccountPk])
+    const getStats = async () => {
+      await fetchFundingStats()
+      fetchHourlyFundingStats()
+    }
+    getStats()
+  }, [mangoAccountPk, hideFundingDust])
+
+  useEffect(() => {
+    if (hourlyFunding[selectedAsset]) {
+      const start = new Date(
+        // @ts-ignore
+        dayjs().utc().hour(0).minute(0).subtract(29, 'day')
+      ).getTime()
+
+      const filtered = hourlyFunding[selectedAsset].filter(
+        (d) => new Date(d.time).getTime() > start
+      )
+
+      const dailyFunding = []
+
+      filtered.forEach((d) => {
+        const found = dailyFunding.find(
+          (x) =>
+            dayjs(x.time).format('DD-MMM') === dayjs(d.time).format('DD-MMM')
+        )
+        if (found) {
+          const newFunding = d.total_funding
+          found.funding = found.funding + newFunding
+        } else {
+          dailyFunding.push({
+            time: new Date(d.time).getTime(),
+            funding: d.total_funding,
+          })
+        }
+      })
+      setChartData(dailyFunding.reverse())
+    }
+  }, [hourlyFunding, selectedAsset])
+
+  useEffect(() => {
+    if (!selectedAsset && Object.keys(hourlyFunding).length > 0) {
+      setSelectedAsset(Object.keys(hourlyFunding)[0])
+    }
+  }, [hourlyFunding])
+
+  const increaseYAxisWidth = !!chartData.find((data) => data.value < 0.001)
 
   return (
     <>
-      <div className="pb-4 text-th-fgd-1 text-lg">
-        {t('total-funding-stats')}
-        <Button
-          className={`float-right text-xs h-8 pt-0 pb-0 pl-3 pr-3`}
-          onClick={exportFundingDataToCSV}
-        >
-          <div className={`flex items-center`}>
-            <SaveIcon className={`h-4 w-4 mr-1.5`} />
-            {t('export-data')}
-          </div>
-        </Button>
+      <div className="flex items-center justify-between pb-4">
+        <div className="text-th-fgd-1 text-lg">{t('total-funding')}</div>
+        <div className="flex items-center">
+          <Button
+            className={`float-right text-xs h-8 pt-0 pb-0 pl-3 pr-3`}
+            onClick={exportFundingDataToCSV}
+          >
+            <div className={`flex items-center whitespace-nowrap`}>
+              <SaveIcon className={`h-4 w-4 mr-1.5`} />
+              {t('export-data')}
+            </div>
+          </Button>
+          <Switch
+            checked={hideFundingDust}
+            className="ml-2 text-xs"
+            onChange={() => setHideFundingDust(!hideFundingDust)}
+          >
+            {t('hide-dust')}
+          </Switch>
+        </div>
       </div>
       {mangoAccount ? (
         <div>
@@ -134,7 +219,7 @@ const AccountFunding = () => {
             <thead>
               <TrHead>
                 <Th>{t('token')}</Th>
-                <Th>{t('total-funding')}</Th>
+                <Th>{t('total-funding')} (USDC)</Th>
               </TrHead>
             </thead>
             <tbody>
@@ -142,7 +227,9 @@ const AccountFunding = () => {
                 <TrBody index={0}>
                   <td colSpan={4}>
                     <div className="flex">
-                      <div className="mx-auto py-4">{t('no-funding')}</div>
+                      <div className="mx-auto py-4 text-th-fgd-3">
+                        {t('no-funding')}
+                      </div>
                     </div>
                   </td>
                 </TrBody>
@@ -173,7 +260,7 @@ const AccountFunding = () => {
                           }`}
                         >
                           {stats.total_funding
-                            ? `$${stats.total_funding?.toFixed(6)}`
+                            ? `${stats.total_funding?.toFixed(6)}`
                             : '-'}
                         </div>
                       </Td>
@@ -226,6 +313,33 @@ const AccountFunding = () => {
                     ))}
                   </div>
                 </div>
+                {selectedAsset && chartData.length > 0 ? (
+                  <div className="flex flex-col sm:flex-row space-x-0 sm:space-x-4 w-full">
+                    <div
+                      className="border border-th-bkg-4 relative mb-6 p-4 rounded-md w-full"
+                      style={{ height: '330px' }}
+                    >
+                      <Chart
+                        hideRangeFilters
+                        title={t('funding-chart-title', {
+                          symbol: selectedAsset,
+                        })}
+                        xAxis="time"
+                        yAxis="funding"
+                        data={chartData}
+                        labelFormat={(x) =>
+                          x &&
+                          `${x.toLocaleString(undefined, {
+                            maximumFractionDigits: 6,
+                          })} USDC`
+                        }
+                        tickFormat={handleDustTicks}
+                        type="bar"
+                        yAxisWidth={increaseYAxisWidth ? 70 : 50}
+                      />
+                    </div>
+                  </div>
+                ) : null}
                 <div>
                   <div>
                     {paginatedData.length ? (
@@ -233,24 +347,21 @@ const AccountFunding = () => {
                         <thead>
                           <TrHead>
                             <Th>{t('time')}</Th>
-                            <Th>{t('funding')}</Th>
+                            <Th>{t('funding')} (USDC)</Th>
                           </TrHead>
                         </thead>
                         <tbody>
                           {paginatedData.map((stat, index) => {
-                            const date = new Date(stat.time)
+                            // @ts-ignore
+                            const utc = dayjs.utc(stat.time).format()
 
                             return (
                               <TrBody index={index} key={stat.time}>
-                                <Td>
-                                  {date.toLocaleDateString()}{' '}
-                                  {date.toLocaleTimeString()}
-                                </Td>
+                                <Td>{dayjs(utc).format('DD/MM/YY, h:mma')}</Td>
                                 <Td>
                                   {stat.total_funding.toFixed(
                                     QUOTE_DECIMALS + 1
-                                  )}{' '}
-                                  USDC
+                                  )}
                                 </Td>
                               </TrBody>
                             )
@@ -258,7 +369,7 @@ const AccountFunding = () => {
                         </tbody>
                       </Table>
                     ) : (
-                      <div className="flex justify-center w-full bg-th-bkg-3 py-4">
+                      <div className="flex justify-center w-full bg-th-bkg-3 py-4 text-th-fgd-3">
                         {t('no-funding')}
                       </div>
                     )}
@@ -274,10 +385,10 @@ const AccountFunding = () => {
                 </div>
               </>
             ) : loading ? (
-              <div className="flex justify-center my-8">
-                <div>
-                  <Loading />
-                </div>
+              <div className="pt-8 space-y-2">
+                <div className="animate-pulse bg-th-bkg-3 h-12 rounded-md w-full" />
+                <div className="animate-pulse bg-th-bkg-3 h-12 rounded-md w-full" />
+                <div className="animate-pulse bg-th-bkg-3 h-12 rounded-md w-full" />
               </div>
             ) : null}
           </>

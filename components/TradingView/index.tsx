@@ -92,6 +92,7 @@ const TVChartContainer = () => {
         defaultProps.interval,
         () => {}
       )
+      drawLines()
     }
   }, [selectedMarketConfig.name])
 
@@ -328,6 +329,8 @@ const TVChartContainer = () => {
   }
 
   function getLine(order, market) {
+    console.log('order price', order.price)
+
     return tvWidgetRef.current
       .chart()
       .createOrderLine({ disableUndo: false })

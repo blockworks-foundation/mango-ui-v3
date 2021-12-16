@@ -123,11 +123,14 @@ interface AlertRequest {
 }
 
 interface MangoStore extends State {
+  notificationIdCounter: number
   notifications: Array<{
     type: string
     title: string
     description?: string
     txid?: string
+    id: number
+    show?: boolean
   }>
   accountInfos: AccountInfoList
   connection: {
@@ -216,6 +219,7 @@ const useMangoStore = create<MangoStore>((set, get) => {
 
   const connection = new Connection(rpcUrl, 'processed' as Commitment)
   return {
+    notificationIdCounter: 0,
     notifications: [],
     accountInfos: {},
     connection: {

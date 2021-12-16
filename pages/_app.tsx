@@ -89,7 +89,7 @@ function App({ Component, pageProps }) {
       <MangoStoreUpdater />
       <ThemeProvider defaultTheme="Mango">
         <ViewportProvider>
-          <div className="bg-th-bkg-1">
+          <div className="bg-th-bkg-1 min-h-screen">
             <Component {...pageProps} />
           </div>
           <div className="md:hidden fixed bottom-0 left-0 w-full z-20">
