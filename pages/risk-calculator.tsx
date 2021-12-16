@@ -24,6 +24,7 @@ import {
 import Switch from '../components/Switch'
 import Slider from 'rc-slider'
 import 'rc-slider/assets/index.css'
+import { AnchorIcon } from '../components/icons'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'next-i18next'
 
@@ -45,10 +46,16 @@ interface CalculatorRow {
   spotDeposit: number
   spotBorrow: number
   spotInOrders: number
+  spotBaseTokenFree: number
+  spotBaseTokenLocked: number
+  spotQuoteTokenFree: number
+  spotQuoteTokenLocked: number
   spotMarketIndex: number
   spotPublicKey: number
   perpBasePosition: number
   perpInOrders: number
+  perpBids: number
+  perpAsks: number
   perpAvgEntryPrice: number
   perpScenarioPnL: number
   perpPositionPnL: number
@@ -95,6 +102,7 @@ export default function RiskCalculator() {
   const [accountConnected, setAccountConnected] = useState(false)
   const [showZeroBalances, setShowZeroBalances] = useState(true)
   const [interimValue, setInterimValue] = useState(new Map())
+  const [ordersAsBalance, toggleOrdersAsBalance] = useState(true)
   const defaultSliderVal = 1
 
   // Set rules for updating the scenario
@@ -122,6 +130,15 @@ export default function RiskCalculator() {
     }
   }, [connected, selectedMarginAccount, scenarioInitialized, mangoGroup])
 
+  // Handle toggling open order inclusion or order cancelling for heatlh calculation
+  useEffect(() => {
+    if (mangoGroup && selectedMarginAccount && connected) {
+      setScenarioInitialized(!scenarioInitialized)
+      createScenario('account')
+    }
+  }, [ordersAsBalance])
+
+  // Retrieve the data to create the scenario table
   const createScenario = (type) => {
     const rowData = []
     let calculatorRowData
@@ -181,8 +198,34 @@ export default function RiskCalculator() {
               )
             : 0
         ) || 0
+      const spotBaseTokenLocked =
+        mangoAccount && spotMarketConfig
+          ? Number(
+              mangoAccount.spotOpenOrdersAccounts[i]?.baseTokenTotal.sub(
+                mangoAccount.spotOpenOrdersAccounts[i]?.baseTokenFree
+              )
+            ) / Math.pow(10, spotMarketConfig.baseDecimals) || 0
+          : 0
+      const spotQuoteTokenLocked =
+        mangoAccount && spotMarketConfig
+          ? Number(
+              mangoAccount.spotOpenOrdersAccounts[i]?.quoteTokenTotal.sub(
+                mangoAccount.spotOpenOrdersAccounts[i]?.quoteTokenFree
+              )
+            ) / Math.pow(10, 6) || 0
+          : 0
+      const spotBaseTokenFree =
+        mangoAccount && spotMarketConfig
+          ? Number(mangoAccount.spotOpenOrdersAccounts[i]?.baseTokenFree) /
+              Math.pow(10, spotMarketConfig.baseDecimals) || 0
+          : 0
+      const spotQuoteTokenFree =
+        mangoAccount && spotMarketConfig
+          ? Number(mangoAccount.spotOpenOrdersAccounts[i]?.quoteTokenFree) /
+              Math.pow(10, 6) || 0
+          : 0
       let inOrders = 0
-      if (symbol === 'USDC') {
+      if (symbol === 'USDC' && ordersAsBalance) {
         for (let j = 0; j < mangoGroup.tokens.length; j++) {
           const inOrder =
             j !== QUOTE_INDEX &&
@@ -225,13 +268,13 @@ export default function RiskCalculator() {
       const basePosition =
         perpMarketConfig?.publicKey && mangoAccount
           ? Number(perpAccount?.basePosition) /
-            Math.pow(10, perpContractPrecision[symbol])
+              Math.pow(10, perpContractPrecision[symbol]) || 0
           : 0
       const unsettledFunding =
         perpMarketConfig?.publicKey && mangoAccount
           ? (Number(perpAccount?.getUnsettledFunding(perpMarketCache)) *
               basePosition) /
-            Math.pow(10, 6)
+              Math.pow(10, 6) || 0
           : 0
       const positionPnL =
         perpMarketConfig?.publicKey && mangoAccount
@@ -241,8 +284,32 @@ export default function RiskCalculator() {
                 perpMarketCache,
                 mangoCache.priceCache[perpMarketIndex].price
               )
-            ) / Math.pow(10, 6)
+            ) / Math.pow(10, 6) || 0
           : 0
+      const perpBids =
+        perpMarketConfig?.publicKey && mangoAccount
+          ? Number(perpPosition?.bidsQuantity) /
+              Math.pow(10, perpContractPrecision[symbol]) || 0
+          : Number(0)
+      const perpAsks =
+        perpMarketConfig?.publicKey && mangoAccount
+          ? Number(perpPosition?.asksQuantity) /
+              Math.pow(10, perpContractPrecision[symbol]) || 0
+          : Number(0)
+
+      if (mangoAccount?.perpAccounts[i]) {
+        console.log(
+          'Test Check' +
+            ':symbol:' +
+            symbol +
+            ':spotNet:' +
+            basePosition +
+            ':basePosition:' +
+            perpBids +
+            ':perpBids:' +
+            perpAsks
+        )
+      }
 
       if (
         spotMarketConfig?.publicKey ||
@@ -272,7 +339,7 @@ export default function RiskCalculator() {
             type === 'account'
               ? Number(
                   floorToDecimal(
-                    spotDeposit - spotBorrow + inOrders,
+                    spotDeposit - spotBorrow + (ordersAsBalance ? inOrders : 0),
                     spotMarketConfig?.baseDecimals || 6
                   )
                 )
@@ -298,6 +365,22 @@ export default function RiskCalculator() {
           spotInOrders:
             type === 'account'
               ? Number(floorToDecimal(inOrders, 6))
+              : Number(0),
+          spotBaseTokenFree:
+            type === 'account'
+              ? Number(floorToDecimal(spotBaseTokenFree, 6))
+              : Number(0),
+          spotBaseTokenLocked:
+            type === 'account'
+              ? Number(floorToDecimal(spotBaseTokenLocked, 6))
+              : Number(0),
+          spotQuoteTokenFree:
+            type === 'account'
+              ? Number(floorToDecimal(spotQuoteTokenFree, 6))
+              : Number(0),
+          spotQuoteTokenLocked:
+            type === 'account'
+              ? Number(floorToDecimal(spotQuoteTokenLocked, 6))
               : Number(0),
           spotMarketIndex: mangoGroup.spotMarkets[i]?.spotMarket
             ? spotMarketConfig?.marketIndex
@@ -333,16 +416,17 @@ export default function RiskCalculator() {
               : Number(0),
           perpInOrders:
             type === 'account' && perpMarketConfig?.publicKey
-              ? Number(perpPosition?.bidsQuantity) >
-                Math.abs(Number(perpPosition?.asksQuantity))
-                ? floorToDecimal(
-                    Number(perpPosition?.bidsQuantity),
-                    tokenPrecision[perpMarketConfig?.baseSymbol] || 6
-                  )
-                : floorToDecimal(
-                    -1 * Number(perpPosition?.asksQuantity),
-                    tokenPrecision[perpMarketConfig?.baseSymbol] || 6
-                  )
+              ? perpBids > Math.abs(perpAsks)
+                ? perpBids
+                : perpAsks
+              : Number(0),
+          perpBids:
+            type === 'account' && perpMarketConfig?.publicKey
+              ? perpBids || 0
+              : Number(0),
+          perpAsks:
+            type === 'account' && perpMarketConfig?.publicKey
+              ? perpAsks || 0
               : Number(0),
           perpPositionSide:
             type === 'account' &&
@@ -458,7 +542,7 @@ export default function RiskCalculator() {
   }
 
   // Reset column details
-  const resetScenarioColumn = (type, column) => {
+  const resetScenarioColumn = (column) => {
     let resetRowData
     mangoGroup
       ? (resetRowData = scenarioBars.rowData.map((asset) => {
@@ -556,7 +640,7 @@ export default function RiskCalculator() {
                   ) || 0
                 resetInOrders = 0
 
-                if (asset.symbolName === 'USDC') {
+                if (asset.symbolName === 'USDC' && ordersAsBalance) {
                   for (let j = 0; j < mangoGroup.tokens.length; j++) {
                     const inOrder =
                       j !== QUOTE_INDEX &&
@@ -578,7 +662,9 @@ export default function RiskCalculator() {
                       : 0
                 }
                 resetValue = floorToDecimal(
-                  resetDeposit - resetBorrow + resetInOrders,
+                  resetDeposit -
+                    resetBorrow +
+                    (ordersAsBalance ? resetInOrders : 0),
                   spotMarketConfig?.baseDecimals || 6
                 )
               }
@@ -716,26 +802,35 @@ export default function RiskCalculator() {
             case 'price':
               return {
                 ...asset,
-                [field]: Math.abs(updateValue),
+                [field]: Math.abs(
+                  sliderPercentage === 0
+                    ? updateValue
+                    : updateValue / sliderPercentage
+                ),
               }
           }
         } else {
-          if (field === 'price') {
-            return {
-              ...asset,
-              [field]:
-                Math.abs(asset.price) *
-                (asset.priceDisabled ? 1 : sliderPercentage),
-            }
-          } else {
-            return asset
-          }
+          return asset
         }
       })
 
       const calcData = updateCalculator(updatedRowData)
       setScenarioBars(calcData)
     }
+  }
+
+  // Anchor current displayed prices to zero
+  const anchorPricing = () => {
+    const updatedRowData = scenarioBars.rowData.map((asset) => {
+      return {
+        ...asset,
+        ['price']:
+          Math.abs(asset.price) * (asset.priceDisabled ? 1 : sliderPercentage),
+      }
+    })
+
+    const calcData = updateCalculator(updatedRowData)
+    setScenarioBars(calcData)
   }
 
   // Handle slider usage
@@ -864,31 +959,66 @@ export default function RiskCalculator() {
         quoteCalc -= Math.abs(asset.spotNet)
       }
 
-      // Calculate spot assets
-      const spotQuote =
+      let spotQuote =
         asset.spotNet * asset.price * (asset.priceDisabled ? 1 : modPrice)
-      spotAssets += asset.spotNet > 0 ? spotQuote : 0
+
+      // Handle spot orders if not to be included as balance
+      if (
+        !ordersAsBalance &&
+        asset.symbolName !== 'USDC' &&
+        asset.spotInOrders != 0
+      ) {
+        const spotBidsBaseNet =
+          asset.spotNet +
+          (asset.price > 0 ? asset.spotQuoteTokenLocked / asset.price : 0) +
+          asset.spotBaseTokenFree +
+          asset.spotBaseTokenLocked
+        const spotAsksBaseNet = asset.spotNet + asset.spotBaseTokenFree
+        if (spotBidsBaseNet > Math.abs(spotAsksBaseNet)) {
+          spotQuote =
+            spotBidsBaseNet * asset.price * (asset.priceDisabled ? 1 : modPrice)
+          quoteCalc += asset.spotQuoteTokenFree
+        } else {
+          spotQuote =
+            spotAsksBaseNet * asset.price * (asset.priceDisabled ? 1 : modPrice)
+          quoteCalc +=
+            (asset.price > 0 ? asset.spotBaseTokenLocked * asset.price : 0) +
+            asset.spotQuoteTokenFree +
+            asset.spotQuoteTokenLocked
+        }
+      }
+
+      // Calculate spot assets
+      spotAssets += spotQuote > 0 ? spotQuote : 0
       initAssets +=
-        asset.spotNet > 0 && asset.symbolName !== 'USDC'
+        spotQuote > 0 && asset.symbolName !== 'USDC'
           ? spotQuote * asset.initAssetWeightSpot
           : 0
       maintAssets +=
-        asset.spotNet > 0 && asset.symbolName !== 'USDC'
+        spotQuote > 0 && asset.symbolName !== 'USDC'
           ? spotQuote * asset.maintAssetWeightSpot
           : 0
 
       // Calculate spot liabilities
-      spotLiabilities += asset.spotNet < 0 ? Math.abs(spotQuote) : 0
+      spotLiabilities += spotQuote < 0 ? Math.abs(spotQuote) : 0
       initLiabilities +=
-        asset.spotNet <= 0 && asset.symbolName !== 'USDC'
+        spotQuote <= 0 && asset.symbolName !== 'USDC'
           ? Math.abs(spotQuote) * asset.initLiabWeightSpot
           : 0
       maintLiabilities +=
-        asset.spotNet <= 0 && asset.symbolName !== 'USDC'
+        spotQuote <= 0 && asset.symbolName !== 'USDC'
           ? Math.abs(spotQuote) * asset.maintLiabWeightSpot
           : 0
 
       // PERPS
+      // Get simple perp asset and liability value
+      let assetVal = 0
+      let liabVal = 0
+      const perpBasPosValSimple =
+        asset.perpBasePosition * (asset.price * modPrice)
+      liabVal = asset.perpBasePosition < 0 ? perpBasPosValSimple : 0
+      assetVal = asset.perpBasePosition > 0 ? perpBasPosValSimple : 0
+
       // Calculate scenario profit and loss
       const scenarioPnL =
         asset.perpBasePosition > 0
@@ -897,19 +1027,36 @@ export default function RiskCalculator() {
           : Math.abs(asset.perpBasePosition) *
             (asset.perpAvgEntryPrice - asset.price * modPrice)
 
-      // Get base position value
-      const basPosVal = asset.perpBasePosition * (asset.price * modPrice)
+      // Get base and quote position values
+      let basPosVal = asset.perpBasePosition * (asset.price * modPrice)
+      let perpQuotePos = -1 * basPosVal + asset.perpPositionPnL + scenarioPnL
 
-      // Get perp quote position
-      const perpQuotePos = -1 * basPosVal + asset.perpPositionPnL + scenarioPnL
+      // Handle perp orders if not to be cancelled
+      if (
+        !ordersAsBalance &&
+        asset.symbolName !== 'USDC' &&
+        asset.perpInOrders != 0
+      ) {
+        const perpBidsBaseNet = asset.perpBasePosition + asset.perpBids
+        const perpAsksBaseNet = asset.perpBasePosition - asset.perpAsks
+        if (!ordersAsBalance && perpBidsBaseNet > Math.abs(perpAsksBaseNet)) {
+          perpQuotePos =
+            -1 * basPosVal +
+            asset.perpPositionPnL +
+            scenarioPnL -
+            asset.perpBids * asset.price
+          basPosVal = perpBidsBaseNet * (asset.price * modPrice)
+        } else {
+          perpQuotePos =
+            -1 * basPosVal +
+            asset.perpPositionPnL +
+            scenarioPnL +
+            asset.perpAsks * asset.price
+          basPosVal = perpAsksBaseNet * (asset.price * modPrice)
+        }
+      }
 
-      // Get initial perp asset and liability value
-      let assetVal = 0
-      let liabVal = 0
-      liabVal = asset.perpBasePosition < 0 ? basPosVal : 0
-      assetVal = asset.perpBasePosition > 0 ? basPosVal : 0
-
-      // Adjust for PnL and unsettled funding
+      // Adjust for PnL and unsettledFunding, then add to assets or liabilities
       const realQuotePosition =
         -1 * asset.perpBasePosition * (asset.price * modPrice) +
         asset.perpPositionPnL +
@@ -922,23 +1069,17 @@ export default function RiskCalculator() {
       }
       liabVal = Math.abs(liabVal)
       assetVal = Math.abs(assetVal)
+      perpsAssets += assetVal
+      perpsLiabilities += liabVal
 
       // Assign to quote, assets and liabilities
       quoteCalc += perpQuotePos
-      perpsAssets += assetVal
-      perpsLiabilities += liabVal
-      initAssets +=
-        asset.perpBasePosition > 0 ? basPosVal * asset.initAssetWeightPerp : 0
+      initAssets += basPosVal > 0 ? basPosVal * asset.initAssetWeightPerp : 0
       initLiabilities +=
-        asset.perpBasePosition < 0
-          ? Math.abs(basPosVal) * asset.initLiabWeightPerp
-          : 0
-      maintAssets +=
-        asset.perpBasePosition > 0 ? basPosVal * asset.maintAssetWeightPerp : 0
+        basPosVal < 0 ? Math.abs(basPosVal) * asset.initLiabWeightPerp : 0
+      maintAssets += basPosVal > 0 ? basPosVal * asset.maintAssetWeightPerp : 0
       maintLiabilities +=
-        asset.perpBasePosition < 0
-          ? Math.abs(basPosVal) * asset.maintLiabWeightPerp
-          : 0
+        basPosVal < 0 ? Math.abs(basPosVal) * asset.maintLiabWeightPerp : 0
     })
 
     // Calculate basic scenario details
@@ -1082,9 +1223,6 @@ export default function RiskCalculator() {
           interimValue.delete(interimIdentifier)
           setInterimValue(new Map())
         }
-        if (field === 'price') {
-          setSliderPercentage(defaultSliderVal)
-        }
         break
     }
   }
@@ -1119,10 +1257,11 @@ export default function RiskCalculator() {
                       className={`text-xs flex items-center justify-center sm:ml-3 pt-0 pb-0 h-8 pl-3 pr-3 rounded`}
                       onClick={() => {
                         setSliderPercentage(defaultSliderVal)
+                        toggleOrdersAsBalance(true)
                         createScenario(accountConnected ? 'account' : 'blank')
                       }}
                     >
-                      <div className="flex items-center">
+                      <div className="flex items-center hover:text-th-primary">
                         <RefreshIcon className="h-5 w-5 mr-1.5" />
                         Reset
                       </div>
@@ -1154,7 +1293,7 @@ export default function RiskCalculator() {
                   <div className="pl-4 text-th-fgd-1 text-xs w-16">
                     {`${Number((sliderPercentage - 1) * 100).toFixed(0)}%`}
                   </div>
-                  <div className="pl-4 text-th-fgd-1 text-xs w-16">
+                  <div className="pl-4 text-th-fgd-1 text-xs w-16 hover:text-th-primary">
                     <LinkButton
                       onClick={() => setSliderPercentage(defaultSliderVal)}
                     >
@@ -1162,14 +1301,41 @@ export default function RiskCalculator() {
                     </LinkButton>
                   </div>
                 </div>
-                <div className="flex items-center mb-3 lg:mx-3 px-3 h-8 rounded">
-                  <Switch
-                    checked={showZeroBalances}
-                    className="text-xs"
-                    onChange={() => setShowZeroBalances(!showZeroBalances)}
-                  >
-                    {t('show-zero')}
-                  </Switch>
+                <div className="flex justify-between pb-2 lg:pb-3 px-0 lg:px-3">
+                  <div className="flex items-center mb-3 lg:mx-3 px-3 h-8 rounded">
+                    <Switch
+                      checked={showZeroBalances}
+                      className="text-xs"
+                      onChange={() => setShowZeroBalances(!showZeroBalances)}
+                    >
+                      {t('show-zero')}
+                    </Switch>
+                  </div>
+                  <div className="flex items-center mb-3 lg:mx-3 px-3 h-8 rounded">
+                    <Switch
+                      checked={ordersAsBalance}
+                      className="text-xs"
+                      onChange={() => toggleOrdersAsBalance(!ordersAsBalance)}
+                    >
+                      Simulate orders cancelled
+                    </Switch>
+                  </div>
+                  <div className="flex justify-between lg:justify-start">
+                    <Tooltip content="Set current pricing to be the anchor point (0%) for slider">
+                      <Button
+                        className={`text-xs flex items-center justify-center sm:ml-3 pt-0 pb-0 h-8 pl-3 pr-3 rounded`}
+                        onClick={() => {
+                          anchorPricing()
+                          setSliderPercentage(defaultSliderVal)
+                        }}
+                      >
+                        <div className="flex items-center hover:text-th-primary">
+                          <AnchorIcon className="h-5 w-5 mr-1.5" />
+                          Anchor slider
+                        </div>
+                      </Button>
+                    </Tooltip>
+                  </div>
                 </div>
                 {/*Create scenario table for display*/}
                 <div className={`flex flex-col pb-2`}>
@@ -1193,9 +1359,7 @@ export default function RiskCalculator() {
                               <div className="flex justify-start md:justify-between">
                                 <div className="pr-2">Spot</div>
                                 <LinkButton
-                                  onClick={() =>
-                                    resetScenarioColumn('spot', 'spotNet')
-                                  }
+                                  onClick={() => resetScenarioColumn('spotNet')}
                                 >
                                   Reset
                                 </LinkButton>
@@ -1209,10 +1373,7 @@ export default function RiskCalculator() {
                                 <div className="pr-2">Perp</div>
                                 <LinkButton
                                   onClick={() =>
-                                    resetScenarioColumn(
-                                      'perp',
-                                      'perpBasePosition'
-                                    )
+                                    resetScenarioColumn('perpBasePosition')
                                   }
                                 >
                                   Reset
@@ -1227,10 +1388,7 @@ export default function RiskCalculator() {
                                 <div className="pr-2">Perp Entry</div>
                                 <LinkButton
                                   onClick={() =>
-                                    resetScenarioColumn(
-                                      'perp',
-                                      'perpAvgEntryPrice'
-                                    )
+                                    resetScenarioColumn('perpAvgEntryPrice')
                                   }
                                 >
                                   Reset
@@ -1244,9 +1402,7 @@ export default function RiskCalculator() {
                               <div className="flex justify-start md:justify-between">
                                 <div className="pr-2">Price</div>
                                 <LinkButton
-                                  onClick={() =>
-                                    resetScenarioColumn('spot', 'price')
-                                  }
+                                  onClick={() => resetScenarioColumn('price')}
                                 >
                                   Reset
                                 </LinkButton>
@@ -1502,7 +1658,6 @@ export default function RiskCalculator() {
                                         ('price_' + i).toString(),
                                         e.target.value
                                       )
-                                      setSliderPercentage(defaultSliderVal)
                                     }}
                                     onBlur={(e) =>
                                       updateInterimValue(
