@@ -63,6 +63,11 @@ const Notification = ({ notification }) => {
   const setMangoStore = useMangoStore((s) => s.set)
   const { type, title, description, txid, show, id } = notification
 
+  let parsedTitle
+  if (description.includes('Timed out awaiting')) {
+    parsedTitle = 'Unable to confirm transaction'
+  }
+
   const hideNotification = () => {
     setMangoStore((s) => {
       const newNotifications = s.notifications.map((n) =>
@@ -72,11 +77,14 @@ const Notification = ({ notification }) => {
     })
   }
 
-  useInterval(() => {
-    if (show) {
-      hideNotification()
-    }
-  }, 10000)
+  useInterval(
+    () => {
+      if (show) {
+        hideNotification()
+      }
+    },
+    parsedTitle ? 20000 : 12000
+  )
 
   if (!show) return null
 
@@ -97,7 +105,9 @@ const Notification = ({ notification }) => {
           )}
         </div>
         <div className={`ml-2 flex-1`}>
-          <div className={`font-bold text-base text-th-fgd-1`}>{title}</div>
+          <div className={`font-bold text-base text-th-fgd-1`}>
+            {parsedTitle || title}
+          </div>
           {description ? (
             <p className={`mb-0 mt-0.5 text-th-fgd-3`}>{description}</p>
           ) : null}
