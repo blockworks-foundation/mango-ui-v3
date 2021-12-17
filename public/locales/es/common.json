@@ -116,6 +116,7 @@
   "export-data-success": "CSV exported successfully",
   "fee": "Tarifa",
   "fee-discount": "comisiones",
+  "first-deposit-desc": "Necesita 0.035 SOL para crear una cuenta de mango.",
   "funding": "Fondos",
   "funding-chart-title": "Fondos (últimos 30 días)",
   "get-started": "Comenzar",

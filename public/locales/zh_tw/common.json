@@ -116,6 +116,7 @@
   "export-data-success": "CSV exported successfully",
   "fee": "費率",
   "fee-discount": "費率折扣",
+  "first-deposit-desc": "創建Mango帳戶最少需要0.035 SOL。",
   "funding": "資金費",
   "funding-chart-title": "資金費",
   "get-started": "開始",

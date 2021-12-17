@@ -151,9 +151,12 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <Modal.Header>
-        <ElementTitle noMarignBottom>{t('deposit-funds')}</ElementTitle>
-      </Modal.Header>
+      <ElementTitle noMarignBottom>{t('deposit-funds')}</ElementTitle>
+      {!mangoAccount ? (
+        <div className="mb-4 mt-2 text-center text-th-fgd-3 text-xs">
+          {t('first-deposit-desc')}
+        </div>
+      ) : null}
       {tokenSymbol && !selectedAccount ? (
         <div className="mb-4">
           <InlineNotification
@@ -211,7 +214,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
       </div>
       {selectedAccount?.config.symbol === 'SOL' &&
       parseFloat(inputAmount) > selectedAccount?.uiBalance - 0.01 ? (
-        <div className="tiny-text text-center text-th-red -mb-4">
+        <div className="text-xs text-center text-th-red -mb-4 mt-1">
           {t('you-must-leave-enough-sol')}
         </div>
       ) : null}
@@ -235,11 +238,6 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
       {!repayAmount ? (
         <div className="pt-3">
           <InlineNotification desc={t('interest-info')} type="info" />
-        </div>
-      ) : null}
-      {!mangoAccount ? (
-        <div className="flex text-th-fgd-4 text-xxs mt-1">
-          <div className="mx-auto">{t('insufficient-sol')}</div>
         </div>
       ) : null}
     </Modal>
