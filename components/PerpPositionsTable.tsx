@@ -200,7 +200,11 @@ const PositionsTable = () => {
                               : '--'}
                           </Td>
                           <Td>
-                            <PnlText pnl={unrealizedPnl} />
+                            {breakEvenPrice ? (
+                              <PnlText pnl={unrealizedPnl} />
+                            ) : (
+                              '--'
+                            )}
                           </Td>
                           {showMarketCloseModal ? (
                             <MarketCloseModal
