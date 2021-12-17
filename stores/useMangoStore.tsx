@@ -715,39 +715,18 @@ const useMangoStore = create<MangoStore>((set, get) => {
             headers: headers,
           }
         )
-          .then((response: any) => {
-            if (!response.ok) {
-              throw response
-            }
 
-            return response.json()
-          })
-          .catch((err) => {
-            if (typeof err.text === 'function') {
-              err.text().then((errorMessage: string) => {
-                set((state) => {
-                  state.alerts.error = errorMessage
-                  state.alerts.loading = false
-                })
-              })
-            } else {
-              set((state) => {
-                state.alerts.error = 'Something went wrong'
-                state.alerts.loading = false
-              })
-            }
-          })
-
-        if (response) {
+        if (response.ok) {
+          const parsedResponse = await response.json()
           // sort active by latest creation time first
-          const activeAlerts = response.alerts
+          const activeAlerts = parsedResponse.alerts
             .filter((alert) => alert.open)
             .sort((a, b) => {
               return b.timestamp - a.timestamp
             })
 
           // sort triggered by latest trigger time first
-          const triggeredAlerts = response.alerts
+          const triggeredAlerts = parsedResponse.alerts
             .filter((alert) => !alert.open)
             .sort((a, b) => {
               return b.triggeredTimestamp - a.triggeredTimestamp
@@ -756,6 +735,11 @@ const useMangoStore = create<MangoStore>((set, get) => {
           set((state) => {
             state.alerts.activeAlerts = activeAlerts
             state.alerts.triggeredAlerts = triggeredAlerts
+            state.alerts.loading = false
+          })
+        } else {
+          set((state) => {
+            state.alerts.error = 'Error loading alerts'
             state.alerts.loading = false
           })
         }
