@@ -18,6 +18,7 @@
     "alert-health": "Alert when health is below",
     "alert-info": "Email when health <= {{health}}%",
     "alerts-disclaimer": "Do not rely solely on alerts to protect your account. We can't guarantee they will be delivered.",
+    "alerts-max": "You've reached the maximum number of active alerts.",
     "all-assets": "所有资产",
     "amount": "数量",
     "approximate-time": "大概时间",

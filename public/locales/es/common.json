@@ -18,6 +18,7 @@
   "alert-health": "Alert when health is below",
   "alert-info": "Email when health <= {{health}}%",
   "alerts-disclaimer": "Do not rely solely on alerts to protect your account. We can't guarantee they will be delivered.",
+  "alerts-max": "You've reached the maximum number of active alerts.",
   "all-assets": "Todos los activos",
   "amount": "Monto",
   "approximate-time": "Tiempo aproximado",

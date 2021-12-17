@@ -101,6 +101,7 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
                   </ElementTitle>
                   <Button
                     className="col-span-1 flex items-center justify-center pt-0 pb-0 h-8 text-xs w-20"
+                    disabled={activeAlerts.length >= 3}
                     onClick={() => setShowAlertForm(true)}
                   >
                     <div className="flex items-center">
@@ -126,6 +127,11 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
                   </div>
                 ))}
               </div>
+              {activeAlerts.length >= 3 ? (
+                <div className="mt-1 text-center text-xxs text-th-fgd-3">
+                  {t('alerts-max')}
+                </div>
+              ) : null}
             </>
           ) : showAlertForm ? (
             <>
