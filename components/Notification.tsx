@@ -64,7 +64,7 @@ const Notification = ({ notification }) => {
   const { type, title, description, txid, show, id } = notification
 
   let parsedTitle
-  if (description.includes('Timed out awaiting')) {
+  if (description && description.includes('Timed out awaiting')) {
     parsedTitle = 'Unable to confirm transaction'
   }
 
