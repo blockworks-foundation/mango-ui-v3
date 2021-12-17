@@ -92,7 +92,8 @@ const TVChartContainer = () => {
         defaultProps.interval,
         () => {}
       )
-      drawLines()
+      setLines(deleteLines())
+      setLines(drawLines())
     }
   }, [selectedMarketConfig.name])
 
