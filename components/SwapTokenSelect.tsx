@@ -1,10 +1,10 @@
-import { memo, useMemo, useState, PureComponent } from 'react'
+import { memo, useMemo, useState, PureComponent, useEffect } from 'react'
 import { SearchIcon } from '@heroicons/react/outline'
-import { TokenInfo } from '@solana/spl-token-registry'
 import Modal from './Modal'
 import { FixedSizeList } from 'react-window'
+import { Token } from '../@types/types'
 
-const generateSearchTerm = (item: TokenInfo, searchValue: string) => {
+const generateSearchTerm = (item: Token, searchValue: string) => {
   const normalizedSearchValue = searchValue.toLowerCase()
   const values = `${item.symbol} ${item.name}`.toLowerCase()
 
@@ -21,7 +21,7 @@ const generateSearchTerm = (item: TokenInfo, searchValue: string) => {
   }
 }
 
-const startSearch = (items: TokenInfo[], searchValue: string) => {
+const startSearch = (items: Token[], searchValue: string) => {
   return items
     .map((item) => generateSearchTerm(item, searchValue))
     .filter((item) => item.matchingIdx >= 0)
@@ -74,26 +74,32 @@ const SwapTokenSelect = ({
   isOpen,
   sortedTokenMints,
   onClose,
-  tokenMap,
   onTokenSelect,
 }: {
   isOpen: boolean
-  sortedTokenMints: Array<string>
+  sortedTokenMints: Token[]
   onClose?: (x?) => void
-  tokenMap: Map<string, TokenInfo>
   onTokenSelect?: (x?) => void
 }) => {
   const [search, setSearch] = useState('')
 
+  useEffect(() => {
+    function onEscape(e) {
+      if (e.keyCode === 27) {
+        onClose()
+      }
+    }
+
+    window.addEventListener('keydown', onEscape)
+
+    return () => window.removeEventListener('keydown', onEscape)
+  }, [])
+
   const tokenInfos = useMemo(() => {
-    return sortedTokenMints
-      .map((token) => {
-        return tokenMap.get(token)
-      })
-      .filter((tokenInfo) => {
-        return !tokenInfo?.name || !tokenInfo?.symbol ? false : true
-      })
-  }, [sortedTokenMints, tokenMap])
+    return sortedTokenMints.filter((token) => {
+      return !token?.name || !token?.symbol ? false : true
+    })
+  }, [sortedTokenMints])
 
   const handleUpdateSearch = (e) => {
     setSearch(e.target.value)

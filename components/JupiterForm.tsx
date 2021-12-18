@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useState, FunctionComponent } from 'react'
-import { TokenListProvider, TokenInfo, ENV } from '@solana/spl-token-registry'
 import { useJupiter, RouteInfo } from '@jup-ag/react-hook'
+import { TOKEN_LIST_URL } from '@jup-ag/core'
 import { PublicKey } from '@solana/web3.js'
-// import styles from './JupiterForm.module.css'
 import useMangoStore from '../stores/useMangoStore'
 import {
   actionsSelector,
@@ -19,6 +18,7 @@ import {
 import { sleep } from '../utils'
 import SwapTokenSelect from './SwapTokenSelect'
 import { notify } from '../utils/notifications'
+import { Token } from '../@types/types'
 
 type UseJupiterProps = Parameters<typeof useJupiter>[0]
 
@@ -28,7 +28,6 @@ const JupiterForm: FunctionComponent = () => {
   const connected = useMangoStore(walletConnectedSelector)
   const actions = useMangoStore(actionsSelector)
   const walletTokens = useMangoStore((s) => s.wallet.tokens)
-  console.log('wallet tokens', walletTokens)
 
   const [routesToShow, setRoutesToShow] = useState<number>(2)
   const [maxHeight, setMaxHeight] = useState<string>('170px')
@@ -36,7 +35,7 @@ const JupiterForm: FunctionComponent = () => {
   const [selectedRoute, setSelectedRoute] = useState<RouteInfo>(null)
   const [showInputTokenSelect, setShowInputTokenSelect] = useState(false)
   const [showOutputTokenSelect, setShowOutputTokenSelect] = useState(false)
-  const [tokenMap, setTokenMap] = useState<Map<string, TokenInfo>>(new Map())
+  const [tokens, setTokens] = useState<Token[]>([])
   const [formValue, setFormValue] = useState<UseJupiterProps>({
     amount: null,
     inputMint: new PublicKey('EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'),
@@ -47,13 +46,17 @@ const JupiterForm: FunctionComponent = () => {
   // @ts-ignore
   const [inputTokenInfo, outputTokenInfo] = useMemo(() => {
     return [
-      tokenMap.get(formValue.inputMint?.toBase58() || ''),
-      tokenMap.get(formValue.outputMint?.toBase58() || ''),
+      tokens.find(
+        (item) => item.address === formValue.inputMint?.toBase58() || ''
+      ),
+      tokens.find(
+        (item) => item.address === formValue.outputMint?.toBase58() || ''
+      ),
     ]
   }, [
     formValue.inputMint?.toBase58(),
     formValue.outputMint?.toBase58(),
-    tokenMap,
+    tokens,
   ])
 
   const amountInDecimal = useMemo(() => {
@@ -68,17 +71,16 @@ const JupiterForm: FunctionComponent = () => {
     })
 
   useEffect(() => {
-    new TokenListProvider().resolve().then((tokens) => {
-      const tokenList = tokens.filterByChainId(ENV.MainnetBeta).getList()
-
-      setTokenMap(
-        tokenList.reduce((map, item) => {
-          map.set(item.address, item)
-          return map
-        }, new Map())
-      )
-    })
-  }, [setTokenMap])
+    // Fetch token list from Jupiter API
+    fetch(TOKEN_LIST_URL['mainnet-beta'])
+      .then((response) => response.json())
+      .then((result) => {
+        const tokens = allTokenMints.map((mint) =>
+          result.find((item) => item.address === mint)
+        )
+        setTokens(tokens)
+      })
+  }, [allTokenMints])
 
   useEffect(() => {
     if (routes) {
@@ -144,8 +146,8 @@ const JupiterForm: FunctionComponent = () => {
     })
   }
 
-  const sortedTokenMints = sortBy(allTokenMints, (x) => {
-    return tokenMap.get(x)?.symbol?.toLowerCase()
+  const sortedTokenMints = sortBy(tokens, (token) => {
+    return token?.symbol?.toLowerCase()
   })
 
   const displayedRoutes = routes ? routes.slice(0, routesToShow) : []
@@ -185,15 +187,15 @@ const JupiterForm: FunctionComponent = () => {
             onClick={() => setShowInputTokenSelect(true)}
           >
             <div className="flex items-center">
-              <img
-                src={tokenMap.get(formValue.inputMint?.toBase58())?.logoURI}
-                width="24"
-                height="24"
-                alt={tokenMap.get(formValue.inputMint?.toBase58())?.symbol}
-              />
-              <div className="text-lg ml-3">
-                {tokenMap.get(formValue.inputMint?.toBase58())?.symbol}
-              </div>
+              {inputTokenInfo?.logoURI ? (
+                <img
+                  src={inputTokenInfo?.logoURI}
+                  width="24"
+                  height="24"
+                  alt={inputTokenInfo?.symbol}
+                />
+              ) : null}
+              <div className="text-lg ml-3">{inputTokenInfo?.symbol}</div>
               <ChevronDownIcon className="h-4 w-4 ml-1" />
             </div>
           </button>
@@ -237,15 +239,15 @@ const JupiterForm: FunctionComponent = () => {
             className="flex items-center hover:bg-th-bkg-3 px-2 py-2"
             onClick={() => setShowOutputTokenSelect(true)}
           >
-            <img
-              src={tokenMap.get(formValue.outputMint?.toBase58())?.logoURI}
-              width="24"
-              height="24"
-              alt={tokenMap.get(formValue.outputMint?.toBase58())?.symbol}
-            />
-            <div className="text-lg ml-3">
-              {tokenMap.get(formValue.outputMint?.toBase58())?.symbol}
-            </div>
+            {outputTokenInfo?.logoURI ? (
+              <img
+                src={outputTokenInfo?.logoURI}
+                width="24"
+                height="24"
+                alt={outputTokenInfo?.symbol}
+              />
+            ) : null}
+            <div className="text-lg ml-3">{outputTokenInfo?.symbol}</div>
             <ChevronDownIcon className="h-4 w-4 ml-1" />
           </button>
         </div>
@@ -293,11 +295,7 @@ const JupiterForm: FunctionComponent = () => {
                             })}
                           </div>
                           <div className="text-th-fgd-4 text-xs font-normal">
-                            {
-                              tokenMap.get(formValue.inputMint?.toBase58())
-                                ?.symbol
-                            }{' '}
-                            →{' '}
+                            {inputTokenInfo?.symbol} →{' '}
                             {route.marketInfos.map((r, index) => {
                               const showArrow =
                                 index !== route.marketInfos.length - 1
@@ -307,8 +305,11 @@ const JupiterForm: FunctionComponent = () => {
                                 <span key={index}>
                                   <span>
                                     {
-                                      tokenMap.get(r.outputMint.toString())
-                                        ?.symbol
+                                      tokens.find(
+                                        (item) =>
+                                          item.address ===
+                                          r.outputMint.toString()
+                                      )?.symbol
                                     }
                                   </span>
                                   {showArrow ? ' → ' : ''}
@@ -450,7 +451,9 @@ const JupiterForm: FunctionComponent = () => {
             </span>
           </div>
           {selectedRoute.marketInfos.map((info, index) => {
-            const feeToken = tokenMap.get(info.lpFee?.mint)
+            const feeToken = tokens.find(
+              (item) => item.address === info.lpFee?.mint
+            )
             return (
               <div className="flex justify-between" key={index}>
                 <span>Fees paid to {info.marketMeta?.amm?.label}</span>
@@ -499,7 +502,6 @@ const JupiterForm: FunctionComponent = () => {
           isOpen={showInputTokenSelect}
           onClose={() => setShowInputTokenSelect(false)}
           sortedTokenMints={sortedTokenMints}
-          tokenMap={tokenMap}
           onTokenSelect={(token) => {
             console.log('input token address', token.address)
 
@@ -516,7 +518,6 @@ const JupiterForm: FunctionComponent = () => {
           isOpen={showOutputTokenSelect}
           onClose={() => setShowOutputTokenSelect(false)}
           sortedTokenMints={sortedTokenMints}
-          tokenMap={tokenMap}
           onTokenSelect={(token) => {
             console.log('output token address', token.address)
 
