@@ -49,6 +49,7 @@ const TopBar = () => {
                 className={`hidden md:flex md:items-center md:space-x-4 lg:space-x-6 md:ml-4`}
               >
                 <MenuItem href={defaultMarket.path}>{t('trade')}</MenuItem>
+                <MenuItem href="/swap">{t('swap')}</MenuItem>
                 <MenuItem href="/account">{t('account')}</MenuItem>
                 <MenuItem href="/borrow">{t('borrow')}</MenuItem>
                 <MenuItem href="/stats">{t('stats')}</MenuItem>

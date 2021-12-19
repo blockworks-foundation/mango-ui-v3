@@ -73,6 +73,13 @@ export const defaultLayouts = {
 export const GRID_LAYOUT_KEY = 'mangoSavedLayouts-3.0.10'
 export const breakpoints = { xl: 1600, lg: 1280, md: 1024, sm: 768, xs: 0 }
 
+const getCurrentBreakpoint = () => {
+  return Responsive.utils.getBreakpointFromWidth(
+    breakpoints,
+    window.innerWidth - 63
+  )
+}
+
 const TradePageGrid = () => {
   const { uiLocked } = useMangoStore((s) => s.settings)
   const [savedLayouts, setSavedLayouts] = useLocalStorageState(
@@ -81,13 +88,6 @@ const TradePageGrid = () => {
   )
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
-
-  const getCurrentBreakpoint = () => {
-    return Responsive.utils.getBreakpointFromWidth(
-      breakpoints,
-      window.innerWidth - 63
-    )
-  }
 
   const onLayoutChange = (layouts) => {
     if (layouts) {
@@ -135,7 +135,7 @@ const TradePageGrid = () => {
           onBreakpointChange(newBreakpoint)
         }
         onLayoutChange={(layout, layouts) => onLayoutChange(layouts)}
-        useCSSTransforms={false}
+        measureBeforeMount
       >
         <div key="tvChart">
           <FloatingElement className="h-full pl-0 md:pl-0 md:pr-1 md:pb-1 md:pt-3">

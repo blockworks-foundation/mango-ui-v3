@@ -1,7 +1,14 @@
 import { Portal } from 'react-portal'
 import { XIcon } from '@heroicons/react/outline'
 
-const Modal = ({ isOpen, onClose, children, hideClose = false }) => {
+const Modal = ({
+  isOpen,
+  onClose,
+  children,
+  hideClose = false,
+  noPadding = false,
+  alignTop = false,
+}) => {
   return (
     <Portal>
       <div
@@ -19,17 +26,21 @@ const Modal = ({ isOpen, onClose, children, hideClose = false }) => {
             ></div>
           ) : null}
 
-          <span
-            className="hidden sm:inline-block sm:align-middle sm:h-screen"
-            aria-hidden="true"
-          >
-            &#8203;
-          </span>
+          {alignTop ? null : (
+            <span
+              className="hidden sm:inline-block sm:align-middle sm:h-screen"
+              aria-hidden="true"
+            >
+              &#8203;
+            </span>
+          )}
 
           {isOpen ? (
             <div
-              className="inline-block bg-th-bkg-2 min-h-screen sm:min-h-full
-              sm:rounded-lg text-left px-8 pt-6 pb-6 shadow-lg transform transition-all align-middle sm:max-w-lg w-full"
+              className={`inline-block bg-th-bkg-2 min-h-screen sm:min-h-full
+              sm:rounded-lg text-left ${
+                noPadding ? '' : 'px-8 pt-6 pb-6'
+              } shadow-lg transform transition-all align-middle sm:max-w-md w-full`}
             >
               {!hideClose ? (
                 <div className="">
@@ -40,9 +51,7 @@ const Modal = ({ isOpen, onClose, children, hideClose = false }) => {
                     <XIcon className={`h-5 w-5`} />
                   </button>
                 </div>
-              ) : (
-                <div className="w-full pt-4" />
-              )}
+              ) : null}
               {children}
             </div>
           ) : null}

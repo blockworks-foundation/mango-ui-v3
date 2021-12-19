@@ -75,7 +75,7 @@ const PerpMarket = () => {
       setMangoStore((state) => {
         state.selectedMarket.kind = marketType
         if (newMarket.name !== marketConfig.name) {
-          state.selectedMarket.current = null
+          // state.selectedMarket.current = null
           state.selectedMarket.config = newMarket
           state.tradeForm.price =
             state.tradeForm.tradeType === 'Limit'
