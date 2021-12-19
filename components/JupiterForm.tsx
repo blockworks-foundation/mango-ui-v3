@@ -1,10 +1,15 @@
-import { useEffect, useMemo, useState, FunctionComponent } from 'react'
+import {
+  useEffect,
+  useMemo,
+  useState,
+  FunctionComponent,
+  useCallback,
+} from 'react'
 import { useJupiter, RouteInfo } from '@jup-ag/react-hook'
 import { TOKEN_LIST_URL } from '@jup-ag/core'
 import { PublicKey } from '@solana/web3.js'
 import useMangoStore from '../stores/useMangoStore'
 import {
-  actionsSelector,
   connectionSelector,
   walletConnectedSelector,
   walletSelector,
@@ -19,7 +24,11 @@ import { sleep } from '../utils'
 import SwapTokenSelect from './SwapTokenSelect'
 import { notify } from '../utils/notifications'
 import { Token } from '../@types/types'
-import { zeroKey } from '@blockworks-foundation/mango-client'
+import {
+  getTokenAccountsByOwnerWithWrappedSol,
+  nativeToUi,
+  zeroKey,
+} from '@blockworks-foundation/mango-client'
 
 type UseJupiterProps = Parameters<typeof useJupiter>[0]
 
@@ -27,8 +36,6 @@ const JupiterForm: FunctionComponent = () => {
   const wallet = useMangoStore(walletSelector)
   const connection = useMangoStore(connectionSelector)
   const connected = useMangoStore(walletConnectedSelector)
-  const actions = useMangoStore(actionsSelector)
-  const walletTokens = useMangoStore((s) => s.wallet.tokens)
 
   const [routesToShow, setRoutesToShow] = useState<number>(2)
   const [maxHeight, setMaxHeight] = useState<string>('170px')
@@ -36,16 +43,36 @@ const JupiterForm: FunctionComponent = () => {
   const [selectedRoute, setSelectedRoute] = useState<RouteInfo>(null)
   const [showInputTokenSelect, setShowInputTokenSelect] = useState(false)
   const [showOutputTokenSelect, setShowOutputTokenSelect] = useState(false)
+  const [swapping, setSwapping] = useState(false)
   const [tokens, setTokens] = useState<Token[]>([])
   const [inputTokenStats, setInputTokenStats] = useState(null)
   const [outputTokenStats, setOutputTokenStats] = useState(null)
   const [coinGeckoList, setCoinGeckoList] = useState(null)
+  const [walletTokens, setWalletTokens] = useState([])
   const [formValue, setFormValue] = useState<UseJupiterProps>({
     amount: null,
     inputMint: new PublicKey('EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'),
     outputMint: new PublicKey('MangoCzJ36AjZyKwVj3VnYU4GTonjfVEnJmvvWaxLac'),
     slippage: 0.5,
   })
+
+  const fetchWalletTokens = useCallback(async () => {
+    const ownedTokens = []
+    const ownedTokenAccounts = await getTokenAccountsByOwnerWithWrappedSol(
+      connection,
+      wallet.publicKey
+    )
+
+    ownedTokenAccounts.forEach((account) => {
+      const decimals = tokens.find(
+        (t) => t?.address === account.mint.toString()
+      )?.decimals
+      const uiBalance = nativeToUi(account.amount, decimals || 6)
+      ownedTokens.push({ account, uiBalance })
+    })
+    console.log('ownedToknes', ownedTokens)
+    setWalletTokens(ownedTokens)
+  }, [wallet, connection])
 
   // @ts-ignore
   const [inputTokenInfo, outputTokenInfo] = useMemo(() => {
@@ -74,6 +101,12 @@ const JupiterForm: FunctionComponent = () => {
 
     fetchCoinGeckoList()
   }, [])
+
+  useEffect(() => {
+    if (connected) {
+      fetchWalletTokens()
+    }
+  }, [connected])
 
   useEffect(() => {
     if (!coinGeckoList?.length) return
@@ -169,27 +202,28 @@ const JupiterForm: FunctionComponent = () => {
     }
   }, [routeMap, tokens, formValue.inputMint])
 
-  const inputWalletBalance = useMemo(() => {
+  const inputWalletBalance = () => {
     if (walletTokens.length) {
-      const walletToken = walletTokens.find((t) => {
+      const walletToken = walletTokens.filter((t) => {
         return t.account.mint.toString() === inputTokenInfo?.address
       })
-
-      return walletToken?.uiBalance
+      const largestTokenAccount = sortBy(walletToken, 'uiBalance').reverse()[0]
+      return largestTokenAccount?.uiBalance
     }
-    return 0.0
-  }, [inputTokenInfo])
 
-  const outputWalletBalance = useMemo(() => {
+    return 0.0
+  }
+
+  const outputWalletBalance = () => {
     if (walletTokens.length) {
-      const walletToken = walletTokens.find((t) => {
+      const walletToken = walletTokens.filter((t) => {
         return t.account.mint.toString() === outputTokenInfo?.address
       })
-
-      return walletToken?.uiBalance
+      const largestTokenAccount = sortBy(walletToken, 'uiBalance').reverse()[0]
+      return largestTokenAccount?.uiBalance
     }
     return 0.0
-  }, [outputTokenInfo])
+  }
 
   const [inputTokenPrice, inputTokenChange] = useMemo(() => {
     if (inputTokenStats?.prices?.length) {
@@ -255,6 +289,12 @@ const JupiterForm: FunctionComponent = () => {
 
   return (
     <div className="max-w-md mx-auto">
+      {connected ? (
+        <div className="mt-8 bg-th-bkg-2 rounded-lg p-4 text-th-fgd-4 -mb-2">
+          Swaps occur in your connected wallet. After swapping, you may then
+          deposit swapped tokens into your mango account.
+        </div>
+      ) : null}
       <div className="mt-8 bg-th-bkg-2 rounded-lg px-6 pt-8 pb-8">
         <div className="flex justify-between">
           <label htmlFor="inputMint" className="block text-sm font-medium">
@@ -262,7 +302,7 @@ const JupiterForm: FunctionComponent = () => {
           </label>
           <div>
             <label htmlFor="amount" className="text-th-fgd-4">
-              Balance {inputWalletBalance}
+              Balance {inputWalletBalance()}
             </label>
             {connected ? (
               <button
@@ -270,7 +310,7 @@ const JupiterForm: FunctionComponent = () => {
                 onClick={() => {
                   setFormValue((val) => ({
                     ...val,
-                    amount: inputWalletBalance,
+                    amount: inputWalletBalance(),
                   }))
                 }}
               >
@@ -329,7 +369,7 @@ const JupiterForm: FunctionComponent = () => {
           <label htmlFor="outputMint" className="font-medium">
             You receive
           </label>
-          <span className="text-th-fgd-4">Balance {outputWalletBalance}</span>
+          <span className="text-th-fgd-4">Balance {outputWalletBalance()}</span>
         </div>
         <div className="flex items-center mt-2">
           <button
@@ -477,23 +517,31 @@ const JupiterForm: FunctionComponent = () => {
           if (!connected && zeroKey !== wallet?.publicKey) {
             wallet.connect()
           } else if (!loading && selectedRoute && connected) {
+            setSwapping(true)
+            let txCount = 1
             const swapResult = await exchange({
               wallet: wallet,
               route: selectedRoute,
-              confirmationWaiterFactory: async (txid) => {
-                notify({
-                  type: 'confirm',
-                  title: 'Confirming Transaction',
-                  txid,
-                })
+              confirmationWaiterFactory: async (txid, totalTxs) => {
+                console.log('txid, totalTxs', txid, totalTxs)
                 await connection.confirmTransaction(txid)
-
+                if (txCount === totalTxs) {
+                  notify({
+                    type: 'confirm',
+                    title: 'Confirming Transaction',
+                    txid,
+                  })
+                }
+                txCount++
                 return await connection.getTransaction(txid, {
                   commitment: 'confirmed',
                 })
               },
             })
-            actions.fetchWalletTokens()
+            console.log('swapResult', swapResult)
+
+            setSwapping(false)
+            fetchWalletTokens()
             if ('error' in swapResult) {
               console.log('Error:', swapResult.error)
               notify({
@@ -514,12 +562,16 @@ const JupiterForm: FunctionComponent = () => {
                 } ${outputTokenInfo?.symbol}`,
                 txid: swapResult.txid,
               })
+              setFormValue((val) => ({
+                ...val,
+                amount: null,
+              }))
             }
           }
         }}
         className="mt-6 p-4 bg-th-bkg-2 hover:bg-th-primary w-full"
       >
-        {connected ? 'Swap' : 'Connect Wallet'}
+        {connected ? (swapping ? 'Swapping...' : 'Swap') : 'Connect Wallet'}
       </button>
       {inputTokenStats?.prices?.length && outputTokenStats?.prices?.length ? (
         <>
