@@ -208,7 +208,7 @@ const JupiterForm: FunctionComponent = () => {
         return t.account.mint.toString() === inputTokenInfo?.address
       })
       const largestTokenAccount = sortBy(walletToken, 'uiBalance').reverse()[0]
-      return largestTokenAccount?.uiBalance
+      return largestTokenAccount?.uiBalance || 0.0
     }
 
     return 0.0
@@ -220,7 +220,7 @@ const JupiterForm: FunctionComponent = () => {
         return t.account.mint.toString() === outputTokenInfo?.address
       })
       const largestTokenAccount = sortBy(walletToken, 'uiBalance').reverse()[0]
-      return largestTokenAccount?.uiBalance
+      return largestTokenAccount?.uiBalance || 0.0
     }
     return 0.0
   }
