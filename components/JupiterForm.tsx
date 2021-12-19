@@ -524,7 +524,6 @@ const JupiterForm: FunctionComponent = () => {
               route: selectedRoute,
               confirmationWaiterFactory: async (txid, totalTxs) => {
                 console.log('txid, totalTxs', txid, totalTxs)
-                await connection.confirmTransaction(txid)
                 if (txCount === totalTxs) {
                   notify({
                     type: 'confirm',
@@ -532,6 +531,8 @@ const JupiterForm: FunctionComponent = () => {
                     txid,
                   })
                 }
+                await connection.confirmTransaction(txid)
+
                 txCount++
                 return await connection.getTransaction(txid, {
                   commitment: 'confirmed',
