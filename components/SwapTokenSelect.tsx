@@ -89,9 +89,7 @@ const SwapTokenSelect = ({
         onClose()
       }
     }
-
     window.addEventListener('keydown', onEscape)
-
     return () => window.removeEventListener('keydown', onEscape)
   }, [])
 

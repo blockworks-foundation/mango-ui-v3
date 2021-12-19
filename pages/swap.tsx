@@ -6,6 +6,7 @@ import TopBar from '../components/TopBar'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 // import { useTranslation } from 'next-i18next'
 import {
+  actionsSelector,
   connectionSelector,
   walletConnectedSelector,
   walletSelector,
@@ -27,6 +28,7 @@ export default function Swap() {
   const connection = useMangoStore(connectionSelector)
   const connected = useMangoStore(walletConnectedSelector)
   const wallet = useMangoStore(walletSelector)
+  const actions = useMangoStore(actionsSelector)
 
   useEffect(() => {
     // @ts-ignore
@@ -35,6 +37,12 @@ export default function Swap() {
       window.solana.connect({ onlyIfTrusted: true })
     }
   }, [])
+
+  useEffect(() => {
+    if (connected) {
+      actions.fetchWalletTokens()
+    }
+  }, [connected])
 
   if (!connection) return null
 

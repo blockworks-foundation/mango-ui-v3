@@ -47,10 +47,10 @@ const JupiterForm: FunctionComponent = () => {
   const [inputTokenInfo, outputTokenInfo] = useMemo(() => {
     return [
       tokens.find(
-        (item) => item.address === formValue.inputMint?.toBase58() || ''
+        (item) => item?.address === formValue.inputMint?.toBase58() || ''
       ),
       tokens.find(
-        (item) => item.address === formValue.outputMint?.toBase58() || ''
+        (item) => item?.address === formValue.outputMint?.toBase58() || ''
       ),
     ]
   }, [
@@ -76,7 +76,7 @@ const JupiterForm: FunctionComponent = () => {
       .then((response) => response.json())
       .then((result) => {
         const tokens = allTokenMints.map((mint) =>
-          result.find((item) => item.address === mint)
+          result.find((item) => item?.address === mint)
         )
         setTokens(tokens)
       })
@@ -88,39 +88,53 @@ const JupiterForm: FunctionComponent = () => {
     }
   }, [routes])
 
-  // setup inputMint and outputMint
-  useEffect(() => {
-    if (!formValue.inputMint && allTokenMints.length) {
-      const input = allTokenMints[0]
-      const output = routeMap.get(input)![0]
-      setFormValue((val) => ({
-        ...val,
-        inputMint: new PublicKey(allTokenMints[0]),
-        outputMint: new PublicKey(output),
-      }))
-    }
-  }, [allTokenMints])
-
   useEffect(() => {
     const getDepositAndFee = async () => {
       const fees = await selectedRoute.getDepositAndFee()
       setDepositAndFee(fees)
     }
-    if (selectedRoute) {
+    if (selectedRoute && connected) {
       getDepositAndFee()
     }
   }, [selectedRoute])
 
-  const fetchWalletBalance = (mintPublicKey: PublicKey) => {
-    if (walletTokens.length) {
-      const walletToken = walletTokens.find((t) => {
-        return t.account.mint.equals(mintPublicKey)
+  const outputTokenMints = useMemo(() => {
+    if (routeMap.size && formValue.inputMint) {
+      const routeOptions = routeMap.get(formValue.inputMint.toString())
+
+      const routeOptionTokens = routeOptions.map((address) => {
+        return tokens.find((t) => {
+          return t?.address === address
+        })
       })
 
-      return walletToken.uiBalance
+      return routeOptionTokens
+    } else {
+      return sortedTokenMints
+    }
+  }, [routeMap, tokens, formValue.inputMint])
+
+  const inputWalletBalance = useMemo(() => {
+    if (walletTokens.length) {
+      const walletToken = walletTokens.find((t) => {
+        return t.account.mint.toString() === inputTokenInfo?.address
+      })
+
+      return walletToken?.uiBalance
     }
     return 0.0
-  }
+  }, [inputTokenInfo])
+
+  const outputWalletBalance = useMemo(() => {
+    if (walletTokens.length) {
+      const walletToken = walletTokens.find((t) => {
+        return t.account.mint.toString() === outputTokenInfo?.address
+      })
+
+      return walletToken?.uiBalance
+    }
+    return 0.0
+  }, [outputTokenInfo])
 
   const handleSelectRoute = (route) => {
     setSelectedRoute(route)
@@ -165,19 +179,21 @@ const JupiterForm: FunctionComponent = () => {
           </label>
           <div>
             <label htmlFor="amount" className="text-th-fgd-4">
-              Balance {fetchWalletBalance(formValue.inputMint)}
+              Balance {inputWalletBalance}
             </label>
-            <button
-              className="ml-1 bg-th-bkg-4 rounded-lg px-2 text-th-fgd-4 text-xs cursor-pointer hover:text-th-primary"
-              onClick={() => {
-                setFormValue((val) => ({
-                  ...val,
-                  amount: fetchWalletBalance(formValue.inputMint),
-                }))
-              }}
-            >
-              MAX
-            </button>
+            {connected ? (
+              <button
+                className="ml-1 bg-th-bkg-4 rounded-lg px-2 text-th-fgd-4 text-xs cursor-pointer hover:text-th-primary"
+                onClick={() => {
+                  setFormValue((val) => ({
+                    ...val,
+                    amount: inputWalletBalance,
+                  }))
+                }}
+              >
+                MAX
+              </button>
+            ) : null}
           </div>
         </div>
 
@@ -230,9 +246,7 @@ const JupiterForm: FunctionComponent = () => {
           <label htmlFor="outputMint" className="font-medium">
             You receive
           </label>
-          <span className="text-th-fgd-4">
-            Balance {fetchWalletBalance(formValue.outputMint)}
-          </span>
+          <span className="text-th-fgd-4">Balance {outputWalletBalance}</span>
         </div>
         <div className="flex items-center mt-2">
           <button
@@ -307,8 +321,8 @@ const JupiterForm: FunctionComponent = () => {
                                     {
                                       tokens.find(
                                         (item) =>
-                                          item.address ===
-                                          r.outputMint.toString()
+                                          item?.address ===
+                                          r?.outputMint?.toString()
                                       )?.symbol
                                     }
                                   </span>
@@ -329,30 +343,34 @@ const JupiterForm: FunctionComponent = () => {
               })}
             </div>
             <div className="flex justify-between text-th-fgd-4 mx-1 mt-2">
-              <div>
-                {routes.length > displayedRoutes.length ? (
-                  <div className="flex items-center">
-                    <ChevronDownIcon className="h-4 w-4" />
-                    <button className="text-xs ml-2" onClick={handleShowMore}>
-                      Show more
-                    </button>
-                  </div>
-                ) : (
-                  <div className="flex items-center">
-                    <ChevronUpIcon className="h-4 w-4" />
-                    <button className="text-xs ml-2" onClick={handleShowLess}>
-                      Show less
-                    </button>
-                  </div>
-                )}
-              </div>
-              <div className="text-xs">
-                from{' '}
-                {routes[routes.length - 1].outAmount /
-                  10 ** (outputTokenInfo?.decimals || 1)}{' '}
-                to{' '}
-                {routes[0].outAmount / 10 ** (outputTokenInfo?.decimals || 1)}
-              </div>
+              {routes.length ? (
+                <div>
+                  {routes.length > displayedRoutes.length ? (
+                    <div className="flex items-center">
+                      <ChevronDownIcon className="h-4 w-4" />
+                      <button className="text-xs ml-2" onClick={handleShowMore}>
+                        Show more
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center">
+                      <ChevronUpIcon className="h-4 w-4" />
+                      <button className="text-xs ml-2" onClick={handleShowLess}>
+                        Show less
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : null}
+              {routes.length ? (
+                <div className="text-xs">
+                  from{' '}
+                  {routes[routes.length - 1].outAmount /
+                    10 ** (outputTokenInfo?.decimals || 1)}{' '}
+                  to{' '}
+                  {routes[0].outAmount / 10 ** (outputTokenInfo?.decimals || 1)}
+                </div>
+              ) : null}
             </div>
             <div className="flex justify-center text-xs text-th-fgd-4 mt-4 -mb-4">
               <a
@@ -373,10 +391,7 @@ const JupiterForm: FunctionComponent = () => {
         type="button"
         disabled={loading}
         onClick={async () => {
-          console.log('clicked on swap button', loading, wallet)
-
           if (!loading && selectedRoute && connected) {
-            console.log('in if', wallet.publicKey.toString())
             const swapResult = await exchange({
               wallet: wallet,
               route: selectedRoute,
@@ -452,7 +467,7 @@ const JupiterForm: FunctionComponent = () => {
           </div>
           {selectedRoute.marketInfos.map((info, index) => {
             const feeToken = tokens.find(
-              (item) => item.address === info.lpFee?.mint
+              (item) => item?.address === info.lpFee?.mint
             )
             return (
               <div className="flex justify-between" key={index}>
@@ -503,12 +518,10 @@ const JupiterForm: FunctionComponent = () => {
           onClose={() => setShowInputTokenSelect(false)}
           sortedTokenMints={sortedTokenMints}
           onTokenSelect={(token) => {
-            console.log('input token address', token.address)
-
             setShowInputTokenSelect(false)
             setFormValue((val) => ({
               ...val,
-              inputMint: new PublicKey(token.address),
+              inputMint: new PublicKey(token?.address),
             }))
           }}
         />
@@ -517,14 +530,12 @@ const JupiterForm: FunctionComponent = () => {
         <SwapTokenSelect
           isOpen={showOutputTokenSelect}
           onClose={() => setShowOutputTokenSelect(false)}
-          sortedTokenMints={sortedTokenMints}
+          sortedTokenMints={outputTokenMints}
           onTokenSelect={(token) => {
-            console.log('output token address', token.address)
-
             setShowOutputTokenSelect(false)
             setFormValue((val) => ({
               ...val,
-              outputMint: new PublicKey(token.address),
+              outputMint: new PublicKey(token?.address),
             }))
           }}
         />
