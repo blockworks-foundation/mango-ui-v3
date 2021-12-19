@@ -94,7 +94,7 @@ const Notification = ({ notification }: { notification: Notification }) => {
   useEffect(() => {
     const id = setTimeout(
       () => {
-        if (show && type !== 'confirm') {
+        if (show) {
           hideNotification()
         }
       },

@@ -19,6 +19,7 @@ import { sleep } from '../utils'
 import SwapTokenSelect from './SwapTokenSelect'
 import { notify } from '../utils/notifications'
 import { Token } from '../@types/types'
+import { zeroKey } from '@blockworks-foundation/mango-client'
 
 type UseJupiterProps = Parameters<typeof useJupiter>[0]
 
@@ -36,6 +37,9 @@ const JupiterForm: FunctionComponent = () => {
   const [showInputTokenSelect, setShowInputTokenSelect] = useState(false)
   const [showOutputTokenSelect, setShowOutputTokenSelect] = useState(false)
   const [tokens, setTokens] = useState<Token[]>([])
+  const [inputTokenStats, setInputTokenStats] = useState(null)
+  const [outputTokenStats, setOutputTokenStats] = useState(null)
+  const [coinGeckoList, setCoinGeckoList] = useState(null)
   const [formValue, setFormValue] = useState<UseJupiterProps>({
     amount: null,
     inputMint: new PublicKey('EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'),
@@ -58,6 +62,57 @@ const JupiterForm: FunctionComponent = () => {
     formValue.outputMint?.toBase58(),
     tokens,
   ])
+
+  useEffect(() => {
+    const fetchCoinGeckoList = async () => {
+      const response = await fetch(
+        'https://api.coingecko.com/api/v3/coins/list'
+      )
+      const data = await response.json()
+      setCoinGeckoList(data)
+    }
+
+    fetchCoinGeckoList()
+  }, [])
+
+  useEffect(() => {
+    if (!coinGeckoList?.length) return
+
+    const fetchInputTokenStats = async () => {
+      const id = coinGeckoList.find(
+        (x) =>
+          x?.symbol?.toLowerCase() === inputTokenInfo?.symbol?.toLowerCase()
+      )?.id
+      const results = await fetch(
+        `https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=1`
+      )
+      const json = await results.json()
+      console.log('json i', json)
+
+      setInputTokenStats(json)
+    }
+
+    const fetchOutputTokenStats = async () => {
+      const id = coinGeckoList.find(
+        (x) =>
+          x?.symbol?.toLowerCase() === outputTokenInfo?.symbol?.toLowerCase()
+      )?.id
+      const results = await fetch(
+        `https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=1`
+      )
+      const json = await results.json()
+      console.log('json o', json)
+
+      setOutputTokenStats(json)
+    }
+
+    if (inputTokenInfo) {
+      fetchInputTokenStats()
+    }
+    if (outputTokenInfo) {
+      fetchOutputTokenStats()
+    }
+  }, [inputTokenInfo, outputTokenInfo, coinGeckoList])
 
   const amountInDecimal = useMemo(() => {
     return formValue.amount * 10 ** (inputTokenInfo?.decimals || 1)
@@ -135,6 +190,37 @@ const JupiterForm: FunctionComponent = () => {
     }
     return 0.0
   }, [outputTokenInfo])
+
+  const [inputTokenPrice, inputTokenChange] = useMemo(() => {
+    if (inputTokenStats?.prices?.length) {
+      const price =
+        inputTokenStats.prices[inputTokenStats.prices.length - 1][1].toFixed(2)
+      const change =
+        ((inputTokenStats.prices[0][1] -
+          inputTokenStats.prices[inputTokenStats.prices.length - 1][1]) /
+          inputTokenStats.prices[0][1]) *
+        100
+
+      return [price, change]
+    }
+    return [0, 0]
+  }, [inputTokenStats])
+
+  const [outputTokenPrice, outputTokenChange] = useMemo(() => {
+    if (outputTokenStats?.prices?.length) {
+      const price =
+        outputTokenStats.prices[outputTokenStats.prices.length - 1][1].toFixed(
+          2
+        )
+      const change =
+        ((outputTokenStats.prices[0][1] -
+          outputTokenStats.prices[outputTokenStats.prices.length - 1][1]) /
+          outputTokenStats.prices[0][1]) *
+        100
+      return [price, change]
+    }
+    return [0, 0]
+  }, [outputTokenStats])
 
   const handleSelectRoute = (route) => {
     setSelectedRoute(route)
@@ -391,7 +477,9 @@ const JupiterForm: FunctionComponent = () => {
         type="button"
         disabled={loading}
         onClick={async () => {
-          if (!loading && selectedRoute && connected) {
+          if (!connected && zeroKey !== wallet?.publicKey) {
+            wallet.connect()
+          } else if (!loading && selectedRoute && connected) {
             const swapResult = await exchange({
               wallet: wallet,
               route: selectedRoute,
@@ -436,6 +524,56 @@ const JupiterForm: FunctionComponent = () => {
       >
         {connected ? 'Swap' : 'Connect Wallet'}
       </button>
+      {inputTokenStats?.prices?.length && outputTokenStats?.prices?.length ? (
+        <>
+          <div className="flex items-center justify-between mt-4">
+            <div className="flex items-center">
+              {inputTokenInfo?.logoURI ? (
+                <img
+                  src={inputTokenInfo?.logoURI}
+                  width="36"
+                  height="36"
+                  alt={inputTokenInfo?.symbol}
+                />
+              ) : null}
+              <div className="ml-2">{inputTokenInfo?.name}</div>
+            </div>
+            <div className="flex items-center">
+              <div className="">${inputTokenPrice}</div>
+              <div
+                className={`ml-4 ${
+                  inputTokenChange <= 0 ? 'text-th-green' : 'text-th-red'
+                }`}
+              >
+                {(inputTokenChange * -1).toFixed(2)}%
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center justify-between mt-4">
+            <div className="flex items-center">
+              {outputTokenInfo?.logoURI ? (
+                <img
+                  src={outputTokenInfo?.logoURI}
+                  width="36"
+                  height="36"
+                  alt={outputTokenInfo?.symbol}
+                />
+              ) : null}
+              <div className="ml-2">{outputTokenInfo?.name}</div>
+            </div>
+            <div className="flex items-center">
+              <div className="">${outputTokenPrice}</div>
+              <div
+                className={`ml-4 ${
+                  outputTokenChange <= 0 ? 'text-th-green' : 'text-th-red'
+                }`}
+              >
+                {(outputTokenChange * -1).toFixed(2)}%
+              </div>
+            </div>
+          </div>
+        </>
+      ) : null}
       {selectedRoute ? (
         <div className="flex flex-col space-y-3 mt-4 text-th-fgd-4 text-xs">
           <div className="my-2 font-bold">Price Info</div>
