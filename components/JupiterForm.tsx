@@ -194,7 +194,7 @@ const JupiterForm: FunctionComponent = () => {
   const [inputTokenPrice, inputTokenChange] = useMemo(() => {
     if (inputTokenStats?.prices?.length) {
       const price =
-        inputTokenStats.prices[inputTokenStats.prices.length - 1][1].toFixed(2)
+        inputTokenStats.prices[inputTokenStats.prices.length - 1][1].toFixed(6)
       const change =
         ((inputTokenStats.prices[0][1] -
           inputTokenStats.prices[inputTokenStats.prices.length - 1][1]) /
@@ -210,7 +210,7 @@ const JupiterForm: FunctionComponent = () => {
     if (outputTokenStats?.prices?.length) {
       const price =
         outputTokenStats.prices[outputTokenStats.prices.length - 1][1].toFixed(
-          2
+          6
         )
       const change =
         ((outputTokenStats.prices[0][1] -
