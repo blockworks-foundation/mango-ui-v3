@@ -516,12 +516,14 @@ const JupiterForm: FunctionComponent = () => {
           } else if (!loading && selectedRoute && connected) {
             setSwapping(true)
             let txCount = 1
+            let errorTxid
             const swapResult = await exchange({
               wallet: wallet,
               route: selectedRoute,
               confirmationWaiterFactory: async (txid, totalTxs) => {
                 console.log('txid, totalTxs', txid, totalTxs)
                 if (txCount === totalTxs) {
+                  errorTxid = txid
                   notify({
                     type: 'confirm',
                     title: 'Confirming Transaction',
@@ -546,7 +548,7 @@ const JupiterForm: FunctionComponent = () => {
                 type: 'error',
                 title: swapResult.error.name,
                 description: swapResult.error.message,
-                txid: swapResult.error.txid,
+                txid: errorTxid,
               })
             } else if ('txid' in swapResult) {
               notify({

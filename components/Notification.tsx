@@ -65,7 +65,10 @@ const Notification = ({ notification }: { notification: Notification }) => {
 
   // overwrite the title if of the error message if it is a time out error
   let parsedTitle
-  if (description && description.includes('Timed out awaiting')) {
+  if (
+    (description && description.includes('Timed out awaiting')) ||
+    description.includes('was not confirmed')
+  ) {
     parsedTitle = 'Unable to confirm transaction'
   }
 
