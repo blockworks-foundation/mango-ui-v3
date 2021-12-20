@@ -67,12 +67,13 @@ const JupiterForm: FunctionComponent = () => {
       const decimals = tokens.find(
         (t) => t?.address === account.mint.toString()
       )?.decimals
+
       const uiBalance = nativeToUi(account.amount, decimals || 6)
       ownedTokens.push({ account, uiBalance })
     })
     console.log('ownedToknes', ownedTokens)
     setWalletTokens(ownedTokens)
-  }, [wallet, connection])
+  }, [wallet, connection, tokens])
 
   // @ts-ignore
   const [inputTokenInfo, outputTokenInfo] = useMemo(() => {
@@ -120,8 +121,6 @@ const JupiterForm: FunctionComponent = () => {
         `https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=1`
       )
       const json = await results.json()
-      console.log('json i', json)
-
       setInputTokenStats(json)
     }
 
@@ -134,8 +133,6 @@ const JupiterForm: FunctionComponent = () => {
         `https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=1`
       )
       const json = await results.json()
-      console.log('json o', json)
-
       setOutputTokenStats(json)
     }
 
