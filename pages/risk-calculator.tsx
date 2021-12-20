@@ -1287,7 +1287,7 @@ export default function RiskCalculator() {
                     </LinkButton>
                   </div>
                 </div>
-                <div className="flex justify-between pb-2 lg:pb-3 px-0 lg:px-3">
+                <div className="flex justify-between wrap pb-2 lg:pb-3 px-0 lg:px-3">
                   <div className="flex items-center mb-3 lg:mx-3 px-3 h-8 rounded">
                     <Switch
                       checked={showZeroBalances}
@@ -1322,6 +1322,140 @@ export default function RiskCalculator() {
                       </Button>
                     </Tooltip>
                   </div>
+                </div>
+                {/*Hidden panel that displays a short scenario summary on mobile instead of the detailed one*/}
+                <div className="bg-th-bkg-1 border border-th-fgd-4 md:hidden sticky w-full rounded mb-3">
+                  <Disclosure>
+                    {({ open }) => (
+                      <>
+                        <Disclosure.Button className="bg-th-bkg-1 default-transition flex items-center justify-between p-3 w-full hover:bg-th-bkg-1 focus:outline-none">
+                          <div className="text-th-fgd-3">
+                            {open
+                              ? 'Scenario Details'
+                              : 'Scenario Maintenance Health:'}
+                          </div>
+                          {open ? null : (
+                            <div className="text-th-fgd-3 text-xs">
+                              {scenarioDetails.get('maintHealth') * 100 >= 9999
+                                ? '>10000'
+                                : scenarioDetails.get('maintHealth') * 100 < 0
+                                ? '<0'
+                                : (
+                                    scenarioDetails.get('maintHealth') * 100
+                                  ).toFixed(2)}
+                              %
+                            </div>
+                          )}
+                          <ChevronUpIcon
+                            className={`default-transition h-4 text-th-fgd-1 w-4 ${
+                              open
+                                ? 'transform rotate-360'
+                                : 'transform rotate-180'
+                            }`}
+                          />
+                        </Disclosure.Button>
+                        <Disclosure.Panel className="p-3">
+                          <div className="text-th-fgd-1 text-xs">
+                            <div className="flex items-center justify-between pb-3">
+                              <div className="text-th-fgd-3">
+                                Maintenance Health
+                              </div>
+                              {scenarioDetails.get('maintHealth') * 100 >= 9999
+                                ? '>10000'
+                                : scenarioDetails.get('maintHealth') * 100 < 0
+                                ? '<0'
+                                : (
+                                    scenarioDetails.get('maintHealth') * 100
+                                  ).toFixed(2)}
+                              %
+                            </div>
+                            <div className="flex items-center justify-between pb-3">
+                              <div className="text-th-fgd-3">
+                                Initial Health
+                              </div>
+                              {scenarioDetails.get('initHealth') * 100 >= 9999
+                                ? '>10000'
+                                : scenarioDetails.get('initHealth') * 100 < 0
+                                ? '<0'
+                                : (
+                                    scenarioDetails.get('initHealth') * 100
+                                  ).toFixed(2)}
+                              %
+                            </div>
+                            <div className="flex items-center justify-between pb-3">
+                              <div className="text-th-fgd-3">
+                                New Positions Can Be Opened
+                              </div>
+                              <div
+                                className={`font-bold ${
+                                  scenarioDetails.get('initHealth') * 100 >= 0
+                                    ? 'text-th-green'
+                                    : 'text-th-red'
+                                }`}
+                              >
+                                {scenarioDetails.get('initHealth') * 100 >= 0
+                                  ? 'Yes'
+                                  : 'No'}
+                              </div>
+                            </div>
+                            <div className="flex items-center justify-between pb-3">
+                              <div className="text-th-fgd-3">
+                                Account Health
+                              </div>
+                              <div className="font-bold">
+                                {
+                                  <div
+                                    className={`font-bold ${
+                                      scenarioDetails.get('maintHealth') * 100 <
+                                      0
+                                        ? 'text-th-red'
+                                        : scenarioDetails.get('riskRanking') ===
+                                          'Very Poor'
+                                        ? 'text-th-red'
+                                        : scenarioDetails.get('riskRanking') ===
+                                          'Poor'
+                                        ? 'text-th-orange'
+                                        : scenarioDetails.get('riskRanking') ===
+                                          'OK'
+                                        ? 'text-th-primary'
+                                        : 'text-th-green'
+                                    }`}
+                                  >
+                                    {scenarioDetails.get('maintHealth') * 100 <
+                                    0
+                                      ? 'Rekt'
+                                      : scenarioDetails.get('riskRanking')}
+                                  </div>
+                                }
+                              </div>
+                            </div>
+                            <div>
+                              <div className="flex items-center justify-between pb-3">
+                                <div className="text-th-fgd-3">
+                                  Account Value
+                                </div>
+                                <div className="font-bold">
+                                  {formatUsdValue(
+                                    scenarioDetails.get('equity')
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex items-center justify-between pb-3">
+                              <Tooltip content="Relative to the 'Edit All Prices' slider value">
+                                <div className="text-th-fgd-3">
+                                  Percent Move To Liquidation
+                                </div>
+                              </Tooltip>
+                              <div className="font-bold">
+                                {scenarioDetails.get('percentToLiquidation')}%
+                              </div>
+                            </div>
+                          </div>
+                        </Disclosure.Panel>
+                      </>
+                    )}
+                  </Disclosure>
                 </div>
                 {/*Create scenario table for display*/}
                 <div className={`flex flex-col pb-2`}>
@@ -1951,94 +2085,6 @@ export default function RiskCalculator() {
           <div className="animate-pulse bg-th-bkg-3 h-64 rounded-lg w-full" />
         )}
       </PageBodyContainer>
-      {scenarioBars?.rowData.length > 0 ? (
-        <div className="bg-th-bkg-3 bottom-0 md:hidden sticky w-full">
-          <Disclosure>
-            {({ open }) => (
-              <>
-                <Disclosure.Button className="bg-th-bkg-3 default-transition flex items-center justify-between p-3 w-full hover:bg-th-bkg-1 focus:outline-none">
-                  Scenario Details
-                  <ChevronUpIcon
-                    className={`default-transition h-4 text-th-fgd-1 w-4 ${
-                      open ? 'transform rotate-180' : 'transform rotate-360'
-                    }`}
-                  />
-                </Disclosure.Button>
-                <Disclosure.Panel className="p-3">
-                  <div className="text-th-fgd-1">
-                    <div className="flex items-center justify-between pb-3">
-                      <div className="text-th-fgd-3">Maintenance Health</div>
-                      <div className="font-bold">
-                        {scenarioDetails.get('maintHealth') * 100 >= 9999
-                          ? '>10000'
-                          : scenarioDetails.get('maintHealth') * 100 < 0
-                          ? '<0'
-                          : (scenarioDetails.get('maintHealth') * 100).toFixed(
-                              2
-                            )}
-                        %
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between pb-3">
-                      <div className="text-th-fgd-3">Initial Health</div>
-                      {scenarioDetails.get('initHealth') * 100 >= 9999
-                        ? '>10000'
-                        : scenarioDetails.get('initHealth') * 100 < 0
-                        ? '<0'
-                        : (scenarioDetails.get('initHealth') * 100).toFixed(2)}
-                      %
-                    </div>
-                    <div className="flex items-center justify-between pb-3">
-                      <div className="text-th-fgd-3">
-                        New Positions Can Be Opened
-                      </div>
-                      <div className="font-bold">
-                        {scenarioDetails.get('initHealth') * 100 >= 0
-                          ? 'Yes'
-                          : 'No'}
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between pb-3">
-                      <div className="text-th-fgd-3">Account Health</div>
-                      <div className="font-bold">
-                        {
-                          <div
-                            className={`font-bold ${
-                              scenarioDetails.get('maintHealth') * 100 < 0
-                                ? 'text-th-red'
-                                : scenarioDetails.get('riskRanking') ===
-                                  'Very Poor'
-                                ? 'text-th-red'
-                                : scenarioDetails.get('riskRanking') === 'Poor'
-                                ? 'text-th-orange'
-                                : scenarioDetails.get('riskRanking') === 'OK'
-                                ? 'text-th-primary'
-                                : 'text-th-green'
-                            }`}
-                          >
-                            {scenarioDetails.get('maintHealth') * 100 < 0
-                              ? 'Rekt'
-                              : scenarioDetails.get('riskRanking')}
-                          </div>
-                        }
-                      </div>
-                    </div>
-
-                    <div>
-                      <div className="flex items-center justify-between pb-3">
-                        <div className="text-th-fgd-3">Account Value</div>
-                        <div className="font-bold">
-                          {formatUsdValue(scenarioDetails.get('equity'))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </Disclosure.Panel>
-              </>
-            )}
-          </Disclosure>
-        </div>
-      ) : null}
     </div>
   )
 }
