@@ -109,7 +109,7 @@ export interface UpdateRequest {
   expiryDate: string
 }
 
-interface Update {
+export interface Update {
   message: string
   expiryDate: string
   hasSeen: Array<[]>
@@ -190,6 +190,7 @@ interface MangoStore extends State {
     loading: boolean
     submitting: boolean
     updates: Array<{ message: string; date: string }>
+    newUpdatesCount: number
   }
   set: (x: any) => void
   actions: {
@@ -268,6 +269,7 @@ const useMangoStore = create<MangoStore>((set, get) => {
       loading: false,
       submitting: false,
       updates: [],
+      newUpdatesCount: 0,
     },
     set: (fn) => set(produce(fn)),
     actions: {
@@ -597,7 +599,7 @@ const useMangoStore = create<MangoStore>((set, get) => {
         const response = await fetch(fetchUrl, {
           method: 'POST',
           headers: headers,
-          body: JSON.stringify(req),
+          body: JSON.stringify(update),
         })
 
         if (response.ok) {
@@ -605,7 +607,7 @@ const useMangoStore = create<MangoStore>((set, get) => {
 
           set((state) => {
             state.globalUpdates.updates = [...updates, update as Update]
-            state.alerts.submitting = false
+            state.globalUpdates.submitting = false
           })
           notify({
             title: 'Update created',
@@ -620,7 +622,7 @@ const useMangoStore = create<MangoStore>((set, get) => {
           return false
         }
       },
-      async loadAlerts() {
+      async loadUpdates() {
         const set = get().set
 
         set((state) => {
@@ -637,11 +639,16 @@ const useMangoStore = create<MangoStore>((set, get) => {
         )
 
         if (response.ok) {
-          console.log(response)
+          const parsedResponse = await response.json()
+          const mangoAccountPk = get().selectedMangoAccount.current
+
+          const newUpdates = parsedResponse.updates.filter(
+            (u) => !u.hasSeen.includes(mangoAccountPk)
+          )
           set((state) => {
-            state.globalUpdates.updates = ''
-            state.globalUpdates.newUpdates = ''
-            state.alerts.loading = false
+            state.globalUpdates.updates = parsedResponse.updates
+            state.globalUpdates.newUpdatesCount = newUpdates.length
+            state.globalUpdates.loading = false
           })
         } else {
           notify({
@@ -649,28 +656,42 @@ const useMangoStore = create<MangoStore>((set, get) => {
             type: 'error',
           })
         }
+      },
+      async deleteUpdate(id: string) {
+        const set = get().set
 
-        // if (response) {
-        //   // sort active by latest creation time first
-        //   const activeAlerts = response.alerts
-        //     .filter((alert) => alert.open)
-        //     .sort((a, b) => {
-        //       return b.timestamp - a.timestamp
-        //     })
+        set((state) => {
+          state.globalUpdates.submitting = true
+        })
 
-        //   // sort triggered by latest trigger time first
-        //   const triggeredAlerts = response.alerts
-        //     .filter((alert) => !alert.open)
-        //     .sort((a, b) => {
-        //       return b.triggeredTimestamp - a.triggeredTimestamp
-        //     })
+        const fetchUrl = `https://mango-alerts-v3.herokuapp.com/delete-update`
+        const headers = { 'Content-Type': 'application/json' }
 
-        // set((state) => {
-        //   state.alerts.activeAlerts = activeAlerts
-        //   state.alerts.triggeredAlerts = triggeredAlerts
-        //   state.alerts.loading = false
-        // })
-        // }
+        const response = await fetch(fetchUrl, {
+          method: 'POST',
+          headers: headers,
+          body: JSON.stringify({ id }),
+        })
+
+        if (response.ok) {
+          const updates = get().globalUpdates.updates
+
+          set((state) => {
+            state.globalUpdates.updates = updates.filter(
+              (u: any) => u._id !== id
+            )
+            state.alerts.submitting = false
+          })
+          notify({
+            title: 'Alert deleted',
+            type: 'success',
+          })
+        } else {
+          notify({
+            title: 'Something went wrong',
+            type: 'error',
+          })
+        }
       },
     },
   }
