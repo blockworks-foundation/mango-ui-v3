@@ -104,6 +104,18 @@ export interface Orderbook {
   asks: number[][]
 }
 
+export interface UpdateRequest {
+  message: string
+  expiryDate: string
+}
+
+interface Update {
+  message: string
+  expiryDate: string
+  hasSeen: Array<[]>
+  hasCleared: Array<[]>
+}
+
 interface MangoStore extends State {
   notificationIdCounter: number
   notifications: Array<{
@@ -174,6 +186,11 @@ interface MangoStore extends State {
     uiLocked: boolean
   }
   tradeHistory: any[]
+  globalUpdates: {
+    loading: boolean
+    submitting: boolean
+    updates: Array<{ message: string; date: string }>
+  }
   set: (x: any) => void
   actions: {
     [key: string]: (args?) => void
@@ -247,6 +264,11 @@ const useMangoStore = create<MangoStore>((set, get) => {
       uiLocked: true,
     },
     tradeHistory: [],
+    globalUpdates: {
+      loading: false,
+      submitting: false,
+      updates: [],
+    },
     set: (fn) => set(produce(fn)),
     actions: {
       async fetchWalletTokens() {
@@ -555,6 +577,100 @@ const useMangoStore = create<MangoStore>((set, get) => {
           state.connection.current = newConnection
           state.connection.client = newClient
         })
+      },
+      async createUpdate(req: UpdateRequest) {
+        const set = get().set
+        const update = {
+          message: req.message,
+          expiryDate: req.expiryDate,
+          hasSeen: [],
+          hasCleared: [],
+        }
+
+        set((state) => {
+          state.globalUpdates.submitting = true
+        })
+
+        const fetchUrl = `https://mango-alerts-v3.herokuapp.com/updates`
+        const headers = { 'Content-Type': 'application/json' }
+
+        const response = await fetch(fetchUrl, {
+          method: 'POST',
+          headers: headers,
+          body: JSON.stringify(req),
+        })
+
+        if (response.ok) {
+          const updates = get().globalUpdates.updates
+
+          set((state) => {
+            state.globalUpdates.updates = [...updates, update as Update]
+            state.alerts.submitting = false
+          })
+          notify({
+            title: 'Update created',
+            type: 'success',
+          })
+          return true
+        } else {
+          notify({
+            title: 'Something went wrong',
+            type: 'error',
+          })
+          return false
+        }
+      },
+      async loadAlerts() {
+        const set = get().set
+
+        set((state) => {
+          state.globalUpdates.loading = true
+        })
+
+        const headers = { 'Content-Type': 'application/json' }
+        const response = await fetch(
+          `https://mango-alerts-v3.herokuapp.com/get-updates`,
+          {
+            method: 'GET',
+            headers: headers,
+          }
+        )
+
+        if (response.ok) {
+          console.log(response)
+          set((state) => {
+            state.globalUpdates.updates = ''
+            state.globalUpdates.newUpdates = ''
+            state.alerts.loading = false
+          })
+        } else {
+          notify({
+            title: 'Error fetching updates',
+            type: 'error',
+          })
+        }
+
+        // if (response) {
+        //   // sort active by latest creation time first
+        //   const activeAlerts = response.alerts
+        //     .filter((alert) => alert.open)
+        //     .sort((a, b) => {
+        //       return b.timestamp - a.timestamp
+        //     })
+
+        //   // sort triggered by latest trigger time first
+        //   const triggeredAlerts = response.alerts
+        //     .filter((alert) => !alert.open)
+        //     .sort((a, b) => {
+        //       return b.triggeredTimestamp - a.triggeredTimestamp
+        //     })
+
+        // set((state) => {
+        //   state.alerts.activeAlerts = activeAlerts
+        //   state.alerts.triggeredAlerts = triggeredAlerts
+        //   state.alerts.loading = false
+        // })
+        // }
       },
     },
   }
