@@ -22,6 +22,7 @@ import {
 } from '@blockworks-foundation/mango-client'
 import usePerpPositions from '../hooks/usePerpPositions'
 import { useOpenOrders } from '../hooks/useOpenOrders'
+import { formatUsdValue } from '../utils'
 
 interface CloseAccountModalProps {
   accountName?: string
@@ -175,8 +176,8 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
         mangoAccount.getAssetsVal(mangoGroup, mangoCache).gt(ZERO_I80F48) ? (
           <div className="flex items-center text-th-fgd-2 mt-4">
             <CheckCircleIcon className="h-4 w-4 mr-1.5 text-th-green" />
-            Withdraw assets worth $
-            {mangoAccount.getAssetsVal(mangoGroup, mangoCache).toFixed(2)}
+            Withdraw assets worth{' '}
+            {formatUsdValue(+mangoAccount.computeValue(mangoGroup, mangoCache))}
           </div>
         ) : (
           ''
