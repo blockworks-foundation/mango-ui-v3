@@ -65,11 +65,13 @@ const Notification = ({ notification }: { notification: Notification }) => {
 
   // overwrite the title if of the error message if it is a time out error
   let parsedTitle
-  if (
-    (description && description.includes('Timed out awaiting')) ||
-    description.includes('was not confirmed')
-  ) {
-    parsedTitle = 'Unable to confirm transaction'
+  if (description) {
+    if (
+      description?.includes('Timed out awaiting') ||
+      description?.includes('was not confirmed')
+    ) {
+      parsedTitle = 'Unable to confirm transaction'
+    }
   }
 
   // if the notification is a success, then hide the confirming tx notification with the same txid
@@ -101,7 +103,7 @@ const Notification = ({ notification }: { notification: Notification }) => {
           hideNotification()
         }
       },
-      parsedTitle || type === 'confirm' ? 30000 : 10000
+      parsedTitle || type === 'confirm' || type === 'error' ? 30000 : 10000
     )
 
     return () => {
