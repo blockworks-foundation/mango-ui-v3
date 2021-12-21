@@ -729,10 +729,7 @@ export default function AdvancedTradeForm({
       </ElementTitle>
       {insufficientSol ? (
         <div className="pb-3 text-left">
-          <InlineNotification
-            desc="Add more SOL to your wallet to avoid failed transactions."
-            type="warning"
-          />
+          <InlineNotification desc={t('add-more-sol')} type="warning" />
         </div>
       ) : null}
       <OrderSideTabs onChange={onChangeSide} side={side} />

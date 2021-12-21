@@ -48,10 +48,12 @@ import Modal from './Modal'
 import { ElementTitle } from './styles'
 import { WalletIcon } from './icons'
 import Tooltip from './Tooltip'
+import { useTranslation } from 'next-i18next'
 
 type UseJupiterProps = Parameters<typeof useJupiter>[0]
 
 const JupiterForm: FunctionComponent = () => {
+  const { t } = useTranslation(['common', 'swap'])
   const wallet = useMangoStore(walletSelector)
   const connection = useMangoStore(connectionSelector)
   const connected = useMangoStore(walletConnectedSelector)
@@ -418,13 +420,13 @@ const JupiterForm: FunctionComponent = () => {
       return (
         <div className="bg-th-bkg-3 flex min-w-[120px] p-2 rounded">
           <div>
-            <div className="text-th-fgd-3 text-xs">Time</div>
+            <div className="text-th-fgd-3 text-xs">{t('time')}</div>
             <div className="font-bold text-th-fgd-1 text-xs">
               {dayjs(tooltipProps.payload[0].payload.time).format('h:mma')}
             </div>
           </div>
           <div className="pl-3">
-            <div className="text-th-fgd-3 text-xs">Price</div>
+            <div className="text-th-fgd-3 text-xs">{t('price')}</div>
             <div className="font-bold text-th-fgd-1 text-xs">
               {usdFormatter(tooltipProps.payload[0].payload.price)}
             </div>
@@ -451,7 +453,7 @@ const JupiterForm: FunctionComponent = () => {
               className={`bg-th-bkg-3 max-h-[500px] overflow-auto pb-4 pt-6 rounded-r-md w-64 thin-scroll`}
             >
               <div className="flex items-center justify-between pb-2 px-4">
-                <div className="font-bold text-base text-th-fgd-1">Wallet</div>
+                <div className="font-bold text-base text-th-fgd-1">{t('wallet')}</div>
                 <a
                   className="flex items-center text-th-fgd-4 text-xs hover:text-th-fgd-3"
                   href={`https://explorer.solana.com/address/${wallet?.publicKey}`}
@@ -502,7 +504,7 @@ const JupiterForm: FunctionComponent = () => {
                             <div className="ml-2 text-th-fgd-4 text-xs">
                               {walletTokenPrices[geckoId]
                                 ? `$${walletTokenPrices[geckoId].usd}`
-                                : 'Unavailable'}
+                                : t('swap:unavailable')}
                             </div>
                           ) : null}
                         </div>
@@ -538,11 +540,11 @@ const JupiterForm: FunctionComponent = () => {
         <div className="mt-8 bg-th-bkg-2 rounded-lg px-6 py-8">
           <div className="flex justify-between">
             <label htmlFor="inputMint" className="block text-sm font-semibold">
-              Pay
+              {t('swap:pay')}
             </label>
             <div className="space-x-3">
               <label htmlFor="amount" className="text-th-fgd-3 text-xs">
-                Bal: {inputWalletBalance()}
+                {t('swap:bal')} {inputWalletBalance()}
               </label>
               {connected ? (
                 <>
@@ -555,7 +557,7 @@ const JupiterForm: FunctionComponent = () => {
                       }))
                     }}
                   >
-                    Max
+                    {t('max')}
                   </LinkButton>
                 </>
               ) : null}
@@ -609,10 +611,10 @@ const JupiterForm: FunctionComponent = () => {
 
           <div className="flex justify-between">
             <label htmlFor="outputMint" className="font-semibold">
-              Receive
+              {t('swap:receive')}
             </label>
             <span className="text-th-fgd-3 text-xs">
-              Bal: {outputWalletBalance()}
+              {t('swap:bal')} {outputWalletBalance()}
             </span>
           </div>
           <div className="flex items-center mt-3">
@@ -636,7 +638,9 @@ const JupiterForm: FunctionComponent = () => {
           {routes ? (
             <div>
               <div className="text-th-fgd-4 text-center text-xs">
-                {routes?.length} routes found!
+                {t('swap:routes-found', {
+                  numberOfRoutes: routes?.length
+                })}
               </div>
               <div
                 className="transition-all duration-700 mt-3 max-h-80 overflow-x-hidden overflow-y-auto thin-scroll pr-1"
@@ -718,7 +722,7 @@ const JupiterForm: FunctionComponent = () => {
                         onClick={handleShowMore}
                       >
                         <ChevronDownIcon className="h-5 mr-1 w-5" />
-                        Show more
+                        {t('show-more')}
                       </button>
                     ) : (
                       <button
@@ -726,17 +730,17 @@ const JupiterForm: FunctionComponent = () => {
                         onClick={handleShowLess}
                       >
                         <ChevronUpIcon className="h-5 mr-1 w-5" />
-                        Show less
+                        {t('show-less')}
                       </button>
                     )}
                   </div>
                 ) : null}
                 {routes.length ? (
                   <div className="text-xs">
-                    from{' '}
+                    {t('swap:from')}{' '}
                     {routes[routes.length - 1].outAmount /
                       10 ** (outputTokenInfo?.decimals || 1)}{' '}
-                    to{' '}
+                    {t('swap:to')}{' '}
                     {routes[0].outAmount /
                       10 ** (outputTokenInfo?.decimals || 1)}
                   </div>
@@ -758,7 +762,7 @@ const JupiterForm: FunctionComponent = () => {
           {error && (
             <div className="flex items-center justify-center mt-2 text-th-red">
               <ExclamationCircleIcon className="h-5 mr-1.5 w-5" />
-              Error in Jupiter – Try changing your input
+              {t('swap:jupiter-error')}
             </div>
           )}
         </div>
@@ -780,7 +784,7 @@ const JupiterForm: FunctionComponent = () => {
                     errorTxid = txid
                     notify({
                       type: 'confirm',
-                      title: 'Confirming Transaction',
+                      title: t('confirming-transaction'),
                       txid,
                     })
                   }
@@ -807,7 +811,7 @@ const JupiterForm: FunctionComponent = () => {
               } else if ('txid' in swapResult) {
                 notify({
                   type: 'success',
-                  title: 'Swap Successful',
+                  title: t('swap-successful'),
                   description: `Swapped ${
                     swapResult.inputAmount /
                     10 ** (inputTokenInfo?.decimals || 1)
@@ -826,7 +830,7 @@ const JupiterForm: FunctionComponent = () => {
           }}
           className="h-12 mt-6 text-base w-full"
         >
-          {connected ? (swapping ? 'Swapping...' : 'Swap') : 'Connect Wallet'}
+          {connected ? (swapping ? t('swap:swapping') : t('swap')) : t('connect-wallet')}
         </Button>
         {inputTokenStats?.prices?.length && outputTokenStats?.prices?.length ? (
           <>
@@ -945,7 +949,7 @@ const JupiterForm: FunctionComponent = () => {
         {selectedRoute && isTablet ? (
           <div className="flex flex-col space-y-2.5 mt-6 text-th-fgd-3 text-xs">
             <div className="flex justify-between">
-              <span>Rate</span>
+              <span>{t('rate')}</span>
               <span className="text-th-fgd-1">
                 1 {outputTokenInfo?.symbol} ≈{' '}
                 {(formValue?.amount / outAmountUi).toFixed(6)}{' '}
@@ -953,7 +957,7 @@ const JupiterForm: FunctionComponent = () => {
               </span>
             </div>
             <div className="flex justify-between">
-              <span>Price Impact</span>
+              <span>{t('price-impact')}</span>
               <span className="text-th-fgd-1">
                 {selectedRoute.priceImpactPct * 100 < 0.1
                   ? '< 0.1%'
@@ -961,7 +965,7 @@ const JupiterForm: FunctionComponent = () => {
               </span>
             </div>
             <div className="flex justify-between">
-              <span>Minimum Received</span>
+              <span>{t('swap:minimum-received')}</span>
               <span className="text-th-fgd-1">
                 {(
                   selectedRoute.outAmountWithSlippage /
@@ -976,7 +980,11 @@ const JupiterForm: FunctionComponent = () => {
               )
               return (
                 <div className="flex justify-between" key={index}>
-                  <span>Fees paid to {info.marketMeta?.amm?.label}</span>
+                  <span>
+                    {t('swap:fees-paid-to', {
+                      feeRecipient: info.marketMeta?.amm?.label
+                    })}
+                  </span>
                   <span className="text-th-fgd-1">
                     {(
                       info.lpFee?.amount / Math.pow(10, feeToken?.decimals)
@@ -989,7 +997,7 @@ const JupiterForm: FunctionComponent = () => {
             {connected ? (
               <>
                 <div className="flex justify-between">
-                  <span>Transaction Fee</span>
+                  <span>{t('swap:transaction-fee')}</span>
                   <span className="text-th-fgd-1">
                     {depositAndFee
                       ? depositAndFee?.signatureFee / Math.pow(10, 9)
@@ -998,18 +1006,21 @@ const JupiterForm: FunctionComponent = () => {
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span>Deposit</span>
+                  <span>{t('swap:ata-deposit')}</span>
                   <div className="flex flex-col text-right">
                     <span className="text-th-fgd-1">
-                      {depositAndFee?.ataDeposit / Math.pow(10, 9)} SOL for{' '}
-                      {depositAndFee?.ataDepositLength} ATA Account
+                      {t('swap:ata-deposit-details', {
+                        cost: depositAndFee?.ataDeposit / Math.pow(10, 9),
+                        count: depositAndFee?.ataDepositLength
+                      })}
                     </span>
                     {depositAndFee?.openOrdersDeposits?.length ? (
                       <span className="text-th-fgd-1">
-                        {sum(depositAndFee?.openOrdersDeposits) /
-                          Math.pow(10, 9)}{' '}
-                        SOL for {depositAndFee?.openOrdersDeposits.length} Serum
-                        OpenOrders Account
+                        {t('swap:serum-details', {
+                          cost: sum(depositAndFee?.openOrdersDeposits) /
+                          Math.pow(10, 9),
+                          count: depositAndFee?.openOrdersDeposits.length
+                        })}
                       </span>
                     ) : null}
                   </div>
@@ -1048,17 +1059,16 @@ const JupiterForm: FunctionComponent = () => {
         ) : null}
         {connected && !hasSwapped ? (
           <Modal isOpen={!hasSwapped} onClose={() => setHasSwapped(true)}>
-            <ElementTitle>Before you get started...</ElementTitle>
+            <ElementTitle>{t('swap:get-started')}</ElementTitle>
             <div className="flex flex-col justify-center">
               <div className="text-center text-th-fgd-3">
-                Swaps interact directly with your connected wallet, not your
-                Mango Account.
+                {t('swap:swap-in-wallet')}
               </div>
               <Button
                 className="mt-6 mx-auto"
                 onClick={() => setHasSwapped(true)}
               >
-                Got It
+                {t('swap:got-it')}
               </Button>
             </div>
           </Modal>
@@ -1074,7 +1084,7 @@ const JupiterForm: FunctionComponent = () => {
         >
           <div className="space-y-2.5 text-th-fgd-3 text-xs">
             <div>
-              <span>Rate</span>
+              <span>{t('rate')}</span>
               <div className="mt-0.5 text-th-fgd-1">
                 1 {outputTokenInfo?.symbol} ≈{' '}
                 {(formValue?.amount / outAmountUi).toFixed(6)}{' '}
@@ -1082,7 +1092,7 @@ const JupiterForm: FunctionComponent = () => {
               </div>
             </div>
             <div>
-              <span>Price Impact</span>
+              <span>{t('price-impact')}</span>
               <div className="mt-0.5 text-th-fgd-1">
                 {selectedRoute?.priceImpactPct * 100 < 0.1
                   ? '< 0.1%'
@@ -1090,7 +1100,7 @@ const JupiterForm: FunctionComponent = () => {
               </div>
             </div>
             <div>
-              <span>Minimum Received</span>
+              <span>{t('swap:minimum-received')}</span>
               <div className="mt-0.5 text-th-fgd-1">
                 {(
                   selectedRoute?.outAmountWithSlippage /
@@ -1102,7 +1112,7 @@ const JupiterForm: FunctionComponent = () => {
             {!isNaN(feeValue) ? (
               <div>
                 <div className="flex items-center">
-                  <span>Swap Fee</span>
+                  <span>{t('swap:swap-fee')}</span>
                   <Tooltip
                     content={
                       <div className="space-y-2.5">
@@ -1113,7 +1123,9 @@ const JupiterForm: FunctionComponent = () => {
                           return (
                             <div key={index}>
                               <span>
-                                Fees paid to {info.marketMeta?.amm?.label}
+                                {t('swap:fees-paid-to', {
+                                  feeRecipient: info.marketMeta?.amm?.label
+                                })}
                               </span>
                               <div className="text-th-fgd-1">
                                 {(
@@ -1143,7 +1155,11 @@ const JupiterForm: FunctionComponent = () => {
                 )
                 return (
                   <div key={index}>
-                    <span>Fees paid to {info.marketMeta?.amm?.label}</span>
+                    <span>
+                    {t('swap:fees-paid-to', {
+                      feeRecipient: info.marketMeta?.amm?.label
+                    })}
+                    </span>
                     <div className="mt-0.5 text-th-fgd-1">
                       {(
                         info.lpFee?.amount / Math.pow(10, feeToken?.decimals)
@@ -1157,7 +1173,7 @@ const JupiterForm: FunctionComponent = () => {
             {connected ? (
               <>
                 <div>
-                  <span>Transaction Fee</span>
+                  <span>{t('swap:transaction-fee')}</span>
                   <div className="mt-0.5 text-th-fgd-1">
                     {depositAndFee
                       ? depositAndFee?.signatureFee / Math.pow(10, 9)
@@ -1169,26 +1185,24 @@ const JupiterForm: FunctionComponent = () => {
                 depositAndFee?.openOrdersDeposits?.length ? (
                   <div>
                     <div className="flex items-center">
-                      <span>Deposit</span>
+                      <span>{t('deposit')}</span>
                       <Tooltip
                         content={
                           <>
                             {depositAndFee?.ataDepositLength ? (
                               <div>
-                                You need to have an Associated Token Account.
+                                {t('swap:need-ata-account')}
                               </div>
                             ) : null}
                             {depositAndFee?.openOrdersDeposits?.length ? (
                               <div className="mt-2">
-                                Serum requires an OpenOrders account for each
-                                token. You can close the account and recover the
-                                SOL later.{' '}
+                                {t('swap:serum-requires-openorders')}{' '}
                                 <a
                                   href="https://docs.google.com/document/d/1qEWc_Bmc1aAxyCUcilKB4ZYpOu3B0BxIbe__dRYmVns/"
                                   target="_blank"
                                   rel="noopener noreferrer"
                                 >
-                                  Here&apos;s how
+                                  {t('swap:heres-how')}
                                 </a>
                               </div>
                             ) : null}
@@ -1202,23 +1216,18 @@ const JupiterForm: FunctionComponent = () => {
                     <div>
                       {depositAndFee?.ataDepositLength ? (
                         <div className="mt-0.5 text-th-fgd-1">
-                          {(
-                            depositAndFee?.ataDeposit / Math.pow(10, 9)
-                          ).toFixed(5)}{' '}
-                          SOL for {depositAndFee?.ataDepositLength} ATA Account
+                          {t('swap:ata-deposit-details', {
+                            cost: (depositAndFee?.ataDeposit / Math.pow(10, 9)).toFixed(5),
+                            count: depositAndFee?.ataDepositLength
+                          })}
                         </div>
                       ) : null}
                       {depositAndFee?.openOrdersDeposits?.length ? (
                         <div className="mt-0.5 text-th-fgd-1">
-                          {(
-                            sum(depositAndFee?.openOrdersDeposits) /
-                            Math.pow(10, 9)
-                          ).toFixed(5)}{' '}
-                          SOL for {depositAndFee?.openOrdersDeposits.length}{' '}
-                          Serum OpenOrders{' '}
-                          {depositAndFee?.openOrdersDeposits.length > 1
-                            ? 'Accounts'
-                            : 'Account'}
+                          {t('swap:serum-details', {
+                            cost: (sum(depositAndFee?.openOrdersDeposits) / Math.pow(10, 9)).toFixed(5),
+                            count: depositAndFee?.openOrdersDeposits.length
+                          })}
                         </div>
                       ) : null}
                     </div>
