@@ -107,13 +107,19 @@ export interface Orderbook {
 export interface UpdateRequest {
   message: string
   expiryDate: string
+  password: string
 }
 
 export interface Update {
   message: string
   expiryDate: string
-  hasSeen: Array<[]>
-  hasCleared: Array<[]>
+  hasSeen: Array<string>
+  hasCleared: Array<string>
+}
+
+interface DeleteUpdateReq {
+  id: string
+  password: string
 }
 
 interface MangoStore extends State {
@@ -189,8 +195,12 @@ interface MangoStore extends State {
   globalUpdates: {
     loading: boolean
     submitting: boolean
-    updates: Array<{ message: string; date: string }>
-    newUpdatesCount: number
+    updates: Array<{
+      message: string
+      date: string
+      hasSeen: Array<string>
+      hasCleared: Array<string>
+    }>
   }
   set: (x: any) => void
   actions: {
@@ -269,7 +279,6 @@ const useMangoStore = create<MangoStore>((set, get) => {
       loading: false,
       submitting: false,
       updates: [],
-      newUpdatesCount: 0,
     },
     set: (fn) => set(produce(fn)),
     actions: {
@@ -582,11 +591,14 @@ const useMangoStore = create<MangoStore>((set, get) => {
       },
       async createUpdate(req: UpdateRequest) {
         const set = get().set
-        const update = {
-          message: req.message,
-          expiryDate: req.expiryDate,
-          hasSeen: [],
-          hasCleared: [],
+        const body = {
+          update: {
+            message: req.message,
+            expiryDate: req.expiryDate,
+            hasSeen: [],
+            hasCleared: [],
+          },
+          password: req.password,
         }
 
         set((state) => {
@@ -599,14 +611,14 @@ const useMangoStore = create<MangoStore>((set, get) => {
         const response = await fetch(fetchUrl, {
           method: 'POST',
           headers: headers,
-          body: JSON.stringify(update),
+          body: JSON.stringify(body),
         })
 
         if (response.ok) {
-          const updates = get().globalUpdates.updates
-
+          await get().actions.loadUpdates()
+          // const updates = get().globalUpdates.updates
           set((state) => {
-            state.globalUpdates.updates = [...updates, update as Update]
+            // state.globalUpdates.updates = updates.concat([body.update as any])
             state.globalUpdates.submitting = false
           })
           notify({
@@ -640,14 +652,9 @@ const useMangoStore = create<MangoStore>((set, get) => {
 
         if (response.ok) {
           const parsedResponse = await response.json()
-          const mangoAccountPk = get().selectedMangoAccount.current
 
-          const newUpdates = parsedResponse.updates.filter(
-            (u) => !u.hasSeen.includes(mangoAccountPk)
-          )
           set((state) => {
             state.globalUpdates.updates = parsedResponse.updates
-            state.globalUpdates.newUpdatesCount = newUpdates.length
             state.globalUpdates.loading = false
           })
         } else {
@@ -657,7 +664,7 @@ const useMangoStore = create<MangoStore>((set, get) => {
           })
         }
       },
-      async deleteUpdate(id: string) {
+      async deleteUpdate(req: DeleteUpdateReq) {
         const set = get().set
 
         set((state) => {
@@ -670,7 +677,7 @@ const useMangoStore = create<MangoStore>((set, get) => {
         const response = await fetch(fetchUrl, {
           method: 'POST',
           headers: headers,
-          body: JSON.stringify({ id }),
+          body: JSON.stringify(req),
         })
 
         if (response.ok) {
@@ -678,19 +685,21 @@ const useMangoStore = create<MangoStore>((set, get) => {
 
           set((state) => {
             state.globalUpdates.updates = updates.filter(
-              (u: any) => u._id !== id
+              (u: any) => u._id !== req.id
             )
-            state.alerts.submitting = false
+            state.globalUpdates.submitting = false
           })
           notify({
-            title: 'Alert deleted',
+            title: 'Update deleted',
             type: 'success',
           })
+          return true
         } else {
           notify({
             title: 'Something went wrong',
             type: 'error',
           })
+          return false
         }
       },
     },

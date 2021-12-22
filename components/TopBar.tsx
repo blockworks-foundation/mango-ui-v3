@@ -13,6 +13,7 @@ import { DEFAULT_MARKET_KEY, initialMarket } from './SettingsModal'
 // import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import Settings from './Settings'
+import Updates from './Updates'
 
 const TopBar = () => {
   const { t } = useTranslation('common')
@@ -99,19 +100,24 @@ const TopBar = () => {
               {mangoAccount &&
               mangoAccount.owner.toBase58() ===
                 wallet?.publicKey?.toBase58() ? (
-                <div className="pl-2">
-                  <button
-                    className="border border-th-bkg-4 py-1 px-2 rounded text-xs focus:outline-none hover:border-th-fgd-4"
-                    onClick={() => setShowAccountsModal(true)}
-                  >
-                    <div className="font-normal text-th-primary text-xs">
-                      {t('account')}
-                    </div>
-                    {mangoAccount.name
-                      ? mangoAccount.name
-                      : abbreviateAddress(mangoAccount.publicKey)}
-                  </button>
-                </div>
+                <>
+                  <div className="pl-2">
+                    <Updates />
+                  </div>
+                  <div className="pl-2">
+                    <button
+                      className="border border-th-bkg-4 py-1 px-2 rounded text-xs focus:outline-none hover:border-th-fgd-4"
+                      onClick={() => setShowAccountsModal(true)}
+                    >
+                      <div className="font-normal text-th-primary text-xs">
+                        {t('account')}
+                      </div>
+                      {mangoAccount.name
+                        ? mangoAccount.name
+                        : abbreviateAddress(mangoAccount.publicKey)}
+                    </button>
+                  </div>
+                </>
               ) : null}
               <div className="flex">
                 <div className="pl-2">
