@@ -1339,12 +1339,12 @@
     "@types/yargs" "^16.0.0"
     chalk "^4.0.0"
 
-"@jup-ag/core@~0.0.0-alpha.22":
-  version "0.0.0-alpha.22"
-  resolved "https://registry.yarnpkg.com/@jup-ag/core/-/core-0.0.0-alpha.22.tgz#e2c50e55cda8b1338e919751cfe4aa77601da77b"
-  integrity sha512-78Z2+7TfhRomWH7i+9rA1+g+UL8OUu/ZofzXN7Jib1X0M3hMii4C7AvfoHNn+b36WOupi5c5J6Qp2MCWlF/v2Q==
+"@jup-ag/core@1.0.0-beta.0":
+  version "1.0.0-beta.0"
+  resolved "https://registry.yarnpkg.com/@jup-ag/core/-/core-1.0.0-beta.0.tgz#0149a7097ec59d5401fe4b1b7057814589aade5b"
+  integrity sha512-1hAEVCO/jI/aQjiXCIPy+fvsrEwrnOEDdnB8V0CSM9q2hWItTLGboR8t23xdkbfYoMoxN/WAE186izQX2nezZQ==
   dependencies:
-    "@jup-ag/math" "0.0.0-alpha.22"
+    "@jup-ag/math" "1.0.0-beta.0"
     "@mercurial-finance/stable-swap-n-pool" "0.2.0"
     "@project-serum/anchor" "0.17.1-beta.1"
     "@project-serum/serum" "~0.13.60"
@@ -1359,10 +1359,10 @@
     jsbi "~4.1.0"
     promise-retry "~2.0.1"
 
-"@jup-ag/math@0.0.0-alpha.22":
-  version "0.0.0-alpha.22"
-  resolved "https://registry.yarnpkg.com/@jup-ag/math/-/math-0.0.0-alpha.22.tgz#0631b47f67701f297835f31d8e7654577f11de0d"
-  integrity sha512-zbq1GFC243EIaAgTjr2r3Z/XqWysqVHsYE2Y3kvxEWM0OTHgU+wyGlGYfRIjXsMWv4clL38ZJsIsoxoYnfD7fg==
+"@jup-ag/math@1.0.0-beta.0":
+  version "1.0.0-beta.0"
+  resolved "https://registry.yarnpkg.com/@jup-ag/math/-/math-1.0.0-beta.0.tgz#b89912edcca90a25aa43747140bfe64506d9c4f4"
+  integrity sha512-C4r5EUnwYT4QGkqyCuKrGENDPYuZs6cJF4JP9Jx2Q1i0jJK+FIct+lOmskJ2dKJG4Khvx9NLlWH3RzNGokROgA==
   dependencies:
     "@solana/spl-token-registry" "^0.2.229"
     "@solana/web3.js" "~1.30.2"
@@ -1370,12 +1370,12 @@
     decimal.js "~10.3.1"
     jsbi "~4.1.0"
 
-"@jup-ag/react-hook@^0.0.0-alpha.22":
-  version "0.0.0-alpha.22"
-  resolved "https://registry.yarnpkg.com/@jup-ag/react-hook/-/react-hook-0.0.0-alpha.22.tgz#e11cf00e24ee66fd051d01332b5c0b2b37d9c80d"
-  integrity sha512-a5pNvTr41zHZWUIWrBrGODfy+9+vNdnfT1MePx+bVuOHmZjNKCmHU/DGmZOHzs+QuycbT61U7VfnH1mGC92jXA==
+"@jup-ag/react-hook@latest":
+  version "1.0.0-beta.0"
+  resolved "https://registry.yarnpkg.com/@jup-ag/react-hook/-/react-hook-1.0.0-beta.0.tgz#3f28ad1f38786c9a43baa79bc3dba625111839ea"
+  integrity sha512-0llUvxceYfNx5vD6Hx3Eed5S1PWWWQ76kZydSbFLh20CnkV51+oA2iK/04XPDdizSvt4ZhUn3zokQnB8VP56WQ==
   dependencies:
-    "@jup-ag/core" "~0.0.0-alpha.22"
+    "@jup-ag/core" "1.0.0-beta.0"
 
 "@mercurial-finance/stable-swap-n-pool@0.2.0":
   version "0.2.0"
@@ -1667,10 +1667,10 @@
     bs58 "^4.0.1"
     eventemitter3 "^4.0.7"
 
-"@saberhq/solana-contrib@^1.10.5", "@saberhq/solana-contrib@^1.6.2":
-  version "1.10.5"
-  resolved "https://registry.yarnpkg.com/@saberhq/solana-contrib/-/solana-contrib-1.10.5.tgz#a556bfae83fe3e1e686466ac21178f099a09a1be"
-  integrity sha512-IH0FFlzsCCBSS1XGTVVr/GKk8ngEocDO/W28W7Q8J1Pyap7ioa5dOFw0mInjk+uDX8dBP9UmubFRPqpLvvXqAg==
+"@saberhq/solana-contrib@^1.11.3", "@saberhq/solana-contrib@^1.6.2":
+  version "1.11.3"
+  resolved "https://registry.yarnpkg.com/@saberhq/solana-contrib/-/solana-contrib-1.11.3.tgz#40d4fc64e728dc3135e1df555e78881b6f6428a2"
+  integrity sha512-crh3GdPk9yY3ieWQfFOGh1SIoW6mGvCcyKu4XDGT3hfSXKpYY+1XNVIKVgpHc+gIoscZZKOeHIw8elDCm9qkeg==
   dependencies:
     "@types/promise-retry" "^1.1.3"
     "@types/retry" "^0.12.1"
@@ -1694,14 +1694,14 @@
     yargs "^17.2.1"
 
 "@saberhq/token-utils@^1.6.2":
-  version "1.10.5"
-  resolved "https://registry.yarnpkg.com/@saberhq/token-utils/-/token-utils-1.10.5.tgz#4c18efc9c17296de4e8a79c17b9804a4d58d4617"
-  integrity sha512-CvvdLV3bEIiS0t08Lbgbeh82lsTPTkOL45n28qkRMldL7uCTejMB6t67nwXcWeGjQ27/lHMud7I2njQThTOTrg==
+  version "1.11.3"
+  resolved "https://registry.yarnpkg.com/@saberhq/token-utils/-/token-utils-1.11.3.tgz#b6b283f0ee3aae5db7cf1df67724e4218ca1ff81"
+  integrity sha512-/GRnNQlm0GYKJOZxrNwWxWAak+bDtyFEMlWVO/oloPKjjAW037IPPoxl+O0AWYOShEy7JooEDsg1nnbzAa6hYQ==
   dependencies:
-    "@saberhq/solana-contrib" "^1.10.5"
-    "@solana/buffer-layout" "^3.0.0"
+    "@saberhq/solana-contrib" "^1.11.3"
+    "@solana/buffer-layout" "^4.0.0"
     "@solana/spl-token" "^0.1.8"
-    "@ubeswap/token-math" "^4.3.1"
+    "@ubeswap/token-math" "^4.4.1"
     tiny-invariant "^1.2.0"
     tslib "^2.3.1"
 
@@ -1731,7 +1731,7 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
-"@solana/buffer-layout@^3.0.0", "@solana/buffer-layout@~3.0.0":
+"@solana/buffer-layout@3.0.0", "@solana/buffer-layout@^3.0.0", "@solana/buffer-layout@^4.0.0", "@solana/buffer-layout@~3.0.0":
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/@solana/buffer-layout/-/buffer-layout-3.0.0.tgz#b9353caeb9a1589cb77a1b145bcb1a9a93114326"
   integrity sha512-MVdgAKKL39tEs0l8je0hKaXLQFb7Rdfb0Xg2LjFZd8Lfdazkg6xiS98uAZrEKvaoF3i4M95ei9RydkGIDMeo3w==
@@ -1739,9 +1739,9 @@
     buffer "~6.0.3"
 
 "@solana/spl-token-registry@^0.2.229":
-  version "0.2.692"
-  resolved "https://registry.yarnpkg.com/@solana/spl-token-registry/-/spl-token-registry-0.2.692.tgz#a2f8261603293114c0f3fbd2a0bb6a7119e25486"
-  integrity sha512-7n4JRWlDOWtFTK1ZcVC8ynvP07/4yZ2Pu0J2DiQf44UT7ZrgWgaKChe3yYBxEZP7Z3zxPIlYVgvWJa1VWLtCAw==
+  version "0.2.819"
+  resolved "https://registry.yarnpkg.com/@solana/spl-token-registry/-/spl-token-registry-0.2.819.tgz#1bf967e60a98eb55161d95fed2b91aef4cf61745"
+  integrity sha512-gPXH4L692NoWzfJSe45S6rVD6ImMcirc9KrD+XuE1pYRM9bl6pD7czfmlEw+SwvPb76Sm26M0ikemVhmI6+ORg==
   dependencies:
     cross-fetch "3.0.6"
 
@@ -2099,14 +2099,14 @@
   integrity sha512-0d5Wd09ItQWH1qFbEyQ7oTQ3GZrMfth5JkbN3EvTKLXcHLRDSXeLnlvlOn0wvxVIwK5o2M8JzP/OWz7T3NRsbw==
 
 "@types/node@*":
-  version "16.11.12"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.11.12.tgz#ac7fb693ac587ee182c3780c26eb65546a1a3c10"
-  integrity sha512-+2Iggwg7PxoO5Kyhvsq9VarmPbIelXP070HMImEpbtGCoyWNINQj4wzjbQCXzdHTRXnqufutJb5KAURZANNBAw==
+  version "17.0.2"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-17.0.2.tgz#a4c07d47ff737e8ee7e586fe636ff0e1ddff070a"
+  integrity sha512-JepeIUPFDARgIs0zD/SKPgFsJEAF0X5/qO80llx59gOxFTboS9Amv3S+QfB7lqBId5sFXJ99BN0J6zFRvL9dDA==
 
 "@types/node@^12.12.54":
-  version "12.20.37"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.20.37.tgz#abb38afa9d6e8a2f627a8cb52290b3c80fbe61ed"
-  integrity sha512-i1KGxqcvJaLQali+WuypQnXwcplhtNtjs66eNsZpp2P2FL/trJJxx/VWsM0YCL2iMoIJrbXje48lvIQAQ4p2ZA==
+  version "12.20.38"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.20.38.tgz#74801983c0558a7a31a4ead18bce2edded2b0e2f"
+  integrity sha512-NxmtBRGipjx1B225OeMdI+CQmLbYqvvmYbukDTJGDgzIDgPQ1EcjGmYxGhOk5hTBqeB558S6RgHSpq2iiqifAQ==
 
 "@types/node@^14.14.25":
   version "14.17.3"
@@ -2296,13 +2296,13 @@
     "@typescript-eslint/types" "4.33.0"
     eslint-visitor-keys "^2.0.0"
 
-"@ubeswap/token-math@^4.2.0", "@ubeswap/token-math@^4.3.1":
-  version "4.3.1"
-  resolved "https://registry.yarnpkg.com/@ubeswap/token-math/-/token-math-4.3.1.tgz#e72aee7907e375d305e4a743327aa261b8f84339"
-  integrity sha512-RjN/vmcHos/5j2ewAcKl5fYZhvpING5ghsw+V9g5uZ9f/W+ZYtqXCtbI+ppexCacZ+VCEvAAeg7SFHohOMG2bQ==
+"@ubeswap/token-math@^4.2.0", "@ubeswap/token-math@^4.4.1":
+  version "4.4.1"
+  resolved "https://registry.yarnpkg.com/@ubeswap/token-math/-/token-math-4.4.1.tgz#bb1aa0547691aed6c14d1a80db4538b6e74a502e"
+  integrity sha512-856auygzQ8chxOt2dNGk5Tp/TWl8Fgs2U6pTHkclFn8RcV7htpd/DaTYDCITQneLTAIfAkm1UopIkwHDaMMx4g==
   dependencies:
     big.js "^6.1.1"
-    decimal.js-light "^2.5.0"
+    decimal.js-light "^2.5.1"
     tiny-invariant "^1.2.0"
     toformat "^2.0.0"
     tslib "^2.3.1"
@@ -3807,7 +3807,7 @@ decamelize@^1.2.0:
   resolved "https://registry.yarnpkg.com/decamelize/-/decamelize-1.2.0.tgz#f6534d15148269b20352e7bee26f501f9a191290"
   integrity sha1-9lNNFRSCabIDUue+4m9QH5oZEpA=
 
-decimal.js-light@^2.4.1, decimal.js-light@^2.5.0:
+decimal.js-light@^2.4.1, decimal.js-light@^2.5.1:
   version "2.5.1"
   resolved "https://registry.yarnpkg.com/decimal.js-light/-/decimal.js-light-2.5.1.tgz#134fd32508f19e208f4fb2f8dac0d2626a867934"
   integrity sha512-qIMFpTMZmny+MMIitAB6D7iVPEorVw6YQRWkvarTkT4tBeSLLiHzcwj6q0MmYSFCiVpiqPJTJEYIrpcPzVEIvg==
@@ -5810,9 +5810,9 @@ istanbul-reports@^3.0.2:
     istanbul-lib-report "^3.0.0"
 
 jayson@^3.4.4:
-  version "3.6.5"
-  resolved "https://registry.yarnpkg.com/jayson/-/jayson-3.6.5.tgz#e560bcad4daf098c7391f46ba8efc9d6f34a4102"
-  integrity sha512-wmOjX+eQcnCDyPF4KORomaIj9wj3h0B5VEbeD0+2VHfTfErB+h1zpR7oBkgCZp36AFjp3+a4CLz6U72BYpFHAw==
+  version "3.6.6"
+  resolved "https://registry.yarnpkg.com/jayson/-/jayson-3.6.6.tgz#189984f624e398f831bd2be8e8c80eb3abf764a1"
+  integrity sha512-f71uvrAWTtrwoww6MKcl9phQTC+56AopLyEenWvKVAIMz+q0oVGj6tenLZ7Z6UiPBkJtKLj4kt0tACllFQruGQ==
   dependencies:
     "@types/connect" "^3.4.33"
     "@types/express-serve-static-core" "^4.17.9"
@@ -5827,7 +5827,7 @@ jayson@^3.4.4:
     isomorphic-ws "^4.0.1"
     json-stringify-safe "^5.0.1"
     lodash "^4.17.20"
-    uuid "^3.4.0"
+    uuid "^8.3.2"
     ws "^7.4.5"
 
 jest-changed-files@^26.6.2:
@@ -9879,12 +9879,7 @@ util@0.12.4, util@^0.12.0:
     safe-buffer "^5.1.2"
     which-typed-array "^1.1.2"
 
-uuid@^3.4.0:
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.4.0.tgz#b23e4358afa8a202fe7a100af1f5f883f02007ee"
-  integrity sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A==
-
-uuid@^8.3.0:
+uuid@^8.3.0, uuid@^8.3.2:
   version "8.3.2"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-8.3.2.tgz#80d5b5ced271bb9af6c445f21a1a04c606cefbe2"
   integrity sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==

@@ -29,7 +29,7 @@
     "@blockworks-foundation/mango-client": "git+https://github.com/blockworks-foundation/mango-client-v3.git",
     "@headlessui/react": "^1.2.0",
     "@heroicons/react": "^1.0.0",
-    "@jup-ag/react-hook": "^0.0.0-alpha.22",
+    "@jup-ag/react-hook": "latest",
     "@project-serum/serum": "0.13.55",
     "@project-serum/sol-wallet-adapter": "0.2.0",
     "@solana/web3.js": "^1.31.0",
@@ -87,6 +87,7 @@
   },
   "resolutions": {
     "bn.js": "5.1.3",
+    "@solana/buffer-layout": "3.0.0",
     "@types/bn.js": "5.1.0"
   }
 }

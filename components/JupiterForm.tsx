@@ -284,6 +284,8 @@ const JupiterForm: FunctionComponent = () => {
     ? selectedRoute.outAmount / 10 ** (outputTokenInfo?.decimals || 1)
     : null
 
+  const swapDisabled = loading || !selectedRoute || routes?.length === 0
+
   return (
     <div className="max-w-md mx-auto">
       {connected ? (
@@ -509,7 +511,7 @@ const JupiterForm: FunctionComponent = () => {
       </div>
       <button
         type="button"
-        disabled={loading}
+        disabled={swapDisabled}
         onClick={async () => {
           if (!connected && zeroKey !== wallet?.publicKey) {
             wallet.connect()
@@ -569,7 +571,9 @@ const JupiterForm: FunctionComponent = () => {
             }
           }
         }}
-        className="mt-6 p-4 bg-th-bkg-2 hover:bg-th-primary w-full"
+        className={`mt-6 p-4 bg-th-bkg-2 ${
+          swapDisabled ? 'cursor-not-allowed ' : 'hover:bg-th-primary'
+        } w-full`}
       >
         {connected ? (swapping ? 'Swapping...' : 'Swap') : 'Connect Wallet'}
       </button>
