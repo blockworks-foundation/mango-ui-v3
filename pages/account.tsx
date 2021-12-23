@@ -17,6 +17,7 @@ import AccountsModal from '../components/AccountsModal'
 import AccountOverview from '../components/account_page/AccountOverview'
 import AccountInterest from '../components/account_page/AccountInterest'
 import AccountFunding from '../components/account_page/AccountFunding'
+import AccountPerformance from '../components/account_page/AccountPerformance'
 import AccountNameModal from '../components/AccountNameModal'
 import Button from '../components/Button'
 import EmptyState from '../components/EmptyState'
@@ -40,7 +41,7 @@ export async function getServerSideProps({ locale }) {
   }
 }
 
-const TABS = ['Portfolio', 'Orders', 'History', 'Interest', 'Funding']
+const TABS = ['Portfolio', 'Orders', 'History', 'Interest', 'Funding', 'Performance']
 
 export default function Account() {
   const { t } = useTranslation('common')
@@ -305,6 +306,8 @@ const TabContent = ({ activeTab }) => {
       return <AccountInterest />
     case 'Funding':
       return <AccountFunding />
+    case 'Performance':
+      return <AccountPerformance />
     default:
       return <AccountOverview />
   }
