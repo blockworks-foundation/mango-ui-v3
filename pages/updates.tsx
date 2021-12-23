@@ -28,7 +28,7 @@ export default function UpdatesPage() {
   const [updateMessage, setUpdateMessage] = useState('')
   const [password, setPassword] = useState('')
   const [expiryDate, setExpiryDate] = useState<any>(
-    new Date(new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).getTime())
+    new Date(new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).getTime()).getTime()
   )
   const [expiryOffset, setExpiryOffset] = useState('1')
   const [deleteUpdateId, setDeleteUpdateId] = useState('')
@@ -61,7 +61,9 @@ export default function UpdatesPage() {
     }
     setExpiryOffset(offset)
     setExpiryDate(
-      new Date(new Date(Date.now() + days * 24 * 60 * 60 * 1000).getTime())
+      new Date(
+        new Date(Date.now() + days * 24 * 60 * 60 * 1000).getTime()
+      ).getTime()
     )
   }
 
@@ -168,10 +170,16 @@ export default function UpdatesPage() {
                       key={index}
                     >
                       <div>
-                        <div className="mb-1">{u.message}</div>
-                        <div className="text-th-fgd-3 text-xs">
-                          Expires:{' '}
-                          {dayjs(u.expiryDate).format('DD MMM YYYY, h:mma')}
+                        <div className="mb-2">{u.message}</div>
+                        <div className="flex space-x-3">
+                          <div className="text-th-fgd-3 text-xs">
+                            Created:{' '}
+                            {dayjs(u.date).format('DD MMM YYYY, h:mma')}
+                          </div>
+                          <div className="text-th-fgd-3 text-xs">
+                            Expires:{' '}
+                            {dayjs(u.expiryDate).format('DD MMM YYYY, h:mma')}
+                          </div>
                         </div>
                       </div>
                       <div className="flex items-center">

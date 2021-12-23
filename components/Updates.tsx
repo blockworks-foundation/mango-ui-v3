@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import dayjs from 'dayjs'
 import { notify } from '../utils/notifications'
 import { BellIcon } from '@heroicons/react/outline'
 import useMangoStore from '../stores/useMangoStore'
@@ -106,10 +107,10 @@ const Updates = () => {
         <BellIcon className="w-4 h-4" />
       </IconButton>
       {showUpdates ? (
-        <div className="absolute bg-th-bkg-1 mt-4 p-3 outline-none right-0 rounded-md shadow-lg w-64 z-20">
+        <div className="absolute bg-th-bkg-1 mt-4 p-3 outline-none right-0 rounded-md shadow-lg w-72 z-20">
           <div className="space-y-2">
             <div className="border-b border-th-bkg-4 flex items-center justify-between pb-2">
-              <h3 className="font-bold text-th-fgd-1 text-base">Updates</h3>
+              <h3 className="font-bold text-th-fgd-1 text-sm">Updates</h3>
               <LinkButton
                 className="text-xs"
                 onClick={() => handleClearUpdates(updatesToShow)}
@@ -118,14 +119,19 @@ const Updates = () => {
               </LinkButton>
             </div>
             {updatesToShow.length > 0 ? (
-              updatesToShow.map((u, index) => (
-                <div
-                  className="border-b border-th-bkg-4 pb-2 text-th-fgd-1"
-                  key={index}
-                >
-                  {u.message}
-                </div>
-              ))
+              updatesToShow
+                .sort((a, b) => +b.date - +a.date)
+                .map((u, index) => (
+                  <div
+                    className="border-b border-th-bkg-4 pb-2 text-th-fgd-1"
+                    key={index}
+                  >
+                    <div className="text-xs">{u.message}</div>
+                    <div className="text-th-fgd-4 text-xxs">
+                      {dayjs(u.date).format('DD MMM YY, h:mma')}
+                    </div>
+                  </div>
+                ))
             ) : (
               <div className="p-2 text-center text-th-fgd-3">No updates</div>
             )}
