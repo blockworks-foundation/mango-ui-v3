@@ -5,6 +5,8 @@ import {
   FunctionComponent,
   useCallback,
 } from 'react'
+import { useViewport } from '../hooks/useViewport'
+import { breakpoints } from './TradePageGrid'
 import { useJupiter, RouteInfo } from '@jup-ag/react-hook'
 import { TOKEN_LIST_URL } from '@jup-ag/core'
 import { PublicKey } from '@solana/web3.js'
@@ -63,6 +65,8 @@ const JupiterForm: FunctionComponent = () => {
   const [hasSwapped, setHasSwapped] = useLocalStorageState('hasSwapped', false)
   const [showWalletDraw, setShowWalletDraw] = useState(false)
   const [walletTokenPrices, setWalletTokenPrices] = useState(null)
+  const { width } = useViewport()
+  const isMobile = width ? width < breakpoints.sm : false
 
   const fetchWalletTokens = useCallback(async () => {
     const ownedTokens = []
@@ -127,8 +131,6 @@ const JupiterForm: FunctionComponent = () => {
   useEffect(() => {
     getWalletTokenPrices()
   }, [walletTokensWithInfos])
-
-  console.log(walletTokensWithInfos)
 
   useEffect(() => {
     const fetchCoinGeckoList = async () => {
@@ -325,21 +327,20 @@ const JupiterForm: FunctionComponent = () => {
 
   const swapDisabled = loading || !selectedRoute || routes?.length === 0
 
-  console.log(walletTokenPrices)
-
   return (
     <>
-      {connected && walletTokenPrices ? (
+      {connected && walletTokenPrices && !isMobile ? (
         <div
-          className={`flex transform top-24 left-0 w-80 fixed h-2/3 overflow-hidden ease-in-out transition-all duration-300 z-30 ${
+          className={`flex transform top-24 left-0 w-80 fixed overflow-hidden ease-in-out transition-all duration-300 z-30 ${
             showWalletDraw ? 'translate-x-0' : 'ml-16 -translate-x-full'
           }`}
         >
           <aside
-            className={`bg-th-bkg-2 h-full overflow-auto px-4 py-6 rounded-r-md space-y-4 w-64`}
+            className={`bg-th-bkg-3 max-h-[480px] overflow-auto pb-4 pt-6 rounded-r-md w-64`}
           >
-            {/* sort((a, b) => Math.abs(+b.value) - Math.abs(+a.value)) */}
-            <div className="font-bold text-base text-th-fgd-1">Your Tokens</div>
+            <div className="font-bold pb-2 px-4 text-base text-th-fgd-1">
+              Wallet Balance
+            </div>
             {walletTokensWithInfos
               .sort((a, b) => {
                 const aId = a.item.extensions.coingeckoId
@@ -353,8 +354,14 @@ const JupiterForm: FunctionComponent = () => {
                 const geckoId = token.item.extensions.coingeckoId
                 return (
                   <div
-                    className="flex items-center justify-between"
+                    className="cursor-pointer default-transition flex items-center justify-between px-4 py-2 hover:bg-th-bkg-4"
                     key={geckoId}
+                    onClick={() =>
+                      setFormValue((val) => ({
+                        ...val,
+                        inputMint: new PublicKey(token?.item.address),
+                      }))
+                    }
                   >
                     <div className="flex items-center">
                       {token.item.logoURI ? (
@@ -388,7 +395,9 @@ const JupiterForm: FunctionComponent = () => {
                         {walletTokenPrices[geckoId]
                           ? `$${(
                               token.uiBalance * walletTokenPrices[geckoId].usd
-                            ).toFixed(2)}`
+                            ).toLocaleString(undefined, {
+                              maximumFractionDigits: 2,
+                            })}`
                           : '?'}
                       </div>
                     </div>
