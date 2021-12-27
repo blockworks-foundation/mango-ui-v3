@@ -5,7 +5,9 @@ import {
   FunctionComponent,
   useCallback,
 } from 'react'
+import dayjs from 'dayjs'
 import { useJupiter, RouteInfo } from '@jup-ag/react-hook'
+import { AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts'
 import { TOKEN_LIST_URL } from '@jup-ag/core'
 import { PublicKey } from '@solana/web3.js'
 import useMangoStore from '../stores/useMangoStore'
@@ -16,10 +18,10 @@ import {
 } from '../stores/selectors'
 import { sortBy, sum } from 'lodash'
 import {
-  ChevronDownIcon,
-  ChevronUpIcon,
+  ExclamationCircleIcon,
   SwitchVerticalIcon,
 } from '@heroicons/react/outline'
+import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid'
 import { sleep } from '../utils'
 import SwapTokenSelect from './SwapTokenSelect'
 import { notify } from '../utils/notifications'
@@ -29,6 +31,8 @@ import {
   nativeToUi,
   zeroKey,
 } from '@blockworks-foundation/mango-client'
+import Button, { LinkButton } from './Button'
+import { usdFormatter } from '../utils'
 
 type UseJupiterProps = Parameters<typeof useJupiter>[0]
 
@@ -91,6 +95,33 @@ const JupiterForm: FunctionComponent = () => {
     tokens,
   ])
 
+  const [inputChartPrices, outputChartPrices] = useMemo(() => {
+    return [
+      inputTokenStats && inputTokenStats.prices
+        ? inputTokenStats.prices.reduce((a, c) => {
+            const found = a.find((t) => {
+              return new Date(c[0]).getHours() === new Date(t.time).getHours()
+            })
+            if (!found) {
+              a.push({ time: c[0], price: c[1] })
+            }
+            return a
+          }, [])
+        : null,
+      outputTokenStats && outputTokenStats.prices
+        ? outputTokenStats.prices.reduce((a, c) => {
+            const found = a.find((t) => {
+              return new Date(c[0]).getHours() === new Date(t.time).getHours()
+            })
+            if (!found) {
+              a.push({ time: c[0], price: c[1] })
+            }
+            return a
+          }, [])
+        : null,
+    ]
+  }, [inputTokenStats, outputTokenStats])
+
   useEffect(() => {
     const fetchCoinGeckoList = async () => {
       const response = await fetch(
@@ -117,11 +148,13 @@ const JupiterForm: FunctionComponent = () => {
         (x) =>
           x?.symbol?.toLowerCase() === inputTokenInfo?.symbol?.toLowerCase()
       )?.id
-      const results = await fetch(
-        `https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=1`
-      )
-      const json = await results.json()
-      setInputTokenStats(json)
+      if (id) {
+        const results = await fetch(
+          `https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=1`
+        )
+        const json = await results.json()
+        setInputTokenStats(json)
+      }
     }
 
     const fetchOutputTokenStats = async () => {
@@ -129,11 +162,13 @@ const JupiterForm: FunctionComponent = () => {
         (x) =>
           x?.symbol?.toLowerCase() === outputTokenInfo?.symbol?.toLowerCase()
       )?.id
-      const results = await fetch(
-        `https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=1`
-      )
-      const json = await results.json()
-      setOutputTokenStats(json)
+      if (id) {
+        const results = await fetch(
+          `https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=1`
+        )
+        const json = await results.json()
+        setOutputTokenStats(json)
+      }
     }
 
     if (inputTokenInfo) {
@@ -286,6 +321,28 @@ const JupiterForm: FunctionComponent = () => {
 
   const swapDisabled = loading || !selectedRoute || routes?.length === 0
 
+  const tooltipContent = (tooltipProps) => {
+    if (tooltipProps.payload.length > 0) {
+      return (
+        <div className="bg-th-bkg-1 flex p-2 rounded">
+          <div>
+            <div className="text-th-fgd-3 text-xs">Time</div>
+            <div className="font-bold text-th-fgd-1 text-xs">
+              {dayjs(tooltipProps.payload[0].payload.time).format('h:mma')}
+            </div>
+          </div>
+          <div className="pl-3">
+            <div className="text-th-fgd-3 text-xs">Price</div>
+            <div className="font-bold text-th-fgd-1 text-xs">
+              {usdFormatter(tooltipProps.payload[0].payload.price)}
+            </div>
+          </div>
+        </div>
+      )
+    }
+    return null
+  }
+
   return (
     <div className="max-w-md mx-auto">
       {connected ? (
@@ -294,34 +351,36 @@ const JupiterForm: FunctionComponent = () => {
           deposit swapped tokens into your mango account.
         </div>
       ) : null}
-      <div className="mt-8 bg-th-bkg-2 rounded-lg px-6 pt-8 pb-8">
+      <div className="mt-8 bg-th-bkg-2 rounded-lg px-6 py-8">
         <div className="flex justify-between">
-          <label htmlFor="inputMint" className="block text-sm font-medium">
-            You pay
+          <label htmlFor="inputMint" className="block text-sm font-semibold">
+            You Pay
           </label>
-          <div>
-            <label htmlFor="amount" className="text-th-fgd-4">
-              Balance {inputWalletBalance()}
+          <div className="space-x-3">
+            <label htmlFor="amount" className="text-th-fgd-3 text-xs">
+              Bal: {inputWalletBalance()}
             </label>
             {connected ? (
-              <button
-                className="ml-1 bg-th-bkg-4 rounded-lg px-2 text-th-fgd-4 text-xs cursor-pointer hover:text-th-primary"
-                onClick={() => {
-                  setFormValue((val) => ({
-                    ...val,
-                    amount: inputWalletBalance(),
-                  }))
-                }}
-              >
-                MAX
-              </button>
+              <>
+                <LinkButton
+                  className="text-th-primary text-xs"
+                  onClick={() => {
+                    setFormValue((val) => ({
+                      ...val,
+                      amount: inputWalletBalance(),
+                    }))
+                  }}
+                >
+                  Max
+                </LinkButton>
+              </>
             ) : null}
           </div>
         </div>
 
-        <div className="flex justify-between items-center my-2 bg-th-bkg-1 rounded-md py-3">
+        <div className="bg-th-bkg-2 flex justify-between items-center mt-2 rounded-md">
           <button
-            className="hover:bg-th-bkg-3 ml-2 px-2 py-2"
+            className="hover:bg-th-bkg-3 -ml-2 p-2"
             onClick={() => setShowInputTokenSelect(true)}
           >
             <div className="flex items-center">
@@ -334,14 +393,14 @@ const JupiterForm: FunctionComponent = () => {
                 />
               ) : null}
               <div className="text-lg ml-3">{inputTokenInfo?.symbol}</div>
-              <ChevronDownIcon className="h-4 w-4 ml-1" />
+              <ChevronDownIcon className="h-5 w-5 ml-1 text-th-fgd-3" />
             </div>
           </button>
           <div>
             <input
               name="amount"
               id="amount"
-              className="bg-th-bkg-1 pr-4 focus:outline-none sm:text-sm rounded-md text-right"
+              className="bg-th-bkg-1 font-bold pr-4 py-3 focus:outline-none rounded-md text-lg text-right tracking-wide"
               value={formValue.amount || ''}
               placeholder="0.00"
               type="text"
@@ -360,19 +419,21 @@ const JupiterForm: FunctionComponent = () => {
 
         <div className="flex justify-center my-4">
           <button onClick={handleSwitchMints}>
-            <SwitchVerticalIcon className="h-8 w-8 border rounded-full p-1 border-th-fgd-4 text-th-fgd-4 hover:border-th-primary hover:text-th-primary" />
+            <SwitchVerticalIcon className="default-transition h-8 w-8 rounded-full p-1.5 bg-th-bkg-4 text-th-fgd-1 hover:text-th-primary" />
           </button>
         </div>
 
         <div className="flex justify-between">
-          <label htmlFor="outputMint" className="font-medium">
-            You receive
+          <label htmlFor="outputMint" className="font-semibold">
+            You Receive
           </label>
-          <span className="text-th-fgd-4">Balance {outputWalletBalance()}</span>
+          <span className="text-th-fgd-3 text-xs">
+            Bal: {outputWalletBalance()}
+          </span>
         </div>
-        <div className="flex items-center mt-2">
+        <div className="flex items-center mt-3">
           <button
-            className="flex items-center hover:bg-th-bkg-3 px-2 py-2"
+            className="flex items-center hover:bg-th-bkg-3 -ml-2 p-2"
             onClick={() => setShowOutputTokenSelect(true)}
           >
             {outputTokenInfo?.logoURI ? (
@@ -384,7 +445,7 @@ const JupiterForm: FunctionComponent = () => {
               />
             ) : null}
             <div className="text-lg ml-3">{outputTokenInfo?.symbol}</div>
-            <ChevronDownIcon className="h-4 w-4 ml-1" />
+            <ChevronDownIcon className="h-5 w-5 ml-1 text-th-fgd-3" />
           </button>
         </div>
 
@@ -394,7 +455,7 @@ const JupiterForm: FunctionComponent = () => {
               {routes?.length} routes found!
             </div>
             <div
-              className="transition-all duration-700 mt-4 max-h-80 overflow-x-hidden overflow-y-auto thin-scroll pr-1"
+              className="transition-all duration-700 mt-3 max-h-80 overflow-x-hidden overflow-y-auto thin-scroll pr-1"
               style={{ maxHeight: maxHeight }}
             >
               {displayedRoutes.map((route, index) => {
@@ -402,10 +463,10 @@ const JupiterForm: FunctionComponent = () => {
                 return (
                   <div
                     key={index}
-                    className={`border border-th-fgd-4 rounded mb-2 ${
+                    className={`bg-th-bkg-3 border default-transition rounded mb-2 hover:bg-th-bkg-4 ${
                       selected
                         ? 'border-th-primary text-th-primary hover:border-th-primary'
-                        : 'hover:border-th-fgd-3'
+                        : 'border-transparent'
                     }`}
                   >
                     <button
@@ -464,23 +525,25 @@ const JupiterForm: FunctionComponent = () => {
                 )
               })}
             </div>
-            <div className="flex justify-between text-th-fgd-4 mx-1 mt-2">
+            <div className="flex justify-between text-th-fgd-3 mx-1 mt-1">
               {routes.length ? (
                 <div>
                   {routes.length > displayedRoutes.length ? (
-                    <div className="flex items-center">
-                      <ChevronDownIcon className="h-4 w-4" />
-                      <button className="text-xs ml-2" onClick={handleShowMore}>
-                        Show more
-                      </button>
-                    </div>
+                    <button
+                      className="flex items-center text-xs hover:text-th-fgd-1"
+                      onClick={handleShowMore}
+                    >
+                      <ChevronDownIcon className="h-5 mr-1 w-5" />
+                      Show more
+                    </button>
                   ) : (
-                    <div className="flex items-center">
-                      <ChevronUpIcon className="h-4 w-4" />
-                      <button className="text-xs ml-2" onClick={handleShowLess}>
-                        Show less
-                      </button>
-                    </div>
+                    <button
+                      className="flex items-center text-xs hover:text-th-fgd-1"
+                      onClick={handleShowLess}
+                    >
+                      <ChevronUpIcon className="h-5 mr-1 w-5" />
+                      Show less
+                    </button>
                   )}
                 </div>
               ) : null}
@@ -507,10 +570,14 @@ const JupiterForm: FunctionComponent = () => {
           </div>
         ) : null}
 
-        {error && <div>Error in Jupiter, try changing your input</div>}
+        {error && (
+          <div className="flex items-center justify-center mt-2 text-th-red">
+            <ExclamationCircleIcon className="h-5 mr-1.5 w-5" />
+            Error in Jupiter – Try changing your input
+          </div>
+        )}
       </div>
-      <button
-        type="button"
+      <Button
         disabled={swapDisabled}
         onClick={async () => {
           if (!connected && zeroKey !== wallet?.publicKey) {
@@ -571,68 +638,16 @@ const JupiterForm: FunctionComponent = () => {
             }
           }
         }}
-        className={`mt-6 p-4 bg-th-bkg-2 ${
-          swapDisabled ? 'cursor-not-allowed ' : 'hover:bg-th-primary'
-        } w-full`}
+        className="h-12 mt-6 text-base w-full"
       >
         {connected ? (swapping ? 'Swapping...' : 'Swap') : 'Connect Wallet'}
-      </button>
-      {inputTokenStats?.prices?.length && outputTokenStats?.prices?.length ? (
-        <>
-          <div className="flex items-center justify-between mt-4">
-            <div className="flex items-center">
-              {inputTokenInfo?.logoURI ? (
-                <img
-                  src={inputTokenInfo?.logoURI}
-                  width="36"
-                  height="36"
-                  alt={inputTokenInfo?.symbol}
-                />
-              ) : null}
-              <div className="ml-2">{inputTokenInfo?.name}</div>
-            </div>
-            <div className="flex items-center">
-              <div className="">${inputTokenPrice}</div>
-              <div
-                className={`ml-4 ${
-                  inputTokenChange <= 0 ? 'text-th-green' : 'text-th-red'
-                }`}
-              >
-                {(inputTokenChange * -1).toFixed(2)}%
-              </div>
-            </div>
-          </div>
-          <div className="flex items-center justify-between mt-4">
-            <div className="flex items-center">
-              {outputTokenInfo?.logoURI ? (
-                <img
-                  src={outputTokenInfo?.logoURI}
-                  width="36"
-                  height="36"
-                  alt={outputTokenInfo?.symbol}
-                />
-              ) : null}
-              <div className="ml-2">{outputTokenInfo?.name}</div>
-            </div>
-            <div className="flex items-center">
-              <div className="">${outputTokenPrice}</div>
-              <div
-                className={`ml-4 ${
-                  outputTokenChange <= 0 ? 'text-th-green' : 'text-th-red'
-                }`}
-              >
-                {(outputTokenChange * -1).toFixed(2)}%
-              </div>
-            </div>
-          </div>
-        </>
-      ) : null}
+      </Button>
+
       {selectedRoute ? (
-        <div className="flex flex-col space-y-3 mt-4 text-th-fgd-4 text-xs">
-          <div className="my-2 font-bold">Price Info</div>
+        <div className="border-b border-th-bkg-4 flex flex-col space-y-2.5 mt-6 pb-6 text-th-fgd-3 text-xs">
           <div className="flex justify-between">
             <span>Rate</span>
-            <span>
+            <span className="text-th-fgd-1">
               1 {outputTokenInfo?.symbol} ≈{' '}
               {(formValue?.amount / outAmountUi).toFixed(6)}{' '}
               {inputTokenInfo?.symbol}
@@ -640,7 +655,7 @@ const JupiterForm: FunctionComponent = () => {
           </div>
           <div className="flex justify-between">
             <span>Price Impact</span>
-            <span>
+            <span className="text-th-fgd-1">
               {selectedRoute.priceImpactPct * 100 < 0.1
                 ? '< 0.1%'
                 : `~ ${(selectedRoute.priceImpactPct * 100).toFixed(4)}%`}
@@ -648,7 +663,7 @@ const JupiterForm: FunctionComponent = () => {
           </div>
           <div className="flex justify-between">
             <span>Minimum Received</span>
-            <span>
+            <span className="text-th-fgd-1">
               {(
                 selectedRoute.outAmountWithSlippage /
                 10 ** (outputTokenInfo?.decimals || 1)
@@ -663,7 +678,7 @@ const JupiterForm: FunctionComponent = () => {
             return (
               <div className="flex justify-between" key={index}>
                 <span>Fees paid to {info.marketMeta?.amm?.label}</span>
-                <span>
+                <span className="text-th-fgd-1">
                   {(
                     info.lpFee?.amount / Math.pow(10, feeToken?.decimals)
                   ).toFixed(6)}{' '}
@@ -676,7 +691,7 @@ const JupiterForm: FunctionComponent = () => {
             <>
               <div className="flex justify-between">
                 <span>Transaction Fee</span>
-                <span>
+                <span className="text-th-fgd-1">
                   {depositAndFee
                     ? depositAndFee?.signatureFee / Math.pow(10, 9)
                     : '-'}{' '}
@@ -686,12 +701,12 @@ const JupiterForm: FunctionComponent = () => {
               <div className="flex justify-between items-center">
                 <span>Deposit</span>
                 <div className="flex flex-col text-right">
-                  <span>
+                  <span className="text-th-fgd-1">
                     {depositAndFee?.ataDeposit / Math.pow(10, 9)} SOL for{' '}
                     {depositAndFee?.ataDepositLength} ATA Account
                   </span>
                   {depositAndFee?.openOrdersDeposits?.length ? (
-                    <span>
+                    <span className="text-th-fgd-1">
                       {sum(depositAndFee?.openOrdersDeposits) / Math.pow(10, 9)}{' '}
                       SOL for {depositAndFee?.openOrdersDeposits.length} Serum
                       OpenOrders Account
@@ -702,6 +717,110 @@ const JupiterForm: FunctionComponent = () => {
             </>
           ) : null}
         </div>
+      ) : null}
+      {inputTokenStats?.prices?.length && outputTokenStats?.prices?.length ? (
+        <>
+          <div className="flex items-center justify-between mt-6">
+            <div className="flex items-center">
+              {inputTokenInfo?.logoURI ? (
+                <img
+                  src={inputTokenInfo?.logoURI}
+                  width="32"
+                  height="32"
+                  alt={inputTokenInfo?.symbol}
+                />
+              ) : null}
+              <div className="ml-2">
+                <div className="font-semibold">{inputTokenInfo?.symbol}</div>
+                <div className="text-th-fgd-4 text-xs">
+                  {inputTokenInfo?.name}
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center space-x-3">
+              <div className="">${inputTokenPrice}</div>
+              <div
+                className={`${
+                  inputTokenChange <= 0 ? 'text-th-green' : 'text-th-red'
+                }`}
+              >
+                {(inputTokenChange * -1).toFixed(2)}%
+              </div>
+              <AreaChart
+                width={120}
+                height={40}
+                data={inputChartPrices || null}
+              >
+                <Area
+                  isAnimationActive={false}
+                  type="monotone"
+                  dataKey="price"
+                  stroke="#FF9C24"
+                  fill="#FF9C24"
+                  fillOpacity={0.1}
+                />
+                <XAxis dataKey="time" hide />
+                <YAxis
+                  dataKey="price"
+                  type="number"
+                  domain={['dataMin', 'dataMax']}
+                  hide
+                />
+                <Tooltip content={tooltipContent} position={{ x: 0, y: -50 }} />
+              </AreaChart>
+            </div>
+          </div>
+          <div className="flex items-center justify-between mt-4">
+            <div className="flex items-center">
+              {outputTokenInfo?.logoURI ? (
+                <img
+                  src={outputTokenInfo?.logoURI}
+                  width="32"
+                  height="32"
+                  alt={outputTokenInfo?.symbol}
+                />
+              ) : null}
+              <div className="ml-2">
+                <div className="font-semibold">{outputTokenInfo?.symbol}</div>
+                <div className="text-th-fgd-4 text-xs">
+                  {outputTokenInfo?.name}
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center space-x-3">
+              <div className="">${outputTokenPrice}</div>
+              <div
+                className={`${
+                  outputTokenChange <= 0 ? 'text-th-green' : 'text-th-red'
+                }`}
+              >
+                {(outputTokenChange * -1).toFixed(2)}%
+              </div>
+              <AreaChart
+                width={120}
+                height={40}
+                data={outputChartPrices || null}
+              >
+                <Area
+                  isAnimationActive={false}
+                  type="monotone"
+                  dataKey="price"
+                  stroke="#FF9C24"
+                  fill="#FF9C24"
+                  fillOpacity={0.1}
+                />
+                <XAxis dataKey="time" hide />
+                <YAxis
+                  dataKey="price"
+                  type="number"
+                  domain={['dataMin', 'dataMax']}
+                  hide
+                />
+                <Tooltip content={tooltipContent} position={{ x: 0, y: -50 }} />
+              </AreaChart>
+            </div>
+          </div>
+        </>
       ) : null}
       {showInputTokenSelect ? (
         <SwapTokenSelect
