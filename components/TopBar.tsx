@@ -60,7 +60,7 @@ const TopBar = () => {
                   menuTitle={t('more')}
                   // linksArray: [name: string, href: string, isExternal: boolean]
                   linksArray={[
-                    ['Mango v1', 'https://usdt.mango.markets', true],
+                    ['Mango v1', 'https://v1.mango.markets', true],
                     ['Mango v2', 'https://v2.mango.markets', true],
                   ]}
                 />
