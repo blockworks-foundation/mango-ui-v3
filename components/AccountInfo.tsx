@@ -291,7 +291,7 @@ export default function AccountInfo() {
                     <div>
                       {t('tooltip-account-liquidated')}{' '}
                       <a
-                        href="https://docs.mango.markets/mango-v3/overview#health"
+                        href="https://docs.mango.markets/mango/health-overview"
                         target="_blank"
                         rel="noopener noreferrer"
                       >

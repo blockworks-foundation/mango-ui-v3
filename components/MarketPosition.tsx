@@ -143,7 +143,7 @@ export default function MarketPosition() {
       <div>
         {t('pnl-help')}{' '}
         <a
-          href="https://docs.mango.markets/mango-v3/overview#settle-pnl"
+          href="https://docs.mango.markets/mango/settle-pnl"
           target="_blank"
           rel="noopener noreferrer"
         >
