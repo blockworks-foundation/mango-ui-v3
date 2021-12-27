@@ -107,7 +107,8 @@ export default function RiskCalculator() {
 
   // Set rules for updating the scenario
   useEffect(() => {
-    if (mangoGroup) {
+    if (mangoGroup && mangoCache) {
+      console.log('test check:in standard')
       if (selectedMarginAccount && !scenarioInitialized && connected) {
         setSliderPercentage(defaultSliderVal)
         createScenario('account')
@@ -128,11 +129,18 @@ export default function RiskCalculator() {
         setBlankScenarioInitialized(false)
       }
     }
-  }, [connected, selectedMarginAccount, scenarioInitialized, mangoGroup])
+  }, [
+    connected,
+    selectedMarginAccount,
+    scenarioInitialized,
+    mangoGroup,
+    mangoCache,
+  ])
 
   // Handle toggling open order inclusion or order cancelling for heatlh calculation
   useEffect(() => {
-    if (mangoGroup && selectedMarginAccount && connected) {
+    if (mangoGroup && mangoCache && selectedMarginAccount && connected) {
+      console.log('test check:in orders as balance:' + mangoGroup)
       setScenarioInitialized(!scenarioInitialized)
       createScenario('account')
     }
