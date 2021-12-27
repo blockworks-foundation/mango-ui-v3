@@ -19,10 +19,11 @@ import {
 import { sortBy, sum } from 'lodash'
 import {
   ExclamationCircleIcon,
+  ExternalLinkIcon,
   SwitchVerticalIcon,
 } from '@heroicons/react/outline'
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid'
-import { sleep } from '../utils'
+import { abbreviateAddress, sleep } from '../utils'
 import SwapTokenSelect from './SwapTokenSelect'
 import { notify } from '../utils/notifications'
 import { Token } from '../@types/types'
@@ -33,6 +34,12 @@ import {
 } from '@blockworks-foundation/mango-client'
 import Button, { LinkButton } from './Button'
 import { usdFormatter } from '../utils'
+import { useViewport } from '../hooks/useViewport'
+import { breakpoints } from './TradePageGrid'
+import useLocalStorageState from '../hooks/useLocalStorageState'
+import Modal from './Modal'
+import { ElementTitle } from './styles'
+import { WalletIcon } from './icons'
 
 type UseJupiterProps = Parameters<typeof useJupiter>[0]
 
@@ -59,6 +66,11 @@ const JupiterForm: FunctionComponent = () => {
     outputMint: new PublicKey('MangoCzJ36AjZyKwVj3VnYU4GTonjfVEnJmvvWaxLac'),
     slippage: 0.5,
   })
+  const [hasSwapped, setHasSwapped] = useLocalStorageState('hasSwapped', false)
+  const [showWalletDraw, setShowWalletDraw] = useState(false)
+  const [walletTokenPrices, setWalletTokenPrices] = useState(null)
+  const { width } = useViewport()
+  const isMobile = width ? width < breakpoints.sm : false
 
   const fetchWalletTokens = useCallback(async () => {
     const ownedTokens = []
@@ -285,6 +297,34 @@ const JupiterForm: FunctionComponent = () => {
     return [0, 0]
   }, [outputTokenStats])
 
+  const [walletTokensWithInfos] = useMemo(() => {
+    const userTokens = []
+    tokens.map((item) => {
+      const found = walletTokens.find(
+        (token) => token.account.mint.toBase58() === item?.address
+      )
+      if (found) {
+        userTokens.push({ ...found, item })
+      }
+    })
+    return [userTokens]
+  }, [walletTokens, tokens])
+
+  const getWalletTokenPrices = async () => {
+    const ids = walletTokensWithInfos.map(
+      (token) => token.item.extensions.coingeckoId
+    )
+    const response = await fetch(
+      `https://api.coingecko.com/api/v3/simple/price?ids=${ids.toString()}&vs_currencies=usd`
+    )
+    const data = await response.json()
+    setWalletTokenPrices(data)
+  }
+
+  useEffect(() => {
+    getWalletTokenPrices()
+  }, [walletTokensWithInfos])
+
   const handleSelectRoute = (route) => {
     setSelectedRoute(route)
   }
@@ -324,7 +364,7 @@ const JupiterForm: FunctionComponent = () => {
   const tooltipContent = (tooltipProps) => {
     if (tooltipProps.payload.length > 0) {
       return (
-        <div className="bg-th-bkg-1 flex p-2 rounded">
+        <div className="bg-th-bkg-3 flex min-w-[120px] p-2 rounded">
           <div>
             <div className="text-th-fgd-3 text-xs">Time</div>
             <div className="font-bold text-th-fgd-1 text-xs">
@@ -345,12 +385,106 @@ const JupiterForm: FunctionComponent = () => {
 
   return (
     <div className="max-w-md mx-auto">
-      {connected ? (
+      {connected && walletTokenPrices && !isMobile ? (
+        <div
+          className={`flex transform top-22 left-0 w-80 fixed overflow-hidden ease-in-out transition-all duration-300 z-30 ${
+            showWalletDraw ? 'translate-x-0' : 'ml-16 -translate-x-full'
+          }`}
+        >
+          <aside
+            className={`bg-th-bkg-3 max-h-[500px] overflow-auto pb-4 pt-6 rounded-r-md w-64`}
+          >
+            <div className="flex items-center justify-between pb-2 px-4">
+              <div className="font-bold text-base text-th-fgd-1">Wallet</div>
+              <a
+                className="flex items-center text-th-fgd-4 text-xs hover:text-th-fgd-3"
+                href={`https://explorer.solana.com/address/${wallet?.publicKey}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <div className="bg-th-green h-1.5 mr-1.5 rounded-full w-1.5" />
+                {abbreviateAddress(wallet.publicKey)}
+                <ExternalLinkIcon className="h-3.5 ml-0.5 -mt-0.5 w-3.5" />
+              </a>
+            </div>
+            {walletTokensWithInfos
+              .sort((a, b) => {
+                const aId = a.item.extensions.coingeckoId
+                const bId = b.item.extensions.coingeckoId
+                return (
+                  b.uiBalance * walletTokenPrices[bId]?.usd -
+                  a.uiBalance * walletTokenPrices[aId]?.usd
+                )
+              })
+              .map((token) => {
+                const geckoId = token.item.extensions.coingeckoId
+                return (
+                  <div
+                    className="cursor-pointer default-transition flex items-center justify-between px-4 py-2 hover:bg-th-bkg-4"
+                    key={geckoId}
+                    onClick={() =>
+                      setFormValue((val) => ({
+                        ...val,
+                        inputMint: new PublicKey(token?.item.address),
+                      }))
+                    }
+                  >
+                    <div className="flex items-center">
+                      {token.item.logoURI ? (
+                        <img
+                          src={token.item.logoURI}
+                          width="24"
+                          height="24"
+                          alt={token.item.symbol}
+                        />
+                      ) : null}
+                      <div>
+                        <div className="ml-2 text-th-fgd-1">
+                          {token.item.symbol}
+                        </div>
+                        {walletTokenPrices ? (
+                          <div className="ml-2 text-th-fgd-4 text-xs">
+                            {walletTokenPrices[geckoId]
+                              ? `$${walletTokenPrices[geckoId].usd}`
+                              : 'Unavailable'}
+                          </div>
+                        ) : null}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-right text-th-fgd-1">
+                        {token.uiBalance.toLocaleString(undefined, {
+                          maximumSignificantDigits: 6,
+                        })}
+                      </div>
+                      <div className="text-th-fgd-4 text-right text-xs">
+                        {walletTokenPrices[geckoId]
+                          ? `$${(
+                              token.uiBalance * walletTokenPrices[geckoId].usd
+                            ).toLocaleString(undefined, {
+                              maximumFractionDigits: 2,
+                            })}`
+                          : '?'}
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
+          </aside>
+          <button
+            className="absolute bg-th-bkg-4 p-3 left-64 rounded-l-none text-th-fgd-1 hover:text-th-primary top-12"
+            onClick={() => setShowWalletDraw(!showWalletDraw)}
+          >
+            <WalletIcon className="h-5 w-5" />
+          </button>
+        </div>
+      ) : null}
+      {/* {connected ? (
         <div className="mt-8 bg-th-bkg-2 rounded-lg p-4 text-th-fgd-4 -mb-2">
           Swaps occur in your connected wallet. After swapping, you may then
           deposit swapped tokens into your mango account.
         </div>
-      ) : null}
+      ) : null} */}
       <div className="mt-8 bg-th-bkg-2 rounded-lg px-6 py-8">
         <div className="flex justify-between">
           <label htmlFor="inputMint" className="block text-sm font-semibold">
@@ -642,9 +776,116 @@ const JupiterForm: FunctionComponent = () => {
       >
         {connected ? (swapping ? 'Swapping...' : 'Swap') : 'Connect Wallet'}
       </Button>
-
+      {inputTokenStats?.prices?.length && outputTokenStats?.prices?.length ? (
+        <>
+          <div className="flex items-center justify-between mt-4">
+            <div className="flex items-center">
+              {inputTokenInfo?.logoURI ? (
+                <img
+                  src={inputTokenInfo?.logoURI}
+                  width="32"
+                  height="32"
+                  alt={inputTokenInfo?.symbol}
+                />
+              ) : null}
+              <div className="ml-2">
+                <div className="font-semibold">{inputTokenInfo?.symbol}</div>
+                <div className="text-th-fgd-4 text-xs">
+                  {inputTokenInfo?.name}
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center space-x-3">
+              <div className="flex flex-col items-end sm:flex-row sm:space-x-3">
+                <div>${inputTokenPrice}</div>
+                <div
+                  className={`text-xs sm:text-sm ${
+                    inputTokenChange <= 0 ? 'text-th-green' : 'text-th-red'
+                  }`}
+                >
+                  {(inputTokenChange * -1).toFixed(2)}%
+                </div>
+              </div>
+              <AreaChart
+                width={120}
+                height={40}
+                data={inputChartPrices || null}
+              >
+                <Area
+                  isAnimationActive={false}
+                  type="monotone"
+                  dataKey="price"
+                  stroke="#FF9C24"
+                  fill="#FF9C24"
+                  fillOpacity={0.1}
+                />
+                <XAxis dataKey="time" hide />
+                <YAxis
+                  dataKey="price"
+                  type="number"
+                  domain={['dataMin', 'dataMax']}
+                  hide
+                />
+                <Tooltip content={tooltipContent} position={{ x: 0, y: -50 }} />
+              </AreaChart>
+            </div>
+          </div>
+          <div className="flex items-center justify-between mt-4">
+            <div className="flex items-center">
+              {outputTokenInfo?.logoURI ? (
+                <img
+                  src={outputTokenInfo?.logoURI}
+                  width="32"
+                  height="32"
+                  alt={outputTokenInfo?.symbol}
+                />
+              ) : null}
+              <div className="ml-2">
+                <div className="font-semibold">{outputTokenInfo?.symbol}</div>
+                <div className="text-th-fgd-4 text-xs">
+                  {outputTokenInfo?.name}
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center space-x-3">
+              <div className="flex flex-col items-end sm:flex-row sm:space-x-3">
+                <div>${outputTokenPrice}</div>
+                <div
+                  className={`${
+                    outputTokenChange <= 0 ? 'text-th-green' : 'text-th-red'
+                  }`}
+                >
+                  {(outputTokenChange * -1).toFixed(2)}%
+                </div>
+              </div>
+              <AreaChart
+                width={120}
+                height={40}
+                data={outputChartPrices || null}
+              >
+                <Area
+                  isAnimationActive={false}
+                  type="monotone"
+                  dataKey="price"
+                  stroke="#FF9C24"
+                  fill="#FF9C24"
+                  fillOpacity={0.1}
+                />
+                <XAxis dataKey="time" hide />
+                <YAxis
+                  dataKey="price"
+                  type="number"
+                  domain={['dataMin', 'dataMax']}
+                  hide
+                />
+                <Tooltip content={tooltipContent} position={{ x: 0, y: -50 }} />
+              </AreaChart>
+            </div>
+          </div>
+        </>
+      ) : null}
       {selectedRoute ? (
-        <div className="border-b border-th-bkg-4 flex flex-col space-y-2.5 mt-6 pb-6 text-th-fgd-3 text-xs">
+        <div className="flex flex-col space-y-2.5 mt-6 text-th-fgd-3 text-xs">
           <div className="flex justify-between">
             <span>Rate</span>
             <span className="text-th-fgd-1">
@@ -718,110 +959,6 @@ const JupiterForm: FunctionComponent = () => {
           ) : null}
         </div>
       ) : null}
-      {inputTokenStats?.prices?.length && outputTokenStats?.prices?.length ? (
-        <>
-          <div className="flex items-center justify-between mt-6">
-            <div className="flex items-center">
-              {inputTokenInfo?.logoURI ? (
-                <img
-                  src={inputTokenInfo?.logoURI}
-                  width="32"
-                  height="32"
-                  alt={inputTokenInfo?.symbol}
-                />
-              ) : null}
-              <div className="ml-2">
-                <div className="font-semibold">{inputTokenInfo?.symbol}</div>
-                <div className="text-th-fgd-4 text-xs">
-                  {inputTokenInfo?.name}
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="">${inputTokenPrice}</div>
-              <div
-                className={`${
-                  inputTokenChange <= 0 ? 'text-th-green' : 'text-th-red'
-                }`}
-              >
-                {(inputTokenChange * -1).toFixed(2)}%
-              </div>
-              <AreaChart
-                width={120}
-                height={40}
-                data={inputChartPrices || null}
-              >
-                <Area
-                  isAnimationActive={false}
-                  type="monotone"
-                  dataKey="price"
-                  stroke="#FF9C24"
-                  fill="#FF9C24"
-                  fillOpacity={0.1}
-                />
-                <XAxis dataKey="time" hide />
-                <YAxis
-                  dataKey="price"
-                  type="number"
-                  domain={['dataMin', 'dataMax']}
-                  hide
-                />
-                <Tooltip content={tooltipContent} position={{ x: 0, y: -50 }} />
-              </AreaChart>
-            </div>
-          </div>
-          <div className="flex items-center justify-between mt-4">
-            <div className="flex items-center">
-              {outputTokenInfo?.logoURI ? (
-                <img
-                  src={outputTokenInfo?.logoURI}
-                  width="32"
-                  height="32"
-                  alt={outputTokenInfo?.symbol}
-                />
-              ) : null}
-              <div className="ml-2">
-                <div className="font-semibold">{outputTokenInfo?.symbol}</div>
-                <div className="text-th-fgd-4 text-xs">
-                  {outputTokenInfo?.name}
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="">${outputTokenPrice}</div>
-              <div
-                className={`${
-                  outputTokenChange <= 0 ? 'text-th-green' : 'text-th-red'
-                }`}
-              >
-                {(outputTokenChange * -1).toFixed(2)}%
-              </div>
-              <AreaChart
-                width={120}
-                height={40}
-                data={outputChartPrices || null}
-              >
-                <Area
-                  isAnimationActive={false}
-                  type="monotone"
-                  dataKey="price"
-                  stroke="#FF9C24"
-                  fill="#FF9C24"
-                  fillOpacity={0.1}
-                />
-                <XAxis dataKey="time" hide />
-                <YAxis
-                  dataKey="price"
-                  type="number"
-                  domain={['dataMin', 'dataMax']}
-                  hide
-                />
-                <Tooltip content={tooltipContent} position={{ x: 0, y: -50 }} />
-              </AreaChart>
-            </div>
-          </div>
-        </>
-      ) : null}
       {showInputTokenSelect ? (
         <SwapTokenSelect
           isOpen={showInputTokenSelect}
@@ -849,6 +986,23 @@ const JupiterForm: FunctionComponent = () => {
             }))
           }}
         />
+      ) : null}
+      {connected && !hasSwapped ? (
+        <Modal isOpen={!hasSwapped} onClose={() => setHasSwapped(true)}>
+          <ElementTitle>Before you get started...</ElementTitle>
+          <div className="flex flex-col justify-center">
+            <div className="text-center text-th-fgd-3">
+              Swaps interact directly with your connected wallet, not your Mango
+              Account.
+            </div>
+            <Button
+              className="mt-6 mx-auto"
+              onClick={() => setHasSwapped(true)}
+            >
+              Got It
+            </Button>
+          </div>
+        </Modal>
       ) : null}
     </div>
   )
