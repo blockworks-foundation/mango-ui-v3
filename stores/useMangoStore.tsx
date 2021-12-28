@@ -341,8 +341,11 @@ const useMangoStore = create<MangoStore>((set, get) => {
           .getMangoGroup(mangoGroupPk)
           .then(async (mangoGroup) => {
             mangoGroup.loadRootBanks(connection).then(() => {
-              set((state) => {
-                state.selectedMangoGroup.current = mangoGroup
+              mangoGroup.loadCache(connection).then((mangoCache) => {
+                set((state) => {
+                  state.selectedMangoGroup.current = mangoGroup
+                  state.selectedMangoGroup.cache = mangoCache
+                })
               })
             })
             const allMarketConfigs = getAllMarkets(mangoGroupConfig)
@@ -351,16 +354,14 @@ const useMangoStore = create<MangoStore>((set, get) => {
               .map((m) => [m.bidsKey, m.asksKey])
               .flat()
 
-            let allMarketAccountInfos, mangoCache, allBidsAndAsksAccountInfos
+            let allMarketAccountInfos, allBidsAndAsksAccountInfos
             try {
               const resp = await Promise.all([
                 getMultipleAccounts(connection, allMarketPks),
-                mangoGroup.loadCache(connection),
                 getMultipleAccounts(connection, allBidsAndAsksPks),
               ])
               allMarketAccountInfos = resp[0]
-              mangoCache = resp[1]
-              allBidsAndAsksAccountInfos = resp[2]
+              allBidsAndAsksAccountInfos = resp[1]
             } catch {
               notify({
                 type: 'error',
@@ -400,7 +401,6 @@ const useMangoStore = create<MangoStore>((set, get) => {
             )
 
             set((state) => {
-              state.selectedMangoGroup.cache = mangoCache
               state.selectedMangoGroup.markets = allMarkets
               state.selectedMarket.current = allMarketAccounts.find((mkt) =>
                 mkt.publicKey.equals(selectedMarketConfig.publicKey)
