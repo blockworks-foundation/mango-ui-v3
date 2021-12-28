@@ -60,7 +60,6 @@ const MarketDetails = () => {
   const isPerpMarket = marketConfig.kind === 'perp'
 
   const previousMarketName: string = usePrevious(selectedMarketName)
-  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const connected = useMangoStore((s) => s.wallet.connected)
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
@@ -264,7 +263,7 @@ const MarketDetails = () => {
           </div>
         ) : null}
         <div className="ml-2" id="data-refresh-tip">
-          {!isMobile && connected && mangoAccount ? <ManualRefresh /> : null}
+          {!isMobile && connected ? <ManualRefresh /> : null}
         </div>
       </div>
     </div>
