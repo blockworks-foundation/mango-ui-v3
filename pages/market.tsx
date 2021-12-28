@@ -36,6 +36,7 @@ const PerpMarket = () => {
   const groupConfig = useMangoGroupConfig()
   const setMangoStore = useMangoStore((s) => s.set)
   const connected = useMangoStore(walletConnectedSelector)
+  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const marketConfig = useMangoStore(marketConfigSelector)
   const router = useRouter()
   const { width } = useViewport()
@@ -96,7 +97,9 @@ const PerpMarket = () => {
 
   return (
     <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
-      {showTour && !hideTips ? <IntroTips connected={connected} /> : null}
+      {showTour && !hideTips ? (
+        <IntroTips connected={connected} mangoAccount={mangoAccount} />
+      ) : null}
       <TopBar />
       <MarketSelect />
       <PageBodyWrapper className="p-1 sm:px-2 sm:py-1 md:px-2 md:py-1">
