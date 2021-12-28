@@ -85,6 +85,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
         notify({
           title: t('deposit-failed'),
           description: err.message,
+          txid: err?.txid,
           type: 'error',
         })
       })
