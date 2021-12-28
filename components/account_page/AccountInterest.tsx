@@ -58,9 +58,11 @@ const AccountInterest = () => {
   const [interestStats, setInterestStats] = useState<any>([])
   const [hourlyInterestStats, setHourlyInterestStats] = useState<any>({})
   // const [totalInterestValue, setTotalInterestValue] = useState(null)
-  const [loading, setLoading] = useState(false)
+  const [loadHourlyStats, setLoadHourlyStats] = useState(false)
+  const [loadTotalStats, setLoadTotalStats] = useState(false)
   const [selectedAsset, setSelectedAsset] = useState<string>('')
   const [chartData, setChartData] = useState([])
+  const [showHours, setShowHours] = useState(false)
   const {
     paginatedData,
     setData,
@@ -135,6 +137,7 @@ const AccountInterest = () => {
   useEffect(() => {
     const hideDust = []
     const fetchInterestStats = async () => {
+      setLoadTotalStats(true)
       const response = await fetch(
         `https://mango-transaction-log.herokuapp.com/v3/stats/total-interest-earned?mango-account=${mangoAccountPk}`
       )
@@ -154,6 +157,7 @@ const AccountInterest = () => {
             hideDust.push(r)
           }
         })
+        setLoadTotalStats(false)
         setInterestStats(hideDust)
       } else {
         const stats = Object.entries(parsedResponse)
@@ -165,12 +169,13 @@ const AccountInterest = () => {
             stats.total_deposit_interest > smallestValue
           )
         })
+        setLoadTotalStats(false)
         setInterestStats(filterMicroBalances)
       }
     }
 
     const fetchHourlyInterestStats = async () => {
-      setLoading(true)
+      setLoadHourlyStats(true)
       const response = await fetch(
         `https://mango-transaction-log.herokuapp.com/v3/stats/hourly-interest-prices?mango-account=${mangoAccountPk}`
       )
@@ -213,7 +218,7 @@ const AccountInterest = () => {
           delete stats[asset]
         }
       }
-      setLoading(false)
+      setLoadHourlyStats(false)
       setHourlyInterestStats(stats)
     }
 
@@ -282,7 +287,20 @@ const AccountInterest = () => {
           })
         }
       })
-      setChartData(dailyInterest.reverse())
+      if (dailyInterest.length <= 1) {
+        const chartFunding = []
+        hourlyInterestStats[selectedAsset].forEach((a) => {
+          chartFunding.push({
+            funding: a.total_funding,
+            time: a.time,
+          })
+        })
+        setShowHours(true)
+        setChartData(chartFunding.reverse())
+      } else {
+        setShowHours(false)
+        setChartData(dailyInterest.reverse())
+      }
     }
   }, [hourlyInterestStats, selectedAsset])
 
@@ -313,7 +331,13 @@ const AccountInterest = () => {
       </div>
       {mangoAccount ? (
         <div>
-          {!isMobile ? (
+          {loadTotalStats ? (
+            <div className="space-y-2">
+              <div className="animate-pulse bg-th-bkg-3 h-12 rounded-md w-full" />
+              <div className="animate-pulse bg-th-bkg-3 h-12 rounded-md w-full" />
+              <div className="animate-pulse bg-th-bkg-3 h-12 rounded-md w-full" />
+            </div>
+          ) : !isMobile ? (
             <Table>
               <thead>
                 <TrHead>
@@ -454,7 +478,7 @@ const AccountInterest = () => {
             </div>
           ) : null} */}
           <>
-            {!isEmpty(hourlyInterestStats) && !loading ? (
+            {!isEmpty(hourlyInterestStats) && !loadHourlyStats ? (
               <>
                 <div className="flex items-center justify-between pb-4 pt-8 w-full">
                   <div className="text-th-fgd-1 text-lg">{t('history')}</div>
@@ -502,6 +526,7 @@ const AccountInterest = () => {
                       style={{ height: '330px' }}
                     >
                       <Chart
+                        daysRange={showHours ? 1 : 30}
                         hideRangeFilters
                         title={t('interest-chart-title', {
                           symbol: selectedAsset,
@@ -556,8 +581,10 @@ const AccountInterest = () => {
                             const utc = dayjs.utc(stat.time).format()
                             return (
                               <TrBody index={index} key={stat.time}>
-                                <Td>{dayjs(utc).format('DD/MM/YY, h:mma')}</Td>
-                                <Td>
+                                <Td className="w-1/3">
+                                  {dayjs(utc).format('DD/MM/YY, h:mma')}
+                                </Td>
+                                <Td className="w-1/3">
                                   {stat.borrow_interest > 0
                                     ? `-${stat.borrow_interest.toFixed(
                                         token.decimals + 1
@@ -567,7 +594,7 @@ const AccountInterest = () => {
                                       )}{' '}
                                   {selectedAsset}
                                 </Td>
-                                <Td>
+                                <Td className="w-1/3">
                                   {stat.borrow_interest > 0
                                     ? `-$${(
                                         stat.borrow_interest * stat.price
@@ -597,7 +624,7 @@ const AccountInterest = () => {
                   />
                 </div>
               </>
-            ) : loading ? (
+            ) : loadHourlyStats ? (
               <div className="pt-8 space-y-2">
                 <div className="animate-pulse bg-th-bkg-3 h-12 rounded-md w-full" />
                 <div className="animate-pulse bg-th-bkg-3 h-12 rounded-md w-full" />
