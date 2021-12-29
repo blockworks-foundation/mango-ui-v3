@@ -1081,40 +1081,41 @@ const JupiterForm: FunctionComponent = () => {
               </div>
             </div>
             {!isNaN(feeValue) ? (
-              <div className="flex items-center">
-                <div>
+              <div>
+                <div className="flex items-center">
                   <span>Swap Fee</span>
-                  <div className="mt-0.5 text-th-fgd-1">
-                    ≈ ${feeValue?.toFixed(2)}
-                  </div>
-                </div>
-                <Tooltip
-                  content={
-                    <div className="space-y-2.5">
-                      {selectedRoute?.marketInfos.map((info, index) => {
-                        const feeToken = tokens.find(
-                          (item) => item?.address === info.lpFee?.mint
-                        )
-                        return (
-                          <div key={index}>
-                            <span>
-                              Fees paid to {info.marketMeta?.amm?.label}
-                            </span>
-                            <div className="text-th-fgd-1">
-                              {(
-                                info.lpFee?.amount /
-                                Math.pow(10, feeToken?.decimals)
-                              ).toFixed(6)}{' '}
-                              {feeToken?.symbol} ({info.lpFee?.pct * 100}%)
+                  <Tooltip
+                    content={
+                      <div className="space-y-2.5">
+                        {selectedRoute?.marketInfos.map((info, index) => {
+                          const feeToken = tokens.find(
+                            (item) => item?.address === info.lpFee?.mint
+                          )
+                          return (
+                            <div key={index}>
+                              <span>
+                                Fees paid to {info.marketMeta?.amm?.label}
+                              </span>
+                              <div className="text-th-fgd-1">
+                                {(
+                                  info.lpFee?.amount /
+                                  Math.pow(10, feeToken?.decimals)
+                                ).toFixed(6)}{' '}
+                                {feeToken?.symbol} ({info.lpFee?.pct * 100}%)
+                              </div>
                             </div>
-                          </div>
-                        )
-                      })}
-                    </div>
-                  }
-                >
-                  <InformationCircleIcon className="cursor-help h-5 ml-2 w-5 text-th-primary" />
-                </Tooltip>
+                          )
+                        })}
+                      </div>
+                    }
+                    placement={'left'}
+                  >
+                    <InformationCircleIcon className="cursor-help h-3.5 ml-1.5 w-3.5 text-th-primary" />
+                  </Tooltip>
+                </div>
+                <div className="mt-0.5 text-th-fgd-1">
+                  ≈ ${feeValue?.toFixed(2)}
+                </div>
               </div>
             ) : (
               selectedRoute?.marketInfos.map((info, index) => {
@@ -1148,7 +1149,37 @@ const JupiterForm: FunctionComponent = () => {
                 {depositAndFee?.ataDepositLength ||
                 depositAndFee?.openOrdersDeposits?.length ? (
                   <div>
-                    <span>Deposit</span>
+                    <div className="flex items-center">
+                      <span>Deposit</span>
+                      <Tooltip
+                        content={
+                          <>
+                            {depositAndFee?.ataDepositLength ? (
+                              <div>
+                                You need to have an Associated Token Account.
+                              </div>
+                            ) : null}
+                            {depositAndFee?.openOrdersDeposits?.length ? (
+                              <div className="mt-2">
+                                Serum requires an OpenOrders account for each
+                                token. You can close the account and recover the
+                                SOL later.{' '}
+                                <a
+                                  href="https://docs.google.com/document/d/1qEWc_Bmc1aAxyCUcilKB4ZYpOu3B0BxIbe__dRYmVns/"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  Here&apos;s how
+                                </a>
+                              </div>
+                            ) : null}
+                          </>
+                        }
+                        placement={'left'}
+                      >
+                        <InformationCircleIcon className="cursor-help h-3.5 ml-1.5 w-3.5 text-th-primary" />
+                      </Tooltip>
+                    </div>
                     <div>
                       {depositAndFee?.ataDepositLength ? (
                         <div className="mt-0.5 text-th-fgd-1">
@@ -1165,7 +1196,10 @@ const JupiterForm: FunctionComponent = () => {
                             Math.pow(10, 9)
                           ).toFixed(5)}{' '}
                           SOL for {depositAndFee?.openOrdersDeposits.length}{' '}
-                          Serum OpenOrders Account
+                          Serum OpenOrders{' '}
+                          {depositAndFee?.openOrdersDeposits.length > 1
+                            ? 'Accounts'
+                            : 'Account'}
                         </div>
                       ) : null}
                     </div>
