@@ -16,6 +16,7 @@ import {
 } from 'recharts'
 import { TOKEN_LIST_URL } from '@jup-ag/core'
 import { PublicKey } from '@solana/web3.js'
+import Image from 'next/image'
 import useMangoStore from '../stores/useMangoStore'
 import {
   connectionSelector,
@@ -29,7 +30,7 @@ import {
   InformationCircleIcon,
   SwitchVerticalIcon,
 } from '@heroicons/react/outline'
-import { ChevronDownIcon } from '@heroicons/react/solid'
+import { ChevronDownIcon, CogIcon } from '@heroicons/react/solid'
 import { abbreviateAddress } from '../utils'
 import SwapTokenSelect from './SwapTokenSelect'
 import { notify } from '../utils/notifications'
@@ -46,8 +47,9 @@ import { breakpoints } from './TradePageGrid'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import Modal from './Modal'
 import { ElementTitle } from './styles'
-import { WalletIcon } from './icons'
+import { RefreshClockwiseIcon, WalletIcon } from './icons'
 import Tooltip from './Tooltip'
+import SwapSettingsModal from './SwapSettingsModal'
 
 type UseJupiterProps = Parameters<typeof useJupiter>[0]
 
@@ -56,6 +58,7 @@ const JupiterForm: FunctionComponent = () => {
   const connection = useMangoStore(connectionSelector)
   const connected = useMangoStore(walletConnectedSelector)
 
+  const [showSettings, setShowSettings] = useState(false)
   const [depositAndFee, setDepositAndFee] = useState(null)
   const [selectedRoute, setSelectedRoute] = useState<RouteInfo>(null)
   const [showInputTokenSelect, setShowInputTokenSelect] = useState(false)
@@ -66,11 +69,12 @@ const JupiterForm: FunctionComponent = () => {
   const [outputTokenStats, setOutputTokenStats] = useState(null)
   const [coinGeckoList, setCoinGeckoList] = useState(null)
   const [walletTokens, setWalletTokens] = useState([])
+  const [slippage, setSlippage] = useState(0.5)
   const [formValue, setFormValue] = useState<UseJupiterProps>({
     amount: null,
     inputMint: new PublicKey('EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'),
     outputMint: new PublicKey('MangoCzJ36AjZyKwVj3VnYU4GTonjfVEnJmvvWaxLac'),
-    slippage: 0.5,
+    slippage,
   })
   const [hasSwapped, setHasSwapped] = useLocalStorageState('hasSwapped', false)
   const [seenWalletDraw, setSeenWalletDraw] = useLocalStorageState(
@@ -207,7 +211,7 @@ const JupiterForm: FunctionComponent = () => {
     return formValue.amount * 10 ** (inputTokenInfo?.decimals || 1)
   }, [inputTokenInfo, formValue.amount])
 
-  const { routeMap, allTokenMints, routes, loading, exchange, error } =
+  const { routeMap, allTokenMints, routes, loading, exchange, error, refresh } =
     useJupiter({
       ...formValue,
       amount: amountInDecimal,
@@ -520,7 +524,99 @@ const JupiterForm: FunctionComponent = () => {
             </button>
           </div>
         ) : null}
-        <div className="mt-8 bg-th-bkg-2 rounded-lg px-6 py-8">
+        <div className="flex justify-between mt-8">
+          <div className="flex items-center space-x-1">
+            <div>
+              <Image
+                src="/assets/icons/orca.svg"
+                alt="Orca"
+                width="20"
+                height="20"
+              />
+            </div>
+            <div>
+              <Image
+                src="/assets/icons/ray.svg"
+                alt="Raydium"
+                width="24"
+                height="24"
+              />
+            </div>
+            <div>
+              <Image
+                src="/assets/icons/srm.svg"
+                alt="Serum"
+                width="24"
+                height="24"
+              />
+            </div>
+            <div>
+              <Image
+                src="/assets/icons/mercurial.svg"
+                alt="Mercurial"
+                width="24"
+                height="24"
+              />
+            </div>
+            <div>
+              <Image
+                src="/assets/icons/aldrin.svg"
+                alt="Aldrin"
+                width="22"
+                height="22"
+              />
+            </div>
+            <div>
+              <Image
+                src="/assets/icons/saber.svg"
+                alt="Saber"
+                width="18"
+                height="18"
+              />
+            </div>
+            <div>
+              <Image
+                src="/assets/icons/dexlab.svg"
+                alt="Dexlab"
+                width="22"
+                height="22"
+              />
+            </div>
+            <div>
+              <Image
+                src="/assets/icons/parrot.svg"
+                alt="Parrot"
+                width="20"
+                height="20"
+              />
+            </div>
+            <div>
+              <Image
+                src="/assets/icons/step.svg"
+                alt="Step"
+                width="20"
+                height="20"
+              />
+            </div>
+          </div>
+          <div className="flex items-center text-th-fgd-3">
+            <button
+              className="rounded-full bg-th-bkg-4 p-1.5"
+              onClick={() => refresh()}
+            >
+              <RefreshClockwiseIcon
+                className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`}
+              />
+            </button>
+            <button
+              className="rounded-full bg-th-bkg-4 p-1.5 ml-2"
+              onClick={() => setShowSettings(true)}
+            >
+              <CogIcon className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+        <div className="mt-2 bg-th-bkg-2 rounded-lg px-6 py-8">
           <div className="flex justify-between">
             <label htmlFor="inputMint" className="block text-sm font-semibold">
               Pay
@@ -1155,6 +1251,14 @@ const JupiterForm: FunctionComponent = () => {
                 outputMint: new PublicKey(token?.address),
               }))
             }}
+          />
+        ) : null}
+        {showSettings ? (
+          <SwapSettingsModal
+            isOpen={showSettings}
+            onClose={() => setShowSettings(false)}
+            slippage={slippage}
+            setSlippage={setSlippage}
           />
         ) : null}
         {connected && !hasSwapped ? (
