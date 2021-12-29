@@ -37,7 +37,7 @@ class ErrorBoundary extends React.Component<
     if (this.state.hasError) {
       // You can render any custom fallback UI
       return (
-        <div className="text-th-bkg-2 text-center pt-1">
+        <div className="text-th-fgd-2 text-center pt-1">
           <div>Something went wrong.</div>
           <div className="text-th-red">{this.state.error.message}</div>
           <button className="mt-2" onClick={() => location.reload()}>
