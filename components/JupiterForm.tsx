@@ -75,6 +75,10 @@ const JupiterForm: FunctionComponent = () => {
     slippage: 0.5,
   })
   const [hasSwapped, setHasSwapped] = useLocalStorageState('hasSwapped', false)
+  const [seenWalletDraw, setSeenWalletDraw] = useLocalStorageState(
+    'seenWalletDraw',
+    false
+  )
   const [showWalletDraw, setShowWalletDraw] = useState(false)
   const [walletTokenPrices, setWalletTokenPrices] = useState(null)
   const { width } = useViewport()
@@ -320,6 +324,18 @@ const JupiterForm: FunctionComponent = () => {
     return [userTokens]
   }, [walletTokens, tokens])
 
+  useEffect(() => {
+    if (walletTokensWithInfos.length && !seenWalletDraw) {
+      setShowWalletDraw(true)
+      setSeenWalletDraw(true)
+      const timer = setTimeout(() => setShowWalletDraw(false), 3000)
+
+      return () => {
+        clearTimeout(timer)
+      }
+    }
+  }, [walletTokensWithInfos])
+
   const getWalletTokenPrices = async () => {
     const ids = walletTokensWithInfos.map(
       (token) => token.item.extensions.coingeckoId
@@ -422,7 +438,10 @@ const JupiterForm: FunctionComponent = () => {
   return (
     <div className="max-w-md mx-auto relative">
       <div className="relative z-10">
-        {connected && walletTokenPrices && !isMobile ? (
+        {connected &&
+        walletTokensWithInfos.length &&
+        walletTokenPrices &&
+        !isMobile ? (
           <div
             className={`flex transform top-22 left-0 w-80 fixed overflow-hidden ease-in-out transition-all duration-700 z-30 ${
               showWalletDraw ? 'translate-x-0' : 'ml-16 -translate-x-full'
