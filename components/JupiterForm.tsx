@@ -436,85 +436,88 @@ const JupiterForm: FunctionComponent = () => {
               showWalletDraw ? 'translate-x-0' : 'ml-16 -translate-x-full'
             }`}
           >
-            <aside
-              className={`bg-th-bkg-3 max-h-[500px] overflow-auto pb-4 pt-6 rounded-r-md w-64`}
-            >
-              <div className="flex items-center justify-between pb-2 px-4">
-                <div className="font-bold text-base text-th-fgd-1">Wallet</div>
-                <a
-                  className="flex items-center text-th-fgd-4 text-xs hover:text-th-fgd-3"
-                  href={`https://explorer.solana.com/address/${wallet?.publicKey}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <div className="bg-th-green h-1.5 mr-1.5 rounded-full w-1.5" />
-                  {abbreviateAddress(wallet.publicKey)}
-                  <ExternalLinkIcon className="h-3.5 ml-0.5 -mt-0.5 w-3.5" />
-                </a>
-              </div>
-              {walletTokensWithInfos
-                .sort((a, b) => {
-                  const aId = a.item.extensions.coingeckoId
-                  const bId = b.item.extensions.coingeckoId
-                  return (
-                    b.uiBalance * walletTokenPrices[bId]?.usd -
-                    a.uiBalance * walletTokenPrices[aId]?.usd
-                  )
-                })
-                .map((token) => {
-                  const geckoId = token.item.extensions.coingeckoId
-                  return (
-                    <div
-                      className="cursor-pointer default-transition flex items-center justify-between px-4 py-2 hover:bg-th-bkg-4"
-                      key={geckoId}
-                      onClick={() =>
-                        setFormValue((val) => ({
-                          ...val,
-                          inputMint: new PublicKey(token?.item.address),
-                        }))
-                      }
-                    >
-                      <div className="flex items-center">
-                        {token.item.logoURI ? (
-                          <img
-                            src={token.item.logoURI}
-                            width="24"
-                            height="24"
-                            alt={token.item.symbol}
-                          />
-                        ) : null}
-                        <div>
-                          <div className="ml-2 text-th-fgd-1">
-                            {token.item.symbol}
-                          </div>
-                          {walletTokenPrices ? (
-                            <div className="ml-2 text-th-fgd-4 text-xs">
-                              {walletTokenPrices[geckoId]
-                                ? `$${walletTokenPrices[geckoId].usd}`
-                                : 'Unavailable'}
-                            </div>
+            <aside className={`bg-th-bkg-3  pb-4 pt-6 rounded-r-md w-64`}>
+              <div className="max-h-[500px] overflow-auto thin-scroll">
+                <div className="flex items-center justify-between pb-2 px-4">
+                  <div className="font-bold text-base text-th-fgd-1">
+                    Wallet
+                  </div>
+                  <a
+                    className="flex items-center text-th-fgd-4 text-xs hover:text-th-fgd-3"
+                    href={`https://explorer.solana.com/address/${wallet?.publicKey}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <div className="bg-th-green h-1.5 mr-1.5 rounded-full w-1.5" />
+                    {abbreviateAddress(wallet.publicKey)}
+                    <ExternalLinkIcon className="h-3.5 ml-0.5 -mt-0.5 w-3.5" />
+                  </a>
+                </div>
+                {walletTokensWithInfos
+                  .sort((a, b) => {
+                    const aId = a.item.extensions.coingeckoId
+                    const bId = b.item.extensions.coingeckoId
+                    return (
+                      b.uiBalance * walletTokenPrices[bId]?.usd -
+                      a.uiBalance * walletTokenPrices[aId]?.usd
+                    )
+                  })
+                  .map((token) => {
+                    const geckoId = token.item.extensions.coingeckoId
+                    return (
+                      <div
+                        className="cursor-pointer default-transition flex items-center justify-between px-4 py-2 hover:bg-th-bkg-4"
+                        key={geckoId}
+                        onClick={() =>
+                          setFormValue((val) => ({
+                            ...val,
+                            inputMint: new PublicKey(token?.item.address),
+                          }))
+                        }
+                      >
+                        <div className="flex items-center">
+                          {token.item.logoURI ? (
+                            <img
+                              src={token.item.logoURI}
+                              width="24"
+                              height="24"
+                              alt={token.item.symbol}
+                            />
                           ) : null}
+                          <div>
+                            <div className="ml-2 text-th-fgd-1">
+                              {token.item.symbol}
+                            </div>
+                            {walletTokenPrices ? (
+                              <div className="ml-2 text-th-fgd-4 text-xs">
+                                {walletTokenPrices[geckoId]
+                                  ? `$${walletTokenPrices[geckoId].usd}`
+                                  : 'Unavailable'}
+                              </div>
+                            ) : null}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-right text-th-fgd-1">
+                            {token.uiBalance.toLocaleString(undefined, {
+                              maximumSignificantDigits: 6,
+                            })}
+                          </div>
+                          <div className="text-th-fgd-4 text-right text-xs">
+                            {walletTokenPrices[geckoId]
+                              ? `$${(
+                                  token.uiBalance *
+                                  walletTokenPrices[geckoId].usd
+                                ).toLocaleString(undefined, {
+                                  maximumFractionDigits: 2,
+                                })}`
+                              : '?'}
+                          </div>
                         </div>
                       </div>
-                      <div>
-                        <div className="text-right text-th-fgd-1">
-                          {token.uiBalance.toLocaleString(undefined, {
-                            maximumSignificantDigits: 6,
-                          })}
-                        </div>
-                        <div className="text-th-fgd-4 text-right text-xs">
-                          {walletTokenPrices[geckoId]
-                            ? `$${(
-                                token.uiBalance * walletTokenPrices[geckoId].usd
-                              ).toLocaleString(undefined, {
-                                maximumFractionDigits: 2,
-                              })}`
-                            : '?'}
-                        </div>
-                      </div>
-                    </div>
-                  )
-                })}
+                    )
+                  })}
+              </div>
             </aside>
             <button
               className="absolute bg-th-bkg-4 p-3 left-64 rounded-l-none text-th-fgd-1 hover:text-th-primary top-8"
