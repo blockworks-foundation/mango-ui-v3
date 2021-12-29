@@ -54,12 +54,11 @@ const PositionsTable = () => {
   const handleSettleAll = async () => {
     setSettling(true)
     const mangoAccounts = await mangoClient.getAllMangoAccounts(mangoGroup)
-    await Promise.all(
-      unsettledPositions.map((p) =>
-        settlePnl(p.perpMarket, p.perpAccount, t, mangoAccounts)
-      )
-    )
-    await reloadMangoAccount()
+    for (const p of unsettledPositions) {
+      await settlePnl(p.perpMarket, p.perpAccount, t, mangoAccounts)
+    }
+
+    reloadMangoAccount()
     setSettling(false)
   }
 
