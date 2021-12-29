@@ -587,14 +587,14 @@ const JupiterForm: FunctionComponent = () => {
                 className="bg-th-bkg-1 font-bold pr-4 py-3 focus:outline-none rounded-md text-lg text-right tracking-wide"
                 value={formValue.amount || ''}
                 placeholder="0.00"
-                type="text"
+                type="number"
                 pattern="[0-9]*"
                 onInput={(e: any) => {
-                  let newValue = Number(e.target?.value || 0)
+                  let newValue = e.target?.value || 0
                   newValue = Number.isNaN(newValue) ? 0 : newValue
                   setFormValue((val) => ({
                     ...val,
-                    amount: newValue ? Math.max(newValue, 0) : null,
+                    amount: newValue,
                   }))
                 }}
               />
