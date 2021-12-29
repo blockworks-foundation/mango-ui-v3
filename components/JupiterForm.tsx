@@ -29,8 +29,8 @@ import {
   InformationCircleIcon,
   SwitchVerticalIcon,
 } from '@heroicons/react/outline'
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid'
-import { abbreviateAddress, sleep } from '../utils'
+import { ChevronDownIcon } from '@heroicons/react/solid'
+import { abbreviateAddress } from '../utils'
 import SwapTokenSelect from './SwapTokenSelect'
 import { notify } from '../utils/notifications'
 import { Token } from '../@types/types'
@@ -56,8 +56,6 @@ const JupiterForm: FunctionComponent = () => {
   const connection = useMangoStore(connectionSelector)
   const connected = useMangoStore(walletConnectedSelector)
 
-  const [routesToShow, setRoutesToShow] = useState<number>(2)
-  const [maxHeight, setMaxHeight] = useState<string>('170px')
   const [depositAndFee, setDepositAndFee] = useState(null)
   const [selectedRoute, setSelectedRoute] = useState<RouteInfo>(null)
   const [showInputTokenSelect, setShowInputTokenSelect] = useState(false)
@@ -83,8 +81,8 @@ const JupiterForm: FunctionComponent = () => {
   const [walletTokenPrices, setWalletTokenPrices] = useState(null)
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
-  const isTablet = width ? width < breakpoints.md : false
   const [feeValue, setFeeValue] = useState(null)
+  const [showRoutesModal, setShowRoutesModal] = useState(false)
 
   const fetchWalletTokens = useCallback(async () => {
     const ownedTokens = []
@@ -378,6 +376,7 @@ const JupiterForm: FunctionComponent = () => {
   }, [walletTokensWithInfos])
 
   const handleSelectRoute = (route) => {
+    setShowRoutesModal(false)
     setSelectedRoute(route)
   }
 
@@ -389,23 +388,9 @@ const JupiterForm: FunctionComponent = () => {
     }))
   }
 
-  const handleShowMore = () => {
-    setRoutesToShow(routes.length)
-    setMaxHeight('340px')
-  }
-
-  const handleShowLess = () => {
-    setMaxHeight('160px')
-    sleep(700).then(() => {
-      setRoutesToShow(2)
-    })
-  }
-
   const sortedTokenMints = sortBy(tokens, (token) => {
     return token?.symbol?.toLowerCase()
   })
-
-  const displayedRoutes = routes ? routes.slice(0, routesToShow) : []
 
   const outAmountUi = selectedRoute
     ? selectedRoute.outAmount / 10 ** (outputTokenInfo?.decimals || 1)
@@ -607,7 +592,7 @@ const JupiterForm: FunctionComponent = () => {
             </button>
           </div>
 
-          <div className="flex justify-between">
+          <div className="flex items-center justify-between">
             <label htmlFor="outputMint" className="font-semibold">
               Receive
             </label>
@@ -615,7 +600,7 @@ const JupiterForm: FunctionComponent = () => {
               Bal: {outputWalletBalance()}
             </span>
           </div>
-          <div className="flex items-center mt-3">
+          <div className="bg-th-bkg-2 flex justify-between items-center mt-2 rounded-md">
             <button
               className="flex items-center hover:bg-th-bkg-3 -ml-2 p-2"
               onClick={() => setShowOutputTokenSelect(true)}
@@ -631,203 +616,324 @@ const JupiterForm: FunctionComponent = () => {
               <div className="text-lg ml-3">{outputTokenInfo?.symbol}</div>
               <ChevronDownIcon className="h-5 w-5 ml-1 text-th-fgd-3" />
             </button>
+            <div>
+              <input
+                name="amount"
+                id="amount"
+                className="bg-th-bkg-1 font-bold pr-4 py-3 focus:outline-none rounded-md text-lg text-right tracking-wide"
+                value={
+                  selectedRoute?.outAmount /
+                    10 ** (outputTokenInfo?.decimals || 1) || ''
+                }
+                placeholder="0.00"
+                type="text"
+                pattern="[0-9]*"
+                onInput={(e: any) => {
+                  let newValue = Number(e.target?.value || 0)
+                  newValue = Number.isNaN(newValue) ? 0 : newValue
+                  setFormValue((val) => ({
+                    ...val,
+                    amount: newValue ? Math.max(newValue, 0) : null,
+                  }))
+                }}
+              />
+            </div>
           </div>
 
-          {routes ? (
-            <div>
-              <div className="text-th-fgd-4 text-center text-xs">
-                {routes?.length} routes found!
-              </div>
-              <div
-                className="transition-all duration-700 mt-3 max-h-80 overflow-x-hidden overflow-y-auto thin-scroll pr-1"
-                style={{ maxHeight: maxHeight }}
-              >
-                {displayedRoutes.map((route, index) => {
-                  const selected = selectedRoute === route
-                  return (
-                    <div
-                      key={index}
-                      className={`bg-th-bkg-3 border default-transition rounded mb-2 hover:bg-th-bkg-4 ${
-                        selected
-                          ? 'border-th-primary text-th-primary hover:border-th-primary'
-                          : 'border-transparent'
-                      }`}
-                    >
-                      <button
-                        className="p-4 w-full"
-                        onClick={() => handleSelectRoute(route)}
-                      >
-                        <div className="flex justify-between items-center">
-                          <div className="flex flex-col text-left">
-                            <div className="whitespace-nowrap overflow-ellipsis">
-                              {route.marketInfos.map((info, index) => {
-                                let includeSeparator = false
-                                if (
-                                  route.marketInfos.length > 1 &&
-                                  index !== route.marketInfos.length - 1
-                                ) {
-                                  includeSeparator = true
-                                }
-                                return (
-                                  <span key={index}>{`${
-                                    info.marketMeta.amm.label
-                                  } ${includeSeparator ? 'x ' : ''}`}</span>
-                                )
-                              })}
-                            </div>
-                            <div className="text-th-fgd-4 text-xs font-normal">
-                              {inputTokenInfo?.symbol} →{' '}
-                              {route.marketInfos.map((r, index) => {
-                                const showArrow =
-                                  index !== route.marketInfos.length - 1
-                                    ? true
-                                    : false
-                                return (
-                                  <span key={index}>
-                                    <span>
-                                      {
-                                        tokens.find(
-                                          (item) =>
-                                            item?.address ===
-                                            r?.outputMint?.toString()
-                                        )?.symbol
-                                      }
-                                    </span>
-                                    {showArrow ? ' → ' : ''}
-                                  </span>
-                                )
-                              })}
-                            </div>
-                          </div>
-                          <div className="text-lg">
-                            {route.outAmount /
-                              10 ** (outputTokenInfo?.decimals || 1)}
-                          </div>
-                        </div>
-                      </button>
-                    </div>
-                  )
-                })}
-              </div>
-              <div className="flex justify-between text-th-fgd-3 mx-1 mt-1">
-                {routes.length ? (
+          {selectedRoute ? (
+            <div className="mt-6 text-th-fgd-3 text-xs">
+              <div className="bg-th-bkg-3 mb-4 pb-4 px-3 pt-4 relative rounded-md">
+                {selectedRoute === routes[0] ? (
+                  <div className="absolute bg-th-primary font-bold px-1 rounded-sm text-th-bkg-1 text-xs -top-2">
+                    Best Swap
+                  </div>
+                ) : null}
+                <div className="flex items-center justify-between">
                   <div>
-                    {routes.length > displayedRoutes.length ? (
-                      <button
-                        className="flex items-center text-xs hover:text-th-fgd-1"
-                        onClick={handleShowMore}
-                      >
-                        <ChevronDownIcon className="h-5 mr-1 w-5" />
-                        Show more
-                      </button>
-                    ) : (
-                      <button
-                        className="flex items-center text-xs hover:text-th-fgd-1"
-                        onClick={handleShowLess}
-                      >
-                        <ChevronUpIcon className="h-5 mr-1 w-5" />
-                        Show less
-                      </button>
-                    )}
+                    <span className="font-bold overflow-ellipsis text-sm text-th-fgd-1 whitespace-nowrap">
+                      {selectedRoute?.marketInfos.map((info, index) => {
+                        let includeSeparator = false
+                        if (
+                          selectedRoute?.marketInfos.length > 1 &&
+                          index !== selectedRoute?.marketInfos.length - 1
+                        ) {
+                          includeSeparator = true
+                        }
+                        return (
+                          <span key={index}>{`${info.marketMeta.amm.label} ${
+                            includeSeparator ? 'x ' : ''
+                          }`}</span>
+                        )
+                      })}
+                    </span>
+                    <div className="mr-2 mt-0.5 text-th-fgd-3 text-xs font-normal">
+                      {inputTokenInfo?.symbol} →{' '}
+                      {selectedRoute?.marketInfos.map((r, index) => {
+                        const showArrow =
+                          index !== selectedRoute?.marketInfos.length - 1
+                            ? true
+                            : false
+                        return (
+                          <span key={index}>
+                            <span>
+                              {
+                                tokens.find(
+                                  (item) =>
+                                    item?.address === r?.outputMint?.toString()
+                                )?.symbol
+                              }
+                            </span>
+                            {showArrow ? ' → ' : ''}
+                          </span>
+                        )
+                      })}
+                    </div>
                   </div>
-                ) : null}
-                {routes.length ? (
-                  <div className="text-xs">
-                    from{' '}
-                    {routes[routes.length - 1].outAmount /
-                      10 ** (outputTokenInfo?.decimals || 1)}{' '}
-                    to{' '}
-                    {routes[0].outAmount /
-                      10 ** (outputTokenInfo?.decimals || 1)}
-                  </div>
-                ) : null}
+                  <Button
+                    className="bg-transparent border border-th-fgd-4 font-normal pb-1 pt-1 px-2 rounded-md text-th-fgd-3 text-center text-xs"
+                    onClick={() => setShowRoutesModal(true)}
+                  >
+                    {routes?.length - 1} other routes
+                  </Button>
+                </div>
               </div>
-              <div className="flex justify-center text-xs text-th-fgd-4 mt-4 -mb-4">
-                <a
-                  href="https://jup.ag/swap/USDC-MNGO"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-th-fgd-4"
-                >
-                  Powered by Jupiter
-                </a>
+              <div className="px-3 space-y-2">
+                <div className="flex justify-between">
+                  <span>Rate</span>
+                  <div className="text-th-fgd-1">
+                    1 {outputTokenInfo?.symbol} ≈{' '}
+                    {(formValue?.amount / outAmountUi).toFixed(6)}{' '}
+                    {inputTokenInfo?.symbol}
+                  </div>
+                </div>
+                <div className="flex justify-between">
+                  <span>Price Impact</span>
+                  <div className="text-th-fgd-1">
+                    {selectedRoute?.priceImpactPct * 100 < 0.1
+                      ? '< 0.1%'
+                      : `~ ${(selectedRoute?.priceImpactPct * 100).toFixed(
+                          4
+                        )}%`}
+                  </div>
+                </div>
+                <div className="flex justify-between">
+                  <span>Minimum Received</span>
+                  <div className="text-th-fgd-1">
+                    {(
+                      selectedRoute?.outAmountWithSlippage /
+                      10 ** (outputTokenInfo?.decimals || 1)
+                    ).toFixed(6)}{' '}
+                    {outputTokenInfo?.symbol}
+                  </div>
+                </div>
+                {!isNaN(feeValue) ? (
+                  <div className="flex justify-between">
+                    <span>Swap Fee</span>
+                    <div className="flex items-center">
+                      <div className="text-th-fgd-1">
+                        ≈ ${feeValue?.toFixed(2)}
+                      </div>
+                      <Tooltip
+                        content={
+                          <div className="space-y-2.5">
+                            {selectedRoute?.marketInfos.map((info, index) => {
+                              const feeToken = tokens.find(
+                                (item) => item?.address === info.lpFee?.mint
+                              )
+                              return (
+                                <div key={index}>
+                                  <span>
+                                    Fees paid to {info.marketMeta?.amm?.label}
+                                  </span>
+                                  <div className="text-th-fgd-1">
+                                    {(
+                                      info.lpFee?.amount /
+                                      Math.pow(10, feeToken?.decimals)
+                                    ).toFixed(6)}{' '}
+                                    {feeToken?.symbol} ({info.lpFee?.pct * 100}
+                                    %)
+                                  </div>
+                                </div>
+                              )
+                            })}
+                          </div>
+                        }
+                        placement={'left'}
+                      >
+                        <InformationCircleIcon className="cursor-help h-3.5 ml-1.5 w-3.5 text-th-primary" />
+                      </Tooltip>
+                    </div>
+                  </div>
+                ) : (
+                  selectedRoute?.marketInfos.map((info, index) => {
+                    const feeToken = tokens.find(
+                      (item) => item?.address === info.lpFee?.mint
+                    )
+                    return (
+                      <div className="flex justify-between" key={index}>
+                        <span>Fees paid to {info.marketMeta?.amm?.label}</span>
+                        <div className="text-th-fgd-1">
+                          {(
+                            info.lpFee?.amount /
+                            Math.pow(10, feeToken?.decimals)
+                          ).toFixed(6)}{' '}
+                          {feeToken?.symbol} ({info.lpFee?.pct * 100}%)
+                        </div>
+                      </div>
+                    )
+                  })
+                )}
+                {connected ? (
+                  <>
+                    <div className="flex justify-between">
+                      <span>Transaction Fee</span>
+                      <div className="text-th-fgd-1">
+                        {depositAndFee
+                          ? depositAndFee?.signatureFee / Math.pow(10, 9)
+                          : '-'}{' '}
+                        SOL
+                      </div>
+                    </div>
+                    {depositAndFee?.ataDepositLength ||
+                    depositAndFee?.openOrdersDeposits?.length ? (
+                      <div className="flex justify-between">
+                        <div className="flex items-center">
+                          <span>Deposit</span>
+                          <Tooltip
+                            content={
+                              <>
+                                {depositAndFee?.ataDepositLength ? (
+                                  <div>
+                                    You need to have an Associated Token
+                                    Account.
+                                  </div>
+                                ) : null}
+                                {depositAndFee?.openOrdersDeposits?.length ? (
+                                  <div className="mt-2">
+                                    Serum requires an OpenOrders account for
+                                    each token. You can close the account and
+                                    recover the SOL later.{' '}
+                                    <a
+                                      href="https://docs.google.com/document/d/1qEWc_Bmc1aAxyCUcilKB4ZYpOu3B0BxIbe__dRYmVns/"
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                    >
+                                      Here&apos;s how
+                                    </a>
+                                  </div>
+                                ) : null}
+                              </>
+                            }
+                            placement={'left'}
+                          >
+                            <InformationCircleIcon className="cursor-help h-3.5 ml-1.5 w-3.5 text-th-primary" />
+                          </Tooltip>
+                        </div>
+                        <div>
+                          {depositAndFee?.ataDepositLength ? (
+                            <div className="text-right text-th-fgd-1">
+                              {(
+                                depositAndFee?.ataDeposit / Math.pow(10, 9)
+                              ).toFixed(5)}{' '}
+                              SOL for {depositAndFee?.ataDepositLength} ATA
+                              Account
+                            </div>
+                          ) : null}
+                          {depositAndFee?.openOrdersDeposits?.length ? (
+                            <div className="text-th-fgd-1">
+                              {(
+                                sum(depositAndFee?.openOrdersDeposits) /
+                                Math.pow(10, 9)
+                              ).toFixed(5)}{' '}
+                              SOL for {depositAndFee?.openOrdersDeposits.length}{' '}
+                              Serum OpenOrders{' '}
+                              {depositAndFee?.openOrdersDeposits.length > 1
+                                ? 'Accounts'
+                                : 'Account'}
+                            </div>
+                          ) : null}
+                        </div>
+                      </div>
+                    ) : null}
+                  </>
+                ) : null}
               </div>
             </div>
           ) : null}
-
           {error && (
             <div className="flex items-center justify-center mt-2 text-th-red">
               <ExclamationCircleIcon className="h-5 mr-1.5 w-5" />
               Error in Jupiter – Try changing your input
             </div>
           )}
-        </div>
-        <Button
-          disabled={swapDisabled}
-          onClick={async () => {
-            if (!connected && zeroKey !== wallet?.publicKey) {
-              wallet.connect()
-            } else if (!loading && selectedRoute && connected) {
-              setSwapping(true)
-              let txCount = 1
-              let errorTxid
-              const swapResult = await exchange({
-                wallet: wallet,
-                route: selectedRoute,
-                confirmationWaiterFactory: async (txid, totalTxs) => {
-                  console.log('txid, totalTxs', txid, totalTxs)
-                  if (txCount === totalTxs) {
-                    errorTxid = txid
-                    notify({
-                      type: 'confirm',
-                      title: 'Confirming Transaction',
-                      txid,
+          <Button
+            disabled={swapDisabled}
+            onClick={async () => {
+              if (!connected && zeroKey !== wallet?.publicKey) {
+                wallet.connect()
+              } else if (!loading && selectedRoute && connected) {
+                setSwapping(true)
+                let txCount = 1
+                let errorTxid
+                const swapResult = await exchange({
+                  wallet: wallet,
+                  route: selectedRoute,
+                  confirmationWaiterFactory: async (txid, totalTxs) => {
+                    console.log('txid, totalTxs', txid, totalTxs)
+                    if (txCount === totalTxs) {
+                      errorTxid = txid
+                      notify({
+                        type: 'confirm',
+                        title: 'Confirming Transaction',
+                        txid,
+                      })
+                    }
+                    await connection.confirmTransaction(txid)
+
+                    txCount++
+                    return await connection.getTransaction(txid, {
+                      commitment: 'confirmed',
                     })
-                  }
-                  await connection.confirmTransaction(txid)
+                  },
+                })
+                console.log('swapResult', swapResult)
 
-                  txCount++
-                  return await connection.getTransaction(txid, {
-                    commitment: 'confirmed',
+                setSwapping(false)
+                fetchWalletTokens()
+                if ('error' in swapResult) {
+                  console.log('Error:', swapResult.error)
+                  notify({
+                    type: 'error',
+                    title: swapResult.error.name,
+                    description: swapResult.error.message,
+                    txid: errorTxid,
                   })
-                },
-              })
-              console.log('swapResult', swapResult)
-
-              setSwapping(false)
-              fetchWalletTokens()
-              if ('error' in swapResult) {
-                console.log('Error:', swapResult.error)
-                notify({
-                  type: 'error',
-                  title: swapResult.error.name,
-                  description: swapResult.error.message,
-                  txid: errorTxid,
-                })
-              } else if ('txid' in swapResult) {
-                notify({
-                  type: 'success',
-                  title: 'Swap Successful',
-                  description: `Swapped ${
-                    swapResult.inputAmount /
-                    10 ** (inputTokenInfo?.decimals || 1)
-                  } ${inputTokenInfo?.symbol} to ${
-                    swapResult.outputAmount /
-                    10 ** (outputTokenInfo?.decimals || 1)
-                  } ${outputTokenInfo?.symbol}`,
-                  txid: swapResult.txid,
-                })
-                setFormValue((val) => ({
-                  ...val,
-                  amount: null,
-                }))
+                } else if ('txid' in swapResult) {
+                  notify({
+                    type: 'success',
+                    title: 'Swap Successful',
+                    description: `Swapped ${
+                      swapResult.inputAmount /
+                      10 ** (inputTokenInfo?.decimals || 1)
+                    } ${inputTokenInfo?.symbol} to ${
+                      swapResult.outputAmount /
+                      10 ** (outputTokenInfo?.decimals || 1)
+                    } ${outputTokenInfo?.symbol}`,
+                    txid: swapResult.txid,
+                  })
+                  setFormValue((val) => ({
+                    ...val,
+                    amount: null,
+                  }))
+                }
               }
-            }
-          }}
-          className="h-12 mt-6 text-base w-full"
-        >
-          {connected ? (swapping ? 'Swapping...' : 'Swap') : 'Connect Wallet'}
-        </Button>
+            }}
+            className="h-12 mt-6 text-base w-full"
+          >
+            {connected ? (swapping ? 'Swapping...' : 'Swap') : 'Connect Wallet'}
+          </Button>
+        </div>
+
         {inputTokenStats?.prices?.length && outputTokenStats?.prices?.length ? (
           <>
             <div className="flex items-center justify-between mt-6">
@@ -942,81 +1048,85 @@ const JupiterForm: FunctionComponent = () => {
             </div>
           </>
         ) : null}
-        {selectedRoute && isTablet ? (
-          <div className="flex flex-col space-y-2.5 mt-6 text-th-fgd-3 text-xs">
-            <div className="flex justify-between">
-              <span>Rate</span>
-              <span className="text-th-fgd-1">
-                1 {outputTokenInfo?.symbol} ≈{' '}
-                {(formValue?.amount / outAmountUi).toFixed(6)}{' '}
-                {inputTokenInfo?.symbol}
-              </span>
+        {showRoutesModal ? (
+          <Modal
+            isOpen={showRoutesModal}
+            onClose={() => setShowRoutesModal(false)}
+          >
+            <div className="font-bold mb-4 text-th-fgd-1 text-center text-lg">
+              {routes?.length} routes
             </div>
-            <div className="flex justify-between">
-              <span>Price Impact</span>
-              <span className="text-th-fgd-1">
-                {selectedRoute.priceImpactPct * 100 < 0.1
-                  ? '< 0.1%'
-                  : `~ ${(selectedRoute.priceImpactPct * 100).toFixed(4)}%`}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span>Minimum Received</span>
-              <span className="text-th-fgd-1">
-                {(
-                  selectedRoute.outAmountWithSlippage /
-                  10 ** (outputTokenInfo?.decimals || 1)
-                ).toFixed(6)}{' '}
-                {outputTokenInfo?.symbol}
-              </span>
-            </div>
-            {selectedRoute.marketInfos.map((info, index) => {
-              const feeToken = tokens.find(
-                (item) => item?.address === info.lpFee?.mint
-              )
-              return (
-                <div className="flex justify-between" key={index}>
-                  <span>Fees paid to {info.marketMeta?.amm?.label}</span>
-                  <span className="text-th-fgd-1">
-                    {(
-                      info.lpFee?.amount / Math.pow(10, feeToken?.decimals)
-                    ).toFixed(6)}{' '}
-                    {feeToken?.symbol} ({info.lpFee?.pct * 100}%)
-                  </span>
-                </div>
-              )
-            })}
-            {connected ? (
-              <>
-                <div className="flex justify-between">
-                  <span>Transaction Fee</span>
-                  <span className="text-th-fgd-1">
-                    {depositAndFee
-                      ? depositAndFee?.signatureFee / Math.pow(10, 9)
-                      : '-'}{' '}
-                    SOL
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span>Deposit</span>
-                  <div className="flex flex-col text-right">
-                    <span className="text-th-fgd-1">
-                      {depositAndFee?.ataDeposit / Math.pow(10, 9)} SOL for{' '}
-                      {depositAndFee?.ataDepositLength} ATA Account
-                    </span>
-                    {depositAndFee?.openOrdersDeposits?.length ? (
-                      <span className="text-th-fgd-1">
-                        {sum(depositAndFee?.openOrdersDeposits) /
-                          Math.pow(10, 9)}{' '}
-                        SOL for {depositAndFee?.openOrdersDeposits.length} Serum
-                        OpenOrders Account
-                      </span>
-                    ) : null}
+            <div className="max-h-96 overflow-x-hidden overflow-y-auto thin-scroll pr-1">
+              {routes.map((route, index) => {
+                const selected = selectedRoute === route
+                return (
+                  <div
+                    key={index}
+                    className={`bg-th-bkg-3 border default-transition rounded mb-2 hover:bg-th-bkg-4 ${
+                      selected
+                        ? 'border-th-primary text-th-primary hover:border-th-primary'
+                        : 'border-transparent text-th-fgd-1'
+                    }`}
+                  >
+                    <button
+                      className="p-4 w-full"
+                      onClick={() => handleSelectRoute(route)}
+                    >
+                      <div className="flex justify-between items-center">
+                        <div className="flex flex-col text-left">
+                          <div className="whitespace-nowrap overflow-ellipsis">
+                            {route.marketInfos.map((info, index) => {
+                              let includeSeparator = false
+                              if (
+                                route.marketInfos.length > 1 &&
+                                index !== route.marketInfos.length - 1
+                              ) {
+                                includeSeparator = true
+                              }
+                              return (
+                                <span key={index}>{`${
+                                  info.marketMeta.amm.label
+                                } ${includeSeparator ? 'x ' : ''}`}</span>
+                              )
+                            })}
+                          </div>
+                          <div className="text-th-fgd-4 text-xs font-normal">
+                            {inputTokenInfo?.symbol} →{' '}
+                            {route.marketInfos.map((r, index) => {
+                              const showArrow =
+                                index !== route.marketInfos.length - 1
+                                  ? true
+                                  : false
+                              return (
+                                <span key={index}>
+                                  <span>
+                                    {
+                                      tokens.find(
+                                        (item) =>
+                                          item?.address ===
+                                          r?.outputMint?.toString()
+                                      )?.symbol
+                                    }
+                                  </span>
+                                  {showArrow ? ' → ' : ''}
+                                </span>
+                              )
+                            })}
+                          </div>
+                        </div>
+                        <div className="text-lg">
+                          {(
+                            route.outAmount /
+                            10 ** (outputTokenInfo?.decimals || 1)
+                          ).toLocaleString()}
+                        </div>
+                      </div>
+                    </button>
                   </div>
-                </div>
-              </>
-            ) : null}
-          </div>
+                )
+              })}
+            </div>
+          </Modal>
         ) : null}
         {showInputTokenSelect ? (
           <SwapTokenSelect
@@ -1064,171 +1174,6 @@ const JupiterForm: FunctionComponent = () => {
           </Modal>
         ) : null}
       </div>
-      {!isTablet ? (
-        <div
-          className={`absolute bg-th-bkg-3 overflow-auto p-4 -right-56 rounded-r-md top-8 transform transition-all delay-500 duration-700 w-56 ${
-            formValue?.amount > 0 && outAmountUi
-              ? 'opacity-100 translate-x-0'
-              : 'opacity-0 -translate-x-full'
-          }`}
-        >
-          <div className="space-y-2.5 text-th-fgd-3 text-xs">
-            <div>
-              <span>Rate</span>
-              <div className="mt-0.5 text-th-fgd-1">
-                1 {outputTokenInfo?.symbol} ≈{' '}
-                {(formValue?.amount / outAmountUi).toFixed(6)}{' '}
-                {inputTokenInfo?.symbol}
-              </div>
-            </div>
-            <div>
-              <span>Price Impact</span>
-              <div className="mt-0.5 text-th-fgd-1">
-                {selectedRoute?.priceImpactPct * 100 < 0.1
-                  ? '< 0.1%'
-                  : `~ ${(selectedRoute?.priceImpactPct * 100).toFixed(4)}%`}
-              </div>
-            </div>
-            <div>
-              <span>Minimum Received</span>
-              <div className="mt-0.5 text-th-fgd-1">
-                {(
-                  selectedRoute?.outAmountWithSlippage /
-                  10 ** (outputTokenInfo?.decimals || 1)
-                ).toFixed(6)}{' '}
-                {outputTokenInfo?.symbol}
-              </div>
-            </div>
-            {!isNaN(feeValue) ? (
-              <div>
-                <div className="flex items-center">
-                  <span>Swap Fee</span>
-                  <Tooltip
-                    content={
-                      <div className="space-y-2.5">
-                        {selectedRoute?.marketInfos.map((info, index) => {
-                          const feeToken = tokens.find(
-                            (item) => item?.address === info.lpFee?.mint
-                          )
-                          return (
-                            <div key={index}>
-                              <span>
-                                Fees paid to {info.marketMeta?.amm?.label}
-                              </span>
-                              <div className="text-th-fgd-1">
-                                {(
-                                  info.lpFee?.amount /
-                                  Math.pow(10, feeToken?.decimals)
-                                ).toFixed(6)}{' '}
-                                {feeToken?.symbol} ({info.lpFee?.pct * 100}%)
-                              </div>
-                            </div>
-                          )
-                        })}
-                      </div>
-                    }
-                    placement={'left'}
-                  >
-                    <InformationCircleIcon className="cursor-help h-3.5 ml-1.5 w-3.5 text-th-primary" />
-                  </Tooltip>
-                </div>
-                <div className="mt-0.5 text-th-fgd-1">
-                  ≈ ${feeValue?.toFixed(2)}
-                </div>
-              </div>
-            ) : (
-              selectedRoute?.marketInfos.map((info, index) => {
-                const feeToken = tokens.find(
-                  (item) => item?.address === info.lpFee?.mint
-                )
-                return (
-                  <div key={index}>
-                    <span>Fees paid to {info.marketMeta?.amm?.label}</span>
-                    <div className="mt-0.5 text-th-fgd-1">
-                      {(
-                        info.lpFee?.amount / Math.pow(10, feeToken?.decimals)
-                      ).toFixed(6)}{' '}
-                      {feeToken?.symbol} ({info.lpFee?.pct * 100}%)
-                    </div>
-                  </div>
-                )
-              })
-            )}
-            {connected ? (
-              <>
-                <div>
-                  <span>Transaction Fee</span>
-                  <div className="mt-0.5 text-th-fgd-1">
-                    {depositAndFee
-                      ? depositAndFee?.signatureFee / Math.pow(10, 9)
-                      : '-'}{' '}
-                    SOL
-                  </div>
-                </div>
-                {depositAndFee?.ataDepositLength ||
-                depositAndFee?.openOrdersDeposits?.length ? (
-                  <div>
-                    <div className="flex items-center">
-                      <span>Deposit</span>
-                      <Tooltip
-                        content={
-                          <>
-                            {depositAndFee?.ataDepositLength ? (
-                              <div>
-                                You need to have an Associated Token Account.
-                              </div>
-                            ) : null}
-                            {depositAndFee?.openOrdersDeposits?.length ? (
-                              <div className="mt-2">
-                                Serum requires an OpenOrders account for each
-                                token. You can close the account and recover the
-                                SOL later.{' '}
-                                <a
-                                  href="https://docs.google.com/document/d/1qEWc_Bmc1aAxyCUcilKB4ZYpOu3B0BxIbe__dRYmVns/"
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                >
-                                  Here&apos;s how
-                                </a>
-                              </div>
-                            ) : null}
-                          </>
-                        }
-                        placement={'left'}
-                      >
-                        <InformationCircleIcon className="cursor-help h-3.5 ml-1.5 w-3.5 text-th-primary" />
-                      </Tooltip>
-                    </div>
-                    <div>
-                      {depositAndFee?.ataDepositLength ? (
-                        <div className="mt-0.5 text-th-fgd-1">
-                          {(
-                            depositAndFee?.ataDeposit / Math.pow(10, 9)
-                          ).toFixed(5)}{' '}
-                          SOL for {depositAndFee?.ataDepositLength} ATA Account
-                        </div>
-                      ) : null}
-                      {depositAndFee?.openOrdersDeposits?.length ? (
-                        <div className="mt-0.5 text-th-fgd-1">
-                          {(
-                            sum(depositAndFee?.openOrdersDeposits) /
-                            Math.pow(10, 9)
-                          ).toFixed(5)}{' '}
-                          SOL for {depositAndFee?.openOrdersDeposits.length}{' '}
-                          Serum OpenOrders{' '}
-                          {depositAndFee?.openOrdersDeposits.length > 1
-                            ? 'Accounts'
-                            : 'Account'}
-                        </div>
-                      ) : null}
-                    </div>
-                  </div>
-                ) : null}
-              </>
-            ) : null}
-          </div>
-        </div>
-      ) : null}
     </div>
   )
 }
