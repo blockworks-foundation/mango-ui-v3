@@ -194,12 +194,12 @@ const useMangoStore = create<MangoStore>((set, get) => {
       current: connection,
       websocket: WEBSOCKET_CONNECTION,
       client: new MangoClient(connection, programId, {
-        postSignTxCallback: ({ txid }) => {
+        postSendTxCallback: ({ txid }: { txid: string }) => {
           notify({
             title: 'Transaction sent',
             description: 'Waiting for confirmation',
             type: 'confirm',
-            txid,
+            txid: txid,
           })
         },
       }),
