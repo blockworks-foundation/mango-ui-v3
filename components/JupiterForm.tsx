@@ -448,7 +448,7 @@ const JupiterForm: FunctionComponent = () => {
             }`}
           >
             <aside
-              className={`bg-th-bkg-3 max-h-[500px] overflow-auto pb-4 pt-6 rounded-r-md w-64`}
+              className={`bg-th-bkg-3 max-h-[500px] overflow-auto pb-4 pt-6 rounded-r-md w-64 thin-scroll`}
             >
               <div className="flex items-center justify-between pb-2 px-4">
                 <div className="font-bold text-base text-th-fgd-1">Wallet</div>
