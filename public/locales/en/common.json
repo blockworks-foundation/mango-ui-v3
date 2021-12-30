@@ -63,6 +63,7 @@
   "collateral-available-tip-desc": "The collateral value that can be used to take on leverage. Assets carry different collateral weights depending on the risk they present to the platform.",
   "collateral-available-tip-title": "Collateral Available",
   "condition": "Condition",
+  "confirm": "Confirm",
   "confirm-deposit": "Confirm Deposit",
   "confirm-withdraw": "Confirm Withdraw",
   "confirming-transaction": "Confirming Transaction",
@@ -370,6 +371,7 @@
   "value": "Value",
   "view-all-trades": "View all trades in the Account page",
   "view-transaction": "View Transaction",
+  "wallet": "Wallet",
   "wallet-connected": "Wallet connected",
   "wallet-disconnected": "Disconnected from wallet",
   "withdraw": "Withdraw",
@@ -381,8 +383,5 @@
   "you-must-leave-enough-sol": "You must leave enough SOL in your wallet to pay for the transaction",
   "your-account": "Your Account",
   "your-assets": "Your Assets",
-  "your-borrows": "Your Borrows",
-
-  "wallet": "Wallet",
-  "confirm": "Confirm"
+  "your-borrows": "Your Borrows"
 }
