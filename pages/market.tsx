@@ -43,14 +43,6 @@ const PerpMarket = () => {
   const hideTips = width ? width < breakpoints.md : false
 
   useEffect(() => {
-    // @ts-ignore
-    if (window.solana) {
-      // @ts-ignore
-      window.solana.connect({ onlyIfTrusted: true })
-    }
-  }, [marketConfig])
-
-  useEffect(() => {
     const name = decodeURIComponent(router.asPath).split('name=')[1]
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
 

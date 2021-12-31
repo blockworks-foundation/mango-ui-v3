@@ -31,14 +31,6 @@ export default function Swap() {
   const actions = useMangoStore(actionsSelector)
 
   useEffect(() => {
-    // @ts-ignore
-    if (window.solana) {
-      // @ts-ignore
-      window.solana.connect({ onlyIfTrusted: true })
-    }
-  }, [])
-
-  useEffect(() => {
     if (connected) {
       actions.fetchWalletTokens()
     }
