@@ -5,6 +5,7 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "next dev",
+    "devnet": "NEXT_PUBLIC_CLUSTER=devnet NEXT_PUBLIC_ENDPOINT=https://mango.devnet.rpcpool.com/ NEXT_PUBLIC_GROUP=devnet.2 next dev",
     "build": "next build",
     "start": "next start",
     "type-check": "tsc --pretty --noEmit",
