@@ -5,15 +5,7 @@ import {
   FunctionComponent,
   useCallback,
 } from 'react'
-import dayjs from 'dayjs'
 import { useJupiter, RouteInfo } from '@jup-ag/react-hook'
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  Tooltip as ChartTooltip,
-} from 'recharts'
 import { TOKEN_LIST_URL } from '@jup-ag/core'
 import { PublicKey } from '@solana/web3.js'
 // import Image from 'next/image'
@@ -65,7 +57,11 @@ const JupiterForm: FunctionComponent = () => {
   const [showOutputTokenSelect, setShowOutputTokenSelect] = useState(false)
   const [swapping, setSwapping] = useState(false)
   const [tokens, setTokens] = useState<Token[]>([])
-  const [inputTokenStats, setInputTokenStats] = useState(null)
+  const [
+    ,
+    // inputTokenStats,
+    setInputTokenStats,
+  ] = useState(null)
   const [outputTokenStats, setOutputTokenStats] = useState(null)
   const [coinGeckoList, setCoinGeckoList] = useState(null)
   const [walletTokens, setWalletTokens] = useState([])
@@ -118,33 +114,6 @@ const JupiterForm: FunctionComponent = () => {
     formValue.outputMint?.toBase58(),
     tokens,
   ])
-
-  const [inputChartPrices, outputChartPrices] = useMemo(() => {
-    return [
-      inputTokenStats && inputTokenStats.prices
-        ? inputTokenStats.prices.reduce((a, c) => {
-            const found = a.find((t) => {
-              return new Date(c[0]).getHours() === new Date(t.time).getHours()
-            })
-            if (!found) {
-              a.push({ time: c[0], price: c[1] })
-            }
-            return a
-          }, [])
-        : null,
-      outputTokenStats && outputTokenStats.prices
-        ? outputTokenStats.prices.reduce((a, c) => {
-            const found = a.find((t) => {
-              return new Date(c[0]).getHours() === new Date(t.time).getHours()
-            })
-            if (!found) {
-              a.push({ time: c[0], price: c[1] })
-            }
-            return a
-          }, [])
-        : null,
-    ]
-  }, [inputTokenStats, outputTokenStats])
 
   useEffect(() => {
     const fetchCoinGeckoList = async () => {
@@ -281,30 +250,11 @@ const JupiterForm: FunctionComponent = () => {
     return 0.0
   }
 
-  const [inputTokenPrice, inputTokenChange] = useMemo(() => {
-    if (inputTokenStats?.prices?.length) {
-      const price = inputTokenStats.prices[inputTokenStats.prices.length - 1][1]
-      const change =
-        ((inputTokenStats.prices[0][1] -
-          inputTokenStats.prices[inputTokenStats.prices.length - 1][1]) /
-          inputTokenStats.prices[0][1]) *
-        100
-
-      return [price.toFixed(price < 5 ? 6 : 4), change]
-    }
-    return [0, 0]
-  }, [inputTokenStats])
-
-  const [outputTokenPrice, outputTokenChange] = useMemo(() => {
+  const [outputTokenPrice] = useMemo(() => {
     if (outputTokenStats?.prices?.length) {
       const price =
         outputTokenStats.prices[outputTokenStats.prices.length - 1][1]
-      const change =
-        ((outputTokenStats.prices[0][1] -
-          outputTokenStats.prices[outputTokenStats.prices.length - 1][1]) /
-          outputTokenStats.prices[0][1]) *
-        100
-      return [price.toFixed(price < 5 ? 6 : 4), change]
+      return [price.toFixed(price < 5 ? 6 : 4)]
     }
     return [0, 0]
   }, [outputTokenStats])
@@ -385,28 +335,6 @@ const JupiterForm: FunctionComponent = () => {
     : null
 
   const swapDisabled = loading || !selectedRoute || routes?.length === 0
-
-  const tooltipContent = (tooltipProps) => {
-    if (tooltipProps.payload.length > 0) {
-      return (
-        <div className="bg-th-bkg-3 flex min-w-[120px] p-2 rounded">
-          <div>
-            <div className="text-th-fgd-3 text-xs">Time</div>
-            <div className="font-bold text-th-fgd-1 text-xs">
-              {dayjs(tooltipProps.payload[0].payload.time).format('h:mma')}
-            </div>
-          </div>
-          <div className="pl-3">
-            <div className="text-th-fgd-3 text-xs">Price</div>
-            <div className="font-bold text-th-fgd-1 text-xs">
-              {tooltipProps.payload[0].payload.price}
-            </div>
-          </div>
-        </div>
-      )
-    }
-    return null
-  }
 
   return (
     <div className="grid grid-cols-12 lg:space-x-4 mt-8">
@@ -963,126 +891,6 @@ const JupiterForm: FunctionComponent = () => {
                 : 'Connect Wallet'}
             </Button>
           </div>
-
-          {inputTokenStats?.prices?.length &&
-          outputTokenStats?.prices?.length ? (
-            <>
-              <div className="flex items-center justify-between mt-6">
-                <div className="flex items-center">
-                  {inputTokenInfo?.logoURI ? (
-                    <img
-                      src={inputTokenInfo?.logoURI}
-                      width="32"
-                      height="32"
-                      alt={inputTokenInfo?.symbol}
-                    />
-                  ) : null}
-                  <div className="ml-2">
-                    <div className="font-semibold">
-                      {inputTokenInfo?.symbol}
-                    </div>
-                    <div className="text-th-fgd-4 text-xs">
-                      {inputTokenInfo?.name}
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <div className="flex flex-col items-end sm:flex-row sm:space-x-3">
-                    <div>${inputTokenPrice}</div>
-                    <div
-                      className={`text-xs sm:text-sm ${
-                        inputTokenChange <= 0 ? 'text-th-green' : 'text-th-red'
-                      }`}
-                    >
-                      {(inputTokenChange * -1).toFixed(2)}%
-                    </div>
-                  </div>
-                  <AreaChart
-                    width={80}
-                    height={40}
-                    data={inputChartPrices || null}
-                  >
-                    <Area
-                      isAnimationActive={false}
-                      type="monotone"
-                      dataKey="price"
-                      stroke="#FF9C24"
-                      fill="#FF9C24"
-                      fillOpacity={0.1}
-                    />
-                    <XAxis dataKey="time" hide />
-                    <YAxis
-                      dataKey="price"
-                      type="number"
-                      domain={['dataMin', 'dataMax']}
-                      hide
-                    />
-                    <ChartTooltip
-                      content={tooltipContent}
-                      position={{ x: 0, y: -50 }}
-                    />
-                  </AreaChart>
-                </div>
-              </div>
-              <div className="flex items-center justify-between mt-4">
-                <div className="flex items-center">
-                  {outputTokenInfo?.logoURI ? (
-                    <img
-                      src={outputTokenInfo?.logoURI}
-                      width="32"
-                      height="32"
-                      alt={outputTokenInfo?.symbol}
-                    />
-                  ) : null}
-                  <div className="ml-2">
-                    <div className="font-semibold">
-                      {outputTokenInfo?.symbol}
-                    </div>
-                    <div className="text-th-fgd-4 text-xs">
-                      {outputTokenInfo?.name}
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <div className="flex flex-col items-end sm:flex-row sm:space-x-3">
-                    <div>${outputTokenPrice}</div>
-                    <div
-                      className={`${
-                        outputTokenChange <= 0 ? 'text-th-green' : 'text-th-red'
-                      }`}
-                    >
-                      {(outputTokenChange * -1).toFixed(2)}%
-                    </div>
-                  </div>
-                  <AreaChart
-                    width={80}
-                    height={40}
-                    data={outputChartPrices || null}
-                  >
-                    <Area
-                      isAnimationActive={false}
-                      type="monotone"
-                      dataKey="price"
-                      stroke="#FF9C24"
-                      fill="#FF9C24"
-                      fillOpacity={0.1}
-                    />
-                    <XAxis dataKey="time" hide />
-                    <YAxis
-                      dataKey="price"
-                      type="number"
-                      domain={['dataMin', 'dataMax']}
-                      hide
-                    />
-                    <ChartTooltip
-                      content={tooltipContent}
-                      position={{ x: 0, y: -50 }}
-                    />
-                  </AreaChart>
-                </div>
-              </div>
-            </>
-          ) : null}
 
           {showRoutesModal ? (
             <Modal
