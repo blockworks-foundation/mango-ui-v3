@@ -42,30 +42,28 @@ class ItemRenderer extends PureComponent<ItemRendererProps> {
     const tokenInfo = this.props.data.items[this.props.index]
 
     return (
-      <div style={this.props.style}>
-        <div
-          key={tokenInfo?.address}
-          className="flex justify-between items-center py-4 hover:bg-th-bkg-4 cursor-pointer px-6"
-          onClick={() => this.props.data.onSubmit(tokenInfo)}
-        >
-          <div className="flex items-center">
-            <img
-              src={tokenInfo?.logoURI}
-              width="24"
-              height="24"
-              alt={tokenInfo?.symbol}
-            />
-            <div className="ml-4">
-              <div className="text-th-fgd-2">
-                {tokenInfo?.symbol || 'unknown'}
-              </div>
-              <div className="text-th-fgd-4">
-                {tokenInfo?.name || 'unknown'}
-              </div>
+      <button
+        key={tokenInfo?.address}
+        className="flex font-normal justify-between items-center py-4 hover:bg-th-bkg-4 cursor-pointer px-6 rounded-none w-full focus:outline-none focus:bg-th-bkg-3"
+        onClick={() => this.props.data.onSubmit(tokenInfo)}
+      >
+        <div className="flex items-center">
+          <img
+            src={tokenInfo?.logoURI}
+            width="24"
+            height="24"
+            alt={tokenInfo?.symbol}
+          />
+          <div className="ml-4">
+            <div className="text-left text-th-fgd-2">
+              {tokenInfo?.symbol || 'unknown'}
+            </div>
+            <div className="text-left text-th-fgd-4">
+              {tokenInfo?.name || 'unknown'}
             </div>
           </div>
         </div>
-      </div>
+      </button>
     )
   }
 }

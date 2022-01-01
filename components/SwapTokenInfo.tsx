@@ -152,7 +152,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
   return (
     <div>
       {chartData.length ? (
-        <div className="p-4">
+        <div className="py-6">
           <div className="flex justify-between">
             <div>
               {inputTokenSymbol && outputTokenInfo ? (
@@ -181,14 +181,17 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                       chartData[chartData.length - 1]['price']
                     )}
                     <span
-                      className={`ml-2 text-sm ${
+                      className={`ml-2 text-xs ${
                         chartChange >= 0 ? 'text-th-green' : 'text-th-red'
                       }`}
                     >
                       {chartChange.toFixed(2)}%
                     </span>
+                    <span className="font-normal ml-2 text-xs text-th-fgd-4">
+                      (Last 24h)
+                    </span>
                   </div>
-                  <div className="text-xs font-normal text-th-fgd-4">
+                  <div className="text-xs font-normal text-th-fgd-3">
                     {dayjs(chartData[chartData.length - 1]['time']).format(
                       'DD MMM YY, h:mma'
                     )}
@@ -270,18 +273,18 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
           ) : null}
         </div>
       ) : (
-        <div className="bg-th-bkg-3 mx-4 p-4 rounded-md text-center text-th-fgd-3">
+        <div className="bg-th-bkg-3 p-4 rounded-md text-center text-th-fgd-3">
           Chart not available
         </div>
       )}
 
       {inputTokenInfo ? (
-        <div className="px-4 w-full">
+        <div className="w-full">
           <Disclosure>
             {({ open }) => (
               <>
                 <Disclosure.Button
-                  className={`bg-th-bkg-2 border border-th-bkg-4 default-transition flex items-center justify-between mt-4 p-3 rounded-md w-full hover:bg-th-bkg-3 ${
+                  className={`border border-th-bkg-4 default-transition flex items-center justify-between mt-4 p-3 rounded-md w-full hover:bg-th-bkg-2 ${
                     open
                       ? 'border-b-transparent rounded-b-none'
                       : 'transform rotate-360'
@@ -306,7 +309,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                     </div>
                   </div>
                   <div className="flex items-center">
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-3">
                       {inputTokenInfo.market_data?.current_price?.usd ? (
                         <div className="font-normal text-th-fgd-1">
                           $
@@ -480,18 +483,18 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
           </Disclosure>
         </div>
       ) : (
-        <div className="bg-th-bkg-3 mx-4 p-4 rounded-md text-center text-th-fgd-3">
+        <div className="bg-th-bkg-3 p-4 rounded-md text-center text-th-fgd-3">
           Input token information is not available right now.
         </div>
       )}
 
       {outputTokenInfo ? (
-        <div className="px-4 w-full">
+        <div className="w-full">
           <Disclosure>
             {({ open }) => (
               <>
                 <Disclosure.Button
-                  className={`bg-th-bkg-2 border border-th-bkg-4 default-transition flex items-center justify-between mt-4 p-3 rounded-md w-full hover:bg-th-bkg-3 ${
+                  className={`border border-th-bkg-4 default-transition flex items-center justify-between mt-3 p-3 rounded-md w-full hover:bg-th-bkg-2 ${
                     open
                       ? 'border-b-transparent rounded-b-none'
                       : 'transform rotate-360'
@@ -516,7 +519,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                     </div>
                   </div>
                   <div className="flex items-center">
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-3">
                       {outputTokenInfo.market_data?.current_price?.usd ? (
                         <div className="font-normal text-th-fgd-1">
                           $
@@ -690,7 +693,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
           </Disclosure>
         </div>
       ) : (
-        <div className="bg-th-bkg-3 mx-4 p-4 rounded-md text-center text-th-fgd-3">
+        <div className="bg-th-bkg-3 p-4 rounded-md text-center text-th-fgd-3">
           Output token information is not available right now.
         </div>
       )}

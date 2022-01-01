@@ -60,6 +60,30 @@ export default function Swap() {
       <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
         <TopBar />
         <PageBodyContainer>
+          <div className="grid grid-cols-12">
+            <div className="col-span-12 lg:col-span-10 lg:col-start-2 pt-8 pb-3 sm:pb-4 md:pt-10">
+              <div className="flex flex-col items-start md:flex-row md:items-end md:justify-between mb-1">
+                <h1
+                  className={`mb-1.5 md:mb-0 text-th-fgd-1 text-2xl font-semibold`}
+                >
+                  Swap
+                </h1>
+                <div className="flex flex-col md:items-end">
+                  <p className="mb-0 text-xs">
+                    Swap between 100s of tokens at the best rates.
+                  </p>
+                  <a
+                    className="mb-0 text-th-fgd-2 text-xs"
+                    href="https://jup.ag/swap/USDC-MNGO"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Powered by Jupiter
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
           {wallet ? (
             <JupiterForm />
           ) : (
