@@ -42,6 +42,7 @@ import { RefreshClockwiseIcon, WalletIcon } from './icons'
 import Tooltip from './Tooltip'
 import SwapSettingsModal from './SwapSettingsModal'
 import SwapTokenInfo from './SwapTokenInfo'
+import { numberFormatter } from './SwapTokenInfo'
 
 type UseJupiterProps = Parameters<typeof useJupiter>[0]
 
@@ -68,7 +69,7 @@ const JupiterForm: FunctionComponent = () => {
     slippage,
   })
   const [hasSwapped, setHasSwapped] = useLocalStorageState('hasSwapped', false)
-  const [showWalletDraw, setShowWalletDraw] = useState(true)
+  const [showWalletDraw, setShowWalletDraw] = useState(false)
   const [walletTokenPrices, setWalletTokenPrices] = useState(null)
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
@@ -109,6 +110,12 @@ const JupiterForm: FunctionComponent = () => {
     formValue.outputMint?.toBase58(),
     tokens,
   ])
+
+  useEffect(() => {
+    if (width >= 1680) {
+      setShowWalletDraw(true)
+    }
+  }, [])
 
   useEffect(() => {
     const fetchCoinGeckoList = async () => {
@@ -318,12 +325,14 @@ const JupiterForm: FunctionComponent = () => {
               walletTokenPrices &&
               !isMobile ? (
                 <div
-                  className={`flex transform top-22 left-0 w-80 fixed overflow-hidden ease-in-out transition-all duration-700 z-30 ${
-                    showWalletDraw ? 'translate-x-0' : 'ml-16 -translate-x-full'
+                  className={`flex transform top-22 right-0 w-80 fixed overflow-hidden ease-in-out transition-all duration-700 z-30 ${
+                    showWalletDraw ? 'translate-x-0' : 'mr-16 translate-x-full'
                   }`}
                 >
-                  <aside className={`bg-th-bkg-3  pb-4 pt-6 rounded-r-md w-64`}>
-                    <div className="max-h-[500px] overflow-auto thin-scroll">
+                  <aside
+                    className={`bg-th-bkg-3 ml-16 pb-4 pt-6 rounded-l-md w-64`}
+                  >
+                    <div className="max-h-[480px] overflow-auto thin-scroll">
                       <div className="flex items-center justify-between pb-2 px-4">
                         <div className="font-bold text-base text-th-fgd-1">
                           Wallet
@@ -406,7 +415,7 @@ const JupiterForm: FunctionComponent = () => {
                     </div>
                   </aside>
                   <button
-                    className="absolute bg-th-bkg-4 p-3 left-64 rounded-l-none text-th-fgd-1 hover:text-th-primary top-8"
+                    className="absolute bg-th-bkg-4 p-3 right-64 rounded-r-none text-th-fgd-1 hover:text-th-primary top-20"
                     onClick={() => setShowWalletDraw(!showWalletDraw)}
                   >
                     <WalletIcon className="h-5 w-5" />
@@ -414,19 +423,6 @@ const JupiterForm: FunctionComponent = () => {
                 </div>
               ) : null}
               <div className="bg-th-bkg-2 rounded-lg p-6">
-                {/* <div className="flex items-center justify-between mb-4">
-              <div className="font-bold text-lg text-th-fgd-1">Swap</div>
-              <div className="flex items-center space-x-2">
-                <IconButton onClick={() => refresh()}>
-                  <RefreshClockwiseIcon
-                    className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`}
-                  />
-                </IconButton>
-                <IconButton onClick={() => setShowSettings(true)}>
-                  <CogIcon className="h-4 w-4" />
-                </IconButton>
-              </div>
-            </div> */}
                 <div className="flex justify-between">
                   <label
                     htmlFor="inputMint"
@@ -481,7 +477,7 @@ const JupiterForm: FunctionComponent = () => {
                     <input
                       name="amount"
                       id="amount"
-                      className="bg-th-bkg-1 border border-th-fgd-4 font-bold pr-4 h-12 focus:outline-none rounded-md text-base text-right tracking-wide w-full"
+                      className="bg-th-bkg-1 border border-th-fgd-4 default-transition font-bold pr-4 h-12 focus:outline-none rounded-md text-base text-right tracking-wide w-full hover:border-th-primary focus:border-th-primary"
                       value={formValue.amount || ''}
                       placeholder="0.00"
                       type="number"
@@ -539,9 +535,14 @@ const JupiterForm: FunctionComponent = () => {
                       id="amount"
                       className="bg-th-bkg-3 border border-th-bkg-4 cursor-not-allowed font-bold pr-4 h-12 focus:outline-none rounded-md text-lg text-right tracking-wide w-full"
                       disabled
+                      placeholder="0.00"
                       value={
-                        selectedRoute?.outAmount /
-                          10 ** (outputTokenInfo?.decimals || 1) || ''
+                        selectedRoute?.outAmount
+                          ? numberFormatter.format(
+                              selectedRoute?.outAmount /
+                                10 ** (outputTokenInfo?.decimals || 1)
+                            )
+                          : ''
                       }
                     />
                     {selectedRoute?.outAmount && outputTokenPrice ? (
@@ -636,10 +637,42 @@ const JupiterForm: FunctionComponent = () => {
                       </div>
                       <div className="flex justify-between">
                         <span>Rate</span>
-                        <div className="text-right text-th-fgd-1">
-                          1 {outputTokenInfo?.symbol} ≈{' '}
-                          {(formValue?.amount / outAmountUi).toFixed(6)}{' '}
-                          {inputTokenInfo?.symbol}
+                        <div>
+                          <div className="text-right text-th-fgd-1">
+                            1 {outputTokenInfo?.symbol} ≈{' '}
+                            {numberFormatter.format(
+                              formValue?.amount / outAmountUi
+                            )}{' '}
+                            {inputTokenInfo?.symbol}
+                          </div>
+                          <div
+                            className={`text-right ${
+                              ((formValue?.amount / outAmountUi -
+                                outputTokenPrice) /
+                                (formValue?.amount / outAmountUi)) *
+                                100 <=
+                              0
+                                ? 'text-th-green'
+                                : 'text-th-red'
+                            }`}
+                          >
+                            {Math.abs(
+                              ((formValue?.amount / outAmountUi -
+                                outputTokenPrice) /
+                                (formValue?.amount / outAmountUi)) *
+                                100
+                            ).toFixed(1)}
+                            %{' '}
+                            <span className="text-th-fgd-4">{`${
+                              ((formValue?.amount / outAmountUi -
+                                outputTokenPrice) /
+                                (formValue?.amount / outAmountUi)) *
+                                100 <=
+                              0
+                                ? 'cheaper'
+                                : 'more expensive'
+                            } than CoinGecko`}</span>
+                          </div>
                         </div>
                       </div>
                       <div className="flex justify-between">
@@ -655,8 +688,10 @@ const JupiterForm: FunctionComponent = () => {
                       <div className="flex justify-between">
                         <span>Minimum Received</span>
                         <div className="text-right text-th-fgd-1">
-                          {selectedRoute?.outAmountWithSlippage /
-                            10 ** (outputTokenInfo?.decimals || 1)}{' '}
+                          {numberFormatter.format(
+                            selectedRoute?.outAmountWithSlippage /
+                              10 ** outputTokenInfo?.decimals || 1
+                          )}{' '}
                           {outputTokenInfo?.symbol}
                         </div>
                       </div>
@@ -950,10 +985,10 @@ const JupiterForm: FunctionComponent = () => {
                                 </div>
                               </div>
                               <div className="text-lg">
-                                {(
+                                {numberFormatter.format(
                                   route.outAmount /
-                                  10 ** (outputTokenInfo?.decimals || 1)
-                                ).toLocaleString()}
+                                    10 ** (outputTokenInfo?.decimals || 1)
+                                )}
                               </div>
                             </div>
                           </button>

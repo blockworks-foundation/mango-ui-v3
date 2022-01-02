@@ -17,6 +17,12 @@ interface SwapTokenInfoProps {
   outputTokenId?: string
 }
 
+export const numberFormatter = Intl.NumberFormat('en', {
+  minimumSignificantDigits: 1,
+  maximumSignificantDigits: 5,
+  notation: 'compact',
+})
+
 const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
   inputTokenId,
   inputTokenSymbol,
@@ -27,7 +33,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
   const [inputTokenInfo, setInputTokenInfo] = useState(null)
   const [outputTokenInfo, setOutputTokenInfo] = useState(null)
   const [mouseData, setMouseData] = useState<string | null>(null)
-  //   const [daysToShow, setDaysToShow] = useState(1)
+  const [daysToShow, setDaysToShow] = useState(1)
   const { observe, width, height } = useDimensions()
 
   const handleMouseMove = (coords) => {
@@ -40,63 +46,66 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
     setMouseData(null)
   }
 
-  // Use ohlc data. Don't think it works
+  // Use ohlc data
+
+  const getChartData = async () => {
+    const inputResponse = await fetch(
+      `https://api.coingecko.com/api/v3/coins/${inputTokenId}/ohlc?vs_currency=usd&days=${daysToShow}`
+    )
+    const outputResponse = await fetch(
+      `https://api.coingecko.com/api/v3/coins/${outputTokenId}/ohlc?vs_currency=usd&days=${daysToShow}`
+    )
+    const inputData = await inputResponse.json()
+    const outputData = await outputResponse.json()
+
+    const data = inputData.concat(outputData)
+
+    const formattedData = data.reduce((a, c) => {
+      const found = a.find((price) => price.time === c[0])
+      if (found) {
+        found.price = found.inputPrice / c[4]
+      } else {
+        a.push({ time: c[0], inputPrice: c[4] })
+      }
+      return a
+    }, [])
+    formattedData[formattedData.length - 1].time = Date.now()
+    setChartData(formattedData.filter((d) => d.price))
+  }
+
+  // Alternative chart data. Needs a timestamp tolerance to get data points for each asset
 
   //   const getChartData = async () => {
+  //     const now = Date.now() / 1000
   //     const inputResponse = await fetch(
-  //       `https://api.coingecko.com/api/v3/coins/${inputTokenId}/ohlc?vs_currency=usd&days=${daysToShow}`
+  //       `https://api.coingecko.com/api/v3/coins/${inputTokenId}/market_chart/range?vs_currency=usd&from=${
+  //         now - 1 * 86400
+  //       }&to=${now}`
   //     )
+
   //     const outputResponse = await fetch(
-  //       `https://api.coingecko.com/api/v3/coins/${outputTokenId}/ohlc?vs_currency=usd&days=${daysToShow}`
+  //       `https://api.coingecko.com/api/v3/coins/${outputTokenId}/market_chart/range?vs_currency=usd&from=${
+  //         now - 1 * 86400
+  //       }&to=${now}`
   //     )
   //     const inputData = await inputResponse.json()
   //     const outputData = await outputResponse.json()
 
-  //     const data = inputData.concat(outputData)
+  //     const data = inputData?.prices.concat(outputData?.prices)
 
   //     const formattedData = data.reduce((a, c) => {
-  //       const found = a.find((price) => price.time === c[0])
+  //       const found = a.find(
+  //         (price) => c[0] >= price.time - 120000 && c[0] <= price.time + 120000
+  //       )
   //       if (found) {
-  //         found.price = found.inputPrice / c[2]
+  //         found.price = found.inputPrice / c[1]
   //       } else {
-  //         a.push({ time: c[0], inputPrice: c[2] })
+  //         a.push({ time: c[0], inputPrice: c[1] })
   //       }
   //       return a
   //     }, [])
   //     setChartData(formattedData.filter((d) => d.price))
   //   }
-
-  const getChartData = async () => {
-    const now = Date.now() / 1000
-    const inputResponse = await fetch(
-      `https://api.coingecko.com/api/v3/coins/${inputTokenId}/market_chart/range?vs_currency=usd&from=${
-        now - 1 * 86400
-      }&to=${now}`
-    )
-
-    const outputResponse = await fetch(
-      `https://api.coingecko.com/api/v3/coins/${outputTokenId}/market_chart/range?vs_currency=usd&from=${
-        now - 1 * 86400
-      }&to=${now}`
-    )
-    const inputData = await inputResponse.json()
-    const outputData = await outputResponse.json()
-
-    const data = inputData?.prices.concat(outputData?.prices)
-
-    const formattedData = data.reduce((a, c) => {
-      const found = a.find(
-        (price) => c[0] >= price.time - 120000 && c[0] <= price.time + 120000
-      )
-      if (found) {
-        found.price = found.inputPrice / c[1]
-      } else {
-        a.push({ time: c[0], inputPrice: c[1] })
-      }
-      return a
-    }, [])
-    setChartData(formattedData.filter((d) => d.price))
-  }
 
   const getInputTokenInfo = async () => {
     const response = await fetch(
@@ -120,11 +129,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
     if (inputTokenId && outputTokenId) {
       getChartData()
     }
-  }, [
-    //   daysToShow,
-    inputTokenId,
-    outputTokenId,
-  ])
+  }, [daysToShow, inputTokenId, outputTokenId])
 
   useMemo(() => {
     if (inputTokenId) {
@@ -135,25 +140,17 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
     }
   }, [outputTokenId])
 
-  console.log(outputTokenInfo)
-
   const chartChange = chartData.length
     ? ((chartData[chartData.length - 1]['price'] - chartData[0]['price']) /
         chartData[0]['price']) *
       100
     : 0
 
-  const numberFormatter = Intl.NumberFormat('en', {
-    minimumSignificantDigits: 1,
-    maximumSignificantDigits: 4,
-    notation: 'compact',
-  })
-
   return (
     <div>
-      {chartData.length ? (
+      {chartData.length && inputTokenId && outputTokenId ? (
         <div className="py-6">
-          <div className="flex justify-between">
+          <div className="flex items-start justify-between">
             <div>
               {inputTokenSymbol && outputTokenInfo ? (
                 <div className="text-th-fgd-3 text-sm">{`${inputTokenSymbol.toUpperCase()}/${outputTokenInfo.symbol.toUpperCase()}`}</div>
@@ -163,14 +160,14 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                   <div className="font-bold text-lg text-th-fgd-1">
                     {numberFormatter.format(mouseData['price'])}
                     <span
-                      className={`ml-2 text-sm ${
+                      className={`ml-2 text-xs ${
                         chartChange >= 0 ? 'text-th-green' : 'text-th-red'
                       }`}
                     >
                       {chartChange.toFixed(2)}%
                     </span>
                   </div>
-                  <div className="text-xs font-normal text-th-fgd-4">
+                  <div className="text-xs font-normal text-th-fgd-3">
                     {dayjs(mouseData['time']).format('DD MMM YY, h:mma')}
                   </div>
                 </>
@@ -186,9 +183,6 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                       }`}
                     >
                       {chartChange.toFixed(2)}%
-                    </span>
-                    <span className="font-normal ml-2 text-xs text-th-fgd-4">
-                      (Last 24h)
                     </span>
                   </div>
                   <div className="text-xs font-normal text-th-fgd-3">
@@ -206,32 +200,6 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                 <EyeOffIcon className="w-4 h-4" />
               )}
             </IconButton>
-            {/* <div className="flex h-5">
-              <button
-                className={`default-transition font-bold mx-3 text-th-fgd-1 text-xs hover:text-th-primary focus:outline-none ${
-                  daysToShow === 1 && 'text-th-primary'
-                }`}
-                onClick={() => setDaysToShow(1)}
-              >
-                24H
-              </button>
-              <button
-                className={`default-transition font-bold mx-3 text-th-fgd-1 text-xs hover:text-th-primary focus:outline-none ${
-                  daysToShow === 7 && 'text-th-primary'
-                }`}
-                onClick={() => setDaysToShow(7)}
-              >
-                7D
-              </button>
-              <button
-                className={`default-transition font-bold ml-3 text-th-fgd-1 text-xs hover:text-th-primary focus:outline-none ${
-                  daysToShow === 30 && 'text-th-primary'
-                }`}
-                onClick={() => setDaysToShow(30)}
-              >
-                30D
-              </button>
-            </div> */}
           </div>
           {!hideChart ? (
             <div className="h-52 mt-4 w-full" ref={observe}>
@@ -269,22 +237,49 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                   hide
                 />
               </AreaChart>
+              <div className="flex justify-end">
+                <button
+                  className={`default-transition font-bold px-3 py-2 text-th-fgd-1 text-xs hover:text-th-primary focus:outline-none ${
+                    daysToShow === 1 && 'text-th-primary'
+                  }`}
+                  onClick={() => setDaysToShow(1)}
+                >
+                  24H
+                </button>
+                <button
+                  className={`default-transition font-bold px-3 py-2 text-th-fgd-1 text-xs hover:text-th-primary focus:outline-none ${
+                    daysToShow === 7 && 'text-th-primary'
+                  }`}
+                  onClick={() => setDaysToShow(7)}
+                >
+                  7D
+                </button>
+                <button
+                  className={`default-transition font-bold px-3 py-2 text-th-fgd-1 text-xs hover:text-th-primary focus:outline-none ${
+                    daysToShow === 30 && 'text-th-primary'
+                  }`}
+                  onClick={() => setDaysToShow(30)}
+                >
+                  30D
+                </button>
+              </div>
             </div>
           ) : null}
         </div>
       ) : (
-        <div className="bg-th-bkg-3 p-4 rounded-md text-center text-th-fgd-3">
+        <div className="bg-th-bkg-3 mt-4 md:mt-0 p-4 rounded-md text-center text-th-fgd-3">
+          <LineChartIcon className="h-6 mx-auto text-th-primary w-6" />
           Chart not available
         </div>
       )}
 
-      {inputTokenInfo ? (
+      {inputTokenInfo && inputTokenId ? (
         <div className="w-full">
           <Disclosure>
             {({ open }) => (
               <>
                 <Disclosure.Button
-                  className={`border border-th-bkg-4 default-transition flex items-center justify-between mt-4 p-3 rounded-md w-full hover:bg-th-bkg-2 ${
+                  className={`border border-th-bkg-4 default-transition flex items-center justify-between mt-6 p-3 rounded-md w-full hover:bg-th-bkg-2 ${
                     open
                       ? 'border-b-transparent rounded-b-none'
                       : 'transform rotate-360'
@@ -483,12 +478,12 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
           </Disclosure>
         </div>
       ) : (
-        <div className="bg-th-bkg-3 p-4 rounded-md text-center text-th-fgd-3">
-          Input token information is not available right now.
+        <div className="bg-th-bkg-3 mt-3 p-4 rounded-md text-center text-th-fgd-3">
+          Input token information is not available.
         </div>
       )}
 
-      {outputTokenInfo ? (
+      {outputTokenInfo && outputTokenId ? (
         <div className="w-full">
           <Disclosure>
             {({ open }) => (
@@ -693,8 +688,8 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
           </Disclosure>
         </div>
       ) : (
-        <div className="bg-th-bkg-3 p-4 rounded-md text-center text-th-fgd-3">
-          Output token information is not available right now.
+        <div className="bg-th-bkg-3 mt-3 p-4 rounded-md text-center text-th-fgd-3">
+          Output token information is not available.
         </div>
       )}
     </div>

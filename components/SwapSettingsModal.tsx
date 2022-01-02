@@ -2,6 +2,8 @@ import { useState } from 'react'
 import Modal from './Modal'
 // import { useTranslation } from 'next-i18next'
 import Button from './Button'
+import ButtonGroup from './ButtonGroup'
+import Input from './Input'
 
 const SwapSettingsModal = ({
   isOpen,
@@ -31,50 +33,29 @@ const SwapSettingsModal = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose} hideClose>
       <Modal.Header>
-        <div className="text-th-fgd-1 text-lg">Slippage Settings</div>
+        <h2 className="font-bold text-th-fgd-1 text-lg">Slippage Settings</h2>
       </Modal.Header>
-      <div className="flex items-center justify-between text-th-fgd-3">
-        <button
-          className={`bg-th-bkg-1 py-4 px-10 focus:outline-none transition-none ${
-            tempSlippage === 0.1 ? 'border border-th-primary' : ''
-          }`}
-          onClick={() => handleSetTempSlippage(0.1)}
-        >
-          0.1%
-        </button>
-        <button
-          className={`bg-th-bkg-1 py-4 px-10 focus:outline-none transition-none ${
-            tempSlippage === 0.5 ? 'border border-th-primary' : ''
-          }`}
-          onClick={() => handleSetTempSlippage(0.5)}
-        >
-          0.5%
-        </button>
-        <button
-          className={`bg-th-bkg-1 py-4 px-10 focus:outline-none transition-none ${
-            tempSlippage === 1 ? 'border border-th-primary' : ''
-          }`}
-          onClick={() => handleSetTempSlippage(1)}
-        >
-          1%
-        </button>
-      </div>
-      <div className="text-th-fgd-3 mt-3">Custom</div>
-      <div className="flex mt-1 items-center text-th-fgd-3">
-        <input
+      <div className="text-th-fgd-1 text-xs mb-2">Slippage</div>
+      <ButtonGroup
+        activeValue={tempSlippage.toString()}
+        onChange={(v) => handleSetTempSlippage(v)}
+        unit="%"
+        values={['0.1', '0.5', '1', '2']}
+      />
+      <div className="mt-4 mb-6">
+        <div className="text-th-fgd-1 text-xs mb-2">Custom</div>
+        <Input
           type="text"
-          className="text-right w-full bg-th-bkg-1 focus:outline-none px-4 py-3 rounded"
+          className="w-full bg-th-bkg-1 focus:outline-none rounded"
           placeholder="0.00"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
+          suffix="%"
         />
-        <div className="text-xl ml-2">%</div>
       </div>
-      <div className="flex mt-4">
-        <Button className="w-full" onClick={handleSave}>
-          Save
-        </Button>
-      </div>
+      <Button className="w-full" onClick={handleSave}>
+        Save
+      </Button>
     </Modal>
   )
 }
