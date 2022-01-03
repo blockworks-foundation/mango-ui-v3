@@ -87,6 +87,10 @@ button {
   @apply font-semibold rounded-md tracking-wider;
 }
 
+button.transition-none {
+  transition: none;
+}
+
 .default-transition {
   @apply transition-all duration-300;
 }
