@@ -1,7 +1,7 @@
 import { ChevronUpIcon, RefreshIcon } from '@heroicons/react/outline'
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
 import { Disclosure } from '@headlessui/react'
-import useMangoStore from '../stores/useMangoStore'
+import useMangoStore, { serumProgramId } from '../stores/useMangoStore'
 import PageBodyContainer from '../components/PageBodyContainer'
 import TopBar from '../components/TopBar'
 import Button, { LinkButton } from '../components/Button'
@@ -27,6 +27,8 @@ import 'rc-slider/assets/index.css'
 import { AnchorIcon } from '../components/icons'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'next-i18next'
+import { useRouter } from 'next/router'
+import { PublicKey } from '@solana/web3.js'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -85,13 +87,15 @@ export default function RiskCalculator() {
   const { t } = useTranslation('common')
 
   // Get mango account data
-  const selectedMarginAccount =
-    useMangoStore.getState().selectedMangoAccount.current
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
+  const mangoClient = useMangoStore((s) => s.connection.client)
   const mangoConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const connected = useMangoStore((s) => s.wallet.connected)
+  const setMangoStore = useMangoStore((s) => s.set)
+  const router = useRouter()
+  const { pubkey } = router.query
 
   // Set default state variables
   const [sliderPercentage, setSliderPercentage] = useState(0)
@@ -103,43 +107,79 @@ export default function RiskCalculator() {
   const [showZeroBalances, setShowZeroBalances] = useState(true)
   const [interimValue, setInterimValue] = useState(new Map())
   const [ordersAsBalance, toggleOrdersAsBalance] = useState(true)
+  const [resetOnLeave, setResetOnLeave] = useState(false)
   const defaultSliderVal = 1
+
+  useEffect(() => {
+    if (connected) {
+      router.push('/risk-calculator')
+      setScenarioInitialized(false)
+    }
+  }, [connected])
+
+  useEffect(() => {
+    async function loadUnownedMangoAccount() {
+      try {
+        const unownedMangoAccountPubkey = new PublicKey(pubkey)
+        if (mangoGroup) {
+          const unOwnedMangoAccount = await mangoClient.getMangoAccount(
+            unownedMangoAccountPubkey,
+            serumProgramId
+          )
+          setMangoStore((state) => {
+            state.selectedMangoAccount.current = unOwnedMangoAccount
+          })
+          setScenarioInitialized(false)
+          setResetOnLeave(true)
+        }
+      } catch (error) {
+        router.push('/risk-calculator')
+      }
+    }
+
+    if (pubkey) {
+      loadUnownedMangoAccount()
+    }
+  }, [pubkey, mangoGroup])
+
+  useEffect(() => {
+    const handleRouteChange = () => {
+      if (resetOnLeave) {
+        setMangoStore((state) => {
+          state.selectedMangoAccount.current = undefined
+        })
+      }
+    }
+    router.events.on('routeChangeStart', handleRouteChange)
+    return () => {
+      router.events.off('routeChangeStart', handleRouteChange)
+    }
+  }, [resetOnLeave])
 
   // Set rules for updating the scenario
   useEffect(() => {
     if (mangoGroup && mangoCache) {
-      console.log('test check:in standard')
-      if (selectedMarginAccount && !scenarioInitialized && connected) {
+      if (mangoAccount && !scenarioInitialized) {
         setSliderPercentage(defaultSliderVal)
         createScenario('account')
         setScenarioInitialized(true)
         setAccountConnected(true)
         setBlankScenarioInitialized(false)
       } else if (
-        !selectedMarginAccount &&
+        !mangoAccount &&
         !scenarioInitialized &&
         !blankScenarioInitialized
       ) {
         setSliderPercentage(defaultSliderVal)
         createScenario('blank')
         setBlankScenarioInitialized(true)
-      } else if (scenarioInitialized && accountConnected && !connected) {
-        setScenarioInitialized(false)
-        setAccountConnected(false)
-        setBlankScenarioInitialized(false)
       }
     }
-  }, [
-    connected,
-    selectedMarginAccount,
-    scenarioInitialized,
-    mangoGroup,
-    mangoCache,
-  ])
+  }, [connected, mangoAccount, scenarioInitialized, mangoGroup, mangoCache])
 
   // Handle toggling open order inclusion or order cancelling for heatlh calculation
   useEffect(() => {
-    if (mangoGroup && mangoCache && selectedMarginAccount && connected) {
+    if (mangoGroup && mangoCache && mangoAccount) {
       console.log('test check:in orders as balance:' + mangoGroup)
       setScenarioInitialized(!scenarioInitialized)
       createScenario('account')
