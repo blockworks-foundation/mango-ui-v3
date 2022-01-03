@@ -3,12 +3,12 @@ import { EyeOffIcon } from '@heroicons/react/outline'
 import { ChevronDownIcon } from '@heroicons/react/solid'
 import { Disclosure } from '@headlessui/react'
 import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
 import { AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts'
 import useDimensions from 'react-cool-dimensions'
 import { IconButton } from './Button'
 import { LineChartIcon } from './icons'
 
-const relativeTime = require('dayjs/plugin/relativeTime')
 dayjs.extend(relativeTime)
 
 interface SwapTokenInfoProps {

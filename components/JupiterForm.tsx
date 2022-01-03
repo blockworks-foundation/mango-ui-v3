@@ -43,10 +43,12 @@ import Tooltip from './Tooltip'
 import SwapSettingsModal from './SwapSettingsModal'
 import SwapTokenInfo from './SwapTokenInfo'
 import { numberFormatter } from './SwapTokenInfo'
+import { useTranslation } from 'next-i18next'
 
 type UseJupiterProps = Parameters<typeof useJupiter>[0]
 
 const JupiterForm: FunctionComponent = () => {
+  const { t } = useTranslation(['common', 'swap'])
   const wallet = useMangoStore(walletSelector)
   const connection = useMangoStore(connectionSelector)
   const connected = useMangoStore(walletConnectedSelector)
@@ -314,6 +316,9 @@ const JupiterForm: FunctionComponent = () => {
 
   const swapDisabled = loading || !selectedRoute || routes?.length === 0
 
+  const inputTokenInfos = inputTokenInfo ? (inputTokenInfo as any) : null
+  const outputTokenInfos = outputTokenInfo ? (outputTokenInfo as any) : null
+
   return (
     <div className="grid grid-cols-12 lg:space-x-4">
       <div className="col-span-12 lg:col-span-10 lg:col-start-2 ">
@@ -335,7 +340,7 @@ const JupiterForm: FunctionComponent = () => {
                     <div className="max-h-[480px] overflow-auto thin-scroll">
                       <div className="flex items-center justify-between pb-2 px-4">
                         <div className="font-bold text-base text-th-fgd-1">
-                          Wallet
+                          {t('wallet')}
                         </div>
                         <a
                           className="flex items-center text-th-fgd-4 text-xs hover:text-th-fgd-3"
@@ -387,7 +392,7 @@ const JupiterForm: FunctionComponent = () => {
                                     <div className="ml-2 text-th-fgd-4 text-xs">
                                       {walletTokenPrices[geckoId]
                                         ? `$${walletTokenPrices[geckoId].usd}`
-                                        : 'Unavailable'}
+                                        : t('swap:unavailable')}
                                     </div>
                                   ) : null}
                                 </div>
@@ -428,11 +433,11 @@ const JupiterForm: FunctionComponent = () => {
                     htmlFor="inputMint"
                     className="block text-sm font-semibold"
                   >
-                    Pay
+                    {t('swap:pay')}
                   </label>
                   <div className="space-x-3">
                     <label htmlFor="amount" className="text-th-fgd-3 text-xs">
-                      Bal: {inputWalletBalance()}
+                      {t('swap:bal')} {inputWalletBalance()}
                     </label>
                     {connected ? (
                       <>
@@ -445,7 +450,7 @@ const JupiterForm: FunctionComponent = () => {
                             }))
                           }}
                         >
-                          Max
+                          {t('max')}
                         </LinkButton>
                       </>
                     ) : null}
@@ -503,10 +508,10 @@ const JupiterForm: FunctionComponent = () => {
 
                 <div className="flex items-center justify-between">
                   <label htmlFor="outputMint" className="font-semibold">
-                    Receive
+                    {t('swap:receive')}
                   </label>
                   <span className="text-th-fgd-3 text-xs">
-                    Bal: {outputWalletBalance()}
+                    {t('swap:bal')} {outputWalletBalance()}
                   </span>
                 </div>
                 <div className="grid grid-cols-2 mt-2">
@@ -563,7 +568,7 @@ const JupiterForm: FunctionComponent = () => {
                     <div className="border border-th-bkg-4 mb-4 pb-4 px-3 pt-4 relative rounded-md">
                       {selectedRoute === routes[0] ? (
                         <div className="absolute bg-th-primary font-bold px-1 rounded-sm text-th-bkg-1 text-xs -top-2">
-                          Best Swap
+                          {t('swap:best-swap')}
                         </div>
                       ) : null}
                       <div className="flex items-center justify-between">
@@ -613,14 +618,16 @@ const JupiterForm: FunctionComponent = () => {
                           disabled={routes?.length === 1}
                           onClick={() => setShowRoutesModal(true)}
                         >
-                          {routes?.length - 1} other routes
+                          {t('swap:routes-found', {
+                            numberOfRoutes: routes?.length - 1,
+                          })}
                         </Button>
                       </div>
                     </div>
                     <div className="px-3 space-y-2">
                       <div className="flex items-center justify-between mb-4">
                         <div className="font-bold text-sm text-th-fgd-1">
-                          Swap Details
+                          {t('swap:swap-details')}
                         </div>
                         <div className="flex items-center space-x-2">
                           <IconButton onClick={() => refresh()}>
@@ -636,7 +643,7 @@ const JupiterForm: FunctionComponent = () => {
                         </div>
                       </div>
                       <div className="flex justify-between">
-                        <span>Rate</span>
+                        <span>{t('swap:rate')}</span>
                         <div>
                           <div className="text-right text-th-fgd-1">
                             1 {outputTokenInfo?.symbol} ≈{' '}
@@ -676,7 +683,7 @@ const JupiterForm: FunctionComponent = () => {
                         </div>
                       </div>
                       <div className="flex justify-between">
-                        <span>Price Impact</span>
+                        <span>{t('swap:price-impact')}</span>
                         <div className="text-right text-th-fgd-1">
                           {selectedRoute?.priceImpactPct * 100 < 0.1
                             ? '< 0.1%'
@@ -686,7 +693,7 @@ const JupiterForm: FunctionComponent = () => {
                         </div>
                       </div>
                       <div className="flex justify-between">
-                        <span>Minimum Received</span>
+                        <span>{t('swap:minimum-received')}</span>
                         <div className="text-right text-th-fgd-1">
                           {numberFormatter.format(
                             selectedRoute?.outAmountWithSlippage /
@@ -697,7 +704,7 @@ const JupiterForm: FunctionComponent = () => {
                       </div>
                       {!isNaN(feeValue) ? (
                         <div className="flex justify-between">
-                          <span>Swap Fee</span>
+                          <span>{t('swap:swap-fee')}</span>
                           <div className="flex items-center">
                             <div className="text-right text-th-fgd-1">
                               ≈ ${feeValue?.toFixed(2)}
@@ -714,8 +721,10 @@ const JupiterForm: FunctionComponent = () => {
                                       return (
                                         <div key={index}>
                                           <span>
-                                            Fees paid to{' '}
-                                            {info.marketMeta?.amm?.label}
+                                            {t('swap:fees-paid-to', {
+                                              feeRecipient:
+                                                info.marketMeta?.amm?.label,
+                                            })}
                                           </span>
                                           <div className="text-th-fgd-1">
                                             {(
@@ -746,7 +755,9 @@ const JupiterForm: FunctionComponent = () => {
                           return (
                             <div className="flex justify-between" key={index}>
                               <span>
-                                Fees paid to {info.marketMeta?.amm?.label}
+                                {t('swap:fees-paid-to', {
+                                  feeRecipient: info.marketMeta?.amm?.label,
+                                })}
                               </span>
                               <div className="text-right text-th-fgd-1">
                                 {(
@@ -762,7 +773,7 @@ const JupiterForm: FunctionComponent = () => {
                       {connected ? (
                         <>
                           <div className="flex justify-between">
-                            <span>Transaction Fee</span>
+                            <span>{t('swap:transaction-fee')}</span>
                             <div className="text-right text-th-fgd-1">
                               {depositAndFee
                                 ? depositAndFee?.signatureFee / Math.pow(10, 9)
@@ -774,28 +785,23 @@ const JupiterForm: FunctionComponent = () => {
                           depositAndFee?.openOrdersDeposits?.length ? (
                             <div className="flex justify-between">
                               <div className="flex items-center">
-                                <span>Deposit</span>
+                                <span>{t('deposit')}</span>
                                 <Tooltip
                                   content={
                                     <>
                                       {depositAndFee?.ataDepositLength ? (
-                                        <div>
-                                          You need to have an Associated Token
-                                          Account.
-                                        </div>
+                                        <div>{t('need-ata-account')}</div>
                                       ) : null}
                                       {depositAndFee?.openOrdersDeposits
                                         ?.length ? (
                                         <div className="mt-2">
-                                          Serum requires an OpenOrders account
-                                          for each token. You can close the
-                                          account and recover the SOL later.{' '}
+                                          {t('swap:serum-requires-openorders')}{' '}
                                           <a
                                             href="https://docs.google.com/document/d/1qEWc_Bmc1aAxyCUcilKB4ZYpOu3B0BxIbe__dRYmVns/"
                                             target="_blank"
                                             rel="noopener noreferrer"
                                           >
-                                            Here&apos;s how
+                                            {t('swap:heres-how')}
                                           </a>
                                         </div>
                                       ) : null}
@@ -809,27 +815,49 @@ const JupiterForm: FunctionComponent = () => {
                               <div>
                                 {depositAndFee?.ataDepositLength ? (
                                   <div className="text-right text-th-fgd-1">
-                                    {(
-                                      depositAndFee?.ataDeposit /
-                                      Math.pow(10, 9)
-                                    ).toFixed(5)}{' '}
-                                    SOL for {depositAndFee?.ataDepositLength}{' '}
-                                    ATA Account
+                                    {depositAndFee?.ataDepositLength === 1
+                                      ? t('swap:ata-deposit-details', {
+                                          cost: (
+                                            depositAndFee?.ataDeposit /
+                                            Math.pow(10, 9)
+                                          ).toFixed(5),
+                                          count:
+                                            depositAndFee?.ataDepositLength,
+                                        })
+                                      : t('swap:ata-deposit-details_plural', {
+                                          cost: (
+                                            depositAndFee?.ataDeposit /
+                                            Math.pow(10, 9)
+                                          ).toFixed(5),
+                                          count:
+                                            depositAndFee?.ataDepositLength,
+                                        })}
                                   </div>
                                 ) : null}
                                 {depositAndFee?.openOrdersDeposits?.length ? (
                                   <div className="text-right text-th-fgd-1">
-                                    {(
-                                      sum(depositAndFee?.openOrdersDeposits) /
-                                      Math.pow(10, 9)
-                                    ).toFixed(5)}{' '}
-                                    SOL for{' '}
-                                    {depositAndFee?.openOrdersDeposits.length}{' '}
-                                    Serum OpenOrders{' '}
                                     {depositAndFee?.openOrdersDeposits.length >
                                     1
-                                      ? 'Accounts'
-                                      : 'Account'}
+                                      ? t('swap:serum-details_plural', {
+                                          cost: (
+                                            sum(
+                                              depositAndFee?.openOrdersDeposits
+                                            ) / Math.pow(10, 9)
+                                          ).toFixed(5),
+                                          count:
+                                            depositAndFee?.openOrdersDeposits
+                                              .length,
+                                        })
+                                      : t('swap:serum-details', {
+                                          cost: (
+                                            sum(
+                                              depositAndFee?.openOrdersDeposits
+                                            ) / Math.pow(10, 9)
+                                          ).toFixed(5),
+                                          count:
+                                            depositAndFee?.openOrdersDeposits
+                                              .length,
+                                        })}
                                   </div>
                                 ) : null}
                               </div>
@@ -843,7 +871,7 @@ const JupiterForm: FunctionComponent = () => {
                 {error && (
                   <div className="flex items-center justify-center mt-2 text-th-red">
                     <ExclamationCircleIcon className="h-5 mr-1.5 w-5" />
-                    Error in Jupiter – Try changing your input
+                    {t('swap:jupiter-error')}
                   </div>
                 )}
                 <Button
@@ -912,9 +940,9 @@ const JupiterForm: FunctionComponent = () => {
                 >
                   {connected
                     ? swapping
-                      ? 'Swapping...'
-                      : 'Swap'
-                    : 'Connect Wallet'}
+                      ? t('swap:swapping')
+                      : t('swap')
+                    : t('connect-wallet')}
                 </Button>
               </div>
 
@@ -924,7 +952,9 @@ const JupiterForm: FunctionComponent = () => {
                   onClose={() => setShowRoutesModal(false)}
                 >
                   <div className="font-bold mb-4 text-th-fgd-1 text-center text-lg">
-                    {routes?.length} routes
+                    {t('swap:routes-found', {
+                      numberOfRoutes: routes?.length,
+                    })}
                   </div>
                   <div className="max-h-96 overflow-x-hidden overflow-y-auto thin-scroll pr-1">
                     {routes.map((route, index) => {
@@ -1036,11 +1066,10 @@ const JupiterForm: FunctionComponent = () => {
               ) : null}
               {connected && !hasSwapped ? (
                 <Modal isOpen={!hasSwapped} onClose={() => setHasSwapped(true)}>
-                  <ElementTitle>Before you get started...</ElementTitle>
+                  <ElementTitle>{t('swap:get-started')}</ElementTitle>
                   <div className="flex flex-col justify-center">
                     <div className="text-center text-th-fgd-3">
-                      Swaps interact directly with your connected wallet, not
-                      your Mango Account.
+                      {t('swap-in-wallet')}
                     </div>
                   </div>
                 </Modal>
@@ -1073,31 +1102,14 @@ const JupiterForm: FunctionComponent = () => {
                   }}
                 />
               ) : null}
-              {connected && !hasSwapped ? (
-                <Modal isOpen={!hasSwapped} onClose={() => setHasSwapped(true)}>
-                  <ElementTitle>Before you get started...</ElementTitle>
-                  <div className="flex flex-col justify-center">
-                    <div className="text-center text-th-fgd-3">
-                      Swaps interact directly with your connected wallet, not
-                      your Mango Account.
-                    </div>
-                    <Button
-                      className="mt-6 mx-auto"
-                      onClick={() => setHasSwapped(true)}
-                    >
-                      Got It
-                    </Button>
-                  </div>
-                </Modal>
-              ) : null}
             </div>
           </div>
           <div className="w-full md:w-1/2 xl:w-2/3">
             {inputTokenInfo && outputTokenInfo ? (
               <SwapTokenInfo
-                inputTokenId={inputTokenInfo?.extensions?.coingeckoId}
+                inputTokenId={inputTokenInfos?.extensions?.coingeckoId}
                 inputTokenSymbol={inputTokenInfo?.symbol}
-                outputTokenId={outputTokenInfo?.extensions?.coingeckoId}
+                outputTokenId={outputTokenInfos?.extensions?.coingeckoId}
               />
             ) : null}
           </div>
