@@ -76,14 +76,6 @@ export default function Account() {
   }, [])
 
   useEffect(() => {
-    // @ts-ignore
-    if (window.solana) {
-      // @ts-ignore
-      window.solana.connect({ onlyIfTrusted: true })
-    }
-  }, [])
-
-  useEffect(() => {
     async function loadUnownedMangoAccount() {
       try {
         const unownedMangoAccountPubkey = new PublicKey(pubkey)

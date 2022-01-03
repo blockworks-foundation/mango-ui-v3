@@ -103,7 +103,7 @@ const Notification = ({ notification }: { notification: Notification }) => {
           hideNotification()
         }
       },
-      parsedTitle || type === 'confirm' || type === 'error' ? 30000 : 10000
+      parsedTitle || type === 'confirm' || type === 'error' ? 30000 : 8000
     )
 
     return () => {
@@ -129,7 +129,7 @@ const Notification = ({ notification }: { notification: Notification }) => {
             <XCircleIcon className={`text-th-red h-7 w-7 mr-1`} />
           )}
           {type === 'confirm' && (
-            <Loading className={`text-th-fgd-3 h-7 w-7 mr-1`} />
+            <Loading className="text-th-fgd-3 h-7 w-7 mr-1" />
           )}
         </div>
         <div className={`ml-2 flex-1`}>

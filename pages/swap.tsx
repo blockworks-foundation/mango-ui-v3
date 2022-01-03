@@ -17,26 +17,18 @@ import { zeroKey } from '@blockworks-foundation/mango-client'
 export async function getStaticProps({ locale }) {
   return {
     props: {
-      ...(await serverSideTranslations(locale, ['common'])),
+      ...(await serverSideTranslations(locale, ['common', 'swap'])),
       // Will be passed to the page component as props
     },
   }
 }
 
 export default function Swap() {
-  // const { t } = useTranslation('common')
+  // const { t } = useTranslation(['common', 'swap'])
   const connection = useMangoStore(connectionSelector)
   const connected = useMangoStore(walletConnectedSelector)
   const wallet = useMangoStore(walletSelector)
   const actions = useMangoStore(actionsSelector)
-
-  useEffect(() => {
-    // @ts-ignore
-    if (window.solana) {
-      // @ts-ignore
-      window.solana.connect({ onlyIfTrusted: true })
-    }
-  }, [])
 
   useEffect(() => {
     if (connected) {
