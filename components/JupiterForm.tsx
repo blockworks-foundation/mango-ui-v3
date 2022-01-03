@@ -558,15 +558,20 @@ const JupiterForm: FunctionComponent = () => {
                       disabled
                       placeholder="0.00"
                       value={
-                        selectedRoute?.outAmount
-                          ? numberFormatter.format(
+                        selectedRoute?.outAmount && formValue.amount
+                          ? Intl.NumberFormat('en', {
+                              minimumSignificantDigits: 1,
+                              maximumSignificantDigits: 6,
+                            }).format(
                               selectedRoute?.outAmount /
                                 10 ** (outputTokenInfo?.decimals || 1)
                             )
                           : ''
                       }
                     />
-                    {selectedRoute?.outAmount && outputTokenPrice ? (
+                    {selectedRoute?.outAmount &&
+                    formValue.amount &&
+                    outputTokenPrice ? (
                       <div className="absolute mt-1 right-0 text-th-fgd-3 text-xs">
                         ≈ $
                         {(
