@@ -77,6 +77,7 @@ const JupiterForm: FunctionComponent = () => {
   const isMobile = width ? width < breakpoints.sm : false
   const [feeValue, setFeeValue] = useState(null)
   const [showRoutesModal, setShowRoutesModal] = useState(false)
+  const [loadWalletTokens, setLoadWalletTokens] = useState(false)
 
   const fetchWalletTokens = useCallback(async () => {
     const ownedTokens = []
@@ -263,6 +264,13 @@ const JupiterForm: FunctionComponent = () => {
     setWalletTokenPrices(data)
   }
 
+  const refreshWallet = async () => {
+    setLoadWalletTokens(true)
+    await fetchWalletTokens()
+    await getWalletTokenPrices()
+    setLoadWalletTokens(false)
+  }
+
   const getSwapFeeTokenValue = async () => {
     const mints = selectedRoute.marketInfos.map((info) => info.lpFee.mint)
     const response = await fetch(
@@ -339,19 +347,27 @@ const JupiterForm: FunctionComponent = () => {
                   >
                     <div className="max-h-[480px] overflow-auto thin-scroll">
                       <div className="flex items-center justify-between pb-2 px-4">
-                        <div className="font-bold text-base text-th-fgd-1">
-                          {t('wallet')}
+                        <div>
+                          <div className="font-bold text-base text-th-fgd-1">
+                            {t('wallet')}
+                          </div>
+                          <a
+                            className="flex items-center text-th-fgd-3 text-xs hover:text-th-fgd-2"
+                            href={`https://explorer.solana.com/address/${wallet?.publicKey}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {abbreviateAddress(wallet.publicKey)}
+                            <ExternalLinkIcon className="h-3.5 ml-0.5 -mt-0.5 w-3.5" />
+                          </a>
                         </div>
-                        <a
-                          className="flex items-center text-th-fgd-4 text-xs hover:text-th-fgd-3"
-                          href={`https://explorer.solana.com/address/${wallet?.publicKey}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <div className="bg-th-green h-1.5 mr-1.5 rounded-full w-1.5" />
-                          {abbreviateAddress(wallet.publicKey)}
-                          <ExternalLinkIcon className="h-3.5 ml-0.5 -mt-0.5 w-3.5" />
-                        </a>
+                        <IconButton onClick={() => refreshWallet()}>
+                          <RefreshClockwiseIcon
+                            className={`h-4 w-4 ${
+                              loadWalletTokens && 'animate-spin'
+                            }`}
+                          />
+                        </IconButton>
                       </div>
                       {walletTokensWithInfos
                         .sort((a, b) => {
