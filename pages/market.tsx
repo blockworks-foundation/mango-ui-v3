@@ -36,18 +36,11 @@ const PerpMarket = () => {
   const groupConfig = useMangoGroupConfig()
   const setMangoStore = useMangoStore((s) => s.set)
   const connected = useMangoStore(walletConnectedSelector)
+  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const marketConfig = useMangoStore(marketConfigSelector)
   const router = useRouter()
   const { width } = useViewport()
   const hideTips = width ? width < breakpoints.md : false
-
-  useEffect(() => {
-    // @ts-ignore
-    if (window.solana) {
-      // @ts-ignore
-      window.solana.connect({ onlyIfTrusted: true })
-    }
-  }, [marketConfig])
 
   useEffect(() => {
     const name = decodeURIComponent(router.asPath).split('name=')[1]
@@ -75,7 +68,7 @@ const PerpMarket = () => {
       setMangoStore((state) => {
         state.selectedMarket.kind = marketType
         if (newMarket.name !== marketConfig.name) {
-          state.selectedMarket.current = null
+          // state.selectedMarket.current = null
           state.selectedMarket.config = newMarket
           state.tradeForm.price =
             state.tradeForm.tradeType === 'Limit'
@@ -96,7 +89,9 @@ const PerpMarket = () => {
 
   return (
     <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
-      {showTour && !hideTips ? <IntroTips connected={connected} /> : null}
+      {showTour && !hideTips ? (
+        <IntroTips connected={connected} mangoAccount={mangoAccount} />
+      ) : null}
       <TopBar />
       <MarketSelect />
       <PageBodyWrapper className="p-1 sm:px-2 sm:py-1 md:px-2 md:py-1">

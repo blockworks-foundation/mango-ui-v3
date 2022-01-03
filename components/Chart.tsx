@@ -7,6 +7,7 @@ import { numberCompactFormatter } from '../utils'
 
 interface ChartProps {
   data: any
+  daysRange?: number
   hideRangeFilters?: boolean
   title?: string
   xAxis: string
@@ -22,6 +23,7 @@ const Chart: FunctionComponent<ChartProps> = ({
   xAxis,
   yAxis,
   data,
+  daysRange,
   labelFormat,
   tickFormat,
   type,
@@ -29,7 +31,7 @@ const Chart: FunctionComponent<ChartProps> = ({
   yAxisWidth,
 }) => {
   const [mouseData, setMouseData] = useState<string | null>(null)
-  const [daysToShow, setDaysToShow] = useState(30)
+  const [daysToShow, setDaysToShow] = useState(daysRange || 30)
   const { observe, width, height } = useDimensions()
   const { theme } = useTheme()
 
@@ -186,7 +188,13 @@ const Chart: FunctionComponent<ChartProps> = ({
         <BarChart
           width={width}
           height={height}
-          data={data ? handleDaysToShow(daysToShow) : null}
+          data={
+            data
+              ? hideRangeFilters
+                ? data
+                : handleDaysToShow(daysToShow)
+              : null
+          }
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
         >

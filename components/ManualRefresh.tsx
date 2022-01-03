@@ -9,12 +9,15 @@ const ManualRefresh = ({ className = '' }) => {
   const { t } = useTranslation('common')
   const [spin, setSpin] = useState(false)
   const actions = useMangoStore((s) => s.actions)
+  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
 
   const handleRefreshData = async () => {
     setSpin(true)
     await actions.fetchMangoGroup()
-    await actions.reloadMangoAccount()
-    actions.fetchTradeHistory()
+    if (mangoAccount) {
+      await actions.reloadMangoAccount()
+      actions.fetchTradeHistory()
+    }
   }
 
   useEffect(() => {

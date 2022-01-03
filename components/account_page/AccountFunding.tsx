@@ -27,7 +27,8 @@ const AccountFunding = () => {
   const [fundingStats, setFundingStats] = useState<any>([])
   const [hourlyFunding, setHourlyFunding] = useState<any>([])
   const [selectedAsset, setSelectedAsset] = useState<string>('BTC')
-  const [loading, setLoading] = useState(false)
+  const [loadHourlyStats, setLoadHourlyStats] = useState(false)
+  const [loadTotalStats, setLoadTotalStats] = useState(false)
   const {
     paginatedData,
     setData,
@@ -43,6 +44,7 @@ const AccountFunding = () => {
     false
   )
   const [chartData, setChartData] = useState([])
+  const [showHours, setShowHours] = useState(false)
 
   const mangoAccountPk = useMemo(() => {
     return mangoAccount.publicKey.toString()
@@ -83,6 +85,7 @@ const AccountFunding = () => {
   useEffect(() => {
     const hideDust = []
     const fetchFundingStats = async () => {
+      setLoadTotalStats(true)
       const response = await fetch(
         `https://mango-transaction-log.herokuapp.com/v3/stats/total-funding?mango-account=${mangoAccountPk}`
       )
@@ -95,14 +98,16 @@ const AccountFunding = () => {
             hideDust.push(r)
           }
         })
+        setLoadTotalStats(false)
         setFundingStats(hideDust)
       } else {
+        setLoadTotalStats(false)
         setFundingStats(Object.entries(parsedResponse))
       }
     }
 
     const fetchHourlyFundingStats = async () => {
-      setLoading(true)
+      setLoadHourlyStats(true)
       const response = await fetch(
         `https://mango-transaction-log.herokuapp.com/v3/stats/hourly-funding?mango-account=${mangoAccountPk}`
       )
@@ -139,7 +144,7 @@ const AccountFunding = () => {
           .reverse()
       }
 
-      setLoading(false)
+      setLoadHourlyStats(false)
       setHourlyFunding(stats)
     }
 
@@ -173,12 +178,25 @@ const AccountFunding = () => {
           found.funding = found.funding + newFunding
         } else {
           dailyFunding.push({
-            time: new Date(d.time).getTime(),
+            time: d.time,
             funding: d.total_funding,
           })
         }
       })
-      setChartData(dailyFunding.reverse())
+      if (dailyFunding.length <= 1) {
+        const chartFunding = []
+        hourlyFunding[selectedAsset].forEach((a) => {
+          chartFunding.push({
+            funding: a.total_funding,
+            time: a.time,
+          })
+        })
+        setShowHours(true)
+        setChartData(chartFunding.reverse())
+      } else {
+        setShowHours(false)
+        setChartData(dailyFunding.reverse())
+      }
     }
   }, [hourlyFunding, selectedAsset])
 
@@ -187,8 +205,6 @@ const AccountFunding = () => {
       setSelectedAsset(Object.keys(hourlyFunding)[0])
     }
   }, [hourlyFunding])
-
-  const increaseYAxisWidth = !!chartData.find((data) => data.value < 0.001)
 
   return (
     <>
@@ -215,64 +231,72 @@ const AccountFunding = () => {
       </div>
       {mangoAccount ? (
         <div>
-          <Table>
-            <thead>
-              <TrHead>
-                <Th>{t('token')}</Th>
-                <Th>{t('total-funding')} (USDC)</Th>
-              </TrHead>
-            </thead>
-            <tbody>
-              {fundingStats.length === 0 ? (
-                <TrBody index={0}>
-                  <td colSpan={4}>
-                    <div className="flex">
-                      <div className="mx-auto py-4 text-th-fgd-3">
-                        {t('no-funding')}
+          {loadTotalStats ? (
+            <div className="space-y-2">
+              <div className="animate-pulse bg-th-bkg-3 h-12 rounded-md w-full" />
+              <div className="animate-pulse bg-th-bkg-3 h-12 rounded-md w-full" />
+              <div className="animate-pulse bg-th-bkg-3 h-12 rounded-md w-full" />
+            </div>
+          ) : (
+            <Table>
+              <thead>
+                <TrHead>
+                  <Th>{t('token')}</Th>
+                  <Th>{t('total-funding')} (USDC)</Th>
+                </TrHead>
+              </thead>
+              <tbody>
+                {fundingStats.length === 0 ? (
+                  <TrBody index={0}>
+                    <td colSpan={4}>
+                      <div className="flex">
+                        <div className="mx-auto py-4 text-th-fgd-3">
+                          {t('no-funding')}
+                        </div>
                       </div>
-                    </div>
-                  </td>
-                </TrBody>
-              ) : (
-                fundingStats.map(([symbol, stats], index) => {
-                  return (
-                    <TrBody index={index} key={symbol}>
-                      <Td>
-                        <div className="flex items-center">
-                          <img
-                            alt=""
-                            width="20"
-                            height="20"
-                            src={`/assets/icons/${symbol.toLowerCase()}.svg`}
-                            className={`mr-2.5`}
-                          />
-                          {symbol}-PERP
-                        </div>
-                      </Td>
-                      <Td>
-                        <div
-                          className={`${
-                            stats.total_funding > 0
-                              ? 'text-th-green'
-                              : stats.total_funding < 0
-                              ? 'text-th-red'
-                              : 'text-th-fgd-3'
-                          }`}
-                        >
-                          {stats.total_funding
-                            ? `${stats.total_funding?.toFixed(6)}`
-                            : '-'}
-                        </div>
-                      </Td>
-                    </TrBody>
-                  )
-                })
-              )}
-            </tbody>
-          </Table>
+                    </td>
+                  </TrBody>
+                ) : (
+                  fundingStats.map(([symbol, stats], index) => {
+                    return (
+                      <TrBody index={index} key={symbol}>
+                        <Td className="w-1/2">
+                          <div className="flex items-center">
+                            <img
+                              alt=""
+                              width="20"
+                              height="20"
+                              src={`/assets/icons/${symbol.toLowerCase()}.svg`}
+                              className={`mr-2.5`}
+                            />
+                            {symbol}-PERP
+                          </div>
+                        </Td>
+                        <Td className="w-1/2">
+                          <div
+                            className={`${
+                              stats.total_funding > 0
+                                ? 'text-th-green'
+                                : stats.total_funding < 0
+                                ? 'text-th-red'
+                                : 'text-th-fgd-3'
+                            }`}
+                          >
+                            {stats.total_funding
+                              ? `${stats.total_funding?.toFixed(6)}`
+                              : '-'}
+                          </div>
+                        </Td>
+                      </TrBody>
+                    )
+                  })
+                )}
+              </tbody>
+            </Table>
+          )}
 
           <>
-            {!isEmpty(hourlyFunding) && !loading ? (
+            {!isEmpty(hourlyFunding) && !loadHourlyStats ? (
               <>
                 <div className="flex items-center justify-between pb-4 pt-6 w-full">
                   <div className="text-th-fgd-1 text-lg">{t('history')}</div>
@@ -320,6 +344,7 @@ const AccountFunding = () => {
                       style={{ height: '330px' }}
                     >
                       <Chart
+                        daysRange={showHours ? 1 : 30}
                         hideRangeFilters
                         title={t('funding-chart-title', {
                           symbol: selectedAsset,
@@ -329,13 +354,13 @@ const AccountFunding = () => {
                         data={chartData}
                         labelFormat={(x) =>
                           x &&
-                          `${x.toLocaleString(undefined, {
+                          `${x?.toLocaleString(undefined, {
                             maximumFractionDigits: 6,
                           })} USDC`
                         }
                         tickFormat={handleDustTicks}
                         type="bar"
-                        yAxisWidth={increaseYAxisWidth ? 70 : 50}
+                        yAxisWidth={70}
                       />
                     </div>
                   </div>
@@ -357,8 +382,10 @@ const AccountFunding = () => {
 
                             return (
                               <TrBody index={index} key={stat.time}>
-                                <Td>{dayjs(utc).format('DD/MM/YY, h:mma')}</Td>
-                                <Td>
+                                <Td className="w-1/2">
+                                  {dayjs(utc).format('DD/MM/YY, h:mma')}
+                                </Td>
+                                <Td className="w-1/2">
                                   {stat.total_funding.toFixed(
                                     QUOTE_DECIMALS + 1
                                   )}
@@ -384,7 +411,7 @@ const AccountFunding = () => {
                   />
                 </div>
               </>
-            ) : loading ? (
+            ) : loadHourlyStats ? (
               <div className="pt-8 space-y-2">
                 <div className="animate-pulse bg-th-bkg-3 h-12 rounded-md w-full" />
                 <div className="animate-pulse bg-th-bkg-3 h-12 rounded-md w-full" />
