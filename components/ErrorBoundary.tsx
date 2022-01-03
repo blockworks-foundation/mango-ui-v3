@@ -24,7 +24,10 @@ class ErrorBoundary extends React.Component<
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            content: `UI ERROR: ${error} : ${errorInfo?.componentStack}`,
+            content: `UI ERROR: ${error} : ${errorInfo?.componentStack}`.slice(
+              0,
+              1999
+            ),
           }),
         })
       } catch (err) {
@@ -43,7 +46,7 @@ class ErrorBoundary extends React.Component<
           <button className="mt-2" onClick={() => location.reload()}>
             Refresh and try again
           </button>
-          <div className="mt-4 px-4">{this.state.error.stack}</div>
+          <div className="mt-4 px-8 mx-8">{this.state.error.stack}</div>
         </div>
       )
     }

@@ -354,7 +354,7 @@ const AccountFunding = () => {
                         data={chartData}
                         labelFormat={(x) =>
                           x &&
-                          `${x.toLocaleString(undefined, {
+                          `${x?.toLocaleString(undefined, {
                             maximumFractionDigits: 6,
                           })} USDC`
                         }

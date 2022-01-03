@@ -534,7 +534,7 @@ const AccountInterest = () => {
                         xAxis="time"
                         yAxis="interest"
                         data={chartData}
-                        labelFormat={(x) => x && x.toFixed(token.decimals + 1)}
+                        labelFormat={(x) => x && x?.toFixed(token.decimals + 1)}
                         tickFormat={handleDustTicks}
                         type="bar"
                         yAxisWidth={increaseYAxisWidth ? 70 : 50}
@@ -554,8 +554,8 @@ const AccountInterest = () => {
                         data={chartData}
                         labelFormat={(x) =>
                           x && x < 0
-                            ? `-$${Math.abs(x).toFixed(token.decimals + 1)}`
-                            : `$${x.toFixed(token.decimals + 1)}`
+                            ? `-$${Math.abs(x)?.toFixed(token.decimals + 1)}`
+                            : `$${x?.toFixed(token.decimals + 1)}`
                         }
                         tickFormat={handleUsdDustTicks}
                         type="bar"

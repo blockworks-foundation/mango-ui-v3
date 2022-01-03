@@ -619,7 +619,7 @@ const JupiterForm: FunctionComponent = () => {
                           onClick={() => setShowRoutesModal(true)}
                         >
                           {t('swap:routes-found', {
-                            numberOfRoutes: routes?.length - 1,
+                            numberOfRoutes: routes?.length,
                           })}
                         </Button>
                       </div>
