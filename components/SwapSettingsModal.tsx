@@ -1,9 +1,12 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Modal from './Modal'
-// import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next'
 import Button from './Button'
 import ButtonGroup from './ButtonGroup'
 import Input from './Input'
+import { LinkButton } from './Button'
+
+const slippagePresets = ['0.1', '0.5', '1', '2']
 
 const SwapSettingsModal = ({
   isOpen,
@@ -16,9 +19,12 @@ const SwapSettingsModal = ({
   slippage: number
   setSlippage: (x) => void
 }) => {
-  // const { t } = useTranslation('common')
+  const { t } = useTranslation('common')
   const [tempSlippage, setTempSlippage] = useState(slippage)
-  const [inputValue, setInputValue] = useState('')
+  const [inputValue, setInputValue] = useState(
+    tempSlippage ? tempSlippage.toString() : ''
+  )
+  const [showCustomSlippageForm, setShowCustomSlippageForm] = useState(false)
 
   const handleSetTempSlippage = (s) => {
     setTempSlippage(s)
@@ -30,20 +36,27 @@ const SwapSettingsModal = ({
     onClose()
   }
 
+  useEffect(() => {
+    if (!slippagePresets.includes(tempSlippage.toString())) {
+      setShowCustomSlippageForm(true)
+    }
+  }, [])
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} hideClose>
       <Modal.Header>
         <h2 className="font-bold text-th-fgd-1 text-lg">Slippage Settings</h2>
       </Modal.Header>
-      <div className="text-th-fgd-1 text-xs mb-2">Slippage</div>
-      <ButtonGroup
-        activeValue={tempSlippage.toString()}
-        onChange={(v) => handleSetTempSlippage(v)}
-        unit="%"
-        values={['0.1', '0.5', '1', '2']}
-      />
-      <div className="mt-4 mb-6">
-        <div className="text-th-fgd-1 text-xs mb-2">Custom</div>
+      <div className="flex justify-between mb-2">
+        <div className="text-th-fgd-1 text-xs">Slippage</div>
+        <LinkButton
+          className="font-normal text-th-fgd-3 text-xs"
+          onClick={() => setShowCustomSlippageForm(!showCustomSlippageForm)}
+        >
+          {showCustomSlippageForm ? t('presets') : t('custom')}
+        </LinkButton>
+      </div>
+      {showCustomSlippageForm ? (
         <Input
           type="text"
           className="w-full bg-th-bkg-1 focus:outline-none rounded"
@@ -52,8 +65,16 @@ const SwapSettingsModal = ({
           onChange={(e) => setInputValue(e.target.value)}
           suffix="%"
         />
-      </div>
-      <Button className="w-full" onClick={handleSave}>
+      ) : (
+        <ButtonGroup
+          activeValue={tempSlippage.toString()}
+          className="h-10"
+          onChange={(v) => handleSetTempSlippage(v)}
+          unit="%"
+          values={slippagePresets}
+        />
+      )}
+      <Button className="mt-6 w-full" onClick={handleSave}>
         Save
       </Button>
     </Modal>
