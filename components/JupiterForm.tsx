@@ -453,7 +453,9 @@ const JupiterForm: FunctionComponent = () => {
               className={`bg-th-bkg-3 max-h-[500px] overflow-auto pb-4 pt-6 rounded-r-md w-64 thin-scroll`}
             >
               <div className="flex items-center justify-between pb-2 px-4">
-                <div className="font-bold text-base text-th-fgd-1">{t('wallet')}</div>
+                <div className="font-bold text-base text-th-fgd-1">
+                  {t('wallet')}
+                </div>
                 <a
                   className="flex items-center text-th-fgd-4 text-xs hover:text-th-fgd-3"
                   href={`https://explorer.solana.com/address/${wallet?.publicKey}`}
@@ -639,7 +641,7 @@ const JupiterForm: FunctionComponent = () => {
             <div>
               <div className="text-th-fgd-4 text-center text-xs">
                 {t('swap:routes-found', {
-                  numberOfRoutes: routes?.length
+                  numberOfRoutes: routes?.length,
                 })}
               </div>
               <div
@@ -830,7 +832,11 @@ const JupiterForm: FunctionComponent = () => {
           }}
           className="h-12 mt-6 text-base w-full"
         >
-          {connected ? (swapping ? t('swap:swapping') : t('swap')) : t('connect-wallet')}
+          {connected
+            ? swapping
+              ? t('swap:swapping')
+              : t('swap')
+            : t('connect-wallet')}
         </Button>
         {inputTokenStats?.prices?.length && outputTokenStats?.prices?.length ? (
           <>
@@ -982,7 +988,7 @@ const JupiterForm: FunctionComponent = () => {
                 <div className="flex justify-between" key={index}>
                   <span>
                     {t('swap:fees-paid-to', {
-                      feeRecipient: info.marketMeta?.amm?.label
+                      feeRecipient: info.marketMeta?.amm?.label,
                     })}
                   </span>
                   <span className="text-th-fgd-1">
@@ -1011,15 +1017,16 @@ const JupiterForm: FunctionComponent = () => {
                     <span className="text-th-fgd-1">
                       {t('swap:ata-deposit-details', {
                         cost: depositAndFee?.ataDeposit / Math.pow(10, 9),
-                        count: depositAndFee?.ataDepositLength
+                        count: depositAndFee?.ataDepositLength,
                       })}
                     </span>
                     {depositAndFee?.openOrdersDeposits?.length ? (
                       <span className="text-th-fgd-1">
                         {t('swap:serum-details', {
-                          cost: sum(depositAndFee?.openOrdersDeposits) /
-                          Math.pow(10, 9),
-                          count: depositAndFee?.openOrdersDeposits.length
+                          cost:
+                            sum(depositAndFee?.openOrdersDeposits) /
+                            Math.pow(10, 9),
+                          count: depositAndFee?.openOrdersDeposits.length,
                         })}
                       </span>
                     ) : null}
@@ -1124,7 +1131,7 @@ const JupiterForm: FunctionComponent = () => {
                             <div key={index}>
                               <span>
                                 {t('swap:fees-paid-to', {
-                                  feeRecipient: info.marketMeta?.amm?.label
+                                  feeRecipient: info.marketMeta?.amm?.label,
                                 })}
                               </span>
                               <div className="text-th-fgd-1">
@@ -1156,9 +1163,9 @@ const JupiterForm: FunctionComponent = () => {
                 return (
                   <div key={index}>
                     <span>
-                    {t('swap:fees-paid-to', {
-                      feeRecipient: info.marketMeta?.amm?.label
-                    })}
+                      {t('swap:fees-paid-to', {
+                        feeRecipient: info.marketMeta?.amm?.label,
+                      })}
                     </span>
                     <div className="mt-0.5 text-th-fgd-1">
                       {(
@@ -1190,9 +1197,7 @@ const JupiterForm: FunctionComponent = () => {
                         content={
                           <>
                             {depositAndFee?.ataDepositLength ? (
-                              <div>
-                                {t('swap:need-ata-account')}
-                              </div>
+                              <div>{t('swap:need-ata-account')}</div>
                             ) : null}
                             {depositAndFee?.openOrdersDeposits?.length ? (
                               <div className="mt-2">
@@ -1217,16 +1222,21 @@ const JupiterForm: FunctionComponent = () => {
                       {depositAndFee?.ataDepositLength ? (
                         <div className="mt-0.5 text-th-fgd-1">
                           {t('swap:ata-deposit-details', {
-                            cost: (depositAndFee?.ataDeposit / Math.pow(10, 9)).toFixed(5),
-                            count: depositAndFee?.ataDepositLength
+                            cost: (
+                              depositAndFee?.ataDeposit / Math.pow(10, 9)
+                            ).toFixed(5),
+                            count: depositAndFee?.ataDepositLength,
                           })}
                         </div>
                       ) : null}
                       {depositAndFee?.openOrdersDeposits?.length ? (
                         <div className="mt-0.5 text-th-fgd-1">
                           {t('swap:serum-details', {
-                            cost: (sum(depositAndFee?.openOrdersDeposits) / Math.pow(10, 9)).toFixed(5),
-                            count: depositAndFee?.openOrdersDeposits.length
+                            cost: (
+                              sum(depositAndFee?.openOrdersDeposits) /
+                              Math.pow(10, 9)
+                            ).toFixed(5),
+                            count: depositAndFee?.openOrdersDeposits.length,
                           })}
                         </div>
                       ) : null}
