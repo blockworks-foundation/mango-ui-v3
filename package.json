@@ -27,7 +27,7 @@
     ]
   },
   "dependencies": {
-    "@blockworks-foundation/mango-client": "latest",
+    "@blockworks-foundation/mango-client": "^3.2.21",
     "@headlessui/react": "^1.2.0",
     "@heroicons/react": "^1.0.0",
     "@jup-ag/react-hook": "latest",
