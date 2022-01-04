@@ -22,7 +22,7 @@ import {
   InformationCircleIcon,
   SwitchVerticalIcon,
 } from '@heroicons/react/outline'
-import { ChevronDownIcon } from '@heroicons/react/solid'
+import { ChevronDownIcon, SwitchHorizontalIcon } from '@heroicons/react/solid'
 import { abbreviateAddress } from '../utils'
 import SwapTokenSelect from './SwapTokenSelect'
 import { notify } from '../utils/notifications'
@@ -78,6 +78,7 @@ const JupiterForm: FunctionComponent = () => {
   const [feeValue, setFeeValue] = useState(null)
   const [showRoutesModal, setShowRoutesModal] = useState(false)
   const [loadWalletTokens, setLoadWalletTokens] = useState(false)
+  const [swapRate, setSwapRate] = useState(false)
 
   const fetchWalletTokens = useCallback(async () => {
     const ownedTokens = []
@@ -673,12 +674,30 @@ const JupiterForm: FunctionComponent = () => {
                       <div className="flex justify-between">
                         <span>{t('swap:rate')}</span>
                         <div>
-                          <div className="text-right text-th-fgd-1">
-                            1 {outputTokenInfo?.symbol} ≈{' '}
-                            {numberFormatter.format(
-                              formValue?.amount / outAmountUi
-                            )}{' '}
-                            {inputTokenInfo?.symbol}
+                          <div className="flex items-center justify-end">
+                            <div className="text-right text-th-fgd-1">
+                              {swapRate ? (
+                                <>
+                                  1 {inputTokenInfo?.symbol} ≈{' '}
+                                  {numberFormatter.format(
+                                    outAmountUi / formValue?.amount
+                                  )}{' '}
+                                  {outputTokenInfo?.symbol}
+                                </>
+                              ) : (
+                                <>
+                                  1 {outputTokenInfo?.symbol} ≈{' '}
+                                  {numberFormatter.format(
+                                    formValue?.amount / outAmountUi
+                                  )}{' '}
+                                  {inputTokenInfo?.symbol}
+                                </>
+                              )}
+                            </div>
+                            <SwitchHorizontalIcon
+                              className="cursor-pointer default-transition h-4 ml-1 text-th-fgd-3 w-4 hover:text-th-fgd-2"
+                              onClick={() => setSwapRate(!swapRate)}
+                            />
                           </div>
                           {tokenPrices?.outputTokenPrice &&
                           tokenPrices?.inputTokenPrice ? (
