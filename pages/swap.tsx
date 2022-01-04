@@ -76,13 +76,7 @@ export default function Swap() {
               </div>
             </div>
           </div>
-          {wallet ? (
-            <JupiterForm />
-          ) : (
-            <div className="bg-th-bkg-2 overflow-none p-4 sm:p-6 rounded-lg">
-              test
-            </div>
-          )}
+          {wallet ? <JupiterForm /> : null}
         </PageBodyContainer>
       </div>
     </JupiterProvider>

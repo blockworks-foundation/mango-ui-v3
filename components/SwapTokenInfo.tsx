@@ -1,4 +1,4 @@
-import { FunctionComponent, useMemo, useState } from 'react'
+import { FunctionComponent, useEffect, useMemo, useState } from 'react'
 import { EyeOffIcon } from '@heroicons/react/outline'
 import { ChevronDownIcon } from '@heroicons/react/solid'
 import { Disclosure } from '@headlessui/react'
@@ -13,7 +13,6 @@ dayjs.extend(relativeTime)
 
 interface SwapTokenInfoProps {
   inputTokenId?: string
-  inputTokenSymbol?: string
   outputTokenId?: string
 }
 
@@ -25,11 +24,12 @@ export const numberFormatter = Intl.NumberFormat('en', {
 
 const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
   inputTokenId,
-  inputTokenSymbol,
   outputTokenId,
 }) => {
   const [chartData, setChartData] = useState([])
   const [hideChart, setHideChart] = useState(false)
+  const [baseTokenId, setBaseTokenId] = useState(null)
+  const [quoteTokenId, setQuoteTokenId] = useState(null)
   const [inputTokenInfo, setInputTokenInfo] = useState(null)
   const [outputTokenInfo, setOutputTokenInfo] = useState(null)
   const [mouseData, setMouseData] = useState<string | null>(null)
@@ -46,14 +46,24 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
     setMouseData(null)
   }
 
+  useEffect(() => {
+    if (['usd-coin', 'tether'].includes(inputTokenId)) {
+      setBaseTokenId(outputTokenId)
+      setQuoteTokenId(inputTokenId)
+    } else {
+      setBaseTokenId(inputTokenId)
+      setQuoteTokenId(outputTokenId)
+    }
+  }, [inputTokenId, outputTokenId])
+
   // Use ohlc data
 
   const getChartData = async () => {
     const inputResponse = await fetch(
-      `https://api.coingecko.com/api/v3/coins/${inputTokenId}/ohlc?vs_currency=usd&days=${daysToShow}`
+      `https://api.coingecko.com/api/v3/coins/${baseTokenId}/ohlc?vs_currency=usd&days=${daysToShow}`
     )
     const outputResponse = await fetch(
-      `https://api.coingecko.com/api/v3/coins/${outputTokenId}/ohlc?vs_currency=usd&days=${daysToShow}`
+      `https://api.coingecko.com/api/v3/coins/${quoteTokenId}/ohlc?vs_currency=usd&days=${daysToShow}`
     )
     const inputData = await inputResponse.json()
     const outputData = await outputResponse.json()
@@ -109,7 +119,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
 
   const getInputTokenInfo = async () => {
     const response = await fetch(
-      `https://api.coingecko.com/api/v3/coins/${inputTokenId}?localization=false&tickers=false&developer_data=false&sparkline=false
+      `https://api.coingecko.com/api/v3/coins/${baseTokenId}?localization=false&tickers=false&developer_data=false&sparkline=false
       `
     )
     const data = await response.json()
@@ -118,7 +128,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
 
   const getOutputTokenInfo = async () => {
     const response = await fetch(
-      `https://api.coingecko.com/api/v3/coins/${outputTokenId}?localization=false&tickers=false&developer_data=false&sparkline=false
+      `https://api.coingecko.com/api/v3/coins/${quoteTokenId}?localization=false&tickers=false&developer_data=false&sparkline=false
       `
     )
     const data = await response.json()
@@ -126,19 +136,19 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
   }
 
   useMemo(() => {
-    if (inputTokenId && outputTokenId) {
+    if (baseTokenId && quoteTokenId) {
       getChartData()
     }
-  }, [daysToShow, inputTokenId, outputTokenId])
+  }, [daysToShow, baseTokenId, quoteTokenId])
 
   useMemo(() => {
-    if (inputTokenId) {
+    if (baseTokenId) {
       getInputTokenInfo()
     }
-    if (outputTokenId) {
+    if (quoteTokenId) {
       getOutputTokenInfo()
     }
-  }, [inputTokenId, outputTokenId])
+  }, [baseTokenId, quoteTokenId])
 
   const chartChange = chartData.length
     ? ((chartData[chartData.length - 1]['price'] - chartData[0]['price']) /
@@ -148,12 +158,12 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
 
   return (
     <div>
-      {chartData.length && inputTokenId && outputTokenId ? (
+      {chartData.length && baseTokenId && quoteTokenId ? (
         <div className="py-6">
           <div className="flex items-start justify-between">
             <div>
-              {inputTokenSymbol && outputTokenInfo ? (
-                <div className="text-th-fgd-3 text-sm">{`${inputTokenSymbol.toUpperCase()}/${outputTokenInfo.symbol.toUpperCase()}`}</div>
+              {inputTokenInfo && outputTokenInfo ? (
+                <div className="text-th-fgd-3 text-sm">{`${inputTokenInfo.symbol.toUpperCase()}/${outputTokenInfo.symbol.toUpperCase()}`}</div>
               ) : null}
               {mouseData ? (
                 <>

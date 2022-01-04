@@ -1161,7 +1161,6 @@ const JupiterForm: FunctionComponent = () => {
             {inputTokenInfo && outputTokenInfo ? (
               <SwapTokenInfo
                 inputTokenId={inputTokenInfos?.extensions?.coingeckoId}
-                inputTokenSymbol={inputTokenInfo?.symbol}
                 outputTokenId={outputTokenInfos?.extensions?.coingeckoId}
               />
             ) : null}
