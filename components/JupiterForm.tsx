@@ -60,7 +60,7 @@ const JupiterForm: FunctionComponent = () => {
   const [showOutputTokenSelect, setShowOutputTokenSelect] = useState(false)
   const [swapping, setSwapping] = useState(false)
   const [tokens, setTokens] = useState<Token[]>([])
-  const [outputTokenPrice, setOutputTokenPrice] = useState(null)
+  const [tokenPrices, setTokenPrices] = useState(null)
   const [coinGeckoList, setCoinGeckoList] = useState(null)
   const [walletTokens, setWalletTokens] = useState([])
   const [slippage, setSlippage] = useState(0.5)
@@ -140,27 +140,34 @@ const JupiterForm: FunctionComponent = () => {
 
   useEffect(() => {
     if (!coinGeckoList?.length) return
-
-    const fetchOutputTokenPrice = async () => {
-      const id = coinGeckoList.find(
+    setTokenPrices(null)
+    const fetchTokenPrices = async () => {
+      const inputId = coinGeckoList.find(
+        (x) =>
+          x?.symbol?.toLowerCase() === inputTokenInfo?.symbol?.toLowerCase()
+      )?.id
+      const outputId = coinGeckoList.find(
         (x) =>
           x?.symbol?.toLowerCase() === outputTokenInfo?.symbol?.toLowerCase()
       )?.id
-      if (id) {
+      if (inputId && outputId) {
         const results = await fetch(
-          `https://api.coingecko.com/api/v3/simple/price?ids=${id}&vs_currencies=usd`
+          `https://api.coingecko.com/api/v3/simple/price?ids=${inputId},${outputId}&vs_currencies=usd`
         )
         const json = await results.json()
-        if (json[id].usd) {
-          setOutputTokenPrice(json[id].usd)
+        if (json[inputId]?.usd && json[outputId]?.usd) {
+          setTokenPrices({
+            inputTokenPrice: json[inputId].usd,
+            outputTokenPrice: json[outputId].usd,
+          })
         }
       }
     }
 
-    if (outputTokenInfo) {
-      fetchOutputTokenPrice()
+    if (inputTokenInfo && outputTokenInfo) {
+      fetchTokenPrices()
     }
-  }, [outputTokenInfo, coinGeckoList])
+  }, [inputTokenInfo, outputTokenInfo, coinGeckoList])
 
   const amountInDecimal = useMemo(() => {
     return formValue.amount * 10 ** (inputTokenInfo?.decimals || 1)
@@ -571,13 +578,13 @@ const JupiterForm: FunctionComponent = () => {
                     />
                     {selectedRoute?.outAmount &&
                     formValue.amount &&
-                    outputTokenPrice ? (
+                    tokenPrices?.outputTokenPrice ? (
                       <div className="absolute mt-1 right-0 text-th-fgd-3 text-xs">
                         ≈ $
                         {(
                           (selectedRoute?.outAmount /
                             10 ** (outputTokenInfo?.decimals || 1)) *
-                          outputTokenPrice
+                          tokenPrices?.outputTokenPrice
                         ).toFixed(2)}
                       </div>
                     ) : null}
@@ -673,34 +680,40 @@ const JupiterForm: FunctionComponent = () => {
                             )}{' '}
                             {inputTokenInfo?.symbol}
                           </div>
-                          <div
-                            className={`text-right ${
-                              ((formValue?.amount / outAmountUi -
-                                outputTokenPrice) /
-                                (formValue?.amount / outAmountUi)) *
-                                100 <=
-                              0
-                                ? 'text-th-green'
-                                : 'text-th-red'
-                            }`}
-                          >
-                            {Math.abs(
-                              ((formValue?.amount / outAmountUi -
-                                outputTokenPrice) /
-                                (formValue?.amount / outAmountUi)) *
-                                100
-                            ).toFixed(1)}
-                            %{' '}
-                            <span className="text-th-fgd-4">{`${
-                              ((formValue?.amount / outAmountUi -
-                                outputTokenPrice) /
-                                (formValue?.amount / outAmountUi)) *
-                                100 <=
-                              0
-                                ? 'cheaper'
-                                : 'more expensive'
-                            } than CoinGecko`}</span>
-                          </div>
+                          {tokenPrices?.outputTokenPrice &&
+                          tokenPrices?.inputTokenPrice ? (
+                            <div
+                              className={`text-right ${
+                                ((formValue?.amount / outAmountUi -
+                                  tokenPrices?.outputTokenPrice /
+                                    tokenPrices?.inputTokenPrice) /
+                                  (formValue?.amount / outAmountUi)) *
+                                  100 <=
+                                0
+                                  ? 'text-th-green'
+                                  : 'text-th-red'
+                              }`}
+                            >
+                              {Math.abs(
+                                ((formValue?.amount / outAmountUi -
+                                  tokenPrices?.outputTokenPrice /
+                                    tokenPrices?.inputTokenPrice) /
+                                  (formValue?.amount / outAmountUi)) *
+                                  100
+                              ).toFixed(1)}
+                              %{' '}
+                              <span className="text-th-fgd-4">{`${
+                                ((formValue?.amount / outAmountUi -
+                                  tokenPrices?.outputTokenPrice /
+                                    tokenPrices?.inputTokenPrice) /
+                                  (formValue?.amount / outAmountUi)) *
+                                  100 <=
+                                0
+                                  ? 'cheaper'
+                                  : 'more expensive'
+                              } than CoinGecko`}</span>
+                            </div>
+                          ) : null}
                         </div>
                       </div>
                       <div className="flex justify-between">

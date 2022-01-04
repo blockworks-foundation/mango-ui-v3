@@ -138,7 +138,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
     if (outputTokenId) {
       getOutputTokenInfo()
     }
-  }, [outputTokenId])
+  }, [inputTokenId, outputTokenId])
 
   const chartChange = chartData.length
     ? ((chartData[chartData.length - 1]['price'] - chartData[0]['price']) /
