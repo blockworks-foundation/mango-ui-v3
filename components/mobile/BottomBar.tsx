@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { ChartBarIcon, CurrencyDollarIcon } from '@heroicons/react/solid'
+import {
+  ChartBarIcon,
+  CurrencyDollarIcon,
+  CalculatorIcon,
+} from '@heroicons/react/solid'
 import { BtcMonoIcon, TradeIcon } from '../icons'
 import useMangoGroupConfig from '../../hooks/useMangoGroupConfig'
 import MarketsModal from '../MarketsModal'
@@ -37,7 +41,7 @@ const BottomBar = () => {
 
   return (
     <>
-      <div className="bg-th-bkg-1 default-transition grid grid-cols-4 grid-rows-1 py-2.5">
+      <div className="bg-th-bkg-1 default-transition grid grid-cols-5 grid-rows-1 py-2.5">
         <div
           className="col-span-1 cursor-pointer default-transition flex flex-col items-center text-th-fgd-3 hover:text-th-primary"
           onClick={() => setShowMarketsModal(true)}
@@ -81,6 +85,18 @@ const BottomBar = () => {
           >
             <ChartBarIcon className="h-4 mb-1 w-4" />
             <StyledBarItemLabel>{t('stats')}</StyledBarItemLabel>
+          </div>
+        </Link>
+        <Link href="/risk-calculator">
+          <div
+            className={`${
+              asPath === '/risk-calculator'
+                ? 'text-th-primary'
+                : 'text-th-fgd-3'
+            } col-span-1 cursor-pointer default-transition flex flex-col items-center hover:text-th-primary`}
+          >
+            <CalculatorIcon className="h-4 mb-1 w-4" />
+            <StyledBarItemLabel>{t('calculator')}</StyledBarItemLabel>
           </div>
         </Link>
       </div>

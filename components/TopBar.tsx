@@ -52,6 +52,14 @@ const TopBar = () => {
                 <MenuItem href="/swap">{t('swap')}</MenuItem>
                 <MenuItem href="/account">{t('account')}</MenuItem>
                 <MenuItem href="/borrow">{t('borrow')}</MenuItem>
+                <MenuItem href="/risk-calculator">
+                  {t('calculator')}
+                  <div className="inline-flex items-center relative h-6 px-2 py-1 bg-gradient-to-br from-red-500 to-yellow-500 rounded-full lg:-top-3 md:-top-3 sm:-top-3 xs:-top-2">
+                    <p className="text-white text-xs uppercase font-bold tracking-widest subpixel-antialiased self-baseline">
+                      new
+                    </p>
+                  </div>
+                </MenuItem>
                 <MenuItem href="/stats">{t('stats')}</MenuItem>
                 <MenuItem href="https://docs.mango.markets/" newWindow>
                   {t('learn')}
