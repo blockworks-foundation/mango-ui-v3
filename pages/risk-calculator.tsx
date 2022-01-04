@@ -106,7 +106,7 @@ export default function RiskCalculator() {
   const [accountConnected, setAccountConnected] = useState(false)
   const [showZeroBalances, setShowZeroBalances] = useState(true)
   const [interimValue, setInterimValue] = useState(new Map())
-  const [ordersAsBalance, toggleOrdersAsBalance] = useState(true)
+  const [ordersAsBalance, toggleOrdersAsBalance] = useState(false)
   const [resetOnLeave, setResetOnLeave] = useState(false)
   const defaultSliderVal = 1
 
@@ -180,7 +180,6 @@ export default function RiskCalculator() {
   // Handle toggling open order inclusion or order cancelling for heatlh calculation
   useEffect(() => {
     if (mangoGroup && mangoCache && mangoAccount) {
-      console.log('test check:in orders as balance:' + mangoGroup)
       setScenarioInitialized(!scenarioInitialized)
       createScenario('account')
     }
@@ -884,6 +883,7 @@ export default function RiskCalculator() {
     let initLiabilities = 0
     let maintLiabilities = 0
     let percentToLiquidation = 0
+    let percentToLiquidationAbsolute = 0
 
     // Detailed health scenario variables
     let equity = 0
@@ -943,6 +943,15 @@ export default function RiskCalculator() {
               1
             )
           : 0
+      percentToLiquidationAbsolute =
+        maintHealth > 0
+          ? roundToDecimal(1 / (sliderPercentage / percentToLiquidation), 1)
+          : 0
+
+      if (sliderPercentage * 100 + percentToLiquidation < 0) {
+        percentToLiquidation = -9999
+        percentToLiquidationAbsolute = -9999
+      }
     }
 
     // Add scenario details for display
@@ -959,7 +968,19 @@ export default function RiskCalculator() {
     scenarioHashMap.set('riskRanking', riskRanking)
     scenarioHashMap.set(
       'percentToLiquidation',
-      Number.isFinite(percentToLiquidation) ? percentToLiquidation : 0
+      Number.isFinite(percentToLiquidation)
+        ? percentToLiquidation === -9999
+          ? 'N/A'
+          : percentToLiquidation
+        : 'N/A'
+    )
+    scenarioHashMap.set(
+      'percentToLiquidationAbsolute',
+      Number.isFinite(percentToLiquidationAbsolute)
+        ? percentToLiquidationAbsolute === -9999
+          ? 'N/A'
+          : percentToLiquidationAbsolute
+        : 'N/A'
     )
 
     return scenarioHashMap
@@ -1291,7 +1312,7 @@ export default function RiskCalculator() {
                       className={`text-xs flex items-center justify-center sm:ml-3 pt-0 pb-0 h-8 pl-3 pr-3 rounded`}
                       onClick={() => {
                         setSliderPercentage(defaultSliderVal)
-                        toggleOrdersAsBalance(true)
+                        toggleOrdersAsBalance(false)
                         createScenario(accountConnected ? 'account' : 'blank')
                       }}
                     >
@@ -1490,13 +1511,14 @@ export default function RiskCalculator() {
                               </div>
                             </div>
                             <div className="flex items-center justify-between pb-3">
-                              <Tooltip content="Relative to the 'Edit All Prices' slider value">
-                                <div className="text-th-fgd-3">
-                                  Percent Move To Liquidation
-                                </div>
-                              </Tooltip>
+                              <div className="text-th-fgd-3">
+                                Percent Move To Liquidation
+                              </div>
                               <div className="font-bold">
-                                {scenarioDetails.get('percentToLiquidation')}%
+                                {scenarioDetails.get(
+                                  'percentToLiquidationAbsolute'
+                                )}
+                                %
                               </div>
                             </div>
                           </div>
@@ -2116,13 +2138,11 @@ export default function RiskCalculator() {
                     </div>
                   </div>
                   <div className="flex items-center justify-between pb-3">
-                    <Tooltip content="Relative to the 'Edit All Prices' slider value">
-                      <div className="text-th-fgd-3">
-                        Percent Move To Liquidation
-                      </div>
-                    </Tooltip>
+                    <div className="text-th-fgd-3">
+                      Percent Move To Liquidation
+                    </div>
                     <div className="font-bold">
-                      {scenarioDetails.get('percentToLiquidation')}%
+                      {scenarioDetails.get('percentToLiquidationAbsolute')}%
                     </div>
                   </div>
                 </div>
