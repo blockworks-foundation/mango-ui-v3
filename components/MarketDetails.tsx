@@ -69,7 +69,6 @@ const MarketDetails = () => {
   const [perpStats, setPerpStats] = useState([])
   const [perpVolume, setPerpVolume] = useState(0)
   const change = ohlcv ? ((ohlcv.c[0] - ohlcv.o[0]) / ohlcv.o[0]) * 100 : ''
-  // const volume = ohlcv ? ohlcv.v[0] : '--'
 
   const fetchPerpStats = useCallback(async () => {
     const urlParams = new URLSearchParams({ mangoGroup: groupConfig.name })
@@ -84,7 +83,7 @@ const MarketDetails = () => {
     const parsedPerpVolume = await perpVolume.json()
     setPerpVolume(parsedPerpVolume?.data?.volume)
     setPerpStats(parsedPerpStats)
-  }, [selectedMarketName])
+  }, [selectedMarketName, marketConfig, groupConfig.name])
 
   useInterval(() => {
     if (isPerpMarket) {
