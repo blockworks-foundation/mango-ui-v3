@@ -52,6 +52,7 @@ const AccountInterest = () => {
         return {
         timestamp: `${timestamp.toLocaleDateString()} ${timestamp.toLocaleTimeString()}`,
         account_equity: row.account_equity,
+        pnl: row.pnl
         }
     })
 
@@ -61,6 +62,7 @@ const AccountInterest = () => {
     const headers = [
       'Timestamp',
       'Account Equity',
+      'PNL'
     ]
 
     exportDataToCSV(dataToExport, title, headers, t)
@@ -77,7 +79,7 @@ const AccountInterest = () => {
     const fetchHourlyInterestStats = async () => {
       setLoading(true)
       const response = await fetch(
-        `https://mango-transaction-log.herokuapp.com/v3/stats/account_equity?mango-account=${mangoAccountPk}`
+        `https://mango-transaction-log.herokuapp.com/v3/stats/account-performance?mango-account=${mangoAccountPk}`
       )
       const parsedResponse = await response.json()
       const entries: any = Object.entries(parsedResponse)
@@ -155,6 +157,22 @@ const AccountInterest = () => {
                         yAxisWidth={increaseYAxisWidth ? 70 : 50}
                       />
                     </div>
+                    <div
+                      className="border border-th-bkg-4 relative mb-6 p-4 rounded-md w-full sm:w-1/2"
+                      style={{ height: '330px' }}
+                    >
+                      <Chart
+                        hideRangeFilters
+                        title={t('account-pnl-chart-title')}
+                        xAxis="time"
+                        yAxis="pnl"
+                        data={chartData}
+                        labelFormat={(x) => x && x.toFixed(6 + 1)}
+                        tickFormat={handleDustTicks}
+                        type="area"
+                        yAxisWidth={increaseYAxisWidth ? 70 : 50}
+                      />
+                    </div>
                   </div>
                 ) : null}
                 <div>
@@ -165,6 +183,7 @@ const AccountInterest = () => {
                           <TrHead>
                             <Th>{t('time')}</Th>
                             <Th>{t('account-equity')}</Th>
+                            <Th>{t('account-pnl')}</Th>
                           </TrHead>
                         </thead>
                         <tbody>
@@ -176,6 +195,11 @@ const AccountInterest = () => {
                                 <Td>{dayjs(utc).format('DD/MM/YY, h:mma')}</Td>
                                 <Td>
                                   {stat.account_equity.toFixed(
+                                        6 + 1
+                                      )}
+                                </Td>
+                                <Td>
+                                  {stat.pnl.toFixed(
                                         6 + 1
                                       )}
                                 </Td>
