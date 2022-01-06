@@ -15,11 +15,12 @@ module.exports = {
       body: ['Lato, sans-serif'],
     },
     extend: {
+      animation: {
+        shake: 'shake 0.4s linear 4',
+        'spin-fast': 'spin 0.5s linear infinite',
+      },
       cursor: {
         help: 'help',
-      },
-      fontSize: {
-        xxs: '.65rem',
       },
       colors: {
         'light-theme': {
@@ -90,6 +91,9 @@ module.exports = {
         'th-green-muted': 'var(--green-muted)',
         'th-orange': 'var(--orange)',
       },
+      fontSize: {
+        xxs: '.65rem',
+      },
       keyframes: {
         shake: {
           '0%, 100%': {
@@ -102,9 +106,6 @@ module.exports = {
             transform: 'rotate(-6deg)',
           },
         },
-      },
-      animation: {
-        shake: 'shake 0.4s linear 4',
       },
     },
   },

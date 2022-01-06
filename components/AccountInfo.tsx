@@ -12,10 +12,11 @@ import {
   ExternalLinkIcon,
   HeartIcon,
 } from '@heroicons/react/solid'
+import { BellIcon } from '@heroicons/react/outline'
 import useMangoStore, { MNGO_INDEX } from '../stores/useMangoStore'
 import { abbreviateAddress, formatUsdValue, usdFormatter } from '../utils'
 import { notify } from '../utils/notifications'
-import { LinkButton } from './Button'
+import { IconButton, LinkButton } from './Button'
 import { ElementTitle } from './styles'
 import Tooltip from './Tooltip'
 import DepositModal from './DepositModal'
@@ -27,6 +28,7 @@ import { breakpoints } from './TradePageGrid'
 import { useTranslation } from 'next-i18next'
 import useMangoAccount from '../hooks/useMangoAccount'
 import Loading from './Loading'
+import CreateAlertModal from './CreateAlertModal'
 
 const I80F48_100 = I80F48.fromString('100')
 
@@ -45,6 +47,7 @@ export default function AccountInfo() {
 
   const [showDepositModal, setShowDepositModal] = useState(false)
   const [showWithdrawModal, setShowWithdrawModal] = useState(false)
+  const [showAlertsModal, setShowAlertsModal] = useState(false)
 
   const handleCloseDeposit = useCallback(() => {
     setShowDepositModal(false)
@@ -52,6 +55,10 @@ export default function AccountInfo() {
 
   const handleCloseWithdraw = useCallback(() => {
     setShowWithdrawModal(false)
+  }, [])
+
+  const handleCloseAlerts = useCallback(() => {
+    setShowAlertsModal(false)
   }, [])
 
   const equity = mangoAccount
@@ -129,23 +136,33 @@ export default function AccountInfo() {
         id="account-details-tip"
       >
         {!isMobile ? (
-          <ElementTitle>
-            <Tooltip
-              content={
-                mangoAccount ? (
-                  <div>
-                    {t('init-health')}: {initHealth.toFixed(4)}
-                    <br />
-                    {t('maint-health')}: {maintHealth.toFixed(4)}
-                  </div>
-                ) : (
-                  ''
-                )
-              }
-            >
-              {t('account')}
-            </Tooltip>
-          </ElementTitle>
+          mangoAccount ? (
+            <div className="flex items-center justify-between">
+              <div className="h-8 w-8" />
+              <ElementTitle>
+                <Tooltip
+                  content={
+                    mangoAccount ? (
+                      <div>
+                        {t('init-health')}: {initHealth.toFixed(4)}
+                        <br />
+                        {t('maint-health')}: {maintHealth.toFixed(4)}
+                      </div>
+                    ) : (
+                      ''
+                    )
+                  }
+                >
+                  {t('account')}
+                </Tooltip>
+              </ElementTitle>
+              <IconButton onClick={() => setShowAlertsModal(true)}>
+                <BellIcon className={`w-4 h-4`} />
+              </IconButton>
+            </div>
+          ) : (
+            <ElementTitle>{t('account')}</ElementTitle>
+          )
         ) : null}
         <div>
           {mangoAccount ? (
@@ -291,7 +308,7 @@ export default function AccountInfo() {
                     <div>
                       {t('tooltip-account-liquidated')}{' '}
                       <a
-                        href="https://docs.mango.markets/mango-v3/overview#health"
+                        href="https://docs.mango.markets/mango/health-overview"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -358,6 +375,13 @@ export default function AccountInfo() {
         <WithdrawModal
           isOpen={showWithdrawModal}
           onClose={handleCloseWithdraw}
+        />
+      )}
+
+      {showAlertsModal && (
+        <CreateAlertModal
+          isOpen={showAlertsModal}
+          onClose={handleCloseAlerts}
         />
       )}
     </>

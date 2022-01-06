@@ -87,7 +87,7 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
               >
                 <div className="flex items-center">
                   <PlusCircleIcon className="h-5 w-5 mr-1.5" />
-                  {t('new-account')}
+                  {t('new')}
                 </div>
               </Button>
             </div>

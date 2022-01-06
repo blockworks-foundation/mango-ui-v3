@@ -43,9 +43,9 @@ class ItemRenderer extends PureComponent<ItemRendererProps> {
 
     return (
       <div style={this.props.style}>
-        <div
+        <button
           key={tokenInfo?.address}
-          className="flex justify-between items-center py-4 hover:bg-th-bkg-4 cursor-pointer px-6"
+          className="flex font-normal justify-between items-center py-4 hover:bg-th-bkg-4 cursor-pointer px-6 rounded-none w-full focus:outline-none focus:bg-th-bkg-3"
           onClick={() => this.props.data.onSubmit(tokenInfo)}
         >
           <div className="flex items-center">
@@ -56,15 +56,15 @@ class ItemRenderer extends PureComponent<ItemRendererProps> {
               alt={tokenInfo?.symbol}
             />
             <div className="ml-4">
-              <div className="text-th-fgd-2">
+              <div className="text-left text-th-fgd-2">
                 {tokenInfo?.symbol || 'unknown'}
               </div>
-              <div className="text-th-fgd-4">
+              <div className="text-left text-th-fgd-4">
                 {tokenInfo?.name || 'unknown'}
               </div>
             </div>
           </div>
-        </div>
+        </button>
       </div>
     )
   }

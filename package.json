@@ -5,6 +5,7 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "next dev",
+    "devnet": "NEXT_PUBLIC_CLUSTER=devnet NEXT_PUBLIC_ENDPOINT=https://mango.devnet.rpcpool.com/ NEXT_PUBLIC_GROUP=devnet.2 next dev",
     "build": "next build",
     "start": "next start",
     "type-check": "tsc --pretty --noEmit",
@@ -26,7 +27,7 @@
     ]
   },
   "dependencies": {
-    "@blockworks-foundation/mango-client": "git+https://github.com/blockworks-foundation/mango-client-v3.git",
+    "@blockworks-foundation/mango-client": "^3.2.21",
     "@headlessui/react": "^1.2.0",
     "@heroicons/react": "^1.0.0",
     "@jup-ag/react-hook": "latest",
@@ -48,6 +49,7 @@
     "next-i18next": "^8.9.0",
     "next-themes": "^0.0.14",
     "postcss-preset-env": "^6.7.0",
+    "rc-slider": "^9.7.5",
     "react": "^17.0.2",
     "react-cool-dimensions": "^2.0.1",
     "react-dom": "^17.0.2",

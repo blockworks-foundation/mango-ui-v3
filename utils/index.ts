@@ -158,6 +158,9 @@ export const tokenPrecision = {
   COPE: 2,
   FTT: 3,
   ADA: 2,
+  MSOL: 2,
+  BNB: 3,
+  AVAX: 2,
   USDC: 2,
   USDT: 2,
 }
@@ -172,6 +175,9 @@ export const perpContractPrecision = {
   RAY: 1,
   FTT: 1,
   ADA: 0,
+  BNB: 3,
+  AVAX: 2,
+  LUNA: 2,
 }
 
 const tokenPricePrecision = {
@@ -184,6 +190,9 @@ const tokenPricePrecision = {
   COPE: 3,
   FTT: 3,
   ADA: 4,
+  MSOL: 2,
+  BNB: 1,
+  AVAX: 2,
   USDC: 2,
   USDT: 2,
 }

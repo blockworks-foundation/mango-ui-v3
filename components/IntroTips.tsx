@@ -1,11 +1,14 @@
 import React, { Component } from 'react'
 import { Steps } from 'intro.js-react'
 import { withTranslation } from 'react-i18next'
+import { MangoAccount } from '@blockworks-foundation/mango-client'
+import DepositModal from './DepositModal'
 
 export const SHOW_TOUR_KEY = 'showTour'
 
 interface Props {
   connected: boolean
+  mangoAccount: MangoAccount
   t: any
 }
 
@@ -13,6 +16,7 @@ interface State {
   steps: any
   stepsEnabled: boolean
   initialStep: number
+  showDeposit: boolean
 }
 
 class IntroTips extends Component<Props, State> {
@@ -20,6 +24,7 @@ class IntroTips extends Component<Props, State> {
   constructor(props) {
     super(props)
     this.state = {
+      showDeposit: false,
       stepsEnabled: true,
       initialStep: 0,
       steps: [
@@ -181,9 +186,16 @@ class IntroTips extends Component<Props, State> {
     }
   }
 
+  closeCreateAccountModal = () => {
+    this.setState({ showDeposit: false })
+  }
+
   handleEndTour = () => {
     localStorage.setItem('showTour', 'false')
     this.setState({ stepsEnabled: false })
+    if (!this.props.mangoAccount) {
+      this.setState({ showDeposit: true })
+    }
   }
 
   onBeforeChange = (nextStepIndex) => {
@@ -202,27 +214,35 @@ class IntroTips extends Component<Props, State> {
   }
 
   render() {
-    const { initialStep, stepsEnabled, steps } = this.state
+    const { initialStep, showDeposit, stepsEnabled, steps } = this.state
 
     return (
-      <Steps
-        enabled={stepsEnabled}
-        steps={steps}
-        initialStep={initialStep}
-        onBeforeChange={this.onBeforeChange}
-        onExit={() => this.handleEndTour()}
-        options={{
-          doneLabel: this.props.t('get-started'),
-          exitOnOverlayClick: false,
-          nextLabel: this.props.t('next'),
-          overlayOpacity: 0.6,
-          scrollToElement: true,
-          showBullets: false,
-          showProgress: true,
-          skipLabel: this.props.t('close'),
-        }}
-        ref={(steps) => (this.steps = steps)}
-      />
+      <>
+        <Steps
+          enabled={stepsEnabled}
+          steps={steps}
+          initialStep={initialStep}
+          onBeforeChange={this.onBeforeChange}
+          onExit={() => this.handleEndTour()}
+          options={{
+            doneLabel: this.props.t('get-started'),
+            exitOnOverlayClick: false,
+            nextLabel: this.props.t('next'),
+            overlayOpacity: 0.6,
+            scrollToElement: true,
+            showBullets: false,
+            showProgress: true,
+            skipLabel: this.props.t('close'),
+          }}
+          ref={(steps) => (this.steps = steps)}
+        />
+        {showDeposit ? (
+          <DepositModal
+            isOpen={showDeposit}
+            onClose={this.closeCreateAccountModal}
+          />
+        ) : null}
+      </>
     )
   }
 }

@@ -7,6 +7,7 @@ import { numberCompactFormatter } from '../utils'
 
 interface ChartProps {
   data: any
+  daysRange?: number
   hideRangeFilters?: boolean
   title?: string
   xAxis: string
@@ -15,6 +16,7 @@ interface ChartProps {
   type: string
   labelFormat: (x) => ReactNode
   tickFormat?: (x) => any
+  showAll?: boolean
 }
 
 const Chart: FunctionComponent<ChartProps> = ({
@@ -22,14 +24,16 @@ const Chart: FunctionComponent<ChartProps> = ({
   xAxis,
   yAxis,
   data,
+  daysRange,
   labelFormat,
   tickFormat,
   type,
   hideRangeFilters,
   yAxisWidth,
+  showAll = false,
 }) => {
   const [mouseData, setMouseData] = useState<string | null>(null)
-  const [daysToShow, setDaysToShow] = useState(30)
+  const [daysToShow, setDaysToShow] = useState(daysRange || 30)
   const { observe, width, height } = useDimensions()
   const { theme } = useTheme()
 
@@ -117,6 +121,16 @@ const Chart: FunctionComponent<ChartProps> = ({
             >
               30D
             </button>
+            {showAll ? (
+              <button
+                className={`default-transition font-bold ml-3 text-th-fgd-1 text-xs hover:text-th-primary focus:outline-none ${
+                  daysToShow === 1000 && 'text-th-primary'
+                }`}
+                onClick={() => setDaysToShow(1000)}
+              >
+                All
+              </button>
+            ) : null}
           </div>
         ) : null}
       </div>
@@ -186,7 +200,13 @@ const Chart: FunctionComponent<ChartProps> = ({
         <BarChart
           width={width}
           height={height}
-          data={data ? handleDaysToShow(daysToShow) : null}
+          data={
+            data
+              ? hideRangeFilters
+                ? data
+                : handleDaysToShow(daysToShow)
+              : null
+          }
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
         >

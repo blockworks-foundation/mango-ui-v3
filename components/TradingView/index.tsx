@@ -92,7 +92,8 @@ const TVChartContainer = () => {
         defaultProps.interval,
         () => {}
       )
-      drawLines()
+      setLines(deleteLines())
+      setLines(drawLines())
     }
   }, [selectedMarketConfig.name])
 
@@ -138,7 +139,10 @@ const TVChartContainer = () => {
       studies_overrides: defaultProps.studiesOverrides,
       theme: theme === 'Light' ? 'Light' : 'Dark',
       custom_css_url: '/tradingview-chart.css',
-      loading_screen: { backgroundColor: 'rgba(0,0,0,0.1)' },
+      loading_screen: {
+        backgroundColor:
+          theme === 'Dark' ? '#1B1B1F' : theme === 'Light' ? '#fff' : '#1D1832',
+      },
       overrides: {
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         'paneProperties.background':

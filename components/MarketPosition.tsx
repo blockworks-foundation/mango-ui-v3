@@ -7,6 +7,7 @@ import Tooltip from './Tooltip'
 import PerpSideBadge from './PerpSideBadge'
 import {
   getMarketIndexBySymbol,
+  MangoAccount,
   PerpAccount,
   PerpMarket,
   QUOTE_INDEX,
@@ -25,7 +26,8 @@ import useMangoAccount from '../hooks/useMangoAccount'
 export const settlePnl = async (
   perpMarket: PerpMarket,
   perpAccount: PerpAccount,
-  t
+  t,
+  mangoAccounts: MangoAccount[] | undefined
 ) => {
   const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
   const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
@@ -43,7 +45,8 @@ export const settlePnl = async (
       perpMarket,
       mangoGroup.rootBankAccounts[QUOTE_INDEX],
       mangoCache.priceCache[marketIndex].price,
-      wallet
+      wallet,
+      mangoAccounts
     )
     actions.reloadMangoAccount()
     notify({
@@ -112,7 +115,7 @@ export default function MarketPosition() {
 
   const handleSettlePnl = (perpMarket, perpAccount) => {
     setSettling(true)
-    settlePnl(perpMarket, perpAccount, t).then(() => {
+    settlePnl(perpMarket, perpAccount, t, undefined).then(() => {
       setSettling(false)
     })
   }
@@ -140,7 +143,7 @@ export default function MarketPosition() {
       <div>
         {t('pnl-help')}{' '}
         <a
-          href="https://docs.mango.markets/mango-v3/overview#settle-pnl"
+          href="https://docs.mango.markets/mango/settle-pnl"
           target="_blank"
           rel="noopener noreferrer"
         >

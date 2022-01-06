@@ -104,6 +104,24 @@ export interface Orderbook {
   asks: number[][]
 }
 
+export interface Alert {
+  acc: PublicKey
+  alertProvider: 'mail'
+  health: number
+  _id: string
+  open: boolean
+  timestamp: number
+  triggeredTimestamp: number | undefined
+}
+
+interface AlertRequest {
+  alertProvider: 'mail'
+  health: number
+  mangoGroupPk: string
+  mangoAccountPk: string
+  email: string | undefined
+}
+
 interface MangoStore extends State {
   notificationIdCounter: number
   notifications: Array<Notification>
@@ -171,6 +189,14 @@ interface MangoStore extends State {
   actions: {
     [key: string]: (args?) => void
   }
+  alerts: {
+    activeAlerts: Array<Alert>
+    triggeredAlerts: Array<Alert>
+    loading: boolean
+    error: string
+    submitting: boolean
+    success: string
+  }
 }
 
 const useMangoStore = create<MangoStore>((set, get) => {
@@ -193,7 +219,16 @@ const useMangoStore = create<MangoStore>((set, get) => {
       cluster: CLUSTER,
       current: connection,
       websocket: WEBSOCKET_CONNECTION,
-      client: new MangoClient(connection, programId),
+      client: new MangoClient(connection, programId, {
+        postSendTxCallback: ({ txid }: { txid: string }) => {
+          notify({
+            title: 'Transaction sent',
+            description: 'Waiting for confirmation',
+            type: 'confirm',
+            txid: txid,
+          })
+        },
+      }),
       endpoint: ENDPOINT.url,
       slot: 0,
     },
@@ -238,6 +273,14 @@ const useMangoStore = create<MangoStore>((set, get) => {
     wallet: INITIAL_STATE.WALLET,
     settings: {
       uiLocked: true,
+    },
+    alerts: {
+      activeAlerts: [],
+      triggeredAlerts: [],
+      loading: false,
+      error: '',
+      submitting: false,
+      success: '',
     },
     tradeHistory: [],
     set: (fn) => set(produce(fn)),
@@ -341,8 +384,11 @@ const useMangoStore = create<MangoStore>((set, get) => {
           .getMangoGroup(mangoGroupPk)
           .then(async (mangoGroup) => {
             mangoGroup.loadRootBanks(connection).then(() => {
-              set((state) => {
-                state.selectedMangoGroup.current = mangoGroup
+              mangoGroup.loadCache(connection).then((mangoCache) => {
+                set((state) => {
+                  state.selectedMangoGroup.current = mangoGroup
+                  state.selectedMangoGroup.cache = mangoCache
+                })
               })
             })
             const allMarketConfigs = getAllMarkets(mangoGroupConfig)
@@ -351,16 +397,14 @@ const useMangoStore = create<MangoStore>((set, get) => {
               .map((m) => [m.bidsKey, m.asksKey])
               .flat()
 
-            let allMarketAccountInfos, mangoCache, allBidsAndAsksAccountInfos
+            let allMarketAccountInfos, allBidsAndAsksAccountInfos
             try {
               const resp = await Promise.all([
                 getMultipleAccounts(connection, allMarketPks),
-                mangoGroup.loadCache(connection),
                 getMultipleAccounts(connection, allBidsAndAsksPks),
               ])
               allMarketAccountInfos = resp[0]
-              mangoCache = resp[1]
-              allBidsAndAsksAccountInfos = resp[2]
+              allBidsAndAsksAccountInfos = resp[1]
             } catch {
               notify({
                 type: 'error',
@@ -400,7 +444,6 @@ const useMangoStore = create<MangoStore>((set, get) => {
             )
 
             set((state) => {
-              state.selectedMangoGroup.cache = mangoCache
               state.selectedMangoGroup.markets = allMarkets
               state.selectedMarket.current = allMarketAccounts.find((mkt) =>
                 mkt.publicKey.equals(selectedMarketConfig.publicKey)
@@ -548,6 +591,160 @@ const useMangoStore = create<MangoStore>((set, get) => {
           state.connection.current = newConnection
           state.connection.client = newClient
         })
+      },
+      async createAlert(req: AlertRequest) {
+        const set = get().set
+        const alert = {
+          acc: new PublicKey(req.mangoAccountPk),
+          alertProvider: req.alertProvider,
+          health: req.health,
+          open: true,
+          timestamp: Date.now(),
+        }
+
+        set((state) => {
+          state.alerts.submitting = true
+          state.alerts.error = ''
+          state.alerts.success = ''
+        })
+
+        const mangoAccount = get().selectedMangoAccount.current
+        const mangoGroup = get().selectedMangoGroup.current
+        const mangoCache = get().selectedMangoGroup.cache
+        const currentAccHealth = await mangoAccount.getHealthRatio(
+          mangoGroup,
+          mangoCache,
+          'Maint'
+        )
+
+        if (currentAccHealth && currentAccHealth.toNumber() <= req.health) {
+          set((state) => {
+            state.alerts.submitting = false
+            state.alerts.error = `Current account health is already below ${req.health}%`
+          })
+          return false
+        }
+
+        const fetchUrl = `https://mango-alerts-v3.herokuapp.com/alerts`
+        const headers = { 'Content-Type': 'application/json' }
+
+        const response = await fetch(fetchUrl, {
+          method: 'POST',
+          headers: headers,
+          body: JSON.stringify(req),
+        })
+
+        if (response.ok) {
+          const alerts = get().alerts.activeAlerts
+
+          set((state) => {
+            state.alerts.activeAlerts = [alert as Alert].concat(alerts)
+            state.alerts.submitting = false
+            state.alerts.success = 'Alert saved'
+          })
+          notify({
+            title: 'Alert saved',
+            type: 'success',
+          })
+          return true
+        } else {
+          set((state) => {
+            state.alerts.error = 'Something went wrong'
+            state.alerts.submitting = false
+          })
+          notify({
+            title: 'Something went wrong',
+            type: 'error',
+          })
+          return false
+        }
+      },
+      async deleteAlert(id: string) {
+        const set = get().set
+
+        set((state) => {
+          state.alerts.submitting = true
+          state.alerts.error = ''
+          state.alerts.success = ''
+        })
+
+        const fetchUrl = `https://mango-alerts-v3.herokuapp.com/delete-alert`
+        const headers = { 'Content-Type': 'application/json' }
+
+        const response = await fetch(fetchUrl, {
+          method: 'POST',
+          headers: headers,
+          body: JSON.stringify({ id }),
+        })
+
+        if (response.ok) {
+          const alerts = get().alerts.activeAlerts
+          set((state) => {
+            state.alerts.activeAlerts = alerts.filter(
+              (alert) => alert._id !== id
+            )
+            state.alerts.submitting = false
+            state.alerts.success = 'Alert deleted'
+          })
+          notify({
+            title: 'Alert deleted',
+            type: 'success',
+          })
+        } else {
+          set((state) => {
+            state.alerts.error = 'Something went wrong'
+            state.alerts.submitting = false
+          })
+          notify({
+            title: 'Something went wrong',
+            type: 'error',
+          })
+        }
+      },
+      async loadAlerts(mangoAccountPk: PublicKey) {
+        const set = get().set
+
+        set((state) => {
+          state.alerts.error = ''
+          state.alerts.loading = true
+        })
+
+        const headers = { 'Content-Type': 'application/json' }
+        const response = await fetch(
+          `https://mango-alerts-v3.herokuapp.com/alerts/${mangoAccountPk}`,
+          {
+            method: 'GET',
+            headers: headers,
+          }
+        )
+
+        if (response.ok) {
+          const parsedResponse = await response.json()
+          // sort active by latest creation time first
+          const activeAlerts = parsedResponse.alerts
+            .filter((alert) => alert.open)
+            .sort((a, b) => {
+              return b.timestamp - a.timestamp
+            })
+
+          // sort triggered by latest trigger time first
+          const triggeredAlerts = parsedResponse.alerts
+            .filter((alert) => !alert.open)
+            .sort((a, b) => {
+              return b.triggeredTimestamp - a.triggeredTimestamp
+            })
+
+          set((state) => {
+            state.alerts.activeAlerts = activeAlerts
+            state.alerts.triggeredAlerts = triggeredAlerts
+            state.alerts.loading = false
+          })
+        } else {
+          set((state) => {
+            state.alerts.error = 'Error loading alerts'
+            state.alerts.loading = false
+          })
+        }
       },
     },
   }

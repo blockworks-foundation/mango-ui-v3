@@ -70,7 +70,7 @@ export const defaultLayouts = {
   ],
 }
 
-export const GRID_LAYOUT_KEY = 'mangoSavedLayouts-3.0.10'
+export const GRID_LAYOUT_KEY = 'mangoSavedLayouts-3.1.4'
 export const breakpoints = { xl: 1600, lg: 1280, md: 1024, sm: 768, xs: 0 }
 
 const getCurrentBreakpoint = () => {
@@ -101,7 +101,7 @@ const TradePageGrid = () => {
 
   const [orderbookDepth, setOrderbookDepth] = useState(8)
   const [currentBreakpoint, setCurrentBreakpoint] = useState(null)
-  const [mounted, setMounted] = useState(false)
+  // const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     const adjustOrderBook = (layouts, breakpoint?: string | null) => {
@@ -117,15 +117,15 @@ const TradePageGrid = () => {
     adjustOrderBook(savedLayouts, currentBreakpoint)
   }, [currentBreakpoint, savedLayouts])
 
-  useEffect(() => setMounted(true), [])
-  if (!mounted) return null
+  // useEffect(() => setMounted(true), [])
+  // if (!mounted) return null
 
   return !isMobile ? (
     <>
       <MarketDetails />
       <ResponsiveGridLayout
         className="layout"
-        layouts={savedLayouts || defaultLayouts}
+        layouts={savedLayouts ? savedLayouts : defaultLayouts}
         breakpoints={breakpoints}
         cols={{ xl: 12, lg: 12, md: 12, sm: 12, xs: 1 }}
         rowHeight={15}
@@ -135,7 +135,6 @@ const TradePageGrid = () => {
           onBreakpointChange(newBreakpoint)
         }
         onLayoutChange={(layout, layouts) => onLayoutChange(layouts)}
-        measureBeforeMount
       >
         <div key="tvChart">
           <FloatingElement className="h-full pl-0 md:pl-0 md:pr-1 md:pb-1 md:pt-3">
@@ -153,11 +152,6 @@ const TradePageGrid = () => {
             <AccountInfo />
           </FloatingElement>
         </div>
-        <div key="userInfo">
-          <FloatingElement className="h-full">
-            <UserInfo />
-          </FloatingElement>
-        </div>
         <div key="marketPosition">
           <FloatingElement className="h-full" showConnect>
             <UserMarketInfo />
@@ -166,6 +160,11 @@ const TradePageGrid = () => {
         <div key="marketTrades">
           <FloatingElement className="h-full">
             <RecentMarketTrades />
+          </FloatingElement>
+        </div>
+        <div key="userInfo">
+          <FloatingElement className="h-full">
+            <UserInfo />
           </FloatingElement>
         </div>
       </ResponsiveGridLayout>

@@ -60,7 +60,6 @@ const MarketDetails = () => {
   const isPerpMarket = marketConfig.kind === 'perp'
 
   const previousMarketName: string = usePrevious(selectedMarketName)
-  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const connected = useMangoStore((s) => s.wallet.connected)
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
@@ -70,7 +69,6 @@ const MarketDetails = () => {
   const [perpStats, setPerpStats] = useState([])
   const [perpVolume, setPerpVolume] = useState(0)
   const change = ohlcv ? ((ohlcv.c[0] - ohlcv.o[0]) / ohlcv.o[0]) * 100 : ''
-  // const volume = ohlcv ? ohlcv.v[0] : '--'
 
   const fetchPerpStats = useCallback(async () => {
     const urlParams = new URLSearchParams({ mangoGroup: groupConfig.name })
@@ -85,7 +83,7 @@ const MarketDetails = () => {
     const parsedPerpVolume = await perpVolume.json()
     setPerpVolume(parsedPerpVolume?.data?.volume)
     setPerpStats(parsedPerpStats)
-  }, [selectedMarketName])
+  }, [selectedMarketName, marketConfig, groupConfig.name])
 
   useInterval(() => {
     if (isPerpMarket) {
@@ -264,7 +262,7 @@ const MarketDetails = () => {
           </div>
         ) : null}
         <div className="ml-2" id="data-refresh-tip">
-          {!isMobile && connected && mangoAccount ? <ManualRefresh /> : null}
+          {!isMobile && connected ? <ManualRefresh /> : null}
         </div>
       </div>
     </div>
