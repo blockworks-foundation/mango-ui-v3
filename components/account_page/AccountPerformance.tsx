@@ -103,16 +103,7 @@ const AccountInterest = () => {
 
   useEffect(() => {
     if (hourlyPerformanceStats) {
-      const start = new Date(
-        // @ts-ignore
-        dayjs().utc().hour(0).minute(0).subtract(29, 'day')
-      ).getTime()
-
-      const filtered = hourlyPerformanceStats.filter(
-        (d) => new Date(d.time).getTime() > start
-      )
-
-      setChartData(filtered.reverse())
+      setChartData(hourlyPerformanceStats.slice().reverse())
     }
   }, [hourlyPerformanceStats])
 
@@ -146,7 +137,6 @@ const AccountInterest = () => {
                       style={{ height: '330px' }}
                     >
                       <Chart
-                        hideRangeFilters
                         title={t('account-equity-chart-title')}
                         xAxis="time"
                         yAxis="account_equity"
@@ -155,6 +145,7 @@ const AccountInterest = () => {
                         tickFormat={handleDustTicks}
                         type="area"
                         yAxisWidth={increaseYAxisWidth ? 70 : 50}
+                        showAll
                       />
                     </div>
                     <div
@@ -162,7 +153,6 @@ const AccountInterest = () => {
                       style={{ height: '330px' }}
                     >
                       <Chart
-                        hideRangeFilters
                         title={t('account-pnl-chart-title')}
                         xAxis="time"
                         yAxis="pnl"
@@ -171,6 +161,7 @@ const AccountInterest = () => {
                         tickFormat={handleDustTicks}
                         type="area"
                         yAxisWidth={increaseYAxisWidth ? 70 : 50}
+                        showAll
                       />
                     </div>
                   </div>
