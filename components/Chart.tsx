@@ -150,15 +150,15 @@ const Chart: FunctionComponent<ChartProps> = ({
           />
           <defs>
             <linearGradient id="gradientArea" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#FF9C24" stopOpacity={0.5} />
-              <stop offset="100%" stopColor="#FF9C24" stopOpacity={0} />
+              <stop offset="0%" stopColor="#ffba24" stopOpacity={1} />
+              <stop offset="100%" stopColor="#ffba24" stopOpacity={0} />
             </linearGradient>
           </defs>
           <Area
             isAnimationActive={false}
             type="monotone"
             dataKey={yAxis}
-            stroke="#FF9C24"
+            stroke="#ffba24"
             fill="url(#gradientArea)"
           />
           <XAxis
@@ -169,7 +169,9 @@ const Chart: FunctionComponent<ChartProps> = ({
             minTickGap={20}
             tick={{
               fill:
-                theme === 'Light' ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.6)',
+                theme === 'Light'
+                  ? 'rgba(0,0,0,0.4)'
+                  : 'rgba(255,255,255,0.35)',
               fontSize: 10,
             }}
             tickLine={false}
@@ -180,9 +182,12 @@ const Chart: FunctionComponent<ChartProps> = ({
             axisLine={false}
             hide={data.length > 0 ? false : true}
             dx={-10}
+            domain={['dataMin', 'dataMax']}
             tick={{
               fill:
-                theme === 'Light' ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.6)',
+                theme === 'Light'
+                  ? 'rgba(0,0,0,0.4)'
+                  : 'rgba(255,255,255,0.35)',
               fontSize: 10,
             }}
             tickLine={false}
@@ -219,8 +224,8 @@ const Chart: FunctionComponent<ChartProps> = ({
           />
           <defs>
             <linearGradient id="gradientBar" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#FF9C24" stopOpacity={1} />
-              <stop offset="100%" stopColor="#FF9C24" stopOpacity={0.5} />
+              <stop offset="0%" stopColor="#ffba24" stopOpacity={1} />
+              <stop offset="100%" stopColor="#ffba24" stopOpacity={0.5} />
             </linearGradient>
           </defs>
           <Bar
@@ -237,7 +242,9 @@ const Chart: FunctionComponent<ChartProps> = ({
             minTickGap={20}
             tick={{
               fill:
-                theme === 'Light' ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.6)',
+                theme === 'Light'
+                  ? 'rgba(0,0,0,0.4)'
+                  : 'rgba(255,255,255,0.35)',
               fontSize: 10,
             }}
             tickLine={false}
@@ -251,7 +258,9 @@ const Chart: FunctionComponent<ChartProps> = ({
             dx={-10}
             tick={{
               fill:
-                theme === 'Light' ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.6)',
+                theme === 'Light'
+                  ? 'rgba(0,0,0,0.4)'
+                  : 'rgba(255,255,255,0.35)',
               fontSize: 10,
             }}
             tickLine={false}
