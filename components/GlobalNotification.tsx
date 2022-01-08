@@ -1,12 +1,12 @@
-// import {useState, useEffect} from 'react'
-import useLocalStorageState from '../hooks/useLocalStorageState'
+import { useState } from 'react'
+// import useLocalStorageState from '../hooks/useLocalStorageState'
 
 import { XIcon } from '@heroicons/react/solid'
 
-const GLOBAL_NOTIFICATION_KEY = 'globalNotification-0.1'
+// const GLOBAL_NOTIFICATION_KEY = 'globalNotification-0.1'
 
 const GlobalNotification = () => {
-  const [show, setShow] = useLocalStorageState(GLOBAL_NOTIFICATION_KEY, true)
+  const [show, setShow] = useState(true)
 
   if (show) {
     return (
