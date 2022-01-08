@@ -78,8 +78,8 @@ export const serumProgramId = new PublicKey(defaultMangoGroupIds.serumProgramId)
 const mangoGroupPk = new PublicKey(defaultMangoGroupIds.publicKey)
 
 // Used to retry loading the MangoGroup and MangoAccount if an rpc node error occurs
-let mangoGroupRetryAttempt = 0
-let mangoAccountRetryAttempt = 0
+// let mangoGroupRetryAttempt = 0
+// let mangoAccountRetryAttempt = 0
 
 export const INITIAL_STATE = {
   WALLET: {
@@ -337,7 +337,7 @@ const useMangoStore = create<MangoStore>((set, get) => {
         const mangoGroup = get().selectedMangoGroup.current
         const mangoClient = get().connection.client
         const wallet = get().wallet.current
-        const actions = get().actions
+        // const actions = get().actions
         const walletPk = wallet?.publicKey
 
         if (!walletPk) return
@@ -370,11 +370,11 @@ const useMangoStore = create<MangoStore>((set, get) => {
             }
           })
           .catch((err) => {
-            if (mangoAccountRetryAttempt < 2) {
-              actions.fetchAllMangoAccounts()
-              mangoAccountRetryAttempt++
-            }
-            mangoAccountRetryAttempt = 0
+            // if (mangoAccountRetryAttempt < 2) {
+            //   actions.fetchAllMangoAccounts()
+            //   mangoAccountRetryAttempt++
+            // }
+            // mangoAccountRetryAttempt = 0
             notify({
               type: 'error',
               title: 'Unable to load mango account',
@@ -389,7 +389,7 @@ const useMangoStore = create<MangoStore>((set, get) => {
         const selectedMarketConfig = get().selectedMarket.config
         const mangoClient = get().connection.client
         const connection = get().connection.current
-        const actions = get().actions
+        // const actions = get().actions
 
         return mangoClient
           .getMangoGroup(mangoGroupPk)
@@ -470,11 +470,11 @@ const useMangoStore = create<MangoStore>((set, get) => {
             })
           })
           .catch((err) => {
-            if (mangoGroupRetryAttempt < 2) {
-              actions.fetchMangoGroup()
-              mangoGroupRetryAttempt++
-            }
-            mangoGroupRetryAttempt = 0
+            // if (mangoGroupRetryAttempt < 2) {
+            //   actions.fetchMangoGroup()
+            //   mangoGroupRetryAttempt++
+            // }
+            // mangoGroupRetryAttempt = 0
             notify({
               title: 'Failed to load mango group. Please refresh',
               description: `${err}`,
