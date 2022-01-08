@@ -163,7 +163,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
           <div className="flex items-start justify-between">
             <div>
               {inputTokenInfo && outputTokenInfo ? (
-                <div className="text-th-fgd-3 text-sm">{`${inputTokenInfo.symbol.toUpperCase()}/${outputTokenInfo.symbol.toUpperCase()}`}</div>
+                <div className="text-th-fgd-3 text-sm">{`${inputTokenInfo?.symbol?.toUpperCase()}/${outputTokenInfo?.symbol?.toUpperCase()}`}</div>
               ) : null}
               {mouseData ? (
                 <>
@@ -306,7 +306,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                     ) : null}
                     <div className="ml-2.5 text-left">
                       <h2 className="font-bold text-base text-th-fgd-1">
-                        {inputTokenInfo.symbol.toUpperCase()}
+                        {inputTokenInfo?.symbol?.toUpperCase()}
                       </h2>
                       <div className="font-normal text-th-fgd-3 text-xs">
                         {inputTokenInfo.name}
@@ -516,7 +516,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                     ) : null}
                     <div className="ml-2.5 text-left">
                       <h2 className="font-bold text-base text-th-fgd-1">
-                        {outputTokenInfo.symbol.toUpperCase()}
+                        {outputTokenInfo?.symbol?.toUpperCase()}
                       </h2>
                       <div className="font-normal text-th-fgd-3 text-xs">
                         {outputTokenInfo.name}
