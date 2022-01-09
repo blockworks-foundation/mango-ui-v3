@@ -17,9 +17,8 @@ interface SwapTokenInfoProps {
 }
 
 export const numberFormatter = Intl.NumberFormat('en', {
-  minimumSignificantDigits: 1,
-  maximumSignificantDigits: 5,
-  notation: 'compact',
+  minimumFractionDigits: 1,
+  maximumFractionDigits: 5,
 })
 
 const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
