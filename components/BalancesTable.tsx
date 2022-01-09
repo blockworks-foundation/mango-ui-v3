@@ -100,9 +100,16 @@ const BalancesTable = ({ showZeroBalances = false }) => {
       const spotMarkets = Object.values(markets).filter(
         (mkt) => mkt instanceof Market
       ) as Market[]
-      await mangoClient.settleAll(mangoGroup, mangoAccount, spotMarkets, wallet)
+      const txids = await mangoClient.settleAll(
+        mangoGroup,
+        mangoAccount,
+        spotMarkets,
+        wallet
+      )
 
-      notify({ title: t('settle-success') })
+      for (const txid of txids) {
+        notify({ title: t('settle-success'), txid })
+      }
     } catch (e) {
       console.warn('Error settling all:', e)
       if (e.message === 'No unsettled funds') {
