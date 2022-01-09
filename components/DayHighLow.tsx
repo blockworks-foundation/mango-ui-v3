@@ -18,7 +18,7 @@ const DayHighLow = ({ high, low, latest }) => {
         {t('daily-range')}
       </div>
       <div className="flex items-center font-semibold">
-        <div className="pr-2 text-th-fgd-1 md:text-xs">
+        <div className="pr-2 text-th-fgd-2 md:text-xs">
           {low ? formatUsdValue(low) : <MarketDataLoader />}
         </div>
         <div className="h-1.5 flex rounded bg-th-bkg-3 w-16 sm:w-20">
@@ -29,7 +29,7 @@ const DayHighLow = ({ high, low, latest }) => {
             className="flex rounded bg-th-primary"
           ></div>
         </div>
-        <div className="pl-2 text-th-fgd-1 md:text-xs">
+        <div className="pl-2 text-th-fgd-2 md:text-xs">
           {high ? formatUsdValue(high) : <MarketDataLoader />}
         </div>
       </div>

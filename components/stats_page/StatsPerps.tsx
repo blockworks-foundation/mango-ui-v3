@@ -151,7 +151,7 @@ export default function StatsPerps({ perpStats }) {
       </div>
       <div className="grid grid-flow-row grid-cols-1 grid-rows-2 md:grid-cols-2 md:grid-rows-2 gap-2 sm:gap-4">
         <div
-          className="border border-th-bkg-4 relative p-4 rounded-md"
+          className="border border-th-bkg-3 relative p-4 rounded-md"
           style={{ height: '330px' }}
         >
           <Chart
@@ -167,7 +167,7 @@ export default function StatsPerps({ perpStats }) {
           />
         </div>
         <div
-          className="border border-th-bkg-4 relative p-4 rounded-md"
+          className="border border-th-bkg-3 relative p-4 rounded-md"
           style={{ height: '330px' }}
         >
           <Chart
@@ -187,7 +187,7 @@ export default function StatsPerps({ perpStats }) {
             type="area"
           />
         </div>
-        <div className="border border-th-bkg-4 relative p-4 rounded-md">
+        <div className="border border-th-bkg-3 relative p-4 rounded-md">
           <div className="text-lg">{t('liquidity-mining')}</div>
           <div className="flex justify-between mt-4">
             <div>{t('depth-rewarded')}</div>

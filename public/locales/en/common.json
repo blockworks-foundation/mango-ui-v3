@@ -46,6 +46,7 @@
   "borrows": "Borrows",
   "break-even": "Break-even Price",
   "buy": "Buy",
+  "calculator": "Calculator",
   "cancel": "Cancel",
   "cancel-error": "Error cancelling order",
   "cancel-success": "Successfully cancelled order",

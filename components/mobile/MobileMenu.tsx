@@ -43,6 +43,7 @@ const MobileMenu = () => {
           <MenuItem href="/account">{t('account')}</MenuItem>
           <MenuItem href="/borrow">{t('borrow')}</MenuItem>
           <MenuItem href="/stats">{t('stats')}</MenuItem>
+          <MenuItem href="/risk-calculator">{t('calculator')}</MenuItem>
           <MenuItem href="https://docs.mango.markets/">{t('learn')}</MenuItem>
         </div>
       </Transition>

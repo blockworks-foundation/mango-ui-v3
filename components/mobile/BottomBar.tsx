@@ -1,9 +1,11 @@
-import { useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { ChartBarIcon, CurrencyDollarIcon } from '@heroicons/react/solid'
+import {
+  ChartBarIcon,
+  CurrencyDollarIcon,
+  CalculatorIcon,
+} from '@heroicons/react/solid'
 import { BtcMonoIcon, TradeIcon } from '../icons'
-import useMangoGroupConfig from '../../hooks/useMangoGroupConfig'
 import { useTranslation } from 'next-i18next'
 
 const StyledBarItemLabel = ({ children, ...props }) => (
@@ -15,22 +17,6 @@ const StyledBarItemLabel = ({ children, ...props }) => (
 const BottomBar = () => {
   const { t } = useTranslation('common')
   const { asPath } = useRouter()
-  const groupConfig = useMangoGroupConfig()
-
-  useEffect(() => {
-    const markets = []
-    const allMarkets = [...groupConfig.spotMarkets, ...groupConfig.perpMarkets]
-    allMarkets.forEach((market) => {
-      const base = market.name.slice(0, -5)
-      const found = markets.find((b) => b.baseAsset === base)
-      if (!found) {
-        markets.push({ baseAsset: base, markets: [market] })
-      } else {
-        found.markets.push(market)
-      }
-    })
-    setSortedMarkets(markets)
-  }, [])
 
   return (
     <>
@@ -43,7 +29,7 @@ const BottomBar = () => {
           <div
             className={`${
               asPath === '/select' ? 'text-th-primary' : 'text-th-fgd-3'
-            } col-span-1 cursor-pointer default-transition flex flex-col items-center hover:text-th-primary`}
+            } col-span-1 cursor-pointer default-transition flex flex-col items-center text-th-fgd-3  hover:text-th-primary`}
           >
             <BtcMonoIcon className="h-4 mb-1 w-4" />
             <StyledBarItemLabel>{t('markets')}</StyledBarItemLabel>
@@ -85,6 +71,18 @@ const BottomBar = () => {
           >
             <ChartBarIcon className="h-4 mb-1 w-4" />
             <StyledBarItemLabel>{t('stats')}</StyledBarItemLabel>
+          </div>
+        </Link>
+        <Link href="/risk-calculator">
+          <div
+            className={`${
+              asPath === '/risk-calculator'
+                ? 'text-th-primary'
+                : 'text-th-fgd-3'
+            } col-span-1 cursor-pointer default-transition flex flex-col items-center hover:text-th-primary`}
+          >
+            <CalculatorIcon className="h-4 mb-1 w-4" />
+            <StyledBarItemLabel>{t('calculator')}</StyledBarItemLabel>
           </div>
         </Link>
       </div>

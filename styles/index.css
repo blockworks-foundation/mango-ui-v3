@@ -87,6 +87,10 @@ button {
   @apply font-semibold rounded-md tracking-wider;
 }
 
+button.transition-none {
+  transition: none;
+}
+
 .default-transition {
   @apply transition-all duration-300;
 }
@@ -161,14 +165,13 @@ input[type='number'] {
 /* Scrollbars */
 
 body::-webkit-scrollbar {
-  width: 12px;
-  height: 8px;
-  background-color: var(--bkg-4);
+  width: 8px;
+  background-color: var(--bkg-1);
 }
 
 body::-webkit-scrollbar-thumb {
   border-radius: 4px;
-  background-color: var(--bkg-2);
+  background-color: var(--bkg-4);
 }
 
 body::-webkit-scrollbar-track {

@@ -177,6 +177,7 @@ export const perpContractPrecision = {
   ADA: 0,
   BNB: 3,
   AVAX: 2,
+  LUNA: 2,
 }
 
 const tokenPricePrecision = {

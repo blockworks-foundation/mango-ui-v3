@@ -27,10 +27,10 @@
     ]
   },
   "dependencies": {
-    "@blockworks-foundation/mango-client": "latest",
+    "@blockworks-foundation/mango-client": "^3.2.21",
     "@headlessui/react": "^1.2.0",
     "@heroicons/react": "^1.0.0",
-    "@jup-ag/react-hook": "latest",
+    "@jup-ag/react-hook": "^1.0.0-beta.4",
     "@project-serum/serum": "0.13.55",
     "@project-serum/sol-wallet-adapter": "0.2.0",
     "@solana/web3.js": "^1.31.0",
@@ -49,6 +49,7 @@
     "next-i18next": "^8.9.0",
     "next-themes": "^0.0.14",
     "postcss-preset-env": "^6.7.0",
+    "rc-slider": "^9.7.5",
     "react": "^17.0.2",
     "react-cool-dimensions": "^2.0.1",
     "react-dom": "^17.0.2",

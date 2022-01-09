@@ -69,7 +69,6 @@ const MarketDetails = () => {
   const [perpStats, setPerpStats] = useState([])
   const [perpVolume, setPerpVolume] = useState(0)
   const change = ohlcv ? ((ohlcv.c[0] - ohlcv.o[0]) / ohlcv.o[0]) * 100 : ''
-  // const volume = ohlcv ? ohlcv.v[0] : '--'
 
   const fetchPerpStats = useCallback(async () => {
     const urlParams = new URLSearchParams({ mangoGroup: groupConfig.name })
@@ -84,7 +83,7 @@ const MarketDetails = () => {
     const parsedPerpVolume = await perpVolume.json()
     setPerpVolume(parsedPerpVolume?.data?.volume)
     setPerpStats(parsedPerpStats)
-  }, [selectedMarketName])
+  }, [selectedMarketName, marketConfig, groupConfig.name])
 
   useInterval(() => {
     if (isPerpMarket) {
@@ -179,7 +178,7 @@ const MarketDetails = () => {
             <div className="text-th-fgd-3 tiny-text pb-0.5">
               {t('oracle-price')}
             </div>
-            <div className="font-semibold text-th-fgd-1 md:text-xs">
+            <div className="font-semibold text-th-fgd-2 md:text-xs">
               {oraclePrice && selectedMarket
                 ? oraclePrice.toFixed(getDecimalCount(selectedMarket.tickSize))
                 : '--'}
@@ -196,7 +195,7 @@ const MarketDetails = () => {
                     ? `text-th-green`
                     : change < 0
                     ? `text-th-red`
-                    : `text-th-fgd-1`
+                    : `text-th-fgd-2`
                 }`}
               >
                 {change.toFixed(2) + '%'}
@@ -210,7 +209,7 @@ const MarketDetails = () => {
               <div className="text-th-fgd-3 tiny-text pb-0.5">
                 {t('daily-volume')}
               </div>
-              <div className="font-semibold text-th-fgd-1 md:text-xs">
+              <div className="font-semibold text-th-fgd-2 md:text-xs">
                 {perpVolume ? (
                   usdFormatter(perpVolume, 0)
                 ) : (
@@ -225,7 +224,7 @@ const MarketDetails = () => {
                 <div className="text-th-fgd-3 tiny-text pb-0.5">
                   {t('average-funding')}
                 </div>
-                <div className="font-semibold text-th-fgd-1 md:text-xs">
+                <div className="font-semibold text-th-fgd-2 md:text-xs">
                   {selectedMarket ? (
                     `${funding1hStr}% (${fundingAprStr}% APR)`
                   ) : (
@@ -237,7 +236,7 @@ const MarketDetails = () => {
                 <div className="text-th-fgd-3 tiny-text pb-0.5">
                   {t('open-interest')}
                 </div>
-                <div className="font-semibold text-th-fgd-1 md:text-xs">
+                <div className="font-semibold text-th-fgd-2 md:text-xs">
                   {selectedMarket ? (
                     `${parseOpenInterest(
                       selectedMarket as PerpMarket
