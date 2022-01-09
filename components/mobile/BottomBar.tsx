@@ -1,10 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { ChartBarIcon, CurrencyDollarIcon } from '@heroicons/react/solid'
 import { BtcMonoIcon, TradeIcon } from '../icons'
 import useMangoGroupConfig from '../../hooks/useMangoGroupConfig'
-import MarketsModal from '../MarketsModal'
 import { useTranslation } from 'next-i18next'
 
 const StyledBarItemLabel = ({ children, ...props }) => (
@@ -15,8 +14,6 @@ const StyledBarItemLabel = ({ children, ...props }) => (
 
 const BottomBar = () => {
   const { t } = useTranslation('common')
-  const [showMarketsModal, setShowMarketsModal] = useState(false)
-  const [sortedMarkets, setSortedMarkets] = useState([])
   const { asPath } = useRouter()
   const groupConfig = useMangoGroupConfig()
 
@@ -38,13 +35,20 @@ const BottomBar = () => {
   return (
     <>
       <div className="bg-th-bkg-1 default-transition grid grid-cols-4 grid-rows-1 py-2.5">
-        <div
-          className="col-span-1 cursor-pointer default-transition flex flex-col items-center text-th-fgd-3 hover:text-th-primary"
-          onClick={() => setShowMarketsModal(true)}
+        <Link
+          href={{
+            pathname: '/select',
+          }}
         >
-          <BtcMonoIcon className="h-4 mb-1 w-4" />
-          <StyledBarItemLabel>{t('markets')}</StyledBarItemLabel>
-        </div>
+          <div
+            className={`${
+              asPath === '/select' ? 'text-th-primary' : 'text-th-fgd-3'
+            } col-span-1 cursor-pointer default-transition flex flex-col items-center hover:text-th-primary`}
+          >
+            <BtcMonoIcon className="h-4 mb-1 w-4" />
+            <StyledBarItemLabel>{t('markets')}</StyledBarItemLabel>
+          </div>
+        </Link>
         <Link
           href={{
             pathname: '/market',
@@ -54,7 +58,7 @@ const BottomBar = () => {
         >
           <div
             className={`${
-              asPath === '/' || asPath.includes('market')
+              asPath === '/' || asPath.startsWith('/market')
                 ? 'text-th-primary'
                 : 'text-th-fgd-3'
             } col-span-1 cursor-pointer default-transition flex flex-col items-center hover:text-th-primary`}
@@ -84,13 +88,6 @@ const BottomBar = () => {
           </div>
         </Link>
       </div>
-      {showMarketsModal ? (
-        <MarketsModal
-          isOpen={showMarketsModal}
-          onClose={() => setShowMarketsModal(false)}
-          markets={sortedMarkets}
-        />
-      ) : null}
     </>
   )
 }
