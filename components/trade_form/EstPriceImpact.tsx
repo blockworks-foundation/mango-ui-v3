@@ -13,7 +13,7 @@ const EstPriceImpact = ({
   return (
     <div className={`text-th-fgd-3 text-xs`}>
       <div className="flex justify-between mb-1">
-        {t('slippage')}
+        {t('est-slippage')}
         <span
           className={`font-bold opacity-80 ml-2 ${
             priceImpactRel <= 0.005
