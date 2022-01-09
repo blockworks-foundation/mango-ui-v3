@@ -11,10 +11,10 @@ const GlobalNotification = () => {
   if (show) {
     return (
       <div className="flex items-center bg-th-bkg-4 text-th-fgd-1">
-        <div className="w-full text-center py-1">
+        <div className="w-full text-center p-2.5">
           <span>
             The Solana network is currently experiencing degraded performance
-            resulting in some transactions timing out
+            resulting in some transactions timing out.
           </span>
           <a
             href="https://status.solana.com"
