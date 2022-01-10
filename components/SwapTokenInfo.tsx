@@ -21,6 +21,11 @@ export const numberFormatter = Intl.NumberFormat('en', {
   maximumFractionDigits: 5,
 })
 
+export const numberCompacter = Intl.NumberFormat('en', {
+  notation: 'compact',
+  maximumFractionDigits: 2,
+})
+
 const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
   inputTokenId,
   outputTokenId,
@@ -397,14 +402,15 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                           </div>
                         </div>
                       ) : null}
-                      {inputTokenInfo.market_data?.market_cap ? (
+                      {inputTokenInfo.market_data?.market_cap &&
+                      inputTokenInfo.market_data?.market_cap?.usd !== 0 ? (
                         <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
                           <div className="text-th-fgd-3 text-xs">
                             Market Cap
                           </div>
                           <div className="font-bold text-th-fgd-1 text-lg">
                             $
-                            {numberFormatter.format(
+                            {numberCompacter.format(
                               inputTokenInfo.market_data?.market_cap?.usd
                             )}
                           </div>
@@ -417,7 +423,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                           </div>
                           <div className="font-bold text-th-fgd-1 text-lg">
                             $
-                            {numberFormatter.format(
+                            {numberCompacter.format(
                               inputTokenInfo.market_data.total_volume?.usd
                             )}
                           </div>
@@ -429,14 +435,14 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                             Token Supply
                           </div>
                           <div className="font-bold text-th-fgd-1 text-lg">
-                            {numberFormatter.format(
+                            {numberCompacter.format(
                               inputTokenInfo.market_data.circulating_supply
                             )}
                           </div>
                           {inputTokenInfo.market_data?.max_supply ? (
                             <div className="text-th-fgd-2 text-xs">
                               Max Supply:{' '}
-                              {numberFormatter.format(
+                              {numberCompacter.format(
                                 inputTokenInfo.market_data.max_supply
                               )}
                             </div>
@@ -647,14 +653,15 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                           </div>
                         </div>
                       ) : null}
-                      {outputTokenInfo.market_data?.market_cap ? (
+                      {outputTokenInfo.market_data?.market_cap &&
+                      outputTokenInfo.market_data?.market_cap?.usd !== 0 ? (
                         <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
                           <div className="text-th-fgd-3 text-xs">
                             Market Cap
                           </div>
                           <div className="font-bold text-th-fgd-1 text-lg">
                             $
-                            {numberFormatter.format(
+                            {numberCompacter.format(
                               outputTokenInfo.market_data?.market_cap?.usd
                             )}
                           </div>
@@ -667,7 +674,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                           </div>
                           <div className="font-bold text-th-fgd-1 text-lg">
                             $
-                            {numberFormatter.format(
+                            {numberCompacter.format(
                               outputTokenInfo.market_data.total_volume?.usd
                             )}
                           </div>
@@ -679,14 +686,14 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                             Token Supply
                           </div>
                           <div className="font-bold text-th-fgd-1 text-lg">
-                            {numberFormatter.format(
+                            {numberCompacter.format(
                               outputTokenInfo.market_data.circulating_supply
                             )}
                           </div>
                           {outputTokenInfo.market_data?.max_supply ? (
                             <div className="text-th-fgd-2 text-xs">
                               Max Supply:{' '}
-                              {numberFormatter.format(
+                              {numberCompacter.format(
                                 outputTokenInfo.market_data.max_supply
                               )}
                             </div>

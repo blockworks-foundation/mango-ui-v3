@@ -1172,7 +1172,7 @@ const JupiterForm: FunctionComponent = () => {
               ) : null}
             </div>
           </div>
-          <div className="w-full md:w-1/2 xl:w-2/3">
+          <div className="py-4 md:py-0 w-full md:w-1/2 xl:w-2/3">
             <Tabs
               activeTab={activeTab}
               onChange={handleTabChange}

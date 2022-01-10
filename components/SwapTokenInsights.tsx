@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import { PublicKey } from '@solana/web3.js'
 import ButtonGroup from './ButtonGroup'
-import { numberFormatter } from './SwapTokenInfo'
+import { numberCompacter } from './SwapTokenInfo'
 
 const SwapTokenInsights = ({ formState, jupiterTokens, setOutputToken }) => {
   const [tokenInsights, setTokenInsights] = useState([])
   const [filteredTokenInsights, setFilteredTokenInsights] = useState([])
   const [insightType, setInsightType] = useState('Best')
+  const [filterBy, setFilterBy] = useState('24h Change')
   const [loading, setLoading] = useState(false)
 
   const getTokenInsights = async () => {
@@ -22,27 +23,53 @@ const SwapTokenInsights = ({ formState, jupiterTokens, setOutputToken }) => {
     setTokenInsights(data)
   }
 
+  console.log(filteredTokenInsights)
+
   useEffect(() => {
-    if (insightType === 'Best') {
+    if (filterBy === '24h Change') {
       setFilteredTokenInsights(
         tokenInsights
-          .sort(
-            (a, b) =>
-              b.price_change_percentage_24h - a.price_change_percentage_24h
+          .sort((a, b) =>
+            insightType === 'Best'
+              ? b.price_change_percentage_24h - a.price_change_percentage_24h
+              : a.price_change_percentage_24h - b.price_change_percentage_24h
           )
           .slice(0, 10)
       )
     } else {
       setFilteredTokenInsights(
         tokenInsights
-          .sort(
-            (a, b) =>
-              a.price_change_percentage_24h - b.price_change_percentage_24h
+          .sort((a, b) =>
+            insightType === 'Best'
+              ? b.total_volume - a.total_volume
+              : a.total_volume - b.total_volume
           )
           .slice(0, 10)
       )
     }
-  }, [insightType, tokenInsights])
+  }, [filterBy, insightType, tokenInsights])
+
+  //   useEffect(() => {
+  //     if (insightType === 'Best') {
+  //       setFilteredTokenInsights(
+  //         tokenInsights
+  //           .sort(
+  //             (a, b) =>
+  //               b.price_change_percentage_24h - a.price_change_percentage_24h
+  //           )
+  //           .slice(0, 10)
+  //       )
+  //     } else {
+  //       setFilteredTokenInsights(
+  //         tokenInsights
+  //           .sort(
+  //             (a, b) =>
+  //               a.price_change_percentage_24h - b.price_change_percentage_24h
+  //           )
+  //           .slice(0, 10)
+  //       )
+  //     }
+  //   }, [insightType, tokenInsights])
 
   useEffect(() => {
     if (jupiterTokens) {
@@ -53,7 +80,14 @@ const SwapTokenInsights = ({ formState, jupiterTokens, setOutputToken }) => {
   return filteredTokenInsights ? (
     <div>
       <div className="flex items-center justify-between mb-2">
-        <h2 className="font-bold text-base text-th-fgd-1">24h Change</h2>
+        {/* <h2 className="font-bold text-base text-th-fgd-1">24h Change</h2> */}
+        <div className="w-48">
+          <ButtonGroup
+            activeValue={filterBy}
+            onChange={(t) => setFilterBy(t)}
+            values={['24h Change', '24h Volume']}
+          />
+        </div>
         <div className="w-40">
           <ButtonGroup
             activeValue={insightType}
@@ -65,9 +99,9 @@ const SwapTokenInsights = ({ formState, jupiterTokens, setOutputToken }) => {
 
       {loading ? (
         <div className="space-y-2">
-          <div className="animate-pulse bg-th-bkg-3 h-12 w-full" />
-          <div className="animate-pulse bg-th-bkg-3 h-12 w-full" />
-          <div className="animate-pulse bg-th-bkg-3 h-12 w-full" />
+          <div className="animate-pulse bg-th-bkg-3 h-12 rounded-md w-full" />
+          <div className="animate-pulse bg-th-bkg-3 h-12 rounded-md w-full" />
+          <div className="animate-pulse bg-th-bkg-3 h-12 rounded-md w-full" />
         </div>
       ) : (
         filteredTokenInsights.map((insight) => {
@@ -88,10 +122,14 @@ const SwapTokenInsights = ({ formState, jupiterTokens, setOutputToken }) => {
               <div className="flex items-center space-x-3">
                 <div
                   className={`text-xs ${
-                    insightType === 'Best' ? 'text-th-green' : 'text-th-red'
+                    insight.price_change_percentage_24h >= 0
+                      ? 'text-th-green'
+                      : 'text-th-red'
                   }`}
                 >
-                  {insight.price_change_percentage_24h.toFixed(1)}%
+                  {insight.price_change_percentage_24h
+                    ? `${insight.price_change_percentage_24h.toFixed(1)}%`
+                    : '?'}
                 </div>
                 {insight.image ? (
                   <img
@@ -113,7 +151,7 @@ const SwapTokenInsights = ({ formState, jupiterTokens, setOutputToken }) => {
                   <div className="text-th-fgd-3 text-xs">{insight.name}</div>
                 </div>
               </div>
-              <div className="flex space-x-3 text-right text-xs">
+              <div className="flex pl-2 space-x-3 text-right text-xs">
                 <div>
                   <div className="text-th-fgd-4">Price</div>
                   <div className="text-th-fgd-3">
@@ -129,7 +167,16 @@ const SwapTokenInsights = ({ formState, jupiterTokens, setOutputToken }) => {
                   <div className="text-th-fgd-4">M. Cap</div>
                   <div className="text-th-fgd-3">
                     {insight.market_cap > 0
-                      ? `$${numberFormatter.format(insight.market_cap)}`
+                      ? `$${numberCompacter.format(insight.market_cap)}`
+                      : '?'}
+                  </div>
+                </div>
+                <div className="border-l border-th-bkg-4" />
+                <div>
+                  <div className="text-th-fgd-4">Volume</div>
+                  <div className="text-th-fgd-3">
+                    {insight.total_volume > 0
+                      ? `$${numberCompacter.format(insight.total_volume)}`
                       : '?'}
                   </div>
                 </div>
