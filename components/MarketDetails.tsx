@@ -178,7 +178,7 @@ const MarketDetails = () => {
             <div className="text-th-fgd-3 tiny-text pb-0.5">
               {t('oracle-price')}
             </div>
-            <div className="font-semibold text-th-fgd-1 md:text-xs">
+            <div className="font-semibold text-th-fgd-2 md:text-xs">
               {oraclePrice && selectedMarket
                 ? oraclePrice.toFixed(getDecimalCount(selectedMarket.tickSize))
                 : '--'}
@@ -195,7 +195,7 @@ const MarketDetails = () => {
                     ? `text-th-green`
                     : change < 0
                     ? `text-th-red`
-                    : `text-th-fgd-1`
+                    : `text-th-fgd-2`
                 }`}
               >
                 {change.toFixed(2) + '%'}
@@ -209,7 +209,7 @@ const MarketDetails = () => {
               <div className="text-th-fgd-3 tiny-text pb-0.5">
                 {t('daily-volume')}
               </div>
-              <div className="font-semibold text-th-fgd-1 md:text-xs">
+              <div className="font-semibold text-th-fgd-2 md:text-xs">
                 {perpVolume ? (
                   usdFormatter(perpVolume, 0)
                 ) : (
@@ -224,7 +224,7 @@ const MarketDetails = () => {
                 <div className="text-th-fgd-3 tiny-text pb-0.5">
                   {t('average-funding')}
                 </div>
-                <div className="font-semibold text-th-fgd-1 md:text-xs">
+                <div className="font-semibold text-th-fgd-2 md:text-xs">
                   {selectedMarket ? (
                     `${funding1hStr}% (${fundingAprStr}% APR)`
                   ) : (
@@ -236,7 +236,7 @@ const MarketDetails = () => {
                 <div className="text-th-fgd-3 tiny-text pb-0.5">
                   {t('open-interest')}
                 </div>
-                <div className="font-semibold text-th-fgd-1 md:text-xs">
+                <div className="font-semibold text-th-fgd-2 md:text-xs">
                   {selectedMarket ? (
                     `${parseOpenInterest(
                       selectedMarket as PerpMarket

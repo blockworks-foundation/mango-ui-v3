@@ -41,7 +41,7 @@ const Input = ({
         onChange={onChange}
         className={`${className} bg-th-bkg-1 pb-px px-2 flex-1 rounded-md h-10 text-th-fgd-1 w-full
           border ${
-            error ? 'border-th-red' : 'border-th-fgd-4'
+            error ? 'border-th-red' : 'border-th-bkg-4'
           } default-transition hover:border-th-primary 
           focus:border-th-primary focus:outline-none 
           ${

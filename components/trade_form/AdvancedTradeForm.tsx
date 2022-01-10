@@ -22,7 +22,6 @@ import TradeType from './TradeType'
 import Input from '../Input'
 import { Market } from '@project-serum/serum'
 import Big from 'big.js'
-import Loading from '../Loading'
 import Tooltip from '../Tooltip'
 import OrderSideTabs from './OrderSideTabs'
 import { ElementTitle } from '../styles'
@@ -110,7 +109,6 @@ export default function AdvancedTradeForm({
 
   const [postOnly, setPostOnly] = useState(false)
   const [ioc, setIoc] = useState(false)
-  const [submitting, setSubmitting] = useState(false)
 
   const orderBookRef = useRef(useMangoStore.getState().selectedMarket.orderBook)
   const orderbook = orderBookRef.current
@@ -547,7 +545,6 @@ export default function AdvancedTradeForm({
     const wallet = useMangoStore.getState().wallet.current
 
     if (!wallet || !mangoGroup || !mangoAccount || !market) return
-    setSubmitting(true)
 
     try {
       const orderPrice = calculateTradePrice(
@@ -662,7 +659,6 @@ export default function AdvancedTradeForm({
     } finally {
       actions.reloadMangoAccount()
       actions.loadMarketFills()
-      setSubmitting(false)
     }
   }
 
@@ -688,7 +684,6 @@ export default function AdvancedTradeForm({
     (!price && isLimitOrder) ||
     !baseSize ||
     !connected ||
-    submitting ||
     !mangoAccount ||
     sizeTooLarge ||
     editMaxSlippage
@@ -967,25 +962,21 @@ export default function AdvancedTradeForm({
                     : 'border border-th-bkg-4'
                 } hover:text-th-fgd-1 flex-grow`}
               >
-                {submitting ? (
-                  <div className="w-full">
-                    <Loading className="mx-auto" />
-                  </div>
-                ) : sizeTooLarge ? (
-                  t('too-large')
-                ) : side === 'buy' ? (
-                  `${
-                    baseSize > 0 ? `${t('buy')} ` + baseSize : `${t('buy')} `
-                  } ${
-                    isPerpMarket ? marketConfig.name : marketConfig.baseSymbol
-                  }`
-                ) : (
-                  `${
-                    baseSize > 0 ? `${t('sell')} ` + baseSize : `${t('sell')} `
-                  } ${
-                    isPerpMarket ? marketConfig.name : marketConfig.baseSymbol
-                  }`
-                )}
+                {sizeTooLarge
+                  ? t('too-large')
+                  : side === 'buy'
+                  ? `${
+                      baseSize > 0 ? `${t('buy')} ` + baseSize : `${t('buy')} `
+                    } ${
+                      isPerpMarket ? marketConfig.name : marketConfig.baseSymbol
+                    }`
+                  : `${
+                      baseSize > 0
+                        ? `${t('sell')} ` + baseSize
+                        : `${t('sell')} `
+                    } ${
+                      isPerpMarket ? marketConfig.name : marketConfig.baseSymbol
+                    }`}
               </Button>
             ) : (
               <div className="flex-grow">

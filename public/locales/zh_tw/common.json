@@ -264,7 +264,7 @@
   "post": "Post",
   "presets": "預設",
   "price": "價格",
-  "price-expect": "成交前價格也許會有變化。",
+  "price-expect": "您收到的價格可能與您預期有差異，並且無法保證完全執行。為了您的安全，最大滑點保持為 2.5%。超過 2.5%滑點的部分不會被平倉。",
   "price-impact": "預計價格影響",
   "price-unavailable": "無法取價格",
   "prices-changed": "價格波動導致您的槓桿增加了。請減少取款數量。",
