@@ -48,7 +48,7 @@
     "next": "^12.0.0",
     "next-i18next": "^8.9.0",
     "next-themes": "^0.0.14",
-    "postcss-preset-env": "^6.7.0",
+    "postcss-preset-env": "^7.2.0",
     "rc-slider": "^9.7.5",
     "react": "^17.0.2",
     "react-cool-dimensions": "^2.0.1",
