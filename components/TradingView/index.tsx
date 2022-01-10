@@ -51,8 +51,7 @@ const TVChartContainer = () => {
   const openOrders = useOpenOrders()
   const actions = useMangoStore((s) => s.actions)
   const connected = useMangoStore((s) => s.wallet.connected)
-  const selectedMarginAccount =
-    useMangoStore.getState().selectedMangoAccount.current
+  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const selectedMarketPrice = useMangoStore((s) => s.selectedMarket.markPrice)
   const [lines, setLines] = useState(new Map())
   const [moveInProgress, toggleMoveInProgress] = useState(false)
@@ -563,7 +562,7 @@ const TVChartContainer = () => {
   useInterval(() => {
     if (showOrderLines) {
       if (
-        selectedMarginAccount &&
+        mangoAccount &&
         connected &&
         !moveInProgress &&
         !orderInProgress &&
@@ -589,7 +588,7 @@ const TVChartContainer = () => {
           lines?.size != openOrdersInSelectedMarket ||
           matches != openOrdersInSelectedMarket ||
           (lines?.size > 0 && lines?.size != matches) ||
-          (lines?.size > 0 && !selectedMarginAccount) ||
+          (lines?.size > 0 && !mangoAccount) ||
           priceReset
         ) {
           if (priceReset) {
@@ -604,7 +603,7 @@ const TVChartContainer = () => {
     } else if (lines?.size > 0) {
       setLines(deleteLines())
     }
-  }, [100])
+  }, [500])
 
   return <div id={defaultProps.containerId} className="tradingview-chart" />
 }
