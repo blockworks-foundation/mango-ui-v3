@@ -27,7 +27,7 @@
     ]
   },
   "dependencies": {
-    "@blockworks-foundation/mango-client": "^3.2.23",
+    "@blockworks-foundation/mango-client": "latest",
     "@headlessui/react": "^1.2.0",
     "@heroicons/react": "^1.0.0",
     "@jup-ag/react-hook": "^1.0.0-beta.4",
@@ -75,9 +75,9 @@
     "eslint-config-prettier": "^7.2.0",
     "eslint-plugin-react": "^7.26.0",
     "eslint-plugin-react-hooks": "^4.3.0",
-    "husky": "^4.2.3",
+    "husky": "^7.0.4",
     "identity-obj-proxy": "^3.0.0",
-    "jest": "^26.6.3",
+    "jest": "^27.4.7",
     "jest-watch-typeahead": "^0.6.1",
     "lint-staged": "^10.0.10",
     "postcss": "^8.2.8",
