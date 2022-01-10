@@ -28,8 +28,8 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
 }) => {
   const [chartData, setChartData] = useState([])
   const [hideChart, setHideChart] = useState(false)
-  const [baseTokenId, setBaseTokenId] = useState('mango-markets')
-  const [quoteTokenId, setQuoteTokenId] = useState('usd-coin')
+  const [baseTokenId, setBaseTokenId] = useState('usd-coin')
+  const [quoteTokenId, setQuoteTokenId] = useState('mango-markets')
   const [inputTokenInfo, setInputTokenInfo] = useState(null)
   const [outputTokenInfo, setOutputTokenInfo] = useState(null)
   const [mouseData, setMouseData] = useState<string | null>(null)
@@ -61,8 +61,6 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
       )
     }
   }, [inputTokenInfo, outputTokenInfo])
-
-  console.log(topHolders)
 
   const handleMouseMove = (coords) => {
     if (coords.activePayload) {
@@ -101,7 +99,11 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
     const formattedData = data.reduce((a, c) => {
       const found = a.find((price) => price.time === c[0])
       if (found) {
-        found.price = found.inputPrice / c[4]
+        if (['usd-coin', 'tether'].includes(quoteTokenId)) {
+          found.price = found.inputPrice / c[4]
+        } else {
+          found.price = c[4] / found.inputPrice
+        }
       } else {
         a.push({ time: c[0], inputPrice: c[4] })
       }
@@ -147,7 +149,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
 
   const getInputTokenInfo = async () => {
     const response = await fetch(
-      `https://api.coingecko.com/api/v3/coins/${baseTokenId}?localization=false&tickers=false&developer_data=false&sparkline=false
+      `https://api.coingecko.com/api/v3/coins/${inputTokenId}?localization=false&tickers=false&developer_data=false&sparkline=false
       `
     )
     const data = await response.json()
@@ -156,7 +158,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
 
   const getOutputTokenInfo = async () => {
     const response = await fetch(
-      `https://api.coingecko.com/api/v3/coins/${quoteTokenId}?localization=false&tickers=false&developer_data=false&sparkline=false
+      `https://api.coingecko.com/api/v3/coins/${outputTokenId}?localization=false&tickers=false&developer_data=false&sparkline=false
       `
     )
     const data = await response.json()
@@ -187,11 +189,15 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
   return (
     <div>
       {chartData.length && baseTokenId && quoteTokenId ? (
-        <div className="py-6">
+        <div className="pb-6">
           <div className="flex items-start justify-between">
             <div>
               {inputTokenInfo && outputTokenInfo ? (
-                <div className="text-th-fgd-3 text-sm">{`${inputTokenInfo.symbol.toUpperCase()}/${outputTokenInfo.symbol.toUpperCase()}`}</div>
+                <div className="text-th-fgd-3 text-sm">
+                  {['usd-coin', 'tether'].includes(baseTokenId)
+                    ? `${inputTokenInfo.symbol.toUpperCase()}/${outputTokenInfo.symbol.toUpperCase()}`
+                    : `${outputTokenInfo.symbol.toUpperCase()}/${inputTokenInfo.symbol.toUpperCase()}`}
+                </div>
               ) : null}
               {mouseData ? (
                 <>
@@ -311,7 +317,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
         </div>
       )}
 
-      {inputTokenInfo && inputTokenId ? (
+      {inputTokenInfo && baseTokenId ? (
         <div className="w-full">
           <Disclosure>
             {({ open }) => (
@@ -326,6 +332,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                   <div className="flex items-center">
                     {inputTokenInfo.image?.small ? (
                       <img
+                        className="rounded-full"
                         src={inputTokenInfo.image?.small}
                         width="32"
                         height="32"
@@ -560,7 +567,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
         </div>
       )}
 
-      {outputTokenInfo && outputTokenId ? (
+      {outputTokenInfo && quoteTokenId ? (
         <div className="w-full">
           <Disclosure>
             {({ open }) => (
@@ -575,6 +582,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                   <div className="flex items-center">
                     {outputTokenInfo.image?.small ? (
                       <img
+                        className="rounded-full"
                         src={outputTokenInfo.image?.small}
                         width="32"
                         height="32"
