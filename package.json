@@ -64,7 +64,7 @@
   },
   "devDependencies": {
     "@netlify/plugin-nextjs": "^4.1.0",
-    "@svgr/webpack": "^5.5.0",
+    "@svgr/webpack": "^6.1.2",
     "@testing-library/react": "^11.2.5",
     "@types/jest": "^26.0.20",
     "@types/node": "^14.14.25",
