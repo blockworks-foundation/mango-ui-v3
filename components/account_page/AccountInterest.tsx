@@ -51,6 +51,7 @@ const handleUsdDustTicks = (v) =>
 
 const AccountInterest = () => {
   const { t } = useTranslation('common')
+  const connected = useMangoStore((s) => s.wallet.connected)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
@@ -81,8 +82,10 @@ const AccountInterest = () => {
   )
 
   const mangoAccountPk = useMemo(() => {
-    return mangoAccount.publicKey.toString()
-  }, [mangoAccount])
+    if (connected) {
+      return mangoAccount.publicKey.toString()
+    }
+  }, [connected, mangoAccount])
 
   const token = useMemo(() => {
     if (selectedAsset) {
@@ -287,16 +290,24 @@ const AccountInterest = () => {
           })
         }
       })
-      if (dailyInterest.length <= 1) {
-        const chartFunding = []
-        hourlyInterestStats[selectedAsset].forEach((a) => {
-          chartFunding.push({
-            funding: a.total_funding,
-            time: a.time,
+
+      if (dailyInterest.length === 1) {
+        const chartInterest = []
+        filtered.forEach((a) => {
+          chartInterest.push({
+            time: new Date(a.time).getTime(),
+            interest:
+              a.borrow_interest > 0
+                ? a.borrow_interest * -1
+                : a.deposit_interest,
+            value:
+              a.borrow_interest > 0
+                ? a.borrow_interest * a.price * -1
+                : a.deposit_interest * a.price,
           })
         })
         setShowHours(true)
-        setChartData(chartFunding.reverse())
+        setChartData(chartInterest.reverse())
       } else {
         setShowHours(false)
         setChartData(dailyInterest.reverse())
