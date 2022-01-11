@@ -7,6 +7,8 @@ import { ChevronDownIcon } from '@heroicons/react/solid'
 import ButtonGroup from './ButtonGroup'
 import { numberCompacter, numberFormatter } from './SwapTokenInfo'
 import Button from './Button'
+import Input from './Input'
+import { SearchIcon } from '@heroicons/react/outline'
 
 dayjs.extend(relativeTime)
 
@@ -15,6 +17,7 @@ const SwapTokenInsights = ({ formState, jupiterTokens, setOutputToken }) => {
   const [filteredTokenInsights, setFilteredTokenInsights] = useState([])
   const [insightType, setInsightType] = useState('Best')
   const [filterBy, setFilterBy] = useState('24h Change')
+  const [textFilter, setTextFilter] = useState('')
   const [loading, setLoading] = useState(false)
 
   const getTokenInsights = async () => {
@@ -31,7 +34,7 @@ const SwapTokenInsights = ({ formState, jupiterTokens, setOutputToken }) => {
   }
 
   useEffect(() => {
-    if (filterBy === '24h Change') {
+    if (filterBy === '24h Change' && textFilter === '') {
       setFilteredTokenInsights(
         tokenInsights
           .sort((a, b) =>
@@ -41,7 +44,8 @@ const SwapTokenInsights = ({ formState, jupiterTokens, setOutputToken }) => {
           )
           .slice(0, 10)
       )
-    } else {
+    }
+    if (filterBy === '24h Volume' && textFilter === '') {
       setFilteredTokenInsights(
         tokenInsights
           .sort((a, b) =>
@@ -52,7 +56,15 @@ const SwapTokenInsights = ({ formState, jupiterTokens, setOutputToken }) => {
           .slice(0, 10)
       )
     }
-  }, [filterBy, insightType, tokenInsights])
+    if (textFilter !== '') {
+      setFilteredTokenInsights(
+        tokenInsights.filter(
+          (token) =>
+            token.name.includes(textFilter) || token.symbol.includes(textFilter)
+        )
+      )
+    }
+  }, [filterBy, insightType, textFilter, tokenInsights])
 
   useEffect(() => {
     if (jupiterTokens) {
@@ -62,23 +74,33 @@ const SwapTokenInsights = ({ formState, jupiterTokens, setOutputToken }) => {
 
   return filteredTokenInsights ? (
     <div>
-      <div className="flex items-center justify-between mb-2">
-        {/* <h2 className="font-bold text-th-fgd-1">24h Change</h2> */}
-        <div className="w-48">
-          <ButtonGroup
-            activeValue={filterBy}
-            onChange={(t) => setFilterBy(t)}
-            values={['24h Change', '24h Volume']}
-          />
-        </div>
-        <div className="w-40">
-          <ButtonGroup
-            activeValue={insightType}
-            onChange={(t) => setInsightType(t)}
-            values={['Best', 'Worst']}
-          />
-        </div>
+      <div className="mb-2">
+        <Input
+          type="text"
+          placeholder="Search tokens..."
+          value={textFilter}
+          onChange={(e) => setTextFilter(e.target.value)}
+          prefix={<SearchIcon className="h-4 text-th-fgd-3 w-4" />}
+        />
       </div>
+      {textFilter === '' ? (
+        <div className="flex items-center justify-between mb-2 mt-4">
+          <div className="w-48">
+            <ButtonGroup
+              activeValue={filterBy}
+              onChange={(t) => setFilterBy(t)}
+              values={['24h Change', '24h Volume']}
+            />
+          </div>
+          <div className="w-32">
+            <ButtonGroup
+              activeValue={insightType}
+              onChange={(t) => setInsightType(t)}
+              values={['Best', 'Worst']}
+            />
+          </div>
+        </div>
+      ) : null}
 
       {loading ? (
         <div className="space-y-2">
@@ -86,7 +108,7 @@ const SwapTokenInsights = ({ formState, jupiterTokens, setOutputToken }) => {
           <div className="animate-pulse bg-th-bkg-3 h-12 rounded-md w-full" />
           <div className="animate-pulse bg-th-bkg-3 h-12 rounded-md w-full" />
         </div>
-      ) : (
+      ) : filteredTokenInsights.length > 0 ? (
         filteredTokenInsights.map((insight) => {
           const jupToken = jupiterTokens.find(
             (t) => t?.extensions?.coingeckoId === insight.id
@@ -144,18 +166,18 @@ const SwapTokenInsights = ({ formState, jupiterTokens, setOutputToken }) => {
                       </div>
                       <div className="flex items-center pl-2 space-x-3 text-right text-xs">
                         <div>
-                          <div className="mb-0.5 text-th-fgd-4">Price</div>
+                          <div className="mb-[4px] text-th-fgd-4">Price</div>
                           <div className="text-th-fgd-3">
                             $
                             {insight.current_price.toLocaleString(undefined, {
                               minimumFractionDigits: 2,
-                              maximumFractionDigits: 7,
+                              maximumFractionDigits: 6,
                             })}
                           </div>
                         </div>
                         <div className="border-l border-th-bkg-4" />
                         <div>
-                          <div className="mb-0.5 text-th-fgd-4">Volume</div>
+                          <div className="mb-[4px] text-th-fgd-4">Volume</div>
                           <div className="text-th-fgd-3">
                             {insight.total_volume > 0
                               ? `$${numberCompacter.format(
@@ -174,7 +196,7 @@ const SwapTokenInsights = ({ formState, jupiterTokens, setOutputToken }) => {
                       </div>
                     </Disclosure.Button>
                     <Button
-                      className="ml-3 pl-3 pr-3 text-xs"
+                      className="hidden lg:block ml-3 pl-3 pr-3 text-xs"
                       onClick={() =>
                         setOutputToken({
                           ...formState,
@@ -185,8 +207,8 @@ const SwapTokenInsights = ({ formState, jupiterTokens, setOutputToken }) => {
                       Buy
                     </Button>
                   </div>
-                  <Disclosure.Panel>
-                    <div className="bg-th-bkg-2 border-b border-th-bkg-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 grid-flow-row px-2 pb-2">
+                  <Disclosure.Panel className="bg-th-bkg-2 border-b border-th-bkg-4 px-2 pb-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 grid-flow-row">
                       {insight.market_cap_rank ? (
                         <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
                           <div className="text-th-fgd-3 text-xs">
@@ -287,12 +309,27 @@ const SwapTokenInsights = ({ formState, jupiterTokens, setOutputToken }) => {
                         </div>
                       ) : null}
                     </div>
+                    <Button
+                      className="block lg:hidden my-2 text-xs w-full"
+                      onClick={() =>
+                        setOutputToken({
+                          ...formState,
+                          outputMint: new PublicKey(jupToken.address),
+                        })
+                      }
+                    >
+                      Buy
+                    </Button>
                   </Disclosure.Panel>
                 </>
               )}
             </Disclosure>
           )
         })
+      ) : (
+        <div className="bg-th-bkg-3 mt-3 p-4 rounded-md text-center text-th-fgd-3">
+          No tokens found...
+        </div>
       )}
     </div>
   ) : (
