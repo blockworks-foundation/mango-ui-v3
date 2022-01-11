@@ -88,6 +88,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
           txid: err?.txid,
           type: 'error',
         })
+        onClose()
       })
   }
 

@@ -15,6 +15,7 @@ import { ViewportProvider } from '../hooks/useViewport'
 import BottomBar from '../components/mobile/BottomBar'
 import { appWithTranslation } from 'next-i18next'
 import ErrorBoundary from '../components/ErrorBoundary'
+import GlobalNotification from '../components/GlobalNotification'
 
 const MangoStoreUpdater = () => {
   useHydrateStore()
@@ -96,6 +97,7 @@ function App({ Component, pageProps }) {
           <ViewportProvider>
             <div className="bg-th-bkg-1 min-h-screen">
               <ErrorBoundary>
+                <GlobalNotification />
                 <Component {...pageProps} />
               </ErrorBoundary>
             </div>
