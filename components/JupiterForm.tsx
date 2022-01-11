@@ -349,9 +349,9 @@ const JupiterForm: FunctionComponent = () => {
 
   return (
     <div className="grid grid-cols-12 lg:space-x-4">
-      <div className="col-span-12 lg:col-span-10 lg:col-start-2 ">
+      <div className="col-span-12 xl:col-span-10 xl:col-start-2 ">
         <div className="flex flex-col md:flex-row md:space-x-6">
-          <div className="w-full md:w-1/2  xl:w-1/3">
+          <div className="w-full md:w-1/2  lg:w-1/3">
             <div className="relative z-10">
               {connected &&
               walletTokensWithInfos.length &&
@@ -1172,7 +1172,7 @@ const JupiterForm: FunctionComponent = () => {
               ) : null}
             </div>
           </div>
-          <div className="py-4 md:py-0 w-full md:w-1/2 xl:w-2/3">
+          <div className="py-4 md:py-0 w-full md:w-1/2 lg:w-2/3">
             <Tabs
               activeTab={activeTab}
               onChange={handleTabChange}
