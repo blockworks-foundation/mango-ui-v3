@@ -6,6 +6,8 @@ import useMangoStore from '../stores/useMangoStore'
 import Link from 'next/link'
 import { formatUsdValue } from '../utils'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import PageBodyContainer from '../components/PageBodyContainer'
+import TopBar from '../components/TopBar'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -39,52 +41,55 @@ const SelectMarket = () => {
   }, [])
 
   return (
-    <div>
-      <div className="flex items-end justify-between pb-3 pt-2">
-        <div className="font-bold text-lg text-th-fgd-1">{t('markets')}</div>
-      </div>
-      {markets.map((mkt) => (
-        <div key={mkt.baseAsset}>
-          <div className="bg-th-bkg-3 flex items-center justify-between px-2.5 py-2">
-            <div className="flex items-center">
-              <img
-                alt=""
-                src={`/assets/icons/${mkt.baseAsset.toLowerCase()}.svg`}
-                className={`h-5 mr-2.5 w-auto`}
-              />
-              <span className="text-th-fgd-2">{mkt.baseAsset}</span>
+    <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
+      <TopBar />
+      <PageBodyContainer>
+        <div className="font-bold py-4 text-2xl text-th-fgd-1">
+          {t('markets')}
+        </div>
+        {markets.map((mkt) => (
+          <div key={mkt.baseAsset}>
+            <div className="bg-th-bkg-3 flex items-center justify-between px-2.5 py-2">
+              <div className="flex items-center">
+                <img
+                  alt=""
+                  src={`/assets/icons/${mkt.baseAsset.toLowerCase()}.svg`}
+                  className={`h-5 mr-2.5 w-auto`}
+                />
+                <span className="text-th-fgd-2">{mkt.baseAsset}</span>
+              </div>
+            </div>
+            <div className="divide-y divide-th-bkg-4">
+              {mangoGroup
+                ? mkt.markets.map((m) => (
+                    <div
+                      className={`flex items-center justify-between px-2.5 text-xs`}
+                      key={m.name}
+                    >
+                      <Link href={`/market?name=${m.name}`} key={m.name}>
+                        <a className="cursor-pointer default-transition flex h-12 items-center justify-between text-th-fgd-2 hover:text-th-primary w-full">
+                          {m.name}
+                          <div className="flex items-center">
+                            <span className="text-right w-20">
+                              {formatUsdValue(
+                                mangoGroup
+                                  .getPrice(m.marketIndex, mangoCache)
+                                  .toNumber()
+                              )}
+                            </span>
+                            <ChevronRightIcon className="h-4 ml-1 w-5 text-th-fgd-2" />
+                          </div>
+                        </a>
+                      </Link>
+                    </div>
+                  ))
+                : null}
             </div>
           </div>
-          <div className="divide-y divide-th-bkg-4">
-            {mangoGroup
-              ? mkt.markets.map((m) => (
-                  <div
-                    className={`flex items-center justify-between px-2.5 text-xs`}
-                    key={m.name}
-                  >
-                    <Link href={`/market?name=${m.name}`} key={m.name}>
-                      <a className="cursor-pointer default-transition flex h-12 items-center justify-between text-th-fgd-2 hover:text-th-primary w-full">
-                        {m.name}
-                        <div className="flex items-center">
-                          <span className="text-right w-20">
-                            {formatUsdValue(
-                              mangoGroup
-                                .getPrice(m.marketIndex, mangoCache)
-                                .toNumber()
-                            )}
-                          </span>
-                          <ChevronRightIcon className="h-4 ml-1 w-5 text-th-fgd-2" />
-                        </div>
-                      </a>
-                    </Link>
-                  </div>
-                ))
-              : null}
-          </div>
-        </div>
-      ))}
-      {/* spacer so last market can be selected albeit bottom bar overlay */}
-      <p className="flex h-12 md:hidden"></p>
+        ))}
+        {/* spacer so last market can be selected albeit bottom bar overlay */}
+        <p className="flex h-12 md:hidden"></p>
+      </PageBodyContainer>
     </div>
   )
 }
