@@ -69,7 +69,7 @@ module.exports = {
           'bkg-3': '#2A2440',
           'bkg-4': '#37324D',
           'fgd-1': '#E5E3EC',
-          'fgd-2': '#E5E3EC',
+          'fgd-2': '#D2CEDE',
           'fgd-3': '#C1BED3',
           'fgd-4': '#706C81',
         },
