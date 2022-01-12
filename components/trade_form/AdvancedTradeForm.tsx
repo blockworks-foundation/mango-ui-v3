@@ -231,7 +231,16 @@ export default function AdvancedTradeForm({
         mangoGroup.getPrice(marketIndex, mangoCache).toNumber()
 
     return { max: scaledMax, deposits, borrows, spotMax, reduceMax }
-  }, [mangoAccount, mangoGroup, mangoCache, marketIndex, market, side, price, reduceOnly])
+  }, [
+    mangoAccount,
+    mangoGroup,
+    mangoCache,
+    marketIndex,
+    market,
+    side,
+    price,
+    reduceOnly,
+  ])
 
   const onChangeSide = (side) => {
     setPositionSizePercent('')
@@ -424,8 +433,11 @@ export default function AdvancedTradeForm({
 
   const handleSetPositionSize = (percent, spotMargin, reduceOnly) => {
     setPositionSizePercent(percent)
-    const baseSizeMax =
-      reduceOnly ? reduceMax : spotMargin || marketConfig.kind === 'perp' ? max : spotMax
+    const baseSizeMax = reduceOnly
+      ? reduceMax
+      : spotMargin || marketConfig.kind === 'perp'
+      ? max
+      : spotMax
     const baseSize = baseSizeMax * (parseInt(percent) / 100)
     const step = parseFloat(minOrderSize)
     const roundedSize = (Math.floor(baseSize / step) * step).toFixed(
@@ -504,7 +516,7 @@ export default function AdvancedTradeForm({
     }
 
     const estimatedSize =
-      perpAccount && reduceOnly
+      perpAccount && reduceOnly && market instanceof PerpMarket
         ? Math.abs(
             (market as PerpMarket).baseLotsToNumber(perpAccount.basePosition)
           )

@@ -44,7 +44,7 @@ function calculateFundingRate(perpStats, perpMarket) {
 }
 
 function parseOpenInterest(perpMarket: PerpMarket) {
-  if (!(perpMarket instanceof PerpMarket)) return 0
+  if (!perpMarket || !(perpMarket instanceof PerpMarket)) return 0
 
   return perpMarket.baseLotsToNumber(perpMarket.openInterest) / 2
 }
