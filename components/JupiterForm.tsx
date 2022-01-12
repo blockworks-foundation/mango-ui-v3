@@ -728,9 +728,9 @@ const JupiterForm: FunctionComponent = () => {
                                   (formValue?.amount / outAmountUi)) *
                                   100 <=
                                 0
-                                  ? 'cheaper'
-                                  : 'more expensive'
-                              } than CoinGecko`}</span>
+                                  ? t('swap:cheaper')
+                                  : t('swap:more-expensive')
+                              } CoinGecko`}</span>
                             </div>
                           ) : null}
                         </div>
