@@ -4,7 +4,6 @@ import useMangoStore from '../stores/useMangoStore'
 import PageBodyContainer from '../components/PageBodyContainer'
 import TopBar from '../components/TopBar'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
-// import { useTranslation } from 'next-i18next'
 import {
   actionsSelector,
   connectionSelector,
@@ -13,6 +12,7 @@ import {
 } from '../stores/selectors'
 import JupiterForm from '../components/JupiterForm'
 import { zeroKey } from '@blockworks-foundation/mango-client'
+import { useTranslation } from 'next-i18next'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -24,7 +24,7 @@ export async function getStaticProps({ locale }) {
 }
 
 export default function Swap() {
-  // const { t } = useTranslation(['common', 'swap'])
+  const { t } = useTranslation(['common', 'swap'])
   const connection = useMangoStore(connectionSelector)
   const connected = useMangoStore(walletConnectedSelector)
   const wallet = useMangoStore(walletSelector)
@@ -58,11 +58,11 @@ export default function Swap() {
                 <h1
                   className={`mb-1.5 md:mb-0 text-th-fgd-1 text-2xl font-semibold`}
                 >
-                  Swap
+                  {t('swap')}
                 </h1>
                 <div className="flex flex-col md:items-end">
                   <p className="mb-0 text-xs">
-                    Swap between 100s of tokens at the best rates.
+                    {t('swap:swap-between-hundreds')}
                   </p>
                   <a
                     className="mb-0 text-th-fgd-2 text-xs"

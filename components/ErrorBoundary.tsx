@@ -18,9 +18,9 @@ class ErrorBoundary extends React.Component<
     // You can also log the error to an error reporting service
     // logErrorToMyService(error, errorInfo)
 
-    if (process.env.NEXT_ERROR_WEBHOOK_URL) {
+    if (process.env.NEXT_PUBLIC_ERROR_WEBHOOK_URL) {
       try {
-        fetch(process.env.NEXT_ERROR_WEBHOOK_URL, {
+        fetch(process.env.NEXT_PUBLIC_ERROR_WEBHOOK_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

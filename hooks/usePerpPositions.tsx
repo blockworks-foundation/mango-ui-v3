@@ -55,7 +55,7 @@ export const collectPerpPosition = (
     console.error(e)
   }
 
-  const basePosition = perpMarket.baseLotsToNumber(perpAccount.basePosition)
+  const basePosition = perpMarket?.baseLotsToNumber(perpAccount.basePosition)
   const indexPrice = mangoGroup.getPrice(marketIndex, mangoCache).toNumber()
   const notionalSize = Math.abs(basePosition * indexPrice)
   const unrealizedPnl = basePosition * (indexPrice - breakEvenPrice)

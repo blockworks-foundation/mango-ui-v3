@@ -16,6 +16,7 @@ import RecentMarketTrades from '../RecentMarketTrades'
 import FloatingElement from '../FloatingElement'
 import Swipeable from './Swipeable'
 import { useTranslation } from 'next-i18next'
+import Link from 'next/link'
 
 const TVChartContainer = dynamic(
   () => import('../../components/TradingView/index'),
@@ -54,27 +55,29 @@ const MobileTradePage = () => {
   return (
     <div className="pb-14 pt-4 px-2">
       <div className="relative">
-        <div className="flex items-center">
-          <img
-            alt=""
-            width="30"
-            height="30"
-            src={`/assets/icons/${baseSymbol.toLowerCase()}.svg`}
-            className="mr-2"
-          />
+        <Link href="/select">
           <div className="flex items-center">
-            <div className="font-semibold pr-0.5 text-xl">{baseSymbol}</div>
-            <span className="text-th-fgd-4 text-xl">
-              {isPerpMarket ? '-' : '/'}
-            </span>
-            <div className="font-semibold pl-0.5 text-xl">
-              {isPerpMarket ? 'PERP' : groupConfig.quoteSymbol}
+            <img
+              alt=""
+              width="30"
+              height="30"
+              src={`/assets/icons/${baseSymbol.toLowerCase()}.svg`}
+              className="mr-2"
+            />
+            <div className="flex items-center">
+              <div className="font-semibold pr-0.5 text-xl">{baseSymbol}</div>
+              <span className="text-th-fgd-4 text-xl">
+                {isPerpMarket ? '-' : '/'}
+              </span>
+              <div className="font-semibold pl-0.5 text-xl">
+                {isPerpMarket ? 'PERP' : groupConfig.quoteSymbol}
+              </div>
             </div>
+            <span className="border border-th-primary ml-2 px-1 py-0.5 rounded text-xs text-th-primary">
+              {initLeverage}x
+            </span>
           </div>
-          <span className="border border-th-primary ml-2 px-1 py-0.5 rounded text-xs text-th-primary">
-            {initLeverage}x
-          </span>
-        </div>
+        </Link>
         <Disclosure>
           {({ open }) => (
             <>

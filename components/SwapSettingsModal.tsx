@@ -19,7 +19,7 @@ const SwapSettingsModal = ({
   slippage: number
   setSlippage: (x) => void
 }) => {
-  const { t } = useTranslation('common')
+  const { t } = useTranslation(['common', 'swap'])
   const [tempSlippage, setTempSlippage] = useState(slippage)
   const [inputValue, setInputValue] = useState(
     tempSlippage ? tempSlippage.toString() : ''
@@ -45,10 +45,12 @@ const SwapSettingsModal = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose} hideClose>
       <Modal.Header>
-        <h2 className="font-bold text-th-fgd-1 text-lg">Slippage Settings</h2>
+        <h2 className="font-bold text-th-fgd-1 text-lg">
+          {t('swap:slippage-settings')}
+        </h2>
       </Modal.Header>
       <div className="flex justify-between mb-2">
-        <div className="text-th-fgd-1 text-xs">Slippage</div>
+        <div className="text-th-fgd-1 text-xs">{t('swap:slippage')}</div>
         <LinkButton
           className="font-normal text-th-fgd-3 text-xs"
           onClick={() => setShowCustomSlippageForm(!showCustomSlippageForm)}
@@ -75,7 +77,7 @@ const SwapSettingsModal = ({
         />
       )}
       <Button className="mt-6 w-full" onClick={handleSave}>
-        Save
+        {t('save')}
       </Button>
     </Modal>
   )
