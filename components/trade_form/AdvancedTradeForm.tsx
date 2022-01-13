@@ -212,11 +212,9 @@ export default function AdvancedTradeForm({
     )
 
     let reduceMax
-    if (marketConfig.kind === 'perp') {
+    if (market && market instanceof PerpMarket) {
       reduceMax =
-        Math.abs(
-          (market as PerpMarket)?.baseLotsToNumber(perpAccount?.basePosition)
-        ) || 0
+        Math.abs(market?.baseLotsToNumber(perpAccount?.basePosition)) || 0
     } else {
       reduceMax = 0
     }
@@ -517,9 +515,7 @@ export default function AdvancedTradeForm({
 
     const estimatedSize =
       perpAccount && reduceOnly && market instanceof PerpMarket
-        ? Math.abs(
-            (market as PerpMarket).baseLotsToNumber(perpAccount.basePosition)
-          )
+        ? Math.abs(market.baseLotsToNumber(perpAccount.basePosition))
         : baseSize
     estimatedPrice = estimateMarketPrice(orderbook, estimatedSize || 0, side)
 
