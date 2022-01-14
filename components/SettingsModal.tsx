@@ -29,6 +29,7 @@ const CUSTOM_NODE = NODE_URLS.find((n) => n.label === 'Custom')
 export const NODE_URL_KEY = 'node-url-key-0.5'
 export const DEFAULT_MARKET_KEY = 'defaultMarket'
 export const ORDERBOOK_FLASH_KEY = 'showOrderbookFlash'
+export const DEFAULT_SPOT_MARGIN_KEY = 'defaultSpotMargin'
 export const initialMarket = {
   base: 'BTC',
   kind: 'perp',
@@ -43,6 +44,7 @@ const SettingsModal = ({ isOpen, onClose }) => {
     NODE_URL_KEY,
     NODE_URLS[0].value
   )
+
   const [defaultMarket] = useLocalStorageState(
     DEFAULT_MARKET_KEY,
     initialMarket
@@ -51,6 +53,12 @@ const SettingsModal = ({ isOpen, onClose }) => {
     ORDERBOOK_FLASH_KEY,
     true
   )
+
+  const [defaultSpotMargin, setDefaultSpotMargin] = useLocalStorageState(
+    DEFAULT_SPOT_MARGIN_KEY,
+    false
+  )
+
   const rpcEndpoint =
     NODE_URLS.find((node) => node.value === rpcEndpointUrl) || CUSTOM_NODE
   return (
@@ -94,6 +102,14 @@ const SettingsModal = ({ isOpen, onClose }) => {
             <Switch
               checked={showOrderbookFlash}
               onChange={(checked) => setShowOrderbookFlash(checked)}
+            />
+          </div>
+
+          <div className="border-t border-th-bkg-4 flex items-center justify-between py-3 text-th-fgd-1">
+            <span>{t('default-spot-margin')}</span>
+            <Switch
+              checked={defaultSpotMargin}
+              onChange={(checked) => setDefaultSpotMargin(checked)}
             />
           </div>
         </div>
