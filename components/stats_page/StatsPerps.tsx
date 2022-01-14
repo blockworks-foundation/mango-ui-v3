@@ -7,6 +7,7 @@ import BN from 'bn.js'
 import { perpContractPrecision } from '../../utils'
 import { useTranslation } from 'next-i18next'
 import Select from '../Select'
+import { marketsSelector } from '../../stores/selectors'
 
 function calculateFundingRate(
   oldestLongFunding,
@@ -42,10 +43,12 @@ export default function StatsPerps({ perpStats }) {
   const selectedMarketConfig = marketConfigs.find(
     (m) => m.name === selectedAsset
   )
-  const markets = Object.values(
-    useMangoStore.getState().selectedMangoGroup.markets
-  ).filter((m) => m instanceof PerpMarket) as PerpMarket[]
-  const selectedMarket = markets.find((m) =>
+  const markets = useMangoStore(marketsSelector)
+  const perpMarkets = markets.filter(
+    (m) => m instanceof PerpMarket
+  ) as PerpMarket[]
+
+  const selectedMarket = perpMarkets.find((m) =>
     m.publicKey.equals(selectedMarketConfig.publicKey)
   )
   let selectedStatsData = perpStats.filter(
