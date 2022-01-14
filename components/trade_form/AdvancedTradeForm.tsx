@@ -64,7 +64,7 @@ export default function AdvancedTradeForm({
   const market = useMangoStore((s) => s.selectedMarket.current)
   const isPerpMarket = market instanceof PerpMarket
   const [reduceOnly, setReduceOnly] = useState(false)
-  const [spotMargin, setSpotMargin] = useState(true)
+  const [spotMargin, setSpotMargin] = useState(false)
   const [positionSizePercent, setPositionSizePercent] = useState('')
   const [insufficientSol, setInsufficientSol] = useState(false)
   const { takerFee, makerFee } = useFees()
