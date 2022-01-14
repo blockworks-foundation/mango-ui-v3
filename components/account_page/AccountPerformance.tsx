@@ -24,7 +24,7 @@ export const handleDustTicks = (v) =>
       : v.toExponential()
     : numberCompactFormatter.format(v)
 
-const AccountInterest = () => {
+const AccountPerformance = () => {
   const { t } = useTranslation('common')
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const [hourlyPerformanceStats, setHourlyPerformanceStats] = useState<any>([])
@@ -45,7 +45,7 @@ const AccountInterest = () => {
     return mangoAccount.publicKey.toString()
   }, [mangoAccount])
 
-  const exportInterestDataToCSV = () => {
+  const exportPerformanceDataToCSV = () => {
 
     const dataToExport = hourlyPerformanceStats.map((row) => {
         const timestamp = new Date(row.time)
@@ -76,7 +76,7 @@ const AccountInterest = () => {
 
   useEffect(() => {
 
-    const fetchHourlyInterestStats = async () => {
+    const fetchHourlyPerformanceStats = async () => {
       setLoading(true)
       const response = await fetch(
         `https://mango-transaction-log.herokuapp.com/v3/stats/account-performance?mango-account=${mangoAccountPk}`
@@ -95,10 +95,7 @@ const AccountInterest = () => {
       setHourlyPerformanceStats(stats)
     }
 
-    const getStats = async () => {
-      fetchHourlyInterestStats()
-    }
-    getStats()
+    fetchHourlyPerformanceStats()
   }, [mangoAccountPk])
 
   useEffect(() => {
@@ -116,7 +113,7 @@ const AccountInterest = () => {
         <div className="flex items-center">
           <Button
             className={`float-right text-xs h-8 pt-0 pb-0 pl-3 pr-3`}
-            onClick={exportInterestDataToCSV}
+            onClick={exportPerformanceDataToCSV}
           >
             <div className={`flex items-center whitespace-nowrap`}>
               <SaveIcon className={`h-4 w-4 mr-1.5`} />
@@ -231,4 +228,4 @@ const AccountInterest = () => {
   )
 }
 
-export default AccountInterest
+export default AccountPerformance
