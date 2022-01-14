@@ -120,6 +120,7 @@ export default function useWallet() {
       })
       // set connected before fetching data
       await actions.fetchAllMangoAccounts()
+      await actions.fetchProfilePicture()
       actions.reloadOrders()
       actions.fetchTradeHistory()
       actions.fetchWalletTokens()

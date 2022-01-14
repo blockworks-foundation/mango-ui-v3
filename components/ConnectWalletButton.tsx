@@ -14,7 +14,7 @@ import {
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import { abbreviateAddress, copyToClipboard } from '../utils'
 import WalletSelect from './WalletSelect'
-import { WalletIcon, ProfileIcon } from './icons'
+import { WalletIcon } from './icons'
 import AccountsModal from './AccountsModal'
 import { useEffect } from 'react'
 import { useTranslation } from 'next-i18next'
@@ -22,6 +22,7 @@ import { useTranslation } from 'next-i18next'
 const ConnectWalletButton = () => {
   const { t } = useTranslation('common')
   const wallet = useMangoStore((s) => s.wallet.current)
+  const pfp = useMangoStore((s) => s.wallet.pfp)
   const connected = useMangoStore((s) => s.wallet.connected)
   const set = useMangoStore((s) => s.set)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
@@ -53,7 +54,7 @@ const ConnectWalletButton = () => {
         <Menu>
           <div className="relative" id="profile-menu-tip">
             <Menu.Button className="bg-th-bkg-4 flex items-center justify-center rounded-full w-10 h-10 text-white focus:outline-none hover:bg-th-bkg-4 hover:text-th-fgd-3">
-              <ProfileIcon className="h-6 w-6" />
+              <img alt="" src={pfp} className="rounded-full" />
             </Menu.Button>
             <Menu.Items className="bg-th-bkg-1 mt-2 p-1 absolute right-0 shadow-lg outline-none rounded-md w-48 z-20">
               <Menu.Item>
