@@ -101,6 +101,7 @@ const BalancesTable = ({ showZeroBalances = false }) => {
       const spotMarkets = Object.values(markets).filter(
         (mkt) => mkt instanceof Market
       ) as Market[]
+
       const txids: TransactionSignature[] = await mangoClient.settleAll(
         mangoGroup,
         mangoAccount,

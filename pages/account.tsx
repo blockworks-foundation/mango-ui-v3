@@ -43,7 +43,14 @@ export async function getStaticProps({ locale }) {
   }
 }
 
-const TABS = ['Portfolio', 'Orders', 'History', 'Interest', 'Funding', 'Performance']
+const TABS = [
+  'Portfolio',
+  'Orders',
+  'History',
+  'Interest',
+  'Funding',
+  'Performance',
+]
 
 export default function Account() {
   const { t } = useTranslation('common')
