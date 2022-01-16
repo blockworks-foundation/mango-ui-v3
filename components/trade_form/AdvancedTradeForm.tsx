@@ -664,7 +664,18 @@ export default function AdvancedTradeForm({
           )
         }
       }
-      notify({ title: t('successfully-placed'), txid })
+      if (txid instanceof Array) {
+        for (const [index, id] of txid.entries()) {
+          notify({
+            title:
+              index === 0 ? 'Transaction successful' : t('successfully-placed'),
+            txid: id,
+          })
+        }
+      } else {
+        notify({ title: t('successfully-placed'), txid })
+      }
+
       setPrice('')
       onSetBaseSize('')
     } catch (e) {

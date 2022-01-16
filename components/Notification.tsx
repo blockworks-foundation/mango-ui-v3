@@ -5,7 +5,7 @@ import {
   InformationCircleIcon,
   XCircleIcon,
 } from '@heroicons/react/outline'
-import useMangoStore from '../stores/useMangoStore'
+import useMangoStore, { CLUSTER } from '../stores/useMangoStore'
 import { Notification, notify } from '../utils/notifications'
 import { useTranslation } from 'next-i18next'
 import Loading from './Loading'
@@ -143,7 +143,9 @@ const Notification = ({ notification }: { notification: Notification }) => {
           ) : null}
           {txid ? (
             <a
-              href={'https://explorer.solana.com/tx/' + txid}
+              href={
+                'https://explorer.solana.com/tx/' + txid + '?cluster=' + CLUSTER
+              }
               className="flex items-center mt-1 text-sm"
               target="_blank"
               rel="noreferrer"
