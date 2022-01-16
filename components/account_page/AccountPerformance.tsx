@@ -5,9 +5,7 @@ import { Table, Td, Th, TrBody, TrHead } from '../TableElements'
 import { useTranslation } from 'next-i18next'
 import { isEmpty } from 'lodash'
 import usePagination from '../../hooks/usePagination'
-import {
-  numberCompactFormatter,
-} from '../../utils/'
+import { numberCompactFormatter } from '../../utils/'
 import Pagination from '../Pagination'
 import Chart from '../Chart'
 
@@ -46,24 +44,19 @@ const AccountPerformance = () => {
   }, [mangoAccount])
 
   const exportPerformanceDataToCSV = () => {
-
     const dataToExport = hourlyPerformanceStats.map((row) => {
-        const timestamp = new Date(row.time)
-        return {
+      const timestamp = new Date(row.time)
+      return {
         timestamp: `${timestamp.toLocaleDateString()} ${timestamp.toLocaleTimeString()}`,
         account_equity: row.account_equity,
-        pnl: row.pnl
-        }
+        pnl: row.pnl,
+      }
     })
 
     const title = `${
       mangoAccount.name || mangoAccount.publicKey
     }-Performance-${new Date().toLocaleDateString()}`
-    const headers = [
-      'Timestamp',
-      'Account Equity',
-      'PNL'
-    ]
+    const headers = ['Timestamp', 'Account Equity', 'PNL']
 
     exportDataToCSV(dataToExport, title, headers, t)
   }
@@ -75,7 +68,6 @@ const AccountPerformance = () => {
   }, [hourlyPerformanceStats])
 
   useEffect(() => {
-
     const fetchHourlyPerformanceStats = async () => {
       setLoading(true)
       const response = await fetch(
@@ -85,12 +77,12 @@ const AccountPerformance = () => {
       const entries: any = Object.entries(parsedResponse)
 
       const stats = entries
-          .map(([key, value]) => {
-              return { ...value, time: key }
-          })
-          .filter((x) => x)
-          .reverse()
-    
+        .map(([key, value]) => {
+          return { ...value, time: key }
+        })
+        .filter((x) => x)
+        .reverse()
+
       setLoading(false)
       setHourlyPerformanceStats(stats)
     }
@@ -181,16 +173,8 @@ const AccountPerformance = () => {
                             return (
                               <TrBody index={index} key={stat.time}>
                                 <Td>{dayjs(utc).format('DD/MM/YY, h:mma')}</Td>
-                                <Td>
-                                  {stat.account_equity.toFixed(
-                                        6 + 1
-                                      )}
-                                </Td>
-                                <Td>
-                                  {stat.pnl.toFixed(
-                                        6 + 1
-                                      )}
-                                </Td>
+                                <Td>{stat.account_equity.toFixed(6 + 1)}</Td>
+                                <Td>{stat.pnl.toFixed(6 + 1)}</Td>
                               </TrBody>
                             )
                           })}
