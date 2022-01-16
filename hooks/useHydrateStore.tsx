@@ -83,6 +83,7 @@ const useHydrateStore = () => {
       mangoAccount.publicKey,
       (info) => {
         console.log('mango account WS update: ', info)
+        if (info?.lamports === 0) return
 
         const decodedMangoAccount = MangoAccountLayout.decode(info?.data)
         const newMangoAccount = Object.assign(mangoAccount, decodedMangoAccount)

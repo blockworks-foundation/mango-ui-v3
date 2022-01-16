@@ -48,7 +48,6 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
   const client = useMangoStore((s) => s.connection.client)
   const openOrders = useOpenOrders()
   const setMangoStore = useMangoStore((s) => s.set)
-  const mangoAccounts = useMangoStore((s) => s.mangoAccounts)
 
   const fetchTotalAccountSOL = useCallback(async () => {
     if (!mangoAccount) {
@@ -94,7 +93,7 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
   const closeAccount = async () => {
     const wallet = useMangoStore.getState().wallet.current
     try {
-      await client.emptyAndCloseMangoAccount(
+      const txids = await client.emptyAndCloseMangoAccount(
         mangoGroup,
         mangoAccount,
         mangoCache,
@@ -102,20 +101,27 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
         wallet
       )
 
-      actions.fetchAllMangoAccounts()
+      await actions.fetchAllMangoAccounts()
+      const mangoAccounts = useMangoStore.getState().mangoAccounts
+
       setMangoStore((state) => {
-        state.selectedMangoAccount.current = mangoAccounts[0]
+        state.selectedMangoAccount.current = mangoAccounts.length
+          ? mangoAccounts[0]
+          : null
       })
-      actions.reloadMangoAccount()
+
       onClose()
-      notify({
-        title: 'Account Deleted',
-      })
+      for (const txid of txids) {
+        notify({
+          title: 'Account Deleted',
+          txid,
+        })
+      }
     } catch (err) {
       console.warn('Error deleting account:', err)
       notify({
         title: 'Error deleting account',
-        description: `${err}`,
+        description: `${err.message}`,
         txid: err.txid,
         type: 'error',
       })
