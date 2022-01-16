@@ -191,6 +191,8 @@ interface MangoStore extends State {
   tradeHistory: any[]
   set: (x: any) => void
   actions: {
+    fetchAllMangoAccounts: () => Promise<void>
+    fetchMangoGroup: () => Promise<void>
     [key: string]: (args?) => void
   }
   alerts: {
