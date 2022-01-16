@@ -1,5 +1,5 @@
 import { PerpMarket } from '@blockworks-foundation/mango-client'
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import useMangoGroupConfig from '../../hooks/useMangoGroupConfig'
 import useMangoStore from '../../stores/useMangoStore'
 import Chart from '../Chart'
@@ -43,46 +43,57 @@ export default function StatsPerps({ perpStats }) {
   const selectedMarketConfig = marketConfigs.find(
     (m) => m.name === selectedAsset
   )
-  const markets = useMangoStore(marketsSelector)
-  const perpMarkets = markets.filter(
-    (m) => m instanceof PerpMarket
-  ) as PerpMarket[]
+  let markets = useMangoStore(marketsSelector)
+  markets = Object.values(markets)
 
-  const selectedMarket = perpMarkets.find((m) =>
-    m.publicKey.equals(selectedMarketConfig.publicKey)
-  )
-  let selectedStatsData = perpStats.filter(
-    (stat) => stat.name === selectedAsset
-  )
+  const perpMarkets = useMemo(() => {
+    return markets.filter((m) => m instanceof PerpMarket) as PerpMarket[]
+  }, [markets])
 
-  if (selectedAsset == 'SOL-PERP') {
-    const startTimestamp = 1632160800000
-    selectedStatsData = selectedStatsData.filter(
-      (stat) => new Date(stat.hourly).getTime() >= startTimestamp
+  const selectedMarket = useMemo(() => {
+    return perpMarkets.find((m) =>
+      m.publicKey.equals(selectedMarketConfig.publicKey)
     )
-  }
+  }, [selectedMarketConfig, perpMarkets])
 
-  const perpsData = selectedStatsData.map((x) => {
-    return {
-      fundingRate: calculateFundingRate(
-        x.oldestLongFunding,
-        x.oldestShortFunding,
-        x.latestLongFunding,
-        x.latestShortFunding,
-        selectedMarket,
-        x.baseOraclePrice
-      ),
-      openInterest: selectedMarket.baseLotsToNumber(x.openInterest) / 2,
-      time: x.hourly,
+  const perpsData = useMemo(() => {
+    if (perpStats.length === 0) return []
+
+    let selectedStatsData = perpStats.filter(
+      (stat) => stat.name === selectedAsset
+    )
+
+    if (selectedAsset == 'SOL-PERP') {
+      const startTimestamp = 1632160800000
+      selectedStatsData = selectedStatsData.filter(
+        (stat) => new Date(stat.hourly).getTime() >= startTimestamp
+      )
     }
-  })
 
-  if (selectedAsset === 'BTC-PERP') {
-    const index = perpsData.findIndex(
-      (x) => x.time === '2021-09-15T05:00:00.000Z'
-    )
-    perpsData.splice(index, 1)
-  }
+    const perpsData = selectedStatsData.map((x) => {
+      return {
+        fundingRate: calculateFundingRate(
+          x.oldestLongFunding,
+          x.oldestShortFunding,
+          x.latestLongFunding,
+          x.latestShortFunding,
+          selectedMarket,
+          x.baseOraclePrice
+        ),
+        openInterest: selectedMarket.baseLotsToNumber(x.openInterest) / 2,
+        time: x.hourly,
+      }
+    })
+
+    if (selectedAsset === 'BTC-PERP') {
+      const index = perpsData.findIndex(
+        (x) => x.time === '2021-09-15T05:00:00.000Z'
+      )
+      perpsData.splice(index, 1)
+    }
+
+    return perpsData
+  }, [selectedAsset, perpStats, selectedMarket])
 
   const progress =
     1 -
