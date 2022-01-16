@@ -113,7 +113,7 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
       onClose()
       for (const txid of txids) {
         notify({
-          title: 'Account Deleted',
+          title: 'Transaction confirmed',
           txid,
         })
       }
