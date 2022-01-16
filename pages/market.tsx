@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/router'
 import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
-import useMangoStore from '../stores/useMangoStore'
+import useMangoStore, { serumProgramId } from '../stores/useMangoStore'
 import {
   getMarketByBaseSymbolAndKind,
   getMarketIndexBySymbol,
@@ -17,9 +17,12 @@ import IntroTips, { SHOW_TOUR_KEY } from '../components/IntroTips'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from '../components/TradePageGrid'
 import {
+  actionsSelector,
+  mangoAccountSelector,
   marketConfigSelector,
   walletConnectedSelector,
 } from '../stores/selectors'
+import { PublicKey } from '@solana/web3.js'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -36,11 +39,45 @@ const PerpMarket = () => {
   const groupConfig = useMangoGroupConfig()
   const setMangoStore = useMangoStore((s) => s.set)
   const connected = useMangoStore(walletConnectedSelector)
-  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
+  const mangoAccount = useMangoStore(mangoAccountSelector)
+  const mangoClient = useMangoStore((s) => s.connection.client)
+  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const marketConfig = useMangoStore(marketConfigSelector)
+  const actions = useMangoStore(actionsSelector)
   const router = useRouter()
+  const { pubkey } = router.query
   const { width } = useViewport()
   const hideTips = width ? width < breakpoints.md : false
+
+  useEffect(() => {
+    async function loadUnownedMangoAccount() {
+      try {
+        const unownedMangoAccountPubkey = new PublicKey(pubkey)
+        if (mangoGroup) {
+          const unOwnedMangoAccount = await mangoClient.getMangoAccount(
+            unownedMangoAccountPubkey,
+            serumProgramId
+          )
+          console.log('unOwnedMangoAccount: ', unOwnedMangoAccount)
+
+          setMangoStore((state) => {
+            state.selectedMangoAccount.current = unOwnedMangoAccount
+            state.selectedMangoAccount.initialLoad = false
+            state.wallet.connected = true
+          })
+          actions.fetchTradeHistory()
+          actions.reloadOrders()
+          // setResetOnLeave(true)
+        }
+      } catch (error) {
+        router.push('/account')
+      }
+    }
+
+    if (pubkey) {
+      loadUnownedMangoAccount()
+    }
+  }, [pubkey, mangoClient, mangoGroup])
 
   useEffect(() => {
     const name = decodeURIComponent(router.asPath).split('name=')[1]

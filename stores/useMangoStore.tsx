@@ -394,12 +394,14 @@ const useMangoStore = create<MangoStore>((set, get) => {
         return mangoClient
           .getMangoGroup(mangoGroupPk)
           .then(async (mangoGroup) => {
+            mangoGroup.loadCache(connection).then((mangoCache) => {
+              set((state) => {
+                state.selectedMangoGroup.cache = mangoCache
+              })
+            })
             mangoGroup.loadRootBanks(connection).then(() => {
-              mangoGroup.loadCache(connection).then((mangoCache) => {
-                set((state) => {
-                  state.selectedMangoGroup.current = mangoGroup
-                  state.selectedMangoGroup.cache = mangoCache
-                })
+              set((state) => {
+                state.selectedMangoGroup.current = mangoGroup
               })
             })
             const allMarketConfigs = getAllMarkets(mangoGroupConfig)

@@ -31,6 +31,12 @@ import { useTranslation } from 'next-i18next'
 import Select from '../components/Select'
 import { useRouter } from 'next/router'
 import { PublicKey } from '@solana/web3.js'
+import {
+  actionsSelector,
+  mangoAccountSelector,
+  mangoGroupSelector,
+  walletConnectedSelector,
+} from '../stores/selectors'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -56,13 +62,13 @@ export default function Account() {
   const [showNameModal, setShowNameModal] = useState(false)
   const [isCopied, setIsCopied] = useState(false)
   const [resetOnLeave, setResetOnLeave] = useState(false)
-  const connected = useMangoStore((s) => s.wallet.connected)
-  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
+  const connected = useMangoStore(walletConnectedSelector)
+  const mangoAccount = useMangoStore(mangoAccountSelector)
   const mangoClient = useMangoStore((s) => s.connection.client)
-  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  const mangoGroup = useMangoStore(mangoGroupSelector)
   const wallet = useMangoStore((s) => s.wallet.current)
   const isLoading = useMangoStore((s) => s.selectedMangoAccount.initialLoad)
-  const actions = useMangoStore((s) => s.actions)
+  const actions = useMangoStore(actionsSelector)
   const setMangoStore = useMangoStore((s) => s.set)
   const [viewIndex, setViewIndex] = useState(0)
   const [activeTab, setActiveTab] = useState(TABS[0])
