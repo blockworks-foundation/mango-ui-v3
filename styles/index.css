@@ -74,6 +74,10 @@ h1 {
   @apply font-bold text-th-fgd-1 text-xl;
 }
 
+h3 {
+  @apply font-bold text-th-fgd-1 text-base;
+}
+
 p {
   @apply text-th-fgd-3 mb-2.5;
 }
