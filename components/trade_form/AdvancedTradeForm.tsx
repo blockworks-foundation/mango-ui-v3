@@ -969,6 +969,7 @@ export default function AdvancedTradeForm({
                     checked={spotMargin}
                     onChange={(e) => marginOnChange(e.target.checked)}
                   >
+                {/* TOTRANSLATE */}
                     Margin
                   </Checkbox>
                 </Tooltip>
@@ -981,6 +982,7 @@ export default function AdvancedTradeForm({
                 <ExclamationIcon className="h-5 w-5 mr-2" />
               </div>
               <div className="text-xs">
+                {/* TOTRANSLATE */}
                 This order will likely have extremely large slippage! Consider
                 using Stop Limit or Take Profit Limit order instead.
               </div>

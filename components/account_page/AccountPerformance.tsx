@@ -23,7 +23,7 @@ export const handleDustTicks = (v) =>
     : numberCompactFormatter.format(v)
 
 const AccountPerformance = () => {
-  const { t } = useTranslation('common')
+  const { t } = useTranslation('common') // TOTRANSLATE
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const [hourlyPerformanceStats, setHourlyPerformanceStats] = useState<any>([])
   const [loading, setLoading] = useState(false)

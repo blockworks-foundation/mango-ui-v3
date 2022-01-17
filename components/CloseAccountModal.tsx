@@ -35,7 +35,7 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  //const { t } = useTranslation('common')
+  //const { t } = useTranslation('common') TOTRANSLATE
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)

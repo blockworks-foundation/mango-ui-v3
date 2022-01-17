@@ -55,7 +55,7 @@ const TABS = [
   'History',
   'Interest',
   'Funding',
-  'Performance',
+  'Performance',// TOTRANSLATE
 ]
 
 export default function Account() {
@@ -204,6 +204,7 @@ export default function Account() {
                   <div className="flex items-center">
                     <TrashIcon className="h-4 w-4 mr-1.5" />
                     Close Account
+                    {/* TOTRANSLATE */}
                   </div>
                 </Button>
                 <a
