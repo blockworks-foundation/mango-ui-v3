@@ -99,6 +99,7 @@
   "data-refresh-tip-title": "Manual Data Refresh",
   "date": "Date",
   "default-market": "Default Market",
+  "default-spot-margin": "Trade with margin by default",
   "delay-displaying-recent": "There may be a delay in displaying the latest activity.",
   "deposit": "Deposit",
   "deposit-before": "You need more {{tokenSymbol}} in your wallet to fully repay your borrow",
