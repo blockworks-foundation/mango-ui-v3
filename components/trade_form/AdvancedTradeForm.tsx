@@ -1087,7 +1087,8 @@ export default function AdvancedTradeForm({
                     <div className="flex justify-between mb-1 text-th-fgd-3 text-xs">
                       <div className="flex items-center">
                         {t('max-slippage')}
-                        <Tooltip content="If price slips more than your max slippage, your order will be partially filled up to that price.">
+                        {/* TOTRANSLATE */}
+                        <Tooltip content="If price slips more than your max slippage, your order will be partially filled up to that price."> 
                           <div className="outline-none focus:outline-none">
                             <InformationCircleIcon className="h-4 w-4 ml-1.5 text-th-fgd-3" />
                           </div>
