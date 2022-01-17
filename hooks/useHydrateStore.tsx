@@ -96,19 +96,34 @@ const useHydrateStore = () => {
     console.log('in mango account WS useEffect')
     const subscriptionId = connection.onAccountChange(
       mangoAccount.publicKey,
-      (info) => {
-        console.log('mango account WS update: ', info)
+      (info, context) => {
         if (info?.lamports === 0) return
 
-        const decodedMangoAccount = MangoAccountLayout.decode(info?.data)
-        const newMangoAccount = Object.assign(mangoAccount, decodedMangoAccount)
+        const lastSeenSlot =
+          useMangoStore.getState().selectedMangoAccount.lastSlot
+        const mangoAccountLastUpdated = new Date(
+          useMangoStore.getState().selectedMangoAccount.lastUpdatedAt
+        )
+        const newUpdatedAt = new Date()
+        const timeDiff =
+          mangoAccountLastUpdated.getTime() - newUpdatedAt.getTime()
 
-        // const lastSlot = useMangoStore.getState().connection.slot
+        // only updated mango account if it's been more than 1 second since last update
+        if (Math.abs(timeDiff / 1000) >= 1 && context.slot > lastSeenSlot) {
+          console.log('mango account WS update: ', info)
+          const decodedMangoAccount = MangoAccountLayout.decode(info?.data)
+          const newMangoAccount = Object.assign(
+            mangoAccount,
+            decodedMangoAccount
+          )
 
-        setMangoStore((state) => {
-          state.selectedMangoAccount.current = newMangoAccount
-          state.selectedMangoAccount.lastUpdatedAt = new Date().toISOString()
-        })
+          setMangoStore((state) => {
+            state.selectedMangoAccount.lastSlot = context.slot
+            state.selectedMangoAccount.current = newMangoAccount
+            state.selectedMangoAccount.lastUpdatedAt =
+              newUpdatedAt.toISOString()
+          })
+        }
       }
     )
 

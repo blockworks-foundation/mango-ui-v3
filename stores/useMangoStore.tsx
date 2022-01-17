@@ -161,7 +161,8 @@ interface MangoStore extends State {
   selectedMangoAccount: {
     current: MangoAccount | null
     initialLoad: boolean
-    lastUpdatedAt: number
+    lastUpdatedAt: string
+    lastSlot: number
   }
   tradeForm: {
     side: 'buy' | 'sell'
@@ -264,7 +265,8 @@ const useMangoStore = create<MangoStore>((set, get) => {
     selectedMangoAccount: {
       current: null,
       initialLoad: true,
-      lastUpdatedAt: 0,
+      lastUpdatedAt: '0',
+      lastSlot: 0,
     },
     tradeForm: {
       side: 'buy',
@@ -525,16 +527,18 @@ const useMangoStore = create<MangoStore>((set, get) => {
         const connection = get().connection.current
         const mangoClient = get().connection.client
 
-        const reloadedMangoAccount = await mangoAccount.reloadFromSlot(
-          connection,
-          mangoClient.lastSlot
-        )
+        const [reloadedMangoAccount, lastSlot] =
+          await mangoAccount.reloadFromSlot(connection, mangoClient.lastSlot)
+        const lastSeenSlot = get().selectedMangoAccount.lastSlot
 
-        set((state) => {
-          state.selectedMangoAccount.current = reloadedMangoAccount
-          state.selectedMangoAccount.lastUpdatedAt = new Date().toISOString()
-        })
-        console.log('reloaded mango account', reloadedMangoAccount)
+        if (lastSlot > lastSeenSlot) {
+          set((state) => {
+            state.selectedMangoAccount.current = reloadedMangoAccount
+            state.selectedMangoAccount.lastUpdatedAt = new Date().toISOString()
+            state.selectedMangoAccount.lastSlot = lastSlot
+          })
+          console.log('reloaded mango account', reloadedMangoAccount)
+        }
       },
       async reloadOrders() {
         const mangoAccount = get().selectedMangoAccount.current
