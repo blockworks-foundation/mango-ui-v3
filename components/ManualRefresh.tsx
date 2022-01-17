@@ -17,7 +17,6 @@ const ManualRefresh = ({ className = '' }) => {
     if (mangoAccount) {
       await actions.reloadMangoAccount()
       actions.reloadOrders()
-      actions.updateOpenOrders()
       actions.fetchTradeHistory()
     }
   }
