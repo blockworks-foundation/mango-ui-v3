@@ -1295,9 +1295,6 @@ export default function RiskCalculator() {
             IN TESTING (Use at your own risk): Please report any bugs or
             comments in our #dev-ui discord channel.
           </p>
-          {/* <p className="mb-0">
-                        Stay healthy to keep the dream alive. We hear that one mango smoothie a day keeps the liquidators away!
-                    </p> */}
         </div>
         {scenarioBars?.rowData.length > 0 ? (
           <div className="rounded-lg bg-th-bkg-2">

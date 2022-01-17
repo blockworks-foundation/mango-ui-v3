@@ -208,9 +208,7 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
           ''
         )}
       </div>
-      <div className="text-th-fgd-2 text-center my-4">
-        Goodbye and good luck 🙏
-      </div>
+      <div className="text-th-fgd-2 text-center my-4">Goodbye 👋</div>
       <Button
         onClick={() => closeAccount()}
         disabled={
@@ -218,7 +216,7 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
           hasBorrows ||
           hasOpenPositions
         }
-        className="mt-4 w-full"
+        className="mt-1 w-full"
       >
         Close Account
       </Button>

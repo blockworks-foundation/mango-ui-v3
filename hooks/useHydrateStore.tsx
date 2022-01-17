@@ -19,7 +19,6 @@ import {
 } from '../stores/selectors'
 
 const SECONDS = 1000
-const _SLOW_REFRESH_INTERVAL = 20 * SECONDS
 
 function decodeBook(market, accInfo: AccountInfo<Buffer>): number[][] {
   if (market && accInfo?.data) {
@@ -49,17 +48,33 @@ const useHydrateStore = () => {
   const connection = useMangoStore(connectionSelector)
   const mangoAccount = useMangoStore(mangoAccountSelector)
 
+  // Fetches mango group as soon as page loads
   useEffect(() => {
     actions.fetchMangoGroup()
   }, [actions])
 
   useInterval(() => {
-    actions.fetchMangoGroup()
-  }, 120 * SECONDS)
-
-  useInterval(() => {
     actions.fetchMangoGroupCache()
   }, 12 * SECONDS)
+
+  useInterval(() => {
+    if (mangoAccount) {
+      actions.fetchTradeHistory()
+      actions.reloadOrders()
+      actions.updateOpenOrders()
+    }
+  }, 60 * SECONDS)
+
+  useInterval(() => {
+    if (mangoAccount) {
+      actions.reloadMangoAccount()
+      actions.fetchWalletTokens()
+    }
+  }, 90 * SECONDS)
+
+  useInterval(() => {
+    actions.fetchMangoGroup()
+  }, 120 * SECONDS)
 
   useEffect(() => {
     const market = markets[marketConfig.publicKey.toString()]
@@ -161,7 +176,7 @@ const useHydrateStore = () => {
   // fetch filled trades for selected market
   useInterval(() => {
     actions.loadMarketFills()
-  }, _SLOW_REFRESH_INTERVAL)
+  }, 20 * SECONDS)
 
   useEffect(() => {
     actions.loadMarketFills()
