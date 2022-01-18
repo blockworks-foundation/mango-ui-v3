@@ -43,7 +43,7 @@ import {
 export async function getStaticProps({ locale }) {
   return {
     props: {
-      ...(await serverSideTranslations(locale, ['common'])),
+      ...(await serverSideTranslations(locale, ['common', 'close-account'])),
       // Will be passed to the page component as props
     },
   }
@@ -59,7 +59,7 @@ const TABS = [
 ]
 
 export default function Account() {
-  const { t } = useTranslation('common')
+  const { t } = useTranslation(['common', 'close-account'])
   const [showAccountsModal, setShowAccountsModal] = useState(false)
   const [showNameModal, setShowNameModal] = useState(false)
   const [showCloseAccountModal, setShowCloseAccountModal] = useState(false)
@@ -197,7 +197,7 @@ export default function Account() {
                 >
                   <div className="flex items-center">
                     <TrashIcon className="h-4 w-4 mr-1.5" />
-                    Close Account
+                    {t('close-account:close-account')}
                   </div>
                 </Button>
                 <a
