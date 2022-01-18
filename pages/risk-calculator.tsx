@@ -84,7 +84,7 @@ interface ScenarioCalculator {
 }
 
 export default function RiskCalculator() {
-  const { t } = useTranslation('common')
+  const { t } = useTranslation('common') // TOTRANSLATE
 
   // Get mango account data
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)

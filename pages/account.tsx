@@ -20,7 +20,7 @@ import AccountInterest from '../components/account_page/AccountInterest'
 import AccountFunding from '../components/account_page/AccountFunding'
 import AccountPerformance from '../components/account_page/AccountPerformance'
 import AccountNameModal from '../components/AccountNameModal'
-import Button from '../components/Button'
+import Button, { IconButton } from '../components/Button'
 import EmptyState from '../components/EmptyState'
 import Loading from '../components/Loading'
 import Swipeable from '../components/mobile/Swipeable'
@@ -43,7 +43,7 @@ import {
 export async function getStaticProps({ locale }) {
   return {
     props: {
-      ...(await serverSideTranslations(locale, ['common'])),
+      ...(await serverSideTranslations(locale, ['common', 'close-account'])),
       // Will be passed to the page component as props
     },
   }
@@ -59,7 +59,7 @@ const TABS = [
 ]
 
 export default function Account() {
-  const { t } = useTranslation('common')
+  const { t } = useTranslation(['common', 'close-account'])
   const [showAccountsModal, setShowAccountsModal] = useState(false)
   const [showNameModal, setShowNameModal] = useState(false)
   const [showCloseAccountModal, setShowCloseAccountModal] = useState(false)
@@ -165,11 +165,14 @@ export default function Account() {
           {mangoAccount ? (
             <>
               <div className="pb-3 md:pb-0">
-                <h1
-                  className={`font-semibold mb-1 mr-3 text-th-fgd-1 text-2xl`}
-                >
-                  {mangoAccount?.name || t('account')}
-                </h1>
+                <div className="flex items-center mb-1">
+                  <h1 className={`font-semibold mr-3 text-th-fgd-1 text-2xl`}>
+                    {mangoAccount?.name || t('account')}
+                  </h1>
+                  <IconButton onClick={() => setShowNameModal(true)}>
+                    <PencilIcon className="h-4 w-4" />
+                  </IconButton>
+                </div>
                 <div className="flex items-center text-th-fgd-3 ">
                   <span className="text-xxs sm:text-xs">
                     {mangoAccount.publicKey.toString()}
@@ -187,23 +190,14 @@ export default function Account() {
                   {t('account-address-warning')}
                 </div>
               </div>
-              <div className="grid grid-cols-4 grid-rows-1 gap-2">
-                <Button
-                  className="col-span-1 flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs"
-                  onClick={() => setShowNameModal(true)}
-                >
-                  <div className="flex items-center">
-                    <PencilIcon className="h-4 w-4 mr-1.5" />
-                    {mangoAccount?.name ? t('edit-name') : t('add-name')}
-                  </div>
-                </Button>
+              <div className="grid grid-cols-3 grid-rows-1 gap-2">
                 <Button
                   className="col-span-1 flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs"
                   onClick={() => setShowCloseAccountModal(true)}
                 >
                   <div className="flex items-center">
                     <TrashIcon className="h-4 w-4 mr-1.5" />
-                    Close Account
+                    {t('close-account:close-account')}
                   </div>
                 </Button>
                 <a

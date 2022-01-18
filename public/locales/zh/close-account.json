@@ -1,0 +1,16 @@
+{
+  "are-you-sure": "您确定吗？",
+  "before-you-continue": "进行之前",
+  "claim-x-mngo": "收获{{amount}}MNGO奖励",
+  "close-account": "关闭帐户",
+  "close-all-borrows": "归还所有借贷",
+  "close-open-orders": "取消所有挂单",
+  "close-perp-positions": "结清所有永续合约持仓",
+  "closing-account-will": "关闭Mango帐户您就会：",
+  "delete-your-account": "删除您的Mango帐户",
+  "error-deleting-account": "删除帐户出错",
+  "goodbye": "再见 👋",
+  "recover-x-sol": "收回{{amount}}SOL（帐户租金）",
+  "transaction-confirmed": "交易成功",
+  "withdraw-assets-worth": "将总价值{{value}}提出到您的钱包"
+}

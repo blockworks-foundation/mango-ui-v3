@@ -29,6 +29,7 @@
     "@project-serum/serum": "0.13.55",
     "@project-serum/sol-wallet-adapter": "0.2.0",
     "@solana/web3.js": "^1.31.0",
+    "@solflare-wallet/pfp": "^0.0.6",
     "@tippyjs/react": "^4.2.5",
     "big.js": "^6.1.1",
     "bn.js": "^5.2.0",

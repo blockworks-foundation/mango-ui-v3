@@ -6,13 +6,15 @@ import {
   useState,
 } from 'react'
 import useMangoStore, { MNGO_INDEX } from '../stores/useMangoStore'
-import { XCircleIcon } from '@heroicons/react/outline'
+import {
+  CheckCircleIcon,
+  ExclamationCircleIcon,
+} from '@heroicons/react/outline'
 import Button from './Button'
 import Modal from './Modal'
 import { ElementTitle } from './styles'
 import { notify } from '../utils/notifications'
-//import { useTranslation } from 'next-i18next'
-import { CheckCircleIcon } from '@heroicons/react/solid'
+import { useTranslation } from 'next-i18next'
 import {
   getMultipleAccounts,
   nativeToUi,
@@ -35,7 +37,7 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  //const { t } = useTranslation('common')
+  const { t } = useTranslation(['common', 'close-account'])
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
@@ -113,14 +115,14 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
       onClose()
       for (const txid of txids) {
         notify({
-          title: 'Transaction confirmed',
+          title: t('close-account:transaction-confirmed'),
           txid,
         })
       }
     } catch (err) {
       console.warn('Error deleting account:', err)
       notify({
-        title: 'Error deleting account',
+        title: t('close-account:error-deleting-account'),
         description: `${err.message}`,
         txid: err.txid,
         type: 'error',
@@ -128,97 +130,95 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
     }
   }
 
+  const isDisabled =
+    (openOrders && openOrders.length > 0) || hasBorrows || hasOpenPositions
+
   return (
     <Modal onClose={onClose} isOpen={isOpen && mangoAccount !== undefined}>
-      <Modal.Header>
-        <div className="flex items-center">
-          <ElementTitle noMarignBottom>Close your account</ElementTitle>
-        </div>
-      </Modal.Header>
-      <div className="text-th-fgd-2 text-center my-4">
-        You can close your Mango account and recover the small amount of SOL
-        used to cover rent exemption.
-      </div>
-      <div className="text-th-fgd-2 text-center my-4">
-        To close your account you must:
-      </div>
-
-      <div className="bg-th-bkg-4 overflow-none p-2 sm:p-6 rounded-lg">
-        <div className="flex items-center text-th-fgd-2 mb-4 ">
-          {!hasBorrows ? (
-            <CheckCircleIcon className="h-4 w-4 mr-1.5 text-th-green" />
-          ) : (
-            <XCircleIcon className="h-4 w-4 mr-1.5 text-th-red" />
-          )}{' '}
-          Close all borrows
-        </div>
-        <div className="flex items-center text-th-fgd-2 mb-4">
-          {!hasOpenPositions ? (
-            <CheckCircleIcon className="h-4 w-4 mr-1.5 text-th-green" />
-          ) : (
-            <XCircleIcon className="h-4 w-4 mr-1.5 text-th-red" />
-          )}{' '}
-          Close and settle all Perp positons
-        </div>
-        <div className="flex items-center text-th-fgd-2">
-          {openOrders && !openOrders.length ? (
-            <CheckCircleIcon className="h-4 w-4 mr-1.5 text-th-green" />
-          ) : (
-            <XCircleIcon className="h-4 w-4 mr-1.5 text-th-red" />
-          )}{' '}
-          Close all open orders
-        </div>
-      </div>
-
-      <div className="text-th-fgd-2 text-center my-4">
-        By closing your account you will:
-      </div>
-      <div className="bg-th-bkg-4 overflow-wrap p-2 sm:p-6 rounded-lg">
+      <ElementTitle noMarignBottom>
+        {t('close-account:are-you-sure')}
+      </ElementTitle>
+      <p className="text-center mt-1">
+        {t('close-account:closing-account-will')}
+      </p>
+      <div className="bg-th-bkg-4 overflow-wrap p-2 sm:p-4 rounded-md space-y-2">
         <div className="flex items-center text-th-fgd-2">
           <CheckCircleIcon className="h-4 w-4 mr-1.5 text-th-green" />
-          Delete your Mango account
+          {t('close-account:delete-your-account')}
         </div>
         {mangoAccount &&
         mangoAccount.getAssetsVal(mangoGroup, mangoCache).gt(ZERO_I80F48) ? (
-          <div className="flex items-center text-th-fgd-2 mt-4">
+          <div className="flex items-center text-th-fgd-2">
             <CheckCircleIcon className="h-4 w-4 mr-1.5 text-th-green" />
-            Withdraw assets worth{' '}
-            {formatUsdValue(+mangoAccount.computeValue(mangoGroup, mangoCache))}
+            {t('close-account:withdraw-assets-worth', {
+              value: formatUsdValue(
+                +mangoAccount.computeValue(mangoGroup, mangoCache)
+              ),
+            })}
           </div>
         ) : (
           ''
         )}
-        <div className="flex items-center text-th-fgd-2 mt-4">
+        <div className="flex items-center text-th-fgd-2">
           <CheckCircleIcon className="h-4 w-4 mr-1.5 text-th-green" />
-          Recover {totalAccountSOL.toFixed(3)} SOL
+          {t('close-account:recover-x-sol', {
+            amount: totalAccountSOL.toFixed(3),
+          })}
         </div>
         {!mngoAccrued.isZero() ? (
-          <div className="flex items-center text-th-fgd-2 mt-4">
+          <div className="flex items-center text-th-fgd-2">
             <CheckCircleIcon className="h-4 w-4 mr-1.5 text-th-green" />
-            Claim{' '}
-            {mangoGroup
-              ? nativeToUi(
-                  mngoAccrued.toNumber(),
-                  mangoGroup.tokens[MNGO_INDEX].decimals
-                ).toFixed(3)
-              : 0}{' '}
-            MNGO in unclaimed rewards
+            {t('close-account:claim-x-mngo', {
+              amount: mangoGroup
+                ? nativeToUi(
+                    mngoAccrued.toNumber(),
+                    mangoGroup.tokens[MNGO_INDEX].decimals
+                  ).toFixed(3)
+                : 0,
+            })}
           </div>
         ) : (
           ''
         )}
       </div>
-      <div className="text-th-fgd-2 text-center my-4">Goodbye 👋</div>
+      {isDisabled ? (
+        <>
+          <h3 className="text-center my-3">
+            {t('close-account:before-you-continue')}
+          </h3>
+          <div className="bg-th-bkg-4 overflow-none p-2 sm:p-4 rounded-md space-y-2">
+            {hasBorrows ? (
+              <div className="flex items-center text-th-fgd-2">
+                <ExclamationCircleIcon className="h-4 w-4 mr-1.5 text-th-red" />
+                {t('close-account:close-all-borrows')}
+              </div>
+            ) : null}
+            {hasOpenPositions ? (
+              <div className="flex items-center text-th-fgd-2">
+                <ExclamationCircleIcon className="h-4 w-4 mr-1.5 text-th-red" />
+                {t('close-account:close-perp-positions')}
+              </div>
+            ) : null}
+            {openOrders && openOrders.length ? (
+              <div className="flex items-center text-th-fgd-2">
+                <ExclamationCircleIcon className="h-4 w-4 mr-1.5 text-th-red" />
+                {t('close-account:close-open-orders')}
+              </div>
+            ) : null}
+          </div>
+        </>
+      ) : null}
+      {!isDisabled ? (
+        <div className="text-th-fgd-2 text-center mt-4">
+          {t('close-account:goodbye')}
+        </div>
+      ) : null}
       <Button
         onClick={() => closeAccount()}
-        disabled={
-          (openOrders && openOrders.length > 0) ||
-          hasBorrows ||
-          hasOpenPositions
-        }
-        className="mt-1 w-full"
+        disabled={isDisabled}
+        className="mt-6 w-full"
       >
-        Close Account
+        {t('close-account:close-account')}
       </Button>
     </Modal>
   )
