@@ -1607,7 +1607,9 @@ export default function RiskCalculator() {
                               className={`px-1 lg:px-3 py-1 text-left font-normal`}
                             >
                               <div className="flex justify-start md:justify-between">
-                                <Tooltip content="Spot Value + Perp Balance">
+                                <Tooltip
+                                  content={t('calculator:spot-val-perp-val')}
+                                >
                                   <div className="pr-2">{t('value')}</div>
                                 </Tooltip>
                               </div>
@@ -1617,7 +1619,9 @@ export default function RiskCalculator() {
                               className={`px-1 lg:px-3 py-1 text-left font-normal`}
                             >
                               <div className="flex justify-start md:justify-between">
-                                <Tooltip content="Single asset liquidation price assuming all other asset prices remain constant">
+                                <Tooltip
+                                  content={t('calculator:single-asset-liq')}
+                                >
                                   <div className="pr-2">
                                     {t('calculator:liq-price')}
                                   </div>
