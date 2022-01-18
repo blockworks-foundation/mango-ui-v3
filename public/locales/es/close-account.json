@@ -1,0 +1,16 @@
+{
+  "by-closing-you-will": "By closing your account you will:",
+  "claim-x-mngo": "Claim {{amount}} MNGO in unclaimed rewards",
+  "close-account": "Close Account",
+  "close-account-description": "You can close your Mango account and recover the small amount of SOL used to cover rent exemption.",
+  "close-all-borrows": "Close all borrows",
+  "close-open-orders": "Close all open orders",
+  "close-perp-positions": "Close and settle all Perp positons",
+  "delete-your-account": "Delete your Mango account",
+  "error-deleting-account": "Error deleting account",
+  "goodbye": "Goodbye 👋",
+  "recover-x-sol": "Recover {{amount}} SOL",
+  "to-close-account-steps": "To close your account you must:",
+  "transaction-confirmed": "Transaction Confirmed",
+  "withdraw-assets-worth": "Withdraw assets worth {{value}}"
+}

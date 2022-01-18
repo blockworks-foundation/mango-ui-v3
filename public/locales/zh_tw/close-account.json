@@ -1,0 +1,16 @@
+{
+  "by-closing-you-will": "透過關閉帳戶您就會：",
+  "claim-x-mngo": "收穫{{amount}}MNGO的未收穫獎勵",
+  "close-account": "關閉帳戶",
+  "close-account-description": "您可以將Mango帳戶刪除而收回少量SOL帳戶租金。",
+  "close-all-borrows": "歸還所有借貸",
+  "close-open-orders": "取消所有掛單",
+  "close-perp-positions": "結清所有永續合約持倉",
+  "delete-your-account": "刪除您的Mango帳戶",
+  "error-deleting-account": "刪除帳戶出錯",
+  "goodbye": "再見 👋",
+  "recover-x-sol": "收回{{amount}}SOL",
+  "to-close-account-steps": "為了關閉帳戶您得先：",
+  "transaction-confirmed": "交易成功",
+  "withdraw-assets-worth": "將總價值{{value}}提出到您的錢包"
+}

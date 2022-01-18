@@ -392,5 +392,7 @@
   "you-must-leave-enough-sol": "You must leave enough SOL in your wallet to pay for the transaction",
   "your-account": "Su cuenta",
   "your-assets": "Sus activos",
-  "your-borrows": "Sus préstamos"
+  "your-borrows": "Sus préstamos",
+
+  "performance": "Performance"
 }

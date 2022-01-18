@@ -11,7 +11,7 @@ import Button from './Button'
 import Modal from './Modal'
 import { ElementTitle } from './styles'
 import { notify } from '../utils/notifications'
-//import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next'
 import { CheckCircleIcon } from '@heroicons/react/solid'
 import {
   getMultipleAccounts,
@@ -35,7 +35,7 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  //const { t } = useTranslation('common') TOTRANSLATE
+  const { t } = useTranslation(['common', 'close-account'])
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
@@ -113,14 +113,14 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
       onClose()
       for (const txid of txids) {
         notify({
-          title: 'Transaction confirmed',
+          title: t('transaction-confirmed'),
           txid,
         })
       }
     } catch (err) {
       console.warn('Error deleting account:', err)
       notify({
-        title: 'Error deleting account',
+        title: t('error-deleting-account'),
         description: `${err.message}`,
         txid: err.txid,
         type: 'error',
@@ -132,15 +132,14 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
     <Modal onClose={onClose} isOpen={isOpen && mangoAccount !== undefined}>
       <Modal.Header>
         <div className="flex items-center">
-          <ElementTitle noMarignBottom>Close your account</ElementTitle>
+          <ElementTitle noMarignBottom>{t('close-account:close-account')}</ElementTitle>
         </div>
       </Modal.Header>
       <div className="text-th-fgd-2 text-center my-4">
-        You can close your Mango account and recover the small amount of SOL
-        used to cover rent exemption.
+        {t('close-account:close-account-description')}
       </div>
       <div className="text-th-fgd-2 text-center my-4">
-        To close your account you must:
+        {t('close-account:to-close-account-steps')}
       </div>
 
       <div className="bg-th-bkg-4 overflow-none p-2 sm:p-6 rounded-lg">
@@ -150,7 +149,7 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
           ) : (
             <XCircleIcon className="h-4 w-4 mr-1.5 text-th-red" />
           )}{' '}
-          Close all borrows
+          {t('close-account:close-all-borrows')}
         </div>
         <div className="flex items-center text-th-fgd-2 mb-4">
           {!hasOpenPositions ? (
@@ -158,7 +157,7 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
           ) : (
             <XCircleIcon className="h-4 w-4 mr-1.5 text-th-red" />
           )}{' '}
-          Close and settle all Perp positons
+          {t('close-account:close-perp-positions')}
         </div>
         <div className="flex items-center text-th-fgd-2">
           {openOrders && !openOrders.length ? (
@@ -166,49 +165,50 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
           ) : (
             <XCircleIcon className="h-4 w-4 mr-1.5 text-th-red" />
           )}{' '}
-          Close all open orders
+          {t('close-account:close-open-orders')}
         </div>
       </div>
 
       <div className="text-th-fgd-2 text-center my-4">
-        By closing your account you will:
+        {t('close-account:by-closing-you-will')}
       </div>
       <div className="bg-th-bkg-4 overflow-wrap p-2 sm:p-6 rounded-lg">
         <div className="flex items-center text-th-fgd-2">
           <CheckCircleIcon className="h-4 w-4 mr-1.5 text-th-green" />
-          Delete your Mango account
+          {t('close-account:delete-your-account')}
         </div>
         {mangoAccount &&
         mangoAccount.getAssetsVal(mangoGroup, mangoCache).gt(ZERO_I80F48) ? (
           <div className="flex items-center text-th-fgd-2 mt-4">
             <CheckCircleIcon className="h-4 w-4 mr-1.5 text-th-green" />
-            Withdraw assets worth{' '}
-            {formatUsdValue(+mangoAccount.computeValue(mangoGroup, mangoCache))}
+            {t('close-account:withdraw-assets-worth', {
+              value: formatUsdValue(+mangoAccount.computeValue(mangoGroup, mangoCache))
+            })}
           </div>
         ) : (
           ''
         )}
         <div className="flex items-center text-th-fgd-2 mt-4">
           <CheckCircleIcon className="h-4 w-4 mr-1.5 text-th-green" />
-          Recover {totalAccountSOL.toFixed(3)} SOL
+          {t('close-account:recover-x-sol', {amount: totalAccountSOL.toFixed(3)})}
         </div>
         {!mngoAccrued.isZero() ? (
           <div className="flex items-center text-th-fgd-2 mt-4">
             <CheckCircleIcon className="h-4 w-4 mr-1.5 text-th-green" />
-            Claim{' '}
-            {mangoGroup
-              ? nativeToUi(
-                  mngoAccrued.toNumber(),
-                  mangoGroup.tokens[MNGO_INDEX].decimals
-                ).toFixed(3)
-              : 0}{' '}
-            MNGO in unclaimed rewards
+            {t('close-account:claim-x-mngo', {
+              amount: mangoGroup
+                ? nativeToUi(
+                    mngoAccrued.toNumber(),
+                    mangoGroup.tokens[MNGO_INDEX].decimals
+                  ).toFixed(3)
+                : 0
+            })}
           </div>
         ) : (
           ''
         )}
       </div>
-      <div className="text-th-fgd-2 text-center my-4">Goodbye 👋</div>
+      <div className="text-th-fgd-2 text-center my-4">{t('close-account:goodbye')}</div>
       <Button
         onClick={() => closeAccount()}
         disabled={
@@ -218,7 +218,7 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
         }
         className="mt-1 w-full"
       >
-        Close Account
+        {t('close-account:close-account')}
       </Button>
     </Modal>
   )
