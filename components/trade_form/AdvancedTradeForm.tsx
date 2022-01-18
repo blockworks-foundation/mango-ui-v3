@@ -969,7 +969,7 @@ export default function AdvancedTradeForm({
                     checked={spotMargin}
                     onChange={(e) => marginOnChange(e.target.checked)}
                   >
-                    Margin
+                    {t('margin')}
                   </Checkbox>
                 </Tooltip>
               </div>
@@ -980,10 +980,7 @@ export default function AdvancedTradeForm({
               <div>
                 <ExclamationIcon className="h-5 w-5 mr-2" />
               </div>
-              <div className="text-xs">
-                This order will likely have extremely large slippage! Consider
-                using Stop Limit or Take Profit Limit order instead.
-              </div>
+              <div className="text-xs">{t('slippage-warning')}</div>
             </div>
           ) : null}
           <div className={`flex pt-4`}>
@@ -1085,7 +1082,7 @@ export default function AdvancedTradeForm({
                     <div className="flex justify-between mb-1 text-th-fgd-3 text-xs">
                       <div className="flex items-center">
                         {t('max-slippage')}
-                        <Tooltip content="If price slips more than your max slippage, your order will be partially filled up to that price.">
+                        <Tooltip content={t('tooltip-slippage')}>
                           <div className="outline-none focus:outline-none">
                             <InformationCircleIcon className="h-4 w-4 ml-1.5 text-th-fgd-3" />
                           </div>
