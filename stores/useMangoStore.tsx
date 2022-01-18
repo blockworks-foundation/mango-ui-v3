@@ -33,7 +33,7 @@ import {
   NODE_URL_KEY,
 } from '../components/SettingsModal'
 import { MSRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
-import { getProfilePicture } from '@solflare-wallet/pfp'
+import { getProfilePicture, ProfilePicture } from '@solflare-wallet/pfp'
 
 export const ENDPOINTS: EndpointInfo[] = [
   {
@@ -186,7 +186,7 @@ interface MangoStore extends State {
     connected: boolean
     current: WalletAdapter | undefined
     tokens: WalletToken[]
-    pfp: string
+    pfp: ProfilePicture
   }
   settings: {
     uiLocked: boolean
@@ -347,7 +347,7 @@ const useMangoStore = create<MangoStore>((set, get) => {
           const result = await getProfilePicture(connection, walletPk)
 
           set((state) => {
-            state.wallet.pfp = result.url
+            state.wallet.pfp = result
           })
         } catch (e) {
           console.log('Could not get profile picture', e)

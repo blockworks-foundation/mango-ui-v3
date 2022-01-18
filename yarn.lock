@@ -2049,10 +2049,10 @@
     superstruct "^0.14.2"
     tweetnacl "^1.0.0"
 
-"@solflare-wallet/pfp@^0.0.5":
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/@solflare-wallet/pfp/-/pfp-0.0.5.tgz#5c3a712703b030bbb04f63c60e81732f2336875a"
-  integrity sha512-3gtRPR+PssRhhXVPdO7dStRF1T9jys0e9hGGbrBLaYkkmoGmHh/Vv57KQq6vFI5GrAXUOClikHQ7oTT4Dqq6Mw==
+"@solflare-wallet/pfp@^0.0.6":
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/@solflare-wallet/pfp/-/pfp-0.0.6.tgz#0dc360e7ebb11029977f5cd5593b5dc5e6074bab"
+  integrity sha512-XZxgD2VvCFweaPHzWpbKcp+wJvpOYihBBj+kCEJr9gDGdEEJNpBAiJAr5QO2L85Zg0IIXdMD+wi7m5K0m/2/wg==
   dependencies:
     "@metaplex-foundation/mpl-token-metadata" "0.0.2"
     "@project-serum/borsh" "^0.2.3"
