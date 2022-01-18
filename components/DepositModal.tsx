@@ -70,7 +70,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
         notify({
           title: t('deposit-successful'),
           type: 'success',
-          txid: response.toString(),
+          txid: response instanceof Array ? response[1] : response,
         })
         setSubmitting(false)
         onClose()

@@ -75,8 +75,8 @@ const MarketSelect = () => {
           }}
           className="border-l-[20px] border-th-bkg-4"
         />
-        <div className="flex items-center justify-between pl-3 w-full">
-          <div className="flex items-center space-x-6">
+        <div className="flex items-center justify-between w-full">
+          <div className="flex items-center">
             {sortedMarkets
               .filter((m) => !hiddenMarkets.includes(m.baseAsset))
               .map((s) => (

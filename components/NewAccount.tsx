@@ -63,7 +63,11 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
         actions.fetchWalletTokens()
         actions.fetchAllMangoAccounts()
         setSubmitting(false)
-        onAccountCreation(response)
+        onAccountCreation(response[0])
+        notify({
+          title: 'Mango Account Created',
+          txid: response[1],
+        })
       })
       .catch((e) => {
         setSubmitting(false)

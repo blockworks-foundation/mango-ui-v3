@@ -21,6 +21,7 @@ import WithdrawModal from './WithdrawModal'
 import { ExpandableRow } from './TableElements'
 import MobileTableHeader from './mobile/MobileTableHeader'
 import { useTranslation } from 'next-i18next'
+import { TransactionSignature } from '@solana/web3.js'
 
 const BalancesTable = ({ showZeroBalances = false }) => {
   const { t } = useTranslation('common')
@@ -100,7 +101,8 @@ const BalancesTable = ({ showZeroBalances = false }) => {
       const spotMarkets = Object.values(markets).filter(
         (mkt) => mkt instanceof Market
       ) as Market[]
-      const txids = await mangoClient.settleAll(
+
+      const txids: TransactionSignature[] = await mangoClient.settleAll(
         mangoGroup,
         mangoAccount,
         spotMarkets,

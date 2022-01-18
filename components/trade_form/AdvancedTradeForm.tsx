@@ -33,8 +33,11 @@ import EstPriceImpact from './EstPriceImpact'
 import useFees from '../../hooks/useFees'
 import { useTranslation } from 'next-i18next'
 import useSrmAccount from '../../hooks/useSrmAccount'
-import { useLocalStorageStringState } from '../../hooks/useLocalStorageState'
+import useLocalStorageState, {
+  useLocalStorageStringState,
+} from '../../hooks/useLocalStorageState'
 import InlineNotification from '../InlineNotification'
+import { DEFAULT_SPOT_MARGIN_KEY } from '../SettingsModal'
 
 const MAX_SLIPPAGE_KEY = 'maxSlippage'
 
@@ -64,7 +67,11 @@ export default function AdvancedTradeForm({
   const market = useMangoStore((s) => s.selectedMarket.current)
   const isPerpMarket = market instanceof PerpMarket
   const [reduceOnly, setReduceOnly] = useState(false)
-  const [spotMargin, setSpotMargin] = useState(true)
+  const [defaultSpotMargin] = useLocalStorageState(
+    DEFAULT_SPOT_MARGIN_KEY,
+    false
+  )
+  const [spotMargin, setSpotMargin] = useState(defaultSpotMargin)
   const [positionSizePercent, setPositionSizePercent] = useState('')
   const [insufficientSol, setInsufficientSol] = useState(false)
   const { takerFee, makerFee } = useFees()
@@ -664,7 +671,18 @@ export default function AdvancedTradeForm({
           )
         }
       }
-      notify({ title: t('successfully-placed'), txid })
+      if (txid instanceof Array) {
+        for (const [index, id] of txid.entries()) {
+          notify({
+            title:
+              index === 0 ? 'Transaction successful' : t('successfully-placed'),
+            txid: id,
+          })
+        }
+      } else {
+        notify({ title: t('successfully-placed'), txid })
+      }
+
       setPrice('')
       onSetBaseSize('')
     } catch (e) {

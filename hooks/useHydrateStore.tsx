@@ -19,7 +19,6 @@ import {
 } from '../stores/selectors'
 
 const SECONDS = 1000
-const _SLOW_REFRESH_INTERVAL = 20 * SECONDS
 
 function decodeBook(market, accInfo: AccountInfo<Buffer>): number[][] {
   if (market && accInfo?.data) {
@@ -49,17 +48,33 @@ const useHydrateStore = () => {
   const connection = useMangoStore(connectionSelector)
   const mangoAccount = useMangoStore(mangoAccountSelector)
 
+  // Fetches mango group as soon as page loads
   useEffect(() => {
     actions.fetchMangoGroup()
   }, [actions])
 
   useInterval(() => {
-    actions.fetchMangoGroup()
-  }, 120 * SECONDS)
-
-  useInterval(() => {
     actions.fetchMangoGroupCache()
   }, 12 * SECONDS)
+
+  useInterval(() => {
+    if (mangoAccount) {
+      actions.fetchTradeHistory()
+      actions.reloadOrders()
+      actions.updateOpenOrders()
+    }
+  }, 60 * SECONDS)
+
+  useInterval(() => {
+    if (mangoAccount) {
+      actions.reloadMangoAccount()
+      actions.fetchWalletTokens()
+    }
+  }, 90 * SECONDS)
+
+  useInterval(() => {
+    actions.fetchMangoGroup()
+  }, 120 * SECONDS)
 
   useEffect(() => {
     const market = markets[marketConfig.publicKey.toString()]
@@ -81,18 +96,34 @@ const useHydrateStore = () => {
     console.log('in mango account WS useEffect')
     const subscriptionId = connection.onAccountChange(
       mangoAccount.publicKey,
-      (info) => {
-        console.log('mango account WS update: ', info)
+      (info, context) => {
+        if (info?.lamports === 0) return
 
-        const decodedMangoAccount = MangoAccountLayout.decode(info?.data)
-        const newMangoAccount = Object.assign(mangoAccount, decodedMangoAccount)
+        const lastSeenSlot =
+          useMangoStore.getState().selectedMangoAccount.lastSlot
+        const mangoAccountLastUpdated = new Date(
+          useMangoStore.getState().selectedMangoAccount.lastUpdatedAt
+        )
+        const newUpdatedAt = new Date()
+        const timeDiff =
+          mangoAccountLastUpdated.getTime() - newUpdatedAt.getTime()
 
-        // const lastSlot = useMangoStore.getState().connection.slot
+        // only updated mango account if it's been more than 1 second since last update
+        if (Math.abs(timeDiff / 1000) >= 1 && context.slot > lastSeenSlot) {
+          console.log('mango account WS update: ', info)
+          const decodedMangoAccount = MangoAccountLayout.decode(info?.data)
+          const newMangoAccount = Object.assign(
+            mangoAccount,
+            decodedMangoAccount
+          )
 
-        setMangoStore((state) => {
-          state.selectedMangoAccount.current = newMangoAccount
-          state.selectedMangoAccount.lastUpdatedAt = new Date().toISOString()
-        })
+          setMangoStore((state) => {
+            state.selectedMangoAccount.lastSlot = context.slot
+            state.selectedMangoAccount.current = newMangoAccount
+            state.selectedMangoAccount.lastUpdatedAt =
+              newUpdatedAt.toISOString()
+          })
+        }
       }
     )
 
@@ -160,7 +191,7 @@ const useHydrateStore = () => {
   // fetch filled trades for selected market
   useInterval(() => {
     actions.loadMarketFills()
-  }, _SLOW_REFRESH_INTERVAL)
+  }, 20 * SECONDS)
 
   useEffect(() => {
     actions.loadMarketFills()

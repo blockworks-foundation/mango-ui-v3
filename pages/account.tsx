@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import {
   CurrencyDollarIcon,
   DuplicateIcon,
@@ -6,6 +6,7 @@ import {
   ExternalLinkIcon,
   LinkIcon,
   PencilIcon,
+  TrashIcon,
 } from '@heroicons/react/outline'
 import useMangoStore, { serumProgramId } from '../stores/useMangoStore'
 import { copyToClipboard } from '../utils'
@@ -17,6 +18,7 @@ import AccountsModal from '../components/AccountsModal'
 import AccountOverview from '../components/account_page/AccountOverview'
 import AccountInterest from '../components/account_page/AccountInterest'
 import AccountFunding from '../components/account_page/AccountFunding'
+import AccountPerformance from '../components/account_page/AccountPerformance'
 import AccountNameModal from '../components/AccountNameModal'
 import Button from '../components/Button'
 import EmptyState from '../components/EmptyState'
@@ -30,6 +32,13 @@ import { useTranslation } from 'next-i18next'
 import Select from '../components/Select'
 import { useRouter } from 'next/router'
 import { PublicKey } from '@solana/web3.js'
+import CloseAccountModal from '../components/CloseAccountModal'
+import {
+  actionsSelector,
+  mangoAccountSelector,
+  mangoGroupSelector,
+  walletConnectedSelector,
+} from '../stores/selectors'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -40,21 +49,29 @@ export async function getStaticProps({ locale }) {
   }
 }
 
-const TABS = ['Portfolio', 'Orders', 'History', 'Interest', 'Funding']
+const TABS = [
+  'Portfolio',
+  'Orders',
+  'History',
+  'Interest',
+  'Funding',
+  'Performance',
+]
 
 export default function Account() {
   const { t } = useTranslation('common')
   const [showAccountsModal, setShowAccountsModal] = useState(false)
   const [showNameModal, setShowNameModal] = useState(false)
+  const [showCloseAccountModal, setShowCloseAccountModal] = useState(false)
   const [isCopied, setIsCopied] = useState(false)
   const [resetOnLeave, setResetOnLeave] = useState(false)
-  const connected = useMangoStore((s) => s.wallet.connected)
-  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
+  const connected = useMangoStore(walletConnectedSelector)
+  const mangoAccount = useMangoStore(mangoAccountSelector)
   const mangoClient = useMangoStore((s) => s.connection.client)
-  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  const mangoGroup = useMangoStore(mangoGroupSelector)
   const wallet = useMangoStore((s) => s.wallet.current)
   const isLoading = useMangoStore((s) => s.selectedMangoAccount.initialLoad)
-  const actions = useMangoStore((s) => s.actions)
+  const actions = useMangoStore(actionsSelector)
   const setMangoStore = useMangoStore((s) => s.set)
   const [viewIndex, setViewIndex] = useState(0)
   const [activeTab, setActiveTab] = useState(TABS[0])
@@ -73,6 +90,9 @@ export default function Account() {
   }
   const handleCloseNameModal = useCallback(() => {
     setShowNameModal(false)
+  }, [])
+  const handleCloseCloseAccountModal = useCallback(() => {
+    setShowCloseAccountModal(false)
   }, [])
 
   useEffect(() => {
@@ -167,7 +187,7 @@ export default function Account() {
                   {t('account-address-warning')}
                 </div>
               </div>
-              <div className="grid grid-cols-3 grid-rows-1 gap-2">
+              <div className="grid grid-cols-4 grid-rows-1 gap-2">
                 <Button
                   className="col-span-1 flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs"
                   onClick={() => setShowNameModal(true)}
@@ -175,6 +195,15 @@ export default function Account() {
                   <div className="flex items-center">
                     <PencilIcon className="h-4 w-4 mr-1.5" />
                     {mangoAccount?.name ? t('edit-name') : t('add-name')}
+                  </div>
+                </Button>
+                <Button
+                  className="col-span-1 flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs"
+                  onClick={() => setShowCloseAccountModal(true)}
+                >
+                  <div className="flex items-center">
+                    <TrashIcon className="h-4 w-4 mr-1.5" />
+                    Close Account
                   </div>
                 </Button>
                 <a
@@ -281,6 +310,13 @@ export default function Account() {
           onClose={handleCloseNameModal}
         />
       ) : null}
+      {showCloseAccountModal ? (
+        <CloseAccountModal
+          accountName={mangoAccount?.name}
+          isOpen={showCloseAccountModal}
+          onClose={handleCloseCloseAccountModal}
+        />
+      ) : null}
     </div>
   )
 }
@@ -297,6 +333,8 @@ const TabContent = ({ activeTab }) => {
       return <AccountInterest />
     case 'Funding':
       return <AccountFunding />
+    case 'Performance':
+      return <AccountPerformance />
     default:
       return <AccountOverview />
   }
