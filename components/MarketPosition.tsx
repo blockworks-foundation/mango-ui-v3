@@ -165,7 +165,7 @@ export default function MarketPosition() {
           </ElementTitle>
         ) : null}
         <div className="flex items-center justify-between pb-3">
-          <div className="font-normal text-th-fgd-3 leading-4">{t('size')}</div>
+          <div className="font-normal text-th-fgd-3 leading-4">{t('side')}</div>
           {initialLoad ? (
             <DataLoader />
           ) : (

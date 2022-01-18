@@ -46,7 +46,7 @@ export default function RecentMarketTrades() {
 
   useInterval(async () => {
     fetchTradesForChart()
-  }, 5000)
+  }, 2000)
 
   return !isMobile ? (
     <>

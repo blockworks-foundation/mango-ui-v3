@@ -28,7 +28,7 @@ export default function MarketMenuItem({ menuTitle = '', linksArray = [] }) {
       <div
         onMouseEnter={() => onHover(openState, 'onMouseEnter')}
         onMouseLeave={() => onHover(openState, 'onMouseLeave')}
-        className="cursor-pointer flex flex-col h-10"
+        className="cursor-pointer flex flex-col h-10 px-3"
       >
         <div className="default-transition flex items-center h-10 text-th-fgd-3 hover:text-th-primary focus:outline-none">
           <SymbolIcon

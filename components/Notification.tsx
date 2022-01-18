@@ -5,7 +5,7 @@ import {
   InformationCircleIcon,
   XCircleIcon,
 } from '@heroicons/react/outline'
-import useMangoStore from '../stores/useMangoStore'
+import useMangoStore, { CLUSTER } from '../stores/useMangoStore'
 import { Notification, notify } from '../utils/notifications'
 import { useTranslation } from 'next-i18next'
 import Loading from './Loading'
@@ -103,7 +103,7 @@ const Notification = ({ notification }: { notification: Notification }) => {
           hideNotification()
         }
       },
-      parsedTitle || type === 'confirm' || type === 'error' ? 30000 : 8000
+      parsedTitle || type === 'confirm' || type === 'error' ? 20000 : 8000
     )
 
     return () => {
@@ -117,7 +117,7 @@ const Notification = ({ notification }: { notification: Notification }) => {
     <div
       className={`max-w-sm w-full bg-th-bkg-3 border border-th-bkg-4 shadow-lg rounded-md mt-2 pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden`}
     >
-      <div className={`flex items-center p-4 relative`}>
+      <div className={`flex items-center px-2 py-2.5 relative`}>
         <div className={`flex-shrink-0`}>
           {type === 'success' ? (
             <CheckCircleIcon className={`text-th-green h-7 w-7 mr-1`} />
@@ -133,20 +133,24 @@ const Notification = ({ notification }: { notification: Notification }) => {
           )}
         </div>
         <div className={`ml-2 flex-1`}>
-          <div className={`font-bold text-base text-th-fgd-1`}>
+          <div className={`font-bold text-normal text-th-fgd-1`}>
             {parsedTitle || title}
           </div>
           {description ? (
-            <p className={`mb-0 mt-0.5 text-th-fgd-3`}>{description}</p>
+            <p className={`mb-0 mt-0.5 text-th-fgd-3 leading-tight`}>
+              {description}
+            </p>
           ) : null}
           {txid ? (
             <a
-              href={'https://explorer.solana.com/tx/' + txid}
-              className="flex items-center mt-0.5 text-sm"
+              href={
+                'https://explorer.solana.com/tx/' + txid + '?cluster=' + CLUSTER
+              }
+              className="flex items-center mt-1 text-sm"
               target="_blank"
               rel="noreferrer"
             >
-              <div className="break-all flex-1">
+              <div className="break-all flex-1 text-xs">
                 {type === 'error'
                   ? txid
                   : `${txid.slice(0, 14)}...${txid.slice(txid.length - 14)}`}

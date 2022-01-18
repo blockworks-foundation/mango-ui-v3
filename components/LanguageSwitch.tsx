@@ -2,8 +2,14 @@ import { useEffect, useState } from 'react'
 import { TranslateIcon } from '@heroicons/react/outline'
 import DropMenu from './DropMenu'
 import { useRouter } from 'next/router'
+import dayjs from 'dayjs'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import { useTranslation } from 'next-i18next'
+
+require('dayjs/locale/en')
+require('dayjs/locale/es')
+require('dayjs/locale/zh')
+require('dayjs/locale/zh-tw')
 
 export const LANGS = [
   { locale: 'en', name: 'english', description: 'english' },
@@ -29,6 +35,7 @@ const LanguageSwitch = () => {
   const handleLangChange = (e) => {
     setSavedLanguage(e)
     router.push({ pathname, query }, asPath, { locale: e })
+    dayjs.locale(e == 'zh_tw' ? 'zh-tw' : e)
   }
 
   return (

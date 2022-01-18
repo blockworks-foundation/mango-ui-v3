@@ -33,8 +33,11 @@ import EstPriceImpact from './EstPriceImpact'
 import useFees from '../../hooks/useFees'
 import { useTranslation } from 'next-i18next'
 import useSrmAccount from '../../hooks/useSrmAccount'
-import { useLocalStorageStringState } from '../../hooks/useLocalStorageState'
+import useLocalStorageState, {
+  useLocalStorageStringState,
+} from '../../hooks/useLocalStorageState'
 import InlineNotification from '../InlineNotification'
+import { DEFAULT_SPOT_MARGIN_KEY } from '../SettingsModal'
 
 const MAX_SLIPPAGE_KEY = 'maxSlippage'
 
@@ -64,7 +67,11 @@ export default function AdvancedTradeForm({
   const market = useMangoStore((s) => s.selectedMarket.current)
   const isPerpMarket = market instanceof PerpMarket
   const [reduceOnly, setReduceOnly] = useState(false)
-  const [spotMargin, setSpotMargin] = useState(true)
+  const [defaultSpotMargin] = useLocalStorageState(
+    DEFAULT_SPOT_MARGIN_KEY,
+    false
+  )
+  const [spotMargin, setSpotMargin] = useState(defaultSpotMargin)
   const [positionSizePercent, setPositionSizePercent] = useState('')
   const [insufficientSol, setInsufficientSol] = useState(false)
   const { takerFee, makerFee } = useFees()
@@ -170,7 +177,7 @@ export default function AdvancedTradeForm({
     }
   }, [set, tradeType, side])
 
-  const { max, deposits, borrows, spotMax } = useMemo(() => {
+  const { max, deposits, borrows, spotMax, reduceMax } = useMemo(() => {
     if (!mangoAccount) return { max: 0 }
     const priceOrDefault = price
       ? I80F48.fromNumber(price)
@@ -211,6 +218,14 @@ export default function AdvancedTradeForm({
       priceOrDefault
     )
 
+    let reduceMax
+    if (market && market instanceof PerpMarket) {
+      reduceMax =
+        Math.abs(market?.baseLotsToNumber(perpAccount?.basePosition)) || 0
+    } else {
+      reduceMax = 0
+    }
+
     if (maxQuote.toNumber() <= 0) return { max: 0 }
     // multiply the maxQuote by a scaler value to account for
     // srm fees or rounding issues in getMaxLeverageForMarket
@@ -220,8 +235,17 @@ export default function AdvancedTradeForm({
       : (maxQuote.toNumber() * maxScaler) /
         mangoGroup.getPrice(marketIndex, mangoCache).toNumber()
 
-    return { max: scaledMax, deposits, borrows, spotMax }
-  }, [mangoAccount, mangoGroup, mangoCache, marketIndex, market, side, price])
+    return { max: scaledMax, deposits, borrows, spotMax, reduceMax }
+  }, [
+    mangoAccount,
+    mangoGroup,
+    mangoCache,
+    marketIndex,
+    market,
+    side,
+    price,
+    reduceOnly,
+  ])
 
   const onChangeSide = (side) => {
     setPositionSizePercent('')
@@ -402,19 +426,23 @@ export default function AdvancedTradeForm({
     setIoc(checked)
   }
   const reduceOnChange = (checked) => {
+    handleSetPositionSize(positionSizePercent, spotMargin, checked)
     setReduceOnly(checked)
   }
   const marginOnChange = (checked) => {
     setSpotMargin(checked)
     if (positionSizePercent) {
-      handleSetPositionSize(positionSizePercent, checked)
+      handleSetPositionSize(positionSizePercent, checked, reduceOnly)
     }
   }
 
-  const handleSetPositionSize = (percent, spotMargin) => {
+  const handleSetPositionSize = (percent, spotMargin, reduceOnly) => {
     setPositionSizePercent(percent)
-    const baseSizeMax =
-      spotMargin || marketConfig.kind === 'perp' ? max : spotMax
+    const baseSizeMax = reduceOnly
+      ? reduceMax
+      : spotMargin || marketConfig.kind === 'perp'
+      ? max
+      : spotMax
     const baseSize = baseSizeMax * (parseInt(percent) / 100)
     const step = parseFloat(minOrderSize)
     const roundedSize = (Math.floor(baseSize / step) * step).toFixed(
@@ -493,10 +521,8 @@ export default function AdvancedTradeForm({
     }
 
     const estimatedSize =
-      perpAccount && reduceOnly
-        ? Math.abs(
-            (market as PerpMarket).baseLotsToNumber(perpAccount.basePosition)
-          )
+      perpAccount && reduceOnly && market instanceof PerpMarket
+        ? Math.abs(market.baseLotsToNumber(perpAccount.basePosition))
         : baseSize
     estimatedPrice = estimateMarketPrice(orderbook, estimatedSize || 0, side)
 
@@ -645,7 +671,18 @@ export default function AdvancedTradeForm({
           )
         }
       }
-      notify({ title: t('successfully-placed'), txid })
+      if (txid instanceof Array) {
+        for (const [index, id] of txid.entries()) {
+          notify({
+            title:
+              index === 0 ? 'Transaction successful' : t('successfully-placed'),
+            txid: id,
+          })
+        }
+      } else {
+        notify({ title: t('successfully-placed'), txid })
+      }
+
       setPrice('')
       onSetBaseSize('')
     } catch (e) {
@@ -840,7 +877,7 @@ export default function AdvancedTradeForm({
         <div className="col-span-12 -mt-1">
           <ButtonGroup
             activeValue={positionSizePercent}
-            onChange={(p) => handleSetPositionSize(p, spotMargin)}
+            onChange={(p) => handleSetPositionSize(p, spotMargin, reduceOnly)}
             unit="%"
             values={
               isMobile

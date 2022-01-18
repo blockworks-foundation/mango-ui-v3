@@ -8,6 +8,7 @@ import { AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts'
 import useDimensions from 'react-cool-dimensions'
 import { IconButton } from './Button'
 import { LineChartIcon } from './icons'
+import { useTranslation } from 'next-i18next'
 
 dayjs.extend(relativeTime)
 
@@ -40,6 +41,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
   const [daysToShow, setDaysToShow] = useState(1)
   const [topHolders, setTopHolders] = useState(null)
   const { observe, width, height } = useDimensions()
+  const { t } = useTranslation(['common', 'swap'])
 
   const getTopHolders = async (inputMint, outputMint) => {
     const inputResponse = await fetch(
@@ -317,7 +319,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
       ) : (
         <div className="bg-th-bkg-3 mt-4 md:mt-0 p-4 rounded-md text-center text-th-fgd-3">
           <LineChartIcon className="h-6 mx-auto text-th-primary w-6" />
-          Chart not available
+          {t('swap:chart-not-available')}
         </div>
       )}
 
@@ -395,7 +397,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                       {inputTokenInfo.market_cap_rank ? (
                         <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
                           <div className="text-th-fgd-3 text-xs">
-                            Market Cap Rank
+                            {t('swap:market-cap-rank')}
                           </div>
                           <div className="font-bold text-th-fgd-1 text-lg">
                             #{inputTokenInfo.market_cap_rank}
@@ -406,7 +408,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                       inputTokenInfo.market_data?.market_cap?.usd !== 0 ? (
                         <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
                           <div className="text-th-fgd-3 text-xs">
-                            Market Cap
+                            {t('swap:market-cap')}
                           </div>
                           <div className="font-bold text-th-fgd-1 text-lg">
                             $
@@ -419,7 +421,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                       {inputTokenInfo.market_data.total_volume?.usd ? (
                         <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
                           <div className="text-th-fgd-3 text-xs">
-                            24h Volume
+                            {t('daily-volume')}
                           </div>
                           <div className="font-bold text-th-fgd-1 text-lg">
                             $
@@ -432,7 +434,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                       {inputTokenInfo.market_data?.circulating_supply ? (
                         <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
                           <div className="text-th-fgd-3 text-xs">
-                            Token Supply
+                            {t('swap:token-supply')}
                           </div>
                           <div className="font-bold text-th-fgd-1 text-lg">
                             {numberCompacter.format(
@@ -441,7 +443,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                           </div>
                           {inputTokenInfo.market_data?.max_supply ? (
                             <div className="text-th-fgd-2 text-xs">
-                              Max Supply:{' '}
+                              {t('swap:max-supply')}:{' '}
                               {numberCompacter.format(
                                 inputTokenInfo.market_data.max_supply
                               )}
@@ -452,7 +454,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                       {inputTokenInfo.market_data?.ath?.usd ? (
                         <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
                           <div className="text-th-fgd-3 text-xs">
-                            All-Time High
+                            {t('swap:ath')}
                           </div>
                           <div className="flex">
                             <div className="font-bold text-th-fgd-1 text-lg">
@@ -490,7 +492,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                       {inputTokenInfo.market_data?.atl?.usd ? (
                         <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
                           <div className="text-th-fgd-3 text-xs">
-                            All-Time Low
+                            {t('swap:atl')}
                           </div>
                           <div className="flex">
                             <div className="font-bold text-th-fgd-1 text-lg">
@@ -568,7 +570,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
         </div>
       ) : (
         <div className="bg-th-bkg-3 mt-3 p-4 rounded-md text-center text-th-fgd-3">
-          Input token information is not available.
+          {t('swap:input-info-unavailable')}
         </div>
       )}
 
@@ -646,7 +648,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                       {outputTokenInfo.market_cap_rank ? (
                         <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
                           <div className="text-th-fgd-3 text-xs">
-                            Market Cap Rank
+                            {t('swap:market-cap-rank')}
                           </div>
                           <div className="font-bold text-th-fgd-1 text-lg">
                             #{outputTokenInfo.market_cap_rank}
@@ -657,7 +659,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                       outputTokenInfo.market_data?.market_cap?.usd !== 0 ? (
                         <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
                           <div className="text-th-fgd-3 text-xs">
-                            Market Cap
+                            {t('swap:market-cap')}
                           </div>
                           <div className="font-bold text-th-fgd-1 text-lg">
                             $
@@ -670,7 +672,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                       {outputTokenInfo.market_data.total_volume?.usd ? (
                         <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
                           <div className="text-th-fgd-3 text-xs">
-                            24h Volume
+                            {t('daily-volume')}
                           </div>
                           <div className="font-bold text-th-fgd-1 text-lg">
                             $
@@ -683,7 +685,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                       {outputTokenInfo.market_data?.circulating_supply ? (
                         <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
                           <div className="text-th-fgd-3 text-xs">
-                            Token Supply
+                            {t('swap:token-supply')}
                           </div>
                           <div className="font-bold text-th-fgd-1 text-lg">
                             {numberCompacter.format(
@@ -692,7 +694,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                           </div>
                           {outputTokenInfo.market_data?.max_supply ? (
                             <div className="text-th-fgd-2 text-xs">
-                              Max Supply:{' '}
+                              {t('swap:max-supply')}:{' '}
                               {numberCompacter.format(
                                 outputTokenInfo.market_data.max_supply
                               )}
@@ -703,7 +705,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                       {outputTokenInfo.market_data?.ath?.usd ? (
                         <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
                           <div className="text-th-fgd-3 text-xs">
-                            All-Time High
+                            {t('swap:ath')}
                           </div>
                           <div className="flex">
                             <div className="font-bold text-th-fgd-1 text-lg">
@@ -741,7 +743,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                       {outputTokenInfo.market_data?.atl?.usd ? (
                         <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
                           <div className="text-th-fgd-3 text-xs">
-                            All-Time Low
+                            {t('swap:atl')}
                           </div>
                           <div className="flex">
                             <div className="font-bold text-th-fgd-1 text-lg">
@@ -819,7 +821,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
         </div>
       ) : (
         <div className="bg-th-bkg-3 mt-3 p-4 rounded-md text-center text-th-fgd-3">
-          Output token information is not available.
+          {t('swap:output-info-unavailable')}
         </div>
       )}
     </div>

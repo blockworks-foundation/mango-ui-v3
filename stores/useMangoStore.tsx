@@ -52,8 +52,8 @@ export const ENDPOINTS: EndpointInfo[] = [
 ]
 
 type ClusterType = 'mainnet' | 'devnet'
-
-const CLUSTER = (process.env.NEXT_PUBLIC_CLUSTER as ClusterType) || 'mainnet'
+const DEFAULT_MANGO_GROUP_NAME = process.env.NEXT_PUBLIC_GROUP || 'mainnet.1'
+export const CLUSTER = DEFAULT_MANGO_GROUP_NAME.split('.')[0] as ClusterType
 const ENDPOINT = ENDPOINTS.find((e) => e.name === CLUSTER)
 
 export const WEBSOCKET_CONNECTION = new Connection(
@@ -61,7 +61,6 @@ export const WEBSOCKET_CONNECTION = new Connection(
   'processed' as Commitment
 )
 
-const DEFAULT_MANGO_GROUP_NAME = process.env.NEXT_PUBLIC_GROUP || 'mainnet.1'
 export const DEFAULT_MANGO_GROUP_CONFIG = Config.ids().getGroup(
   CLUSTER,
   DEFAULT_MANGO_GROUP_NAME
@@ -78,8 +77,8 @@ export const serumProgramId = new PublicKey(defaultMangoGroupIds.serumProgramId)
 const mangoGroupPk = new PublicKey(defaultMangoGroupIds.publicKey)
 
 // Used to retry loading the MangoGroup and MangoAccount if an rpc node error occurs
-// let mangoGroupRetryAttempt = 0
-// let mangoAccountRetryAttempt = 0
+let mangoGroupRetryAttempt = 0
+let mangoAccountRetryAttempt = 0
 
 export const INITIAL_STATE = {
   WALLET: {
@@ -162,7 +161,8 @@ interface MangoStore extends State {
   selectedMangoAccount: {
     current: MangoAccount | null
     initialLoad: boolean
-    lastUpdatedAt: number
+    lastUpdatedAt: string
+    lastSlot: number
   }
   tradeForm: {
     side: 'buy' | 'sell'
@@ -191,6 +191,8 @@ interface MangoStore extends State {
   tradeHistory: any[]
   set: (x: any) => void
   actions: {
+    fetchAllMangoAccounts: () => Promise<void>
+    fetchMangoGroup: () => Promise<void>
     [key: string]: (args?) => void
   }
   alerts: {
@@ -263,7 +265,8 @@ const useMangoStore = create<MangoStore>((set, get) => {
     selectedMangoAccount: {
       current: null,
       initialLoad: true,
-      lastUpdatedAt: 0,
+      lastUpdatedAt: '0',
+      lastSlot: 0,
     },
     tradeForm: {
       side: 'buy',
@@ -337,7 +340,7 @@ const useMangoStore = create<MangoStore>((set, get) => {
         const mangoGroup = get().selectedMangoGroup.current
         const mangoClient = get().connection.client
         const wallet = get().wallet.current
-        // const actions = get().actions
+        const actions = get().actions
         const walletPk = wallet?.publicKey
 
         if (!walletPk) return
@@ -370,17 +373,17 @@ const useMangoStore = create<MangoStore>((set, get) => {
             }
           })
           .catch((err) => {
-            // if (mangoAccountRetryAttempt < 2) {
-            //   actions.fetchAllMangoAccounts()
-            //   mangoAccountRetryAttempt++
-            // }
-            // mangoAccountRetryAttempt = 0
-            notify({
-              type: 'error',
-              title: 'Unable to load mango account',
-              description: err.message,
-            })
-            console.log('Could not get margin accounts for wallet', err)
+            if (mangoAccountRetryAttempt < 2) {
+              actions.fetchAllMangoAccounts()
+              mangoAccountRetryAttempt++
+            } else {
+              notify({
+                type: 'error',
+                title: 'Unable to load mango account',
+                description: err.message,
+              })
+              console.log('Could not get margin accounts for wallet', err)
+            }
           })
       },
       async fetchMangoGroup() {
@@ -389,17 +392,19 @@ const useMangoStore = create<MangoStore>((set, get) => {
         const selectedMarketConfig = get().selectedMarket.config
         const mangoClient = get().connection.client
         const connection = get().connection.current
-        // const actions = get().actions
+        const actions = get().actions
 
         return mangoClient
           .getMangoGroup(mangoGroupPk)
           .then(async (mangoGroup) => {
+            mangoGroup.loadCache(connection).then((mangoCache) => {
+              set((state) => {
+                state.selectedMangoGroup.cache = mangoCache
+              })
+            })
             mangoGroup.loadRootBanks(connection).then(() => {
-              mangoGroup.loadCache(connection).then((mangoCache) => {
-                set((state) => {
-                  state.selectedMangoGroup.current = mangoGroup
-                  state.selectedMangoGroup.cache = mangoCache
-                })
+              set((state) => {
+                state.selectedMangoGroup.current = mangoGroup
               })
             })
             const allMarketConfigs = getAllMarkets(mangoGroupConfig)
@@ -470,17 +475,17 @@ const useMangoStore = create<MangoStore>((set, get) => {
             })
           })
           .catch((err) => {
-            // if (mangoGroupRetryAttempt < 2) {
-            //   actions.fetchMangoGroup()
-            //   mangoGroupRetryAttempt++
-            // }
-            // mangoGroupRetryAttempt = 0
-            notify({
-              title: 'Failed to load mango group. Please refresh',
-              description: `${err}`,
-              type: 'error',
-            })
-            console.log('Could not get mango group: ', err)
+            if (mangoGroupRetryAttempt < 2) {
+              actions.fetchMangoGroup()
+              mangoGroupRetryAttempt++
+            } else {
+              notify({
+                title: 'Failed to load mango group. Please refresh',
+                description: `${err}`,
+                type: 'error',
+              })
+              console.log('Could not get mango group: ', err)
+            }
           })
       },
       async fetchTradeHistory(mangoAccount = null) {
@@ -522,16 +527,18 @@ const useMangoStore = create<MangoStore>((set, get) => {
         const connection = get().connection.current
         const mangoClient = get().connection.client
 
-        const reloadedMangoAccount = await mangoAccount.reloadFromSlot(
-          connection,
-          mangoClient.lastSlot
-        )
+        const [reloadedMangoAccount, lastSlot] =
+          await mangoAccount.reloadFromSlot(connection, mangoClient.lastSlot)
+        const lastSeenSlot = get().selectedMangoAccount.lastSlot
 
-        set((state) => {
-          state.selectedMangoAccount.current = reloadedMangoAccount
-          state.selectedMangoAccount.lastUpdatedAt = new Date().toISOString()
-        })
-        console.log('reloaded mango account', reloadedMangoAccount)
+        if (lastSlot > lastSeenSlot) {
+          set((state) => {
+            state.selectedMangoAccount.current = reloadedMangoAccount
+            state.selectedMangoAccount.lastUpdatedAt = new Date().toISOString()
+            state.selectedMangoAccount.lastSlot = lastSlot
+          })
+          console.log('reloaded mango account', reloadedMangoAccount)
+        }
       },
       async reloadOrders() {
         const mangoAccount = get().selectedMangoAccount.current

@@ -30,7 +30,12 @@ export async function deposit({
       Number(amount)
     )
   } else {
-    return await mangoClient.initMangoAccountAndDeposit(
+    const existingAccounts = await mangoClient.getMangoAccountsForOwner(
+      mangoGroup,
+      wallet.publicKey,
+      false
+    )
+    return await mangoClient.createMangoAccountAndDeposit(
       mangoGroup,
       wallet,
       mangoGroup.tokens[tokenIndex].rootBank,
@@ -38,6 +43,7 @@ export async function deposit({
       mangoGroup.rootBankAccounts[tokenIndex].nodeBankAccounts[0].vault,
       fromTokenAcc.publicKey,
       Number(amount),
+      existingAccounts.length,
       accountName
     )
   }

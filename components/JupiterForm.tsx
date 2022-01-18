@@ -275,7 +275,7 @@ const JupiterForm: FunctionComponent = () => {
 
   const getWalletTokenPrices = async () => {
     const ids = walletTokensWithInfos.map(
-      (token) => token.item.extensions.coingeckoId
+      (token) => token.item.extensions?.coingeckoId
     )
     const response = await fetch(
       `https://api.coingecko.com/api/v3/simple/price?ids=${ids.toString()}&vs_currencies=usd`
@@ -391,15 +391,15 @@ const JupiterForm: FunctionComponent = () => {
                       </div>
                       {walletTokensWithInfos
                         .sort((a, b) => {
-                          const aId = a.item.extensions.coingeckoId
-                          const bId = b.item.extensions.coingeckoId
+                          const aId = a.item.extensions?.coingeckoId
+                          const bId = b.item.extensions?.coingeckoId
                           return (
                             b.uiBalance * walletTokenPrices[bId]?.usd -
                             a.uiBalance * walletTokenPrices[aId]?.usd
                           )
                         })
                         .map((token) => {
-                          const geckoId = token.item.extensions.coingeckoId
+                          const geckoId = token.item.extensions?.coingeckoId
                           return (
                             <div
                               className="cursor-pointer default-transition flex items-center justify-between px-4 py-2 hover:bg-th-bkg-4"
@@ -743,9 +743,9 @@ const JupiterForm: FunctionComponent = () => {
                                   (formValue?.amount / outAmountUi)) *
                                   100 <=
                                 0
-                                  ? 'cheaper'
-                                  : 'more expensive'
-                              } than CoinGecko`}</span>
+                                  ? t('swap:cheaper')
+                                  : t('swap:more-expensive')
+                              } CoinGecko`}</span>
                             </div>
                           ) : null}
                         </div>

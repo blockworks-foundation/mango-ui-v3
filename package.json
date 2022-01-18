@@ -8,17 +8,12 @@
     "devnet": "NEXT_PUBLIC_CLUSTER=devnet NEXT_PUBLIC_ENDPOINT=https://mango.devnet.rpcpool.com/ NEXT_PUBLIC_GROUP=devnet.2 next dev",
     "build": "next build",
     "start": "next start",
+    "prepare": "husky install",
     "type-check": "tsc --pretty --noEmit",
     "format": "prettier --write .",
     "lint": "eslint . --ext ts --ext tsx --ext js --quiet",
     "test": "jest",
     "test-all": "yarn lint && yarn type-check && yarn test"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged",
-      "pre-push": ""
-    }
   },
   "lint-staged": {
     "*.@(ts|tsx)": [
@@ -27,7 +22,7 @@
     ]
   },
   "dependencies": {
-    "@blockworks-foundation/mango-client": "latest",
+    "@blockworks-foundation/mango-client": "git+https://github.com/blockworks-foundation/mango-client-v3.git",
     "@headlessui/react": "^1.2.0",
     "@heroicons/react": "^1.0.0",
     "@jup-ag/react-hook": "^1.0.0-beta.4",

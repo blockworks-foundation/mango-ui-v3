@@ -9,7 +9,6 @@ import { numberCompacter, numberFormatter } from './SwapTokenInfo'
 import Button, { IconButton } from './Button'
 import Input from './Input'
 import { SearchIcon, XIcon } from '@heroicons/react/outline'
-import { time } from 'console'
 
 dayjs.extend(relativeTime)
 
@@ -151,7 +150,7 @@ const SwapTokenInsights = ({ formState, jupiterTokens, setOutputToken }) => {
             (t) => t?.extensions?.coingeckoId === insight.id
           )
           return (
-            <Disclosure>
+            <Disclosure key={insight.id}>
               {({ open }) => (
                 <>
                   <div

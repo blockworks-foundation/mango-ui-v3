@@ -11,10 +11,8 @@ import {
   BitpieWalletAdapter,
 } from '../utils/wallet-adapters'
 import { WalletAdapter } from '../@types/types'
-import useInterval from './useInterval'
 import { useTranslation } from 'next-i18next'
 
-const SECONDS = 1000
 const ASSET_URL =
   'https://cdn.jsdelivr.net/gh/solana-labs/oyster@main/assets/wallets'
 
@@ -67,7 +65,6 @@ export default function useWallet() {
     providerUrl: selectedProviderUrl,
   } = useMangoStore((state) => state.wallet)
   const endpoint = useMangoStore((state) => state.connection.endpoint)
-  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const actions = useMangoStore((s) => s.actions)
   const [savedProviderUrl, setSavedProviderUrl] = useLocalStorageState(
     PROVIDER_LOCAL_STORAGE_KEY,
@@ -147,19 +144,6 @@ export default function useWallet() {
       })
     })
   }, [wallet, setMangoStore])
-
-  useInterval(() => {
-    if (connected && mangoAccount) {
-      actions.fetchWalletTokens()
-      actions.fetchTradeHistory()
-    }
-  }, 90 * SECONDS)
-
-  useInterval(() => {
-    if (connected && mangoAccount) {
-      actions.reloadMangoAccount()
-    }
-  }, 90 * SECONDS)
 
   return { connected, wallet }
 }
