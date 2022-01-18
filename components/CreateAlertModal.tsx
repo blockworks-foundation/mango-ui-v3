@@ -21,7 +21,7 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  const { t } = useTranslation('common')
+  const { t } = useTranslation(['common', 'alerts'])
   const actions = useMangoStore((s) => s.actions)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
@@ -51,13 +51,13 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
   async function onCreateAlert() {
     if (!email) {
       notify({
-        title: 'An email address is required',
+        title: t('alerts:email-address-required'),
         type: 'error',
       })
       return
     } else if (!health) {
       notify({
-        title: 'Alert health is required',
+        title: t('alerts:alert-health-required'),
         type: 'error',
       })
       return
@@ -96,8 +96,8 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
               <Modal.Header>
                 <div className="flex items-center justify-between w-full">
                   <div className="w-20" />
-                  <ElementTitle noMarginBottom>
-                    {t('active-alerts')}
+                  <ElementTitle noMarignBottom>
+                    {t('alerts:active-alerts')}
                   </ElementTitle>
                   <Button
                     className="col-span-1 flex items-center justify-center pt-0 pb-0 h-8 text-xs w-20"
@@ -118,7 +118,7 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
                     key={`${alert._id}${index}`}
                   >
                     <div className="text-th-fgd-1">
-                      {t('alert-info', { health: alert.health })}
+                      {t('alerts:alert-info', { health: alert.health })}
                     </div>
                     <TrashIcon
                       className="cursor-pointer default-transition h-5 text-th-fgd-3 w-5 hover:text-th-primary"
@@ -129,16 +129,16 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
               </div>
               {activeAlerts.length >= 3 ? (
                 <div className="mt-1 text-center text-xxs text-th-fgd-3">
-                  {t('alerts-max')}
+                  {t('alerts:alerts-max')}
                 </div>
               ) : null}
             </>
           ) : showAlertForm ? (
             <>
               <div>
-                <ElementTitle noMarginBottom>{t('create-alert')}</ElementTitle>
+                <ElementTitle noMarignBottom>{t('alerts:create-alert')}</ElementTitle>
                 <p className="mt-1 text-center text-th-fgd-4">
-                  {t('alerts-disclaimer')}
+                  {t('alerts:alerts-disclaimer')}
                 </p>
               </div>
               {error ? (
@@ -158,7 +158,7 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
               <div className="flex items-end mt-4">
                 <div className="w-full">
                   <div className="flex justify-between mb-1.5">
-                    <div className="text-th-fgd-1">{t('alert-health')}</div>
+                    <div className="text-th-fgd-1">{t('alerts:alert-health')}</div>
                     <LinkButton
                       className="font-normal text-th-fgd-3 text-xs"
                       onClick={() =>
@@ -193,7 +193,7 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
               </div>
               <div className="flex items-center mt-6">
                 <Button onClick={() => onCreateAlert()}>
-                  {t('create-alert')}
+                  {t('alerts:create-alert')}
                 </Button>
                 <LinkButton
                   className="ml-4 text-th-fgd-3 hover:text-th-fgd-1"
@@ -216,14 +216,14 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
           ) : (
             <div>
               <Modal.Header>
-                <ElementTitle noMarginBottom>{t('no-alerts')}</ElementTitle>
+                <ElementTitle noMarignBottom>{t('alerts:no-alerts')}</ElementTitle>
               </Modal.Header>
-              <p className="mb-4 text-center">{t('no-alerts-desc')}</p>
+              <p className="mb-4 text-center">{t('alerts:no-alerts-desc')}</p>
               <Button
                 className="flex justify-center m-auto"
                 onClick={() => setShowAlertForm(true)}
               >
-                {t('new-alert')}
+                {t('alerts:new-alert')}
               </Button>
             </div>
           )}
