@@ -44,6 +44,10 @@ import SwapSettingsModal from './SwapSettingsModal'
 import SwapTokenInfo from './SwapTokenInfo'
 import { numberFormatter } from './SwapTokenInfo'
 import { useTranslation } from 'next-i18next'
+import Tabs from './Tabs'
+import SwapTokenInsights from './SwapTokenInsights'
+
+const TABS = ['Market Data', 'Performance Insights']
 
 type UseJupiterProps = Parameters<typeof useJupiter>[0]
 
@@ -79,6 +83,11 @@ const JupiterForm: FunctionComponent = () => {
   const [showRoutesModal, setShowRoutesModal] = useState(false)
   const [loadWalletTokens, setLoadWalletTokens] = useState(false)
   const [swapRate, setSwapRate] = useState(false)
+  const [activeTab, setActiveTab] = useState('Market Data')
+
+  const handleTabChange = (tabName) => {
+    setActiveTab(tabName)
+  }
 
   const fetchWalletTokens = useCallback(async () => {
     const ownedTokens = []
@@ -143,14 +152,17 @@ const JupiterForm: FunctionComponent = () => {
     if (!coinGeckoList?.length) return
     setTokenPrices(null)
     const fetchTokenPrices = async () => {
-      const inputId = coinGeckoList.find(
-        (x) =>
-          x?.symbol?.toLowerCase() === inputTokenInfo?.symbol?.toLowerCase()
+      const inputId = coinGeckoList.find((x) =>
+        inputTokenInfos?.extensions?.coingeckoId
+          ? x?.id === inputTokenInfos.extensions.coingeckoId
+          : x?.symbol?.toLowerCase() === inputTokenInfo?.symbol?.toLowerCase()
       )?.id
-      const outputId = coinGeckoList.find(
-        (x) =>
-          x?.symbol?.toLowerCase() === outputTokenInfo?.symbol?.toLowerCase()
+      const outputId = coinGeckoList.find((x) =>
+        outputTokenInfos?.extensions?.coingeckoId
+          ? x?.id === outputTokenInfos.extensions.coingeckoId
+          : x?.symbol?.toLowerCase() === outputTokenInfo?.symbol?.toLowerCase()
       )?.id
+
       if (inputId && outputId) {
         const results = await fetch(
           `https://api.coingecko.com/api/v3/simple/price?ids=${inputId},${outputId}&vs_currencies=usd`
@@ -337,9 +349,9 @@ const JupiterForm: FunctionComponent = () => {
 
   return (
     <div className="grid grid-cols-12 lg:space-x-4">
-      <div className="col-span-12 lg:col-span-10 lg:col-start-2 ">
+      <div className="col-span-12 xl:col-span-10 xl:col-start-2 ">
         <div className="flex flex-col md:flex-row md:space-x-6">
-          <div className="w-full md:w-1/2  xl:w-1/3">
+          <div className="w-full md:w-1/2  lg:w-1/3">
             <div className="relative z-10">
               {connected &&
               walletTokensWithInfos.length &&
@@ -402,6 +414,7 @@ const JupiterForm: FunctionComponent = () => {
                               <div className="flex items-center">
                                 {token.item.logoURI ? (
                                   <img
+                                    className="rounded-full"
                                     src={token.item.logoURI}
                                     width="24"
                                     height="24"
@@ -489,6 +502,7 @@ const JupiterForm: FunctionComponent = () => {
                       <div className="flex h-8 items-center">
                         {inputTokenInfo?.logoURI ? (
                           <img
+                            className="rounded-full"
                             src={inputTokenInfo?.logoURI}
                             width="24"
                             height="24"
@@ -546,6 +560,7 @@ const JupiterForm: FunctionComponent = () => {
                     >
                       {outputTokenInfo?.logoURI ? (
                         <img
+                          className="rounded-full"
                           src={outputTokenInfo?.logoURI}
                           width="24"
                           height="24"
@@ -1157,11 +1172,25 @@ const JupiterForm: FunctionComponent = () => {
               ) : null}
             </div>
           </div>
-          <div className="w-full md:w-1/2 xl:w-2/3">
-            {inputTokenInfo && outputTokenInfo ? (
+          <div className="py-4 md:py-0 w-full md:w-1/2 lg:w-2/3">
+            <Tabs
+              activeTab={activeTab}
+              onChange={handleTabChange}
+              tabs={TABS}
+            />
+            {inputTokenInfo &&
+            outputTokenInfo &&
+            activeTab === 'Market Data' ? (
               <SwapTokenInfo
                 inputTokenId={inputTokenInfos?.extensions?.coingeckoId}
                 outputTokenId={outputTokenInfos?.extensions?.coingeckoId}
+              />
+            ) : null}
+            {activeTab === 'Performance Insights' ? (
+              <SwapTokenInsights
+                formState={formValue}
+                jupiterTokens={tokens}
+                setOutputToken={setFormValue}
               />
             ) : null}
           </div>
