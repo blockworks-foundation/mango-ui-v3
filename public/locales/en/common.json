@@ -412,5 +412,10 @@
   "you-must-leave-enough-sol": "You must leave enough SOL in your wallet to pay for the transaction",
   "your-account": "Your Account",
   "your-assets": "Your Assets",
-  "your-borrows": "Your Borrows"
+  "your-borrows": "Your Borrows",
+
+  "reset": "Reset",
+  "spot": "Spot",
+  "account-health": "Account Health",
+  "liabilities": "Liabilities"
 }
