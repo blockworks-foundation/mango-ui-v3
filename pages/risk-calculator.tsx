@@ -1467,8 +1467,8 @@ export default function RiskCalculator() {
                                 }`}
                               >
                                 {scenarioDetails.get('initHealth') * 100 >= 0
-                                  ? 'Yes'
-                                  : 'No'}
+                                  ? t('calculator:yes')
+                                  : t('calculator:no')}
                               </div>
                             </div>
                             <div className="flex items-center justify-between pb-3">
@@ -2069,8 +2069,8 @@ export default function RiskCalculator() {
                       }`}
                     >
                       {scenarioDetails.get('initHealth') * 100 >= 0
-                        ? 'Yes'
-                        : 'No'}
+                        ? t('calculator:yes')
+                        : t('calculator:no')}
                     </div>
                   </div>
                   <div className="flex items-center justify-between pb-3 mb-6">
