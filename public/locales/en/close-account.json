@@ -1,0 +1,16 @@
+{
+  "are-you-sure": "Are you sure?",
+  "before-you-continue": "Before you can continue",
+  "claim-x-mngo": "Claim {{amount}} MNGO rewards",
+  "close-account": "Close Account",
+  "close-all-borrows": "Close all borrows",
+  "close-open-orders": "Close all open orders",
+  "close-perp-positions": "Close and settle all Perp positons",
+  "closing-account-will": "Closing your Mango Account will:",
+  "delete-your-account": "Delete your Mango account",
+  "error-deleting-account": "Error deleting account",
+  "goodbye": "Until next time 👋",
+  "recover-x-sol": "Recover {{amount}} SOL (rent for your account)",
+  "transaction-confirmed": "Transaction Confirmed",
+  "withdraw-assets-worth": "Withdraw assets worth {{value}}"
+}
