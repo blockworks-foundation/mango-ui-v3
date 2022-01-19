@@ -108,6 +108,7 @@ export default function Account() {
           )
           setMangoStore((state) => {
             state.selectedMangoAccount.current = unOwnedMangoAccount
+            state.selectedMangoAccount.initialLoad = false
           })
           actions.fetchTradeHistory()
           setResetOnLeave(true)
@@ -118,6 +119,9 @@ export default function Account() {
     }
 
     if (pubkey) {
+      setMangoStore((state) => {
+        state.selectedMangoAccount.initialLoad = true
+      })
       loadUnownedMangoAccount()
     }
   }, [pubkey, mangoGroup])
@@ -171,9 +175,11 @@ export default function Account() {
                   <h1 className={`font-semibold mr-3 text-th-fgd-1 text-2xl`}>
                     {mangoAccount?.name || t('account')}
                   </h1>
-                  <IconButton onClick={() => setShowNameModal(true)}>
-                    <PencilIcon className="h-4 w-4" />
-                  </IconButton>
+                  {!pubkey ? (
+                    <IconButton onClick={() => setShowNameModal(true)}>
+                      <PencilIcon className="h-4 w-4" />
+                    </IconButton>
+                  ) : null}
                 </div>
                 <a
                   className="flex items-center text-th-fgd-3"
@@ -191,35 +197,37 @@ export default function Account() {
                   {t('account-address-warning')}
                 </div>
               </div>
-              <div className="grid grid-cols-3 grid-rows-1 gap-2">
-                <Button
-                  className="col-span-1 flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs"
-                  onClick={() => setShowCloseAccountModal(true)}
-                >
-                  <div className="flex items-center">
-                    <TrashIcon className="h-4 w-4 mr-1.5" />
-                    {t('close-account:close-account')}
-                  </div>
-                </Button>
-                <Button
-                  className="col-span-1 flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs"
-                  onClick={() => setShowAlertsModal(true)}
-                >
-                  <div className="flex items-center">
-                    <BellIcon className="h-4 w-4 mr-1.5" />
-                    Alerts
-                  </div>
-                </Button>
-                <Button
-                  className="col-span-1 flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs"
-                  onClick={() => setShowAccountsModal(true)}
-                >
-                  <div className="flex items-center">
-                    <CurrencyDollarIcon className="h-4 w-4 mr-1.5" />
-                    {t('accounts')}
-                  </div>
-                </Button>
-              </div>
+              {!pubkey ? (
+                <div className="grid grid-cols-3 grid-rows-1 gap-2">
+                  <Button
+                    className="col-span-1 flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs"
+                    onClick={() => setShowCloseAccountModal(true)}
+                  >
+                    <div className="flex items-center">
+                      <TrashIcon className="h-4 w-4 mr-1.5" />
+                      {t('close-account:close-account')}
+                    </div>
+                  </Button>
+                  <Button
+                    className="col-span-1 flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs"
+                    onClick={() => setShowAlertsModal(true)}
+                  >
+                    <div className="flex items-center">
+                      <BellIcon className="h-4 w-4 mr-1.5" />
+                      Alerts
+                    </div>
+                  </Button>
+                  <Button
+                    className="col-span-1 flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs"
+                    onClick={() => setShowAccountsModal(true)}
+                  >
+                    <div className="flex items-center">
+                      <CurrencyDollarIcon className="h-4 w-4 mr-1.5" />
+                      {t('accounts')}
+                    </div>
+                  </Button>
+                </div>
+              ) : null}
             </>
           ) : null}
         </div>
@@ -271,19 +279,17 @@ export default function Account() {
                 </div>
               </Swipeable>
             )
+          ) : isLoading ? (
+            <div className="flex justify-center py-10">
+              <Loading />
+            </div>
           ) : connected ? (
-            isLoading ? (
-              <div className="flex justify-center py-10">
-                <Loading />
-              </div>
-            ) : (
-              <EmptyState
-                buttonText={t('create-account')}
-                icon={<CurrencyDollarIcon />}
-                onClickButton={() => setShowAccountsModal(true)}
-                title={t('no-account-found')}
-              />
-            )
+            <EmptyState
+              buttonText={t('create-account')}
+              icon={<CurrencyDollarIcon />}
+              onClickButton={() => setShowAccountsModal(true)}
+              title={t('no-account-found')}
+            />
           ) : (
             <EmptyState
               buttonText={t('connect')}

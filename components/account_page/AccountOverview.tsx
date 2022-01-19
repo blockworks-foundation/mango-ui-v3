@@ -16,6 +16,7 @@ import Switch from '../Switch'
 import useLocalStorageState from '../../hooks/useLocalStorageState'
 import { ExclamationIcon } from '@heroicons/react/solid'
 import { useTranslation } from 'next-i18next'
+import { useRouter } from 'next/router'
 
 const SHOW_ZERO_BALANCE_KEY = 'showZeroAccountBalances-0.2'
 
@@ -26,6 +27,8 @@ export default function AccountOverview() {
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const mangoClient = useMangoStore((s) => s.connection.client)
+  const router = useRouter()
+  const { pubkey } = router.query
   const [showZeroBalances, setShowZeroBalances] = useLocalStorageState(
     SHOW_ZERO_BALANCE_KEY,
     true
@@ -165,13 +168,15 @@ export default function AccountOverview() {
                 : 0}
             </div>
           </div>
-          <LinkButton
-            onClick={handleRedeemMngo}
-            disabled={mngoAccrued.eq(ZERO_BN)}
-            className="text-th-primary text-xs"
-          >
-            {t('claim-reward')}
-          </LinkButton>
+          {!pubkey ? (
+            <LinkButton
+              onClick={handleRedeemMngo}
+              disabled={mngoAccrued.eq(ZERO_BN)}
+              className="text-th-primary text-xs"
+            >
+              {t('claim-reward')}
+            </LinkButton>
+          ) : null}
         </div>
       </div>
       <div className="pb-8">

@@ -220,6 +220,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                           />
                         </LinkButton>
                       </Th>
+                      <Th> </Th>
                     </TrHead>
                   </thead>
                   <tbody>
@@ -254,12 +255,28 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                           <Td>{formatUsdValue(trade.value)}</Td>
                           <Td>{trade.liquidity}</Td>
                           <Td>{formatUsdValue(trade.feeCost)}</Td>
-                          <Td>
+                          <Td className="w-[0.1%]">
                             {trade.loadTimestamp || trade.timestamp
                               ? renderTradeDateTime(
                                   trade.loadTimestamp || trade.timestamp
                                 )
                               : t('recent')}
+                          </Td>
+                          <Td className="w-[0.1%]">
+                            {trade.marketName.includes('PERP') ? (
+                              <a
+                                className="text-th-fgd-4 underline text-xs underline-offset-4"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                href={`/account?pubkey=${
+                                  trade.liquidity === 'Taker'
+                                    ? trade.maker
+                                    : trade.taker
+                                }`}
+                              >
+                                View Counterparty
+                              </a>
+                            ) : null}
                           </Td>
                         </TrBody>
                       )
