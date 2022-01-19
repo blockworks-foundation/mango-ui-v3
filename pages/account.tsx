@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import {
+  BellIcon,
   CurrencyDollarIcon,
-  DuplicateIcon,
   ExclamationCircleIcon,
   ExternalLinkIcon,
   LinkIcon,
@@ -9,7 +9,6 @@ import {
   TrashIcon,
 } from '@heroicons/react/outline'
 import useMangoStore, { serumProgramId } from '../stores/useMangoStore'
-import { copyToClipboard } from '../utils'
 import PageBodyContainer from '../components/PageBodyContainer'
 import TopBar from '../components/TopBar'
 import AccountOrders from '../components/account_page/AccountOrders'
@@ -39,6 +38,7 @@ import {
   mangoGroupSelector,
   walletConnectedSelector,
 } from '../stores/selectors'
+import CreateAlertModal from '../components/CreateAlertModal'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -63,6 +63,7 @@ export default function Account() {
   const [showAccountsModal, setShowAccountsModal] = useState(false)
   const [showNameModal, setShowNameModal] = useState(false)
   const [showCloseAccountModal, setShowCloseAccountModal] = useState(false)
+  const [showAlertsModal, setShowAlertsModal] = useState(false)
   const [isCopied, setIsCopied] = useState(false)
   const [resetOnLeave, setResetOnLeave] = useState(false)
   const connected = useMangoStore(walletConnectedSelector)
@@ -80,17 +81,18 @@ export default function Account() {
   const router = useRouter()
   const { pubkey } = router.query
 
+  const handleCloseAlertModal = useCallback(() => {
+    setShowAlertsModal(false)
+  }, [])
+
   const handleCloseAccounts = useCallback(() => {
     setShowAccountsModal(false)
   }, [])
 
-  const handleCopyPublicKey = (code) => {
-    setIsCopied(true)
-    copyToClipboard(code)
-  }
   const handleCloseNameModal = useCallback(() => {
     setShowNameModal(false)
   }, [])
+
   const handleCloseCloseAccountModal = useCallback(() => {
     setShowCloseAccountModal(false)
   }, [])
@@ -173,18 +175,17 @@ export default function Account() {
                     <PencilIcon className="h-4 w-4" />
                   </IconButton>
                 </div>
-                <div className="flex items-center text-th-fgd-3 ">
+                <a
+                  className="flex items-center text-th-fgd-3"
+                  href={`https://explorer.solana.com/address/${mangoAccount?.publicKey}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <span className="text-xxs sm:text-xs">
                     {mangoAccount.publicKey.toString()}
                   </span>
-                  <DuplicateIcon
-                    className="cursor-pointer default-transition h-4 w-4 ml-1.5 hover:text-th-fgd-1"
-                    onClick={() => handleCopyPublicKey(mangoAccount.publicKey)}
-                  />
-                  {isCopied ? (
-                    <div className="ml-2 text-th-fgd-2 text-xs">Copied!</div>
-                  ) : null}
-                </div>
+                  <ExternalLinkIcon className="cursor-pointer default-transition h-4 w-4 ml-1.5 hover:text-th-fgd-1" />
+                </a>
                 <div className="flex items-center text-th-red text-xxs">
                   <ExclamationCircleIcon className="h-4 mr-1.5 w-4" />
                   {t('account-address-warning')}
@@ -200,20 +201,23 @@ export default function Account() {
                     Close Account
                   </div>
                 </Button>
-                <a
-                  className="bg-th-bkg-4 col-span-1 default-transition flex font-bold h-8 items-center justify-center pl-3 pr-3 rounded-full text-th-fgd-1 text-xs hover:text-th-fgd-1 hover:brightness-[1.15] focus:outline-none"
-                  href={`https://explorer.solana.com/address/${mangoAccount?.publicKey}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Button
+                  className="col-span-1 flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs"
+                  onClick={() => setShowAlertsModal(true)}
                 >
-                  <span>{t('explorer')}</span>
-                  <ExternalLinkIcon className={`h-4 w-4 ml-1.5`} />
-                </a>
+                  <div className="flex items-center">
+                    <BellIcon className="h-4 w-4 mr-1.5" />
+                    Alerts
+                  </div>
+                </Button>
                 <Button
                   className="col-span-1 flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs"
                   onClick={() => setShowAccountsModal(true)}
                 >
-                  {t('accounts')}
+                  <div className="flex items-center">
+                    <CurrencyDollarIcon className="h-4 w-4 mr-1.5" />
+                    {t('accounts')}
+                  </div>
                 </Button>
               </div>
             </>
@@ -309,6 +313,12 @@ export default function Account() {
           accountName={mangoAccount?.name}
           isOpen={showCloseAccountModal}
           onClose={handleCloseCloseAccountModal}
+        />
+      ) : null}
+      {showAlertsModal ? (
+        <CreateAlertModal
+          isOpen={showAlertsModal}
+          onClose={handleCloseAlertModal}
         />
       ) : null}
     </div>
