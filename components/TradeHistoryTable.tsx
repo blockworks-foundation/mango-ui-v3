@@ -14,6 +14,7 @@ import { formatUsdValue } from '../utils'
 import { useTranslation } from 'next-i18next'
 import Pagination from './Pagination'
 import usePagination from '../hooks/usePagination'
+import { useEffect } from 'react'
 
 const renderTradeDateTime = (timestamp: BN | string) => {
   let date
@@ -37,10 +38,8 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
   const { t } = useTranslation('common')
   const { asPath } = useRouter()
   const tradeHistory = useTradeHistory({ excludePerpLiquidations: true })
-  const { items, requestSort, sortConfig } = useSortableData(tradeHistory)
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.md : false
-  const filteredTrades = numTrades ? items.slice(0, numTrades) : items
 
   const {
     paginatedData,
@@ -50,7 +49,16 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
     page,
     firstPage,
     lastPage,
-  } = usePagination(filteredTrades, { perPage: 500 })
+    setData,
+    data,
+  } = usePagination(tradeHistory || [], { perPage: 100 })
+  const { items, requestSort, sortConfig } = useSortableData(paginatedData)
+
+  useEffect(() => {
+    if (tradeHistory?.length && data?.length !== tradeHistory?.length) {
+      setData(tradeHistory)
+    }
+  }, [tradeHistory])
 
   const renderMarketName = (trade: any) => {
     if (
