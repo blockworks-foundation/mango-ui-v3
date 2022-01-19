@@ -92,7 +92,9 @@ export default function AccountOverview() {
             <CurrencyDollarIcon className="flex-shrink-0 h-5 w-5 sm:h-7 sm:w-7 mr-1.5 text-th-primary" />
             <div className="font-bold text-th-fgd-1 text-xl sm:text-2xl">
               {formatUsdValue(
-                +mangoAccount.computeValue(mangoGroup, mangoCache)
+                +mangoAccount
+                  .computeValue(mangoGroup, mangoCache)
+                  .add(mangoAccount.mgnoAccruedValue(mangoGroup, mangoCache))
               )}
             </div>
           </div>
