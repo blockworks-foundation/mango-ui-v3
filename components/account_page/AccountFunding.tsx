@@ -26,7 +26,7 @@ const AccountFunding = () => {
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const [fundingStats, setFundingStats] = useState<any>([])
   const [hourlyFunding, setHourlyFunding] = useState<any>([])
-  const [selectedAsset, setSelectedAsset] = useState<string>('BTC')
+  const [selectedAsset, setSelectedAsset] = useState<string>('')
   const [loadHourlyStats, setLoadHourlyStats] = useState(false)
   const [loadTotalStats, setLoadTotalStats] = useState(false)
   const {
@@ -44,7 +44,6 @@ const AccountFunding = () => {
     false
   )
   const [chartData, setChartData] = useState([])
-  const [showHours, setShowHours] = useState(false)
 
   const mangoAccountPk = useMemo(() => {
     return mangoAccount.publicKey.toString()
@@ -168,6 +167,16 @@ const AccountFunding = () => {
 
       const dailyFunding = []
 
+      for (let i = 0; i < 30; i++) {
+        dailyFunding.push({
+          funding: 0,
+          time: new Date(
+            // @ts-ignore
+            dayjs().utc().hour(0).minute(0).subtract(i, 'day')
+          ).getTime(),
+        })
+      }
+
       filtered.forEach((d) => {
         const found = dailyFunding.find(
           (x) =>
@@ -176,27 +185,10 @@ const AccountFunding = () => {
         if (found) {
           const newFunding = d.total_funding
           found.funding = found.funding + newFunding
-        } else {
-          dailyFunding.push({
-            time: d.time,
-            funding: d.total_funding,
-          })
         }
       })
-      if (dailyFunding.length <= 1) {
-        const chartFunding = []
-        hourlyFunding[selectedAsset].forEach((a) => {
-          chartFunding.push({
-            funding: a.total_funding,
-            time: a.time,
-          })
-        })
-        setShowHours(true)
-        setChartData(chartFunding.reverse())
-      } else {
-        setShowHours(false)
-        setChartData(dailyFunding.reverse())
-      }
+
+      setChartData(dailyFunding.reverse())
     }
   }, [hourlyFunding, selectedAsset])
 
@@ -339,30 +331,35 @@ const AccountFunding = () => {
                 </div>
                 {selectedAsset && chartData.length > 0 ? (
                   <div className="flex flex-col sm:flex-row space-x-0 sm:space-x-4 w-full">
-                    <div
-                      className="border border-th-bkg-4 relative mb-6 p-4 rounded-md w-full"
-                      style={{ height: '330px' }}
-                    >
-                      <Chart
-                        daysRange={showHours ? 1 : 30}
-                        hideRangeFilters
-                        title={t('funding-chart-title', {
-                          symbol: selectedAsset,
-                        })}
-                        xAxis="time"
-                        yAxis="funding"
-                        data={chartData}
-                        labelFormat={(x) =>
-                          x &&
-                          `${x?.toLocaleString(undefined, {
-                            maximumFractionDigits: 6,
-                          })} USDC`
-                        }
-                        tickFormat={handleDustTicks}
-                        type="bar"
-                        yAxisWidth={70}
-                      />
-                    </div>
+                    {chartData.find((d) => d.funding !== 0) ? (
+                      <div
+                        className="border border-th-bkg-4 relative mb-6 p-4 rounded-md w-full"
+                        style={{ height: '330px' }}
+                      >
+                        <Chart
+                          hideRangeFilters
+                          title={t('funding-chart-title')}
+                          xAxis="time"
+                          yAxis="funding"
+                          data={chartData}
+                          labelFormat={(x) =>
+                            x &&
+                            `${x?.toLocaleString(undefined, {
+                              maximumFractionDigits: 6,
+                            })} USDC`
+                          }
+                          tickFormat={handleDustTicks}
+                          titleValue={chartData.reduce(
+                            (a, c) => a + c.funding,
+                            0
+                          )}
+                          type="bar"
+                          useMulticoloredBars
+                          yAxisWidth={70}
+                          zeroLine
+                        />
+                      </div>
+                    ) : null}
                   </div>
                 ) : null}
                 <div>

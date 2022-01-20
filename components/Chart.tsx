@@ -1,7 +1,17 @@
 import { FunctionComponent, useState, ReactNode } from 'react'
 import { useTheme } from 'next-themes'
 import dayjs from 'dayjs'
-import { AreaChart, Area, XAxis, YAxis, Tooltip, BarChart, Bar } from 'recharts'
+import {
+  AreaChart,
+  Area,
+  Cell,
+  XAxis,
+  YAxis,
+  Tooltip,
+  BarChart,
+  Bar,
+  ReferenceLine,
+} from 'recharts'
 import useDimensions from 'react-cool-dimensions'
 import { numberCompactFormatter } from '../utils'
 
@@ -17,6 +27,9 @@ interface ChartProps {
   labelFormat: (x) => ReactNode
   tickFormat?: (x) => any
   showAll?: boolean
+  titleValue?: number
+  useMulticoloredBars?: boolean
+  zeroLine?: boolean
 }
 
 const Chart: FunctionComponent<ChartProps> = ({
@@ -31,6 +44,9 @@ const Chart: FunctionComponent<ChartProps> = ({
   hideRangeFilters,
   yAxisWidth,
   showAll = false,
+  titleValue,
+  useMulticoloredBars,
+  zeroLine,
 }) => {
   const [mouseData, setMouseData] = useState<string | null>(null)
   const [daysToShow, setDaysToShow] = useState(daysRange || 30)
@@ -82,10 +98,14 @@ const Chart: FunctionComponent<ChartProps> = ({
           ) : data.length > 0 ? (
             <>
               <div className="pb-1 text-xl text-th-fgd-1">
-                {labelFormat(data[data.length - 1][yAxis])}
+                {titleValue
+                  ? labelFormat(titleValue)
+                  : labelFormat(data[data.length - 1][yAxis])}
               </div>
-              <div className="text-xs font-normal text-th-fgd-4">
-                {new Date(data[data.length - 1][xAxis]).toDateString()}
+              <div className="text-xs font-normal h-4 text-th-fgd-4">
+                {titleValue
+                  ? ''
+                  : new Date(data[data.length - 1][xAxis]).toDateString()}
               </div>
             </>
           ) : (
@@ -199,6 +219,15 @@ const Chart: FunctionComponent<ChartProps> = ({
             type="number"
             width={yAxisWidth || 50}
           />
+          {zeroLine ? (
+            <ReferenceLine
+              y={0}
+              stroke={
+                theme === 'Light' ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.35)'
+              }
+              strokeDasharray="3 3"
+            />
+          ) : null}
         </AreaChart>
       ) : null}
       {width > 0 && type === 'bar' ? (
@@ -223,17 +252,49 @@ const Chart: FunctionComponent<ChartProps> = ({
             content={<></>}
           />
           <defs>
-            <linearGradient id="gradientBar" x1="0" y1="0" x2="0" y2="1">
+            <linearGradient id="defaultGradientBar" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#ffba24" stopOpacity={1} />
               <stop offset="100%" stopColor="#ffba24" stopOpacity={0.5} />
             </linearGradient>
+            <linearGradient id="greenGradientBar" x1="0" y1="0" x2="0" y2="1">
+              <stop
+                offset="0%"
+                stopColor={theme === 'Mango' ? '#AFD803' : '#5EBF4D'}
+                stopOpacity={1}
+              />
+              <stop
+                offset="100%"
+                stopColor={theme === 'Mango' ? '#AFD803' : '#5EBF4D'}
+                stopOpacity={0.5}
+              />
+            </linearGradient>
+            <linearGradient id="redGradientBar" x1="0" y1="0" x2="0" y2="1">
+              <stop
+                offset="0%"
+                stopColor={theme === 'Mango' ? '#F84638' : '#CC2929'}
+                stopOpacity={1}
+              />
+              <stop
+                offset="100%"
+                stopColor={theme === 'Mango' ? '#F84638' : '#CC2929'}
+                stopOpacity={0.5}
+              />
+            </linearGradient>
           </defs>
-          <Bar
-            isAnimationActive={false}
-            type="monotone"
-            dataKey={yAxis}
-            fill="url(#gradientBar)"
-          />
+          <Bar dataKey={yAxis}>
+            {data.map((entry, index) => (
+              <Cell
+                key={`cell-${index}`}
+                fill={
+                  useMulticoloredBars
+                    ? entry[yAxis] > 0
+                      ? 'url(#greenGradientBar)'
+                      : 'url(#redGradientBar)'
+                    : 'url(#defaultGradientBar)'
+                }
+              />
+            ))}
+          </Bar>
           <XAxis
             dataKey={xAxis}
             axisLine={false}
@@ -272,6 +333,14 @@ const Chart: FunctionComponent<ChartProps> = ({
             type="number"
             width={yAxisWidth || 50}
           />
+          {zeroLine ? (
+            <ReferenceLine
+              y={0}
+              stroke={
+                theme === 'Light' ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.2)'
+              }
+            />
+          ) : null}
         </BarChart>
       ) : null}
     </div>
