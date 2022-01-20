@@ -73,7 +73,7 @@ const AccountInterest = () => {
     page,
     firstPage,
     lastPage,
-  } = usePagination(hourlyInterestStats[selectedAsset])
+  } = usePagination(hourlyInterestStats[selectedAsset] || [])
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.md : false
   const [hideInterestDust, sethideInterestDust] = useLocalStorageState(
@@ -127,7 +127,7 @@ const AccountInterest = () => {
 
   useEffect(() => {
     if (!isEmpty(hourlyInterestStats)) {
-      setData(hourlyInterestStats[selectedAsset])
+      setData(hourlyInterestStats[selectedAsset] || [])
     }
   }, [selectedAsset, hourlyInterestStats])
 

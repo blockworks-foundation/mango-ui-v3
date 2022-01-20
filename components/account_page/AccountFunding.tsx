@@ -38,7 +38,7 @@ const AccountFunding = () => {
     page,
     firstPage,
     lastPage,
-  } = usePagination(hourlyFunding[selectedAsset])
+  } = usePagination(hourlyFunding[selectedAsset] || [])
   const [hideFundingDust, setHideFundingDust] = useLocalStorageState(
     'hideFundingDust',
     false
@@ -78,7 +78,7 @@ const AccountFunding = () => {
 
   useEffect(() => {
     if (!isEmpty(hourlyFunding)) {
-      setData(hourlyFunding[selectedAsset])
+      setData(hourlyFunding[selectedAsset] || [])
     }
   }, [selectedAsset, hourlyFunding])
 
