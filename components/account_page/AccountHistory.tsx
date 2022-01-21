@@ -115,7 +115,7 @@ export default function AccountHistory() {
 
   return (
     <>
-      <div className="bg-th-bkg-3 flex mb-4 md:mb-6 md:-mt-6 md:-mx-6 px-3 md:px-4 py-2 rounded-md md:rounded-none md:rounded-t-md">
+      <div className="bg-th-bkg-3 flex mb-4 md:mb-6 md:-mx-6 px-3 md:px-4 py-2">
         {historyViews.map(({ label, key }, index) => (
           <div
             className={`md:px-2 py-1 text-xs md:text-sm ${
@@ -136,9 +136,7 @@ export default function AccountHistory() {
       </div>
       <div className="flex flex-col pb-6 sm:flex-row sm:items-end sm:justify-between">
         <div className="pb-4 sm:pb-0">
-          <div className="mb-1 text-th-fgd-1 text-lg">
-            {t(`${view.toLowerCase()}-history`)}
-          </div>
+          <h2 className="mb-1">{t(`${view.toLowerCase()}-history`)}</h2>
           <div className="mr-4 text-xs text-th-fgd-3">
             {t('delay-displaying-recent')} {t('use-explorer-one')}
             <a

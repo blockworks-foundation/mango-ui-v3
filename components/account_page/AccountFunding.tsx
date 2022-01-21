@@ -208,8 +208,8 @@ const AccountFunding = () => {
 
   return (
     <>
-      <div className="flex items-center justify-between pb-4">
-        <div className="text-th-fgd-1 text-lg">{t('total-funding')}</div>
+      <div className="flex items-center justify-between py-4">
+        <h2>{t('total-funding')}</h2>
         <div className="flex items-center">
           <Button
             className={`float-right text-xs h-8 pt-0 pb-0 pl-3 pr-3`}

@@ -1,14 +1,19 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   BellIcon,
   CurrencyDollarIcon,
   ExclamationCircleIcon,
   ExternalLinkIcon,
+  GiftIcon,
   LinkIcon,
   PencilIcon,
   TrashIcon,
 } from '@heroicons/react/outline'
-import useMangoStore, { serumProgramId } from '../stores/useMangoStore'
+import { nativeToUi, ZERO_BN } from '@blockworks-foundation/mango-client'
+import useMangoStore, {
+  serumProgramId,
+  MNGO_INDEX,
+} from '../stores/useMangoStore'
 import PageBodyContainer from '../components/PageBodyContainer'
 import TopBar from '../components/TopBar'
 import AccountOrders from '../components/account_page/AccountOrders'
@@ -17,7 +22,6 @@ import AccountsModal from '../components/AccountsModal'
 import AccountOverview from '../components/account_page/AccountOverview'
 import AccountInterest from '../components/account_page/AccountInterest'
 import AccountFunding from '../components/account_page/AccountFunding'
-import AccountPerformance from '../components/account_page/AccountPerformance'
 import AccountNameModal from '../components/AccountNameModal'
 import Button, { IconButton } from '../components/Button'
 import EmptyState from '../components/EmptyState'
@@ -32,6 +36,7 @@ import Select from '../components/Select'
 import { useRouter } from 'next/router'
 import { PublicKey } from '@solana/web3.js'
 import CloseAccountModal from '../components/CloseAccountModal'
+import { notify } from '../utils/notifications'
 import {
   actionsSelector,
   mangoAccountSelector,
@@ -49,14 +54,7 @@ export async function getStaticProps({ locale }) {
   }
 }
 
-const TABS = [
-  'Portfolio',
-  'Orders',
-  'History',
-  'Interest',
-  'Funding',
-  'Performance',
-]
+const TABS = ['Portfolio', 'Orders', 'History', 'Interest', 'Funding']
 
 export default function Account() {
   const { t } = useTranslation(['common', 'close-account'])
@@ -163,6 +161,44 @@ export default function Account() {
     setActiveTab(tabName)
   }
 
+  const mngoAccrued = useMemo(() => {
+    return mangoAccount
+      ? mangoAccount.perpAccounts.reduce((acc, perpAcct) => {
+          return perpAcct.mngoAccrued.add(acc)
+        }, ZERO_BN)
+      : ZERO_BN
+  }, [mangoAccount])
+
+  const handleRedeemMngo = async () => {
+    const wallet = useMangoStore.getState().wallet.current
+    const mngoNodeBank =
+      mangoGroup.rootBankAccounts[MNGO_INDEX].nodeBankAccounts[0]
+
+    try {
+      const txid = await mangoClient.redeemAllMngo(
+        mangoGroup,
+        mangoAccount,
+        wallet,
+        mangoGroup.tokens[MNGO_INDEX].rootBank,
+        mngoNodeBank.publicKey,
+        mngoNodeBank.vault
+      )
+      actions.reloadMangoAccount()
+      notify({
+        title: t('redeem-success'),
+        description: '',
+        txid,
+      })
+    } catch (e) {
+      notify({
+        title: t('redeem-failure'),
+        description: e.message,
+        txid: e.txid,
+        type: 'error',
+      })
+    }
+  }
+
   return (
     <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
       <TopBar />
@@ -198,9 +234,23 @@ export default function Account() {
                 </div>
               </div>
               {!pubkey ? (
-                <div className="grid grid-cols-3 grid-rows-1 gap-2">
+                <div className="flex items-center pb-1.5 space-x-2">
+                  {!mngoAccrued.eq(ZERO_BN) ? (
+                    <button
+                      className="bg-th-primary flex items-center justify-center h-8 text-th-bkg-1 text-xs px-3 py-0 rounded-full hover:brightness-[1.15] focus:outline-none disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:cursor-not-allowed disabled:hover:brightness-100"
+                      onClick={handleRedeemMngo}
+                    >
+                      <div className="flex items-center">
+                        <GiftIcon className="h-4 w-4 mr-1.5" />
+                        {`Claim ${nativeToUi(
+                          mngoAccrued.toNumber(),
+                          mangoGroup.tokens[MNGO_INDEX].decimals
+                        ).toFixed(3)} MNGO`}
+                      </div>
+                    </button>
+                  ) : null}
                   <Button
-                    className="col-span-1 flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs"
+                    className="flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs"
                     onClick={() => setShowCloseAccountModal(true)}
                   >
                     <div className="flex items-center">
@@ -209,7 +259,7 @@ export default function Account() {
                     </div>
                   </Button>
                   <Button
-                    className="col-span-1 flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs"
+                    className="flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs"
                     onClick={() => setShowAlertsModal(true)}
                   >
                     <div className="flex items-center">
@@ -217,43 +267,34 @@ export default function Account() {
                       Alerts
                     </div>
                   </Button>
-                  <Button
-                    className="col-span-1 flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs"
-                    onClick={() => setShowAccountsModal(true)}
-                  >
-                    <div className="flex items-center">
-                      <CurrencyDollarIcon className="h-4 w-4 mr-1.5" />
-                      {t('accounts')}
-                    </div>
-                  </Button>
                 </div>
               ) : null}
             </>
           ) : null}
         </div>
-        {mangoAccount ? (
-          !isMobile ? (
-            <Tabs
-              activeTab={activeTab}
-              onChange={handleTabChange}
-              tabs={TABS}
-            />
-          ) : (
-            <div className="pb-2 pt-3">
-              <Select
-                value={t(TABS[viewIndex].toLowerCase())}
-                onChange={(e) => handleChangeViewIndex(e)}
-              >
-                {TABS.map((tab, index) => (
-                  <Select.Option key={index + tab} value={index}>
-                    {t(tab.toLowerCase())}
-                  </Select.Option>
-                ))}
-              </Select>
-            </div>
-          )
-        ) : null}
         <div className="bg-th-bkg-2 p-4 sm:p-6 rounded-lg">
+          {mangoAccount ? (
+            !isMobile ? (
+              <Tabs
+                activeTab={activeTab}
+                onChange={handleTabChange}
+                tabs={TABS}
+              />
+            ) : (
+              <div className="pb-2 pt-3">
+                <Select
+                  value={t(TABS[viewIndex].toLowerCase())}
+                  onChange={(e) => handleChangeViewIndex(e)}
+                >
+                  {TABS.map((tab, index) => (
+                    <Select.Option key={index + tab} value={index}>
+                      {t(tab.toLowerCase())}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </div>
+            )
+          ) : null}
           {mangoAccount ? (
             !isMobile ? (
               <TabContent activeTab={activeTab} />
@@ -343,8 +384,6 @@ const TabContent = ({ activeTab }) => {
       return <AccountInterest />
     case 'Funding':
       return <AccountFunding />
-    case 'Performance':
-      return <AccountPerformance />
     default:
       return <AccountOverview />
   }
