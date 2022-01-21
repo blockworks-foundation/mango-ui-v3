@@ -113,7 +113,7 @@ const usePagination = (data: Array<any>, opts = {}) => {
     setPerPage: (x) => dispatch({ type: 'PER_PAGE', payload: { perPage: x } }),
     setData: (x) => dispatch({ type: 'SET_DATA', payload: { data: x } }),
     data: state.data,
-    totalPages: ceil(state.data.length / state.perPage),
+    totalPages: ceil(state?.data?.length / state.perPage),
     paginatedData: state.paginated,
     page: state.page + 1,
     perPage: state.perPage,
