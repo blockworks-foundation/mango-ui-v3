@@ -6,7 +6,7 @@ import { XIcon } from '@heroicons/react/solid'
 // const GLOBAL_NOTIFICATION_KEY = 'globalNotification-0.1'
 
 const GlobalNotification = () => {
-  const [show, setShow] = useState(false) // update this to true when we have a notification
+  const [show, setShow] = useState(true) // update this to true when we have a notification
 
   if (show) {
     return (
@@ -16,14 +16,6 @@ const GlobalNotification = () => {
             The Solana network is currently experiencing degraded performance
             resulting in some transactions timing out.
           </span>
-          <a
-            href="https://status.solana.com"
-            className="ml-2"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            https://status.solana.com
-          </a>
         </div>
 
         <button
