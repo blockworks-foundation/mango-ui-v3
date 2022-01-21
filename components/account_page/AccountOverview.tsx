@@ -223,7 +223,7 @@ export default function AccountOverview() {
           {t('show-zero')}
         </Switch>
       </div>
-      <BalancesTable showZeroBalances={showZeroBalances} />
+      <BalancesTable showZeroBalances={showZeroBalances} showDepositWithdraw />
     </>
   ) : null
 }
