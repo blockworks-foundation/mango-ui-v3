@@ -14,6 +14,7 @@ import { useTranslation } from 'next-i18next'
 import ButtonGroup from '../ButtonGroup'
 import useDimensions from 'react-cool-dimensions'
 import { useTheme } from 'next-themes'
+import { numberCompacter } from '../SwapTokenInfo'
 
 dayjs.extend(utc)
 
@@ -103,7 +104,7 @@ export default function AccountOverview() {
       if (performanceRange === '7d') {
         const start = new Date(
           // @ts-ignore
-          dayjs().utc().hour(0).minute(0).subtract(6, 'day')
+          dayjs().utc().hour(0).minute(0).subtract(7, 'day')
         ).getTime()
         const chartData = hourlyPerformanceStats.filter(
           (d) => new Date(d.time).getTime() > start
@@ -124,7 +125,9 @@ export default function AccountOverview() {
   }, [hourlyPerformanceStats, performanceRange])
 
   const pnlChartColor =
-    chartToShow === 'PnL' && mouseData && mouseData['PnL'] > 0
+    chartToShow === 'PnL' &&
+    chartData.length > 0 &&
+    chartData[chartData.length - 1]['pnl'] > 0
       ? theme === 'Mango'
         ? '#AFD803'
         : '#5EBF4D'
@@ -146,6 +149,16 @@ export default function AccountOverview() {
   //         chartData[1]['pnl']) *
   //       100
   //     : null
+
+  const formatDateAxis = (date) => {
+    if (['All', '30d'].includes(performanceRange)) {
+      return dayjs(date).format('D MMM')
+    } else if (performanceRange === '7d') {
+      return dayjs(date).format('ddd, h:mma')
+    } else {
+      return dayjs(date).format('h:mma')
+    }
+  }
 
   return mangoAccount ? (
     <>
@@ -286,7 +299,7 @@ export default function AccountOverview() {
         </div>
         <div className="border-t border-th-bkg-4 col-span-3">
           <div className="h-64 mt-4 w-full" ref={observe}>
-            <div className="flex justify-between pb-4">
+            <div className="flex justify-between pb-9">
               <div className="">
                 <div className="pb-0.5 text-sm text-th-fgd-3">
                   {chartToShow}{' '}
@@ -306,7 +319,7 @@ export default function AccountOverview() {
                       )}
                     </div>
                     <div className="text-xs font-normal text-th-fgd-4">
-                      {new Date(mouseData['time']).toDateString()}
+                      {dayjs(mouseData['time']).format('ddd MMM D YYYY, h:mma')}
                     </div>
                   </>
                 ) : chartData.length > 0 ? (
@@ -319,9 +332,9 @@ export default function AccountOverview() {
                       )}
                     </div>
                     <div className="text-xs font-normal text-th-fgd-4">
-                      {new Date(
-                        chartData[chartData.length - 1]['time']
-                      ).toDateString()}
+                      {dayjs(chartData[chartData.length - 1]['time']).format(
+                        'ddd MMM D YYYY, h:mma'
+                      )}
                     </div>
                   </>
                 ) : (
@@ -340,43 +353,115 @@ export default function AccountOverview() {
                 />
               </div>
             </div>
-            <AreaChart
-              width={width}
-              height={height}
-              data={chartData}
-              onMouseMove={handleMouseMove}
-              onMouseLeave={handleMouseLeave}
-            >
-              <Tooltip
-                cursor={{
-                  strokeOpacity: 0,
-                }}
-                content={<></>}
-              />
-              <defs>
-                <linearGradient id="gradientArea" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#ffba24" stopOpacity={0.9} />
-                  <stop offset="90%" stopColor="#ffba24" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <Area
-                isAnimationActive={true}
-                type="monotone"
-                dataKey={chartToShow === 'PnL' ? 'pnl' : 'account_equity'}
-                stroke={chartToShow === 'PnL' ? pnlChartColor : '#ffba24'}
-                fill={
-                  chartToShow === 'PnL' ? pnlChartColor : 'url(#gradientArea)'
-                }
-                fillOpacity={0.2}
-              />
-              <XAxis dataKey="time" hide />
-              <YAxis
-                dataKey={chartToShow === 'PnL' ? 'pnl' : 'account_equity'}
-                type="number"
-                domain={['dataMin', 'dataMax']}
-                hide
-              />
-            </AreaChart>
+            {chartData.length > 0 ? (
+              <AreaChart
+                width={width}
+                height={height}
+                data={chartData}
+                onMouseMove={handleMouseMove}
+                onMouseLeave={handleMouseLeave}
+              >
+                <Tooltip
+                  cursor={{
+                    strokeOpacity: 0,
+                  }}
+                  content={<></>}
+                />
+                <defs>
+                  <linearGradient
+                    id="defaultGradientArea"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+                    <stop offset="0%" stopColor="#ffba24" stopOpacity={0.9} />
+                    <stop offset="80%" stopColor="#ffba24" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient
+                    id="greenGradientArea"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+                    <stop
+                      offset="0%"
+                      stopColor={theme === 'Mango' ? '#AFD803' : '#5EBF4D'}
+                      stopOpacity={0.9}
+                    />
+                    <stop
+                      offset="80%"
+                      stopColor={theme === 'Mango' ? '#AFD803' : '#5EBF4D'}
+                      stopOpacity={0}
+                    />
+                  </linearGradient>
+                  <linearGradient
+                    id="redGradientArea"
+                    x1="0"
+                    y1="1"
+                    x2="0"
+                    y2="0"
+                  >
+                    <stop
+                      offset="0%"
+                      stopColor={theme === 'Mango' ? '#F84638' : '#CC2929'}
+                      stopOpacity={0.9}
+                    />
+                    <stop
+                      offset="80%"
+                      stopColor={theme === 'Mango' ? '#F84638' : '#CC2929'}
+                      stopOpacity={0}
+                    />
+                  </linearGradient>
+                </defs>
+                <Area
+                  isAnimationActive={true}
+                  type="monotone"
+                  dataKey={chartToShow === 'PnL' ? 'pnl' : 'account_equity'}
+                  stroke={chartToShow === 'PnL' ? pnlChartColor : '#ffba24'}
+                  fill={
+                    chartToShow === 'PnL'
+                      ? chartData[chartData.length - 1]['pnl'] > 0
+                        ? 'url(#greenGradientArea)'
+                        : 'url(#redGradientArea)'
+                      : 'url(#defaultGradientArea)'
+                  }
+                  fillOpacity={0.3}
+                />
+                <XAxis
+                  dataKey="time"
+                  axisLine={false}
+                  dy={10}
+                  minTickGap={20}
+                  tick={{
+                    fill:
+                      theme === 'Light'
+                        ? 'rgba(0,0,0,0.4)'
+                        : 'rgba(255,255,255,0.35)',
+                    fontSize: 10,
+                  }}
+                  tickLine={false}
+                  tickFormatter={(v) => formatDateAxis(v)}
+                />
+                <YAxis
+                  dataKey={chartToShow === 'PnL' ? 'pnl' : 'account_equity'}
+                  type="number"
+                  domain={['dataMin', 'dataMax']}
+                  axisLine={false}
+                  dx={-10}
+                  tick={{
+                    fill:
+                      theme === 'Light'
+                        ? 'rgba(0,0,0,0.4)'
+                        : 'rgba(255,255,255,0.35)',
+                    fontSize: 10,
+                  }}
+                  tickLine={false}
+                  tickFormatter={(v) => numberCompacter.format(v)}
+                />
+              </AreaChart>
+            ) : null}
           </div>
         </div>
       </div>
