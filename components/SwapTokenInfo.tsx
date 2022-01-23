@@ -201,8 +201,8 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
               {inputTokenInfo && outputTokenInfo ? (
                 <div className="text-th-fgd-3 text-sm">
                   {['usd-coin', 'tether'].includes(baseTokenId)
-                    ? `${inputTokenInfo.symbol.toUpperCase()}/${outputTokenInfo.symbol.toUpperCase()}`
-                    : `${outputTokenInfo.symbol.toUpperCase()}/${inputTokenInfo.symbol.toUpperCase()}`}
+                    ? `${inputTokenInfo?.symbol?.toUpperCase()}/${outputTokenInfo?.symbol?.toUpperCase()}`
+                    : `${outputTokenInfo?.symbol?.toUpperCase()}/${inputTokenInfo?.symbol?.toUpperCase()}`}
                 </div>
               ) : null}
               {mouseData ? (
