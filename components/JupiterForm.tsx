@@ -190,7 +190,7 @@ const JupiterForm: FunctionComponent = () => {
     useJupiter({
       ...formValue,
       amount: amountInDecimal,
-      slippage: formValue.slippage,
+      slippage,
     })
 
   useEffect(() => {
