@@ -95,6 +95,8 @@ export default function StatsPerps({ perpStats }) {
     return perpsData
   }, [selectedAsset, perpStats, selectedMarket])
 
+  if (!selectedMarket) return null
+
   const progress =
     1 -
     selectedMarket.liquidityMiningInfo.mngoLeft.toNumber() /
