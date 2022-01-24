@@ -146,7 +146,6 @@ const MarketDetails = () => {
   }, [selectedMarketName])
 
   const funding1h = calculateFundingRate(perpStats, selectedMarket)
-  console.log('funding1h', funding1h, selectedMarket, perpStats)
   const [funding1hStr, fundingAprStr] = funding1h
     ? [funding1h.toFixed(4), (funding1h * 24 * 365).toFixed(2)]
     : ['-', '-']
