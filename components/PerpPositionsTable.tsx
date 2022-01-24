@@ -75,7 +75,7 @@ const PositionsTable = () => {
               className="text-xs pt-0 pb-0 h-8 pl-3 pr-3 whitespace-nowrap"
               onClick={handleSettleAll}
             >
-              {settling ? <Loading /> : t('settle-all')}
+              {settling ? <Loading /> : t('redeem-pnl')}
             </Button>
           </div>
           {unsettledPositions.map((p) => {

@@ -254,7 +254,7 @@ export default function MarketPosition() {
                 className="ml-2 text-th-primary text-xs disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:underline"
                 disabled={unsettledPnl === 0}
               >
-                {t('settle')}
+                {t('redeem-pnl')}
               </LinkButton>
             )}
           </div>
