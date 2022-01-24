@@ -6,7 +6,7 @@ import { XIcon } from '@heroicons/react/solid'
 // const GLOBAL_NOTIFICATION_KEY = 'globalNotification-0.1'
 
 const GlobalNotification = () => {
-  const [show, setShow] = useState(true) // update this to true when we have a notification
+  const [show, setShow] = useState(false) // update this to true when we have a notification
 
   if (show) {
     return (

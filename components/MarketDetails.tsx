@@ -77,12 +77,13 @@ const MarketDetails = () => {
       `https://mango-stats-v3.herokuapp.com/perp/funding_rate?` + urlParams
     )
     const parsedPerpStats = await perpStats.json()
+    setPerpStats(parsedPerpStats)
+
     const perpVolume = await fetch(
       `https://event-history-api.herokuapp.com/stats/perps/${marketConfig.publicKey.toString()}`
     )
     const parsedPerpVolume = await perpVolume.json()
     setPerpVolume(parsedPerpVolume?.data?.volume)
-    setPerpStats(parsedPerpStats)
   }, [selectedMarketName, marketConfig, groupConfig.name])
 
   useInterval(() => {
@@ -145,6 +146,7 @@ const MarketDetails = () => {
   }, [selectedMarketName])
 
   const funding1h = calculateFundingRate(perpStats, selectedMarket)
+  console.log('funding1h', funding1h, selectedMarket, perpStats)
   const [funding1hStr, fundingAprStr] = funding1h
     ? [funding1h.toFixed(4), (funding1h * 24 * 365).toFixed(2)]
     : ['-', '-']
