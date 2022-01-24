@@ -23,7 +23,10 @@ import MobileTableHeader from './mobile/MobileTableHeader'
 import { useTranslation } from 'next-i18next'
 import { TransactionSignature } from '@solana/web3.js'
 
-const BalancesTable = ({ showZeroBalances = false }) => {
+const BalancesTable = ({
+  showZeroBalances = false,
+  showDepositWithdraw = false,
+}) => {
   const { t } = useTranslation('common')
   const [showDepositModal, setShowDepositModal] = useState(false)
   const [showWithdrawModal, setShowWithdrawModal] = useState(false)
@@ -391,28 +394,30 @@ const BalancesTable = ({ showZeroBalances = false }) => {
                           {balance.borrowRate.toFixed(2)}%
                         </span>
                       </Td>
-                      <Td>
-                        <div className="flex justify-end">
-                          <Button
-                            className="text-xs pt-0 pb-0 h-8 pl-3 pr-3"
-                            onClick={() =>
-                              handleOpenDepositModal(balance.symbol)
-                            }
-                          >
-                            {balance.borrows.toNumber() > 0
-                              ? t('repay')
-                              : t('deposit')}
-                          </Button>
-                          <Button
-                            className="text-xs pt-0 pb-0 h-8 ml-4 pl-3 pr-3"
-                            onClick={() =>
-                              handleOpenWithdrawModal(balance.symbol)
-                            }
-                          >
-                            {t('withdraw')}
-                          </Button>
-                        </div>
-                      </Td>
+                      {showDepositWithdraw ? (
+                        <Td>
+                          <div className="flex justify-end">
+                            <Button
+                              className="text-xs pt-0 pb-0 h-8 pl-3 pr-3"
+                              onClick={() =>
+                                handleOpenDepositModal(balance.symbol)
+                              }
+                            >
+                              {balance.borrows.toNumber() > 0
+                                ? t('repay')
+                                : t('deposit')}
+                            </Button>
+                            <Button
+                              className="text-xs pt-0 pb-0 h-8 ml-4 pl-3 pr-3"
+                              onClick={() =>
+                                handleOpenWithdrawModal(balance.symbol)
+                              }
+                            >
+                              {t('withdraw')}
+                            </Button>
+                          </div>
+                        </Td>
+                      ) : null}
                     </TrBody>
                   ))}
                 </tbody>

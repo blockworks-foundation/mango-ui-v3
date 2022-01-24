@@ -94,7 +94,7 @@ const paginationReducer = (state, action) => {
   }
 }
 
-const usePagination = (data = [], opts = {}) => {
+const usePagination = (data: Array<any>, opts = {}) => {
   const { perPage, page } = { page: 0, perPage: 10, ...opts }
 
   const [state, dispatch] = useReducer(paginationReducer, {

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { CLUSTER } from '../stores/useMangoStore'
 
 const SANCTIONED_COUNTRIES = [
   ['AG', 'Antigua and Barbuda'],
@@ -57,5 +58,9 @@ export default function useIpAddress() {
     checkIpLocation()
   }, [])
 
-  return { ipAllowed, spotAllowed }
+  if (CLUSTER === 'mainnet') {
+    return { ipAllowed, spotAllowed }
+  } else {
+    return { ipAllowed: true, spotAllowed: true }
+  }
 }

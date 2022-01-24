@@ -216,7 +216,7 @@ const SwapTokenInsights = ({ formState, jupiterTokens, setOutputToken }) => {
                         )}
                         <div className="text-left">
                           <div className="font-bold">
-                            {insight.symbol.toUpperCase()}
+                            {insight?.symbol?.toUpperCase()}
                           </div>
                           <div className="text-th-fgd-3 text-xs">
                             {insight.name}

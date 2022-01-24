@@ -101,7 +101,7 @@ const TradePageGrid = () => {
 
   const [orderbookDepth, setOrderbookDepth] = useState(8)
   const [currentBreakpoint, setCurrentBreakpoint] = useState(null)
-  // const [mounted, setMounted] = useState(false)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     const adjustOrderBook = (layouts, breakpoint?: string | null) => {
@@ -117,8 +117,8 @@ const TradePageGrid = () => {
     adjustOrderBook(savedLayouts, currentBreakpoint)
   }, [currentBreakpoint, savedLayouts])
 
-  // useEffect(() => setMounted(true), [])
-  // if (!mounted) return null
+  useEffect(() => setMounted(true), [])
+  if (!mounted) return null
 
   return !isMobile ? (
     <>
