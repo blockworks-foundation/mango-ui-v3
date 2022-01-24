@@ -296,6 +296,7 @@
   "repay-full": "100% repay borrow",
   "repay-partial": "Repay {{percentage}}% of borrow",
   "reposition": "Drag to reposition",
+  "rolling-change" : "24hr Change",
   "rpc-endpoint": "RPC Endpoint",
   "save": "Save",
   "save-name": "Save Name",
