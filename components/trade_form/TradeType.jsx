@@ -27,7 +27,7 @@ const TradeType = ({
               className={`font-normal w-full bg-th-bkg-1 border border-th-bkg-4 px-2 h-10 hover:border-th-primary rounded-md focus:outline-none focus:border-th-primary`}
             >
               <div className={`flex items-center justify-between space-x-4`}>
-                <span>{t(value?.toLowerCase()?.replaceAll(' ', '-'))}</span>
+                <span>{t(value?.toLowerCase()?.replace(/\s/g, '-'))}</span>
                 {open ? (
                   <ChevronUpIcon className={`h-5 w-5 mr-1 text-th-primary`} />
                 ) : (
@@ -48,7 +48,7 @@ const TradeType = ({
                           selected && `text-th-primary`
                         }`}
                       >
-                        {t(type?.toLowerCase()?.replaceAll(' ', '-'))}
+                        {t(type?.toLowerCase()?.replace(/\s/g, '-'))}
                       </div>
                     )}
                   </Listbox.Option>
