@@ -152,11 +152,11 @@ export default function AccountOverview() {
 
   const formatDateAxis = (date) => {
     if (['All', '30d'].includes(performanceRange)) {
-      return dayjs(date).format('D MMM')
+      return dayjs(date + 'Z').format('D MMM')
     } else if (performanceRange === '7d') {
-      return dayjs(date).format('ddd, h:mma')
+      return dayjs(date + 'Z').format('ddd, h:mma')
     } else {
-      return dayjs(date).format('h:mma')
+      return dayjs(date + 'Z').format('h:mma')
     }
   }
 
@@ -172,8 +172,8 @@ export default function AccountOverview() {
           />
         </div>
       </div>
-      <div className="grid grid-flow-col grid-cols-1 grid-rows-2 lg:grid-cols-4 lg:grid-rows-1 lg:gap-6 pb-12">
-        <div className="border-t border-th-bkg-4 col-span-1 pb-6 lg:pb-0">
+      <div className="flex flex-col lg:flex-row lg:space-x-6 pb-8 lg:pb-12">
+        <div className="border-t border-th-bkg-4 pb-6 lg:pb-0 w-full lg:w-1/4">
           <div className="border-b border-th-bkg-4 p-3 sm:p-4">
             <div className="pb-0.5 text-th-fgd-3 text-xs sm:text-sm">
               {t('equity')}
@@ -297,7 +297,7 @@ export default function AccountOverview() {
             ></div>
           </div>
         </div>
-        <div className="border-t border-th-bkg-4 col-span-3">
+        <div className="border-t border-th-bkg-4 h-96 lg:h-auto w-full lg:w-3/4">
           <div className="h-64 mt-4 w-full" ref={observe}>
             <div className="flex justify-between pb-9">
               <div className="">
@@ -465,7 +465,7 @@ export default function AccountOverview() {
           </div>
         </div>
       </div>
-      <div className="pb-12">
+      <div className="pb-8 lg:pb-12">
         <div className="text-th-fgd-1 text-lg pb-4">{t('perp-positions')}</div>
         <PositionsTable />
       </div>
@@ -473,7 +473,7 @@ export default function AccountOverview() {
         {t('assets-liabilities')}
       </div>
 
-      <div className="grid grid-flow-col grid-cols-1 grid-rows-2 md:grid-cols-2 md:grid-rows-1 gap-2 sm:gap-4 pb-12">
+      <div className="grid grid-flow-col grid-cols-1 grid-rows-2 md:grid-cols-2 md:grid-rows-1 gap-2 sm:gap-4 pb-8 lg:pb-12">
         <div className="border border-th-bkg-4 p-3 sm:p-4 rounded-md sm:rounded-lg">
           <div className="pb-0.5 text-xs text-th-fgd-3">
             {t('total-assets')}

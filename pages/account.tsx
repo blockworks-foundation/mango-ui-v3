@@ -44,6 +44,7 @@ import {
   walletConnectedSelector,
 } from '../stores/selectors'
 import CreateAlertModal from '../components/CreateAlertModal'
+import { abbreviateAddress } from '../utils'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -208,12 +209,15 @@ export default function Account() {
             <>
               <div className="pb-3 md:pb-0">
                 <div className="flex items-center mb-1">
-                  <h1 className={`font-semibold mr-3 text-th-fgd-1 text-2xl`}>
+                  <h1 className={`font-semibold mr-2 text-th-fgd-1 text-2xl`}>
                     {mangoAccount?.name || t('account')}
                   </h1>
                   {!pubkey ? (
-                    <IconButton onClick={() => setShowNameModal(true)}>
-                      <PencilIcon className="h-4 w-4" />
+                    <IconButton
+                      className="h-7 w-7"
+                      onClick={() => setShowNameModal(true)}
+                    >
+                      <PencilIcon className="h-3.5 w-3.5" />
                     </IconButton>
                   ) : null}
                 </div>
@@ -224,9 +228,9 @@ export default function Account() {
                   rel="noopener noreferrer"
                 >
                   <span className="text-xxs sm:text-xs">
-                    {mangoAccount.publicKey.toString()}
+                    {abbreviateAddress(mangoAccount.publicKey)}
                   </span>
-                  <ExternalLinkIcon className="cursor-pointer default-transition h-4 w-4 ml-1.5 hover:text-th-fgd-1" />
+                  <ExternalLinkIcon className="cursor-pointer default-transition h-3.5 w-3.5 ml-1.5 hover:text-th-fgd-1" />
                 </a>
                 <div className="flex items-center text-th-red text-xxs">
                   <ExclamationCircleIcon className="h-4 mr-1.5 w-4" />
