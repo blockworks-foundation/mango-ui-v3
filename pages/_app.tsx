@@ -81,7 +81,7 @@ function App({ Component, pageProps }) {
           content="Mango Markets - Decentralised, cross-margin trading up to 10x leverage with lightning speed and near-zero fees."
         />
         <meta name="twitter:image" content="/twitter-image.png" />
-
+        <meta name="google" content="notranslate" />
         <script src="/datafeeds/udf/dist/polyfills.js"></script>
         <script src="/datafeeds/udf/dist/bundle.js"></script>
 
