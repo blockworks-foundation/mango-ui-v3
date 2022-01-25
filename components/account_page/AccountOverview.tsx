@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ArrowSmUpIcon, ArrowSmDownIcon } from '@heroicons/react/outline'
+// import { ArrowSmUpIcon, ArrowSmDownIcon } from '@heroicons/react/outline'
 import { AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
@@ -135,13 +135,13 @@ export default function AccountOverview() {
       ? '#F84638'
       : '#CC2929'
 
-  const equityChangePercentage =
-    chartData.length > 0
-      ? ((chartData[chartData.length - 1]['account_equity'] -
-          chartData[0]['account_equity']) /
-          chartData[0]['account_equity']) *
-        100
-      : null
+  // const equityChangePercentage =
+  //   chartData.length > 0
+  //     ? ((chartData[chartData.length - 1]['account_equity'] -
+  //         chartData[0]['account_equity']) /
+  //         chartData[0]['account_equity']) *
+  //       100
+  //     : null
 
   // const pnlChangePercentage =
   //   chartData.length > 0
@@ -176,18 +176,14 @@ export default function AccountOverview() {
         <div className="border-t border-th-bkg-4 pb-6 lg:pb-0 w-full lg:w-1/4">
           <div className="border-b border-th-bkg-4 p-3 sm:p-4">
             <div className="pb-0.5 text-th-fgd-3 text-xs sm:text-sm">
-              {t('equity')}
+              {t('account-value')}
             </div>
             <div className="font-bold text-th-fgd-1 text-xl sm:text-2xl">
-              {chartData.length > 0 ? (
-                formatUsdValue(
-                  chartData[chartData.length - 1]['account_equity']
-                )
-              ) : (
-                <div className="animate-pulse bg-th-bkg-3 h-8 mt-1 rounded w-48" />
+              {formatUsdValue(
+                +mangoAccount.computeValue(mangoGroup, mangoCache)
               )}
             </div>
-            {equityChangePercentage ? (
+            {/* {equityChangePercentage ? (
               <div
                 className={`flex items-center ${
                   equityChangePercentage >= 0 ? 'text-th-green' : 'text-th-red'
@@ -212,7 +208,7 @@ export default function AccountOverview() {
               </div>
             ) : (
               <div className="animate-pulse bg-th-bkg-3 h-4 mt-1 rounded w-16" />
-            )}
+            )} */}
           </div>
           <div className="border-b border-th-bkg-4 p-3 sm:p-4">
             <div className="pb-0.5 text-th-fgd-3 text-xs sm:text-sm">PnL</div>
@@ -302,11 +298,11 @@ export default function AccountOverview() {
             <div className="flex justify-between pb-9">
               <div className="">
                 <div className="pb-0.5 text-sm text-th-fgd-3">
-                  {chartToShow}{' '}
+                  {chartToShow === 'Value' ? t('account-value') : chartToShow}{' '}
                   <span className="text-th-fgd-4">
                     {performanceRange === 'All'
                       ? '(All-time)'
-                      : `(last ${performanceRange})`}
+                      : `(Last ${performanceRange})`}
                   </span>
                 </div>
                 {mouseData ? (
@@ -349,7 +345,7 @@ export default function AccountOverview() {
                   activeValue={chartToShow}
                   className="pb-2 pt-2 text-sm"
                   onChange={(v) => setChartToShow(v)}
-                  values={['PnL', t('equity')]}
+                  values={['PnL', t('value')]}
                 />
               </div>
             </div>
