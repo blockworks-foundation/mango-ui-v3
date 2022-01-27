@@ -266,7 +266,7 @@
   "perpetual-futures": "Perpetual Futures",
   "perps": "Perps",
   "pnl-error": "Error settling PNL",
-  "pnl-help": "Settling will update your USDC balance to reflect the unsettled PnL amount.",
+  "pnl-help": "Redeeming will update your USDC balance to reflect the redeemed PnL amount.",
   "pnl-success": "Successfully settled PNL",
   "portfolio": "Portfolio",
   "position": "Position",

@@ -59,21 +59,21 @@ const useHydrateStore = () => {
 
   useInterval(() => {
     if (mangoAccount) {
-      actions.fetchTradeHistory()
       actions.reloadOrders()
-      actions.updateOpenOrders()
     }
-  }, 60 * SECONDS)
+  }, 30 * SECONDS)
 
   useInterval(() => {
     if (mangoAccount) {
       actions.reloadMangoAccount()
-      actions.fetchWalletTokens()
+      actions.fetchTradeHistory()
+      actions.updateOpenOrders()
     }
   }, 90 * SECONDS)
 
   useInterval(() => {
     actions.fetchMangoGroup()
+    actions.fetchWalletTokens()
   }, 120 * SECONDS)
 
   useEffect(() => {

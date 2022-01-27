@@ -131,9 +131,7 @@ const BalancesTable = ({
         })
       }
     } finally {
-      actions.reloadMangoAccount()
       actions.reloadOrders()
-
       setSubmitting(false)
     }
   }

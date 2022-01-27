@@ -366,11 +366,10 @@ const useMangoStore = create<MangoStore>((set, get) => {
         const mangoClient = get().connection.client
         const wallet = get().wallet.current
         const actions = get().actions
-        const walletPk = wallet?.publicKey
 
-        if (!walletPk) return
+        if (!wallet?.publicKey || !mangoGroup) return
         return mangoClient
-          .getMangoAccountsForOwner(mangoGroup, walletPk, true)
+          .getMangoAccountsForOwner(mangoGroup, wallet?.publicKey, true)
           .then((mangoAccounts) => {
             if (mangoAccounts.length > 0) {
               const sortedAccounts = mangoAccounts
@@ -566,16 +565,23 @@ const useMangoStore = create<MangoStore>((set, get) => {
         }
       },
       async reloadOrders() {
+        const set = get().set
         const mangoAccount = get().selectedMangoAccount.current
         const connection = get().connection.current
         if (mangoAccount) {
-          await Promise.all([
+          const [spotOpenOrdersAccounts, advancedOrders] = await Promise.all([
             mangoAccount.loadOpenOrders(
               connection,
               new PublicKey(serumProgramId)
             ),
             mangoAccount.loadAdvancedOrders(connection),
           ])
+          mangoAccount.spotOpenOrdersAccounts = spotOpenOrdersAccounts
+          mangoAccount.advancedOrders = advancedOrders
+          set((state) => {
+            state.selectedMangoAccount.current = mangoAccount
+            state.selectedMangoAccount.lastUpdatedAt = new Date().toISOString()
+          })
         }
       },
       async updateOpenOrders() {
