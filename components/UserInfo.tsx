@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react'
 import useMangoStore from '../stores/useMangoStore'
-import { useOpenOrders } from '../hooks/useOpenOrders'
 import usePerpPositions from '../hooks/usePerpPositions'
 import OpenOrdersTable from './OpenOrdersTable'
 import BalancesTable from './BalancesTable'
 import PositionsTable from './PerpPositionsTable'
 import TradeHistoryTable from './TradeHistoryTable'
-// import FeeDiscountsTable from './FeeDiscountsTable'
 import ManualRefresh from './ManualRefresh'
 import Tabs from './Tabs'
 import FeeDiscountsTable from './FeeDiscountsTable'
@@ -22,7 +20,9 @@ const TABS = [
 ]
 
 const UserInfoTabs = ({ activeTab, setActiveTab }) => {
-  const openOrders = useOpenOrders()
+  const totalOpenOrders = useMangoStore(
+    (s) => s.selectedMangoAccount.totalOpenOrders
+  )
   const { openPositions } = usePerpPositions()
   const { mangoAccount } = useMangoAccount()
 
@@ -36,9 +36,9 @@ const UserInfoTabs = ({ activeTab, setActiveTab }) => {
         activeTab={activeTab}
         onChange={handleTabChange}
         showCount={
-          openOrders && openPositions
+          totalOpenOrders > 0 && openPositions
             ? [
-                { tabName: 'Orders', count: openOrders.length },
+                { tabName: 'Orders', count: totalOpenOrders },
                 { tabName: 'Positions', count: openPositions.length },
               ]
             : null

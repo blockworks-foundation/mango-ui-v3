@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react'
 import Big from 'big.js'
+import { isEqual as isArrayEqual } from 'lodash'
 import useInterval from '../hooks/useInterval'
 import usePrevious from '../hooks/usePrevious'
 import { isEqual, getDecimalCount, usdFormatter } from '../utils/'
@@ -14,7 +15,6 @@ import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
 import Tooltip from './Tooltip'
 import GroupSize from './GroupSize'
-import { useOpenOrders } from '../hooks/useOpenOrders'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import {
@@ -124,10 +124,7 @@ export default function Orderbook({ depth = 8 }) {
   const orderbook = useMangoStore(orderbookSelector)
   const market = useMangoStore(marketSelector)
   const markPrice = useMarkPrice()
-  const openOrders = useOpenOrders()
-  const openOrderPrices = openOrders?.length
-    ? openOrders.map(({ order }) => order.price)
-    : []
+
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
 
@@ -135,6 +132,7 @@ export default function Orderbook({ depth = 8 }) {
   const lastOrderbookData = useRef(null)
   const previousDepth = usePrevious(depth)
 
+  const [openOrderPrices, setOpenOrderPrices] = useState([])
   const [orderbookData, setOrderbookData] = useState(null)
   const [defaultLayout, setDefaultLayout] = useState(true)
   const [displayCumulativeSize, setDisplayCumulativeSize] = useState(false)
@@ -157,6 +155,17 @@ export default function Orderbook({ depth = 8 }) {
       previousDepth !== depth ||
       previousGrouping !== grouping
     ) {
+      // check if user has open orders so we can highlight them on orderbook
+      const openOrders =
+        useMangoStore.getState().selectedMangoAccount.openOrders
+      const newOpenOrderPrices = openOrders?.length
+        ? openOrders.map(({ order }) => order.price)
+        : []
+      if (!isArrayEqual(newOpenOrderPrices, openOrderPrices)) {
+        setOpenOrderPrices(newOpenOrderPrices)
+      }
+
+      // updated orderbook data
       const bids = groupBy(orderbook?.bids, market, grouping, true) || []
       const asks = groupBy(orderbook?.asks, market, grouping, false) || []
 

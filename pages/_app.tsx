@@ -16,10 +16,12 @@ import BottomBar from '../components/mobile/BottomBar'
 import { appWithTranslation } from 'next-i18next'
 import ErrorBoundary from '../components/ErrorBoundary'
 import GlobalNotification from '../components/GlobalNotification'
+import { useOpenOrders } from '../hooks/useOpenOrders'
 
 const MangoStoreUpdater = () => {
   useHydrateStore()
   useWallet()
+  useOpenOrders()
 
   return null
 }

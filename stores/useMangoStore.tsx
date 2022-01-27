@@ -165,6 +165,8 @@ interface MangoStore extends State {
     initialLoad: boolean
     lastUpdatedAt: string
     lastSlot: number
+    openOrders: any[]
+    totalOpenOrders: number
   }
   tradeForm: {
     side: 'buy' | 'sell'
@@ -270,6 +272,8 @@ const useMangoStore = create<MangoStore>((set, get) => {
       initialLoad: true,
       lastUpdatedAt: '0',
       lastSlot: 0,
+      openOrders: [],
+      totalOpenOrders: 0,
     },
     tradeForm: {
       side: 'buy',

@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { PencilIcon, TrashIcon, XIcon } from '@heroicons/react/outline'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { useOpenOrders } from '../hooks/useOpenOrders'
 import Button, { IconButton } from './Button'
 import Loading from './Loading'
 import useMangoStore from '../stores/useMangoStore'
@@ -139,14 +138,14 @@ const DesktopTable = ({
                       {!order.perpTrigger ? (
                         <Button
                           onClick={() => showEditOrderForm(index, order)}
-                          className="text-xs pt-0 pb-0 h-8 pl-3 pr-3"
+                          className="text-xs -my-1 pt-0 pb-0 h-8 pl-3 pr-3"
                         >
                           {t('edit')}
                         </Button>
                       ) : null}
                       <Button
                         onClick={() => handleCancelOrder(order, market.account)}
-                        className="text-xs pt-0 pb-0 h-8 pl-3 pr-3"
+                        className="text-xs -my-1 pt-0 pb-0 h-8 pl-3 pr-3"
                       >
                         {cancelledOrderId + '' === order.orderId + '' ? (
                           <Loading />
@@ -332,7 +331,7 @@ const MobileTable = ({
 const OpenOrdersTable = () => {
   const { t } = useTranslation('common')
   const { asPath } = useRouter()
-  const openOrders = useOpenOrders()
+  const openOrders = useMangoStore((s) => s.selectedMangoAccount.openOrders)
   const [cancelId, setCancelId] = useState(null)
   const [modifyId, setModifyId] = useState(null)
   const [editOrderIndex, setEditOrderIndex] = useState(null)

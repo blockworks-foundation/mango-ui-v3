@@ -10,7 +10,6 @@ import { CHART_DATA_FEED } from '../../utils/chartDataConnector'
 import useMangoStore from '../../stores/useMangoStore'
 import { useViewport } from '../../hooks/useViewport'
 import { breakpoints } from '../TradePageGrid'
-import { useOpenOrders } from '../../hooks/useOpenOrders'
 import { Order, Market } from '@project-serum/serum/lib/market'
 import { PerpOrder, PerpMarket } from '@blockworks-foundation/mango-client'
 import { notify } from '../../utils/notifications'
@@ -48,7 +47,7 @@ const TVChartContainer = () => {
   const isMobile = width ? width < breakpoints.sm : false
 
   const selectedMarketName = selectedMarketConfig.name
-  const openOrders = useOpenOrders()
+  const openOrders = useMangoStore((s) => s.selectedMangoAccount.openOrders)
   const actions = useMangoStore((s) => s.actions)
   const connected = useMangoStore((s) => s.wallet.connected)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
@@ -332,8 +331,6 @@ const TVChartContainer = () => {
   }
 
   function getLine(order, market) {
-    console.log('order price', order.price)
-
     return tvWidgetRef.current
       .chart()
       .createOrderLine({ disableUndo: false })
