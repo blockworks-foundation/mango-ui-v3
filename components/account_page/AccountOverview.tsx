@@ -163,7 +163,7 @@ export default function AccountOverview() {
   return mangoAccount ? (
     <>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-4">
-        <h2 className="mb-4 sm:mb-0">Summary</h2>
+        <h2 className="mb-4 sm:mb-0">{t('summary')}</h2>
         <div className="w-full sm:w-56">
           <ButtonGroup
             activeValue={performanceRange}
@@ -296,13 +296,15 @@ export default function AccountOverview() {
         <div className="border-t border-th-bkg-4 h-96 lg:h-auto w-full lg:w-3/4">
           <div className="h-64 mt-4 w-full" ref={observe}>
             <div className="flex justify-between pb-9">
-              <div className="">
+              <div>
                 <div className="pb-0.5 text-sm text-th-fgd-3">
                   {chartToShow === 'Value' ? t('account-value') : chartToShow}{' '}
                   <span className="text-th-fgd-4">
                     {performanceRange === 'All'
-                      ? '(All-time)'
-                      : `(Last ${performanceRange})`}
+                      ? `(${t('all-time')})`
+                      : `(${t('timeframe-desc', {
+                          timeframe: performanceRange,
+                        })})`}
                   </span>
                 </div>
                 {mouseData ? (
@@ -496,7 +498,7 @@ export default function AccountOverview() {
         </div>
       </div>
       <div className="flex justify-between pb-4">
-        <div className="text-th-fgd-1 text-lg">Balances</div>
+        <div className="text-th-fgd-1 text-lg">{t('balances')}</div>
         <Switch
           checked={showZeroBalances}
           className="text-xs"
