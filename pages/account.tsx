@@ -239,20 +239,23 @@ export default function Account() {
               </div>
               {!pubkey ? (
                 <div className="flex items-center pb-1.5 space-x-2">
-                  {!mngoAccrued.eq(ZERO_BN) ? (
-                    <button
-                      className="bg-th-primary flex items-center justify-center h-8 text-th-bkg-1 text-xs px-3 py-0 rounded-full hover:brightness-[1.15] focus:outline-none disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:cursor-not-allowed disabled:hover:brightness-100"
-                      onClick={handleRedeemMngo}
-                    >
-                      <div className="flex items-center">
-                        <GiftIcon className="h-4 w-4 mr-1.5" />
-                        {`Claim ${nativeToUi(
-                          mngoAccrued.toNumber(),
-                          mangoGroup.tokens[MNGO_INDEX].decimals
-                        ).toFixed(3)} MNGO`}
-                      </div>
-                    </button>
-                  ) : null}
+                  {/* {!mngoAccrued.eq(ZERO_BN) ? ( */}
+                  <button
+                    className="bg-th-primary flex items-center justify-center h-8 text-th-bkg-1 text-xs px-3 py-0 rounded-full hover:brightness-[1.15] focus:outline-none disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:cursor-not-allowed disabled:hover:brightness-100"
+                    disabled={mngoAccrued.eq(ZERO_BN)}
+                    onClick={handleRedeemMngo}
+                  >
+                    <div className="flex items-center">
+                      <GiftIcon className="h-4 w-4 mr-1.5" />
+                      {!mngoAccrued.eq(ZERO_BN)
+                        ? `Claim ${nativeToUi(
+                            mngoAccrued.toNumber(),
+                            mangoGroup.tokens[MNGO_INDEX].decimals
+                          ).toFixed(3)} MNGO`
+                        : '0 MNGO Rewards'}
+                    </div>
+                  </button>
+                  {/* ) : null} */}
                   <Button
                     className="flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs"
                     onClick={() => setShowCloseAccountModal(true)}

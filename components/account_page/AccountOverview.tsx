@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react'
-// import { ArrowSmUpIcon, ArrowSmDownIcon } from '@heroicons/react/outline'
 import { AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
@@ -15,6 +14,7 @@ import ButtonGroup from '../ButtonGroup'
 import useDimensions from 'react-cool-dimensions'
 import { useTheme } from 'next-themes'
 import { numberCompacter } from '../SwapTokenInfo'
+import Checkbox from '../Checkbox'
 
 dayjs.extend(utc)
 
@@ -37,6 +37,8 @@ export default function AccountOverview() {
   const { observe, width, height } = useDimensions()
   const [mouseData, setMouseData] = useState<string | null>(null)
   const [chartToShow, setChartToShow] = useState('PnL')
+  const [showSpotPnl, setShowSpotPnl] = useState(true)
+  const [showPerpPnl, setShowPerpPnl] = useState(true)
   const { theme } = useTheme()
 
   const handleMouseMove = (coords) => {
@@ -68,7 +70,7 @@ export default function AccountOverview() {
   useEffect(() => {
     const fetchHourlyPerformanceStats = async () => {
       const response = await fetch(
-        `https://mango-transaction-log.herokuapp.com/v3/stats/account-performance?mango-account=${mangoAccountPk}`
+        `https://mango-transaction-log.herokuapp.com/v3/stats/account-performance-detailed?mango-account=${mangoAccountPk}`
       )
       const parsedResponse = await response.json()
       const entries: any = Object.entries(parsedResponse)
@@ -124,16 +126,13 @@ export default function AccountOverview() {
     }
   }, [hourlyPerformanceStats, performanceRange])
 
-  const pnlChartColor =
-    chartToShow === 'PnL' &&
-    chartData.length > 0 &&
-    chartData[chartData.length - 1]['pnl'] > 0
-      ? theme === 'Mango'
-        ? '#AFD803'
-        : '#5EBF4D'
-      : theme === 'Mango'
-      ? '#F84638'
-      : '#CC2929'
+  useEffect(() => {
+    if (chartData.length > 0) {
+      for (const stat of chartData) {
+        stat.spot_pnl = stat.pnl - stat.perp_pnl
+      }
+    }
+  }, [chartData])
 
   // const equityChangePercentage =
   //   chartData.length > 0
@@ -159,6 +158,27 @@ export default function AccountOverview() {
       return dayjs(date + 'Z').format('h:mma')
     }
   }
+
+  const pnlChartDataKey = () => {
+    if (!showPerpPnl && showSpotPnl) {
+      return 'spot_pnl'
+    } else if (!showSpotPnl && showPerpPnl) {
+      return 'perp_pnl'
+    } else {
+      return 'pnl'
+    }
+  }
+
+  const pnlChartColor =
+    chartToShow === 'PnL' &&
+    chartData.length > 0 &&
+    chartData[chartData.length - 1][pnlChartDataKey()] > 0
+      ? theme === 'Mango'
+        ? '#AFD803'
+        : '#5EBF4D'
+      : theme === 'Mango'
+      ? '#F84638'
+      : '#CC2929'
 
   return mangoAccount ? (
     <>
@@ -312,7 +332,9 @@ export default function AccountOverview() {
                     <div className="font-bold pb-1 text-xl sm:text-2xl text-th-fgd-1">
                       {formatUsdValue(
                         mouseData[
-                          chartToShow === 'PnL' ? 'pnl' : 'account_equity'
+                          chartToShow === 'PnL'
+                            ? pnlChartDataKey()
+                            : 'account_equity'
                         ]
                       )}
                     </div>
@@ -325,7 +347,9 @@ export default function AccountOverview() {
                     <div className="font-bold pb-1 text-xl sm:text-2xl text-th-fgd-1">
                       {formatUsdValue(
                         chartData[chartData.length - 1][
-                          chartToShow === 'PnL' ? 'pnl' : 'account_equity'
+                          chartToShow === 'PnL'
+                            ? pnlChartDataKey()
+                            : 'account_equity'
                         ]
                       )}
                     </div>
@@ -342,13 +366,34 @@ export default function AccountOverview() {
                   </>
                 )}
               </div>
-              <div className="w-36">
-                <ButtonGroup
-                  activeValue={chartToShow}
-                  className="pb-2 pt-2 text-sm"
-                  onChange={(v) => setChartToShow(v)}
-                  values={['PnL', t('value')]}
-                />
+              <div className="flex flex-col items-end">
+                <div className="w-36">
+                  <ButtonGroup
+                    activeValue={chartToShow}
+                    className="pb-2 pt-2 text-sm"
+                    onChange={(v) => setChartToShow(v)}
+                    values={['PnL', t('value')]}
+                  />
+                </div>
+
+                {chartToShow === 'PnL' ? (
+                  <div className="flex pt-4 space-x-3">
+                    <Checkbox
+                      checked={showSpotPnl}
+                      disabled={!showPerpPnl}
+                      onChange={(e) => setShowSpotPnl(e.target.checked)}
+                    >
+                      {t('include-spot')}
+                    </Checkbox>
+                    <Checkbox
+                      checked={showPerpPnl}
+                      disabled={!showSpotPnl}
+                      onChange={(e) => setShowPerpPnl(e.target.checked)}
+                    >
+                      {t('include-perp')}
+                    </Checkbox>
+                  </div>
+                ) : null}
               </div>
             </div>
             {chartData.length > 0 ? (
@@ -416,11 +461,13 @@ export default function AccountOverview() {
                 <Area
                   isAnimationActive={true}
                   type="monotone"
-                  dataKey={chartToShow === 'PnL' ? 'pnl' : 'account_equity'}
+                  dataKey={
+                    chartToShow === 'PnL' ? pnlChartDataKey() : 'account_equity'
+                  }
                   stroke={chartToShow === 'PnL' ? pnlChartColor : '#ffba24'}
                   fill={
                     chartToShow === 'PnL'
-                      ? chartData[chartData.length - 1]['pnl'] > 0
+                      ? chartData[chartData.length - 1][pnlChartDataKey()] > 0
                         ? 'url(#greenGradientArea)'
                         : 'url(#redGradientArea)'
                       : 'url(#defaultGradientArea)'
@@ -443,7 +490,9 @@ export default function AccountOverview() {
                   tickFormatter={(v) => formatDateAxis(v)}
                 />
                 <YAxis
-                  dataKey={chartToShow === 'PnL' ? 'pnl' : 'account_equity'}
+                  dataKey={
+                    chartToShow === 'PnL' ? pnlChartDataKey() : 'account_equity'
+                  }
                   type="number"
                   domain={['dataMin', 'dataMax']}
                   axisLine={false}

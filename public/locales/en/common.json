@@ -152,6 +152,8 @@
   "hourly-deposit-interest": "Hourly Deposit Interest",
   "hourly-funding": "Hourly Funding",
   "in-orders": "In Orders",
+  "include-perp": "Include Perp",
+  "include-spot": "Include Spot",
   "includes-borrow": "Includes borrow of",
   "init-error": "Could not perform init mango account and deposit operation",
   "init-health": "Init Health",

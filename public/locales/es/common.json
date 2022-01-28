@@ -152,6 +152,8 @@
   "hourly-deposit-interest": "Interés por depósito por hora",
   "hourly-funding": "Financiamiento por hora",
   "in-orders": "En ordenes",
+  "include-perp": "Include Perp",
+  "include-spot": "Include Spot",
   "includes-borrow": "Incluye el prestado de",
   "init-error": "No se pudo realizar la operación de depósito y cuenta de margen inicial",
   "init-health": "Salud Init",

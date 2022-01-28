@@ -152,6 +152,8 @@
   "hourly-deposit-interest": "1小時存款利息",
   "hourly-funding": "1小時資金費",
   "in-orders": "在掛單中",
+  "include-perp": "Include Perp",
+  "include-spot": "Include Spot",
   "includes-borrow": "包括存入",
   "init-error": "創建Mango帳戶與存款出錯了",
   "init-health": "初始健康度",
