@@ -167,6 +167,10 @@ interface MangoStore extends State {
     lastSlot: number
     openOrders: any[]
     totalOpenOrders: number
+    perpAccounts: any[]
+    openPerpPositions: any[]
+    totalOpenPerpPositions: number
+    unsettledPerpPositions: any[]
   }
   tradeForm: {
     side: 'buy' | 'sell'
@@ -274,6 +278,10 @@ const useMangoStore = create<MangoStore>((set, get) => {
       lastSlot: 0,
       openOrders: [],
       totalOpenOrders: 0,
+      perpAccounts: [],
+      openPerpPositions: [],
+      totalOpenPerpPositions: 0,
+      unsettledPerpPositions: [],
     },
     tradeForm: {
       side: 'buy',

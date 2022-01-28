@@ -1,20 +1,20 @@
 import { useCallback, useState } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
-import useMangoStore from '../stores/useMangoStore'
+import { useTranslation } from 'next-i18next'
 import { ExclamationIcon } from '@heroicons/react/outline'
+
+import useMangoStore from '../stores/useMangoStore'
 import Button from '../components/Button'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { ExpandableRow, Table, Td, Th, TrBody, TrHead } from './TableElements'
 import { formatUsdValue } from '../utils'
 import Loading from './Loading'
-import usePerpPositions from '../hooks/usePerpPositions'
 import MarketCloseModal from './MarketCloseModal'
 import PerpSideBadge from './PerpSideBadge'
 import PnlText from './PnlText'
 import { settlePnl } from './MarketPosition'
-import { useTranslation } from 'next-i18next'
 import MobileTableHeader from './mobile/MobileTableHeader'
 
 const PositionsTable = () => {
@@ -30,7 +30,11 @@ const PositionsTable = () => {
   const price = useMangoStore((s) => s.tradeForm.price)
   const [showMarketCloseModal, setShowMarketCloseModal] = useState(false)
   const setMangoStore = useMangoStore((s) => s.set)
-  const { openPositions, unsettledPositions } = usePerpPositions()
+  const openPositions = useMangoStore(
+    (s) => s.selectedMangoAccount.openPerpPositions
+  )
+  const unsettledPositions =
+    useMangoStore.getState().selectedMangoAccount.unsettledPerpPositions
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.md : false
   const { asPath } = useRouter()
@@ -120,7 +124,6 @@ const PositionsTable = () => {
                   {openPositions.map(
                     (
                       {
-                        marketIndex,
                         marketConfig,
                         perpMarket,
                         perpAccount,
@@ -134,7 +137,10 @@ const PositionsTable = () => {
                       index
                     ) => {
                       return (
-                        <TrBody index={index} key={`${marketIndex}`}>
+                        <TrBody
+                          index={index}
+                          key={`${marketConfig.marketIndex}`}
+                        >
                           <Td>
                             <div className="flex items-center">
                               <img
@@ -215,7 +221,7 @@ const PositionsTable = () => {
                               isOpen={showMarketCloseModal}
                               onClose={handleCloseWarning}
                               market={perpMarket}
-                              marketIndex={marketIndex}
+                              marketIndex={marketConfig.marketIndex}
                             />
                           ) : null}
                         </TrBody>

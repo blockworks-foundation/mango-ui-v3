@@ -22,7 +22,6 @@ import {
   ZERO_BN,
   ZERO_I80F48,
 } from '@blockworks-foundation/mango-client'
-import usePerpPositions from '../hooks/usePerpPositions'
 import { formatUsdValue } from '../utils'
 
 interface CloseAccountModalProps {
@@ -40,7 +39,12 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
-  const { openPositions, unsettledPositions } = usePerpPositions()
+  const openPositions = useMangoStore(
+    (s) => s.selectedMangoAccount.openPerpPositions
+  )
+  const unsettledPositions = useMangoStore(
+    (s) => s.selectedMangoAccount.unsettledPerpPositions
+  )
   const [hasBorrows, setHasBorrows] = useState(false)
   const [hasOpenPositions, setHasOpenPositions] = useState(false)
   const [totalAccountSOL, setTotalAccountSOL] = useState(0)

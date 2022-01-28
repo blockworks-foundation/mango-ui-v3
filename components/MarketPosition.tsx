@@ -12,14 +12,12 @@ import {
   PerpMarket,
   QUOTE_INDEX,
 } from '@blockworks-foundation/mango-client'
-import useTradeHistory from '../hooks/useTradeHistory'
 import { notify } from '../utils/notifications'
 import MarketCloseModal from './MarketCloseModal'
 import PnlText from './PnlText'
 import Loading from './Loading'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
-import { collectPerpPosition } from '../hooks/usePerpPositions'
 import { useTranslation } from 'next-i18next'
 import useMangoAccount from '../hooks/useMangoAccount'
 
@@ -76,9 +74,10 @@ export default function MarketPosition() {
   const connected = useMangoStore((s) => s.wallet.connected)
   const setMangoStore = useMangoStore((s) => s.set)
   const price = useMangoStore((s) => s.tradeForm.price)
+  const perpAccounts =
+    useMangoStore.getState().selectedMangoAccount.perpAccounts
   const baseSymbol = marketConfig.baseSymbol
   const marketName = marketConfig.name
-  const tradeHistory = useTradeHistory()
 
   const [showMarketCloseModal, setShowMarketCloseModal] = useState(false)
   const [settling, setSettling] = useState(false)
@@ -124,19 +123,16 @@ export default function MarketPosition() {
     return null
 
   const {
-    basePosition,
-    avgEntryPrice,
-    breakEvenPrice,
-    notionalSize,
-    unsettledPnl,
-  } = collectPerpPosition(
-    mangoAccount,
-    mangoGroup,
-    mangoCache,
-    marketConfig,
-    selectedMarket,
-    tradeHistory
-  )
+    basePosition = 0,
+    avgEntryPrice = 0,
+    breakEvenPrice = 0,
+    notionalSize = 0,
+    unsettledPnl = 0,
+  } = perpAccounts.length
+    ? perpAccounts.find((pa) =>
+        pa.perpMarket.publicKey.equals(selectedMarket.publicKey)
+      )
+    : {}
 
   function SettlePnlTooltip() {
     return (

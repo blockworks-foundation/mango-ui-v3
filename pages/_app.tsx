@@ -17,12 +17,25 @@ import { appWithTranslation } from 'next-i18next'
 import ErrorBoundary from '../components/ErrorBoundary'
 import GlobalNotification from '../components/GlobalNotification'
 import { useOpenOrders } from '../hooks/useOpenOrders'
+import usePerpPositions from '../hooks/usePerpPositions'
 
 const MangoStoreUpdater = () => {
   useHydrateStore()
-  useWallet()
-  useOpenOrders()
+  return null
+}
 
+const WalletStoreUpdater = () => {
+  useWallet()
+  return null
+}
+
+const OpenOrdersStoreUpdater = () => {
+  useOpenOrders()
+  return null
+}
+
+const PerpPositionsStoreUpdater = () => {
+  usePerpPositions()
   return null
 }
 
@@ -93,6 +106,9 @@ function App({ Component, pageProps }) {
         <ErrorBoundary>
           <PageTitle />
           <MangoStoreUpdater />
+          <WalletStoreUpdater />
+          <OpenOrdersStoreUpdater />
+          <PerpPositionsStoreUpdater />
         </ErrorBoundary>
 
         <ThemeProvider defaultTheme="Mango">

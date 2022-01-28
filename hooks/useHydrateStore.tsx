@@ -61,7 +61,7 @@ const useHydrateStore = () => {
     if (mangoAccount) {
       actions.reloadOrders()
     }
-  }, 30 * SECONDS)
+  }, 20 * SECONDS)
 
   useInterval(() => {
     if (mangoAccount) {
