@@ -408,7 +408,11 @@ const OpenOrdersTable = () => {
     const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
     const mangoClient = useMangoStore.getState().connection.client
-    const { askInfo, bidInfo } = useMangoStore.getState().selectedMarket
+    const marketConfig = useMangoStore.getState().selectedMarket.config
+    const askInfo =
+      useMangoStore.getState().accountInfos[marketConfig.asksKey.toString()]
+    const bidInfo =
+      useMangoStore.getState().accountInfos[marketConfig.bidsKey.toString()]
     const wallet = useMangoStore.getState().wallet.current
 
     if (!wallet || !mangoGroup || !mangoAccount || !market) return

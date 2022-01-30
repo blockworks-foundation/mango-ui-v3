@@ -127,7 +127,7 @@ interface AlertRequest {
   email: string | undefined
 }
 
-interface MangoStore extends State {
+export interface MangoStore extends State {
   notificationIdCounter: number
   notifications: Array<Notification>
   accountInfos: AccountInfoList
@@ -144,8 +144,6 @@ interface MangoStore extends State {
     current: Market | PerpMarket | null
     markPrice: number
     kind: string
-    askInfo: AccountInfo<Buffer> | null
-    bidInfo: AccountInfo<Buffer> | null
     orderBook: Orderbook
     fills: any[]
   }
@@ -264,8 +262,6 @@ const useMangoStore = create<MangoStore>((set, get) => {
       kind: defaultMarket.kind,
       current: null,
       markPrice: 0,
-      askInfo: null,
-      bidInfo: null,
       orderBook: { bids: [], asks: [] },
       fills: [],
     },
@@ -569,7 +565,7 @@ const useMangoStore = create<MangoStore>((set, get) => {
             state.selectedMangoAccount.lastUpdatedAt = new Date().toISOString()
             state.selectedMangoAccount.lastSlot = lastSlot
           })
-          console.log('reloaded mango account', reloadedMangoAccount)
+          console.log('reloaded mango account')
         }
       },
       async reloadOrders() {

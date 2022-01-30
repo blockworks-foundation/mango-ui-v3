@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react'
 import Big from 'big.js'
-import { isEqual as isArrayEqual } from 'lodash'
+import { isEqual as isEqualLodash } from 'lodash'
 import useInterval from '../hooks/useInterval'
 import usePrevious from '../hooks/usePrevious'
 import { isEqual, getDecimalCount, usdFormatter } from '../utils/'
@@ -129,7 +129,7 @@ export default function Orderbook({ depth = 8 }) {
   const isMobile = width ? width < breakpoints.sm : false
 
   const currentOrderbookData = useRef(null)
-  const lastOrderbookData = useRef(null)
+  const nextOrderbookData = useRef(null)
   const previousDepth = usePrevious(depth)
 
   const [openOrderPrices, setOpenOrderPrices] = useState([])
@@ -150,8 +150,14 @@ export default function Orderbook({ depth = 8 }) {
   useInterval(() => {
     if (
       !currentOrderbookData.current ||
-      JSON.stringify(currentOrderbookData.current) !==
-        JSON.stringify(lastOrderbookData.current) ||
+      !isEqualLodash(
+        currentOrderbookData.current.bids,
+        nextOrderbookData.current.bids
+      ) ||
+      !isEqualLodash(
+        currentOrderbookData.current.asks,
+        nextOrderbookData.current.asks
+      ) ||
       previousDepth !== depth ||
       previousGrouping !== grouping
     ) {
@@ -159,9 +165,13 @@ export default function Orderbook({ depth = 8 }) {
       const openOrders =
         useMangoStore.getState().selectedMangoAccount.openOrders
       const newOpenOrderPrices = openOrders?.length
-        ? openOrders.map(({ order }) => order.price)
+        ? openOrders
+            .filter(({ market }) =>
+              market.account.publicKey.equals(marketConfig.publicKey)
+            )
+            .map(({ order }) => order.price)
         : []
-      if (!isArrayEqual(newOpenOrderPrices, openOrderPrices)) {
+      if (!isEqualLodash(newOpenOrderPrices, openOrderPrices)) {
         setOpenOrderPrices(newOpenOrderPrices)
       }
 
@@ -226,7 +236,7 @@ export default function Orderbook({ depth = 8 }) {
   }, 500)
 
   useEffect(() => {
-    lastOrderbookData.current = {
+    nextOrderbookData.current = {
       bids: orderbook?.bids,
       asks: orderbook?.asks,
     }
