@@ -34,6 +34,8 @@ import {
   orderbookSelector,
   setStoreSelector,
 } from '../stores/selectors'
+import { Market } from '@project-serum/serum'
+import { PerpMarket } from '@blockworks-foundation/mango-client'
 
 const Line = (props) => {
   return (
@@ -617,6 +619,15 @@ const OrderbookRow = React.memo<any>(
     hasOpenOrder,
     market,
     grouping,
+  }: {
+    side: 'buy' | 'sell'
+    price: number
+    size: number
+    sizePercent: number
+    hasOpenOrder: boolean
+    invert: boolean
+    grouping: number
+    market: Market | PerpMarket
   }) => {
     const element = useRef(null)
     const setMangoStore = useMangoStore(setStoreSelector)
@@ -660,6 +671,11 @@ const OrderbookRow = React.memo<any>(
 
     if (!market) return null
 
+    console.log('tick size', market.minOrderSize)
+
+    const groupingDecimalCount = getDecimalCount(grouping)
+    const minOrderSizeDecimals = getDecimalCount(market.minOrderSize)
+
     return (
       <div
         className={`flex relative text-sm leading-6 justify-between cursor-pointer`}
@@ -683,7 +699,7 @@ const OrderbookRow = React.memo<any>(
                     : `text-th-red brightness-125`
                 }`}
               >
-                {usdFormatter(formattedPrice, getDecimalCount(grouping), false)}
+                {usdFormatter(formattedPrice, groupingDecimalCount, false)}
               </div>
 
               <div
@@ -692,7 +708,7 @@ const OrderbookRow = React.memo<any>(
                 }`}
                 onClick={handleSizeClick}
               >
-                {usdFormatter(formattedSize, undefined, false)}
+                {usdFormatter(formattedSize, minOrderSizeDecimals, false)}
               </div>
             </div>
           </>
@@ -705,7 +721,7 @@ const OrderbookRow = React.memo<any>(
                 }`}
                 onClick={handleSizeClick}
               >
-                {usdFormatter(formattedSize, undefined, false)}
+                {usdFormatter(formattedSize, minOrderSizeDecimals, false)}
               </div>
               <div
                 className={`z-10 text-xs leading-5 md:leading-6 md:pr-4 ${
@@ -715,7 +731,7 @@ const OrderbookRow = React.memo<any>(
                 }`}
                 onClick={handlePriceClick}
               >
-                {usdFormatter(formattedPrice, getDecimalCount(grouping), false)}
+                {usdFormatter(formattedPrice, groupingDecimalCount, false)}
               </div>
             </div>
 
