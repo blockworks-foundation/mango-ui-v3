@@ -96,7 +96,7 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
               <Modal.Header>
                 <div className="flex items-center justify-between w-full">
                   <div className="w-20" />
-                  <ElementTitle noMarignBottom>
+                  <ElementTitle noMarginBottom>
                     {t('active-alerts')}
                   </ElementTitle>
                   <Button
@@ -136,7 +136,7 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
           ) : showAlertForm ? (
             <>
               <div>
-                <ElementTitle noMarignBottom>{t('create-alert')}</ElementTitle>
+                <ElementTitle noMarginBottom>{t('create-alert')}</ElementTitle>
                 <p className="mt-1 text-center text-th-fgd-4">
                   {t('alerts-disclaimer')}
                 </p>
@@ -216,7 +216,7 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
           ) : (
             <div>
               <Modal.Header>
-                <ElementTitle noMarignBottom>{t('no-alerts')}</ElementTitle>
+                <ElementTitle noMarginBottom>{t('no-alerts')}</ElementTitle>
               </Modal.Header>
               <p className="mb-4 text-center">{t('no-alerts-desc')}</p>
               <Button

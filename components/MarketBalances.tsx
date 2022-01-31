@@ -57,7 +57,9 @@ export default function MarketBalances() {
 
   return (
     <div className={!connected ? 'filter blur' : null}>
-      {!isMobile ? <ElementTitle>Balances</ElementTitle> : null}
+      {!isMobile ? (
+        <ElementTitle className="hidden 2xl:flex">Balances</ElementTitle>
+      ) : null}
       {mangoGroup ? (
         <div className="grid grid-cols-2 grid-rows-1 gap-4 pt-2">
           {mangoGroupConfig.tokens

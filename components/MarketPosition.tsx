@@ -160,7 +160,7 @@ export default function MarketPosition() {
             {marketConfig.name} {t('position')}
           </ElementTitle>
         ) : null}
-        <div className="flex items-center justify-between pb-3">
+        <div className="flex items-center justify-between pb-2">
           <div className="font-normal text-th-fgd-3 leading-4">{t('side')}</div>
           {initialLoad ? (
             <DataLoader />
@@ -168,7 +168,7 @@ export default function MarketPosition() {
             <PerpSideBadge perpAccount={perpAccount}></PerpSideBadge>
           )}
         </div>
-        <div className="flex justify-between pb-3">
+        <div className="flex justify-between pb-2">
           <div className="font-normal text-th-fgd-3 leading-4">
             {t('position-size')}
           </div>
@@ -192,7 +192,7 @@ export default function MarketPosition() {
             )}
           </div>
         </div>
-        <div className="flex justify-between pb-3">
+        <div className="flex justify-between pb-2">
           <div className="font-normal text-th-fgd-3 leading-4">
             {t('notional-size')}
           </div>
@@ -206,7 +206,7 @@ export default function MarketPosition() {
             )}
           </div>
         </div>
-        <div className="flex justify-between pb-3">
+        <div className="flex justify-between pb-2">
           <div className="font-normal text-th-fgd-3 leading-4">
             {t('average-entry')}
           </div>
@@ -220,7 +220,7 @@ export default function MarketPosition() {
             )}
           </div>
         </div>
-        <div className="flex justify-between pb-3">
+        <div className="flex justify-between pb-2">
           <div className="font-normal text-th-fgd-3 leading-4">
             {t('break-even')}
           </div>
@@ -234,7 +234,7 @@ export default function MarketPosition() {
             )}
           </div>
         </div>
-        <div className="flex justify-between pb-3">
+        <div className="flex justify-between pb-2">
           <Tooltip content={<SettlePnlTooltip />}>
             <Tooltip.Content className="font-normal text-th-fgd-3 leading-4">
               {t('unsettled-balance')}

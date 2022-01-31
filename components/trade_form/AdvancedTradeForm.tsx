@@ -765,7 +765,7 @@ export default function AdvancedTradeForm({
         </div>
       ) : null}
       <OrderSideTabs onChange={onChangeSide} side={side} />
-      <div className="grid grid-cols-12 gap-2 text-left">
+      <div className="grid grid-cols-12 gap-x-1.5 gap-y-0.5 text-left">
         <div className="col-span-12 md:col-span-6">
           <label className="text-xxs text-th-fgd-3">{t('type')}</label>
           <TradeType
@@ -874,7 +874,7 @@ export default function AdvancedTradeForm({
             }
           />
         </div>
-        <div className="col-span-12 -mt-1">
+        <div className="col-span-12 mt-1">
           <ButtonGroup
             activeValue={positionSizePercent}
             onChange={(p) => handleSetPositionSize(p, spotMargin, reduceOnly)}
@@ -901,7 +901,7 @@ export default function AdvancedTradeForm({
           <div className="sm:flex">
             {isLimitOrder ? (
               <div className="flex">
-                <div className="mr-4 mt-4">
+                <div className="mr-4 mt-3">
                   <Tooltip
                     className="hidden md:block"
                     delay={250}
@@ -916,7 +916,7 @@ export default function AdvancedTradeForm({
                     </Checkbox>
                   </Tooltip>
                 </div>
-                <div className="mr-4 mt-4">
+                <div className="mr-4 mt-3">
                   <Tooltip
                     className="hidden md:block"
                     delay={250}
@@ -941,7 +941,7 @@ export default function AdvancedTradeForm({
                 && showReduceOnly(perpAccount?.basePosition.toNumber())
              */}
             {marketConfig.kind === 'perp' ? (
-              <div className="mt-4">
+              <div className="mt-3">
                 <Tooltip
                   className="hidden md:block"
                   delay={250}
@@ -959,7 +959,7 @@ export default function AdvancedTradeForm({
               </div>
             ) : null}
             {marketConfig.kind === 'spot' ? (
-              <div className="mt-4">
+              <div className="mt-3">
                 <Tooltip
                   delay={250}
                   placement="left"
@@ -983,7 +983,7 @@ export default function AdvancedTradeForm({
               <div className="text-xs">{t('slippage-warning')}</div>
             </div>
           ) : null}
-          <div className={`flex pt-4`}>
+          <div className={`flex mt-3`}>
             {canTrade ? (
               <Button
                 disabled={disabledTradeButton}

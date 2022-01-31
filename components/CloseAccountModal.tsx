@@ -138,7 +138,7 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
 
   return (
     <Modal onClose={onClose} isOpen={isOpen && mangoAccount !== undefined}>
-      <ElementTitle noMarignBottom>
+      <ElementTitle noMarginBottom>
         {t('close-account:are-you-sure')}
       </ElementTitle>
       <p className="text-center mt-1">

@@ -299,7 +299,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
         {!showSimulation ? (
           <>
             <Modal.Header>
-              <ElementTitle noMarignBottom>
+              <ElementTitle noMarginBottom>
                 {title ? title : t('withdraw-funds')}
               </ElementTitle>
             </Modal.Header>
@@ -425,7 +425,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
         {showSimulation && simulation ? (
           <>
             <Modal.Header>
-              <ElementTitle noMarignBottom>
+              <ElementTitle noMarginBottom>
                 {t('confirm-withdraw')}
               </ElementTitle>
             </Modal.Header>

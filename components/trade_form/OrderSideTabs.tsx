@@ -29,25 +29,27 @@ const OrderSideTabs: FunctionComponent<OrderSideTabsProps> = ({
       <nav className="-mb-px flex space-x-2" aria-label="Tabs">
         <button
           onClick={() => onChange('buy')}
-          className={`cursor-pointer default-transition flex font-semibold items-center justify-center py-1.5 md:py-2 relative text-sm md:text-base w-1/2 whitespace-nowrap hover:opacity-100
-                    ${
-                      side === 'buy'
-                        ? `border border-th-green md:border-0 text-th-green`
-                        : `border border-th-fgd-4 md:border-0 text-th-fgd-4 hover:border-th-green hover:text-th-green`
-                    }
-                  `}
+          className={`cursor-pointer default-transition flex font-semibold items-center 
+            justify-center py-1 relative text-sm md:text-base w-1/2 whitespace-nowrap hover:opacity-100
+            ${
+              side === 'buy'
+                ? `border border-th-green md:border-0 text-th-green`
+                : `border border-th-fgd-4 md:border-0 text-th-fgd-4 hover:border-th-green hover:text-th-green`
+            }
+          `}
         >
           {market instanceof PerpMarket && isSimpleForm ? 'Long' : t('buy')}
         </button>
         <button
           onClick={() => onChange('sell')}
-          className={`cursor-pointer default-transition flex font-semibold items-center justify-center py-1.5 md:py-2 relative text-sm md:text-base w-1/2 whitespace-nowrap hover:opacity-100
-                    ${
-                      side === 'sell'
-                        ? `border border-th-red md:border-0 text-th-red`
-                        : `border border-th-fgd-4 md:border-0 text-th-fgd-4 hover:border-th-red hover:text-th-red`
-                    }
-                  `}
+          className={`cursor-pointer default-transition flex font-semibold items-center 
+            justify-center py-1 relative text-sm md:text-base w-1/2 whitespace-nowrap hover:opacity-100
+            ${
+              side === 'sell'
+                ? `border border-th-red md:border-0 text-th-red`
+                : `border border-th-fgd-4 md:border-0 text-th-fgd-4 hover:border-th-red hover:text-th-red`
+            }
+          `}
         >
           {market instanceof PerpMarket && isSimpleForm
             ? capitalize(t('short'))

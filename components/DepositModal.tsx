@@ -153,7 +153,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <ElementTitle noMarignBottom>{t('deposit-funds')}</ElementTitle>
+      <ElementTitle noMarginBottom>{t('deposit-funds')}</ElementTitle>
       {!mangoAccount ? (
         <div className="mb-4 mt-2 text-center text-th-fgd-3 text-xs">
           {t('first-deposit-desc')}

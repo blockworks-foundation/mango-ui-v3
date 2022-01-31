@@ -179,7 +179,7 @@ export default function AccountInfo() {
             </div>
           ) : null}
           <div>
-            <div className="flex justify-between pb-3">
+            <div className="flex justify-between pb-2">
               <div className="font-normal text-th-fgd-3 leading-4">
                 {t('equity')}
               </div>
@@ -187,7 +187,7 @@ export default function AccountInfo() {
                 {initialLoad ? <DataLoader /> : formatUsdValue(+equity)}
               </div>
             </div>
-            <div className="flex justify-between pb-3">
+            <div className="flex justify-between pb-2">
               <div className="font-normal text-th-fgd-3 leading-4">
                 {t('leverage')}
               </div>
@@ -203,7 +203,7 @@ export default function AccountInfo() {
                 )}
               </div>
             </div>
-            <div className={`flex justify-between pb-3`}>
+            <div className={`flex justify-between pb-2`}>
               <div className="font-normal text-th-fgd-3 leading-4">
                 {t('collateral-available')}
               </div>
@@ -222,7 +222,7 @@ export default function AccountInfo() {
                 )}
               </div>
             </div>
-            <div className={`flex justify-between pb-3`}>
+            <div className={`flex justify-between pb-2`}>
               <div className="font-normal text-th-fgd-3 leading-4">
                 {marketConfig.name} {t('margin-available')}
               </div>
@@ -242,7 +242,7 @@ export default function AccountInfo() {
                   : '0.00'}
               </div>
             </div>
-            <div className={`flex justify-between pb-3`}>
+            <div className={`flex justify-between pb-2`}>
               <div className="font-normal text-th-fgd-3 leading-4">
                 {marketConfig.name} {t('estimated-liq-price')}
               </div>
@@ -252,7 +252,7 @@ export default function AccountInfo() {
                   : 'N/A'}
               </div>
             </div>
-            <div className={`flex justify-between pb-3`}>
+            <div className={`flex justify-between pb-2`}>
               <Tooltip
                 content={
                   <div>
@@ -296,7 +296,7 @@ export default function AccountInfo() {
               </div>
             </div>
           </div>
-          <div className="border border-th-bkg-4 rounded flex items-center my-2 sm:my-3 p-2.5">
+          <div className="border border-th-bkg-4 rounded flex items-center my-2 sm:my-1 p-2.5">
             <div className="flex items-center pr-2">
               <HeartIcon
                 className="h-5 mr-1.5 w-5 text-th-primary"
@@ -345,12 +345,12 @@ export default function AccountInfo() {
             </div>
           </div>
           {mangoAccount && mangoAccount.beingLiquidated ? (
-            <div className="pt-0.5 text-xs sm:text-sm flex items-center justify-center">
+            <div className="pt-0.5 text-xs flex items-center justify-center">
               <ExclamationIcon className="flex-shrink-0 h-5 w-5 mr-1.5 text-th-red" />
               <span className="text-th-red">{t('being-liquidated')}</span>
             </div>
           ) : null}
-          <div className={`grid grid-cols-2 grid-rows-1 gap-4 pt-2 sm:pt-4`}>
+          <div className={`grid grid-cols-2 grid-rows-1 gap-4 pt-2 sm:pt-2`}>
             <Button
               onClick={() => setShowDepositModal(true)}
               className="w-full"

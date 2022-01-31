@@ -73,7 +73,7 @@ const SettingsModal = ({ isOpen, onClose }) => {
         </button>
       ) : null}
       <Modal.Header>
-        <ElementTitle noMarignBottom>{t('settings')}</ElementTitle>
+        <ElementTitle noMarginBottom>{t('settings')}</ElementTitle>
       </Modal.Header>
       {!settingsView ? (
         <div className="border-b border-th-bkg-4">
