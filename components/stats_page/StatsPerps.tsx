@@ -43,8 +43,8 @@ export default function StatsPerps({ perpStats }) {
   const selectedMarketConfig = marketConfigs.find(
     (m) => m.name === selectedAsset
   )
-  let markets = useMangoStore(marketsSelector)
-  markets = Object.values(markets)
+  const marketDirectory = useMangoStore(marketsSelector)
+  const markets = Object.values(marketDirectory)
 
   const perpMarkets = useMemo(() => {
     return markets.filter((m) => m instanceof PerpMarket) as PerpMarket[]
