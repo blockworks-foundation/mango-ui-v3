@@ -31,7 +31,7 @@ const UserInfoTabs = ({ activeTab, setActiveTab }) => {
   }
 
   return (
-    <div className="pb-2 relative">
+    <div className="pb-1 relative">
       <Tabs
         activeTab={activeTab}
         onChange={handleTabChange}
@@ -42,7 +42,7 @@ const UserInfoTabs = ({ activeTab, setActiveTab }) => {
         tabs={TABS}
       />
       {mangoAccount ? (
-        <div className="absolute right-0 top-0">
+        <div className="absolute right-0 top-0 -mt-1">
           <ManualRefresh />
         </div>
       ) : null}

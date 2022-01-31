@@ -276,7 +276,7 @@ export default function Orderbook({ depth = 8 }) {
                       onClick={() => {
                         setDisplayCumulativeSize(!displayCumulativeSize)
                       }}
-                      className="flex items-center justify-center rounded-full bg-th-bkg-3 w-7 h-7 hover:text-th-primary focus:outline-none"
+                      className="flex items-center justify-center rounded-full bg-th-bkg-4 w-7 h-7 hover:text-th-primary focus:outline-none"
                     >
                       {displayCumulativeSize ? (
                         <StepSizeIcon className="w-4 h-4" />
@@ -294,7 +294,7 @@ export default function Orderbook({ depth = 8 }) {
                   >
                     <button
                       onClick={handleLayoutChange}
-                      className="flex items-center justify-center rounded-full bg-th-bkg-3 w-7 h-7 hover:text-th-primary focus:outline-none"
+                      className="flex items-center justify-center rounded-full bg-th-bkg-4 w-7 h-7 hover:text-th-primary focus:outline-none"
                     >
                       <SwitchHorizontalIcon className="w-4 h-4" />
                     </button>
