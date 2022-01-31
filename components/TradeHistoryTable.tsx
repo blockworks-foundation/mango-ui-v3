@@ -65,7 +65,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
       trade.marketName.includes('PERP') ||
       trade.marketName.includes('USDC')
     ) {
-      const location = `/market?name=${trade.marketName}`
+      const location = `/?name=${trade.marketName}`
       if (asPath.includes(location)) {
         return <span>{trade.marketName}</span>
       } else {

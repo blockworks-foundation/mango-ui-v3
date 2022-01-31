@@ -50,7 +50,7 @@ export default function MarketMenuItem({ menuTitle = '', linksArray = [] }) {
               {linksArray.map((m) => (
                 <Link
                   href={{
-                    pathname: '/market',
+                    pathname: '/',
                     query: { name: m.name },
                   }}
                   key={m.name}

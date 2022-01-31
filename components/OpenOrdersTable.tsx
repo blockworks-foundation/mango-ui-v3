@@ -45,8 +45,8 @@ const DesktopTable = ({
   const renderMarketName = (market: MarketConfig) => {
     const location =
       market.kind === 'spot'
-        ? `/market?name=${market.baseSymbol}%2FUSDC`
-        : `/market?name=${market.name}`
+        ? `/?name=${market.baseSymbol}%2FUSDC`
+        : `/?name=${market.name}`
     if (!asPath.includes(location)) {
       return (
         <Link href={location} shallow={true}>

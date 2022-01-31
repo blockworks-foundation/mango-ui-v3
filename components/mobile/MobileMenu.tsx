@@ -39,7 +39,7 @@ const MobileMenu = () => {
           <ConnectWalletButton />
         </div>
         <div className="p-6">
-          <MenuItem href="/market?name=BTC/USDC">{t('trade')}</MenuItem>
+          <MenuItem href="/?name=BTC/USDC">{t('trade')}</MenuItem>
           <MenuItem href="/account">{t('account')}</MenuItem>
           <MenuItem href="/borrow">{t('borrow')}</MenuItem>
           <MenuItem href="/stats">{t('stats')}</MenuItem>

@@ -34,7 +34,7 @@ export const initialMarket = {
   base: 'BTC',
   kind: 'perp',
   name: 'BTC-PERP',
-  path: '/market?name=BTC-PERP',
+  path: '/?name=BTC-PERP',
 }
 
 const SettingsModal = ({ isOpen, onClose }) => {
@@ -153,7 +153,7 @@ const DefaultMarketSettings = ({ setSettingsView }) => {
       base: 'BTC',
       kind: 'perp',
       name: 'BTC-PERP',
-      path: '/market?name=BTC-PERP',
+      path: '/?name=BTC-PERP',
     }
   )
   const handleSetDefaultMarket = (market) => {
@@ -164,7 +164,7 @@ const DefaultMarketSettings = ({ setSettingsView }) => {
       base: base,
       kind: kind,
       name: market,
-      path: `/market?name=${market}`,
+      path: `/?name=${market}`,
     })
   }
   const parsedDefaultMarket = defaultMarket

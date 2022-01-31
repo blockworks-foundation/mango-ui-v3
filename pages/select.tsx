@@ -66,7 +66,7 @@ const SelectMarket = () => {
                       className={`flex items-center justify-between px-2.5 text-xs`}
                       key={m.name}
                     >
-                      <Link href={`/market?name=${m.name}`} key={m.name}>
+                      <Link href={`/?name=${m.name}`} key={m.name}>
                         <a className="cursor-pointer default-transition flex h-12 items-center justify-between text-th-fgd-2 hover:text-th-primary w-full">
                           {m.name}
                           <div className="flex items-center">

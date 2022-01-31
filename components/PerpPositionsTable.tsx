@@ -153,7 +153,7 @@ const PositionsTable = () => {
                               ) : (
                                 <Link
                                   href={{
-                                    pathname: '/market',
+                                    pathname: '/',
                                     query: { name: marketConfig.name },
                                   }}
                                   shallow={true}
