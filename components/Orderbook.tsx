@@ -702,7 +702,7 @@ const OrderbookRow = React.memo<any>(
 
               <div
                 className={`z-10 text-xs ${
-                  hasOpenOrder ? 'text-th-primary' : 'text-th-fgd-3'
+                  hasOpenOrder ? 'text-th-primary' : 'text-th-fgd-2'
                 }`}
                 onClick={handleSizeClick}
               >
@@ -715,7 +715,7 @@ const OrderbookRow = React.memo<any>(
             <div className="flex justify-between w-full">
               <div
                 className={`z-10 text-xs leading-5 md:leading-6 ${
-                  hasOpenOrder ? 'text-th-primary' : 'text-th-fgd-3'
+                  hasOpenOrder ? 'text-th-primary' : 'text-th-fgd-2'
                 }`}
                 onClick={handleSizeClick}
               >
