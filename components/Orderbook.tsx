@@ -671,8 +671,6 @@ const OrderbookRow = React.memo<any>(
 
     if (!market) return null
 
-    console.log('tick size', market.minOrderSize)
-
     const groupingDecimalCount = getDecimalCount(grouping)
     const minOrderSizeDecimals = getDecimalCount(market.minOrderSize)
 
