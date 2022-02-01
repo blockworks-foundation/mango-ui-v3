@@ -138,14 +138,14 @@ const DesktopTable = ({
                       {!order.perpTrigger ? (
                         <Button
                           onClick={() => showEditOrderForm(index, order)}
-                          className="text-xs -my-1 pt-0 pb-0 h-8 pl-3 pr-3"
+                          className="text-xs -my-1 pt-0 pb-0 h-7 pl-3 pr-3"
                         >
                           {t('edit')}
                         </Button>
                       ) : null}
                       <Button
                         onClick={() => handleCancelOrder(order, market.account)}
-                        className="text-xs -my-1 pt-0 pb-0 h-8 pl-3 pr-3"
+                        className="text-xs -my-1 pt-0 pb-0 h-7 pl-3 pr-3"
                       >
                         {cancelledOrderId + '' === order.orderId + '' ? (
                           <Loading />
@@ -157,7 +157,7 @@ const DesktopTable = ({
                   ) : (
                     <>
                       <Button
-                        className="text-xs pt-0 pb-0 h-8 pl-3 pr-3"
+                        className="text-xs pt-0 pb-0 h-7 pl-3 pr-3"
                         onClick={() =>
                           handleModifyOrder(
                             order,
@@ -174,7 +174,7 @@ const DesktopTable = ({
                         )}
                       </Button>
                       <Button
-                        className="text-xs pt-0 pb-0 h-8 pl-3 pr-3"
+                        className="text-xs pt-0 pb-0 h-7 pl-3 pr-3"
                         onClick={() => setEditOrderIndex(null)}
                       >
                         Cancel Edit

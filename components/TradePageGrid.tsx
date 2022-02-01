@@ -46,7 +46,7 @@ export const defaultLayouts = {
     { i: 'marketPosition', x: 8, y: 1, w: 4, h: 11, minW: 2 },
     { i: 'accountInfo', x: 8, y: 0, w: 4, h: 14, minW: 2 },
     { i: 'orderbook', x: 0, y: 2, w: 4, h: 19, minW: 2 },
-    { i: 'tradeForm', x: 4, y: 2, w: 4, h: 17, minW: 3 },
+    { i: 'tradeForm', x: 4, y: 2, w: 4, h: 19, minW: 3 },
     { i: 'marketTrades', x: 8, y: 2, w: 4, h: 19, minW: 2 },
     { i: 'userInfo', x: 0, y: 3, w: 12, h: 19, minW: 6 },
   ],
@@ -128,7 +128,7 @@ const TradePageGrid = () => {
         onLayoutChange={(layout, layouts) => onLayoutChange(layouts)}
       >
         <div key="tvChart">
-          <FloatingElement className="h-full pl-0 md:pl-0 md:pr-1 md:pb-1 md:pt-3">
+          <FloatingElement className="h-full pl-0 md:pl-0 md:pr-1 md:pb-1 md:pt-2.5">
             <TVChartContainer />
           </FloatingElement>
         </div>

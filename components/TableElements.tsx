@@ -30,7 +30,7 @@ export const Td = ({
   className?: string
 }) => (
   <td
-    className={`px-4 py-3 whitespace-nowrap text-sm text-th-fgd-1 ${className}`}
+    className={`px-4 py-3.5 whitespace-nowrap text-sm text-th-fgd-2 ${className}`}
   >
     {children}
   </td>

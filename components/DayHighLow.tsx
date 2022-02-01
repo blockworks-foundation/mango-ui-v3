@@ -17,7 +17,7 @@ const DayHighLow = ({ high, low, latest }) => {
       <div className="text-left xl:text-center text-th-fgd-3 tiny-text pb-0.5">
         {t('daily-range')}
       </div>
-      <div className="flex items-center font-semibold">
+      <div className="flex items-center">
         <div className="pr-2 text-th-fgd-2 md:text-xs">
           {low ? formatUsdValue(low) : <MarketDataLoader />}
         </div>

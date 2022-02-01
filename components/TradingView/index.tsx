@@ -109,6 +109,7 @@ const TVChartContainer = () => {
         defaultProps.containerId as ChartingLibraryWidgetOptions['container_id'],
       library_path: defaultProps.libraryPath as string,
       locale: 'en',
+      enabled_features: ['hide_left_toolbar_by_default'],
       disabled_features: [
         'use_localstorage_for_settings',
         'timeframes_toolbar',

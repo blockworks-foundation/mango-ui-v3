@@ -397,7 +397,7 @@ const BalancesTable = ({
                         <Td>
                           <div className="flex justify-end">
                             <Button
-                              className="text-xs pt-0 pb-0 h-8 pl-3 pr-3"
+                              className="text-xs pt-0 pb-0 h-7 pl-3 pr-3"
                               onClick={() =>
                                 handleOpenDepositModal(balance.symbol)
                               }
@@ -407,7 +407,7 @@ const BalancesTable = ({
                                 : t('deposit')}
                             </Button>
                             <Button
-                              className="text-xs pt-0 pb-0 h-8 ml-4 pl-3 pr-3"
+                              className="text-xs pt-0 pb-0 h-7 ml-4 pl-3 pr-3"
                               onClick={() =>
                                 handleOpenWithdrawModal(balance.symbol)
                               }
@@ -516,7 +516,7 @@ const BalancesTable = ({
                         </div>
                         <div className="flex space-x-4">
                           <Button
-                            className="text-xs pt-0 pb-0 h-8 pl-3 pr-3 w-1/2"
+                            className="text-xs pt-0 pb-0 h-7 pl-3 pr-3 w-1/2"
                             onClick={() =>
                               handleOpenDepositModal(balance.symbol)
                             }
@@ -526,7 +526,7 @@ const BalancesTable = ({
                               : t('deposit')}
                           </Button>
                           <Button
-                            className="text-xs pt-0 pb-0 h-8 pl-3 pr-3 w-1/2"
+                            className="text-xs pt-0 pb-0 h-7 pl-3 pr-3 w-1/2"
                             onClick={() =>
                               handleOpenWithdrawModal(balance.symbol)
                             }

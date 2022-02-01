@@ -238,7 +238,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                           index={index}
                           key={`${trade.seqNum}${trade.marketName}`}
                         >
-                          <Td>
+                          <Td className="!py-2 ">
                             <div className="flex items-center">
                               <img
                                 alt=""
@@ -252,25 +252,29 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                               {renderMarketName(trade)}
                             </div>
                           </Td>
-                          <Td>
+                          <Td className="!py-2 ">
                             <SideBadge side={trade.side} />
                           </Td>
-                          <Td>{trade.size}</Td>
-                          <Td>
+                          <Td className="!py-2 ">{trade.size}</Td>
+                          <Td className="!py-2 ">
                             $
                             {new Intl.NumberFormat('en-US').format(trade.price)}
                           </Td>
-                          <Td>{formatUsdValue(trade.value)}</Td>
-                          <Td>{trade.liquidity}</Td>
-                          <Td>{formatUsdValue(trade.feeCost)}</Td>
-                          <Td className="w-[0.1%]">
+                          <Td className="!py-2 ">
+                            {formatUsdValue(trade.value)}
+                          </Td>
+                          <Td className="!py-2 ">{trade.liquidity}</Td>
+                          <Td className="!py-2 ">
+                            {formatUsdValue(trade.feeCost)}
+                          </Td>
+                          <Td className="!py-2 w-[0.1%]">
                             {trade.loadTimestamp || trade.timestamp
                               ? renderTradeDateTime(
                                   trade.loadTimestamp || trade.timestamp
                                 )
                               : t('recent')}
                           </Td>
-                          <Td className="w-[0.1%]">
+                          <Td className="!py-2 w-[0.1%]">
                             {trade.marketName.includes('PERP') ? (
                               <a
                                 className="text-th-fgd-4 underline text-xs underline-offset-4"
