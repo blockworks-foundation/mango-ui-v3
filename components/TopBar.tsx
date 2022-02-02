@@ -10,7 +10,6 @@ import NavDropMenu from './NavDropMenu'
 import AccountsModal from './AccountsModal'
 import LanguageSwitch from './LanguageSwitch'
 import { DEFAULT_MARKET_KEY, initialMarket } from './SettingsModal'
-// import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import Settings from './Settings'
 
