@@ -68,7 +68,7 @@ html .group-wWM3zP_M {
   background-color: var(--bkg-dark);
   border-radius: 50%;
   margin-left: 8px;
-  transform: scale(0.9);
+  transform: scale(0.75);
   width: 38px;
 }
 
@@ -165,7 +165,7 @@ html .container-1e-eHKCj:not(.disabled-3lywlGlv):hover .highlighted-3Ob1jr_R {
 
 /* icons */
 
-html .button-263WXsg- .icon-1Y-3MM9F svg {
+html .button-263WXsg- .icon-1Y-3MM9F {
   transform: scale(0.8);
 }
 
@@ -409,7 +409,7 @@ html.theme-dark .group-wWM3zP_M {
   background-color: var(--bkg-light);
   border-radius: 50%;
   margin-left: 8px;
-  transform: scale(0.9);
+  transform: scale(0.75);
   width: 38px;
 }
 
@@ -506,7 +506,7 @@ html.theme-dark
 
 /* icons */
 
-html.theme-dark .button-263WXsg- .icon-1Y-3MM9F svg {
+html.theme-dark .button-263WXsg- .icon-1Y-3MM9F  {
   transform: scale(0.8);
 }
 

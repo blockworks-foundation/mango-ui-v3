@@ -9,15 +9,6 @@ import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { useTranslation } from 'next-i18next'
 
-// const StyledMarketSelectWrapper = styled.div`
-//   -ms-overflow-style: none;
-//   scrollbar-width: none;
-
-//   ::-webkit-scrollbar {
-//     display: none;
-//   }
-// `
-
 const MarketSelect = () => {
   const { t } = useTranslation('common')
   const [showMarketsModal, setShowMarketsModal] = useState(false)
@@ -44,14 +35,7 @@ const MarketSelect = () => {
 
   return (
     <div className="hidden md:flex">
-      <div
-        // style={{
-        //   '-ms-overflow-style': 'none',
-        //   scrollbarWidth: 'none',
-        //   '::-webkit-scrollbar': { display: 'none' },
-        // }}
-        className="bg-th-bkg-3 flex h-10 w-full"
-      >
+      <div className="bg-th-bkg-3 flex h-10 w-full">
         <div className="bg-th-bkg-4 flex items-center pl-4 lg:pl-9 pr-1">
           {isMobile ? (
             <MenuIcon

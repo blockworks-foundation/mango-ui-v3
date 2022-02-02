@@ -197,11 +197,13 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   }
 
   const getDepositsForSelectedAsset = (): I80F48 => {
-    return mangoAccount.getUiDeposit(
-      mangoCache.rootBankCache[tokenIndex],
-      mangoGroup,
-      tokenIndex
-    )
+    return mangoAccount
+      ? mangoAccount.getUiDeposit(
+          mangoCache.rootBankCache[tokenIndex],
+          mangoGroup,
+          tokenIndex
+        )
+      : ZERO_I80F48
   }
 
   const getBorrowAmount = () => {
@@ -279,12 +281,12 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
       return {
         symbol: token.symbol,
         balance: mangoAccount
-          .getUiDeposit(
+          ?.getUiDeposit(
             mangoCache.rootBankCache[tokenIndex],
             mangoGroup,
             tokenIndex
           )
-          .toFixed(tokenPrecision[token.symbol]),
+          ?.toFixed(tokenPrecision[token.symbol]),
       }
     })
   }
@@ -297,7 +299,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
         {!showSimulation ? (
           <>
             <Modal.Header>
-              <ElementTitle noMarignBottom>
+              <ElementTitle noMarginBottom>
                 {title ? title : t('withdraw-funds')}
               </ElementTitle>
             </Modal.Header>
@@ -317,12 +319,12 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                       {withdrawTokenSymbol}
                     </div>
                     {mangoAccount
-                      .getUiDeposit(
+                      ?.getUiDeposit(
                         mangoCache.rootBankCache[tokenIndex],
                         mangoGroup,
                         tokenIndex
                       )
-                      .toFixed(tokenPrecision[withdrawTokenSymbol])}
+                      ?.toFixed(tokenPrecision[withdrawTokenSymbol])}
                   </div>
                 ) : (
                   <span className="text-th-fgd-4">{t('select-asset')}</span>
@@ -423,7 +425,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
         {showSimulation && simulation ? (
           <>
             <Modal.Header>
-              <ElementTitle noMarignBottom>
+              <ElementTitle noMarginBottom>
                 {t('confirm-withdraw')}
               </ElementTitle>
             </Modal.Header>

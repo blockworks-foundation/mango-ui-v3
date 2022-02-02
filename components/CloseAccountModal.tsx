@@ -22,8 +22,6 @@ import {
   ZERO_BN,
   ZERO_I80F48,
 } from '@blockworks-foundation/mango-client'
-import usePerpPositions from '../hooks/usePerpPositions'
-import { useOpenOrders } from '../hooks/useOpenOrders'
 import { formatUsdValue } from '../utils'
 
 interface CloseAccountModalProps {
@@ -41,14 +39,19 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
-  const { openPositions, unsettledPositions } = usePerpPositions()
+  const openPositions = useMangoStore(
+    (s) => s.selectedMangoAccount.openPerpPositions
+  )
+  const unsettledPositions = useMangoStore(
+    (s) => s.selectedMangoAccount.unsettledPerpPositions
+  )
   const [hasBorrows, setHasBorrows] = useState(false)
   const [hasOpenPositions, setHasOpenPositions] = useState(false)
   const [totalAccountSOL, setTotalAccountSOL] = useState(0)
   const actions = useMangoStore((s) => s.actions)
   const connection = useMangoStore((s) => s.connection.current)
   const client = useMangoStore((s) => s.connection.client)
-  const openOrders = useOpenOrders()
+  const openOrders = useMangoStore((s) => s.selectedMangoAccount.openOrders)
   const setMangoStore = useMangoStore((s) => s.set)
 
   const fetchTotalAccountSOL = useCallback(async () => {
@@ -135,7 +138,7 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
 
   return (
     <Modal onClose={onClose} isOpen={isOpen && mangoAccount !== undefined}>
-      <ElementTitle noMarignBottom>
+      <ElementTitle noMarginBottom>
         {t('close-account:are-you-sure')}
       </ElementTitle>
       <p className="text-center mt-1">

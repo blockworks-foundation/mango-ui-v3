@@ -79,7 +79,7 @@ const AccountNameModal: FunctionComponent<AccountNameModalProps> = ({
     <Modal onClose={onClose} isOpen={isOpen}>
       <Modal.Header>
         <div className="flex items-center">
-          <ElementTitle noMarignBottom>{t('name-your-account')}</ElementTitle>
+          <ElementTitle noMarginBottom>{t('name-your-account')}</ElementTitle>
         </div>
       </Modal.Header>
       <div className="flex items-center justify-center text-th-fgd-3 pb-4">

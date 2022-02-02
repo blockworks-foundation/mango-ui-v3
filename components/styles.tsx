@@ -13,13 +13,13 @@ export const PageBodyWrapper = ({ children, className, ...props }) => (
 
 export const ElementTitle = ({
   children,
-  noMarignBottom = false,
+  noMarginBottom = false,
   className = '',
 }) => (
   <div
     className={`flex justify-center ${
-      noMarignBottom ? 'mb-0' : 'mb-2.5'
-    } text-lg font-semibold items-center text-th-fgd-1 ${className}`}
+      noMarginBottom ? 'mb-0' : 'mb-2.5'
+    } -mt-1 text-base font-medium items-center text-th-fgd-1 ${className}`}
   >
     {children}
   </div>

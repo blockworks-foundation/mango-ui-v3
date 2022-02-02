@@ -5,6 +5,11 @@ module.exports = {
   async redirects() {
     return [
       {
+        source: '/market',
+        destination: '/',
+        permanent: true,
+      },
+      {
         source: '/spot/:name',
         destination: '/',
         permanent: true,

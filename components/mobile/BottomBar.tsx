@@ -33,14 +33,14 @@ const BottomBar = () => {
         </Link>
         <Link
           href={{
-            pathname: '/market',
+            pathname: '/',
             query: { name: 'BTC-PERP' },
           }}
           shallow={true}
         >
           <div
             className={`${
-              asPath === '/' || asPath.startsWith('/market')
+              asPath === '/' || asPath.startsWith('/?name')
                 ? 'text-th-primary'
                 : 'text-th-fgd-3'
             } col-span-1 cursor-pointer default-transition flex flex-col items-center hover:text-th-primary`}

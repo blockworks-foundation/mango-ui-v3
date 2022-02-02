@@ -46,7 +46,6 @@ const handleUsdDustTicks = (v) =>
 
 const AccountInterest = () => {
   const { t } = useTranslation('common')
-  const connected = useMangoStore((s) => s.wallet.connected)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
@@ -75,10 +74,8 @@ const AccountInterest = () => {
   )
 
   const mangoAccountPk = useMemo(() => {
-    if (connected) {
-      return mangoAccount.publicKey.toString()
-    }
-  }, [connected, mangoAccount])
+    return mangoAccount.publicKey.toString()
+  }, [mangoAccount])
 
   const token = useMemo(() => {
     if (selectedAsset) {

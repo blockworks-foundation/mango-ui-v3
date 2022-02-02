@@ -100,7 +100,13 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
     const inputData = await inputResponse.json()
     const outputData = await outputResponse.json()
 
-    const data = inputData.concat(outputData)
+    let data = []
+    if (Array.isArray(inputData)) {
+      data = data.concat(inputData)
+    }
+    if (Array.isArray(outputData)) {
+      data = data.concat(outputData)
+    }
 
     const formattedData = data.reduce((a, c) => {
       const found = a.find((price) => price.time === c[0])
@@ -321,7 +327,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
         </div>
       )}
 
-      {inputTokenInfo && baseTokenId ? (
+      {inputTokenInfo && outputTokenInfo && baseTokenId ? (
         <div className="w-full">
           <Disclosure>
             {({ open }) => (
@@ -358,7 +364,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                         <div className="font-normal text-th-fgd-1">
                           $
                           {numberFormatter.format(
-                            inputTokenInfo.market_data.current_price.usd
+                            inputTokenInfo.market_data?.current_price.usd
                           )}
                         </div>
                       ) : null}
@@ -416,7 +422,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                           </div>
                         </div>
                       ) : null}
-                      {inputTokenInfo.market_data.total_volume?.usd ? (
+                      {inputTokenInfo.market_data?.total_volume?.usd ? (
                         <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
                           <div className="text-th-fgd-3 text-xs">
                             {t('daily-volume')}
@@ -424,7 +430,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                           <div className="font-bold text-th-fgd-1 text-lg">
                             $
                             {numberCompacter.format(
-                              inputTokenInfo.market_data.total_volume?.usd
+                              inputTokenInfo.market_data?.total_volume?.usd
                             )}
                           </div>
                         </div>
@@ -667,7 +673,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                           </div>
                         </div>
                       ) : null}
-                      {outputTokenInfo.market_data.total_volume?.usd ? (
+                      {outputTokenInfo.market_data?.total_volume?.usd ? (
                         <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
                           <div className="text-th-fgd-3 text-xs">
                             {t('daily-volume')}
@@ -675,7 +681,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                           <div className="font-bold text-th-fgd-1 text-lg">
                             $
                             {numberCompacter.format(
-                              outputTokenInfo.market_data.total_volume?.usd
+                              outputTokenInfo.market_data?.total_volume?.usd
                             )}
                           </div>
                         </div>

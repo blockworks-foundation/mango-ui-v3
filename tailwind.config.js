@@ -44,7 +44,7 @@ module.exports = {
             DEFAULT: '#F2C94C',
             dark: '#E4AF11',
           },
-          red: { DEFAULT: '#CC2929', dark: '#AA2222', muted: '#622123' },
+          red: { DEFAULT: '#CC2929', dark: '#AA2222', muted: '#571e20' },
           green: { DEFAULT: '#5EBF4D', dark: '#4BA53B', muted: '#365D31' },
           orange: { DEFAULT: '#FF9C24' },
           'bkg-1': '#101012',
