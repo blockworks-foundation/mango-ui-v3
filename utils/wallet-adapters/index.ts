@@ -1,5 +1,5 @@
 import { PhantomWalletAdapter } from './phantom'
-import { SolflareExtensionWalletAdapter } from './solflare-extension'
+import { SolflareWalletAdapter } from './solflare'
 import { SolletExtensionAdapter } from './sollet-extension'
 import { SlopeWalletAdapter } from './slope'
 import { BitpieWalletAdapter } from './bitpie'
@@ -18,7 +18,7 @@ export const WALLET_PROVIDERS = [
     name: 'Solflare',
     url: 'https://solflare.com',
     icon: `${ASSET_URL}/solflare.svg`,
-    adapter: SolflareExtensionWalletAdapter,
+    adapter: SolflareWalletAdapter,
   },
   {
     name: 'Sollet.io',
