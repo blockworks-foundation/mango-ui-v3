@@ -96,7 +96,7 @@ const ConnectWalletButton = () => {
         </Menu>
       ) : (
         <div
-          className="bg-th-bkg-1 h-14 flex divide-x divide-th-bkg-3 justify-between"
+          className="bg-th-bkg-4 h-14 flex divide-x divide-th-bkg-3 justify-between"
           id="connect-wallet-tip"
         >
           <button
