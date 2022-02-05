@@ -745,7 +745,12 @@ const OrderbookRow = React.memo<any>(
     )
   },
   (prevProps, nextProps) =>
-    isEqual(prevProps, nextProps, ['price', 'size', 'sizePercent'])
+    isEqual(prevProps, nextProps, [
+      'price',
+      'size',
+      'sizePercent',
+      'hasOpenOrder',
+    ])
 )
 
 const MarkPriceComponent = React.memo<{ markPrice: number }>(

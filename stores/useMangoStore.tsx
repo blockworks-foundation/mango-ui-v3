@@ -630,11 +630,15 @@ const useMangoStore = create<MangoStore>((set, get) => {
         const mangoGroup = get().selectedMangoGroup.current
         const connection = get().connection.current
         if (mangoGroup) {
-          const mangoCache = await mangoGroup.loadCache(connection)
+          try {
+            const mangoCache = await mangoGroup.loadCache(connection)
 
-          set((state) => {
-            state.selectedMangoGroup.cache = mangoCache
-          })
+            set((state) => {
+              state.selectedMangoGroup.cache = mangoCache
+            })
+          } catch (e) {
+            console.warn('Error fetching mango group cache:', e)
+          }
         }
       },
       async updateConnection(endpointUrl) {
