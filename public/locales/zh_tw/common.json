@@ -133,6 +133,7 @@
   "export-data": "Export CSV",
   "export-data-empty": "No data to export",
   "export-data-success": "CSV exported successfully",
+  "favorites": "Favorites",
   "fee": "費率",
   "fee-discount": "費率折扣",
   "first-deposit-desc": "創建Mango帳戶最少需要0.035 SOL。",

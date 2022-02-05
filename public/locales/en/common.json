@@ -133,6 +133,7 @@
   "export-data": "Export CSV",
   "export-data-empty": "No data to export",
   "export-data-success": "CSV exported successfully",
+  "favorites": "Favorites",
   "fee": "Fee",
   "fee-discount": "Fee Discount",
   "first-deposit-desc": "There is a one-time cost of 0.035 SOL when you make your first deposit. This covers the rent on the Solana Blockchain for your account.",

@@ -114,7 +114,9 @@ const TradePageGrid = () => {
 
   return !isMobile ? (
     <>
-      <MarketDetails />
+      <div className="pt-2">
+        <MarketDetails />
+      </div>
       <ResponsiveGridLayout
         layouts={savedLayouts ? savedLayouts : defaultLayouts}
         breakpoints={breakpoints}

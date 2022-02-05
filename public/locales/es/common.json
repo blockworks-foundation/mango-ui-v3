@@ -133,6 +133,7 @@
   "export-data": "Export CSV",
   "export-data-empty": "No data to export",
   "export-data-success": "CSV exported successfully",
+  "favorites": "Favorites",
   "fee": "Tarifa",
   "fee-discount": "comisiones",
   "first-deposit-desc": "Necesita 0.035 SOL para crear una cuenta de mango.",
