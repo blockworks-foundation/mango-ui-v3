@@ -242,6 +242,7 @@
   "no-history": "No trade history",
   "no-interest": "No interest earned or paid",
   "no-margin": "No margin accounts found",
+  "no-markets": "No markets found",
   "no-orders": "No open orders",
   "no-perp": "No perp positions",
   "no-unsettled": "There are no unsettled funds",

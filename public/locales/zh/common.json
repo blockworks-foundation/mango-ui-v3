@@ -242,6 +242,7 @@
     "no-history": "您没有交易纪录",
     "no-interest": "您未收/付过利息",
     "no-margin": "查不到保证金帐户",
+    "no-markets": "No markets found",
     "no-orders": "您没有订单",
     "no-perp": "您没有永续合约持仓",
     "no-unsettled": "您没有未结清金额",

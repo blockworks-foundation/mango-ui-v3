@@ -242,6 +242,7 @@
   "no-history": "您沒有交易紀錄",
   "no-interest": "您未收/付過利息",
   "no-margin": "查不到保證金帳戶",
+  "no-markets": "No markets found",
   "no-orders": "您沒有訂單",
   "no-perp": "您沒有永續合約持倉",
   "no-unsettled": "您沒有未結清金額",

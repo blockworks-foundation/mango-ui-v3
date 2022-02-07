@@ -111,30 +111,34 @@ const SwitchMarketDropdown = () => {
               </div>
               {searchString.length > 0 ? (
                 <div className="pt-1.5 space-y-2.5">
-                  {filteredMarkets.map((mkt) => (
-                    <div className="text-th-fgd-3" key={mkt.name}>
-                      <div className="flex items-center justify-between">
-                        <button
-                          className="font-normal"
-                          onClick={() => selectMarket(mkt)}
-                        >
-                          <div
-                            className={`flex items-center text-xs hover:text-th-primary w-full whitespace-nowrap ${
-                              asPath.includes(mkt.name) ||
-                              (asPath === '/' &&
-                                initialMarket.name === mkt.name)
-                                ? 'text-th-primary'
-                                : 'text-th-fgd-1'
-                            }`}
+                  {filteredMarkets.length > 0 ? (
+                    filteredMarkets.map((mkt) => (
+                      <div className="text-th-fgd-3" key={mkt.name}>
+                        <div className="flex items-center justify-between">
+                          <button
+                            className="font-normal"
+                            onClick={() => selectMarket(mkt)}
                           >
-                            {renderIcon(mkt.baseSymbol)}
-                            {mkt.name}
-                          </div>
-                        </button>
-                        <FavoriteMarketButton market={mkt} />
+                            <div
+                              className={`flex items-center text-xs hover:text-th-primary w-full whitespace-nowrap ${
+                                asPath.includes(mkt.name) ||
+                                (asPath === '/' &&
+                                  initialMarket.name === mkt.name)
+                                  ? 'text-th-primary'
+                                  : 'text-th-fgd-1'
+                              }`}
+                            >
+                              {renderIcon(mkt.baseSymbol)}
+                              {mkt.name}
+                            </div>
+                          </button>
+                          <FavoriteMarketButton market={mkt} />
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))
+                  ) : (
+                    <p className="mb-0 text-center">{t('no-markets')}</p>
+                  )}
                 </div>
               ) : (
                 <div className="space-y-2.5">
