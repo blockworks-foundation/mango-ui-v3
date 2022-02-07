@@ -11,6 +11,8 @@ import { FavoriteMarketButton } from './TradeNavMenu'
 import { initialMarket } from './SettingsModal'
 import Input from './Input'
 import { useTranslation } from 'next-i18next'
+import { getWeights } from '@blockworks-foundation/mango-client'
+import useMangoStore from '../stores/useMangoStore'
 
 const SwitchMarketDropdown = () => {
   const [favoriteMarkets] = useLocalStorageState(FAVORITE_MARKETS_KEY, [])
@@ -32,6 +34,7 @@ const SwitchMarketDropdown = () => {
   const filteredMarkets = markets
     .filter((m) => m.name.toLowerCase().includes(searchString.toLowerCase()))
     .sort((a, b) => a.name.localeCompare(b.name))
+  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
 
   const renderIcon = (symbol) => {
     const iconName = `${symbol.slice(0, 1)}${symbol
@@ -65,13 +68,22 @@ const SwitchMarketDropdown = () => {
     }
   }, [])
 
+  const getMarketLeverage = (market) => {
+    if (!mangoGroup) return 1
+    const ws = getWeights(mangoGroup, market.marketIndex, 'Init')
+    const w = market.name.includes('PERP')
+      ? ws.perpAssetWeight
+      : ws.spotAssetWeight
+    return Math.round((100 * -1) / (w.toNumber() - 1)) / 100
+  }
+
   return (
     <Popover>
       {({ open }) => (
         <div className="flex flex-col ml-2 relative">
           <Popover.Button
             className={`focus:outline-none focus:bg-th-bkg-3 ${
-              open && 'bg-th-bkg-3 rounded-b-none'
+              open && 'bg-th-bkg-3'
             }`}
             ref={buttonRef}
           >
@@ -97,7 +109,7 @@ const SwitchMarketDropdown = () => {
             leaveTo="opacity-0"
           >
             <Popover.Panel
-              className="absolute bg-th-bkg-3 max-h-96 overflow-y-auto p-4 right-0 rounded-b-md rounded-tl-md thin-scroll top-10 w-48 z-10"
+              className="absolute bg-th-bkg-3 max-h-96 overflow-y-auto p-4 left-1/2 transform -translate-x-1/2 rounded-b-md rounded-tl-md thin-scroll top-12 w-56 z-10"
               static
             >
               <div className="pb-2.5">
@@ -130,6 +142,9 @@ const SwitchMarketDropdown = () => {
                             >
                               {renderIcon(mkt.baseSymbol)}
                               {mkt.name}
+                              <span className="ml-1.5 text-xs text-th-fgd-4">
+                                {getMarketLeverage(mkt)}x
+                              </span>
                             </div>
                           </button>
                           <FavoriteMarketButton market={mkt} />
@@ -163,6 +178,9 @@ const SwitchMarketDropdown = () => {
                               >
                                 {renderIcon(mkt.baseSymbol)}
                                 {mkt.name}
+                                <span className="ml-1.5 text-xs text-th-fgd-4">
+                                  {getMarketLeverage(mkt)}x
+                                </span>
                               </div>
                             </button>
                             <FavoriteMarketButton market={mkt} />
@@ -171,60 +189,74 @@ const SwitchMarketDropdown = () => {
                       ))}
                     </>
                   ) : null}
-                  <h4 className="pt-1.5 text-xs">{t('spot')}</h4>
-                  {spotMarkets.map((mkt) => (
-                    <div className="text-th-fgd-3" key={mkt.name}>
-                      <div className="flex items-center justify-between">
-                        <button
-                          className="font-normal"
-                          onClick={() => selectMarket(mkt)}
-                        >
-                          <div
-                            className={`flex items-center text-xs hover:text-th-primary w-full whitespace-nowrap ${
-                              asPath.includes(mkt.name) ||
-                              (asPath === '/' &&
-                                initialMarket.name === mkt.name)
-                                ? 'text-th-primary'
-                                : 'text-th-fgd-1'
-                            }`}
-                          >
-                            {renderIcon(mkt.baseSymbol)}
-                            {mkt.name}
-                          </div>
-                        </button>
-                        <FavoriteMarketButton market={mkt} />
-                      </div>
-                    </div>
-                  ))}
-                  <h4 className="pt-1.5 text-xs">{t('perp')}</h4>
-                  {perpMarkets
-                    .filter(
-                      (m) => !favoriteMarkets.find((n) => n.name === m.name)
-                    )
-                    .map((mkt) => (
-                      <div className="text-th-fgd-3" key={mkt.name}>
-                        <div className="flex items-center justify-between">
-                          <button
-                            className="font-normal"
-                            onClick={() => selectMarket(mkt)}
-                          >
-                            <div
-                              className={`flex items-center text-xs hover:text-th-primary w-full whitespace-nowrap ${
-                                asPath.includes(mkt.name) ||
-                                (asPath === '/' &&
-                                  initialMarket.name === mkt.name)
-                                  ? 'text-th-primary'
-                                  : 'text-th-fgd-1'
-                              }`}
+                  {spotMarkets.length > 0 ? (
+                    <>
+                      <h4 className="pt-1.5 text-xs">{t('spot')}</h4>
+                      {spotMarkets.map((mkt) => (
+                        <div className="text-th-fgd-3" key={mkt.name}>
+                          <div className="flex items-center justify-between">
+                            <button
+                              className="font-normal"
+                              onClick={() => selectMarket(mkt)}
                             >
-                              {renderIcon(mkt.baseSymbol)}
-                              {mkt.name}
-                            </div>
-                          </button>
-                          <FavoriteMarketButton market={mkt} />
+                              <div
+                                className={`flex items-center text-xs hover:text-th-primary w-full whitespace-nowrap ${
+                                  asPath.includes(mkt.name) ||
+                                  (asPath === '/' &&
+                                    initialMarket.name === mkt.name)
+                                    ? 'text-th-primary'
+                                    : 'text-th-fgd-1'
+                                }`}
+                              >
+                                {renderIcon(mkt.baseSymbol)}
+                                {mkt.name}
+                                <span className="ml-1.5 text-xs text-th-fgd-4">
+                                  {getMarketLeverage(mkt)}x
+                                </span>
+                              </div>
+                            </button>
+                            <FavoriteMarketButton market={mkt} />
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </>
+                  ) : null}
+                  {perpMarkets.length > 0 ? (
+                    <>
+                      <h4 className="pt-1.5 text-xs">{t('perp')}</h4>
+                      {perpMarkets
+                        .filter(
+                          (m) => !favoriteMarkets.find((n) => n.name === m.name)
+                        )
+                        .map((mkt) => (
+                          <div className="text-th-fgd-3" key={mkt.name}>
+                            <div className="flex items-center justify-between">
+                              <button
+                                className="font-normal"
+                                onClick={() => selectMarket(mkt)}
+                              >
+                                <div
+                                  className={`flex items-center text-xs hover:text-th-primary w-full whitespace-nowrap ${
+                                    asPath.includes(mkt.name) ||
+                                    (asPath === '/' &&
+                                      initialMarket.name === mkt.name)
+                                      ? 'text-th-primary'
+                                      : 'text-th-fgd-1'
+                                  }`}
+                                >
+                                  {renderIcon(mkt.baseSymbol)}
+                                  {mkt.name}
+                                  <span className="ml-1.5 text-xs text-th-fgd-4">
+                                    {getMarketLeverage(mkt)}x
+                                  </span>
+                                </div>
+                              </button>
+                              <FavoriteMarketButton market={mkt} />
+                            </div>
+                          </div>
+                        ))}
+                    </>
+                  ) : null}
                 </div>
               )}
             </Popover.Panel>

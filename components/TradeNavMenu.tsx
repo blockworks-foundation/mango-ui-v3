@@ -12,6 +12,8 @@ import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
 import * as MonoIcons from './icons'
 import { initialMarket } from './SettingsModal'
 import useLocalStorageState from '../hooks/useLocalStorageState'
+import { getWeights } from '@blockworks-foundation/mango-client'
+import useMangoStore from '../stores/useMangoStore'
 
 const initialMenuCategories = [
   { name: 'Spot', desc: 'spot-desc' },
@@ -29,6 +31,7 @@ const TradeNavMenu = () => {
   const groupConfig = useMangoGroupConfig()
   const { asPath } = useRouter()
   const { t } = useTranslation('common')
+  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
 
   let timeout
   const timeoutDuration = 200
@@ -107,6 +110,15 @@ const TradeNavMenu = () => {
     }
   }, [favoriteMarkets])
 
+  const getMarketLeverage = (market) => {
+    if (!mangoGroup) return 1
+    const ws = getWeights(mangoGroup, market.marketIndex, 'Init')
+    const w = market.name.includes('PERP')
+      ? ws.perpAssetWeight
+      : ws.spotAssetWeight
+    return Math.round((100 * -1) / (w.toNumber() - 1)) / 100
+  }
+
   return (
     <Popover>
       {({ open }) => (
@@ -176,6 +188,9 @@ const TradeNavMenu = () => {
                           >
                             {renderIcon(mkt.baseSymbol)}
                             {mkt.name}
+                            <span className="ml-1.5 text-xs text-th-fgd-4">
+                              {getMarketLeverage(mkt)}x
+                            </span>
                           </a>
                         </Link>
                         <FavoriteMarketButton market={mkt} />
@@ -248,10 +263,7 @@ export const FavoriteMarketButton = ({ market }) => {
   )
 
   const addToFavorites = (mkt) => {
-    const newFavorites = [
-      ...favoriteMarkets,
-      { name: mkt.name, baseSymbol: mkt.baseSymbol },
-    ]
+    const newFavorites = [...favoriteMarkets, mkt]
     setFavoriteMarkets(newFavorites)
   }
 
