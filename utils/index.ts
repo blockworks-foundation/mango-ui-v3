@@ -312,3 +312,10 @@ export function getIsDocumentHidden() {
 export const numberCompactFormatter = Intl.NumberFormat('en', {
   notation: 'compact',
 })
+
+export function patchInternalMarketName(marketName: string) {
+  if (marketName.includes('/USDC')) {
+    marketName = marketName.replace('/USDC', '-SPOT')
+  }
+  return marketName
+}
