@@ -8,7 +8,11 @@ import ManualRefresh from './ManualRefresh'
 import useOraclePrice from '../hooks/useOraclePrice'
 import DayHighLow from './DayHighLow'
 import { useEffect } from 'react'
-import { getDecimalCount, usdFormatter } from '../utils'
+import {
+  getDecimalCount,
+  patchInternalMarketName,
+  usdFormatter,
+} from '../utils'
 import { PerpMarket } from '@blockworks-foundation/mango-client'
 import BN from 'bn.js'
 import { useViewport } from '../hooks/useViewport'
@@ -66,10 +70,28 @@ const MarketDetails = () => {
   const isMobile = width ? width < breakpoints.sm : false
 
   const [ohlcv, setOhlcv] = useState(null)
+  const [change24h, setChange24h] = useState(0)
   const [, setLoading] = useState(false)
   const [perpStats, setPerpStats] = useState([])
   const [perpVolume, setPerpVolume] = useState(0)
-  const change = ohlcv ? ((ohlcv.c[0] - ohlcv.o[0]) / ohlcv.o[0]) * 100 : ''
+
+  const fetchMarketInfo = useCallback(async () => {
+    const marketInfo = await fetch(
+      `https://event-history-api-candles.herokuapp.com/markets/${patchInternalMarketName(
+        selectedMarketName
+      )}`
+    )
+    const parsedMarketInfo = await marketInfo.json()
+    setChange24h(parsedMarketInfo?.change24h)
+  }, [selectedMarketName])
+
+  useInterval(() => {
+    fetchMarketInfo()
+  }, 120 * SECONDS)
+
+  useEffect(() => {
+    fetchMarketInfo()
+  }, [fetchMarketInfo])
 
   const fetchPerpStats = useCallback(async () => {
     const urlParams = new URLSearchParams({ mangoGroup: groupConfig.name })
@@ -191,19 +213,19 @@ const MarketDetails = () => {
           </div>
           <div className="flex items-center justify-between md:block">
             <div className="text-th-fgd-3 tiny-text pb-0.5">
-              {t('daily-change')}
+              {t('rolling-change')}
             </div>
-            {change || change === 0 ? (
+            {change24h || change24h === 0 ? (
               <div
                 className={`md:text-xs ${
-                  change > 0
+                  change24h > 0
                     ? `text-th-green`
-                    : change < 0
+                    : change24h < 0
                     ? `text-th-red`
                     : `text-th-fgd-1`
                 }`}
               >
-                {change.toFixed(2) + '%'}
+                {(change24h * 100).toFixed(2) + '%'}
               </div>
             ) : (
               <MarketDataLoader />

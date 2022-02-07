@@ -130,7 +130,7 @@ const usePerpPositions = () => {
         )
       })
     }
-  }, [mangoAccount, mangoCache])
+  }, [mangoAccount, mangoCache, tradeHistory])
 }
 
 export default usePerpPositions
