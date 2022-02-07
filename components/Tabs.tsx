@@ -42,7 +42,7 @@ const Tabs: FunctionComponent<TabsProps> = ({
             <a
               key={tabName}
               onClick={() => onChange(tabName)}
-              className={`cursor-pointer default-transition flex font-semibold justify-center pb-4 pt-2 relative whitespace-nowrap hover:opacity-100
+              className={`cursor-pointer default-transition flex justify-center pb-4 relative whitespace-nowrap hover:opacity-100
                     ${
                       activeTab === tabName
                         ? `text-th-primary`
@@ -51,7 +51,7 @@ const Tabs: FunctionComponent<TabsProps> = ({
                   `}
               style={{ width: `${100 / tabs.length}%`, maxWidth: '176px' }}
             >
-              {t(tabName.toLowerCase().replace(' ', '-'))}
+              {t(tabName.toLowerCase().replace(/\s/g, '-'))}
               {tabCount && tabCount.count > 0 ? (
                 <Count count={tabCount.count} />
               ) : null}

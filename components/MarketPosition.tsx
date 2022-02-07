@@ -12,14 +12,12 @@ import {
   PerpMarket,
   QUOTE_INDEX,
 } from '@blockworks-foundation/mango-client'
-import useTradeHistory from '../hooks/useTradeHistory'
 import { notify } from '../utils/notifications'
 import MarketCloseModal from './MarketCloseModal'
 import PnlText from './PnlText'
 import Loading from './Loading'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
-import { collectPerpPosition } from '../hooks/usePerpPositions'
 import { useTranslation } from 'next-i18next'
 import useMangoAccount from '../hooks/useMangoAccount'
 
@@ -76,9 +74,10 @@ export default function MarketPosition() {
   const connected = useMangoStore((s) => s.wallet.connected)
   const setMangoStore = useMangoStore((s) => s.set)
   const price = useMangoStore((s) => s.tradeForm.price)
+  const perpAccounts =
+    useMangoStore.getState().selectedMangoAccount.perpAccounts
   const baseSymbol = marketConfig.baseSymbol
   const marketName = marketConfig.name
-  const tradeHistory = useTradeHistory()
 
   const [showMarketCloseModal, setShowMarketCloseModal] = useState(false)
   const [settling, setSettling] = useState(false)
@@ -124,19 +123,16 @@ export default function MarketPosition() {
     return null
 
   const {
-    basePosition,
-    avgEntryPrice,
-    breakEvenPrice,
-    notionalSize,
-    unsettledPnl,
-  } = collectPerpPosition(
-    mangoAccount,
-    mangoGroup,
-    mangoCache,
-    marketConfig,
-    selectedMarket,
-    tradeHistory
-  )
+    basePosition = 0,
+    avgEntryPrice = 0,
+    breakEvenPrice = 0,
+    notionalSize = 0,
+    unsettledPnl = 0,
+  } = perpAccounts.length
+    ? perpAccounts.find((pa) =>
+        pa.perpMarket.publicKey.equals(selectedMarket.publicKey)
+      )
+    : {}
 
   function SettlePnlTooltip() {
     return (
@@ -164,7 +160,7 @@ export default function MarketPosition() {
             {marketConfig.name} {t('position')}
           </ElementTitle>
         ) : null}
-        <div className="flex items-center justify-between pb-3">
+        <div className="flex items-center justify-between pb-2">
           <div className="font-normal text-th-fgd-3 leading-4">{t('side')}</div>
           {initialLoad ? (
             <DataLoader />
@@ -172,7 +168,7 @@ export default function MarketPosition() {
             <PerpSideBadge perpAccount={perpAccount}></PerpSideBadge>
           )}
         </div>
-        <div className="flex justify-between pb-3">
+        <div className="flex justify-between pb-2">
           <div className="font-normal text-th-fgd-3 leading-4">
             {t('position-size')}
           </div>
@@ -196,7 +192,7 @@ export default function MarketPosition() {
             )}
           </div>
         </div>
-        <div className="flex justify-between pb-3">
+        <div className="flex justify-between pb-2">
           <div className="font-normal text-th-fgd-3 leading-4">
             {t('notional-size')}
           </div>
@@ -210,7 +206,7 @@ export default function MarketPosition() {
             )}
           </div>
         </div>
-        <div className="flex justify-between pb-3">
+        <div className="flex justify-between pb-2">
           <div className="font-normal text-th-fgd-3 leading-4">
             {t('average-entry')}
           </div>
@@ -224,7 +220,7 @@ export default function MarketPosition() {
             )}
           </div>
         </div>
-        <div className="flex justify-between pb-3">
+        <div className="flex justify-between pb-2">
           <div className="font-normal text-th-fgd-3 leading-4">
             {t('break-even')}
           </div>
@@ -238,7 +234,7 @@ export default function MarketPosition() {
             )}
           </div>
         </div>
-        <div className="flex justify-between pb-3">
+        <div className="flex justify-between pb-2">
           <Tooltip content={<SettlePnlTooltip />}>
             <Tooltip.Content className="font-normal text-th-fgd-3 leading-4">
               {t('unsettled-balance')}
@@ -254,7 +250,7 @@ export default function MarketPosition() {
                 className="ml-2 text-th-primary text-xs disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:underline"
                 disabled={unsettledPnl === 0}
               >
-                {t('settle')}
+                {t('redeem-pnl')}
               </LinkButton>
             )}
           </div>

@@ -65,7 +65,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
       trade.marketName.includes('PERP') ||
       trade.marketName.includes('USDC')
     ) {
-      const location = `/market?name=${trade.marketName}`
+      const location = `/?name=${trade.marketName}`
       if (asPath.includes(location)) {
         return <span>{trade.marketName}</span>
       } else {
@@ -238,7 +238,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                           index={index}
                           key={`${trade.seqNum}${trade.marketName}`}
                         >
-                          <Td>
+                          <Td className="!py-2 ">
                             <div className="flex items-center">
                               <img
                                 alt=""
@@ -252,25 +252,29 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                               {renderMarketName(trade)}
                             </div>
                           </Td>
-                          <Td>
+                          <Td className="!py-2 ">
                             <SideBadge side={trade.side} />
                           </Td>
-                          <Td>{trade.size}</Td>
-                          <Td>
+                          <Td className="!py-2 ">{trade.size}</Td>
+                          <Td className="!py-2 ">
                             $
                             {new Intl.NumberFormat('en-US').format(trade.price)}
                           </Td>
-                          <Td>{formatUsdValue(trade.value)}</Td>
-                          <Td>{trade.liquidity}</Td>
-                          <Td>{formatUsdValue(trade.feeCost)}</Td>
-                          <Td className="w-[0.1%]">
+                          <Td className="!py-2 ">
+                            {formatUsdValue(trade.value)}
+                          </Td>
+                          <Td className="!py-2 ">{t(trade.liquidity.toLowerCase())}</Td>
+                          <Td className="!py-2 ">
+                            {formatUsdValue(trade.feeCost)}
+                          </Td>
+                          <Td className="!py-2 w-[0.1%]">
                             {trade.loadTimestamp || trade.timestamp
                               ? renderTradeDateTime(
                                   trade.loadTimestamp || trade.timestamp
                                 )
                               : t('recent')}
                           </Td>
-                          <Td className="w-[0.1%]">
+                          <Td className="!py-2 w-[0.1%]">
                             {trade.marketName.includes('PERP') ? (
                               <a
                                 className="text-th-fgd-4 underline text-xs underline-offset-4"
@@ -282,7 +286,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                                     : trade.taker
                                 }`}
                               >
-                                View Counterparty
+                                {t('view-counterparty')}
                               </a>
                             ) : null}
                           </Td>

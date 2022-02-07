@@ -17,15 +17,7 @@ export const Th = ({ children }) => (
 )
 
 export const TrBody = ({ children, index }) => (
-  <tr
-    className={`border-b border-th-bkg-3
-    ${
-      index % 2 === 0
-        ? `bg-[rgba(255,255,255,0.03)]`
-        : `bg-[rgba(255,255,255,0.07)]`
-    }
-    `}
-  >
+  <tr className={`${index % 2 === 0 ? `bg-[rgba(255,255,255,0.03)]` : ''}`}>
     {children}
   </tr>
 )
@@ -38,7 +30,7 @@ export const Td = ({
   className?: string
 }) => (
   <td
-    className={`px-4 py-3.5 whitespace-nowrap text-sm text-th-fgd-1 ${className}`}
+    className={`px-4 py-3.5 whitespace-nowrap text-sm text-th-fgd-2 ${className}`}
   >
     {children}
   </td>

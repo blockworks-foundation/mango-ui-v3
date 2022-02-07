@@ -13,13 +13,13 @@ import {
 import FloatingElement from '../FloatingElement'
 
 export default function TradeForm() {
-  const [showAdvancedFrom, setShowAdvancedForm] = useState(true)
+  const [showAdvancedForm, setShowAdvancedForm] = useState(true)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const connected = useMangoStore((s) => s.wallet.connected)
 
   const handleFormChange = () => {
-    setShowAdvancedForm(!showAdvancedFrom)
+    setShowAdvancedForm(!showAdvancedForm)
   }
 
   const initLeverage = useMemo(() => {
@@ -33,30 +33,24 @@ export default function TradeForm() {
 
   return (
     <FlipCard>
-      <FlipCardInner flip={showAdvancedFrom}>
-        {showAdvancedFrom ? (
+      <FlipCardInner flip={showAdvancedForm}>
+        {showAdvancedForm ? (
           <FlipCardFront>
-            <FloatingElement
-              className="h-full px-1 py-0 md:px-4 md:py-4 fadein-floating-element"
-              showConnect
-            >
-              <div className={`${!connected ? 'filter blur-sm' : ''}`}>
-                {/* <button
+            <FloatingElement className="h-full px-1 py-0 md:px-4 md:py-4 fadein-floating-element">
+              {/* <div className={`${!connected ? 'filter blur-sm' : ''}`}> */}
+              {/* <button
                   onClick={handleFormChange}
                   className="absolute hidden md:flex items-center justify-center right-4 rounded-full bg-th-bkg-3 w-8 h-8 hover:text-th-primary focus:outline-none"
                 >
                   <SwitchHorizontalIcon className="w-5 h-5" />
                 </button> */}
-                <AdvancedTradeForm initLeverage={initLeverage} />
-              </div>
+              <AdvancedTradeForm initLeverage={initLeverage} />
+              {/* </div> */}
             </FloatingElement>
           </FlipCardFront>
         ) : (
           <FlipCardBack>
-            <FloatingElement
-              className="h-full px-1 md:px-4 fadein-floating-element"
-              showConnect
-            >
+            <FloatingElement className="h-full px-1 md:px-4 fadein-floating-element">
               <div className={`${!connected ? 'filter blur-sm' : ''}`}>
                 <button
                   onClick={handleFormChange}

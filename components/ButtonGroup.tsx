@@ -6,6 +6,7 @@ interface ButtonGroupProps {
   onChange: (x) => void
   unit?: string
   values: Array<string>
+  names?: Array<string>
 }
 
 const ButtonGroup: FunctionComponent<ButtonGroupProps> = ({
@@ -14,6 +15,7 @@ const ButtonGroup: FunctionComponent<ButtonGroupProps> = ({
   unit,
   values,
   onChange,
+  names,
 }) => {
   return (
     <div className="bg-th-bkg-3 rounded-md">
@@ -44,8 +46,7 @@ const ButtonGroup: FunctionComponent<ButtonGroupProps> = ({
               width: `${100 / values.length}%`,
             }}
           >
-            {v}
-            {unit}
+            {names ? (unit ? names[i] + unit : names[i]) : unit ? v + unit : v}
           </button>
         ))}
       </div>

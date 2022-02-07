@@ -18,6 +18,7 @@ const EmptyState: FunctionComponent<EmptyStateProps> = ({
   title,
 }) => {
   const wallet = useMangoStore((s) => s.wallet.current)
+  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
 
   return (
     <div className="flex flex-col items-center text-th-fgd-1 px-4 pb-2 rounded-lg">
@@ -33,7 +34,11 @@ const EmptyState: FunctionComponent<EmptyStateProps> = ({
         </p>
       ) : null}
       {buttonText && onClickButton ? (
-        <Button className="mt-2" onClick={onClickButton} disabled={!wallet}>
+        <Button
+          className="mt-2"
+          onClick={onClickButton}
+          disabled={!wallet || !mangoGroup}
+        >
           {buttonText}
         </Button>
       ) : null}

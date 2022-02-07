@@ -1,17 +1,28 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/router'
-import { Responsive, WidthProvider } from 'react-grid-layout'
+import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
+import useMangoStore, { serumProgramId } from '../stores/useMangoStore'
+import {
+  getMarketByBaseSymbolAndKind,
+  getMarketIndexBySymbol,
+} from '@blockworks-foundation/mango-client'
 import TopBar from '../components/TopBar'
+import TradePageGrid from '../components/TradePageGrid'
 import MarketSelect from '../components/MarketSelect'
 import useLocalStorageState from '../hooks/useLocalStorageState'
+import AlphaModal, { ALPHA_MODAL_KEY } from '../components/AlphaModal'
 import { PageBodyWrapper } from '../components/styles'
-import { DEFAULT_MARKET_KEY, initialMarket } from '../components/SettingsModal'
-import {
-  breakpoints,
-  defaultLayouts,
-  GRID_LAYOUT_KEY,
-} from '../components/TradePageGrid'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import IntroTips, { SHOW_TOUR_KEY } from '../components/IntroTips'
+import { useViewport } from '../hooks/useViewport'
+import { breakpoints } from '../components/TradePageGrid'
+import {
+  actionsSelector,
+  mangoAccountSelector,
+  marketConfigSelector,
+  walletConnectedSelector,
+} from '../stores/selectors'
+import { PublicKey } from '@solana/web3.js'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -22,71 +33,112 @@ export async function getStaticProps({ locale }) {
   }
 }
 
-const ResponsiveGridLayout = WidthProvider(Responsive)
-
-const Index = () => {
-  const [defaultMarket] = useLocalStorageState(
-    DEFAULT_MARKET_KEY,
-    initialMarket
-  )
-  const [savedLayouts] = useLocalStorageState(GRID_LAYOUT_KEY, defaultLayouts)
+const PerpMarket = () => {
+  const [alphaAccepted] = useLocalStorageState(ALPHA_MODAL_KEY, false)
+  const [showTour] = useLocalStorageState(SHOW_TOUR_KEY, false)
+  const groupConfig = useMangoGroupConfig()
+  const setMangoStore = useMangoStore((s) => s.set)
+  const connected = useMangoStore(walletConnectedSelector)
+  const mangoAccount = useMangoStore(mangoAccountSelector)
+  const mangoClient = useMangoStore((s) => s.connection.client)
+  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  const marketConfig = useMangoStore(marketConfigSelector)
+  const actions = useMangoStore(actionsSelector)
   const router = useRouter()
+  const { pubkey } = router.query
+  const { width } = useViewport()
+  const hideTips = width ? width < breakpoints.md : false
 
   useEffect(() => {
-    const { pathname } = router
-    if (pathname == '/') {
-      router.push(defaultMarket.path)
+    async function loadUnownedMangoAccount() {
+      try {
+        const unownedMangoAccountPubkey = new PublicKey(pubkey)
+        if (mangoGroup) {
+          const unOwnedMangoAccount = await mangoClient.getMangoAccount(
+            unownedMangoAccountPubkey,
+            serumProgramId
+          )
+          console.log('unOwnedMangoAccount: ', unOwnedMangoAccount)
+
+          setMangoStore((state) => {
+            state.selectedMangoAccount.current = unOwnedMangoAccount
+            state.selectedMangoAccount.initialLoad = false
+            state.wallet.connected = true
+          })
+          actions.fetchTradeHistory()
+          actions.reloadOrders()
+          // setResetOnLeave(true)
+        }
+      } catch (error) {
+        router.push('/account')
+      }
     }
-  }, [])
+
+    if (pubkey) {
+      loadUnownedMangoAccount()
+    }
+  }, [pubkey, mangoClient, mangoGroup])
+
+  useEffect(() => {
+    const name = decodeURIComponent(router.asPath).split('name=')[1]
+    const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
+
+    let marketQueryParam, marketBaseSymbol, marketType, newMarket, marketIndex
+    if (name) {
+      marketQueryParam = name.toString().split(/-|\//)
+      marketBaseSymbol = marketQueryParam[0]
+      marketType = marketQueryParam[1] === 'PERP' ? 'perp' : 'spot'
+
+      newMarket = getMarketByBaseSymbolAndKind(
+        groupConfig,
+        marketBaseSymbol.toUpperCase(),
+        marketType
+      )
+      marketIndex = getMarketIndexBySymbol(
+        groupConfig,
+        marketBaseSymbol.toUpperCase()
+      )
+    }
+
+    if (name && mangoGroup) {
+      const mangoCache = useMangoStore.getState().selectedMangoGroup.cache
+      setMangoStore((state) => {
+        state.selectedMarket.kind = marketType
+        if (newMarket.name !== marketConfig.name) {
+          // state.selectedMarket.current = null
+          state.selectedMarket.config = newMarket
+          state.tradeForm.price =
+            state.tradeForm.tradeType === 'Limit'
+              ? mangoGroup.getPrice(marketIndex, mangoCache).toFixed(2)
+              : ''
+        }
+      })
+    } else if (name && marketConfig) {
+      // if mangoGroup hasn't loaded yet, set the marketConfig to the query param if different
+      if (newMarket.name !== marketConfig.name) {
+        setMangoStore((state) => {
+          state.selectedMarket.kind = marketType
+          state.selectedMarket.config = newMarket
+        })
+      }
+    }
+  }, [router, marketConfig])
 
   return (
     <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
+      {showTour && !hideTips ? (
+        <IntroTips connected={connected} mangoAccount={mangoAccount} />
+      ) : null}
       <TopBar />
       <MarketSelect />
       <PageBodyWrapper className="p-1 sm:px-2 sm:py-1 md:px-2 md:py-1">
-        <div className="animate animate-pulse bg-th-bkg-3 rounded-lg h-10 md:mb-1 mt-6 mx-2 md:mx-3" />
-        <ResponsiveGridLayout
-          className="layout"
-          layouts={savedLayouts || defaultLayouts}
-          breakpoints={breakpoints}
-          cols={{ xl: 12, lg: 12, md: 12, sm: 12, xs: 1 }}
-          rowHeight={15}
-          isDraggable={false}
-          isResizable={false}
-          useCSSTransforms={false}
-        >
-          <div
-            className="animate animate-pulse bg-th-bkg-3 rounded-lg"
-            key="tvChart"
-          ></div>
-          <div
-            className="animate animate-pulse bg-th-bkg-3 rounded-lg"
-            key="orderbook"
-          ></div>
-          <div
-            className="animate animate-pulse bg-th-bkg-3 rounded-lg"
-            key="tradeForm"
-          ></div>
-          <div
-            className="animate animate-pulse bg-th-bkg-3 rounded-lg"
-            key="accountInfo"
-          ></div>
-          <div
-            className="animate animate-pulse bg-th-bkg-3 rounded-lg"
-            key="userInfo"
-          ></div>
-          <div
-            className="animate animate-pulse bg-th-bkg-3 rounded-lg"
-            key="marketPosition"
-          ></div>
-          <div
-            className="animate animate-pulse bg-th-bkg-3 rounded-lg"
-            key="marketTrades"
-          ></div>
-        </ResponsiveGridLayout>
+        <TradePageGrid />
       </PageBodyWrapper>
+      {!alphaAccepted && (
+        <AlphaModal isOpen={!alphaAccepted} onClose={() => {}} />
+      )}
     </div>
   )
 }
 
-export default Index
+export default PerpMarket

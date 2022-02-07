@@ -127,7 +127,7 @@ interface AlertRequest {
   email: string | undefined
 }
 
-interface MangoStore extends State {
+export interface MangoStore extends State {
   notificationIdCounter: number
   notifications: Array<Notification>
   accountInfos: AccountInfoList
@@ -144,8 +144,6 @@ interface MangoStore extends State {
     current: Market | PerpMarket | null
     markPrice: number
     kind: string
-    askInfo: AccountInfo<Buffer> | null
-    bidInfo: AccountInfo<Buffer> | null
     orderBook: Orderbook
     fills: any[]
   }
@@ -165,6 +163,12 @@ interface MangoStore extends State {
     initialLoad: boolean
     lastUpdatedAt: string
     lastSlot: number
+    openOrders: any[]
+    totalOpenOrders: number
+    perpAccounts: any[]
+    openPerpPositions: any[]
+    totalOpenPerpPositions: number
+    unsettledPerpPositions: any[]
   }
   tradeForm: {
     side: 'buy' | 'sell'
@@ -258,8 +262,6 @@ const useMangoStore = create<MangoStore>((set, get) => {
       kind: defaultMarket.kind,
       current: null,
       markPrice: 0,
-      askInfo: null,
-      bidInfo: null,
       orderBook: { bids: [], asks: [] },
       fills: [],
     },
@@ -270,6 +272,12 @@ const useMangoStore = create<MangoStore>((set, get) => {
       initialLoad: true,
       lastUpdatedAt: '0',
       lastSlot: 0,
+      openOrders: [],
+      totalOpenOrders: 0,
+      perpAccounts: [],
+      openPerpPositions: [],
+      totalOpenPerpPositions: 0,
+      unsettledPerpPositions: [],
     },
     tradeForm: {
       side: 'buy',
@@ -362,11 +370,10 @@ const useMangoStore = create<MangoStore>((set, get) => {
         const mangoClient = get().connection.client
         const wallet = get().wallet.current
         const actions = get().actions
-        const walletPk = wallet?.publicKey
 
-        if (!walletPk) return
+        if (!wallet?.publicKey || !mangoGroup) return
         return mangoClient
-          .getMangoAccountsForOwner(mangoGroup, walletPk, true)
+          .getMangoAccountsForOwner(mangoGroup, wallet?.publicKey, true)
           .then((mangoAccounts) => {
             if (mangoAccounts.length > 0) {
               const sortedAccounts = mangoAccounts
@@ -558,20 +565,27 @@ const useMangoStore = create<MangoStore>((set, get) => {
             state.selectedMangoAccount.lastUpdatedAt = new Date().toISOString()
             state.selectedMangoAccount.lastSlot = lastSlot
           })
-          console.log('reloaded mango account', reloadedMangoAccount)
+          console.log('reloaded mango account')
         }
       },
       async reloadOrders() {
+        const set = get().set
         const mangoAccount = get().selectedMangoAccount.current
         const connection = get().connection.current
         if (mangoAccount) {
-          await Promise.all([
+          const [spotOpenOrdersAccounts, advancedOrders] = await Promise.all([
             mangoAccount.loadOpenOrders(
               connection,
               new PublicKey(serumProgramId)
             ),
             mangoAccount.loadAdvancedOrders(connection),
           ])
+          mangoAccount.spotOpenOrdersAccounts = spotOpenOrdersAccounts
+          mangoAccount.advancedOrders = advancedOrders
+          set((state) => {
+            state.selectedMangoAccount.current = mangoAccount
+            state.selectedMangoAccount.lastUpdatedAt = new Date().toISOString()
+          })
         }
       },
       async updateOpenOrders() {
@@ -616,11 +630,15 @@ const useMangoStore = create<MangoStore>((set, get) => {
         const mangoGroup = get().selectedMangoGroup.current
         const connection = get().connection.current
         if (mangoGroup) {
-          const mangoCache = await mangoGroup.loadCache(connection)
+          try {
+            const mangoCache = await mangoGroup.loadCache(connection)
 
-          set((state) => {
-            state.selectedMangoGroup.cache = mangoCache
-          })
+            set((state) => {
+              state.selectedMangoGroup.cache = mangoCache
+            })
+          } catch (e) {
+            console.warn('Error fetching mango group cache:', e)
+          }
         }
       },
       async updateConnection(endpointUrl) {

@@ -6,11 +6,7 @@ import {
   DuplicateIcon,
   LogoutIcon,
 } from '@heroicons/react/outline'
-import {
-  WALLET_PROVIDERS,
-  DEFAULT_PROVIDER,
-  PROVIDER_LOCAL_STORAGE_KEY,
-} from '../hooks/useWallet'
+import { PROVIDER_LOCAL_STORAGE_KEY } from '../hooks/useWallet'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import { abbreviateAddress, copyToClipboard } from '../utils'
 import WalletSelect from './WalletSelect'
@@ -18,10 +14,12 @@ import { WalletIcon, ProfileIcon } from './icons'
 import AccountsModal from './AccountsModal'
 import { useEffect } from 'react'
 import { useTranslation } from 'next-i18next'
+import { DEFAULT_PROVIDER, WALLET_PROVIDERS } from '../utils/wallet-adapters'
 
 const ConnectWalletButton = () => {
   const { t } = useTranslation('common')
   const wallet = useMangoStore((s) => s.wallet.current)
+  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const pfp = useMangoStore((s) => s.wallet.pfp)
   const connected = useMangoStore((s) => s.wallet.connected)
   const set = useMangoStore((s) => s.set)
@@ -103,7 +101,7 @@ const ConnectWalletButton = () => {
         >
           <button
             onClick={handleWalletConect}
-            disabled={!wallet}
+            disabled={!wallet || !mangoGroup}
             className="rounded-none text-th-primary hover:bg-th-bkg-4 focus:outline-none disabled:text-th-fgd-4 disabled:cursor-wait"
           >
             <div className="flex flex-row items-center px-3 justify-center h-full default-transition hover:text-th-fgd-1">

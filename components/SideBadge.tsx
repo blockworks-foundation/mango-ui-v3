@@ -1,5 +1,6 @@
 import React, { FunctionComponent } from 'react'
 import { useTranslation } from 'next-i18next'
+import { capitalize } from 'lodash'
 
 type SideBadgeProps = {
   side: string
@@ -15,9 +16,9 @@ const SideBadge: FunctionComponent<SideBadgeProps> = ({ side }) => {
           ? 'border border-th-green text-th-green'
           : 'border border-th-red text-th-red'
       }
-       px-2 py-1 text-xs`}
+       px-2 py-0.5 -my-0.5 text-xs`}
     >
-      {t(side)?.toUpperCase()}
+      {capitalize(t(side))}
     </div>
   )
 }

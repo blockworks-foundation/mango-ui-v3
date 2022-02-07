@@ -1,16 +1,12 @@
 import { useEffect, useState } from 'react'
 import useMangoStore from '../stores/useMangoStore'
-import { useOpenOrders } from '../hooks/useOpenOrders'
-import usePerpPositions from '../hooks/usePerpPositions'
 import OpenOrdersTable from './OpenOrdersTable'
 import BalancesTable from './BalancesTable'
 import PositionsTable from './PerpPositionsTable'
 import TradeHistoryTable from './TradeHistoryTable'
-// import FeeDiscountsTable from './FeeDiscountsTable'
 import ManualRefresh from './ManualRefresh'
 import Tabs from './Tabs'
 import FeeDiscountsTable from './FeeDiscountsTable'
-import useMangoAccount from '../hooks/useMangoAccount'
 import { marketConfigSelector } from '../stores/selectors'
 
 const TABS = [
@@ -22,31 +18,31 @@ const TABS = [
 ]
 
 const UserInfoTabs = ({ activeTab, setActiveTab }) => {
-  const openOrders = useOpenOrders()
-  const { openPositions } = usePerpPositions()
-  const { mangoAccount } = useMangoAccount()
+  const totalOpenOrders = useMangoStore(
+    (s) => s.selectedMangoAccount.totalOpenOrders
+  )
+  const totalOpenPerpPositions = useMangoStore(
+    (s) => s.selectedMangoAccount.totalOpenPerpPositions
+  )
+  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
 
   const handleTabChange = (tabName) => {
     setActiveTab(tabName)
   }
 
   return (
-    <div className="pb-2 relative">
+    <div className="pb-1 relative">
       <Tabs
         activeTab={activeTab}
         onChange={handleTabChange}
-        showCount={
-          openOrders && openPositions
-            ? [
-                { tabName: 'Orders', count: openOrders.length },
-                { tabName: 'Positions', count: openPositions.length },
-              ]
-            : null
-        }
+        showCount={[
+          { tabName: 'Orders', count: totalOpenOrders },
+          { tabName: 'Positions', count: totalOpenPerpPositions },
+        ]}
         tabs={TABS}
       />
       {mangoAccount ? (
-        <div className="absolute right-0 top-0">
+        <div className="absolute right-0 top-0 -mt-1">
           <ManualRefresh />
         </div>
       ) : null}

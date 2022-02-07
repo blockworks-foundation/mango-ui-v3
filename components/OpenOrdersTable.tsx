@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { PencilIcon, TrashIcon, XIcon } from '@heroicons/react/outline'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { useOpenOrders } from '../hooks/useOpenOrders'
 import Button, { IconButton } from './Button'
 import Loading from './Loading'
 import useMangoStore from '../stores/useMangoStore'
@@ -46,8 +45,8 @@ const DesktopTable = ({
   const renderMarketName = (market: MarketConfig) => {
     const location =
       market.kind === 'spot'
-        ? `/market?name=${market.baseSymbol}%2FUSDC`
-        : `/market?name=${market.name}`
+        ? `/?name=${market.baseSymbol}%2FUSDC`
+        : `/?name=${market.name}`
     if (!asPath.includes(location)) {
       return (
         <Link href={location} shallow={true}>
@@ -139,14 +138,14 @@ const DesktopTable = ({
                       {!order.perpTrigger ? (
                         <Button
                           onClick={() => showEditOrderForm(index, order)}
-                          className="text-xs pt-0 pb-0 h-8 pl-3 pr-3"
+                          className="text-xs -my-1 pt-0 pb-0 h-7 pl-3 pr-3"
                         >
                           {t('edit')}
                         </Button>
                       ) : null}
                       <Button
                         onClick={() => handleCancelOrder(order, market.account)}
-                        className="text-xs pt-0 pb-0 h-8 pl-3 pr-3"
+                        className="text-xs -my-1 pt-0 pb-0 h-7 pl-3 pr-3"
                       >
                         {cancelledOrderId + '' === order.orderId + '' ? (
                           <Loading />
@@ -158,7 +157,7 @@ const DesktopTable = ({
                   ) : (
                     <>
                       <Button
-                        className="text-xs pt-0 pb-0 h-8 pl-3 pr-3"
+                        className="text-xs pt-0 pb-0 h-7 pl-3 pr-3"
                         onClick={() =>
                           handleModifyOrder(
                             order,
@@ -175,7 +174,7 @@ const DesktopTable = ({
                         )}
                       </Button>
                       <Button
-                        className="text-xs pt-0 pb-0 h-8 pl-3 pr-3"
+                        className="text-xs pt-0 pb-0 h-7 pl-3 pr-3"
                         onClick={() => setEditOrderIndex(null)}
                       >
                         Cancel Edit
@@ -332,7 +331,7 @@ const MobileTable = ({
 const OpenOrdersTable = () => {
   const { t } = useTranslation('common')
   const { asPath } = useRouter()
-  const openOrders = useOpenOrders()
+  const openOrders = useMangoStore((s) => s.selectedMangoAccount.openOrders)
   const [cancelId, setCancelId] = useState(null)
   const [modifyId, setModifyId] = useState(null)
   const [editOrderIndex, setEditOrderIndex] = useState(null)
@@ -409,7 +408,11 @@ const OpenOrdersTable = () => {
     const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
     const mangoClient = useMangoStore.getState().connection.client
-    const { askInfo, bidInfo } = useMangoStore.getState().selectedMarket
+    const marketConfig = useMangoStore.getState().selectedMarket.config
+    const askInfo =
+      useMangoStore.getState().accountInfos[marketConfig.asksKey.toString()]
+    const bidInfo =
+      useMangoStore.getState().accountInfos[marketConfig.bidsKey.toString()]
     const wallet = useMangoStore.getState().wallet.current
 
     if (!wallet || !mangoGroup || !mangoAccount || !market) return

@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react'
 import Big from 'big.js'
+import { isEqual as isEqualLodash } from 'lodash'
 import useInterval from '../hooks/useInterval'
 import usePrevious from '../hooks/usePrevious'
 import { isEqual, getDecimalCount, usdFormatter } from '../utils/'
@@ -14,7 +15,6 @@ import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
 import Tooltip from './Tooltip'
 import GroupSize from './GroupSize'
-import { useOpenOrders } from '../hooks/useOpenOrders'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import {
@@ -34,11 +34,13 @@ import {
   orderbookSelector,
   setStoreSelector,
 } from '../stores/selectors'
+import { Market } from '@project-serum/serum'
+import { PerpMarket } from '@blockworks-foundation/mango-client'
 
 const Line = (props) => {
   return (
     <div
-      className={props.className}
+      className={`${props.className}`}
       style={{
         textAlign: props.invert ? 'left' : 'right',
         height: '100%',
@@ -124,17 +126,15 @@ export default function Orderbook({ depth = 8 }) {
   const orderbook = useMangoStore(orderbookSelector)
   const market = useMangoStore(marketSelector)
   const markPrice = useMarkPrice()
-  const openOrders = useOpenOrders()
-  const openOrderPrices = openOrders?.length
-    ? openOrders.map(({ order }) => order.price)
-    : []
+
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
 
   const currentOrderbookData = useRef(null)
-  const lastOrderbookData = useRef(null)
+  const nextOrderbookData = useRef(null)
   const previousDepth = usePrevious(depth)
 
+  const [openOrderPrices, setOpenOrderPrices] = useState([])
   const [orderbookData, setOrderbookData] = useState(null)
   const [defaultLayout, setDefaultLayout] = useState(true)
   const [displayCumulativeSize, setDisplayCumulativeSize] = useState(false)
@@ -152,11 +152,32 @@ export default function Orderbook({ depth = 8 }) {
   useInterval(() => {
     if (
       !currentOrderbookData.current ||
-      JSON.stringify(currentOrderbookData.current) !==
-        JSON.stringify(lastOrderbookData.current) ||
+      !isEqualLodash(
+        currentOrderbookData.current.bids,
+        nextOrderbookData.current.bids
+      ) ||
+      !isEqualLodash(
+        currentOrderbookData.current.asks,
+        nextOrderbookData.current.asks
+      ) ||
       previousDepth !== depth ||
       previousGrouping !== grouping
     ) {
+      // check if user has open orders so we can highlight them on orderbook
+      const openOrders =
+        useMangoStore.getState().selectedMangoAccount.openOrders
+      const newOpenOrderPrices = openOrders?.length
+        ? openOrders
+            .filter(({ market }) =>
+              market.account.publicKey.equals(marketConfig.publicKey)
+            )
+            .map(({ order }) => order.price)
+        : []
+      if (!isEqualLodash(newOpenOrderPrices, openOrderPrices)) {
+        setOpenOrderPrices(newOpenOrderPrices)
+      }
+
+      // updated orderbook data
       const bids = groupBy(orderbook?.bids, market, grouping, true) || []
       const asks = groupBy(orderbook?.asks, market, grouping, false) || []
 
@@ -217,7 +238,7 @@ export default function Orderbook({ depth = 8 }) {
   }, 500)
 
   useEffect(() => {
-    lastOrderbookData.current = {
+    nextOrderbookData.current = {
       bids: orderbook?.bids,
       asks: orderbook?.asks,
     }
@@ -255,17 +276,17 @@ export default function Orderbook({ depth = 8 }) {
                       onClick={() => {
                         setDisplayCumulativeSize(!displayCumulativeSize)
                       }}
-                      className="flex items-center justify-center rounded-full bg-th-bkg-3 w-8 h-8 hover:text-th-primary focus:outline-none"
+                      className="flex items-center justify-center rounded-full bg-th-bkg-4 w-7 h-7 hover:text-th-primary focus:outline-none"
                     >
                       {displayCumulativeSize ? (
-                        <StepSizeIcon className="w-5 h-5" />
+                        <StepSizeIcon className="w-4 h-4" />
                       ) : (
-                        <CumulativeSizeIcon className="w-5 h-5" />
+                        <CumulativeSizeIcon className="w-4 h-4" />
                       )}
                     </button>
                   </Tooltip>
                 </div>
-                <ElementTitle noMarignBottom>{t('orderbook')}</ElementTitle>
+                <ElementTitle noMarginBottom>{t('orderbook')}</ElementTitle>
                 <div className="flex relative">
                   <Tooltip
                     content={t('tooltip-switch-layout')}
@@ -273,14 +294,14 @@ export default function Orderbook({ depth = 8 }) {
                   >
                     <button
                       onClick={handleLayoutChange}
-                      className="flex items-center justify-center rounded-full bg-th-bkg-3 w-8 h-8 hover:text-th-primary focus:outline-none"
+                      className="flex items-center justify-center rounded-full bg-th-bkg-4 w-7 h-7 hover:text-th-primary focus:outline-none"
                     >
-                      <SwitchHorizontalIcon className="w-5 h-5" />
+                      <SwitchHorizontalIcon className="w-4 h-4" />
                     </button>
                   </Tooltip>
                 </div>
               </div>
-              <div className="flex justify-end items-center mb-4">
+              <div className="flex justify-end items-center mb-3">
                 <MarkPriceComponent markPrice={markPrice} />
                 <GroupSize
                   tickSize={market?.tickSize}
@@ -363,15 +384,7 @@ export default function Orderbook({ depth = 8 }) {
                   )}
                 </div>
               </div>
-              <div className="flex justify-between bg-th-bkg-1 p-2 mt-4 rounded-md text-xs">
-                <div className="text-th-fgd-3">{t('spread')}</div>
-                <div className="text-th-fgd-1">
-                  {orderbookData?.spread?.toFixed(2)}
-                </div>
-                <div className="text-th-fgd-1">
-                  {orderbookData?.spreadPercentage?.toFixed(2)}%
-                </div>
-              </div>
+              <OrderbookSpread orderbookData={orderbookData} />
             </FloatingElement>
           </FlipCardFront>
         ) : (
@@ -401,7 +414,7 @@ export default function Orderbook({ depth = 8 }) {
                     </button>
                   </Tooltip>
                 </div>
-                <ElementTitle noMarignBottom>{t('orderbook')}</ElementTitle>
+                <ElementTitle noMarginBottom>{t('orderbook')}</ElementTitle>
                 <div className="flex relative">
                   <Tooltip
                     content={t('tooltip-switch-layout')}
@@ -559,13 +572,7 @@ export default function Orderbook({ depth = 8 }) {
           />
         )
       )}
-      <div className="flex justify-between bg-th-bkg-1 p-2 my-2 rounded-md text-xs">
-        <div className="hidden sm:block text-th-fgd-3">{t('spread')}</div>
-        <div className="text-th-fgd-1">{orderbookData?.spread.toFixed(2)}</div>
-        <div className="text-th-fgd-1">
-          {orderbookData?.spreadPercentage.toFixed(2)}%
-        </div>
-      </div>
+      <OrderbookSpread orderbookData={orderbookData} />
       {orderbookData?.bids.map(
         ({ price, size, cumulativeSize, sizePercent, maxSizePercent }) => (
           <OrderbookRow
@@ -588,6 +595,20 @@ export default function Orderbook({ depth = 8 }) {
   )
 }
 
+const OrderbookSpread = ({ orderbookData }) => {
+  const { t } = useTranslation('common')
+
+  return (
+    <div className="flex justify-between bg-th-bkg-1 p-2 mb-0 mt-3 rounded-md text-xs">
+      <div className="hidden sm:block text-th-fgd-3">{t('spread')}</div>
+      <div className="text-th-fgd-1">{orderbookData?.spread.toFixed(2)}</div>
+      <div className="text-th-fgd-1">
+        {orderbookData?.spreadPercentage.toFixed(2)}%
+      </div>
+    </div>
+  )
+}
+
 const OrderbookRow = React.memo<any>(
   ({
     side,
@@ -598,19 +619,29 @@ const OrderbookRow = React.memo<any>(
     hasOpenOrder,
     market,
     grouping,
+  }: {
+    side: 'buy' | 'sell'
+    price: number
+    size: number
+    sizePercent: number
+    hasOpenOrder: boolean
+    invert: boolean
+    grouping: number
+    market: Market | PerpMarket
   }) => {
     const element = useRef(null)
     const setMangoStore = useMangoStore(setStoreSelector)
     const [showOrderbookFlash] = useLocalStorageState(ORDERBOOK_FLASH_KEY, true)
+    const flashClassName = side === 'sell' ? 'red-flash' : 'green-flash'
 
     useEffect(() => {
       showOrderbookFlash &&
-        !element.current?.classList.contains('flash') &&
-        element.current?.classList.add('flash')
+        !element.current?.classList.contains(flashClassName) &&
+        element.current?.classList.add(flashClassName)
       const id = setTimeout(
         () =>
-          element.current?.classList.contains('flash') &&
-          element.current?.classList.remove('flash'),
+          element.current?.classList.contains(flashClassName) &&
+          element.current?.classList.remove(flashClassName),
         250
       )
       return () => clearTimeout(id)
@@ -640,9 +671,12 @@ const OrderbookRow = React.memo<any>(
 
     if (!market) return null
 
+    const groupingDecimalCount = getDecimalCount(grouping)
+    const minOrderSizeDecimals = getDecimalCount(market.minOrderSize)
+
     return (
       <div
-        className={`flex relative text-sm leading-7 justify-between cursor-pointer`}
+        className={`flex relative text-sm leading-6 justify-between cursor-pointer`}
         ref={element}
       >
         {invert ? (
@@ -654,44 +688,48 @@ const OrderbookRow = React.memo<any>(
                 side === 'buy' ? `bg-th-green-muted` : `bg-th-red-muted`
               }`}
             />
-            <div className="flex justify-between w-full">
+            <div className="flex justify-between w-full hover:font-semibold">
               <div
                 onClick={handlePriceClick}
-                className={`z-10 text-xs md:text-sm leading-5 md:leading-7 text-th-fgd-1 md:pl-2 ${
-                  side === 'buy' ? `text-th-green` : `text-th-red`
+                className={`z-10 text-xs leading-5 md:leading-6 text-th-fgd-1 md:pl-5 ${
+                  side === 'buy'
+                    ? `text-th-green`
+                    : `text-th-red brightness-125`
                 }`}
               >
-                {usdFormatter(formattedPrice, getDecimalCount(grouping), false)}
+                {usdFormatter(formattedPrice, groupingDecimalCount, false)}
               </div>
 
               <div
-                className={`z-10 ${
-                  hasOpenOrder ? 'text-th-primary' : 'text-th-fgd-3'
+                className={`z-10 text-xs ${
+                  hasOpenOrder ? 'text-th-primary' : 'text-th-fgd-2'
                 }`}
                 onClick={handleSizeClick}
               >
-                {formattedSize}
+                {usdFormatter(formattedSize, minOrderSizeDecimals, false)}
               </div>
             </div>
           </>
         ) : (
           <>
-            <div className="flex justify-between w-full">
+            <div className="flex justify-between w-full hover:font-semibold">
               <div
-                className={`z-10 text-xs md:text-sm leading-5 md:leading-7 ${
-                  hasOpenOrder ? 'text-th-primary' : 'text-th-fgd-3'
+                className={`z-10 text-xs leading-5 md:leading-6 ${
+                  hasOpenOrder ? 'text-th-primary' : 'text-th-fgd-2'
                 }`}
                 onClick={handleSizeClick}
               >
-                {formattedSize}
+                {usdFormatter(formattedSize, minOrderSizeDecimals, false)}
               </div>
               <div
-                className={`z-10 text-xs md:text-sm leading-5 md:leading-7 md:pr-2 ${
-                  side === 'buy' ? `text-th-green` : `text-th-red`
+                className={`z-10 text-xs leading-5 md:leading-6 md:pr-4 ${
+                  side === 'buy'
+                    ? `text-th-green`
+                    : `text-th-red brightness-125`
                 }`}
                 onClick={handlePriceClick}
               >
-                {usdFormatter(formattedPrice, getDecimalCount(grouping), false)}
+                {usdFormatter(formattedPrice, groupingDecimalCount, false)}
               </div>
             </div>
 
@@ -707,7 +745,12 @@ const OrderbookRow = React.memo<any>(
     )
   },
   (prevProps, nextProps) =>
-    isEqual(prevProps, nextProps, ['price', 'size', 'sizePercent'])
+    isEqual(prevProps, nextProps, [
+      'price',
+      'size',
+      'sizePercent',
+      'hasOpenOrder',
+    ])
 )
 
 const MarkPriceComponent = React.memo<{ markPrice: number }>(
@@ -716,7 +759,7 @@ const MarkPriceComponent = React.memo<{ markPrice: number }>(
 
     return (
       <div
-        className={`flex justify-center items-center font-bold md:text-lg md:w-1/3 ${
+        className={`flex justify-center items-center font-bold md:text-base md:w-1/3 ${
           markPrice > previousMarkPrice
             ? `text-th-green`
             : markPrice < previousMarkPrice
@@ -725,10 +768,10 @@ const MarkPriceComponent = React.memo<{ markPrice: number }>(
         }`}
       >
         {markPrice > previousMarkPrice && (
-          <ArrowUpIcon className={`h-5 w-5 mr-1 text-th-green`} />
+          <ArrowUpIcon className={`h-4 w-4 mr-1 text-th-green`} />
         )}
         {markPrice < previousMarkPrice && (
-          <ArrowDownIcon className={`h-5 w-5 mr-1 text-th-red`} />
+          <ArrowDownIcon className={`h-4 w-4 mr-1 text-th-red`} />
         )}
         {markPrice || '----'}
       </div>

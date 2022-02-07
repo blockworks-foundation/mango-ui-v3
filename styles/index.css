@@ -314,36 +314,68 @@ body::-webkit-scrollbar-corner {
 
 /* orderbook flash */
 
-@keyframes highlight {
+@keyframes green-flash {
   from {
-    background-color: var(--primary);
+    background-color: var(--green-muted);
   }
   to {
     background-color: transparent;
   }
 }
 
-@-webkit-keyframes highlight {
+@-webkit-keyframes green-flash {
   from {
-    background-color: var(--primary);
+    background-color: var(--green-muted);
   }
   to {
     background-color: transparent;
   }
 }
-@-moz-keyframes highlight {
+@-moz-keyframes green-flash {
   from {
-    background-color: var(--primary);
+    background-color: var(--green-muted);
   }
   to {
     background-color: transparent;
   }
 }
 
-.flash {
-  -moz-animation: highlight 0.5s ease 0s 1 alternate;
-  -webkit-animation: highlight 0.5s ease 0s 1 alternate;
-  animation: highlight 0.5s ease 0s 1 alternate;
+@keyframes red-flash {
+  from {
+    background-color: var(--red-muted);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+
+@-webkit-keyframes red-flash {
+  from {
+    background-color: var(--red-muted);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+@-moz-keyframes red-flash {
+  from {
+    background-color: var(--red-muted);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+
+.green-flash {
+  -moz-animation: green-flash 0.5s ease 0s 1 alternate;
+  -webkit-animation: green-flash 0.5s ease 0s 1 alternate;
+  animation: green-flash 0.5s ease 0s 1 alternate;
+}
+
+.red-flash {
+  -moz-animation: red-flash 0.5s ease 0s 1 alternate;
+  -webkit-animation: red-flash 0.5s ease 0s 1 alternate;
+  animation: red-flash 0.5s ease 0s 1 alternate;
 }
 
 .react-swipeable-view-container > div[aria-hidden='false'] {

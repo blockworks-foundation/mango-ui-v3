@@ -1,7 +1,7 @@
 import { Menu } from '@headlessui/react'
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid'
 import useMangoStore from '../stores/useMangoStore'
-import { WALLET_PROVIDERS } from '../hooks/useWallet'
+import { WALLET_PROVIDERS } from '../utils/wallet-adapters'
 
 export default function WalletSelect({ isPrimary = false }) {
   const setMangoStore = useMangoStore((s) => s.set)

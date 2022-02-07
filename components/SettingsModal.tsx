@@ -27,14 +27,14 @@ const NODE_URLS = [
 const CUSTOM_NODE = NODE_URLS.find((n) => n.label === 'Custom')
 
 export const NODE_URL_KEY = 'node-url-key-0.5'
-export const DEFAULT_MARKET_KEY = 'defaultMarket'
+export const DEFAULT_MARKET_KEY = 'defaultMarket-0.3'
 export const ORDERBOOK_FLASH_KEY = 'showOrderbookFlash'
 export const DEFAULT_SPOT_MARGIN_KEY = 'defaultSpotMargin'
 export const initialMarket = {
-  base: 'BTC',
+  base: 'SOL',
   kind: 'perp',
-  name: 'BTC-PERP',
-  path: '/market?name=BTC-PERP',
+  name: 'SOL-PERP',
+  path: '/?name=SOL-PERP',
 }
 
 const SettingsModal = ({ isOpen, onClose }) => {
@@ -73,7 +73,7 @@ const SettingsModal = ({ isOpen, onClose }) => {
         </button>
       ) : null}
       <Modal.Header>
-        <ElementTitle noMarignBottom>{t('settings')}</ElementTitle>
+        <ElementTitle noMarginBottom>{t('settings')}</ElementTitle>
       </Modal.Header>
       {!settingsView ? (
         <div className="border-b border-th-bkg-4">
@@ -153,7 +153,7 @@ const DefaultMarketSettings = ({ setSettingsView }) => {
       base: 'BTC',
       kind: 'perp',
       name: 'BTC-PERP',
-      path: '/market?name=BTC-PERP',
+      path: '/?name=BTC-PERP',
     }
   )
   const handleSetDefaultMarket = (market) => {
@@ -164,7 +164,7 @@ const DefaultMarketSettings = ({ setSettingsView }) => {
       base: base,
       kind: kind,
       name: market,
-      path: `/market?name=${market}`,
+      path: `/?name=${market}`,
     })
   }
   const parsedDefaultMarket = defaultMarket

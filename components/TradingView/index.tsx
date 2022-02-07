@@ -10,7 +10,6 @@ import { CHART_DATA_FEED } from '../../utils/chartDataConnector'
 import useMangoStore from '../../stores/useMangoStore'
 import { useViewport } from '../../hooks/useViewport'
 import { breakpoints } from '../TradePageGrid'
-import { useOpenOrders } from '../../hooks/useOpenOrders'
 import { Order, Market } from '@project-serum/serum/lib/market'
 import { PerpOrder, PerpMarket } from '@blockworks-foundation/mango-client'
 import { notify } from '../../utils/notifications'
@@ -48,7 +47,7 @@ const TVChartContainer = () => {
   const isMobile = width ? width < breakpoints.sm : false
 
   const selectedMarketName = selectedMarketConfig.name
-  const openOrders = useOpenOrders()
+  const openOrders = useMangoStore((s) => s.selectedMangoAccount.openOrders)
   const actions = useMangoStore((s) => s.actions)
   const connected = useMangoStore((s) => s.wallet.connected)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
@@ -110,6 +109,7 @@ const TVChartContainer = () => {
         defaultProps.containerId as ChartingLibraryWidgetOptions['container_id'],
       library_path: defaultProps.libraryPath as string,
       locale: 'en',
+      enabled_features: ['hide_left_toolbar_by_default'],
       disabled_features: [
         'use_localstorage_for_settings',
         'timeframes_toolbar',
@@ -264,7 +264,11 @@ const TVChartContainer = () => {
   ) => {
     const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
-    const { askInfo, bidInfo } = useMangoStore.getState().selectedMarket
+    const marketConfig = useMangoStore.getState().selectedMarket.config
+    const askInfo =
+      useMangoStore.getState().accountInfos[marketConfig.asksKey.toString()]
+    const bidInfo =
+      useMangoStore.getState().accountInfos[marketConfig.bidsKey.toString()]
     const wallet = useMangoStore.getState().wallet.current
 
     if (!wallet || !mangoGroup || !mangoAccount || !market) return
@@ -332,8 +336,6 @@ const TVChartContainer = () => {
   }
 
   function getLine(order, market) {
-    console.log('order price', order.price)
-
     return tvWidgetRef.current
       .chart()
       .createOrderLine({ disableUndo: false })
