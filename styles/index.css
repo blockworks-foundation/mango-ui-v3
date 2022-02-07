@@ -78,6 +78,10 @@ h3 {
   @apply font-bold text-th-fgd-1 text-base;
 }
 
+h4 {
+  @apply font-bold text-th-fgd-3 text-sm;
+}
+
 p {
   @apply text-th-fgd-3 mb-2.5;
 }
@@ -186,7 +190,7 @@ body::-webkit-scrollbar-corner {
   background-color: var(--bkg-3);
 }
 
-.thin-scroll::-webkit-scrollbar {
+/* .thin-scroll::-webkit-scrollbar {
   width: 4px;
   height: 8px;
   background-color: var(--bkg-2);
@@ -194,7 +198,7 @@ body::-webkit-scrollbar-corner {
 
 .thin-scroll::-webkit-scrollbar-thumb {
   border-radius: 4px;
-  background-color: var(--bkg-3);
+  background-color: var(--bkg-4);
 }
 
 .thin-scroll::-webkit-scrollbar-track {
@@ -202,7 +206,28 @@ body::-webkit-scrollbar-corner {
 }
 
 .thin-scroll::-webkit-scrollbar-corner {
-  background-color: var(--bkg-3);
+  background-color: var(--bkg-4);
+} */
+
+.thin-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+/* Track */
+.thin-scroll::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+}
+
+/* Handle */
+.thin-scroll::-webkit-scrollbar-thumb {
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+  background: var(--bkg-4);
+}
+.thin-scroll::-webkit-scrollbar-thumb:window-inactive {
+  background: var(--bkg-4);
 }
 
 /* Responsive table */

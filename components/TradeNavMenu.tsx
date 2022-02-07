@@ -1,5 +1,5 @@
-import { FunctionComponent, useEffect, useRef, useState } from 'react'
-import { Popover } from '@headlessui/react'
+import { Fragment, FunctionComponent, useEffect, useRef, useState } from 'react'
+import { Popover, Transition } from '@headlessui/react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
@@ -18,13 +18,10 @@ const initialMenuCategories = [
   { name: 'Perp', desc: 'perp-desc' },
 ]
 
-const FAVORITE_MARKETS_KEY = 'favoriteMarkets'
+export const FAVORITE_MARKETS_KEY = 'favoriteMarkets'
 
 const TradeNavMenu = () => {
-  const [favoriteMarkets, setFavoriteMarkets] = useLocalStorageState(
-    FAVORITE_MARKETS_KEY,
-    []
-  )
+  const [favoriteMarkets] = useLocalStorageState(FAVORITE_MARKETS_KEY, [])
   const [activeMenuCategory, setActiveMenuCategory] = useState('Spot')
   const [menuCategories, setMenuCategories] = useState(initialMenuCategories)
   const [openState, setOpenState] = useState(false)
@@ -87,18 +84,6 @@ const TradeNavMenu = () => {
     }
   }
 
-  const addToFavorites = (mkt) => {
-    const newFavorites = [
-      ...favoriteMarkets,
-      { name: mkt.name, baseSymbol: mkt.baseSymbol },
-    ]
-    setFavoriteMarkets(newFavorites)
-  }
-
-  const removeFromFavorites = (mkt) => {
-    setFavoriteMarkets(favoriteMarkets.filter((m) => m.name !== mkt.name))
-  }
-
   useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside)
 
@@ -149,58 +134,58 @@ const TradeNavMenu = () => {
             </div>
           </Popover.Button>
 
-          <Popover.Panel className="absolute grid grid-cols-3 grid-rows-1 top-14 w-[700px] z-10">
-            <div className="bg-th-bkg-4 col-span-1 rounded-bl-lg">
-              <MenuCategories
-                activeCategory={activeMenuCategory}
-                categories={menuCategories}
-                onChange={handleMenuCategoryChange}
-              />
-            </div>
-            <div className="bg-th-bkg-3 col-span-2 p-4 rounded-br-lg">
-              <div className="grid grid-cols-2 grid-flow-row gap-4">
-                {markets.map((mkt) => (
-                  <div className="col-span-1 text-th-fgd-3" key={mkt.name}>
-                    <div className="flex items-center justify-between">
-                      <Link
-                        href={{
-                          pathname: '/',
-                          query: { name: mkt.name },
-                        }}
-                        shallow={true}
-                      >
-                        <a
-                          className={`flex items-center text-xs hover:text-th-primary whitespace-nowrap ${
-                            asPath.includes(mkt.name) ||
-                            (asPath === '/' && initialMarket.name === mkt.name)
-                              ? 'text-th-primary'
-                              : 'text-th-fgd-1'
-                          }`}
-                        >
-                          {renderIcon(mkt.baseSymbol)}
-                          {mkt.name}
-                        </a>
-                      </Link>
-                      {favoriteMarkets
-                        .map((mkt) => mkt.name)
-                        .includes(mkt.name) ? (
-                        <button onClick={() => removeFromFavorites(mkt)}>
-                          <FilledStarIcon className="h-4 text-th-primary w-4" />
-                        </button>
-                      ) : (
-                        <button
-                          className="default-transition text-th-fgd-4 hover:text-th-fgd-3"
-                          onClick={() => addToFavorites(mkt)}
-                        >
-                          <StarIcon className="h-4 w-4" />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                ))}
+          <Transition
+            appear={true}
+            show={open}
+            as={Fragment}
+            enter="transition-all ease-in duration-200"
+            enterFrom="opacity-0 transform scale-75"
+            enterTo="opacity-100 transform scale-100"
+            leave="transition ease-out duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <Popover.Panel className="absolute grid grid-cols-3 grid-rows-1 top-14 w-[700px] z-10">
+              <div className="bg-th-bkg-4 col-span-1 rounded-bl-lg">
+                <MenuCategories
+                  activeCategory={activeMenuCategory}
+                  categories={menuCategories}
+                  onChange={handleMenuCategoryChange}
+                />
               </div>
-            </div>
-          </Popover.Panel>
+              <div className="bg-th-bkg-3 col-span-2 p-4 rounded-br-lg">
+                <div className="grid grid-cols-2 grid-flow-row gap-x-4 gap-y-2.5">
+                  {markets.map((mkt) => (
+                    <div className="col-span-1 text-th-fgd-3" key={mkt.name}>
+                      <div className="flex items-center justify-between">
+                        <Link
+                          href={{
+                            pathname: '/',
+                            query: { name: mkt.name },
+                          }}
+                          shallow={true}
+                        >
+                          <a
+                            className={`flex items-center text-xs hover:text-th-primary w-full whitespace-nowrap ${
+                              asPath.includes(mkt.name) ||
+                              (asPath === '/' &&
+                                initialMarket.name === mkt.name)
+                                ? 'text-th-primary'
+                                : 'text-th-fgd-1'
+                            }`}
+                          >
+                            {renderIcon(mkt.baseSymbol)}
+                            {mkt.name}
+                          </a>
+                        </Link>
+                        <FavoriteMarketButton market={mkt} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </Popover.Panel>
+          </Transition>
         </div>
       )}
     </Popover>
@@ -253,5 +238,37 @@ const MenuCategories: FunctionComponent<MenuCategoriesProps> = ({
         )
       })}
     </div>
+  )
+}
+
+export const FavoriteMarketButton = ({ market }) => {
+  const [favoriteMarkets, setFavoriteMarkets] = useLocalStorageState(
+    FAVORITE_MARKETS_KEY,
+    []
+  )
+
+  const addToFavorites = (mkt) => {
+    const newFavorites = [
+      ...favoriteMarkets,
+      { name: mkt.name, baseSymbol: mkt.baseSymbol },
+    ]
+    setFavoriteMarkets(newFavorites)
+  }
+
+  const removeFromFavorites = (mkt) => {
+    setFavoriteMarkets(favoriteMarkets.filter((m) => m.name !== mkt.name))
+  }
+
+  return favoriteMarkets.find((mkt) => mkt.name === market.name) ? (
+    <button onClick={() => removeFromFavorites(market)}>
+      <FilledStarIcon className="h-4 text-th-primary w-4" />
+    </button>
+  ) : (
+    <button
+      className="default-transition text-th-fgd-4 hover:text-th-fgd-3"
+      onClick={() => addToFavorites(market)}
+    >
+      <StarIcon className="h-4 w-4" />
+    </button>
   )
 }

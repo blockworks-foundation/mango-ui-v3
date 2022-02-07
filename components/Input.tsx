@@ -1,3 +1,5 @@
+import { forwardRef } from 'react'
+
 interface InputProps {
   type: string
   value: any
@@ -9,23 +11,19 @@ interface InputProps {
   [x: string]: any
 }
 
-const Group = ({ children, className = '' }) => {
-  return <div className={`flex ${className}`}>{children}</div>
-}
-
-const Input = ({
-  type,
-  value,
-  onChange,
-  className,
-  error,
-  wrapperClassName = 'w-full',
-  disabled,
-  prefix,
-  prefixClassName,
-  suffix,
-  ...props
-}: InputProps) => {
+const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
+  const {
+    type,
+    value,
+    onChange,
+    className,
+    error,
+    wrapperClassName = 'w-full',
+    disabled,
+    prefix,
+    prefixClassName,
+    suffix,
+  } = props
   return (
     <div className={`flex relative ${wrapperClassName}`}>
       {prefix ? (
@@ -51,6 +49,7 @@ const Input = ({
           }
           ${prefix ? 'pl-7' : ''}`}
         disabled={disabled}
+        ref={ref}
         {...props}
       />
       {suffix ? (
@@ -60,8 +59,6 @@ const Input = ({
       ) : null}
     </div>
   )
-}
-
-Input.Group = Group
+})
 
 export default Input

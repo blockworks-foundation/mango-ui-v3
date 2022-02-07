@@ -14,6 +14,7 @@ import BN from 'bn.js'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { useTranslation } from 'next-i18next'
+import SwitchMarketDropdown from './SwitchMarketDropdown'
 
 const SECONDS = 1000
 
@@ -157,21 +158,24 @@ const MarketDetails = () => {
       <div className="flex flex-col lg:flex-row lg:items-center">
         <div className="hidden md:block md:pb-4 md:pr-6 lg:pb-0">
           <div className="flex items-center">
-            <img
-              alt=""
-              width="24"
-              height="24"
-              src={`/assets/icons/${baseSymbol.toLowerCase()}.svg`}
-              className={`mr-2.5`}
-            />
+            <div className="flex items-center">
+              <img
+                alt=""
+                width="24"
+                height="24"
+                src={`/assets/icons/${baseSymbol.toLowerCase()}.svg`}
+                className={`mr-2.5`}
+              />
 
-            <div className="font-semibold pr-0.5 text-xl">{baseSymbol}</div>
-            <span className="text-th-fgd-4 text-xl">
-              {isPerpMarket ? '-' : '/'}
-            </span>
-            <div className="font-semibold pl-0.5 text-xl">
-              {isPerpMarket ? 'PERP' : groupConfig.quoteSymbol}
+              <div className="font-semibold pr-0.5 text-xl">{baseSymbol}</div>
+              <span className="text-th-fgd-4 text-xl">
+                {isPerpMarket ? '-' : '/'}
+              </span>
+              <div className="font-semibold pl-0.5 text-xl">
+                {isPerpMarket ? 'PERP' : groupConfig.quoteSymbol}
+              </div>
             </div>
+            <SwitchMarketDropdown />
           </div>
         </div>
         <div className="grid grid-flow-row grid-cols-1 md:grid-cols-3 gap-3 lg:grid-cols-none lg:grid-flow-col lg:grid-rows-1 lg:gap-6">
