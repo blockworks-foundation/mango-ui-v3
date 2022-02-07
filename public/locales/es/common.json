@@ -23,6 +23,7 @@
   "add-name": "Añadir nombre",
   "alert-health": "Alert when health is below",
   "alert-info": "Email when health <= {{health}}%",
+  "alerts": "Alerts",
   "alerts-disclaimer": "Do not rely solely on alerts to protect your account. We can't guarantee they will be delivered.",
   "alerts-max": "You've reached the maximum number of active alerts.",
   "all-assets": "Todos los activos",
@@ -189,6 +190,7 @@
   "low": "Bajo",
   "maint-health": "Salud de mantenimiento",
   "make-trade": "Hacer un trato",
+  "maker": "Maker",
   "maker-fee": "orden límite",
   "mango": "Mango",
   "mango-accounts": "Cuentas Mango",
@@ -255,6 +257,7 @@
   "orderbook": "libro de ordenes",
   "orderbook-animation": "Animación del libro de ordenes",
   "orders": "ordenes",
+  "performance": "Performance",
   "performance-insights": "Performance Insights",
   "period-progress": "Period Progress",
   "perp": "perpetuo",
@@ -287,8 +290,8 @@
   "recent": "Reciente",
   "recent-trades": "Operaciones recientes",
   "redeem-failure": "Error al canjear MNGO",
-  "redeem-success": "MNGO canjeado con éxito",
   "redeem-pnl": "Resolver",
+  "redeem-success": "MNGO canjeado con éxito",
   "refresh": "Actualizar",
   "refresh-data": "Actualizar datos",
   "repay": "Pagar",
@@ -331,6 +334,7 @@
   "swap": "Swap",
   "take-profit": "Tomar ganancias",
   "take-profit-limit": "Tomar el límite de ganancias",
+  "taker": "Taker",
   "taker-fee": "Orden mercado",
   "target-period-length": "Target Period Length",
   "themes-tip-desc": "Mango, Dark o Light (si te gusta eso).",
@@ -393,6 +397,7 @@
   "v3-welcome": "Bienvenido a Mango V3",
   "value": "Valor",
   "view-all-trades": "Ver todas las operaciones en la página de la cuenta",
+  "view-counterparty": "View Counterparty",
   "view-transaction": "View Transaction",
   "wallet": "Wallet",
   "wallet-connected": "Wallet connected",
@@ -406,7 +411,5 @@
   "you-must-leave-enough-sol": "You must leave enough SOL in your wallet to pay for the transaction",
   "your-account": "Su cuenta",
   "your-assets": "Sus activos",
-  "your-borrows": "Sus préstamos",
-
-  "performance": "Performance"
+  "your-borrows": "Sus préstamos"
 }

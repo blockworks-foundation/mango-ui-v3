@@ -51,7 +51,7 @@ const Tabs: FunctionComponent<TabsProps> = ({
                   `}
               style={{ width: `${100 / tabs.length}%`, maxWidth: '176px' }}
             >
-              {t(tabName.toLowerCase().replace(' ', '-'))}
+              {t(tabName.toLowerCase().replace(/\s/g, '-'))}
               {tabCount && tabCount.count > 0 ? (
                 <Count count={tabCount.count} />
               ) : null}

@@ -13,13 +13,13 @@ import {
 import FloatingElement from '../FloatingElement'
 
 export default function TradeForm() {
-  const [showAdvancedFrom, setShowAdvancedForm] = useState(true)
+  const [showAdvancedForm, setShowAdvancedForm] = useState(true)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const connected = useMangoStore((s) => s.wallet.connected)
 
   const handleFormChange = () => {
-    setShowAdvancedForm(!showAdvancedFrom)
+    setShowAdvancedForm(!showAdvancedForm)
   }
 
   const initLeverage = useMemo(() => {
@@ -33,8 +33,8 @@ export default function TradeForm() {
 
   return (
     <FlipCard>
-      <FlipCardInner flip={showAdvancedFrom}>
-        {showAdvancedFrom ? (
+      <FlipCardInner flip={showAdvancedForm}>
+        {showAdvancedForm ? (
           <FlipCardFront>
             <FloatingElement className="h-full px-1 py-0 md:px-4 md:py-4 fadein-floating-element">
               {/* <div className={`${!connected ? 'filter blur-sm' : ''}`}> */}
