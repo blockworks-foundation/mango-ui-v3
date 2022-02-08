@@ -56,6 +56,7 @@ const TopBar = () => {
                 <MenuItem href="/account">{t('account')}</MenuItem>
                 <MenuItem href="/borrow">{t('borrow')}</MenuItem>
                 <MenuItem href="/stats">{t('stats')}</MenuItem>
+                <MenuItem href="/referral">{t('referrals')}</MenuItem>
                 <NavDropMenu
                   menuTitle={t('more')}
                   // linksArray: [name: string, href: string, isExternal: boolean]
