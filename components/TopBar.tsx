@@ -13,11 +13,11 @@ import { DEFAULT_MARKET_KEY, initialMarket } from './SettingsModal'
 import { useTranslation } from 'next-i18next'
 import Settings from './Settings'
 
-const StyledNewLabel = ({ children, ...props }) => (
-  <div style={{ fontSize: '0.5rem', marginLeft: '1px' }} {...props}>
-    {children}
-  </div>
-)
+// const StyledNewLabel = ({ children, ...props }) => (
+//   <div style={{ fontSize: '0.5rem', marginLeft: '1px' }} {...props}>
+//     {children}
+//   </div>
+// )
 
 const TopBar = () => {
   const { t } = useTranslation('common')
@@ -50,58 +50,22 @@ const TopBar = () => {
                   />
                 </div>
               </Link>
-              <div
-                className={`hidden md:flex md:items-center md:space-x-4 lg:space-x-6 md:ml-4`}
-              >
+              <div className={`hidden md:flex md:items-center md:ml-4`}>
                 <MenuItem href={defaultMarket.path}>{t('trade')}</MenuItem>
                 <MenuItem href="/swap">{t('swap')}</MenuItem>
                 <MenuItem href="/account">{t('account')}</MenuItem>
                 <MenuItem href="/borrow">{t('borrow')}</MenuItem>
-                <div className="relative">
-                  <MenuItem href="/risk-calculator">
-                    {t('calculator')}
-                    <div>
-                      <div className="absolute flex items-center justify-center h-4 px-1.5 bg-gradient-to-br from-red-500 to-yellow-500 rounded-full -right-5 -top-3">
-                        <StyledNewLabel className="text-white uppercase">
-                          new
-                        </StyledNewLabel>
-                      </div>
-                    </div>
-                  </MenuItem>
-                </div>
                 <MenuItem href="/stats">{t('stats')}</MenuItem>
-                <MenuItem href="https://docs.mango.markets/" newWindow>
-                  {t('learn')}
-                </MenuItem>
                 <NavDropMenu
                   menuTitle={t('more')}
                   // linksArray: [name: string, href: string, isExternal: boolean]
                   linksArray={[
-                    ['Mango v1', 'https://v1.mango.markets', true],
+                    [t('calculator'), '/risk-calculator', false],
+                    [t('learn'), 'https://docs.mango.markets/', true],
                     ['Mango v2', 'https://v2.mango.markets', true],
+                    ['Mango v1', 'https://v1.mango.markets', true],
                   ]}
                 />
-                {/* <button
-                  onClick={() => {
-                    handleLocaleChange('en')
-                  }}
-                >
-                  English
-                </button>
-                <button
-                  onClick={() => {
-                    handleLocaleChange('zh')
-                  }}
-                >
-                  简体中文
-                </button>
-                <button
-                  onClick={() => {
-                    handleLocaleChange('zh_tw')
-                  }}
-                >
-                  繁體中文
-                </button> */}
               </div>
             </div>
             <div className="flex items-center">
