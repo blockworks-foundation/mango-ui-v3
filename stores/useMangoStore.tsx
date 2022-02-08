@@ -522,14 +522,28 @@ const useMangoStore = create<MangoStore>((set, get) => {
         const set = get().set
         if (!selectedMangoAccount) return
 
-        let serumTradeHistory = []
+        fetch(
+          `https://event-history-api.herokuapp.com/perp_trades/${selectedMangoAccount.publicKey.toString()}`
+        )
+          .then((response) => response.json())
+          .then((jsonPerpHistory) => {
+            const perpHistory = jsonPerpHistory?.data || []
+
+            set((state) => {
+              state.tradeHistory = [...state.tradeHistory, ...perpHistory]
+            })
+          })
+          .catch((e) => {
+            console.error('Error fetching trade history', e)
+          })
+
         if (selectedMangoAccount.spotOpenOrdersAccounts.length) {
           const openOrdersAccounts =
             selectedMangoAccount.spotOpenOrdersAccounts.filter(isDefined)
           const publicKeys = openOrdersAccounts.map((act) =>
             act.publicKey.toString()
           )
-          serumTradeHistory = await Promise.all(
+          Promise.all(
             publicKeys.map(async (pk) => {
               const response = await fetch(
                 `https://event-history-api.herokuapp.com/trades/open_orders/${pk.toString()}`
@@ -538,16 +552,18 @@ const useMangoStore = create<MangoStore>((set, get) => {
               return parsedResponse?.data ? parsedResponse.data : []
             })
           )
+            .then((serumTradeHistory) => {
+              set((state) => {
+                state.tradeHistory = [
+                  ...serumTradeHistory,
+                  ...state.tradeHistory,
+                ]
+              })
+            })
+            .catch((e) => {
+              console.error('Error fetching trade history', e)
+            })
         }
-        const perpHistory = await fetch(
-          `https://event-history-api.herokuapp.com/perp_trades/${selectedMangoAccount.publicKey.toString()}`
-        )
-        let parsedPerpHistory = await perpHistory.json()
-        parsedPerpHistory = parsedPerpHistory?.data || []
-
-        set((state) => {
-          state.tradeHistory = [...serumTradeHistory, ...parsedPerpHistory]
-        })
       },
       async reloadMangoAccount() {
         const set = get().set
