@@ -18,6 +18,9 @@ import ErrorBoundary from '../components/ErrorBoundary'
 import GlobalNotification from '../components/GlobalNotification'
 import { useOpenOrders } from '../hooks/useOpenOrders'
 import usePerpPositions from '../hooks/usePerpPositions'
+import { useEffect } from 'react'
+import { PublicKey } from '@solana/web3.js'
+import { mangoClientSelector, mangoGroupSelector } from '../stores/selectors'
 
 const MangoStoreUpdater = () => {
   useHydrateStore()
@@ -36,6 +39,40 @@ const OpenOrdersStoreUpdater = () => {
 
 const PerpPositionsStoreUpdater = () => {
   usePerpPositions()
+  return null
+}
+
+const TrackReferrer = () => {
+  const setMangoStore = useMangoStore((s) => s.set)
+  const mangoClient = useMangoStore(mangoClientSelector)
+  const mangoGroup = useMangoStore(mangoGroupSelector)
+  const router = useRouter()
+  const { query } = router
+
+  useEffect(() => {
+    const storeReferrer = async () => {
+      if (query.ref && mangoGroup) {
+        let reffererPk
+        if (query.ref.length === 44) {
+          reffererPk = new PublicKey(query.ref)
+        } else {
+          const { referrerPda } = await mangoClient.getReferrerPda(
+            mangoGroup,
+            query.ref as string
+          )
+          reffererPk = referrerPda
+        }
+        console.log('reffererPk', reffererPk)
+
+        setMangoStore((state) => {
+          state.ref = reffererPk
+        })
+      }
+    }
+
+    storeReferrer()
+  }, [query, mangoGroup])
+
   return null
 }
 
@@ -109,6 +146,7 @@ function App({ Component, pageProps }) {
           <WalletStoreUpdater />
           <OpenOrdersStoreUpdater />
           <PerpPositionsStoreUpdater />
+          <TrackReferrer />
         </ErrorBoundary>
 
         <ThemeProvider defaultTheme="Mango">
