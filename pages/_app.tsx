@@ -20,7 +20,15 @@ import { useOpenOrders } from '../hooks/useOpenOrders'
 import usePerpPositions from '../hooks/usePerpPositions'
 import { useEffect } from 'react'
 import { PublicKey } from '@solana/web3.js'
-import { mangoClientSelector, mangoGroupSelector } from '../stores/selectors'
+import {
+  connectionSelector,
+  mangoClientSelector,
+  mangoGroupSelector,
+} from '../stores/selectors'
+import {
+  ReferrerIdRecordLayout,
+  ReferrerIdRecord,
+} from '@blockworks-foundation/mango-client'
 
 const MangoStoreUpdater = () => {
   useHydrateStore()
@@ -42,30 +50,37 @@ const PerpPositionsStoreUpdater = () => {
   return null
 }
 
-const TrackReferrer = () => {
+const FetchReferrer = () => {
   const setMangoStore = useMangoStore((s) => s.set)
   const mangoClient = useMangoStore(mangoClientSelector)
   const mangoGroup = useMangoStore(mangoGroupSelector)
+  const connection = useMangoStore(connectionSelector)
   const router = useRouter()
   const { query } = router
 
   useEffect(() => {
     const storeReferrer = async () => {
       if (query.ref && mangoGroup) {
-        let reffererPk
+        let referrerPk
         if (query.ref.length === 44) {
-          reffererPk = new PublicKey(query.ref)
+          referrerPk = new PublicKey(query.ref)
         } else {
           const { referrerPda } = await mangoClient.getReferrerPda(
             mangoGroup,
             query.ref as string
           )
-          reffererPk = referrerPda
+          console.log('in App referrerPda', referrerPda)
+          const info = await connection.getAccountInfo(referrerPda)
+          console.log('in App referrerPda info', info)
+          if (info) {
+            const decoded = ReferrerIdRecordLayout.decode(info.data)
+            const referrerRecord = new ReferrerIdRecord(decoded)
+            referrerPk = referrerRecord.referrerMangoAccount
+          }
         }
-        console.log('reffererPk', reffererPk)
-
+        console.log('in App referrerPk from url is:', referrerPk)
         setMangoStore((state) => {
-          state.ref = reffererPk
+          state.referrerPk = referrerPk
         })
       }
     }
@@ -146,7 +161,7 @@ function App({ Component, pageProps }) {
           <WalletStoreUpdater />
           <OpenOrdersStoreUpdater />
           <PerpPositionsStoreUpdater />
-          <TrackReferrer />
+          <FetchReferrer />
         </ErrorBoundary>
 
         <ThemeProvider defaultTheme="Mango">

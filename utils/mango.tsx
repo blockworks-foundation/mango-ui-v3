@@ -17,7 +17,8 @@ export async function deposit({
   const wallet = useMangoStore.getState().wallet.current
   const tokenIndex = mangoGroup.getTokenIndex(fromTokenAcc.mint)
   const mangoClient = useMangoStore.getState().connection.client
-  const referrer = useMangoStore.getState().ref
+  const referrer = useMangoStore.getState().referrerPk
+  console.log('referrerPk', referrer)
 
   if (mangoAccount) {
     return await mangoClient.deposit(
@@ -36,6 +37,7 @@ export async function deposit({
       wallet.publicKey,
       false
     )
+    console.log('in deposit and create, referrer is', referrer)
     return await mangoClient.createMangoAccountAndDeposit(
       mangoGroup,
       wallet,

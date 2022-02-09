@@ -158,7 +158,7 @@ export interface MangoStore extends State {
     cache: MangoCache | null
   }
   mangoAccounts: MangoAccount[]
-  ref: string
+  referrerPk: PublicKey | null
   selectedMangoAccount: {
     current: MangoAccount | null
     initialLoad: boolean
@@ -268,7 +268,7 @@ const useMangoStore = create<MangoStore>((set, get) => {
     },
     mangoGroups: [],
     mangoAccounts: [],
-    ref: '',
+    referrerPk: null,
     selectedMangoAccount: {
       current: null,
       initialLoad: true,
