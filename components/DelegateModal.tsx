@@ -105,7 +105,7 @@ const DelegateModal: FunctionComponent<DelegateModalProps> = ({
       ) : null}
       <Button
         onClick={() => setDelegate()}
-        disabled={validateKeyInput()}
+        disabled={keyBase58.length != 44 && keyBase58.length != 0}
         className="mt-4 w-full"
       >
         {t('delegate:set-delegate')}
