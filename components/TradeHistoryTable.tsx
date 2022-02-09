@@ -263,7 +263,9 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                           <Td className="!py-2 ">
                             {formatUsdValue(trade.value)}
                           </Td>
-                          <Td className="!py-2 ">{t(trade.liquidity.toLowerCase())}</Td>
+                          <Td className="!py-2 ">
+                            {t(trade.liquidity.toLowerCase())}
+                          </Td>
                           <Td className="!py-2 ">
                             {formatUsdValue(trade.feeCost)}
                           </Td>

@@ -43,7 +43,7 @@ export default function AccountBorrows() {
   const [showDepositModal, setShowDepositModal] = useState(false)
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
-  const canWithdraw = mangoAccount.owner.equals(wallet.publicKey)
+  const canWithdraw = mangoAccount?.owner.equals(wallet.publicKey)
 
   const handleCloseWithdraw = useCallback(() => {
     setShowBorrowModal(false)

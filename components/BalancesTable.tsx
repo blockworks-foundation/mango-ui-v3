@@ -58,7 +58,7 @@ const BalancesTable = ({
   const isMobile = width ? width < breakpoints.md : false
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const wallet = useMangoStore((s) => s.wallet.current)
-  const canWithdraw = mangoAccount.owner.equals(wallet.publicKey)
+  const canWithdraw = mangoAccount?.owner.equals(wallet.publicKey)
 
   const handleSizeClick = (size, symbol) => {
     const step = selectedMarket.minOrderSize
