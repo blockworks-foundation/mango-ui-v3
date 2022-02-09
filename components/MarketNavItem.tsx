@@ -42,26 +42,25 @@ const MarketNavItem: FunctionComponent<MarketNavItemProps> = ({
 
   return (
     <div className="text-th-fgd-3">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center">
-          <FavoriteMarketButton market={market} />
-          <button className="font-normal" onClick={() => selectMarket(market)}>
-            <div
-              className={`flex items-center text-xs hover:text-th-primary w-full whitespace-nowrap ${
-                asPath.includes(market.name) ||
-                (asPath === '/' && initialMarket.name === market.name)
-                  ? 'text-th-primary'
-                  : 'text-th-fgd-1'
-              }`}
-            >
-              <span className="ml-2">{market.name}</span>
-              <span className="ml-1.5 text-xs text-th-fgd-4">
-                {getMarketLeverage(market)}x
-              </span>
-            </div>
-          </button>
-        </div>
-        <div className="flex items-center">
+      <div className="flex items-center">
+        <FavoriteMarketButton market={market} />
+        <button
+          className="font-normal flex items-center justify-between w-full"
+          onClick={() => selectMarket(market)}
+        >
+          <div
+            className={`flex items-center text-xs hover:text-th-primary w-full whitespace-nowrap ${
+              asPath.includes(market.name) ||
+              (asPath === '/' && initialMarket.name === market.name)
+                ? 'text-th-primary'
+                : 'text-th-fgd-1'
+            }`}
+          >
+            <span className="ml-2">{market.name}</span>
+            <span className="ml-1.5 text-xs text-th-fgd-4">
+              {getMarketLeverage(market)}x
+            </span>
+          </div>
           <div
             className={`text-xs ${
               mktInfo
@@ -73,7 +72,7 @@ const MarketNavItem: FunctionComponent<MarketNavItemProps> = ({
           >
             {mktInfo ? `${(mktInfo.change24h * 100).toFixed(1)}%` : 'N/A'}
           </div>
-        </div>
+        </button>
       </div>
     </div>
   )
