@@ -56,6 +56,9 @@ const BalancesTable = ({
   const { width } = useViewport()
   const [submitting, setSubmitting] = useState(false)
   const isMobile = width ? width < breakpoints.md : false
+  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
+  const wallet = useMangoStore((s) => s.wallet.current)
+  const canWithdraw = mangoAccount.owner.equals(wallet.publicKey)
 
   const handleSizeClick = (size, symbol) => {
     const step = selectedMarket.minOrderSize
@@ -95,9 +98,7 @@ const BalancesTable = ({
   }, [])
 
   async function handleSettleAll() {
-    const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
     const markets = useMangoStore.getState().selectedMangoGroup.markets
-    const wallet = useMangoStore.getState().wallet.current
 
     try {
       setSubmitting(true)
@@ -411,6 +412,7 @@ const BalancesTable = ({
                               onClick={() =>
                                 handleOpenWithdrawModal(balance.symbol)
                               }
+                              disabled={!canWithdraw}
                             >
                               {t('withdraw')}
                             </Button>

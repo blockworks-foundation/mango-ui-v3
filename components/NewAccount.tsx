@@ -198,7 +198,7 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
         <Button
           disabled={
             parseFloat(inputAmount) <= 0 ||
-            parseFloat(inputAmount) > selectedAccount.uiBalance
+            parseFloat(inputAmount) > selectedAccount?.uiBalance
           }
           onClick={handleNewAccountDeposit}
           className="w-full"
