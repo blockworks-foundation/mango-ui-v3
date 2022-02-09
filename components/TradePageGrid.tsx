@@ -19,6 +19,8 @@ import useMangoStore from '../stores/useMangoStore'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import { useViewport } from '../hooks/useViewport'
 import MarketDetails from './MarketDetails'
+import useInterval from '../hooks/useInterval'
+import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
 
 const ResponsiveGridLayout = WidthProvider(Responsive)
 
@@ -63,6 +65,7 @@ export const defaultLayouts = {
 
 export const GRID_LAYOUT_KEY = 'mangoSavedLayouts-3.1.6'
 export const breakpoints = { xl: 1600, lg: 1280, md: 1024, sm: 768 }
+const SECONDS = 1000
 
 const getCurrentBreakpoint = () => {
   return Responsive.utils.getBreakpointFromWidth(
@@ -79,6 +82,9 @@ const TradePageGrid = () => {
   )
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
+  const actions = useMangoStore((s) => s.actions)
+  const groupConfig = useMangoGroupConfig()
+  const markets = [...groupConfig.spotMarkets, ...groupConfig.perpMarkets]
 
   const onLayoutChange = (layouts) => {
     if (layouts) {
@@ -94,6 +100,7 @@ const TradePageGrid = () => {
   const [orderbookDepth, setOrderbookDepth] = useState(10)
   const [currentBreakpoint, setCurrentBreakpoint] = useState(null)
   const [mounted, setMounted] = useState(false)
+  const [trigger, setTrigger] = useState(true)
 
   useEffect(() => {
     const adjustOrderBook = (layouts, breakpoint?: string | null) => {
@@ -110,6 +117,21 @@ const TradePageGrid = () => {
   }, [currentBreakpoint, savedLayouts])
 
   useEffect(() => setMounted(true), [])
+
+  useInterval(() => {
+    setTrigger(true)
+  }, 120 * SECONDS)
+
+  if (trigger) {
+    actions.fetchMarketInfo(markets)
+  }
+
+  useEffect(() => {
+    if (trigger) {
+      setTrigger(false)
+    }
+  }, [trigger])
+
   if (!mounted) return null
 
   return !isMobile ? (

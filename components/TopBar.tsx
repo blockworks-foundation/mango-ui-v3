@@ -37,7 +37,7 @@ const TopBar = () => {
   return (
     <>
       <nav className={`bg-th-bkg-2`}>
-        <div className={`px-4 lg:px-10`}>
+        <div className={`px-4 xl:px-6`}>
           <div className={`flex justify-between h-14`}>
             <div className={`flex`}>
               <Link href={defaultMarket.path} shallow={true}>

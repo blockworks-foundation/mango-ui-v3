@@ -1,19 +1,14 @@
 import { Fragment, FunctionComponent, useEffect, useRef, useState } from 'react'
 import { Popover, Transition } from '@headlessui/react'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
-import { StarIcon, QuestionMarkCircleIcon } from '@heroicons/react/outline'
+import { StarIcon } from '@heroicons/react/outline'
 import {
   ChevronDownIcon,
   StarIcon as FilledStarIcon,
 } from '@heroicons/react/solid'
 import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
-import * as MonoIcons from './icons'
-import { initialMarket } from './SettingsModal'
 import useLocalStorageState from '../hooks/useLocalStorageState'
-import { getWeights } from '@blockworks-foundation/mango-client'
-import useMangoStore from '../stores/useMangoStore'
+import MarketNavItem from './MarketNavItem'
 
 const initialMenuCategories = [
   { name: 'Spot', desc: 'spot-desc' },
@@ -29,9 +24,7 @@ const TradeNavMenu = () => {
   const [openState, setOpenState] = useState(false)
   const buttonRef = useRef(null)
   const groupConfig = useMangoGroupConfig()
-  const { asPath } = useRouter()
   const { t } = useTranslation('common')
-  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
 
   let timeout
   const timeoutDuration = 200
@@ -45,15 +38,6 @@ const TradeNavMenu = () => {
 
   const handleMenuCategoryChange = (categoryName) => {
     setActiveMenuCategory(categoryName)
-  }
-
-  const renderIcon = (symbol) => {
-    const iconName = `${symbol.slice(0, 1)}${symbol
-      .slice(1, 4)
-      .toLowerCase()}MonoIcon`
-
-    const SymbolIcon = MonoIcons[iconName] || QuestionMarkCircleIcon
-    return <SymbolIcon className={`h-3.5 w-auto mr-2`} />
   }
 
   const toggleMenu = () => {
@@ -110,15 +94,6 @@ const TradeNavMenu = () => {
     }
   }, [favoriteMarkets])
 
-  const getMarketLeverage = (market) => {
-    if (!mangoGroup) return 1
-    const ws = getWeights(mangoGroup, market.marketIndex, 'Init')
-    const w = market.name.includes('PERP')
-      ? ws.perpAssetWeight
-      : ws.spotAssetWeight
-    return Math.round((100 * -1) / (w.toNumber() - 1)) / 100
-  }
-
   return (
     <Popover>
       {({ open }) => (
@@ -166,36 +141,9 @@ const TradeNavMenu = () => {
                 />
               </div>
               <div className="bg-th-bkg-3 col-span-2 p-4 rounded-br-lg">
-                <div className="grid grid-cols-2 grid-flow-row gap-x-4 gap-y-2.5">
+                <div className="grid grid-cols-2 grid-flow-row gap-x-6 gap-y-2.5">
                   {markets.map((mkt) => (
-                    <div className="col-span-1 text-th-fgd-3" key={mkt.name}>
-                      <div className="flex items-center justify-between">
-                        <Link
-                          href={{
-                            pathname: '/',
-                            query: { name: mkt.name },
-                          }}
-                          shallow={true}
-                        >
-                          <a
-                            className={`flex items-center text-xs hover:text-th-primary w-full whitespace-nowrap ${
-                              asPath.includes(mkt.name) ||
-                              (asPath === '/' &&
-                                initialMarket.name === mkt.name)
-                                ? 'text-th-primary'
-                                : 'text-th-fgd-1'
-                            }`}
-                          >
-                            {renderIcon(mkt.baseSymbol)}
-                            {mkt.name}
-                            <span className="ml-1.5 text-xs text-th-fgd-4">
-                              {getMarketLeverage(mkt)}x
-                            </span>
-                          </a>
-                        </Link>
-                        <FavoriteMarketButton market={mkt} />
-                      </div>
-                    </div>
+                    <MarketNavItem market={mkt} key={mkt.name} />
                   ))}
                 </div>
               </div>

@@ -96,13 +96,13 @@ const ConnectWalletButton = () => {
         </Menu>
       ) : (
         <div
-          className="bg-th-bkg-4 h-14 flex divide-x divide-th-bkg-3 justify-between"
+          className="h-14 flex divide-x divide-th-bkg-3 justify-between"
           id="connect-wallet-tip"
         >
           <button
             onClick={handleWalletConect}
             disabled={!wallet || !mangoGroup}
-            className="rounded-none text-th-primary hover:bg-th-bkg-4 focus:outline-none disabled:text-th-fgd-4 disabled:cursor-wait"
+            className="bg-th-bkg-4 rounded-none text-th-primary hover:brightness-[1.15] focus:outline-none disabled:text-th-fgd-4 disabled:cursor-wait"
           >
             <div className="flex flex-row items-center px-3 justify-center h-full default-transition hover:text-th-fgd-1">
               <WalletIcon className="w-4 h-4 mr-2 fill-current" />

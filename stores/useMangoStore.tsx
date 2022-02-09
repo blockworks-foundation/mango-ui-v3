@@ -24,7 +24,7 @@ import {
 } from '@blockworks-foundation/mango-client'
 import { AccountInfo, Commitment, Connection, PublicKey } from '@solana/web3.js'
 import { EndpointInfo, WalletAdapter } from '../@types/types'
-import { isDefined, zipDict } from '../utils'
+import { isDefined, patchInternalMarketName, zipDict } from '../utils'
 import { Notification, notify } from '../utils/notifications'
 import { LAST_ACCOUNT_KEY } from '../components/AccountsModal'
 import {
@@ -76,6 +76,8 @@ export const MNGO_INDEX = defaultMangoGroupIds.oracles.findIndex(
 export const programId = new PublicKey(defaultMangoGroupIds.mangoProgramId)
 export const serumProgramId = new PublicKey(defaultMangoGroupIds.serumProgramId)
 const mangoGroupPk = new PublicKey(defaultMangoGroupIds.publicKey)
+
+export const SECONDS = 1000
 
 // Used to retry loading the MangoGroup and MangoAccount if an rpc node error occurs
 let mangoGroupRetryAttempt = 0
@@ -210,6 +212,7 @@ export interface MangoStore extends State {
     submitting: boolean
     success: string
   }
+  marketInfo: any[]
 }
 
 const useMangoStore = create<MangoStore>((set, get) => {
@@ -225,6 +228,7 @@ const useMangoStore = create<MangoStore>((set, get) => {
 
   const connection = new Connection(rpcUrl, 'processed' as Commitment)
   return {
+    marketInfo: [],
     notificationIdCounter: 0,
     notifications: [],
     accountInfos: {},
@@ -807,6 +811,24 @@ const useMangoStore = create<MangoStore>((set, get) => {
             state.alerts.loading = false
           })
         }
+      },
+      async fetchMarketInfo(markets) {
+        const set = get().set
+        const marketInfos = []
+        await Promise.all(
+          markets.map(async (market) => {
+            const response = await fetch(
+              `https://event-history-api-candles.herokuapp.com/markets/${patchInternalMarketName(
+                market.name
+              )}`
+            )
+            const parsedResponse = await response.json()
+            marketInfos.push(parsedResponse)
+          })
+        )
+        set((state) => {
+          state.marketInfo = marketInfos
+        })
       },
     },
   }
