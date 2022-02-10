@@ -345,7 +345,7 @@ const BalancesTable = ({
                 </thead>
                 <tbody>
                   {items.map((balance, index) => (
-                    <TrBody index={index} key={`${balance.symbol}${index}`}>
+                    <TrBody key={`${balance.symbol}${index}`}>
                       <Td>
                         <div className="flex items-center">
                           <img

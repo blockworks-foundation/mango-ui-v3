@@ -79,7 +79,7 @@ const DesktopTable = ({
           const decimals = getDecimalCount(market.account.tickSize)
           const editThisOrder = editOrderIndex === index
           return (
-            <TrBody index={index} key={`${order.orderId}${order.side}`}>
+            <TrBody key={`${order.orderId}${order.side}`}>
               <Td className="w-[14.286%]">
                 <div className="flex items-center">
                   <img
