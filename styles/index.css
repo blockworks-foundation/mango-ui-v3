@@ -83,7 +83,7 @@ p {
 }
 
 a {
-  @apply text-th-primary transition-all duration-300 hover:text-th-primary-dark;
+  @apply text-th-primary hover:text-th-primary-dark;
 }
 
 button {

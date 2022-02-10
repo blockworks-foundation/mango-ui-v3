@@ -38,7 +38,7 @@ export default function MarketMenuItem({ menuTitle = '', linksArray = [] }) {
         className="cursor-pointer flex flex-col h-10 px-3"
       >
         <div
-          className={`default-transition flex items-center h-10 text-th-fgd-3 hover:text-th-primary focus:outline-none ${
+          className={`flex items-center h-10 text-th-fgd-3 hover:text-th-primary focus:outline-none ${
             isSelected ? 'text-th-primary' : ''
           }`}
         >
