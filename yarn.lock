@@ -2215,6 +2215,16 @@
     cross-fetch "^3.1.4"
     jdenticon "^3.1.1"
 
+"@solflare-wallet/sdk@^1.0.10":
+  version "1.0.10"
+  resolved "https://registry.yarnpkg.com/@solflare-wallet/sdk/-/sdk-1.0.10.tgz#336e57f5987431a40b7e9308635153a61a8b8d94"
+  integrity sha512-ym9PbKgozXUP8VYzqM1NKJp6x/HR4aI9YY0GMPqjhezCVuQ9dctp6zZ2RSMnjdh7evcYKgPdp6XgI36yhR3w6w==
+  dependencies:
+    "@project-serum/sol-wallet-adapter" "0.2.0"
+    bs58 "^4.0.1"
+    eventemitter3 "^4.0.7"
+    uuid "^8.3.2"
+
 "@svgr/babel-plugin-add-jsx-attribute@^6.0.0":
   version "6.0.0"
   resolved "https://registry.yarnpkg.com/@svgr/babel-plugin-add-jsx-attribute/-/babel-plugin-add-jsx-attribute-6.0.0.tgz#bd6d1ff32a31b82b601e73672a789cc41e84fe18"
