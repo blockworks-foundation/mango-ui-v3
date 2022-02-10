@@ -88,7 +88,7 @@ a {
 
 button {
   transition: all 0.3s ease;
-  @apply font-semibold rounded-md tracking-wider;
+  @apply rounded-md tracking-wider;
 }
 
 button.transition-none {
