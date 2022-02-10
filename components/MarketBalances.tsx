@@ -39,7 +39,7 @@ export default function MarketBalances() {
       const baseSize = Math.floor(size / priceOrDefault / step) * step
       setMangoStore((state) => {
         state.tradeForm.baseSize = baseSize
-        state.tradeForm.quoteSize = (baseSize * priceOrDefault).toFixed(2)
+        state.tradeForm.quoteSize = baseSize * priceOrDefault
         state.tradeForm.side = 'buy'
       })
     } else {
@@ -47,7 +47,7 @@ export default function MarketBalances() {
       const quoteSize = roundedSize * priceOrDefault
       setMangoStore((state) => {
         state.tradeForm.baseSize = roundedSize
-        state.tradeForm.quoteSize = quoteSize.toFixed(2)
+        state.tradeForm.quoteSize = quoteSize
         state.tradeForm.side = 'sell'
       })
     }

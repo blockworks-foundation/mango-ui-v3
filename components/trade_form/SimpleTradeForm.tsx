@@ -123,9 +123,9 @@ export default function SimpleTradeForm({ initLeverage }) {
   const setTriggerPrice = (price) =>
     set((s) => {
       if (!Number.isNaN(parseFloat(price))) {
-        s.tradeForm.tripperPrice = parseFloat(price)
+        s.tradeForm.triggerPrice = parseFloat(price)
       } else {
-        s.tradeForm.tripperPrice = price
+        s.tradeForm.triggerPrice = price
       }
     })
 

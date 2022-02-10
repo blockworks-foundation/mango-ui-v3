@@ -47,7 +47,7 @@ const PositionsTable = () => {
     const quoteSize = roundedSize * priceOrDefault
     setMangoStore((state) => {
       state.tradeForm.baseSize = roundedSize
-      state.tradeForm.quoteSize = quoteSize.toFixed(2)
+      state.tradeForm.quoteSize = quoteSize
       state.tradeForm.side = side === 'buy' ? 'sell' : 'buy'
     })
   }
