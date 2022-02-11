@@ -114,8 +114,9 @@ export default function Referral() {
   }, [hasCopied])
 
   const onChangeRefIdInput = (value) => {
-    setCustomRefLinkInput(value)
-    if (customRefLinkInput.length > 32) {
+    const id = value.replace(/ /g, '')
+    setCustomRefLinkInput(id)
+    if (id.length > 32) {
       setInputError('Referral IDs must be less then 33 characters')
     } else {
       setInputError('')
