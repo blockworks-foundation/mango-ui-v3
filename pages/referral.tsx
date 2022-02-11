@@ -320,7 +320,7 @@ export default function Referral() {
                           )}
                         </div>
                       ) : (
-                        <div className="bg-th-bkg-3 flex flex-col flex-1 items-center justify-center rounded-md">
+                        <div className="bg-th-bkg-3 flex flex-col flex-1 items-center justify-center py-8 rounded-md">
                           <MngoMonoIcon className="h-6 mb-2 text-th-fgd-2 w-6" />
                           <p className="mb-0">
                             You need 10,000 MNGO in your Mango Account
