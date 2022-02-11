@@ -155,7 +155,8 @@ export default function Referral() {
           </h1>
           <div className="flex flex-col sm:flex-row items-start">
             <p className="mb-0 mr-2 text-th-fgd-1">
-              Earn 20% of the perp trading fees paid by anyone you refer.
+              Earn 20% of the perp fees paid by anyone you refer. Plus, they get
+              a 5% perp fee discount.
             </p>
             <LinkButton
               className="mt-1 sm:mt-0"
