@@ -35,6 +35,8 @@ import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from '../components/TradePageGrid'
 import { ExpandableRow } from '../components/TableElements'
 import MobileTableHeader from '../components/mobile/MobileTableHeader'
+import Input from '../components/Input'
+import InlineNotification from '../components/InlineNotification'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -83,6 +85,7 @@ export default function Referral() {
   const [showAccountsModal, setShowAccountsModal] = useState(false)
   const [hasReferrals] = useState(true) // Placeholder to show/hide users referral stats
   const [loading, setLoading] = useState(false)
+  const [inputError, setInputError] = useState('')
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
 
@@ -110,26 +113,46 @@ export default function Referral() {
     }
   }, [hasCopied])
 
-  const submitRefLink = async () => {
-    try {
-      const txid = await client.registerReferrerId(
-        mangoGroup,
-        mangoAccount,
-        wallet,
-        customRefLinkInput
-      )
-      notify({
-        txid,
-        title: 'Custom referal link created',
-      })
-    } catch (e) {
-      notify({
-        type: 'error',
-        title: 'Unable to create referral link',
-        description: e.message,
-        txid: e.txid,
-      })
+  const onChangeRefIdInput = (value) => {
+    setCustomRefLinkInput(value)
+    if (customRefLinkInput.length > 32) {
+      setInputError('Referral IDs must be less then 33 characters')
+    } else {
+      setInputError('')
     }
+  }
+
+  const validateRefIdInput = () => {
+    if (customRefLinkInput.length >= 33) {
+      setInputError('Referral IDs must be less then 33 characters')
+    }
+    if (customRefLinkInput.length === 0) {
+      setInputError('Enter a referral ID')
+    }
+  }
+
+  const submitRefLink = async () => {
+    if (!inputError) {
+      try {
+        const txid = await client.registerReferrerId(
+          mangoGroup,
+          mangoAccount,
+          wallet,
+          customRefLinkInput
+        )
+        notify({
+          txid,
+          title: 'Custom referal link created',
+        })
+      } catch (e) {
+        notify({
+          type: 'error',
+          title: 'Unable to create referral link',
+          description: e.message,
+          txid: e.txid,
+        })
+      }
+    } else return
   }
 
   const handleCopyLink = (link, index) => {
@@ -339,15 +362,23 @@ export default function Referral() {
                           <label className="block mb-2 text-th-fgd-3 text-xs">
                             Referral ID
                           </label>
-                          <input
+                          <Input
                             className="bg-th-bkg-1 border border-th-fgd-4 default-transition font-bold pl-4 h-12 focus:outline-none rounded-md text-base tracking-wide w-full hover:border-th-primary focus:border-th-primary"
+                            error={!!inputError}
                             type="text"
                             placeholder="ElonMusk"
-                            onChange={(e) =>
-                              setCustomRefLinkInput(e.target.value)
-                            }
+                            onBlur={validateRefIdInput}
+                            onChange={(e) => onChangeRefIdInput(e.target.value)}
                             value={customRefLinkInput}
                           />
+                          {inputError ? (
+                            <div className="pt-2">
+                              <InlineNotification
+                                type="error"
+                                desc={inputError}
+                              />
+                            </div>
+                          ) : null}
                         </div>
                         <button
                           className="bg-th-primary flex items-center justify-center text-th-bkg-1 text-sm px-4 py-2 rounded-full hover:brightness-[1.15] focus:outline-none disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:cursor-not-allowed disabled:hover:brightness-100"
