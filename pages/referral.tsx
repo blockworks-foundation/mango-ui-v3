@@ -11,7 +11,7 @@ import {
   walletSelector,
 } from '../stores/selectors'
 import { IconButton, LinkButton } from '../components/Button'
-import { copyToClipboard } from '../utils'
+import { abbreviateAddress, copyToClipboard } from '../utils'
 import { notify } from '../utils/notifications'
 import {
   getMarketIndexBySymbol,
@@ -31,6 +31,10 @@ import Modal from '../components/Modal'
 import { Table, Td, Th, TrBody, TrHead } from '../components/TableElements'
 import dayjs from 'dayjs'
 import AccountsModal from '../components/AccountsModal'
+import { useViewport } from '../hooks/useViewport'
+import { breakpoints } from '../components/TradePageGrid'
+import { ExpandableRow } from '../components/TableElements'
+import MobileTableHeader from '../components/mobile/MobileTableHeader'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -79,6 +83,8 @@ export default function Referral() {
   const [showAccountsModal, setShowAccountsModal] = useState(false)
   const [hasReferrals] = useState(true) // Placeholder to show/hide users referral stats
   const [loading, setLoading] = useState(false)
+  const { width } = useViewport()
+  const isMobile = width ? width < breakpoints.sm : false
 
   const fetchCustomReferralLinks = useCallback(async () => {
     setLoading(true)
@@ -147,11 +153,14 @@ export default function Referral() {
           <h1 className={`mb-1 text-th-fgd-1 text-2xl font-semibold`}>
             Sow the Mango Seed
           </h1>
-          <div className="flex">
+          <div className="flex flex-col sm:flex-row items-start">
             <p className="mb-0 mr-2 text-th-fgd-1">
               Earn 20% of the perp trading fees paid by anyone you refer.
             </p>
-            <LinkButton onClick={() => setShowMoreInfoModal(true)}>
+            <LinkButton
+              className="mt-1 sm:mt-0"
+              onClick={() => setShowMoreInfoModal(true)}
+            >
               More Info
             </LinkButton>
           </div>
@@ -163,8 +172,8 @@ export default function Referral() {
                 {hasReferrals ? (
                   <div className="col-span-12">
                     <h2 className="mb-4">Your Referrals</h2>
-                    <div className="grid grid-cols-2 grid-row-flow gap-6">
-                      <div className="border-b border-t border-th-bkg-4 col-span-1 p-3 sm:p-4">
+                    <div className="border-b border-th-bkg-4 sm:border-b-0 grid grid-cols-2 grid-row-flow sm:gap-6">
+                      <div className="sm:border-b border-t border-th-bkg-4 col-span-2 sm:col-span-1 p-3 sm:p-4">
                         <div className="pb-0.5 text-th-fgd-3 text-xs sm:text-sm">
                           Total Earnings
                         </div>
@@ -172,7 +181,7 @@ export default function Referral() {
                           $150.50
                         </div>
                       </div>
-                      <div className="border-b border-t border-th-bkg-4 col-span-1 p-3 sm:p-4">
+                      <div className="sm:border-b border-t border-th-bkg-4 col-span-2 sm:col-span-1 p-3 sm:p-4">
                         <div className="pb-0.5 text-th-fgd-3 text-xs sm:text-sm">
                           Total referrals
                         </div>
@@ -184,37 +193,7 @@ export default function Referral() {
                   </div>
                 ) : null}
                 <div className="col-span-12">
-                  <div className="flex space-x-6 w-full">
-                    {hasCustomRefLinks && existingCustomRefLinks.length < 5 ? (
-                      <div className="bg-th-bkg-3 p-6 rounded-md w-1/3">
-                        <h2 className="mb-1">Custom Referral ID</h2>
-                        <p className="mb-4">
-                          You can generate up to 5 custom IDs
-                        </p>
-                        <div className="pb-6">
-                          <label className="block mb-2 text-th-fgd-3 text-xs">
-                            Referral ID
-                          </label>
-                          <input
-                            className="bg-th-bkg-1 border border-th-fgd-4 default-transition font-bold pl-4 h-12 focus:outline-none rounded-md text-base tracking-wide w-full hover:border-th-primary focus:border-th-primary"
-                            type="text"
-                            placeholder="ElonMusk"
-                            onChange={(e) =>
-                              setCustomRefLinkInput(e.target.value)
-                            }
-                            value={customRefLinkInput}
-                          />
-                        </div>
-                        <button
-                          className="bg-th-primary flex items-center justify-center text-th-bkg-1 text-sm px-4 py-2 rounded-full hover:brightness-[1.15] focus:outline-none disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:cursor-not-allowed disabled:hover:brightness-100"
-                          onClick={submitRefLink}
-                        >
-                          <LinkIcon className="h-4 mr-1.5 w-4" />
-                          Generate Referral ID
-                        </button>
-                      </div>
-                    ) : null}
-
+                  <div className="flex flex-col lg:flex-row lg:space-x-6 space-y-4 lg:space-y-0 w-full">
                     <div className="flex flex-col w-full">
                       <div className="flex items-center justify-between"></div>
                       {hasRequiredMngo ? (
@@ -226,14 +205,25 @@ export default function Referral() {
                                 <thead>
                                   <TrHead>
                                     <Th>Link</Th>
-                                    <Th>Copy</Th>
+                                    <Th>Copy Link</Th>
                                   </TrHead>
                                 </thead>
                                 <tbody>
                                   <TrBody>
                                     <Td>
-                                      https://trade.mango.markets?ref=
-                                      {mangoAccount.publicKey.toString()}
+                                      <div className="flex items-center">
+                                        {!isMobile ? (
+                                          <LinkIcon className="h-4 mr-1.5 w-4" />
+                                        ) : null}
+                                        <p className="mb-0 text-th-fgd-1">
+                                          {isMobile
+                                            ? abbreviateAddress(
+                                                mangoAccount.publicKey
+                                              )
+                                            : `https://trade.mango.markets?ref=
+                                      ${mangoAccount.publicKey.toString()}`}
+                                        </p>
+                                      </div>
                                     </Td>
                                     {/* <Td>5</Td> */}
                                     <Td className="flex items-center justify-end">
@@ -266,7 +256,7 @@ export default function Referral() {
                                     <Th>Link</Th>
                                     <Th>
                                       <div className="flex justify-end">
-                                        Copy
+                                        Copy Link
                                       </div>
                                     </Th>
                                   </TrHead>
@@ -277,9 +267,13 @@ export default function Referral() {
                                       <TrBody key={customRefs.referrerId}>
                                         <Td>
                                           <div className="flex items-center">
-                                            <LinkIcon className="h-4 mr-1.5 w-4" />
+                                            {!isMobile ? (
+                                              <LinkIcon className="h-4 mr-1.5 w-4" />
+                                            ) : null}
                                             <p className="mb-0 text-th-fgd-1">
-                                              {`https://trade.mango.markets?ref=${customRefs.referrerId}`}
+                                              {isMobile
+                                                ? customRefs.referrerId
+                                                : `https://trade.mango.markets?ref=${customRefs.referrerId}`}
                                             </p>
                                           </div>
                                         </Td>
@@ -320,7 +314,7 @@ export default function Referral() {
                           )}
                         </div>
                       ) : (
-                        <div className="bg-th-bkg-3 flex flex-col flex-1 items-center justify-center py-8 rounded-md">
+                        <div className="bg-th-bkg-3 flex flex-col flex-1 items-center justify-center px-4 py-8 rounded-md text-center">
                           <MngoMonoIcon className="h-6 mb-2 text-th-fgd-2 w-6" />
                           <p className="mb-0">
                             You need 10,000 MNGO in your Mango Account
@@ -334,47 +328,126 @@ export default function Referral() {
                         </div>
                       )}
                     </div>
+                    {hasCustomRefLinks && existingCustomRefLinks.length < 5 ? (
+                      <div className="bg-th-bkg-3 p-6 rounded-md w-full lg:w-1/3">
+                        <h2 className="mb-1">Custom Referral ID</h2>
+                        <p className="mb-4">
+                          You can generate up to 5 custom IDs
+                        </p>
+                        <div className="pb-6">
+                          <label className="block mb-2 text-th-fgd-3 text-xs">
+                            Referral ID
+                          </label>
+                          <input
+                            className="bg-th-bkg-1 border border-th-fgd-4 default-transition font-bold pl-4 h-12 focus:outline-none rounded-md text-base tracking-wide w-full hover:border-th-primary focus:border-th-primary"
+                            type="text"
+                            placeholder="ElonMusk"
+                            onChange={(e) =>
+                              setCustomRefLinkInput(e.target.value)
+                            }
+                            value={customRefLinkInput}
+                          />
+                        </div>
+                        <button
+                          className="bg-th-primary flex items-center justify-center text-th-bkg-1 text-sm px-4 py-2 rounded-full hover:brightness-[1.15] focus:outline-none disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:cursor-not-allowed disabled:hover:brightness-100"
+                          onClick={submitRefLink}
+                        >
+                          <LinkIcon className="h-4 mr-1.5 w-4" />
+                          Generate ID
+                        </button>
+                      </div>
+                    ) : null}
                   </div>
                 </div>
 
                 {referralHistory.length > 0 ? (
                   <div className="col-span-12">
-                    <h2 className="mb-4">{t('history')}</h2>
-                    <Table>
-                      <thead>
-                        <TrHead>
-                          <Th>{t('date')}</Th>
-                          <Th>Referral ID</Th>
-                          <Th>Referee</Th>
-                          <Th>
-                            <div className="flex justify-end">Fee Earned</div>
-                          </Th>
-                        </TrHead>
-                      </thead>
-                      <tbody>
+                    <h2 className="mb-4">Earnings History</h2>
+                    {!isMobile ? (
+                      <Table>
+                        <thead>
+                          <TrHead>
+                            <Th>{t('date')}</Th>
+                            <Th>Referral ID</Th>
+                            <Th>Referee</Th>
+                            <Th>
+                              <div className="flex justify-end">Fee Earned</div>
+                            </Th>
+                          </TrHead>
+                        </thead>
+                        <tbody>
+                          {referralHistory.map((ref, index) => (
+                            <TrBody key={ref.fee + index}>
+                              <Td>
+                                {dayjs(ref.time).format('DD MMM YYYY h:mma')}
+                              </Td>
+                              <Td>{ref.referralLink}</Td>
+                              <Td>
+                                <Link
+                                  href={`/account?pubkey=${ref.referee}`}
+                                  shallow={true}
+                                >
+                                  <a className="text-th-fgd-2 underline hover:no-underline hover:text-th-fgd-3">
+                                    {abbreviateAddress(mangoAccount.publicKey)}
+                                  </a>
+                                </Link>
+                              </Td>
+                              <Td className="flex items-center justify-end">
+                                ${ref.fee}
+                              </Td>
+                            </TrBody>
+                          ))}
+                        </tbody>
+                      </Table>
+                    ) : (
+                      <>
+                        <MobileTableHeader
+                          colOneHeader={t('date')}
+                          colTwoHeader="Fee Earned"
+                        />
                         {referralHistory.map((ref, index) => (
-                          <TrBody key={ref.fee + index}>
-                            <Td>
-                              {dayjs(ref.time).format('DD MMM YYYY h:mma')}
-                            </Td>
-                            <Td>{ref.referralLink}</Td>
-                            <Td>
-                              <Link
-                                href={`/account?pubkey=${ref.referee}`}
-                                shallow={true}
-                              >
-                                <a className="text-th-fgd-2 underline hover:no-underline hover:text-th-fgd-3">
-                                  {ref.referee}
-                                </a>
-                              </Link>
-                            </Td>
-                            <Td className="flex items-center justify-end">
-                              ${ref.fee}
-                            </Td>
-                          </TrBody>
+                          <ExpandableRow
+                            buttonTemplate={
+                              <div className="flex items-center justify-between text-th-fgd-1 w-full">
+                                <div>
+                                  {dayjs(ref.time).format('DD MMM YYYY h:mma')}
+                                </div>
+                                <div className="text-right">${ref.fee}</div>
+                              </div>
+                            }
+                            key={`${ref.fee + index}`}
+                            index={index}
+                            panelTemplate={
+                              <>
+                                <div className="grid grid-cols-2 grid-flow-row gap-4 pb-4">
+                                  <div className="text-left">
+                                    <div className="pb-0.5 text-th-fgd-3 text-xs">
+                                      Referral ID
+                                    </div>
+                                    <div>{ref.referralLink}</div>
+                                  </div>
+                                  <div className="text-left">
+                                    <div className="pb-0.5 text-th-fgd-3 text-xs">
+                                      Referee
+                                    </div>
+                                    <Link
+                                      href={`/account?pubkey=${ref.referee}`}
+                                      shallow={true}
+                                    >
+                                      <a className="text-th-fgd-2 underline hover:no-underline hover:text-th-fgd-3">
+                                        {abbreviateAddress(
+                                          mangoAccount.publicKey
+                                        )}
+                                      </a>
+                                    </Link>
+                                  </div>
+                                </div>
+                              </>
+                            }
+                          />
                         ))}
-                      </tbody>
-                    </Table>
+                      </>
+                    )}
                   </div>
                 ) : null}
               </>

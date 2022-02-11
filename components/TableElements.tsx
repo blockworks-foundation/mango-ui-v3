@@ -1,5 +1,5 @@
 import { Disclosure } from '@headlessui/react'
-import { ChevronDownIcon } from '@heroicons/react/outline'
+import { ChevronDownIcon } from '@heroicons/react/solid'
 import { ReactNode } from 'hoist-non-react-statics/node_modules/@types/react'
 
 export const Table = ({ children }) => (
