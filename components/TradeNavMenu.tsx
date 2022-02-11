@@ -21,13 +21,9 @@ const TradeNavMenu = () => {
   const [favoriteMarkets] = useLocalStorageState(FAVORITE_MARKETS_KEY, [])
   const [activeMenuCategory, setActiveMenuCategory] = useState('Spot')
   const [menuCategories, setMenuCategories] = useState(initialMenuCategories)
-  const [openState, setOpenState] = useState(false)
   const buttonRef = useRef(null)
   const groupConfig = useMangoGroupConfig()
   const { t } = useTranslation('common')
-
-  let timeout
-  const timeoutDuration = 200
 
   const markets =
     activeMenuCategory === 'Favorites'
@@ -41,7 +37,6 @@ const TradeNavMenu = () => {
   }
 
   const toggleMenu = () => {
-    setOpenState((openState) => !openState)
     buttonRef?.current?.click()
     if (favoriteMarkets.length > 0) {
       setActiveMenuCategory('Favorites')
@@ -50,18 +45,12 @@ const TradeNavMenu = () => {
     }
   }
 
-  const handleClick = (open) => {
-    setOpenState(!open)
-    clearTimeout(timeout)
-  }
-
   const onHoverMenu = (open, action) => {
     if (
-      (!open && !openState && action === 'onMouseEnter') ||
-      (open && openState && action === 'onMouseLeave')
+      (!open && action === 'onMouseEnter') ||
+      (open && action === 'onMouseLeave')
     ) {
-      clearTimeout(timeout)
-      timeout = setTimeout(() => toggleMenu(), timeoutDuration)
+      toggleMenu()
     }
   }
 
@@ -110,7 +99,6 @@ const TradeNavMenu = () => {
           >
             <div
               className={`flex h-14 items-center rounded-none hover:text-th-primary`}
-              onClick={() => handleClick(open)}
             >
               <span>{t('trade')}</span>
               <ChevronDownIcon
@@ -120,7 +108,6 @@ const TradeNavMenu = () => {
               />
             </div>
           </Popover.Button>
-
           <Transition
             appear={true}
             show={open}
@@ -143,7 +130,11 @@ const TradeNavMenu = () => {
               <div className="bg-th-bkg-3 col-span-2 p-4 rounded-br-lg">
                 <div className="grid grid-cols-2 grid-flow-row gap-x-6 gap-y-2.5">
                   {markets.map((mkt) => (
-                    <MarketNavItem market={mkt} key={mkt.name} />
+                    <MarketNavItem
+                      buttonRef={buttonRef}
+                      market={mkt}
+                      key={mkt.name}
+                    />
                   ))}
                 </div>
               </div>
@@ -187,13 +178,12 @@ const MenuCategories: FunctionComponent<MenuCategoriesProps> = ({
             key={cat.name}
             onClick={() => onChange(cat.name)}
             onMouseEnter={() => onChange(cat.name)}
-            className={`cursor-pointer default-transition flex flex-col h-14 justify-center px-4 relative rounded-none w-full whitespace-nowrap hover:bg-th-bkg-3
-                      ${
-                        activeCategory === cat.name
-                          ? `bg-th-bkg-3 text-th-primary`
-                          : `text-th-fgd-2 hover:text-th-primary`
-                      }
-                    `}
+            className={`cursor-pointer default-transition flex flex-col h-14 justify-center px-4 relative rounded-none w-full whitespace-nowrap hover:bg-th-bkg-3 ${
+              activeCategory === cat.name
+                ? `bg-th-bkg-3 text-th-primary`
+                : `text-th-fgd-2 hover:text-th-primary`
+            }
+          `}
           >
             {t(cat.name.toLowerCase().replace(' ', '-'))}
             <div className="text-th-fgd-4 text-xs">{t(cat.desc)}</div>

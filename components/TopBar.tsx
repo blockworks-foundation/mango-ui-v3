@@ -54,7 +54,6 @@ const TopBar = () => {
               <div
                 className={`hidden md:flex md:items-center md:space-x-4 lg:space-x-6 md:ml-4`}
               >
-                {/* <MenuItem href={defaultMarket.path}>{t('trade')}</MenuItem> */}
                 <TradeNavMenu />
                 <MenuItem href="/swap">{t('swap')}</MenuItem>
                 <MenuItem href="/account">{t('account')}</MenuItem>
@@ -134,7 +133,7 @@ const TopBar = () => {
                 </div>
               ) : null}
               <div className="flex">
-                <div className="pl-2">
+                <div className="pl-4">
                   <ConnectWalletButton />
                 </div>
               </div>

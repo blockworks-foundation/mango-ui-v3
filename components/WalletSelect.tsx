@@ -4,7 +4,7 @@ import { ChevronDownIcon } from '@heroicons/react/solid'
 import useMangoStore from '../stores/useMangoStore'
 import { WALLET_PROVIDERS } from '../utils/wallet-adapters'
 
-export default function WalletSelect({ isPrimary = false }) {
+export default function WalletSelect() {
   const setMangoStore = useMangoStore((s) => s.set)
 
   const handleSelectProvider = (url) => {
@@ -18,14 +18,10 @@ export default function WalletSelect({ isPrimary = false }) {
       {({ open }) => (
         <>
           <Menu.Button
-            className={`bg-th-bkg-4 flex justify-center items-center h-full rounded-none focus:outline-none text-th-primary hover:brightness-[1.15] hover:text-th-fgd-1 ${
-              isPrimary
-                ? 'px-3 hover:bg-th-bkg-4'
-                : 'px-2 hover:bg-th-bkg-4 border-l border-th-fgd-4'
-            } cursor-pointer`}
+            className={`bg-th-primary flex justify-center items-center h-full rounded-none focus:outline-none text-th-bkg-1 hover:brightness-[1.15] hover:text-th-bkg-1 hover:bg-th-primary cursor-pointer w-10`}
           >
             <ChevronDownIcon
-              className={`default-transition h-4 w-4 ${
+              className={`default-transition h-5 w-5 ${
                 open ? 'transform rotate-180' : 'transform rotate-360'
               }`}
             />
@@ -41,7 +37,7 @@ export default function WalletSelect({ isPrimary = false }) {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Menu.Items className="absolute bg-th-bkg-1 divide-y divide-th-bkg-3 p-1 rounded-md right-0.5 mt-1 shadow-lg outline-none w-36 z-20">
+            <Menu.Items className="absolute bg-th-bkg-1 divide-y divide-th-bkg-3 rounded-md right-0 mt-1 shadow-lg outline-none w-44 z-20">
               {WALLET_PROVIDERS.map(({ name, url, icon }) => (
                 <Menu.Item key={name}>
                   <button
