@@ -40,7 +40,7 @@ export const LinkButton: FunctionComponent<ButtonProps> = ({
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`${className} border-0 underline hover:no-underline hover:opacity-60 focus:outline-none`}
+      className={`${className} border-0 underline hover:no-underline hover:opacity-60 focus:outline-none disabled:text-th-fgd-4 disabled:cursor-not-allowed disabled:opacity-100`}
       {...props}
     >
       {children}
