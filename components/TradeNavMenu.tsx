@@ -11,8 +11,8 @@ import useLocalStorageState from '../hooks/useLocalStorageState'
 import MarketNavItem from './MarketNavItem'
 
 const initialMenuCategories = [
-  { name: 'Spot', desc: 'spot-desc' },
   { name: 'Perp', desc: 'perp-desc' },
+  { name: 'Spot', desc: 'spot-desc' },
 ]
 
 export const FAVORITE_MARKETS_KEY = 'favoriteMarkets'
