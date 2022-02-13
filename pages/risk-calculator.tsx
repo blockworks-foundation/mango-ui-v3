@@ -1298,11 +1298,7 @@ export default function RiskCalculator() {
           <h1 className={`mb-2 text-th-fgd-1 text-2xl font-semibold`}>
             {t('calculator:risk-calculator')}
           </h1>
-          <p className="mb-0">
-            {t('calculator:in-testing-warning')}
-            IN TESTING (Use at your own risk): Please report any bugs or
-            comments in our #dev-ui discord channel.
-          </p>
+          <p className="mb-0">{t('calculator:in-testing-warning')}</p>
         </div>
         {scenarioBars?.rowData.length > 0 ? (
           <div className="rounded-lg bg-th-bkg-2">
