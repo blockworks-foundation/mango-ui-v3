@@ -18,6 +18,7 @@ import BN from 'bn.js'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { useTranslation } from 'next-i18next'
+import Tooltip from './Tooltip'
 
 const SECONDS = 1000
 
@@ -243,18 +244,23 @@ const MarketDetails = () => {
           ) : null}
           {isPerpMarket && selectedMarket instanceof PerpMarket ? (
             <>
-              <div className="flex items-center justify-between md:block">
-                <div className="text-th-fgd-3 tiny-text pb-0.5">
-                  {t('average-funding')}
+              <Tooltip
+                content="Funding is paid continuously. The 1hr rate displayed is a rolling average of the past 60 mins."
+                placement={'bottom'}
+              >
+                <div className="flex items-center justify-between md:block hover:cursor-help">
+                  <div className="flex text-th-fgd-3 tiny-text pb-0.5 items-center">
+                    {t('average-funding')}
+                  </div>
+                  <div className="text-th-fgd-1 md:text-xs">
+                    {selectedMarket ? (
+                      `${funding1hStr}% (${fundingAprStr}% APR)`
+                    ) : (
+                      <MarketDataLoader />
+                    )}
+                  </div>
                 </div>
-                <div className="text-th-fgd-1 md:text-xs">
-                  {selectedMarket ? (
-                    `${funding1hStr}% (${fundingAprStr}% APR)`
-                  ) : (
-                    <MarketDataLoader />
-                  )}
-                </div>
-              </div>
+              </Tooltip>
               <div className="flex items-center justify-between md:block">
                 <div className="text-th-fgd-3 tiny-text pb-0.5">
                   {t('open-interest')}
