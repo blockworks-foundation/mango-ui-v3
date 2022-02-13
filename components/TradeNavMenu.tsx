@@ -19,7 +19,7 @@ export const FAVORITE_MARKETS_KEY = 'favoriteMarkets'
 
 const TradeNavMenu = () => {
   const [favoriteMarkets] = useLocalStorageState(FAVORITE_MARKETS_KEY, [])
-  const [activeMenuCategory, setActiveMenuCategory] = useState('Spot')
+  const [activeMenuCategory, setActiveMenuCategory] = useState('Perp')
   const [menuCategories, setMenuCategories] = useState(initialMenuCategories)
   const buttonRef = useRef(null)
   const groupConfig = useMangoGroupConfig()
@@ -41,7 +41,7 @@ const TradeNavMenu = () => {
     if (favoriteMarkets.length > 0) {
       setActiveMenuCategory('Favorites')
     } else {
-      setActiveMenuCategory('Spot')
+      setActiveMenuCategory('Perp')
     }
   }
 
@@ -78,7 +78,7 @@ const TradeNavMenu = () => {
         menuCategories.filter((cat) => cat.name !== 'Favorites')
       )
       if (activeMenuCategory === 'Favorites') {
-        setActiveMenuCategory('Spot')
+        setActiveMenuCategory('Perp')
       }
     }
   }, [favoriteMarkets])
