@@ -2,6 +2,7 @@
   "anchor-slider": "定滑快",
   "edit-all-prices": "调整所有价格",
   "great": "很好",
+  "in-testing-warning": "在试验中！ (风险自负): 遇到问题请在discord #dev-ui频道上报到。",
   "init-weighted-assets": "初始加权资产价值",
   "init-weighted-liabilities": "初始加权借贷价值",
   "initial-health": "初始健康度",
@@ -34,7 +35,6 @@
   "scenario-balances": "模拟余额",
   "scenario-details": "模拟细节",
   "scenario-maint-health": "模拟维持健康度：",
-
   "simulate-orders-cancelled": "架设取消挂单",
   "single-asset-liq": "单个资产虚拟清算价格会假设所有其他资产价格不变",
   "spot-val-perp-val": "现货价直＋合约余额",
@@ -42,6 +42,5 @@
   "tooltip-init-health": "为了扩大当前持仓，初始健康度必须高于０％。",
   "tooltip-maint-health": "为了避免清算，维持健康度必须高于０％。",
   "very-poor": "很不好",
-  "yes": "行",
-  "in-testing-warning": "在试验中！ (风险自负): 遇到问题请在discord #dev-ui频道上报到。"
+  "yes": "行"
 }

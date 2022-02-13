@@ -2,6 +2,7 @@
   "anchor-slider": "定滑快",
   "edit-all-prices": "調整所有價格",
   "great": "很好",
+  "in-testing-warning": "在試驗中！ (風險自負): 遇到問題請在discord #dev-ui頻道上報到。",
   "init-weighted-assets": "初始加權資產價值",
   "init-weighted-liabilities": "初始加權借貸價值",
   "initial-health": "初始健康度",
@@ -41,6 +42,5 @@
   "tooltip-init-health": "為了擴大當前持倉，初始健康度必須高於０％。",
   "tooltip-maint-health": "為了避免清算，維持健康度必須高於０％。",
   "very-poor": "很不好",
-  "yes": "行",
-  "in-testing-warning": "在試驗中！ (風險自負): 遇到問題請在discord #dev-ui頻道上報到。"
+  "yes": "行"
 }
