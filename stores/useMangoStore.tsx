@@ -21,6 +21,7 @@ import {
   getMultipleAccounts,
   PerpMarketLayout,
   msrmMints,
+  MangoAccountLayout,
 } from '@blockworks-foundation/mango-client'
 import { AccountInfo, Commitment, Connection, PublicKey } from '@solana/web3.js'
 import { EndpointInfo, WalletAdapter } from '../@types/types'
@@ -377,16 +378,35 @@ const useMangoStore = create<MangoStore>((set, get) => {
         const wallet = get().wallet.current
         const actions = get().actions
 
+        const delegateFilter = [
+          {
+            memcmp: {
+              offset: MangoAccountLayout.offsetOf('delegate'),
+              bytes: wallet?.publicKey.toBase58(),
+            },
+          },
+        ]
+        const accountSorter = (a, b) =>
+          a.publicKey.toBase58() > b.publicKey.toBase58() ? 1 : -1
+
         if (!wallet?.publicKey || !mangoGroup) return
-        return mangoClient
-          .getMangoAccountsForOwner(mangoGroup, wallet?.publicKey, true)
-          .then((mangoAccounts) => {
-            if (mangoAccounts.length > 0) {
+
+        return Promise.all([
+          mangoClient.getMangoAccountsForOwner(
+            mangoGroup,
+            wallet?.publicKey,
+            true
+          ),
+          mangoClient.getAllMangoAccounts(mangoGroup, delegateFilter, false),
+        ])
+          .then((values) => {
+            const [mangoAccounts, delegatedAccounts] = values
+            console.log(mangoAccounts.length, delegatedAccounts.length)
+            if (mangoAccounts.length + delegatedAccounts.length > 0) {
               const sortedAccounts = mangoAccounts
                 .slice()
-                .sort((a, b) =>
-                  a.publicKey.toBase58() > b.publicKey.toBase58() ? 1 : -1
-                )
+                .sort(accountSorter)
+                .concat(delegatedAccounts.sort(accountSorter))
 
               set((state) => {
                 state.selectedMangoAccount.initialLoad = false
