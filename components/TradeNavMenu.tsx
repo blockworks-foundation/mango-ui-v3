@@ -186,7 +186,9 @@ const MenuCategories: FunctionComponent<MenuCategoriesProps> = ({
           `}
           >
             {t(cat.name.toLowerCase().replace(' ', '-'))}
-            <div className="text-th-fgd-4 text-xs">{t(cat.desc)}</div>
+            <div className="font-normal text-th-fgd-4 text-xs">
+              {t(cat.desc)}
+            </div>
           </button>
         )
       })}
