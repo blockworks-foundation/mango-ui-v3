@@ -41,5 +41,8 @@
   "tooltip-init-health": "Initial health must be above 0% to open new positions.",
   "tooltip-maint-health": "Maintenance health must be above 0% to avoid liquidation.",
   "very-poor": "Very Poor",
-  "yes": "Yes"
+  "yes": "Yes",
+
+  "in-testing-warning": "IN TESTING (Use at your own risk): Please report any bugs or comments in our #dev-ui discord channel.",
+
 }

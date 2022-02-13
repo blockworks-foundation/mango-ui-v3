@@ -2,6 +2,7 @@
   "anchor-slider": "Anchor slider",
   "edit-all-prices": "Edit All Prices",
   "great": "Great",
+  "in-testing-warning": "IN TESTING (Use at your own risk): Please report any bugs or comments in our #dev-ui discord channel.",
   "init-weighted-assets": "Init. Weighted Assets Value",
   "init-weighted-liabilities": "Init. Weighted Liabilities Value",
   "initial-health": "Initial Health",

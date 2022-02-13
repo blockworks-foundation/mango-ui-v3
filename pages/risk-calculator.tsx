@@ -1299,6 +1299,7 @@ export default function RiskCalculator() {
             {t('calculator:risk-calculator')}
           </h1>
           <p className="mb-0">
+            {t('calculator:in-testing-warning')}
             IN TESTING (Use at your own risk): Please report any bugs or
             comments in our #dev-ui discord channel.
           </p>
