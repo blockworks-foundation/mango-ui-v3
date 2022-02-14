@@ -47,26 +47,27 @@ export async function getStaticProps({ locale }) {
   }
 }
 
-const referralHistory = [
-  {
-    time: '2022-02-09T19:28:59Z',
-    referralLink: 'test2',
-    referee: '22JS1jkvkLcdxhHo1LpWXUh6sTErkt54j1YaszYWZoCi',
-    fee: 0.22,
-  },
-  {
-    time: '2022-02-08T19:28:59Z',
-    referralLink: 'test2',
-    referee: '22JS1jkvkLcdxhHo1LpWXUh6sTErkt54j1YaszYWZoCi',
-    fee: 0.21,
-  },
-  {
-    time: '2022-02-07T19:28:59Z',
-    referralLink: 'test2',
-    referee: '22JS1jkvkLcdxhHo1LpWXUh6sTErkt54j1YaszYWZoCi',
-    fee: 0.15,
-  },
-]
+const referralHistory = []
+// [
+//   {
+//     time: '2022-02-09T19:28:59Z',
+//     referralLink: 'test2',
+//     referee: '22JS1jkvkLcdxhHo1LpWXUh6sTErkt54j1YaszYWZoCi',
+//     fee: 0.22,
+//   },
+//   {
+//     time: '2022-02-08T19:28:59Z',
+//     referralLink: 'test2',
+//     referee: '22JS1jkvkLcdxhHo1LpWXUh6sTErkt54j1YaszYWZoCi',
+//     fee: 0.21,
+//   },
+//   {
+//     time: '2022-02-07T19:28:59Z',
+//     referralLink: 'test2',
+//     referee: '22JS1jkvkLcdxhHo1LpWXUh6sTErkt54j1YaszYWZoCi',
+//     fee: 0.15,
+//   },
+// ]
 
 export default function Referral() {
   const { t } = useTranslation('common')
@@ -78,12 +79,13 @@ export default function Referral() {
   const connected = useMangoStore((s) => s.wallet.connected)
 
   const [customRefLinkInput, setCustomRefLinkInput] = useState('')
-  const [existingCustomRefLinks, setexistingCustomRefLinks] =
-    useState<ReferrerIdRecord[]>()
+  const [existingCustomRefLinks, setexistingCustomRefLinks] = useState<
+    ReferrerIdRecord[]
+  >([])
   const [hasCopied, setHasCopied] = useState(null)
   const [showMoreInfoModal, setShowMoreInfoModal] = useState(false)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
-  const [hasReferrals] = useState(true) // Placeholder to show/hide users referral stats
+  const [hasReferrals] = useState(false) // Placeholder to show/hide users referral stats
   const [loading, setLoading] = useState(false)
   const [inputError, setInputError] = useState('')
   const { width } = useViewport()
@@ -143,8 +145,9 @@ export default function Referral() {
         )
         notify({
           txid,
-          title: 'Custom referal link created',
+          title: 'Custom referral link created',
         })
+        fetchCustomReferralLinks()
       } catch (e) {
         notify({
           type: 'error',
@@ -183,7 +186,7 @@ export default function Referral() {
               a 5% perp fee discount.
             </p>
             <LinkButton
-              className="mt-1 sm:mt-0"
+              className="mt-1 sm:mt-0 text-th-primary"
               onClick={() => setShowMoreInfoModal(true)}
             >
               More Info
@@ -353,11 +356,11 @@ export default function Referral() {
                         </div>
                       )}
                     </div>
-                    {hasCustomRefLinks && existingCustomRefLinks.length < 5 ? (
+                    {hasRequiredMngo ? (
                       <div className="bg-th-bkg-3 p-6 rounded-md w-full lg:w-1/3">
-                        <h2 className="mb-1">Custom Referral ID</h2>
+                        <h2 className="mb-1">Custom Referral Links</h2>
                         <p className="mb-4">
-                          You can generate up to 5 custom IDs
+                          You can generate up to 5 custom referral links.
                         </p>
                         <div className="pb-6">
                           <label className="block mb-2 text-th-fgd-3 text-xs">
@@ -371,6 +374,7 @@ export default function Referral() {
                             onBlur={validateRefIdInput}
                             onChange={(e) => onChangeRefIdInput(e.target.value)}
                             value={customRefLinkInput}
+                            disabled={existingCustomRefLinks.length === 5}
                           />
                           {inputError ? (
                             <div className="pt-2">
@@ -384,9 +388,10 @@ export default function Referral() {
                         <button
                           className="bg-th-primary flex items-center justify-center text-th-bkg-1 text-sm px-4 py-2 rounded-full hover:brightness-[1.15] focus:outline-none disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:cursor-not-allowed disabled:hover:brightness-100"
                           onClick={submitRefLink}
+                          disabled={existingCustomRefLinks.length === 5}
                         >
                           <LinkIcon className="h-4 mr-1.5 w-4" />
-                          Generate ID
+                          Generate Custom Link
                         </button>
                       </div>
                     ) : null}
@@ -511,7 +516,7 @@ export default function Referral() {
           isOpen={showMoreInfoModal}
           onClose={() => setShowMoreInfoModal(false)}
         >
-          <h2 className="mb-4">Referral Program Details</h2>
+          <h2 className="mb-4 text-th-fgd-2">Referral Program Details</h2>
           <ul className="list-disc pl-3">
             <li>
               Your referral code is automatically applied whenever your link is
