@@ -200,7 +200,7 @@ export default function Referral() {
             mangoGroup,
             mngoIndex
           )
-          .toNumber() > 10000
+          .toNumber() >= 10000
       : false
   const hasCustomRefLinks =
     existingCustomRefLinks && existingCustomRefLinks.length > 0

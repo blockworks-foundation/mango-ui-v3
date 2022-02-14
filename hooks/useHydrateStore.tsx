@@ -147,17 +147,12 @@ const useHydrateStore = () => {
             ],
             programId
           )
-          console.log('referrerMemoryPk', referrerMemoryPk)
-          const info = await connection.getAccountInfo(referrerMemoryPk)
-          console.log('info useHydrateStore set referrer is:', info)
 
+          const info = await connection.getAccountInfo(referrerMemoryPk)
           if (info) {
             const decodedReferrer = ReferrerMemoryLayout.decode(info.data)
             const referrerMemory = new ReferrerMemory(decodedReferrer)
-            console.log(
-              'referrer is saved as:',
-              referrerMemory.referrerMangoAccount
-            )
+
             setMangoStore((state) => {
               state.referrerPk = referrerMemory.referrerMangoAccount
             })
