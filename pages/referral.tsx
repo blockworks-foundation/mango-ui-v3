@@ -4,7 +4,7 @@ import TopBar from '../components/TopBar'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import useMangoStore from '../stores/useMangoStore'
 import {
-  mangoAccountSelector,
+  mangoCacheSelector,
   mangoClientSelector,
   mangoGroupConfigSelector,
   mangoGroupSelector,
@@ -37,6 +37,7 @@ import { ExpandableRow } from '../components/TableElements'
 import MobileTableHeader from '../components/mobile/MobileTableHeader'
 import Input from '../components/Input'
 import InlineNotification from '../components/InlineNotification'
+import useMangoAccount from '../hooks/useMangoAccount'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -72,7 +73,8 @@ const referralHistory = []
 export default function Referral() {
   const { t } = useTranslation('common')
   const mangoGroup = useMangoStore(mangoGroupSelector)
-  const mangoAccount = useMangoStore(mangoAccountSelector)
+  const mangoCache = useMangoStore(mangoCacheSelector)
+  const { mangoAccount } = useMangoAccount()
   const groupConfig = useMangoStore(mangoGroupConfigSelector)
   const client = useMangoStore(mangoClientSelector)
   const wallet = useMangoStore(walletSelector)
@@ -165,9 +167,14 @@ export default function Referral() {
   }
 
   const mngoIndex = getMarketIndexBySymbol(groupConfig, 'MNGO')
+
   const hasRequiredMngo =
     mangoGroup && mangoAccount
-      ? mangoAccount.deposits[mngoIndex].toNumber() > 10000
+      ? mangoAccount.getUiDeposit(
+          mangoCache.rootBankCache[mngoIndex],
+          mangoGroup,
+          mngoIndex
+        )
       : false
   const hasCustomRefLinks =
     existingCustomRefLinks && existingCustomRefLinks.length > 0
@@ -182,8 +189,8 @@ export default function Referral() {
           </h1>
           <div className="flex flex-col sm:flex-row items-start">
             <p className="mb-0 mr-2 text-th-fgd-1">
-              Earn 20% of the perp fees paid by anyone you refer. Plus, they get
-              a 5% perp fee discount.
+              Earn 16% of the perp fees paid by anyone you refer. Plus, they get
+              a 4% perp fee discount.
             </p>
             <LinkButton
               className="mt-1 sm:mt-0 text-th-primary"
@@ -523,11 +530,11 @@ export default function Referral() {
               used to create an account.
             </li>
             <li>
-              When any of your referrals trade Mango Perps, you earn 20% of
+              When any of your referrals trade Mango Perps, you earn 16% of
               their trade fees.
             </li>
             <li>
-              Plus, for using your link they get a 5% discount off their Mango
+              Plus, for using your link they get a 4% discount off their Mango
               Perp fees.
             </li>
             <li>
