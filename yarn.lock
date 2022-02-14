@@ -1293,11 +1293,15 @@
 "@blockworks-foundation/mango-client@git+https://github.com/blockworks-foundation/mango-client-v3.git#dd/reflinks":
   version "3.3.13"
 <<<<<<< HEAD
+<<<<<<< HEAD
   resolved "git+https://github.com/blockworks-foundation/mango-client-v3.git#33ceaf776f95c95d647d2624484b8fbc412f7898"
 >>>>>>> e0d3a1f... create referral page
 =======
   resolved "git+https://github.com/blockworks-foundation/mango-client-v3.git#148835a26d004808e4a8bc5e7335957fa31becd5"
 >>>>>>> 33c4938... wip
+=======
+  resolved "git+https://github.com/blockworks-foundation/mango-client-v3.git#2e3b6d2927b77c8cf1104cd1acf38546f28ea54f"
+>>>>>>> 6d27077... add ref links
   dependencies:
     "@project-serum/anchor" "^0.16.2"
     "@project-serum/serum" "0.13.55"
@@ -2174,6 +2178,7 @@
 
 "@solana/web3.js@^1.17.0", "@solana/web3.js@^1.21.0":
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "1.34.0"
   resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.34.0.tgz#33becf2c7e87497d73406374185e54e0b7bc235d"
   integrity sha512-6QvqN2DqEELvuV+5yUQM8P9fRiSG+6SzQ58HjumJqODu14r7eu5HXVWEymvKAvMLGME+0TmAdJHjw9xD5NgUWA==
@@ -2182,6 +2187,11 @@
   resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.33.0.tgz#3b8c0b4cd259ffe8764937f1001f79958c5d9533"
   integrity sha512-R53wvQQsUKCCJ9UmOfDlxCwC94jzjmpjr6wT/Xf1uFavZblSLAtzLaF4vbGIS465lk3mW6oJMtASd8cqSnr8Mw==
 >>>>>>> 33c4938... wip
+=======
+  version "1.34.0"
+  resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.34.0.tgz#33becf2c7e87497d73406374185e54e0b7bc235d"
+  integrity sha512-6QvqN2DqEELvuV+5yUQM8P9fRiSG+6SzQ58HjumJqODu14r7eu5HXVWEymvKAvMLGME+0TmAdJHjw9xD5NgUWA==
+>>>>>>> 6d27077... add ref links
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@ethersproject/sha2" "^5.5.0"
@@ -3180,15 +3190,10 @@ bl@^4.0.3:
     inherits "^2.0.4"
     readable-stream "^3.4.0"
 
-bn.js@5.1.3, bn.js@^4.0.0, bn.js@^4.1.0, bn.js@^4.11.9, bn.js@^5.0.0, bn.js@^5.1.0, bn.js@^5.1.1, bn.js@^5.1.2, bn.js@~5.2.0:
+bn.js@5.1.3, bn.js@^4.0.0, bn.js@^4.1.0, bn.js@^4.11.9, bn.js@^5.0.0, bn.js@^5.1.0, bn.js@^5.1.1, bn.js@^5.1.2, bn.js@^5.2.0, bn.js@~5.2.0:
   version "5.1.3"
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-5.1.3.tgz#beca005408f642ebebea80b042b4d18d2ac0ee6b"
   integrity sha512-GkTiFpjFtUzU9CbMeJ5iazkCzGL3jrhzerzZIuqLABjbwRaFt33I9tUdSNryIptM+RxDet6OKm2WnLXzW51KsQ==
-
-bn.js@^5.2.0:
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-5.2.0.tgz#358860674396c6997771a9d051fcc1b57d4ae002"
-  integrity sha512-D7iWRBvnZE8ecXiLj/9wbxH7Tk79fAh8IHaTNq1RWRixsS02W+5qS+iE9yq6RYl0asXx5tw0bLhmT5pIfbSquw==
 
 boolbase@^1.0.0:
   version "1.0.0"

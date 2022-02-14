@@ -414,6 +414,7 @@ const OpenOrdersTable = () => {
     const bidInfo =
       useMangoStore.getState().accountInfos[marketConfig.bidsKey.toString()]
     const wallet = useMangoStore.getState().wallet.current
+    const referrerPk = useMangoStore.getState().referrerPk
 
     if (!wallet || !mangoGroup || !mangoAccount || !market) return
     setModifyId(order.orderId)
@@ -455,7 +456,9 @@ const OpenOrdersTable = () => {
           size,
           orderType,
           0,
-          order.side === 'buy' ? askInfo : bidInfo
+          order.side === 'buy' ? askInfo : bidInfo,
+          false,
+          referrerPk
         )
       }
       notify({ title: t('successfully-placed'), txid })

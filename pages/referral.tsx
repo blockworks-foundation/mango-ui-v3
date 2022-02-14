@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import PageBodyContainer from '../components/PageBodyContainer'
 import TopBar from '../components/TopBar'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
@@ -14,7 +14,10 @@ import Button from '../components/Button'
 import { copyToClipboard } from '../utils'
 import Input from '../components/Input'
 import { notify } from '../utils/notifications'
-import { getMarketIndexBySymbol } from '@blockworks-foundation/mango-client'
+import {
+  getMarketIndexBySymbol,
+  ReferrerIdRecord,
+} from '@blockworks-foundation/mango-client'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -32,18 +35,21 @@ export default function Referral() {
   const client = useMangoStore(mangoClientSelector)
   const wallet = useMangoStore(walletSelector)
 
-  const [customRefLink, setCustomRefLink] = useState('')
+  const [customRefLinkInput, setCustomRefLinkInput] = useState('')
+  const [existingCustomRefLInks, setExistingCustomRefLinks] =
+    useState<ReferrerIdRecord[]>()
 
-  console.log('MangoAccount', mangoAccount)
+  const fetchCustomReferralLinks = useCallback(async () => {
+    const referrerIds = await client.getReferrerIdsForMangoAccount(mangoAccount)
 
-  // TODO: check if this is still needed on every top level page
-  // useEffect(() => {
-  //   // @ts-ignore
-  //   if (window.solana) {
-  //     // @ts-ignore
-  //     window.solana.connect({ onlyIfTrusted: true })
-  //   }
-  // }, [])
+    setExistingCustomRefLinks(referrerIds)
+  }, [mangoAccount])
+
+  useEffect(() => {
+    if (mangoAccount) {
+      fetchCustomReferralLinks()
+    }
+  }, [mangoAccount])
 
   const submitRefLink = async () => {
     try {
@@ -51,7 +57,7 @@ export default function Referral() {
         mangoGroup,
         mangoAccount,
         wallet,
-        customRefLink
+        customRefLinkInput
       )
       notify({
         txid,
@@ -72,6 +78,8 @@ export default function Referral() {
     mangoGroup && mangoAccount
       ? mangoAccount.deposits[mngoIndex].toNumber() > 10000
       : false
+  const hasCustomRefLinks =
+    existingCustomRefLInks && existingCustomRefLInks.length > 0
 
   return (
     <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
@@ -112,6 +120,7 @@ export default function Referral() {
                     {mangoAccount.publicKey.toString()}
                   </a>
                   <Button
+                    className="ml-4"
                     onClick={() =>
                       copyToClipboard(
                         `https://trade.mango.markets?ref=${mangoAccount.publicKey.toString()}`
@@ -133,14 +142,39 @@ export default function Referral() {
                   <Input
                     type="text"
                     placeholder="ElonMusk"
-                    onChange={(e) => setCustomRefLink(e.target.value)}
-                    value={customRefLink}
+                    onChange={(e) => setCustomRefLinkInput(e.target.value)}
+                    value={customRefLinkInput}
                   />
                   <Button onClick={submitRefLink}>Submit</Button>
                 </div>
               </div>
             </div>
           ) : null}
+          <div>
+            {hasCustomRefLinks
+              ? existingCustomRefLInks.map((customRefs) => {
+                  return (
+                    <div key={customRefs.referrerId}>
+                      <div className="flex items-center">
+                        <div>{`https://trade.mango.markets?ref=${customRefs.referrerId}`}</div>
+                        <div>
+                          <Button
+                            className="ml-4"
+                            onClick={() =>
+                              copyToClipboard(
+                                `https://trade.mango.markets?ref=${customRefs.referrerId}`
+                              )
+                            }
+                          >
+                            Copy
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })
+              : null}
+          </div>
         </div>
       </PageBodyContainer>
     </div>
