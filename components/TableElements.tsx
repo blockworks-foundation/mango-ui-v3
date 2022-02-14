@@ -1,6 +1,6 @@
 import { Disclosure } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/solid'
-import { ReactNode } from 'hoist-non-react-statics/node_modules/@types/react'
+import { ReactNode } from 'react'
 
 export const Table = ({ children }) => (
   <table className="min-w-full">{children}</table>
