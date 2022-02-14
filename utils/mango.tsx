@@ -17,6 +17,7 @@ export async function deposit({
   const wallet = useMangoStore.getState().wallet.current
   const tokenIndex = mangoGroup.getTokenIndex(fromTokenAcc.mint)
   const mangoClient = useMangoStore.getState().connection.client
+  const referrer = useMangoStore.getState().ref
 
   if (mangoAccount) {
     return await mangoClient.deposit(
@@ -44,7 +45,8 @@ export async function deposit({
       fromTokenAcc.publicKey,
       Number(amount),
       existingAccounts.length,
-      accountName
+      accountName,
+      referrer
     )
   }
 }
