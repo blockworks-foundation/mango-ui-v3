@@ -10,7 +10,7 @@ import {
   mangoGroupSelector,
   walletSelector,
 } from '../stores/selectors'
-import { IconButton, LinkButton } from '../components/Button'
+import { IconButton } from '../components/Button'
 import { abbreviateAddress, copyToClipboard } from '../utils'
 import { notify } from '../utils/notifications'
 import {
@@ -27,7 +27,6 @@ import {
 } from '@heroicons/react/outline'
 import { MngoMonoIcon } from '../components/icons'
 import Link from 'next/link'
-import Modal from '../components/Modal'
 import { Table, Td, Th, TrBody, TrHead } from '../components/TableElements'
 import dayjs from 'dayjs'
 import AccountsModal from '../components/AccountsModal'
@@ -85,7 +84,6 @@ export default function Referral() {
     ReferrerIdRecord[]
   >([])
   const [hasCopied, setHasCopied] = useState(null)
-  const [showMoreInfoModal, setShowMoreInfoModal] = useState(false)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
   const [hasReferrals] = useState(false) // Placeholder to show/hide users referral stats
   const [loading, setLoading] = useState(false)
@@ -170,11 +168,13 @@ export default function Referral() {
 
   const hasRequiredMngo =
     mangoGroup && mangoAccount
-      ? mangoAccount.getUiDeposit(
-          mangoCache.rootBankCache[mngoIndex],
-          mangoGroup,
-          mngoIndex
-        )
+      ? mangoAccount
+          .getUiDeposit(
+            mangoCache.rootBankCache[mngoIndex],
+            mangoGroup,
+            mngoIndex
+          )
+          .toNumber() > 10000
       : false
   const hasCustomRefLinks =
     existingCustomRefLinks && existingCustomRefLinks.length > 0
@@ -192,12 +192,6 @@ export default function Referral() {
               Earn 16% of the perp fees paid by anyone you refer. Plus, they get
               a 4% perp fee discount.
             </p>
-            <LinkButton
-              className="mt-1 sm:mt-0 text-th-primary"
-              onClick={() => setShowMoreInfoModal(true)}
-            >
-              More Info
-            </LinkButton>
           </div>
         </div>
         <div className="bg-th-bkg-2 grid grid-cols-12 grid-flow-row gap-x-6 gap-y-8 p-4 sm:p-6 rounded-lg">
@@ -228,9 +222,30 @@ export default function Referral() {
                   </div>
                 ) : null}
                 <div className="col-span-12">
-                  <div className="flex flex-col lg:flex-row lg:space-x-6 space-y-4 lg:space-y-0 w-full">
+                  <div className="flex flex-col xl:flex-row xl:space-x-6 space-y-4 xl:space-y-0 w-full">
+                    <div className="min-w-[25%] bg-th-bkg-3 flex-1 p-6 rounded-md">
+                      <h2 className="mb-4">Program Details</h2>
+                      <ul className="list-disc pl-3">
+                        <li>
+                          Your referral code is automatically applied whenever
+                          your link is used to create an account.
+                        </li>
+                        <li>
+                          When any of your referrals trade Mango Perps, you earn
+                          16% of their trade fees.
+                        </li>
+                        <li>
+                          Plus, for using your link they get a 4% discount off
+                          their Mango Perp fees.
+                        </li>
+                        <li>
+                          You must have at least 10,000 MNGO in your Mango
+                          Account to qualify for generating referrals and
+                          earning referral rewards.
+                        </li>
+                      </ul>
+                    </div>
                     <div className="flex flex-col w-full">
-                      <div className="flex items-center justify-between"></div>
                       {hasRequiredMngo ? (
                         <div className="bg-th-bkg-3 flex-1 p-6 rounded-md">
                           <h2 className="mb-4">Your Links</h2>
@@ -364,7 +379,7 @@ export default function Referral() {
                       )}
                     </div>
                     {hasRequiredMngo ? (
-                      <div className="bg-th-bkg-3 p-6 rounded-md w-full lg:w-1/3">
+                      <div className="bg-th-bkg-3 p-6 rounded-md w-full xl:w-1/3">
                         <h2 className="mb-1">Custom Referral Links</h2>
                         <p className="mb-4">
                           You can generate up to 5 custom referral links.
@@ -518,32 +533,6 @@ export default function Referral() {
           )}
         </div>
       </PageBodyContainer>
-      {showMoreInfoModal ? (
-        <Modal
-          isOpen={showMoreInfoModal}
-          onClose={() => setShowMoreInfoModal(false)}
-        >
-          <h2 className="mb-4 text-th-fgd-2">Referral Program Details</h2>
-          <ul className="list-disc pl-3">
-            <li>
-              Your referral code is automatically applied whenever your link is
-              used to create an account.
-            </li>
-            <li>
-              When any of your referrals trade Mango Perps, you earn 16% of
-              their trade fees.
-            </li>
-            <li>
-              Plus, for using your link they get a 4% discount off their Mango
-              Perp fees.
-            </li>
-            <li>
-              You must have at least 10,000 MNGO in your Mango Account to
-              qualify for generating referrals and earning referral rewards.
-            </li>
-          </ul>
-        </Modal>
-      ) : null}
       {showAccountsModal ? (
         <AccountsModal
           onClose={() => setShowAccountsModal(false)}
