@@ -16,7 +16,7 @@ const Modal: any = React.forwardRef<any, any>((props, ref) => {
   return (
     <Portal>
       <div
-        className="fixed z-30 inset-0 overflow-y-auto sm:py-8"
+        className="fixed z-30 inset-0 overflow-y-auto"
         aria-labelledby="modal-title"
         role="dialog"
         aria-modal="true"

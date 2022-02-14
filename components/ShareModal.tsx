@@ -10,7 +10,8 @@ import { getWeights, MarketConfig } from '@blockworks-foundation/mango-client'
 import useMangoStore from '../stores/useMangoStore'
 import Modal from './Modal'
 import { useScreenshot } from '../hooks/useScreenshot'
-import { ExternalLinkIcon } from '@heroicons/react/outline'
+import * as MonoIcons from './icons'
+import { TwitterIcon } from './icons'
 
 interface ShareModalProps {
   onClose: () => void
@@ -43,9 +44,15 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
   }, [mangoGroup, marketConfig])
 
   const positionPercentage =
-    ((position.indexPrice - position.avgEntryPrice) / position.avgEntryPrice) *
-    100 *
-    initLeverage
+    position.basePosition > 0
+      ? ((position.indexPrice - position.avgEntryPrice) /
+          position.avgEntryPrice) *
+        100 *
+        initLeverage
+      : ((position.avgEntryPrice - position.indexPrice) /
+          position.avgEntryPrice) *
+        100 *
+        initLeverage
 
   const side = position.basePosition > 0 ? 'LONG' : 'SHORT'
 
@@ -80,99 +87,96 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
 
   const isProfit = positionPercentage > 0
 
+  const iconName = `${marketConfig.baseSymbol.slice(
+    0,
+    1
+  )}${marketConfig.baseSymbol.slice(1, 4).toLowerCase()}MonoIcon`
+
+  const SymbolIcon = MonoIcons[iconName]
+
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      className="md:max-w-sm"
+      className={`${
+        side === 'LONG'
+          ? isProfit
+            ? 'bg-long-profit'
+            : 'bg-long-loss'
+          : isProfit
+          ? 'bg-short-profit'
+          : 'bg-short-loss'
+      } bg-contain h-[337.5px] w-[600px] sm:max-w-7xl`}
       noPadding
       hideClose
       ref={ref}
     >
-      <div className="relative overflow-hidden px-8 pt-6 pb-6 rounded-lg">
-        <div id="share-image" className="relative z-20">
-          <div className="flex justify-center p-4 pt-0">
-            <img
-              className={`h-32 w-auto`}
-              src="/assets/icons/logo.svg"
-              alt="next"
-            />
-          </div>
-          <div className="text-th-fgd-1 text-center text-xl">
-            <span className="font-bold">Mango</span>
-            <span className="font-extralight"> Markets</span>
-          </div>
-          <div className="pb-4 text-lg text-center">
-            <span className="text-th-fgd-3">{position.marketConfig.name}</span>
-            <span className="px-2 text-th-fgd-4">|</span>
-
-            <span
-              className={`${
-                position.basePosition > 0 ? 'text-th-green' : 'text-th-red'
-              }`}
-            >
-              {side}
-            </span>
-          </div>
-          <div className="flex justify-center items-center">
-            <div
-              className={`border mb-6 px-4 ${
-                !showButton ? 'pt-2' : 'py-2'
-              } rounded-lg text-5xl text-center font-light ${
-                isProfit
-                  ? 'border-th-green text-th-green'
-                  : 'border-th-red text-th-red'
-              }`}
-            >
-              {isProfit
-                ? `${positionPercentage.toFixed(2)}`
-                : positionPercentage.toFixed(2)}
-              %
-            </div>
-          </div>
-          <div className="space-y-2 text-th-fgd-1">
-            <div className="flex items-center justify-between">
-              <span className="text-th-fgd-2">Avg Entry Price:</span>
-              <span>${position.avgEntryPrice.toFixed(2)}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-th-fgd-2">Mark Price:</span>
-              <span>${position.indexPrice.toFixed(2)}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-th-fgd-2">Max Leverage:</span>
-              <span>{initLeverage}x</span>
-            </div>
-          </div>
-          {copied ? (
-            <a
-              className="bg-th-bkg-3 hover:cursor-pointer block mt-6 px-4 py-3 rounded-full text-center text-th-fgd-1 w-full"
-              href={`https://twitter.com/intent/tweet?text=I'm ${side} %24${position.marketConfig.baseSymbol} perp on %40mangomarkets%0A[PASTE IMAGE HERE]`}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <div className="flex items-center justify-center">
-                <div>Tweet</div>
-                <ExternalLinkIcon className="ml-1 h-4 w-4" />
-              </div>
-            </a>
-          ) : (
-            <a
-              className={`${
-                !showButton ? 'hidden' : ''
-              } bg-th-bkg-3 hover:cursor-pointer block mt-6 px-4 py-3 rounded-full text-center text-th-fgd-1 w-full`}
-              onClick={handleCopyToClipboard}
-            >
-              Copy Image to Clipboard & Share
-            </a>
-          )}
-          {!showButton ? <div className="mb-6">.</div> : null}
+      <div
+        id="share-image"
+        className="drop-shadow-lg flex flex-col h-full items-center justify-center space-y-4 relative z-20"
+      >
+        <div className="flex items-center text-lg text-th-fgd-3 text-center">
+          <SymbolIcon className="h-6 w-auto mr-2" />
+          <span className="mr-2">{position.marketConfig.name}</span>
+          <span
+            className={`border px-1 rounded ${
+              position.basePosition > 0
+                ? 'border-th-green text-th-green'
+                : 'border-th-red text-th-red'
+            }`}
+          >
+            {side}
+          </span>
         </div>
         <div
-          className={`absolute h-full w-full opacity-75 bottom-2/3 left-0 pointer-events-none bg-gradient-to-b ${
-            isProfit ? 'from-th-green' : 'from-th-red'
-          } to-th-bkg-2 z-10`}
-        ></div>
+          className={`font-bold text-6xl text-center ${
+            isProfit
+              ? 'border-th-green text-th-green'
+              : 'border-th-red text-th-red'
+          }`}
+        >
+          {positionPercentage > 0 ? '+' : null}
+          {positionPercentage.toFixed(2)}%
+        </div>
+        <div className="pt-2 space-y-1 text-base text-th-fgd-1 w-2/3">
+          <div className="flex items-center justify-between">
+            <span className="text-th-fgd-2">Avg Entry Price</span>
+            <span className="font-bold">
+              ${position.avgEntryPrice.toFixed(2)}
+            </span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-th-fgd-2">Mark Price</span>
+            <span className="font-bold">${position.indexPrice.toFixed(2)}</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-th-fgd-2">Max Leverage</span>
+            <span className="font-bold">{initLeverage}x</span>
+          </div>
+        </div>
+      </div>
+      <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2">
+        {copied ? (
+          <a
+            className="bg-th-primary font-bold block mt-6 px-4 py-3 rounded-full text-center text-th-bkg-1 w-full hover:cursor-pointer hover:text-th-bkg-1 hover:brightness-[1.15]"
+            href={`https://twitter.com/intent/tweet?text=I'm ${side} %24${position.marketConfig.baseSymbol} perp on %40mangomarkets%0A[PASTE IMAGE HERE]`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <div className="flex items-center justify-center">
+              <TwitterIcon className="h-4 mr-1.5 w-4" />
+              <div>Tweet Position</div>
+            </div>
+          </a>
+        ) : (
+          <a
+            className={`bg-th-primary flex font-bold items-center mt-6 px-4 py-3 rounded-full text-center text-th-bkg-1 w-full hover:cursor-pointer hover:text-th-bkg-1 hover:brightness-[1.15]`}
+            onClick={handleCopyToClipboard}
+          >
+            <TwitterIcon className="h-4 mr-1.5 w-4" />
+            Copy Image and Share
+          </a>
+        )}
       </div>
     </Modal>
   )
