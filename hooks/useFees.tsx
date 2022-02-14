@@ -1,11 +1,12 @@
 import {
+  CENTIBPS_PER_UNIT,
   getMarketIndexBySymbol,
   PerpMarket,
 } from '@blockworks-foundation/mango-client'
 import useSrmAccount from '../hooks/useSrmAccount'
 import useMangoStore from '../stores/useMangoStore'
 
-export default function useFees() {
+export default function useFees(): { makerFee: number; takerFee: number } {
   const { rates } = useSrmAccount()
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoGroupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
@@ -16,9 +17,9 @@ export default function useFees() {
     marketConfig.baseSymbol
   )
 
-  if (!mangoGroup) return {}
+  if (!mangoGroup) return { makerFee: 0, takerFee: 0 }
 
-  let takerFee, makerFee
+  let takerFee: number, makerFee: number
   if (market instanceof PerpMarket) {
     takerFee = parseFloat(
       mangoGroup.perpMarkets[marketIndex].takerFee.toFixed()
@@ -31,5 +32,11 @@ export default function useFees() {
     makerFee = rates.maker
   }
 
-  return { makerFee, takerFee }
+  // @ts-ignore
+  const refSurcharge = mangoGroup.refSurchargeCentibps / CENTIBPS_PER_UNIT
+
+  return {
+    makerFee: makerFee,
+    takerFee: takerFee + refSurcharge,
+  }
 }
