@@ -669,7 +669,7 @@ export default function AdvancedTradeForm({
             Date.now(),
             side === 'buy' ? askInfo : bidInfo, // book side used for ConsumeEvents
             reduceOnly,
-            referrerPk
+            referrerPk ? referrerPk : undefined
           )
         }
       }
