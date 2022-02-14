@@ -54,7 +54,7 @@ export const ENDPOINTS: EndpointInfo[] = [
 ]
 
 type ClusterType = 'mainnet' | 'devnet'
-const DEFAULT_MANGO_GROUP_NAME = process.env.NEXT_PUBLIC_GROUP || 'mainnet.1'
+const DEFAULT_MANGO_GROUP_NAME = process.env.NEXT_PUBLIC_GROUP || 'devnet.2'
 export const CLUSTER = DEFAULT_MANGO_GROUP_NAME.split('.')[0] as ClusterType
 const ENDPOINT = ENDPOINTS.find((e) => e.name === CLUSTER)
 
@@ -159,6 +159,7 @@ export interface MangoStore extends State {
     cache: MangoCache | null
   }
   mangoAccounts: MangoAccount[]
+  referrerPk: PublicKey | null
   selectedMangoAccount: {
     current: MangoAccount | null
     initialLoad: boolean
@@ -271,6 +272,7 @@ const useMangoStore = create<MangoStore>((set, get) => {
     },
     mangoGroups: [],
     mangoAccounts: [],
+    referrerPk: null,
     selectedMangoAccount: {
       current: null,
       initialLoad: true,
@@ -461,6 +463,7 @@ const useMangoStore = create<MangoStore>((set, get) => {
                 state.selectedMangoGroup.current = mangoGroup
               })
             })
+
             const allMarketConfigs = getAllMarkets(mangoGroupConfig)
             const allMarketPks = allMarketConfigs.map((m) => m.publicKey)
             const allBidsAndAsksPks = allMarketConfigs

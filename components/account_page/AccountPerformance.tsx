@@ -167,11 +167,11 @@ const AccountPerformance = () => {
                           </TrHead>
                         </thead>
                         <tbody>
-                          {paginatedData.map((stat, index) => {
+                          {paginatedData.map((stat) => {
                             // @ts-ignore
                             const utc = dayjs.utc(stat.time).format()
                             return (
-                              <TrBody index={index} key={stat.time}>
+                              <TrBody key={stat.time}>
                                 <Td>{dayjs(utc).format('DD/MM/YY, h:mma')}</Td>
                                 <Td>{stat.account_equity.toFixed(6 + 1)}</Td>
                                 <Td>{stat.pnl.toFixed(6 + 1)}</Td>

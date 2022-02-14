@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
-import { AccountInfo } from '@solana/web3.js'
-import useMangoStore from '../stores/useMangoStore'
+import { AccountInfo, PublicKey } from '@solana/web3.js'
+import useMangoStore, { programId } from '../stores/useMangoStore'
 import useInterval from './useInterval'
 import { Orderbook as SpotOrderBook, Market } from '@project-serum/serum'
 import {
@@ -8,6 +8,8 @@ import {
   BookSideLayout,
   MangoAccountLayout,
   PerpMarket,
+  ReferrerMemory,
+  ReferrerMemoryLayout,
 } from '@blockworks-foundation/mango-client'
 import {
   actionsSelector,
@@ -91,6 +93,7 @@ const useHydrateStore = () => {
     })
   }, [marketConfig, markets, setMangoStore])
 
+  // watch selected Mango Account for changes
   useEffect(() => {
     if (!mangoAccount) return
     console.log('in mango account WS useEffect')
@@ -129,6 +132,42 @@ const useHydrateStore = () => {
 
     return () => {
       connection.removeAccountChangeListener(subscriptionId)
+    }
+  }, [mangoAccount])
+
+  // fetch referrer for selected Mango Account
+  useEffect(() => {
+    if (mangoAccount) {
+      const fetchReferrer = async () => {
+        try {
+          const [referrerMemoryPk] = await PublicKey.findProgramAddress(
+            [
+              mangoAccount.publicKey.toBytes(),
+              new Buffer('ReferrerMemory', 'utf-8'),
+            ],
+            programId
+          )
+          console.log('referrerMemoryPk', referrerMemoryPk)
+          const info = await connection.getAccountInfo(referrerMemoryPk)
+          console.log('info useHydrateStore set referrer is:', info)
+
+          if (info) {
+            const decodedReferrer = ReferrerMemoryLayout.decode(info.data)
+            const referrerMemory = new ReferrerMemory(decodedReferrer)
+            console.log(
+              'referrer is saved as:',
+              referrerMemory.referrerMangoAccount
+            )
+            setMangoStore((state) => {
+              state.referrerPk = referrerMemory.referrerMangoAccount
+            })
+          }
+        } catch (e) {
+          console.error('Unable to fetch referrer', e)
+        }
+      }
+
+      fetchReferrer()
     }
   }, [mangoAccount])
 

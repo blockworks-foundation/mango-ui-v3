@@ -92,7 +92,7 @@ export default function AccountBorrows() {
                     <tbody>
                       {balances
                         .filter((assets) => assets.borrows.gt(ZERO_I80F48))
-                        .map((asset, i) => {
+                        .map((asset) => {
                           const token = getTokenBySymbol(
                             mangoConfig,
                             asset.symbol
@@ -101,7 +101,7 @@ export default function AccountBorrows() {
                             token.mintKey
                           )
                           return (
-                            <TrBody index={i} key={tokenIndex}>
+                            <TrBody key={tokenIndex}>
                               <Td>
                                 <div className="flex items-center">
                                   <img
@@ -317,7 +317,7 @@ export default function AccountBorrows() {
                   {mangoConfig.tokens.map((token, i) => {
                     const tokenIndex = mangoGroup.getTokenIndex(token.mintKey)
                     return (
-                      <TrBody index={i} key={`${token.symbol}${i}`}>
+                      <TrBody key={`${token.symbol}${i}`}>
                         <Td>
                           <div className="flex items-center">
                             <img

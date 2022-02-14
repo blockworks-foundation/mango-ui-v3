@@ -345,7 +345,7 @@ const BalancesTable = ({
                 </thead>
                 <tbody>
                   {items.map((balance, index) => (
-                    <TrBody index={index} key={`${balance.symbol}${index}`}>
+                    <TrBody key={`${balance.symbol}${index}`}>
                       <Td>
                         <div className="flex items-center">
                           <img
@@ -451,8 +451,8 @@ const BalancesTable = ({
                 {items.map((balance, index) => (
                   <ExpandableRow
                     buttonTemplate={
-                      <div className="flex items-center justify-between text-fgd-1 w-full">
-                        <div className="flex items-center text-fgd-1">
+                      <div className="flex items-center justify-between text-th-fgd-1 w-full">
+                        <div className="flex items-center text-th-fgd-1">
                           <img
                             alt=""
                             width="20"
@@ -463,7 +463,7 @@ const BalancesTable = ({
 
                           {balance.symbol}
                         </div>
-                        <div className="text-fgd-1 text-right">
+                        <div className="text-th-fgd-1 text-right">
                           {balance.net.toFixed()}
                         </div>
                       </div>
