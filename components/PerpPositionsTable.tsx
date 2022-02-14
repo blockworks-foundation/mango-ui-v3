@@ -26,6 +26,7 @@ const PositionsTable = () => {
   const [settling, setSettling] = useState(false)
   const [showShareModal, setShowShareModal] = useState(false)
   const [showMarketCloseModal, setShowMarketCloseModal] = useState(false)
+  const [positionToShare, setPositionToShare] = useState(null)
 
   const market = useMangoStore(marketSelector)
   const price = useMangoStore((s) => s.tradeForm.price)
@@ -68,6 +69,11 @@ const PositionsTable = () => {
   const handleCloseShare = useCallback(() => {
     setShowShareModal(false)
   }, [])
+
+  const handleShowShare = (position) => {
+    setPositionToShare(position)
+    setShowShareModal(true)
+  }
 
   return (
     <div className="flex flex-col pb-2">
@@ -221,7 +227,9 @@ const PositionsTable = () => {
                           </Td>
                           <Td>
                             <LinkButton
-                              onClick={() => setShowShareModal(true)}
+                              onClick={() =>
+                                handleShowShare(openPositions[index])
+                              }
                               disabled={!avgEntryPrice ? true : false}
                             >
                               <TwitterIcon className="h-4 w-4" />
@@ -233,20 +241,6 @@ const PositionsTable = () => {
                               onClose={handleCloseWarning}
                               market={perpMarket}
                               marketIndex={marketConfig.marketIndex}
-                            />
-                          ) : null}
-                          {showShareModal ? (
-                            <ShareModal
-                              isOpen={showShareModal}
-                              onClose={handleCloseShare}
-                              position={{
-                                marketConfig,
-                                indexPrice,
-                                avgEntryPrice: avgEntryPrice
-                                  ? avgEntryPrice
-                                  : '0.00',
-                                basePosition,
-                              }}
                             />
                           ) : null}
                         </TrBody>
@@ -353,6 +347,13 @@ const PositionsTable = () => {
           )}
         </div>
       </div>
+      {showShareModal ? (
+        <ShareModal
+          isOpen={showShareModal}
+          onClose={handleCloseShare}
+          position={positionToShare}
+        />
+      ) : null}
     </div>
   )
 }
