@@ -69,6 +69,32 @@ const referralHistory = []
 //   },
 // ]
 
+const ProgramDetails = () => {
+  return (
+    <>
+      <h2 className="mb-4">Program Details</h2>
+      <ul className="list-disc pl-3">
+        <li>
+          Your referral code is automatically applied when a user creates a
+          Mango Account using your link.
+        </li>
+        <li>
+          When any of your referrals trade Mango Perps, you earn 16% of their
+          trade fees.
+        </li>
+        <li>
+          Plus, for using your link they get a 4% discount off their Mango Perp
+          fees.
+        </li>
+        <li>
+          You must have at least 10,000 MNGO in your Mango Account to qualify
+          for generating referrals and earning referral rewards.
+        </li>
+      </ul>
+    </>
+  )
+}
+
 export default function Referral() {
   const { t } = useTranslation('common')
   const mangoGroup = useMangoStore(mangoGroupSelector)
@@ -85,7 +111,7 @@ export default function Referral() {
   >([])
   const [hasCopied, setHasCopied] = useState(null)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
-  const [hasReferrals] = useState(false) // Placeholder to show/hide users referral stats
+  // const [hasReferrals] = useState(false) // Placeholder to show/hide users referral stats
   const [loading, setLoading] = useState(false)
   const [inputError, setInputError] = useState('')
   const { width } = useViewport()
@@ -198,7 +224,7 @@ export default function Referral() {
           {connected ? (
             mangoAccount ? (
               <>
-                {hasReferrals ? (
+                {/* {hasReferrals ? (
                   <div className="col-span-12">
                     <h2 className="mb-4">Your Referrals</h2>
                     <div className="border-b border-th-bkg-4 sm:border-b-0 grid grid-cols-2 grid-row-flow sm:gap-6">
@@ -220,30 +246,11 @@ export default function Referral() {
                       </div>
                     </div>
                   </div>
-                ) : null}
+                ) : null} */}
                 <div className="col-span-12">
                   <div className="flex flex-col xl:flex-row xl:space-x-6 space-y-4 xl:space-y-0 w-full">
                     <div className="min-w-[25%] bg-th-bkg-3 flex-1 p-6 rounded-md">
-                      <h2 className="mb-4">Program Details</h2>
-                      <ul className="list-disc pl-3">
-                        <li>
-                          Your referral code is automatically applied whenever
-                          your link is used to create an account.
-                        </li>
-                        <li>
-                          When any of your referrals trade Mango Perps, you earn
-                          16% of their trade fees.
-                        </li>
-                        <li>
-                          Plus, for using your link they get a 4% discount off
-                          their Mango Perp fees.
-                        </li>
-                        <li>
-                          You must have at least 10,000 MNGO in your Mango
-                          Account to qualify for generating referrals and
-                          earning referral rewards.
-                        </li>
-                      </ul>
+                      <ProgramDetails />
                     </div>
                     <div className="flex flex-col w-full">
                       {hasRequiredMngo ? (
@@ -265,17 +272,15 @@ export default function Referral() {
                                         {!isMobile ? (
                                           <LinkIcon className="h-4 mr-1.5 w-4" />
                                         ) : null}
-                                        <p className="mb-0 text-th-fgd-1">
+                                        <p className="mb-0 text-th-fgd-1 max-w-md">
                                           {isMobile
                                             ? abbreviateAddress(
                                                 mangoAccount.publicKey
                                               )
-                                            : `https://trade.mango.markets?ref=
-                                      ${mangoAccount.publicKey.toString()}`}
+                                            : `https://trade.mango.markets?ref=${mangoAccount.publicKey.toString()}`}
                                         </p>
                                       </div>
                                     </Td>
-                                    {/* <Td>5</Td> */}
                                     <Td className="flex items-center justify-end">
                                       <IconButton
                                         className={`flex-shrink-0 ${
@@ -327,7 +332,6 @@ export default function Referral() {
                                             </p>
                                           </div>
                                         </Td>
-                                        {/* <Td>5</Td> */}
                                         <Td className="flex items-center justify-end">
                                           <IconButton
                                             className={`flex-shrink-0 ${
@@ -379,7 +383,7 @@ export default function Referral() {
                       )}
                     </div>
                     {hasRequiredMngo ? (
-                      <div className="bg-th-bkg-3 p-6 rounded-md w-full xl:w-1/3">
+                      <div className="min-w-[25%] bg-th-bkg-3 p-6 rounded-md w-full xl:w-1/3">
                         <h2 className="mb-1">Custom Referral Links</h2>
                         <p className="mb-4">
                           You can generate up to 5 custom referral links.
@@ -512,24 +516,34 @@ export default function Referral() {
                 ) : null}
               </>
             ) : (
-              <div className="col-span-12">
-                <EmptyState
-                  buttonText={t('create-account')}
-                  icon={<CurrencyDollarIcon />}
-                  onClickButton={() => setShowAccountsModal(true)}
-                  title={t('no-account-found')}
-                />
-              </div>
+              <>
+                <div className="col-span-12 lg:col-span-4 bg-th-bkg-3 p-6 rounded-md">
+                  <ProgramDetails />
+                </div>
+                <div className="col-span-12 lg:col-span-8 bg-th-bkg-3 p-6 rounded-md flex items-center justify-center">
+                  <EmptyState
+                    buttonText={t('create-account')}
+                    icon={<CurrencyDollarIcon />}
+                    onClickButton={() => setShowAccountsModal(true)}
+                    title={t('no-account-found')}
+                  />
+                </div>
+              </>
             )
           ) : (
-            <div className="col-span-12">
-              <EmptyState
-                buttonText={t('connect')}
-                icon={<LinkIcon />}
-                onClickButton={() => wallet.connect()}
-                title={t('connect-wallet')}
-              />
-            </div>
+            <>
+              <div className="col-span-12 lg:col-span-4 bg-th-bkg-3 p-6 rounded-md">
+                <ProgramDetails />
+              </div>
+              <div className="col-span-12 lg:col-span-8 bg-th-bkg-3 p-6 rounded-md flex items-center justify-center">
+                <EmptyState
+                  buttonText={t('connect')}
+                  icon={<LinkIcon />}
+                  onClickButton={() => wallet.connect()}
+                  title={t('connect-wallet')}
+                />
+              </div>
+            </>
           )}
         </div>
       </PageBodyContainer>

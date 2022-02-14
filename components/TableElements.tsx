@@ -27,11 +27,7 @@ export const Td = ({
   children: ReactNode
   className?: string
 }) => (
-  <td
-    className={`px-4 h-16 whitespace-nowrap text-sm text-th-fgd-2 ${className}`}
-  >
-    {children}
-  </td>
+  <td className={`px-4 h-16 text-sm text-th-fgd-2 ${className}`}>{children}</td>
 )
 
 type ExpandableRowProps = {
