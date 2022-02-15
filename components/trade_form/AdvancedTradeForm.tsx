@@ -426,7 +426,9 @@ export default function AdvancedTradeForm({
     setIoc(checked)
   }
   const reduceOnChange = (checked) => {
-    handleSetPositionSize(positionSizePercent, spotMargin, checked)
+    if (positionSizePercent) {
+      handleSetPositionSize(positionSizePercent, spotMargin, checked)
+    }
     setReduceOnly(checked)
   }
   const marginOnChange = (checked) => {
