@@ -33,7 +33,7 @@ import { PublicKey } from '@solana/web3.js'
 export async function getStaticProps({ locale }) {
   return {
     props: {
-      ...(await serverSideTranslations(locale, ['common'])),
+      ...(await serverSideTranslations(locale, ['common', 'calculator'])),
     },
   }
 }
@@ -84,7 +84,14 @@ interface ScenarioCalculator {
 }
 
 export default function RiskCalculator() {
-  const { t } = useTranslation('common') // TOTRANSLATE
+  const { t } = useTranslation(['common', 'calculator'])
+  const riskRanks = [
+    t('calculator:great'),
+    t('calculator:ok'),
+    t('calculator:poor'),
+    t('calculator:very-poor'),
+    t('calculator:rekt'),
+  ]
 
   // Get mango account data
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
@@ -916,14 +923,14 @@ export default function RiskCalculator() {
 
       riskRanking =
         maintHealth > 0.4
-          ? 'Great'
+          ? riskRanks[0]
           : maintHealth > 0.3
-          ? 'OK'
+          ? riskRanks[1]
           : initHealth > 0
-          ? 'Poor'
+          ? riskRanks[2]
           : maintHealth > 0
-          ? 'Very Poor'
-          : 'Rekt'
+          ? riskRanks[3]
+          : riskRanks[4]
 
       // Calculate percent to liquidation
       const scenarioBaseLine = getHealthComponents(1)
@@ -1289,12 +1296,9 @@ export default function RiskCalculator() {
       <PageBodyContainer>
         <div className="flex flex-col pt-8 pb-3 sm:pb-6 md:pt-10">
           <h1 className={`mb-2 text-th-fgd-1 text-2xl font-semibold`}>
-            Risk Calculator
+            {t('calculator:risk-calculator')}
           </h1>
-          <p className="mb-0">
-            IN TESTING (Use at your own risk): Please report any bugs or
-            comments in our #dev-ui discord channel.
-          </p>
+          <p className="mb-0">{t('calculator:in-testing-warning')}</p>
         </div>
         {scenarioBars?.rowData.length > 0 ? (
           <div className="rounded-lg bg-th-bkg-2">
@@ -1302,7 +1306,7 @@ export default function RiskCalculator() {
               <div className="col-span-12 md:col-span-8 p-4">
                 <div className="flex justify-between pb-2 lg:pb-3 px-0 lg:px-3">
                   <div className="pb-4 lg:pb-0 text-th-fgd-1 text-lg">
-                    Scenario Balances
+                    {t('calculator:scenario-balances')}
                   </div>
                   <div className="flex justify-between lg:justify-start">
                     <Button
@@ -1315,14 +1319,14 @@ export default function RiskCalculator() {
                     >
                       <div className="flex items-center hover:text-th-primary">
                         <RefreshIcon className="h-5 w-5 mr-1.5" />
-                        Reset
+                        {t('reset')}
                       </div>
                     </Button>
                   </div>
                 </div>
                 <div className="bg-th-bkg-1 border border-th-fgd-4 flex items-center mb-3 lg:mx-3 px-3 h-8 rounded">
                   <div className="pr-5 text-th-fgd-3 text-xs whitespace-nowrap">
-                    Edit All Prices
+                    {t('calculator:edit-all-prices')}
                   </div>
                   <div className="w-full">
                     <Slider
@@ -1349,7 +1353,7 @@ export default function RiskCalculator() {
                     <LinkButton
                       onClick={() => setSliderPercentage(defaultSliderVal)}
                     >
-                      Reset
+                      {t('reset')}
                     </LinkButton>
                   </div>
                 </div>
@@ -1369,11 +1373,11 @@ export default function RiskCalculator() {
                       className="text-xs"
                       onChange={() => toggleOrdersAsBalance(!ordersAsBalance)}
                     >
-                      Simulate orders cancelled
+                      {t('calculator:simulate-orders-cancelled')}
                     </Switch>
                   </div>
                   <div className="flex justify-between lg:justify-start">
-                    <Tooltip content="Set current pricing to be the anchor point (0%) for slider">
+                    <Tooltip content={t('calculator:tooltip-anchor-slider')}>
                       <Button
                         className={`text-xs flex items-center justify-center sm:ml-3 pt-0 pb-0 h-8 pl-3 pr-3 rounded`}
                         onClick={() => {
@@ -1383,7 +1387,7 @@ export default function RiskCalculator() {
                       >
                         <div className="flex items-center hover:text-th-primary">
                           <AnchorIcon className="h-5 w-5 mr-1.5" />
-                          Anchor slider
+                          {t('calculator:anchor-slider')}
                         </div>
                       </Button>
                     </Tooltip>
@@ -1397,8 +1401,8 @@ export default function RiskCalculator() {
                         <Disclosure.Button className="bg-th-bkg-1 default-transition flex items-center justify-between p-3 w-full hover:bg-th-bkg-1 focus:outline-none">
                           <div className="text-th-fgd-3">
                             {open
-                              ? 'Scenario Details'
-                              : 'Scenario Maintenance Health:'}
+                              ? t('calculator:scenario-details')
+                              : t('calculator:scenario-maint-health')}
                           </div>
                           {open ? null : (
                             <div className="text-th-fgd-3 text-xs">
@@ -1424,7 +1428,7 @@ export default function RiskCalculator() {
                           <div className="text-th-fgd-1 text-xs">
                             <div className="flex items-center justify-between pb-3">
                               <div className="text-th-fgd-3">
-                                Maintenance Health
+                                {t('maint-health')}
                               </div>
                               {scenarioDetails.get('maintHealth') * 100 >= 9999
                                 ? '>10000'
@@ -1437,7 +1441,7 @@ export default function RiskCalculator() {
                             </div>
                             <div className="flex items-center justify-between pb-3">
                               <div className="text-th-fgd-3">
-                                Initial Health
+                                {t('init-health')}
                               </div>
                               {scenarioDetails.get('initHealth') * 100 >= 9999
                                 ? '>10000'
@@ -1450,7 +1454,7 @@ export default function RiskCalculator() {
                             </div>
                             <div className="flex items-center justify-between pb-3">
                               <div className="text-th-fgd-3">
-                                New Positions Can Be Opened
+                                {t('calculator:new-positions-openable')}
                               </div>
                               <div
                                 className={`font-bold ${
@@ -1460,14 +1464,12 @@ export default function RiskCalculator() {
                                 }`}
                               >
                                 {scenarioDetails.get('initHealth') * 100 >= 0
-                                  ? 'Yes'
-                                  : 'No'}
+                                  ? t('calculator:yes')
+                                  : t('calculator:no')}
                               </div>
                             </div>
                             <div className="flex items-center justify-between pb-3">
-                              <div className="text-th-fgd-3">
-                                Account Health
-                              </div>
+                              <div className="text-th-fgd-3">{t('health')}</div>
                               <div className="font-bold">
                                 {
                                   <div
@@ -1476,20 +1478,20 @@ export default function RiskCalculator() {
                                       0
                                         ? 'text-th-red'
                                         : scenarioDetails.get('riskRanking') ===
-                                          'Very Poor'
+                                          riskRanks[3]
                                         ? 'text-th-red'
                                         : scenarioDetails.get('riskRanking') ===
-                                          'Poor'
+                                          riskRanks[2]
                                         ? 'text-th-orange'
                                         : scenarioDetails.get('riskRanking') ===
-                                          'OK'
+                                          riskRanks[1]
                                         ? 'text-th-primary'
                                         : 'text-th-green'
                                     }`}
                                   >
                                     {scenarioDetails.get('maintHealth') * 100 <
                                     0
-                                      ? 'Rekt'
+                                      ? riskRanks[4]
                                       : scenarioDetails.get('riskRanking')}
                                   </div>
                                 }
@@ -1498,7 +1500,7 @@ export default function RiskCalculator() {
                             <div>
                               <div className="flex items-center justify-between pb-3">
                                 <div className="text-th-fgd-3">
-                                  Account Value
+                                  {t('account-value')}
                                 </div>
                                 <div className="font-bold">
                                   {formatUsdValue(
@@ -1509,7 +1511,7 @@ export default function RiskCalculator() {
                             </div>
                             <div className="flex items-center justify-between pb-3">
                               <div className="text-th-fgd-3">
-                                Percent Move To Liquidation
+                                {t('calculator:percent-move-liquidation')}
                               </div>
                               <div className="font-bold">
                                 {scenarioDetails.get(
@@ -1537,18 +1539,18 @@ export default function RiskCalculator() {
                               scope="col"
                               className={`px-1 lg:px-3 py-1 text-left font-normal`}
                             >
-                              Asset
+                              {t('asset')}
                             </Th>
                             <Th
                               scope="col"
                               className={`px-1 lg:px-3 py-1 text-left font-normal`}
                             >
                               <div className="flex justify-start md:justify-between">
-                                <div className="pr-2">Spot</div>
+                                <div className="pr-2">{t('spot')}</div>
                                 <LinkButton
                                   onClick={() => resetScenarioColumn('spotNet')}
                                 >
-                                  Reset
+                                  {t('reset')}
                                 </LinkButton>
                               </div>
                             </Th>
@@ -1557,13 +1559,13 @@ export default function RiskCalculator() {
                               className={`px-1 lg:px-3 py-1 text-left font-normal`}
                             >
                               <div className="flex justify-start md:justify-between">
-                                <div className="pr-2">Perp</div>
+                                <div className="pr-2">{t('perp')}</div>
                                 <LinkButton
                                   onClick={() =>
                                     resetScenarioColumn('perpBasePosition')
                                   }
                                 >
-                                  Reset
+                                  {t('reset')}
                                 </LinkButton>
                               </div>
                             </Th>
@@ -1572,13 +1574,15 @@ export default function RiskCalculator() {
                               className={`px-1 lg:px-3 py-1 text-left font-normal`}
                             >
                               <div className="flex justify-start md:justify-between">
-                                <div className="pr-2">Perp Entry</div>
+                                <div className="pr-2">
+                                  {t('calculator:perp-entry')}
+                                </div>
                                 <LinkButton
                                   onClick={() =>
                                     resetScenarioColumn('perpAvgEntryPrice')
                                   }
                                 >
-                                  Reset
+                                  {t('reset')}
                                 </LinkButton>
                               </div>
                             </Th>
@@ -1587,11 +1591,11 @@ export default function RiskCalculator() {
                               className={`px-1 lg:px-3 py-1 font-normal`}
                             >
                               <div className="flex justify-start md:justify-between">
-                                <div className="pr-2">Price</div>
+                                <div className="pr-2">{t('price')}</div>
                                 <LinkButton
                                   onClick={() => resetScenarioColumn('price')}
                                 >
-                                  Reset
+                                  {t('reset')}
                                 </LinkButton>
                               </div>
                             </Th>
@@ -1600,8 +1604,10 @@ export default function RiskCalculator() {
                               className={`px-1 lg:px-3 py-1 text-left font-normal`}
                             >
                               <div className="flex justify-start md:justify-between">
-                                <Tooltip content="Spot Value + Perp Balance">
-                                  <div className="pr-2">Value</div>
+                                <Tooltip
+                                  content={t('calculator:spot-val-perp-val')}
+                                >
+                                  <div className="pr-2">{t('value')}</div>
                                 </Tooltip>
                               </div>
                             </Th>
@@ -1610,8 +1616,12 @@ export default function RiskCalculator() {
                               className={`px-1 lg:px-3 py-1 text-left font-normal`}
                             >
                               <div className="flex justify-start md:justify-between">
-                                <Tooltip content="Single asset liquidation price assuming all other asset prices remain constant">
-                                  <div className="pr-2">Liq. Price</div>
+                                <Tooltip
+                                  content={t('calculator:single-asset-liq')}
+                                >
+                                  <div className="pr-2">
+                                    {t('calculator:liq-price')}
+                                  </div>
                                 </Tooltip>
                               </div>
                             </Th>
@@ -1936,7 +1946,7 @@ export default function RiskCalculator() {
               {scenarioBars?.rowData.length > 0 ? (
                 <div className="bg-th-bkg-3 col-span-4 hidden md:block p-4 relative rounded-r-lg">
                   <div className="pb-4 text-th-fgd-1 text-lg">
-                    Scenario Details
+                    {t('calculator:scenario-details')}
                   </div>
                   {/* Joke Wrapper */}
                   <div className="relative col-span-4">
@@ -1944,10 +1954,10 @@ export default function RiskCalculator() {
                     scenarioDetails.get('equity') === 0 ? (
                       <div className="bg-th-green-dark border border-th-green-dark flex flex-col items-center mb-6 p-3 rounded text-center text-th-fgd-1">
                         <div className="pb-0.5 text-th-fgd-1">
-                          Let&apos;s get this party started
+                          {t('calculator:joke-get-party-started')}
                         </div>
                         <div className="text-th-fgd-1 text-xs">
-                          The mangoes are ripe for the picking...
+                          {t('calculator:joke-mangoes-are-ripe')}
                         </div>
                       </div>
                     ) : null}
@@ -1955,64 +1965,70 @@ export default function RiskCalculator() {
                     scenarioDetails.get('equity') > 0 ? (
                       <div className="border border-th-green flex flex-col items-center mb-6 p-3 rounded text-center text-th-fgd-1">
                         <div className="pb-0.5 text-th-fgd-1">
-                          0 Borrows = 0 Risk
+                          {t('calculator:joke-zero-borrows-risk')}
                         </div>
                         <div className="text-th-fgd-3 text-xs">
-                          Come on, live a little...
+                          {t('calculator:joke-live-a-little')}
                         </div>
                       </div>
                     ) : null}
-                    {scenarioDetails.get('riskRanking') === 'Great' &&
+                    {scenarioDetails.get('riskRanking') === riskRanks[0] &&
                     scenarioDetails.get('leverage') !== 0 ? (
                       <div className="border border-th-green flex flex-col items-center mb-6 p-3 rounded text-center text-th-fgd-1">
-                        <div className="pb-0.5 text-th-fgd-1">Looking good</div>
+                        <div className="pb-0.5 text-th-fgd-1">
+                          {t('calculator:joke-looking-good')}
+                        </div>
                         <div className="text-th-fgd-3 text-xs">
-                          The sun is shining and the mangoes are ripe...
+                          {t('calculator:joke-sun-shining')}
                         </div>
                       </div>
                     ) : null}
-                    {scenarioDetails.get('riskRanking') === 'OK' ? (
+                    {scenarioDetails.get('riskRanking') === riskRanks[1] ? (
                       <div className="border border-th-orange flex flex-col items-center mb-6 p-3 rounded text-center text-th-fgd-1">
                         <div className="pb-0.5 text-th-fgd-1">
-                          Liquidator activity is increasing
+                          {t('calculator:joke-liquidator-activity')}
                         </div>
                         <div className="text-th-fgd-3 text-xs">
-                          It might be time to re-think your positions
+                          {t('calculator:joke-rethink-positions')}
                         </div>
                       </div>
                     ) : null}
-                    {scenarioDetails.get('riskRanking') === 'Poor' ? (
+                    {scenarioDetails.get('riskRanking') === riskRanks[2] ? (
                       <div className="border border-th-red flex flex-col items-center mb-6 p-3 rounded text-center text-th-fgd-1">
                         <div className="pb-0.5 text-th-fgd-1">
-                          Liquidators are closing in
+                          {t('calculator:joke-liquidators-closing')}
                         </div>
                         <div className="text-th-fgd-3 text-xs">
-                          Hit &apos;em with everything you&apos;ve got...
+                          {t('calculator:joke-hit-em-with')}
                         </div>
                       </div>
                     ) : null}
-                    {scenarioDetails.get('riskRanking') === 'Very Poor' ? (
+                    {scenarioDetails.get('riskRanking') === riskRanks[3] ? (
                       <div className="border border-th-red flex flex-col items-center mb-6 p-3 rounded text-center text-th-fgd-1">
                         <div className="pb-0.5 text-th-fgd-1">
-                          Liquidators have spotted you
+                          {t('calculator:joke-liquidators-spotted-you')}
                         </div>
                         <div className="text-th-fgd-3 text-xs">
-                          Throw some money at them to make them go away...
+                          {t('calculator:joke-throw-some-money')}
                         </div>
                       </div>
                     ) : null}
-                    {scenarioDetails.get('riskRanking') === 'Rekt' ? (
+                    {scenarioDetails.get('riskRanking') === riskRanks[4] ? (
                       <div className="bg-th-red border border-th-red flex flex-col items-center mb-6 p-3 rounded text-center text-th-fgd-1">
-                        <div className="pb-0.5 text-th-fgd-1">Liquidated!</div>
+                        <div className="pb-0.5 text-th-fgd-1">
+                          {t('calculator:joke-liquidated')}
+                        </div>
                         <div className="text-th-fgd-1 text-xs">
-                          Insert coin to continue...
+                          {t('calculator:joke-insert-coin')}
                         </div>
                       </div>
                     ) : null}
                   </div>
                   <div className="flex items-center justify-between pb-3">
-                    <Tooltip content="Maintenance health must be above 0% to avoid liquidation.">
-                      <div className="text-th-fgd-3">Maintenance Health</div>
+                    <Tooltip content={t('calculator:tooltip-maint-health')}>
+                      <div className="text-th-fgd-3">
+                        {t('calculator:maintenance-health')}
+                      </div>
                     </Tooltip>
                     <div className="font-bold">
                       {scenarioDetails.get('maintHealth') * 100 >= 9999
@@ -2024,8 +2040,10 @@ export default function RiskCalculator() {
                     </div>
                   </div>
                   <div className="flex items-center justify-between pb-3">
-                    <Tooltip content="Initial health must be above 0% to open new positions.">
-                      <div className="text-th-fgd-3">Initial Health</div>
+                    <Tooltip content={t('calculator:tooltip-init-health')}>
+                      <div className="text-th-fgd-3">
+                        {t('calculator:initial-health')}
+                      </div>
                     </Tooltip>
                     <div className="font-bold">
                       {scenarioDetails.get('initHealth') * 100 >= 9999
@@ -2038,7 +2056,7 @@ export default function RiskCalculator() {
                   </div>
                   <div className="flex items-center justify-between pb-3">
                     <div className="text-th-fgd-3">
-                      New Positions Can Be Opened
+                      {t('calculator:new-positions-openable')}
                     </div>
                     <div
                       className={`font-bold ${
@@ -2048,53 +2066,56 @@ export default function RiskCalculator() {
                       }`}
                     >
                       {scenarioDetails.get('initHealth') * 100 >= 0
-                        ? 'Yes'
-                        : 'No'}
+                        ? t('calculator:yes')
+                        : t('calculator:no')}
                     </div>
                   </div>
                   <div className="flex items-center justify-between pb-3 mb-6">
-                    <div className="text-th-fgd-3">Account Health</div>
+                    <div className="text-th-fgd-3">{t('account-health')}</div>
                     {
                       <div
                         className={`font-bold ${
                           scenarioDetails.get('maintHealth') * 100 < 0
                             ? 'text-th-red'
-                            : scenarioDetails.get('riskRanking') === 'Very Poor'
+                            : scenarioDetails.get('riskRanking') ===
+                              riskRanks[3]
                             ? 'text-th-red'
-                            : scenarioDetails.get('riskRanking') === 'Poor'
+                            : scenarioDetails.get('riskRanking') ===
+                              riskRanks[2]
                             ? 'text-th-orange'
-                            : scenarioDetails.get('riskRanking') === 'OK'
+                            : scenarioDetails.get('riskRanking') ===
+                              riskRanks[1]
                             ? 'text-th-primary'
                             : 'text-th-green'
                         }`}
                       >
                         {scenarioDetails.get('maintHealth') * 100 < 0
-                          ? 'Rekt'
+                          ? riskRanks[4]
                           : scenarioDetails.get('riskRanking')}
                       </div>
                     }
                   </div>
                   <div className="flex items-center justify-between pb-3">
-                    <div className="text-th-fgd-3">Account Value</div>
+                    <div className="text-th-fgd-3">{t('account-value')}</div>
                     <div className="font-bold">
                       {formatUsdValue(scenarioDetails.get('equity'))}
                     </div>
                   </div>
                   <div className="flex items-center justify-between pb-3">
-                    <div className="text-th-fgd-3">Assets</div>
+                    <div className="text-th-fgd-3">{t('assets')}</div>
                     <div className="font-bold">
                       {formatUsdValue(scenarioDetails.get('assets'))}
                     </div>
                   </div>
                   <div className="flex items-center justify-between pb-3 mb-6">
-                    <div className="text-th-fgd-3">Liabilities</div>
+                    <div className="text-th-fgd-3">{t('liabilities')}</div>
                     <div className="font-bold">
                       {formatUsdValue(scenarioDetails.get('liabilities'))}
                     </div>
                   </div>
                   <div className="flex items-center justify-between pb-3">
                     <div className="text-th-fgd-3">
-                      Maint. Weighted Assets Value
+                      {t('calculator:maint-weighted-assets')}
                     </div>
                     <div className="font-bold">
                       {formatUsdValue(scenarioDetails.get('maintWeightAssets'))}
@@ -2102,7 +2123,7 @@ export default function RiskCalculator() {
                   </div>
                   <div className="flex items-center justify-between pb-3">
                     <div className="text-th-fgd-3">
-                      Maint. Weighted Liabilities Value
+                      {t('calculator:maint-weighted-liabilities')}
                     </div>
                     <div className="font-bold">
                       {formatUsdValue(
@@ -2112,7 +2133,7 @@ export default function RiskCalculator() {
                   </div>
                   <div className="flex items-center justify-between pb-3">
                     <div className="text-th-fgd-3">
-                      Init. Weighted Assets Value
+                      {t('calculator:init-weighted-assets')}
                     </div>
                     <div className="font-bold">
                       {formatUsdValue(scenarioDetails.get('initWeightAssets'))}
@@ -2120,7 +2141,7 @@ export default function RiskCalculator() {
                   </div>
                   <div className="flex items-center justify-between pb-3 mb-6">
                     <div className="text-th-fgd-3">
-                      Init. Weighted Liabilities Value
+                      {t('calculator:init-weighted-assets')}
                     </div>
                     <div className="font-bold">
                       {formatUsdValue(
@@ -2129,14 +2150,14 @@ export default function RiskCalculator() {
                     </div>
                   </div>
                   <div className="flex items-center justify-between pb-3">
-                    <div className="text-th-fgd-3">Leverage</div>
+                    <div className="text-th-fgd-3">{t('leverage')}</div>
                     <div className="font-bold">
                       {scenarioDetails.get('leverage').toFixed(2)}x
                     </div>
                   </div>
                   <div className="flex items-center justify-between pb-3">
                     <div className="text-th-fgd-3">
-                      Percent Move To Liquidation
+                      {t('calculator:percent-move-liquidation')}
                     </div>
                     <div className="font-bold">
                       {scenarioDetails.get('percentToLiquidationAbsolute')}%

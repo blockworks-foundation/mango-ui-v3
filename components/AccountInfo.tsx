@@ -40,6 +40,7 @@ export default function AccountInfo() {
   const { mangoAccount, initialLoad } = useMangoAccount()
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const mangoClient = useMangoStore((s) => s.connection.client)
+  const wallet = useMangoStore((s) => s.wallet.current)
   const actions = useMangoStore((s) => s.actions)
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
@@ -48,6 +49,8 @@ export default function AccountInfo() {
   const [showDepositModal, setShowDepositModal] = useState(false)
   const [showWithdrawModal, setShowWithdrawModal] = useState(false)
   const [showAlertsModal, setShowAlertsModal] = useState(false)
+
+  const canWithdraw = mangoAccount?.owner.equals(wallet.publicKey)
 
   const handleCloseDeposit = useCallback(() => {
     setShowDepositModal(false)
@@ -361,7 +364,7 @@ export default function AccountInfo() {
             <Button
               onClick={() => setShowWithdrawModal(true)}
               className="w-full"
-              disabled={!connected || !mangoAccount}
+              disabled={!connected || !mangoAccount || !canWithdraw}
             >
               <span>{t('withdraw')}</span>
             </Button>

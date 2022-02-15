@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import { Popover } from '@headlessui/react'
+import { ChevronDownIcon } from '@heroicons/react/outline'
 import Link from 'next/link'
 import { ChevronDownIcon } from '@heroicons/react/outline'
 
@@ -43,7 +44,7 @@ export default function NavDropMenu({
             className="flex flex-col"
           >
             <Popover.Button
-              className="h-10 text-th-fgd-1 hover:text-th-primary md:px-2 lg:px-4 focus:outline-none"
+              className="h-10 text-th-fgd-1 hover:text-th-primary md:px-2 lg:px-4 focus:outline-none transition-none"
               ref={buttonRef}
             >
               <div

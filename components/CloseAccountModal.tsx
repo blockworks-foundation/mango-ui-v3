@@ -25,7 +25,6 @@ import {
 import { formatUsdValue } from '../utils'
 
 interface CloseAccountModalProps {
-  accountName?: string
   lamports?: number
   isOpen: boolean
   onClose?: (x?) => void

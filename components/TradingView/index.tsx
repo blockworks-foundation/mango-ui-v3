@@ -270,6 +270,7 @@ const TVChartContainer = () => {
     const bidInfo =
       useMangoStore.getState().accountInfos[marketConfig.bidsKey.toString()]
     const wallet = useMangoStore.getState().wallet.current
+    const referrerPk = useMangoStore.getState().referrerPk
 
     if (!wallet || !mangoGroup || !mangoAccount || !market) return
 
@@ -311,7 +312,9 @@ const TVChartContainer = () => {
           order.size,
           orderType,
           0,
-          order.side === 'buy' ? askInfo : bidInfo
+          order.side === 'buy' ? askInfo : bidInfo,
+          false,
+          referrerPk ? referrerPk : undefined
         )
       }
 

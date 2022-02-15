@@ -90,7 +90,7 @@ export default function useWallet() {
         state.wallet.connected = false
         state.mangoAccounts = []
         state.selectedMangoAccount.current = null
-        state.tradeHistory = []
+        state.tradeHistory = { spot: [], perp: [] }
       })
       notify({
         type: 'info',

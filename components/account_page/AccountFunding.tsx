@@ -239,7 +239,7 @@ const AccountFunding = () => {
               </thead>
               <tbody>
                 {fundingStats.length === 0 ? (
-                  <TrBody index={0}>
+                  <TrBody>
                     <td colSpan={4}>
                       <div className="flex">
                         <div className="mx-auto py-4 text-th-fgd-3">
@@ -249,9 +249,9 @@ const AccountFunding = () => {
                     </td>
                   </TrBody>
                 ) : (
-                  fundingStats.map(([symbol, stats], index) => {
+                  fundingStats.map(([symbol, stats]) => {
                     return (
-                      <TrBody index={index} key={symbol}>
+                      <TrBody key={symbol}>
                         <Td className="w-1/2">
                           <div className="flex items-center">
                             <img
@@ -373,12 +373,12 @@ const AccountFunding = () => {
                           </TrHead>
                         </thead>
                         <tbody>
-                          {paginatedData.map((stat, index) => {
+                          {paginatedData.map((stat) => {
                             // @ts-ignore
                             const utc = dayjs.utc(stat.time).format()
 
                             return (
-                              <TrBody index={index} key={stat.time}>
+                              <TrBody key={stat.time}>
                                 <Td className="w-1/2">
                                   {dayjs(utc).format('DD/MM/YY, h:mma')}
                                 </Td>

@@ -79,16 +79,24 @@ h3 {
 }
 
 p {
-  @apply text-th-fgd-3 mb-2.5;
+  @apply text-sm text-th-fgd-3 mb-2;
 }
 
 a {
-  @apply text-th-primary transition-all duration-300 hover:text-th-primary-dark;
+  @apply text-th-primary hover:text-th-primary-dark;
+}
+
+li {
+  @apply text-sm text-th-fgd-3 mb-2;
+}
+
+tbody {
+  @apply border-t border-th-bkg-4;
 }
 
 button {
   transition: all 0.3s ease;
-  @apply font-semibold rounded-md tracking-wider;
+  @apply rounded-md tracking-wider;
 }
 
 button.transition-none {

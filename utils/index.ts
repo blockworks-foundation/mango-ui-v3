@@ -1,4 +1,4 @@
-import { I80F48 } from '@blockworks-foundation/mango-client/lib/src/fixednum'
+import { I80F48 } from '@blockworks-foundation/mango-client'
 import { TOKEN_MINTS } from '@project-serum/serum'
 import { PublicKey } from '@solana/web3.js'
 import BN from 'bn.js'
@@ -312,3 +312,10 @@ export function getIsDocumentHidden() {
 export const numberCompactFormatter = Intl.NumberFormat('en', {
   notation: 'compact',
 })
+
+export function patchInternalMarketName(marketName: string) {
+  if (marketName.includes('/USDC')) {
+    marketName = marketName.replace('/USDC', '-SPOT')
+  }
+  return marketName
+}

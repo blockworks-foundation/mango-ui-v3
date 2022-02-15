@@ -569,6 +569,7 @@ export default function AdvancedTradeForm({
     const bidInfo =
       useMangoStore.getState().accountInfos[marketConfig.bidsKey.toString()]
     const wallet = useMangoStore.getState().wallet.current
+    const referrerPk = useMangoStore.getState().referrerPk
 
     if (!wallet || !mangoGroup || !mangoAccount || !market) return
 
@@ -667,7 +668,8 @@ export default function AdvancedTradeForm({
             perpOrderType,
             Date.now(),
             side === 'buy' ? askInfo : bidInfo, // book side used for ConsumeEvents
-            reduceOnly
+            reduceOnly,
+            referrerPk ? referrerPk : undefined
           )
         }
       }

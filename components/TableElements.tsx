@@ -1,9 +1,9 @@
 import { Disclosure } from '@headlessui/react'
-import { ChevronDownIcon } from '@heroicons/react/outline'
-import { ReactNode } from 'hoist-non-react-statics/node_modules/@types/react'
+import { ChevronDownIcon } from '@heroicons/react/solid'
+import { ReactNode } from 'react'
 
 export const Table = ({ children }) => (
-  <table className="min-w-full divide-y divide-th-bkg-2">{children}</table>
+  <table className="min-w-full">{children}</table>
 )
 
 export const TrHead = ({ children }) => (
@@ -16,10 +16,8 @@ export const Th = ({ children }) => (
   </th>
 )
 
-export const TrBody = ({ children, index }) => (
-  <tr className={`${index % 2 === 0 ? `bg-[rgba(255,255,255,0.03)]` : ''}`}>
-    {children}
-  </tr>
+export const TrBody = ({ children }) => (
+  <tr className="border-b border-th-bkg-4">{children}</tr>
 )
 
 export const Td = ({
@@ -29,11 +27,7 @@ export const Td = ({
   children: ReactNode
   className?: string
 }) => (
-  <td
-    className={`px-4 py-3.5 whitespace-nowrap text-sm text-th-fgd-2 ${className}`}
-  >
-    {children}
-  </td>
+  <td className={`px-4 h-16 text-sm text-th-fgd-2 ${className}`}>{children}</td>
 )
 
 type ExpandableRowProps = {

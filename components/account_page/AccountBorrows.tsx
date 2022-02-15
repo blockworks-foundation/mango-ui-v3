@@ -43,6 +43,7 @@ export default function AccountBorrows() {
   const [showDepositModal, setShowDepositModal] = useState(false)
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
+  const canWithdraw = mangoAccount?.owner.equals(wallet.publicKey)
 
   const handleCloseWithdraw = useCallback(() => {
     setShowBorrowModal(false)
@@ -91,7 +92,7 @@ export default function AccountBorrows() {
                     <tbody>
                       {balances
                         .filter((assets) => assets.borrows.gt(ZERO_I80F48))
-                        .map((asset, i) => {
+                        .map((asset) => {
                           const token = getTokenBySymbol(
                             mangoConfig,
                             asset.symbol
@@ -100,7 +101,7 @@ export default function AccountBorrows() {
                             token.mintKey
                           )
                           return (
-                            <TrBody index={i} key={tokenIndex}>
+                            <TrBody key={tokenIndex}>
                               <Td>
                                 <div className="flex items-center">
                                   <img
@@ -155,7 +156,11 @@ export default function AccountBorrows() {
                                       handleShowBorrow(asset.symbol)
                                     }
                                     className="ml-3 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
-                                    disabled={!connected || loadingMangoAccount}
+                                    disabled={
+                                      !connected ||
+                                      loadingMangoAccount ||
+                                      !canWithdraw
+                                    }
                                   >
                                     {t('borrow')}
                                   </Button>
@@ -257,7 +262,11 @@ export default function AccountBorrows() {
                                       handleShowBorrow(asset.symbol)
                                     }
                                     className="text-xs pt-0 pb-0 h-8 w-full"
-                                    disabled={!connected || loadingMangoAccount}
+                                    disabled={
+                                      !connected ||
+                                      loadingMangoAccount ||
+                                      !canWithdraw
+                                    }
                                   >
                                     {t('borrow')}
                                   </Button>
@@ -308,7 +317,7 @@ export default function AccountBorrows() {
                   {mangoConfig.tokens.map((token, i) => {
                     const tokenIndex = mangoGroup.getTokenIndex(token.mintKey)
                     return (
-                      <TrBody index={i} key={`${token.symbol}${i}`}>
+                      <TrBody key={`${token.symbol}${i}`}>
                         <Td>
                           <div className="flex items-center">
                             <img
@@ -388,7 +397,11 @@ export default function AccountBorrows() {
                             <Button
                               onClick={() => handleShowBorrow(token.symbol)}
                               className="text-xs pt-0 pb-0 h-8 pl-3 pr-3 ml-3"
-                              disabled={!connected || loadingMangoAccount}
+                              disabled={
+                                !connected ||
+                                loadingMangoAccount ||
+                                !canWithdraw
+                              }
                             >
                               {t('borrow')}
                             </Button>
@@ -496,7 +509,11 @@ export default function AccountBorrows() {
                             <Button
                               onClick={() => handleShowBorrow(token.symbol)}
                               className="text-xs pt-0 pb-0 h-8 w-full"
-                              disabled={!connected || loadingMangoAccount}
+                              disabled={
+                                !connected ||
+                                loadingMangoAccount ||
+                                !canWithdraw
+                              }
                             >
                               {t('borrow')}
                             </Button>

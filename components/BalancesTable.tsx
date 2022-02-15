@@ -56,6 +56,9 @@ const BalancesTable = ({
   const { width } = useViewport()
   const [submitting, setSubmitting] = useState(false)
   const isMobile = width ? width < breakpoints.md : false
+  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
+  const wallet = useMangoStore((s) => s.wallet.current)
+  const canWithdraw = mangoAccount?.owner.equals(wallet.publicKey)
 
   const handleSizeClick = (size, symbol) => {
     const step = selectedMarket.minOrderSize
@@ -70,7 +73,7 @@ const BalancesTable = ({
       const baseSize = Math.floor(size / priceOrDefault / step) * step
       setMangoStore((state) => {
         state.tradeForm.baseSize = baseSize
-        state.tradeForm.quoteSize = (baseSize * priceOrDefault).toFixed(2)
+        state.tradeForm.quoteSize = baseSize * priceOrDefault
         state.tradeForm.side = 'buy'
       })
     } else {
@@ -78,7 +81,7 @@ const BalancesTable = ({
       const quoteSize = roundedSize * priceOrDefault
       setMangoStore((state) => {
         state.tradeForm.baseSize = roundedSize
-        state.tradeForm.quoteSize = quoteSize.toFixed(2)
+        state.tradeForm.quoteSize = quoteSize
         state.tradeForm.side = 'sell'
       })
     }
@@ -95,9 +98,7 @@ const BalancesTable = ({
   }, [])
 
   async function handleSettleAll() {
-    const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
     const markets = useMangoStore.getState().selectedMangoGroup.markets
-    const wallet = useMangoStore.getState().wallet.current
 
     try {
       setSubmitting(true)
@@ -344,7 +345,7 @@ const BalancesTable = ({
                 </thead>
                 <tbody>
                   {items.map((balance, index) => (
-                    <TrBody index={index} key={`${balance.symbol}${index}`}>
+                    <TrBody key={`${balance.symbol}${index}`}>
                       <Td>
                         <div className="flex items-center">
                           <img
@@ -411,6 +412,7 @@ const BalancesTable = ({
                               onClick={() =>
                                 handleOpenWithdrawModal(balance.symbol)
                               }
+                              disabled={!canWithdraw}
                             >
                               {t('withdraw')}
                             </Button>
@@ -449,8 +451,8 @@ const BalancesTable = ({
                 {items.map((balance, index) => (
                   <ExpandableRow
                     buttonTemplate={
-                      <div className="flex items-center justify-between text-fgd-1 w-full">
-                        <div className="flex items-center text-fgd-1">
+                      <div className="flex items-center justify-between text-th-fgd-1 w-full">
+                        <div className="flex items-center text-th-fgd-1">
                           <img
                             alt=""
                             width="20"
@@ -461,7 +463,7 @@ const BalancesTable = ({
 
                           {balance.symbol}
                         </div>
-                        <div className="text-fgd-1 text-right">
+                        <div className="text-th-fgd-1 text-right">
                           {balance.net.toFixed()}
                         </div>
                       </div>

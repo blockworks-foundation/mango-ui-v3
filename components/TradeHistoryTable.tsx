@@ -232,12 +232,9 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                     </TrHead>
                   </thead>
                   <tbody>
-                    {paginatedData.map((trade: any, index) => {
+                    {paginatedData.map((trade: any) => {
                       return (
-                        <TrBody
-                          index={index}
-                          key={`${trade.seqNum}${trade.marketName}`}
-                        >
+                        <TrBody key={`${trade.seqNum}${trade.marketName}`}>
                           <Td className="!py-2 ">
                             <div className="flex items-center">
                               <img
@@ -263,7 +260,9 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                           <Td className="!py-2 ">
                             {formatUsdValue(trade.value)}
                           </Td>
-                          <Td className="!py-2 ">{trade.liquidity}</Td>
+                          <Td className="!py-2 ">
+                            {t(trade.liquidity.toLowerCase())}
+                          </Td>
                           <Td className="!py-2 ">
                             {formatUsdValue(trade.feeCost)}
                           </Td>
@@ -286,7 +285,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                                     : trade.taker
                                 }`}
                               >
-                                View Counterparty
+                                {t('view-counterparty')}
                               </a>
                             ) : null}
                           </Td>

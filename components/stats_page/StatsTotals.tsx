@@ -168,8 +168,8 @@ export default function StatsTotals({ latestStats, stats }) {
                   </TrHead>
                 </thead>
                 <tbody>
-                  {latestStats.map((stat, index) => (
-                    <TrBody key={stat.name} index={index}>
+                  {latestStats.map((stat) => (
+                    <TrBody key={stat.name}>
                       <Td>
                         <div className="flex items-center">
                           <img
@@ -248,8 +248,8 @@ export default function StatsTotals({ latestStats, stats }) {
                   </TrHead>
                 </thead>
                 <tbody>
-                  {latestStats.map((stat, index) => (
-                    <TrBody key={stat.name} index={index}>
+                  {latestStats.map((stat) => (
+                    <TrBody key={stat.name}>
                       <Td>
                         <div className="flex items-center">
                           <img
@@ -297,8 +297,8 @@ export default function StatsTotals({ latestStats, stats }) {
                 </TrHead>
               </thead>
               <tbody>
-                {latestStats.map((stat, index) => (
-                  <TrBody key={stat.name} index={index}>
+                {latestStats.map((stat) => (
+                  <TrBody key={stat.name}>
                     <Td>
                       <div className="flex items-center">
                         <img

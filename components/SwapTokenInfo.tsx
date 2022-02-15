@@ -395,7 +395,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                 <Disclosure.Panel>
                   <div className="border border-th-bkg-4 border-t-0 p-3 rounded-b-md">
                     <div className="font-bold m-1 mt-0 pb-2 text-th-fgd-1 text-base">
-                      Market Data
+                      {t('market-data')}
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 grid-flow-row">
                       {inputTokenInfo.market_cap_rank ? (
@@ -539,7 +539,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                     {topHolders?.inputHolders ? (
                       <div className="pt-4">
                         <div className="font-bold m-1 pb-3 text-th-fgd-1 text-base">
-                          Top 10 Holders
+                          {t('swap:top-ten')}
                         </div>
                         {topHolders.inputHolders.map((holder) => (
                           <a
@@ -646,7 +646,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                 <Disclosure.Panel>
                   <div className="border border-th-bkg-4 border-t-0 p-3 rounded-b-md">
                     <div className="font-bold m-1 mt-0 pb-2 text-th-fgd-1 text-base">
-                      Market Data
+                      {t('market-data')}
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 grid-flow-row">
                       {outputTokenInfo.market_cap_rank ? (
@@ -790,7 +790,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                     {topHolders?.outputHolders ? (
                       <div className="pt-4">
                         <div className="font-bold m-1 pb-3 text-th-fgd-1 text-base">
-                          Top 10 Holders
+                          {t('swap:top-ten')}
                         </div>
                         {topHolders.outputHolders.map((holder) => (
                           <a
