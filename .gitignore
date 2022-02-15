@@ -37,3 +37,4 @@ yarn-error.log*
 .sentryclirc
 
 .idea
+/tsconfig.tsbuildinfo
