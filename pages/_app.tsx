@@ -149,7 +149,7 @@ function App({ Component, pageProps }) {
         />
         <meta
           name="twitter:image"
-          content="https://trade.mango.markets/twitter-image.png"
+          content="https://www.mango.markets/socials/twitter-image-1200x600.png?34567878"
         />
         <meta name="google" content="notranslate" />
         <script src="/datafeeds/udf/dist/polyfills.js"></script>
