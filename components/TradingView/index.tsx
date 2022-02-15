@@ -314,7 +314,7 @@ const TVChartContainer = () => {
           0,
           order.side === 'buy' ? askInfo : bidInfo,
           false,
-          referrerPk
+          referrerPk ? referrerPk : undefined
         )
       }
 
