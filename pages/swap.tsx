@@ -76,7 +76,7 @@ export default function Swap() {
               </div>
             </div>
           </div>
-          {wallet ? <JupiterForm /> : null}
+          <JupiterForm />
         </PageBodyContainer>
       </div>
     </JupiterProvider>

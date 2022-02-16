@@ -146,7 +146,7 @@ const JupiterForm: FunctionComponent = () => {
     if (connected) {
       fetchWalletTokens()
     }
-  }, [connected])
+  }, [connected, fetchWalletTokens])
 
   useEffect(() => {
     if (!coinGeckoList?.length) return
