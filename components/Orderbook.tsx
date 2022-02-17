@@ -691,7 +691,7 @@ const OrderbookRow = React.memo<any>(
             <div className="flex justify-between w-full hover:font-semibold">
               <div
                 onClick={handlePriceClick}
-                className={`z-10 text-xs leading-5 md:leading-6 text-th-fgd-1 md:pl-5 ${
+                className={`z-10 text-xs leading-5 md:leading-6 md:pl-5 ${
                   side === 'buy'
                     ? `text-th-green`
                     : `text-th-red brightness-125`

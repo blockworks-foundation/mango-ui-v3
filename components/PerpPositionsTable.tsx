@@ -47,7 +47,7 @@ const PositionsTable = () => {
     const quoteSize = roundedSize * priceOrDefault
     setMangoStore((state) => {
       state.tradeForm.baseSize = roundedSize
-      state.tradeForm.quoteSize = quoteSize.toFixed(2)
+      state.tradeForm.quoteSize = quoteSize
       state.tradeForm.side = side === 'buy' ? 'sell' : 'buy'
     })
   }
@@ -118,25 +118,19 @@ const PositionsTable = () => {
                 </thead>
                 <tbody>
                   {openPositions.map(
-                    (
-                      {
-                        marketConfig,
-                        perpMarket,
-                        perpAccount,
-                        basePosition,
-                        notionalSize,
-                        indexPrice,
-                        avgEntryPrice,
-                        breakEvenPrice,
-                        unrealizedPnl,
-                      },
-                      index
-                    ) => {
+                    ({
+                      marketConfig,
+                      perpMarket,
+                      perpAccount,
+                      basePosition,
+                      notionalSize,
+                      indexPrice,
+                      avgEntryPrice,
+                      breakEvenPrice,
+                      unrealizedPnl,
+                    }) => {
                       return (
-                        <TrBody
-                          index={index}
-                          key={`${marketConfig.marketIndex}`}
-                        >
+                        <TrBody key={`${marketConfig.marketIndex}`}>
                           <Td>
                             <div className="flex items-center">
                               <img

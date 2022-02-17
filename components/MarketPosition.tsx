@@ -74,8 +74,7 @@ export default function MarketPosition() {
   const connected = useMangoStore((s) => s.wallet.connected)
   const setMangoStore = useMangoStore((s) => s.set)
   const price = useMangoStore((s) => s.tradeForm.price)
-  const perpAccounts =
-    useMangoStore.getState().selectedMangoAccount.perpAccounts
+  const perpAccounts = useMangoStore((s) => s.selectedMangoAccount.perpAccounts)
   const baseSymbol = marketConfig.baseSymbol
   const marketName = marketConfig.name
 
@@ -103,7 +102,7 @@ export default function MarketPosition() {
     const quoteSize = roundedSize * priceOrDefault
     setMangoStore((state) => {
       state.tradeForm.baseSize = roundedSize
-      state.tradeForm.quoteSize = quoteSize.toFixed(2)
+      state.tradeForm.quoteSize = quoteSize
       state.tradeForm.side = side === 'buy' ? 'sell' : 'buy'
     })
   }

@@ -19,10 +19,11 @@ import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { useTranslation } from 'next-i18next'
 import SwitchMarketDropdown from './SwitchMarketDropdown'
+import Tooltip from './Tooltip'
 
 const SECONDS = 1000
 
-function calculateFundingRate(perpStats, perpMarket) {
+export function calculateFundingRate(perpStats, perpMarket) {
   const oldestStat = perpStats[perpStats.length - 1]
   const latestStat = perpStats[0]
 
@@ -48,7 +49,7 @@ function calculateFundingRate(perpStats, perpMarket) {
   return (fundingInQuoteDecimals / basePriceInBaseLots) * 100
 }
 
-function parseOpenInterest(perpMarket: PerpMarket) {
+export function parseOpenInterest(perpMarket: PerpMarket) {
   if (!perpMarket || !(perpMarket instanceof PerpMarket)) return 0
 
   return perpMarket.baseLotsToNumber(perpMarket.openInterest) / 2
@@ -247,18 +248,23 @@ const MarketDetails = () => {
           ) : null}
           {isPerpMarket && selectedMarket instanceof PerpMarket ? (
             <>
-              <div className="flex items-center justify-between md:block">
-                <div className="text-th-fgd-3 tiny-text pb-0.5">
-                  {t('average-funding')}
+              <Tooltip
+                content="Funding is paid continuously. The 1hr rate displayed is a rolling average of the past 60 mins."
+                placement={'bottom'}
+              >
+                <div className="flex items-center justify-between md:block hover:cursor-help">
+                  <div className="flex text-th-fgd-3 tiny-text pb-0.5 items-center">
+                    {t('average-funding')}
+                  </div>
+                  <div className="text-th-fgd-1 md:text-xs">
+                    {selectedMarket ? (
+                      `${funding1hStr}% (${fundingAprStr}% APR)`
+                    ) : (
+                      <MarketDataLoader />
+                    )}
+                  </div>
                 </div>
-                <div className="text-th-fgd-1 md:text-xs">
-                  {selectedMarket ? (
-                    `${funding1hStr}% (${fundingAprStr}% APR)`
-                  ) : (
-                    <MarketDataLoader />
-                  )}
-                </div>
-              </div>
+              </Tooltip>
               <div className="flex items-center justify-between md:block">
                 <div className="text-th-fgd-3 tiny-text pb-0.5">
                   {t('open-interest')}
@@ -275,11 +281,16 @@ const MarketDetails = () => {
               </div>
             </>
           ) : null}
-          <DayHighLow
-            high={ohlcv?.h[0]}
-            low={ohlcv?.l[0]}
-            latest={oraclePrice?.toNumber()}
-          />
+          <div>
+            <div className="text-left xl:text-center text-th-fgd-3 tiny-text pb-0.5">
+              {t('daily-range')}
+            </div>
+            <DayHighLow
+              high={ohlcv?.h[0]}
+              low={ohlcv?.l[0]}
+              latest={oraclePrice?.toNumber()}
+            />
+          </div>
         </div>
       </div>
       <div className="absolute right-0 bottom-0 sm:bottom-auto lg:right-3 flex items-center justify-end space-x-2">

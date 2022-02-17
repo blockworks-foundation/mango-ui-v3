@@ -18,6 +18,17 @@ import ErrorBoundary from '../components/ErrorBoundary'
 import GlobalNotification from '../components/GlobalNotification'
 import { useOpenOrders } from '../hooks/useOpenOrders'
 import usePerpPositions from '../hooks/usePerpPositions'
+import { useEffect } from 'react'
+import { PublicKey } from '@solana/web3.js'
+import {
+  connectionSelector,
+  mangoClientSelector,
+  mangoGroupSelector,
+} from '../stores/selectors'
+import {
+  ReferrerIdRecordLayout,
+  ReferrerIdRecord,
+} from '@blockworks-foundation/mango-client'
 
 const MangoStoreUpdater = () => {
   useHydrateStore()
@@ -36,6 +47,47 @@ const OpenOrdersStoreUpdater = () => {
 
 const PerpPositionsStoreUpdater = () => {
   usePerpPositions()
+  return null
+}
+
+const FetchReferrer = () => {
+  const setMangoStore = useMangoStore((s) => s.set)
+  const mangoClient = useMangoStore(mangoClientSelector)
+  const mangoGroup = useMangoStore(mangoGroupSelector)
+  const connection = useMangoStore(connectionSelector)
+  const router = useRouter()
+  const { query } = router
+
+  useEffect(() => {
+    const storeReferrer = async () => {
+      if (query.ref && mangoGroup) {
+        let referrerPk
+        if (query.ref.length === 44) {
+          referrerPk = new PublicKey(query.ref)
+        } else {
+          const { referrerPda } = await mangoClient.getReferrerPda(
+            mangoGroup,
+            query.ref as string
+          )
+          console.log('in App referrerPda', referrerPda)
+          const info = await connection.getAccountInfo(referrerPda)
+          console.log('in App referrerPda info', info)
+          if (info) {
+            const decoded = ReferrerIdRecordLayout.decode(info.data)
+            const referrerRecord = new ReferrerIdRecord(decoded)
+            referrerPk = referrerRecord.referrerMangoAccount
+          }
+        }
+        console.log('in App referrerPk from url is:', referrerPk)
+        setMangoStore((state) => {
+          state.referrerPk = referrerPk
+        })
+      }
+    }
+
+    storeReferrer()
+  }, [query, mangoGroup])
+
   return null
 }
 
@@ -93,9 +145,12 @@ function App({ Component, pageProps }) {
         <meta name="twitter:title" content="Mango Markets" />
         <meta
           name="twitter:description"
-          content="Mango Markets - Decentralised, cross-margin trading up to 10x leverage with lightning speed and near-zero fees."
+          content="Mango Markets - Decentralised, cross-margin trading up to 20x leverage with lightning speed and near-zero fees."
         />
-        <meta name="twitter:image" content="/twitter-image.png" />
+        <meta
+          name="twitter:image"
+          content="https://www.mango.markets/socials/twitter-image-1200x600.png?34567878"
+        />
         <meta name="google" content="notranslate" />
         <script src="/datafeeds/udf/dist/polyfills.js"></script>
         <script src="/datafeeds/udf/dist/bundle.js"></script>
@@ -109,6 +164,7 @@ function App({ Component, pageProps }) {
           <WalletStoreUpdater />
           <OpenOrdersStoreUpdater />
           <PerpPositionsStoreUpdater />
+          <FetchReferrer />
         </ErrorBoundary>
 
         <ThemeProvider defaultTheme="Mango">

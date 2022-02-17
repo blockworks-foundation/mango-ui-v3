@@ -88,9 +88,12 @@ export const useTradeHistory = (
   const fills = useMangoStore(fillsSelector)
   const mangoAccount = useMangoStore(mangoAccountSelector)
   const selectedMangoGroup = useMangoStore(mangoGroupSelector)
-  let tradeHistory = useMangoStore(tradeHistorySelector)
+  const tradeHistory = useMangoStore(tradeHistorySelector)
 
   if (!mangoAccount || !selectedMangoGroup) return null
+
+  let combinedTradeHistory = [...tradeHistory.spot, ...tradeHistory.perp]
+
   const openOrdersAccount =
     mangoAccount.spotOpenOrdersAccounts[marketConfig.marketIndex]
 
@@ -113,7 +116,7 @@ export const useTradeHistory = (
   if (mangoAccountFills && mangoAccountFills.length > 0) {
     const newFills = mangoAccountFills.filter(
       (fill) =>
-        !tradeHistory.flat().find((t) => {
+        !combinedTradeHistory.flat().find((t) => {
           if (t.orderId) {
             return t.orderId === fill.orderId?.toString()
           } else {
@@ -121,15 +124,15 @@ export const useTradeHistory = (
           }
         })
     )
-    const newTradeHistory = [...newFills, ...tradeHistory]
+    const newTradeHistory = [...newFills, ...combinedTradeHistory]
     if (newFills.length > 0 && newTradeHistory.length !== allTrades.length) {
-      tradeHistory = newTradeHistory
+      combinedTradeHistory = newTradeHistory
     }
   }
 
   const formattedTradeHistory = formatTradeHistory(
     mangoAccount.publicKey,
-    tradeHistory
+    combinedTradeHistory
   )
   if (opts.excludePerpLiquidations) {
     return formattedTradeHistory.filter((t) => !('liqor' in t))

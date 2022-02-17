@@ -1,7 +1,7 @@
 import { AccountInfo, PublicKey, Transaction } from '@solana/web3.js'
 import { Market, OpenOrders } from '@project-serum/serum'
 import { Event } from '@project-serum/serum/lib/queue'
-import { I80F48 } from '@blockworks-foundation/mango-client/lib/src/fixednum'
+import { I80F48 } from '@blockworks-foundation/mango-client'
 
 export interface Token {
   chainId: number // 101,

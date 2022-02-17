@@ -39,7 +39,7 @@ const MarketSelect = () => {
         <div className="bg-th-bkg-4 flex items-center pl-4 lg:pl-9 pr-1">
           {isMobile ? (
             <MenuIcon
-              className="cursor-pointer default-transition h-5 text-th-fgd-1 w-5 hover:text-th-primary"
+              className="cursor-pointer h-5 text-th-fgd-1 w-5 hover:text-th-primary"
               onClick={() => setShowMarketsModal(true)}
             />
           ) : (

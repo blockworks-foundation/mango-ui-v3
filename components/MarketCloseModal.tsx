@@ -39,6 +39,7 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
 
     const orderbook = useMangoStore.getState().selectedMarket.orderBook
     const markPrice = useMangoStore.getState().selectedMarket.markPrice
+    const referrerPk = useMangoStore.getState().referrerPk
 
     // The reference price is the book mid if book is double sided; else mark price
     const bb = orderbook?.bids?.length > 0 && Number(orderbook.bids[0][0])
@@ -70,7 +71,8 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
         'ioc',
         0, // client order id
         side === 'buy' ? askInfo : bidInfo,
-        true // reduce only
+        true, // reduce only
+        referrerPk ? referrerPk : undefined
       )
       await sleep(500)
       actions.reloadMangoAccount()

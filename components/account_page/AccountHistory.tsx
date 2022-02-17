@@ -352,7 +352,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
               </TrHead>
             </thead>
             <tbody>
-              {items.map(({ activity_details, activity_type }, index) => {
+              {items.map(({ activity_details, activity_type }) => {
                 let perpMarket: PerpMarket
                 if (activity_type.includes('perp')) {
                   const symbol = activity_details.perp_market.split('-')[0]
@@ -376,7 +376,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
                 const lostDecimals = assetLost.symbol === 'SOL' ? 9 : 6
                 const gainedDecimals = assetGained.symbol === 'SOL' ? 9 : 6
                 return (
-                  <TrBody index={index} key={activity_details.signature}>
+                  <TrBody key={activity_details.signature}>
                     <Td>
                       <div>{date.toLocaleDateString()}</div>
                       <div className="text-xs text-th-fgd-3">
@@ -531,10 +531,10 @@ const HistoryTable = ({ history, view }) => {
               </TrHead>
             </thead>
             <tbody>
-              {items.map((activity_details: any, index) => {
+              {items.map((activity_details: any) => {
                 const date = new Date(activity_details.block_datetime)
                 return (
-                  <TrBody index={index} key={activity_details.signature}>
+                  <TrBody key={activity_details.signature}>
                     <Td>
                       <div>{date.toLocaleDateString()}</div>
                       <div className="text-xs text-th-fgd-3">

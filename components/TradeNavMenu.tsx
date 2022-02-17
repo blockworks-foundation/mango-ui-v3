@@ -98,7 +98,7 @@ const TradeNavMenu = () => {
             ref={buttonRef}
           >
             <div
-              className={`flex h-14 items-center rounded-none hover:text-th-primary`}
+              className={`flex font-bold h-14 items-center rounded-none hover:text-th-primary`}
             >
               <span>{t('trade')}</span>
               <ChevronDownIcon

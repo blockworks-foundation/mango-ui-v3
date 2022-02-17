@@ -22,7 +22,7 @@
     ]
   },
   "dependencies": {
-    "@blockworks-foundation/mango-client": "^3.3.7",
+    "@blockworks-foundation/mango-client": "^3.3.15",
     "@headlessui/react": "^1.2.0",
     "@heroicons/react": "^1.0.0",
     "@jup-ag/react-hook": "^1.0.0-beta.4",
@@ -31,6 +31,7 @@
     "@sentry/nextjs": "^6.17.4",
     "@solana/web3.js": "^1.31.0",
     "@solflare-wallet/pfp": "^0.0.6",
+    "@solflare-wallet/sdk": "^1.0.10",
     "@tippyjs/react": "^4.2.5",
     "big.js": "^6.1.1",
     "bn.js": "^5.2.0",

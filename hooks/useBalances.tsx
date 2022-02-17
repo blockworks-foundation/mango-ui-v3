@@ -8,7 +8,7 @@ import {
 import useMangoStore from '../stores/useMangoStore'
 import { i80f48ToPercent } from '../utils/index'
 import { sumBy } from 'lodash'
-import { I80F48 } from '@blockworks-foundation/mango-client/lib/src/fixednum'
+import { I80F48 } from '@blockworks-foundation/mango-client'
 import useMangoAccount from './useMangoAccount'
 
 export function useBalances(): Balances[] {
