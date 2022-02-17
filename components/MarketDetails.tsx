@@ -21,7 +21,7 @@ import { useTranslation } from 'next-i18next'
 import SwitchMarketDropdown from './SwitchMarketDropdown'
 import Tooltip from './Tooltip'
 
-const SECONDS = 1000
+export const SECONDS = 1000
 
 export function calculateFundingRate(perpStats, perpMarket) {
   const oldestStat = perpStats[perpStats.length - 1]

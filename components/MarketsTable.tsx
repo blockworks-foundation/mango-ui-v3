@@ -16,6 +16,8 @@ import {
 import { MarketDataLoader } from './MarketDetails'
 import MobileTableHeader from './mobile/MobileTableHeader'
 import { ExpandableRow } from './TableElements'
+import useInterval from '../hooks/useInterval'
+import { SECONDS } from './MarketDetails'
 
 const MarketsTable = ({ isPerpMarket }) => {
   const { t } = useTranslation('common')
@@ -97,6 +99,12 @@ const MarketsTable = ({ isPerpMarket }) => {
     setPerpStats(perpStats)
   }
 
+  useInterval(() => {
+    if (isPerpMarket) {
+      fetchPerpStats()
+    }
+  }, 120 * SECONDS)
+
   // const fetchOraclePrices = () => {
   //   if (mangoGroup && mangoCache) {
   //     const oraclePrices = []
@@ -120,7 +128,7 @@ const MarketsTable = ({ isPerpMarket }) => {
     if (isPerpMarket) {
       fetchPerpStats()
     }
-  }, [isPerpMarket])
+  }, [])
 
   return tableMarkets.length > 0 ? (
     !isMobile ? (
@@ -218,7 +226,7 @@ const MarketsTable = ({ isPerpMarket }) => {
                   >
                     {mktInfo ? (
                       mktInfo.change24h ? (
-                        (mktInfo?.change24h * 100).toFixed(2)
+                        `${(mktInfo?.change24h * 100).toFixed(2)}%`
                       ) : (
                         'Unavailable'
                       )
@@ -358,7 +366,15 @@ const MarketsTable = ({ isPerpMarket }) => {
                           : 'text-th-red'
                       }
                     >
-                      {(mktInfo?.change24h * 100).toFixed(2)}%
+                      {mktInfo ? (
+                        mktInfo.change24h ? (
+                          `${(mktInfo?.change24h * 100).toFixed(2)}%`
+                        ) : (
+                          'Unavailable'
+                        )
+                      ) : (
+                        <MarketDataLoader />
+                      )}
                     </div>
                   </div>
                 </div>
