@@ -18,6 +18,7 @@ import MobileTableHeader from './mobile/MobileTableHeader'
 import { ExpandableRow } from './TableElements'
 import useInterval from '../hooks/useInterval'
 import { SECONDS } from './MarketDetails'
+import { FavoriteMarketButton } from './TradeNavMenu'
 
 const MarketsTable = ({ isPerpMarket }) => {
   const { t } = useTranslation('common')
@@ -147,6 +148,9 @@ const MarketsTable = ({ isPerpMarket }) => {
                 <Th>{t('open-interest')}</Th>
               </>
             ) : null}
+            <Th>
+              <span className="flex justify-end">{t('favorite')}</span>
+            </Th>
           </TrHead>
         </thead>
         <tbody>
@@ -273,7 +277,10 @@ const MarketsTable = ({ isPerpMarket }) => {
                     <Td>
                       {perpStats.length > 0 ? (
                         funding1h ? (
-                          `${funding1hStr}% (${fundingAprStr}% APR)`
+                          <>
+                            <span>{`${funding1hStr}%`}</span>{' '}
+                            <span className="text-th-fgd-3 text-xs">{`(${fundingAprStr}% APR)`}</span>
+                          </>
                         ) : (
                           'Unavailable'
                         )
@@ -284,9 +291,12 @@ const MarketsTable = ({ isPerpMarket }) => {
                     <Td>
                       {perpStats.length > 0 ? (
                         openInterest ? (
-                          `${openInterest.toLocaleString()} ${
-                            market.baseSymbol
-                          }`
+                          <>
+                            <span>{openInterest.toLocaleString()}</span>{' '}
+                            <span className="text-th-fgd-3 text-xs">
+                              {market.baseSymbol}
+                            </span>
+                          </>
                         ) : (
                           'Unavailable'
                         )
@@ -296,6 +306,11 @@ const MarketsTable = ({ isPerpMarket }) => {
                     </Td>
                   </>
                 ) : null}
+                <Td>
+                  <div className="flex justify-end">
+                    <FavoriteMarketButton market={market} />
+                  </div>
+                </Td>
               </TrBody>
             )
           })}
