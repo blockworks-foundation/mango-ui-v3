@@ -14,7 +14,6 @@ import { useTranslation } from 'next-i18next'
 import Settings from './Settings'
 import TradeNavMenu from './TradeNavMenu'
 import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
-import useInterval from '../hooks/useInterval'
 
 const StyledNewLabel = ({ children, ...props }) => (
   <div style={{ fontSize: '0.5rem', marginLeft: '1px' }} {...props}>
@@ -22,14 +21,11 @@ const StyledNewLabel = ({ children, ...props }) => (
   </div>
 )
 
-const SECONDS = 1000
-
 const TopBar = () => {
   const { t } = useTranslation('common')
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const wallet = useMangoStore((s) => s.wallet.current)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
-  const [trigger, setTrigger] = useState(true)
   const [defaultMarket] = useLocalStorageState(
     DEFAULT_MARKET_KEY,
     initialMarket
@@ -42,19 +38,9 @@ const TopBar = () => {
     setShowAccountsModal(false)
   }, [])
 
-  useInterval(() => {
-    setTrigger(true)
-  }, 120 * SECONDS)
-
-  if (trigger) {
-    actions.fetchMarketInfo(markets)
-  }
-
   useEffect(() => {
-    if (trigger) {
-      setTrigger(false)
-    }
-  }, [trigger])
+    actions.fetchMarketInfo(markets)
+  }, [])
 
   return (
     <>

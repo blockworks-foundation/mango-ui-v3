@@ -20,8 +20,7 @@ import { breakpoints } from './TradePageGrid'
 import { useTranslation } from 'next-i18next'
 import SwitchMarketDropdown from './SwitchMarketDropdown'
 import Tooltip from './Tooltip'
-
-export const SECONDS = 1000
+import { SECONDS } from '../stores/useMangoStore'
 
 export function calculateFundingRate(perpStats, perpMarket) {
   const oldestStat = perpStats[perpStats.length - 1]

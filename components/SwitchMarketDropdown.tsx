@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useRef, useState } from 'react'
+import { Fragment, useCallback, useMemo, useRef, useState } from 'react'
 import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
 import { Popover, Transition } from '@headlessui/react'
 import { SearchIcon } from '@heroicons/react/outline'
@@ -9,14 +9,21 @@ import MarketNavItem from './MarketNavItem'
 
 const SwitchMarketDropdown = () => {
   const groupConfig = useMangoGroupConfig()
-  const markets = [...groupConfig.spotMarkets, ...groupConfig.perpMarkets]
-  const spotMarkets = [...groupConfig.spotMarkets].sort((a, b) =>
-    a.name.localeCompare(b.name)
+  const markets = useMemo(
+    () => [...groupConfig.spotMarkets, ...groupConfig.perpMarkets],
+    [groupConfig]
+  )
+  const spotMarkets = useMemo(
+    () =>
+      [...groupConfig.spotMarkets].sort((a, b) => a.name.localeCompare(b.name)),
+    [groupConfig]
+  )
+  const perpMarkets = useMemo(
+    () =>
+      [...groupConfig.perpMarkets].sort((a, b) => a.name.localeCompare(b.name)),
+    [groupConfig]
   )
 
-  const perpMarkets = [...groupConfig.perpMarkets].sort((a, b) =>
-    a.name.localeCompare(b.name)
-  )
   const [suggestions, setSuggestions] = useState([])
   const [searchString, setSearchString] = useState('')
   const buttonRef = useRef(null)
@@ -92,7 +99,7 @@ const SwitchMarketDropdown = () => {
                     filteredMarkets.map((mkt) => (
                       <MarketNavItem
                         buttonRef={buttonRef}
-                        clearSearchString={() => setSearchString('')}
+                        onClick={() => setSearchString('')}
                         market={mkt}
                         key={mkt.name}
                       />
@@ -112,7 +119,7 @@ const SwitchMarketDropdown = () => {
                   {spotMarkets.map((mkt) => (
                     <MarketNavItem
                       buttonRef={buttonRef}
-                      clearSearchString={() => setSearchString('')}
+                      onClick={() => setSearchString('')}
                       market={mkt}
                       key={mkt.name}
                     />
@@ -126,7 +133,7 @@ const SwitchMarketDropdown = () => {
                   {perpMarkets.map((mkt) => (
                     <MarketNavItem
                       buttonRef={buttonRef}
-                      clearSearchString={() => setSearchString('')}
+                      onClick={() => setSearchString('')}
                       market={mkt}
                       key={mkt.name}
                     />

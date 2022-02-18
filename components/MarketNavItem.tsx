@@ -7,13 +7,13 @@ import { getWeights } from '@blockworks-foundation/mango-client'
 
 interface MarketNavItemProps {
   market: any
-  clearSearchString?: () => void
+  onClick?: () => void
   buttonRef?: RefObject<HTMLElement>
 }
 
 const MarketNavItem: FunctionComponent<MarketNavItemProps> = ({
   market,
-  clearSearchString,
+  onClick,
   buttonRef,
 }) => {
   const { asPath } = useRouter()
@@ -26,8 +26,8 @@ const MarketNavItem: FunctionComponent<MarketNavItemProps> = ({
   const selectMarket = (market) => {
     buttonRef?.current?.click()
     router.push(`/?name=${market.name}`, undefined, { shallow: true })
-    if (clearSearchString) {
-      clearSearchString()
+    if (onClick) {
+      onClick()
     }
   }
 

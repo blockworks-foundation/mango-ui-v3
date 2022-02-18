@@ -19,8 +19,7 @@ import {
   marketSelector,
   marketsSelector,
 } from '../stores/selectors'
-
-const SECONDS = 1000
+import { SECONDS } from '../stores/useMangoStore'
 
 function decodeBook(market, accInfo: AccountInfo<Buffer>): number[][] {
   if (market && accInfo?.data) {
