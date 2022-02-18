@@ -216,7 +216,7 @@ const MarketsTable = ({ isPerpMarket }) => {
                     mktInfo.price ? (
                       formatUsdValue(mktInfo.price)
                     ) : (
-                      'Unavailable'
+                      <span className="text-th-fgd-4">Unavailable</span>
                     )
                   ) : (
                     <MarketDataLoader />
@@ -232,7 +232,7 @@ const MarketsTable = ({ isPerpMarket }) => {
                       mktInfo.change24h ? (
                         `${(mktInfo?.change24h * 100).toFixed(2)}%`
                       ) : (
-                        'Unavailable'
+                        <span className="text-th-fgd-4">Unavailable</span>
                       )
                     ) : (
                       <MarketDataLoader />
@@ -244,7 +244,7 @@ const MarketsTable = ({ isPerpMarket }) => {
                     ohlcv.l[0] ? (
                       formatUsdValue(ohlcv?.l[0])
                     ) : (
-                      'Unavailable'
+                      <span className="text-th-fgd-4">Unavailable</span>
                     )
                   ) : (
                     <MarketDataLoader />
@@ -255,7 +255,7 @@ const MarketsTable = ({ isPerpMarket }) => {
                     ohlcv.h[0] ? (
                       formatUsdValue(ohlcv?.h[0])
                     ) : (
-                      'Unavailable'
+                      <span className="text-th-fgd-4">Unavailable</span>
                     )
                   ) : (
                     <MarketDataLoader />
@@ -268,7 +268,7 @@ const MarketsTable = ({ isPerpMarket }) => {
                         perpVolume ? (
                           usdFormatter(perpVolume, 0)
                         ) : (
-                          'Unavailable'
+                          <span className="text-th-fgd-4">Unavailable</span>
                         )
                       ) : (
                         <MarketDataLoader />
@@ -282,7 +282,7 @@ const MarketsTable = ({ isPerpMarket }) => {
                             <span className="text-th-fgd-3 text-xs">{`(${fundingAprStr}% APR)`}</span>
                           </>
                         ) : (
-                          'Unavailable'
+                          <span className="text-th-fgd-4">Unavailable</span>
                         )
                       ) : (
                         <MarketDataLoader />
@@ -298,7 +298,7 @@ const MarketsTable = ({ isPerpMarket }) => {
                             </span>
                           </>
                         ) : (
-                          'Unavailable'
+                          <span className="text-th-fgd-4">Unavailable</span>
                         )
                       ) : (
                         <MarketDataLoader />
@@ -385,7 +385,7 @@ const MarketsTable = ({ isPerpMarket }) => {
                         mktInfo.change24h ? (
                           `${(mktInfo?.change24h * 100).toFixed(2)}%`
                         ) : (
-                          'Unavailable'
+                          <span className="text-th-fgd-4">Unavailable</span>
                         )
                       ) : (
                         <MarketDataLoader />
@@ -407,7 +407,7 @@ const MarketsTable = ({ isPerpMarket }) => {
                         ohlcv.l[0] ? (
                           formatUsdValue(ohlcv?.l[0])
                         ) : (
-                          'Unavailable'
+                          <span className="text-th-fgd-4">Unavailable</span>
                         )
                       ) : (
                         <MarketDataLoader />
@@ -421,7 +421,7 @@ const MarketsTable = ({ isPerpMarket }) => {
                         ohlcv.h[0] ? (
                           formatUsdValue(ohlcv?.h[0])
                         ) : (
-                          'Unavailable'
+                          <span className="text-th-fgd-4">Unavailable</span>
                         )
                       ) : (
                         <MarketDataLoader />
@@ -437,7 +437,7 @@ const MarketsTable = ({ isPerpMarket }) => {
                             perpVolume ? (
                               usdFormatter(perpVolume, 0)
                             ) : (
-                              'Unavailable'
+                              <span className="text-th-fgd-4">Unavailable</span>
                             )
                           ) : (
                             <MarketDataLoader />
@@ -451,7 +451,7 @@ const MarketsTable = ({ isPerpMarket }) => {
                             funding1h ? (
                               `${funding1hStr}% (${fundingAprStr}% APR)`
                             ) : (
-                              'Unavailable'
+                              <span className="text-th-fgd-4">Unavailable</span>
                             )
                           ) : (
                             <MarketDataLoader />
@@ -467,7 +467,7 @@ const MarketsTable = ({ isPerpMarket }) => {
                                 market.baseSymbol
                               }`
                             ) : (
-                              'Unavailable'
+                              <span className="text-th-fgd-4">Unavailable</span>
                             )
                           ) : (
                             <MarketDataLoader />
