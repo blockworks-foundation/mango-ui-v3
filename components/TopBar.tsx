@@ -80,7 +80,6 @@ const TopBar = () => {
                 <MenuItem href="/swap">{t('swap')}</MenuItem>
                 <MenuItem href="/account">{t('account')}</MenuItem>
                 <MenuItem href="/borrow">{t('borrow')}</MenuItem>
-                <MenuItem href="/markets">{t('markets')}</MenuItem>
                 <MenuItem href="/stats">{t('stats')}</MenuItem>
                 <div className="relative">
                   <MenuItem href="/referral">
