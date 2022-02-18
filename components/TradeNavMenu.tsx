@@ -89,7 +89,7 @@ const TradeNavMenu = () => {
         <div
           onMouseEnter={() => onHoverMenu(open, 'onMouseEnter')}
           onMouseLeave={() => onHoverMenu(open, 'onMouseLeave')}
-          className="flex flex-col"
+          className="relative flex flex-col z-50"
         >
           <Popover.Button
             className={`-mr-3 px-3 rounded-none focus:outline-none focus:bg-th-bkg-3 ${
