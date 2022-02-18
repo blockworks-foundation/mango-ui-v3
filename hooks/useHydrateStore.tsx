@@ -75,6 +75,7 @@ const useHydrateStore = () => {
   useInterval(() => {
     actions.fetchMangoGroup()
     actions.fetchWalletTokens()
+    actions.fetchMarketInfo()
   }, 120 * SECONDS)
 
   useEffect(() => {
