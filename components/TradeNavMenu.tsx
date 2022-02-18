@@ -119,7 +119,7 @@ const TradeNavMenu = () => {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Popover.Panel className="absolute grid grid-cols-3 grid-rows-1 top-14 w-[700px] z-10">
+            <Popover.Panel className="absolute grid grid-cols-3 grid-rows-1 min-h-[235px] top-14 w-[700px] z-10">
               <div className="bg-th-bkg-4 col-span-1 rounded-bl-lg">
                 <MenuCategories
                   activeCategory={activeMenuCategory}
@@ -212,15 +212,18 @@ export const FavoriteMarketButton = ({ market }) => {
   }
 
   return favoriteMarkets.find((mkt) => mkt.name === market.name) ? (
-    <button onClick={() => removeFromFavorites(market)}>
-      <FilledStarIcon className="h-4 text-th-primary w-4" />
+    <button
+      className="default-transition text-th-primary hover:text-th-fgd-3"
+      onClick={() => removeFromFavorites(market)}
+    >
+      <FilledStarIcon className="h-5 w-5" />
     </button>
   ) : (
     <button
-      className="default-transition text-th-fgd-4 hover:text-th-fgd-3"
+      className="default-transition text-th-fgd-4 hover:text-th-primary"
       onClick={() => addToFavorites(market)}
     >
-      <StarIcon className="h-4 w-4" />
+      <StarIcon className="h-5 w-5" />
     </button>
   )
 }
