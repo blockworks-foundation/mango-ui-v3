@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { abbreviateAddress } from '../utils/index'
 import useLocalStorageState from '../hooks/useLocalStorageState'
@@ -12,6 +12,8 @@ import LanguageSwitch from './LanguageSwitch'
 import { DEFAULT_MARKET_KEY, initialMarket } from './SettingsModal'
 import { useTranslation } from 'next-i18next'
 import Settings from './Settings'
+import TradeNavMenu from './TradeNavMenu'
+import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
 
 const StyledNewLabel = ({ children, ...props }) => (
   <div style={{ fontSize: '0.5rem', marginLeft: '1px' }} {...props}>
@@ -28,15 +30,22 @@ const TopBar = () => {
     DEFAULT_MARKET_KEY,
     initialMarket
   )
+  const actions = useMangoStore((s) => s.actions)
+  const groupConfig = useMangoGroupConfig()
+  const markets = [...groupConfig.spotMarkets, ...groupConfig.perpMarkets]
 
   const handleCloseAccounts = useCallback(() => {
     setShowAccountsModal(false)
   }, [])
 
+  useEffect(() => {
+    actions.fetchMarketInfo(markets)
+  }, [])
+
   return (
     <>
-      <nav className={`bg-th-bkg-2 border-b border-th-bkg-2`}>
-        <div className={`px-4 lg:px-10`}>
+      <nav className={`bg-th-bkg-2`}>
+        <div className={`px-4 xl:px-6`}>
           <div className={`flex justify-between h-14`}>
             <div className={`flex`}>
               <Link href={defaultMarket.path} shallow={true}>
@@ -50,8 +59,10 @@ const TopBar = () => {
                   />
                 </div>
               </Link>
-              <div className={`hidden md:flex md:items-center md:ml-4`}>
-                <MenuItem href={defaultMarket.path}>{t('trade')}</MenuItem>
+              <div
+                className={`hidden md:flex md:items-center md:space-x-2 lg:space-x-3 md:ml-4`}
+              >
+                <TradeNavMenu />
                 <MenuItem href="/swap">{t('swap')}</MenuItem>
                 <MenuItem href="/account">{t('account')}</MenuItem>
                 <MenuItem href="/borrow">{t('borrow')}</MenuItem>
@@ -59,12 +70,10 @@ const TopBar = () => {
                 <div className="relative">
                   <MenuItem href="/referral">
                     {t('referrals')}
-                    <div>
-                      <div className="absolute flex items-center justify-center h-4 px-1.5 bg-gradient-to-br from-red-500 to-yellow-500 rounded-full -right-2 -top-3">
-                        <StyledNewLabel className="text-white uppercase">
-                          new
-                        </StyledNewLabel>
-                      </div>
+                    <div className="absolute flex items-center justify-center h-4 px-1.5 bg-gradient-to-br from-red-500 to-yellow-500 rounded-full -right-3 -top-3">
+                      <StyledNewLabel className="text-white uppercase">
+                        new
+                      </StyledNewLabel>
                     </div>
                   </MenuItem>
                 </div>
@@ -108,7 +117,7 @@ const TopBar = () => {
                 </div>
               ) : null}
               <div className="flex">
-                <div className="pl-2">
+                <div className="pl-4">
                   <ConnectWalletButton />
                 </div>
               </div>

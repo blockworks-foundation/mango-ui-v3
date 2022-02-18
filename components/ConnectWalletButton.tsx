@@ -96,26 +96,28 @@ const ConnectWalletButton = () => {
         </Menu>
       ) : (
         <div
-          className="bg-th-bkg-1 h-14 flex divide-x divide-th-bkg-3 justify-between"
+          className="h-14 flex divide-x divide-th-bkg-3 justify-between"
           id="connect-wallet-tip"
         >
           <button
             onClick={handleWalletConect}
             disabled={!wallet || !mangoGroup}
-            className="rounded-none text-th-primary hover:bg-th-bkg-4 focus:outline-none disabled:text-th-fgd-4 disabled:cursor-wait"
+            className="bg-th-primary rounded-none text-th-bkg-1 hover:brightness-[1.15] focus:outline-none disabled:text-th-fgd-4 disabled:cursor-wait"
           >
-            <div className="flex flex-row items-center px-3 justify-center h-full default-transition hover:text-th-fgd-1">
+            <div className="flex flex-row items-center px-3 justify-center h-full default-transition hover:text-th-bkg-1">
               <WalletIcon className="w-4 h-4 mr-2 fill-current" />
               <div className="text-left">
-                <div className="mb-0.5 whitespace-nowrap">{t('connect')}</div>
-                <div className="font-normal text-th-fgd-3 leading-3 tracking-wider text-xxs">
+                <div className="font-bold mb-0.5 whitespace-nowrap">
+                  {t('connect')}
+                </div>
+                <div className="font-normal text-th-bkg-2 leading-3 tracking-wider text-xxs">
                   {WALLET_PROVIDERS.find((p) => p.url === selectedWallet)?.name}
                 </div>
               </div>
             </div>
           </button>
           <div className="relative">
-            <WalletSelect isPrimary />
+            <WalletSelect />
           </div>
         </div>
       )}

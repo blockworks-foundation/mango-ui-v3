@@ -18,11 +18,11 @@ import BN from 'bn.js'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { useTranslation } from 'next-i18next'
+import SwitchMarketDropdown from './SwitchMarketDropdown'
 import Tooltip from './Tooltip'
+import { SECONDS } from '../stores/useMangoStore'
 
-const SECONDS = 1000
-
-function calculateFundingRate(perpStats, perpMarket) {
+export function calculateFundingRate(perpStats, perpMarket) {
   const oldestStat = perpStats[perpStats.length - 1]
   const latestStat = perpStats[0]
 
@@ -48,7 +48,7 @@ function calculateFundingRate(perpStats, perpMarket) {
   return (fundingInQuoteDecimals / basePriceInBaseLots) * 100
 }
 
-function parseOpenInterest(perpMarket: PerpMarket) {
+export function parseOpenInterest(perpMarket: PerpMarket) {
   if (!perpMarket || !(perpMarket instanceof PerpMarket)) return 0
 
   return perpMarket.baseLotsToNumber(perpMarket.openInterest) / 2
@@ -180,21 +180,24 @@ const MarketDetails = () => {
       <div className="flex flex-col lg:flex-row lg:items-center">
         <div className="hidden md:block md:pb-4 md:pr-6 lg:pb-0">
           <div className="flex items-center">
-            <img
-              alt=""
-              width="24"
-              height="24"
-              src={`/assets/icons/${baseSymbol.toLowerCase()}.svg`}
-              className={`mr-2.5`}
-            />
+            <div className="flex items-center">
+              <img
+                alt=""
+                width="24"
+                height="24"
+                src={`/assets/icons/${baseSymbol.toLowerCase()}.svg`}
+                className={`mr-2.5`}
+              />
 
-            <div className="font-semibold pr-0.5 text-xl">{baseSymbol}</div>
-            <span className="text-th-fgd-4 text-xl">
-              {isPerpMarket ? '-' : '/'}
-            </span>
-            <div className="font-semibold pl-0.5 text-xl">
-              {isPerpMarket ? 'PERP' : groupConfig.quoteSymbol}
+              <div className="font-semibold pr-0.5 text-xl">{baseSymbol}</div>
+              <span className="text-th-fgd-4 text-xl">
+                {isPerpMarket ? '-' : '/'}
+              </span>
+              <div className="font-semibold pl-0.5 text-xl">
+                {isPerpMarket ? 'PERP' : groupConfig.quoteSymbol}
+              </div>
             </div>
+            <SwitchMarketDropdown />
           </div>
         </div>
         <div className="grid grid-flow-row grid-cols-1 md:grid-cols-3 gap-3 lg:grid-cols-none lg:grid-flow-col lg:grid-rows-1 lg:gap-6">
@@ -277,20 +280,25 @@ const MarketDetails = () => {
               </div>
             </>
           ) : null}
-          <DayHighLow
-            high={ohlcv?.h[0]}
-            low={ohlcv?.l[0]}
-            latest={oraclePrice?.toNumber()}
-          />
+          <div>
+            <div className="text-left xl:text-center text-th-fgd-3 tiny-text pb-0.5">
+              {t('daily-range')}
+            </div>
+            <DayHighLow
+              high={ohlcv?.h[0]}
+              low={ohlcv?.l[0]}
+              latest={oraclePrice?.toNumber()}
+            />
+          </div>
         </div>
       </div>
-      <div className="absolute right-4 bottom-0 sm:bottom-auto lg:right-6 flex items-center justify-end">
+      <div className="absolute right-0 bottom-0 sm:bottom-auto lg:right-3 flex items-center justify-end space-x-2">
         {!isMobile ? (
           <div id="layout-tip">
             <UiLock />
           </div>
         ) : null}
-        <div className="ml-2" id="data-refresh-tip">
+        <div id="data-refresh-tip">
           {!isMobile && connected ? <ManualRefresh /> : null}
         </div>
       </div>
