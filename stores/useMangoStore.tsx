@@ -407,7 +407,6 @@ const useMangoStore = create<MangoStore>((set, get) => {
         ])
           .then((values) => {
             const [mangoAccounts, delegatedAccounts] = values
-            console.log(mangoAccounts.length, delegatedAccounts.length)
             if (mangoAccounts.length + delegatedAccounts.length > 0) {
               const sortedAccounts = mangoAccounts
                 .slice()
@@ -534,6 +533,7 @@ const useMangoStore = create<MangoStore>((set, get) => {
                   }
                 })
             })
+            actions.fetchMarketInfo()
           })
           .catch((err) => {
             if (mangoGroupRetryAttempt < 2) {
@@ -856,9 +856,14 @@ const useMangoStore = create<MangoStore>((set, get) => {
           })
         }
       },
-      async fetchMarketInfo(markets) {
+      async fetchMarketInfo() {
         const set = get().set
         const marketInfos = []
+        const groupConfig = get().selectedMangoGroup.config
+        const markets = [...groupConfig.spotMarkets, ...groupConfig.perpMarkets]
+
+        if (!markets) return
+
         await Promise.all(
           markets.map(async (market) => {
             const response = await fetch(

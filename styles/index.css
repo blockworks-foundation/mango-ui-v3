@@ -112,7 +112,7 @@ button.transition-none {
 }
 
 .default-transition {
-  @apply transition-all duration-300;
+  @apply transition-all duration-200;
 }
 
 .tiny-text {

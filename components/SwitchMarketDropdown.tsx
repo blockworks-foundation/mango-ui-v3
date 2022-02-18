@@ -1,14 +1,19 @@
 import { Fragment, useCallback, useMemo, useRef, useState } from 'react'
 import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
 import { Popover, Transition } from '@headlessui/react'
-import { SearchIcon } from '@heroicons/react/outline'
-import { SwitchHorizontalIcon, XIcon } from '@heroicons/react/solid'
+import { ChevronDownIcon, SearchIcon } from '@heroicons/react/outline'
+import { XIcon } from '@heroicons/react/solid'
 import Input from './Input'
 import { useTranslation } from 'next-i18next'
 import MarketNavItem from './MarketNavItem'
+import useMangoStore from '../stores/useMangoStore'
 
 const SwitchMarketDropdown = () => {
   const groupConfig = useMangoGroupConfig()
+  const marketConfig = useMangoStore((s) => s.selectedMarket.config)
+  const baseSymbol = marketConfig.baseSymbol
+  const isPerpMarket = marketConfig.kind === 'perp'
+
   const markets = useMemo(
     () => [...groupConfig.spotMarkets, ...groupConfig.perpMarkets],
     [groupConfig]
@@ -52,21 +57,38 @@ const SwitchMarketDropdown = () => {
   return (
     <Popover>
       {({ open }) => (
-        <div className="flex flex-col ml-2 relative">
+        <div className="flex flex-col relative">
           <Popover.Button
             className={`focus:outline-none focus:bg-th-bkg-3 ${
               open && 'bg-th-bkg-3'
             }`}
             ref={buttonRef}
           >
-            <div
-              className={`flex h-10 items-center justify-center rounded-none w-10 hover:text-th-primary`}
-            >
-              {open ? (
-                <XIcon className="h-5 w-5" />
-              ) : (
-                <SwitchHorizontalIcon className="h-5 w-5" />
-              )}
+            <div className="flex items-center pl-2 hover:text-th-primary">
+              <img
+                alt=""
+                width="24"
+                height="24"
+                src={`/assets/icons/${baseSymbol.toLowerCase()}.svg`}
+                className={`mr-2.5`}
+              />
+
+              <div className="font-semibold pr-0.5 text-xl">{baseSymbol}</div>
+              <span className="text-th-fgd-4 text-xl">
+                {isPerpMarket ? '-' : '/'}
+              </span>
+              <div className="font-semibold pl-0.5 text-xl">
+                {isPerpMarket ? 'PERP' : groupConfig.quoteSymbol}
+              </div>
+              <div
+                className={`flex h-10 items-center justify-center rounded-none w-10`}
+              >
+                {open ? (
+                  <XIcon className="h-5 w-5" />
+                ) : (
+                  <ChevronDownIcon className="h-5 w-5" />
+                )}
+              </div>
             </div>
           </Popover.Button>
           <Transition
@@ -81,7 +103,7 @@ const SwitchMarketDropdown = () => {
             leaveTo="opacity-0"
           >
             <Popover.Panel
-              className="absolute bg-th-bkg-3 max-h-96 overflow-y-auto p-4 left-1/2 transform -translate-x-1/2 rounded-b-md rounded-tl-md thin-scroll top-12 w-72 z-10"
+              className="absolute bg-th-bkg-3 max-h-96 overflow-y-auto p-4 left-0 transform rounded-b-md rounded-tl-md thin-scroll top-12 w-72 z-10"
               static
             >
               <div className="pb-2.5">
@@ -94,7 +116,7 @@ const SwitchMarketDropdown = () => {
                 />
               </div>
               {searchString.length > 0 ? (
-                <div className="pt-1.5 space-y-2.5">
+                <div className="pt-1.5">
                   {filteredMarkets.length > 0 ? (
                     filteredMarkets.map((mkt) => (
                       <MarketNavItem
@@ -109,14 +131,14 @@ const SwitchMarketDropdown = () => {
                   )}
                 </div>
               ) : (
-                <div className="space-y-2.5">
-                  <div className="flex justify-between pt-1.5">
-                    <h4 className="text-xs">{t('spot')}</h4>
+                <div className="">
+                  <div className="flex justify-between py-1.5">
+                    <h4 className="text-xs">{t('perp')}</h4>
                     <p className="mb-0 text-th-fgd-4 text-xs">
                       {t('rolling-change')}
                     </p>
                   </div>
-                  {spotMarkets.map((mkt) => (
+                  {perpMarkets.map((mkt) => (
                     <MarketNavItem
                       buttonRef={buttonRef}
                       onClick={() => setSearchString('')}
@@ -124,13 +146,13 @@ const SwitchMarketDropdown = () => {
                       key={mkt.name}
                     />
                   ))}
-                  <div className="flex justify-between pt-1.5">
-                    <h4 className="text-xs">{t('perp')}</h4>
+                  <div className="flex justify-between py-1.5">
+                    <h4 className="text-xs">{t('spot')}</h4>
                     <p className="mb-0 text-th-fgd-4 text-xs">
                       {t('rolling-change')}
                     </p>
                   </div>
-                  {perpMarkets.map((mkt) => (
+                  {spotMarkets.map((mkt) => (
                     <MarketNavItem
                       buttonRef={buttonRef}
                       onClick={() => setSearchString('')}

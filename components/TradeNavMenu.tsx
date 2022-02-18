@@ -112,10 +112,10 @@ const TradeNavMenu = () => {
             appear={true}
             show={open}
             as={Fragment}
-            enter="transition-all ease-in duration-200"
-            enterFrom="opacity-0 transform scale-75"
+            enter="transition-all ease-in duration-100"
+            enterFrom="opacity-0 transform scale-90"
             enterTo="opacity-100 transform scale-100"
-            leave="transition ease-out duration-200"
+            leave="transition ease-out duration-100"
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
@@ -128,7 +128,7 @@ const TradeNavMenu = () => {
                 />
               </div>
               <div className="bg-th-bkg-3 col-span-2 p-4 rounded-br-lg">
-                <div className="grid grid-cols-2 grid-flow-row gap-x-6 gap-y-2.5">
+                <div className="grid grid-cols-2 grid-flow-row gap-x-6">
                   {markets.map((mkt) => (
                     <MarketNavItem
                       buttonRef={buttonRef}

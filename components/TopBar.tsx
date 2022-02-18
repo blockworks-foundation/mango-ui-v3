@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import Link from 'next/link'
 import { abbreviateAddress } from '../utils/index'
 import useLocalStorageState from '../hooks/useLocalStorageState'
@@ -13,7 +13,6 @@ import { DEFAULT_MARKET_KEY, initialMarket } from './SettingsModal'
 import { useTranslation } from 'next-i18next'
 import Settings from './Settings'
 import TradeNavMenu from './TradeNavMenu'
-import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
 
 const StyledNewLabel = ({ children, ...props }) => (
   <div style={{ fontSize: '0.5rem', marginLeft: '1px' }} {...props}>
@@ -30,16 +29,9 @@ const TopBar = () => {
     DEFAULT_MARKET_KEY,
     initialMarket
   )
-  const actions = useMangoStore((s) => s.actions)
-  const groupConfig = useMangoGroupConfig()
-  const markets = [...groupConfig.spotMarkets, ...groupConfig.perpMarkets]
 
   const handleCloseAccounts = useCallback(() => {
     setShowAccountsModal(false)
-  }, [])
-
-  useEffect(() => {
-    actions.fetchMarketInfo(markets)
   }, [])
 
   return (
