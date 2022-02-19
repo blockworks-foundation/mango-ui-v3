@@ -1,10 +1,10 @@
 {
-    "set-delegate": "Set Delegate",
-    "delegate-your-account": "Delegate Your Account",
-    "delegated-account": "Delegated Account",
-    "info": "Grant control to another Solana account to use Mango on your behalf.",
-    "public-key": "Delegate Public Key",
-    "delegate-updated": "Delegate Updated",
-    "set-error": "Could not set Delegate",
-    "invalid-key": "Invalid public key"
+    "set-delegate": "设置受托钱包",
+    "delegate-your-account": "将您的帐户委托出去",
+    "delegated-account": "委托帐户",
+    "info": "将此帐户控制委托其他钱包负责。",
+    "public-key": "受托钱包地址",
+    "delegate-updated": "已更换受托钱包",
+    "set-error": "设置委托钱包出错",
+    "invalid-key": "您输入的地址有问题"
 }
