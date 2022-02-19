@@ -135,7 +135,7 @@ const SwitchMarketDropdown = () => {
                   <div className="flex justify-between py-1.5">
                     <h4 className="text-xs">{t('perp')}</h4>
                     <p className="mb-0 text-th-fgd-4 text-xs">
-                      {t('rolling-change')}
+                      {/* {t('rolling-change')} */}
                     </p>
                   </div>
                   {perpMarkets.map((mkt) => (
@@ -149,7 +149,7 @@ const SwitchMarketDropdown = () => {
                   <div className="flex justify-between py-1.5">
                     <h4 className="text-xs">{t('spot')}</h4>
                     <p className="mb-0 text-th-fgd-4 text-xs">
-                      {t('rolling-change')}
+                      {/* {t('rolling-change')} */}
                     </p>
                   </div>
                   {spotMarkets.map((mkt) => (
