@@ -145,7 +145,7 @@ export default function Referral() {
       setInputError(t('referrals:too-long-error'))
     }
     if (customRefLinkInput.length === 0) {
-      setInputError(t('referrals:enter-refferal-id'))
+      setInputError(t('referrals:enter-referral-id'))
     }
   }
 
