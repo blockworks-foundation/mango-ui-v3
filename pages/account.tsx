@@ -49,6 +49,7 @@ export async function getStaticProps({ locale }) {
         'common',
         'close-account',
         'delegate',
+        'alerts',
       ])),
       // Will be passed to the page component as props
     },
@@ -231,7 +232,7 @@ export default function Account() {
                   >
                     <div className="flex items-center">
                       <BellIcon className="h-4 w-4 mr-1.5" />
-                      Alerts
+                      {t('alerts')}
                     </div>
                   </Button>
                   {!isDelegatedAccount && (
