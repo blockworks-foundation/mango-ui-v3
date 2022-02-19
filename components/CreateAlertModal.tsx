@@ -100,7 +100,7 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
                     {t('alerts:active-alerts')}
                   </ElementTitle>
                   <Button
-                    className="col-span-1 flex items-center justify-center pt-0 pb-0 h-8 text-xs w-20"
+                    className="col-span-1 flex items-center justify-center pt-0 pb-0 h-8 text-xs w-30"
                     disabled={activeAlerts.length >= 3}
                     onClick={() => setShowAlertForm(true)}
                   >
@@ -136,7 +136,9 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
           ) : showAlertForm ? (
             <>
               <div>
-                <ElementTitle noMarignBottom>{t('alerts:create-alert')}</ElementTitle>
+                <ElementTitle noMarignBottom>
+                  {t('alerts:create-alert')}
+                </ElementTitle>
                 <p className="mt-1 text-center text-th-fgd-4">
                   {t('alerts:alerts-disclaimer')}
                 </p>
@@ -158,7 +160,9 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
               <div className="flex items-end mt-4">
                 <div className="w-full">
                   <div className="flex justify-between mb-1.5">
-                    <div className="text-th-fgd-1">{t('alerts:alert-health')}</div>
+                    <div className="text-th-fgd-1">
+                      {t('alerts:alert-health')}
+                    </div>
                     <LinkButton
                       className="font-normal text-th-fgd-3 text-xs"
                       onClick={() =>
@@ -216,7 +220,9 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
           ) : (
             <div>
               <Modal.Header>
-                <ElementTitle noMarignBottom>{t('alerts:no-alerts')}</ElementTitle>
+                <ElementTitle noMarignBottom>
+                  {t('alerts:no-alerts')}
+                </ElementTitle>
               </Modal.Header>
               <p className="mb-4 text-center">{t('alerts:no-alerts-desc')}</p>
               <Button
