@@ -395,7 +395,8 @@ const BalancesTable = ({
                       <Td>
                         {marketConfig.kind === 'spot' &&
                         marketConfig.name.includes(balance.symbol) &&
-                        selectedMarket ? (
+                        selectedMarket &&
+                        decodeURIComponent(asPath).includes(`name`) ? ( // disable this in account page
                           <span
                             className={
                               balance.net.toNumber() != 0

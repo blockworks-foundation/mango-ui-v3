@@ -662,20 +662,21 @@ export default function AdvancedTradeForm({
           )
           actions.reloadOrders()
         } else {
-          txid = await mangoClient.placePerpOrder(
+          txid = await mangoClient.placePerpOrder2(
             mangoGroup,
             mangoAccount,
-            mangoGroup.mangoCache,
             market,
             wallet,
             side,
             perpOrderPrice,
             baseSize,
-            perpOrderType,
-            Date.now(),
-            side === 'buy' ? askInfo : bidInfo, // book side used for ConsumeEvents
-            reduceOnly,
-            referrerPk ? referrerPk : undefined
+            {
+              orderType: perpOrderType,
+              clientOrderId: Date.now(),
+              bookSideInfo: side === 'buy' ? askInfo : bidInfo, // book side used for ConsumeEvents
+              reduceOnly,
+              referrerMangoAccountPk: referrerPk ? referrerPk : undefined,
+            }
           )
         }
       }
