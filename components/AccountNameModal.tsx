@@ -91,7 +91,6 @@ const AccountNameModal: FunctionComponent<AccountNameModalProps> = ({
       <div className="pb-2 text-th-fgd-1">{t('account-name')}</div>
       <Input
         type="text"
-        className={`border border-th-fgd-4 flex-grow`}
         error={!!invalidNameMessage}
         placeholder="e.g. Calypso"
         value={name}
