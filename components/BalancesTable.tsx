@@ -361,12 +361,12 @@ const BalancesTable = ({
                       </Td>
                       <Td>
                         {balance.deposits.toLocaleString(undefined, {
-                          maximumFractionDigits: 14,
+                          maximumFractionDigits: balance.decimals,
                         })}
                       </Td>
                       <Td>
                         {balance.borrows.toLocaleString(undefined, {
-                          maximumFractionDigits: 14,
+                          maximumFractionDigits: balance.decimals,
                         })}
                       </Td>
                       <Td>{balance.orders}</Td>
@@ -386,12 +386,12 @@ const BalancesTable = ({
                             }
                           >
                             {balance.net.toLocaleString(undefined, {
-                              maximumFractionDigits: 14,
+                              maximumFractionDigits: balance.decimals,
                             })}
                           </span>
                         ) : (
                           balance.net.toLocaleString(undefined, {
-                            maximumFractionDigits: 14,
+                            maximumFractionDigits: balance.decimals,
                           })
                         )}
                       </Td>
@@ -477,7 +477,7 @@ const BalancesTable = ({
                         </div>
                         <div className="text-th-fgd-1 text-right">
                           {balance.net.toLocaleString(undefined, {
-                            maximumFractionDigits: 14,
+                            maximumFractionDigits: balance.decimals,
                           })}
                         </div>
                       </div>
@@ -492,7 +492,7 @@ const BalancesTable = ({
                               {t('deposits')}
                             </div>
                             {balance.deposits.toLocaleString(undefined, {
-                              maximumFractionDigits: 14,
+                              maximumFractionDigits: balance.decimals,
                             })}
                           </div>
                           <div className="text-left">
@@ -500,7 +500,7 @@ const BalancesTable = ({
                               {t('borrows')}
                             </div>
                             {balance.borrows.toLocaleString(undefined, {
-                              maximumFractionDigits: 14,
+                              maximumFractionDigits: balance.decimals,
                             })}
                           </div>
                           <div className="text-left">
@@ -508,7 +508,7 @@ const BalancesTable = ({
                               {t('in-orders')}
                             </div>
                             {balance.orders.toLocaleString(undefined, {
-                              maximumFractionDigits: 14,
+                              maximumFractionDigits: balance.decimals,
                             })}
                           </div>
                           <div className="text-left">
@@ -516,7 +516,7 @@ const BalancesTable = ({
                               {t('unsettled')}
                             </div>
                             {balance.unsettled.toLocaleString(undefined, {
-                              maximumFractionDigits: 14,
+                              maximumFractionDigits: balance.decimals,
                             })}
                           </div>
                           <div className="text-left">
@@ -567,7 +567,7 @@ const BalancesTable = ({
                             repayAmount={
                               balance.borrows.toNumber() > 0
                                 ? balance.borrows.toLocaleString(undefined, {
-                                    maximumFractionDigits: 14,
+                                    maximumFractionDigits: balance.decimals,
                                   })
                                 : ''
                             }
