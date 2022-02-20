@@ -1,27 +1,24 @@
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { useBalances } from '../hooks/useBalances'
 import useMangoStore from '../stores/useMangoStore'
 import Button, { LinkButton } from '../components/Button'
 import { notify } from '../utils/notifications'
 import { ArrowSmDownIcon, ExclamationIcon } from '@heroicons/react/outline'
 import { Market } from '@project-serum/serum'
-import {
-  getMarketIndexBySymbol,
-  getTokenBySymbol,
-} from '@blockworks-foundation/mango-client'
-import { useState } from 'react'
+import { getTokenBySymbol } from '@blockworks-foundation/mango-client'
 import Loading from './Loading'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
-import { floorToDecimal, formatUsdValue } from '../utils'
-import { Table, Td, Th, TrBody, TrHead } from './TableElements'
+import { floorToDecimal, formatUsdValue, getPrecisionDigits } from '../utils'
+import { ExpandableRow, Table, Td, Th, TrBody, TrHead } from './TableElements'
 import { useSortableData } from '../hooks/useSortableData'
 import DepositModal from './DepositModal'
 import WithdrawModal from './WithdrawModal'
-import { ExpandableRow } from './TableElements'
 import MobileTableHeader from './mobile/MobileTableHeader'
 import { useTranslation } from 'next-i18next'
 import { TransactionSignature } from '@solana/web3.js'
+import Link from 'next/link'
+import { useRouter } from 'next/router'
 
 const BalancesTable = ({
   showZeroBalances = false,
@@ -59,34 +56,42 @@ const BalancesTable = ({
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const wallet = useMangoStore((s) => s.wallet.current)
   const canWithdraw = mangoAccount?.owner.equals(wallet.publicKey)
+  const { asPath } = useRouter()
 
   const handleSizeClick = (size, symbol) => {
-    const step = selectedMarket.minOrderSize
-    const marketIndex = getMarketIndexBySymbol(
-      mangoGroupConfig,
-      marketConfig.baseSymbol
-    )
+    const minOrderSize = selectedMarket.minOrderSize
+    const sizePrecisionDigits = getPrecisionDigits(minOrderSize)
+    const marketIndex = marketConfig.marketIndex
+
     const priceOrDefault = price
       ? price
-      : mangoGroup.getPrice(marketIndex, mangoGroupCache).toNumber()
-    if (symbol === 'USDC') {
-      const baseSize = Math.floor(size / priceOrDefault / step) * step
-      setMangoStore((state) => {
-        state.tradeForm.baseSize = baseSize
-        state.tradeForm.quoteSize = baseSize * priceOrDefault
-        state.tradeForm.side = 'buy'
-      })
-    } else {
-      const roundedSize = Math.round(size / step) * step
-      const quoteSize = roundedSize * priceOrDefault
-      setMangoStore((state) => {
-        state.tradeForm.baseSize = roundedSize
-        state.tradeForm.quoteSize = quoteSize
-        state.tradeForm.side = 'sell'
-      })
-    }
-  }
+      : mangoGroup.getPriceUi(marketIndex, mangoGroupCache)
 
+    let roundedSize, side
+    if (symbol === 'USDC') {
+      roundedSize = parseFloat(
+        (
+          Math.abs(size) / priceOrDefault +
+          (size < 0 ? minOrderSize / 2 : -minOrderSize / 2)
+        ) // round up so neg USDC gets cleared
+          .toFixed(sizePrecisionDigits)
+      )
+      side = size > 0 ? 'buy' : 'sell'
+    } else {
+      roundedSize = parseFloat(
+        (
+          Math.abs(size) + (size < 0 ? minOrderSize / 2 : -minOrderSize / 2)
+        ).toFixed(sizePrecisionDigits)
+      )
+      side = size > 0 ? 'sell' : 'buy'
+    }
+    const quoteSize = parseFloat((roundedSize * priceOrDefault).toFixed(2))
+    setMangoStore((state) => {
+      state.tradeForm.baseSize = roundedSize
+      state.tradeForm.quoteSize = quoteSize
+      state.tradeForm.side = side
+    })
+  }
   const handleOpenDepositModal = useCallback((symbol) => {
     setActionSymbol(symbol)
     setShowDepositModal(true)
@@ -171,7 +176,6 @@ const BalancesTable = ({
                     src={`/assets/icons/${bal.symbol.toLowerCase()}.svg`}
                     className={`mr-2.5`}
                   />
-                  <div>{bal.symbol}</div>
                 </div>
                 {`${floorToDecimal(bal.unsettled, tokenConfig.decimals)} ${
                   bal.symbol
@@ -356,7 +360,24 @@ const BalancesTable = ({
                             className={`mr-2.5`}
                           />
 
-                          {balance.symbol}
+                          {balance.symbol === 'USDC' ||
+                          decodeURIComponent(asPath).includes(
+                            `${balance.symbol}/USDC`
+                          ) ? (
+                            <span>{balance.symbol}</span>
+                          ) : (
+                            <Link
+                              href={{
+                                pathname: '/',
+                                query: { name: `${balance.symbol}/USDC` },
+                              }}
+                              shallow={true}
+                            >
+                              <a className="text-th-fgd-1 underline hover:no-underline hover:text-th-fgd-1">
+                                {balance.symbol}
+                              </a>
+                            </Link>
+                          )}
                         </div>
                       </Td>
                       <Td>
@@ -377,7 +398,7 @@ const BalancesTable = ({
                         selectedMarket ? (
                           <span
                             className={
-                              balance.net.toNumber() > 0
+                              balance.net.toNumber() != 0
                                 ? 'cursor-pointer underline hover:no-underline'
                                 : ''
                             }

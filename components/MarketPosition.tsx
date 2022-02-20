@@ -102,7 +102,7 @@ export default function MarketPosition() {
       ? price
       : mangoGroup.getPriceUi(marketIndex, mangoCache)
     const roundedSize = parseFloat(Math.abs(size).toFixed(sizePrecisionDigits))
-    const quoteSize = parseFloat((roundedSize * priceOrDefault).toFixed(0))
+    const quoteSize = parseFloat((roundedSize * priceOrDefault).toFixed(2))
     setMangoStore((state) => {
       state.tradeForm.baseSize = roundedSize
       state.tradeForm.quoteSize = quoteSize

@@ -48,7 +48,7 @@ const PositionsTable = () => {
     const sizePrecisionDigits = getPrecisionDigits(selectedMarket.minOrderSize)
     const priceOrDefault = price ? price : indexPrice
     const roundedSize = parseFloat(Math.abs(size).toFixed(sizePrecisionDigits))
-    const quoteSize = parseFloat((roundedSize * priceOrDefault).toFixed(0))
+    const quoteSize = parseFloat((roundedSize * priceOrDefault).toFixed(2))
     setMangoStore((state) => {
       state.tradeForm.baseSize = roundedSize
       state.tradeForm.quoteSize = quoteSize
