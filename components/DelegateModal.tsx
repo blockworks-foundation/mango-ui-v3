@@ -91,7 +91,6 @@ const DelegateModal: FunctionComponent<DelegateModalProps> = ({
       <div className="pb-2 text-th-fgd-1">{t('delegate:public-key')}</div>
       <Input
         type="text"
-        className={`border border-th-fgd-4 flex-grow`}
         error={!!invalidKeyMessage}
         value={keyBase58}
         onBlur={validateKeyInput}

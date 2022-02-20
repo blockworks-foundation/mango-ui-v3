@@ -144,7 +144,6 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
         </div>
         <Input
           type="text"
-          className={`border border-th-fgd-4 flex-grow`}
           error={!!invalidNameMessage}
           placeholder="e.g. Calypso"
           value={name}
@@ -171,7 +170,6 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
         <Input
           type="number"
           min="0"
-          className={`border border-th-fgd-4 flex-grow pr-11`}
           placeholder="0.00"
           error={!!invalidAmountMessage}
           onBlur={(e) => validateAmountInput(e.target.value)}

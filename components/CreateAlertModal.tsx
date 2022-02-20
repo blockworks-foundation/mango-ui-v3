@@ -149,7 +149,6 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
               <div className="mb-1.5 text-th-fgd-1">{t('email-address')}</div>
               <Input
                 type="email"
-                className={`border border-th-fgd-4 flex-grow pr-11`}
                 error={!!invalidAmountMessage}
                 onBlur={(e) => validateEmailInput(e.target.value)}
                 value={email || ''}
