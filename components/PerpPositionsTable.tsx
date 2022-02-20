@@ -9,7 +9,7 @@ import Button from '../components/Button'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { ExpandableRow, Table, Td, Th, TrBody, TrHead } from './TableElements'
-import { formatUsdValue } from '../utils'
+import { formatUsdValue, perpContractPrecision } from '../utils'
 import Loading from './Loading'
 import MarketCloseModal from './MarketCloseModal'
 import PerpSideBadge from './PerpSideBadge'
@@ -129,6 +129,12 @@ const PositionsTable = () => {
                       breakEvenPrice,
                       unrealizedPnl,
                     }) => {
+                      const basePositionUi = Math.abs(
+                        basePosition
+                      ).toLocaleString(undefined, {
+                        maximumFractionDigits:
+                          perpContractPrecision[marketConfig.baseSymbol],
+                      })
                       return (
                         <TrBody key={`${marketConfig.marketIndex}`}>
                           <Td>
@@ -170,21 +176,19 @@ const PositionsTable = () => {
                                 className="cursor-pointer underline hover:no-underline"
                                 onClick={() =>
                                   handleSizeClick(
-                                    Math.abs(basePosition),
+                                    parseFloat(
+                                      basePositionUi.replace(/,/g, '')
+                                    ),
                                     basePosition > 0 ? 'buy' : 'sell',
                                     indexPrice
                                   )
                                 }
                               >
-                                {`${Math.abs(basePosition)} ${
-                                  marketConfig.baseSymbol
-                                }`}
+                                {`${basePositionUi} ${marketConfig.baseSymbol}`}
                               </span>
                             ) : (
                               <span>
-                                {`${Math.abs(basePosition)} ${
-                                  marketConfig.baseSymbol
-                                }`}
+                                {`${basePositionUi} ${marketConfig.baseSymbol}`}
                               </span>
                             )}
                           </Td>

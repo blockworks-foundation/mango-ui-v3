@@ -1,5 +1,5 @@
-import React, { useCallback, useMemo, useState } from 'react'
-import useMangoStore from '../stores/useMangoStore'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import useMangoStore, { SECONDS } from '../stores/useMangoStore'
 import usePrevious from '../hooks/usePrevious'
 import useInterval from '../hooks/useInterval'
 import ChartApi from '../utils/chartDataConnector'
@@ -7,10 +7,10 @@ import UiLock from './UiLock'
 import ManualRefresh from './ManualRefresh'
 import useOraclePrice from '../hooks/useOraclePrice'
 import DayHighLow from './DayHighLow'
-import { useEffect } from 'react'
 import {
-  getDecimalCount,
+  getPrecisionDigits,
   patchInternalMarketName,
+  perpContractPrecision,
   usdFormatter,
 } from '../utils'
 import { PerpMarket } from '@blockworks-foundation/mango-client'
@@ -20,7 +20,6 @@ import { breakpoints } from './TradePageGrid'
 import { useTranslation } from 'next-i18next'
 import SwitchMarketDropdown from './SwitchMarketDropdown'
 import Tooltip from './Tooltip'
-import { SECONDS } from '../stores/useMangoStore'
 
 export function calculateFundingRate(perpStats, perpMarket) {
   const oldestStat = perpStats[perpStats.length - 1]
@@ -190,7 +189,11 @@ const MarketDetails = () => {
             </div>
             <div className="text-th-fgd-1 md:text-xs">
               {oraclePrice && selectedMarket
-                ? oraclePrice.toFixed(getDecimalCount(selectedMarket.tickSize))
+                ? oraclePrice.toNumber().toLocaleString(undefined, {
+                    maximumFractionDigits: getPrecisionDigits(
+                      selectedMarket.tickSize
+                    ),
+                  })
                 : '--'}
             </div>
           </div>
@@ -255,7 +258,9 @@ const MarketDetails = () => {
                   {selectedMarket ? (
                     `${parseOpenInterest(
                       selectedMarket as PerpMarket
-                    )} ${baseSymbol}`
+                    ).toLocaleString(undefined, {
+                      maximumFractionDigits: perpContractPrecision[baseSymbol],
+                    })} ${baseSymbol}`
                   ) : (
                     <MarketDataLoader />
                   )}

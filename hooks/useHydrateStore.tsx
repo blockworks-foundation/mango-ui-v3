@@ -1,8 +1,8 @@
 import { useEffect } from 'react'
 import { AccountInfo, PublicKey } from '@solana/web3.js'
-import useMangoStore, { programId } from '../stores/useMangoStore'
+import useMangoStore, { programId, SECONDS } from '../stores/useMangoStore'
 import useInterval from './useInterval'
-import { Orderbook as SpotOrderBook, Market } from '@project-serum/serum'
+import { Market, Orderbook as SpotOrderBook } from '@project-serum/serum'
 import {
   BookSide,
   BookSideLayout,
@@ -19,7 +19,6 @@ import {
   marketSelector,
   marketsSelector,
 } from '../stores/selectors'
-import { SECONDS } from '../stores/useMangoStore'
 
 function decodeBook(market, accInfo: AccountInfo<Buffer>): number[][] {
   if (market && accInfo?.data) {
@@ -33,7 +32,7 @@ function decodeBook(market, accInfo: AccountInfo<Buffer>): number[][] {
         market,
         BookSideLayout.decode(accInfo.data)
       )
-      return book.getL2(depth).map(([price, size]) => [price, size])
+      return book.getL2Ui(depth)
     }
   } else {
     return []

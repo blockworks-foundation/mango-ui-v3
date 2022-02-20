@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react'
 import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
-import { formatUsdValue } from '../utils/index'
+import { formatUsdValue, perpContractPrecision } from '../utils/index'
 import Button, { LinkButton } from './Button'
 import Tooltip from './Tooltip'
 import PerpSideBadge from './PerpSideBadge'
@@ -184,7 +184,9 @@ export default function MarketPosition() {
                   )
                 }
               >
-                {`${Math.abs(basePosition)} ${baseSymbol}`}
+                {`${Math.abs(basePosition).toLocaleString(undefined, {
+                  maximumFractionDigits: perpContractPrecision[baseSymbol],
+                })} ${baseSymbol}`}
               </span>
             ) : (
               `0 ${baseSymbol}`
