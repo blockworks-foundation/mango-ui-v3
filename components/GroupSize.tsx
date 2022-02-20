@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react'
 import { Listbox } from '@headlessui/react'
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid'
+import { ChevronDownIcon } from '@heroicons/react/solid'
 import { isEqual } from '../utils'
 
 const GroupSize = ({ tickSize, value, onChange, className = '' }) => {
@@ -21,18 +21,18 @@ const GroupSize = ({ tickSize, value, onChange, className = '' }) => {
         {({ open }) => (
           <>
             <Listbox.Button
-              className={`font-normal border border-th-bkg-4 hover:border-th-primary rounded focus:outline-none focus:border-th-primary`}
+              className={`bg-th-bkg-1 border border-th-bkg-4 font-normal py-0.5 hover:border-th-fgd-4 rounded focus:outline-none focus:border-th-fgd-4`}
             >
               <div
-                className={`flex items-center justify-between space-x-1 pr-1 pl-2`}
+                className={`flex items-center justify-between space-x-1 pr-1 pl-2 text-xs`}
               >
                 <span>{value}</span>
 
-                {open ? (
-                  <ChevronUpIcon className={`h-5 w-5 text-th-primary`} />
-                ) : (
-                  <ChevronDownIcon className={`h-5 w-5 text-th-primary`} />
-                )}
+                <ChevronDownIcon
+                  className={`default-transition h-4 w-4 text-th-fgd-1 ${
+                    open ? 'transform rotate-180' : 'transform rotate-360'
+                  }`}
+                />
               </div>
             </Listbox.Button>
             {open ? (

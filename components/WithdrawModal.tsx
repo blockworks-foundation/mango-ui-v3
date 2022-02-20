@@ -379,7 +379,6 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                 disabled={!withdrawTokenSymbol}
                 type="number"
                 min="0"
-                className={`border border-th-fgd-4 flex-grow pr-11`}
                 error={!!invalidAmountMessage}
                 placeholder="0.00"
                 value={inputAmount}

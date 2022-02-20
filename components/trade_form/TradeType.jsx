@@ -1,5 +1,5 @@
 import { Listbox } from '@headlessui/react'
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid'
+import { ChevronDownIcon } from '@heroicons/react/solid'
 import { useTranslation } from 'next-i18next'
 
 const TradeType = ({
@@ -24,15 +24,15 @@ const TradeType = ({
         {({ open }) => (
           <>
             <Listbox.Button
-              className={`font-normal w-full bg-th-bkg-1 border border-th-bkg-3 px-2 h-10 hover:border-th-bkg-4 rounded-md focus:outline-none focus:border-th-primary`}
+              className={`font-normal w-full bg-th-bkg-1 border border-th-bkg-4 px-2 h-10 hover:border-th-fgd-4 rounded-md focus:outline-none focus:border-th-fgd-4`}
             >
               <div className={`flex items-center justify-between space-x-4`}>
                 <span>{t(value?.toLowerCase()?.replace(/\s/g, '-'))}</span>
-                {open ? (
-                  <ChevronUpIcon className={`h-5 w-5 mr-1 text-th-primary`} />
-                ) : (
-                  <ChevronDownIcon className={`h-5 w-5 mr-1 text-th-primary`} />
-                )}
+                <ChevronDownIcon
+                  className={`default-transition h-5 w-5 mr-1 text-th-fgd-1 ${
+                    open ? 'transform rotate-180' : 'transform rotate-360'
+                  }`}
+                />
               </div>
             </Listbox.Button>
             {open ? (
