@@ -71,7 +71,7 @@ const MarketNavItem: FunctionComponent<MarketNavItemProps> = ({
                 : 'text-th-fgd-4'
             }`}
           >
-            {mktInfo ? `${(mktInfo.change24h * 100).toFixed(1)}%` : '?'}
+            {mktInfo ? `${(mktInfo.change24h * 100).toFixed(1)}%` : ''}
           </div>
         </button>
       </div>
