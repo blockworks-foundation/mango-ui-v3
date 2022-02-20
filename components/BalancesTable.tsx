@@ -359,8 +359,16 @@ const BalancesTable = ({
                           {balance.symbol}
                         </div>
                       </Td>
-                      <Td>{balance.deposits.toFixed()}</Td>
-                      <Td>{balance.borrows.toFixed()}</Td>
+                      <Td>
+                        {balance.deposits.toLocaleString(undefined, {
+                          maximumFractionDigits: 14,
+                        })}
+                      </Td>
+                      <Td>
+                        {balance.borrows.toLocaleString(undefined, {
+                          maximumFractionDigits: 14,
+                        })}
+                      </Td>
                       <Td>{balance.orders}</Td>
                       <Td>{balance.unsettled}</Td>
                       <Td>
@@ -377,10 +385,14 @@ const BalancesTable = ({
                               handleSizeClick(balance.net, balance.symbol)
                             }
                           >
-                            {balance.net.toFixed()}
+                            {balance.net.toLocaleString(undefined, {
+                              maximumFractionDigits: 14,
+                            })}
                           </span>
                         ) : (
-                          balance.net.toFixed()
+                          balance.net.toLocaleString(undefined, {
+                            maximumFractionDigits: 14,
+                          })
                         )}
                       </Td>
                       <Td>{formatUsdValue(balance.value.toNumber())}</Td>
@@ -464,7 +476,9 @@ const BalancesTable = ({
                           {balance.symbol}
                         </div>
                         <div className="text-th-fgd-1 text-right">
-                          {balance.net.toFixed()}
+                          {balance.net.toLocaleString(undefined, {
+                            maximumFractionDigits: 14,
+                          })}
                         </div>
                       </div>
                     }
@@ -477,25 +491,33 @@ const BalancesTable = ({
                             <div className="pb-0.5 text-th-fgd-3 text-xs">
                               {t('deposits')}
                             </div>
-                            {balance.deposits.toFixed()}
+                            {balance.deposits.toLocaleString(undefined, {
+                              maximumFractionDigits: 14,
+                            })}
                           </div>
                           <div className="text-left">
                             <div className="pb-0.5 text-th-fgd-3 text-xs">
                               {t('borrows')}
                             </div>
-                            {balance.borrows.toFixed()}
+                            {balance.borrows.toLocaleString(undefined, {
+                              maximumFractionDigits: 14,
+                            })}
                           </div>
                           <div className="text-left">
                             <div className="pb-0.5 text-th-fgd-3 text-xs">
                               {t('in-orders')}
                             </div>
-                            {balance.orders.toFixed()}
+                            {balance.orders.toLocaleString(undefined, {
+                              maximumFractionDigits: 14,
+                            })}
                           </div>
                           <div className="text-left">
                             <div className="pb-0.5 text-th-fgd-3 text-xs">
                               {t('unsettled')}
                             </div>
-                            {balance.unsettled.toFixed()}
+                            {balance.unsettled.toLocaleString(undefined, {
+                              maximumFractionDigits: 14,
+                            })}
                           </div>
                           <div className="text-left">
                             <div className="pb-0.5 text-th-fgd-3 text-xs">
@@ -544,7 +566,9 @@ const BalancesTable = ({
                             tokenSymbol={actionSymbol}
                             repayAmount={
                               balance.borrows.toNumber() > 0
-                                ? balance.borrows.toFixed()
+                                ? balance.borrows.toLocaleString(undefined, {
+                                    maximumFractionDigits: 14,
+                                  })
                                 : ''
                             }
                           />

@@ -12,8 +12,8 @@ export async function sleep(ms) {
 
 export const percentFormat = new Intl.NumberFormat(undefined, {
   style: 'percent',
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
+  minimumFractionDigits: 1,
+  maximumFractionDigits: 3,
 })
 
 export function floorToDecimal(
