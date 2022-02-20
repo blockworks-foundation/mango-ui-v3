@@ -191,7 +191,6 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
         <Input
           type="number"
           min="0"
-          className={`border border-th-fgd-4 flex-grow pr-11`}
           placeholder="0.00"
           error={!!invalidAmountMessage}
           onBlur={(e) => validateAmountInput(e.target.value)}

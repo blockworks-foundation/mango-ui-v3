@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Listbox } from '@headlessui/react'
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid'
+import { ChevronDownIcon } from '@heroicons/react/solid'
 import { abbreviateAddress } from '../utils'
 import useMangoStore, { WalletToken } from '../stores/useMangoStore'
 import { RefreshClockwiseIcon } from './icons'
@@ -73,7 +73,7 @@ const AccountSelect = ({
           <>
             <div className="flex items-center">
               <Listbox.Button
-                className={`border border-th-fgd-4 bg-th-bkg-1 rounded-md default-transition hover:border-th-primary focus:outline-none focus:border-th-primary p-2 w-full font-normal`}
+                className={`border border-th-bkg-4 bg-th-bkg-1 rounded-md default-transition hover:border-th-fgd-4 focus:outline-none focus:border-th-fgd-4 p-2 w-full font-normal`}
               >
                 <div
                   className={`flex items-center text-th-fgd-1 justify-between`}
@@ -104,11 +104,11 @@ const AccountSelect = ({
                   ) : (
                     t('select-asset')
                   )}
-                  {open ? (
-                    <ChevronUpIcon className="h-5 w-5 ml-2 text-th-primary" />
-                  ) : (
-                    <ChevronDownIcon className="h-5 w-5 ml-2 text-th-primary" />
-                  )}
+                  <ChevronDownIcon
+                    className={`default-transition h-5 w-5 ml-2 text-th-fgd-1 ${
+                      open ? 'transform rotate-180' : 'transform rotate-360'
+                    }`}
+                  />
                 </div>
               </Listbox.Button>
             </div>

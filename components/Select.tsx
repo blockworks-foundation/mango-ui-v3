@@ -1,5 +1,5 @@
 import { Listbox } from '@headlessui/react'
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid'
+import { ChevronDownIcon } from '@heroicons/react/solid'
 
 const Select = ({
   value,
@@ -15,18 +15,18 @@ const Select = ({
         {({ open }) => (
           <>
             <Listbox.Button
-              className={`h-full w-full font-normal bg-th-bkg-1 ring-1 ring-th-fgd-4 ring-inset rounded hover:ring-th-primary focus:outline-none focus:border-th-primary`}
+              className={`h-full w-full font-normal bg-th-bkg-1 ring-1 ring-th-bkg-4 ring-inset rounded-md hover:ring-th-fgd-4 focus:outline-none focus:border-th-fgd-4`}
             >
               <div
                 style={{ minHeight: '2.5rem' }}
                 className={`flex items-center justify-between space-x-4 p-2 text-th-fgd-1`}
               >
                 {value ? value : placeholder}
-                {open ? (
-                  <ChevronUpIcon className={`h-5 w-5 mr-1 text-th-primary`} />
-                ) : (
-                  <ChevronDownIcon className={`h-5 w-5 mr-1 text-th-primary`} />
-                )}
+                <ChevronDownIcon
+                  className={`default-transition h-5 w-5 mr-1 text-th-fgd-1 ${
+                    open ? 'transform rotate-180' : 'transform rotate-360'
+                  }`}
+                />
               </div>
             </Listbox.Button>
             {open ? (
