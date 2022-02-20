@@ -28,8 +28,8 @@ module.exports = {
             DEFAULT: '#FF9C24',
             dark: '#F58700',
           },
-          red: { DEFAULT: '#CC2929', dark: '#AA2222', muted: '#eba9a9' },
-          green: { DEFAULT: '#5EBF4D', dark: '#4BA53B', muted: '#bfe5b8' },
+          red: { DEFAULT: '#CC2929', dark: '#CC2929', muted: '#eba9a9' },
+          green: { DEFAULT: '#5EBF4D', dark: '#5EBF4D', muted: '#bfe5b8' },
           'bkg-1': '#f7f7f7',
           'bkg-2': '#FDFDFD',
           'bkg-3': '#F0F0F0',
@@ -56,7 +56,7 @@ module.exports = {
           'fgd-2': '#C8C8C8',
           'fgd-3': '#B3B3B3',
           'fgd-4': '#878787',
-          'bkg-button': '#474640',
+          'bkg-button': '#52514E',
         },
         'mango-theme': {
           yellow: {
@@ -74,7 +74,7 @@ module.exports = {
           'fgd-2': '#D2CEDE',
           'fgd-3': '#C1BED3',
           'fgd-4': '#706C81',
-          'bkg-button': '#4F496F',
+          'bkg-button': '#464063',
         },
         'th-bkg-1': 'var(--bkg-1)',
         'th-bkg-2': 'var(--bkg-2)',
