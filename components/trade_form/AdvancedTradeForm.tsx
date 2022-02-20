@@ -989,16 +989,14 @@ export default function AdvancedTradeForm({
           ) : null}
           <div className={`flex mt-3`}>
             {canTrade ? (
-              <Button
+              <button
                 disabled={disabledTradeButton}
                 onClick={onSubmit}
-                className={`bg-th-bkg-2 border ${
-                  !disabledTradeButton
-                    ? side === 'buy'
-                      ? 'border-th-green hover:border-th-green-dark text-th-green hover:bg-th-green-dark'
-                      : 'border-th-red hover:border-th-red-dark text-th-red hover:bg-th-red-dark'
-                    : 'border border-th-bkg-4'
-                } hover:text-th-fgd-1 flex-grow`}
+                className={`flex-grow font-bold px-6 py-2 rounded-full text-th-fgd-1 hover:brightness-[1.15] focus:outline-none disabled:bg-th-bkg-4 disabled:text-th-fgd-3 disabled:cursor-not-allowed disabled:hover:brightness-100 ${
+                  side === 'buy'
+                    ? 'bg-th-green-dark text-th-fgd-1'
+                    : 'bg-th-red text-th-fgd-1'
+                }`}
               >
                 {sizeTooLarge
                   ? t('too-large')
@@ -1015,7 +1013,7 @@ export default function AdvancedTradeForm({
                     } ${
                       isPerpMarket ? marketConfig.name : marketConfig.baseSymbol
                     }`}
-              </Button>
+              </button>
             ) : (
               <div className="flex-grow">
                 <Tooltip content={t('country-not-allowed-tooltip')}>

@@ -102,9 +102,9 @@ const ConnectWalletButton = () => {
           <button
             onClick={handleWalletConect}
             disabled={!wallet || !mangoGroup}
-            className="bg-th-primary rounded-none text-th-bkg-1 hover:brightness-[1.15] focus:outline-none disabled:text-th-fgd-4 disabled:cursor-wait"
+            className="bg-th-primary-dark rounded-none text-th-bkg-1 hover:brightness-[1.15] focus:outline-none disabled:text-th-bkg-2 disabled:cursor-wait"
           >
-            <div className="flex flex-row items-center px-3 justify-center h-full default-transition hover:text-th-bkg-1">
+            <div className="flex flex-row items-center px-3 justify-center h-full default-transition">
               <WalletIcon className="w-4 h-4 mr-2 fill-current" />
               <div className="text-left">
                 <div className="font-bold mb-0.5 whitespace-nowrap">

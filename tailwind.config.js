@@ -38,6 +38,7 @@ module.exports = {
           'fgd-2': '#0C3F45',
           'fgd-3': '#446065',
           'fgd-4': '#B0B0B0',
+          'bkg-button': '#E6DBCF',
         },
         'dark-theme': {
           yellow: {
@@ -55,6 +56,7 @@ module.exports = {
           'fgd-2': '#C8C8C8',
           'fgd-3': '#B3B3B3',
           'fgd-4': '#878787',
+          'bkg-button': '#474640',
         },
         'mango-theme': {
           yellow: {
@@ -72,6 +74,7 @@ module.exports = {
           'fgd-2': '#D2CEDE',
           'fgd-3': '#C1BED3',
           'fgd-4': '#706C81',
+          'bkg-button': '#4F496F',
         },
         'th-bkg-1': 'var(--bkg-1)',
         'th-bkg-2': 'var(--bkg-2)',
@@ -90,6 +93,7 @@ module.exports = {
         'th-green-dark': 'var(--green-dark)',
         'th-green-muted': 'var(--green-muted)',
         'th-orange': 'var(--orange)',
+        'th-bkg-button': 'var(--bkg-button)',
       },
       fontSize: {
         xxs: '.65rem',
