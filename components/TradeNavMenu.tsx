@@ -178,7 +178,7 @@ const MenuCategories: FunctionComponent<MenuCategoriesProps> = ({
             key={cat.name}
             onClick={() => onChange(cat.name)}
             onMouseEnter={() => onChange(cat.name)}
-            className={`cursor-pointer default-transition flex flex-col h-14 justify-center px-4 relative rounded-none w-full whitespace-nowrap hover:bg-th-bkg-3 ${
+            className={`cursor-pointer default-transition flex flex-col font-bold h-14 justify-center px-4 relative rounded-none w-full whitespace-nowrap hover:bg-th-bkg-3 ${
               activeCategory === cat.name
                 ? `bg-th-bkg-3 text-th-primary`
                 : `text-th-fgd-2 hover:text-th-primary`
