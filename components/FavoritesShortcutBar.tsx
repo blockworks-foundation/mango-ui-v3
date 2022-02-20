@@ -24,7 +24,7 @@ const FavoritesShortcutBar = () => {
       .toLowerCase()}MonoIcon`
 
     const SymbolIcon = MonoIcons[iconName] || QuestionMarkCircleIcon
-    return <SymbolIcon className={`h-3.5 w-auto mr-2`} />
+    return <SymbolIcon className={`h-3.5 w-auto mr-1.5`} />
   }
 
   return !isMobile ? (
@@ -45,7 +45,7 @@ const FavoritesShortcutBar = () => {
         return (
           <Link href={`/?name=${mkt.name}`} key={mkt.name} shallow={true}>
             <a
-              className={`flex items-center py-1 text-xs hover:text-th-primary whitespace-nowrap ${
+              className={`default-transition flex items-center py-1 text-xs hover:text-th-primary whitespace-nowrap ${
                 asPath.includes(mkt.name) ||
                 (asPath === '/' && initialMarket.name === mkt.name)
                   ? 'text-th-primary'
