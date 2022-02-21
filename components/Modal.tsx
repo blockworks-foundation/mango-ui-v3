@@ -12,7 +12,7 @@ const Modal = ({
   return (
     <Portal>
       <div
-        className="fixed z-30 inset-0 overflow-y-auto sm:py-8"
+        className="fixed z-50 inset-0 overflow-y-auto sm:py-8"
         aria-labelledby="modal-title"
         role="dialog"
         aria-modal="true"
