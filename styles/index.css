@@ -74,7 +74,7 @@ body {
 }
 
 h1 {
-  @apply font-bold text-th-fgd-1 text-xl;
+  @apply font-bold text-th-fgd-1 text-2xl;
 }
 
 h2 {

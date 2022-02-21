@@ -992,7 +992,7 @@ export default function AdvancedTradeForm({
               <button
                 disabled={disabledTradeButton}
                 onClick={onSubmit}
-                className={`flex-grow font-bold px-6 py-2 rounded-full text-white hover:brightness-[1.1] focus:outline-none disabled:bg-th-bkg-4 disabled:text-th-fgd-3 disabled:cursor-not-allowed disabled:hover:brightness-100 ${
+                className={`flex-grow font-bold px-6 py-2 rounded-full text-white hover:brightness-[1.1] focus:outline-none disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:cursor-not-allowed disabled:hover:brightness-100 ${
                   side === 'buy' ? 'bg-th-green-dark' : 'bg-th-red'
                 }`}
               >

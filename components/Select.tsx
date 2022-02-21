@@ -23,7 +23,7 @@ const Select = ({
               >
                 {value ? value : placeholder}
                 <ChevronDownIcon
-                  className={`default-transition h-5 w-5 mr-1 text-th-fgd-1 ${
+                  className={`default-transition h-6 w-6 mr-1 text-th-fgd-1 ${
                     open ? 'transform rotate-180' : 'transform rotate-360'
                   }`}
                 />

@@ -210,11 +210,9 @@ export default function Referral() {
       <TopBar />
       <PageBodyContainer>
         <div className="py-4 md:pb-4 md:pt-10">
-          <h1 className={`mb-1 text-th-fgd-1 text-2xl font-semibold`}>
-            Sow the Mango Seed
-          </h1>
+          <h1 className={`mb-1`}>Sow the Mango Seed</h1>
           <div className="flex flex-col sm:flex-row items-start">
-            <p className="mb-0 mr-2 text-th-fgd-1">
+            <p className="mb-0 mr-2">
               Earn 16% of the perp fees paid by anyone you refer. Plus, they get
               a 4% perp fee discount.
             </p>
@@ -375,7 +373,7 @@ export default function Referral() {
                           </p>
 
                           <Link href={'/?name=MNGO/USDC'} shallow={true}>
-                            <a className="mt-4 px-6 py-2 bg-th-bkg-4 font-bold rounded-full text-th-fgd-1 hover:brightness-[1.15] hover:text-th-fgd-1 focus:outline-none">
+                            <a className="mt-4 px-6 py-2 bg-th-bkg-button font-bold rounded-full text-th-fgd-1 hover:brightness-[1.15] hover:text-th-fgd-1 focus:outline-none">
                               Buy MNGO
                             </a>
                           </Link>
@@ -412,7 +410,7 @@ export default function Referral() {
                           ) : null}
                         </div>
                         <button
-                          className="bg-th-primary flex items-center justify-center text-th-bkg-1 text-sm px-4 py-2 rounded-full hover:brightness-[1.15] focus:outline-none disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:cursor-not-allowed disabled:hover:brightness-100"
+                          className="bg-th-primary flex items-center justify-center text-th-bkg-1 text-sm px-4 py-2 rounded-full hover:brightness-[1.1] focus:outline-none disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:cursor-not-allowed disabled:hover:brightness-100"
                           onClick={submitRefLink}
                           disabled={existingCustomRefLinks.length === 5}
                         >

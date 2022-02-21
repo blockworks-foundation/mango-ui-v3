@@ -58,9 +58,7 @@ export default function StatsPage() {
       <TopBar />
       <PageBodyContainer>
         <div className="flex flex-col sm:flex-row py-4 md:pb-4 md:pt-10">
-          <h1 className={`text-th-fgd-1 text-2xl font-semibold`}>
-            {t('stats')}
-          </h1>
+          <h1>{t('stats')}</h1>
         </div>
         {!isMobile ? (
           <Tabs activeTab={activeTab} onChange={handleTabChange} tabs={TABS} />

@@ -137,7 +137,7 @@ export default function StatsPerps({ perpStats }) {
         <div className="bg-th-bkg-3 hidden md:flex mb-4 md:mb-6 md:-mt-6 md:-mx-6 px-3 md:px-4 py-2 rounded-md md:rounded-none md:rounded-t-md">
           {marketConfigs.map((market, index) => (
             <div
-              className={`md:px-2 py-1 text-xs md:text-sm ${
+              className={`font-bold md:px-2 py-1 text-xs md:text-sm ${
                 index > 0 ? 'ml-4 md:ml-2' : null
               } rounded-md cursor-pointer default-transition
                           ${
@@ -162,7 +162,9 @@ export default function StatsPerps({ perpStats }) {
               .toLowerCase()}.svg`}
             className="mr-2.5"
           />
-          {selectedAsset.split(/-|\//)[0]} {t('perpetual-futures')}
+          <h2>
+            {selectedAsset.split(/-|\//)[0]} {t('perpetual-futures')}
+          </h2>
         </div>
       </div>
       <div className="grid grid-flow-row grid-cols-1 grid-rows-2 md:grid-cols-2 md:grid-rows-2 gap-2 sm:gap-4">
@@ -204,7 +206,7 @@ export default function StatsPerps({ perpStats }) {
           />
         </div>
         <div className="border border-th-bkg-3 relative p-4 rounded-md">
-          <div className="text-lg">{t('liquidity-mining')}</div>
+          <h2>{t('liquidity-mining')}</h2>
           <div className="flex justify-between mt-4">
             <div>{t('depth-rewarded')}</div>
             <div>
