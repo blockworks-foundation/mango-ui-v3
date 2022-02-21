@@ -37,7 +37,7 @@ const ButtonGroup: FunctionComponent<ButtonGroupProps> = ({
               ${
                 v === activeValue
                   ? `text-th-primary`
-                  : `text-th-fgd-1 opacity-70 hover:opacity-100`
+                  : `text-th-fgd-2 hover:text-th-primary`
               }
             `}
             key={`${v}${i}`}

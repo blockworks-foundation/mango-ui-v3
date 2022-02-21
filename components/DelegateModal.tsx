@@ -79,15 +79,11 @@ const DelegateModal: FunctionComponent<DelegateModalProps> = ({
   return (
     <Modal onClose={onClose} isOpen={isOpen}>
       <Modal.Header>
-        <div className="flex items-center">
-          <ElementTitle noMarginBottom>
-            {t('delegate:delegate-your-account')}
-          </ElementTitle>
-        </div>
+        <ElementTitle noMarginBottom>
+          {t('delegate:delegate-your-account')}
+        </ElementTitle>
+        <p className="mt-1 text-center">{t('delegate:info')}</p>
       </Modal.Header>
-      <div className="flex items-center justify-center text-th-fgd-3 pb-4">
-        <p className="text-center">{t('delegate:info')}</p>
-      </div>
       <div className="pb-2 text-th-fgd-1">{t('delegate:public-key')}</div>
       <Input
         type="text"
@@ -105,7 +101,7 @@ const DelegateModal: FunctionComponent<DelegateModalProps> = ({
       <Button
         onClick={() => setDelegate()}
         disabled={keyBase58.length != 44 && keyBase58.length != 0}
-        className="mt-4 w-full"
+        className="mt-6 w-full"
       >
         {t('delegate:set-delegate')}
       </Button>

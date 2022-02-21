@@ -62,9 +62,7 @@ const Modal = ({
 }
 
 const Header = ({ children }) => {
-  return (
-    <div className={`flex justify-center bg-th-bkg-2 pb-4`}>{children}</div>
-  )
+  return <div className={`flex flex-col items-center pb-2`}>{children}</div>
 }
 
 Modal.Header = Header

@@ -78,16 +78,14 @@ const AccountNameModal: FunctionComponent<AccountNameModalProps> = ({
   return (
     <Modal onClose={onClose} isOpen={isOpen}>
       <Modal.Header>
-        <div className="flex items-center">
-          <ElementTitle noMarginBottom>{t('name-your-account')}</ElementTitle>
-        </div>
+        <ElementTitle noMarginBottom>{t('name-your-account')}</ElementTitle>
+        <p className="flex items-center justify-center">
+          {t('edit-nickname')}
+          <Tooltip content={t('tooltip-name-onchain')}>
+            <InformationCircleIcon className="h-5 w-5 ml-2 text-th-primary" />
+          </Tooltip>
+        </p>
       </Modal.Header>
-      <div className="flex items-center justify-center text-th-fgd-3 pb-4">
-        {t('edit-nickname')}
-        <Tooltip content={t('tooltip-name-onchain')}>
-          <InformationCircleIcon className="h-5 w-5 ml-2 text-th-primary" />
-        </Tooltip>
-      </div>
       <div className="pb-2 text-th-fgd-1">{t('account-name')}</div>
       <Input
         type="text"
@@ -106,7 +104,7 @@ const AccountNameModal: FunctionComponent<AccountNameModalProps> = ({
       <Button
         onClick={() => submitName()}
         disabled={name.length >= 33}
-        className="mt-4 w-full"
+        className="mt-6 w-full"
       >
         {t('save-name')}
       </Button>
