@@ -91,7 +91,7 @@ const DelegateModal: FunctionComponent<DelegateModalProps> = ({
               content={
                 <div>
                   <a
-                    href="https://docs.mango.markets/mango-v3/account-delegation"
+                    href="https://docs.mango.markets/mango/account-delegation"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
