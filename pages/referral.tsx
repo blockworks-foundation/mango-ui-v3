@@ -41,7 +41,7 @@ import useMangoAccount from '../hooks/useMangoAccount'
 export async function getStaticProps({ locale }) {
   return {
     props: {
-      ...(await serverSideTranslations(locale, ['common'])),
+      ...(await serverSideTranslations(locale, ['common', 'referrals'])),
       // Will be passed to the page component as props
     },
   }
@@ -70,33 +70,22 @@ const referralHistory = []
 // ]
 
 const ProgramDetails = () => {
+  const { t } = useTranslation('referrals')
   return (
     <>
-      <h2 className="mb-4">Program Details</h2>
+      <h2 className="mb-4">{t('referrals:program-details')}</h2>
       <ul className="list-disc pl-3">
-        <li>
-          Your referral code is automatically applied when a user creates a
-          Mango Account using your link.
-        </li>
-        <li>
-          When any of your referrals trade Mango Perps, you earn 16% of their
-          trade fees.
-        </li>
-        <li>
-          Plus, for using your link they get a 4% discount off their Mango Perp
-          fees.
-        </li>
-        <li>
-          You must have at least 10,000 MNGO in your Mango Account to qualify
-          for generating referrals and earning referral rewards.
-        </li>
+        <li>{t('referrals:program-details-1')}</li>
+        <li>{t('referrals:program-details-2')}</li>
+        <li>{t('referrals:program-details-3')}</li>
+        <li>{t('referrals:program-details-4')}</li>
       </ul>
     </>
   )
 }
 
 export default function Referral() {
-  const { t } = useTranslation('common')
+  const { t } = useTranslation(['common', 'referrals'])
   const mangoGroup = useMangoStore(mangoGroupSelector)
   const mangoCache = useMangoStore(mangoCacheSelector)
   const { mangoAccount } = useMangoAccount()
@@ -145,7 +134,7 @@ export default function Referral() {
     const id = value.replace(/ /g, '')
     setCustomRefLinkInput(id)
     if (id.length > 32) {
-      setInputError('Referral IDs must be less then 33 characters')
+      setInputError(t('referrals:too-long-error'))
     } else {
       setInputError('')
     }
@@ -153,31 +142,41 @@ export default function Referral() {
 
   const validateRefIdInput = () => {
     if (customRefLinkInput.length >= 33) {
-      setInputError('Referral IDs must be less then 33 characters')
+      setInputError(t('referrals:too-long-error'))
     }
     if (customRefLinkInput.length === 0) {
-      setInputError('Enter a referral ID')
+      setInputError(t('referrals:enter-referral-id'))
     }
   }
 
   const submitRefLink = async () => {
+    let encodedRefLink: string
+    try {
+      encodedRefLink = encodeURIComponent(customRefLinkInput)
+    } catch (e) {
+      notify({
+        type: 'error',
+        title: 'Invalid custom referral link',
+      })
+    }
+
     if (!inputError) {
       try {
         const txid = await client.registerReferrerId(
           mangoGroup,
           mangoAccount,
           wallet,
-          customRefLinkInput
+          encodedRefLink
         )
         notify({
           txid,
-          title: 'Custom referral link created',
+          title: t('referrals:link-created'),
         })
         fetchCustomReferralLinks()
       } catch (e) {
         notify({
           type: 'error',
-          title: 'Unable to create referral link',
+          title: t('referrals:link-not-created'),
           description: e.message,
           txid: e.txid,
         })
@@ -210,12 +209,9 @@ export default function Referral() {
       <TopBar />
       <PageBodyContainer>
         <div className="py-4 md:pb-4 md:pt-10">
-          <h1 className={`mb-1`}>Sow the Mango Seed</h1>
+          <h1 className={`mb-1`}>{t('referrals:sow-seed')}</h1>
           <div className="flex flex-col sm:flex-row items-start">
-            <p className="mb-0 mr-2">
-              Earn 16% of the perp fees paid by anyone you refer. Plus, they get
-              a 4% perp fee discount.
-            </p>
+            <p className="mb-0 mr-2">{t('referrals:earn-16')}</p>
           </div>
         </div>
         <div className="bg-th-bkg-2 grid grid-cols-12 grid-flow-row gap-x-6 gap-y-8 p-4 sm:p-6 rounded-lg">
@@ -224,11 +220,11 @@ export default function Referral() {
               <>
                 {/* {hasReferrals ? (
                   <div className="col-span-12">
-                    <h2 className="mb-4">Your Referrals</h2>
+                    <h2 className="mb-4">{t('referrals:your-referrals')}</h2>
                     <div className="border-b border-th-bkg-4 sm:border-b-0 grid grid-cols-2 grid-row-flow sm:gap-6">
                       <div className="sm:border-b border-t border-th-bkg-4 col-span-2 sm:col-span-1 p-3 sm:p-4">
                         <div className="pb-0.5 text-th-fgd-3 text-xs sm:text-sm">
-                          Total Earnings
+                          {t('referrals:total-earnings')}
                         </div>
                         <div className="font-bold text-th-fgd-1 text-xl sm:text-2xl">
                           $150.50
@@ -236,7 +232,7 @@ export default function Referral() {
                       </div>
                       <div className="sm:border-b border-t border-th-bkg-4 col-span-2 sm:col-span-1 p-3 sm:p-4">
                         <div className="pb-0.5 text-th-fgd-3 text-xs sm:text-sm">
-                          Total referrals
+                          {t('referrals:total-referrals')}
                         </div>
                         <div className="font-bold text-th-fgd-1 text-xl sm:text-2xl">
                           15
@@ -253,14 +249,14 @@ export default function Referral() {
                     <div className="flex flex-col w-full">
                       {hasRequiredMngo ? (
                         <div className="bg-th-bkg-3 flex-1 p-6 rounded-md">
-                          <h2 className="mb-4">Your Links</h2>
+                          <h2 className="mb-4">{t('referrals:your-links')}</h2>
                           {!loading ? (
                             !hasCustomRefLinks ? (
                               <Table>
                                 <thead>
                                   <TrHead>
-                                    <Th>Link</Th>
-                                    <Th>Copy Link</Th>
+                                    <Th>{t('referrlals:link')}</Th>
+                                    <Th>{t('referrlals:copy-link')}</Th>
                                   </TrHead>
                                 </thead>
                                 <tbody>
@@ -306,10 +302,10 @@ export default function Referral() {
                               <Table>
                                 <thead>
                                   <TrHead>
-                                    <Th>Link</Th>
+                                    <Th>{t('referrals:link')}</Th>
                                     <Th>
                                       <div className="flex justify-end">
-                                        Copy Link
+                                        {t('referrals:copy-link')}
                                       </div>
                                     </Th>
                                   </TrHead>
@@ -368,13 +364,11 @@ export default function Referral() {
                       ) : (
                         <div className="bg-th-bkg-3 flex flex-col flex-1 items-center justify-center px-4 py-8 rounded-md text-center">
                           <MngoMonoIcon className="h-6 mb-2 text-th-fgd-2 w-6" />
-                          <p className="mb-0">
-                            You need 10,000 MNGO in your Mango Account
-                          </p>
+                          <p className="mb-0">{t('referrals:10k-mngo')}</p>
 
                           <Link href={'/?name=MNGO/USDC'} shallow={true}>
                             <a className="mt-4 px-6 py-2 bg-th-bkg-button font-bold rounded-full text-th-fgd-1 hover:brightness-[1.15] hover:text-th-fgd-1 focus:outline-none">
-                              Buy MNGO
+                              {t('referrals:buy-mngo')}
                             </a>
                           </Link>
                         </div>
@@ -382,12 +376,12 @@ export default function Referral() {
                     </div>
                     {hasRequiredMngo ? (
                       <div className="min-w-[25%] bg-th-bkg-3 p-6 rounded-md w-full xl:w-1/3">
-                        <h2 className="mb-1">Custom Referral Links</h2>
+                        <h2 className="mb-1">{t('referrals:custom-links')}</h2>
                         <p className="mb-4">
-                          You can generate up to 5 custom referral links.
+                          {t('referrals:custom-links-limit')}
                         </p>
                         <div className="pb-6">
-                          <Label>Referral ID</Label>
+                          <Label>{t('referrals:referral-id')}</Label>
                           <Input
                             error={!!inputError}
                             type="text"
@@ -412,7 +406,7 @@ export default function Referral() {
                         >
                           <div className="flex items-center">
                             <LinkIcon className="h-4 mr-1.5 w-4" />
-                            Generate Custom Link
+                            {t('referrals:generate-link')}
                           </div>
                         </Button>
                       </div>
@@ -422,16 +416,18 @@ export default function Referral() {
 
                 {referralHistory.length > 0 ? (
                   <div className="col-span-12">
-                    <h2 className="mb-4">Earnings History</h2>
+                    <h2 className="mb-4">{t('referrals:earnings-history')}</h2>
                     {!isMobile ? (
                       <Table>
                         <thead>
                           <TrHead>
                             <Th>{t('date')}</Th>
-                            <Th>Referral ID</Th>
-                            <Th>Referee</Th>
+                            <Th>{t('referrals:referral-id')}</Th>
+                            <Th>{t('referrals:referee')}</Th>
                             <Th>
-                              <div className="flex justify-end">Fee Earned</div>
+                              <div className="flex justify-end">
+                                {t('referrals:fee-earned')}
+                              </div>
                             </Th>
                           </TrHead>
                         </thead>
@@ -463,7 +459,7 @@ export default function Referral() {
                       <>
                         <MobileTableHeader
                           colOneHeader={t('date')}
-                          colTwoHeader="Fee Earned"
+                          colTwoHeader={t('referrals:fee-eanred')}
                         />
                         {referralHistory.map((ref, index) => (
                           <ExpandableRow
@@ -482,13 +478,13 @@ export default function Referral() {
                                 <div className="grid grid-cols-2 grid-flow-row gap-4 pb-4">
                                   <div className="text-left">
                                     <div className="pb-0.5 text-th-fgd-3 text-xs">
-                                      Referral ID
+                                      {t('referrals:referral-id')}
                                     </div>
                                     <div>{ref.referralLink}</div>
                                   </div>
                                   <div className="text-left">
                                     <div className="pb-0.5 text-th-fgd-3 text-xs">
-                                      Referee
+                                      {t('referrals:referee')}
                                     </div>
                                     <Link
                                       href={`/account?pubkey=${ref.referee}`}
