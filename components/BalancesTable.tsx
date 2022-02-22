@@ -143,7 +143,7 @@ const BalancesTable = ({
   return (
     <div className={`flex flex-col pb-2 sm:pb-4`}>
       {unsettledBalances.length > 0 ? (
-        <div className="border border-th-bkg-4 rounded-lg mb-6 p-4 sm:p-6">
+        <div className="bg-th-bkg-3 mb-6 p-4 sm:p-6 rounded-lg">
           <div className="flex items-center justify-between pb-4">
             <div className="flex items-center">
               <ExclamationIcon className="flex-shrink-0 h-5 mr-1.5 mt-0.5 text-th-primary w-5" />
@@ -156,29 +156,37 @@ const BalancesTable = ({
               {submitting ? <Loading /> : t('settle-all')}
             </Button>
           </div>
-          {unsettledBalances.map((bal) => {
-            const tokenConfig = getTokenBySymbol(mangoGroupConfig, bal.symbol)
-            return (
-              <div
-                className="border-b border-th-bkg-4 flex items-center justify-between py-4 last:border-b-0 last:pb-0"
-                key={bal.symbol}
-              >
-                <div className="flex items-center">
-                  <img
-                    alt=""
-                    width="20"
-                    height="20"
-                    src={`/assets/icons/${bal.symbol.toLowerCase()}.svg`}
-                    className={`mr-2.5`}
-                  />
-                  <div>{bal.symbol}</div>
+          <div className="gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 grid-flow-row">
+            {unsettledBalances.map((bal) => {
+              const tokenConfig = getTokenBySymbol(mangoGroupConfig, bal.symbol)
+              return (
+                <div
+                  className="bg-th-bkg-4 col-span-1 flex items-center justify-between px-5 py-3 rounded-full"
+                  key={bal.symbol}
+                >
+                  <div className="flex space-x-2">
+                    <div className="flex items-center">
+                      <img
+                        alt=""
+                        width="24"
+                        height="24"
+                        src={`/assets/icons/${bal.symbol.toLowerCase()}.svg`}
+                        className={`mr-3`}
+                      />
+                      <div>
+                        <p className="mb-0 text-th-fgd-1 text-xs">
+                          {bal.symbol}
+                        </p>
+                        <div className="font-bold text-th-green">
+                          {floorToDecimal(bal.unsettled, tokenConfig.decimals)}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                {`${floorToDecimal(bal.unsettled, tokenConfig.decimals)} ${
-                  bal.symbol
-                }`}
-              </div>
-            )
-          })}
+              )
+            })}
+          </div>
         </div>
       ) : null}
       <div className={`md:overflow-x-auto`}>
