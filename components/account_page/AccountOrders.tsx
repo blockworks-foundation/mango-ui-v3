@@ -6,7 +6,7 @@ const AccountOrders = () => {
 
   return (
     <>
-      <div className="pb-3.5 text-th-fgd-1 text-lg">{t('open-orders')}</div>
+      <h2 className="mb-3.5">{t('open-orders')}</h2>
       <OpenOrdersTable />
     </>
   )

@@ -42,7 +42,7 @@ const Tabs: FunctionComponent<TabsProps> = ({
             <a
               key={tabName}
               onClick={() => onChange(tabName)}
-              className={`cursor-pointer default-transition flex justify-center pb-4 relative whitespace-nowrap hover:opacity-100
+              className={`cursor-pointer default-transition flex font-bold justify-center pb-4 relative whitespace-nowrap hover:opacity-100
                     ${
                       activeTab === tabName
                         ? `text-th-primary`

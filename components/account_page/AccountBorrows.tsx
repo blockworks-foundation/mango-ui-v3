@@ -66,7 +66,7 @@ export default function AccountBorrows() {
 
   return (
     <>
-      <div className="pb-2 text-th-fgd-1 text-lg">{t('your-borrows')}</div>
+      <h2 className="mb-2">{t('your-borrows')}</h2>
       {/* TODO: calculate LiabsVal without perp markets
         <div className="border border-th-red flex items-center justify-between p-2 rounded">
           <div className="pr-4 text-xs text-th-fgd-3">{t('total-borrow-value')}:</div>
@@ -297,7 +297,7 @@ export default function AccountBorrows() {
           </div>
         </div>
       </div>
-      <div className="pb-2 pt-8 text-th-fgd-1 text-lg">{t('all-assets')}</div>
+      <h2 className="mb-2 mt-8">{t('all-assets')}</h2>
       <div className="flex flex-col pb-2 pt-4">
         <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div className="align-middle inline-block min-w-full sm:px-6 lg:px-8">

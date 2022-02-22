@@ -23,7 +23,7 @@ const EmptyState: FunctionComponent<EmptyStateProps> = ({
   return (
     <div className="flex flex-col items-center text-th-fgd-1 px-4 pb-2 rounded-lg">
       <div className="w-6 h-6 mb-1 text-th-primary">{icon}</div>
-      <div className="font-bold text-base pb-1">{title}</div>
+      <h2 className="text-base mb-1">{title}</h2>
       {desc ? (
         <p
           className={`text-center ${

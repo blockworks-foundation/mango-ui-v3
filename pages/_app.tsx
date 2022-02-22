@@ -65,9 +65,15 @@ const FetchReferrer = () => {
         if (query.ref.length === 44) {
           referrerPk = new PublicKey(query.ref)
         } else {
+          let decodedRefLink: string
+          try {
+            decodedRefLink = decodeURIComponent(query.ref as string)
+          } catch (e) {
+            console.log('Failed to decode referrer link', e)
+          }
           const { referrerPda } = await mangoClient.getReferrerPda(
             mangoGroup,
-            query.ref as string
+            decodedRefLink
           )
           console.log('in App referrerPda', referrerPda)
           const info = await connection.getAccountInfo(referrerPda)

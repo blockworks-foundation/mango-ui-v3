@@ -119,7 +119,7 @@ const TradeNavMenu = () => {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Popover.Panel className="absolute grid grid-cols-3 grid-rows-1 min-h-[235px] top-14 w-[700px] z-10">
+            <Popover.Panel className="absolute grid grid-cols-3 grid-rows-1 min-h-[235px] top-14 w-[700px]">
               <div className="bg-th-bkg-4 col-span-1 rounded-bl-lg">
                 <MenuCategories
                   activeCategory={activeMenuCategory}

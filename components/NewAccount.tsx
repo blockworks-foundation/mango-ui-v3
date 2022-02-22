@@ -20,6 +20,7 @@ import { deposit } from '../utils/mango'
 import { useTranslation } from 'next-i18next'
 import ButtonGroup from './ButtonGroup'
 import InlineNotification from './InlineNotification'
+import Modal from './Modal'
 
 interface NewAccountProps {
   onAccountCreation?: (x?) => void
@@ -130,10 +131,10 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
 
   return (
     <>
-      <ElementTitle>{t('create-account')}</ElementTitle>
-      <div className="mx-auto pb-4 text-center text-th-fgd-3 text-xs">
-        {t('insufficient-sol')}
-      </div>
+      <Modal.Header>
+        <ElementTitle noMarginBottom>{t('create-account')}</ElementTitle>
+        <p className="mt-1 text-center">{t('insufficient-sol')}</p>
+      </Modal.Header>
       <div className="border-b border-th-bkg-4 mb-4 pb-6">
         <div className="flex items-center pb-2 text-th-fgd-1">
           {t('account-name')}{' '}
@@ -157,9 +158,7 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
           </div>
         ) : null}
       </div>
-      <div className="font-bold pb-2 text-center text-th-fgd-2">
-        {t('initial-deposit')}
-      </div>
+      <h3 className="mb-2 text-center">{t('initial-deposit')}</h3>
       <AccountSelect
         accounts={walletTokens}
         selectedAccount={selectedAccount}
