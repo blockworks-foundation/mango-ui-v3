@@ -1,11 +1,12 @@
 import { useMemo, useState } from 'react'
 import { Listbox } from '@headlessui/react'
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid'
+import { ChevronDownIcon } from '@heroicons/react/solid'
 import { abbreviateAddress } from '../utils'
 import useMangoStore, { WalletToken } from '../stores/useMangoStore'
 import { RefreshClockwiseIcon } from './icons'
 import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
 import { useTranslation } from 'next-i18next'
+import { LinkButton } from './Button'
 
 type AccountSelectProps = {
   accounts: WalletToken[]
@@ -52,17 +53,14 @@ const AccountSelect = ({
       <div className="flex justify-between pb-2">
         <div className="text-th-fgd-1">{t('asset')}</div>
         {missingTokenSymbols.length > 0 ? (
-          <button
-            className="ml-2 text-th-fgd-1 hover:text-th-primary outline-none focus:outline-none"
-            onClick={handleRefreshBalances}
-          >
-            <div className="flex items-center text-th-fgd-1 font-normal underline cursor-pointer hover:text-th-primary hover:no-underline">
+          <LinkButton className="ml-2" onClick={handleRefreshBalances}>
+            <div className="flex items-center">
               <RefreshClockwiseIcon
                 className={`h-4 w-4 mr-1 ${loading ? 'animate-spin' : ''}`}
               />
               {t('refresh')}
             </div>
-          </button>
+          </LinkButton>
         ) : null}
       </div>
       <Listbox
@@ -73,7 +71,7 @@ const AccountSelect = ({
           <>
             <div className="flex items-center">
               <Listbox.Button
-                className={`border border-th-fgd-4 bg-th-bkg-1 rounded-md default-transition hover:border-th-primary focus:outline-none focus:border-th-primary p-2 w-full font-normal`}
+                className={`border border-th-bkg-4 bg-th-bkg-1 rounded-md default-transition hover:border-th-fgd-4 focus:outline-none focus:border-th-fgd-4 p-2 w-full font-normal`}
               >
                 <div
                   className={`flex items-center text-th-fgd-1 justify-between`}
@@ -104,11 +102,11 @@ const AccountSelect = ({
                   ) : (
                     t('select-asset')
                   )}
-                  {open ? (
-                    <ChevronUpIcon className="h-5 w-5 ml-2 text-th-primary" />
-                  ) : (
-                    <ChevronDownIcon className="h-5 w-5 ml-2 text-th-primary" />
-                  )}
+                  <ChevronDownIcon
+                    className={`default-transition h-5 w-5 ml-2 text-th-fgd-1 ${
+                      open ? 'transform rotate-180' : 'transform rotate-360'
+                    }`}
+                  />
                 </div>
               </Listbox.Button>
             </div>

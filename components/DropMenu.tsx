@@ -29,10 +29,7 @@ const DropMenu: FunctionComponent<DropMenuProps> = ({
       <Listbox value={value} onChange={onChange}>
         {({ open }) => (
           <>
-            <Listbox.Button
-              className={`${buttonClassName} default-transition`}
-              disabled={disabled}
-            >
+            <Listbox.Button className={buttonClassName} disabled={disabled}>
               {toolTipContent && !open ? (
                 <Tooltip content={toolTipContent} className="text-xs py-1">
                   {button}
@@ -41,19 +38,20 @@ const DropMenu: FunctionComponent<DropMenuProps> = ({
                 button
               )}
             </Listbox.Button>
-
             <Transition
+              appear={true}
               show={open}
               as={Fragment}
-              enter="transition ease-out duration-200"
-              enterFrom="opacity-0 translate-y-1"
-              enterTo="opacity-100 translate-y-0"
-              leave="transition ease-in duration-150"
-              leaveFrom="opacity-100 translate-y-0"
-              leaveTo="opacity-0 translate-y-1"
+              enter="transition-all ease-in duration-200"
+              enterFrom="opacity-0 transform scale-75"
+              enterTo="opacity-100 transform scale-100"
+              leave="transition ease-out duration-200"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
             >
               <Listbox.Options
-                className={`absolute z-20 mt-4 p-1 right-0 w-24 bg-th-bkg-1 divide-y divide-th-bkg-3 shadow-lg outline-none rounded-md`}
+                className={`absolute bg-th-bkg-3 left-1/2 mt-2 px-4 py-2.5 rounded-md transform -translate-x-1/2 z-10`}
+                static
               >
                 {options.map((option) => (
                   <Listbox.Option
@@ -62,7 +60,7 @@ const DropMenu: FunctionComponent<DropMenuProps> = ({
                   >
                     {({ selected }) => (
                       <div
-                        className={`p-2 hover:bg-th-bkg-2 hover:cursor-pointer tracking-wider ${
+                        className={`default-transition py-1.5 hover:text-th-primary hover:cursor-pointer tracking-wider whitespace-nowrap ${
                           selected && `text-th-primary`
                         } ${option.icon && `flex items-center`}`}
                       >

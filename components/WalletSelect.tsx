@@ -18,7 +18,7 @@ export default function WalletSelect() {
       {({ open }) => (
         <>
           <Menu.Button
-            className={`bg-th-primary flex justify-center items-center h-full rounded-none focus:outline-none text-th-bkg-1 hover:brightness-[1.15] hover:text-th-bkg-1 hover:bg-th-primary cursor-pointer w-10`}
+            className={`bg-th-primary-dark flex justify-center items-center h-full rounded-none focus:outline-none text-th-bkg-1 hover:brightness-[1.1] cursor-pointer w-10`}
           >
             <ChevronDownIcon
               className={`default-transition h-5 w-5 ${

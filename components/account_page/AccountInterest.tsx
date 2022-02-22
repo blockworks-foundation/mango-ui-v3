@@ -271,7 +271,7 @@ const AccountInterest = () => {
   return (
     <>
       <div className="flex items-center justify-between pb-4">
-        <div className="text-th-fgd-1 text-lg">{t('interest-earned')}</div>
+        <h2>{t('interest-earned')}</h2>
         <div className="flex items-center">
           <Button
             className={`float-right text-xs h-8 pt-0 pb-0 pl-3 pr-3`}

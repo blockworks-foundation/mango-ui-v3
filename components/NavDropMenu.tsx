@@ -65,17 +65,17 @@ export default function NavDropMenu({
             leaveTo="opacity-0"
           >
             <Popover.Panel className="absolute top-14 z-10">
-              <div className="relative bg-th-bkg-3 divide-y divide-th-bkg-3 px-4 rounded-b-md">
+              <div className="relative bg-th-bkg-3 px-4 py-2.5 rounded-b-md">
                 {linksArray.map(([name, href, isExternal]) =>
                   !isExternal ? (
                     <Link href={href} key={href}>
-                      <a className="block py-3 text-th-fgd-1 whitespace-nowrap hover:text-th-primary">
+                      <a className="block py-1.5 text-th-fgd-1 whitespace-nowrap hover:text-th-primary">
                         {name}
                       </a>
                     </Link>
                   ) : (
                     <a
-                      className="block py-3 text-th-fgd-1 whitespace-nowrap hover:text-th-primary"
+                      className="block py-1.5 text-th-fgd-1 whitespace-nowrap hover:text-th-primary"
                       href={href}
                       key={href}
                       target="_blank"

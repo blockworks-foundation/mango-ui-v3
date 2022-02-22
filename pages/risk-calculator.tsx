@@ -1295,9 +1295,7 @@ export default function RiskCalculator() {
       <TopBar />
       <PageBodyContainer>
         <div className="flex flex-col pt-8 pb-3 sm:pb-6 md:pt-10">
-          <h1 className={`mb-2 text-th-fgd-1 text-2xl font-semibold`}>
-            {t('calculator:risk-calculator')}
-          </h1>
+          <h1 className={`mb-2`}>{t('calculator:risk-calculator')}</h1>
           <p className="mb-0">{t('calculator:in-testing-warning')}</p>
         </div>
         {scenarioBars?.rowData.length > 0 ? (
@@ -1305,9 +1303,9 @@ export default function RiskCalculator() {
             <div className="grid grid-cols-12">
               <div className="col-span-12 md:col-span-8 p-4">
                 <div className="flex justify-between pb-2 lg:pb-3 px-0 lg:px-3">
-                  <div className="pb-4 lg:pb-0 text-th-fgd-1 text-lg">
+                  <h2 className="mb-4 lg:mb-0">
                     {t('calculator:scenario-balances')}
-                  </div>
+                  </h2>
                   <div className="flex justify-between lg:justify-start">
                     <Button
                       className={`text-xs flex items-center justify-center sm:ml-3 pt-0 pb-0 h-8 pl-3 pr-3 rounded`}
@@ -1399,11 +1397,11 @@ export default function RiskCalculator() {
                     {({ open }) => (
                       <>
                         <Disclosure.Button className="bg-th-bkg-1 default-transition flex items-center justify-between p-3 w-full hover:bg-th-bkg-1 focus:outline-none">
-                          <div className="text-th-fgd-3">
+                          <p className="mb-0">
                             {open
                               ? t('calculator:scenario-details')
                               : t('calculator:scenario-maint-health')}
-                          </div>
+                          </p>
                           {open ? null : (
                             <div className="text-th-fgd-3 text-xs">
                               {scenarioDetails.get('maintHealth') * 100 >= 9999
@@ -1945,9 +1943,7 @@ export default function RiskCalculator() {
               {/*Populate detailed scenario summary*/}
               {scenarioBars?.rowData.length > 0 ? (
                 <div className="bg-th-bkg-3 col-span-4 hidden md:block p-4 relative rounded-r-lg">
-                  <div className="pb-4 text-th-fgd-1 text-lg">
-                    {t('calculator:scenario-details')}
-                  </div>
+                  <h2 className="mb-4">{t('calculator:scenario-details')}</h2>
                   {/* Joke Wrapper */}
                   <div className="relative col-span-4">
                     {scenarioDetails.get('liabilities') === 0 &&

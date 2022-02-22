@@ -186,7 +186,7 @@ export default function Account() {
             <>
               <div className="pb-3 md:pb-0">
                 <div className="flex items-center mb-1">
-                  <h1 className={`font-semibold mr-3 text-th-fgd-1 text-2xl`}>
+                  <h1 className={`mr-3`}>
                     {mangoAccount?.name || t('account')}
                   </h1>
                   {!pubkey ? (
