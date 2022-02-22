@@ -1,8 +1,6 @@
-import { useTranslation } from 'next-i18next'
 import Select from '../Select'
 
 const TradeType = ({ value, onChange, offerTriggers = false }) => {
-  const { t } = useTranslation('common')
   const TRADE_TYPES = ['Limit', 'Market']
   if (offerTriggers)
     TRADE_TYPES.push(
