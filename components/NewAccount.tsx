@@ -3,7 +3,7 @@ import {
   ExclamationCircleIcon,
   InformationCircleIcon,
 } from '@heroicons/react/outline'
-import Input from './Input'
+import Input, { Label } from './Input'
 import AccountSelect from './AccountSelect'
 import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
@@ -136,13 +136,13 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
         <p className="mt-1 text-center">{t('insufficient-sol')}</p>
       </Modal.Header>
       <div className="border-b border-th-bkg-4 mb-4 pb-6">
-        <div className="flex items-center pb-2 text-th-fgd-1">
+        <Label className="flex items-center">
           {t('account-name')}{' '}
           <span className="ml-1 text-th-fgd-3">{t('optional')}</span>
           <Tooltip content={t('tooltip-name-onchain')}>
             <InformationCircleIcon className="h-5 w-5 ml-2 text-th-primary" />
           </Tooltip>
-        </div>
+        </Label>
         <Input
           type="text"
           error={!!invalidNameMessage}
@@ -164,19 +164,17 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
         selectedAccount={selectedAccount}
         onSelectAccount={handleAccountSelect}
       />
-      <div className={`text-th-fgd-1 pb-2 pt-4`}>{t('amount')}</div>
-      <div className="flex">
-        <Input
-          type="number"
-          min="0"
-          placeholder="0.00"
-          error={!!invalidAmountMessage}
-          onBlur={(e) => validateAmountInput(e.target.value)}
-          value={inputAmount || ''}
-          onChange={(e) => onChangeAmountInput(e.target.value)}
-          suffix={symbol}
-        />
-      </div>
+      <Label className="mt-4">{t('amount')}</Label>
+      <Input
+        type="number"
+        min="0"
+        placeholder="0.00"
+        error={!!invalidAmountMessage}
+        onBlur={(e) => validateAmountInput(e.target.value)}
+        value={inputAmount || ''}
+        onChange={(e) => onChangeAmountInput(e.target.value)}
+        suffix={symbol}
+      />
       {invalidAmountMessage ? (
         <div className="flex items-center pt-1.5 text-th-red">
           <ExclamationCircleIcon className="h-4 w-4 mr-1.5" />

@@ -10,7 +10,7 @@ import {
   mangoGroupSelector,
   walletSelector,
 } from '../stores/selectors'
-import { IconButton } from '../components/Button'
+import Button, { IconButton } from '../components/Button'
 import { abbreviateAddress, copyToClipboard } from '../utils'
 import { notify } from '../utils/notifications'
 import {
@@ -34,7 +34,7 @@ import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from '../components/TradePageGrid'
 import { ExpandableRow } from '../components/TableElements'
 import MobileTableHeader from '../components/mobile/MobileTableHeader'
-import Input from '../components/Input'
+import Input, { Label } from '../components/Input'
 import InlineNotification from '../components/InlineNotification'
 import useMangoAccount from '../hooks/useMangoAccount'
 
@@ -387,11 +387,8 @@ export default function Referral() {
                           You can generate up to 5 custom referral links.
                         </p>
                         <div className="pb-6">
-                          <label className="block mb-2 text-th-fgd-3 text-xs">
-                            Referral ID
-                          </label>
+                          <Label>Referral ID</Label>
                           <Input
-                            className="bg-th-bkg-1 border border-th-fgd-4 default-transition font-bold pl-4 h-12 focus:outline-none rounded-md text-base tracking-wide w-full hover:border-th-primary focus:border-th-primary"
                             error={!!inputError}
                             type="text"
                             placeholder="ElonMusk"
@@ -409,14 +406,15 @@ export default function Referral() {
                             </div>
                           ) : null}
                         </div>
-                        <button
-                          className="bg-th-primary flex items-center justify-center text-th-bkg-1 text-sm px-4 py-2 rounded-full hover:brightness-[1.1] focus:outline-none disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:cursor-not-allowed disabled:hover:brightness-100"
+                        <Button
                           onClick={submitRefLink}
                           disabled={existingCustomRefLinks.length === 5}
                         >
-                          <LinkIcon className="h-4 mr-1.5 w-4" />
-                          Generate Custom Link
-                        </button>
+                          <div className="flex items-center">
+                            <LinkIcon className="h-4 mr-1.5 w-4" />
+                            Generate Custom Link
+                          </div>
+                        </Button>
                       </div>
                     ) : null}
                   </div>
