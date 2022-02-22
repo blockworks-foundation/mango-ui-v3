@@ -150,13 +150,23 @@ export default function Referral() {
   }
 
   const submitRefLink = async () => {
+    let encodedRefLink: string
+    try {
+      encodedRefLink = encodeURIComponent(customRefLinkInput)
+    } catch (e) {
+      notify({
+        type: 'error',
+        title: 'Invalid custom referral link',
+      })
+    }
+
     if (!inputError) {
       try {
         const txid = await client.registerReferrerId(
           mangoGroup,
           mangoAccount,
           wallet,
-          customRefLinkInput
+          encodedRefLink
         )
         notify({
           txid,
