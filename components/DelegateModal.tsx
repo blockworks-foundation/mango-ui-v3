@@ -105,6 +105,9 @@ const DelegateModal: FunctionComponent<DelegateModalProps> = ({
           </ElementTitle>
         </div>
       </Modal.Header>
+      <div className="flex items-center justify-center text-th-fgd-3 pb-4">
+        <p className="text-center">{t('delegate:info')}</p>
+      </div>
       <div className="pb-2 text-th-fgd-1">{t('delegate:public-key')}</div>
       <Input
         type="text"
