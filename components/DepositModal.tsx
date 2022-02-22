@@ -153,7 +153,9 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <ElementTitle noMarginBottom>{t('deposit-funds')}</ElementTitle>
+      <Modal.Header>
+        <ElementTitle noMarginBottom>{t('deposit-funds')}</ElementTitle>
+      </Modal.Header>
       {!mangoAccount ? (
         <div className="mb-4 mt-2 text-center text-th-fgd-3 text-xs">
           {t('first-deposit-desc')}
@@ -191,7 +193,6 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
         <Input
           type="number"
           min="0"
-          className={`border border-th-fgd-4 flex-grow pr-11`}
           placeholder="0.00"
           error={!!invalidAmountMessage}
           onBlur={(e) => validateAmountInput(e.target.value)}

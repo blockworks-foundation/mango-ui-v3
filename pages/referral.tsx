@@ -199,11 +199,11 @@ export default function Referral() {
       <TopBar />
       <PageBodyContainer>
         <div className="py-4 md:pb-4 md:pt-10">
-          <h1 className={`mb-1 text-th-fgd-1 text-2xl font-semibold`}>
-            {t('referrals:sow-seed')}
-          </h1>
+          <h1 className={`mb-1`}>{t('referrals:sow-seed')}</h1>
           <div className="flex flex-col sm:flex-row items-start">
-            <p className="mb-0 mr-2 text-th-fgd-1">{t('referrals:earn-16')}</p>
+            <p className="mb-0 mr-2">
+              {t('referrals:earn-16')}
+            </p>
           </div>
         </div>
         <div className="bg-th-bkg-2 grid grid-cols-12 grid-flow-row gap-x-6 gap-y-8 p-4 sm:p-6 rounded-lg">
@@ -359,7 +359,7 @@ export default function Referral() {
                           <p className="mb-0">{t('referrals:10k-mngo')}</p>
 
                           <Link href={'/?name=MNGO/USDC'} shallow={true}>
-                            <a className="mt-4 px-6 py-2 bg-th-bkg-4 font-bold rounded-full text-th-fgd-1 hover:brightness-[1.15] hover:text-th-fgd-1 focus:outline-none">
+                            <a className="mt-4 px-6 py-2 bg-th-bkg-button font-bold rounded-full text-th-fgd-1 hover:brightness-[1.15] hover:text-th-fgd-1 focus:outline-none">
                               {t('referrals:buy-mngo')}
                             </a>
                           </Link>
@@ -396,7 +396,7 @@ export default function Referral() {
                           ) : null}
                         </div>
                         <button
-                          className="bg-th-primary flex items-center justify-center text-th-bkg-1 text-sm px-4 py-2 rounded-full hover:brightness-[1.15] focus:outline-none disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:cursor-not-allowed disabled:hover:brightness-100"
+                          className="bg-th-primary flex items-center justify-center text-th-bkg-1 text-sm px-4 py-2 rounded-full hover:brightness-[1.1] focus:outline-none disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:cursor-not-allowed disabled:hover:brightness-100"
                           onClick={submitRefLink}
                           disabled={existingCustomRefLinks.length === 5}
                         >

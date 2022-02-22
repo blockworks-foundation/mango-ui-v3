@@ -167,7 +167,7 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
           <>
             <NewAccount onAccountCreation={handleNewAccountCreation} />
             <LinkButton
-              className="flex justify-center mt-4 text-th-fgd-3 w-full"
+              className="flex justify-center mt-4 w-full"
               onClick={() => setShowNewAccountForm(false)}
             >
               {t('cancel')}

@@ -88,7 +88,7 @@ const Chart: FunctionComponent<ChartProps> = ({
           <div className="pb-0.5 text-xs text-th-fgd-3">{title}</div>
           {mouseData ? (
             <>
-              <div className="pb-1 text-xl text-th-fgd-1">
+              <div className="font-bold pb-1 text-xl text-th-fgd-1">
                 {labelFormat(mouseData[yAxis])}
               </div>
               <div className="text-xs font-normal text-th-fgd-4">
@@ -97,7 +97,7 @@ const Chart: FunctionComponent<ChartProps> = ({
             </>
           ) : data.length > 0 ? (
             <>
-              <div className="pb-1 text-xl text-th-fgd-1">
+              <div className="font-bold pb-1 text-xl text-th-fgd-1">
                 {titleValue
                   ? labelFormat(titleValue)
                   : labelFormat(data[data.length - 1][yAxis])}

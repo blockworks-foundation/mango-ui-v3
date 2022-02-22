@@ -145,9 +145,9 @@ const BalancesTable = ({
       {unsettledBalances.length > 0 ? (
         <div className="border border-th-bkg-4 rounded-lg mb-6 p-4 sm:p-6">
           <div className="flex items-center justify-between pb-4">
-            <div className="flex items-center sm:text-lg">
+            <div className="flex items-center">
               <ExclamationIcon className="flex-shrink-0 h-5 mr-1.5 mt-0.5 text-th-primary w-5" />
-              {t('unsettled-balances')}
+              <h3>{t('unsettled-balances')}</h3>
             </div>
             <Button
               className="text-xs pt-0 pb-0 h-8 pl-3 pr-3 whitespace-nowrap"
