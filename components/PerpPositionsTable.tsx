@@ -72,7 +72,7 @@ const PositionsTable = () => {
   return (
     <div className="flex flex-col pb-2">
       {unsettledPositions.length > 0 ? (
-        <div className="bg-th-bkg-3 mb-6 p-4 sm:p-6 rounded-lg">
+        <div className="border border-th-bkg-4 mb-6 p-4 sm:p-6 rounded-lg">
           <div className="flex items-center justify-between pb-4">
             <div className="flex items-center">
               <ExclamationIcon className="flex-shrink-0 h-5 mr-1.5 mt-0.5 text-th-primary w-5" />
@@ -90,7 +90,7 @@ const PositionsTable = () => {
             {unsettledPositions.map((p, index) => {
               return (
                 <div
-                  className="bg-th-bkg-4 col-span-1 flex items-center justify-between px-5 py-3 rounded-full"
+                  className="bg-th-bkg-3 col-span-1 flex items-center justify-between px-5 py-3 rounded-full"
                   key={p.marketConfig.baseSymbol}
                 >
                   <div className="flex space-x-2">
