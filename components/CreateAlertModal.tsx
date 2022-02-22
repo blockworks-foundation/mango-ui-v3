@@ -100,7 +100,7 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
                     {t('alerts:active-alerts')}
                   </ElementTitle>
                   <Button
-                    className="flex items-center justify-center pt-0 pb-0 h-8 text-xs w-20"
+                    className="flex items-center justify-center pt-0 pb-0 h-8 text-xs min-w-20"
                     disabled={activeAlerts.length >= 5}
                     onClick={() => setShowAlertForm(true)}
                   >
@@ -136,8 +136,12 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
           ) : showAlertForm ? (
             <>
               <Modal.Header>
-                <ElementTitle noMarginBottom>{t('alerts:create-alert')}</ElementTitle>
-                <p className="mt-1 text-center">{t('alerts:alerts-disclaimer')}</p>
+                <ElementTitle noMarginBottom>
+                  {t('alerts:create-alert')}
+                </ElementTitle>
+                <p className="mt-1 text-center">
+                  {t('alerts:alerts-disclaimer')}
+                </p>
               </Modal.Header>
               {error ? (
                 <div className="my-4">
@@ -212,7 +216,9 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
           ) : (
             <div>
               <Modal.Header>
-                <ElementTitle noMarginBottom>{t('alerts:no-alerts')}</ElementTitle>
+                <ElementTitle noMarginBottom>
+                  {t('alerts:no-alerts')}
+                </ElementTitle>
                 <p className="mt-1 text-center">{t('alerts:no-alerts-desc')}</p>
               </Modal.Header>
               <Button
