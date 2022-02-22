@@ -16,7 +16,7 @@ const DayHighLow = ({ high, low, latest, isTableView }: DayHighLowProps) => {
   }
 
   return (
-    <div className="flex items-center justify-between md:block md:pr-6">
+    <div className="flex items-center justify-between md:block">
       <div className="flex items-center">
         <div className={`pr-2 text-th-fgd-2 ${!isTableView && 'md:text-xs'}`}>
           {low ? formatUsdValue(low) : <MarketDataLoader />}

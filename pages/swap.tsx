@@ -55,11 +55,7 @@ export default function Swap() {
           <div className="grid grid-cols-12">
             <div className="col-span-12 xl:col-span-10 xl:col-start-2 pt-8 pb-3 sm:pb-4 md:pt-10">
               <div className="flex flex-col items-start md:flex-row md:items-end md:justify-between mb-1">
-                <h1
-                  className={`mb-1.5 md:mb-0 text-th-fgd-1 text-2xl font-semibold`}
-                >
-                  {t('swap')}
-                </h1>
+                <h1 className={`mb-1.5 md:mb-0`}>{t('swap')}</h1>
                 <div className="flex flex-col md:items-end">
                   <p className="mb-0 text-xs">
                     {t('swap:swap-between-hundreds')}

@@ -137,12 +137,14 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
 
   return (
     <Modal onClose={onClose} isOpen={isOpen && mangoAccount !== undefined}>
-      <ElementTitle noMarginBottom>
-        {t('close-account:are-you-sure')}
-      </ElementTitle>
-      <p className="text-center mt-1">
-        {t('close-account:closing-account-will')}
-      </p>
+      <Modal.Header>
+        <ElementTitle noMarginBottom>
+          {t('close-account:are-you-sure')}
+        </ElementTitle>
+        <p className="mt-1 text-center">
+          {t('close-account:closing-account-will')}
+        </p>
+      </Modal.Header>
       <div className="bg-th-bkg-4 overflow-wrap p-2 sm:p-4 rounded-md space-y-2">
         <div className="flex items-center text-th-fgd-2">
           <CheckCircleIcon className="h-4 w-4 mr-1.5 text-th-green" />

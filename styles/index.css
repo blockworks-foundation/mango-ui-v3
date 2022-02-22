@@ -22,6 +22,7 @@
   --fgd-2: theme('colors.light-theme["fgd-2"]');
   --fgd-3: theme('colors.light-theme["fgd-3"]');
   --fgd-4: theme('colors.light-theme["fgd-4"]');
+  --bkg-button: theme('colors.light-theme["bkg-button"]');
 }
 
 [data-theme='Dark'] {
@@ -42,6 +43,7 @@
   --fgd-2: theme('colors.dark-theme["fgd-2"]');
   --fgd-3: theme('colors.dark-theme["fgd-3"]');
   --fgd-4: theme('colors.dark-theme["fgd-4"]');
+  --bkg-button: theme('colors.dark-theme["bkg-button"]');
 }
 
 [data-theme='Mango'] {
@@ -62,6 +64,7 @@
   --fgd-2: theme('colors.mango-theme["fgd-2"]');
   --fgd-3: theme('colors.mango-theme["fgd-3"]');
   --fgd-4: theme('colors.mango-theme["fgd-4"]');
+  --bkg-button: theme('colors.mango-theme["bkg-button"]');
 }
 
 /* Base */
@@ -71,7 +74,7 @@ body {
 }
 
 h1 {
-  @apply font-bold text-th-fgd-1 text-xl;
+  @apply font-bold text-th-fgd-1 text-2xl;
 }
 
 h2 {
@@ -95,7 +98,7 @@ a {
 }
 
 li {
-  @apply text-sm text-th-fgd-3 mb-2;
+  @apply text-sm text-th-fgd-3;
 }
 
 tbody {

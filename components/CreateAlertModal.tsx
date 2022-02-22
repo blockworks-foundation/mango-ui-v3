@@ -100,8 +100,8 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
                     {t('active-alerts')}
                   </ElementTitle>
                   <Button
-                    className="col-span-1 flex items-center justify-center pt-0 pb-0 h-8 text-xs w-20"
-                    disabled={activeAlerts.length >= 3}
+                    className="flex items-center justify-center pt-0 pb-0 h-8 text-xs w-20"
+                    disabled={activeAlerts.length >= 5}
                     onClick={() => setShowAlertForm(true)}
                   >
                     <div className="flex items-center">
@@ -111,7 +111,7 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
                   </Button>
                 </div>
               </Modal.Header>
-              <div className="border-b border-th-fgd-4">
+              <div className="border-b border-th-fgd-4 mt-2">
                 {activeAlerts.map((alert, index) => (
                   <div
                     className="border-t border-th-fgd-4 flex items-center justify-between p-4"
@@ -135,12 +135,10 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
             </>
           ) : showAlertForm ? (
             <>
-              <div>
+              <Modal.Header>
                 <ElementTitle noMarginBottom>{t('create-alert')}</ElementTitle>
-                <p className="mt-1 text-center text-th-fgd-4">
-                  {t('alerts-disclaimer')}
-                </p>
-              </div>
+                <p className="mt-1 text-center">{t('alerts-disclaimer')}</p>
+              </Modal.Header>
               {error ? (
                 <div className="my-4">
                   <InlineNotification title={error} type="error" />
@@ -149,7 +147,6 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
               <div className="mb-1.5 text-th-fgd-1">{t('email-address')}</div>
               <Input
                 type="email"
-                className={`border border-th-fgd-4 flex-grow pr-11`}
                 error={!!invalidAmountMessage}
                 onBlur={(e) => validateEmailInput(e.target.value)}
                 value={email || ''}
@@ -160,7 +157,6 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
                   <div className="flex justify-between mb-1.5">
                     <div className="text-th-fgd-1">{t('alert-health')}</div>
                     <LinkButton
-                      className="font-normal text-th-fgd-3 text-xs"
                       onClick={() =>
                         setShowCustomHealthForm(!showCustomHealthForm)
                       }
@@ -191,17 +187,15 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
                   )}
                 </div>
               </div>
-              <div className="flex items-center mt-6">
-                <Button onClick={() => onCreateAlert()}>
-                  {t('create-alert')}
-                </Button>
-                <LinkButton
-                  className="ml-4 text-th-fgd-3 hover:text-th-fgd-1"
-                  onClick={handleCancelCreateAlert}
-                >
-                  {t('cancel')}
-                </LinkButton>
-              </div>
+              <Button className="mt-6 w-full" onClick={() => onCreateAlert()}>
+                {t('create-alert')}
+              </Button>
+              <LinkButton
+                className="mt-4 text-center w-full"
+                onClick={handleCancelCreateAlert}
+              >
+                {t('cancel')}
+              </LinkButton>
             </>
           ) : error ? (
             <div>
@@ -217,8 +211,8 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
             <div>
               <Modal.Header>
                 <ElementTitle noMarginBottom>{t('no-alerts')}</ElementTitle>
+                <p className="mt-1 text-center">{t('no-alerts-desc')}</p>
               </Modal.Header>
-              <p className="mb-4 text-center">{t('no-alerts-desc')}</p>
               <Button
                 className="flex justify-center m-auto"
                 onClick={() => setShowAlertForm(true)}
