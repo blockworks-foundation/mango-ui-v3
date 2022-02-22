@@ -98,7 +98,7 @@ a {
 }
 
 li {
-  @apply text-sm text-th-fgd-3 mb-2;
+  @apply text-sm text-th-fgd-3;
 }
 
 tbody {

@@ -19,11 +19,11 @@ const Select = ({
             >
               <div
                 style={{ minHeight: '2.5rem' }}
-                className={`flex items-center justify-between space-x-4 p-2 text-th-fgd-1`}
+                className={`flex items-center justify-between space-x-2 p-2 text-th-fgd-1`}
               >
                 {value ? value : placeholder}
                 <ChevronDownIcon
-                  className={`default-transition h-6 w-6 mr-1 text-th-fgd-1 ${
+                  className={`default-transition flex-shrink-0 h-5 w-5 text-th-fgd-1 ${
                     open ? 'transform rotate-180' : 'transform rotate-360'
                   }`}
                 />
@@ -32,7 +32,7 @@ const Select = ({
             {open ? (
               <Listbox.Options
                 static
-                className={`text-th-fgd-1 max-h-60 overflow-auto z-20 w-full p-1 absolute left-0 mt-1 bg-th-bkg-1 origin-top-left divide-y divide-th-bkg-3 shadow-lg outline-none rounded-md thin-scroll`}
+                className={`absolute bg-th-bkg-3 left-0 max-h-60 mt-1 overflow-auto origin-top-left outline-none p-2 rounded-md text-th-fgd-1 thin-scroll w-full z-20`}
               >
                 {children}
               </Listbox.Options>
@@ -49,7 +49,7 @@ const Option = ({ value, children, className = '' }) => {
     <Listbox.Option value={value}>
       {({ selected }) => (
         <div
-          className={`p-2 hover:bg-th-bkg-3 hover:cursor-pointer tracking-wider ${
+          className={`default-transition py-1.5 text-th-fgd-1 hover:bg-th-bkg-3 hover:cursor-pointer hover:text-th-primary ${
             selected && `text-th-primary`
           } ${className}`}
         >
