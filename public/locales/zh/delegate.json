@@ -2,7 +2,7 @@
     "set-delegate": "设置受托钱包",
     "delegate-your-account": "将您的帐户委托出去",
     "delegated-account": "委托帐户",
-    "info": "将此帐户控制委托其他钱包负责。",
+    "info": "将此帐户控制委托其他Solana帐户负责。",
     "public-key": "受托钱包地址",
     "delegate-updated": "已更换受托钱包",
     "set-error": "设置委托钱包出错",
