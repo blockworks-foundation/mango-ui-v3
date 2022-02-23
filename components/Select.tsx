@@ -49,7 +49,7 @@ const Option = ({ value, children, className = '' }) => {
     <Listbox.Option value={value}>
       {({ selected }) => (
         <div
-          className={`default-transition py-1.5 text-th-fgd-1 hover:bg-th-bkg-3 hover:cursor-pointer hover:text-th-primary ${
+          className={`default-transition text-th-fgd-1 hover:bg-th-bkg-3 hover:cursor-pointer hover:text-th-primary ${
             selected && `text-th-primary`
           } ${className}`}
         >

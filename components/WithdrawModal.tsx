@@ -334,10 +334,10 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                     <div className="flex items-center">
                       <img
                         alt=""
-                        width="20"
-                        height="20"
+                        width="16"
+                        height="16"
                         src={`/assets/icons/${symbol.toLowerCase()}.svg`}
-                        className={`mr-2.5`}
+                        className={`mr-2`}
                       />
                       <span>{symbol}</span>
                     </div>

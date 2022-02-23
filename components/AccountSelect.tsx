@@ -69,7 +69,7 @@ const AccountSelect = ({
         onChange={handleChange}
       >
         {({ open }) => (
-          <>
+          <div className="relative">
             <div className="flex items-center">
               <Listbox.Button
                 className={`border border-th-bkg-4 bg-th-bkg-1 rounded-md default-transition hover:border-th-fgd-4 focus:outline-none focus:border-th-fgd-4 p-2 w-full font-normal`}
@@ -112,7 +112,7 @@ const AccountSelect = ({
               </Listbox.Button>
             </div>
             <Listbox.Options
-              className={`z-20 p-1 absolute right-0 top-13 bg-th-bkg-1 divide-y divide-th-bkg-3 shadow-lg outline-none rounded-md w-full max-h-60 overflow-auto`}
+              className={`z-20 p-1 absolute right-0 top-14 bg-th-bkg-3 rounded-md w-full max-h-60 overflow-auto thin-scroll`}
             >
               {accounts.map((account) => {
                 const symbolForAccount = account.config.symbol
@@ -125,18 +125,19 @@ const AccountSelect = ({
                   >
                     {({ disabled, selected }) => (
                       <div
-                        className={`p-2 hover:bg-th-bkg-2 hover:cursor-pointer ${
+                        className={`default-transition px-2 py-1 text-th-fgd-1 ${
                           selected && `text-th-primary`
                         } ${
-                          disabled &&
-                          'opacity-50 hover:bg-th-bkg-1 hover:cursor-not-allowed'
+                          disabled
+                            ? 'opacity-50 text-th-fgd-1 hover:text-th-fgd-1 hover:cursor-not-allowed'
+                            : 'hover:text-th-primary hover:cursor-pointer'
                         }`}
                       >
-                        <div className={`flex items-center text-th-fgd-1`}>
+                        <div className={`flex items-center`}>
                           <img
                             alt=""
-                            width="20"
-                            height="20"
+                            width="16"
+                            height="16"
                             src={`/assets/icons/${symbolForAccount.toLowerCase()}.svg`}
                             className="mr-2"
                           />
@@ -161,12 +162,14 @@ const AccountSelect = ({
               })}
               {missingTokenSymbols.map((token) => (
                 <Listbox.Option disabled key={token} value={token}>
-                  <div className={`opacity-50 p-2 hover:cursor-not-allowed`}>
+                  <div
+                    className={`opacity-50 px-2 py-1 hover:cursor-not-allowed`}
+                  >
                     <div className={`flex items-center text-th-fgd-1`}>
                       <img
                         alt=""
-                        width="20"
-                        height="20"
+                        width="16"
+                        height="16"
                         src={`/assets/icons/${token.toLowerCase()}.svg`}
                         className="mr-2"
                       />
@@ -177,7 +180,7 @@ const AccountSelect = ({
                 </Listbox.Option>
               ))}
             </Listbox.Options>
-          </>
+          </div>
         )}
       </Listbox>
     </div>
