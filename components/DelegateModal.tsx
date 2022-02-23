@@ -1,7 +1,7 @@
 import { FunctionComponent, useState } from 'react'
 import useMangoStore from '../stores/useMangoStore'
 import { ExclamationCircleIcon } from '@heroicons/react/outline'
-import Input from './Input'
+import Input, { Label } from './Input'
 import Button from './Button'
 import Modal from './Modal'
 import { ElementTitle } from './styles'
@@ -84,7 +84,7 @@ const DelegateModal: FunctionComponent<DelegateModalProps> = ({
         </ElementTitle>
         <p className="mt-1 text-center">{t('delegate:info')}</p>
       </Modal.Header>
-      <div className="pb-2 text-th-fgd-1">{t('delegate:public-key')}</div>
+      <Label>{t('delegate:public-key')}</Label>
       <Input
         type="text"
         error={!!invalidKeyMessage}

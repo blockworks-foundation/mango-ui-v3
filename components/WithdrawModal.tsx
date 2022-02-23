@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useEffect, useMemo, useState } from 'react'
 import Modal from './Modal'
-import Input from './Input'
+import Input, { Label } from './Input'
 import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
 import { floorToDecimal, tokenPrecision } from '../utils/index'
@@ -219,7 +219,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
       ) : isStatus ? (
         'bg-th-red'
       ) : (
-        'border-th-red text-th-red'
+        'ring-th-red text-th-red'
       )
     } else if (initHealthRatio > 1 && initHealthRatio < 10) {
       return isRisk ? (
@@ -227,7 +227,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
       ) : isStatus ? (
         'bg-th-orange'
       ) : (
-        'border-th-orange text-th-orange'
+        'ring-th-orange text-th-orange'
       )
     } else {
       return isRisk ? (
@@ -235,7 +235,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
       ) : isStatus ? (
         'bg-th-green'
       ) : (
-        'border-th-green text-th-green'
+        'ring-th-green text-th-green'
       )
     }
   }
@@ -299,7 +299,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                 {title ? title : t('withdraw-funds')}
               </ElementTitle>
             </Modal.Header>
-            <div className="pb-2 text-th-fgd-1">{t('asset')}</div>
+            <Label>{t('asset')}</Label>
             <Select
               value={
                 withdrawTokenSymbol && mangoAccount ? (
@@ -361,9 +361,12 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                 onChange={(checked) => handleIncludeBorrowSwitch(checked)}
               />
             </div>
-            <div className="flex justify-between pb-2 pt-4">
-              <div className="text-th-fgd-1">{t('amount')}</div>
-              <LinkButton onClick={() => setInputAmount(maxAmount.toString())}>
+            <div className="flex justify-between pt-4">
+              <Label>{t('amount')}</Label>
+              <LinkButton
+                className="mb-1.5"
+                onClick={() => setInputAmount(maxAmount.toString())}
+              >
                 {includeBorrow ? t('max-with-borrow') : t('max')}
               </LinkButton>
             </div>
@@ -388,7 +391,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                   <span
                     className={`${getAccountStatusColor(
                       simulation.initHealthRatio
-                    )} bg-th-bkg-1 border flex h-10 items-center justify-center ml-1 px-2 rounded`}
+                    )} bg-th-bkg-1 ring-1 ring-inset flex h-10 items-center justify-center ml-1 px-2 rounded`}
                   >
                     {simulation.leverage.toFixed(2)}x
                   </span>

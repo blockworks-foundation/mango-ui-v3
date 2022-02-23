@@ -20,7 +20,7 @@ import { breakpoints } from './TradePageGrid'
 import { Row } from './TableElements'
 import { PerpTriggerOrder } from '../@types/types'
 import { useTranslation } from 'next-i18next'
-import Input from './Input'
+import Input, { Label } from './Input'
 
 const DesktopTable = ({
   cancelledOrderId,
@@ -89,7 +89,9 @@ const DesktopTable = ({
                     src={`/assets/icons/${market.config.baseSymbol.toLowerCase()}.svg`}
                     className={`mr-2.5`}
                   />
-                  {renderMarketName(market.config)}
+                  <span className="whitespace-nowrap">
+                    {renderMarketName(market.config)}
+                  </span>
                 </div>
               </Td>
               <Td className="w-[14.286%]">
@@ -106,7 +108,7 @@ const DesktopTable = ({
                 <>
                   <Td className="w-[14.286%]">
                     <Input
-                      className="bg-transparent border-b-2 border-l-0 border-r-0 border-t-0 h-7 px-0 rounded-none"
+                      className="bg-transparent border-b-2 border-l-0 border-r-0 border-t-0 border-th-fgd-4 default-transition h-7 px-0 rounded-none hover:border-th-fgd-3 focus:border-th-fgd-3 focus:outline-none"
                       type="number"
                       value={modifiedOrderSize}
                       onChange={(e) => setModifiedOrderSize(e.target.value)}
@@ -114,7 +116,8 @@ const DesktopTable = ({
                   </Td>
                   <Td className="w-[14.286%]">
                     <Input
-                      className="bg-transparent border-b-2 border-l-0 border-r-0 border-t-0 h-7 px-0 rounded-none"
+                      autoFocus
+                      className="bg-transparent border-b-2 border-l-0 border-r-0 border-t-0 border-th-fgd-4 default-transition h-7 px-0 rounded-none hover:border-th-fgd-3 focus:border-th-fgd-3 focus:outline-none"
                       type="number"
                       value={modifiedOrderPrice}
                       onChange={(e) => setModifiedOrderPrice(e.target.value)}
@@ -278,23 +281,20 @@ const MobileTable = ({
             </div>
             {editThisOrder ? (
               <div className="flex flex-col sm:flex-row pt-4 sm:space-x-3">
-                <div>
-                  <label className="mb-2 text-th-fgd-3 text-xs">
-                    {t('size')}
-                  </label>
+                <div className="pb-3">
+                  <Label className="text-xs">{t('size')}</Label>
                   <Input
-                    className="bg-transparent border-b-2 border-l-0 border-r-0 border-t-0 h-7 mb-4 sm:mb-0 px-0 rounded-none"
+                    className="bg-transparent border-b-2 border-l-0 border-r-0 border-t-0 border-th-fgd-4 default-transition h-7 px-0 rounded-none w-full hover:border-th-fgd-3 focus:border-th-fgd-3 focus:outline-none"
                     type="number"
                     value={modifiedOrderSize || order.size}
                     onChange={(e) => setModifiedOrderSize(e.target.value)}
                   />
                 </div>
                 <div>
-                  <label className="mb-2 text-th-fgd-3 text-xs">
-                    {t('price')}
-                  </label>
+                  <Label className="text-xs">{t('price')}</Label>
                   <Input
-                    className="bg-transparent border-b-2 border-l-0 border-r-0 border-t-0 h-7 px-0 rounded-none"
+                    autoFocus
+                    className="bg-transparent border-b-2 border-l-0 border-r-0 border-t-0 border-th-fgd-4 default-transition h-7 px-0 rounded-none w-full hover:border-th-fgd-3 focus:border-th-fgd-3 focus:outline-none"
                     type="number"
                     value={modifiedOrderPrice || order.price}
                     onChange={(e) => setModifiedOrderPrice(e.target.value)}

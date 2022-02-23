@@ -4,7 +4,7 @@ import {
   ExclamationCircleIcon,
   InformationCircleIcon,
 } from '@heroicons/react/outline'
-import Input from './Input'
+import Input, { Label } from './Input'
 import Button from './Button'
 import Modal from './Modal'
 import { ElementTitle } from './styles'
@@ -86,7 +86,7 @@ const AccountNameModal: FunctionComponent<AccountNameModalProps> = ({
           </Tooltip>
         </p>
       </Modal.Header>
-      <div className="pb-2 text-th-fgd-1">{t('account-name')}</div>
+      <Label>{t('account-name')}</Label>
       <Input
         type="text"
         error={!!invalidNameMessage}
