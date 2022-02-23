@@ -1,6 +1,6 @@
-import { useCallback, useState } from 'react'
+import { Fragment, useCallback, useState } from 'react'
 import useMangoStore from '../stores/useMangoStore'
-import { Menu } from '@headlessui/react'
+import { Menu, Transition } from '@headlessui/react'
 import {
   CurrencyDollarIcon,
   DuplicateIcon,
@@ -50,49 +50,63 @@ const ConnectWalletButton = () => {
     <>
       {connected && wallet?.publicKey ? (
         <Menu>
-          <div className="relative" id="profile-menu-tip">
-            <Menu.Button className="bg-th-bkg-4 flex items-center justify-center rounded-full w-10 h-10 text-white focus:outline-none hover:bg-th-bkg-4 hover:text-th-fgd-3">
-              {pfp?.isAvailable ? (
-                <img alt="" src={pfp.url} className="rounded-full" />
-              ) : (
-                <ProfileIcon className="h-6 w-6" />
-              )}
-            </Menu.Button>
-            <Menu.Items className="bg-th-bkg-1 mt-2 p-1 absolute right-0 shadow-lg outline-none rounded-md w-48 z-20">
-              <Menu.Item>
-                <button
-                  className="flex flex-row font-normal items-center rounded-none w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer focus:outline-none"
-                  onClick={() => setShowAccountsModal(true)}
-                >
-                  <CurrencyDollarIcon className="h-4 w-4" />
-                  <div className="pl-2 text-left">{t('accounts')}</div>
-                </button>
-              </Menu.Item>
-              <Menu.Item>
-                <button
-                  className="flex flex-row font-normal items-center rounded-none w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer focus:outline-none"
-                  onClick={() => copyToClipboard(wallet?.publicKey)}
-                >
-                  <DuplicateIcon className="h-4 w-4" />
-                  <div className="pl-2 text-left">{t('copy-address')}</div>
-                </button>
-              </Menu.Item>
-              <Menu.Item>
-                <button
-                  className="flex flex-row font-normal items-center rounded-none w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer focus:outline-none"
-                  onClick={() => wallet.disconnect()}
-                >
-                  <LogoutIcon className="h-4 w-4" />
-                  <div className="pl-2 text-left">
-                    <div className="pb-0.5">{t('disconnect')}</div>
-                    <div className="text-th-fgd-4 text-xs">
-                      {abbreviateAddress(wallet?.publicKey)}
-                    </div>
-                  </div>
-                </button>
-              </Menu.Item>
-            </Menu.Items>
-          </div>
+          {({ open }) => (
+            <div className="relative" id="profile-menu-tip">
+              <Menu.Button className="bg-th-bkg-4 flex items-center justify-center rounded-full w-10 h-10 text-white focus:outline-none hover:bg-th-bkg-4 hover:text-th-fgd-3">
+                {pfp?.isAvailable ? (
+                  <img alt="" src={pfp.url} className="rounded-full" />
+                ) : (
+                  <ProfileIcon className="h-6 w-6" />
+                )}
+              </Menu.Button>
+              <Transition
+                appear={true}
+                show={open}
+                as={Fragment}
+                enter="transition-all ease-in duration-200"
+                enterFrom="opacity-0 transform scale-75"
+                enterTo="opacity-100 transform scale-100"
+                leave="transition ease-out duration-200"
+                leaveFrom="opacity-100"
+                leaveTo="opacity-0"
+              >
+                <Menu.Items className="absolute bg-th-bkg-3 mt-1 px-4 py-2.5 right-0 rounded-md space-y-1.5 w-48 z-20">
+                  <Menu.Item>
+                    <button
+                      className="flex flex-row font-normal items-center py-0.5 rounded-none w-full hover:text-th-primary hover:cursor-pointer focus:outline-none"
+                      onClick={() => setShowAccountsModal(true)}
+                    >
+                      <CurrencyDollarIcon className="h-4 w-4" />
+                      <div className="pl-2 text-left">{t('accounts')}</div>
+                    </button>
+                  </Menu.Item>
+                  <Menu.Item>
+                    <button
+                      className="flex flex-row font-normal items-center py-0.5 rounded-none w-full hover:text-th-primary hover:cursor-pointer focus:outline-none"
+                      onClick={() => copyToClipboard(wallet?.publicKey)}
+                    >
+                      <DuplicateIcon className="h-4 w-4" />
+                      <div className="pl-2 text-left">{t('copy-address')}</div>
+                    </button>
+                  </Menu.Item>
+                  <Menu.Item>
+                    <button
+                      className="flex flex-row font-normal items-center py-0.5 rounded-none w-full hover:text-th-primary hover:cursor-pointer focus:outline-none"
+                      onClick={() => wallet.disconnect()}
+                    >
+                      <LogoutIcon className="h-4 w-4" />
+                      <div className="pl-2 text-left">
+                        <div className="pb-0.5">{t('disconnect')}</div>
+                        <div className="text-th-fgd-4 text-xs">
+                          {abbreviateAddress(wallet?.publicKey)}
+                        </div>
+                      </div>
+                    </button>
+                  </Menu.Item>
+                </Menu.Items>
+              </Transition>
+            </div>
+          )}
         </Menu>
       ) : (
         <div

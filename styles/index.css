@@ -98,7 +98,7 @@ a {
 }
 
 li {
-  @apply mb-2 text-sm text-th-fgd-3 last:mb-0;
+  @apply mb-2.5 text-sm text-th-fgd-3 last:mb-0;
 }
 
 tbody {

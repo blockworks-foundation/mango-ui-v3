@@ -69,13 +69,13 @@ export default function NavDropMenu({
                 {linksArray.map(([name, href, isExternal]) =>
                   !isExternal ? (
                     <Link href={href} key={href}>
-                      <a className="block py-1.5 text-th-fgd-1 whitespace-nowrap hover:text-th-primary">
+                      <a className="block py-1 text-th-fgd-1 whitespace-nowrap hover:text-th-primary">
                         {name}
                       </a>
                     </Link>
                   ) : (
                     <a
-                      className="block py-1.5 text-th-fgd-1 whitespace-nowrap hover:text-th-primary"
+                      className="block py-1 text-th-fgd-1 whitespace-nowrap hover:text-th-primary"
                       href={href}
                       key={href}
                       target="_blank"
