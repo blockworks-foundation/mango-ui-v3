@@ -27,7 +27,11 @@ import FavoritesShortcutBar from '../components/FavoritesShortcutBar'
 export async function getStaticProps({ locale }) {
   return {
     props: {
-      ...(await serverSideTranslations(locale, ['common', 'tv-chart'])),
+      ...(await serverSideTranslations(locale, [
+        'common',
+        'tv-chart',
+        'alerts',
+      ])),
       // Will be passed to the page component as props
     },
   }

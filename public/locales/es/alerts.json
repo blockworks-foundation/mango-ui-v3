@@ -1,0 +1,13 @@
+{
+  "active-alerts": "Alertas activas",
+  "alert-health": "Alerta cuando la salud de tu cuenta está baja",
+  "alert-health-required": "Alert health is required",
+  "alert-info": "Envía correo electrónico cuando la salud de tu cuenta es <= {{health}}%",
+  "alerts-disclaimer": "Has alcanzado el número máximo de alertas activas.",
+  "alerts-max": "You've reached the maximum number of active alerts.",
+  "create-alert": "Crear alerta",
+  "email-address-required": "An email address is required",
+  "new-alert": "Alerta nueva",
+  "no-alerts": "No hay alertas activas",
+  "no-alerts-desc": "Cree una alerta para recibir una notificación cuando el estado de su cuenta sea bajo."
+}
