@@ -291,7 +291,7 @@ const AccountFunding = () => {
             {!isEmpty(hourlyFunding) && !loadHourlyStats ? (
               <>
                 <div className="flex items-center justify-between pb-4 pt-6 w-full">
-                  <div className="text-th-fgd-1 text-lg">{t('history')}</div>
+                  <h2>{t('history')}</h2>
                   <Select
                     value={selectedAsset}
                     onChange={(a) => setSelectedAsset(a)}

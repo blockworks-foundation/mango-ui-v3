@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useEffect, useState } from 'react'
 import { PlusCircleIcon, TrashIcon } from '@heroicons/react/outline'
 import Modal from './Modal'
-import Input from './Input'
+import Input, { Label } from './Input'
 import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
 import Button, { LinkButton } from './Button'
@@ -148,7 +148,7 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
                   <InlineNotification title={error} type="error" />
                 </div>
               ) : null}
-              <div className="mb-1.5 text-th-fgd-1">{t('email-address')}</div>
+              <Label>{t('email-address')}</Label>
               <Input
                 type="email"
                 error={!!invalidAmountMessage}
@@ -158,11 +158,11 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
               />
               <div className="flex items-end mt-4">
                 <div className="w-full">
-                  <div className="flex justify-between mb-1.5">
-                    <div className="text-th-fgd-1">
-                      {t('alerts:alert-health')}
-                    </div>
+                  <div className="flex justify-between">
+                    <Label>{t('alerts:alert-health')}</Label>
+
                     <LinkButton
+                      className="mb-1.5"
                       onClick={() =>
                         setShowCustomHealthForm(!showCustomHealthForm)
                       }

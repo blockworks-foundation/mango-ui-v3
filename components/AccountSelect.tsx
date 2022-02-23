@@ -7,6 +7,7 @@ import { RefreshClockwiseIcon } from './icons'
 import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
 import { useTranslation } from 'next-i18next'
 import { LinkButton } from './Button'
+import { Label } from './Input'
 
 type AccountSelectProps = {
   accounts: WalletToken[]
@@ -50,10 +51,10 @@ const AccountSelect = ({
 
   return (
     <div className={`relative inline-block w-full`}>
-      <div className="flex justify-between pb-2">
-        <div className="text-th-fgd-1">{t('asset')}</div>
+      <div className="flex justify-between">
+        <Label>{t('asset')}</Label>
         {missingTokenSymbols.length > 0 ? (
-          <LinkButton className="ml-2" onClick={handleRefreshBalances}>
+          <LinkButton className="mb-1.5 ml-2" onClick={handleRefreshBalances}>
             <div className="flex items-center">
               <RefreshClockwiseIcon
                 className={`h-4 w-4 mr-1 ${loading ? 'animate-spin' : ''}`}

@@ -4,7 +4,7 @@ import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
 import Modal from './Modal'
 import { ElementTitle } from './styles'
 import Button, { LinkButton } from './Button'
-import Input from './Input'
+import Input, { Label } from './Input'
 import useMangoStore from '../stores/useMangoStore'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import Select from './Select'
@@ -170,9 +170,7 @@ const DefaultMarketSettings = ({ setSettingsView }) => {
   const parsedDefaultMarket = defaultMarket
   return (
     <div>
-      <label className="block mb-1 text-th-fgd-1 text-xs">
-        {t('default-market')}
-      </label>
+      <Label>{t('default-market')}</Label>
       <Select
         value={parsedDefaultMarket.name}
         onChange={(market) => handleSetDefaultMarket(market)}
@@ -214,7 +212,7 @@ const RpcEndpointSettings = ({ setSettingsView }) => {
   }
   return (
     <div className="flex flex-col text-th-fgd-1">
-      <label className="block mb-1 text-xs">{t('rpc-endpoint')}</label>
+      <Label>{t('rpc-endpoint')}</Label>
       <Select
         value={rpcEndpoint.label}
         onChange={(url) => handleSelectEndpointUrl(url)}
@@ -228,9 +226,7 @@ const RpcEndpointSettings = ({ setSettingsView }) => {
       </Select>
       {rpcEndpoint.label === 'Custom' ? (
         <div className="pt-4">
-          <label className="block font-semibold mb-1 text-xs">
-            {t('node-url')}
-          </label>
+          <Label>{t('node-url')}</Label>
           <Input
             type="text"
             value={rpcEndpointUrl}
