@@ -13,6 +13,8 @@ import { DEFAULT_MARKET_KEY, initialMarket } from './SettingsModal'
 import { useTranslation } from 'next-i18next'
 import Settings from './Settings'
 import TradeNavMenu from './TradeNavMenu'
+import { CalculatorIcon, LightBulbIcon } from '@heroicons/react/outline'
+import { MangoIcon } from './icons'
 
 const StyledNewLabel = ({ children, ...props }) => (
   <div style={{ fontSize: '0.5rem', marginLeft: '1px' }} {...props}>
@@ -73,10 +75,36 @@ const TopBar = () => {
                   menuTitle={t('more')}
                   // linksArray: [name: string, href: string, isExternal: boolean]
                   linksArray={[
-                    [t('calculator'), '/risk-calculator', false],
-                    [t('learn'), 'https://docs.mango.markets/', true],
-                    ['Mango v2', 'https://v2.mango.markets', true],
-                    ['Mango v1', 'https://v1.mango.markets', true],
+                    [
+                      t('calculator'),
+                      '/risk-calculator',
+                      false,
+                      <CalculatorIcon className="h-4 w-4" key="calculator" />,
+                    ],
+                    [
+                      t('learn'),
+                      'https://docs.mango.markets/',
+                      true,
+                      <LightBulbIcon className="h-4 w-4" key="learn" />,
+                    ],
+                    [
+                      'Mango v2',
+                      'https://v2.mango.markets',
+                      true,
+                      <MangoIcon
+                        className="stroke-current h-4 w-4"
+                        key="mango-v2"
+                      />,
+                    ],
+                    [
+                      'Mango v1',
+                      'https://v1.mango.markets',
+                      true,
+                      <MangoIcon
+                        className="stroke-current h-4 w-4"
+                        key="mango-v1"
+                      />,
+                    ],
                   ]}
                 />
               </div>

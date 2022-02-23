@@ -5,7 +5,7 @@ import Link from 'next/link'
 
 type NavDropMenuProps = {
   menuTitle: string | React.ReactNode
-  linksArray: [string, string, boolean][]
+  linksArray: [string, string, boolean, React.ReactNode][]
 }
 
 export default function NavDropMenu({
@@ -66,21 +66,23 @@ export default function NavDropMenu({
           >
             <Popover.Panel className="absolute top-14 z-10">
               <div className="relative bg-th-bkg-3 px-4 py-2.5 rounded-b-md">
-                {linksArray.map(([name, href, isExternal]) =>
+                {linksArray.map(([name, href, isExternal, icon]) =>
                   !isExternal ? (
                     <Link href={href} key={href}>
-                      <a className="block py-1 text-th-fgd-1 whitespace-nowrap hover:text-th-primary">
+                      <a className="block default-transition flex items-center py-1.5 text-th-fgd-1 whitespace-nowrap hover:text-th-primary">
+                        {icon ? <div className="mr-2">{icon}</div> : null}
                         {name}
                       </a>
                     </Link>
                   ) : (
                     <a
-                      className="block py-1 text-th-fgd-1 whitespace-nowrap hover:text-th-primary"
+                      className="block default-transition flex items-center py-1.5 text-th-fgd-1 whitespace-nowrap hover:text-th-primary"
                       href={href}
                       key={href}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
+                      {icon ? <div className="mr-2">{icon}</div> : null}
                       {name}
                     </a>
                   )

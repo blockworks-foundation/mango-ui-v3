@@ -41,7 +41,7 @@ export default function WalletSelect() {
               {WALLET_PROVIDERS.map(({ name, url, icon }) => (
                 <Menu.Item key={name}>
                   <button
-                    className="flex flex-row items-center justify-between py-1 rounded-none w-full hover:text-th-primary hover:cursor-pointer font-normal focus:outline-none"
+                    className="flex flex-row items-center justify-between py-1.5 rounded-none w-full hover:text-th-primary hover:cursor-pointer font-normal focus:outline-none"
                     onClick={() => handleSelectProvider(url)}
                   >
                     <div className="flex items-center">
