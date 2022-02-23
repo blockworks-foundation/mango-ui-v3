@@ -163,6 +163,7 @@ const BalancesTable = ({
           </div>
           {unsettledBalances.map((bal) => {
             const tokenConfig = getTokenBySymbol(mangoGroupConfig, bal.symbol)
+
             return (
               <div
                 className="border-b border-th-bkg-4 flex items-center justify-between py-4 last:border-b-0 last:pb-0"
@@ -176,6 +177,7 @@ const BalancesTable = ({
                     src={`/assets/icons/${bal.symbol.toLowerCase()}.svg`}
                     className={`mr-2.5`}
                   />
+                  <div>{bal.symbol}</div>
                 </div>
                 {`${floorToDecimal(bal.unsettled, tokenConfig.decimals)} ${
                   bal.symbol
