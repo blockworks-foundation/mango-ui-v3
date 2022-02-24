@@ -212,7 +212,6 @@ export default function AccountBorrows() {
                                 </div>
                               }
                               key={`${asset.symbol}${i}`}
-                              index={i}
                               panelTemplate={
                                 <>
                                   <div className="grid grid-cols-2 grid-flow-row gap-4 pb-4">
@@ -454,7 +453,6 @@ export default function AccountBorrows() {
                         </div>
                       }
                       key={`${token.symbol}${i}`}
-                      index={i}
                       panelTemplate={
                         <div className="grid grid-cols-2 grid-flow-row gap-4">
                           <div className="text-left">
@@ -467,27 +465,29 @@ export default function AccountBorrows() {
                                 .toNumber()
                             )}
                           </div>
-                          <div className="text-left">
-                            <div className="pb-0.5 text-th-fgd-3 text-xs">
-                              {t('max-borrow')}
+                          {mangoAccount ? (
+                            <div className="text-left">
+                              <div className="pb-0.5 text-th-fgd-3 text-xs">
+                                {t('max-borrow')}
+                              </div>
+                              {mangoAccount
+                                ? mangoAccount
+                                    .getMaxWithBorrowForToken(
+                                      mangoGroup,
+                                      mangoCache,
+                                      tokenIndex
+                                    )
+                                    .mul(I80F48.fromString('0.995'))
+                                    .toNumber()
+                                    .toLocaleString(undefined, {
+                                      minimumFractionDigits:
+                                        tokenPrecision[token.symbol],
+                                      maximumFractionDigits:
+                                        tokenPrecision[token.symbol],
+                                    })
+                                : null}
                             </div>
-                            {mangoAccount
-                              ? mangoAccount
-                                  .getMaxWithBorrowForToken(
-                                    mangoGroup,
-                                    mangoCache,
-                                    tokenIndex
-                                  )
-                                  .mul(I80F48.fromString('0.995'))
-                                  .toNumber()
-                                  .toLocaleString(undefined, {
-                                    minimumFractionDigits:
-                                      tokenPrecision[token.symbol],
-                                    maximumFractionDigits:
-                                      tokenPrecision[token.symbol],
-                                  })
-                              : null}
-                          </div>
+                          ) : null}
                           <div className="text-left">
                             <div className="pb-0.5 text-th-fgd-3 text-xs">
                               {t('liquidity')}
@@ -505,7 +505,7 @@ export default function AccountBorrows() {
                           </div>
                           <Button
                             onClick={() => handleShowBorrow(token.symbol)}
-                            className="text-xs pt-0 pb-0 h-8 w-full"
+                            className="col-span-2 text-xs pt-0 pb-0 h-8"
                             disabled={
                               !connected || loadingMangoAccount || !canWithdraw
                             }

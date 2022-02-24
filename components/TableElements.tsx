@@ -1,6 +1,6 @@
-import { Disclosure } from '@headlessui/react'
+import { Disclosure, Transition } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/solid'
-import { ReactNode } from 'react'
+import { Fragment, ReactNode } from 'react'
 
 export const Table = ({ children }) => (
   <table className="min-w-full">{children}</table>
@@ -32,14 +32,12 @@ export const Td = ({
 
 type ExpandableRowProps = {
   buttonTemplate: React.ReactNode
-  index: number
   panelTemplate: React.ReactNode
   rounded?: boolean
 }
 
 export const ExpandableRow = ({
   buttonTemplate,
-  index,
   panelTemplate,
   rounded,
 }: ExpandableRowProps) => {
@@ -48,9 +46,7 @@ export const ExpandableRow = ({
       {({ open }) => (
         <>
           <Disclosure.Button
-            className={`${
-              index % 2 === 0 ? `bg-th-bkg-3` : `bg-th-bkg-4`
-            } default-transition flex items-center justify-between font-normal p-4 text-th-fgd-1 w-full hover:filter hover:brightness-90 focus:outline-none ${
+            className={`border-t border-th-bkg-4 default-transition flex items-center justify-between font-normal p-4 text-th-fgd-1 w-full hover:bg-th-bkg-4 focus:outline-none ${
               rounded
                 ? open
                   ? 'rounded-b-none'
@@ -59,29 +55,29 @@ export const ExpandableRow = ({
             }`}
           >
             {buttonTemplate}
-            <div className="flex items-center justify-end pl-5">
+            <div className="flex items-center justify-end pl-4">
               <ChevronDownIcon
                 className={`${
                   open ? 'transform rotate-180' : 'transform rotate-360'
-                } default-transition h-5 flex-shrink-0 w-5 text-th-primary`}
+                } default-transition h-5 flex-shrink-0 w-5 text-th-fgd-1`}
               />
             </div>
           </Disclosure.Button>
-          <Disclosure.Panel
-            className={`${
-              index % 2 === 0
-                ? `bg-[rgba(255,255,255,0.03)]`
-                : `bg-[rgba(255,255,255,0.07)]`
-            } px-4 ${
-              rounded
-                ? open
-                  ? 'rounded-b-md'
-                  : 'rounded-none'
-                : 'rounded-none'
-            }`}
+          <Transition
+            appear={true}
+            show={open}
+            as={Fragment}
+            enter="transition-all ease-in duration-200"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="transition ease-out"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
           >
-            <div className="py-4">{panelTemplate}</div>
-          </Disclosure.Panel>
+            <Disclosure.Panel>
+              <div className="pb-4 pt-2 px-4">{panelTemplate}</div>
+            </Disclosure.Panel>
+          </Transition>
         </>
       )}
     </Disclosure>
