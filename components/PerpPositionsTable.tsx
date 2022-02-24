@@ -131,17 +131,20 @@ const PositionsTable = () => {
                 </thead>
                 <tbody>
                   {openPositions.map(
-                    ({
-                      marketConfig,
-                      perpMarket,
-                      perpAccount,
-                      basePosition,
-                      notionalSize,
-                      indexPrice,
-                      avgEntryPrice,
-                      breakEvenPrice,
-                      unrealizedPnl,
-                    }) => {
+                    (
+                      {
+                        marketConfig,
+                        perpMarket,
+                        perpAccount,
+                        basePosition,
+                        notionalSize,
+                        indexPrice,
+                        avgEntryPrice,
+                        breakEvenPrice,
+                        unrealizedPnl,
+                      },
+                      index
+                    ) => {
                       return (
                         <TrBody key={`${marketConfig.marketIndex}`}>
                           <Td>

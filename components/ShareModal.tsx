@@ -1,5 +1,6 @@
 import {
   FunctionComponent,
+  useCallback,
   useEffect,
   useMemo,
   createRef,
@@ -12,6 +13,21 @@ import Modal from './Modal'
 import { useScreenshot } from '../hooks/useScreenshot'
 import * as MonoIcons from './icons'
 import { TwitterIcon } from './icons'
+import QRCode from 'react-qr-code'
+import useMangoAccount from '../hooks/useMangoAccount'
+import {
+  mangoCacheSelector,
+  mangoClientSelector,
+  mangoGroupConfigSelector,
+  mangoGroupSelector,
+  marketConfigSelector,
+} from '../stores/selectors'
+import {
+  getMarketIndexBySymbol,
+  ReferrerIdRecord,
+} from '@blockworks-foundation/mango-client'
+import Button from './Button'
+import Switch from './Switch'
 
 interface ShareModalProps {
   onClose: () => void
@@ -32,9 +48,17 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
   const ref = createRef()
   const [copied, setCopied] = useState(false)
   const [showButton, setShowButton] = useState(true)
-  const marketConfig = position.marketConfig
-  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  const marketConfig = useMangoStore(marketConfigSelector)
   const [image, takeScreenshot] = useScreenshot()
+  const { mangoAccount } = useMangoAccount()
+  const mangoCache = useMangoStore(mangoCacheSelector)
+  const groupConfig = useMangoStore(mangoGroupConfigSelector)
+  const client = useMangoStore(mangoClientSelector)
+  const mangoGroup = useMangoStore(mangoGroupSelector)
+  const [customRefLinks, setCustomRefLinks] = useState<ReferrerIdRecord[]>([])
+  const [showSize, setShowSize] = useState(true)
+  const [showReferral, setShowReferral] = useState(false)
+  const [hasRequiredMngo, setHasRequiredMngo] = useState(false)
 
   const initLeverage = useMemo(() => {
     if (!mangoGroup || !marketConfig) return 1
@@ -67,6 +91,25 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
   }
 
   useEffect(() => {
+    const mngoIndex = getMarketIndexBySymbol(groupConfig, 'MNGO')
+
+    const hasRequiredMngo =
+      mangoGroup && mangoAccount
+        ? mangoAccount
+            .getUiDeposit(
+              mangoCache.rootBankCache[mngoIndex],
+              mangoGroup,
+              mngoIndex
+            )
+            .toNumber() >= 10000
+        : false
+
+    if (hasRequiredMngo) {
+      setHasRequiredMngo(true)
+    }
+  }, [mangoAccount, mangoGroup])
+
+  useEffect(() => {
     if (image) {
       copyToClipboard(image)
       setCopied(true)
@@ -85,6 +128,20 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
     setShowButton(false)
   }
 
+  const fetchCustomReferralLinks = useCallback(async () => {
+    // setLoading(true)
+    const referrerIds = await client.getReferrerIdsForMangoAccount(mangoAccount)
+
+    setCustomRefLinks(referrerIds)
+    // setLoading(false)
+  }, [mangoAccount])
+
+  useEffect(() => {
+    if (mangoAccount) {
+      fetchCustomReferralLinks()
+    }
+  }, [mangoAccount])
+
   const isProfit = positionPercentage > 0
 
   const iconName = `${marketConfig.baseSymbol.slice(
@@ -93,6 +150,8 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
   )}${marketConfig.baseSymbol.slice(1, 4).toLowerCase()}MonoIcon`
 
   const SymbolIcon = MonoIcons[iconName]
+
+  console.log(customRefLinks)
 
   return (
     <Modal
@@ -115,6 +174,9 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
         id="share-image"
         className="drop-shadow-lg flex flex-col h-full items-center justify-center space-y-4 relative z-20"
       >
+        <div className="absolute right-4 top-4">
+          <QRCode size={64} value="https://trade.mango.markets" />
+        </div>
         <div className="flex items-center text-lg text-th-fgd-3 text-center">
           <SymbolIcon className="h-6 w-auto mr-2" />
           <span className="mr-2">{position.marketConfig.name}</span>
@@ -155,27 +217,36 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
           </div>
         </div>
       </div>
-      <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2">
+      <div className="absolute bg-th-bkg-2 -bottom-20 left-1/2 p-4 transform -translate-x-1/2 w-[600px]">
+        <Switch
+          checked={showSize}
+          onChange={(checked) => setShowSize(checked)}
+        />
+        {hasRequiredMngo ? (
+          <Switch
+            checked={showReferral}
+            onChange={(checked) => setShowReferral(checked)}
+          />
+        ) : null}
         {copied ? (
           <a
-            className="bg-th-primary font-bold block mt-6 px-4 py-3 rounded-full text-center text-th-bkg-1 w-full hover:cursor-pointer hover:text-th-bkg-1 hover:brightness-[1.15]"
+            className="bg-th-primary flex items-center justify-center font-bold block mt-6 px-4 py-3 rounded-full text-center text-th-bkg-1 hover:cursor-pointer hover:text-th-bkg-1 hover:brightness-[1.15]"
             href={`https://twitter.com/intent/tweet?text=I'm ${side} %24${position.marketConfig.baseSymbol} perp on %40mangomarkets%0A[PASTE IMAGE HERE]`}
             target="_blank"
             rel="noreferrer"
           >
-            <div className="flex items-center justify-center">
-              <TwitterIcon className="h-4 mr-1.5 w-4" />
-              <div>Tweet Position</div>
-            </div>
+            <TwitterIcon className="h-4 mr-1.5 w-4" />
+            <div>Tweet Position</div>
           </a>
         ) : (
-          <a
-            className={`bg-th-primary flex font-bold items-center mt-6 px-4 py-3 rounded-full text-center text-th-bkg-1 w-full hover:cursor-pointer hover:text-th-bkg-1 hover:brightness-[1.15]`}
-            onClick={handleCopyToClipboard}
-          >
-            <TwitterIcon className="h-4 mr-1.5 w-4" />
-            Copy Image and Share
-          </a>
+          <div>
+            <Button onClick={handleCopyToClipboard}>
+              <div className="flex items-center">
+                <TwitterIcon className="h-4 mr-1.5 w-4" />
+                Copy Image and Share
+              </div>
+            </Button>
+          </div>
         )}
       </div>
     </Modal>
