@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useEffect, useMemo, useState } from 'react'
 import Modal from './Modal'
-import Input from './Input'
+import Input, { Label } from './Input'
 import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
 import { floorToDecimal, tokenPrecision } from '../utils/index'
@@ -12,11 +12,7 @@ import {
   ExclamationCircleIcon,
   InformationCircleIcon,
 } from '@heroicons/react/outline'
-import {
-  ChevronLeftIcon,
-  ChevronDownIcon,
-  ChevronUpIcon,
-} from '@heroicons/react/solid'
+import { ChevronDownIcon } from '@heroicons/react/solid'
 import { Disclosure } from '@headlessui/react'
 import Select from './Select'
 import { withdraw } from '../utils/mango'
@@ -223,7 +219,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
       ) : isStatus ? (
         'bg-th-red'
       ) : (
-        'border-th-red text-th-red'
+        'ring-th-red text-th-red'
       )
     } else if (initHealthRatio > 1 && initHealthRatio < 10) {
       return isRisk ? (
@@ -231,7 +227,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
       ) : isStatus ? (
         'bg-th-orange'
       ) : (
-        'border-th-orange text-th-orange'
+        'ring-th-orange text-th-orange'
       )
     } else {
       return isRisk ? (
@@ -239,7 +235,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
       ) : isStatus ? (
         'bg-th-green'
       ) : (
-        'border-th-green text-th-green'
+        'ring-th-green text-th-green'
       )
     }
   }
@@ -303,7 +299,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                 {title ? title : t('withdraw-funds')}
               </ElementTitle>
             </Modal.Header>
-            <div className="pb-2 text-th-fgd-1">{t('asset')}</div>
+            <Label>{t('asset')}</Label>
             <Select
               value={
                 withdrawTokenSymbol && mangoAccount ? (
@@ -338,10 +334,10 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                     <div className="flex items-center">
                       <img
                         alt=""
-                        width="20"
-                        height="20"
+                        width="16"
+                        height="16"
                         src={`/assets/icons/${symbol.toLowerCase()}.svg`}
-                        className={`mr-2.5`}
+                        className={`mr-2`}
                       />
                       <span>{symbol}</span>
                     </div>
@@ -365,10 +361,10 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                 onChange={(checked) => handleIncludeBorrowSwitch(checked)}
               />
             </div>
-            <div className="flex justify-between pb-2 pt-4">
-              <div className="text-th-fgd-1">{t('amount')}</div>
+            <div className="flex justify-between pt-4">
+              <Label>{t('amount')}</Label>
               <LinkButton
-                className="text-th-primary text-xs"
+                className="mb-1.5"
                 onClick={() => setInputAmount(maxAmount.toString())}
               >
                 {includeBorrow ? t('max-with-borrow') : t('max')}
@@ -379,7 +375,6 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                 disabled={!withdrawTokenSymbol}
                 type="number"
                 min="0"
-                className={`border border-th-fgd-4 flex-grow pr-11`}
                 error={!!invalidAmountMessage}
                 placeholder="0.00"
                 value={inputAmount}
@@ -396,7 +391,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                   <span
                     className={`${getAccountStatusColor(
                       simulation.initHealthRatio
-                    )} bg-th-bkg-1 border flex font-semibold h-10 items-center justify-center ml-1 rounded text-th-fgd-1 w-14`}
+                    )} bg-th-bkg-1 ring-1 ring-inset flex h-10 items-center justify-center ml-1 px-2 rounded`}
                   >
                     {simulation.leverage.toFixed(2)}x
                   </span>
@@ -459,9 +454,9 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
               {({ open }) => (
                 <>
                   <Disclosure.Button
-                    className={`border border-th-fgd-4 default-transition font-normal mt-4 pl-3 pr-2 py-2.5 ${
+                    className={`border border-th-bkg-4 default-transition font-normal mt-4 pl-3 pr-2 py-2.5 ${
                       open ? 'rounded-b-none' : 'rounded-md'
-                    } text-th-fgd-1 w-full hover:bg-th-bkg-3 focus:outline-none`}
+                    } text-th-fgd-1 w-full hover:border-th-fgd-4 focus:outline-none`}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center">
@@ -488,30 +483,26 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                           />
                         </Tooltip>
                       </div>
-                      {open ? (
-                        <ChevronUpIcon className="h-5 w-5 mr-1" />
-                      ) : (
-                        <ChevronDownIcon className="h-5 w-5 mr-1" />
-                      )}
+                      <ChevronDownIcon
+                        className={`default-transition h-5 w-5 mr-1 ${
+                          open ? 'transform rotate-180' : 'transform rotate-360'
+                        }`}
+                      />
                     </div>
                   </Disclosure.Button>
                   <Disclosure.Panel
-                    className={`border border-th-fgd-4 border-t-0 p-4 rounded-b-md`}
+                    className={`border border-th-bkg-4 border-t-0 p-4 rounded-b-md`}
                   >
                     {simulation ? (
                       <div>
                         <div className="flex justify-between pb-2">
-                          <div className="text-th-fgd-4">
-                            {t('account-value')}
-                          </div>
+                          <p className="mb-0">{t('account-value')}</p>
                           <div className="text-th-fgd-1">
                             ${simulation.equity.toFixed(2)}
                           </div>
                         </div>
                         <div className="flex justify-between pb-2">
-                          <div className="text-th-fgd-4">
-                            {t('account-risk')}
-                          </div>
+                          <p className="mb-0">{t('account-risk')}</p>
                           <div className="text-th-fgd-1">
                             {getAccountStatusColor(
                               simulation.initHealthRatio,
@@ -520,16 +511,14 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                           </div>
                         </div>
                         <div className="flex justify-between pb-2">
-                          <div className="text-th-fgd-4">{t('leverage')}</div>
+                          <p className="mb-0">{t('leverage')}</p>
                           <div className="text-th-fgd-1">
                             {simulation.leverage.toFixed(2)}x
                           </div>
                         </div>
 
                         <div className="flex justify-between">
-                          <div className="text-th-fgd-4">
-                            {t('borrow-value')}
-                          </div>
+                          <p className="mb-0">{t('borrow-value')}</p>
                           <div className="text-th-fgd-1">
                             ${simulation.liabsVal.toFixed(2)}
                           </div>
@@ -540,7 +529,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                 </>
               )}
             </Disclosure>
-            <div className={`mt-5 flex justify-center`}>
+            <div className={`mt-6 flex flex-col items-center`}>
               <Button
                 onClick={handleWithdraw}
                 disabled={
@@ -555,14 +544,13 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                   {t('withdraw')}
                 </div>
               </Button>
+              <LinkButton
+                className="mt-4"
+                onClick={() => setShowSimulation(false)}
+              >
+                {t('cancel')}
+              </LinkButton>
             </div>
-            <LinkButton
-              className="flex items-center mt-4 text-th-fgd-3"
-              onClick={() => setShowSimulation(false)}
-            >
-              <ChevronLeftIcon className="h-5 w-5 mr-1" />
-              {t('back')}
-            </LinkButton>
           </>
         ) : null}
       </>

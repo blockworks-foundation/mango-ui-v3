@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useEffect, useState } from 'react'
 import { PlusCircleIcon, TrashIcon } from '@heroicons/react/outline'
 import Modal from './Modal'
-import Input from './Input'
+import Input, { Label } from './Input'
 import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
 import Button, { LinkButton } from './Button'
@@ -21,7 +21,7 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  const { t } = useTranslation('common')
+  const { t } = useTranslation(['common', 'alerts'])
   const actions = useMangoStore((s) => s.actions)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
@@ -51,13 +51,13 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
   async function onCreateAlert() {
     if (!email) {
       notify({
-        title: 'An email address is required',
+        title: t('alerts:email-address-required'),
         type: 'error',
       })
       return
     } else if (!health) {
       notify({
-        title: 'Alert health is required',
+        title: t('alerts:alert-health-required'),
         type: 'error',
       })
       return
@@ -97,11 +97,11 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
                 <div className="flex items-center justify-between w-full">
                   <div className="w-20" />
                   <ElementTitle noMarginBottom>
-                    {t('active-alerts')}
+                    {t('alerts:active-alerts')}
                   </ElementTitle>
                   <Button
-                    className="col-span-1 flex items-center justify-center pt-0 pb-0 h-8 text-xs w-20"
-                    disabled={activeAlerts.length >= 3}
+                    className="flex items-center justify-center pt-0 pb-0 h-8 text-xs min-w-20"
+                    disabled={activeAlerts.length >= 5}
                     onClick={() => setShowAlertForm(true)}
                   >
                     <div className="flex items-center">
@@ -111,14 +111,14 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
                   </Button>
                 </div>
               </Modal.Header>
-              <div className="border-b border-th-fgd-4">
+              <div className="border-b border-th-fgd-4 mt-2">
                 {activeAlerts.map((alert, index) => (
                   <div
                     className="border-t border-th-fgd-4 flex items-center justify-between p-4"
                     key={`${alert._id}${index}`}
                   >
                     <div className="text-th-fgd-1">
-                      {t('alert-info', { health: alert.health })}
+                      {t('alerts:alert-info', { health: alert.health })}
                     </div>
                     <TrashIcon
                       className="cursor-pointer default-transition h-5 text-th-fgd-3 w-5 hover:text-th-primary"
@@ -129,27 +129,28 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
               </div>
               {activeAlerts.length >= 3 ? (
                 <div className="mt-1 text-center text-xxs text-th-fgd-3">
-                  {t('alerts-max')}
+                  {t('alerts:alerts-max')}
                 </div>
               ) : null}
             </>
           ) : showAlertForm ? (
             <>
-              <div>
-                <ElementTitle noMarginBottom>{t('create-alert')}</ElementTitle>
-                <p className="mt-1 text-center text-th-fgd-4">
-                  {t('alerts-disclaimer')}
+              <Modal.Header>
+                <ElementTitle noMarginBottom>
+                  {t('alerts:create-alert')}
+                </ElementTitle>
+                <p className="mt-1 text-center">
+                  {t('alerts:alerts-disclaimer')}
                 </p>
-              </div>
+              </Modal.Header>
               {error ? (
                 <div className="my-4">
                   <InlineNotification title={error} type="error" />
                 </div>
               ) : null}
-              <div className="mb-1.5 text-th-fgd-1">{t('email-address')}</div>
+              <Label>{t('email-address')}</Label>
               <Input
                 type="email"
-                className={`border border-th-fgd-4 flex-grow pr-11`}
                 error={!!invalidAmountMessage}
                 onBlur={(e) => validateEmailInput(e.target.value)}
                 value={email || ''}
@@ -157,10 +158,11 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
               />
               <div className="flex items-end mt-4">
                 <div className="w-full">
-                  <div className="flex justify-between mb-1.5">
-                    <div className="text-th-fgd-1">{t('alert-health')}</div>
+                  <div className="flex justify-between">
+                    <Label>{t('alerts:alert-health')}</Label>
+
                     <LinkButton
-                      className="font-normal text-th-fgd-3 text-xs"
+                      className="mb-1.5"
                       onClick={() =>
                         setShowCustomHealthForm(!showCustomHealthForm)
                       }
@@ -191,17 +193,15 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
                   )}
                 </div>
               </div>
-              <div className="flex items-center mt-6">
-                <Button onClick={() => onCreateAlert()}>
-                  {t('create-alert')}
-                </Button>
-                <LinkButton
-                  className="ml-4 text-th-fgd-3 hover:text-th-fgd-1"
-                  onClick={handleCancelCreateAlert}
-                >
-                  {t('cancel')}
-                </LinkButton>
-              </div>
+              <Button className="mt-6 w-full" onClick={() => onCreateAlert()}>
+                {t('alerts:create-alert')}
+              </Button>
+              <LinkButton
+                className="mt-4 text-center w-full"
+                onClick={handleCancelCreateAlert}
+              >
+                {t('cancel')}
+              </LinkButton>
             </>
           ) : error ? (
             <div>
@@ -216,14 +216,16 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
           ) : (
             <div>
               <Modal.Header>
-                <ElementTitle noMarginBottom>{t('no-alerts')}</ElementTitle>
+                <ElementTitle noMarginBottom>
+                  {t('alerts:no-alerts')}
+                </ElementTitle>
+                <p className="mt-1 text-center">{t('alerts:no-alerts-desc')}</p>
               </Modal.Header>
-              <p className="mb-4 text-center">{t('no-alerts-desc')}</p>
               <Button
                 className="flex justify-center m-auto"
                 onClick={() => setShowAlertForm(true)}
               >
-                {t('new-alert')}
+                {t('alerts:new-alert')}
               </Button>
             </div>
           )}

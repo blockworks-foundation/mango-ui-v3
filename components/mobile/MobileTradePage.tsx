@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Disclosure } from '@headlessui/react'
 import dynamic from 'next/dynamic'
-import { XIcon } from '@heroicons/react/outline'
+import { SwitchHorizontalIcon, XIcon } from '@heroicons/react/outline'
 import useMangoStore from '../../stores/useMangoStore'
 import { getWeights, PerpMarket } from '@blockworks-foundation/mango-client'
 import { CandlesIcon } from '../icons'
@@ -55,34 +55,37 @@ const MobileTradePage = () => {
   return (
     <div className="pb-14 pt-4 px-2">
       <div className="relative">
-        <Link href="/select">
+        <div className="flex items-center">
+          <img
+            alt=""
+            width="30"
+            height="30"
+            src={`/assets/icons/${baseSymbol.toLowerCase()}.svg`}
+            className="mr-2"
+          />
           <div className="flex items-center">
-            <img
-              alt=""
-              width="30"
-              height="30"
-              src={`/assets/icons/${baseSymbol.toLowerCase()}.svg`}
-              className="mr-2"
-            />
-            <div className="flex items-center">
-              <div className="font-semibold pr-0.5 text-xl">{baseSymbol}</div>
-              <span className="text-th-fgd-4 text-xl">
-                {isPerpMarket ? '-' : '/'}
-              </span>
-              <div className="font-semibold pl-0.5 text-xl">
-                {isPerpMarket ? 'PERP' : groupConfig.quoteSymbol}
-              </div>
-            </div>
-            <span className="border border-th-primary ml-2 px-1 py-0.5 rounded text-xs text-th-primary">
-              {initLeverage}x
+            <div className="font-semibold pr-0.5 text-xl">{baseSymbol}</div>
+            <span className="text-th-fgd-4 text-xl">
+              {isPerpMarket ? '-' : '/'}
             </span>
+            <div className="font-semibold pl-0.5 text-xl">
+              {isPerpMarket ? 'PERP' : groupConfig.quoteSymbol}
+            </div>
           </div>
-        </Link>
+          <span className="border border-th-primary ml-2 px-1 py-0.5 rounded text-xs text-th-primary">
+            {initLeverage}x
+          </span>
+          <Link href="/select">
+            <div className="flex items-center justify-center h-10 ml-2 w-10">
+              <SwitchHorizontalIcon className="h-5 w-5" />
+            </div>
+          </Link>
+        </div>
         <Disclosure>
           {({ open }) => (
             <>
               <Disclosure.Button>
-                <div className="absolute right-0 top-0 bg-th-bkg-4 flex items-center justify-center rounded-full w-8 h-8 text-th-fgd-1 focus:outline-none hover:text-th-primary">
+                <div className="absolute right-0 top-1 bg-th-bkg-4 flex items-center justify-center rounded-full w-8 h-8 text-th-fgd-1 focus:outline-none hover:text-th-primary">
                   {open ? (
                     <XIcon className="h-4 w-4" />
                   ) : (

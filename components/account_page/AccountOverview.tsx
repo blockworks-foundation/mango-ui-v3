@@ -180,12 +180,10 @@ export default function AccountOverview() {
         </div>
       </div>
       <div className="pb-8">
-        <div className="text-th-fgd-1 text-lg pb-4">{t('perp-positions')}</div>
+        <h2 className="mb-4">{t('perp-positions')}</h2>
         <PositionsTable />
       </div>
-      <div className="pb-4 text-th-fgd-1 text-lg">
-        {t('assets-liabilities')}
-      </div>
+      <h2 className="mb-4">{t('assets-liabilities')}</h2>
 
       <div className="grid grid-flow-col grid-cols-1 grid-rows-2 md:grid-cols-2 md:grid-rows-1 gap-2 sm:gap-4 pb-8">
         <div className="border border-th-bkg-4 p-3 sm:p-4 rounded-md sm:rounded-lg">
@@ -214,7 +212,7 @@ export default function AccountOverview() {
         </div>
       </div>
       <div className="flex justify-between pb-4">
-        <div className="text-th-fgd-1 text-lg">Balances</div>
+        <h2>{t('balances')}</h2>
         <Switch
           checked={showZeroBalances}
           className="text-xs"

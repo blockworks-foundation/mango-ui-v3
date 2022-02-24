@@ -22,6 +22,7 @@
   --fgd-2: theme('colors.light-theme["fgd-2"]');
   --fgd-3: theme('colors.light-theme["fgd-3"]');
   --fgd-4: theme('colors.light-theme["fgd-4"]');
+  --bkg-button: theme('colors.light-theme["bkg-button"]');
 }
 
 [data-theme='Dark'] {
@@ -42,6 +43,7 @@
   --fgd-2: theme('colors.dark-theme["fgd-2"]');
   --fgd-3: theme('colors.dark-theme["fgd-3"]');
   --fgd-4: theme('colors.dark-theme["fgd-4"]');
+  --bkg-button: theme('colors.dark-theme["bkg-button"]');
 }
 
 [data-theme='Mango'] {
@@ -62,6 +64,7 @@
   --fgd-2: theme('colors.mango-theme["fgd-2"]');
   --fgd-3: theme('colors.mango-theme["fgd-3"]');
   --fgd-4: theme('colors.mango-theme["fgd-4"]');
+  --bkg-button: theme('colors.mango-theme["bkg-button"]');
 }
 
 /* Base */
@@ -71,11 +74,19 @@ body {
 }
 
 h1 {
-  @apply font-bold text-th-fgd-1 text-xl;
+  @apply font-bold text-th-fgd-1 text-2xl;
+}
+
+h2 {
+  @apply font-bold text-th-fgd-1 text-lg;
 }
 
 h3 {
   @apply font-bold text-th-fgd-1 text-base;
+}
+
+h4 {
+  @apply font-bold text-th-fgd-3 text-sm;
 }
 
 p {
@@ -87,7 +98,7 @@ a {
 }
 
 li {
-  @apply text-sm text-th-fgd-3 mb-2;
+  @apply mb-2.5 text-sm text-th-fgd-3 last:mb-0;
 }
 
 tbody {
@@ -104,7 +115,7 @@ button.transition-none {
 }
 
 .default-transition {
-  @apply transition-all duration-300;
+  @apply transition-all duration-200;
 }
 
 .tiny-text {
@@ -196,21 +207,23 @@ body::-webkit-scrollbar-corner {
 
 .thin-scroll::-webkit-scrollbar {
   width: 4px;
-  height: 8px;
-  background-color: var(--bkg-2);
 }
 
-.thin-scroll::-webkit-scrollbar-thumb {
-  border-radius: 4px;
-  background-color: var(--bkg-3);
-}
-
+/* Track */
 .thin-scroll::-webkit-scrollbar-track {
-  background-color: inherit;
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
 }
 
-.thin-scroll::-webkit-scrollbar-corner {
-  background-color: var(--bkg-3);
+/* Handle */
+.thin-scroll::-webkit-scrollbar-thumb {
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+  background: var(--bkg-4);
+}
+.thin-scroll::-webkit-scrollbar-thumb:window-inactive {
+  background: var(--bkg-4);
 }
 
 /* Responsive table */

@@ -8,7 +8,6 @@ import {
 } from '@blockworks-foundation/mango-client'
 import TopBar from '../components/TopBar'
 import TradePageGrid from '../components/TradePageGrid'
-import MarketSelect from '../components/MarketSelect'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import AlphaModal, { ALPHA_MODAL_KEY } from '../components/AlphaModal'
 import { PageBodyWrapper } from '../components/styles'
@@ -23,11 +22,16 @@ import {
   walletConnectedSelector,
 } from '../stores/selectors'
 import { PublicKey } from '@solana/web3.js'
+import FavoritesShortcutBar from '../components/FavoritesShortcutBar'
 
 export async function getStaticProps({ locale }) {
   return {
     props: {
-      ...(await serverSideTranslations(locale, ['common', 'tv-chart'])),
+      ...(await serverSideTranslations(locale, [
+        'common',
+        'tv-chart',
+        'alerts',
+      ])),
       // Will be passed to the page component as props
     },
   }
@@ -132,8 +136,8 @@ const PerpMarket = () => {
         <IntroTips connected={connected} mangoAccount={mangoAccount} />
       ) : null}
       <TopBar />
-      <MarketSelect />
-      <PageBodyWrapper className="p-1 sm:px-2 sm:py-1 md:px-2 md:py-1">
+      <FavoritesShortcutBar />
+      <PageBodyWrapper className="p-1 sm:px-2 sm:py-1 md:px-2 md:py-1 xl:px-4">
         <TradePageGrid />
       </PageBodyWrapper>
       {!alphaAccepted && (

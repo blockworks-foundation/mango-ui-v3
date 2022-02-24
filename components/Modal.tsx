@@ -16,7 +16,7 @@ const Modal: any = React.forwardRef<any, any>((props, ref) => {
   return (
     <Portal>
       <div
-        className="fixed z-30 inset-0 overflow-y-auto"
+        className="fixed z-50 inset-0 overflow-y-auto sm:py-8"
         aria-labelledby="modal-title"
         role="dialog"
         aria-modal="true"
@@ -67,9 +67,7 @@ const Modal: any = React.forwardRef<any, any>((props, ref) => {
 })
 
 const Header = ({ children }) => {
-  return (
-    <div className={`flex justify-center bg-th-bkg-2 pb-4`}>{children}</div>
-  )
+  return <div className={`flex flex-col items-center pb-2`}>{children}</div>
 }
 
 Modal.Header = Header

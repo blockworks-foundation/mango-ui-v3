@@ -49,6 +49,7 @@ export async function getStaticProps({ locale }) {
         'common',
         'close-account',
         'delegate',
+        'alerts',
       ])),
       // Will be passed to the page component as props
     },
@@ -185,7 +186,7 @@ export default function Account() {
             <>
               <div className="pb-3 md:pb-0">
                 <div className="flex items-center mb-1">
-                  <h1 className={`font-semibold mr-3 text-th-fgd-1 text-2xl`}>
+                  <h1 className={`mr-3`}>
                     {mangoAccount?.name || t('account')}
                   </h1>
                   {!pubkey ? (
@@ -231,7 +232,7 @@ export default function Account() {
                   >
                     <div className="flex items-center">
                       <BellIcon className="h-4 w-4 mr-1.5" />
-                      Alerts
+                      {t('alerts')}
                     </div>
                   </Button>
                   {!isDelegatedAccount && (

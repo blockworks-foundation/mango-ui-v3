@@ -65,9 +65,15 @@ const FetchReferrer = () => {
         if (query.ref.length === 44) {
           referrerPk = new PublicKey(query.ref)
         } else {
+          let decodedRefLink: string
+          try {
+            decodedRefLink = decodeURIComponent(query.ref as string)
+          } catch (e) {
+            console.log('Failed to decode referrer link', e)
+          }
           const { referrerPda } = await mangoClient.getReferrerPda(
             mangoGroup,
-            query.ref as string
+            decodedRefLink
           )
           console.log('in App referrerPda', referrerPda)
           const info = await connection.getAccountInfo(referrerPda)
@@ -145,9 +151,12 @@ function App({ Component, pageProps }) {
         <meta name="twitter:title" content="Mango Markets" />
         <meta
           name="twitter:description"
-          content="Mango Markets - Decentralised, cross-margin trading up to 10x leverage with lightning speed and near-zero fees."
+          content="Mango Markets - Decentralised, cross-margin trading up to 20x leverage with lightning speed and near-zero fees."
         />
-        <meta name="twitter:image" content="/twitter-image.png" />
+        <meta
+          name="twitter:image"
+          content="https://www.mango.markets/socials/twitter-image-1200x600.png?34567878"
+        />
         <meta name="google" content="notranslate" />
         <script src="/datafeeds/udf/dist/polyfills.js"></script>
         <script src="/datafeeds/udf/dist/bundle.js"></script>

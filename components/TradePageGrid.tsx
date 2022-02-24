@@ -110,11 +110,14 @@ const TradePageGrid = () => {
   }, [currentBreakpoint, savedLayouts])
 
   useEffect(() => setMounted(true), [])
+
   if (!mounted) return null
 
   return !isMobile ? (
     <>
-      <MarketDetails />
+      <div className="pt-2">
+        <MarketDetails />
+      </div>
       <ResponsiveGridLayout
         layouts={savedLayouts ? savedLayouts : defaultLayouts}
         breakpoints={breakpoints}

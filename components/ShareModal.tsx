@@ -151,13 +151,11 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
 
   const SymbolIcon = MonoIcons[iconName]
 
-  console.log(customRefLinks)
-
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      className={`${
+      className={`-mt-40 ${
         side === 'LONG'
           ? isProfit
             ? 'bg-long-profit'
@@ -174,9 +172,18 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
         id="share-image"
         className="drop-shadow-lg flex flex-col h-full items-center justify-center space-y-4 relative z-20"
       >
-        <div className="absolute right-4 top-4">
-          <QRCode size={64} value="https://trade.mango.markets" />
-        </div>
+        {hasRequiredMngo && showReferral ? (
+          <div className="absolute right-4 top-4">
+            <QRCode
+              size={64}
+              value={
+                customRefLinks.length > 0
+                  ? `https://trade.mango.markets?ref=${customRefLinks[0].referrerId}`
+                  : `https://trade.mango.markets?ref=${mangoAccount.publicKey.toString()}`
+              }
+            />
+          </div>
+        ) : null}
         <div className="flex items-center text-lg text-th-fgd-3 text-center">
           <SymbolIcon className="h-6 w-auto mr-2" />
           <span className="mr-2">{position.marketConfig.name}</span>
@@ -201,6 +208,14 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
           {positionPercentage.toFixed(2)}%
         </div>
         <div className="pt-2 space-y-1 text-base text-th-fgd-1 w-2/3">
+          {showSize ? (
+            <div className="flex items-center justify-between">
+              <span className="text-th-fgd-2">Size</span>
+              <span className="font-bold">
+                {Math.abs(position.basePosition)}
+              </span>
+            </div>
+          ) : null}
           <div className="flex items-center justify-between">
             <span className="text-th-fgd-2">Avg Entry Price</span>
             <span className="font-bold">
@@ -217,37 +232,49 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
           </div>
         </div>
       </div>
-      <div className="absolute bg-th-bkg-2 -bottom-20 left-1/2 p-4 transform -translate-x-1/2 w-[600px]">
-        <Switch
-          checked={showSize}
-          onChange={(checked) => setShowSize(checked)}
-        />
-        {hasRequiredMngo ? (
-          <Switch
-            checked={showReferral}
-            onChange={(checked) => setShowReferral(checked)}
-          />
-        ) : null}
-        {copied ? (
-          <a
-            className="bg-th-primary flex items-center justify-center font-bold block mt-6 px-4 py-3 rounded-full text-center text-th-bkg-1 hover:cursor-pointer hover:text-th-bkg-1 hover:brightness-[1.15]"
-            href={`https://twitter.com/intent/tweet?text=I'm ${side} %24${position.marketConfig.baseSymbol} perp on %40mangomarkets%0A[PASTE IMAGE HERE]`}
-            target="_blank"
-            rel="noreferrer"
-          >
-            <TwitterIcon className="h-4 mr-1.5 w-4" />
-            <div>Tweet Position</div>
-          </a>
-        ) : (
-          <div>
-            <Button onClick={handleCopyToClipboard}>
+      <div className="absolute bg-th-bkg-2 left-1/2 mt-3 p-4 rounded-md transform -translate-x-1/2 w-[600px]">
+        <div className="flex flex-col items-center">
+          <div className="flex pb-4 space-x-4">
+            <div className="flex items-center">
+              <label className="mr-1.5 text-th-fgd-2">Show Size</label>
+              <Switch
+                checked={showSize}
+                onChange={(checked) => setShowSize(checked)}
+              />
+            </div>
+            {hasRequiredMngo ? (
               <div className="flex items-center">
-                <TwitterIcon className="h-4 mr-1.5 w-4" />
-                Copy Image and Share
+                <label className="mr-1.5 text-th-fgd-2">
+                  Show Referral Link
+                </label>
+                <Switch
+                  checked={showReferral}
+                  onChange={(checked) => setShowReferral(checked)}
+                />
               </div>
-            </Button>
+            ) : null}
           </div>
-        )}
+          {copied ? (
+            <a
+              className="bg-th-bkg-button flex items-center justify-center font-bold block px-6 py-2 rounded-full text-center text-th-fgd-1 hover:cursor-pointer hover:text-th-fgd-1 hover:brightness-[1.1]"
+              href={`https://twitter.com/intent/tweet?text=I'm ${side} %24${position.marketConfig.baseSymbol} perp on %40mangomarkets%0A[PASTE IMAGE HERE]`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <TwitterIcon className="h-4 mr-1.5 w-4" />
+              <div>Tweet Position</div>
+            </a>
+          ) : (
+            <div>
+              <Button onClick={handleCopyToClipboard}>
+                <div className="flex items-center">
+                  <TwitterIcon className="h-4 mr-1.5 w-4" />
+                  Copy Image and Share
+                </div>
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
     </Modal>
   )

@@ -146,7 +146,7 @@ const JupiterForm: FunctionComponent = () => {
     if (connected) {
       fetchWalletTokens()
     }
-  }, [connected])
+  }, [connected, fetchWalletTokens])
 
   useEffect(() => {
     if (!coinGeckoList?.length) return
@@ -520,7 +520,7 @@ const JupiterForm: FunctionComponent = () => {
                     <input
                       name="amount"
                       id="amount"
-                      className="bg-th-bkg-1 border border-th-fgd-4 default-transition font-bold pr-4 h-12 focus:outline-none rounded-md text-base text-right tracking-wide w-full hover:border-th-primary focus:border-th-primary"
+                      className="bg-th-bkg-1 border border-th-bkg-4 default-transition font-bold pr-4 h-12 focus:outline-none rounded-md text-base text-right tracking-wide w-full hover:border-th-fgd-4 focus:border-th-fgd-4"
                       value={formValue.amount || ''}
                       placeholder="0.00"
                       type="number"
