@@ -3,7 +3,7 @@ import Modal from './Modal'
 import { useTranslation } from 'next-i18next'
 import Button from './Button'
 import ButtonGroup from './ButtonGroup'
-import Input from './Input'
+import Input, { Label } from './Input'
 import { LinkButton } from './Button'
 
 const slippagePresets = ['0.1', '0.5', '1', '2']
@@ -49,10 +49,10 @@ const SwapSettingsModal = ({
           {t('swap:slippage-settings')}
         </h2>
       </Modal.Header>
-      <div className="flex justify-between mb-2">
-        <div className="text-th-fgd-1 text-xs">{t('swap:slippage')}</div>
+      <div className="flex justify-between">
+        <Label>{t('swap:slippage')}</Label>
         <LinkButton
-          className="font-normal text-th-fgd-3 text-xs"
+          className="mb-1.5"
           onClick={() => setShowCustomSlippageForm(!showCustomSlippageForm)}
         >
           {showCustomSlippageForm ? t('presets') : t('custom')}
@@ -61,7 +61,6 @@ const SwapSettingsModal = ({
       {showCustomSlippageForm ? (
         <Input
           type="text"
-          className="w-full bg-th-bkg-1 focus:outline-none rounded"
           placeholder="0.00"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}

@@ -5,7 +5,7 @@ import {
   XIcon,
   InformationCircleIcon,
 } from '@heroicons/react/outline'
-import Input from './Input'
+import Input, { Label } from './Input'
 import Tooltip from './Tooltip'
 import Button, { IconButton } from './Button'
 import Modal from './Modal'
@@ -108,7 +108,7 @@ const DelegateModal: FunctionComponent<DelegateModalProps> = ({
       <div className="flex items-center justify-center text-th-fgd-3 pb-4">
         <p className="text-center">{t('delegate:info')}</p>
       </div>
-      <div className="pb-2 text-th-fgd-1">{t('delegate:public-key')}</div>
+      <Label>{t('delegate:public-key')}</Label>
       <Input
         type="text"
         error={!!invalidKeyMessage}

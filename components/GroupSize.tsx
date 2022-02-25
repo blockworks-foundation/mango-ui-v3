@@ -44,7 +44,7 @@ const GroupSize = ({ tickSize, value, onChange, className = '' }) => {
                   <Listbox.Option key={size} value={size}>
                     {({ selected }) => (
                       <div
-                        className={`default-transition py-1.5 text-th-fgd-1 hover:bg-th-bkg-3 hover:cursor-pointer hover:text-th-primary text-right ${
+                        className={`default-transition text-th-fgd-1 hover:bg-th-bkg-3 hover:cursor-pointer hover:text-th-primary text-right ${
                           selected && `text-th-primary`
                         }`}
                       >

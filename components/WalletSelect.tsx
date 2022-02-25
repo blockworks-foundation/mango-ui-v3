@@ -37,14 +37,14 @@ export default function WalletSelect() {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Menu.Items className="absolute bg-th-bkg-1 divide-y divide-th-bkg-3 rounded-md right-0 mt-1 shadow-lg outline-none w-44 z-20">
+            <Menu.Items className="absolute bg-th-bkg-3 px-4 py-2.5 rounded-b-md right-0 outline-none w-44 z-20">
               {WALLET_PROVIDERS.map(({ name, url, icon }) => (
                 <Menu.Item key={name}>
                   <button
-                    className="flex flex-row items-center justify-between rounded-none text-xs w-full p-2 hover:bg-th-bkg-2 hover:cursor-pointer font-normal focus:outline-none"
+                    className="flex flex-row items-center justify-between py-1.5 rounded-none w-full hover:text-th-primary hover:cursor-pointer font-normal focus:outline-none"
                     onClick={() => handleSelectProvider(url)}
                   >
-                    <div className="flex">
+                    <div className="flex items-center">
                       <img src={icon} className="w-4 h-4 mr-2" />
                       {name}
                     </div>

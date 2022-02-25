@@ -60,7 +60,7 @@ const DropMenu: FunctionComponent<DropMenuProps> = ({
                   >
                     {({ selected }) => (
                       <div
-                        className={`default-transition py-1.5 hover:text-th-primary hover:cursor-pointer tracking-wider whitespace-nowrap ${
+                        className={`default-transition text-th-fgd-1 hover:text-th-primary hover:cursor-pointer tracking-wider whitespace-nowrap ${
                           selected && `text-th-primary`
                         } ${option.icon && `flex items-center`}`}
                       >

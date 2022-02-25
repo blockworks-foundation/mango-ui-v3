@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useEffect, useState } from 'react'
 import { ExclamationCircleIcon } from '@heroicons/react/outline'
 import Modal from './Modal'
-import Input from './Input'
+import Input, { Label } from './Input'
 import AccountSelect from './AccountSelect'
 import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
@@ -186,21 +186,17 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
         selectedAccount={selectedAccount}
         onSelectAccount={handleAccountSelect}
       />
-      <div className="flex justify-between pb-2 pt-4">
-        <div className={`text-th-fgd-1`}>{t('amount')}</div>
-      </div>
-      <div className="flex">
-        <Input
-          type="number"
-          min="0"
-          placeholder="0.00"
-          error={!!invalidAmountMessage}
-          onBlur={(e) => validateAmountInput(e.target.value)}
-          value={inputAmount || ''}
-          onChange={(e) => onChangeAmountInput(e.target.value)}
-          suffix={selectedAccount?.config.symbol}
-        />
-      </div>
+      <Label className={`mt-4`}>{t('amount')}</Label>
+      <Input
+        type="number"
+        min="0"
+        placeholder="0.00"
+        error={!!invalidAmountMessage}
+        onBlur={(e) => validateAmountInput(e.target.value)}
+        value={inputAmount || ''}
+        onChange={(e) => onChangeAmountInput(e.target.value)}
+        suffix={selectedAccount?.config.symbol}
+      />
       {invalidAmountMessage ? (
         <div className="flex items-center pt-1.5 text-th-red">
           <ExclamationCircleIcon className="h-4 w-4 mr-1.5" />
