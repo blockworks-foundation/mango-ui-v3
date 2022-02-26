@@ -106,7 +106,7 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
                   >
                     <div className="flex items-center">
                       <PlusCircleIcon className="h-4 w-4 mr-1.5" />
-                      {t('new')}
+                      {t('alerts:new-alert')}
                     </div>
                   </Button>
                 </div>
