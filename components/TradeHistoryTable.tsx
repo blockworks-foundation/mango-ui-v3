@@ -273,7 +273,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                                 )
                               : t('recent')}
                           </Td>
-                          <Td className="!py-2 w-[0.1%]">
+                          <Td className="!py-2 w-[0.1%] keep-break">
                             {trade.marketName.includes('PERP') ? (
                               <a
                                 className="text-th-fgd-4 underline text-xs underline-offset-4"

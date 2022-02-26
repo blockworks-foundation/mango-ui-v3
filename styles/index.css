@@ -517,3 +517,8 @@ body::-webkit-scrollbar-corner {
 .fadein-floating-element {
   animation: fadein 1s linear;
 }
+
+/* CJK characters */
+.keep-break {
+  word-break: keep-all;
+}
