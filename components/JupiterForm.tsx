@@ -964,7 +964,7 @@ const JupiterForm: FunctionComponent = () => {
                               txid,
                             })
                           }
-                          await connection.confirmTransaction(txid)
+                          await connection.confirmTransaction(txid, 'confirmed')
 
                           txCount++
                           return await connection.getTransaction(txid, {

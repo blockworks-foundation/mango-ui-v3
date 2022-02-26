@@ -25,7 +25,7 @@
     "@blockworks-foundation/mango-client": "^3.3.17",
     "@headlessui/react": "^1.2.0",
     "@heroicons/react": "^1.0.0",
-    "@jup-ag/react-hook": "^1.0.0-beta.4",
+    "@jup-ag/react-hook": "^1.0.0-beta.16",
     "@project-serum/serum": "0.13.55",
     "@project-serum/sol-wallet-adapter": "0.2.0",
     "@solana/web3.js": "^1.31.0",
