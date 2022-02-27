@@ -64,7 +64,7 @@ const DesktopTable = ({
       <thead>
         <TrHead>
           <Th>{t('market')}</Th>
-          <Th>{t('size')}</Th>
+          <Th>{t('side')}</Th>
           <Th>{t('size')}</Th>
           <Th>{t('price')}</Th>
           <Th>{t('value')}</Th>
