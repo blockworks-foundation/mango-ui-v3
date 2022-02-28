@@ -1,7 +1,7 @@
 import { Fragment, useRef } from 'react'
 import { Popover, Transition } from '@headlessui/react'
-import { ChevronDownIcon } from '@heroicons/react/solid'
 import Link from 'next/link'
+import { ChevronDownIcon } from '@heroicons/react/outline'
 
 type NavDropMenuProps = {
   menuTitle: string | React.ReactNode

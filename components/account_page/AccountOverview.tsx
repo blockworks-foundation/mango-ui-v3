@@ -1,25 +1,50 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ArrowSmUpIcon, ArrowSmDownIcon } from '@heroicons/react/outline'
-import { AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
+import { ExclamationIcon } from '@heroicons/react/solid'
+import { useTranslation } from 'next-i18next'
+
 import useMangoStore from '../../stores/useMangoStore'
 import { formatUsdValue } from '../../utils'
 import BalancesTable from '../BalancesTable'
-import PositionsTable from '../PerpPositionsTable'
 import Switch from '../Switch'
 import useLocalStorageState from '../../hooks/useLocalStorageState'
-import { ExclamationIcon } from '@heroicons/react/solid'
-import { useTranslation } from 'next-i18next'
 import ButtonGroup from '../ButtonGroup'
-import useDimensions from 'react-cool-dimensions'
-import { useTheme } from 'next-themes'
+import PerformanceChart from './PerformanceChart'
+import PositionsTable from '../PerpPositionsTable'
 
 dayjs.extend(utc)
 
 const SHOW_ZERO_BALANCE_KEY = 'showZeroAccountBalances-0.2'
 
-const performanceRangePresets = ['24h', '7d', '30d', 'All']
+const performanceRangePresets = [
+  { label: '24h', value: 1 },
+  { label: '7d', value: 7 },
+  { label: '30d', value: 30 },
+  { label: '3m', value: 90 },
+]
+const performanceRangePresetLabels = performanceRangePresets.map((x) => x.label)
+
+const fetchHourlyPerformanceStats = async (mangoAccountPk: string) => {
+  const range =
+    performanceRangePresets[performanceRangePresets.length - 1].value
+  const response = await fetch(
+    `https://mango-transaction-log.herokuapp.com/v3/stats/account-performance-detailed?mango-account=${mangoAccountPk}&start-date=${dayjs()
+      .subtract(range, 'day')
+      .format('YYYY-MM-DD')}`
+  )
+  const parsedResponse = await response.json()
+  const entries: any = Object.entries(parsedResponse)
+
+  const stats = entries
+    .map(([key, value]) => {
+      return { ...value, time: key }
+    })
+    .filter((x) => x)
+    .reverse()
+
+  return stats
+}
 
 export default function AccountOverview() {
   const { t } = useTranslation('common')
@@ -30,23 +55,21 @@ export default function AccountOverview() {
     SHOW_ZERO_BALANCE_KEY,
     true
   )
-  const [performanceRange, setPerformanceRange] = useState('All')
-  const [hourlyPerformanceStats, setHourlyPerformanceStats] = useState<any>([])
-  const [chartData, setChartData] = useState([])
-  const { observe, width, height } = useDimensions()
-  const [mouseData, setMouseData] = useState<string | null>(null)
-  const [chartToShow, setChartToShow] = useState('PnL')
-  const { theme } = useTheme()
 
-  const handleMouseMove = (coords) => {
-    if (coords.activePayload) {
-      setMouseData(coords.activePayload[0].payload)
+  const [pnl, setPnl] = useState(0)
+  const [performanceRange, setPerformanceRange] = useState('30d')
+  const [hourlyPerformanceStats, setHourlyPerformanceStats] = useState([])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const stats = await fetchHourlyPerformanceStats(
+        mangoAccount.publicKey.toString()
+      )
+      setPnl(stats[0]['pnl'])
+      setHourlyPerformanceStats(stats)
     }
-  }
-
-  const handleMouseLeave = () => {
-    setMouseData(null)
-  }
+    fetchData()
+  }, [mangoAccount.publicKey])
 
   const maintHealthRatio = useMemo(() => {
     return mangoAccount
@@ -60,184 +83,42 @@ export default function AccountOverview() {
       : 100
   }, [mangoAccount, mangoGroup, mangoCache])
 
-  const mangoAccountPk = useMemo(() => {
-    return mangoAccount.publicKey.toString()
-  }, [mangoAccount])
-
-  useEffect(() => {
-    const fetchHourlyPerformanceStats = async () => {
-      const response = await fetch(
-        `https://mango-transaction-log.herokuapp.com/v3/stats/account-performance?mango-account=${mangoAccountPk}`
-      )
-      const parsedResponse = await response.json()
-      const entries: any = Object.entries(parsedResponse)
-
-      const stats = entries
-        .map(([key, value]) => {
-          return { ...value, time: key }
-        })
-        .filter((x) => x)
-        .reverse()
-
-      setHourlyPerformanceStats(stats)
-    }
-
-    fetchHourlyPerformanceStats()
-  }, [mangoAccountPk])
-
-  useEffect(() => {
-    if (hourlyPerformanceStats) {
-      if (performanceRange === 'All') {
-        setChartData(hourlyPerformanceStats.slice().reverse())
-      }
-      if (performanceRange === '30d') {
-        const start = new Date(
-          // @ts-ignore
-          dayjs().utc().hour(0).minute(0).subtract(29, 'day')
-        ).getTime()
-        const chartData = hourlyPerformanceStats.filter(
-          (d) => new Date(d.time).getTime() > start
-        )
-        setChartData(chartData.reverse())
-      }
-      if (performanceRange === '7d') {
-        const start = new Date(
-          // @ts-ignore
-          dayjs().utc().hour(0).minute(0).subtract(6, 'day')
-        ).getTime()
-        const chartData = hourlyPerformanceStats.filter(
-          (d) => new Date(d.time).getTime() > start
-        )
-        setChartData(chartData.reverse())
-      }
-      if (performanceRange === '24h') {
-        const start = new Date(
-          // @ts-ignore
-          dayjs().utc().hour(0).minute(0).subtract(1, 'day')
-        ).getTime()
-        const chartData = hourlyPerformanceStats.filter(
-          (d) => new Date(d.time).getTime() > start
-        )
-        setChartData(chartData.reverse())
-      }
-    }
-  }, [hourlyPerformanceStats, performanceRange])
-
-  const pnlChartColor =
-    chartToShow === 'PnL' && mouseData && mouseData['PnL'] > 0
-      ? theme === 'Mango'
-        ? '#AFD803'
-        : '#5EBF4D'
-      : theme === 'Mango'
-      ? '#F84638'
-      : '#CC2929'
-
-  const equityChangePercentage =
-    chartData.length > 0
-      ? ((chartData[chartData.length - 1]['account_equity'] -
-          chartData[0]['account_equity']) /
-          chartData[0]['account_equity']) *
-        100
-      : null
-
-  // const pnlChangePercentage =
-  //   chartData.length > 0
-  //     ? ((chartData[chartData.length - 1]['pnl'] - chartData[1]['pnl']) /
-  //         chartData[1]['pnl']) *
-  //       100
-  //     : null
-
   return mangoAccount ? (
     <>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-4">
-        <h2 className="mb-4 sm:mb-0">Summary</h2>
+        <h2 className="mb-4 sm:mb-0">{t('summary')}</h2>
         <div className="w-full sm:w-56">
           <ButtonGroup
             activeValue={performanceRange}
             onChange={(p) => setPerformanceRange(p)}
-            values={performanceRangePresets}
+            values={performanceRangePresetLabels}
           />
         </div>
       </div>
-      <div className="grid grid-flow-col grid-cols-1 grid-rows-2 lg:grid-cols-4 lg:grid-rows-1 lg:gap-6 pb-12">
-        <div className="border-t border-th-bkg-4 col-span-1 pb-6 lg:pb-0">
+      <div className="flex flex-col lg:flex-row lg:space-x-6 pb-8 lg:pb-12">
+        <div className="border-t border-th-bkg-4 pb-6 lg:pb-0 w-full lg:w-1/4">
           <div className="border-b border-th-bkg-4 p-3 sm:p-4">
             <div className="pb-0.5 text-th-fgd-3 text-xs sm:text-sm">
-              {t('equity')}
+              {t('account-value')}
             </div>
             <div className="font-bold text-th-fgd-1 text-xl sm:text-2xl">
-              {chartData.length > 0 ? (
-                formatUsdValue(
-                  chartData[chartData.length - 1]['account_equity']
-                )
-              ) : (
-                <div className="animate-pulse bg-th-bkg-3 h-8 mt-1 rounded w-48" />
+              {formatUsdValue(
+                +mangoAccount.computeValue(mangoGroup, mangoCache)
               )}
             </div>
-            {equityChangePercentage ? (
-              <div
-                className={`flex items-center ${
-                  equityChangePercentage >= 0 ? 'text-th-green' : 'text-th-red'
-                }`}
-              >
-                {equityChangePercentage >= 0 ? (
-                  <ArrowSmUpIcon className="h-4 w-4" />
-                ) : (
-                  <ArrowSmDownIcon className="h-4 w-4" />
-                )}
-                <span className="mr-1">
-                  {equityChangePercentage.toLocaleString(undefined, {
-                    maximumFractionDigits: 2,
-                  })}
-                  %
-                </span>
-                <span className="text-th-fgd-4">
-                  {performanceRange === 'All'
-                    ? '(All-time)'
-                    : `(last ${performanceRange})`}
-                </span>
-              </div>
-            ) : (
-              <div className="animate-pulse bg-th-bkg-3 h-4 mt-1 rounded w-16" />
-            )}
           </div>
           <div className="border-b border-th-bkg-4 p-3 sm:p-4">
-            <div className="pb-0.5 text-th-fgd-3 text-xs sm:text-sm">PnL</div>
+            <div className="pb-0.5 text-th-fgd-3 text-xs sm:text-sm">
+              {t('pnl')}{' '}
+              <span className="text-th-fgd-4">({t('all-time')})</span>
+            </div>
             <div className="font-bold text-th-fgd-1 text-xl sm:text-2xl">
-              {chartData.length > 0 ? (
-                formatUsdValue(chartData[chartData.length - 1]['pnl'])
+              {pnl ? (
+                formatUsdValue(pnl)
               ) : (
                 <div className="animate-pulse bg-th-bkg-3 h-8 mt-1 rounded w-48" />
               )}
             </div>
-            {/* {pnlChangePercentage ? (
-              <div
-                className={`flex items-center ${
-                  chartData[chartData.length - 1]['pnl'] >= 0
-                    ? 'text-th-green'
-                    : 'text-th-red'
-                }`}
-              >
-                {chartData[chartData.length - 1]['pnl'] >= 0 ? (
-                  <ArrowSmUpIcon className="h-4 w-4" />
-                ) : (
-                  <ArrowSmDownIcon className="h-4 w-4" />
-                )}
-                <span className="mr-1">
-                  {pnlChangePercentage.toLocaleString(undefined, {
-                    maximumFractionDigits: 2,
-                  })}
-                  %
-                </span>
-                <span className="text-th-fgd-4">
-                  {performanceRange === 'All'
-                    ? '(All-time)'
-                    : `(last ${performanceRange})`}
-                </span>
-              </div>
-            ) : (
-              <div className="animate-pulse bg-th-bkg-3 h-4 mt-1 rounded w-16" />
-            )} */}
           </div>
           <div className="border-b border-th-bkg-4 p-3 sm:p-4">
             <div className="pb-0.5 text-th-fgd-3 text-xs sm:text-sm">
@@ -284,100 +165,11 @@ export default function AccountOverview() {
             ></div>
           </div>
         </div>
-        <div className="border-t border-th-bkg-4 col-span-3">
-          <div className="h-64 mt-4 w-full" ref={observe}>
-            <div className="flex justify-between pb-4">
-              <div className="">
-                <div className="pb-0.5 text-sm text-th-fgd-3">
-                  {chartToShow}{' '}
-                  <span className="text-th-fgd-4">
-                    {performanceRange === 'All'
-                      ? '(All-time)'
-                      : `(last ${performanceRange})`}
-                  </span>
-                </div>
-                {mouseData ? (
-                  <>
-                    <div className="font-bold pb-1 text-xl sm:text-2xl text-th-fgd-1">
-                      {formatUsdValue(
-                        mouseData[
-                          chartToShow === 'PnL' ? 'pnl' : 'account_equity'
-                        ]
-                      )}
-                    </div>
-                    <div className="text-xs font-normal text-th-fgd-4">
-                      {new Date(mouseData['time']).toDateString()}
-                    </div>
-                  </>
-                ) : chartData.length > 0 ? (
-                  <>
-                    <div className="font-bold pb-1 text-xl sm:text-2xl text-th-fgd-1">
-                      {formatUsdValue(
-                        chartData[chartData.length - 1][
-                          chartToShow === 'PnL' ? 'pnl' : 'account_equity'
-                        ]
-                      )}
-                    </div>
-                    <div className="text-xs font-normal text-th-fgd-4">
-                      {new Date(
-                        chartData[chartData.length - 1]['time']
-                      ).toDateString()}
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="animate-pulse bg-th-bkg-3 h-8 mt-1 rounded w-48" />
-                    <div className="animate-pulse bg-th-bkg-3 h-4 mt-1 rounded w-24" />
-                  </>
-                )}
-              </div>
-              <div className="w-36">
-                <ButtonGroup
-                  activeValue={chartToShow}
-                  className="pb-2 pt-2 text-sm"
-                  onChange={(v) => setChartToShow(v)}
-                  values={['PnL', t('equity')]}
-                />
-              </div>
-            </div>
-            <AreaChart
-              width={width}
-              height={height}
-              data={chartData}
-              onMouseMove={handleMouseMove}
-              onMouseLeave={handleMouseLeave}
-            >
-              <Tooltip
-                cursor={{
-                  strokeOpacity: 0,
-                }}
-                content={<></>}
-              />
-              <defs>
-                <linearGradient id="gradientArea" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#ffba24" stopOpacity={0.9} />
-                  <stop offset="90%" stopColor="#ffba24" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <Area
-                isAnimationActive={true}
-                type="monotone"
-                dataKey={chartToShow === 'PnL' ? 'pnl' : 'account_equity'}
-                stroke={chartToShow === 'PnL' ? pnlChartColor : '#ffba24'}
-                fill={
-                  chartToShow === 'PnL' ? pnlChartColor : 'url(#gradientArea)'
-                }
-                fillOpacity={0.2}
-              />
-              <XAxis dataKey="time" hide />
-              <YAxis
-                dataKey={chartToShow === 'PnL' ? 'pnl' : 'account_equity'}
-                type="number"
-                domain={['dataMin', 'dataMax']}
-                hide
-              />
-            </AreaChart>
-          </div>
+        <div className="border-t border-th-bkg-4 h-96 lg:h-auto w-full lg:w-3/4">
+          <PerformanceChart
+            hourlyPerformanceStats={hourlyPerformanceStats}
+            performanceRange={performanceRange}
+          />
         </div>
       </div>
       <div className="pb-8">
@@ -386,7 +178,7 @@ export default function AccountOverview() {
       </div>
       <h2 className="mb-4">{t('assets-liabilities')}</h2>
 
-      <div className="grid grid-flow-col grid-cols-1 grid-rows-2 md:grid-cols-2 md:grid-rows-1 gap-2 sm:gap-4 pb-12">
+      <div className="grid grid-flow-col grid-cols-1 grid-rows-2 md:grid-cols-2 md:grid-rows-1 gap-2 sm:gap-4 pb-8 lg:pb-12">
         <div className="border border-th-bkg-4 p-3 sm:p-4 rounded-md sm:rounded-lg">
           <div className="pb-0.5 text-xs text-th-fgd-3">
             {t('total-assets')}

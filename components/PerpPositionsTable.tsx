@@ -5,7 +5,7 @@ import { useTranslation } from 'next-i18next'
 import { ExclamationIcon } from '@heroicons/react/outline'
 
 import useMangoStore from '../stores/useMangoStore'
-import Button from '../components/Button'
+import Button, { LinkButton } from '../components/Button'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { ExpandableRow, Table, Td, Th, TrBody, TrHead } from './TableElements'
@@ -16,16 +16,19 @@ import PerpSideBadge from './PerpSideBadge'
 import PnlText from './PnlText'
 import { settlePnl } from './MarketPosition'
 import MobileTableHeader from './mobile/MobileTableHeader'
+import ShareModal from './ShareModal'
+import { TwitterIcon } from './icons'
+import { marketSelector } from '../stores/selectors'
 
 const PositionsTable = () => {
   const { t } = useTranslation('common')
   const { reloadMangoAccount } = useMangoStore((s) => s.actions)
   const [settling, setSettling] = useState(false)
-
-  const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
-  const selectedMarketConfig = useMangoStore((s) => s.selectedMarket.config)
-  const price = useMangoStore((s) => s.tradeForm.price)
+  const [showShareModal, setShowShareModal] = useState(false)
   const [showMarketCloseModal, setShowMarketCloseModal] = useState(false)
+
+  const market = useMangoStore(marketSelector)
+  const price = useMangoStore((s) => s.tradeForm.price)
   const setMangoStore = useMangoStore((s) => s.set)
   const openPositions = useMangoStore(
     (s) => s.selectedMangoAccount.openPerpPositions
@@ -41,7 +44,7 @@ const PositionsTable = () => {
   }, [])
 
   const handleSizeClick = (size, side, indexPrice) => {
-    const step = selectedMarket.minOrderSize
+    const step = market.minOrderSize
     const priceOrDefault = price ? price : indexPrice
     const roundedSize = Math.round(size / step) * step
     const quoteSize = roundedSize * priceOrDefault
@@ -62,8 +65,12 @@ const PositionsTable = () => {
     setSettling(false)
   }
 
+  const handleCloseShare = useCallback(() => {
+    setShowShareModal(false)
+  }, [])
+
   return (
-    <div className="flex flex-col pb-2">
+    <div className="flex flex-col">
       {unsettledPositions.length > 0 ? (
         <div className="border border-th-bkg-4 rounded-lg mb-6 p-4 sm:p-6">
           <div className="flex items-center justify-between">
@@ -164,7 +171,7 @@ const PositionsTable = () => {
                           </Td>
                           <Td>
                             {basePosition &&
-                            selectedMarketConfig.kind === 'perp' &&
+                            marketConfig.kind === 'perp' &&
                             asPath.includes(marketConfig.baseSymbol) ? (
                               <span
                                 className="cursor-pointer underline hover:no-underline"
@@ -176,15 +183,23 @@ const PositionsTable = () => {
                                   )
                                 }
                               >
-                                {`${Math.abs(basePosition)} ${
-                                  marketConfig.baseSymbol
-                                }`}
+                                {`${Math.abs(basePosition).toLocaleString(
+                                  undefined,
+                                  {
+                                    maximumFractionDigits:
+                                      marketConfig.baseDecimals,
+                                  }
+                                )} ${marketConfig.baseSymbol}`}
                               </span>
                             ) : (
                               <span>
-                                {`${Math.abs(basePosition)} ${
-                                  marketConfig.baseSymbol
-                                }`}
+                                {`${Math.abs(basePosition).toLocaleString(
+                                  undefined,
+                                  {
+                                    maximumFractionDigits:
+                                      marketConfig.baseDecimals,
+                                  }
+                                )} ${marketConfig.baseSymbol}`}
                               </span>
                             )}
                           </Td>
@@ -206,12 +221,34 @@ const PositionsTable = () => {
                               '--'
                             )}
                           </Td>
+                          <Td>
+                            <LinkButton
+                              onClick={() => setShowShareModal(true)}
+                              disabled={!avgEntryPrice ? true : false}
+                            >
+                              <TwitterIcon className="h-4 w-4" />
+                            </LinkButton>
+                          </Td>
                           {showMarketCloseModal ? (
                             <MarketCloseModal
                               isOpen={showMarketCloseModal}
                               onClose={handleCloseWarning}
                               market={perpMarket}
                               marketIndex={marketConfig.marketIndex}
+                            />
+                          ) : null}
+                          {showShareModal ? (
+                            <ShareModal
+                              isOpen={showShareModal}
+                              onClose={handleCloseShare}
+                              position={{
+                                marketConfig,
+                                indexPrice,
+                                avgEntryPrice: avgEntryPrice
+                                  ? avgEntryPrice
+                                  : '0.00',
+                                basePosition,
+                              }}
                             />
                           ) : null}
                         </TrBody>
@@ -267,7 +304,13 @@ const PositionsTable = () => {
                                         ? t('long').toUpperCase()
                                         : t('short').toUpperCase()}
                                     </span>
-                                    {Math.abs(basePosition)}
+                                    {Math.abs(basePosition).toLocaleString(
+                                      undefined,
+                                      {
+                                        maximumFractionDigits:
+                                          marketConfig.baseDecimals,
+                                      }
+                                    )}
                                   </div>
                                 </div>
                               </div>

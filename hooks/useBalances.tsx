@@ -107,6 +107,7 @@ export function useBalances(): Balances[] {
         value: value(nativeBaseLocked, tokenIndex),
         depositRate: i80f48ToPercent(mangoGroup.getDepositRate(tokenIndex)),
         borrowRate: i80f48ToPercent(mangoGroup.getBorrowRate(tokenIndex)),
+        decimals: mangoGroup.tokens[tokenIndex].decimals,
       },
       {
         market: null,
@@ -134,6 +135,7 @@ export function useBalances(): Balances[] {
         value: value(nativeQuoteLocked, quoteCurrencyIndex),
         depositRate: i80f48ToPercent(mangoGroup.getDepositRate(tokenIndex)),
         borrowRate: i80f48ToPercent(mangoGroup.getBorrowRate(tokenIndex)),
+        decimals: mangoGroup.tokens[quoteCurrencyIndex].decimals,
       },
     ]
     balances.push(marketPair)
@@ -172,6 +174,7 @@ export function useBalances(): Balances[] {
       value,
       depositRate,
       borrowRate,
+      decimals: mangoGroup.tokens[QUOTE_INDEX].decimals,
     },
   ].concat(baseBalances)
 }
