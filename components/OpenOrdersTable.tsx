@@ -99,7 +99,11 @@ const DesktopTable = ({
               </Td>
               {editOrderIndex !== index ? (
                 <>
-                  <Td className="w-[14.286%]">{order.size}</Td>
+                  <Td className="w-[14.286%]">
+                    {order.size.toLocaleString(undefined, {
+                      maximumFractionDigits: 4,
+                    })}
+                  </Td>
                   <Td className="w-[14.286%]">
                     {usdFormatter(order.price, decimals)}
                   </Td>
