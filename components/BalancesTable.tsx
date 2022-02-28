@@ -23,6 +23,7 @@ import { useRouter } from 'next/router'
 const BalancesTable = ({
   showZeroBalances = false,
   showDepositWithdraw = false,
+  clickToPopulateTradeForm = false,
 }) => {
   const { t } = useTranslation('common')
   const [showDepositModal, setShowDepositModal] = useState(false)
@@ -398,7 +399,7 @@ const BalancesTable = ({
                         {marketConfig.kind === 'spot' &&
                         marketConfig.name.includes(balance.symbol) &&
                         selectedMarket &&
-                        decodeURIComponent(asPath).includes(`name`) ? ( // disable this in account page
+                        clickToPopulateTradeForm ? (
                           <span
                             className={
                               balance.net.toNumber() != 0
