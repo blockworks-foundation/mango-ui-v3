@@ -1,15 +1,14 @@
 import { useEffect, useState } from 'react'
 import { PublicKey } from '@solana/web3.js'
-import { Disclosure } from '@headlessui/react'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import { ChevronDownIcon } from '@heroicons/react/solid'
 import ButtonGroup from './ButtonGroup'
 import { numberCompacter, numberFormatter } from './SwapTokenInfo'
 import Button, { IconButton } from './Button'
 import Input from './Input'
 import { SearchIcon, XIcon } from '@heroicons/react/outline'
 import { useTranslation } from 'next-i18next'
+import { ExpandableRow } from './TableElements'
 
 const filterByVals = ['change-percent', '24h-volume']
 const timeFrameVals = ['24h', '7d', '30d']
@@ -155,26 +154,17 @@ const SwapTokenInsights = ({ formState, jupiterTokens, setOutputToken }) => {
           <div className="animate-pulse bg-th-bkg-3 h-12 rounded-md w-full" />
         </div>
       ) : filteredTokenInsights.length > 0 ? (
-        filteredTokenInsights.map((insight) => {
-          const jupToken = jupiterTokens.find(
-            (t) => t?.extensions?.coingeckoId === insight.id
-          )
-          return (
-            <Disclosure key={insight.id}>
-              {({ open }) => (
-                <>
-                  <div
-                    className={`border-b default-transition flex items-center p-2 hover:bg-th-bkg-2 ${
-                      open
-                        ? 'bg-th-bkg-2 border-transparent'
-                        : 'border-th-bkg-4'
-                    }`}
-                  >
-                    <Disclosure.Button
-                      className="flex font-normal items-center justify-between text-th-fgd-1 w-full"
-                      key={insight.symbol}
-                    >
-                      <div className="flex items-center space-x-3">
+        <div className="border-b border-th-bkg-4">
+          {filteredTokenInsights.map((insight) => {
+            const jupToken = jupiterTokens.find(
+              (t) => t?.extensions?.coingeckoId === insight.id
+            )
+            return (
+              <>
+                <ExpandableRow
+                  buttonTemplate={
+                    <div className="flex items-center w-full">
+                      <div className="flex items-center space-x-3 w-1/2">
                         <div
                           className={`min-w-[48px] text-xs ${
                             timeframe === timeFrameVals[0] //timeframe 24h
@@ -233,7 +223,7 @@ const SwapTokenInsights = ({ formState, jupiterTokens, setOutputToken }) => {
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center pl-2 space-x-3 text-right text-xs">
+                      <div className="flex items-center justify-end pl-2 space-x-3 text-right text-xs w-1/2">
                         <div>
                           <div className="mb-[4px] text-th-fgd-4">
                             {t('price')}
@@ -259,28 +249,21 @@ const SwapTokenInsights = ({ formState, jupiterTokens, setOutputToken }) => {
                               : '?'}
                           </div>
                         </div>
-                        <ChevronDownIcon
-                          className={`default-transition h-5 text-th-fgd-3 w-5 ${
-                            open
-                              ? 'transform rotate-180'
-                              : 'transform rotate-360'
-                          }`}
-                        />
                       </div>
-                    </Disclosure.Button>
-                    <Button
-                      className="hidden lg:block ml-3 pl-3 pr-3 text-xs"
-                      onClick={() =>
-                        setOutputToken({
-                          ...formState,
-                          outputMint: new PublicKey(jupToken.address),
-                        })
-                      }
-                    >
-                      {t('buy')}
-                    </Button>
-                  </div>
-                  <Disclosure.Panel className="bg-th-bkg-2 border-b border-th-bkg-4 px-2 pb-2">
+                      <Button
+                        className="hidden lg:block ml-3 pl-3 pr-3 text-xs"
+                        onClick={() =>
+                          setOutputToken({
+                            ...formState,
+                            outputMint: new PublicKey(jupToken.address),
+                          })
+                        }
+                      >
+                        {t('buy')}
+                      </Button>
+                    </div>
+                  }
+                  panelTemplate={
                     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 grid-flow-row">
                       {insight.market_cap_rank ? (
                         <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
@@ -383,23 +366,12 @@ const SwapTokenInsights = ({ formState, jupiterTokens, setOutputToken }) => {
                         </div>
                       ) : null}
                     </div>
-                    <Button
-                      className="block lg:hidden my-2 text-xs w-full"
-                      onClick={() =>
-                        setOutputToken({
-                          ...formState,
-                          outputMint: new PublicKey(jupToken.address),
-                        })
-                      }
-                    >
-                      {t('buy')}
-                    </Button>
-                  </Disclosure.Panel>
-                </>
-              )}
-            </Disclosure>
-          )
-        })
+                  }
+                />
+              </>
+            )
+          })}
+        </div>
       ) : (
         <div className="bg-th-bkg-3 mt-3 p-4 rounded-md text-center text-th-fgd-3">
           {t('swap:no-tokens-found')}
