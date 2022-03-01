@@ -508,7 +508,6 @@ const BalancesTable = ({
                       </div>
                     }
                     key={`${balance.symbol}${index}`}
-                    index={index}
                     panelTemplate={
                       <>
                         <div className="grid grid-cols-2 grid-flow-row gap-4 pb-4">

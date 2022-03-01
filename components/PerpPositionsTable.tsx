@@ -278,7 +278,6 @@ const PositionsTable = () => {
                           </>
                         }
                         key={`${index}`}
-                        index={index}
                         panelTemplate={
                           <div className="grid grid-cols-2 grid-flow-row gap-4">
                             <div className="col-span-1 text-left">

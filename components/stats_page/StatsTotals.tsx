@@ -336,7 +336,7 @@ export default function StatsTotals({ latestStats, stats }) {
             <div className="pb-4 text-th-fgd-1 text-lg">
               {t('current-stats')}
             </div>
-            {latestStats.map((stat, index) => (
+            {latestStats.map((stat) => (
               // latestStats.length > 0 ? (
               <ExpandableRow
                 buttonTemplate={
@@ -370,7 +370,6 @@ export default function StatsTotals({ latestStats, stats }) {
                   </div>
                 }
                 key={stat.name}
-                index={index}
                 panelTemplate={
                   <div className="grid grid-cols-2 grid-flow-row gap-4">
                     <div className="text-left">

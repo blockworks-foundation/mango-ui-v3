@@ -472,7 +472,6 @@ export default function Referral() {
                               </div>
                             }
                             key={`${ref.fee + index}`}
-                            index={index}
                             panelTemplate={
                               <>
                                 <div className="grid grid-cols-2 grid-flow-row gap-4 pb-4">
