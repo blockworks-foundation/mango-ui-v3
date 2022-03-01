@@ -76,7 +76,13 @@ const DelegateModal: FunctionComponent<DelegateModalProps> = ({
 
   const isKeyValid = () => {
     try {
-      return PublicKey.isOnCurve(new PublicKey(keyBase58).toBytes())
+      if (keyBase58.length == 0) {
+        return true
+      }
+
+      // will throw if key is wrong length
+      new PublicKey(keyBase58)
+      return true
     } catch (e) {
       return false
     }
@@ -119,8 +125,10 @@ const DelegateModal: FunctionComponent<DelegateModalProps> = ({
         type="text"
         error={!!invalidKeyMessage}
         value={keyBase58}
-        onBlur={validateKeyInput}
-        onChange={(e) => onChangeKeyInput(e.target.value)}
+        onChange={(e) => {
+          validateKeyInput()
+          onChangeKeyInput(e.target.value)
+        }}
         suffix={
           <IconButton
             disabled={!keyBase58.length}
