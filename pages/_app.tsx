@@ -104,7 +104,7 @@ const PageTitle = () => {
   const oraclePrice = useOraclePrice()
   const selectedMarketName = marketConfig.name
   const marketTitleString =
-    marketConfig && router.pathname.includes('market')
+    marketConfig && router.pathname == '/'
       ? `${
           oraclePrice
             ? oraclePrice.toFixed(getDecimalCount(market?.tickSize)) + ' | '
