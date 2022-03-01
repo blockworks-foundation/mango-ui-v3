@@ -207,7 +207,7 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
           {positionPercentage > 0 ? '+' : null}
           {positionPercentage.toFixed(2)}%
         </div>
-        <div className="pt-2 space-y-1 text-base text-th-fgd-1 w-2/3">
+        <div className="pt-2 space-y-1 text-base text-th-fgd-1 w-1/2">
           {showSize ? (
             <div className="flex items-center justify-between">
               <span className="text-th-fgd-2">Size</span>
@@ -234,26 +234,28 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
       </div>
       <div className="absolute bg-th-bkg-2 left-1/2 mt-3 p-4 rounded-md transform -translate-x-1/2 w-[600px]">
         <div className="flex flex-col items-center">
-          <div className="flex pb-4 space-x-4">
-            <div className="flex items-center">
-              <label className="mr-1.5 text-th-fgd-2">Show Size</label>
-              <Switch
-                checked={showSize}
-                onChange={(checked) => setShowSize(checked)}
-              />
-            </div>
-            {hasRequiredMngo ? (
+          {!copied ? (
+            <div className="flex pb-4 space-x-4">
               <div className="flex items-center">
-                <label className="mr-1.5 text-th-fgd-2">
-                  Show Referral Link
-                </label>
+                <label className="mr-1.5 text-th-fgd-2">Show Size</label>
                 <Switch
-                  checked={showReferral}
-                  onChange={(checked) => setShowReferral(checked)}
+                  checked={showSize}
+                  onChange={(checked) => setShowSize(checked)}
                 />
               </div>
-            ) : null}
-          </div>
+              {hasRequiredMngo ? (
+                <div className="flex items-center">
+                  <label className="mr-1.5 text-th-fgd-2">
+                    Show Referral QR
+                  </label>
+                  <Switch
+                    checked={showReferral}
+                    onChange={(checked) => setShowReferral(checked)}
+                  />
+                </div>
+              ) : null}
+            </div>
+          ) : null}
           {copied ? (
             <a
               className="bg-th-bkg-button flex items-center justify-center font-bold block px-6 py-2 rounded-full text-center text-th-fgd-1 hover:cursor-pointer hover:text-th-fgd-1 hover:brightness-[1.1]"
