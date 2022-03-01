@@ -115,7 +115,7 @@ export default function AccountHistory() {
 
   return (
     <>
-      <div className="bg-th-bkg-3 flex mb-4 md:mb-6 md:-mt-6 md:-mx-6 px-3 md:px-4 py-2 rounded-md md:rounded-none md:rounded-t-md">
+      <div className="bg-th-bkg-3 flex mb-4 md:mb-6 md:-mx-6 px-3 md:px-4 py-2">
         {historyViews.map(({ label, key }, index) => (
           <div
             className={`font-bold md:px-2 py-1 text-xs md:text-sm ${

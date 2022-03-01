@@ -57,9 +57,9 @@ const TopBar = () => {
                 className={`hidden md:flex md:items-center md:space-x-2 lg:space-x-3 md:ml-4`}
               >
                 <TradeNavMenu />
-                <MenuItem href="/swap">{t('swap')}</MenuItem>
                 <MenuItem href="/account">{t('account')}</MenuItem>
                 <MenuItem href="/borrow">{t('borrow')}</MenuItem>
+                <MenuItem href="/swap">{t('swap')}</MenuItem>
                 <MenuItem href="/stats">{t('stats')}</MenuItem>
                 <div className="relative">
                   <MenuItem href="/referral">
