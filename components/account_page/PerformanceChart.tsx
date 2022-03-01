@@ -231,9 +231,11 @@ const PerformanceChart = ({
                   : formatUsdValue(accountValue)}
               </div>
               <div className="text-xs font-normal text-th-fgd-4">
-                {dayjs(chartData[chartData.length - 1]['time']).format(
-                  'ddd MMM D YYYY, h:mma'
-                )}
+                {chartToShow === 'PnL'
+                  ? dayjs(chartData[chartData.length - 1]['time']).format(
+                      'ddd MMM D YYYY, h:mma'
+                    )
+                  : dayjs().format('ddd MMM D YYYY, h:mma')}
               </div>
             </>
           ) : (

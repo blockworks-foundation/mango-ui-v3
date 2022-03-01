@@ -112,7 +112,16 @@ export default function AccountOverview() {
           </div>
           <div className="border-b border-th-bkg-4 p-3 sm:p-4">
             <div className="pb-0.5 text-th-fgd-3 text-xs sm:text-sm">
-              {t('pnl')} ({t('all-time')})
+              {t('pnl')}{' '}
+              {hourlyPerformanceStats?.length ? (
+                <span className="text-th-fgd-4 text-xxs">
+                  (
+                  {dayjs(hourlyPerformanceStats[0]['time']).format(
+                    'MMM D YYYY, h:mma'
+                  )}
+                  )
+                </span>
+              ) : null}
             </div>
             <div className="font-bold text-th-fgd-3 text-xl sm:text-2xl">
               {formatUsdValue(pnl)}
