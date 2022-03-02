@@ -216,7 +216,7 @@ const AccountInterest = () => {
     }
 
     const getStats = async () => {
-      await fetchInterestStats()
+      fetchInterestStats()
       fetchHourlyInterestStats()
     }
     getStats()
