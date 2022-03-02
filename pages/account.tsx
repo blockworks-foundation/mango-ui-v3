@@ -91,7 +91,9 @@ export default function Account() {
 
   const isMobile = width ? width < breakpoints.sm : false
   const { pubkey } = router.query
-  const isDelegatedAccount = !mangoAccount?.owner.equals(wallet?.publicKey)
+  const isDelegatedAccount = wallet?.publicKey
+    ? !mangoAccount?.owner?.equals(wallet?.publicKey)
+    : false
 
   const handleCloseAlertModal = useCallback(() => {
     setShowAlertsModal(false)

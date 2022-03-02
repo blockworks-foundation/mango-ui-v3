@@ -56,7 +56,9 @@ const BalancesTable = ({
   const isMobile = width ? width < breakpoints.md : false
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const wallet = useMangoStore((s) => s.wallet.current)
-  const canWithdraw = mangoAccount?.owner.equals(wallet.publicKey)
+  const canWithdraw = wallet?.publicKey
+    ? mangoAccount?.owner.equals(wallet.publicKey)
+    : true
   const { asPath } = useRouter()
 
   const handleSizeClick = (size, symbol) => {
