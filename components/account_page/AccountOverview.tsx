@@ -69,8 +69,10 @@ export default function AccountOverview() {
       setPnl(stats?.length ? stats?.[0]?.['pnl'] : 0)
       setHourlyPerformanceStats(stats)
     }
-    fetchData()
-  }, [mangoAccount.publicKey])
+    if (mangoAccount) {
+      fetchData()
+    }
+  }, [mangoAccount?.publicKey])
 
   const maintHealthRatio = useMemo(() => {
     return mangoAccount
@@ -85,7 +87,7 @@ export default function AccountOverview() {
   }, [mangoAccount, mangoGroup, mangoCache])
 
   const mangoAccountValue = useMemo(() => {
-    return +mangoAccount.computeValue(mangoGroup, mangoCache)
+    return mangoAccount ? +mangoAccount.computeValue(mangoGroup, mangoCache) : 0
   }, [mangoAccount])
 
   return mangoAccount ? (
