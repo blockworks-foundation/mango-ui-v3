@@ -56,7 +56,7 @@ module.exports = {
           'fgd-2': '#C8C8C8',
           'fgd-3': '#B3B3B3',
           'fgd-4': '#878787',
-          'bkg-button': '#52514E',
+          'bkg-button': '#4E5152',
         },
         'mango-theme': {
           yellow: {

@@ -18,9 +18,7 @@ const Button: FunctionComponent<ButtonProps> = ({
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`font-bold px-6 py-2 bg-th-bkg-button rounded-full text-th-fgd-1
-      hover:brightness-[1.1] focus:outline-none disabled:bg-th-bkg-4 
-      disabled:text-th-fgd-4 disabled:cursor-not-allowed disabled:hover:brightness-100 ${className}`}
+      className={`font-bold px-6 py-2 bg-th-bkg-button rounded-full text-th-fgd-1 whitespace-nowrap hover:brightness-[1.1] focus:outline-none disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:cursor-not-allowed disabled:hover:brightness-100 ${className}`}
       {...props}
     >
       {children}
@@ -63,7 +61,8 @@ export const IconButton: FunctionComponent<ButtonProps> = ({
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`${className} bg-th-bkg-4 flex items-center justify-center rounded-full w-7 h-7 text-th-fgd-1 focus:outline-none hover:text-th-primary`}
+      className={`${className} bg-th-bkg-4 flex items-center justify-center rounded-full w-7 h-7 text-th-fgd-1 focus:outline-none hover:text-th-primary disabled:bg-th-bkg-4 
+      disabled:text-th-fgd-4 disabled:cursor-not-allowed disabled:hover:text-th-fgd-4`}
       {...props}
     >
       {children}

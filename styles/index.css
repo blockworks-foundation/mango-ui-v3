@@ -98,7 +98,7 @@ a {
 }
 
 li {
-  @apply text-sm text-th-fgd-3 mb-2;
+  @apply mb-2.5 text-sm text-th-fgd-3 last:mb-0;
 }
 
 tbody {
@@ -516,4 +516,9 @@ body::-webkit-scrollbar-corner {
 
 .fadein-floating-element {
   animation: fadein 1s linear;
+}
+
+/* CJK characters */
+.keep-break {
+  word-break: keep-all;
 }

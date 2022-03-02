@@ -97,7 +97,6 @@ export default function RecentMarketTrades() {
           <div className="mb-0.5 text-fgd-1">{t('recent-trades')}</div>
         </div>
       }
-      index={0}
       panelTemplate={
         !!trades.length && (
           <div className="col-span-2">

@@ -1,0 +1,13 @@
+{
+  "active-alerts": "活动警报",
+  "alert-health": "健康度低于什么程度发警告？",
+  "alert-health-required": "您必须输入警报健康",
+  "alert-info": "健康度在{{health}}％以下时发电子邮件",
+  "alerts-disclaimer": "请别全靠警报来保护资产。我们无法保证会准时发出。",
+  "alerts-max": "您已达到警报数量最多限制",
+  "create-alert": "创建警报",
+  "email-address-required": "您必须输入电子邮件地址",
+  "new-alert": "创建警报",
+  "no-alerts": "您没有活动警报",
+  "no-alerts-desc": "以创建警报而收到健康度通知。"
+}

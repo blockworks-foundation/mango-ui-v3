@@ -1,4 +1,4 @@
-import { forwardRef } from 'react'
+import { forwardRef, ReactNode } from 'react'
 
 interface InputProps {
   type: string
@@ -47,7 +47,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
               ? 'bg-th-bkg-3 cursor-not-allowed hover:border-th-fgd-4 text-th-fgd-3'
               : ''
           }
-          ${prefix ? 'pl-7' : ''}`}
+          ${prefix ? 'pl-7' : ''}
+          ${suffix ? 'pr-11' : ''}`}
         disabled={disabled}
         ref={ref}
         {...props}
@@ -62,3 +63,14 @@ const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
 })
 
 export default Input
+
+interface LabelProps {
+  children: ReactNode
+  className?: string
+}
+
+export const Label = ({ children, className }: LabelProps) => (
+  <label className={`block mb-1.5 text-th-fgd-2 ${className}`}>
+    {children}
+  </label>
+)

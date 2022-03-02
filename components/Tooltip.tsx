@@ -26,11 +26,13 @@ const Tooltip = ({
       interactive
       delay={delay}
       content={
-        <div
-          className={`rounded p-2.5 text-xs bg-th-bkg-3 leading-4 shadow-md text-th-fgd-3 outline-none focus:outline-none border border-th-bkg-4 ${className}`}
-        >
-          {content}
-        </div>
+        content ? (
+          <div
+            className={`rounded p-2.5 text-xs bg-th-bkg-3 leading-4 shadow-md text-th-fgd-3 outline-none focus:outline-none ${className}`}
+          >
+            {content}
+          </div>
+        ) : null
       }
     >
       <div className="outline-none focus:outline-none">{children}</div>

@@ -14,7 +14,11 @@ import {
   InformationCircleIcon,
 } from '@heroicons/react/outline'
 import { notify } from '../../utils/notifications'
-import { calculateTradePrice, getDecimalCount } from '../../utils'
+import {
+  calculateTradePrice,
+  getDecimalCount,
+  percentFormat,
+} from '../../utils'
 import { floorToDecimal } from '../../utils/index'
 import useMangoStore, { Orderbook } from '../../stores/useMangoStore'
 import Button, { LinkButton } from '../Button'
@@ -658,20 +662,21 @@ export default function AdvancedTradeForm({
           )
           actions.reloadOrders()
         } else {
-          txid = await mangoClient.placePerpOrder(
+          txid = await mangoClient.placePerpOrder2(
             mangoGroup,
             mangoAccount,
-            mangoGroup.mangoCache,
             market,
             wallet,
             side,
             perpOrderPrice,
             baseSize,
-            perpOrderType,
-            Date.now(),
-            side === 'buy' ? askInfo : bidInfo, // book side used for ConsumeEvents
-            reduceOnly,
-            referrerPk ? referrerPk : undefined
+            {
+              orderType: perpOrderType,
+              clientOrderId: Date.now(),
+              bookSideInfo: side === 'buy' ? askInfo : bidInfo, // book side used for ConsumeEvents
+              reduceOnly,
+              referrerMangoAccountPk: referrerPk ? referrerPk : undefined,
+            }
           )
         }
       }
@@ -1108,12 +1113,12 @@ export default function AdvancedTradeForm({
           ) : (
             <div className="flex flex-col md:flex-row text-xs text-th-fgd-4 px-6 mt-2.5 items-center justify-center">
               <div>
-                {t('maker-fee')}: {(makerFee * 100).toFixed(2)}%{' '}
+                {t('maker-fee')}: {percentFormat.format(makerFee)}{' '}
               </div>
               <span className="hidden md:block md:px-1">|</span>
               <div>
                 {' '}
-                {t('taker-fee')}: {(takerFee * 100).toFixed(3)}%
+                {t('taker-fee')}: {percentFormat.format(takerFee)}
               </div>
             </div>
           )}

@@ -1,8 +1,13 @@
 import { FunctionComponent, useState } from 'react'
 import useMangoStore from '../stores/useMangoStore'
-import { ExclamationCircleIcon } from '@heroicons/react/outline'
-import Input from './Input'
-import Button from './Button'
+import {
+  ExclamationCircleIcon,
+  XIcon,
+  InformationCircleIcon,
+} from '@heroicons/react/outline'
+import Input, { Label } from './Input'
+import Tooltip from './Tooltip'
+import Button, { IconButton } from './Button'
 import Modal from './Modal'
 import { ElementTitle } from './styles'
 import { notify } from '../utils/notifications'
@@ -62,12 +67,24 @@ const DelegateModal: FunctionComponent<DelegateModalProps> = ({
   }
 
   const validateKeyInput = () => {
-    if (keyBase58.length != 44 && keyBase58.length != 0) {
-      setInvalidKeyMessage(t('delegate:invalid-key'))
-      return false
-    } else {
+    if (isKeyValid()) {
       setInvalidKeyMessage('')
+    } else {
+      setInvalidKeyMessage(t('delegate:invalid-key'))
+    }
+  }
+
+  const isKeyValid = () => {
+    try {
+      if (keyBase58.length == 0) {
+        return true
+      }
+
+      // will throw if key is wrong length
+      new PublicKey(keyBase58)
       return true
+    } catch (e) {
+      return false
     }
   }
 
@@ -79,18 +96,49 @@ const DelegateModal: FunctionComponent<DelegateModalProps> = ({
   return (
     <Modal onClose={onClose} isOpen={isOpen}>
       <Modal.Header>
-        <ElementTitle noMarginBottom>
-          {t('delegate:delegate-your-account')}
-        </ElementTitle>
-        <p className="mt-1 text-center">{t('delegate:info')}</p>
+        <div className="flex items-center">
+          <ElementTitle noMarginBottom>
+            {t('delegate:delegate-your-account')}
+            <Tooltip
+              content={
+                <div>
+                  <a
+                    href="https://docs.mango.markets/mango/account-delegation"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {t('learn-more')}
+                  </a>
+                </div>
+              }
+            >
+              <InformationCircleIcon className="h-5 w-5 ml-2 text-th-primary" />
+            </Tooltip>
+          </ElementTitle>
+        </div>
       </Modal.Header>
-      <div className="pb-2 text-th-fgd-1">{t('delegate:public-key')}</div>
+      <div className="flex items-center justify-center text-th-fgd-3 pb-4">
+        <p className="text-center">{t('delegate:info')}</p>
+      </div>
+      <Label>{t('delegate:public-key')}</Label>
       <Input
         type="text"
         error={!!invalidKeyMessage}
         value={keyBase58}
-        onBlur={validateKeyInput}
-        onChange={(e) => onChangeKeyInput(e.target.value)}
+        onChange={(e) => {
+          validateKeyInput()
+          onChangeKeyInput(e.target.value)
+        }}
+        suffix={
+          <IconButton
+            disabled={!keyBase58.length}
+            onClick={() => {
+              onChangeKeyInput('')
+            }}
+          >
+            <XIcon className="h-4 w-4" />
+          </IconButton>
+        }
       />
       {invalidKeyMessage ? (
         <div className="flex items-center pt-1.5 text-th-red">
@@ -100,7 +148,7 @@ const DelegateModal: FunctionComponent<DelegateModalProps> = ({
       ) : null}
       <Button
         onClick={() => setDelegate()}
-        disabled={keyBase58.length != 44 && keyBase58.length != 0}
+        disabled={!isKeyValid()}
         className="mt-6 w-full"
       >
         {t('delegate:set-delegate')}

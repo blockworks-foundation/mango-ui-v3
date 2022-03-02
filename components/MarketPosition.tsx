@@ -1,7 +1,11 @@
 import { useCallback, useMemo, useState } from 'react'
 import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
-import { formatUsdValue } from '../utils/index'
+import {
+  formatUsdValue,
+  getPrecisionDigits,
+  perpContractPrecision,
+} from '../utils'
 import Button, { LinkButton } from './Button'
 import Tooltip from './Tooltip'
 import PerpSideBadge from './PerpSideBadge'
@@ -92,18 +96,17 @@ export default function MarketPosition() {
     perpAccount = mangoAccount.perpAccounts[marketIndex]
   }
 
-  const handleSizeClick = (size, side) => {
-    const step = selectedMarket.minOrderSize
-
+  const handleSizeClick = (size) => {
+    const sizePrecisionDigits = getPrecisionDigits(selectedMarket.minOrderSize)
     const priceOrDefault = price
       ? price
-      : mangoGroup.getPrice(marketIndex, mangoCache).toNumber()
-    const roundedSize = Math.round(size / step) * step
-    const quoteSize = roundedSize * priceOrDefault
+      : mangoGroup.getPriceUi(marketIndex, mangoCache)
+    const roundedSize = parseFloat(Math.abs(size).toFixed(sizePrecisionDigits))
+    const quoteSize = parseFloat((roundedSize * priceOrDefault).toFixed(2))
     setMangoStore((state) => {
       state.tradeForm.baseSize = roundedSize
       state.tradeForm.quoteSize = quoteSize
-      state.tradeForm.side = side === 'buy' ? 'sell' : 'buy'
+      state.tradeForm.side = size > 0 ? 'sell' : 'buy'
     })
   }
 
@@ -177,14 +180,11 @@ export default function MarketPosition() {
             ) : basePosition ? (
               <span
                 className="cursor-pointer underline hover:no-underline"
-                onClick={() =>
-                  handleSizeClick(
-                    Math.abs(basePosition),
-                    basePosition > 0 ? 'buy' : 'sell'
-                  )
-                }
+                onClick={() => handleSizeClick(basePosition)}
               >
-                {`${Math.abs(basePosition)} ${baseSymbol}`}
+                {`${Math.abs(basePosition).toLocaleString(undefined, {
+                  maximumFractionDigits: perpContractPrecision[baseSymbol],
+                })} ${baseSymbol}`}
               </span>
             ) : (
               `0 ${baseSymbol}`

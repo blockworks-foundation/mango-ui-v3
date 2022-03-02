@@ -17,19 +17,11 @@ export default function StatsAssets({ latestStats, stats }) {
           onChange={(a) => setSelectedAsset(a)}
           className="w-24 md:hidden"
         >
-          <div className="space-y-2">
-            {latestStats.map((stat) => (
-              <Select.Option
-                key={stat.name}
-                value={stat.name}
-                className={`bg-th-bkg-1 relative rounded-md w-full px-3 py-3 cursor-pointer default-transition flex hover:bg-th-bkg-3 focus:outline-none`}
-              >
-                <div className="flex items-center justify-between w-full">
-                  {stat.name}
-                </div>
-              </Select.Option>
-            ))}
-          </div>
+          {latestStats.map((stat) => (
+            <Select.Option key={stat.name} value={stat.name}>
+              {stat.name}
+            </Select.Option>
+          ))}
         </Select>
         <div className="bg-th-bkg-3 hidden md:flex mb-4 md:mb-6 md:-mt-6 md:-mx-6 px-3 md:px-4 py-2 rounded-md md:rounded-none md:rounded-t-md">
           {latestStats.map((stat, index) => (

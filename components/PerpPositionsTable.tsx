@@ -9,7 +9,11 @@ import Button, { LinkButton } from '../components/Button'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { ExpandableRow, Table, Td, Th, TrBody, TrHead } from './TableElements'
-import { formatUsdValue } from '../utils'
+import {
+  formatUsdValue,
+  getPrecisionDigits,
+  perpContractPrecision,
+} from '../utils'
 import Loading from './Loading'
 import MarketCloseModal from './MarketCloseModal'
 import PerpSideBadge from './PerpSideBadge'
@@ -41,15 +45,15 @@ const PositionsTable = () => {
     setShowMarketCloseModal(false)
   }, [])
 
-  const handleSizeClick = (size, side, indexPrice) => {
-    const step = selectedMarket.minOrderSize
+  const handleSizeClick = (size, indexPrice) => {
+    const sizePrecisionDigits = getPrecisionDigits(selectedMarket.minOrderSize)
     const priceOrDefault = price ? price : indexPrice
-    const roundedSize = Math.round(size / step) * step
-    const quoteSize = roundedSize * priceOrDefault
+    const roundedSize = parseFloat(Math.abs(size).toFixed(sizePrecisionDigits))
+    const quoteSize = parseFloat((roundedSize * priceOrDefault).toFixed(2))
     setMangoStore((state) => {
       state.tradeForm.baseSize = roundedSize
       state.tradeForm.quoteSize = quoteSize
-      state.tradeForm.side = side === 'buy' ? 'sell' : 'buy'
+      state.tradeForm.side = size > 0 ? 'sell' : 'buy'
     })
   }
 
@@ -157,6 +161,12 @@ const PositionsTable = () => {
                       breakEvenPrice,
                       unrealizedPnl,
                     }) => {
+                      const basePositionUi = Math.abs(
+                        basePosition
+                      ).toLocaleString(undefined, {
+                        maximumFractionDigits:
+                          perpContractPrecision[marketConfig.baseSymbol],
+                      })
                       return (
                         <TrBody key={`${marketConfig.marketIndex}`}>
                           <Td>
@@ -197,22 +207,14 @@ const PositionsTable = () => {
                               <span
                                 className="cursor-pointer underline hover:no-underline"
                                 onClick={() =>
-                                  handleSizeClick(
-                                    Math.abs(basePosition),
-                                    basePosition > 0 ? 'buy' : 'sell',
-                                    indexPrice
-                                  )
+                                  handleSizeClick(basePosition, indexPrice)
                                 }
                               >
-                                {`${Math.abs(basePosition)} ${
-                                  marketConfig.baseSymbol
-                                }`}
+                                {`${basePositionUi} ${marketConfig.baseSymbol}`}
                               </span>
                             ) : (
                               <span>
-                                {`${Math.abs(basePosition)} ${
-                                  marketConfig.baseSymbol
-                                }`}
+                                {`${basePositionUi} ${marketConfig.baseSymbol}`}
                               </span>
                             )}
                           </Td>
@@ -304,7 +306,6 @@ const PositionsTable = () => {
                           </>
                         }
                         key={`${index}`}
-                        index={index}
                         panelTemplate={
                           <div className="grid grid-cols-2 grid-flow-row gap-4">
                             <div className="col-span-1 text-left">

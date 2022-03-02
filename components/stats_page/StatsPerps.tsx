@@ -120,19 +120,11 @@ export default function StatsPerps({ perpStats }) {
           onChange={(a) => setSelectedAsset(a)}
           className="flex-shrink-0 ml-4 w-36 md:hidden"
         >
-          <div className="space-y-2">
-            {marketConfigs.map((market) => (
-              <Select.Option
-                key={market.name}
-                value={market.name}
-                className={`bg-th-bkg-1 relative rounded-md w-full px-3 py-3 cursor-pointer default-transition flex hover:bg-th-bkg-3 focus:outline-none`}
-              >
-                <div className="flex items-center justify-between w-full">
-                  {market.name}
-                </div>
-              </Select.Option>
-            ))}
-          </div>
+          {marketConfigs.map((market) => (
+            <Select.Option key={market.name} value={market.name}>
+              {market.name}
+            </Select.Option>
+          ))}
         </Select>
         <div className="bg-th-bkg-3 hidden md:flex mb-4 md:mb-6 md:-mt-6 md:-mx-6 px-3 md:px-4 py-2 rounded-md md:rounded-none md:rounded-t-md">
           {marketConfigs.map((market, index) => (

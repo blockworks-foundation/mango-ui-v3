@@ -16,7 +16,7 @@ const GroupSize = ({ tickSize, value, onChange, className = '' }) => {
   )
 
   return (
-    <div className={`${className}`}>
+    <div className={`relative ${className}`}>
       <Listbox value={value} onChange={onChange}>
         {({ open }) => (
           <>
@@ -38,13 +38,13 @@ const GroupSize = ({ tickSize, value, onChange, className = '' }) => {
             {open ? (
               <Listbox.Options
                 static
-                className={`z-40 p-1 absolute top-full right-0 mt-1 bg-th-bkg-1 origin-top-left divide-y divide-th-bkg-3 shadow-lg outline-none rounded-md`}
+                className={`absolute bg-th-bkg-3 left-0 max-h-60 mt-1 overflow-auto outline-none p-2 rounded-md text-th-fgd-1 thin-scroll top-5 w-full z-20`}
               >
                 {sizes.map((size) => (
                   <Listbox.Option key={size} value={size}>
                     {({ selected }) => (
                       <div
-                        className={`pl-6 p-1 text-right hover:bg-th-bkg-2 hover:cursor-pointer tracking-wider ${
+                        className={`default-transition text-th-fgd-1 hover:bg-th-bkg-3 hover:cursor-pointer hover:text-th-primary text-right ${
                           selected && `text-th-primary`
                         }`}
                       >

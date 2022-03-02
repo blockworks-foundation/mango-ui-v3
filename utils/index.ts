@@ -12,8 +12,8 @@ export async function sleep(ms) {
 
 export const percentFormat = new Intl.NumberFormat(undefined, {
   style: 'percent',
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
+  minimumFractionDigits: 1,
+  maximumFractionDigits: 3,
 })
 
 export function floorToDecimal(
@@ -41,6 +41,9 @@ export function roundToDecimal(
   return decimals ? Math.round(value * 10 ** decimals) / 10 ** decimals : value
 }
 
+export function getPrecisionDigits(x: number): number {
+  return -Math.round(Math.log10(x))
+}
 export function getDecimalCount(value): number {
   if (
     !isNaN(value) &&

@@ -3,8 +3,8 @@ import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/solid'
 import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
 import Modal from './Modal'
 import { ElementTitle } from './styles'
-import Button from './Button'
-import Input from './Input'
+import Button, { LinkButton } from './Button'
+import Input, { Label } from './Input'
 import useMangoStore from '../stores/useMangoStore'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import Select from './Select'
@@ -64,13 +64,13 @@ const SettingsModal = ({ isOpen, onClose }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       {settingsView !== '' ? (
-        <button
-          className="absolute default-transition flex items-center left-2 text-th-fgd-3 text-xs top-3 focus:outline-none hover:text-th-fgd-1"
+        <LinkButton
+          className="absolute flex items-center left-2 top-3"
           onClick={() => setSettingsView('')}
         >
-          <ChevronLeftIcon className="h-4 w-4" />
+          <ChevronLeftIcon className="h-5 w-5" />
           <span>{t('back')}</span>
-        </button>
+        </LinkButton>
       ) : null}
       <Modal.Header>
         <ElementTitle noMarginBottom>{t('settings')}</ElementTitle>
@@ -84,7 +84,7 @@ const SettingsModal = ({ isOpen, onClose }) => {
             <span>{t('default-market')}</span>
             <div className="flex items-center text-th-fgd-3 text-xs">
               {defaultMarket.name}
-              <ChevronRightIcon className="h-5 ml-1 w-5 text-th-primary" />
+              <ChevronRightIcon className="h-5 ml-1 w-5 text-th-fgd-1" />
             </div>
           </button>
           <button
@@ -94,7 +94,7 @@ const SettingsModal = ({ isOpen, onClose }) => {
             <span>{t('rpc-endpoint')}</span>
             <div className="flex items-center text-th-fgd-3 text-xs">
               {rpcEndpoint.label}
-              <ChevronRightIcon className="h-5 ml-1 w-5 text-th-primary" />
+              <ChevronRightIcon className="h-5 ml-1 w-5 text-th-fgd-1" />
             </div>
           </button>
           <div className="border-t border-th-bkg-4 flex items-center justify-between py-3 text-th-fgd-1">
@@ -170,27 +170,21 @@ const DefaultMarketSettings = ({ setSettingsView }) => {
   const parsedDefaultMarket = defaultMarket
   return (
     <div>
-      <label className="block font-semibold mb-1 text-th-fgd-1 text-xs">
-        {t('default-market')}
-      </label>
+      <Label>{t('default-market')}</Label>
       <Select
         value={parsedDefaultMarket.name}
         onChange={(market) => handleSetDefaultMarket(market)}
         className="w-full"
       >
         {allMarkets.map((market) => (
-          <Select.Option
-            key={market.name}
-            value={market.name}
-            className={`bg-th-bkg-1 relative rounded-md w-full px-3 py-3 cursor-pointer default-transition flex hover:bg-th-bkg-3 focus:outline-none`}
-          >
+          <Select.Option key={market.name} value={market.name}>
             <div className="flex items-center justify-between w-full">
               {market.name}
             </div>
           </Select.Option>
         ))}
       </Select>
-      <Button onClick={() => setSettingsView('')} className="mt-4 w-full">
+      <Button onClick={() => setSettingsView('')} className="mt-6 w-full">
         <div className={`flex items-center justify-center`}>{t('save')}</div>
       </Button>
     </div>
@@ -218,33 +212,21 @@ const RpcEndpointSettings = ({ setSettingsView }) => {
   }
   return (
     <div className="flex flex-col text-th-fgd-1">
-      <label className="block font-semibold mb-1 text-xs">
-        {t('rpc-endpoint')}
-      </label>
+      <Label>{t('rpc-endpoint')}</Label>
       <Select
         value={rpcEndpoint.label}
         onChange={(url) => handleSelectEndpointUrl(url)}
         className="w-full"
       >
-        <div className="space-y-2">
-          {NODE_URLS.map((node) => (
-            <Select.Option
-              key={node.value}
-              value={node.value}
-              className={`bg-th-bkg-1 relative rounded-md w-full px-3 py-3 cursor-pointer default-transition flex hover:bg-th-bkg-3 focus:outline-none`}
-            >
-              <div className="flex items-center justify-between w-full">
-                {node.label}
-              </div>
-            </Select.Option>
-          ))}
-        </div>
+        {NODE_URLS.map((node) => (
+          <Select.Option key={node.value} value={node.value}>
+            <span>{node.label}</span>
+          </Select.Option>
+        ))}
       </Select>
       {rpcEndpoint.label === 'Custom' ? (
         <div className="pt-4">
-          <label className="block font-semibold mb-1 text-xs">
-            {t('node-url')}
-          </label>
+          <Label>{t('node-url')}</Label>
           <Input
             type="text"
             value={rpcEndpointUrl}
@@ -254,7 +236,7 @@ const RpcEndpointSettings = ({ setSettingsView }) => {
       ) : null}
       <Button
         onClick={() => handleSetEndpointUrl(rpcEndpointUrl)}
-        className="mt-4 w-full"
+        className="mt-6 w-full"
       >
         <div className={`flex items-center justify-center`}>{t('save')}</div>
       </Button>
