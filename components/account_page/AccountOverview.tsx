@@ -15,6 +15,7 @@ import PerformanceChart from './PerformanceChart'
 import PositionsTable from '../PerpPositionsTable'
 import { exportDataToCSV } from '../../utils/export'
 import Button from '../Button'
+import Loading from '../Loading'
 
 dayjs.extend(utc)
 
@@ -24,13 +25,14 @@ const performanceRangePresets = [
   { label: '24h', value: 1 },
   { label: '7d', value: 7 },
   { label: '30d', value: 30 },
-  { label: 'All', value: 10000 },
+  { label: '3m', value: 90 },
 ]
 const performanceRangePresetLabels = performanceRangePresets.map((x) => x.label)
 
-const fetchHourlyPerformanceStats = async (mangoAccountPk: string) => {
-  const range =
-    performanceRangePresets[performanceRangePresets.length - 1].value
+const fetchHourlyPerformanceStats = async (
+  mangoAccountPk: string,
+  range: number
+) => {
   const response = await fetch(
     `https://mango-transaction-log.herokuapp.com/v3/stats/account-performance-detailed?mango-account=${mangoAccountPk}&start-date=${dayjs()
       .subtract(range, 'day')
@@ -62,9 +64,15 @@ export default function AccountOverview() {
   const [pnl, setPnl] = useState(0)
   const [performanceRange, setPerformanceRange] = useState('30d')
   const [hourlyPerformanceStats, setHourlyPerformanceStats] = useState([])
+  const [loadExportData, setLoadExportData] = useState(false)
 
-  const exportPerformanceDataToCSV = () => {
-    const dataToExport = hourlyPerformanceStats.map((row) => {
+  const exportPerformanceDataToCSV = async () => {
+    setLoadExportData(true)
+    const exportData = await fetchHourlyPerformanceStats(
+      mangoAccount.publicKey.toString(),
+      10000
+    )
+    const dataToExport = exportData.map((row) => {
       const timestamp = new Date(row.time)
       return {
         timestamp: `${timestamp.toLocaleDateString()} ${timestamp.toLocaleTimeString()}`,
@@ -79,12 +87,14 @@ export default function AccountOverview() {
     const headers = ['Timestamp', 'Account Equity', 'PNL']
 
     exportDataToCSV(dataToExport, title, headers, t)
+    setLoadExportData(false)
   }
 
   useEffect(() => {
     const fetchData = async () => {
       const stats = await fetchHourlyPerformanceStats(
-        mangoAccount.publicKey.toString()
+        mangoAccount.publicKey.toString(),
+        performanceRangePresets[performanceRangePresets.length - 1].value
       )
 
       setPnl(stats?.length ? stats?.[0]?.['pnl'] : 0)
@@ -147,10 +157,14 @@ export default function AccountOverview() {
                 className={`flex items-center justify-center text-xs h-8 pt-0 pb-0 pl-3 pr-3 whitespace-nowrap`}
                 onClick={exportPerformanceDataToCSV}
               >
-                <div className={`flex items-center`}>
-                  <SaveIcon className={`h-4 w-4 mr-1.5`} />
-                  {t('export-data')}
-                </div>
+                {loadExportData ? (
+                  <Loading />
+                ) : (
+                  <div className={`flex items-center`}>
+                    <SaveIcon className={`h-4 w-4 mr-1.5`} />
+                    {t('export-data')}
+                  </div>
+                )}
               </Button>
             </div>
             <div className="font-bold text-th-fgd-1 text-xl sm:text-2xl">
