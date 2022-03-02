@@ -133,8 +133,8 @@ const PerpMarket = () => {
 
   return (
     <>
-      <Script src="/datafeeds/udf/dist/polyfills.js" strategy="lazyOnload" />
-      <Script src="/datafeeds/udf/dist/bundle.js" strategy="lazyOnload" />
+      <Script src="/datafeeds/udf/dist/polyfills.js" />
+      <Script src="/datafeeds/udf/dist/bundle.js" />
       <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
         {showTour && !hideTips ? (
           <IntroTips connected={connected} mangoAccount={mangoAccount} />
