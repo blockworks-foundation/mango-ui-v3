@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { ExclamationIcon } from '@heroicons/react/solid'
+import { SaveIcon } from '@heroicons/react/outline'
 import { useTranslation } from 'next-i18next'
 
 import useMangoStore from '../../stores/useMangoStore'
@@ -12,6 +13,8 @@ import useLocalStorageState from '../../hooks/useLocalStorageState'
 import ButtonGroup from '../ButtonGroup'
 import PerformanceChart from './PerformanceChart'
 import PositionsTable from '../PerpPositionsTable'
+import { exportDataToCSV } from '../../utils/export'
+import Button from '../Button'
 
 dayjs.extend(utc)
 
@@ -21,7 +24,7 @@ const performanceRangePresets = [
   { label: '24h', value: 1 },
   { label: '7d', value: 7 },
   { label: '30d', value: 30 },
-  { label: '3m', value: 90 },
+  { label: 'All', value: 10000 },
 ]
 const performanceRangePresetLabels = performanceRangePresets.map((x) => x.label)
 
@@ -59,6 +62,24 @@ export default function AccountOverview() {
   const [pnl, setPnl] = useState(0)
   const [performanceRange, setPerformanceRange] = useState('30d')
   const [hourlyPerformanceStats, setHourlyPerformanceStats] = useState([])
+
+  const exportPerformanceDataToCSV = () => {
+    const dataToExport = hourlyPerformanceStats.map((row) => {
+      const timestamp = new Date(row.time)
+      return {
+        timestamp: `${timestamp.toLocaleDateString()} ${timestamp.toLocaleTimeString()}`,
+        account_equity: row.account_equity,
+        pnl: row.pnl,
+      }
+    })
+
+    const title = `${
+      mangoAccount.name || mangoAccount.publicKey
+    }-Performance-${new Date().toLocaleDateString()}`
+    const headers = ['Timestamp', 'Account Equity', 'PNL']
+
+    exportDataToCSV(dataToExport, title, headers, t)
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -111,17 +132,26 @@ export default function AccountOverview() {
             </div>
           </div>
           <div className="border-b border-th-bkg-4 p-3 sm:p-4">
-            <div className="pb-0.5 text-th-fgd-3 text-xs sm:text-sm">
-              {t('pnl')}{' '}
-              {hourlyPerformanceStats?.length ? (
-                <span className="text-th-fgd-4 text-xxs">
-                  (
-                  {dayjs(hourlyPerformanceStats[0]['time']).format(
-                    'MMM D YYYY, h:mma'
-                  )}
-                  )
-                </span>
-              ) : null}
+            <div className="flex items-center justify-between">
+              <div className="pb-0.5 text-th-fgd-3 text-xs sm:text-sm">
+                {t('pnl')}{' '}
+                {hourlyPerformanceStats?.length ? (
+                  <div className="text-th-fgd-4 text-xs">
+                    {dayjs(hourlyPerformanceStats[0]['time']).format(
+                      'MMM D YYYY, h:mma'
+                    )}
+                  </div>
+                ) : null}
+              </div>
+              <Button
+                className={`flex items-center justify-center text-xs h-8 pt-0 pb-0 pl-3 pr-3 whitespace-nowrap`}
+                onClick={exportPerformanceDataToCSV}
+              >
+                <div className={`flex items-center`}>
+                  <SaveIcon className={`h-4 w-4 mr-1.5`} />
+                  {t('export-data')}
+                </div>
+              </Button>
             </div>
             <div className="font-bold text-th-fgd-1 text-xl sm:text-2xl">
               {formatUsdValue(pnl)}
