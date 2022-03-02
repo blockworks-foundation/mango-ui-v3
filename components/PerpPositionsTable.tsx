@@ -5,7 +5,7 @@ import { useTranslation } from 'next-i18next'
 import { ExclamationIcon } from '@heroicons/react/outline'
 
 import useMangoStore from '../stores/useMangoStore'
-import Button from '../components/Button'
+import Button, { LinkButton } from '../components/Button'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { ExpandableRow, Table, Td, Th, TrBody, TrHead } from './TableElements'
@@ -25,6 +25,7 @@ const PositionsTable = () => {
   const { t } = useTranslation('common')
   const { reloadMangoAccount } = useMangoStore((s) => s.actions)
   const [settling, setSettling] = useState(false)
+  const [settleSinglePos, setSettleSinglePos] = useState(null)
 
   const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
   const selectedMarketConfig = useMangoStore((s) => s.selectedMarket.config)
@@ -66,42 +67,69 @@ const PositionsTable = () => {
     setSettling(false)
   }
 
+  const handleSettlePnl = async (perpMarket, perpAccount, index) => {
+    setSettleSinglePos(index)
+    await settlePnl(perpMarket, perpAccount, t, undefined)
+    setSettleSinglePos(null)
+  }
+
   return (
     <div className="flex flex-col pb-2">
       {unsettledPositions.length > 0 ? (
-        <div className="border border-th-bkg-4 rounded-lg mb-6 p-4 sm:p-6">
-          <div className="flex items-center justify-between">
+        <div className="border border-th-bkg-4 mb-6 p-4 sm:p-6 rounded-lg">
+          <div className="flex items-center justify-between pb-4">
             <div className="flex items-center">
               <ExclamationIcon className="flex-shrink-0 h-5 mr-1.5 mt-0.5 text-th-primary w-5" />
               <h3>{t('unsettled-positions')}</h3>
             </div>
+
             <Button
               className="text-xs pt-0 pb-0 h-8 pl-3 pr-3 whitespace-nowrap"
               onClick={handleSettleAll}
             >
-              {settling ? <Loading /> : t('redeem-pnl')}
+              {settling ? <Loading /> : 'Redeem All'}
             </Button>
           </div>
-          {unsettledPositions.map((p) => {
-            return (
-              <div
-                className="border-b border-th-bkg-4 flex items-center justify-between py-4 last:border-b-0 last:pb-0"
-                key={p.marketConfig.baseSymbol}
-              >
-                <div className="flex items-center">
-                  <img
-                    alt=""
-                    width="20"
-                    height="20"
-                    src={`/assets/icons/${p.marketConfig.baseSymbol.toLowerCase()}.svg`}
-                    className={`mr-2.5`}
-                  />
-                  <div>{p.marketConfig.name}</div>
+          <div className="gap-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 grid-flow-row">
+            {unsettledPositions.map((p, index) => {
+              return (
+                <div
+                  className="bg-th-bkg-3 col-span-1 flex items-center justify-between px-5 py-3 rounded-full"
+                  key={p.marketConfig.baseSymbol}
+                >
+                  <div className="flex space-x-2">
+                    <div className="flex items-center">
+                      <img
+                        alt=""
+                        width="24"
+                        height="24"
+                        src={`/assets/icons/${p.marketConfig.baseSymbol.toLowerCase()}.svg`}
+                        className={`mr-3`}
+                      />
+                      <div>
+                        <p className="mb-0 text-th-fgd-1 text-xs">
+                          {p.marketConfig.name}
+                        </p>
+                        <PnlText className="font-bold" pnl={p.unsettledPnl} />
+                      </div>
+                    </div>
+                  </div>
+                  {settleSinglePos === index ? (
+                    <Loading />
+                  ) : (
+                    <LinkButton
+                      className="text-xs"
+                      onClick={() =>
+                        handleSettlePnl(p.perpMarket, p.perpAccount, index)
+                      }
+                    >
+                      {t('redeem-pnl')}
+                    </LinkButton>
+                  )}
                 </div>
-                <PnlText pnl={p.unsettledPnl} />
-              </div>
-            )
-          })}
+              )
+            })}
+          </div>
         </div>
       ) : null}
       <div className={`md:overflow-x-auto`}>
