@@ -2,13 +2,10 @@
 // const defaultTheme = require('tailwindcss/defaultTheme')
 
 module.exports = {
-  mode: 'jit',
-  purge: ['./pages/**/*.{js,ts,jsx,tsx}', './components/**/*.{js,ts,jsx,tsx}'],
-  future: {
-    removeDeprecatedGapUtilities: true,
-    purgeLayersByDefault: true,
-  },
-  darkMode: false,
+  content: [
+    './pages/**/*.{js,ts,jsx,tsx}',
+    './components/**/*.{js,ts,jsx,tsx}',
+  ],
   theme: {
     fontFamily: {
       display: ['Lato, sans-serif'],
@@ -113,13 +110,13 @@ module.exports = {
       },
     },
   },
-  variants: {
-    extend: {
-      cursor: ['hover', 'focus', 'disabled'],
-      opacity: ['disabled'],
-      backgroundColor: ['disabled'],
-      textColor: ['disabled'],
-    },
-  },
+  // variants: {
+  //   extend: {
+  //     cursor: ['hover', 'focus', 'disabled'],
+  //     opacity: ['disabled'],
+  //     backgroundColor: ['disabled'],
+  //     textColor: ['disabled'],
+  //   },
+  // },
   plugins: [],
 }
