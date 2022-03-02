@@ -9,6 +9,7 @@ class MyDocument extends Document {
             href="https://fonts.googleapis.com/css2?family=Lato:wght@200;300;400;500;600;700&display=swap"
             rel="stylesheet"
           />
+          <script src="/datafeeds/udf/dist/bundle.js" />
         </Head>
         <body>
           <Main />

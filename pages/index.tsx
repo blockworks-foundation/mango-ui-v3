@@ -23,7 +23,6 @@ import {
 } from '../stores/selectors'
 import { PublicKey } from '@solana/web3.js'
 import FavoritesShortcutBar from '../components/FavoritesShortcutBar'
-import Script from 'next/script'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -133,8 +132,6 @@ const PerpMarket = () => {
 
   return (
     <>
-      <Script src="/datafeeds/udf/dist/polyfills.js" />
-      <Script src="/datafeeds/udf/dist/bundle.js" />
       <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
         {showTour && !hideTips ? (
           <IntroTips connected={connected} mangoAccount={mangoAccount} />
