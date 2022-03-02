@@ -201,7 +201,7 @@ const PerformanceChart = ({
           </div>
           {mouseData ? (
             <>
-              <div className="font-bold pb-1 text-xl text-th-fgd-3">
+              <div className="font-bold pb-1 text-xl text-th-fgd-1">
                 {formatUsdValue(
                   mouseData[
                     chartToShow === 'PnL' ? pnlChartDataKey() : 'account_equity'
@@ -214,7 +214,7 @@ const PerformanceChart = ({
             </>
           ) : chartData.length === 0 ? (
             <>
-              <div className="font-bold pb-1 text-xl text-th-fgd-3">
+              <div className="font-bold pb-1 text-xl text-th-fgd-1">
                 {formatUsdValue(0.0)}
               </div>
               <div className="text-xs font-normal text-th-fgd-4">
@@ -223,7 +223,7 @@ const PerformanceChart = ({
             </>
           ) : chartData.length > 0 ? (
             <>
-              <div className="font-bold pb-1 text-xl text-th-fgd-3">
+              <div className="font-bold pb-1 text-xl text-th-fgd-1">
                 {chartToShow === 'PnL'
                   ? formatUsdValue(
                       chartData[chartData.length - 1][pnlChartDataKey()]

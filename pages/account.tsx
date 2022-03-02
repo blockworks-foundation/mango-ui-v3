@@ -272,7 +272,7 @@ export default function Account() {
               {!pubkey ? (
                 <div className="flex flex-col sm:flex-row items-center pb-1.5 space-y-2 sm:space-y-0 sm:space-x-2">
                   <button
-                    className="bg-th-primary flex items-center justify-center h-8 text-th-bkg-1 text-xs px-3 py-0 rounded-full w-full hover:brightness-[1.15] focus:outline-none disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:cursor-not-allowed disabled:hover:brightness-100"
+                    className="bg-th-primary flex font-bold items-center justify-center h-8 text-th-bkg-1 text-xs px-3 py-0 rounded-full w-full hover:brightness-[1.15] focus:outline-none disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:cursor-not-allowed disabled:hover:brightness-100"
                     disabled={mngoAccrued.eq(ZERO_BN)}
                     onClick={handleRedeemMngo}
                   >

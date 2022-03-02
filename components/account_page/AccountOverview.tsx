@@ -106,7 +106,7 @@ export default function AccountOverview() {
             <div className="pb-0.5 text-th-fgd-3 text-xs sm:text-sm">
               {t('account-value')}
             </div>
-            <div className="font-bold text-th-fgd-3 text-xl sm:text-2xl">
+            <div className="font-bold text-th-fgd-1 text-xl sm:text-2xl">
               {formatUsdValue(mangoAccountValue)}
             </div>
           </div>
@@ -123,7 +123,7 @@ export default function AccountOverview() {
                 </span>
               ) : null}
             </div>
-            <div className="font-bold text-th-fgd-3 text-xl sm:text-2xl">
+            <div className="font-bold text-th-fgd-1 text-xl sm:text-2xl">
               {formatUsdValue(pnl)}
             </div>
           </div>
@@ -131,7 +131,7 @@ export default function AccountOverview() {
             <div className="pb-0.5 text-th-fgd-3 text-xs sm:text-sm">
               {t('leverage')}
             </div>
-            <div className="font-bold text-th-fgd-3 text-xl sm:text-2xl">
+            <div className="font-bold text-th-fgd-1 text-xl sm:text-2xl">
               {mangoAccount.getLeverage(mangoGroup, mangoCache).toFixed(2)}x
             </div>
           </div>
@@ -139,7 +139,7 @@ export default function AccountOverview() {
             <div className="pb-0.5 text-th-fgd-3 text-xs sm:text-sm">
               {t('health-ratio')}
             </div>
-            <div className={`font-bold text-th-fgd-3 text-xl sm:text-2xl`}>
+            <div className={`font-bold text-th-fgd-1 text-xl sm:text-2xl`}>
               {maintHealthRatio < 1000 ? maintHealthRatio.toFixed(2) : '>100'}%
             </div>
             {mangoAccount.beingLiquidated ? (
@@ -164,7 +164,7 @@ export default function AccountOverview() {
             ></div>
           </div>
         </div>
-        <div className="border-t border-th-bkg-4 h-80 lg:h-auto w-full lg:w-3/4">
+        <div className="lg:border-t border-th-bkg-4 h-80 lg:h-auto w-full lg:w-3/4">
           <PerformanceChart
             hourlyPerformanceStats={hourlyPerformanceStats}
             performanceRange={performanceRange}
@@ -172,31 +172,27 @@ export default function AccountOverview() {
           />
         </div>
       </div>
-      <div className="pb-8">
+      <div className="pb-8 pt-16 lg:pt-0">
         <h2 className="mb-4">{t('perp-positions')}</h2>
         <PositionsTable />
       </div>
       <h2 className="mb-4">{t('assets-liabilities')}</h2>
 
-      <div className="grid grid-flow-col grid-cols-1 grid-rows-2 md:grid-cols-2 md:grid-rows-1 gap-2 sm:gap-4 pb-8 lg:pb-12">
-        <div className="border border-th-bkg-4 p-3 sm:p-4 rounded-md sm:rounded-lg">
-          <div className="pb-0.5 text-xs text-th-fgd-3">
-            {t('total-assets')}
-          </div>
+      <div className="grid grid-flow-col grid-cols-1 grid-rows-2 md:grid-cols-2 md:grid-rows-1 lg:gap-4 pb-8 lg:pb-12">
+        <div className="border-t lg:border-b border-th-bkg-4 p-3 sm:p-4 rounded-md sm:rounded-lg">
+          <div className="pb-0.5 text-th-fgd-3">{t('total-assets')}</div>
           <div className="flex items-center">
-            <div className="text-lg text-th-fgd-1">
+            <div className="font-bold text-2xl text-th-fgd-1">
               {formatUsdValue(
                 +mangoAccount.getAssetsVal(mangoGroup, mangoCache)
               )}
             </div>
           </div>
         </div>
-        <div className="border border-th-bkg-4 p-3 sm:p-4 rounded-md sm:rounded-lg">
-          <div className="pb-0.5 text-xs text-th-fgd-3">
-            {t('total-liabilities')}
-          </div>
+        <div className="border-b border-t border-th-bkg-4 p-3 sm:p-4 rounded-md sm:rounded-lg">
+          <div className="pb-0.5 text-th-fgd-3">{t('total-liabilities')}</div>
           <div className="flex items-center">
-            <div className="text-lg text-th-fgd-1">
+            <div className="font-bold text-2xl text-th-fgd-1">
               {formatUsdValue(
                 +mangoAccount.getLiabsVal(mangoGroup, mangoCache)
               )}
