@@ -23,6 +23,7 @@ import {
 } from '../stores/selectors'
 import { PublicKey } from '@solana/web3.js'
 import FavoritesShortcutBar from '../components/FavoritesShortcutBar'
+import Script from 'next/script'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -131,19 +132,23 @@ const PerpMarket = () => {
   }, [router, marketConfig])
 
   return (
-    <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
-      {showTour && !hideTips ? (
-        <IntroTips connected={connected} mangoAccount={mangoAccount} />
-      ) : null}
-      <TopBar />
-      <FavoritesShortcutBar />
-      <PageBodyWrapper className="p-1 sm:px-2 sm:py-1 md:px-2 md:py-1 xl:px-4">
-        <TradePageGrid />
-      </PageBodyWrapper>
-      {!alphaAccepted && (
-        <AlphaModal isOpen={!alphaAccepted} onClose={() => {}} />
-      )}
-    </div>
+    <>
+      <Script src="/datafeeds/udf/dist/polyfills.js" strategy="lazyOnload" />
+      <Script src="/datafeeds/udf/dist/bundle.js" strategy="lazyOnload" />
+      <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
+        {showTour && !hideTips ? (
+          <IntroTips connected={connected} mangoAccount={mangoAccount} />
+        ) : null}
+        <TopBar />
+        <FavoritesShortcutBar />
+        <PageBodyWrapper className="p-1 sm:px-2 sm:py-1 md:px-2 md:py-1 xl:px-4">
+          <TradePageGrid />
+        </PageBodyWrapper>
+        {!alphaAccepted && (
+          <AlphaModal isOpen={!alphaAccepted} onClose={() => {}} />
+        )}
+      </div>
+    </>
   )
 }
 
