@@ -77,9 +77,11 @@ export default function RecentMarketTrades() {
               </div>
               <div className={`text-right text-th-fgd-3`}>
                 {market?.minOrderSize && !isNaN(trade.size)
-                  ? Number(trade.size).toFixed(
-                      getDecimalCount(market.minOrderSize)
-                    )
+                  ? Number(trade.size).toLocaleString(undefined, {
+                      maximumFractionDigits: getDecimalCount(
+                        market.minOrderSize
+                      ),
+                    })
                   : ''}
               </div>
               <div className={`text-right text-th-fgd-3`}>
