@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import {
   BellIcon,
   CurrencyDollarIcon,
@@ -7,9 +13,11 @@ import {
   GiftIcon,
   LinkIcon,
   PencilIcon,
+  SwitchHorizontalIcon,
   TrashIcon,
   UsersIcon,
 } from '@heroicons/react/outline'
+import { ChevronDownIcon } from '@heroicons/react/solid'
 import { nativeToUi, ZERO_BN } from '@blockworks-foundation/mango-client'
 import useMangoStore, {
   serumProgramId,
@@ -24,7 +32,7 @@ import AccountOverview from '../components/account_page/AccountOverview'
 import AccountInterest from '../components/account_page/AccountInterest'
 import AccountFunding from '../components/account_page/AccountFunding'
 import AccountNameModal from '../components/AccountNameModal'
-import Button, { IconButton, LinkButton } from '../components/Button'
+import { IconButton, LinkButton } from '../components/Button'
 import EmptyState from '../components/EmptyState'
 import Loading from '../components/Loading'
 import Swipeable from '../components/mobile/Swipeable'
@@ -47,6 +55,7 @@ import {
 import CreateAlertModal from '../components/CreateAlertModal'
 import { copyToClipboard } from '../utils'
 import DelegateModal from '../components/DelegateModal'
+import { Menu, Transition } from '@headlessui/react'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -290,37 +299,84 @@ export default function Account() {
                         : '0 MNGO Rewards'}
                     </div>
                   </button>
-                  {!isDelegatedAccount ? (
-                    <Button
-                      className="flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs w-full"
-                      onClick={() => setShowCloseAccountModal(true)}
-                    >
-                      <div className="flex items-center whitespace-nowrap">
-                        <TrashIcon className="flex-shrink-0 h-4 w-4 mr-1.5" />
-                        {t('close-account:close-account')}
+                  <Menu>
+                    {({ open }) => (
+                      <div className="relative" id="profile-menu-tip">
+                        <Menu.Button className="bg-th-bkg-button flex font-bold items-center justify-center pt-0 pb-0 h-8 pl-3 pr-2 rounded-full text-xs w-full hover:filter hover:brightness-[1.1]">
+                          More
+                          <ChevronDownIcon
+                            className={`default-transition h-5 w-5 ${
+                              open
+                                ? 'transform rotate-180'
+                                : 'transform rotate-360'
+                            }`}
+                          />
+                        </Menu.Button>
+                        <Transition
+                          appear={true}
+                          show={open}
+                          as={Fragment}
+                          enter="transition-all ease-in duration-200"
+                          enterFrom="opacity-0 transform scale-75"
+                          enterTo="opacity-100 transform scale-100"
+                          leave="transition ease-out duration-200"
+                          leaveFrom="opacity-100"
+                          leaveTo="opacity-0"
+                        >
+                          <Menu.Items className="absolute bg-th-bkg-3 mt-1 px-4 py-2.5 right-0 rounded-md space-y-1.5 w-48 z-20">
+                            <Menu.Item>
+                              <button
+                                className="flex flex-row font-normal items-center py-0.5 rounded-none w-full hover:text-th-primary hover:cursor-pointer focus:outline-none"
+                                onClick={() => setShowAlertsModal(true)}
+                              >
+                                <div className="flex items-center">
+                                  <BellIcon className="h-4 w-4 mr-1.5" />
+                                  {t('alerts')}
+                                </div>
+                              </button>
+                            </Menu.Item>
+                            {!isDelegatedAccount ? (
+                              <Menu.Item>
+                                <button
+                                  className="flex flex-row font-normal items-center py-0.5 rounded-none w-full hover:text-th-primary hover:cursor-pointer focus:outline-none"
+                                  onClick={() => setShowDelegateModal(true)}
+                                >
+                                  <div className="flex items-center">
+                                    <UsersIcon className="h-4 w-4 mr-1.5" />
+                                    {t('delegate:set-delegate')}
+                                  </div>
+                                </button>
+                              </Menu.Item>
+                            ) : null}
+                            <Menu.Item>
+                              <button
+                                className="flex flex-row font-normal items-center py-0.5 rounded-none w-full hover:text-th-primary hover:cursor-pointer focus:outline-none"
+                                onClick={() => setShowAccountsModal(true)}
+                              >
+                                <div className="flex items-center">
+                                  <SwitchHorizontalIcon className="h-4 w-4 mr-1.5" />
+                                  {t('switch-account')}
+                                </div>
+                              </button>
+                            </Menu.Item>
+                            {!isDelegatedAccount ? (
+                              <Menu.Item>
+                                <button
+                                  className="flex flex-row font-normal items-center py-0.5 rounded-none w-full hover:text-th-primary hover:cursor-pointer focus:outline-none"
+                                  onClick={() => setShowCloseAccountModal(true)}
+                                >
+                                  <div className="flex items-center whitespace-nowrap">
+                                    <TrashIcon className="flex-shrink-0 h-4 w-4 mr-1.5" />
+                                    {t('close-account:close-account')}
+                                  </div>
+                                </button>
+                              </Menu.Item>
+                            ) : null}
+                          </Menu.Items>
+                        </Transition>
                       </div>
-                    </Button>
-                  ) : null}
-                  <Button
-                    className="flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs w-full"
-                    onClick={() => setShowAlertsModal(true)}
-                  >
-                    <div className="flex items-center">
-                      <BellIcon className="h-4 w-4 mr-1.5" />
-                      {t('alerts')}
-                    </div>
-                  </Button>
-                  {!isDelegatedAccount && (
-                    <Button
-                      className="col-span-1 flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs"
-                      onClick={() => setShowDelegateModal(true)}
-                    >
-                      <div className="flex items-center">
-                        <UsersIcon className="h-4 w-4 mr-1.5" />
-                        {t('delegate:set-delegate')}
-                      </div>
-                    </Button>
-                  )}
+                    )}
+                  </Menu>
                 </div>
               ) : null}
             </>
