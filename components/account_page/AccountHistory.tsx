@@ -551,7 +551,7 @@ const HistoryTable = ({ history, view }) => {
                         {activity_details.symbol}
                       </div>
                     </Td>
-                    <Td>{activity_details.quantity}</Td>
+                    <Td>{activity_details.quantity.toLocaleString()}</Td>
                     <Td>{formatUsdValue(activity_details.usd_equivalent)}</Td>
                     <Td>
                       <a
