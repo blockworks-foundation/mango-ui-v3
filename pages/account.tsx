@@ -377,37 +377,6 @@ export default function Account() {
                       </div>
                     )}
                   </Menu>
-                  {/* {!isDelegatedAccount ? (
-                    <Button
-                      className="flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs w-full"
-                      onClick={() => setShowCloseAccountModal(true)}
-                    >
-                      <div className="flex items-center whitespace-nowrap">
-                        <TrashIcon className="flex-shrink-0 h-4 w-4 mr-1.5" />
-                        {t('close-account:close-account')}
-                      </div>
-                    </Button>
-                  ) : null}
-                  <Button
-                    className="flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs w-full"
-                    onClick={() => setShowAlertsModal(true)}
-                  >
-                    <div className="flex items-center">
-                      <BellIcon className="h-4 w-4 mr-1.5" />
-                      {t('alerts')}
-                    </div>
-                  </Button>
-                  {!isDelegatedAccount && (
-                    <Button
-                      className="col-span-1 flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3 text-xs"
-                      onClick={() => setShowDelegateModal(true)}
-                    >
-                      <div className="flex items-center">
-                        <UsersIcon className="h-4 w-4 mr-1.5" />
-                        {t('delegate:set-delegate')}
-                      </div>
-                    </Button>
-                  )} */}
                 </div>
               ) : null}
             </>
