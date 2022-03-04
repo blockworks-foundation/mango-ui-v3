@@ -178,8 +178,6 @@ const PerformanceChart = ({
       ? '#F84638'
       : '#CC2929'
 
-  console.log('chartData', chartData)
-
   return (
     <div className="h-64 mt-4 w-full" ref={observe}>
       <div className="flex justify-between pb-9">

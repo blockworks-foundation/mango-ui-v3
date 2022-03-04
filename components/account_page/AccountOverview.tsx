@@ -65,6 +65,12 @@ export default function AccountOverview() {
   const [performanceRange, setPerformanceRange] = useState('30d')
   const [hourlyPerformanceStats, setHourlyPerformanceStats] = useState([])
   const [loadExportData, setLoadExportData] = useState(false)
+  const wallet = useMangoStore((s) => s.wallet.current)
+  console.log(mangoAccount?.owner.toString(), wallet)
+  const canWithdraw =
+    mangoAccount && wallet?.publicKey
+      ? mangoAccount.owner.equals(wallet.publicKey)
+      : false
 
   const exportPerformanceDataToCSV = async () => {
     setLoadExportData(true)
@@ -155,19 +161,21 @@ export default function AccountOverview() {
                   </div>
                 ) : null}
               </div>
-              <Button
-                className={`flex items-center justify-center text-xs h-8 pt-0 pb-0 pl-3 pr-3 whitespace-nowrap`}
-                onClick={exportPerformanceDataToCSV}
-              >
-                {loadExportData ? (
-                  <Loading />
-                ) : (
-                  <div className={`flex items-center`}>
-                    <SaveIcon className={`h-4 w-4 mr-1.5`} />
-                    {t('export-data')}
-                  </div>
-                )}
-              </Button>
+              {canWithdraw ? (
+                <Button
+                  className={`flex items-center justify-center text-xs h-8 pt-0 pb-0 pl-3 pr-3 whitespace-nowrap`}
+                  onClick={exportPerformanceDataToCSV}
+                >
+                  {loadExportData ? (
+                    <Loading />
+                  ) : (
+                    <div className={`flex items-center`}>
+                      <SaveIcon className={`h-4 w-4 mr-1.5`} />
+                      {t('export-data')}
+                    </div>
+                  )}
+                </Button>
+              ) : null}
             </div>
             <div className="font-bold text-th-fgd-1 text-xl sm:text-2xl">
               {formatUsdValue(pnl)}
