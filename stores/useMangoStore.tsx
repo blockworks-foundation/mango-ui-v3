@@ -530,14 +530,17 @@ const useMangoStore = create<MangoStore>((set, get) => {
               state.selectedMarket.current = allMarketAccounts.find((mkt) =>
                 mkt.publicKey.equals(selectedMarketConfig.publicKey)
               )
-              allMarketAccountInfos
-                .concat(allBidsAndAsksAccountInfos)
-                .forEach(({ publicKey, context, accountInfo }) => {
+
+              allBidsAndAsksAccountInfos.forEach(
+                ({ publicKey, context, accountInfo }) => {
                   if (context.slot >= state.connection.slot) {
                     state.connection.slot = context.slot
                     const perpMarket = allMarketAccounts.find((mkt) => {
                       if (mkt instanceof PerpMarket) {
-                        mkt.bids.equals(publicKey) || mkt.asks.equals(publicKey)
+                        return (
+                          mkt.bids.equals(publicKey) ||
+                          mkt.asks.equals(publicKey)
+                        )
                       }
                     })
                     if (perpMarket) {
@@ -548,7 +551,8 @@ const useMangoStore = create<MangoStore>((set, get) => {
                     }
                     state.accountInfos[publicKey.toBase58()] = accountInfo
                   }
-                })
+                }
+              )
             })
             // actions.fetchMarketInfo()
           })

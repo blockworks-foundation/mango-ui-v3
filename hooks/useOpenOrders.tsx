@@ -67,9 +67,6 @@ function parsePerpOpenOrders(
   let bidOrderBook = accountInfos[market.bids.toBase58()]?.parsed
   let askOrderBook = accountInfos[market.asks.toBase58()]?.parsed
 
-  console.log('bidOrderBook', bidOrderBook)
-  console.log('askOrderBook', askOrderBook)
-
   if (!bidOrderBook) {
     const bidData = accountInfos[market.bids.toBase58()]?.data
     bidOrderBook =
