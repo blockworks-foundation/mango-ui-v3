@@ -281,9 +281,9 @@ export default function Account() {
                 </div>
               </div>
               {!pubkey ? (
-                <div className="flex flex-col sm:flex-row items-center pb-1.5 space-y-2 sm:space-y-0 sm:space-x-2">
+                <div className="flex flex-col sm:flex-row items-center pb-1.5 space-y-3 sm:space-y-0 sm:space-x-2">
                   <button
-                    className="bg-th-primary flex font-bold items-center justify-center h-8 text-th-bkg-1 text-xs px-3 py-0 rounded-full w-full hover:brightness-[1.15] focus:outline-none disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:cursor-not-allowed disabled:hover:brightness-100"
+                    className="bg-th-primary flex font-bold items-center justify-center h-8 text-th-bkg-1 text-xs px-3 py-0 rounded-full w-full sm:w-auto hover:brightness-[1.15] focus:outline-none disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:cursor-not-allowed disabled:hover:brightness-100"
                     disabled={mngoAccrued.eq(ZERO_BN)}
                     onClick={handleRedeemMngo}
                   >
@@ -301,8 +301,11 @@ export default function Account() {
                   </button>
                   <Menu>
                     {({ open }) => (
-                      <div className="relative" id="profile-menu-tip">
-                        <Menu.Button className="bg-th-bkg-button flex font-bold items-center justify-center pt-0 pb-0 h-8 pl-3 pr-2 rounded-full text-xs w-full hover:filter hover:brightness-[1.1]">
+                      <div
+                        className="relative w-full sm:w-auto"
+                        id="profile-menu-tip"
+                      >
+                        <Menu.Button className="bg-th-bkg-button flex font-bold items-center justify-center pt-0 pb-0 h-8 pl-3 pr-2 rounded-full text-xs w-full sm:w-auto hover:filter hover:brightness-[1.1]">
                           More
                           <ChevronDownIcon
                             className={`default-transition h-5 w-5 ${
@@ -323,7 +326,7 @@ export default function Account() {
                           leaveFrom="opacity-100"
                           leaveTo="opacity-0"
                         >
-                          <Menu.Items className="absolute bg-th-bkg-3 mt-1 px-4 py-2.5 right-0 rounded-md space-y-1.5 w-48 z-20">
+                          <Menu.Items className="absolute bg-th-bkg-3 mt-1 px-4 py-2.5 right-0 rounded-md space-y-1.5 w-full sm:w-48 z-20">
                             <Menu.Item>
                               <button
                                 className="flex flex-row font-normal items-center py-0.5 rounded-none w-full hover:text-th-primary hover:cursor-pointer focus:outline-none"
@@ -391,7 +394,7 @@ export default function Account() {
                 tabs={TABS}
               />
             ) : (
-              <div className="pb-2 pt-3">
+              <div className="pb-4">
                 <Select
                   value={t(TABS[viewIndex].toLowerCase())}
                   onChange={(e) => handleChangeViewIndex(e)}
