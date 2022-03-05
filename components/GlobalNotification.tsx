@@ -17,6 +17,8 @@ const getRecentPerformance = async (setShow) => {
 
     if (tps < 1500) {
       setShow(true)
+    } else {
+      setShow(false)
     }
   } catch {
     console.log('Unable to fetch TPS')
