@@ -258,6 +258,7 @@
   "order-error": "Error placing order",
   "orderbook": "Orderbook",
   "orderbook-animation": "Orderbook Animation",
+  "orderline-visible": "Show order lines on chart",
   "orders": "Orders",
   "performance": "Performance",
   "performance-insights": "Performance Insights",

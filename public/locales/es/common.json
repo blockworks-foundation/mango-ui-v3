@@ -254,6 +254,7 @@
   "order-error": "Error al realizar el pedido",
   "orderbook": "Libro de órdenes",
   "orderbook-animation": "Animación del libro de ordenes",
+  "orderline-visible": "Mostrar líneas de orden en el gráfico",
   "orders": "Órdenes",
   "performance": "Performance",
   "performance-insights": "Performance Insights",

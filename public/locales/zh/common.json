@@ -254,6 +254,7 @@
     "order-error": "下订单出错了",
     "orderbook": "订单簿",
     "orderbook-animation": "订单动画",
+    "orderline-visible": "在图表上显示订单线",
     "orders": "订单",
     "performance": "表现",
     "performance-insights": "表现分析",

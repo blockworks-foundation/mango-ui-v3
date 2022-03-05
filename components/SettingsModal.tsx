@@ -30,6 +30,7 @@ export const NODE_URL_KEY = 'node-url-key-0.5'
 export const DEFAULT_MARKET_KEY = 'defaultMarket-0.3'
 export const ORDERBOOK_FLASH_KEY = 'showOrderbookFlash'
 export const DEFAULT_SPOT_MARGIN_KEY = 'defaultSpotMargin'
+export const DEFAULT_ORDER_LINES_KEY = 'showOrderLines'
 export const initialMarket = {
   base: 'SOL',
   kind: 'perp',
@@ -57,6 +58,11 @@ const SettingsModal = ({ isOpen, onClose }) => {
   const [defaultSpotMargin, setDefaultSpotMargin] = useLocalStorageState(
     DEFAULT_SPOT_MARGIN_KEY,
     false
+  )
+
+  const [showOrderLines, setShowOrderLines] = useLocalStorageState(
+    DEFAULT_ORDER_LINES_KEY,
+    true
   )
 
   const rpcEndpoint =
@@ -110,6 +116,13 @@ const SettingsModal = ({ isOpen, onClose }) => {
             <Switch
               checked={defaultSpotMargin}
               onChange={(checked) => setDefaultSpotMargin(checked)}
+            />
+          </div>
+          <div className="border-t border-th-bkg-4 flex items-center justify-between py-3 text-th-fgd-1">
+            <span>{t('orderline-visible')}</span>
+            <Switch
+              checked={showOrderLines}
+              onChange={(checked) => setShowOrderLines(checked)}
             />
           </div>
         </div>

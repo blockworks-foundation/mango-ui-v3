@@ -17,6 +17,8 @@ import { sleep, formatUsdValue, usdFormatter } from '../../utils'
 import useInterval from '../../hooks/useInterval'
 import { PerpTriggerOrder } from '../../@types/types'
 import { useTranslation } from 'next-i18next'
+import useLocalStorageState from '../../hooks/useLocalStorageState'
+import { DEFAULT_ORDER_LINES_KEY } from '../SettingsModal'
 
 // This is a basic example of how to create a TV widget
 // You can add more feature such as storing charts in localStorage
@@ -56,8 +58,17 @@ const TVChartContainer = () => {
   const [moveInProgress, toggleMoveInProgress] = useState(false)
   const [orderInProgress, toggleOrderInProgress] = useState(false)
   const [priceReset, togglePriceReset] = useState(false)
-  const [showOrderLines, toggleShowOrderLines] = useState(true)
+  const [defaultShowOrderLines] = useLocalStorageState(
+    DEFAULT_ORDER_LINES_KEY,
+    true
+  )
+  const [showOrderLines, toggleShowOrderLines] = useState(defaultShowOrderLines)
   const mangoClient = useMangoStore.getState().connection.client
+
+  const [avgEntryLines, setAvgEntryLines] = useState(new Map())
+  const perpAccounts =
+    useMangoStore.getState().selectedMangoAccount.perpAccounts
+  const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
 
   // @ts-ignore
   const defaultProps: ChartContainerProps = {
@@ -90,8 +101,8 @@ const TVChartContainer = () => {
         defaultProps.interval,
         () => {}
       )
-      setLines(deleteLines())
-      setLines(drawLines())
+      setLines(deleteLines('orders'))
+      setAvgEntryLines(deleteLines('avgEntry'))
     }
   }, [selectedMarketConfig.name])
 
@@ -168,15 +179,22 @@ const TVChartContainer = () => {
 
     const tvWidget = new widget(widgetOptions)
     tvWidgetRef.current = tvWidget
-    setLines(deleteLines())
+
+    setLines(deleteLines('orders'))
+    setAvgEntryLines(deleteLines('avgEntry'))
+    setLines(drawLines('orders'))
+    setAvgEntryLines(drawLines('avgEntry'))
 
     tvWidgetRef.current.onChartReady(function () {
       const button = tvWidgetRef.current.createButton()
       button.textContent = 'OL'
-      button.style.color =
-        theme === 'Dark' || theme === 'Mango'
-          ? 'rgb(242, 201, 76)'
-          : 'rgb(255, 156, 36)'
+      button.style.color = !showOrderLines
+        ? theme === 'Dark' || theme === 'Mango'
+          ? 'rgb(138, 138, 138)'
+          : 'rgb(138, 138, 138)'
+        : theme === 'Dark' || theme === 'Mango'
+        ? 'rgb(242, 201, 76)'
+        : 'rgb(255, 156, 36)'
       button.setAttribute('title', t('tv-chart:toggle-order-line'))
       button.addEventListener('click', function () {
         toggleShowOrderLines((showOrderLines) => !showOrderLines)
@@ -248,7 +266,6 @@ const TVChartContainer = () => {
         txid: e.txid,
         type: 'error',
       })
-      console.log('error', `${e}`)
     } finally {
       actions.reloadMangoAccount()
       actions.reloadOrders()
@@ -469,8 +486,6 @@ const TVChartContainer = () => {
       .setCancelButtonBackgroundColor(
         theme === 'Dark' ? '#1B1B1F' : theme === 'Light' ? '#fff' : '#1D1832'
       )
-      .setBodyFont('Lato, sans-serif')
-      .setQuantityFont('Lato, sans-serif')
       .setLineColor(
         order.perpTrigger?.clientOrderId
           ? '#FF9C24'
@@ -541,31 +556,83 @@ const TVChartContainer = () => {
     }
   }
 
-  function deleteLines() {
-    tvWidgetRef.current.onChartReady(() => {
-      if (lines?.size > 0) {
-        lines?.forEach((value, key) => {
-          lines.get(key).remove()
+  function getAvgEntryLine(avgEntry, basePosition) {
+    return tvWidgetRef.current
+      .chart()
+      .createPositionLine({ disableUndo: false })
+      .setPrice(avgEntry)
+      .setQuantity(basePosition)
+      .setText('Average Entry | Size:')
+      .setBodyTextColor('#FFFFFF')
+      .setQuantityTextColor('#FFFFFF')
+      .setBodyBackgroundColor('#2775CA')
+      .setQuantityBackgroundColor('#2775CA')
+      .setBodyBorderColor('#FFFFFF')
+      .setQuantityBorderColor('#FFFFFF')
+      .setLineWidth(2)
+  }
+
+  function deleteLines(type) {
+    switch (type) {
+      case 'orders':
+        tvWidgetRef.current.onChartReady(() => {
+          if (lines?.size > 0) {
+            lines?.forEach((value, key) => {
+              lines.get(key).remove()
+            })
+          }
         })
-      }
-    })
+        break
+      case 'avgEntry':
+        tvWidgetRef.current.onChartReady(() => {
+          if (avgEntryLines?.size > 0) {
+            avgEntryLines.get('avgEntry').remove()
+          }
+        })
+        break
+    }
     return new Map()
   }
 
-  function drawLines() {
+  function drawLines(type) {
     const tempLines = new Map()
-    tvWidgetRef.current.onChartReady(() => {
-      openOrders?.map(({ order, market }) => {
-        if (market.config.name == selectedMarketName) {
-          tempLines.set(order.orderId.toString(), getLine(order, market))
-        }
-      })
-    })
+    switch (type) {
+      case 'orders':
+        tvWidgetRef.current.onChartReady(() => {
+          openOrders?.map(({ order, market }) => {
+            if (market.config.name == selectedMarketName) {
+              tempLines.set(order.orderId.toString(), getLine(order, market))
+            }
+          })
+        })
+        break
+      case 'avgEntry':
+        tvWidgetRef.current.onChartReady(() => {
+          const { basePosition = 0, avgEntryPrice = 0 } = perpAccounts?.length
+            ? perpAccounts.find((pa) =>
+                pa.perpMarket.publicKey.equals(selectedMarket.publicKey)
+              )
+            : {}
+
+          if (
+            Number.isFinite(basePosition) &&
+            basePosition != 0 &&
+            Number.isFinite(avgEntryPrice)
+          ) {
+            tempLines.set(
+              'avgEntry',
+              getAvgEntryLine(avgEntryPrice, basePosition)
+            )
+          }
+        })
+        break
+    }
     return tempLines
   }
 
   useInterval(() => {
     if (showOrderLines) {
+      // Draw Order Lines
       if (
         mangoAccount &&
         connected &&
@@ -599,14 +666,28 @@ const TVChartContainer = () => {
           if (priceReset) {
             togglePriceReset(false)
           }
-          setLines(deleteLines())
-          setLines(drawLines())
+          setLines(deleteLines('orders'))
+          setLines(drawLines('orders'))
         }
       } else if (lines?.size > 0 && !moveInProgress && !orderInProgress) {
-        setLines(deleteLines())
+        setLines(deleteLines('orders'))
       }
-    } else if (lines?.size > 0) {
-      setLines(deleteLines())
+
+      // Draw Average Entry Lines
+      if (
+        mangoAccount &&
+        connected &&
+        perpAccounts.length &&
+        perpAccounts.find((pa) =>
+          pa.perpMarket.publicKey.equals(selectedMarket.publicKey)
+        )
+      ) {
+        setAvgEntryLines(deleteLines('avgEntry'))
+        setAvgEntryLines(drawLines('avgEntry'))
+      }
+    } else if (lines?.size > 0 || avgEntryLines?.size > 0) {
+      setLines(deleteLines('orders'))
+      setAvgEntryLines(deleteLines('avgEntry'))
     }
   }, [500])
 
