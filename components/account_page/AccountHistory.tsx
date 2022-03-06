@@ -1,21 +1,24 @@
 import { useState, useEffect, useMemo } from 'react'
-import TradeHistoryTable from '../TradeHistoryTable'
 import { useTranslation } from 'next-i18next'
-import useMangoStore from '../../stores/useMangoStore'
-import { ArrowSmDownIcon, ExternalLinkIcon } from '@heroicons/react/solid'
-import { Table, TrHead, Th, TrBody, Td } from '../TableElements'
-import { LinkButton } from '../Button'
-import { useSortableData } from '../../hooks/useSortableData'
-import { formatUsdValue } from '../../utils'
+import { ArrowSmDownIcon, ExternalLinkIcon } from '@heroicons/react/outline'
+import { SaveIcon } from '@heroicons/react/outline'
 import {
   getMarketByBaseSymbolAndKind,
   PerpMarket,
 } from '@blockworks-foundation/mango-client'
+
+import TradeHistoryTable from '../TradeHistoryTable'
+import useMangoStore from '../../stores/useMangoStore'
+import { Table, TrHead, Th, TrBody, Td } from '../TableElements'
+import { LinkButton } from '../Button'
+import { useSortableData } from '../../hooks/useSortableData'
+import { formatUsdValue } from '../../utils'
 import { exportDataToCSV } from '../../utils/export'
 import { notify } from '../../utils/notifications'
 import useTradeHistory from '../../hooks/useTradeHistory'
 import Button from '../Button'
-import { SaveIcon } from '@heroicons/react/outline'
+import Loading from '../Loading'
+import { fetchHourlyPerformanceStats } from './AccountOverview'
 
 const historyViews = [
   { label: 'Trades', key: 'Trades' },
@@ -28,6 +31,9 @@ export default function AccountHistory() {
   const { t } = useTranslation('common')
   const [view, setView] = useState('Trades')
   const [history, setHistory] = useState(null)
+  const [loadExportData, setLoadExportData] = useState(false)
+
+  const wallet = useMangoStore((s) => s.wallet.current)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const tradeHistory = useTradeHistory({ excludePerpLiquidations: true })
 
@@ -50,6 +56,30 @@ export default function AccountHistory() {
       fetchAccountActivity()
     }
   }, [mangoAccountPk])
+
+  const exportPerformanceDataToCSV = async () => {
+    setLoadExportData(true)
+    const exportData = await fetchHourlyPerformanceStats(
+      mangoAccount.publicKey.toString(),
+      10000
+    )
+    const dataToExport = exportData.map((row) => {
+      const timestamp = new Date(row.time)
+      return {
+        timestamp: `${timestamp.toLocaleDateString()} ${timestamp.toLocaleTimeString()}`,
+        account_equity: row.account_equity,
+        pnl: row.pnl,
+      }
+    })
+
+    const title = `${
+      mangoAccount.name || mangoAccount.publicKey
+    }-Performance-${new Date().toLocaleDateString()}`
+    const headers = ['Timestamp', 'Account Equity', 'PNL']
+
+    exportDataToCSV(dataToExport, title, headers, t)
+    setLoadExportData(false)
+  }
 
   const exportHistoryToCSV = () => {
     let dataToExport
@@ -113,6 +143,11 @@ export default function AccountHistory() {
     exportDataToCSV(dataToExport, title, headers, t)
   }
 
+  const canWithdraw =
+    mangoAccount && wallet?.publicKey
+      ? mangoAccount.owner.equals(wallet.publicKey)
+      : false
+
   return (
     <>
       <div className="bg-th-bkg-3 flex mb-4 md:mb-6 md:-mx-6 px-3 md:px-4 py-2">
@@ -158,6 +193,20 @@ export default function AccountHistory() {
               <SaveIcon className={`h-4 w-4 mr-1.5`} />
               {t('export-data')}
             </div>
+          </Button>
+        ) : canWithdraw ? (
+          <Button
+            className={`flex items-center justify-center text-xs h-8 pt-0 pb-0 pl-3 pr-3 whitespace-nowrap`}
+            onClick={exportPerformanceDataToCSV}
+          >
+            {loadExportData ? (
+              <Loading />
+            ) : (
+              <div className={`flex items-center`}>
+                <SaveIcon className={`h-4 w-4 mr-1.5`} />
+                Export PnL CSV
+              </div>
+            )}
           </Button>
         ) : null}
       </div>

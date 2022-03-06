@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { ExclamationIcon } from '@heroicons/react/solid'
-import { SaveIcon } from '@heroicons/react/outline'
 import { useTranslation } from 'next-i18next'
 
 import useMangoStore from '../../stores/useMangoStore'
@@ -13,9 +12,6 @@ import useLocalStorageState from '../../hooks/useLocalStorageState'
 import ButtonGroup from '../ButtonGroup'
 import PerformanceChart from './PerformanceChart'
 import PositionsTable from '../PerpPositionsTable'
-import { exportDataToCSV } from '../../utils/export'
-import Button from '../Button'
-import Loading from '../Loading'
 
 dayjs.extend(utc)
 
@@ -29,7 +25,7 @@ const performanceRangePresets = [
 ]
 const performanceRangePresetLabels = performanceRangePresets.map((x) => x.label)
 
-const fetchHourlyPerformanceStats = async (
+export const fetchHourlyPerformanceStats = async (
   mangoAccountPk: string,
   range: number
 ) => {
@@ -64,37 +60,6 @@ export default function AccountOverview() {
   const [pnl, setPnl] = useState(0)
   const [performanceRange, setPerformanceRange] = useState('30d')
   const [hourlyPerformanceStats, setHourlyPerformanceStats] = useState([])
-  const [loadExportData, setLoadExportData] = useState(false)
-  const wallet = useMangoStore((s) => s.wallet.current)
-  console.log(mangoAccount?.owner.toString(), wallet)
-  const canWithdraw =
-    mangoAccount && wallet?.publicKey
-      ? mangoAccount.owner.equals(wallet.publicKey)
-      : false
-
-  const exportPerformanceDataToCSV = async () => {
-    setLoadExportData(true)
-    const exportData = await fetchHourlyPerformanceStats(
-      mangoAccount.publicKey.toString(),
-      10000
-    )
-    const dataToExport = exportData.map((row) => {
-      const timestamp = new Date(row.time)
-      return {
-        timestamp: `${timestamp.toLocaleDateString()} ${timestamp.toLocaleTimeString()}`,
-        account_equity: row.account_equity,
-        pnl: row.pnl,
-      }
-    })
-
-    const title = `${
-      mangoAccount.name || mangoAccount.publicKey
-    }-Performance-${new Date().toLocaleDateString()}`
-    const headers = ['Timestamp', 'Account Equity', 'PNL']
-
-    exportDataToCSV(dataToExport, title, headers, t)
-    setLoadExportData(false)
-  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -161,21 +126,6 @@ export default function AccountOverview() {
                   </div>
                 ) : null}
               </div>
-              {canWithdraw ? (
-                <Button
-                  className={`flex items-center justify-center text-xs h-8 pt-0 pb-0 pl-3 pr-3 whitespace-nowrap`}
-                  onClick={exportPerformanceDataToCSV}
-                >
-                  {loadExportData ? (
-                    <Loading />
-                  ) : (
-                    <div className={`flex items-center`}>
-                      <SaveIcon className={`h-4 w-4 mr-1.5`} />
-                      {t('export-data')}
-                    </div>
-                  )}
-                </Button>
-              ) : null}
             </div>
             <div className="font-bold text-th-fgd-1 text-xl sm:text-2xl">
               {formatUsdValue(pnl)}
