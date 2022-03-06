@@ -268,6 +268,12 @@ const PositionsTable = () => {
                     },
                     index
                   ) => {
+                    const basePositionUi = Math.abs(
+                      basePosition
+                    ).toLocaleString(undefined, {
+                      maximumFractionDigits:
+                        perpContractPrecision[marketConfig.baseSymbol],
+                    })
                     return (
                       <ExpandableRow
                         buttonTemplate={
@@ -297,7 +303,7 @@ const PositionsTable = () => {
                                         ? t('long').toUpperCase()
                                         : t('short').toUpperCase()}
                                     </span>
-                                    {Math.abs(basePosition)}
+                                    {basePositionUi}
                                   </div>
                                 </div>
                               </div>
