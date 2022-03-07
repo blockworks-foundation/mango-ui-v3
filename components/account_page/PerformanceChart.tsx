@@ -212,9 +212,7 @@ const PerformanceChart = ({
             </>
           ) : chartData.length === 0 ? (
             <>
-              <div className="font-bold pb-1 text-xl text-th-fgd-1">
-                {formatUsdValue(0.0)}
-              </div>
+              <div className="font-bold pb-1 text-xl text-th-fgd-1">--</div>
               <div className="text-xs font-normal text-th-fgd-4">
                 {dayjs().format('ddd MMM D YYYY, h:mma')}
               </div>
