@@ -216,7 +216,7 @@ const AccountInterest = () => {
     }
 
     const getStats = async () => {
-      await fetchInterestStats()
+      fetchInterestStats()
       fetchHourlyInterestStats()
     }
     getStats()
@@ -397,7 +397,6 @@ const AccountInterest = () => {
                       </div>
                     }
                     key={`${symbol}${index}`}
-                    index={index}
                     panelTemplate={
                       <>
                         <div className="grid grid-cols-2 grid-flow-row gap-4">

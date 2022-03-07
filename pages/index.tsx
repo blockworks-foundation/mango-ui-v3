@@ -131,19 +131,21 @@ const PerpMarket = () => {
   }, [router, marketConfig])
 
   return (
-    <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
-      {showTour && !hideTips ? (
-        <IntroTips connected={connected} mangoAccount={mangoAccount} />
-      ) : null}
-      <TopBar />
-      <FavoritesShortcutBar />
-      <PageBodyWrapper className="p-1 sm:px-2 sm:py-1 md:px-2 md:py-1 xl:px-4">
-        <TradePageGrid />
-      </PageBodyWrapper>
-      {!alphaAccepted && (
-        <AlphaModal isOpen={!alphaAccepted} onClose={() => {}} />
-      )}
-    </div>
+    <>
+      <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
+        {showTour && !hideTips ? (
+          <IntroTips connected={connected} mangoAccount={mangoAccount} />
+        ) : null}
+        <TopBar />
+        <FavoritesShortcutBar />
+        <PageBodyWrapper className="p-1 sm:px-2 sm:py-1 md:px-2 md:py-1 xl:px-4">
+          <TradePageGrid />
+        </PageBodyWrapper>
+        {!alphaAccepted && (
+          <AlphaModal isOpen={!alphaAccepted} onClose={() => {}} />
+        )}
+      </div>
+    </>
   )
 }
 

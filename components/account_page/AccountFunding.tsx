@@ -148,7 +148,7 @@ const AccountFunding = () => {
     }
 
     const getStats = async () => {
-      await fetchFundingStats()
+      fetchFundingStats()
       fetchHourlyFundingStats()
     }
     getStats()

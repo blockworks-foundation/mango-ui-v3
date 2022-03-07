@@ -64,7 +64,7 @@ const DesktopTable = ({
       <thead>
         <TrHead>
           <Th>{t('market')}</Th>
-          <Th>{t('size')}</Th>
+          <Th>{t('side')}</Th>
           <Th>{t('size')}</Th>
           <Th>{t('price')}</Th>
           <Th>{t('value')}</Th>
@@ -99,7 +99,11 @@ const DesktopTable = ({
               </Td>
               {editOrderIndex !== index ? (
                 <>
-                  <Td className="w-[14.286%]">{order.size}</Td>
+                  <Td className="w-[14.286%]">
+                    {order.size.toLocaleString(undefined, {
+                      maximumFractionDigits: 4,
+                    })}
+                  </Td>
                   <Td className="w-[14.286%]">
                     {usdFormatter(order.price, decimals)}
                   </Td>

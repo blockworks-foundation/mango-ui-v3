@@ -316,18 +316,18 @@ export default function SimpleTradeForm({ initLeverage }) {
           orderType
         )
       } else {
-        txid = await mangoClient.placePerpOrder(
+        txid = await mangoClient.placePerpOrder2(
           mangoGroup,
           mangoAccount,
-          mangoGroup.mangoCache,
           market,
           wallet,
           side,
           orderPrice,
           baseSize,
-          orderType,
-          0,
-          side === 'buy' ? askInfo : bidInfo
+          {
+            orderType,
+            bookSideInfo: side === 'buy' ? askInfo : bidInfo,
+          }
         )
       }
       notify({ title: t('successfully-placed'), txid })

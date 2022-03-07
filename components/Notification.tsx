@@ -70,7 +70,7 @@ const Notification = ({ notification }: { notification: Notification }) => {
       description?.includes('Timed out awaiting') ||
       description?.includes('was not confirmed')
     ) {
-      parsedTitle = 'Unable to confirm transaction'
+      parsedTitle = 'Transaction status unknown'
     }
   }
 

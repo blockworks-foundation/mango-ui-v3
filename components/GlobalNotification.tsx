@@ -1,25 +1,53 @@
-import { useState } from 'react'
-// import useLocalStorageState from '../hooks/useLocalStorageState'
-
+import { useEffect, useState } from 'react'
 import { XIcon } from '@heroicons/react/solid'
+import { Connection } from '@solana/web3.js'
+import { sumBy } from 'lodash'
+import useInterval from '../hooks/useInterval'
+import { SECONDS } from '../stores/useMangoStore'
 
-// const GLOBAL_NOTIFICATION_KEY = 'globalNotification-0.1'
+const connection = new Connection('https://solana-api.projectserum.com/')
+
+const getRecentPerformance = async (setShow) => {
+  try {
+    const samples = 5
+    const response = await connection.getRecentPerformanceSamples(samples)
+    const totalSecs = sumBy(response, 'samplePeriodSecs')
+    const totalTransactions = sumBy(response, 'numTransactions')
+    const tps = totalTransactions / totalSecs
+
+    if (tps < 1500) {
+      setShow(true)
+    } else {
+      setShow(false)
+    }
+  } catch {
+    console.log('Unable to fetch TPS')
+  }
+}
 
 const GlobalNotification = () => {
-  const [show, setShow] = useState(false) // update this to true when we have a notification
+  const [show, setShow] = useState(false)
+
+  useEffect(() => {
+    getRecentPerformance(setShow)
+  }, [])
+
+  useInterval(() => {
+    getRecentPerformance(setShow)
+  }, 60 * SECONDS)
 
   if (show) {
     return (
-      <div className="flex items-center bg-th-bkg-4 text-th-fgd-1">
-        <div className="w-full text-center p-2.5">
+      <div className="flex items-center bg-th-bkg-4 text-th-primary">
+        <div className="w-full text-center p-1">
           <span>
-            The Solana network is currently experiencing degraded performance
-            resulting in some transactions timing out.
+            Solana network is experiencing degraded performance. Transactions
+            may fail to send or confirm.
           </span>
         </div>
 
         <button
-          className="text-th-fgd-1 mr-4 hover:text-th-primary"
+          className="text-th-primary mr-4 hover:text-th-primary"
           onClick={() => setShow(false)}
         >
           <XIcon className="w-5 h-5" />

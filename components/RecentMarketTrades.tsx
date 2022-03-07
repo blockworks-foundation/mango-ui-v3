@@ -77,9 +77,11 @@ export default function RecentMarketTrades() {
               </div>
               <div className={`text-right text-th-fgd-3`}>
                 {market?.minOrderSize && !isNaN(trade.size)
-                  ? Number(trade.size).toFixed(
-                      getDecimalCount(market.minOrderSize)
-                    )
+                  ? Number(trade.size).toLocaleString(undefined, {
+                      maximumFractionDigits: getDecimalCount(
+                        market.minOrderSize
+                      ),
+                    })
                   : ''}
               </div>
               <div className={`text-right text-th-fgd-3`}>
@@ -97,7 +99,6 @@ export default function RecentMarketTrades() {
           <div className="mb-0.5 text-fgd-1">{t('recent-trades')}</div>
         </div>
       }
-      index={0}
       panelTemplate={
         !!trades.length && (
           <div className="col-span-2">

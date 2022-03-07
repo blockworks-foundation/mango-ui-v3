@@ -1,7 +1,5 @@
 import { FunctionComponent, useEffect, useMemo, useState } from 'react'
 import { ExternalLinkIcon, EyeOffIcon } from '@heroicons/react/outline'
-import { ChevronDownIcon } from '@heroicons/react/solid'
-import { Disclosure } from '@headlessui/react'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts'
@@ -9,6 +7,7 @@ import useDimensions from 'react-cool-dimensions'
 import { IconButton } from './Button'
 import { LineChartIcon } from './icons'
 import { useTranslation } from 'next-i18next'
+import { ExpandableRow } from './TableElements'
 
 dayjs.extend(relativeTime)
 
@@ -326,270 +325,247 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
           {t('swap:chart-not-available')}
         </div>
       )}
-
-      {inputTokenInfo && outputTokenInfo && baseTokenId ? (
-        <div className="w-full">
-          <Disclosure>
-            {({ open }) => (
-              <>
-                <Disclosure.Button
-                  className={`border border-th-bkg-4 default-transition flex items-center justify-between mt-6 p-3 rounded-md w-full hover:bg-th-bkg-2 ${
-                    open
-                      ? 'border-b-transparent rounded-b-none'
-                      : 'transform rotate-360'
-                  }`}
-                >
-                  <div className="flex items-center">
-                    {inputTokenInfo.image?.small ? (
-                      <img
-                        className="rounded-full"
-                        src={inputTokenInfo.image?.small}
-                        width="32"
-                        height="32"
-                        alt={inputTokenInfo.name}
-                      />
-                    ) : null}
-                    <div className="ml-2.5 text-left">
-                      <h2 className="font-bold text-base text-th-fgd-1">
-                        {inputTokenInfo?.symbol?.toUpperCase()}
-                      </h2>
-                      <div className="font-normal text-th-fgd-3 text-xs">
-                        {inputTokenInfo.name}
-                      </div>
+      <div className="pt-8">
+        {inputTokenInfo && outputTokenInfo && baseTokenId ? (
+          <ExpandableRow
+            buttonTemplate={
+              <div className="flex items-center justify-between text-fgd-1 w-full">
+                <div className="flex items-center">
+                  {inputTokenInfo.image?.small ? (
+                    <img
+                      className="rounded-full"
+                      src={inputTokenInfo.image?.small}
+                      width="32"
+                      height="32"
+                      alt={inputTokenInfo.name}
+                    />
+                  ) : null}
+                  <div className="ml-2.5 text-left">
+                    <h2 className="font-bold text-base text-th-fgd-1">
+                      {inputTokenInfo?.symbol?.toUpperCase()}
+                    </h2>
+                    <div className="font-normal text-th-fgd-3 text-xs">
+                      {inputTokenInfo.name}
                     </div>
                   </div>
-                  <div className="flex items-center">
-                    <div className="flex items-center space-x-3">
-                      {inputTokenInfo.market_data?.current_price?.usd ? (
-                        <div className="font-normal text-th-fgd-1">
+                </div>
+                <div className="flex items-center">
+                  <div className="flex items-center space-x-3">
+                    {inputTokenInfo.market_data?.current_price?.usd ? (
+                      <div className="font-normal text-th-fgd-1">
+                        $
+                        {numberFormatter.format(
+                          inputTokenInfo.market_data?.current_price.usd
+                        )}
+                      </div>
+                    ) : null}
+                    {inputTokenInfo.market_data?.price_change_percentage_24h ? (
+                      <div
+                        className={`font-normal text-th-fgd-1 ${
+                          inputTokenInfo.market_data
+                            .price_change_percentage_24h >= 0
+                            ? 'text-th-green'
+                            : 'text-th-red'
+                        }`}
+                      >
+                        {inputTokenInfo.market_data.price_change_percentage_24h.toFixed(
+                          2
+                        )}
+                        %
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+              </div>
+            }
+            panelTemplate={
+              <div>
+                <div className="font-bold m-1 mt-0 pb-2 text-th-fgd-1 text-base">
+                  {t('market-data')}
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 grid-flow-row">
+                  {inputTokenInfo.market_cap_rank ? (
+                    <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
+                      <div className="text-th-fgd-3 text-xs">
+                        {t('swap:market-cap-rank')}
+                      </div>
+                      <div className="font-bold text-th-fgd-1 text-lg">
+                        #{inputTokenInfo.market_cap_rank}
+                      </div>
+                    </div>
+                  ) : null}
+                  {inputTokenInfo.market_data?.market_cap &&
+                  inputTokenInfo.market_data?.market_cap?.usd !== 0 ? (
+                    <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
+                      <div className="text-th-fgd-3 text-xs">
+                        {t('swap:market-cap')}
+                      </div>
+                      <div className="font-bold text-th-fgd-1 text-lg">
+                        $
+                        {numberCompacter.format(
+                          inputTokenInfo.market_data?.market_cap?.usd
+                        )}
+                      </div>
+                    </div>
+                  ) : null}
+                  {inputTokenInfo.market_data?.total_volume?.usd ? (
+                    <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
+                      <div className="text-th-fgd-3 text-xs">
+                        {t('daily-volume')}
+                      </div>
+                      <div className="font-bold text-th-fgd-1 text-lg">
+                        $
+                        {numberCompacter.format(
+                          inputTokenInfo.market_data?.total_volume?.usd
+                        )}
+                      </div>
+                    </div>
+                  ) : null}
+                  {inputTokenInfo.market_data?.circulating_supply ? (
+                    <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
+                      <div className="text-th-fgd-3 text-xs">
+                        {t('swap:token-supply')}
+                      </div>
+                      <div className="font-bold text-th-fgd-1 text-lg">
+                        {numberCompacter.format(
+                          inputTokenInfo.market_data.circulating_supply
+                        )}
+                      </div>
+                      {inputTokenInfo.market_data?.max_supply ? (
+                        <div className="text-th-fgd-2 text-xs">
+                          {t('swap:max-supply')}:{' '}
+                          {numberCompacter.format(
+                            inputTokenInfo.market_data.max_supply
+                          )}
+                        </div>
+                      ) : null}
+                    </div>
+                  ) : null}
+                  {inputTokenInfo.market_data?.ath?.usd ? (
+                    <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
+                      <div className="text-th-fgd-3 text-xs">
+                        {t('swap:ath')}
+                      </div>
+                      <div className="flex">
+                        <div className="font-bold text-th-fgd-1 text-lg">
                           $
                           {numberFormatter.format(
-                            inputTokenInfo.market_data?.current_price.usd
+                            inputTokenInfo.market_data.ath.usd
                           )}
                         </div>
-                      ) : null}
-                      {inputTokenInfo.market_data
-                        ?.price_change_percentage_24h ? (
-                        <div
-                          className={`font-normal text-th-fgd-1 ${
-                            inputTokenInfo.market_data
-                              .price_change_percentage_24h >= 0
-                              ? 'text-th-green'
-                              : 'text-th-red'
-                          }`}
-                        >
-                          {inputTokenInfo.market_data.price_change_percentage_24h.toFixed(
-                            2
-                          )}
-                          %
-                        </div>
-                      ) : null}
-                    </div>
-                    <ChevronDownIcon
-                      className={`default-transition h-6 ml-2 w-6 text-th-fgd-3 ${
-                        open ? 'transform rotate-180' : 'transform rotate-360'
-                      }`}
-                    />
-                  </div>
-                </Disclosure.Button>
-                <Disclosure.Panel>
-                  <div className="border border-th-bkg-4 border-t-0 p-3 rounded-b-md">
-                    <div className="font-bold m-1 mt-0 pb-2 text-th-fgd-1 text-base">
-                      {t('market-data')}
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 grid-flow-row">
-                      {inputTokenInfo.market_cap_rank ? (
-                        <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
-                          <div className="text-th-fgd-3 text-xs">
-                            {t('swap:market-cap-rank')}
-                          </div>
-                          <div className="font-bold text-th-fgd-1 text-lg">
-                            #{inputTokenInfo.market_cap_rank}
-                          </div>
-                        </div>
-                      ) : null}
-                      {inputTokenInfo.market_data?.market_cap &&
-                      inputTokenInfo.market_data?.market_cap?.usd !== 0 ? (
-                        <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
-                          <div className="text-th-fgd-3 text-xs">
-                            {t('swap:market-cap')}
-                          </div>
-                          <div className="font-bold text-th-fgd-1 text-lg">
-                            $
-                            {numberCompacter.format(
-                              inputTokenInfo.market_data?.market_cap?.usd
-                            )}
-                          </div>
-                        </div>
-                      ) : null}
-                      {inputTokenInfo.market_data?.total_volume?.usd ? (
-                        <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
-                          <div className="text-th-fgd-3 text-xs">
-                            {t('daily-volume')}
-                          </div>
-                          <div className="font-bold text-th-fgd-1 text-lg">
-                            $
-                            {numberCompacter.format(
-                              inputTokenInfo.market_data?.total_volume?.usd
-                            )}
-                          </div>
-                        </div>
-                      ) : null}
-                      {inputTokenInfo.market_data?.circulating_supply ? (
-                        <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
-                          <div className="text-th-fgd-3 text-xs">
-                            {t('swap:token-supply')}
-                          </div>
-                          <div className="font-bold text-th-fgd-1 text-lg">
-                            {numberCompacter.format(
-                              inputTokenInfo.market_data.circulating_supply
-                            )}
-                          </div>
-                          {inputTokenInfo.market_data?.max_supply ? (
-                            <div className="text-th-fgd-2 text-xs">
-                              {t('swap:max-supply')}:{' '}
-                              {numberCompacter.format(
-                                inputTokenInfo.market_data.max_supply
-                              )}
-                            </div>
-                          ) : null}
-                        </div>
-                      ) : null}
-                      {inputTokenInfo.market_data?.ath?.usd ? (
-                        <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
-                          <div className="text-th-fgd-3 text-xs">
-                            {t('swap:ath')}
-                          </div>
-                          <div className="flex">
-                            <div className="font-bold text-th-fgd-1 text-lg">
-                              $
-                              {numberFormatter.format(
-                                inputTokenInfo.market_data.ath.usd
-                              )}
-                            </div>
-                            {inputTokenInfo.market_data?.ath_change_percentage
-                              ?.usd ? (
-                              <div
-                                className={`ml-1.5 mt-2 text-xs ${
-                                  inputTokenInfo.market_data
-                                    ?.ath_change_percentage?.usd >= 0
-                                    ? 'text-th-green'
-                                    : 'text-th-red'
-                                }`}
-                              >
-                                {(inputTokenInfo.market_data?.ath_change_percentage?.usd).toFixed(
-                                  2
-                                )}
-                                %
-                              </div>
-                            ) : null}
-                          </div>
-                          {inputTokenInfo.market_data?.ath_date?.usd ? (
-                            <div className="text-th-fgd-2 text-xs">
-                              {dayjs(
-                                inputTokenInfo.market_data.ath_date.usd
-                              ).fromNow()}
-                            </div>
-                          ) : null}
-                        </div>
-                      ) : null}
-                      {inputTokenInfo.market_data?.atl?.usd ? (
-                        <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
-                          <div className="text-th-fgd-3 text-xs">
-                            {t('swap:atl')}
-                          </div>
-                          <div className="flex">
-                            <div className="font-bold text-th-fgd-1 text-lg">
-                              $
-                              {numberFormatter.format(
-                                inputTokenInfo.market_data.atl.usd
-                              )}
-                            </div>
-                            {inputTokenInfo.market_data?.atl_change_percentage
-                              ?.usd ? (
-                              <div
-                                className={`ml-1.5 mt-2 text-xs ${
-                                  inputTokenInfo.market_data
-                                    ?.atl_change_percentage?.usd >= 0
-                                    ? 'text-th-green'
-                                    : 'text-th-red'
-                                }`}
-                              >
-                                {(inputTokenInfo.market_data?.atl_change_percentage?.usd).toLocaleString(
-                                  undefined,
-                                  {
-                                    minimumFractionDigits: 0,
-                                    maximumFractionDigits: 2,
-                                  }
-                                )}
-                                %
-                              </div>
-                            ) : null}
-                          </div>
-                          {inputTokenInfo.market_data?.atl_date?.usd ? (
-                            <div className="text-th-fgd-2 text-xs">
-                              {dayjs(
-                                inputTokenInfo.market_data.atl_date.usd
-                              ).fromNow()}
-                            </div>
-                          ) : null}
-                        </div>
-                      ) : null}
-                    </div>
-                    {topHolders?.inputHolders ? (
-                      <div className="pt-4">
-                        <div className="font-bold m-1 pb-3 text-th-fgd-1 text-base">
-                          {t('swap:top-ten')}
-                        </div>
-                        {topHolders.inputHolders.map((holder) => (
-                          <a
-                            className="border-t border-th-bkg-4 default transition flex justify-between mx-1 px-2 py-2.5 text-th-fgd-3 hover:bg-th-bkg-2"
-                            href={`https://explorer.solana.com/address/${holder.owner}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            key={holder.owner}
+                        {inputTokenInfo.market_data?.ath_change_percentage
+                          ?.usd ? (
+                          <div
+                            className={`ml-1.5 mt-2 text-xs ${
+                              inputTokenInfo.market_data?.ath_change_percentage
+                                ?.usd >= 0
+                                ? 'text-th-green'
+                                : 'text-th-red'
+                            }`}
                           >
-                            <div className="text-th-fgd-3">
-                              {holder.owner.slice(0, 5) +
-                                '…' +
-                                holder.owner.slice(-5)}
-                            </div>
-                            <div className="flex items-center">
-                              <div className="text-th-fgd-1">
-                                {numberFormatter.format(
-                                  holder.amount / Math.pow(10, holder.decimals)
-                                )}
-                              </div>
-                              <ExternalLinkIcon className="h-4 ml-2 w-4" />
-                            </div>
-                          </a>
-                        ))}
+                            {(inputTokenInfo.market_data?.ath_change_percentage?.usd).toFixed(
+                              2
+                            )}
+                            %
+                          </div>
+                        ) : null}
                       </div>
-                    ) : null}
+                      {inputTokenInfo.market_data?.ath_date?.usd ? (
+                        <div className="text-th-fgd-2 text-xs">
+                          {dayjs(
+                            inputTokenInfo.market_data.ath_date.usd
+                          ).fromNow()}
+                        </div>
+                      ) : null}
+                    </div>
+                  ) : null}
+                  {inputTokenInfo.market_data?.atl?.usd ? (
+                    <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
+                      <div className="text-th-fgd-3 text-xs">
+                        {t('swap:atl')}
+                      </div>
+                      <div className="flex">
+                        <div className="font-bold text-th-fgd-1 text-lg">
+                          $
+                          {numberFormatter.format(
+                            inputTokenInfo.market_data.atl.usd
+                          )}
+                        </div>
+                        {inputTokenInfo.market_data?.atl_change_percentage
+                          ?.usd ? (
+                          <div
+                            className={`ml-1.5 mt-2 text-xs ${
+                              inputTokenInfo.market_data?.atl_change_percentage
+                                ?.usd >= 0
+                                ? 'text-th-green'
+                                : 'text-th-red'
+                            }`}
+                          >
+                            {(inputTokenInfo.market_data?.atl_change_percentage?.usd).toLocaleString(
+                              undefined,
+                              {
+                                minimumFractionDigits: 0,
+                                maximumFractionDigits: 2,
+                              }
+                            )}
+                            %
+                          </div>
+                        ) : null}
+                      </div>
+                      {inputTokenInfo.market_data?.atl_date?.usd ? (
+                        <div className="text-th-fgd-2 text-xs">
+                          {dayjs(
+                            inputTokenInfo.market_data.atl_date.usd
+                          ).fromNow()}
+                        </div>
+                      ) : null}
+                    </div>
+                  ) : null}
+                </div>
+                {topHolders?.inputHolders ? (
+                  <div className="pt-4">
+                    <div className="font-bold m-1 pb-3 text-th-fgd-1 text-base">
+                      {t('swap:top-ten')}
+                    </div>
+                    {topHolders.inputHolders.map((holder) => (
+                      <a
+                        className="border-t border-th-bkg-4 default transition flex justify-between mx-1 px-2 py-2.5 text-th-fgd-3 hover:bg-th-bkg-2"
+                        href={`https://explorer.solana.com/address/${holder.owner}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        key={holder.owner}
+                      >
+                        <div className="text-th-fgd-3">
+                          {holder.owner.slice(0, 5) +
+                            '…' +
+                            holder.owner.slice(-5)}
+                        </div>
+                        <div className="flex items-center">
+                          <div className="text-th-fgd-1">
+                            {numberFormatter.format(
+                              holder.amount / Math.pow(10, holder.decimals)
+                            )}
+                          </div>
+                          <ExternalLinkIcon className="h-4 ml-2 w-4" />
+                        </div>
+                      </a>
+                    ))}
                   </div>
-                </Disclosure.Panel>
-              </>
-            )}
-          </Disclosure>
-        </div>
-      ) : (
-        <div className="bg-th-bkg-3 mt-3 p-4 rounded-md text-center text-th-fgd-3">
-          {t('swap:input-info-unavailable')}
-        </div>
-      )}
+                ) : null}
+              </div>
+            }
+          />
+        ) : (
+          <div className="bg-th-bkg-3 mt-3 p-4 rounded-md text-center text-th-fgd-3">
+            {t('swap:input-info-unavailable')}
+          </div>
+        )}
 
-      {outputTokenInfo && quoteTokenId ? (
-        <div className="w-full">
-          <Disclosure>
-            {({ open }) => (
-              <>
-                <Disclosure.Button
-                  className={`border border-th-bkg-4 default-transition flex items-center justify-between mt-3 p-3 rounded-md w-full hover:bg-th-bkg-2 ${
-                    open
-                      ? 'border-b-transparent rounded-b-none'
-                      : 'transform rotate-360'
-                  }`}
-                >
+        {outputTokenInfo && quoteTokenId ? (
+          <div className="border-b border-th-bkg-4 w-full">
+            <ExpandableRow
+              buttonTemplate={
+                <div className="flex items-center justify-between text-fgd-1 w-full">
                   <div className="flex items-center">
                     {outputTokenInfo.image?.small ? (
                       <img
@@ -615,7 +591,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                         <div className="font-normal text-th-fgd-1">
                           $
                           {numberFormatter.format(
-                            outputTokenInfo.market_data.current_price.usd
+                            outputTokenInfo.market_data?.current_price.usd
                           )}
                         </div>
                       ) : null}
@@ -636,198 +612,193 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                         </div>
                       ) : null}
                     </div>
-                    <ChevronDownIcon
-                      className={`default-transition h-6 ml-2 w-6 text-th-fgd-3 ${
-                        open ? 'transform rotate-180' : 'transform rotate-360'
-                      }`}
-                    />
                   </div>
-                </Disclosure.Button>
-                <Disclosure.Panel>
-                  <div className="border border-th-bkg-4 border-t-0 p-3 rounded-b-md">
-                    <div className="font-bold m-1 mt-0 pb-2 text-th-fgd-1 text-base">
-                      {t('market-data')}
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 grid-flow-row">
-                      {outputTokenInfo.market_cap_rank ? (
-                        <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
-                          <div className="text-th-fgd-3 text-xs">
-                            {t('swap:market-cap-rank')}
-                          </div>
-                          <div className="font-bold text-th-fgd-1 text-lg">
-                            #{outputTokenInfo.market_cap_rank}
-                          </div>
+                </div>
+              }
+              panelTemplate={
+                <div>
+                  <div className="font-bold m-1 mt-0 pb-2 text-th-fgd-1 text-base">
+                    {t('market-data')}
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 grid-flow-row">
+                    {outputTokenInfo.market_cap_rank ? (
+                      <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
+                        <div className="text-th-fgd-3 text-xs">
+                          {t('swap:market-cap-rank')}
                         </div>
-                      ) : null}
-                      {outputTokenInfo.market_data?.market_cap &&
-                      outputTokenInfo.market_data?.market_cap?.usd !== 0 ? (
-                        <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
-                          <div className="text-th-fgd-3 text-xs">
-                            {t('swap:market-cap')}
+                        <div className="font-bold text-th-fgd-1 text-lg">
+                          #{outputTokenInfo.market_cap_rank}
+                        </div>
+                      </div>
+                    ) : null}
+                    {outputTokenInfo.market_data?.market_cap &&
+                    outputTokenInfo.market_data?.market_cap?.usd !== 0 ? (
+                      <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
+                        <div className="text-th-fgd-3 text-xs">
+                          {t('swap:market-cap')}
+                        </div>
+                        <div className="font-bold text-th-fgd-1 text-lg">
+                          $
+                          {numberCompacter.format(
+                            outputTokenInfo.market_data?.market_cap?.usd
+                          )}
+                        </div>
+                      </div>
+                    ) : null}
+                    {outputTokenInfo.market_data?.total_volume?.usd ? (
+                      <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
+                        <div className="text-th-fgd-3 text-xs">
+                          {t('daily-volume')}
+                        </div>
+                        <div className="font-bold text-th-fgd-1 text-lg">
+                          $
+                          {numberCompacter.format(
+                            outputTokenInfo.market_data?.total_volume?.usd
+                          )}
+                        </div>
+                      </div>
+                    ) : null}
+                    {outputTokenInfo.market_data?.circulating_supply ? (
+                      <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
+                        <div className="text-th-fgd-3 text-xs">
+                          {t('swap:token-supply')}
+                        </div>
+                        <div className="font-bold text-th-fgd-1 text-lg">
+                          {numberCompacter.format(
+                            outputTokenInfo.market_data.circulating_supply
+                          )}
+                        </div>
+                        {outputTokenInfo.market_data?.max_supply ? (
+                          <div className="text-th-fgd-2 text-xs">
+                            {t('swap:max-supply')}:{' '}
+                            {numberCompacter.format(
+                              outputTokenInfo.market_data.max_supply
+                            )}
                           </div>
+                        ) : null}
+                      </div>
+                    ) : null}
+                    {outputTokenInfo.market_data?.ath?.usd ? (
+                      <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
+                        <div className="text-th-fgd-3 text-xs">
+                          {t('swap:ath')}
+                        </div>
+                        <div className="flex">
                           <div className="font-bold text-th-fgd-1 text-lg">
                             $
-                            {numberCompacter.format(
-                              outputTokenInfo.market_data?.market_cap?.usd
+                            {numberFormatter.format(
+                              outputTokenInfo.market_data.ath.usd
                             )}
                           </div>
+                          {outputTokenInfo.market_data?.ath_change_percentage
+                            ?.usd ? (
+                            <div
+                              className={`ml-1.5 mt-2 text-xs ${
+                                outputTokenInfo.market_data
+                                  ?.ath_change_percentage?.usd >= 0
+                                  ? 'text-th-green'
+                                  : 'text-th-red'
+                              }`}
+                            >
+                              {(outputTokenInfo.market_data?.ath_change_percentage?.usd).toFixed(
+                                2
+                              )}
+                              %
+                            </div>
+                          ) : null}
                         </div>
-                      ) : null}
-                      {outputTokenInfo.market_data?.total_volume?.usd ? (
-                        <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
-                          <div className="text-th-fgd-3 text-xs">
-                            {t('daily-volume')}
+                        {outputTokenInfo.market_data?.ath_date?.usd ? (
+                          <div className="text-th-fgd-2 text-xs">
+                            {dayjs(
+                              outputTokenInfo.market_data.ath_date.usd
+                            ).fromNow()}
                           </div>
+                        ) : null}
+                      </div>
+                    ) : null}
+                    {outputTokenInfo.market_data?.atl?.usd ? (
+                      <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
+                        <div className="text-th-fgd-3 text-xs">
+                          {t('swap:atl')}
+                        </div>
+                        <div className="flex">
                           <div className="font-bold text-th-fgd-1 text-lg">
                             $
-                            {numberCompacter.format(
-                              outputTokenInfo.market_data?.total_volume?.usd
+                            {numberFormatter.format(
+                              outputTokenInfo.market_data.atl.usd
                             )}
                           </div>
-                        </div>
-                      ) : null}
-                      {outputTokenInfo.market_data?.circulating_supply ? (
-                        <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
-                          <div className="text-th-fgd-3 text-xs">
-                            {t('swap:token-supply')}
-                          </div>
-                          <div className="font-bold text-th-fgd-1 text-lg">
-                            {numberCompacter.format(
-                              outputTokenInfo.market_data.circulating_supply
-                            )}
-                          </div>
-                          {outputTokenInfo.market_data?.max_supply ? (
-                            <div className="text-th-fgd-2 text-xs">
-                              {t('swap:max-supply')}:{' '}
-                              {numberCompacter.format(
-                                outputTokenInfo.market_data.max_supply
+                          {outputTokenInfo.market_data?.atl_change_percentage
+                            ?.usd ? (
+                            <div
+                              className={`ml-1.5 mt-2 text-xs ${
+                                outputTokenInfo.market_data
+                                  ?.atl_change_percentage?.usd >= 0
+                                  ? 'text-th-green'
+                                  : 'text-th-red'
+                              }`}
+                            >
+                              {(outputTokenInfo.market_data?.atl_change_percentage?.usd).toLocaleString(
+                                undefined,
+                                {
+                                  minimumFractionDigits: 0,
+                                  maximumFractionDigits: 2,
+                                }
                               )}
+                              %
                             </div>
                           ) : null}
                         </div>
-                      ) : null}
-                      {outputTokenInfo.market_data?.ath?.usd ? (
-                        <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
-                          <div className="text-th-fgd-3 text-xs">
-                            {t('swap:ath')}
+                        {outputTokenInfo.market_data?.atl_date?.usd ? (
+                          <div className="text-th-fgd-2 text-xs">
+                            {dayjs(
+                              outputTokenInfo.market_data.atl_date.usd
+                            ).fromNow()}
                           </div>
-                          <div className="flex">
-                            <div className="font-bold text-th-fgd-1 text-lg">
-                              $
-                              {numberFormatter.format(
-                                outputTokenInfo.market_data.ath.usd
-                              )}
-                            </div>
-                            {outputTokenInfo.market_data?.ath_change_percentage
-                              ?.usd ? (
-                              <div
-                                className={`ml-1.5 mt-2 text-xs ${
-                                  outputTokenInfo.market_data
-                                    ?.ath_change_percentage?.usd >= 0
-                                    ? 'text-th-green'
-                                    : 'text-th-red'
-                                }`}
-                              >
-                                {(outputTokenInfo.market_data?.ath_change_percentage?.usd).toFixed(
-                                  2
-                                )}
-                                %
-                              </div>
-                            ) : null}
-                          </div>
-                          {outputTokenInfo.market_data?.ath_date?.usd ? (
-                            <div className="text-th-fgd-2 text-xs">
-                              {dayjs(
-                                outputTokenInfo.market_data.ath_date.usd
-                              ).fromNow()}
-                            </div>
-                          ) : null}
-                        </div>
-                      ) : null}
-                      {outputTokenInfo.market_data?.atl?.usd ? (
-                        <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
-                          <div className="text-th-fgd-3 text-xs">
-                            {t('swap:atl')}
-                          </div>
-                          <div className="flex">
-                            <div className="font-bold text-th-fgd-1 text-lg">
-                              $
-                              {numberFormatter.format(
-                                outputTokenInfo.market_data.atl.usd
-                              )}
-                            </div>
-                            {outputTokenInfo.market_data?.atl_change_percentage
-                              ?.usd ? (
-                              <div
-                                className={`ml-1.5 mt-2 text-xs ${
-                                  outputTokenInfo.market_data
-                                    ?.atl_change_percentage?.usd >= 0
-                                    ? 'text-th-green'
-                                    : 'text-th-red'
-                                }`}
-                              >
-                                {(outputTokenInfo.market_data?.atl_change_percentage?.usd).toLocaleString(
-                                  undefined,
-                                  {
-                                    minimumFractionDigits: 0,
-                                    maximumFractionDigits: 2,
-                                  }
-                                )}
-                                %
-                              </div>
-                            ) : null}
-                          </div>
-                          {outputTokenInfo.market_data?.atl_date?.usd ? (
-                            <div className="text-th-fgd-2 text-xs">
-                              {dayjs(
-                                outputTokenInfo.market_data.atl_date.usd
-                              ).fromNow()}
-                            </div>
-                          ) : null}
-                        </div>
-                      ) : null}
-                    </div>
-                    {topHolders?.outputHolders ? (
-                      <div className="pt-4">
-                        <div className="font-bold m-1 pb-3 text-th-fgd-1 text-base">
-                          {t('swap:top-ten')}
-                        </div>
-                        {topHolders.outputHolders.map((holder) => (
-                          <a
-                            className="border-t border-th-bkg-4 default transition flex justify-between mx-1 px-2 py-2.5 text-th-fgd-3 hover:bg-th-bkg-2"
-                            href={`https://explorer.solana.com/address/${holder.owner}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            key={holder.owner}
-                          >
-                            <div className="text-th-fgd-3">
-                              {holder.owner.slice(0, 5) +
-                                '…' +
-                                holder.owner.slice(-5)}
-                            </div>
-                            <div className="flex items-center">
-                              <div className="text-th-fgd-1">
-                                {numberFormatter.format(
-                                  holder.amount / Math.pow(10, holder.decimals)
-                                )}
-                              </div>
-                              <ExternalLinkIcon className="h-4 ml-2 w-4" />
-                            </div>
-                          </a>
-                        ))}
+                        ) : null}
                       </div>
                     ) : null}
                   </div>
-                </Disclosure.Panel>
-              </>
-            )}
-          </Disclosure>
-        </div>
-      ) : (
-        <div className="bg-th-bkg-3 mt-3 p-4 rounded-md text-center text-th-fgd-3">
-          {t('swap:output-info-unavailable')}
-        </div>
-      )}
+                  {topHolders?.inputHolders ? (
+                    <div className="pt-4">
+                      <div className="font-bold m-1 pb-3 text-th-fgd-1 text-base">
+                        {t('swap:top-ten')}
+                      </div>
+                      {topHolders.inputHolders.map((holder) => (
+                        <a
+                          className="border-t border-th-bkg-4 default transition flex justify-between mx-1 px-2 py-2.5 text-th-fgd-3 hover:bg-th-bkg-2"
+                          href={`https://explorer.solana.com/address/${holder.owner}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          key={holder.owner}
+                        >
+                          <div className="text-th-fgd-3">
+                            {holder.owner.slice(0, 5) +
+                              '…' +
+                              holder.owner.slice(-5)}
+                          </div>
+                          <div className="flex items-center">
+                            <div className="text-th-fgd-1">
+                              {numberFormatter.format(
+                                holder.amount / Math.pow(10, holder.decimals)
+                              )}
+                            </div>
+                            <ExternalLinkIcon className="h-4 ml-2 w-4" />
+                          </div>
+                        </a>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+              }
+            />
+          </div>
+        ) : (
+          <div className="bg-th-bkg-3 mt-3 p-4 rounded-md text-center text-th-fgd-3">
+            {t('swap:output-info-unavailable')}
+          </div>
+        )}
+      </div>
     </div>
   )
 }

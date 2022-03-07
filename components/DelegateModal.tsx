@@ -67,12 +67,24 @@ const DelegateModal: FunctionComponent<DelegateModalProps> = ({
   }
 
   const validateKeyInput = () => {
-    if (keyBase58.length != 44 && keyBase58.length != 0) {
-      setInvalidKeyMessage(t('delegate:invalid-key'))
-      return false
-    } else {
+    if (isKeyValid()) {
       setInvalidKeyMessage('')
+    } else {
+      setInvalidKeyMessage(t('delegate:invalid-key'))
+    }
+  }
+
+  const isKeyValid = () => {
+    try {
+      if (keyBase58.length == 0) {
+        return true
+      }
+
+      // will throw if key is wrong length
+      new PublicKey(keyBase58)
       return true
+    } catch (e) {
+      return false
     }
   }
 
@@ -113,8 +125,10 @@ const DelegateModal: FunctionComponent<DelegateModalProps> = ({
         type="text"
         error={!!invalidKeyMessage}
         value={keyBase58}
-        onBlur={validateKeyInput}
-        onChange={(e) => onChangeKeyInput(e.target.value)}
+        onChange={(e) => {
+          validateKeyInput()
+          onChangeKeyInput(e.target.value)
+        }}
         suffix={
           <IconButton
             disabled={!keyBase58.length}
@@ -134,7 +148,7 @@ const DelegateModal: FunctionComponent<DelegateModalProps> = ({
       ) : null}
       <Button
         onClick={() => setDelegate()}
-        disabled={keyBase58.length != 44 && keyBase58.length != 0}
+        disabled={!isKeyValid()}
         className="mt-6 w-full"
       >
         {t('delegate:set-delegate')}

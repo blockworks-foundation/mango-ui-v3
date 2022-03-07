@@ -22,7 +22,7 @@ export const FlipCardInner = (props) => {
 }
 
 export const FlipCardFront = (props) => {
-  return <div className="w-full flipcard-front">{props.children}</div>
+  return <div className="w-full h-full flipcard-front">{props.children}</div>
 }
 
 export const FlipCardBack = ({ children }) => {
