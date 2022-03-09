@@ -174,7 +174,7 @@ const MarketDetails = () => {
 
   return (
     <div
-      className={`flex flex-col relative md:pb-2 md:pt-3 md:px-3 lg:flex-row lg:items-center lg:justify-between`}
+      className={`relative flex flex-col md:px-3 md:pb-2 md:pt-3 lg:flex-row lg:items-center lg:justify-between`}
     >
       <div className="flex flex-col lg:flex-row lg:items-center">
         <div className="hidden md:block md:pb-4 md:pr-6 lg:pb-0">
@@ -182,9 +182,9 @@ const MarketDetails = () => {
             <SwitchMarketDropdown />
           </div>
         </div>
-        <div className="grid grid-flow-row grid-cols-1 md:grid-cols-3 gap-3 lg:grid-cols-none lg:grid-flow-col lg:grid-rows-1 lg:gap-6">
+        <div className="grid grid-flow-row grid-cols-1 gap-3 md:grid-cols-3 lg:grid-flow-col lg:grid-cols-none lg:grid-rows-1 lg:gap-6">
           <div className="flex items-center justify-between md:block">
-            <div className="text-th-fgd-3 tiny-text pb-0.5">
+            <div className="tiny-text pb-0.5 text-th-fgd-3">
               {t('oracle-price')}
             </div>
             <div className="text-th-fgd-1 md:text-xs">
@@ -198,7 +198,7 @@ const MarketDetails = () => {
             </div>
           </div>
           <div className="flex items-center justify-between md:block">
-            <div className="text-th-fgd-3 tiny-text pb-0.5">
+            <div className="tiny-text pb-0.5 text-th-fgd-3">
               {t('rolling-change')}
             </div>
             {change24h || change24h === 0 ? (
@@ -219,7 +219,7 @@ const MarketDetails = () => {
           </div>
           {isPerpMarket ? (
             <div className="flex items-center justify-between md:block">
-              <div className="text-th-fgd-3 tiny-text pb-0.5">
+              <div className="tiny-text pb-0.5 text-th-fgd-3">
                 {t('daily-volume')}
               </div>
               <div className="text-th-fgd-1 md:text-xs">
@@ -237,8 +237,8 @@ const MarketDetails = () => {
                 content="Funding is paid continuously. The 1hr rate displayed is a rolling average of the past 60 mins."
                 placement={'bottom'}
               >
-                <div className="flex items-center justify-between md:block hover:cursor-help">
-                  <div className="flex text-th-fgd-3 tiny-text pb-0.5 items-center">
+                <div className="flex items-center justify-between hover:cursor-help md:block">
+                  <div className="tiny-text flex items-center pb-0.5 text-th-fgd-3">
                     {t('average-funding')}
                   </div>
                   <div className="text-th-fgd-1 md:text-xs">
@@ -251,7 +251,7 @@ const MarketDetails = () => {
                 </div>
               </Tooltip>
               <div className="flex items-center justify-between md:block">
-                <div className="text-th-fgd-3 tiny-text pb-0.5">
+                <div className="tiny-text pb-0.5 text-th-fgd-3">
                   {t('open-interest')}
                 </div>
                 <div className="text-th-fgd-1 md:text-xs">
@@ -269,7 +269,7 @@ const MarketDetails = () => {
             </>
           ) : null}
           <div>
-            <div className="text-left xl:text-center text-th-fgd-3 tiny-text pb-0.5">
+            <div className="tiny-text pb-0.5 text-left text-th-fgd-3 xl:text-center">
               {t('daily-range')}
             </div>
             <DayHighLow
@@ -280,7 +280,7 @@ const MarketDetails = () => {
           </div>
         </div>
       </div>
-      <div className="absolute right-0 bottom-0 sm:bottom-auto lg:right-3 flex items-center justify-end space-x-2">
+      <div className="absolute right-0 bottom-0 flex items-center justify-end space-x-2 sm:bottom-auto lg:right-3">
         {!isMobile ? (
           <div id="layout-tip">
             <UiLock />
@@ -297,5 +297,5 @@ const MarketDetails = () => {
 export default MarketDetails
 
 export const MarketDataLoader = () => (
-  <div className="animate-pulse bg-th-bkg-3 h-3.5 mt-0.5 w-10 rounded-sm" />
+  <div className="mt-0.5 h-3.5 w-10 animate-pulse rounded-sm bg-th-bkg-3" />
 )

@@ -46,11 +46,11 @@ const MarketNavItem: FunctionComponent<MarketNavItemProps> = ({
         <FavoriteMarketButton market={market} />
 
         <button
-          className="font-normal flex items-center justify-between w-full"
+          className="flex w-full items-center justify-between font-normal"
           onClick={() => selectMarket(market)}
         >
           <div
-            className={`default-transition flex items-center text-xs w-full whitespace-nowrap py-1.5 hover:text-th-primary ${
+            className={`default-transition flex w-full items-center whitespace-nowrap py-1.5 text-xs hover:text-th-primary ${
               asPath.includes(market.name) ||
               (asPath === '/' && initialMarket.name === market.name)
                 ? 'text-th-primary'

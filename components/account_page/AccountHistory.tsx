@@ -150,12 +150,12 @@ export default function AccountHistory() {
 
   return (
     <>
-      <div className="bg-th-bkg-3 flex mb-4 md:mb-6 md:-mx-6 px-3 md:px-4 py-2">
+      <div className="mb-4 flex bg-th-bkg-3 px-3 py-2 md:-mx-6 md:mb-6 md:px-4">
         {historyViews.map(({ label, key }, index) => (
           <div
-            className={`font-bold md:px-2 py-1 text-xs md:text-sm ${
+            className={`py-1 text-xs font-bold md:px-2 md:text-sm ${
               index > 0 ? 'ml-4 md:ml-2' : null
-            } rounded-md cursor-pointer default-transition
+            } default-transition cursor-pointer rounded-md
                           ${
                             view === key
                               ? `text-th-primary`
@@ -186,24 +186,24 @@ export default function AccountHistory() {
         </div>
         {view !== 'Trades' ? (
           <Button
-            className={`flex items-center justify-center text-xs h-8 pt-0 pb-0 pl-3 pr-3 whitespace-nowrap`}
+            className={`flex h-8 items-center justify-center whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs`}
             onClick={exportHistoryToCSV}
           >
             <div className={`flex items-center`}>
-              <SaveIcon className={`h-4 w-4 mr-1.5`} />
+              <SaveIcon className={`mr-1.5 h-4 w-4`} />
               {t('export-data')}
             </div>
           </Button>
         ) : canWithdraw ? (
           <Button
-            className={`flex items-center justify-center text-xs h-8 pt-0 pb-0 pl-3 pr-3 whitespace-nowrap`}
+            className={`flex h-8 items-center justify-center whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs`}
             onClick={exportPerformanceDataToCSV}
           >
             {loadExportData ? (
               <Loading />
             ) : (
               <div className={`flex items-center`}>
-                <SaveIcon className={`h-4 w-4 mr-1.5`} />
+                <SaveIcon className={`mr-1.5 h-4 w-4`} />
                 Export PnL CSV
               </div>
             )}
@@ -308,16 +308,16 @@ const LiquidationHistoryTable = ({ history, view }) => {
               <TrHead>
                 <Th>
                   <LinkButton
-                    className="flex items-center no-underline font-normal"
+                    className="flex items-center font-normal no-underline"
                     onClick={() => requestSort('block_datetime')}
                   >
                     {t('date')}
                     <ArrowSmDownIcon
-                      className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                      className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                         sortConfig?.key === 'block_datetime'
                           ? sortConfig.direction === 'ascending'
-                            ? 'transform rotate-180'
-                            : 'transform rotate-360'
+                            ? 'rotate-180 transform'
+                            : 'rotate-360 transform'
                           : null
                       }`}
                     />
@@ -326,16 +326,16 @@ const LiquidationHistoryTable = ({ history, view }) => {
 
                 <Th>
                   <LinkButton
-                    className="flex items-center no-underline font-normal"
+                    className="flex items-center font-normal no-underline"
                     onClick={() => requestSort('asset_amount')}
                   >
                     Asset Lost
                     <ArrowSmDownIcon
-                      className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                      className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                         sortConfig?.key === 'asset_amount'
                           ? sortConfig.direction === 'ascending'
-                            ? 'transform rotate-180'
-                            : 'transform rotate-360'
+                            ? 'rotate-180 transform'
+                            : 'rotate-360 transform'
                           : null
                       }`}
                     />
@@ -343,16 +343,16 @@ const LiquidationHistoryTable = ({ history, view }) => {
                 </Th>
                 <Th>
                   <LinkButton
-                    className="flex items-center no-underline font-normal"
+                    className="flex items-center font-normal no-underline"
                     onClick={() => requestSort('asset_price')}
                   >
                     Price
                     <ArrowSmDownIcon
-                      className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                      className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                         sortConfig?.key === 'asset_price'
                           ? sortConfig.direction === 'ascending'
-                            ? 'transform rotate-180'
-                            : 'transform rotate-360'
+                            ? 'rotate-180 transform'
+                            : 'rotate-360 transform'
                           : null
                       }`}
                     />
@@ -361,16 +361,16 @@ const LiquidationHistoryTable = ({ history, view }) => {
 
                 <Th>
                   <LinkButton
-                    className="flex items-center no-underline font-normal"
+                    className="flex items-center font-normal no-underline"
                     onClick={() => requestSort('liab_amount')}
                   >
                     Asset Gained
                     <ArrowSmDownIcon
-                      className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                      className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                         sortConfig?.key === 'liab_amount'
                           ? sortConfig.direction === 'ascending'
-                            ? 'transform rotate-180'
-                            : 'transform rotate-360'
+                            ? 'rotate-180 transform'
+                            : 'rotate-360 transform'
                           : null
                       }`}
                     />
@@ -378,16 +378,16 @@ const LiquidationHistoryTable = ({ history, view }) => {
                 </Th>
                 <Th>
                   <LinkButton
-                    className="flex items-center no-underline font-normal"
+                    className="flex items-center font-normal no-underline"
                     onClick={() => requestSort('liab_price')}
                   >
                     Price
                     <ArrowSmDownIcon
-                      className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                      className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                         sortConfig?.key === 'liab_price'
                           ? sortConfig.direction === 'ascending'
-                            ? 'transform rotate-180'
-                            : 'transform rotate-360'
+                            ? 'rotate-180 transform'
+                            : 'rotate-360 transform'
                           : null
                       }`}
                     />
@@ -468,7 +468,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
                         rel="noopener noreferrer"
                       >
                         <span>View Transaction</span>
-                        <ExternalLinkIcon className={`h-4 w-4 ml-1.5`} />
+                        <ExternalLinkIcon className={`ml-1.5 h-4 w-4`} />
                       </a>
                     </Td>
                   </TrBody>
@@ -478,7 +478,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
           </Table>
         </>
       ) : (
-        <div className="w-full text-center py-6 bg-th-bkg-1 text-th-fgd-3 rounded-md">
+        <div className="w-full rounded-md bg-th-bkg-1 py-6 text-center text-th-fgd-3">
           History empty
         </div>
       )}
@@ -506,16 +506,16 @@ const HistoryTable = ({ history, view }) => {
               <TrHead>
                 <Th>
                   <LinkButton
-                    className="flex items-center no-underline font-normal"
+                    className="flex items-center font-normal no-underline"
                     onClick={() => requestSort('block_datetime')}
                   >
                     {t('date')}
                     <ArrowSmDownIcon
-                      className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                      className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                         sortConfig?.key === 'block_datetime'
                           ? sortConfig.direction === 'ascending'
-                            ? 'transform rotate-180'
-                            : 'transform rotate-360'
+                            ? 'rotate-180 transform'
+                            : 'rotate-360 transform'
                           : null
                       }`}
                     />
@@ -523,16 +523,16 @@ const HistoryTable = ({ history, view }) => {
                 </Th>
                 <Th>
                   <LinkButton
-                    className="flex items-center no-underline font-normal"
+                    className="flex items-center font-normal no-underline"
                     onClick={() => requestSort('symbol')}
                   >
                     {t('asset')}
                     <ArrowSmDownIcon
-                      className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                      className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                         sortConfig?.key === 'symbol'
                           ? sortConfig.direction === 'ascending'
-                            ? 'transform rotate-180'
-                            : 'transform rotate-360'
+                            ? 'rotate-180 transform'
+                            : 'rotate-360 transform'
                           : null
                       }`}
                     />
@@ -540,16 +540,16 @@ const HistoryTable = ({ history, view }) => {
                 </Th>
                 <Th>
                   <LinkButton
-                    className="flex items-center no-underline font-normal"
+                    className="flex items-center font-normal no-underline"
                     onClick={() => requestSort('quantity')}
                   >
                     {t('quantity')}
                     <ArrowSmDownIcon
-                      className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                      className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                         sortConfig?.key === 'quantity'
                           ? sortConfig.direction === 'ascending'
-                            ? 'transform rotate-180'
-                            : 'transform rotate-360'
+                            ? 'rotate-180 transform'
+                            : 'rotate-360 transform'
                           : null
                       }`}
                     />
@@ -557,16 +557,16 @@ const HistoryTable = ({ history, view }) => {
                 </Th>
                 <Th>
                   <LinkButton
-                    className="flex items-center no-underline font-normal"
+                    className="flex items-center font-normal no-underline"
                     onClick={() => requestSort('usd_equivalent')}
                   >
                     {t('value')}
                     <ArrowSmDownIcon
-                      className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                      className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                         sortConfig?.key === 'usd_equivalent'
                           ? sortConfig.direction === 'ascending'
-                            ? 'transform rotate-180'
-                            : 'transform rotate-360'
+                            ? 'rotate-180 transform'
+                            : 'rotate-360 transform'
                           : null
                       }`}
                     />
@@ -610,7 +610,7 @@ const HistoryTable = ({ history, view }) => {
                         rel="noopener noreferrer"
                       >
                         <span>{t('view-transaction')}</span>
-                        <ExternalLinkIcon className={`h-4 w-4 ml-1.5`} />
+                        <ExternalLinkIcon className={`ml-1.5 h-4 w-4`} />
                       </a>
                     </Td>
                   </TrBody>
@@ -620,7 +620,7 @@ const HistoryTable = ({ history, view }) => {
           </Table>
         </>
       ) : (
-        <div className="w-full text-center py-6 bg-th-bkg-1 text-th-fgd-3 rounded-md">
+        <div className="w-full rounded-md bg-th-bkg-1 py-6 text-center text-th-fgd-3">
           {t('history-empty')}
         </div>
       )}

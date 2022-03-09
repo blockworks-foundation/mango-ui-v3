@@ -4,9 +4,9 @@ const SwipeableTabs = ({ onChange, tabs, tabIndex }) => {
   const { t } = useTranslation('common')
 
   return (
-    <div className={`border-b border-th-fgd-4 mb-4 relative`}>
+    <div className={`relative mb-4 border-b border-th-fgd-4`}>
       <div
-        className={`absolute bg-th-primary bottom-[-1px] default-transition left-0 h-0.5`}
+        className={`default-transition absolute bottom-[-1px] left-0 h-0.5 bg-th-primary`}
         style={{
           maxWidth: '176px',
           transform: `translateX(${tabIndex * 100}%)`,
@@ -18,7 +18,7 @@ const SwipeableTabs = ({ onChange, tabs, tabIndex }) => {
           <a
             key={tabName}
             onClick={() => onChange(i)}
-            className={`cursor-pointer default-transition flex font-semibold justify-center pb-4 pt-2 relative whitespace-nowrap hover:opacity-100
+            className={`default-transition relative flex cursor-pointer justify-center whitespace-nowrap pb-4 pt-2 font-semibold hover:opacity-100
                   ${
                     tabIndex === i
                       ? `text-th-primary`

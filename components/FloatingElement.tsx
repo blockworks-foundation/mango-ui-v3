@@ -43,11 +43,11 @@ const FloatingElement: FunctionComponent<FloatingElementProps> = ({
   const wallet = useMangoStore((s) => s.wallet.current)
   return (
     <div
-      className={`thin-scroll bg-th-bkg-2 rounded-lg p-2.5 md:p-4 overflow-auto overflow-x-hidden relative ${className}`}
+      className={`thin-scroll relative overflow-auto overflow-x-hidden rounded-lg bg-th-bkg-2 p-2.5 md:p-4 ${className}`}
     >
       {!connected && showConnect ? (
-        <div className="absolute top-0 left-0 w-full h-full z-10">
-          <div className="flex flex-col h-full items-center justify-center relative z-10">
+        <div className="absolute top-0 left-0 z-10 h-full w-full">
+          <div className="relative z-10 flex h-full flex-col items-center justify-center">
             <EmptyState
               buttonText={t('connect')}
               icon={<LinkIcon />}
@@ -55,16 +55,16 @@ const FloatingElement: FunctionComponent<FloatingElementProps> = ({
               title={t('connect-wallet')}
             />
           </div>
-          <div className="absolute top-0 left-0 rounded-lg opacity-50 w-full h-full bg-th-bkg-2" />
+          <div className="absolute top-0 left-0 h-full w-full rounded-lg bg-th-bkg-2 opacity-50" />
         </div>
       ) : null}
       {!uiLocked ? (
-        <div className="absolute top-0 left-0 opacity-80 w-full h-full cursor-move z-50">
-          <div className="relative flex flex-col items-center justify-center text-th-fgd-1 h-full z-50">
-            <MoveIcon className="w-8 h-8" />
+        <div className="absolute top-0 left-0 z-50 h-full w-full cursor-move opacity-80">
+          <div className="relative z-50 flex h-full flex-col items-center justify-center text-th-fgd-1">
+            <MoveIcon className="h-8 w-8" />
             <div className="mt-2">{t('reposition')}</div>
           </div>
-          <div className="absolute top-0 left-0 rounded-lg w-full h-full bg-th-bkg-3" />
+          <div className="absolute top-0 left-0 h-full w-full rounded-lg bg-th-bkg-3" />
         </div>
       ) : null}
       {children}

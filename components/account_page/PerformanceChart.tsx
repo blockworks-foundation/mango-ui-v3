@@ -179,7 +179,7 @@ const PerformanceChart = ({
       : '#CC2929'
 
   return (
-    <div className="h-64 mt-4 w-full" ref={observe}>
+    <div className="mt-4 h-64 w-full" ref={observe}>
       <div className="flex justify-between pb-9">
         <div>
           <div className="flex items-center pb-0.5">
@@ -194,12 +194,12 @@ const PerformanceChart = ({
               </span>
             </div>
             <Tooltip content={t('delayed-info')}>
-              <InformationCircleIcon className="cursor-help h-5 ml-1.5 text-th-fgd-3 w-5" />
+              <InformationCircleIcon className="ml-1.5 h-5 w-5 cursor-help text-th-fgd-3" />
             </Tooltip>
           </div>
           {mouseData ? (
             <>
-              <div className="font-bold pb-1 text-xl text-th-fgd-1">
+              <div className="pb-1 text-xl font-bold text-th-fgd-1">
                 {formatUsdValue(
                   mouseData[
                     chartToShow === 'PnL' ? pnlChartDataKey() : 'account_equity'
@@ -212,14 +212,14 @@ const PerformanceChart = ({
             </>
           ) : chartData.length === 0 ? (
             <>
-              <div className="font-bold pb-1 text-xl text-th-fgd-1">--</div>
+              <div className="pb-1 text-xl font-bold text-th-fgd-1">--</div>
               <div className="text-xs font-normal text-th-fgd-4">
                 {dayjs().format('ddd MMM D YYYY, h:mma')}
               </div>
             </>
           ) : chartData.length > 0 ? (
             <>
-              <div className="font-bold pb-1 text-xl text-th-fgd-1">
+              <div className="pb-1 text-xl font-bold text-th-fgd-1">
                 {chartToShow === 'PnL'
                   ? formatUsdValue(
                       chartData[chartData.length - 1][pnlChartDataKey()]
@@ -236,8 +236,8 @@ const PerformanceChart = ({
             </>
           ) : (
             <>
-              <div className="animate-pulse bg-th-bkg-3 h-8 mt-1 rounded w-48" />
-              <div className="animate-pulse bg-th-bkg-3 h-4 mt-1 rounded w-24" />
+              <div className="mt-1 h-8 w-48 animate-pulse rounded bg-th-bkg-3" />
+              <div className="mt-1 h-4 w-24 animate-pulse rounded bg-th-bkg-3" />
             </>
           )}
         </div>
@@ -252,7 +252,7 @@ const PerformanceChart = ({
           </div>
 
           {chartToShow === 'PnL' ? (
-            <div className="flex pt-4 space-x-3">
+            <div className="flex space-x-3 pt-4">
               <Checkbox
                 checked={showSpotPnl}
                 disabled={!showPerpPnl}

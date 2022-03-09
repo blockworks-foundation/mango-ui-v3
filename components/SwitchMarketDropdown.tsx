@@ -57,9 +57,9 @@ const SwitchMarketDropdown = () => {
   return (
     <Popover>
       {({ open }) => (
-        <div className="flex flex-col relative">
+        <div className="relative flex flex-col">
           <Popover.Button
-            className={`border border-th-bkg-4 p-0.5 hover:border-th-fgd-4 focus:outline-none focus:border-th-fgd-4 ${
+            className={`border border-th-bkg-4 p-0.5 hover:border-th-fgd-4 focus:border-th-fgd-4 focus:outline-none ${
               open && 'border-th-fgd-4'
             }`}
             ref={buttonRef}
@@ -73,19 +73,19 @@ const SwitchMarketDropdown = () => {
                 className={`mr-2.5`}
               />
 
-              <div className="font-semibold pr-0.5 text-xl">{baseSymbol}</div>
-              <span className="text-th-fgd-4 text-xl">
+              <div className="pr-0.5 text-xl font-semibold">{baseSymbol}</div>
+              <span className="text-xl text-th-fgd-4">
                 {isPerpMarket ? '-' : '/'}
               </span>
-              <div className="font-semibold pl-0.5 text-xl">
+              <div className="pl-0.5 text-xl font-semibold">
                 {isPerpMarket ? 'PERP' : groupConfig.quoteSymbol}
               </div>
               <div
-                className={`flex h-10 items-center justify-center rounded-none w-8`}
+                className={`flex h-10 w-8 items-center justify-center rounded-none`}
               >
                 <ChevronDownIcon
                   className={`default-transition h-6 w-6 ${
-                    open ? 'transform rotate-180' : 'transform rotate-360'
+                    open ? 'rotate-180 transform' : 'rotate-360 transform'
                   }`}
                 />
               </div>
@@ -103,13 +103,13 @@ const SwitchMarketDropdown = () => {
             leaveTo="opacity-0"
           >
             <Popover.Panel
-              className="absolute bg-th-bkg-3 max-h-96 overflow-y-auto p-4 left-0 transform rounded-b-md rounded-tl-md thin-scroll top-14 w-72 z-10"
+              className="thin-scroll absolute left-0 top-14 z-10 max-h-96 w-72 transform overflow-y-auto rounded-b-md rounded-tl-md bg-th-bkg-3 p-4"
               static
             >
               <div className="pb-2.5">
                 <Input
                   onChange={(e) => onSearch(e.target.value)}
-                  prefix={<SearchIcon className="h-4 text-th-fgd-3 w-4" />}
+                  prefix={<SearchIcon className="h-4 w-4 text-th-fgd-3" />}
                   ref={callbackRef}
                   type="text"
                   value={searchString}
@@ -134,7 +134,7 @@ const SwitchMarketDropdown = () => {
                 <div className="">
                   <div className="flex justify-between py-1.5">
                     <h4 className="text-xs">{t('perp')}</h4>
-                    <p className="mb-0 text-th-fgd-4 text-xs">
+                    <p className="mb-0 text-xs text-th-fgd-4">
                       {/* {t('rolling-change')} */}
                     </p>
                   </div>
@@ -148,7 +148,7 @@ const SwitchMarketDropdown = () => {
                   ))}
                   <div className="flex justify-between py-1.5">
                     <h4 className="text-xs">{t('spot')}</h4>
-                    <p className="mb-0 text-th-fgd-4 text-xs">
+                    <p className="mb-0 text-xs text-th-fgd-4">
                       {/* {t('rolling-change')} */}
                     </p>
                   </div>

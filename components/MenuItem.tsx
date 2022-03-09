@@ -8,14 +8,14 @@ const MenuItem = ({ href, children, newWindow = false }) => {
   return (
     <Link href={href} shallow={true}>
       <a
-        className={`h-full border-b border-th-bkg-4 md:border-none flex justify-between text-th-fgd-1 font-bold items-center p-3 md:py-0 hover:text-th-primary
+        className={`flex h-full items-center justify-between border-b border-th-bkg-4 p-3 font-bold text-th-fgd-1 hover:text-th-primary md:border-none md:py-0
           ${asPath === href ? `text-th-primary` : `border-transparent`}
         `}
         target={newWindow ? '_blank' : ''}
         rel={newWindow ? 'noopener noreferrer' : ''}
       >
         {children}
-        <ChevronRightIcon className="md:hidden h-5 w-5" />
+        <ChevronRightIcon className="h-5 w-5 md:hidden" />
       </a>
     </Link>
   )

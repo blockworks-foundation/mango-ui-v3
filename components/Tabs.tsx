@@ -22,9 +22,9 @@ const Tabs: FunctionComponent<TabsProps> = ({
   const { t } = useTranslation('common')
 
   return (
-    <div className={`border-b border-th-fgd-4 mb-4 relative`}>
+    <div className={`relative mb-4 border-b border-th-fgd-4`}>
       <div
-        className={`absolute bg-th-primary bottom-[-1px] default-transition left-0 h-0.5`}
+        className={`default-transition absolute bottom-[-1px] left-0 h-0.5 bg-th-primary`}
         style={{
           maxWidth: '176px',
           transform: `translateX(${
@@ -42,7 +42,7 @@ const Tabs: FunctionComponent<TabsProps> = ({
             <a
               key={tabName}
               onClick={() => onChange(tabName)}
-              className={`cursor-pointer default-transition flex font-bold justify-center pb-4 relative whitespace-nowrap hover:opacity-100
+              className={`default-transition relative flex cursor-pointer justify-center whitespace-nowrap pb-4 font-bold hover:opacity-100
                     ${
                       activeTab === tabName
                         ? `text-th-primary`
@@ -66,7 +66,7 @@ const Tabs: FunctionComponent<TabsProps> = ({
 export default Tabs
 
 const Count = ({ count }) => (
-  <span className="h-5 w-5 ml-2 p-1 bg-th-bkg-4 inline-flex rounded-full items-center justify-center text-th-fgd-2 text-xxs">
+  <span className="ml-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-th-bkg-4 p-1 text-xxs text-th-fgd-2">
     {count}
   </span>
 )

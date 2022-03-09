@@ -145,15 +145,15 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
           {t('close-account:closing-account-will')}
         </p>
       </Modal.Header>
-      <div className="bg-th-bkg-4 overflow-wrap p-2 sm:p-4 rounded-md space-y-2">
+      <div className="overflow-wrap space-y-2 rounded-md bg-th-bkg-4 p-2 sm:p-4">
         <div className="flex items-center text-th-fgd-2">
-          <CheckCircleIcon className="h-4 w-4 mr-1.5 text-th-green" />
+          <CheckCircleIcon className="mr-1.5 h-4 w-4 text-th-green" />
           {t('close-account:delete-your-account')}
         </div>
         {mangoAccount &&
         mangoAccount.getAssetsVal(mangoGroup, mangoCache).gt(ZERO_I80F48) ? (
           <div className="flex items-center text-th-fgd-2">
-            <CheckCircleIcon className="h-4 w-4 mr-1.5 text-th-green" />
+            <CheckCircleIcon className="mr-1.5 h-4 w-4 text-th-green" />
             {t('close-account:withdraw-assets-worth', {
               value: formatUsdValue(
                 +mangoAccount.computeValue(mangoGroup, mangoCache)
@@ -164,14 +164,14 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
           ''
         )}
         <div className="flex items-center text-th-fgd-2">
-          <CheckCircleIcon className="h-4 w-4 mr-1.5 text-th-green" />
+          <CheckCircleIcon className="mr-1.5 h-4 w-4 text-th-green" />
           {t('close-account:recover-x-sol', {
             amount: totalAccountSOL.toFixed(3),
           })}
         </div>
         {!mngoAccrued.isZero() ? (
           <div className="flex items-center text-th-fgd-2">
-            <CheckCircleIcon className="h-4 w-4 mr-1.5 text-th-green" />
+            <CheckCircleIcon className="mr-1.5 h-4 w-4 text-th-green" />
             {t('close-account:claim-x-mngo', {
               amount: mangoGroup
                 ? nativeToUi(
@@ -187,25 +187,25 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
       </div>
       {isDisabled ? (
         <>
-          <h3 className="text-center my-3">
+          <h3 className="my-3 text-center">
             {t('close-account:before-you-continue')}
           </h3>
-          <div className="bg-th-bkg-4 overflow-none p-2 sm:p-4 rounded-md space-y-2">
+          <div className="overflow-none space-y-2 rounded-md bg-th-bkg-4 p-2 sm:p-4">
             {hasBorrows ? (
               <div className="flex items-center text-th-fgd-2">
-                <ExclamationCircleIcon className="h-4 w-4 mr-1.5 text-th-red" />
+                <ExclamationCircleIcon className="mr-1.5 h-4 w-4 text-th-red" />
                 {t('close-account:close-all-borrows')}
               </div>
             ) : null}
             {hasOpenPositions ? (
               <div className="flex items-center text-th-fgd-2">
-                <ExclamationCircleIcon className="h-4 w-4 mr-1.5 text-th-red" />
+                <ExclamationCircleIcon className="mr-1.5 h-4 w-4 text-th-red" />
                 {t('close-account:close-perp-positions')}
               </div>
             ) : null}
             {openOrders && openOrders.length ? (
               <div className="flex items-center text-th-fgd-2">
-                <ExclamationCircleIcon className="h-4 w-4 mr-1.5 text-th-red" />
+                <ExclamationCircleIcon className="mr-1.5 h-4 w-4 text-th-red" />
                 {t('close-account:close-open-orders')}
               </div>
             ) : null}
@@ -213,7 +213,7 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
         </>
       ) : null}
       {!isDisabled ? (
-        <div className="text-th-fgd-2 text-center mt-4">
+        <div className="mt-4 text-center text-th-fgd-2">
           {t('close-account:goodbye')}
         </div>
       ) : null}

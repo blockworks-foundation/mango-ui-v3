@@ -115,9 +115,9 @@ export default function StatsTotals({ latestStats, stats }) {
 
   return (
     <>
-      <div className="grid grid-flow-col grid-cols-1 grid-rows-2 md:grid-cols-2 md:grid-rows-1 gap-2 sm:gap-4 pb-8">
+      <div className="grid grid-flow-col grid-cols-1 grid-rows-2 gap-2 pb-8 sm:gap-4 md:grid-cols-2 md:grid-rows-1">
         <div
-          className="border border-th-bkg-3 h-56 relative md:mb-0 p-4 rounded-md"
+          className="relative h-56 rounded-md border border-th-bkg-3 p-4 md:mb-0"
           style={{ height: '330px' }}
         >
           <Chart
@@ -133,7 +133,7 @@ export default function StatsTotals({ latestStats, stats }) {
           />
         </div>
         <div
-          className="border border-th-bkg-3 relative p-4 rounded-md"
+          className="relative rounded-md border border-th-bkg-3 p-4"
           style={{ height: '330px' }}
         >
           <Chart
@@ -225,14 +225,14 @@ export default function StatsTotals({ latestStats, stats }) {
               </Table>
             ) : (
               <>
-                <div className="animate-pulse bg-th-bkg-3 h-8 rounded w-full" />
-                <div className="animate-pulse bg-th-bkg-3 h-8 mt-1 rounded w-full" />
-                <div className="animate-pulse bg-th-bkg-3 h-8 mt-1 rounded w-full" />
+                <div className="h-8 w-full animate-pulse rounded bg-th-bkg-3" />
+                <div className="mt-1 h-8 w-full animate-pulse rounded bg-th-bkg-3" />
+                <div className="mt-1 h-8 w-full animate-pulse rounded bg-th-bkg-3" />
               </>
             )}
           </div>
           <div className="pb-8">
-            <div className="pb-4 text-th-fgd-1 text-lg">
+            <div className="pb-4 text-lg text-th-fgd-1">
               {t('average-deposit')}
             </div>
             {stats.length > 1 ? (
@@ -275,13 +275,13 @@ export default function StatsTotals({ latestStats, stats }) {
               </Table>
             ) : (
               <>
-                <div className="animate-pulse bg-th-bkg-3 h-8 rounded w-full" />
-                <div className="animate-pulse bg-th-bkg-3 h-8 mt-1 rounded w-full" />
-                <div className="animate-pulse bg-th-bkg-3 h-8 mt-1 rounded w-full" />
+                <div className="h-8 w-full animate-pulse rounded bg-th-bkg-3" />
+                <div className="mt-1 h-8 w-full animate-pulse rounded bg-th-bkg-3" />
+                <div className="mt-1 h-8 w-full animate-pulse rounded bg-th-bkg-3" />
               </>
             )}
           </div>
-          <div className="pb-4 text-th-fgd-1 text-lg">
+          <div className="pb-4 text-lg text-th-fgd-1">
             {t('average-borrow')}
           </div>
           {stats.length > 1 ? (
@@ -324,24 +324,24 @@ export default function StatsTotals({ latestStats, stats }) {
             </Table>
           ) : (
             <>
-              <div className="animate-pulse bg-th-bkg-3 h-8 rounded w-full" />
-              <div className="animate-pulse bg-th-bkg-3 h-8 mt-1 rounded w-full" />
-              <div className="animate-pulse bg-th-bkg-3 h-8 mt-1 rounded w-full" />
+              <div className="h-8 w-full animate-pulse rounded bg-th-bkg-3" />
+              <div className="mt-1 h-8 w-full animate-pulse rounded bg-th-bkg-3" />
+              <div className="mt-1 h-8 w-full animate-pulse rounded bg-th-bkg-3" />
             </>
           )}
         </>
       ) : (
         <>
           <div className="pb-8">
-            <div className="pb-4 text-th-fgd-1 text-lg">
+            <div className="pb-4 text-lg text-th-fgd-1">
               {t('current-stats')}
             </div>
             {latestStats.map((stat) => (
               // latestStats.length > 0 ? (
               <ExpandableRow
                 buttonTemplate={
-                  <div className="grid grid-cols-12 grid-rows-2 sm:grid-rows-1 gap-2 text-left sm:text-right w-full">
-                    <div className="col-span-12 sm:col-span-6 flex items-center text-fgd-1">
+                  <div className="grid w-full grid-cols-12 grid-rows-2 gap-2 text-left sm:grid-rows-1 sm:text-right">
+                    <div className="text-fgd-1 col-span-12 flex items-center sm:col-span-6">
                       <div className="flex items-center">
                         <img
                           alt=""
@@ -356,13 +356,13 @@ export default function StatsTotals({ latestStats, stats }) {
                       </div>
                     </div>
                     <div className="col-span-6 sm:col-span-3">
-                      <div className="pb-0.5 text-th-fgd-3 text-xs">
+                      <div className="pb-0.5 text-xs text-th-fgd-3">
                         {t('total-deposits')}
                       </div>
                       {formatNumberString(stat.totalDeposits, 0)}
                     </div>
                     <div className="col-span-6 sm:col-span-3">
-                      <div className="pb-0.5 text-th-fgd-3 text-xs">
+                      <div className="pb-0.5 text-xs text-th-fgd-3">
                         {t('total-borrows')}
                       </div>
                       {formatNumberString(stat.totalBorrows, 0)}
@@ -371,9 +371,9 @@ export default function StatsTotals({ latestStats, stats }) {
                 }
                 key={stat.name}
                 panelTemplate={
-                  <div className="grid grid-cols-2 grid-flow-row gap-4">
+                  <div className="grid grid-flow-row grid-cols-2 gap-4">
                     <div className="text-left">
-                      <div className="pb-0.5 text-th-fgd-3 text-xs">
+                      <div className="pb-0.5 text-xs text-th-fgd-3">
                         {t('deposit-rate')}
                       </div>
                       <span className="text-th-green">
@@ -382,7 +382,7 @@ export default function StatsTotals({ latestStats, stats }) {
                       </span>
                     </div>
                     <div className="text-left">
-                      <div className="pb-0.5 text-th-fgd-3 text-xs">
+                      <div className="pb-0.5 text-xs text-th-fgd-3">
                         {t('borrow-rate')}
                       </div>
                       <span className="text-th-red">
@@ -390,7 +390,7 @@ export default function StatsTotals({ latestStats, stats }) {
                       </span>
                     </div>
                     <div className="text-left">
-                      <div className="pb-0.5 text-th-fgd-3 text-xs">
+                      <div className="pb-0.5 text-xs text-th-fgd-3">
                         {t('utilization')}
                       </div>
                       {formatNumberString(
@@ -405,14 +405,14 @@ export default function StatsTotals({ latestStats, stats }) {
             ))}
           </div>
           <div className="pb-8">
-            <div className="pb-4 text-th-fgd-1 text-lg">
+            <div className="pb-4 text-lg text-th-fgd-1">
               {t('average-deposit')}
             </div>
             {stats.length > 1
               ? latestStats.map((stat, index) => (
                   <Row key={stat.name} index={index}>
-                    <div className="grid grid-cols-12 grid-rows-2 sm:grid-rows-1 gap-2 text-left sm:text-right">
-                      <div className="col-span-12 sm:col-span-3 flex items-center text-fgd-1">
+                    <div className="grid grid-cols-12 grid-rows-2 gap-2 text-left sm:grid-rows-1 sm:text-right">
+                      <div className="text-fgd-1 col-span-12 flex items-center sm:col-span-3">
                         <div className="flex items-center">
                           <img
                             alt=""
@@ -427,15 +427,15 @@ export default function StatsTotals({ latestStats, stats }) {
                         </div>
                       </div>
                       <div className="col-span-4 sm:col-span-3">
-                        <div className="pb-0.5 text-th-fgd-3 text-xs">24h</div>
+                        <div className="pb-0.5 text-xs text-th-fgd-3">24h</div>
                         {getAverageStats(stats, 1, stat.name, 'depositIndex')}
                       </div>
                       <div className="col-span-4 sm:col-span-3">
-                        <div className="pb-0.5 text-th-fgd-3 text-xs">7d</div>
+                        <div className="pb-0.5 text-xs text-th-fgd-3">7d</div>
                         {getAverageStats(stats, 7, stat.name, 'depositIndex')}
                       </div>
                       <div className="col-span-4 sm:col-span-3">
-                        <div className="pb-0.5 text-th-fgd-3 text-xs">30d</div>
+                        <div className="pb-0.5 text-xs text-th-fgd-3">30d</div>
                         {getAverageStats(stats, 30, stat.name, 'depositIndex')}
                       </div>
                     </div>
@@ -443,14 +443,14 @@ export default function StatsTotals({ latestStats, stats }) {
                 ))
               : null}
           </div>
-          <div className="pb-4 text-th-fgd-1 text-lg">
+          <div className="pb-4 text-lg text-th-fgd-1">
             {t('average-borrow')}
           </div>
           {stats.length > 1
             ? latestStats.map((stat, index) => (
                 <Row key={stat.name} index={index}>
-                  <div className="grid grid-cols-12 grid-rows-2 sm:grid-rows-1 gap-2 text-left sm:text-right">
-                    <div className="col-span-12 sm:col-span-3 flex items-center text-fgd-1">
+                  <div className="grid grid-cols-12 grid-rows-2 gap-2 text-left sm:grid-rows-1 sm:text-right">
+                    <div className="text-fgd-1 col-span-12 flex items-center sm:col-span-3">
                       <div className="flex items-center">
                         <img
                           alt=""
@@ -465,15 +465,15 @@ export default function StatsTotals({ latestStats, stats }) {
                       </div>
                     </div>
                     <div className="col-span-4 sm:col-span-3">
-                      <div className="pb-0.5 text-th-fgd-3 text-xs">24h</div>
+                      <div className="pb-0.5 text-xs text-th-fgd-3">24h</div>
                       {getAverageStats(stats, 1, stat.name, 'borrowIndex')}
                     </div>
                     <div className="col-span-4 sm:col-span-3">
-                      <div className="pb-0.5 text-th-fgd-3 text-xs">7d</div>
+                      <div className="pb-0.5 text-xs text-th-fgd-3">7d</div>
                       {getAverageStats(stats, 7, stat.name, 'borrowIndex')}
                     </div>
                     <div className="col-span-4 sm:col-span-3">
-                      <div className="pb-0.5 text-th-fgd-3 text-xs">30d</div>
+                      <div className="pb-0.5 text-xs text-th-fgd-3">30d</div>
                       {getAverageStats(stats, 30, stat.name, 'borrowIndex')}
                     </div>
                   </div>

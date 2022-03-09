@@ -21,9 +21,9 @@ const EmptyState: FunctionComponent<EmptyStateProps> = ({
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
 
   return (
-    <div className="flex flex-col items-center text-th-fgd-1 px-4 pb-2 rounded-lg">
-      <div className="w-6 h-6 mb-1 text-th-primary">{icon}</div>
-      <h2 className="text-base mb-1">{title}</h2>
+    <div className="flex flex-col items-center rounded-lg px-4 pb-2 text-th-fgd-1">
+      <div className="mb-1 h-6 w-6 text-th-primary">{icon}</div>
+      <h2 className="mb-1 text-base">{title}</h2>
       {desc ? (
         <p
           className={`text-center ${

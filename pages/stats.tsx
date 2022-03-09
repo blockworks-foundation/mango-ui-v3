@@ -57,7 +57,7 @@ export default function StatsPage() {
     <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
       <TopBar />
       <PageBodyContainer>
-        <div className="flex flex-col sm:flex-row py-4 md:pb-4 md:pt-10">
+        <div className="flex flex-col py-4 sm:flex-row md:pb-4 md:pt-10">
           <h1>{t('stats')}</h1>
         </div>
         {!isMobile ? (
@@ -69,7 +69,7 @@ export default function StatsPage() {
             tabIndex={viewIndex}
           />
         )}
-        <div className="bg-th-bkg-2 p-4 sm:p-6 rounded-lg">
+        <div className="rounded-lg bg-th-bkg-2 p-4 sm:p-6">
           {!isMobile ? (
             <TabContent
               activeTab={activeTab}

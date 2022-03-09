@@ -26,26 +26,26 @@ const InlineNotification: FunctionComponent<InlineNotificationProps> = ({
         : type === 'info'
         ? 'border-th-bkg-4'
         : 'border-th-orange'
-    } flex items-center p-2 rounded-md`}
+    } flex items-center rounded-md p-2`}
   >
     {type === 'error' ? (
-      <ExclamationCircleIcon className="flex-shrink-0 h-5 w-5 mr-2 text-th-red" />
+      <ExclamationCircleIcon className="mr-2 h-5 w-5 flex-shrink-0 text-th-red" />
     ) : null}
     {type === 'success' ? (
-      <CheckCircleIcon className="flex-shrink-0 h-5 w-5 mr-2 text-th-green" />
+      <CheckCircleIcon className="mr-2 h-5 w-5 flex-shrink-0 text-th-green" />
     ) : null}
     {type === 'warning' ? (
-      <ExclamationIcon className="flex-shrink-0 h-5 w-5 mr-2 text-th-orange" />
+      <ExclamationIcon className="mr-2 h-5 w-5 flex-shrink-0 text-th-orange" />
     ) : null}
     {type === 'info' ? (
-      <InformationCircleIcon className="flex-shrink-0 h-5 w-5 mr-2 text-th-fgd-3" />
+      <InformationCircleIcon className="mr-2 h-5 w-5 flex-shrink-0 text-th-fgd-3" />
     ) : null}
     <div>
       <div className="text-th-fgd-3">{title}</div>
       <div
         className={`${
           title && desc && 'pt-1'
-        } font-normal text-xs text-th-fgd-3`}
+        } text-xs font-normal text-th-fgd-3`}
       >
         {desc}
       </div>

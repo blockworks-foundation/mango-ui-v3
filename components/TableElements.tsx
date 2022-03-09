@@ -7,7 +7,7 @@ export const Table = ({ children }) => (
 )
 
 export const TrHead = ({ children }) => (
-  <tr className="text-th-fgd-3 text-xs">{children}</tr>
+  <tr className="text-xs text-th-fgd-3">{children}</tr>
 )
 
 export const Th = ({ children }) => (
@@ -27,7 +27,7 @@ export const Td = ({
   children: ReactNode
   className?: string
 }) => (
-  <td className={`px-4 h-16 text-sm text-th-fgd-2 ${className}`}>{children}</td>
+  <td className={`h-16 px-4 text-sm text-th-fgd-2 ${className}`}>{children}</td>
 )
 
 type ExpandableRowProps = {
@@ -46,7 +46,7 @@ export const ExpandableRow = ({
       {({ open }) => (
         <>
           <Disclosure.Button
-            className={`border-t border-th-bkg-4 default-transition flex items-center justify-between font-normal p-4 text-th-fgd-1 w-full hover:bg-th-bkg-4 focus:outline-none ${
+            className={`default-transition flex w-full items-center justify-between border-t border-th-bkg-4 p-4 font-normal text-th-fgd-1 hover:bg-th-bkg-4 focus:outline-none ${
               rounded
                 ? open
                   ? 'rounded-b-none'
@@ -58,8 +58,8 @@ export const ExpandableRow = ({
             <div className="flex items-center justify-end pl-4">
               <ChevronDownIcon
                 className={`${
-                  open ? 'transform rotate-180' : 'transform rotate-360'
-                } default-transition h-5 flex-shrink-0 w-5 text-th-fgd-1`}
+                  open ? 'rotate-180 transform' : 'rotate-360 transform'
+                } default-transition h-5 w-5 flex-shrink-0 text-th-fgd-1`}
               />
             </div>
           </Disclosure.Button>
@@ -75,7 +75,7 @@ export const ExpandableRow = ({
             leaveTo="opacity-0"
           >
             <Disclosure.Panel>
-              <div className="pb-4 pt-2 px-4">{panelTemplate}</div>
+              <div className="px-4 pb-4 pt-2">{panelTemplate}</div>
             </Disclosure.Panel>
           </Transition>
         </>
@@ -94,7 +94,7 @@ export const Row = ({ children, index }: RowProps) => {
     <div
       className={`${
         index % 2 === 0 ? `bg-th-bkg-3` : `bg-th-bkg-4`
-      } default-transition font-normal p-4 rounded-none text-th-fgd-1 w-full`}
+      } default-transition w-full rounded-none p-4 font-normal text-th-fgd-1`}
     >
       {children}
     </div>

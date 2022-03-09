@@ -51,11 +51,11 @@ const TopBar = () => {
     <>
       <nav className={`bg-th-bkg-2`}>
         <div className={`px-4 xl:px-6`}>
-          <div className={`flex justify-between h-14`}>
+          <div className={`flex h-14 justify-between`}>
             <div className={`flex`}>
               <Link href={defaultMarket.path} shallow={true}>
                 <div
-                  className={`cursor-pointer flex-shrink-0 flex items-center`}
+                  className={`flex flex-shrink-0 cursor-pointer items-center`}
                 >
                   <img
                     className={`h-8 w-auto`}
@@ -65,7 +65,7 @@ const TopBar = () => {
                 </div>
               </Link>
               <div
-                className={`hidden md:flex md:items-center md:space-x-2 lg:space-x-3 md:ml-4`}
+                className={`hidden md:ml-4 md:flex md:items-center md:space-x-2 lg:space-x-3`}
               >
                 <TradeNavMenu />
                 <MenuItem href="/account">{t('account')}</MenuItem>
@@ -94,7 +94,7 @@ const TopBar = () => {
                       'https://v2.mango.markets',
                       true,
                       <MangoIcon
-                        className="stroke-current h-4 w-4"
+                        className="h-4 w-4 stroke-current"
                         key="mango-v2"
                       />,
                     ],
@@ -103,7 +103,7 @@ const TopBar = () => {
                       'https://v1.mango.markets',
                       true,
                       <MangoIcon
-                        className="stroke-current h-4 w-4"
+                        className="h-4 w-4 stroke-current"
                         key="mango-v1"
                       />,
                     ],
@@ -126,10 +126,10 @@ const TopBar = () => {
                 wallet?.publicKey?.toBase58() ? (
                 <div className="pl-2">
                   <button
-                    className="border border-th-bkg-4 py-1 px-2 rounded text-xs focus:outline-none hover:border-th-fgd-4"
+                    className="rounded border border-th-bkg-4 py-1 px-2 text-xs hover:border-th-fgd-4 focus:outline-none"
                     onClick={() => setShowAccountsModal(true)}
                   >
-                    <div className="font-normal text-th-primary text-xs">
+                    <div className="text-xs font-normal text-th-primary">
                       {t('account')}
                     </div>
                     {mangoAccount.name

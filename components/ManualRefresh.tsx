@@ -33,11 +33,11 @@ const ManualRefresh = ({ className = '' }) => {
   }, [spin])
 
   return (
-    <div className={`inline-flex relative ${className}`}>
-      <Tooltip content={t('refresh-data')} className="text-xs py-1">
+    <div className={`relative inline-flex ${className}`}>
+      <Tooltip content={t('refresh-data')} className="py-1 text-xs">
         <IconButton onClick={handleRefreshData} disabled={spin}>
           <RefreshClockwiseIcon
-            className={`w-4 h-4 ${spin ? 'animate-spin' : null}`}
+            className={`h-4 w-4 ${spin ? 'animate-spin' : null}`}
           />
         </IconButton>
       </Tooltip>

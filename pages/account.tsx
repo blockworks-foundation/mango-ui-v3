@@ -240,11 +240,11 @@ export default function Account() {
     <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
       <TopBar />
       <PageBodyContainer>
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between py-4 md:pb-4 md:pt-10">
+        <div className="flex flex-col py-4 md:flex-row md:items-end md:justify-between md:pb-4 md:pt-10">
           {mangoAccount ? (
             <>
               <div className="pb-3 md:pb-0">
-                <div className="flex items-center mb-1">
+                <div className="mb-1 flex items-center">
                   <h1 className={`mr-3`}>
                     {mangoAccount?.name || t('account')}
                   </h1>
@@ -259,36 +259,36 @@ export default function Account() {
                 </div>
                 <div className="flex h-4 items-center">
                   <LinkButton
-                    className="flex items-center no-underline text-th-fgd-4"
+                    className="flex items-center text-th-fgd-4 no-underline"
                     onClick={() =>
                       handleCopyAddress(mangoAccount.publicKey.toString())
                     }
                   >
-                    <span className="text-xxs sm:text-xs font-normal">
+                    <span className="text-xxs font-normal sm:text-xs">
                       {mangoAccount.publicKey.toBase58()}
                     </span>
-                    <DuplicateIcon className="h-4 w-4 ml-1.5" />
+                    <DuplicateIcon className="ml-1.5 h-4 w-4" />
                   </LinkButton>
                   {isCopied ? (
-                    <span className="bg-th-bkg-3 ml-2 px-1.5 py-0.5 rounded text-xs">
+                    <span className="ml-2 rounded bg-th-bkg-3 px-1.5 py-0.5 text-xs">
                       Copied
                     </span>
                   ) : null}
                 </div>
-                <div className="flex items-center text-th-fgd-4 text-xxs">
-                  <ExclamationCircleIcon className="h-4 mr-1.5 w-4" />
+                <div className="flex items-center text-xxs text-th-fgd-4">
+                  <ExclamationCircleIcon className="mr-1.5 h-4 w-4" />
                   {t('account-address-warning')}
                 </div>
               </div>
               {!pubkey ? (
-                <div className="flex flex-col sm:flex-row items-center pb-1.5 space-y-3 sm:space-y-0 sm:space-x-2">
+                <div className="flex flex-col items-center space-y-3 pb-1.5 sm:flex-row sm:space-y-0 sm:space-x-2">
                   <button
-                    className="bg-th-primary flex font-bold items-center justify-center h-8 text-th-bkg-1 text-xs px-3 py-0 rounded-full w-full sm:w-auto hover:brightness-[1.15] focus:outline-none disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:cursor-not-allowed disabled:hover:brightness-100"
+                    className="flex h-8 w-full items-center justify-center rounded-full bg-th-primary px-3 py-0 text-xs font-bold text-th-bkg-1 hover:brightness-[1.15] focus:outline-none disabled:cursor-not-allowed disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:hover:brightness-100 sm:w-auto"
                     disabled={mngoAccrued.eq(ZERO_BN)}
                     onClick={handleRedeemMngo}
                   >
                     <div className="flex items-center whitespace-nowrap">
-                      <GiftIcon className="flex-shrink-0 h-4 w-4 mr-1.5" />
+                      <GiftIcon className="mr-1.5 h-4 w-4 flex-shrink-0" />
                       {!mngoAccrued.eq(ZERO_BN)
                         ? `Claim ${nativeToUi(
                             mngoAccrued.toNumber(),
@@ -305,13 +305,13 @@ export default function Account() {
                         className="relative w-full sm:w-auto"
                         id="profile-menu-tip"
                       >
-                        <Menu.Button className="bg-th-bkg-button flex font-bold items-center justify-center pt-0 pb-0 h-8 pl-3 pr-2 rounded-full text-xs w-full sm:w-auto hover:filter hover:brightness-[1.1]">
+                        <Menu.Button className="flex h-8 w-full items-center justify-center rounded-full bg-th-bkg-button pt-0 pb-0 pl-3 pr-2 text-xs font-bold hover:brightness-[1.1] hover:filter sm:w-auto">
                           More
                           <ChevronDownIcon
                             className={`default-transition h-5 w-5 ${
                               open
-                                ? 'transform rotate-180'
-                                : 'transform rotate-360'
+                                ? 'rotate-180 transform'
+                                : 'rotate-360 transform'
                             }`}
                           />
                         </Menu.Button>
@@ -326,14 +326,14 @@ export default function Account() {
                           leaveFrom="opacity-100"
                           leaveTo="opacity-0"
                         >
-                          <Menu.Items className="absolute bg-th-bkg-3 mt-1 px-4 py-2.5 right-0 rounded-md space-y-1.5 w-full sm:w-48 z-20">
+                          <Menu.Items className="absolute right-0 z-20 mt-1 w-full space-y-1.5 rounded-md bg-th-bkg-3 px-4 py-2.5 sm:w-48">
                             <Menu.Item>
                               <button
-                                className="flex flex-row font-normal items-center py-0.5 rounded-none w-full hover:text-th-primary hover:cursor-pointer focus:outline-none"
+                                className="flex w-full flex-row items-center rounded-none py-0.5 font-normal hover:cursor-pointer hover:text-th-primary focus:outline-none"
                                 onClick={() => setShowAlertsModal(true)}
                               >
                                 <div className="flex items-center">
-                                  <BellIcon className="h-4 w-4 mr-1.5" />
+                                  <BellIcon className="mr-1.5 h-4 w-4" />
                                   {t('alerts')}
                                 </div>
                               </button>
@@ -341,11 +341,11 @@ export default function Account() {
                             {!isDelegatedAccount ? (
                               <Menu.Item>
                                 <button
-                                  className="flex flex-row font-normal items-center py-0.5 rounded-none w-full hover:text-th-primary hover:cursor-pointer focus:outline-none"
+                                  className="flex w-full flex-row items-center rounded-none py-0.5 font-normal hover:cursor-pointer hover:text-th-primary focus:outline-none"
                                   onClick={() => setShowDelegateModal(true)}
                                 >
                                   <div className="flex items-center">
-                                    <UsersIcon className="h-4 w-4 mr-1.5" />
+                                    <UsersIcon className="mr-1.5 h-4 w-4" />
                                     {t('delegate:set-delegate')}
                                   </div>
                                 </button>
@@ -353,11 +353,11 @@ export default function Account() {
                             ) : null}
                             <Menu.Item>
                               <button
-                                className="flex flex-row font-normal items-center py-0.5 rounded-none w-full hover:text-th-primary hover:cursor-pointer focus:outline-none"
+                                className="flex w-full flex-row items-center rounded-none py-0.5 font-normal hover:cursor-pointer hover:text-th-primary focus:outline-none"
                                 onClick={() => setShowAccountsModal(true)}
                               >
                                 <div className="flex items-center">
-                                  <SwitchHorizontalIcon className="h-4 w-4 mr-1.5" />
+                                  <SwitchHorizontalIcon className="mr-1.5 h-4 w-4" />
                                   {t('switch-account')}
                                 </div>
                               </button>
@@ -365,11 +365,11 @@ export default function Account() {
                             {!isDelegatedAccount ? (
                               <Menu.Item>
                                 <button
-                                  className="flex flex-row font-normal items-center py-0.5 rounded-none w-full hover:text-th-primary hover:cursor-pointer focus:outline-none"
+                                  className="flex w-full flex-row items-center rounded-none py-0.5 font-normal hover:cursor-pointer hover:text-th-primary focus:outline-none"
                                   onClick={() => setShowCloseAccountModal(true)}
                                 >
                                   <div className="flex items-center whitespace-nowrap">
-                                    <TrashIcon className="flex-shrink-0 h-4 w-4 mr-1.5" />
+                                    <TrashIcon className="mr-1.5 h-4 w-4 flex-shrink-0" />
                                     {t('close-account:close-account')}
                                   </div>
                                 </button>
@@ -385,7 +385,7 @@ export default function Account() {
             </>
           ) : null}
         </div>
-        <div className="bg-th-bkg-2 p-4 sm:p-6 rounded-lg">
+        <div className="rounded-lg bg-th-bkg-2 p-4 sm:p-6">
           {mangoAccount ? (
             !isMobile ? (
               <Tabs

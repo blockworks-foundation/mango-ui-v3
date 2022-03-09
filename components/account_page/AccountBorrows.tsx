@@ -77,7 +77,7 @@ export default function AccountBorrows() {
         </div> */}
           <div className="flex flex-col pb-8 pt-4">
             <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
-              <div className="align-middle inline-block min-w-full sm:px-6 lg:px-8">
+              <div className="inline-block min-w-full align-middle sm:px-6 lg:px-8">
                 {balances.find((b) => b.borrows.gt(ZERO_I80F48)) ? (
                   !isMobile ? (
                     <Table>
@@ -146,7 +146,7 @@ export default function AccountBorrows() {
                                           asset.borrows.toFixed()
                                         )
                                       }
-                                      className="ml-3 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
+                                      className="ml-3 h-8 pt-0 pb-0 pl-3 pr-3 text-xs"
                                       disabled={
                                         !connected || loadingMangoAccount
                                       }
@@ -157,7 +157,7 @@ export default function AccountBorrows() {
                                       onClick={() =>
                                         handleShowBorrow(asset.symbol)
                                       }
-                                      className="ml-3 text-xs pt-0 pb-0 h-8 pl-3 pr-3"
+                                      className="ml-3 h-8 pt-0 pb-0 pl-3 pr-3 text-xs"
                                       disabled={
                                         !connected ||
                                         loadingMangoAccount ||
@@ -192,8 +192,8 @@ export default function AccountBorrows() {
                           return (
                             <ExpandableRow
                               buttonTemplate={
-                                <div className="flex items-center justify-between text-fgd-1 w-full">
-                                  <div className="flex items-center text-fgd-1">
+                                <div className="text-fgd-1 flex w-full items-center justify-between">
+                                  <div className="text-fgd-1 flex items-center">
                                     <img
                                       alt=""
                                       width="20"
@@ -214,9 +214,9 @@ export default function AccountBorrows() {
                               key={`${asset.symbol}${i}`}
                               panelTemplate={
                                 <>
-                                  <div className="grid grid-cols-2 grid-flow-row gap-4 pb-4">
+                                  <div className="grid grid-flow-row grid-cols-2 gap-4 pb-4">
                                     <div className="text-left">
-                                      <div className="pb-0.5 text-th-fgd-3 text-xs">
+                                      <div className="pb-0.5 text-xs text-th-fgd-3">
                                         {t('value')}
                                       </div>
                                       {formatUsdValue(
@@ -231,7 +231,7 @@ export default function AccountBorrows() {
                                       )}
                                     </div>
                                     <div className="text-left">
-                                      <div className="pb-0.5 text-th-fgd-3 text-xs">
+                                      <div className="pb-0.5 text-xs text-th-fgd-3">
                                         {t('borrow-rate')} (APR)
                                       </div>
                                       <span className={`text-th-red`}>
@@ -253,7 +253,7 @@ export default function AccountBorrows() {
                                           asset.borrows.toFixed()
                                         )
                                       }
-                                      className="text-xs pt-0 pb-0 h-8 w-full"
+                                      className="h-8 w-full pt-0 pb-0 text-xs"
                                       disabled={
                                         !connected || loadingMangoAccount
                                       }
@@ -264,7 +264,7 @@ export default function AccountBorrows() {
                                       onClick={() =>
                                         handleShowBorrow(asset.symbol)
                                       }
-                                      className="text-xs pt-0 pb-0 h-8 w-full"
+                                      className="h-8 w-full pt-0 pb-0 text-xs"
                                       disabled={
                                         !connected ||
                                         loadingMangoAccount ||
@@ -283,7 +283,7 @@ export default function AccountBorrows() {
                   )
                 ) : (
                   <div
-                    className={`w-full text-center py-6 bg-th-bkg-1 text-th-fgd-3 rounded-md`}
+                    className={`w-full rounded-md bg-th-bkg-1 py-6 text-center text-th-fgd-3`}
                   >
                     {t('no-borrows')}
                   </div>
@@ -296,7 +296,7 @@ export default function AccountBorrows() {
       <h2 className="mb-2">{t('all-assets')}</h2>
       <div className="flex flex-col pb-2 pt-4">
         <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
-          <div className="align-middle inline-block min-w-full sm:px-6 lg:px-8">
+          <div className="inline-block min-w-full align-middle sm:px-6 lg:px-8">
             {!isMobile ? (
               <Table>
                 <thead>
@@ -395,7 +395,7 @@ export default function AccountBorrows() {
                             >
                               <Button
                                 onClick={() => handleShowBorrow(token.symbol)}
-                                className="text-xs pt-0 pb-0 h-8 pl-3 pr-3 ml-3"
+                                className="ml-3 h-8 pt-0 pb-0 pl-3 pr-3 text-xs"
                                 disabled={
                                   !connected ||
                                   loadingMangoAccount ||
@@ -423,7 +423,7 @@ export default function AccountBorrows() {
                   return (
                     <ExpandableRow
                       buttonTemplate={
-                        <div className="flex items-center justify-between text-fgd-1 w-full">
+                        <div className="text-fgd-1 flex w-full items-center justify-between">
                           <div className="flex items-center">
                             <img
                               alt=""
@@ -454,9 +454,9 @@ export default function AccountBorrows() {
                       }
                       key={`${token.symbol}${i}`}
                       panelTemplate={
-                        <div className="grid grid-cols-2 grid-flow-row gap-4">
+                        <div className="grid grid-flow-row grid-cols-2 gap-4">
                           <div className="text-left">
-                            <div className="pb-0.5 text-th-fgd-3 text-xs">
+                            <div className="pb-0.5 text-xs text-th-fgd-3">
                               {t('price')}
                             </div>
                             {formatUsdValue(
@@ -467,7 +467,7 @@ export default function AccountBorrows() {
                           </div>
                           {mangoAccount ? (
                             <div className="text-left">
-                              <div className="pb-0.5 text-th-fgd-3 text-xs">
+                              <div className="pb-0.5 text-xs text-th-fgd-3">
                                 {t('max-borrow')}
                               </div>
                               {mangoAccount
@@ -489,7 +489,7 @@ export default function AccountBorrows() {
                             </div>
                           ) : null}
                           <div className="text-left">
-                            <div className="pb-0.5 text-th-fgd-3 text-xs">
+                            <div className="pb-0.5 text-xs text-th-fgd-3">
                               {t('liquidity')}
                             </div>
                             {mangoGroup
@@ -505,7 +505,7 @@ export default function AccountBorrows() {
                           </div>
                           <Button
                             onClick={() => handleShowBorrow(token.symbol)}
-                            className="col-span-2 text-xs pt-0 pb-0 h-8"
+                            className="col-span-2 h-8 pt-0 pb-0 text-xs"
                             disabled={
                               !connected || loadingMangoAccount || !canWithdraw
                             }

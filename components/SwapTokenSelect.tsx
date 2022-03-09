@@ -45,7 +45,7 @@ class ItemRenderer extends PureComponent<ItemRendererProps> {
       <div style={this.props.style}>
         <button
           key={tokenInfo?.address}
-          className="flex font-normal justify-between items-center py-4 hover:bg-th-bkg-4 cursor-pointer px-6 rounded-none w-full focus:outline-none focus:bg-th-bkg-3"
+          className="flex w-full cursor-pointer items-center justify-between rounded-none py-4 px-6 font-normal hover:bg-th-bkg-4 focus:bg-th-bkg-3 focus:outline-none"
           onClick={() => this.props.data.onSubmit(tokenInfo)}
         >
           <div className="flex items-center">
@@ -108,11 +108,11 @@ const SwapTokenSelect = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose} hideClose noPadding alignTop>
       <div className="flex flex-col pb-2 md:h-2/3">
-        <div className="flex items-center text-th-fgd-4 text-lg p-6">
-          <SearchIcon className="w-8 h-8" />
+        <div className="flex items-center p-6 text-lg text-th-fgd-4">
+          <SearchIcon className="h-8 w-8" />
           <input
             type="text"
-            className="flex-1 ml-4 bg-th-bkg-2 focus:outline-none"
+            className="ml-4 flex-1 bg-th-bkg-2 focus:outline-none"
             placeholder="Search by token or paste address"
             autoFocus
             value={search}

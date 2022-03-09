@@ -7,12 +7,12 @@ export default function MarketFee() {
   const { takerFee, makerFee } = useFees()
 
   return (
-    <div className="flex text-xs text-th-fgd-4 px-6 mt-2.5">
-      <div className="block sm:flex mx-auto text-center">
+    <div className="mt-2.5 flex px-6 text-xs text-th-fgd-4">
+      <div className="mx-auto block text-center sm:flex">
         <div>
           {t('maker-fee')}: {percentFormat.format(makerFee)}
         </div>
-        <div className="hidden sm:block px-2">|</div>
+        <div className="hidden px-2 sm:block">|</div>
         <div>
           {t('taker-fee')}: {percentFormat.format(takerFee)}
         </div>

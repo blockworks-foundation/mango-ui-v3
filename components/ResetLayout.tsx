@@ -17,10 +17,10 @@ const ResetLayout = ({ className = '' }) => {
   }
 
   return (
-    <div className={`inline-flex relative ${className}`}>
-      <Tooltip content={t('tooltip-reset-layout')} className="text-xs py-1">
+    <div className={`relative inline-flex ${className}`}>
+      <Tooltip content={t('tooltip-reset-layout')} className="py-1 text-xs">
         <IconButton onClick={handleResetLayout}>
-          <TemplateIcon className="w-4 h-4" />
+          <TemplateIcon className="h-4 w-4" />
         </IconButton>
       </Tooltip>
     </div>

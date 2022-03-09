@@ -164,13 +164,13 @@ function App({ Component, pageProps }) {
 
         <ThemeProvider defaultTheme="Mango">
           <ViewportProvider>
-            <div className="bg-th-bkg-1 min-h-screen">
+            <div className="min-h-screen bg-th-bkg-1">
               <ErrorBoundary>
                 <GlobalNotification />
                 <Component {...pageProps} />
               </ErrorBoundary>
             </div>
-            <div className="md:hidden fixed bottom-0 left-0 w-full z-20">
+            <div className="fixed bottom-0 left-0 z-20 w-full md:hidden">
               <ErrorBoundary>
                 <BottomBar />
               </ErrorBoundary>

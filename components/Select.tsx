@@ -15,7 +15,7 @@ const Select = ({
         {({ open }) => (
           <>
             <Listbox.Button
-              className={`h-full w-full font-normal bg-th-bkg-1 ring-1 ring-th-bkg-4 ring-inset rounded-md hover:ring-th-fgd-4 focus:outline-none focus:border-th-fgd-4`}
+              className={`h-full w-full rounded-md bg-th-bkg-1 font-normal ring-1 ring-inset ring-th-bkg-4 hover:ring-th-fgd-4 focus:border-th-fgd-4 focus:outline-none`}
             >
               <div
                 style={{ minHeight: '2.5rem' }}
@@ -23,8 +23,8 @@ const Select = ({
               >
                 {value ? value : placeholder}
                 <ChevronDownIcon
-                  className={`default-transition flex-shrink-0 h-5 w-5 text-th-fgd-1 ${
-                    open ? 'transform rotate-180' : 'transform rotate-360'
+                  className={`default-transition h-5 w-5 flex-shrink-0 text-th-fgd-1 ${
+                    open ? 'rotate-180 transform' : 'rotate-360 transform'
                   }`}
                 />
               </div>
@@ -32,7 +32,7 @@ const Select = ({
             {open ? (
               <Listbox.Options
                 static
-                className={`absolute bg-th-bkg-3 left-0 max-h-60 mt-1 overflow-auto origin-top-left outline-none p-2 rounded-md text-th-fgd-1 thin-scroll w-full z-20`}
+                className={`thin-scroll absolute left-0 z-20 mt-1 max-h-60 w-full origin-top-left overflow-auto rounded-md bg-th-bkg-3 p-2 text-th-fgd-1 outline-none`}
               >
                 {children}
               </Listbox.Options>
@@ -49,7 +49,7 @@ const Option = ({ value, children, className = '' }) => {
     <Listbox.Option value={value}>
       {({ selected }) => (
         <div
-          className={`default-transition text-th-fgd-1 hover:bg-th-bkg-3 hover:cursor-pointer hover:text-th-primary ${
+          className={`default-transition text-th-fgd-1 hover:cursor-pointer hover:bg-th-bkg-3 hover:text-th-primary ${
             selected && `text-th-primary`
           } ${className}`}
         >

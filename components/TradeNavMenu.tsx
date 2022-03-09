@@ -89,21 +89,21 @@ const TradeNavMenu = () => {
         <div
           onMouseEnter={() => onHoverMenu(open, 'onMouseEnter')}
           onMouseLeave={() => onHoverMenu(open, 'onMouseLeave')}
-          className="relative flex flex-col z-50"
+          className="relative z-50 flex flex-col"
         >
           <Popover.Button
-            className={`-mr-3 px-3 rounded-none focus:outline-none focus:bg-th-bkg-3 ${
+            className={`-mr-3 rounded-none px-3 focus:bg-th-bkg-3 focus:outline-none ${
               open && 'bg-th-bkg-3'
             }`}
             ref={buttonRef}
           >
             <div
-              className={`flex font-bold h-14 items-center rounded-none hover:text-th-primary`}
+              className={`flex h-14 items-center rounded-none font-bold hover:text-th-primary`}
             >
               <span>{t('trade')}</span>
               <ChevronDownIcon
-                className={`default-transition h-5 ml-0.5 w-5 ${
-                  open ? 'transform rotate-180' : 'transform rotate-360'
+                className={`default-transition ml-0.5 h-5 w-5 ${
+                  open ? 'rotate-180 transform' : 'rotate-360 transform'
                 }`}
               />
             </div>
@@ -119,16 +119,16 @@ const TradeNavMenu = () => {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Popover.Panel className="absolute grid grid-cols-3 grid-rows-1 min-h-[235px] top-14 w-[700px]">
-              <div className="bg-th-bkg-4 col-span-1 rounded-bl-lg">
+            <Popover.Panel className="absolute top-14 grid min-h-[235px] w-[700px] grid-cols-3 grid-rows-1">
+              <div className="col-span-1 rounded-bl-lg bg-th-bkg-4">
                 <MenuCategories
                   activeCategory={activeMenuCategory}
                   categories={menuCategories}
                   onChange={handleMenuCategoryChange}
                 />
               </div>
-              <div className="bg-th-bkg-3 col-span-2 p-4 rounded-br-lg">
-                <div className="grid grid-cols-2 grid-flow-row gap-x-6">
+              <div className="col-span-2 rounded-br-lg bg-th-bkg-3 p-4">
+                <div className="grid grid-flow-row grid-cols-2 gap-x-6">
                   {markets.map((mkt) => (
                     <MarketNavItem
                       buttonRef={buttonRef}
@@ -164,7 +164,7 @@ const MenuCategories: FunctionComponent<MenuCategoriesProps> = ({
   return (
     <div className={`relative`}>
       <div
-        className={`absolute bg-th-primary top-0 default-transition left-0 w-0.5 z-10`}
+        className={`default-transition absolute top-0 left-0 z-10 w-0.5 bg-th-primary`}
         style={{
           transform: `translateY(${
             categories.findIndex((cat) => cat.name === activeCategory) * 100
@@ -178,7 +178,7 @@ const MenuCategories: FunctionComponent<MenuCategoriesProps> = ({
             key={cat.name}
             onClick={() => onChange(cat.name)}
             onMouseEnter={() => onChange(cat.name)}
-            className={`cursor-pointer default-transition flex flex-col font-bold h-14 justify-center px-4 relative rounded-none w-full whitespace-nowrap hover:bg-th-bkg-3 ${
+            className={`default-transition relative flex h-14 w-full cursor-pointer flex-col justify-center whitespace-nowrap rounded-none px-4 font-bold hover:bg-th-bkg-3 ${
               activeCategory === cat.name
                 ? `bg-th-bkg-3 text-th-primary`
                 : `text-th-fgd-2 hover:text-th-primary`
@@ -186,7 +186,7 @@ const MenuCategories: FunctionComponent<MenuCategoriesProps> = ({
           `}
           >
             {t(cat.name.toLowerCase().replace(' ', '-'))}
-            <div className="font-normal text-th-fgd-4 text-xs">
+            <div className="text-xs font-normal text-th-fgd-4">
               {t(cat.desc)}
             </div>
           </button>

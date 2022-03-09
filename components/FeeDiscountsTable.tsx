@@ -30,18 +30,18 @@ const FeeDiscountsTable = () => {
 
   return (
     <div
-      className={`flex justify-center bg-th-bkg-1 py-6 rounded-md divide-x divide-gray-500`}
+      className={`flex justify-center divide-x divide-gray-500 rounded-md bg-th-bkg-1 py-6`}
     >
       <div className="pr-10">
         <div className="text-center text-lg">{t('serum-fees')}</div>
         <div
-          className={`flex flex-col sm:flex-row justify-between text-th-fgd-4 text-center mt-4`}
+          className={`mt-4 flex flex-col justify-between text-center text-th-fgd-4 sm:flex-row`}
         >
           <div className="px-4">
             <div>
               {totalMsrm > 0 ? 'MSRM' : 'SRM'} {t('deposits')}
             </div>
-            <div className="text-th-fgd-3 text-normal">
+            <div className="text-normal text-th-fgd-3">
               {totalMsrm > 0
                 ? totalMsrm.toLocaleString(undefined, {
                     maximumFractionDigits: MSRM_DECIMALS,
@@ -51,13 +51,13 @@ const FeeDiscountsTable = () => {
                   })}
             </div>
           </div>
-          <div className="px-4 mt-4 sm:mt-0">
+          <div className="mt-4 px-4 sm:mt-0">
             <div>{t('maker-fee')}</div>
-            <div className="text-th-fgd-3 text-normal">
+            <div className="text-normal text-th-fgd-3">
               {rates ? percentFormat.format(rates.maker) : null}
             </div>
           </div>
-          <div className="px-4 mt-4 sm:mt-0">
+          <div className="mt-4 px-4 sm:mt-0">
             <div className="flex items-center">
               <div>{t('taker-fee')}</div>
               <div className="flex items-center">
@@ -68,13 +68,13 @@ const FeeDiscountsTable = () => {
                 >
                   <div>
                     <InformationCircleIcon
-                      className={`h-5 w-5 ml-2 text-th-fgd-4 cursor-help`}
+                      className={`ml-2 h-5 w-5 cursor-help text-th-fgd-4`}
                     />
                   </div>
                 </Tooltip>
               </div>
             </div>
-            <div className="text-th-fgd-3 text-normal">
+            <div className="text-normal text-th-fgd-3">
               {rates
                 ? new Intl.NumberFormat(undefined, {
                     style: 'percent',
@@ -86,7 +86,7 @@ const FeeDiscountsTable = () => {
           </div>
         </div>
         {connected && mangoAccount ? (
-          <div className="flex justify-center mt-6">
+          <div className="mt-6 flex justify-center">
             <Button
               onClick={() => setShowDeposit(true)}
               disabled={!ownerMsrmAccount}

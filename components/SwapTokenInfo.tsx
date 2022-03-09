@@ -204,13 +204,13 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
           <div className="flex items-start justify-between">
             <div>
               {inputTokenInfo && outputTokenInfo ? (
-                <div className="text-th-fgd-3 text-sm">
+                <div className="text-sm text-th-fgd-3">
                   {`${outputTokenInfo?.symbol?.toUpperCase()}/${inputTokenInfo?.symbol?.toUpperCase()}`}
                 </div>
               ) : null}
               {mouseData ? (
                 <>
-                  <div className="font-bold text-lg text-th-fgd-1">
+                  <div className="text-lg font-bold text-th-fgd-1">
                     {numberFormatter.format(mouseData['price'])}
                     <span
                       className={`ml-2 text-xs ${
@@ -226,7 +226,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                 </>
               ) : (
                 <>
-                  <div className="font-bold text-lg text-th-fgd-1">
+                  <div className="text-lg font-bold text-th-fgd-1">
                     {numberFormatter.format(
                       chartData[chartData.length - 1]['price']
                     )}
@@ -248,14 +248,14 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
             </div>
             <IconButton onClick={() => setHideChart(!hideChart)}>
               {hideChart ? (
-                <LineChartIcon className="w-4 h-4" />
+                <LineChartIcon className="h-4 w-4" />
               ) : (
-                <EyeOffIcon className="w-4 h-4" />
+                <EyeOffIcon className="h-4 w-4" />
               )}
             </IconButton>
           </div>
           {!hideChart ? (
-            <div className="h-52 mt-4 w-full" ref={observe}>
+            <div className="mt-4 h-52 w-full" ref={observe}>
               <AreaChart
                 width={width}
                 height={height}
@@ -292,7 +292,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
               </AreaChart>
               <div className="flex justify-end">
                 <button
-                  className={`default-transition font-bold px-3 py-2 text-th-fgd-1 text-xs hover:text-th-primary focus:outline-none ${
+                  className={`default-transition px-3 py-2 text-xs font-bold text-th-fgd-1 hover:text-th-primary focus:outline-none ${
                     daysToShow === 1 && 'text-th-primary'
                   }`}
                   onClick={() => setDaysToShow(1)}
@@ -300,7 +300,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                   24H
                 </button>
                 <button
-                  className={`default-transition font-bold px-3 py-2 text-th-fgd-1 text-xs hover:text-th-primary focus:outline-none ${
+                  className={`default-transition px-3 py-2 text-xs font-bold text-th-fgd-1 hover:text-th-primary focus:outline-none ${
                     daysToShow === 7 && 'text-th-primary'
                   }`}
                   onClick={() => setDaysToShow(7)}
@@ -308,7 +308,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                   7D
                 </button>
                 <button
-                  className={`default-transition font-bold px-3 py-2 text-th-fgd-1 text-xs hover:text-th-primary focus:outline-none ${
+                  className={`default-transition px-3 py-2 text-xs font-bold text-th-fgd-1 hover:text-th-primary focus:outline-none ${
                     daysToShow === 30 && 'text-th-primary'
                   }`}
                   onClick={() => setDaysToShow(30)}
@@ -320,8 +320,8 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
           ) : null}
         </div>
       ) : (
-        <div className="bg-th-bkg-3 mt-4 md:mt-0 p-4 rounded-md text-center text-th-fgd-3">
-          <LineChartIcon className="h-6 mx-auto text-th-primary w-6" />
+        <div className="mt-4 rounded-md bg-th-bkg-3 p-4 text-center text-th-fgd-3 md:mt-0">
+          <LineChartIcon className="mx-auto h-6 w-6 text-th-primary" />
           {t('swap:chart-not-available')}
         </div>
       )}
@@ -329,7 +329,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
         {inputTokenInfo && outputTokenInfo && baseTokenId ? (
           <ExpandableRow
             buttonTemplate={
-              <div className="flex items-center justify-between text-fgd-1 w-full">
+              <div className="text-fgd-1 flex w-full items-center justify-between">
                 <div className="flex items-center">
                   {inputTokenInfo.image?.small ? (
                     <img
@@ -341,10 +341,10 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                     />
                   ) : null}
                   <div className="ml-2.5 text-left">
-                    <h2 className="font-bold text-base text-th-fgd-1">
+                    <h2 className="text-base font-bold text-th-fgd-1">
                       {inputTokenInfo?.symbol?.toUpperCase()}
                     </h2>
-                    <div className="font-normal text-th-fgd-3 text-xs">
+                    <div className="text-xs font-normal text-th-fgd-3">
                       {inputTokenInfo.name}
                     </div>
                   </div>
@@ -380,27 +380,27 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
             }
             panelTemplate={
               <div>
-                <div className="font-bold m-1 mt-0 pb-2 text-th-fgd-1 text-base">
+                <div className="m-1 mt-0 pb-2 text-base font-bold text-th-fgd-1">
                   {t('market-data')}
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 grid-flow-row">
+                <div className="grid grid-flow-row grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3">
                   {inputTokenInfo.market_cap_rank ? (
-                    <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
-                      <div className="text-th-fgd-3 text-xs">
+                    <div className="m-1 rounded-md border border-th-bkg-4 p-3">
+                      <div className="text-xs text-th-fgd-3">
                         {t('swap:market-cap-rank')}
                       </div>
-                      <div className="font-bold text-th-fgd-1 text-lg">
+                      <div className="text-lg font-bold text-th-fgd-1">
                         #{inputTokenInfo.market_cap_rank}
                       </div>
                     </div>
                   ) : null}
                   {inputTokenInfo.market_data?.market_cap &&
                   inputTokenInfo.market_data?.market_cap?.usd !== 0 ? (
-                    <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
-                      <div className="text-th-fgd-3 text-xs">
+                    <div className="m-1 rounded-md border border-th-bkg-4 p-3">
+                      <div className="text-xs text-th-fgd-3">
                         {t('swap:market-cap')}
                       </div>
-                      <div className="font-bold text-th-fgd-1 text-lg">
+                      <div className="text-lg font-bold text-th-fgd-1">
                         $
                         {numberCompacter.format(
                           inputTokenInfo.market_data?.market_cap?.usd
@@ -409,11 +409,11 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                     </div>
                   ) : null}
                   {inputTokenInfo.market_data?.total_volume?.usd ? (
-                    <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
-                      <div className="text-th-fgd-3 text-xs">
+                    <div className="m-1 rounded-md border border-th-bkg-4 p-3">
+                      <div className="text-xs text-th-fgd-3">
                         {t('daily-volume')}
                       </div>
-                      <div className="font-bold text-th-fgd-1 text-lg">
+                      <div className="text-lg font-bold text-th-fgd-1">
                         $
                         {numberCompacter.format(
                           inputTokenInfo.market_data?.total_volume?.usd
@@ -422,17 +422,17 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                     </div>
                   ) : null}
                   {inputTokenInfo.market_data?.circulating_supply ? (
-                    <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
-                      <div className="text-th-fgd-3 text-xs">
+                    <div className="m-1 rounded-md border border-th-bkg-4 p-3">
+                      <div className="text-xs text-th-fgd-3">
                         {t('swap:token-supply')}
                       </div>
-                      <div className="font-bold text-th-fgd-1 text-lg">
+                      <div className="text-lg font-bold text-th-fgd-1">
                         {numberCompacter.format(
                           inputTokenInfo.market_data.circulating_supply
                         )}
                       </div>
                       {inputTokenInfo.market_data?.max_supply ? (
-                        <div className="text-th-fgd-2 text-xs">
+                        <div className="text-xs text-th-fgd-2">
                           {t('swap:max-supply')}:{' '}
                           {numberCompacter.format(
                             inputTokenInfo.market_data.max_supply
@@ -442,12 +442,12 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                     </div>
                   ) : null}
                   {inputTokenInfo.market_data?.ath?.usd ? (
-                    <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
-                      <div className="text-th-fgd-3 text-xs">
+                    <div className="m-1 rounded-md border border-th-bkg-4 p-3">
+                      <div className="text-xs text-th-fgd-3">
                         {t('swap:ath')}
                       </div>
                       <div className="flex">
-                        <div className="font-bold text-th-fgd-1 text-lg">
+                        <div className="text-lg font-bold text-th-fgd-1">
                           $
                           {numberFormatter.format(
                             inputTokenInfo.market_data.ath.usd
@@ -471,7 +471,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                         ) : null}
                       </div>
                       {inputTokenInfo.market_data?.ath_date?.usd ? (
-                        <div className="text-th-fgd-2 text-xs">
+                        <div className="text-xs text-th-fgd-2">
                           {dayjs(
                             inputTokenInfo.market_data.ath_date.usd
                           ).fromNow()}
@@ -480,12 +480,12 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                     </div>
                   ) : null}
                   {inputTokenInfo.market_data?.atl?.usd ? (
-                    <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
-                      <div className="text-th-fgd-3 text-xs">
+                    <div className="m-1 rounded-md border border-th-bkg-4 p-3">
+                      <div className="text-xs text-th-fgd-3">
                         {t('swap:atl')}
                       </div>
                       <div className="flex">
-                        <div className="font-bold text-th-fgd-1 text-lg">
+                        <div className="text-lg font-bold text-th-fgd-1">
                           $
                           {numberFormatter.format(
                             inputTokenInfo.market_data.atl.usd
@@ -513,7 +513,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                         ) : null}
                       </div>
                       {inputTokenInfo.market_data?.atl_date?.usd ? (
-                        <div className="text-th-fgd-2 text-xs">
+                        <div className="text-xs text-th-fgd-2">
                           {dayjs(
                             inputTokenInfo.market_data.atl_date.usd
                           ).fromNow()}
@@ -524,12 +524,12 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                 </div>
                 {topHolders?.inputHolders ? (
                   <div className="pt-4">
-                    <div className="font-bold m-1 pb-3 text-th-fgd-1 text-base">
+                    <div className="m-1 pb-3 text-base font-bold text-th-fgd-1">
                       {t('swap:top-ten')}
                     </div>
                     {topHolders.inputHolders.map((holder) => (
                       <a
-                        className="border-t border-th-bkg-4 default transition flex justify-between mx-1 px-2 py-2.5 text-th-fgd-3 hover:bg-th-bkg-2"
+                        className="default mx-1 flex justify-between border-t border-th-bkg-4 px-2 py-2.5 text-th-fgd-3 transition hover:bg-th-bkg-2"
                         href={`https://explorer.solana.com/address/${holder.owner}`}
                         target="_blank"
                         rel="noopener noreferrer"
@@ -546,7 +546,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                               holder.amount / Math.pow(10, holder.decimals)
                             )}
                           </div>
-                          <ExternalLinkIcon className="h-4 ml-2 w-4" />
+                          <ExternalLinkIcon className="ml-2 h-4 w-4" />
                         </div>
                       </a>
                     ))}
@@ -556,16 +556,16 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
             }
           />
         ) : (
-          <div className="bg-th-bkg-3 mt-3 p-4 rounded-md text-center text-th-fgd-3">
+          <div className="mt-3 rounded-md bg-th-bkg-3 p-4 text-center text-th-fgd-3">
             {t('swap:input-info-unavailable')}
           </div>
         )}
 
         {outputTokenInfo && quoteTokenId ? (
-          <div className="border-b border-th-bkg-4 w-full">
+          <div className="w-full border-b border-th-bkg-4">
             <ExpandableRow
               buttonTemplate={
-                <div className="flex items-center justify-between text-fgd-1 w-full">
+                <div className="text-fgd-1 flex w-full items-center justify-between">
                   <div className="flex items-center">
                     {outputTokenInfo.image?.small ? (
                       <img
@@ -577,10 +577,10 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                       />
                     ) : null}
                     <div className="ml-2.5 text-left">
-                      <h2 className="font-bold text-base text-th-fgd-1">
+                      <h2 className="text-base font-bold text-th-fgd-1">
                         {outputTokenInfo?.symbol?.toUpperCase()}
                       </h2>
-                      <div className="font-normal text-th-fgd-3 text-xs">
+                      <div className="text-xs font-normal text-th-fgd-3">
                         {outputTokenInfo.name}
                       </div>
                     </div>
@@ -617,27 +617,27 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
               }
               panelTemplate={
                 <div>
-                  <div className="font-bold m-1 mt-0 pb-2 text-th-fgd-1 text-base">
+                  <div className="m-1 mt-0 pb-2 text-base font-bold text-th-fgd-1">
                     {t('market-data')}
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 grid-flow-row">
+                  <div className="grid grid-flow-row grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3">
                     {outputTokenInfo.market_cap_rank ? (
-                      <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
-                        <div className="text-th-fgd-3 text-xs">
+                      <div className="m-1 rounded-md border border-th-bkg-4 p-3">
+                        <div className="text-xs text-th-fgd-3">
                           {t('swap:market-cap-rank')}
                         </div>
-                        <div className="font-bold text-th-fgd-1 text-lg">
+                        <div className="text-lg font-bold text-th-fgd-1">
                           #{outputTokenInfo.market_cap_rank}
                         </div>
                       </div>
                     ) : null}
                     {outputTokenInfo.market_data?.market_cap &&
                     outputTokenInfo.market_data?.market_cap?.usd !== 0 ? (
-                      <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
-                        <div className="text-th-fgd-3 text-xs">
+                      <div className="m-1 rounded-md border border-th-bkg-4 p-3">
+                        <div className="text-xs text-th-fgd-3">
                           {t('swap:market-cap')}
                         </div>
-                        <div className="font-bold text-th-fgd-1 text-lg">
+                        <div className="text-lg font-bold text-th-fgd-1">
                           $
                           {numberCompacter.format(
                             outputTokenInfo.market_data?.market_cap?.usd
@@ -646,11 +646,11 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                       </div>
                     ) : null}
                     {outputTokenInfo.market_data?.total_volume?.usd ? (
-                      <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
-                        <div className="text-th-fgd-3 text-xs">
+                      <div className="m-1 rounded-md border border-th-bkg-4 p-3">
+                        <div className="text-xs text-th-fgd-3">
                           {t('daily-volume')}
                         </div>
-                        <div className="font-bold text-th-fgd-1 text-lg">
+                        <div className="text-lg font-bold text-th-fgd-1">
                           $
                           {numberCompacter.format(
                             outputTokenInfo.market_data?.total_volume?.usd
@@ -659,17 +659,17 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                       </div>
                     ) : null}
                     {outputTokenInfo.market_data?.circulating_supply ? (
-                      <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
-                        <div className="text-th-fgd-3 text-xs">
+                      <div className="m-1 rounded-md border border-th-bkg-4 p-3">
+                        <div className="text-xs text-th-fgd-3">
                           {t('swap:token-supply')}
                         </div>
-                        <div className="font-bold text-th-fgd-1 text-lg">
+                        <div className="text-lg font-bold text-th-fgd-1">
                           {numberCompacter.format(
                             outputTokenInfo.market_data.circulating_supply
                           )}
                         </div>
                         {outputTokenInfo.market_data?.max_supply ? (
-                          <div className="text-th-fgd-2 text-xs">
+                          <div className="text-xs text-th-fgd-2">
                             {t('swap:max-supply')}:{' '}
                             {numberCompacter.format(
                               outputTokenInfo.market_data.max_supply
@@ -679,12 +679,12 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                       </div>
                     ) : null}
                     {outputTokenInfo.market_data?.ath?.usd ? (
-                      <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
-                        <div className="text-th-fgd-3 text-xs">
+                      <div className="m-1 rounded-md border border-th-bkg-4 p-3">
+                        <div className="text-xs text-th-fgd-3">
                           {t('swap:ath')}
                         </div>
                         <div className="flex">
-                          <div className="font-bold text-th-fgd-1 text-lg">
+                          <div className="text-lg font-bold text-th-fgd-1">
                             $
                             {numberFormatter.format(
                               outputTokenInfo.market_data.ath.usd
@@ -708,7 +708,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                           ) : null}
                         </div>
                         {outputTokenInfo.market_data?.ath_date?.usd ? (
-                          <div className="text-th-fgd-2 text-xs">
+                          <div className="text-xs text-th-fgd-2">
                             {dayjs(
                               outputTokenInfo.market_data.ath_date.usd
                             ).fromNow()}
@@ -717,12 +717,12 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                       </div>
                     ) : null}
                     {outputTokenInfo.market_data?.atl?.usd ? (
-                      <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
-                        <div className="text-th-fgd-3 text-xs">
+                      <div className="m-1 rounded-md border border-th-bkg-4 p-3">
+                        <div className="text-xs text-th-fgd-3">
                           {t('swap:atl')}
                         </div>
                         <div className="flex">
-                          <div className="font-bold text-th-fgd-1 text-lg">
+                          <div className="text-lg font-bold text-th-fgd-1">
                             $
                             {numberFormatter.format(
                               outputTokenInfo.market_data.atl.usd
@@ -750,7 +750,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                           ) : null}
                         </div>
                         {outputTokenInfo.market_data?.atl_date?.usd ? (
-                          <div className="text-th-fgd-2 text-xs">
+                          <div className="text-xs text-th-fgd-2">
                             {dayjs(
                               outputTokenInfo.market_data.atl_date.usd
                             ).fromNow()}
@@ -761,12 +761,12 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                   </div>
                   {topHolders?.inputHolders ? (
                     <div className="pt-4">
-                      <div className="font-bold m-1 pb-3 text-th-fgd-1 text-base">
+                      <div className="m-1 pb-3 text-base font-bold text-th-fgd-1">
                         {t('swap:top-ten')}
                       </div>
                       {topHolders.inputHolders.map((holder) => (
                         <a
-                          className="border-t border-th-bkg-4 default transition flex justify-between mx-1 px-2 py-2.5 text-th-fgd-3 hover:bg-th-bkg-2"
+                          className="default mx-1 flex justify-between border-t border-th-bkg-4 px-2 py-2.5 text-th-fgd-3 transition hover:bg-th-bkg-2"
                           href={`https://explorer.solana.com/address/${holder.owner}`}
                           target="_blank"
                           rel="noopener noreferrer"
@@ -783,7 +783,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                                 holder.amount / Math.pow(10, holder.decimals)
                               )}
                             </div>
-                            <ExternalLinkIcon className="h-4 ml-2 w-4" />
+                            <ExternalLinkIcon className="ml-2 h-4 w-4" />
                           </div>
                         </a>
                       ))}
@@ -794,7 +794,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
             />
           </div>
         ) : (
-          <div className="bg-th-bkg-3 mt-3 p-4 rounded-md text-center text-th-fgd-3">
+          <div className="mt-3 rounded-md bg-th-bkg-3 p-4 text-center text-th-fgd-3">
             {t('swap:output-info-unavailable')}
           </div>
         )}

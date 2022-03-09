@@ -358,27 +358,27 @@ const JupiterForm: FunctionComponent = () => {
               walletTokenPrices &&
               !isMobile ? (
                 <div
-                  className={`flex transform top-22 right-0 w-80 fixed overflow-hidden ease-in-out transition-all duration-700 z-30 ${
+                  className={`top-22 fixed right-0 z-30 flex w-80 transform overflow-hidden transition-all duration-700 ease-in-out ${
                     showWalletDraw ? 'translate-x-0' : 'mr-16 translate-x-full'
                   }`}
                 >
                   <aside
-                    className={`bg-th-bkg-3 ml-16 pb-4 pt-6 rounded-l-md w-64`}
+                    className={`ml-16 w-64 rounded-l-md bg-th-bkg-3 pb-4 pt-6`}
                   >
-                    <div className="max-h-[480px] overflow-auto thin-scroll">
-                      <div className="flex items-center justify-between pb-2 px-4">
+                    <div className="thin-scroll max-h-[480px] overflow-auto">
+                      <div className="flex items-center justify-between px-4 pb-2">
                         <div>
-                          <div className="font-bold text-base text-th-fgd-1">
+                          <div className="text-base font-bold text-th-fgd-1">
                             {t('wallet')}
                           </div>
                           <a
-                            className="flex items-center text-th-fgd-3 text-xs hover:text-th-fgd-2"
+                            className="flex items-center text-xs text-th-fgd-3 hover:text-th-fgd-2"
                             href={`https://explorer.solana.com/address/${wallet?.publicKey}`}
                             target="_blank"
                             rel="noopener noreferrer"
                           >
                             {abbreviateAddress(wallet.publicKey)}
-                            <ExternalLinkIcon className="h-3.5 ml-0.5 -mt-0.5 w-3.5" />
+                            <ExternalLinkIcon className="ml-0.5 -mt-0.5 h-3.5 w-3.5" />
                           </a>
                         </div>
                         <IconButton onClick={() => refreshWallet()}>
@@ -402,7 +402,7 @@ const JupiterForm: FunctionComponent = () => {
                           const geckoId = token.item.extensions?.coingeckoId
                           return (
                             <div
-                              className="cursor-pointer default-transition flex items-center justify-between px-4 py-2 hover:bg-th-bkg-4"
+                              className="default-transition flex cursor-pointer items-center justify-between px-4 py-2 hover:bg-th-bkg-4"
                               key={geckoId}
                               onClick={() =>
                                 setFormValue((val) => ({
@@ -426,7 +426,7 @@ const JupiterForm: FunctionComponent = () => {
                                     {token.item.symbol}
                                   </div>
                                   {walletTokenPrices ? (
-                                    <div className="ml-2 text-th-fgd-4 text-xs">
+                                    <div className="ml-2 text-xs text-th-fgd-4">
                                       {walletTokenPrices[geckoId]
                                         ? `$${walletTokenPrices[geckoId].usd}`
                                         : t('swap:unavailable')}
@@ -440,7 +440,7 @@ const JupiterForm: FunctionComponent = () => {
                                     maximumSignificantDigits: 6,
                                   })}
                                 </div>
-                                <div className="text-th-fgd-4 text-right text-xs">
+                                <div className="text-right text-xs text-th-fgd-4">
                                   {walletTokenPrices[geckoId]
                                     ? `$${(
                                         token.uiBalance *
@@ -457,14 +457,14 @@ const JupiterForm: FunctionComponent = () => {
                     </div>
                   </aside>
                   <button
-                    className="absolute bg-th-bkg-4 p-3 right-64 rounded-r-none text-th-fgd-1 hover:text-th-primary top-20"
+                    className="absolute right-64 top-20 rounded-r-none bg-th-bkg-4 p-3 text-th-fgd-1 hover:text-th-primary"
                     onClick={() => setShowWalletDraw(!showWalletDraw)}
                   >
                     <WalletIcon className="h-5 w-5" />
                   </button>
                 </div>
               ) : null}
-              <div className="bg-th-bkg-2 rounded-lg p-6">
+              <div className="rounded-lg bg-th-bkg-2 p-6">
                 <div className="flex justify-between">
                   <label
                     htmlFor="inputMint"
@@ -473,13 +473,13 @@ const JupiterForm: FunctionComponent = () => {
                     {t('swap:pay')}
                   </label>
                   <div className="space-x-3">
-                    <label htmlFor="amount" className="text-th-fgd-3 text-xs">
+                    <label htmlFor="amount" className="text-xs text-th-fgd-3">
                       {t('swap:bal')} {inputWalletBalance()}
                     </label>
                     {connected ? (
                       <>
                         <LinkButton
-                          className="text-th-primary text-xs"
+                          className="text-xs text-th-primary"
                           onClick={() => {
                             setFormValue((val) => ({
                               ...val,
@@ -493,10 +493,10 @@ const JupiterForm: FunctionComponent = () => {
                     ) : null}
                   </div>
                 </div>
-                <div className="grid grid-cols-2 mt-2">
+                <div className="mt-2 grid grid-cols-2">
                   <div className="col-span-1">
                     <button
-                      className="hover:bg-th-bkg-3 -ml-2 p-2"
+                      className="-ml-2 p-2 hover:bg-th-bkg-3"
                       onClick={() => setShowInputTokenSelect(true)}
                     >
                       <div className="flex h-8 items-center">
@@ -509,10 +509,10 @@ const JupiterForm: FunctionComponent = () => {
                             alt={inputTokenInfo?.symbol}
                           />
                         ) : null}
-                        <div className="text-base xl:text-lg ml-2">
+                        <div className="ml-2 text-base xl:text-lg">
                           {inputTokenInfo?.symbol}
                         </div>
-                        <ChevronDownIcon className="flex-shrink-0 h-5 w-5 ml-1 text-th-fgd-3" />
+                        <ChevronDownIcon className="ml-1 h-5 w-5 flex-shrink-0 text-th-fgd-3" />
                       </div>
                     </button>
                   </div>
@@ -520,7 +520,7 @@ const JupiterForm: FunctionComponent = () => {
                     <input
                       name="amount"
                       id="amount"
-                      className="bg-th-bkg-1 border border-th-bkg-4 default-transition font-bold pr-4 h-12 focus:outline-none rounded-md text-base text-right tracking-wide w-full hover:border-th-fgd-4 focus:border-th-fgd-4"
+                      className="default-transition h-12 w-full rounded-md border border-th-bkg-4 bg-th-bkg-1 pr-4 text-right text-base font-bold tracking-wide hover:border-th-fgd-4 focus:border-th-fgd-4 focus:outline-none"
                       value={formValue.amount || ''}
                       placeholder="0.00"
                       type="number"
@@ -538,9 +538,9 @@ const JupiterForm: FunctionComponent = () => {
                   </div>
                 </div>
 
-                <div className="flex justify-center my-4">
+                <div className="my-4 flex justify-center">
                   <button onClick={handleSwitchMints}>
-                    <SwitchVerticalIcon className="default-transition h-8 w-8 rounded-full p-1.5 bg-th-bkg-4 text-th-fgd-1 hover:text-th-primary" />
+                    <SwitchVerticalIcon className="default-transition h-8 w-8 rounded-full bg-th-bkg-4 p-1.5 text-th-fgd-1 hover:text-th-primary" />
                   </button>
                 </div>
 
@@ -548,14 +548,14 @@ const JupiterForm: FunctionComponent = () => {
                   <label htmlFor="outputMint" className="font-semibold">
                     {t('swap:receive')}
                   </label>
-                  <span className="text-th-fgd-3 text-xs">
+                  <span className="text-xs text-th-fgd-3">
                     {t('swap:bal')} {outputWalletBalance()}
                   </span>
                 </div>
-                <div className="grid grid-cols-2 mt-2">
+                <div className="mt-2 grid grid-cols-2">
                   <div className="col-span-1">
                     <button
-                      className="flex h-12 items-center hover:bg-th-bkg-3 -ml-2 p-2"
+                      className="-ml-2 flex h-12 items-center p-2 hover:bg-th-bkg-3"
                       onClick={() => setShowOutputTokenSelect(true)}
                     >
                       {outputTokenInfo?.logoURI ? (
@@ -567,17 +567,17 @@ const JupiterForm: FunctionComponent = () => {
                           alt={outputTokenInfo?.symbol}
                         />
                       ) : null}
-                      <div className="text-base xl:text-lg ml-2">
+                      <div className="ml-2 text-base xl:text-lg">
                         {outputTokenInfo?.symbol}
                       </div>
-                      <ChevronDownIcon className="flex-shrink-0 h-5 w-5 ml-1 text-th-fgd-3" />
+                      <ChevronDownIcon className="ml-1 h-5 w-5 flex-shrink-0 text-th-fgd-3" />
                     </button>
                   </div>
-                  <div className="col-span-1 relative">
+                  <div className="relative col-span-1">
                     <input
                       name="amount"
                       id="amount"
-                      className="bg-th-bkg-3 border border-th-bkg-4 cursor-not-allowed font-bold pr-4 h-12 focus:outline-none rounded-md text-lg text-right tracking-wide w-full"
+                      className="h-12 w-full cursor-not-allowed rounded-md border border-th-bkg-4 bg-th-bkg-3 pr-4 text-right text-lg font-bold tracking-wide focus:outline-none"
                       disabled
                       placeholder="0.00"
                       value={
@@ -595,7 +595,7 @@ const JupiterForm: FunctionComponent = () => {
                     {selectedRoute?.outAmount &&
                     formValue.amount &&
                     tokenPrices?.outputTokenPrice ? (
-                      <div className="absolute mt-1 right-0 text-th-fgd-3 text-xs">
+                      <div className="absolute right-0 mt-1 text-xs text-th-fgd-3">
                         ≈ $
                         {(
                           (selectedRoute?.outAmount /
@@ -608,16 +608,16 @@ const JupiterForm: FunctionComponent = () => {
                 </div>
 
                 {routes?.length && selectedRoute ? (
-                  <div className="mt-8 text-th-fgd-3 text-xs">
-                    <div className="border border-th-bkg-4 mb-4 pb-4 px-3 pt-4 relative rounded-md">
+                  <div className="mt-8 text-xs text-th-fgd-3">
+                    <div className="relative mb-4 rounded-md border border-th-bkg-4 px-3 pb-4 pt-4">
                       {selectedRoute === routes[0] ? (
-                        <div className="absolute bg-th-primary font-bold px-1 rounded-sm text-th-bkg-1 text-xs -top-2">
+                        <div className="absolute -top-2 rounded-sm bg-th-primary px-1 text-xs font-bold text-th-bkg-1">
                           {t('swap:best-swap')}
                         </div>
                       ) : null}
                       <div className="flex items-center justify-between">
                         <div>
-                          <span className="font-bold overflow-ellipsis text-sm text-th-fgd-1 whitespace-nowrap">
+                          <span className="overflow-ellipsis whitespace-nowrap text-sm font-bold text-th-fgd-1">
                             {selectedRoute?.marketInfos.map((info, index) => {
                               let includeSeparator = false
                               if (
@@ -633,7 +633,7 @@ const JupiterForm: FunctionComponent = () => {
                               )
                             })}
                           </span>
-                          <div className="mr-2 mt-0.5 text-th-fgd-3 text-xs font-normal">
+                          <div className="mr-2 mt-0.5 text-xs font-normal text-th-fgd-3">
                             {inputTokenInfo?.symbol} →{' '}
                             {selectedRoute?.marketInfos.map((r, index) => {
                               const showArrow =
@@ -658,7 +658,7 @@ const JupiterForm: FunctionComponent = () => {
                           </div>
                         </div>
                         <Button
-                          className="bg-transparent border border-th-fgd-4 font-normal pb-1 pt-1 px-2 rounded-md text-th-fgd-3 text-center text-xs"
+                          className="rounded-md border border-th-fgd-4 bg-transparent px-2 pb-1 pt-1 text-center text-xs font-normal text-th-fgd-3"
                           disabled={routes?.length === 1}
                           onClick={() => setShowRoutesModal(true)}
                         >
@@ -668,9 +668,9 @@ const JupiterForm: FunctionComponent = () => {
                         </Button>
                       </div>
                     </div>
-                    <div className="px-3 space-y-2">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="font-bold text-sm text-th-fgd-1">
+                    <div className="space-y-2 px-3">
+                      <div className="mb-4 flex items-center justify-between">
+                        <div className="text-sm font-bold text-th-fgd-1">
                           {t('swap:swap-details')}
                         </div>
                         <div className="flex items-center space-x-2">
@@ -710,7 +710,7 @@ const JupiterForm: FunctionComponent = () => {
                               )}
                             </div>
                             <SwitchHorizontalIcon
-                              className="cursor-pointer default-transition h-4 ml-1 text-th-fgd-3 w-4 hover:text-th-fgd-2"
+                              className="default-transition ml-1 h-4 w-4 cursor-pointer text-th-fgd-3 hover:text-th-fgd-2"
                               onClick={() => setSwapRate(!swapRate)}
                             />
                           </div>
@@ -811,7 +811,7 @@ const JupiterForm: FunctionComponent = () => {
                               }
                               placement={'left'}
                             >
-                              <InformationCircleIcon className="cursor-help h-3.5 ml-1.5 w-3.5 text-th-primary" />
+                              <InformationCircleIcon className="ml-1.5 h-3.5 w-3.5 cursor-help text-th-primary" />
                             </Tooltip>
                           </div>
                         </div>
@@ -877,7 +877,7 @@ const JupiterForm: FunctionComponent = () => {
                                   }
                                   placement={'left'}
                                 >
-                                  <InformationCircleIcon className="cursor-help h-3.5 ml-1.5 w-3.5 text-th-primary" />
+                                  <InformationCircleIcon className="ml-1.5 h-3.5 w-3.5 cursor-help text-th-primary" />
                                 </Tooltip>
                               </div>
                               <div>
@@ -937,8 +937,8 @@ const JupiterForm: FunctionComponent = () => {
                   </div>
                 ) : null}
                 {error && (
-                  <div className="flex items-center justify-center mt-2 text-th-red">
-                    <ExclamationCircleIcon className="h-5 mr-1.5 w-5" />
+                  <div className="mt-2 flex items-center justify-center text-th-red">
+                    <ExclamationCircleIcon className="mr-1.5 h-5 w-5" />
                     {t('swap:jupiter-error')}
                   </div>
                 )}
@@ -1004,7 +1004,7 @@ const JupiterForm: FunctionComponent = () => {
                       }
                     }
                   }}
-                  className="h-12 mt-6 text-base w-full"
+                  className="mt-6 h-12 w-full text-base"
                 >
                   {connected
                     ? swapping
@@ -1019,30 +1019,30 @@ const JupiterForm: FunctionComponent = () => {
                   isOpen={showRoutesModal}
                   onClose={() => setShowRoutesModal(false)}
                 >
-                  <div className="font-bold mb-4 text-th-fgd-1 text-center text-lg">
+                  <div className="mb-4 text-center text-lg font-bold text-th-fgd-1">
                     {t('swap:routes-found', {
                       numberOfRoutes: routes?.length,
                     })}
                   </div>
-                  <div className="max-h-96 overflow-x-hidden overflow-y-auto thin-scroll pr-1">
+                  <div className="thin-scroll max-h-96 overflow-y-auto overflow-x-hidden pr-1">
                     {routes.map((route, index) => {
                       const selected = selectedRoute === route
                       return (
                         <div
                           key={index}
-                          className={`bg-th-bkg-3 border default-transition rounded mb-2 hover:bg-th-bkg-4 ${
+                          className={`default-transition mb-2 rounded border bg-th-bkg-3 hover:bg-th-bkg-4 ${
                             selected
                               ? 'border-th-primary text-th-primary hover:border-th-primary'
                               : 'border-transparent text-th-fgd-1'
                           }`}
                         >
                           <button
-                            className="p-4 w-full"
+                            className="w-full p-4"
                             onClick={() => handleSelectRoute(route)}
                           >
-                            <div className="flex justify-between items-center">
+                            <div className="flex items-center justify-between">
                               <div className="flex flex-col text-left">
-                                <div className="whitespace-nowrap overflow-ellipsis">
+                                <div className="overflow-ellipsis whitespace-nowrap">
                                   {route.marketInfos.map((info, index) => {
                                     let includeSeparator = false
                                     if (
@@ -1058,7 +1058,7 @@ const JupiterForm: FunctionComponent = () => {
                                     )
                                   })}
                                 </div>
-                                <div className="text-th-fgd-4 text-xs font-normal">
+                                <div className="text-xs font-normal text-th-fgd-4">
                                   {inputTokenInfo?.symbol} →{' '}
                                   {route.marketInfos.map((r, index) => {
                                     const showArrow =
@@ -1172,7 +1172,7 @@ const JupiterForm: FunctionComponent = () => {
               ) : null}
             </div>
           </div>
-          <div className="py-4 md:py-0 w-full md:w-1/2 lg:w-2/3">
+          <div className="w-full py-4 md:w-1/2 md:py-0 lg:w-2/3">
             <Tabs
               activeTab={activeTab}
               onChange={handleTabChange}

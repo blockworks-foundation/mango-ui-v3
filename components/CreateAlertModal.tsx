@@ -94,34 +94,34 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
           {activeAlerts.length > 0 && !showAlertForm ? (
             <>
               <Modal.Header>
-                <div className="flex items-center justify-between w-full">
+                <div className="flex w-full items-center justify-between">
                   <div className="w-20" />
                   <ElementTitle noMarginBottom>
                     {t('alerts:active-alerts')}
                   </ElementTitle>
                   <Button
-                    className="flex items-center justify-center pt-0 pb-0 h-8 text-xs min-w-20"
+                    className="min-w-20 flex h-8 items-center justify-center pt-0 pb-0 text-xs"
                     disabled={activeAlerts.length >= 5}
                     onClick={() => setShowAlertForm(true)}
                   >
                     <div className="flex items-center">
-                      <PlusCircleIcon className="h-4 w-4 mr-1.5" />
+                      <PlusCircleIcon className="mr-1.5 h-4 w-4" />
                       {t('alerts:new-alert')}
                     </div>
                   </Button>
                 </div>
               </Modal.Header>
-              <div className="border-b border-th-fgd-4 mt-2">
+              <div className="mt-2 border-b border-th-fgd-4">
                 {activeAlerts.map((alert, index) => (
                   <div
-                    className="border-t border-th-fgd-4 flex items-center justify-between p-4"
+                    className="flex items-center justify-between border-t border-th-fgd-4 p-4"
                     key={`${alert._id}${index}`}
                   >
                     <div className="text-th-fgd-1">
                       {t('alerts:alert-info', { health: alert.health })}
                     </div>
                     <TrashIcon
-                      className="cursor-pointer default-transition h-5 text-th-fgd-3 w-5 hover:text-th-primary"
+                      className="default-transition h-5 w-5 cursor-pointer text-th-fgd-3 hover:text-th-primary"
                       onClick={() => actions.deleteAlert(alert._id)}
                     />
                   </div>
@@ -156,7 +156,7 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
                 value={email || ''}
                 onChange={(e) => onChangeEmailInput(e.target.value)}
               />
-              <div className="flex items-end mt-4">
+              <div className="mt-4 flex items-end">
                 <div className="w-full">
                   <div className="flex justify-between">
                     <Label>{t('alerts:alert-health')}</Label>
@@ -177,7 +177,7 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
                       max="100"
                       onChange={(e) => setHealth(e.target.value)}
                       suffix={
-                        <div className="font-bold text-base text-th-fgd-3">
+                        <div className="text-base font-bold text-th-fgd-3">
                           %
                         </div>
                       }
@@ -197,7 +197,7 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
                 {t('alerts:create-alert')}
               </Button>
               <LinkButton
-                className="mt-4 text-center w-full"
+                className="mt-4 w-full text-center"
                 onClick={handleCancelCreateAlert}
               >
                 {t('cancel')}
@@ -207,7 +207,7 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
             <div>
               <InlineNotification title={error} type="error" />
               <Button
-                className="flex justify-center mt-6 mx-auto"
+                className="mx-auto mt-6 flex justify-center"
                 onClick={() => actions.loadAlerts()}
               >
                 {t('try-again')}
@@ -222,7 +222,7 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
                 <p className="mt-1 text-center">{t('alerts:no-alerts-desc')}</p>
               </Modal.Header>
               <Button
-                className="flex justify-center m-auto"
+                className="m-auto flex justify-center"
                 onClick={() => setShowAlertForm(true)}
               >
                 {t('alerts:new-alert')}
@@ -232,9 +232,9 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
         </>
       ) : (
         <div className="space-y-3">
-          <div className="animate-pulse bg-th-bkg-3 h-12 rounded-md w-full" />
-          <div className="animate-pulse bg-th-bkg-3 h-12 rounded-md w-full" />
-          <div className="animate-pulse bg-th-bkg-3 h-12 rounded-md w-full" />
+          <div className="h-12 w-full animate-pulse rounded-md bg-th-bkg-3" />
+          <div className="h-12 w-full animate-pulse rounded-md bg-th-bkg-3" />
+          <div className="h-12 w-full animate-pulse rounded-md bg-th-bkg-3" />
         </div>
       )}
     </Modal>

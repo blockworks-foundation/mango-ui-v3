@@ -302,7 +302,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
             <Select
               value={
                 withdrawTokenSymbol && mangoAccount ? (
-                  <div className="flex items-center justify-between w-full">
+                  <div className="flex w-full items-center justify-between">
                     <div className="flex items-center">
                       <img
                         alt=""
@@ -345,12 +345,12 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                 </Select.Option>
               ))}
             </Select>
-            <div className="flex items-center jusitfy-between text-th-fgd-1 mt-4 p-2 rounded-md bg-th-bkg-3">
-              <div className="flex items-center text-fgd-1 pr-4">
+            <div className="jusitfy-between mt-4 flex items-center rounded-md bg-th-bkg-3 p-2 text-th-fgd-1">
+              <div className="text-fgd-1 flex items-center pr-4">
                 <span>{t('borrow-funds')}</span>
                 <Tooltip content={t('tooltip-interest-charged')}>
                   <InformationCircleIcon
-                    className={`h-5 w-5 ml-2 text-th-primary cursor-help`}
+                    className={`ml-2 h-5 w-5 cursor-help text-th-primary`}
                   />
                 </Tooltip>
               </div>
@@ -390,7 +390,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                   <span
                     className={`${getAccountStatusColor(
                       simulation.initHealthRatio
-                    )} bg-th-bkg-1 ring-1 ring-inset flex h-10 items-center justify-center ml-1 px-2 rounded`}
+                    )} ml-1 flex h-10 items-center justify-center rounded bg-th-bkg-1 px-2 ring-1 ring-inset`}
                   >
                     {simulation.leverage.toFixed(2)}x
                   </span>
@@ -399,7 +399,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
             </div>
             {invalidAmountMessage ? (
               <div className="flex items-center pt-1.5 text-th-red">
-                <ExclamationCircleIcon className="h-4 w-4 mr-1.5" />
+                <ExclamationCircleIcon className="mr-1.5 h-4 w-4" />
                 {invalidAmountMessage}
               </div>
             ) : null}
@@ -424,19 +424,19 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
               </ElementTitle>
             </Modal.Header>
             {simulation.initHealthRatio < 0 ? (
-              <div className="border border-th-red mb-4 p-2 rounded">
+              <div className="mb-4 rounded border border-th-red p-2">
                 <div className="flex items-center text-th-red">
-                  <ExclamationCircleIcon className="h-4 w-4 mr-1.5 flex-shrink-0" />
+                  <ExclamationCircleIcon className="mr-1.5 h-4 w-4 flex-shrink-0" />
                   {t('prices-changed')}
                 </div>
               </div>
             ) : null}
-            <div className="bg-th-bkg-1 p-4 rounded-lg text-th-fgd-1 text-center">
-              <div className="text-th-fgd-3 pb-1">{t('about-to-withdraw')}</div>
+            <div className="rounded-lg bg-th-bkg-1 p-4 text-center text-th-fgd-1">
+              <div className="pb-1 text-th-fgd-3">{t('about-to-withdraw')}</div>
               <div className="flex items-center justify-center">
-                <div className="font-semibold relative text-xl">
+                <div className="relative text-xl font-semibold">
                   {inputAmount}
-                  <span className="absolute bottom-0.5 font-normal ml-1.5 text-xs text-th-fgd-4">
+                  <span className="absolute bottom-0.5 ml-1.5 text-xs font-normal text-th-fgd-4">
                     {withdrawTokenSymbol}
                   </span>
                 </div>
@@ -454,16 +454,16 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                 buttonTemplate={
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
-                      <span className="flex h-2 w-2 mr-2.5 relative">
+                      <span className="relative mr-2.5 flex h-2 w-2">
                         <span
-                          className={`animate-ping absolute inline-flex h-full w-full rounded-full ${getAccountStatusColor(
+                          className={`absolute inline-flex h-full w-full animate-ping rounded-full ${getAccountStatusColor(
                             simulation.initHealthRatio,
                             false,
                             true
                           )} opacity-75`}
                         ></span>
                         <span
-                          className={`relative inline-flex rounded-full h-2 w-2 ${getAccountStatusColor(
+                          className={`relative inline-flex h-2 w-2 rounded-full ${getAccountStatusColor(
                             simulation.initHealthRatio,
                             false,
                             true
@@ -473,7 +473,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                       {t('health-check')}
                       <Tooltip content={t('tooltip-after-withdrawal')}>
                         <InformationCircleIcon
-                          className={`h-5 w-5 ml-2 text-th-primary cursor-help`}
+                          className={`ml-2 h-5 w-5 cursor-help text-th-primary`}
                         />
                       </Tooltip>
                     </div>
