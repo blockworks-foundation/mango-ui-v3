@@ -9,5 +9,7 @@
   "email-address-required": "您必須輸入電子郵件地址",
   "new-alert": "創建警報",
   "no-alerts": "您沒有活動警報",
-  "no-alerts-desc": "以創建警報而收到健康度通知。"
+  "no-alerts-desc": "以創建警報而收到健康度通知。",
+  "powered-by": "技術支持由",
+  "prompted-to-sign-transaction": "出现提示时，签署交易。"
 }

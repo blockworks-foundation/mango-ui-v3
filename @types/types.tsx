@@ -132,3 +132,6 @@ export interface PerpTriggerOrder {
   triggerCondition: 'above' | 'below'
   triggerPrice: number
 }
+
+// Endpoint types used by Notifi
+export type EndpointTypes = 'mainnet' | 'devnet' | 'localnet'

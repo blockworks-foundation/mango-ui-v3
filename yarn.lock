@@ -1394,6 +1394,21 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
+"@notifi-network/notifi-axios-adapter@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-axios-adapter/-/notifi-axios-adapter-0.1.1.tgz#e258a5ae61768c64f0fadd0500ffcacbcc66b6d3"
+  integrity sha512-aOVUi0tFjObdXVpX1TIItIbuumnBq5EbpP/LLD9v2j+TViF8/JQ4W03BmhdWnEio5X0HLUkKevXKpVHWcpTu8Q==
+
+"@notifi-network/notifi-react-hooks@^0.1.0":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-react-hooks/-/notifi-react-hooks-0.1.1.tgz#f51eedcdd6b7964b4b1c693b487f11527159affe"
+  integrity sha512-FDSmyeRIMoS642Ym2t0JUOf94UHXzDIWirCQ201Glf54Xs4lvWRf6LFCqSmd0pBcNN0Zpd8ABDtWuBjFOP59IQ==
+  dependencies:
+    "@notifi-network/notifi-axios-adapter" "^0.1.1"
+    axios "^0.26.0"
+    typescript "^4.5.5"
+    use-local-storage-state "^15.0.0"
+
 "@orca-so/whirlpool-client-sdk@npm:@jup-ag/whirlpool-client-sdk@0.0.7":
   version "0.0.7"
   resolved "https://registry.yarnpkg.com/@jup-ag/whirlpool-client-sdk/-/whirlpool-client-sdk-0.0.7.tgz#dabb35e9cccc4069d17c3299f7c6ff8b7d0f4bfa"
@@ -2724,6 +2739,13 @@ axios@^0.25.0:
   dependencies:
     follow-redirects "^1.14.7"
 
+axios@^0.26.0:
+  version "0.26.0"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.26.0.tgz#9a318f1c69ec108f8cd5f3c3d390366635e13928"
+  integrity sha512-lKoGLMYtHvFrPVt3r+RBMp9nh34N0M8zEfCWqdWZx6phynIEhQqAdydpyBAAG211zlhX9Rgu08cOamy6XjE5Og==
+  dependencies:
+    follow-redirects "^1.14.8"
+
 babel-plugin-dynamic-import-node@^2.3.3:
   version "2.3.3"
   resolved "https://registry.yarnpkg.com/babel-plugin-dynamic-import-node/-/babel-plugin-dynamic-import-node-2.3.3.tgz#84fda19c976ec5c6defef57f9427b3def66e17a3"
@@ -4019,7 +4041,7 @@ flatted@^3.1.0:
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-3.2.5.tgz#76c8584f4fc843db64702a6bd04ab7a8bd666da3"
   integrity sha512-WIWGi2L3DyTUvUrwRKgGi9TwxQMUEqPOPQBVi71R96jZXJdFskXEmf54BoZaS1kknGODoIGASGEzBUYdyMCBJg==
 
-follow-redirects@^1.14.0, follow-redirects@^1.14.7:
+follow-redirects@^1.14.0, follow-redirects@^1.14.7, follow-redirects@^1.14.8:
   version "1.14.9"
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.14.9.tgz#dd4ea157de7bfaf9ea9b3fbd85aa16951f78d8d7"
   integrity sha512-MQDfihBQYMcyy5dhRDJUHcw7lb2Pv/TuE6xP1vyraLukNDHKbDxDNaOE3NbCAdKQApno+GPRyo1YAp89yCjK4w==
@@ -6499,7 +6521,7 @@ type-fest@^0.21.3:
   resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-0.21.3.tgz#d260a24b0198436e133fa26a524a6d65fa3b2e37"
   integrity sha512-t0rzBq87m3fVcduHDUFhKmyyX+9eo6WQjZvf51Ea/M0Q7+T374Jp1aUiyUl0GKxp8M/OETVHSDvmkyPgvX+X2w==
 
-typescript@^4.6.3:
+typescript@^4.5.5, typescript@^4.6.3:
   version "4.6.3"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.6.3.tgz#eefeafa6afdd31d725584c67a0eaba80f6fc6c6c"
   integrity sha512-yNIatDa5iaofVozS/uQJEl3JRWLKKGJKh6Yaiv0GLGSuhpFJe7P3SbHZ8/yjAHRQwKRoA6YZqlfjXWmVzoVSMw==
@@ -6556,6 +6578,11 @@ uri-js@^4.2.2:
   integrity sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==
   dependencies:
     punycode "^2.1.0"
+
+use-local-storage-state@^15.0.0:
+  version "15.0.0"
+  resolved "https://registry.yarnpkg.com/use-local-storage-state/-/use-local-storage-state-15.0.0.tgz#fc012654bc459798efd66c574e52414abab949d7"
+  integrity sha512-0Dh4DiqgsxpyZDa7PRNs7Mct9OHqTuuZl/V3zzPwNJaR9NVuO4HAZdKSJeelgq8h8bE83ZKMlXMLWzMRxu3ZLg==
 
 use-subscription@1.5.1:
   version "1.5.1"

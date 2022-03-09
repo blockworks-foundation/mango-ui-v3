@@ -9,5 +9,7 @@
   "email-address-required": "An email address is required",
   "new-alert": "New Alert",
   "no-alerts": "No Active Alerts",
-  "no-alerts-desc": "Create an alert to be notified when your account health is low."
+  "no-alerts-desc": "Create an alert to be notified when your account health is low.",
+  "powered-by": "Powered by",
+  "prompted-to-sign-transaction": "When prompted, sign the transaction."
 }

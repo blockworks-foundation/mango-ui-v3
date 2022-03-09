@@ -9,6 +9,14 @@ import { notify } from '../utils/notifications'
 import { useTranslation } from 'next-i18next'
 import ButtonGroup from './ButtonGroup'
 import InlineNotification from './InlineNotification'
+import { NotifiIcon } from './icons'
+import { EndpointTypes } from '../@types/types'
+import {
+  BlockchainEnvironment,
+  GqlError,
+  MessageSigner,
+  useNotifiClient,
+} from '@notifi-network/notifi-react-hooks'
 
 interface CreateAlertModalProps {
   onClose: () => void
@@ -29,13 +37,102 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
   const loading = useMangoStore((s) => s.alerts.loading)
   const submitting = useMangoStore((s) => s.alerts.submitting)
   const error = useMangoStore((s) => s.alerts.error)
-  const [email, setEmail] = useState<string>('')
+  const cluster = useMangoStore((s) => s.connection.cluster)
+  const wallet = useMangoStore((s) => s.wallet.current)
+  const connected = useMangoStore((s) => s.wallet.connected)
   const [invalidAmountMessage, setInvalidAmountMessage] = useState('')
   const [health, setHealth] = useState('')
   const [showCustomHealthForm, setShowCustomHealthForm] = useState(false)
   const [showAlertForm, setShowAlertForm] = useState(false)
+  // notifi loading state
+  const [isLoading, setLoading] = useState<boolean>(false)
+  // notifi error message
+  const [errorMessage, setErrorMessage] = useState<string>('')
 
   const healthPresets = ['5', '10', '15', '25', '30']
+  const ALERT_LIMIT = 5
+
+  const endpoint = cluster ? (cluster as EndpointTypes) : 'mainnet'
+  let env = BlockchainEnvironment.MainNetBeta
+  switch (endpoint) {
+    case 'mainnet':
+      break
+    case 'devnet':
+    case 'localnet':
+      env = BlockchainEnvironment.DevNet
+      break
+  }
+  const { data, logIn, isAuthenticated, updateAlert } = useNotifiClient({
+    dappAddress: mangoGroup?.publicKey?.toString() ?? '',
+    walletPublicKey: mangoAccount?.publicKey?.toString() ?? '',
+    env,
+  })
+  const [email, setEmail] = useState<string>(data?.emailAddress ?? '')
+  const [phone, setPhone] = useState<string>(data?.phoneNumber ?? '')
+
+  useEffect(() => {
+    // Update state when server data changes
+    setEmail(data?.emailAddress ?? '')
+    setPhone(data?.phoneNumber ?? '')
+  }, [data])
+
+  const handleError = (errors: { message: string }[]) => {
+    const error = errors.length > 0 ? errors[0] : null
+    if (error instanceof GqlError) {
+      setErrorMessage(
+        `${error.message}: ${error.getErrorMessages().join(', ')}`
+      )
+    } else {
+      setErrorMessage(error?.message ?? 'Unknown error')
+    }
+    setLoading(false)
+  }
+
+  const handlePhone = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let val = e.target.value
+    if (val.length > 1) {
+      val = val.substring(2)
+    }
+
+    const re = /^[0-9\b]+$/
+    if (val === '' || (re.test(val) && val.length <= 10)) {
+      setPhone('+1' + val)
+    }
+  }
+
+  const createNotifiAlert = async function () {
+    setLoading(true)
+    // user is not authenticated
+    if (!isAuthenticated() && wallet && wallet.publicKey) {
+      try {
+        await logIn(wallet as MessageSigner)
+      } catch (e) {
+        handleError([e])
+      }
+    }
+
+    if (connected && isAuthenticated()) {
+      console.log('Sending')
+      console.log(email)
+      try {
+        // TODO: switch to use new SDK method
+        await updateAlert({
+          name: `${mangoAccount?.name} notifications`,
+          emailAddress: email === '' ? null : email,
+          phoneNumber: phone.length < 12 ? null : phone,
+          telegramId: null,
+        })
+      } catch (e) {
+        handleError([e])
+      }
+    }
+    setLoading(false)
+  }
+
+  const deleteNotifiAlert = async function (alert) {
+    // TODO: use SDK to delete alert from Notifi
+    console.log(alert)
+  }
 
   const validateEmailInput = (amount) => {
     if (Number(amount) <= 0) {
@@ -51,6 +148,10 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
   async function onCreateAlert() {
     if (!mangoGroup || !mangoAccount) return
     const parsedHealth = parseFloat(health)
+
+    // send alert to Notifi
+    await createNotifiAlert()
+
     if (!email) {
       notify({
         title: t('alerts:email-address-required'),
@@ -75,6 +176,14 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
     if (success) {
       setShowAlertForm(false)
     }
+  }
+
+  async function onDeleteAlert(alert) {
+    // delete alert from Notifi
+    await deleteNotifiAlert(alert._id)
+
+    // delete alert from db
+    actions.deleteAlert(alert._id)
   }
 
   const handleCancelCreateAlert = () => {
@@ -105,7 +214,7 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
                   </ElementTitle>
                   <Button
                     className="min-w-20 flex h-8 items-center justify-center pt-0 pb-0 text-xs"
-                    disabled={activeAlerts.length >= 5}
+                    disabled={activeAlerts.length >= ALERT_LIMIT}
                     onClick={() => setShowAlertForm(true)}
                   >
                     <div className="flex items-center">
@@ -126,12 +235,12 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
                     </div>
                     <TrashIcon
                       className="default-transition h-5 w-5 cursor-pointer text-th-fgd-3 hover:text-th-primary"
-                      onClick={() => actions.deleteAlert(alert._id)}
+                      onClick={() => onDeleteAlert(alert)}
                     />
                   </div>
                 ))}
               </div>
-              {activeAlerts.length >= 3 ? (
+              {activeAlerts.length >= ALERT_LIMIT ? (
                 <div className="mt-1 text-center text-xxs text-th-fgd-3">
                   {t('alerts:alerts-max')}
                 </div>
@@ -160,6 +269,8 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
                 value={email || ''}
                 onChange={(e) => onChangeEmailInput(e.target.value)}
               />
+              <Label>{t('phone-number')}</Label>
+              <Input type="tel" value={phone} onChange={handlePhone} />
               <div className="mt-4 flex items-end">
                 <div className="w-full">
                   <div className="flex justify-between">
@@ -197,7 +308,22 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
                   )}
                 </div>
               </div>
-              <Button className="mt-6 w-full" onClick={() => onCreateAlert()}>
+              {errorMessage.length > 0 ? (
+                <div className="mt-1 text-xxs text-th-fgd-3">
+                  {errorMessage}
+                </div>
+              ) : (
+                !isAuthenticated() && (
+                  <div className="mt-1 text-xxs text-th-fgd-3">
+                    {t('alerts:prompted-to-sign-transaction')}
+                  </div>
+                )
+              )}
+              <Button
+                className="mt-6 w-full"
+                onClick={() => onCreateAlert()}
+                disabled={isLoading}
+              >
                 {t('alerts:create-alert')}
               </Button>
               <LinkButton
@@ -245,6 +371,25 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
           <div className="h-12 w-full animate-pulse rounded-md bg-th-bkg-3" />
         </div>
       )}
+      <Modal.Footer>
+        <div className="item-center mt-4 flex w-full justify-between text-th-fgd-3">
+          <div className="flex">
+            <span>{t('alerts:powered-by')}</span>
+            <span className="ml-2">
+              <NotifiIcon className="h-5 w-10"></NotifiIcon>
+            </span>
+          </div>
+          <div>
+            <a
+              href="https://docs.notifi.network/NotifiIntegrationsFAQ.html"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {t('learn-more')}
+            </a>
+          </div>
+        </div>
+      </Modal.Footer>
     </Modal>
   )
 }

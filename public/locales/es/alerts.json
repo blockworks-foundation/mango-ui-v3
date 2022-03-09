@@ -9,5 +9,7 @@
   "email-address-required": "An email address is required",
   "new-alert": "Alerta nueva",
   "no-alerts": "No hay alertas activas",
-  "no-alerts-desc": "Cree una alerta para recibir una notificación cuando el estado de su cuenta sea bajo."
+  "no-alerts-desc": "Cree una alerta para recibir una notificación cuando el estado de su cuenta sea bajo.",
+  "powered-by": "Desarrollada por",
+  "prompted-to-sign-transaction": "Cuando se le solicite, firme la transacción."
 }
