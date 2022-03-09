@@ -20,7 +20,7 @@ import {
   marketsSelector,
 } from '../stores/selectors'
 
-function decodeBook(market, accInfo: AccountInfo<Buffer>): number[][] {
+function decodeBookL2(market, accInfo: AccountInfo<Buffer>): number[][] {
   if (market && accInfo?.data) {
     const depth = 40
     if (market instanceof Market) {
@@ -36,6 +36,19 @@ function decodeBook(market, accInfo: AccountInfo<Buffer>): number[][] {
     }
   } else {
     return []
+  }
+}
+
+export function decodeBook(
+  market,
+  accInfo: AccountInfo<Buffer>
+): BookSide | SpotOrderBook {
+  if (market && accInfo?.data) {
+    if (market instanceof Market) {
+      return SpotOrderBook.decode(market, accInfo.data)
+    } else if (market instanceof PerpMarket) {
+      return new BookSide(null, market, BookSideLayout.decode(accInfo.data))
+    }
   }
 }
 
@@ -80,11 +93,11 @@ const useHydrateStore = () => {
     const market = markets[marketConfig.publicKey.toString()]
     setMangoStore((state) => {
       state.selectedMarket.current = market
-      state.selectedMarket.orderBook.bids = decodeBook(
+      state.selectedMarket.orderBook.bids = decodeBookL2(
         market,
         state.accountInfos[marketConfig.bidsKey.toString()]
       )
-      state.selectedMarket.orderBook.asks = decodeBook(
+      state.selectedMarket.orderBook.asks = decodeBookL2(
         market,
         state.accountInfos[marketConfig.asksKey.toString()]
       )
@@ -182,9 +195,11 @@ const useHydrateStore = () => {
           context.slot > lastSlot
         ) {
           previousBidInfo = info
+
+          info['parsed'] = decodeBook(selectedMarket, info)
           setMangoStore((state) => {
             state.accountInfos[marketConfig.bidsKey.toString()] = info
-            state.selectedMarket.orderBook.bids = decodeBook(
+            state.selectedMarket.orderBook.bids = decodeBookL2(
               selectedMarket,
               info
             )
@@ -203,9 +218,11 @@ const useHydrateStore = () => {
           context.slot > lastSlot
         ) {
           previousAskInfo = info
+
+          info['parsed'] = decodeBook(selectedMarket, info)
           setMangoStore((state) => {
             state.accountInfos[marketConfig.asksKey.toString()] = info
-            state.selectedMarket.orderBook.asks = decodeBook(
+            state.selectedMarket.orderBook.asks = decodeBookL2(
               selectedMarket,
               info
             )

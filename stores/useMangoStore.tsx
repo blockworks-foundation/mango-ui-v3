@@ -35,6 +35,7 @@ import {
 } from '../components/SettingsModal'
 import { MSRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
 import { getProfilePicture, ProfilePicture } from '@solflare-wallet/pfp'
+import { decodeBook } from '../hooks/useHydrateStore'
 
 export const ENDPOINTS: EndpointInfo[] = [
   {
@@ -534,6 +535,17 @@ const useMangoStore = create<MangoStore>((set, get) => {
                 .forEach(({ publicKey, context, accountInfo }) => {
                   if (context.slot >= state.connection.slot) {
                     state.connection.slot = context.slot
+                    const perpMarket = allMarketAccounts.find((mkt) => {
+                      if (mkt instanceof PerpMarket) {
+                        mkt.bids.equals(publicKey) || mkt.asks.equals(publicKey)
+                      }
+                    })
+                    if (perpMarket) {
+                      accountInfo['parsed'] = decodeBook(
+                        perpMarket,
+                        accountInfo
+                      )
+                    }
                     state.accountInfos[publicKey.toBase58()] = accountInfo
                   }
                 })
@@ -663,7 +675,9 @@ const useMangoStore = create<MangoStore>((set, get) => {
         const bidAskAccounts = Object.keys(get().accountInfos).map(
           (pk) => new PublicKey(pk)
         )
-
+        const markets = Object.values(
+          useMangoStore.getState().selectedMangoGroup.markets
+        )
         const allBidsAndAsksAccountInfos = await getMultipleAccounts(
           connection,
           bidAskAccounts
@@ -673,6 +687,17 @@ const useMangoStore = create<MangoStore>((set, get) => {
           allBidsAndAsksAccountInfos.forEach(
             ({ publicKey, context, accountInfo }) => {
               state.connection.slot = context.slot
+
+              const perpMarket = markets.find((mkt) => {
+                if (mkt instanceof PerpMarket) {
+                  return (
+                    mkt.bids.equals(publicKey) || mkt.asks.equals(publicKey)
+                  )
+                }
+              })
+              if (perpMarket) {
+                accountInfo['parsed'] = decodeBook(perpMarket, accountInfo)
+              }
               state.accountInfos[publicKey.toBase58()] = accountInfo
             }
           )

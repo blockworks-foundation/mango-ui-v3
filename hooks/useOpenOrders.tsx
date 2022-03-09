@@ -35,13 +35,18 @@ function parseSpotOrders(
   const openOrders = mangoAccount.spotOpenOrdersAccounts[config.marketIndex]
   if (!openOrders) return []
 
-  const bidData = accountInfos[market['_decoded'].bids.toBase58()]?.data
-  const askData = accountInfos[market['_decoded'].asks.toBase58()]?.data
+  let bidOrderBook = accountInfos[market['_decoded'].bids.toBase58()]?.parsed
+  let askOrderBook = accountInfos[market['_decoded'].asks.toBase58()]?.parsed
 
-  const bidOrderBook =
-    market && bidData ? Orderbook.decode(market, bidData) : []
-  const askOrderBook =
-    market && askData ? Orderbook.decode(market, askData) : []
+  if (!bidOrderBook) {
+    const bidData = accountInfos[market['_decoded'].bids.toBase58()]?.data
+    bidOrderBook = market && bidData ? Orderbook.decode(market, bidData) : []
+  }
+
+  if (!askOrderBook) {
+    const askData = accountInfos[market['_decoded'].asks.toBase58()]?.data
+    askOrderBook = market && askData ? Orderbook.decode(market, askData) : []
+  }
 
   const openOrdersForMarket = [...bidOrderBook, ...askOrderBook].filter((o) =>
     o.openOrdersAddress.equals(openOrders.address)
@@ -59,17 +64,27 @@ function parsePerpOpenOrders(
   mangoAccount: MangoAccount,
   accountInfos
 ) {
-  const bidData = accountInfos[market.bids.toBase58()]?.data
-  const askData = accountInfos[market.asks.toBase58()]?.data
+  let bidOrderBook = accountInfos[market.bids.toBase58()]?.parsed
+  let askOrderBook = accountInfos[market.asks.toBase58()]?.parsed
 
-  const bidOrderBook =
-    market && bidData
-      ? new BookSide(market.bids, market, BookSideLayout.decode(bidData))
-      : []
-  const askOrderBook =
-    market && askData
-      ? new BookSide(market.asks, market, BookSideLayout.decode(askData))
-      : []
+  console.log('bidOrderBook', bidOrderBook)
+  console.log('askOrderBook', askOrderBook)
+
+  if (!bidOrderBook) {
+    const bidData = accountInfos[market.bids.toBase58()]?.data
+    bidOrderBook =
+      market && bidData
+        ? new BookSide(market.bids, market, BookSideLayout.decode(bidData))
+        : []
+  }
+
+  if (!askOrderBook) {
+    const askData = accountInfos[market.asks.toBase58()]?.data
+    askOrderBook =
+      market && askData
+        ? new BookSide(market.asks, market, BookSideLayout.decode(askData))
+        : []
+  }
 
   const openOrdersForMarket = [...bidOrderBook, ...askOrderBook].filter((o) =>
     o.owner.equals(mangoAccount.publicKey)
