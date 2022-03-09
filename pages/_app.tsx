@@ -75,16 +75,13 @@ const FetchReferrer = () => {
             mangoGroup,
             decodedRefLink
           )
-          console.log('in App referrerPda', referrerPda)
           const info = await connection.getAccountInfo(referrerPda)
-          console.log('in App referrerPda info', info)
           if (info) {
             const decoded = ReferrerIdRecordLayout.decode(info.data)
             const referrerRecord = new ReferrerIdRecord(decoded)
             referrerPk = referrerRecord.referrerMangoAccount
           }
         }
-        console.log('in App referrerPk from url is:', referrerPk)
         setMangoStore((state) => {
           state.referrerPk = referrerPk
         })
