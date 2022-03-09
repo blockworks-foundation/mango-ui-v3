@@ -1,9 +1,10 @@
-import React, { FunctionComponent, useEffect, useState } from 'react'
+import React, { FunctionComponent, useEffect, useMemo, useState } from 'react'
 import { PlusCircleIcon, TrashIcon } from '@heroicons/react/outline'
+import { Source } from '@notifi-network/notifi-core'
 import Modal from './Modal'
 import Input, { Label } from './Input'
 import { ElementTitle } from './styles'
-import useMangoStore, { AlertRequest } from '../stores/useMangoStore'
+import useMangoStore, { AlertRequest, programId } from '../stores/useMangoStore'
 import Button, { LinkButton } from './Button'
 import { notify } from '../utils/notifications'
 import { useTranslation } from 'next-i18next'
@@ -14,8 +15,8 @@ import { EndpointTypes } from '../@types/types'
 import {
   BlockchainEnvironment,
   GqlError,
-  MessageSigner,
   useNotifiClient,
+  isAlertObsolete,
 } from '@notifi-network/notifi-react-hooks'
 
 interface CreateAlertModalProps {
@@ -24,6 +25,8 @@ interface CreateAlertModalProps {
   repayAmount?: string
   tokenSymbol?: string
 }
+const nameForAlert = (health: number, email: string, phone: string): string =>
+  `Alert for Email: ${email} Phone: ${phone} When Health <= ${health}`
 
 const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
   isOpen,
@@ -44,8 +47,6 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
   const [health, setHealth] = useState('')
   const [showCustomHealthForm, setShowCustomHealthForm] = useState(false)
   const [showAlertForm, setShowAlertForm] = useState(false)
-  // notifi loading state
-  const [isLoading, setLoading] = useState<boolean>(false)
   // notifi error message
   const [errorMessage, setErrorMessage] = useState<string>('')
 
@@ -58,35 +59,43 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
     case 'mainnet':
       break
     case 'devnet':
-    case 'localnet':
       env = BlockchainEnvironment.DevNet
       break
+    case 'localnet':
+      env = BlockchainEnvironment.LocalNet
+      break
   }
-  const { data, logIn, isAuthenticated, updateAlert } = useNotifiClient({
-    dappAddress: mangoGroup?.publicKey?.toString() ?? '',
-    walletPublicKey: mangoAccount?.publicKey?.toString() ?? '',
-    env,
-  })
-  const [email, setEmail] = useState<string>(data?.emailAddress ?? '')
-  const [phone, setPhone] = useState<string>(data?.phoneNumber ?? '')
-
-  useEffect(() => {
-    // Update state when server data changes
-    setEmail(data?.emailAddress ?? '')
-    setPhone(data?.phoneNumber ?? '')
-  }, [data])
+  const { data, fetchData, logIn, isAuthenticated, createAlert, deleteAlert } =
+    useNotifiClient({
+      dappAddress: programId.toBase58(),
+      walletPublicKey: wallet?.adapter?.publicKey?.toString() ?? '',
+      env,
+    })
+  const [email, setEmail] = useState<string>('')
+  const [phone, setPhone] = useState<string>('')
 
   const handleError = (errors: { message: string }[]) => {
-    const error = errors.length > 0 ? errors[0] : null
-    if (error instanceof GqlError) {
-      setErrorMessage(
-        `${error.message}: ${error.getErrorMessages().join(', ')}`
-      )
+    const err = errors.length > 0 ? errors[0] : null
+    if (err instanceof GqlError) {
+      setErrorMessage(`${err.message}: ${err.getErrorMessages().join(', ')}`)
     } else {
-      setErrorMessage(error?.message ?? 'Unknown error')
+      setErrorMessage(err?.message ?? 'Unknown error')
     }
-    setLoading(false)
   }
+
+  const getSourceToUse = (sources) => {
+    return sources?.find((it) => {
+      const filter = it.applicableFilters?.find((filter) => {
+        return filter.filterType === 'VALUE_THRESHOLD'
+      })
+      return filter !== undefined
+    })
+  }
+
+  let { alerts, sources } = data || {}
+  let sourceToUse: Source | undefined = useMemo(() => {
+    return getSourceToUse(sources)
+  }, [sources])
 
   const handlePhone = (e: React.ChangeEvent<HTMLInputElement>) => {
     let val = e.target.value
@@ -100,38 +109,96 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
     }
   }
 
+  // message signer to login from SDK
+  const adapter = async (message: Uint8Array) => {
+    const signed = await wallet?.adapter?.signMessage(message)
+    // Sollet Adapter signMessage returns Uint8Array
+    if (signed instanceof Uint8Array) {
+      return signed
+    }
+    return signed.signature
+  }
+
   const createNotifiAlert = async function () {
-    setLoading(true)
     // user is not authenticated
-    if (!isAuthenticated() && wallet && wallet.publicKey) {
+    if (!isAuthenticated() && wallet && wallet.adapter?.publicKey) {
       try {
-        await logIn(wallet as MessageSigner)
+        await logIn({ signMessage: adapter })
       } catch (e) {
         handleError([e])
+        throw e
+      }
+      // refresh data after login
+      ({ alerts, sources } = await fetchData())
+      sourceToUse = getSourceToUse(sources)
+    }
+
+    if (connected && isAuthenticated()) {
+      if (!sourceToUse || !sourceToUse.id) return
+      const filter = sourceToUse?.applicableFilters.find(
+        (f) => f.filterType === 'VALUE_THRESHOLD'
+      )
+      if (!filter || !filter.id) return
+      try {
+        const healthInt = parseInt(health, 10)
+        const res = await createAlert({
+          filterId: filter.id,
+          sourceId: sourceToUse.id,
+          groupName: mangoAccount?.publicKey.toBase58(),
+          name: nameForAlert(healthInt, email, phone),
+          emailAddress: email === '' ? null : email,
+          phoneNumber: phone.length < 12 ? null : phone,
+          telegramId: null,
+          filterOptions: {
+            alertFrequency: 'SINGLE',
+            threshold: healthInt,
+          },
+        })
+        // return notifiAlertId
+        return res.id
+      } catch (e) {
+        handleError([e])
+        throw e
+      }
+    }
+  }
+
+  const deleteNotifiAlert = async function (alert) {
+    // user is not authenticated
+    if (!isAuthenticated() && wallet && wallet.adapter?.publicKey) {
+      try {
+        await logIn({ signMessage: adapter })
+      } catch (e) {
+        handleError([e])
+        throw e
       }
     }
 
     if (connected && isAuthenticated()) {
-      console.log('Sending')
-      console.log(email)
       try {
-        // TODO: switch to use new SDK method
-        await updateAlert({
-          name: `${mangoAccount?.name} notifications`,
-          emailAddress: email === '' ? null : email,
-          phoneNumber: phone.length < 12 ? null : phone,
-          telegramId: null,
-        })
+        await deleteAlert({ alertId: alert.notifiAlertId })
       } catch (e) {
         handleError([e])
+        throw e
       }
     }
-    setLoading(false)
   }
 
-  const deleteNotifiAlert = async function (alert) {
-    // TODO: use SDK to delete alert from Notifi
-    console.log(alert)
+  // Clean up alerts that don't exist in DB
+  const consolidateNotifiAlerts = async function () {
+    const alertsToCleanUp = alerts?.filter((alert) => {
+      const isAlertExist = activeAlerts?.some(
+        (a) => a.notifiAlertId === alert.id
+      )
+      return !isAlertExist
+    })
+
+    if (alertsToCleanUp === undefined) return
+    alertsToCleanUp.forEach((alert) => {
+      if (alert.id) {
+        deleteAlert({ alertId: alert.id })
+      }
+    })
   }
 
   const validateEmailInput = (amount) => {
@@ -149,12 +216,9 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
     if (!mangoGroup || !mangoAccount) return
     const parsedHealth = parseFloat(health)
 
-    // send alert to Notifi
-    await createNotifiAlert()
-
-    if (!email) {
+    if (!email && !phone) {
       notify({
-        title: t('alerts:email-address-required'),
+        title: t('alerts:notifi-type-required'),
         type: 'error',
       })
       return
@@ -165,25 +229,56 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
       })
       return
     }
-    const body: AlertRequest = {
-      mangoGroupPk: mangoGroup.publicKey.toString(),
-      mangoAccountPk: mangoAccount.publicKey.toString(),
-      health: parsedHealth,
-      alertProvider: 'mail',
-      email,
+
+    let notifiAlertId
+    // send alert to Notifi
+    try {
+      notifiAlertId = await createNotifiAlert()
+    } catch (e) {
+      handleError([e])
+      return
     }
-    const success: any = await actions.createAlert(body)
-    if (success) {
-      setShowAlertForm(false)
+
+    if (notifiAlertId) {
+      const body: AlertRequest = {
+        mangoGroupPk: mangoGroup.publicKey.toString(),
+        mangoAccountPk: mangoAccount.publicKey.toString(),
+        health: parsedHealth,
+        alertProvider: 'notifi',
+        email,
+        notifiAlertId,
+      }
+      const success: any = await actions.createAlert(body)
+      if (success) {
+        setErrorMessage('')
+        setShowAlertForm(false)
+      }
     }
   }
 
   async function onDeleteAlert(alert) {
-    // delete alert from Notifi
-    await deleteNotifiAlert(alert._id)
-
     // delete alert from db
     actions.deleteAlert(alert._id)
+
+    // delete alert from Notifi
+    try {
+      await deleteNotifiAlert(alert)
+    } catch (e) {
+      handleError([e])
+    }
+  }
+
+  async function onNewAlert() {
+    if (connected && isAuthenticated()) {
+      try {
+        await consolidateNotifiAlerts()
+      } catch (e) {
+        handleError([e])
+        throw e
+      }
+    }
+
+    setShowAlertForm(true)
   }
 
   const handleCancelCreateAlert = () => {
@@ -200,6 +295,15 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
     }
   }, [])
 
+  // Delete notifi Alerts that have fired
+  useEffect(() => {
+    const firedAlert = alerts?.find(isAlertObsolete)
+
+    if (firedAlert !== undefined && firedAlert.id !== null) {
+      deleteAlert({ alertId: firedAlert.id })
+    }
+  }, [alerts, deleteAlert])
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       {!loading && !submitting ? (
@@ -215,7 +319,7 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
                   <Button
                     className="min-w-20 flex h-8 items-center justify-center pt-0 pb-0 text-xs"
                     disabled={activeAlerts.length >= ALERT_LIMIT}
-                    onClick={() => setShowAlertForm(true)}
+                    onClick={onNewAlert}
                   >
                     <div className="flex items-center">
                       <PlusCircleIcon className="mr-1.5 h-4 w-4" />
@@ -225,6 +329,11 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
                 </div>
               </Modal.Header>
               <div className="mt-2 border-b border-th-fgd-4">
+                {errorMessage.length > 0 ? (
+                  <div className="mt-1 text-xxs text-th-fgd-3">
+                    {errorMessage}
+                  </div>
+                ) : null}
                 {activeAlerts.map((alert, index) => (
                   <div
                     className="flex items-center justify-between border-t border-th-fgd-4 p-4"
@@ -269,7 +378,10 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
                 value={email || ''}
                 onChange={(e) => onChangeEmailInput(e.target.value)}
               />
-              <Label>{t('phone-number')}</Label>
+              <Label className="mt-4 flex items-center justify-between">
+                <span>{t('phone-number')}</span>
+                <span>{t('alerts:phone-number-note')}</span>
+              </Label>
               <Input type="tel" value={phone} onChange={handlePhone} />
               <div className="mt-4 flex items-end">
                 <div className="w-full">
@@ -322,7 +434,7 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
               <Button
                 className="mt-6 w-full"
                 onClick={() => onCreateAlert()}
-                disabled={isLoading}
+                disabled={!email && !phone}
               >
                 {t('alerts:create-alert')}
               </Button>
@@ -357,7 +469,7 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
               </Modal.Header>
               <Button
                 className="m-auto flex justify-center"
-                onClick={() => setShowAlertForm(true)}
+                onClick={onNewAlert}
               >
                 {t('alerts:new-alert')}
               </Button>

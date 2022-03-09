@@ -118,14 +118,16 @@ export interface Alert {
   open: boolean
   timestamp: number
   triggeredTimestamp: number | undefined
+  notifiAlertId: string
 }
 
 export interface AlertRequest {
-  alertProvider: 'mail'
+  alertProvider: 'mail' | 'notifi'
   health: number
   mangoGroupPk: string
   mangoAccountPk: string
   email: string | undefined
+  notifiAlertId: string
 }
 
 export type MangoStore = {
@@ -193,6 +195,8 @@ export type MangoStore = {
     triggerCondition: 'above' | 'below'
   }
   wallet: {
+    connected: boolean
+    current: Wallet | undefined
     tokens: WalletToken[] | any[]
     pfp: ProfilePicture | undefined
   }
@@ -337,6 +341,8 @@ const useMangoStore = create<
         triggerCondition: 'above',
       },
       wallet: {
+        connected: false,
+        current: undefined,
         tokens: [],
         pfp: undefined,
       },
@@ -403,6 +409,11 @@ const useMangoStore = create<
               state.wallet.tokens = []
             })
           }
+          // set current and connected for notifi use
+          set((state) => {
+            state.wallet.current = wallet
+            state.wallet.connected = wallet?.adapter?.connected
+          })
         },
         async fetchProfilePicture(wallet: Wallet) {
           const set = get().set
@@ -835,6 +846,7 @@ const useMangoStore = create<
             health: req.health,
             open: true,
             timestamp: Date.now(),
+            notifiAlertId: req.notifiAlertId,
           }
 
           set((state) => {
