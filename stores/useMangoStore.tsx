@@ -566,10 +566,26 @@ const useMangoStore = create<MangoStore>((set, get) => {
           .then((response) => response.json())
           .then((jsonPerpHistory) => {
             const perpHistory = jsonPerpHistory?.data || []
-
             set((state) => {
               state.tradeHistory.perp = perpHistory
             })
+            if (perpHistory.length === 5000) {
+              fetch(
+                `https://event-history-api.herokuapp.com/perp_trades/${selectedMangoAccount.publicKey.toString()}?page=2`
+              )
+                .then((response) => response.json())
+                .then((jsonPerpHistory) => {
+                  const perpHistory = jsonPerpHistory?.data || []
+                  set((state) => {
+                    state.tradeHistory.perp = [
+                      ...state.tradeHistory.perp,
+                    ].concat(perpHistory)
+                  })
+                })
+                .catch((e) => {
+                  console.error('Error fetching trade history', e)
+                })
+            }
           })
           .catch((e) => {
             console.error('Error fetching trade history', e)
