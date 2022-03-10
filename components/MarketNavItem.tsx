@@ -3,7 +3,10 @@ import { useRouter } from 'next/router'
 import { initialMarket } from './SettingsModal'
 import { FavoriteMarketButton } from './TradeNavMenu'
 import useMangoStore from '../stores/useMangoStore'
-import { getWeights } from '@blockworks-foundation/mango-client'
+import {
+  getMarketIndexBySymbol,
+  getWeights,
+} from '@blockworks-foundation/mango-client'
 
 interface MarketNavItemProps {
   market: any
@@ -19,9 +22,7 @@ const MarketNavItem: FunctionComponent<MarketNavItemProps> = ({
   const { asPath } = useRouter()
   const router = useRouter()
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
-  const marketInfo = useMangoStore((s) => s.marketInfo)
-
-  const mktInfo = marketInfo.find((info) => info.name === market.name)
+  const mangoGroupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
 
   const selectMarket = (market) => {
     buttonRef?.current?.click()
@@ -33,7 +34,11 @@ const MarketNavItem: FunctionComponent<MarketNavItemProps> = ({
 
   const getMarketLeverage = (market) => {
     if (!mangoGroup) return 1
-    const ws = getWeights(mangoGroup, market.marketIndex, 'Init')
+    const marketIndex = getMarketIndexBySymbol(
+      mangoGroupConfig,
+      market.baseSymbol
+    )
+    const ws = getWeights(mangoGroup, marketIndex, 'Init')
     const w = market.name.includes('PERP')
       ? ws.perpAssetWeight
       : ws.spotAssetWeight
@@ -43,10 +48,8 @@ const MarketNavItem: FunctionComponent<MarketNavItemProps> = ({
   return (
     <div className="text-th-fgd-3">
       <div className="flex items-center">
-        <FavoriteMarketButton market={market} />
-
         <button
-          className="font-normal flex items-center justify-between w-full"
+          className="font-normal flex items-center justify-between mr-2 w-full"
           onClick={() => selectMarket(market)}
         >
           <div
@@ -57,23 +60,32 @@ const MarketNavItem: FunctionComponent<MarketNavItemProps> = ({
                 : 'text-th-fgd-1'
             }`}
           >
-            <span className="ml-2">{market.name}</span>
+            <div className="flex items-center">
+              <img
+                alt=""
+                width="16"
+                height="16"
+                src={`/assets/icons/${market.baseSymbol.toLowerCase()}.svg`}
+              />
+              <span className="ml-2">{market.name}</span>
+            </div>
             <span className="ml-1.5 text-xs text-th-fgd-4">
               {getMarketLeverage(market)}x
             </span>
           </div>
           <div
             className={`text-xs ${
-              mktInfo
-                ? mktInfo.change24h >= 0
+              market
+                ? market.change24h >= 0
                   ? 'text-th-green'
                   : 'text-th-red'
                 : 'text-th-fgd-4'
             }`}
           >
-            {mktInfo ? `${(mktInfo.change24h * 100).toFixed(1)}%` : ''}
+            {market ? `${(market.change24h * 100).toFixed(1)}%` : ''}
           </div>
         </button>
+        <FavoriteMarketButton market={market} />
       </div>
     </div>
   )

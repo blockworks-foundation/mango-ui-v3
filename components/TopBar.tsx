@@ -58,6 +58,7 @@ const TopBar = () => {
               >
                 <TradeNavMenu />
                 <MenuItem href="/account">{t('account')}</MenuItem>
+                <MenuItem href="/markets">{t('markets')}</MenuItem>
                 <MenuItem href="/borrow">{t('borrow')}</MenuItem>
                 <MenuItem href="/swap">{t('swap')}</MenuItem>
                 <MenuItem href="/stats">{t('stats')}</MenuItem>
