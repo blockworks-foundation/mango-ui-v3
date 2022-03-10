@@ -34,18 +34,18 @@ const UiLock = ({ className = '' }) => {
           <ResetLayout />
         </Transition>
       ) : null}
-      <div className={`${className} flex relative cursor-pointer`}>
+      <div className={`${className} relative flex cursor-pointer`}>
         <Tooltip
           content={
             uiLocked ? t('tooltip-unlock-layout') : t('tooltip-lock-layout')
           }
-          className="text-xs py-1"
+          className="py-1 text-xs"
         >
           <IconButton onClick={handleClick}>
             {uiLocked ? (
-              <LockClosedIcon className="w-4 h-4" />
+              <LockClosedIcon className="h-4 w-4" />
             ) : (
-              <LockOpenIcon className="w-4 h-4 animate-bounce" />
+              <LockOpenIcon className="h-4 w-4 animate-bounce" />
             )}
           </IconButton>
         </Tooltip>

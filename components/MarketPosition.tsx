@@ -154,7 +154,7 @@ export default function MarketPosition() {
   return (
     <>
       <div
-        className={!connected && !isMobile ? 'filter blur-sm' : null}
+        className={!connected && !isMobile ? 'blur-sm filter' : null}
         id="perp-positions-tip"
       >
         {!isMobile ? (
@@ -163,7 +163,7 @@ export default function MarketPosition() {
           </ElementTitle>
         ) : null}
         <div className="flex items-center justify-between pb-2">
-          <div className="font-normal text-th-fgd-3 leading-4">{t('side')}</div>
+          <div className="font-normal leading-4 text-th-fgd-3">{t('side')}</div>
           {initialLoad ? (
             <DataLoader />
           ) : (
@@ -171,7 +171,7 @@ export default function MarketPosition() {
           )}
         </div>
         <div className="flex justify-between pb-2">
-          <div className="font-normal text-th-fgd-3 leading-4">
+          <div className="font-normal leading-4 text-th-fgd-3">
             {t('position-size')}
           </div>
           <div className="text-th-fgd-1">
@@ -192,7 +192,7 @@ export default function MarketPosition() {
           </div>
         </div>
         <div className="flex justify-between pb-2">
-          <div className="font-normal text-th-fgd-3 leading-4">
+          <div className="font-normal leading-4 text-th-fgd-3">
             {t('notional-size')}
           </div>
           <div className="text-th-fgd-1">
@@ -206,7 +206,7 @@ export default function MarketPosition() {
           </div>
         </div>
         <div className="flex justify-between pb-2">
-          <div className="font-normal text-th-fgd-3 leading-4">
+          <div className="font-normal leading-4 text-th-fgd-3">
             {t('average-entry')}
           </div>
           <div className="text-th-fgd-1">
@@ -220,7 +220,7 @@ export default function MarketPosition() {
           </div>
         </div>
         <div className="flex justify-between pb-2">
-          <div className="font-normal text-th-fgd-3 leading-4">
+          <div className="font-normal leading-4 text-th-fgd-3">
             {t('break-even')}
           </div>
           <div className="text-th-fgd-1">
@@ -235,7 +235,7 @@ export default function MarketPosition() {
         </div>
         <div className="flex justify-between pb-2">
           <Tooltip content={<SettlePnlTooltip />}>
-            <Tooltip.Content className="font-normal text-th-fgd-3 leading-4">
+            <Tooltip.Content className="font-normal leading-4 text-th-fgd-3">
               {t('unsettled-balance')}
             </Tooltip.Content>
           </Tooltip>
@@ -246,7 +246,7 @@ export default function MarketPosition() {
             ) : (
               <LinkButton
                 onClick={() => handleSettlePnl(selectedMarket, perpAccount)}
-                className="ml-2 text-th-primary text-xs disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:underline"
+                className="ml-2 text-xs text-th-primary disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:underline"
                 disabled={unsettledPnl === 0}
               >
                 {t('redeem-pnl')}
@@ -276,5 +276,5 @@ export default function MarketPosition() {
 }
 
 export const DataLoader = () => (
-  <div className="animate-pulse bg-th-bkg-3 h-5 w-10 rounded-sm" />
+  <div className="h-5 w-10 animate-pulse rounded-sm bg-th-bkg-3" />
 )

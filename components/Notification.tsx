@@ -47,9 +47,9 @@ const NotificationList = () => {
 
   return (
     <div
-      className={`fixed inset-0 flex items-end px-4 py-6 pointer-events-none sm:p-6 text-th-fgd-1 z-50`}
+      className={`pointer-events-none fixed inset-0 z-50 flex items-end px-4 py-6 text-th-fgd-1 sm:p-6`}
     >
-      <div className={`flex flex-col w-full`}>
+      <div className={`flex w-full flex-col`}>
         {reversedNotifications.map((n) => (
           <Notification key={n.id} notification={n} />
         ))}
@@ -115,29 +115,29 @@ const Notification = ({ notification }: { notification: Notification }) => {
 
   return (
     <div
-      className={`max-w-sm w-full bg-th-bkg-3 border border-th-bkg-4 shadow-lg rounded-md mt-2 pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden`}
+      className={`pointer-events-auto mt-2 w-full max-w-sm overflow-hidden rounded-md border border-th-bkg-4 bg-th-bkg-3 shadow-lg ring-1 ring-black ring-opacity-5`}
     >
-      <div className={`flex items-center px-2 py-2.5 relative`}>
+      <div className={`relative flex items-center px-2 py-2.5`}>
         <div className={`flex-shrink-0`}>
           {type === 'success' ? (
-            <CheckCircleIcon className={`text-th-green h-7 w-7 mr-1`} />
+            <CheckCircleIcon className={`mr-1 h-7 w-7 text-th-green`} />
           ) : null}
           {type === 'info' && (
-            <InformationCircleIcon className={`text-th-primary h-7 w-7 mr-1`} />
+            <InformationCircleIcon className={`mr-1 h-7 w-7 text-th-primary`} />
           )}
           {type === 'error' && (
-            <XCircleIcon className={`text-th-red h-7 w-7 mr-1`} />
+            <XCircleIcon className={`mr-1 h-7 w-7 text-th-red`} />
           )}
           {type === 'confirm' && (
-            <Loading className="text-th-fgd-3 h-7 w-7 mr-1" />
+            <Loading className="mr-1 h-7 w-7 text-th-fgd-3" />
           )}
         </div>
         <div className={`ml-2 flex-1`}>
-          <div className={`font-bold text-normal text-th-fgd-1`}>
+          <div className={`text-normal font-bold text-th-fgd-1`}>
             {parsedTitle || title}
           </div>
           {description ? (
-            <p className={`mb-0 mt-0.5 text-th-fgd-3 leading-tight`}>
+            <p className={`mb-0 mt-0.5 leading-tight text-th-fgd-3`}>
               {description}
             </p>
           ) : null}
@@ -146,20 +146,20 @@ const Notification = ({ notification }: { notification: Notification }) => {
               href={
                 'https://explorer.solana.com/tx/' + txid + '?cluster=' + CLUSTER
               }
-              className="flex items-center mt-1 text-sm"
+              className="mt-1 flex items-center text-sm"
               target="_blank"
               rel="noreferrer"
             >
-              <div className="break-all flex-1 text-xs">
+              <div className="flex-1 break-all text-xs">
                 {type === 'error'
                   ? txid
                   : `${txid.slice(0, 14)}...${txid.slice(txid.length - 14)}`}
               </div>
-              <ExternalLinkIcon className="h-4 mb-0.5 ml-1 w-4" />
+              <ExternalLinkIcon className="mb-0.5 ml-1 h-4 w-4" />
             </a>
           ) : null}
         </div>
-        <div className={`absolute flex-shrink-0 right-2 top-2`}>
+        <div className={`absolute right-2 top-2 flex-shrink-0`}>
           <button
             onClick={hideNotification}
             className={`text-th-fgd-4 hover:text-th-primary focus:outline-none`}

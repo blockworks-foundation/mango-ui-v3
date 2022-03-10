@@ -11,11 +11,11 @@ const EstPriceImpact = ({
   const priceImpactRel = priceImpact.slippage[1]
 
   return (
-    <div className={`text-th-fgd-3 text-xs`}>
-      <div className="flex justify-between mb-1">
+    <div className={`text-xs text-th-fgd-3`}>
+      <div className="mb-1 flex justify-between">
         {t('est-slippage')}
         <span
-          className={`font-bold opacity-80 ml-2 ${
+          className={`ml-2 font-bold opacity-80 ${
             priceImpactRel <= 0.005
               ? 'text-th-green'
               : priceImpactRel > 0.005 && priceImpactRel <= 0.01

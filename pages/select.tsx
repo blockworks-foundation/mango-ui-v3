@@ -44,17 +44,17 @@ const SelectMarket = () => {
     <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
       <TopBar />
       <PageBodyContainer>
-        <div className="font-bold py-4 text-2xl text-th-fgd-1">
+        <div className="py-4 text-2xl font-bold text-th-fgd-1">
           {t('markets')}
         </div>
         {markets.map((mkt) => (
           <div key={mkt.baseAsset}>
-            <div className="bg-th-bkg-3 flex items-center justify-between px-2.5 py-2">
+            <div className="flex items-center justify-between bg-th-bkg-3 px-2.5 py-2">
               <div className="flex items-center">
                 <img
                   alt=""
                   src={`/assets/icons/${mkt.baseAsset.toLowerCase()}.svg`}
-                  className={`h-5 mr-2.5 w-auto`}
+                  className={`mr-2.5 h-5 w-auto`}
                 />
                 <span className="text-th-fgd-2">{mkt.baseAsset}</span>
               </div>
@@ -67,17 +67,17 @@ const SelectMarket = () => {
                       key={m.name}
                     >
                       <Link href={`/?name=${m.name}`} key={m.name}>
-                        <a className="cursor-pointer default-transition flex h-12 items-center justify-between text-th-fgd-2 hover:text-th-primary w-full">
+                        <a className="default-transition flex h-12 w-full cursor-pointer items-center justify-between text-th-fgd-2 hover:text-th-primary">
                           {m.name}
                           <div className="flex items-center">
-                            <span className="text-right w-20">
+                            <span className="w-20 text-right">
                               {formatUsdValue(
                                 mangoGroup
                                   .getPrice(m.marketIndex, mangoCache)
                                   .toNumber()
                               )}
                             </span>
-                            <ChevronRightIcon className="h-4 ml-1 w-5 text-th-fgd-2" />
+                            <ChevronRightIcon className="ml-1 h-4 w-5 text-th-fgd-2" />
                           </div>
                         </a>
                       </Link>

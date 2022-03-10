@@ -36,7 +36,7 @@ export default function TradeForm() {
       <FlipCardInner flip={showAdvancedForm}>
         {showAdvancedForm ? (
           <FlipCardFront>
-            <FloatingElement className="h-full px-1 py-0 md:px-4 md:py-4 fadein-floating-element">
+            <FloatingElement className="fadein-floating-element h-full px-1 py-0 md:px-4 md:py-4">
               {/* <div className={`${!connected ? 'filter blur-sm' : ''}`}> */}
               {/* <button
                   onClick={handleFormChange}
@@ -50,13 +50,13 @@ export default function TradeForm() {
           </FlipCardFront>
         ) : (
           <FlipCardBack>
-            <FloatingElement className="h-full px-1 md:px-4 fadein-floating-element">
-              <div className={`${!connected ? 'filter blur-sm' : ''}`}>
+            <FloatingElement className="fadein-floating-element h-full px-1 md:px-4">
+              <div className={`${!connected ? 'blur-sm filter' : ''}`}>
                 <button
                   onClick={handleFormChange}
-                  className="absolute flex items-center justify-center right-4 rounded-full bg-th-bkg-3 w-8 h-8 hover:text-th-primary focus:outline-none"
+                  className="absolute right-4 flex h-8 w-8 items-center justify-center rounded-full bg-th-bkg-3 hover:text-th-primary focus:outline-none"
                 >
-                  <SwitchHorizontalIcon className="w-5 h-5" />
+                  <SwitchHorizontalIcon className="h-5 w-5" />
                 </button>
                 <SimpleTradeForm initLeverage={initLeverage} />
               </div>

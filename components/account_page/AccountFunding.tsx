@@ -204,11 +204,11 @@ const AccountFunding = () => {
         <h2>{t('total-funding')}</h2>
         <div className="flex items-center">
           <Button
-            className={`float-right text-xs h-8 pt-0 pb-0 pl-3 pr-3`}
+            className={`float-right h-8 pt-0 pb-0 pl-3 pr-3 text-xs`}
             onClick={exportFundingDataToCSV}
           >
             <div className={`flex items-center whitespace-nowrap`}>
-              <SaveIcon className={`h-4 w-4 mr-1.5`} />
+              <SaveIcon className={`mr-1.5 h-4 w-4`} />
               {t('export-data')}
             </div>
           </Button>
@@ -225,9 +225,9 @@ const AccountFunding = () => {
         <div>
           {loadTotalStats ? (
             <div className="space-y-2">
-              <div className="animate-pulse bg-th-bkg-3 h-12 rounded-md w-full" />
-              <div className="animate-pulse bg-th-bkg-3 h-12 rounded-md w-full" />
-              <div className="animate-pulse bg-th-bkg-3 h-12 rounded-md w-full" />
+              <div className="h-12 w-full animate-pulse rounded-md bg-th-bkg-3" />
+              <div className="h-12 w-full animate-pulse rounded-md bg-th-bkg-3" />
+              <div className="h-12 w-full animate-pulse rounded-md bg-th-bkg-3" />
             </div>
           ) : (
             <Table>
@@ -290,7 +290,7 @@ const AccountFunding = () => {
           <>
             {!isEmpty(hourlyFunding) && !loadHourlyStats ? (
               <>
-                <div className="flex items-center justify-between pb-4 pt-6 w-full">
+                <div className="flex w-full items-center justify-between pb-4 pt-6">
                   <h2>{t('history')}</h2>
                   <Select
                     value={selectedAsset}
@@ -302,22 +302,22 @@ const AccountFunding = () => {
                         <Select.Option
                           key={token}
                           value={token}
-                          className={`bg-th-bkg-1 relative rounded-md w-full px-3 py-3 cursor-pointer default-transition flex hover:bg-th-bkg-3 focus:outline-none`}
+                          className={`default-transition relative flex w-full cursor-pointer rounded-md bg-th-bkg-1 px-3 py-3 hover:bg-th-bkg-3 focus:outline-none`}
                         >
-                          <div className="flex items-center justify-between w-full">
+                          <div className="flex w-full items-center justify-between">
                             {token}
                           </div>
                         </Select.Option>
                       ))}
                     </div>
                   </Select>
-                  <div className="hidden sm:flex pb-4 sm:pb-0">
+                  <div className="hidden pb-4 sm:flex sm:pb-0">
                     {Object.keys(hourlyFunding).map((token: string) => (
                       <div
-                        className={`px-2 py-1 ml-2 rounded-md cursor-pointer default-transition bg-th-bkg-3
+                        className={`default-transition ml-2 cursor-pointer rounded-md bg-th-bkg-3 px-2 py-1
                           ${
                             selectedAsset === token
-                              ? `ring-1 ring-inset ring-th-primary text-th-primary`
+                              ? `text-th-primary ring-1 ring-inset ring-th-primary`
                               : `text-th-fgd-1 opacity-50 hover:opacity-100`
                           }
                         `}
@@ -330,10 +330,10 @@ const AccountFunding = () => {
                   </div>
                 </div>
                 {selectedAsset && chartData.length > 0 ? (
-                  <div className="flex flex-col sm:flex-row space-x-0 sm:space-x-4 w-full">
+                  <div className="flex w-full flex-col space-x-0 sm:flex-row sm:space-x-4">
                     {chartData.find((d) => d.funding !== 0) ? (
                       <div
-                        className="border border-th-bkg-4 relative mb-6 p-4 rounded-md w-full"
+                        className="relative mb-6 w-full rounded-md border border-th-bkg-4 p-4"
                         style={{ height: '330px' }}
                       >
                         <Chart
@@ -393,7 +393,7 @@ const AccountFunding = () => {
                         </tbody>
                       </Table>
                     ) : (
-                      <div className="flex justify-center w-full bg-th-bkg-3 py-4 text-th-fgd-3">
+                      <div className="flex w-full justify-center bg-th-bkg-3 py-4 text-th-fgd-3">
                         {t('no-funding')}
                       </div>
                     )}
@@ -409,10 +409,10 @@ const AccountFunding = () => {
                 </div>
               </>
             ) : loadHourlyStats ? (
-              <div className="pt-8 space-y-2">
-                <div className="animate-pulse bg-th-bkg-3 h-12 rounded-md w-full" />
-                <div className="animate-pulse bg-th-bkg-3 h-12 rounded-md w-full" />
-                <div className="animate-pulse bg-th-bkg-3 h-12 rounded-md w-full" />
+              <div className="space-y-2 pt-8">
+                <div className="h-12 w-full animate-pulse rounded-md bg-th-bkg-3" />
+                <div className="h-12 w-full animate-pulse rounded-md bg-th-bkg-3" />
+                <div className="h-12 w-full animate-pulse rounded-md bg-th-bkg-3" />
               </div>
             ) : null}
           </>

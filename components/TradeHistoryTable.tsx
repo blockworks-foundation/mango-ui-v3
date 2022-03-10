@@ -71,7 +71,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
       } else {
         return (
           <Link href={location} shallow={true}>
-            <a className="text-th-fgd-1 underline hover:no-underline hover:text-th-fgd-1">
+            <a className="text-th-fgd-1 underline hover:text-th-fgd-1 hover:no-underline">
               {trade.marketName}
             </a>
           </Link>
@@ -85,7 +85,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
   return (
     <div className={`flex flex-col sm:pb-4`}>
       <div className={`overflow-x-auto sm:-mx-6 lg:-mx-8`}>
-        <div className={`align-middle inline-block min-w-full sm:px-6 lg:px-8`}>
+        <div className={`inline-block min-w-full align-middle sm:px-6 lg:px-8`}>
           {tradeHistory && tradeHistory.length ? (
             !isMobile ? (
               <>
@@ -94,16 +94,16 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                     <TrHead>
                       <Th>
                         <LinkButton
-                          className="flex items-center no-underline font-normal"
+                          className="flex items-center font-normal no-underline"
                           onClick={() => requestSort('market')}
                         >
                           {t('market')}
                           <ArrowSmDownIcon
-                            className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                            className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                               sortConfig?.key === 'market'
                                 ? sortConfig.direction === 'ascending'
-                                  ? 'transform rotate-180'
-                                  : 'transform rotate-360'
+                                  ? 'rotate-180 transform'
+                                  : 'rotate-360 transform'
                                 : null
                             }`}
                           />
@@ -111,16 +111,16 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                       </Th>
                       <Th>
                         <LinkButton
-                          className="flex items-center no-underline font-normal"
+                          className="flex items-center font-normal no-underline"
                           onClick={() => requestSort('side')}
                         >
                           {t('side')}
                           <ArrowSmDownIcon
-                            className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                            className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                               sortConfig?.key === 'side'
                                 ? sortConfig.direction === 'ascending'
-                                  ? 'transform rotate-180'
-                                  : 'transform rotate-360'
+                                  ? 'rotate-180 transform'
+                                  : 'rotate-360 transform'
                                 : null
                             }`}
                           />
@@ -128,16 +128,16 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                       </Th>
                       <Th>
                         <LinkButton
-                          className="flex items-center no-underline font-normal"
+                          className="flex items-center font-normal no-underline"
                           onClick={() => requestSort('size')}
                         >
                           {t('size')}
                           <ArrowSmDownIcon
-                            className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                            className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                               sortConfig?.key === 'size'
                                 ? sortConfig.direction === 'ascending'
-                                  ? 'transform rotate-180'
-                                  : 'transform rotate-360'
+                                  ? 'rotate-180 transform'
+                                  : 'rotate-360 transform'
                                 : null
                             }`}
                           />
@@ -145,16 +145,16 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                       </Th>
                       <Th>
                         <LinkButton
-                          className="flex items-center no-underline font-normal"
+                          className="flex items-center font-normal no-underline"
                           onClick={() => requestSort('price')}
                         >
                           {t('price')}
                           <ArrowSmDownIcon
-                            className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                            className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                               sortConfig?.key === 'price'
                                 ? sortConfig.direction === 'ascending'
-                                  ? 'transform rotate-180'
-                                  : 'transform rotate-360'
+                                  ? 'rotate-180 transform'
+                                  : 'rotate-360 transform'
                                 : null
                             }`}
                           />
@@ -162,16 +162,16 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                       </Th>
                       <Th>
                         <LinkButton
-                          className="flex items-center no-underline font-normal"
+                          className="flex items-center font-normal no-underline"
                           onClick={() => requestSort('value')}
                         >
                           {t('value')}
                           <ArrowSmDownIcon
-                            className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                            className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                               sortConfig?.key === 'value'
                                 ? sortConfig.direction === 'ascending'
-                                  ? 'transform rotate-180'
-                                  : 'transform rotate-360'
+                                  ? 'rotate-180 transform'
+                                  : 'rotate-360 transform'
                                 : null
                             }`}
                           />
@@ -179,16 +179,16 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                       </Th>
                       <Th>
                         <LinkButton
-                          className="flex items-center no-underline font-normal"
+                          className="flex items-center font-normal no-underline"
                           onClick={() => requestSort('liquidity')}
                         >
                           {t('liquidity')}
                           <ArrowSmDownIcon
-                            className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                            className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                               sortConfig?.key === 'liquidity'
                                 ? sortConfig.direction === 'ascending'
-                                  ? 'transform rotate-180'
-                                  : 'transform rotate-360'
+                                  ? 'rotate-180 transform'
+                                  : 'rotate-360 transform'
                                 : null
                             }`}
                           />
@@ -196,16 +196,16 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                       </Th>
                       <Th>
                         <LinkButton
-                          className="flex items-center no-underline font-normal"
+                          className="flex items-center font-normal no-underline"
                           onClick={() => requestSort('feeCost')}
                         >
                           {t('fee')}
                           <ArrowSmDownIcon
-                            className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                            className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                               sortConfig?.key === 'feeCost'
                                 ? sortConfig.direction === 'ascending'
-                                  ? 'transform rotate-180'
-                                  : 'transform rotate-360'
+                                  ? 'rotate-180 transform'
+                                  : 'rotate-360 transform'
                                 : null
                             }`}
                           />
@@ -213,16 +213,16 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                       </Th>
                       <Th>
                         <LinkButton
-                          className="flex items-center no-underline font-normal"
+                          className="flex items-center font-normal no-underline"
                           onClick={() => requestSort('loadTimestamp')}
                         >
                           {t('approximate-time')}
                           <ArrowSmDownIcon
-                            className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                            className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                               sortConfig?.key === 'loadTimestamp'
                                 ? sortConfig.direction === 'ascending'
-                                  ? 'transform rotate-180'
-                                  : 'transform rotate-360'
+                                  ? 'rotate-180 transform'
+                                  : 'rotate-360 transform'
                                 : null
                             }`}
                           />
@@ -266,17 +266,17 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                           <Td className="!py-2 ">
                             {formatUsdValue(trade.feeCost)}
                           </Td>
-                          <Td className="!py-2 w-[0.1%]">
+                          <Td className="w-[0.1%] !py-2">
                             {trade.loadTimestamp || trade.timestamp
                               ? renderTradeDateTime(
                                   trade.loadTimestamp || trade.timestamp
                                 )
                               : t('recent')}
                           </Td>
-                          <Td className="!py-2 w-[0.1%] keep-break">
+                          <Td className="keep-break w-[0.1%] !py-2">
                             {trade.marketName.includes('PERP') ? (
                               <a
-                                className="text-th-fgd-4 underline text-xs underline-offset-4"
+                                className="text-xs text-th-fgd-4 underline underline-offset-4"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 href={`/account?pubkey=${
@@ -295,7 +295,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                   </tbody>
                 </Table>
                 {numTrades && items.length > numTrades ? (
-                  <div className="flex items-center justify-center mt-4">
+                  <div className="mt-4 flex items-center justify-center">
                     <Link href="/account" shallow={true}>
                       {t('view-all-trades')}
                     </Link>
@@ -318,7 +318,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                 <ExpandableRow
                   buttonTemplate={
                     <>
-                      <div className="flex items-center justify-between text-fgd-1 w-full">
+                      <div className="text-fgd-1 flex w-full items-center justify-between">
                         <div className="text-left">
                           {trade.loadTimestamp || trade.timestamp
                             ? renderTradeDateTime(
@@ -328,7 +328,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                         </div>
                         <div>
                           <div className="text-right">
-                            <div className="flex items-center mb-0.5 text-left">
+                            <div className="mb-0.5 flex items-center text-left">
                               <img
                                 alt=""
                                 width="16"
@@ -340,7 +340,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                               />
                               {trade.marketName}
                             </div>
-                            <div className="text-th-fgd-3 text-xs">
+                            <div className="text-xs text-th-fgd-3">
                               <span
                                 className={`mr-1
                                 ${
@@ -361,27 +361,27 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                   }
                   key={`${index}`}
                   panelTemplate={
-                    <div className="grid grid-cols-2 grid-flow-row gap-4">
+                    <div className="grid grid-flow-row grid-cols-2 gap-4">
                       <div className="text-left">
-                        <div className="pb-0.5 text-th-fgd-3 text-xs">
+                        <div className="pb-0.5 text-xs text-th-fgd-3">
                           {t('price')}
                         </div>
                         {formatUsdValue(trade.price)}
                       </div>
                       <div className="text-left">
-                        <div className="pb-0.5 text-th-fgd-3 text-xs">
+                        <div className="pb-0.5 text-xs text-th-fgd-3">
                           {t('value')}
                         </div>
                         {formatUsdValue(trade.value)}
                       </div>
                       <div className="text-left">
-                        <div className="pb-0.5 text-th-fgd-3 text-xs">
+                        <div className="pb-0.5 text-xs text-th-fgd-3">
                           {t('liquidity')}
                         </div>
                         {trade.liquidity}
                       </div>
                       <div className="text-left">
-                        <div className="pb-0.5 text-th-fgd-3 text-xs">
+                        <div className="pb-0.5 text-xs text-th-fgd-3">
                           {t('fee')}
                         </div>
                         {formatUsdValue(trade.feeCost)}
@@ -392,11 +392,11 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
               ))
             )
           ) : (
-            <div className="w-full text-center py-6 bg-th-bkg-1 text-th-fgd-3 rounded-md">
+            <div className="w-full rounded-md bg-th-bkg-1 py-6 text-center text-th-fgd-3">
               {t('no-history')}
               {asPath === '/account' ? (
                 <Link href={'/'} shallow={true}>
-                  <a className="inline-flex ml-2 py-0">{t('make-trade')}</a>
+                  <a className="ml-2 inline-flex py-0">{t('make-trade')}</a>
                 </Link>
               ) : null}
             </div>

@@ -94,7 +94,7 @@ export default function AccountOverview() {
 
   return mangoAccount ? (
     <>
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4">
+      <div className="flex flex-col pb-4 sm:flex-row sm:items-center sm:justify-between">
         <h2 className="mb-4 sm:mb-0">{t('summary')}</h2>
         <div className="w-full sm:w-56">
           <ButtonGroup
@@ -104,22 +104,22 @@ export default function AccountOverview() {
           />
         </div>
       </div>
-      <div className="flex flex-col lg:flex-row lg:space-x-6 pb-8 lg:pb-12">
-        <div className="border-t border-th-bkg-4 pb-6 lg:pb-0 w-full lg:w-1/4">
+      <div className="flex flex-col pb-8 lg:flex-row lg:space-x-6 lg:pb-12">
+        <div className="w-full border-t border-th-bkg-4 pb-6 lg:w-1/4 lg:pb-0">
           <div className="border-b border-th-bkg-4 p-3 sm:p-4">
-            <div className="pb-0.5 text-th-fgd-3 text-xs sm:text-sm">
+            <div className="pb-0.5 text-xs text-th-fgd-3 sm:text-sm">
               {t('account-value')}
             </div>
-            <div className="font-bold text-th-fgd-1 text-xl sm:text-2xl">
+            <div className="text-xl font-bold text-th-fgd-1 sm:text-2xl">
               {formatUsdValue(mangoAccountValue)}
             </div>
           </div>
           <div className="border-b border-th-bkg-4 p-3 sm:p-4">
             <div className="flex items-center justify-between">
-              <div className="pb-0.5 text-th-fgd-3 text-xs sm:text-sm">
+              <div className="pb-0.5 text-xs text-th-fgd-3 sm:text-sm">
                 {t('pnl')}{' '}
                 {hourlyPerformanceStats?.length ? (
-                  <div className="text-th-fgd-4 text-xs">
+                  <div className="text-xs text-th-fgd-4">
                     {dayjs(hourlyPerformanceStats[0]['time']).format(
                       'MMM D YYYY, h:mma'
                     )}
@@ -127,33 +127,33 @@ export default function AccountOverview() {
                 ) : null}
               </div>
             </div>
-            <div className="font-bold text-th-fgd-1 text-xl sm:text-2xl">
+            <div className="text-xl font-bold text-th-fgd-1 sm:text-2xl">
               {formatUsdValue(pnl)}
             </div>
           </div>
           <div className="border-b border-th-bkg-4 p-3 sm:p-4">
-            <div className="pb-0.5 text-th-fgd-3 text-xs sm:text-sm">
+            <div className="pb-0.5 text-xs text-th-fgd-3 sm:text-sm">
               {t('leverage')}
             </div>
-            <div className="font-bold text-th-fgd-1 text-xl sm:text-2xl">
+            <div className="text-xl font-bold text-th-fgd-1 sm:text-2xl">
               {mangoAccount.getLeverage(mangoGroup, mangoCache).toFixed(2)}x
             </div>
           </div>
           <div className="p-3 sm:p-4">
-            <div className="pb-0.5 text-th-fgd-3 text-xs sm:text-sm">
+            <div className="pb-0.5 text-xs text-th-fgd-3 sm:text-sm">
               {t('health-ratio')}
             </div>
-            <div className={`font-bold text-th-fgd-1 text-xl sm:text-2xl`}>
+            <div className={`text-xl font-bold text-th-fgd-1 sm:text-2xl`}>
               {maintHealthRatio < 1000 ? maintHealthRatio.toFixed(2) : '>100'}%
             </div>
             {mangoAccount.beingLiquidated ? (
-              <div className="pt-0.5 sm:pt-2 text-xs sm:text-sm flex items-center">
-                <ExclamationIcon className="flex-shrink-0 h-5 w-5 sm:h-7 sm:w-7 mr-1.5 text-th-red" />
+              <div className="flex items-center pt-0.5 text-xs sm:pt-2 sm:text-sm">
+                <ExclamationIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-th-red sm:h-7 sm:w-7" />
                 <span className="text-th-red">{t('being-liquidated')}</span>
               </div>
             ) : null}
           </div>
-          <div className="h-1 flex rounded bg-th-bkg-3">
+          <div className="flex h-1 rounded bg-th-bkg-3">
             <div
               style={{
                 width: `${maintHealthRatio}%`,
@@ -168,7 +168,7 @@ export default function AccountOverview() {
             ></div>
           </div>
         </div>
-        <div className="lg:border-t border-th-bkg-4 h-80 lg:h-auto w-full lg:w-3/4">
+        <div className="h-80 w-full border-th-bkg-4 lg:h-auto lg:w-3/4 lg:border-t">
           <PerformanceChart
             hourlyPerformanceStats={hourlyPerformanceStats}
             performanceRange={performanceRange}
@@ -182,21 +182,21 @@ export default function AccountOverview() {
       </div>
       <h2 className="mb-4">{t('assets-liabilities')}</h2>
 
-      <div className="grid grid-flow-col grid-cols-1 grid-rows-2 md:grid-cols-2 md:grid-rows-1 lg:gap-4 pb-8 lg:pb-12">
-        <div className="border-t lg:border-b border-th-bkg-4 p-3 sm:p-4 rounded-md sm:rounded-lg">
+      <div className="grid grid-flow-col grid-cols-1 grid-rows-2 pb-8 md:grid-cols-2 md:grid-rows-1 lg:gap-4 lg:pb-12">
+        <div className="rounded-md border-t border-th-bkg-4 p-3 sm:rounded-lg sm:p-4 lg:border-b">
           <div className="pb-0.5 text-th-fgd-3">{t('total-assets')}</div>
           <div className="flex items-center">
-            <div className="font-bold text-2xl text-th-fgd-1">
+            <div className="text-2xl font-bold text-th-fgd-1">
               {formatUsdValue(
                 +mangoAccount.getAssetsVal(mangoGroup, mangoCache)
               )}
             </div>
           </div>
         </div>
-        <div className="border-b border-t border-th-bkg-4 p-3 sm:p-4 rounded-md sm:rounded-lg">
+        <div className="rounded-md border-b border-t border-th-bkg-4 p-3 sm:rounded-lg sm:p-4">
           <div className="pb-0.5 text-th-fgd-3">{t('total-liabilities')}</div>
           <div className="flex items-center">
-            <div className="font-bold text-2xl text-th-fgd-1">
+            <div className="text-2xl font-bold text-th-fgd-1">
               {formatUsdValue(
                 +mangoAccount.getLiabsVal(mangoGroup, mangoCache)
               )}

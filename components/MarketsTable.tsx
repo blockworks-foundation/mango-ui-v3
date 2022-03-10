@@ -245,7 +245,7 @@ const MarketsTable = ({ isPerpMarket }) => {
                   <span
                     className={change24h >= 0 ? 'text-th-green' : 'text-th-red'}
                   >
-                    {change24h ? (
+                    {change24h || change24h === 0 ? (
                       `${(change24h * 100).toFixed(2)}%`
                     ) : (
                       <span className="text-th-fgd-4">Unavailable</span>
@@ -354,7 +354,7 @@ const MarketsTable = ({ isPerpMarket }) => {
                         change24h >= 0 ? 'text-th-green' : 'text-th-red'
                       }
                     >
-                      {change24h ? (
+                      {change24h || change24h === 0 ? (
                         `${(change24h * 100).toFixed(2)}%`
                       ) : (
                         <span className="text-th-fgd-4">Unavailable</span>

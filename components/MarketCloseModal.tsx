@@ -92,7 +92,7 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
 
   return (
     <Modal onClose={onClose} isOpen={isOpen}>
-      <div className="pb-2 text-th-fgd-1 text-lg">
+      <div className="pb-2 text-lg text-th-fgd-1">
         {t('close-confirm', { config_name: config.name })}
       </div>
       <div className="pb-6 text-th-fgd-3">{t('price-expect')}</div>

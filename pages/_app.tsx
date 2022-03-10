@@ -75,16 +75,13 @@ const FetchReferrer = () => {
             mangoGroup,
             decodedRefLink
           )
-          console.log('in App referrerPda', referrerPda)
           const info = await connection.getAccountInfo(referrerPda)
-          console.log('in App referrerPda info', info)
           if (info) {
             const decoded = ReferrerIdRecordLayout.decode(info.data)
             const referrerRecord = new ReferrerIdRecord(decoded)
             referrerPk = referrerRecord.referrerMangoAccount
           }
         }
-        console.log('in App referrerPk from url is:', referrerPk)
         setMangoStore((state) => {
           state.referrerPk = referrerPk
         })
@@ -167,13 +164,13 @@ function App({ Component, pageProps }) {
 
         <ThemeProvider defaultTheme="Mango">
           <ViewportProvider>
-            <div className="bg-th-bkg-1 min-h-screen">
+            <div className="min-h-screen bg-th-bkg-1">
               <ErrorBoundary>
                 <GlobalNotification />
                 <Component {...pageProps} />
               </ErrorBoundary>
             </div>
-            <div className="md:hidden fixed bottom-0 left-0 w-full z-20">
+            <div className="fixed bottom-0 left-0 z-20 w-full md:hidden">
               <ErrorBoundary>
                 <BottomBar />
               </ErrorBoundary>

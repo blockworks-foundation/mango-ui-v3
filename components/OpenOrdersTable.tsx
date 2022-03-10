@@ -50,7 +50,7 @@ const DesktopTable = ({
     if (!asPath.includes(location)) {
       return (
         <Link href={location} shallow={true}>
-          <a className="text-th-fgd-1 underline hover:no-underline hover:text-th-fgd-1">
+          <a className="text-th-fgd-1 underline hover:text-th-fgd-1 hover:no-underline">
             {market.name}
           </a>
         </Link>
@@ -112,7 +112,7 @@ const DesktopTable = ({
                 <>
                   <Td className="w-[14.286%]">
                     <Input
-                      className="bg-transparent border-b-2 border-l-0 border-r-0 border-t-0 border-th-fgd-4 default-transition h-7 px-0 rounded-none hover:border-th-fgd-3 focus:border-th-fgd-3 focus:outline-none"
+                      className="default-transition h-7 rounded-none border-b-2 border-l-0 border-r-0 border-t-0 border-th-fgd-4 bg-transparent px-0 hover:border-th-fgd-3 focus:border-th-fgd-3 focus:outline-none"
                       type="number"
                       value={modifiedOrderSize}
                       onChange={(e) => setModifiedOrderSize(e.target.value)}
@@ -121,7 +121,7 @@ const DesktopTable = ({
                   <Td className="w-[14.286%]">
                     <Input
                       autoFocus
-                      className="bg-transparent border-b-2 border-l-0 border-r-0 border-t-0 border-th-fgd-4 default-transition h-7 px-0 rounded-none hover:border-th-fgd-3 focus:border-th-fgd-3 focus:outline-none"
+                      className="default-transition h-7 rounded-none border-b-2 border-l-0 border-r-0 border-t-0 border-th-fgd-4 bg-transparent px-0 hover:border-th-fgd-3 focus:border-th-fgd-3 focus:outline-none"
                       type="number"
                       value={modifiedOrderPrice}
                       onChange={(e) => setModifiedOrderPrice(e.target.value)}
@@ -145,14 +145,14 @@ const DesktopTable = ({
                       {!order.perpTrigger ? (
                         <Button
                           onClick={() => showEditOrderForm(index, order)}
-                          className="text-xs -my-1 pt-0 pb-0 h-7 pl-3 pr-3"
+                          className="-my-1 h-7 pt-0 pb-0 pl-3 pr-3 text-xs"
                         >
                           {t('edit')}
                         </Button>
                       ) : null}
                       <Button
                         onClick={() => handleCancelOrder(order, market.account)}
-                        className="text-xs -my-1 pt-0 pb-0 h-7 pl-3 pr-3"
+                        className="-my-1 h-7 pt-0 pb-0 pl-3 pr-3 text-xs"
                       >
                         {cancelledOrderId + '' === order.orderId + '' ? (
                           <Loading />
@@ -164,7 +164,7 @@ const DesktopTable = ({
                   ) : (
                     <>
                       <Button
-                        className="text-xs pt-0 pb-0 h-7 pl-3 pr-3"
+                        className="h-7 pt-0 pb-0 pl-3 pr-3 text-xs"
                         onClick={() =>
                           handleModifyOrder(
                             order,
@@ -181,7 +181,7 @@ const DesktopTable = ({
                         )}
                       </Button>
                       <Button
-                        className="text-xs pt-0 pb-0 h-7 pl-3 pr-3"
+                        className="h-7 pt-0 pb-0 pl-3 pr-3 text-xs"
                         onClick={() => setEditOrderIndex(null)}
                       >
                         Cancel Edit
@@ -223,7 +223,7 @@ const MobileTable = ({
         const editThisOrder = editOrderIndex === index
         return (
           <Row key={`${order.orderId}${order.side}`} index={index}>
-            <div className="col-span-12 flex items-center justify-between text-fgd-1 text-left">
+            <div className="text-fgd-1 col-span-12 flex items-center justify-between text-left">
               <div className="flex items-center">
                 <img
                   alt=""
@@ -234,7 +234,7 @@ const MobileTable = ({
                 />
                 <div>
                   <div className="mb-0.5">{market.config.name}</div>
-                  <div className="text-th-fgd-3 text-xs">
+                  <div className="text-xs text-th-fgd-3">
                     <span
                       className={`mr-1
                                 ${
@@ -284,11 +284,11 @@ const MobileTable = ({
               </div>
             </div>
             {editThisOrder ? (
-              <div className="flex flex-col sm:flex-row pt-4 sm:space-x-3">
+              <div className="flex flex-col pt-4 sm:flex-row sm:space-x-3">
                 <div className="pb-3">
                   <Label className="text-xs">{t('size')}</Label>
                   <Input
-                    className="bg-transparent border-b-2 border-l-0 border-r-0 border-t-0 border-th-fgd-4 default-transition h-7 px-0 rounded-none w-full hover:border-th-fgd-3 focus:border-th-fgd-3 focus:outline-none"
+                    className="default-transition h-7 w-full rounded-none border-b-2 border-l-0 border-r-0 border-t-0 border-th-fgd-4 bg-transparent px-0 hover:border-th-fgd-3 focus:border-th-fgd-3 focus:outline-none"
                     type="number"
                     value={modifiedOrderSize || order.size}
                     onChange={(e) => setModifiedOrderSize(e.target.value)}
@@ -298,7 +298,7 @@ const MobileTable = ({
                   <Label className="text-xs">{t('price')}</Label>
                   <Input
                     autoFocus
-                    className="bg-transparent border-b-2 border-l-0 border-r-0 border-t-0 border-th-fgd-4 default-transition h-7 px-0 rounded-none w-full hover:border-th-fgd-3 focus:border-th-fgd-3 focus:outline-none"
+                    className="default-transition h-7 w-full rounded-none border-b-2 border-l-0 border-r-0 border-t-0 border-th-fgd-4 bg-transparent px-0 hover:border-th-fgd-3 focus:border-th-fgd-3 focus:outline-none"
                     type="number"
                     value={modifiedOrderPrice || order.price}
                     onChange={(e) => setModifiedOrderPrice(e.target.value)}
@@ -307,7 +307,7 @@ const MobileTable = ({
                 <Button
                   className={`${
                     index % 2 === 0 ? 'bg-th-bkg-4' : 'bg-th-bkg-3'
-                  } text-xs mt-4 pt-0 pb-0 h-8 pl-3 pr-3`}
+                  } mt-4 h-8 pt-0 pb-0 pl-3 pr-3 text-xs`}
                   onClick={() =>
                     handleModifyOrder(
                       order,
@@ -497,7 +497,7 @@ const OpenOrdersTable = () => {
   return (
     <div className={`flex flex-col sm:pb-4`}>
       <div className={`overflow-x-auto sm:-mx-6 lg:-mx-8`}>
-        <div className={`align-middle inline-block min-w-full sm:px-6 lg:px-8`}>
+        <div className={`inline-block min-w-full align-middle sm:px-6 lg:px-8`}>
           {openOrders && openOrders.length > 0 ? (
             !isMobile ? (
               <DesktopTable {...tableProps} />
@@ -506,12 +506,12 @@ const OpenOrdersTable = () => {
             )
           ) : (
             <div
-              className={`w-full text-center py-6 bg-th-bkg-1 text-th-fgd-3 rounded-md`}
+              className={`w-full rounded-md bg-th-bkg-1 py-6 text-center text-th-fgd-3`}
             >
               {t('no-orders')}
               {asPath === '/account' ? (
                 <Link href={'/'} shallow={true}>
-                  <a className={`inline-flex ml-2 py-0`}>{t('make-trade')}</a>
+                  <a className={`ml-2 inline-flex py-0`}>{t('make-trade')}</a>
                 </Link>
               ) : null}
             </div>

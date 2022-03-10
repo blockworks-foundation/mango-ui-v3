@@ -35,6 +35,7 @@ import {
 } from '../components/SettingsModal'
 import { MSRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
 import { getProfilePicture, ProfilePicture } from '@solflare-wallet/pfp'
+import { decodeBook } from '../hooks/useHydrateStore'
 
 export const ENDPOINTS: EndpointInfo[] = [
   {
@@ -529,14 +530,29 @@ const useMangoStore = create<MangoStore>((set, get) => {
               state.selectedMarket.current = allMarketAccounts.find((mkt) =>
                 mkt.publicKey.equals(selectedMarketConfig.publicKey)
               )
-              allMarketAccountInfos
-                .concat(allBidsAndAsksAccountInfos)
-                .forEach(({ publicKey, context, accountInfo }) => {
+
+              allBidsAndAsksAccountInfos.forEach(
+                ({ publicKey, context, accountInfo }) => {
                   if (context.slot >= state.connection.slot) {
                     state.connection.slot = context.slot
+                    const perpMarket = allMarketAccounts.find((mkt) => {
+                      if (mkt instanceof PerpMarket) {
+                        return (
+                          mkt.bids.equals(publicKey) ||
+                          mkt.asks.equals(publicKey)
+                        )
+                      }
+                    })
+                    if (perpMarket) {
+                      accountInfo['parsed'] = decodeBook(
+                        perpMarket,
+                        accountInfo
+                      )
+                    }
                     state.accountInfos[publicKey.toBase58()] = accountInfo
                   }
-                })
+                }
+              )
             })
           })
           .catch((err) => {
@@ -565,10 +581,26 @@ const useMangoStore = create<MangoStore>((set, get) => {
           .then((response) => response.json())
           .then((jsonPerpHistory) => {
             const perpHistory = jsonPerpHistory?.data || []
-
             set((state) => {
               state.tradeHistory.perp = perpHistory
             })
+            if (perpHistory.length === 5000) {
+              fetch(
+                `https://event-history-api.herokuapp.com/perp_trades/${selectedMangoAccount.publicKey.toString()}?page=2`
+              )
+                .then((response) => response.json())
+                .then((jsonPerpHistory) => {
+                  const perpHistory = jsonPerpHistory?.data || []
+                  set((state) => {
+                    state.tradeHistory.perp = [
+                      ...state.tradeHistory.perp,
+                    ].concat(perpHistory)
+                  })
+                })
+                .catch((e) => {
+                  console.error('Error fetching trade history', e)
+                })
+            }
           })
           .catch((e) => {
             console.error('Error fetching trade history', e)
@@ -646,7 +678,9 @@ const useMangoStore = create<MangoStore>((set, get) => {
         const bidAskAccounts = Object.keys(get().accountInfos).map(
           (pk) => new PublicKey(pk)
         )
-
+        const markets = Object.values(
+          useMangoStore.getState().selectedMangoGroup.markets
+        )
         const allBidsAndAsksAccountInfos = await getMultipleAccounts(
           connection,
           bidAskAccounts
@@ -656,6 +690,17 @@ const useMangoStore = create<MangoStore>((set, get) => {
           allBidsAndAsksAccountInfos.forEach(
             ({ publicKey, context, accountInfo }) => {
               state.connection.slot = context.slot
+
+              const perpMarket = markets.find((mkt) => {
+                if (mkt instanceof PerpMarket) {
+                  return (
+                    mkt.bids.equals(publicKey) || mkt.asks.equals(publicKey)
+                  )
+                }
+              })
+              if (perpMarket) {
+                accountInfo['parsed'] = decodeBook(perpMarket, accountInfo)
+              }
               state.accountInfos[publicKey.toBase58()] = accountInfo
             }
           )

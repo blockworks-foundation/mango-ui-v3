@@ -45,7 +45,7 @@ const SwapSettingsModal = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose} hideClose>
       <Modal.Header>
-        <h2 className="font-bold text-th-fgd-1 text-lg">
+        <h2 className="text-lg font-bold text-th-fgd-1">
           {t('swap:slippage-settings')}
         </h2>
       </Modal.Header>

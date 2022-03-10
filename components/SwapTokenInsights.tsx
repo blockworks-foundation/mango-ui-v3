@@ -90,10 +90,10 @@ const SwapTokenInsights = ({ formState, jupiterTokens, setOutputToken }) => {
 
   return filteredTokenInsights ? (
     <div>
-      <div className="flex items-end mb-3 space-x-2">
+      <div className="mb-3 flex items-end space-x-2">
         {!showSearch ? (
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between w-full">
-            <div className="mb-2 lg:mb-0 w-44">
+          <div className="flex w-full flex-col lg:flex-row lg:items-center lg:justify-between">
+            <div className="mb-2 w-44 lg:mb-0">
               <ButtonGroup
                 activeValue={filterBy}
                 className="h-10"
@@ -131,12 +131,12 @@ const SwapTokenInsights = ({ formState, jupiterTokens, setOutputToken }) => {
               placeholder="Search tokens..."
               value={textFilter}
               onChange={(e) => setTextFilter(e.target.value)}
-              prefix={<SearchIcon className="h-4 text-th-fgd-3 w-4" />}
+              prefix={<SearchIcon className="h-4 w-4 text-th-fgd-3" />}
             />
           </div>
         )}
         <IconButton
-          className="flex-shrink-0 h-10 w-10"
+          className="h-10 w-10 flex-shrink-0"
           onClick={() => handleToggleSearch()}
         >
           {showSearch ? (
@@ -149,9 +149,9 @@ const SwapTokenInsights = ({ formState, jupiterTokens, setOutputToken }) => {
 
       {loading ? (
         <div className="space-y-2">
-          <div className="animate-pulse bg-th-bkg-3 h-12 rounded-md w-full" />
-          <div className="animate-pulse bg-th-bkg-3 h-12 rounded-md w-full" />
-          <div className="animate-pulse bg-th-bkg-3 h-12 rounded-md w-full" />
+          <div className="h-12 w-full animate-pulse rounded-md bg-th-bkg-3" />
+          <div className="h-12 w-full animate-pulse rounded-md bg-th-bkg-3" />
+          <div className="h-12 w-full animate-pulse rounded-md bg-th-bkg-3" />
         </div>
       ) : filteredTokenInsights.length > 0 ? (
         <div className="border-b border-th-bkg-4">
@@ -163,8 +163,8 @@ const SwapTokenInsights = ({ formState, jupiterTokens, setOutputToken }) => {
               <>
                 <ExpandableRow
                   buttonTemplate={
-                    <div className="flex items-center w-full">
-                      <div className="flex items-center space-x-3 w-1/2">
+                    <div className="flex w-full items-center">
+                      <div className="flex w-1/2 items-center space-x-3">
                         <div
                           className={`min-w-[48px] text-xs ${
                             timeframe === timeFrameVals[0] //timeframe 24h
@@ -207,10 +207,10 @@ const SwapTokenInsights = ({ formState, jupiterTokens, setOutputToken }) => {
                             width="24"
                             height="24"
                             alt={insight.name}
-                            className="hidden lg:block rounded-full"
+                            className="hidden rounded-full lg:block"
                           />
                         ) : (
-                          <div className="bg-th-bkg-3 h-6 inline-flex items-center justify-center rounded-full text-th-fgd-3 text-xs w-6">
+                          <div className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-th-bkg-3 text-xs text-th-fgd-3">
                             ?
                           </div>
                         )}
@@ -218,12 +218,12 @@ const SwapTokenInsights = ({ formState, jupiterTokens, setOutputToken }) => {
                           <div className="font-bold">
                             {insight?.symbol?.toUpperCase()}
                           </div>
-                          <div className="text-th-fgd-3 text-xs">
+                          <div className="text-xs text-th-fgd-3">
                             {insight.name}
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center justify-end pl-2 space-x-3 text-right text-xs w-1/2">
+                      <div className="flex w-1/2 items-center justify-end space-x-3 pl-2 text-right text-xs">
                         <div>
                           <div className="mb-[4px] text-th-fgd-4">
                             {t('price')}
@@ -251,7 +251,7 @@ const SwapTokenInsights = ({ formState, jupiterTokens, setOutputToken }) => {
                         </div>
                       </div>
                       <Button
-                        className="hidden lg:block ml-3 pl-3 pr-3 text-xs"
+                        className="ml-3 hidden pl-3 pr-3 text-xs lg:block"
                         onClick={() =>
                           setOutputToken({
                             ...formState,
@@ -264,10 +264,10 @@ const SwapTokenInsights = ({ formState, jupiterTokens, setOutputToken }) => {
                     </div>
                   }
                   panelTemplate={
-                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 grid-flow-row">
+                    <div className="grid grid-flow-row grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
                       {insight.market_cap_rank ? (
-                        <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
-                          <div className="text-th-fgd-3 text-xs">
+                        <div className="m-1 rounded-md border border-th-bkg-4 p-3">
+                          <div className="text-xs text-th-fgd-3">
                             {t('swap:market-cap-rank')}
                           </div>
                           <div className="font-bold text-th-fgd-1">
@@ -276,8 +276,8 @@ const SwapTokenInsights = ({ formState, jupiterTokens, setOutputToken }) => {
                         </div>
                       ) : null}
                       {insight?.market_cap && insight?.market_cap !== 0 ? (
-                        <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
-                          <div className="text-th-fgd-3 text-xs">
+                        <div className="m-1 rounded-md border border-th-bkg-4 p-3">
+                          <div className="text-xs text-th-fgd-3">
                             {t('swap:market-cap')}
                           </div>
                           <div className="font-bold text-th-fgd-1">
@@ -286,15 +286,15 @@ const SwapTokenInsights = ({ formState, jupiterTokens, setOutputToken }) => {
                         </div>
                       ) : null}
                       {insight?.circulating_supply ? (
-                        <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
-                          <div className="text-th-fgd-3 text-xs">
+                        <div className="m-1 rounded-md border border-th-bkg-4 p-3">
+                          <div className="text-xs text-th-fgd-3">
                             {t('swap:token-supply')}
                           </div>
                           <div className="font-bold text-th-fgd-1">
                             {numberCompacter.format(insight.circulating_supply)}
                           </div>
                           {insight?.max_supply ? (
-                            <div className="text-th-fgd-2 text-xs">
+                            <div className="text-xs text-th-fgd-2">
                               {t('swap:max-supply')}
                               {': '}
                               {numberCompacter.format(insight.max_supply)}
@@ -303,8 +303,8 @@ const SwapTokenInsights = ({ formState, jupiterTokens, setOutputToken }) => {
                         </div>
                       ) : null}
                       {insight?.ath ? (
-                        <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
-                          <div className="text-th-fgd-3 text-xs">
+                        <div className="m-1 rounded-md border border-th-bkg-4 p-3">
+                          <div className="text-xs text-th-fgd-3">
                             {t('swap:ath')}
                           </div>
                           <div className="flex">
@@ -324,15 +324,15 @@ const SwapTokenInsights = ({ formState, jupiterTokens, setOutputToken }) => {
                             ) : null}
                           </div>
                           {insight?.ath_date ? (
-                            <div className="text-th-fgd-2 text-xs">
+                            <div className="text-xs text-th-fgd-2">
                               {dayjs(insight.ath_date).fromNow()}
                             </div>
                           ) : null}
                         </div>
                       ) : null}
                       {insight?.atl ? (
-                        <div className="border border-th-bkg-4 m-1 p-3 rounded-md">
-                          <div className="text-th-fgd-3 text-xs">
+                        <div className="m-1 rounded-md border border-th-bkg-4 p-3">
+                          <div className="text-xs text-th-fgd-3">
                             {t('swap:atl')}
                           </div>
                           <div className="flex">
@@ -359,7 +359,7 @@ const SwapTokenInsights = ({ formState, jupiterTokens, setOutputToken }) => {
                             ) : null}
                           </div>
                           {insight?.atl_date ? (
-                            <div className="text-th-fgd-2 text-xs">
+                            <div className="text-xs text-th-fgd-2">
                               {dayjs(insight.atl_date).fromNow()}
                             </div>
                           ) : null}
@@ -373,13 +373,13 @@ const SwapTokenInsights = ({ formState, jupiterTokens, setOutputToken }) => {
           })}
         </div>
       ) : (
-        <div className="bg-th-bkg-3 mt-3 p-4 rounded-md text-center text-th-fgd-3">
+        <div className="mt-3 rounded-md bg-th-bkg-3 p-4 text-center text-th-fgd-3">
           {t('swap:no-tokens-found')}
         </div>
       )}
     </div>
   ) : (
-    <div className="bg-th-bkg-3 mt-3 p-4 rounded-md text-center text-th-fgd-3">
+    <div className="mt-3 rounded-md bg-th-bkg-3 p-4 text-center text-th-fgd-3">
       {t('swap:insights-not-available')}
     </div>
   )

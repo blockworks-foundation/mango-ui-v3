@@ -31,7 +31,7 @@ const DropMenu: FunctionComponent<DropMenuProps> = ({
           <>
             <Listbox.Button className={buttonClassName} disabled={disabled}>
               {toolTipContent && !open ? (
-                <Tooltip content={toolTipContent} className="text-xs py-1">
+                <Tooltip content={toolTipContent} className="py-1 text-xs">
                   {button}
                 </Tooltip>
               ) : (
@@ -50,7 +50,7 @@ const DropMenu: FunctionComponent<DropMenuProps> = ({
               leaveTo="opacity-0"
             >
               <Listbox.Options
-                className={`absolute bg-th-bkg-3 left-1/2 mt-2 px-4 py-2.5 rounded-md transform -translate-x-1/2 z-10`}
+                className={`absolute left-1/2 z-10 mt-2 -translate-x-1/2 transform rounded-md bg-th-bkg-3 px-4 py-2.5`}
                 static
               >
                 {options.map((option) => (
@@ -60,7 +60,7 @@ const DropMenu: FunctionComponent<DropMenuProps> = ({
                   >
                     {({ selected }) => (
                       <div
-                        className={`default-transition text-th-fgd-1 hover:text-th-primary hover:cursor-pointer tracking-wider whitespace-nowrap ${
+                        className={`default-transition whitespace-nowrap tracking-wider text-th-fgd-1 hover:cursor-pointer hover:text-th-primary ${
                           selected && `text-th-primary`
                         } ${option.icon && `flex items-center`}`}
                       >

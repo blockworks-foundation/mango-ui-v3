@@ -39,7 +39,7 @@ const GlobalNotification = () => {
   if (show) {
     return (
       <div className="flex items-center bg-th-bkg-4 text-th-primary">
-        <div className="w-full text-center p-1">
+        <div className="w-full p-1 text-center">
           <span>
             Solana network is experiencing degraded performance. Transactions
             may fail to send or confirm.
@@ -47,10 +47,10 @@ const GlobalNotification = () => {
         </div>
 
         <button
-          className="text-th-primary mr-4 hover:text-th-primary"
+          className="mr-4 text-th-primary hover:text-th-primary"
           onClick={() => setShow(false)}
         >
-          <XIcon className="w-5 h-5" />
+          <XIcon className="h-5 w-5" />
         </button>
       </div>
     )

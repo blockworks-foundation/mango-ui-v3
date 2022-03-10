@@ -437,10 +437,10 @@ export default function SimpleTradeForm({ initLeverage }) {
   const canTrade = ipAllowed || (market instanceof Market && spotAllowed)
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex h-full flex-col">
       <ElementTitle>
         {marketConfig.name}
-        <span className="border border-th-primary ml-2 px-1 py-0.5 rounded text-xs text-th-primary">
+        <span className="ml-2 rounded border border-th-primary px-1 py-0.5 text-xs text-th-primary">
           {initLeverage}x
         </span>
       </ElementTitle>
@@ -518,11 +518,11 @@ export default function SimpleTradeForm({ initLeverage }) {
             />
           </div>
           {side === 'sell' ? (
-            <div className="text-th-fgd-3 text-xs tracking-normal mt-2">
+            <div className="mt-2 text-xs tracking-normal text-th-fgd-3">
               <span>{roundedDeposits > 0 ? closeDepositString : null}</span>
             </div>
           ) : (
-            <div className="text-th-fgd-3 text-xs tracking-normal mt-2">
+            <div className="mt-2 text-xs tracking-normal text-th-fgd-3">
               <span>{roundedBorrows > 0 ? closeBorrowString : null}</span>
             </div>
           )}
@@ -531,7 +531,7 @@ export default function SimpleTradeForm({ initLeverage }) {
               <div
                 className={`${
                   showStopForm ? 'bg-th-bkg-4' : 'bg-th-bkg-3'
-                } mt-1 p-2 rounded-md w-1/2`}
+                } mt-1 w-1/2 rounded-md p-2`}
               >
                 <Checkbox
                   checked={showStopForm}
@@ -545,7 +545,7 @@ export default function SimpleTradeForm({ initLeverage }) {
               <div
                 className={`${
                   showTakeProfitForm ? 'bg-th-bkg-4' : 'bg-th-bkg-3'
-                } mt-1 p-2 rounded-md w-1/2`}
+                } mt-1 w-1/2 rounded-md p-2`}
               >
                 <Checkbox
                   checked={showTakeProfitForm}
@@ -640,7 +640,7 @@ export default function SimpleTradeForm({ initLeverage }) {
                   placement="left"
                   content={t('tooltip-ioc')}
                 >
-                  <div className="flex items-center text-th-fgd-3 text-xs">
+                  <div className="flex items-center text-xs text-th-fgd-3">
                     <Checkbox
                       checked={ioc}
                       onChange={(e) => iocOnChange(e.target.checked)}
@@ -689,9 +689,9 @@ export default function SimpleTradeForm({ initLeverage }) {
               onClick={onSubmit}
               className={`${
                 !disabledTradeButton
-                  ? 'bg-th-bkg-2 border border-th-green hover:border-th-green-dark'
+                  ? 'border border-th-green bg-th-bkg-2 hover:border-th-green-dark'
                   : 'border border-th-bkg-4'
-              } text-th-green hover:text-th-fgd-1 hover:bg-th-green-dark flex-grow`}
+              } flex-grow text-th-green hover:bg-th-green-dark hover:text-th-fgd-1`}
             >
               {submitting ? (
                 <div className="w-full">
@@ -734,7 +734,7 @@ export default function SimpleTradeForm({ initLeverage }) {
           )}
         </div>
         {insufficientSol ? (
-          <div className="tiny-text text-center text-th-red mt-1 -mb-3">
+          <div className="tiny-text mt-1 -mb-3 text-center text-th-red">
             You must leave enough SOL in your wallet to pay for the transaction
           </div>
         ) : null}

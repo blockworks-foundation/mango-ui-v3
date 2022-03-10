@@ -12,7 +12,7 @@ const Settings = () => {
   return mounted ? (
     <>
       <button
-        className="bg-th-bkg-4 default-transition flex items-center justify-center rounded-full w-8 h-8 text-th-fgd-1 focus:outline-none hover:text-th-primary"
+        className="default-transition flex h-8 w-8 items-center justify-center rounded-full bg-th-bkg-4 text-th-fgd-1 hover:text-th-primary focus:outline-none"
         onClick={() => setShowSettingsModal(true)}
       >
         <CogIcon className="h-5 w-5" />
@@ -25,7 +25,7 @@ const Settings = () => {
       ) : null}
     </>
   ) : (
-    <div className="bg-th-bkg-3 rounded-full w-8 h-8" />
+    <div className="h-8 w-8 rounded-full bg-th-bkg-3" />
   )
 }
 

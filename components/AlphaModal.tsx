@@ -50,7 +50,7 @@ const AlphaModal = ({
     <Modal isOpen={isOpen} onClose={onClose} hideClose>
       <Modal.Header>
         <div className="flex flex-col items-center">
-          <div className="flex space-x-8 items-center justify-center">
+          <div className="flex items-center justify-center space-x-8">
             <img
               className={`h-12 w-auto`}
               src="/assets/icons/logo.svg"
@@ -59,36 +59,36 @@ const AlphaModal = ({
           </div>
         </div>
       </Modal.Header>
-      <h1 className="m-auto mb-4 relative w-max">
+      <h1 className="relative m-auto mb-4 w-max">
         {t('v3-welcome')}
-        <span className="absolute bg-th-primary font-bold px-1.5 py-0.5 -right-8 rounded-full text-black text-xs -top-1 w-max">
+        <span className="absolute -right-8 -top-1 w-max rounded-full bg-th-primary px-1.5 py-0.5 text-xs font-bold text-black">
           V3
         </span>
       </h1>
       {savedLanguage ? (
         <>
-          <div className="bg-th-bkg-3 p-4 space-y-3 rounded-md">
+          <div className="space-y-3 rounded-md bg-th-bkg-3 p-4">
             <div className="flex items-center text-th-fgd-1">
-              <CheckCircleIcon className="flex-shrink-0 h-5 mr-2 text-th-green w-5" />
+              <CheckCircleIcon className="mr-2 h-5 w-5 flex-shrink-0 text-th-green" />
               {t('intro-feature-1')}
             </div>
             <div className="flex items-center text-th-fgd-1">
-              <CheckCircleIcon className="flex-shrink-0 h-5 mr-2 text-th-green w-5" />
+              <CheckCircleIcon className="mr-2 h-5 w-5 flex-shrink-0 text-th-green" />
               {t('intro-feature-2')}
             </div>
             <div className="flex items-center text-th-fgd-1">
-              <CheckCircleIcon className="flex-shrink-0 h-5 mr-2 text-th-green w-5" />
+              <CheckCircleIcon className="mr-2 h-5 w-5 flex-shrink-0 text-th-green" />
               {t('intro-feature-3')}
             </div>
             <div className="flex items-center text-th-fgd-1">
-              <CheckCircleIcon className="flex-shrink-0 h-5 mr-2 text-th-green w-5" />
+              <CheckCircleIcon className="mr-2 h-5 w-5 flex-shrink-0 text-th-green" />
               {t('intro-feature-4')}
             </div>
           </div>
-          <div className="px-6 text-th-fgd-3 text-center mt-4">
+          <div className="mt-4 px-6 text-center text-th-fgd-3">
             {t('v3-unaudited')}
           </div>
-          <div className="border border-th-fgd-4 mt-4 p-3 rounded-md">
+          <div className="mt-4 rounded-md border border-th-fgd-4 p-3">
             <Checkbox
               checked={acceptRisks}
               onChange={(e) => setAcceptRisks(e.target.checked)}
@@ -124,10 +124,10 @@ const AlphaModal = ({
                   <div
                     className={`border ${
                       checked ? 'border-th-primary' : 'border-th-fgd-4'
-                    } cursor-pointer default-transition flex items-center mb-2 p-3 rounded-md text-th-fgd-1 hover:border-th-primary`}
+                    } default-transition mb-2 flex cursor-pointer items-center rounded-md p-3 text-th-fgd-1 hover:border-th-primary`}
                   >
                     <CheckCircleIcon
-                      className={`h-5 mr-2 w-5 ${
+                      className={`mr-2 h-5 w-5 ${
                         checked ? 'text-th-primary' : 'text-th-fgd-4'
                       }`}
                     />

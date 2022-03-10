@@ -52,7 +52,7 @@ const ConnectWalletButton = () => {
         <Menu>
           {({ open }) => (
             <div className="relative" id="profile-menu-tip">
-              <Menu.Button className="bg-th-bkg-4 flex items-center justify-center rounded-full w-10 h-10 text-white focus:outline-none hover:bg-th-bkg-4 hover:text-th-fgd-3">
+              <Menu.Button className="flex h-10 w-10 items-center justify-center rounded-full bg-th-bkg-4 text-white hover:bg-th-bkg-4 hover:text-th-fgd-3 focus:outline-none">
                 {pfp?.isAvailable ? (
                   <img alt="" src={pfp.url} className="rounded-full" />
                 ) : (
@@ -70,10 +70,10 @@ const ConnectWalletButton = () => {
                 leaveFrom="opacity-100"
                 leaveTo="opacity-0"
               >
-                <Menu.Items className="absolute bg-th-bkg-3 mt-1 px-4 py-2.5 right-0 rounded-md space-y-1.5 w-48 z-20">
+                <Menu.Items className="absolute right-0 z-20 mt-1 w-48 space-y-1.5 rounded-md bg-th-bkg-3 px-4 py-2.5">
                   <Menu.Item>
                     <button
-                      className="flex flex-row font-normal items-center py-0.5 rounded-none w-full hover:text-th-primary hover:cursor-pointer focus:outline-none"
+                      className="flex w-full flex-row items-center rounded-none py-0.5 font-normal hover:cursor-pointer hover:text-th-primary focus:outline-none"
                       onClick={() => setShowAccountsModal(true)}
                     >
                       <CurrencyDollarIcon className="h-4 w-4" />
@@ -82,7 +82,7 @@ const ConnectWalletButton = () => {
                   </Menu.Item>
                   <Menu.Item>
                     <button
-                      className="flex flex-row font-normal items-center py-0.5 rounded-none w-full hover:text-th-primary hover:cursor-pointer focus:outline-none"
+                      className="flex w-full flex-row items-center rounded-none py-0.5 font-normal hover:cursor-pointer hover:text-th-primary focus:outline-none"
                       onClick={() => copyToClipboard(wallet?.publicKey)}
                     >
                       <DuplicateIcon className="h-4 w-4" />
@@ -91,13 +91,13 @@ const ConnectWalletButton = () => {
                   </Menu.Item>
                   <Menu.Item>
                     <button
-                      className="flex flex-row font-normal items-center py-0.5 rounded-none w-full hover:text-th-primary hover:cursor-pointer focus:outline-none"
+                      className="flex w-full flex-row items-center rounded-none py-0.5 font-normal hover:cursor-pointer hover:text-th-primary focus:outline-none"
                       onClick={() => wallet.disconnect()}
                     >
                       <LogoutIcon className="h-4 w-4" />
                       <div className="pl-2 text-left">
                         <div className="pb-0.5">{t('disconnect')}</div>
-                        <div className="text-th-fgd-4 text-xs">
+                        <div className="text-xs text-th-fgd-4">
                           {abbreviateAddress(wallet?.publicKey)}
                         </div>
                       </div>
@@ -110,21 +110,21 @@ const ConnectWalletButton = () => {
         </Menu>
       ) : (
         <div
-          className="h-14 flex divide-x divide-th-bkg-3 justify-between"
+          className="flex h-14 justify-between divide-x divide-th-bkg-3"
           id="connect-wallet-tip"
         >
           <button
             onClick={handleWalletConect}
             disabled={!wallet || !mangoGroup}
-            className="bg-th-primary-dark rounded-none text-th-bkg-1 hover:brightness-[1.1] focus:outline-none disabled:text-th-bkg-2 disabled:cursor-wait"
+            className="rounded-none bg-th-primary-dark text-th-bkg-1 hover:brightness-[1.1] focus:outline-none disabled:cursor-wait disabled:text-th-bkg-2"
           >
-            <div className="flex flex-row items-center px-3 justify-center h-full default-transition">
-              <WalletIcon className="w-4 h-4 mr-2 fill-current" />
+            <div className="default-transition flex h-full flex-row items-center justify-center px-3">
+              <WalletIcon className="mr-2 h-4 w-4 fill-current" />
               <div className="text-left">
-                <div className="font-bold mb-0.5 whitespace-nowrap">
+                <div className="mb-0.5 whitespace-nowrap font-bold">
                   {t('connect')}
                 </div>
-                <div className="font-normal text-th-bkg-2 leading-3 tracking-wider text-xxs">
+                <div className="text-xxs font-normal leading-3 tracking-wider text-th-bkg-2">
                   {WALLET_PROVIDERS.find((p) => p.url === selectedWallet)?.name}
                 </div>
               </div>

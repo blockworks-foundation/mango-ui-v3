@@ -76,25 +76,25 @@ const PositionsTable = () => {
   return (
     <div className="flex flex-col pb-2">
       {unsettledPositions.length > 0 ? (
-        <div className="border border-th-bkg-4 mb-6 p-4 sm:p-6 rounded-lg">
+        <div className="mb-6 rounded-lg border border-th-bkg-4 p-4 sm:p-6">
           <div className="flex items-center justify-between pb-4">
             <div className="flex items-center">
-              <ExclamationIcon className="flex-shrink-0 h-5 mr-1.5 mt-0.5 text-th-primary w-5" />
+              <ExclamationIcon className="mr-1.5 mt-0.5 h-5 w-5 flex-shrink-0 text-th-primary" />
               <h3>{t('unsettled-positions')}</h3>
             </div>
 
             <Button
-              className="text-xs pt-0 pb-0 h-8 pl-3 pr-3 whitespace-nowrap"
+              className="h-8 whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs"
               onClick={handleSettleAll}
             >
               {settling ? <Loading /> : 'Redeem All'}
             </Button>
           </div>
-          <div className="gap-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 grid-flow-row">
+          <div className="grid grid-flow-row grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
             {unsettledPositions.map((p, index) => {
               return (
                 <div
-                  className="bg-th-bkg-3 col-span-1 flex items-center justify-between px-5 py-3 rounded-full"
+                  className="col-span-1 flex items-center justify-between rounded-full bg-th-bkg-3 px-5 py-3"
                   key={p.marketConfig.baseSymbol}
                 >
                   <div className="flex space-x-2">
@@ -107,7 +107,7 @@ const PositionsTable = () => {
                         className={`mr-3`}
                       />
                       <div>
-                        <p className="mb-0 text-th-fgd-1 text-xs">
+                        <p className="mb-0 text-xs text-th-fgd-1">
                           {p.marketConfig.name}
                         </p>
                         <PnlText className="font-bold" pnl={p.unsettledPnl} />
@@ -133,7 +133,7 @@ const PositionsTable = () => {
         </div>
       ) : null}
       <div className={`md:overflow-x-auto`}>
-        <div className={`align-middle inline-block min-w-full`}>
+        <div className={`inline-block min-w-full align-middle`}>
           {openPositions.length ? (
             !isMobile ? (
               <Table>
@@ -190,7 +190,7 @@ const PositionsTable = () => {
                                   }}
                                   shallow={true}
                                 >
-                                  <a className="text-th-fgd-1 underline hover:no-underline hover:text-th-fgd-1">
+                                  <a className="text-th-fgd-1 underline hover:text-th-fgd-1 hover:no-underline">
                                     {marketConfig.name}
                                   </a>
                                 </Link>
@@ -278,7 +278,7 @@ const PositionsTable = () => {
                       <ExpandableRow
                         buttonTemplate={
                           <>
-                            <div className="flex items-center justify-between text-fgd-1 w-full">
+                            <div className="text-fgd-1 flex w-full items-center justify-between">
                               <div className="flex items-center">
                                 <img
                                   alt=""
@@ -291,7 +291,7 @@ const PositionsTable = () => {
                                   <div className="mb-0.5 text-left">
                                     {marketConfig.name}
                                   </div>
-                                  <div className="text-th-fgd-3 text-xs">
+                                  <div className="text-xs text-th-fgd-3">
                                     <span
                                       className={`mr-1 ${
                                         basePosition > 0
@@ -313,9 +313,9 @@ const PositionsTable = () => {
                         }
                         key={`${index}`}
                         panelTemplate={
-                          <div className="grid grid-cols-2 grid-flow-row gap-4">
+                          <div className="grid grid-flow-row grid-cols-2 gap-4">
                             <div className="col-span-1 text-left">
-                              <div className="pb-0.5 text-th-fgd-3 text-xs">
+                              <div className="pb-0.5 text-xs text-th-fgd-3">
                                 {t('average-entry')}
                               </div>
                               {avgEntryPrice
@@ -323,13 +323,13 @@ const PositionsTable = () => {
                                 : '--'}
                             </div>
                             <div className="col-span-1 text-left">
-                              <div className="pb-0.5 text-th-fgd-3 text-xs">
+                              <div className="pb-0.5 text-xs text-th-fgd-3">
                                 {t('notional-size')}
                               </div>
                               {formatUsdValue(notionalSize)}
                             </div>
                             <div className="col-span-1 text-left">
-                              <div className="pb-0.5 text-th-fgd-3 text-xs">
+                              <div className="pb-0.5 text-xs text-th-fgd-3">
                                 {t('break-even')}
                               </div>
                               {breakEvenPrice
@@ -346,7 +346,7 @@ const PositionsTable = () => {
             )
           ) : (
             <div
-              className={`w-full text-center py-6 bg-th-bkg-1 text-th-fgd-3 rounded-md`}
+              className={`w-full rounded-md bg-th-bkg-1 py-6 text-center text-th-fgd-3`}
             >
               {t('no-perp')}
             </div>

@@ -28,7 +28,7 @@ const Tooltip = ({
       content={
         content ? (
           <div
-            className={`rounded p-2.5 text-xs bg-th-bkg-3 leading-4 shadow-md text-th-fgd-3 outline-none focus:outline-none ${className}`}
+            className={`rounded bg-th-bkg-3 p-2.5 text-xs leading-4 text-th-fgd-3 shadow-md outline-none focus:outline-none ${className}`}
           >
             {content}
           </div>
@@ -43,7 +43,7 @@ const Tooltip = ({
 const Content = ({ className = '', children }) => {
   return (
     <div
-      className={`inline-block cursor-help border-b border-th-fgd-3 border-dashed border-opacity-20 default-transition hover:border-th-bkg-2 ${className}`}
+      className={`default-transition inline-block cursor-help border-b border-dashed border-th-fgd-3 border-opacity-20 hover:border-th-bkg-2 ${className}`}
     >
       {children}
     </div>

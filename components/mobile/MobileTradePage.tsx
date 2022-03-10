@@ -53,7 +53,7 @@ const MobileTradePage = () => {
       : ['Trade', 'Details', 'Balances', 'Orders']
 
   return (
-    <div className="pb-14 pt-4 px-2">
+    <div className="px-2 pb-14 pt-4">
       <div className="relative">
         <div className="flex items-center">
           <img
@@ -64,19 +64,19 @@ const MobileTradePage = () => {
             className="mr-2"
           />
           <div className="flex items-center">
-            <div className="font-semibold pr-0.5 text-xl">{baseSymbol}</div>
-            <span className="text-th-fgd-4 text-xl">
+            <div className="pr-0.5 text-xl font-semibold">{baseSymbol}</div>
+            <span className="text-xl text-th-fgd-4">
               {isPerpMarket ? '-' : '/'}
             </span>
-            <div className="font-semibold pl-0.5 text-xl">
+            <div className="pl-0.5 text-xl font-semibold">
               {isPerpMarket ? 'PERP' : groupConfig.quoteSymbol}
             </div>
           </div>
-          <span className="border border-th-primary ml-2 px-1 py-0.5 rounded text-xs text-th-primary">
+          <span className="ml-2 rounded border border-th-primary px-1 py-0.5 text-xs text-th-primary">
             {initLeverage}x
           </span>
           <Link href="/select">
-            <div className="flex items-center justify-center h-10 ml-2 w-10">
+            <div className="ml-2 flex h-10 w-10 items-center justify-center">
               <SwitchHorizontalIcon className="h-5 w-5" />
             </div>
           </Link>
@@ -85,7 +85,7 @@ const MobileTradePage = () => {
           {({ open }) => (
             <>
               <Disclosure.Button>
-                <div className="absolute right-0 top-1 bg-th-bkg-4 flex items-center justify-center rounded-full w-8 h-8 text-th-fgd-1 focus:outline-none hover:text-th-primary">
+                <div className="absolute right-0 top-1 flex h-8 w-8 items-center justify-center rounded-full bg-th-bkg-4 text-th-fgd-1 hover:text-th-primary focus:outline-none">
                   {open ? (
                     <XIcon className="h-4 w-4" />
                   ) : (
@@ -94,7 +94,7 @@ const MobileTradePage = () => {
                 </div>
               </Disclosure.Button>
               <Disclosure.Panel>
-                <div className="bg-th-bkg-2 h-96 mb-2 p-2 rounded-lg">
+                <div className="mb-2 h-96 rounded-lg bg-th-bkg-2 p-2">
                   <TVChartContainer />
                 </div>
               </Disclosure.Panel>
@@ -109,7 +109,7 @@ const MobileTradePage = () => {
       />
       <Swipeable index={viewIndex} onChangeIndex={handleChangeViewIndex}>
         <div>
-          <div className="bg-th-bkg-2 grid grid-cols-12 grid-rows-1 gap-4 mb-2 px-2 py-3 rounded-lg">
+          <div className="mb-2 grid grid-cols-12 grid-rows-1 gap-4 rounded-lg bg-th-bkg-2 px-2 py-3">
             <div className="col-span-7 pt-2">
               <AdvancedTradeForm />
             </div>
@@ -119,8 +119,8 @@ const MobileTradePage = () => {
           </div>
           <RecentMarketTrades />
         </div>
-        <div className="bg-th-bkg-2 px-2 py-3 rounded-lg">
-          <div className="pb-3.5 text-th-fgd-1 text-base">
+        <div className="rounded-lg bg-th-bkg-2 px-2 py-3">
+          <div className="pb-3.5 text-base text-th-fgd-1">
             {t('market-details')}
           </div>
           <MarketDetails />
@@ -129,10 +129,10 @@ const MobileTradePage = () => {
           <FloatingElement className="py-0" showConnect>
             <div
               className={`${
-                !connected ? 'filter blur-sm' : ''
-              } bg-th-bkg-2 py-3 rounded-lg`}
+                !connected ? 'blur-sm filter' : ''
+              } rounded-lg bg-th-bkg-2 py-3`}
             >
-              <div className="pb-3.5 text-th-fgd-1 text-base">
+              <div className="pb-3.5 text-base text-th-fgd-1">
                 {`${marketConfig.name} ${t('position')}`}
               </div>
               <MarketPosition />
@@ -142,10 +142,10 @@ const MobileTradePage = () => {
           <FloatingElement className="py-0" showConnect>
             <div
               className={`${
-                !connected ? 'filter blur-sm' : ''
-              } bg-th-bkg-2 py-3 rounded-lg`}
+                !connected ? 'blur-sm filter' : ''
+              } rounded-lg bg-th-bkg-2 py-3`}
             >
-              <div className="pb-3.5 text-th-fgd-1 text-base">
+              <div className="pb-3.5 text-base text-th-fgd-1">
                 {t('balances')}
               </div>
               <MarketBalances />
@@ -159,10 +159,10 @@ const MobileTradePage = () => {
           >
             <div
               className={`${
-                !connected ? 'filter blur-sm' : ''
-              } bg-th-bkg-2 py-3 rounded-lg`}
+                !connected ? 'blur-sm filter' : ''
+              } rounded-lg bg-th-bkg-2 py-3`}
             >
-              <div className="pb-3.5 text-th-fgd-1 text-base">
+              <div className="pb-3.5 text-base text-th-fgd-1">
                 {t('open-orders')}
               </div>
               <OpenOrdersTable />

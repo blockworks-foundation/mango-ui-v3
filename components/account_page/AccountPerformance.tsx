@@ -104,11 +104,11 @@ const AccountPerformance = () => {
         <h2>{t('account-performance')}</h2>
         <div className="flex items-center">
           <Button
-            className={`float-right text-xs h-8 pt-0 pb-0 pl-3 pr-3`}
+            className={`float-right h-8 pt-0 pb-0 pl-3 pr-3 text-xs`}
             onClick={exportPerformanceDataToCSV}
           >
             <div className={`flex items-center whitespace-nowrap`}>
-              <SaveIcon className={`h-4 w-4 mr-1.5`} />
+              <SaveIcon className={`mr-1.5 h-4 w-4`} />
               {t('export-data')}
             </div>
           </Button>
@@ -120,9 +120,9 @@ const AccountPerformance = () => {
             {!isEmpty(hourlyPerformanceStats) && !loading ? (
               <>
                 {chartData.length > 0 ? (
-                  <div className="flex flex-col sm:flex-row space-x-0 sm:space-x-4 w-full">
+                  <div className="flex w-full flex-col space-x-0 sm:flex-row sm:space-x-4">
                     <div
-                      className="border border-th-bkg-4 relative mb-6 p-4 rounded-md w-full sm:w-1/2"
+                      className="relative mb-6 w-full rounded-md border border-th-bkg-4 p-4 sm:w-1/2"
                       style={{ height: '330px' }}
                     >
                       <Chart
@@ -138,7 +138,7 @@ const AccountPerformance = () => {
                       />
                     </div>
                     <div
-                      className="border border-th-bkg-4 relative mb-6 p-4 rounded-md w-full sm:w-1/2"
+                      className="relative mb-6 w-full rounded-md border border-th-bkg-4 p-4 sm:w-1/2"
                       style={{ height: '330px' }}
                     >
                       <Chart
@@ -181,7 +181,7 @@ const AccountPerformance = () => {
                         </tbody>
                       </Table>
                     ) : (
-                      <div className="flex justify-center w-full bg-th-bkg-3 py-4 text-th-fgd-3">
+                      <div className="flex w-full justify-center bg-th-bkg-3 py-4 text-th-fgd-3">
                         {t('no-performance-history')}
                       </div>
                     )}
@@ -197,10 +197,10 @@ const AccountPerformance = () => {
                 </div>
               </>
             ) : loading ? (
-              <div className="pt-8 space-y-2">
-                <div className="animate-pulse bg-th-bkg-3 h-12 rounded-md w-full" />
-                <div className="animate-pulse bg-th-bkg-3 h-12 rounded-md w-full" />
-                <div className="animate-pulse bg-th-bkg-3 h-12 rounded-md w-full" />
+              <div className="space-y-2 pt-8">
+                <div className="h-12 w-full animate-pulse rounded-md bg-th-bkg-3" />
+                <div className="h-12 w-full animate-pulse rounded-md bg-th-bkg-3" />
+                <div className="h-12 w-full animate-pulse rounded-md bg-th-bkg-3" />
               </div>
             ) : null}
           </>

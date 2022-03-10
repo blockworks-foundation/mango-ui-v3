@@ -35,11 +35,11 @@ const MarketSelect = () => {
 
   return (
     <div className="hidden md:flex">
-      <div className="bg-th-bkg-3 flex h-10 w-full">
-        <div className="bg-th-bkg-4 flex items-center pl-4 lg:pl-9 pr-1">
+      <div className="flex h-10 w-full bg-th-bkg-3">
+        <div className="flex items-center bg-th-bkg-4 pl-4 pr-1 lg:pl-9">
           {isMobile ? (
             <MenuIcon
-              className="cursor-pointer h-5 text-th-fgd-1 w-5 hover:text-th-primary"
+              className="h-5 w-5 cursor-pointer text-th-fgd-1 hover:text-th-primary"
               onClick={() => setShowMarketsModal(true)}
             />
           ) : (
@@ -59,7 +59,7 @@ const MarketSelect = () => {
           }}
           className="border-l-[20px] border-th-bkg-4"
         />
-        <div className="flex items-center justify-between w-full">
+        <div className="flex w-full items-center justify-between">
           <div className="flex items-center">
             {sortedMarkets
               .filter((m) => !hiddenMarkets.includes(m.baseAsset))
@@ -86,10 +86,10 @@ const MarketSelect = () => {
 
 const ShowMarketsButton = ({ onClick, t }) => (
   <LinkButton
-    className="font-normal flex items-center text-th-fgd-2 text-xs whitespace-nowrap"
+    className="flex items-center whitespace-nowrap text-xs font-normal text-th-fgd-2"
     onClick={onClick}
   >
-    <PlusCircleIcon className="h-4 mr-1 w-4" />
+    <PlusCircleIcon className="mr-1 h-4 w-4" />
     {t('markets').toUpperCase()}
   </LinkButton>
 )

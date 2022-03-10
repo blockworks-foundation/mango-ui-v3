@@ -157,7 +157,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
         <ElementTitle noMarginBottom>{t('deposit-funds')}</ElementTitle>
       </Modal.Header>
       {!mangoAccount ? (
-        <div className="mb-4 mt-2 text-center text-th-fgd-3 text-xs">
+        <div className="mb-4 mt-2 text-center text-xs text-th-fgd-3">
           {t('first-deposit-desc')}
         </div>
       ) : null}
@@ -199,7 +199,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
       />
       {invalidAmountMessage ? (
         <div className="flex items-center pt-1.5 text-th-red">
-          <ExclamationCircleIcon className="h-4 w-4 mr-1.5" />
+          <ExclamationCircleIcon className="mr-1.5 h-4 w-4" />
           {invalidAmountMessage}
         </div>
       ) : null}
@@ -213,7 +213,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
       </div>
       {selectedAccount?.config.symbol === 'SOL' &&
       parseFloat(inputAmount) > selectedAccount?.uiBalance - 0.01 ? (
-        <div className="text-xs text-center text-th-red -mb-4 mt-1">
+        <div className="-mb-4 mt-1 text-center text-xs text-th-red">
           {t('you-must-leave-enough-sol')}
         </div>
       ) : null}
@@ -222,7 +222,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
           <InlineNotification desc={repayMessage} type="info" />
         </div>
       ) : null}
-      <div className={`pt-6 flex justify-center`}>
+      <div className={`flex justify-center pt-6`}>
         <Button
           onClick={handleDeposit}
           className="w-full"

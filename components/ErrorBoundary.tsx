@@ -40,13 +40,13 @@ class ErrorBoundary extends React.Component<
     if (this.state.hasError) {
       // You can render any custom fallback UI
       return (
-        <div className="text-th-fgd-2 text-center pt-1">
+        <div className="pt-1 text-center text-th-fgd-2">
           <div>Something went wrong.</div>
           <div className="text-th-red">{this.state.error.message}</div>
           <button className="mt-2" onClick={() => location.reload()}>
             Refresh and try again
           </button>
-          <div className="mt-4 px-8 mx-8">{this.state.error.stack}</div>
+          <div className="mx-8 mt-4 px-8">{this.state.error.stack}</div>
         </div>
       )
     }

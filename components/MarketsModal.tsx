@@ -37,10 +37,10 @@ const MarketsModal = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="flex items-end justify-between pb-3 pt-2">
-        <div className="font-bold text-lg text-th-fgd-1">{t('markets')}</div>
+        <div className="text-lg font-bold text-th-fgd-1">{t('markets')}</div>
         {hiddenMarkets.length === 0 ? (
           <LinkButton
-            className="font-normal hidden md:block mb-0.5 text-th-fgd-3 text-xs disabled:cursor-not-allowed disabled:no-underline disabled:text-th-fgd-4"
+            className="mb-0.5 hidden text-xs font-normal text-th-fgd-3 disabled:cursor-not-allowed disabled:text-th-fgd-4 disabled:no-underline md:block"
             // disabled={hiddenMarkets.length === 0}
             onClick={() =>
               setHiddenMarkets(markets.map((mkt) => mkt.baseAsset))
@@ -50,7 +50,7 @@ const MarketsModal = ({
           </LinkButton>
         ) : (
           <LinkButton
-            className="font-normal hidden md:block mb-0.5 text-th-fgd-3 text-xs disabled:cursor-not-allowed disabled:no-underline disabled:text-th-fgd-4"
+            className="mb-0.5 hidden text-xs font-normal text-th-fgd-3 disabled:cursor-not-allowed disabled:text-th-fgd-4 disabled:no-underline md:block"
             // disabled={hiddenMarkets.length === 0}
             onClick={() => setHiddenMarkets([])}
           >
@@ -60,24 +60,24 @@ const MarketsModal = ({
       </div>
       {markets.map((mkt) => (
         <div key={mkt.baseAsset}>
-          <div className="bg-th-bkg-3 flex items-center justify-between px-2.5 py-2">
+          <div className="flex items-center justify-between bg-th-bkg-3 px-2.5 py-2">
             <div className="flex items-center">
               <img
                 alt=""
                 src={`/assets/icons/${mkt.baseAsset.toLowerCase()}.svg`}
-                className={`h-5 mr-2.5 w-auto`}
+                className={`mr-2.5 h-5 w-auto`}
               />
               <span className="text-th-fgd-2">{mkt.baseAsset}</span>
             </div>
             <div className="hidden md:flex">
               {hiddenMarkets.includes(mkt.baseAsset) ? (
                 <EyeOffIcon
-                  className="cursor-pointer default-transition h-4 text-th-fgd-4 w-4 hover:text-th-fgd-3"
+                  className="default-transition h-4 w-4 cursor-pointer text-th-fgd-4 hover:text-th-fgd-3"
                   onClick={() => handleHideShowMarket(mkt.baseAsset)}
                 />
               ) : (
                 <EyeIcon
-                  className="cursor-pointer default-transition h-4 text-th-primary w-4 hover:text-th-primary-dark"
+                  className="default-transition h-4 w-4 cursor-pointer text-th-primary hover:text-th-primary-dark"
                   onClick={() => handleHideShowMarket(mkt.baseAsset)}
                 />
               )}
@@ -105,12 +105,12 @@ const MarketsModal = ({
               >
                 <Link href={`/?name=${m.name}`} key={m.name}>
                   <a
-                    className="cursor-pointer default-transition flex h-12 items-center justify-between text-th-fgd-2 hover:text-th-primary w-full"
+                    className="default-transition flex h-12 w-full cursor-pointer items-center justify-between text-th-fgd-2 hover:text-th-primary"
                     onClick={onClose}
                   >
                     {m.name}
                     <div className="flex items-center">
-                      <span className="text-right w-20">
+                      <span className="w-20 text-right">
                         {formatUsdValue(
                           mangoGroup
                             .getPrice(m.marketIndex, mangoCache)
@@ -123,7 +123,7 @@ const MarketsModal = ({
                       <span className="text-th-fgd-3 text-right w-20">
                         $233m
                       </span> */}
-                      <ChevronRightIcon className="h-4 ml-1 w-5 text-th-fgd-2" />
+                      <ChevronRightIcon className="ml-1 h-4 w-5 text-th-fgd-2" />
                     </div>
                   </a>
                 </Link>

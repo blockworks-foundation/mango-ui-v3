@@ -18,11 +18,11 @@ export default function WalletSelect() {
       {({ open }) => (
         <>
           <Menu.Button
-            className={`bg-th-primary-dark flex justify-center items-center h-full rounded-none focus:outline-none text-th-bkg-1 hover:brightness-[1.1] cursor-pointer w-10`}
+            className={`flex h-full w-10 cursor-pointer items-center justify-center rounded-none bg-th-primary-dark text-th-bkg-1 hover:brightness-[1.1] focus:outline-none`}
           >
             <ChevronDownIcon
               className={`default-transition h-5 w-5 ${
-                open ? 'transform rotate-180' : 'transform rotate-360'
+                open ? 'rotate-180 transform' : 'rotate-360 transform'
               }`}
             />
           </Menu.Button>
@@ -37,15 +37,15 @@ export default function WalletSelect() {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Menu.Items className="absolute bg-th-bkg-3 px-4 py-2.5 rounded-b-md right-0 outline-none w-44 z-20">
+            <Menu.Items className="absolute right-0 z-20 w-44 rounded-b-md bg-th-bkg-3 px-4 py-2.5 outline-none">
               {WALLET_PROVIDERS.map(({ name, url, icon }) => (
                 <Menu.Item key={name}>
                   <button
-                    className="flex flex-row items-center justify-between py-1.5 rounded-none w-full hover:text-th-primary hover:cursor-pointer font-normal focus:outline-none"
+                    className="flex w-full flex-row items-center justify-between rounded-none py-1.5 font-normal hover:cursor-pointer hover:text-th-primary focus:outline-none"
                     onClick={() => handleSelectProvider(url)}
                   >
                     <div className="flex items-center">
-                      <img src={icon} className="w-4 h-4 mr-2" />
+                      <img src={icon} className="mr-2 h-4 w-4" />
                       {name}
                     </div>
                   </button>
