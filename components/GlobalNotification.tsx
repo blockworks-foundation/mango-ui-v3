@@ -9,13 +9,13 @@ const connection = new Connection('https://solana-api.projectserum.com/')
 
 const getRecentPerformance = async (setShow) => {
   try {
-    const samples = 5
+    const samples = 3
     const response = await connection.getRecentPerformanceSamples(samples)
     const totalSecs = sumBy(response, 'samplePeriodSecs')
     const totalTransactions = sumBy(response, 'numTransactions')
     const tps = totalTransactions / totalSecs
 
-    if (tps < 1500) {
+    if (tps < 1600) {
       setShow(true)
     } else {
       setShow(false)
