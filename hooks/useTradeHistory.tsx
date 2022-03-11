@@ -8,6 +8,7 @@ import {
   tradeHistorySelector,
 } from '../stores/selectors'
 import useMangoStore from '../stores/useMangoStore'
+import { getDecimalCount } from '../utils'
 
 const byTimestamp = (a, b) => {
   return (
@@ -35,12 +36,18 @@ const parsedPerpEvent = (mangoAccountPk: PublicKey, event) => {
   const value = event.quantity * event.price
   const feeRate = maker ? event.makerFee : event.takerFee
   const side = maker ? reverseSide(event.takerSide) : event.takerSide
+  const allMarkets = useMangoStore.getState().selectedMangoGroup.markets
+  const market = allMarkets[event.address]
+  const sizeDecimalCount = getDecimalCount(market.minOrderSize)
+  const roundedSize = (
+    Math.floor(event.quantity / market.minOrderSize) * market.minOrderSize
+  ).toFixed(sizeDecimalCount)
 
   return {
     ...event,
     key: orderId?.toString(),
     liquidity: maker ? 'Maker' : 'Taker',
-    size: event.quantity,
+    size: roundedSize,
     price: event.price,
     value,
     feeCost: (feeRate * value).toFixed(4),
