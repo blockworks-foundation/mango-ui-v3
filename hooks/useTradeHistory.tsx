@@ -38,16 +38,21 @@ const parsedPerpEvent = (mangoAccountPk: PublicKey, event) => {
   const side = maker ? reverseSide(event.takerSide) : event.takerSide
   const allMarkets = useMangoStore.getState().selectedMangoGroup.markets
   const market = allMarkets[event.address]
-  const sizeDecimalCount = getDecimalCount(market.minOrderSize)
-  const roundedSize = (
-    Math.floor(event.quantity / market.minOrderSize) * market.minOrderSize
-  ).toFixed(sizeDecimalCount)
+
+  let size = event.quantity
+  if (market) {
+    const sizeDecimalCount = getDecimalCount(market.minOrderSize)
+    const roundedSize = (
+      Math.floor(event.quantity / market.minOrderSize) * market.minOrderSize
+    ).toFixed(sizeDecimalCount)
+    size = roundedSize
+  }
 
   return {
     ...event,
     key: orderId?.toString(),
     liquidity: maker ? 'Maker' : 'Taker',
-    size: roundedSize,
+    size: size,
     price: event.price,
     value,
     feeCost: (feeRate * value).toFixed(4),
