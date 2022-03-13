@@ -100,6 +100,7 @@
   "default-market": "Mercado predeterminado",
   "default-spot-margin": "Comercia con margen por defecto",
   "delay-displaying-recent": "Puede haber un retraso en la visualización de la última actividad.",
+  "delayed-info": "Data updates hourly",
   "deposit": "Depositar",
   "deposit-before": "Necesita más {{tokenSymbol}} en su billetera para pagar completamente su préstamo",
   "deposit-failed": "El depósito falló",
@@ -337,6 +338,7 @@
   "stop-loss": "Detener pérdida",
   "stop-price": "Precio de parada",
   "successfully-placed": "Comercio colocado con éxito",
+  "summary": "Summary",
   "supported-assets": "Financie la billetera con uno de los activos admitidos.",
   "swap": "Intercambio",
   "take-profit": "Tomar ganancias",
@@ -420,7 +422,5 @@
   "your-account": "Su cuenta",
   "your-assets": "Sus activos",
   "your-borrows": "Sus préstamos",
-  "zero-mngo-rewards": "0 MNGO Rewards",
-  "summary": "Summary",
-  "delayed-info": "Data updates hourly"
+  "zero-mngo-rewards": "0 MNGO Rewards"
 }

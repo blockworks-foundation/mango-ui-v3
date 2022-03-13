@@ -100,6 +100,7 @@
     "default-market": "预设市场",
     "default-spot-margin": "预设开启杠杆交易",
     "delay-displaying-recent": "显示最近状态也许有所延误。",
+    "delayed-info": "资料每小时更新",
     "deposit": "存款",
     "deposit-before": "归还全借贷前您得先多存入{{tokenSymbol}}",
     "deposit-failed": "存款失败",
@@ -337,6 +338,7 @@
     "stop-loss": "市场止损",
     "stop-price": "止损价格",
     "successfully-placed": "已下单了",
+    "summary": "摘要",
     "supported-assets": "请给钱包存入已被支持的币种。",
     "swap": "换币",
     "take-profit": "止盈",
@@ -420,7 +422,5 @@
     "your-account": "您的帐户",
     "your-assets": "您的资产",
     "your-borrows": "您的借入",
-    "zero-mngo-rewards": "0 MNGO奖励",
-  "summary": "摘要",
-  "delayed-info": "资料每小时更新"
+    "zero-mngo-rewards": "0 MNGO奖励"
 }
