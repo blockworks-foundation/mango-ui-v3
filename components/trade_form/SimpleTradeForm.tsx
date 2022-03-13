@@ -35,7 +35,6 @@ export default function SimpleTradeForm({ initLeverage }) {
   const walletTokens = useMangoStore((s) => s.wallet.tokens)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
-  const mangoClient = useMangoStore((s) => s.connection.client)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const marketIndex = getMarketIndexBySymbol(
     groupConfig,
@@ -272,6 +271,7 @@ export default function SimpleTradeForm({ initLeverage }) {
       return
     }
 
+    const mangoClient = useMangoStore.getState().connection.client
     const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
     const askInfo =

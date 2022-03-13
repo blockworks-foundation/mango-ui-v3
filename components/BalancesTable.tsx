@@ -45,7 +45,6 @@ const BalancesTable = ({
   const actions = useMangoStore((s) => s.actions)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoGroupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
-  const mangoClient = useMangoStore((s) => s.connection.client)
   const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const setMangoStore = useMangoStore((s) => s.set)
@@ -107,6 +106,7 @@ const BalancesTable = ({
 
   async function handleSettleAll() {
     const markets = useMangoStore.getState().selectedMangoGroup.markets
+    const mangoClient = useMangoStore.getState().connection.client
 
     try {
       setSubmitting(true)

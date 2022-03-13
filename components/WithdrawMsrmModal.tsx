@@ -11,7 +11,6 @@ const WithdrawMsrmModal = ({ onClose, isOpen }) => {
   const { t } = useTranslation('common')
   const [submitting, setSubmitting] = useState(false)
   const actions = useMangoStore((s) => s.actions)
-  const mangoClient = useMangoStore((s) => s.connection.client)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const wallet = useMangoStore((s) => s.wallet.current)
@@ -20,6 +19,7 @@ const WithdrawMsrmModal = ({ onClose, isOpen }) => {
 
   const handleMsrmWithdraw = async () => {
     setSubmitting(true)
+    const mangoClient = useMangoStore.getState().connection.client
     const ownerMsrmAccount = walletTokens.find((t) =>
       t.account.mint.equals(msrmMints[cluster])
     )

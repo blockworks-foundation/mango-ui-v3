@@ -24,13 +24,13 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
   const { t } = useTranslation('common')
   const [submitting, setSubmitting] = useState(false)
   const actions = useMangoStore((s) => s.actions)
-  const mangoClient = useMangoStore((s) => s.connection.client)
   const config = useMangoStore.getState().selectedMarket.config
 
   async function handleMarketClose() {
     const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
     const marketConfig = useMangoStore.getState().selectedMarket.config
+    const mangoClient = useMangoStore.getState().connection.client
     const askInfo =
       useMangoStore.getState().accountInfos[marketConfig.asksKey.toString()]
     const bidInfo =

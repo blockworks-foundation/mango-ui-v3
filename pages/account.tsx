@@ -80,7 +80,6 @@ export default function Account() {
 
   const connected = useMangoStore(walletConnectedSelector)
   const mangoAccount = useMangoStore(mangoAccountSelector)
-  const mangoClient = useMangoStore((s) => s.connection.client)
   const mangoGroup = useMangoStore(mangoGroupSelector)
   const wallet = useMangoStore((s) => s.wallet.current)
   const isLoading = useMangoStore((s) => s.selectedMangoAccount.initialLoad)
@@ -128,6 +127,7 @@ export default function Account() {
     async function loadUnownedMangoAccount() {
       try {
         const unownedMangoAccountPubkey = new PublicKey(pubkey)
+        const mangoClient = useMangoStore.getState().connection.client
         if (mangoGroup) {
           const unOwnedMangoAccount = await mangoClient.getMangoAccount(
             unownedMangoAccountPubkey,

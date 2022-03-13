@@ -3,6 +3,7 @@ import produce from 'immer'
 import { Market } from '@project-serum/serum'
 import {
   IDS,
+  BlockhashTimes,
   Config,
   MangoClient,
   MangoGroup,
@@ -142,6 +143,7 @@ export interface MangoStore extends State {
     endpoint: string
     client: MangoClient
     slot: number
+    blockhashTimes: BlockhashTimes[]
   }
   selectedMarket: {
     config: MarketConfig
@@ -254,6 +256,7 @@ const useMangoStore = create<MangoStore>((set, get) => {
       }),
       endpoint: ENDPOINT.url,
       slot: 0,
+      blockhashTimes: [],
     },
     selectedMangoGroup: {
       config: DEFAULT_MANGO_GROUP_CONFIG,
