@@ -8,6 +8,19 @@ import {
   getMarketIndexBySymbol,
 } from '@blockworks-foundation/mango-client'
 
+const getMarketLeverage = (mangoGroup, mangoGroupConfig, market) => {
+  if (!mangoGroup) return 1
+  const marketIndex = getMarketIndexBySymbol(
+    mangoGroupConfig,
+    market.baseSymbol
+  )
+  const ws = getWeights(mangoGroup, marketIndex, 'Init')
+  const w = market.name.includes('PERP')
+    ? ws.perpAssetWeight
+    : ws.spotAssetWeight
+  return Math.round((100 * -1) / (w.toNumber() - 1)) / 100
+}
+
 interface MarketNavItemProps {
   market: any
   onClick?: () => void
@@ -35,19 +48,6 @@ const MarketNavItem: FunctionComponent<MarketNavItemProps> = ({
     }
   }
 
-  const getMarketLeverage = (market) => {
-    if (!mangoGroup) return 1
-    const marketIndex = getMarketIndexBySymbol(
-      mangoGroupConfig,
-      market.baseSymbol
-    )
-    const ws = getWeights(mangoGroup, marketIndex, 'Init')
-    const w = market.name.includes('PERP')
-      ? ws.perpAssetWeight
-      : ws.spotAssetWeight
-    return Math.round((100 * -1) / (w.toNumber() - 1)) / 100
-  }
-
   return (
     <div className="text-th-fgd-3">
       <div className="flex items-center">
@@ -67,7 +67,7 @@ const MarketNavItem: FunctionComponent<MarketNavItemProps> = ({
           >
             <span className="ml-2">{market.name}</span>
             <span className="ml-1.5 text-xs text-th-fgd-4">
-              {getMarketLeverage(market)}x
+              {getMarketLeverage(mangoGroup, mangoGroupConfig, market)}x
             </span>
           </div>
           <div
