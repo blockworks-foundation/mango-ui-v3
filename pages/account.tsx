@@ -207,6 +207,7 @@ export default function Account() {
 
   const handleRedeemMngo = async () => {
     const wallet = useMangoStore.getState().wallet.current
+    const mangoClient = useMangoStore.getState().connection.client
     const mngoNodeBank =
       mangoGroup.rootBankAccounts[MNGO_INDEX].nodeBankAccounts[0]
 
