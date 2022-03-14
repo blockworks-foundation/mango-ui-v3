@@ -76,14 +76,17 @@ const TradeHistoryFilterModal: FunctionComponent<
   }
 
   useEffect(() => {
-    if (sizeFrom && sizeTo && sizeFrom < sizeTo) {
+    if (sizeFrom && sizeTo) {
+      // filter should still work if users get from/to backwards
+      const from = sizeFrom < sizeTo ? sizeFrom : sizeTo
+      const to = sizeTo > sizeFrom ? sizeTo : sizeFrom
       setNewFilters((prevSelected) => {
         return {
           ...prevSelected,
           size: {
             condition: (size) =>
-              parseFloat(size) >= sizeFrom && parseFloat(size) <= sizeTo,
-            values: { from: sizeFrom, to: sizeTo },
+              parseFloat(size) >= from && parseFloat(size) <= to,
+            values: { from: from, to: to },
           },
         }
       })
@@ -91,13 +94,16 @@ const TradeHistoryFilterModal: FunctionComponent<
   }, [sizeFrom, sizeTo])
 
   useEffect(() => {
-    if (valueFrom && valueTo && valueFrom < valueTo) {
+    if (valueFrom && valueTo) {
+      // filter should still work if users get from/to backwards
+      const from = valueFrom < valueTo ? valueFrom : valueTo
+      const to = valueTo > valueFrom ? valueTo : valueFrom
       setNewFilters((prevSelected) => {
         return {
           ...prevSelected,
           value: {
-            condition: (value) => value >= valueFrom && value <= valueTo,
-            values: { from: valueFrom, to: valueTo },
+            condition: (value) => value >= from && value <= to,
+            values: { from: from, to: to },
           },
         }
       })
@@ -108,22 +114,27 @@ const TradeHistoryFilterModal: FunctionComponent<
     if (dateFrom && dateTo) {
       const dateFromTimestamp = dayjs(dateFrom).unix() * 1000
       const dateToTimestamp = dayjs(dateTo).unix() * 1000
-      if (dateFromTimestamp <= dateToTimestamp) {
-        setNewFilters((prevSelected) => {
-          return {
-            ...prevSelected,
-            loadTimestamp: {
-              condition: (date) => {
-                const timestamp = dayjs(date).unix() * 1000
-                return (
-                  timestamp >= dateFromTimestamp && timestamp <= dateToTimestamp
-                )
-              },
-              values: { from: dateFrom, to: dateTo },
+      // filter should still work if users get from/to backwards
+      const from =
+        dateFromTimestamp < dateToTimestamp
+          ? dateFromTimestamp
+          : dateToTimestamp
+      const to =
+        dateToTimestamp > dateFromTimestamp
+          ? dateToTimestamp
+          : dateFromTimestamp
+      setNewFilters((prevSelected) => {
+        return {
+          ...prevSelected,
+          loadTimestamp: {
+            condition: (date) => {
+              const timestamp = dayjs(date).unix() * 1000
+              return timestamp >= from && timestamp <= to
             },
-          }
-        })
-      }
+            values: { from: from, to: to },
+          },
+        }
+      })
     }
   }, [dateFrom, dateTo])
 
