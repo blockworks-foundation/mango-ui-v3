@@ -88,7 +88,7 @@ const AlphaModal = ({
           <div className="mt-4 px-6 text-center text-th-fgd-3">
             {t('v3-unaudited')}
           </div>
-          <div className="mt-4 rounded-md border border-th-fgd-4 p-3">
+          <div className="mt-4 rounded-md border border-th-fgd-4">
             <Checkbox
               checked={acceptRisks}
               onChange={(e) => setAcceptRisks(e.target.checked)}

@@ -79,3 +79,11 @@ export async function withdraw({
     allowBorrow
   )
 }
+
+export const canWithdraw = () => {
+  const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
+  const wallet = useMangoStore.getState().wallet.current
+  if (mangoAccount && wallet?.publicKey) {
+    return mangoAccount.owner.equals(wallet.publicKey) ? true : false
+  } else return false
+}

@@ -17,7 +17,17 @@ import usePagination from '../hooks/usePagination'
 import { useEffect, useState } from 'react'
 import { useFilteredData } from '../hooks/useFilteredData'
 import TradeHistoryFilterModal from './TradeHistoryFilterModal'
-import { FilterIcon } from '@heroicons/react/outline'
+import {
+  FilterIcon,
+  InformationCircleIcon,
+  SaveIcon,
+} from '@heroicons/react/outline'
+import { fetchHourlyPerformanceStats } from './account_page/AccountOverview'
+import useMangoStore from '../stores/useMangoStore'
+import Loading from './Loading'
+import { canWithdraw } from '../utils/mango'
+import { exportDataToCSV } from '../utils/export'
+import Tooltip from './Tooltip'
 
 const renderTradeDateTime = (timestamp: BN | string) => {
   let date
@@ -39,12 +49,14 @@ const renderTradeDateTime = (timestamp: BN | string) => {
 
 const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
   const { t } = useTranslation('common')
+  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const { asPath } = useRouter()
   const tradeHistory = useTradeHistory({ excludePerpLiquidations: true })
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.md : false
   const [filters, setFilters] = useState({})
   const [showFiltersModal, setShowFiltersModal] = useState(false)
+  const [loadExportData, setLoadExportData] = useState(false)
 
   const filteredData = useFilteredData(tradeHistory, filters)
 
@@ -89,19 +101,79 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
     }
   }
 
+  const exportPerformanceDataToCSV = async () => {
+    setLoadExportData(true)
+    const exportData = await fetchHourlyPerformanceStats(
+      mangoAccount.publicKey.toString(),
+      10000
+    )
+    const dataToExport = exportData.map((row) => {
+      const timestamp = new Date(row.time)
+      return {
+        timestamp: `${timestamp.toLocaleDateString()} ${timestamp.toLocaleTimeString()}`,
+        account_equity: row.account_equity,
+        pnl: row.pnl,
+      }
+    })
+
+    const title = `${
+      mangoAccount.name || mangoAccount.publicKey
+    }-Performance-${new Date().toLocaleDateString()}`
+    const headers = ['Timestamp', 'Account Equity', 'PNL']
+
+    exportDataToCSV(dataToExport, title, headers, t)
+    setLoadExportData(false)
+  }
+
   return (
     <>
-      <div className="flex items-center justify-between pb-2">
-        <h4 className="mb-0 text-th-fgd-1">
-          {data.length} {data.length === 1 ? 'Trade' : 'Trades'}
-        </h4>
-        <Button
-          className="flex h-8 items-center justify-center whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs"
-          onClick={() => setShowFiltersModal(true)}
-        >
-          <FilterIcon className="mr-1.5 h-4 w-4" />
-          Filter
-        </Button>
+      <div className="flex items-center justify-between pb-3">
+        <div className="flex items-center">
+          <h4 className="mb-0 text-th-fgd-1">
+            {data.length} {data.length === 1 ? 'Trade' : 'Trades'}
+          </h4>
+          <Tooltip
+            content={
+              <div className="mr-4 text-xs text-th-fgd-3">
+                {t('delay-displaying-recent')} {t('use-explorer-one')}
+                <a
+                  href={`https://explorer.solana.com/address/${mangoAccount.publicKey.toString()}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {t('use-explorer-two')}
+                </a>
+                {t('use-explorer-three')}
+              </div>
+            }
+          >
+            <InformationCircleIcon className="ml-1.5 h-4 w-4 cursor-pointer text-th-fgd-3" />
+          </Tooltip>
+        </div>
+        <div className="flex items-center space-x-3">
+          <Button
+            className="flex h-8 items-center justify-center whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs"
+            onClick={() => setShowFiltersModal(true)}
+          >
+            <FilterIcon className="mr-1.5 h-4 w-4" />
+            Filter
+          </Button>
+          {canWithdraw() ? (
+            <Button
+              className={`flex h-8 items-center justify-center whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs`}
+              onClick={exportPerformanceDataToCSV}
+            >
+              {loadExportData ? (
+                <Loading />
+              ) : (
+                <div className={`flex items-center`}>
+                  <SaveIcon className={`mr-1.5 h-4 w-4`} />
+                  Export PnL CSV
+                </div>
+              )}
+            </Button>
+          ) : null}
+        </div>
       </div>
       <div className={`flex flex-col sm:pb-4`}>
         <div className={`overflow-x-auto sm:-mx-6 lg:-mx-8`}>

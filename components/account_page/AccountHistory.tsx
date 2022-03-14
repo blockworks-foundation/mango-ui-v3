@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'next-i18next'
 import { ArrowSmDownIcon, ExternalLinkIcon } from '@heroicons/react/outline'
-import { SaveIcon } from '@heroicons/react/outline'
+// import { SaveIcon } from '@heroicons/react/outline'
 import {
   getMarketByBaseSymbolAndKind,
   PerpMarket,
@@ -13,12 +13,12 @@ import { Table, TrHead, Th, TrBody, Td } from '../TableElements'
 import { LinkButton } from '../Button'
 import { useSortableData } from '../../hooks/useSortableData'
 import { formatUsdValue } from '../../utils'
-import { exportDataToCSV } from '../../utils/export'
-import { notify } from '../../utils/notifications'
-import useTradeHistory from '../../hooks/useTradeHistory'
-import Button from '../Button'
-import Loading from '../Loading'
-import { fetchHourlyPerformanceStats } from './AccountOverview'
+// import { exportDataToCSV } from '../../utils/export'
+// import { notify } from '../../utils/notifications'
+// import useTradeHistory from '../../hooks/useTradeHistory'
+// import Button from '../Button'
+// import Loading from '../Loading'
+// import { fetchHourlyPerformanceStats } from './AccountOverview'
 
 const historyViews = [
   { label: 'Trades', key: 'Trades' },
@@ -31,11 +31,11 @@ export default function AccountHistory() {
   const { t } = useTranslation('common')
   const [view, setView] = useState('Trades')
   const [history, setHistory] = useState(null)
-  const [loadExportData, setLoadExportData] = useState(false)
+  // const [loadExportData, setLoadExportData] = useState(false)
 
-  const wallet = useMangoStore((s) => s.wallet.current)
+  // const wallet = useMangoStore((s) => s.wallet.current)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
-  const tradeHistory = useTradeHistory({ excludePerpLiquidations: true })
+  // const tradeHistory = useTradeHistory({ excludePerpLiquidations: true })
 
   const mangoAccountPk = useMemo(() => {
     console.log('new mango account')
@@ -57,96 +57,96 @@ export default function AccountHistory() {
     }
   }, [mangoAccountPk])
 
-  const exportPerformanceDataToCSV = async () => {
-    setLoadExportData(true)
-    const exportData = await fetchHourlyPerformanceStats(
-      mangoAccount.publicKey.toString(),
-      10000
-    )
-    const dataToExport = exportData.map((row) => {
-      const timestamp = new Date(row.time)
-      return {
-        timestamp: `${timestamp.toLocaleDateString()} ${timestamp.toLocaleTimeString()}`,
-        account_equity: row.account_equity,
-        pnl: row.pnl,
-      }
-    })
+  // const exportPerformanceDataToCSV = async () => {
+  //   setLoadExportData(true)
+  //   const exportData = await fetchHourlyPerformanceStats(
+  //     mangoAccount.publicKey.toString(),
+  //     10000
+  //   )
+  //   const dataToExport = exportData.map((row) => {
+  //     const timestamp = new Date(row.time)
+  //     return {
+  //       timestamp: `${timestamp.toLocaleDateString()} ${timestamp.toLocaleTimeString()}`,
+  //       account_equity: row.account_equity,
+  //       pnl: row.pnl,
+  //     }
+  //   })
 
-    const title = `${
-      mangoAccount.name || mangoAccount.publicKey
-    }-Performance-${new Date().toLocaleDateString()}`
-    const headers = ['Timestamp', 'Account Equity', 'PNL']
+  //   const title = `${
+  //     mangoAccount.name || mangoAccount.publicKey
+  //   }-Performance-${new Date().toLocaleDateString()}`
+  //   const headers = ['Timestamp', 'Account Equity', 'PNL']
 
-    exportDataToCSV(dataToExport, title, headers, t)
-    setLoadExportData(false)
-  }
+  //   exportDataToCSV(dataToExport, title, headers, t)
+  //   setLoadExportData(false)
+  // }
 
-  const exportHistoryToCSV = () => {
-    let dataToExport
-    let headers
+  // const exportHistoryToCSV = () => {
+  //   let dataToExport
+  //   let headers
 
-    if (view == 'Trades') {
-      dataToExport = tradeHistory.map((trade) => {
-        const timestamp = new Date(trade.loadTimestamp)
-        return {
-          asset: trade.marketName,
-          orderType: trade.side.toUpperCase(),
-          quantity: trade.size,
-          price: trade.price,
-          value: trade.value,
-          liquidity: trade.liquidity,
-          fee: trade.feeCost,
-          date: `${timestamp.toLocaleDateString()} ${timestamp.toLocaleTimeString()}`,
-        }
-      })
-      headers = [
-        'Market',
-        'Side',
-        'Size',
-        'Price',
-        'Value',
-        'Liquidity',
-        'Fee',
-        'Approx. Time',
-      ]
-    } else {
-      dataToExport = history
-        .filter((val) => val.activity_type == view)
-        .map((row) => {
-          row = row.activity_details
-          const timestamp = new Date(row.block_datetime)
+  //   if (view == 'Trades') {
+  //     dataToExport = tradeHistory.map((trade) => {
+  //       const timestamp = new Date(trade.loadTimestamp)
+  //       return {
+  //         asset: trade.marketName,
+  //         orderType: trade.side.toUpperCase(),
+  //         quantity: trade.size,
+  //         price: trade.price,
+  //         value: trade.value,
+  //         liquidity: trade.liquidity,
+  //         fee: trade.feeCost,
+  //         date: `${timestamp.toLocaleDateString()} ${timestamp.toLocaleTimeString()}`,
+  //       }
+  //     })
+  //     headers = [
+  //       'Market',
+  //       'Side',
+  //       'Size',
+  //       'Price',
+  //       'Value',
+  //       'Liquidity',
+  //       'Fee',
+  //       'Approx. Time',
+  //     ]
+  //   } else {
+  //     dataToExport = history
+  //       .filter((val) => val.activity_type == view)
+  //       .map((row) => {
+  //         row = row.activity_details
+  //         const timestamp = new Date(row.block_datetime)
 
-          return {
-            date: `${timestamp.toLocaleDateString()} ${timestamp.toLocaleTimeString()}`,
-            asset: row.symbol,
-            quantity: row.quantity,
-            value: row.usd_equivalent,
-          }
-        })
-      headers = ['Timestamp', 'Asset', 'Quantity', 'Value']
-    }
+  //         return {
+  //           date: `${timestamp.toLocaleDateString()} ${timestamp.toLocaleTimeString()}`,
+  //           asset: row.symbol,
+  //           quantity: row.quantity,
+  //           value: row.usd_equivalent,
+  //         }
+  //       })
+  //     headers = ['Timestamp', 'Asset', 'Quantity', 'Value']
+  //   }
 
-    if (dataToExport.length == 0) {
-      notify({
-        title: t('export-data-empty'),
-        description: '',
-        type: 'info',
-      })
-      return
-    }
+  //   if (dataToExport.length == 0) {
+  //     notify({
+  //       title: t('export-data-empty'),
+  //       description: '',
+  //       type: 'info',
+  //     })
+  //     return
+  //   }
 
-    const tab = historyViews.filter((v) => v.key == view)[0].label
-    const title = `${
-      mangoAccount.name || mangoAccount.publicKey
-    }-${tab}-${new Date().toLocaleDateString()}`
+  //   const tab = historyViews.filter((v) => v.key == view)[0].label
+  //   const title = `${
+  //     mangoAccount.name || mangoAccount.publicKey
+  //   }-${tab}-${new Date().toLocaleDateString()}`
 
-    exportDataToCSV(dataToExport, title, headers, t)
-  }
+  //   exportDataToCSV(dataToExport, title, headers, t)
+  // }
 
-  const canWithdraw =
-    mangoAccount && wallet?.publicKey
-      ? mangoAccount.owner.equals(wallet.publicKey)
-      : false
+  // const canWithdraw =
+  //   mangoAccount && wallet?.publicKey
+  //     ? mangoAccount.owner.equals(wallet.publicKey)
+  //     : false
 
   return (
     <>
@@ -169,7 +169,7 @@ export default function AccountHistory() {
           </div>
         ))}
       </div>
-      <div className="flex flex-col pb-6 sm:flex-row sm:items-end sm:justify-between">
+      {/* <div className="flex flex-col pb-6 sm:flex-row sm:items-end sm:justify-between">
         <div className="pb-4 sm:pb-0">
           <h2 className="mb-1">{t(`${view.toLowerCase()}-history`)}</h2>
           <div className="mr-4 text-xs text-th-fgd-3">
@@ -209,7 +209,7 @@ export default function AccountHistory() {
             )}
           </Button>
         ) : null}
-      </div>
+      </div> */}
       <ViewContent view={view} history={history} />
     </>
   )

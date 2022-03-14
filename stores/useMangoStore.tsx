@@ -554,7 +554,6 @@ const useMangoStore = create<MangoStore>((set, get) => {
                 }
               )
             })
-            // actions.fetchMarketInfo()
           })
           .catch((err) => {
             if (mangoGroupRetryAttempt < 2) {
