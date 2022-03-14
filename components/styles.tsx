@@ -12,7 +12,7 @@ export const ElementTitle = ({
   <h2
     className={`flex justify-center ${
       noMarginBottom ? 'mb-0' : 'mb-2.5'
-    } -mt-1 items-center text-base ${className}`}
+    } -mt-1 items-center text-lg ${className}`}
   >
     {children}
   </h2>

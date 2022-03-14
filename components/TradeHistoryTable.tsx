@@ -4,7 +4,7 @@ import useTradeHistory from '../hooks/useTradeHistory'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import SideBadge from './SideBadge'
-import { LinkButton } from './Button'
+import Button, { LinkButton } from './Button'
 import { useSortableData } from '../hooks/useSortableData'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
@@ -14,7 +14,9 @@ import { formatUsdValue } from '../utils'
 import { useTranslation } from 'next-i18next'
 import Pagination from './Pagination'
 import usePagination from '../hooks/usePagination'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { useFilteredData } from '../hooks/useFilteredData'
+import TradeHistoryFilterModal from './TradeHistoryFilterModal'
 
 const renderTradeDateTime = (timestamp: BN | string) => {
   let date
@@ -40,6 +42,10 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
   const tradeHistory = useTradeHistory({ excludePerpLiquidations: true })
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.md : false
+  const [filters, setFilters] = useState({})
+  const [showFiltersModal, setShowFiltersModal] = useState(false)
+
+  const filtered = useFilteredData(tradeHistory, filters)
 
   const {
     paginatedData,
@@ -51,14 +57,14 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
     lastPage,
     setData,
     data,
-  } = usePagination(tradeHistory || [], { perPage: 100 })
+  } = usePagination(filtered, { perPage: 100 })
   const { items, requestSort, sortConfig } = useSortableData(paginatedData)
 
   useEffect(() => {
-    if (tradeHistory?.length && data?.length !== tradeHistory?.length) {
-      setData(tradeHistory)
+    if (data?.length !== filtered?.length) {
+      setData(filtered)
     }
-  }, [tradeHistory])
+  }, [filtered])
 
   const renderMarketName = (trade: any) => {
     if (
@@ -84,6 +90,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
 
   return (
     <div className={`flex flex-col sm:pb-4`}>
+      <Button onClick={() => setShowFiltersModal(true)}>Filter</Button>
       <div className={`overflow-x-auto sm:-mx-6 lg:-mx-8`}>
         <div className={`inline-block min-w-full align-middle sm:px-6 lg:px-8`}>
           {tradeHistory && tradeHistory.length ? (
@@ -404,6 +411,14 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
           )}
         </div>
       </div>
+      {showFiltersModal ? (
+        <TradeHistoryFilterModal
+          filters={filters}
+          setFilters={setFilters}
+          isOpen={showFiltersModal}
+          onClose={() => setShowFiltersModal(false)}
+        />
+      ) : null}
     </div>
   )
 }
