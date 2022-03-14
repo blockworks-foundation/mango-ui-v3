@@ -173,7 +173,7 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
         {!mngoAccrued.isZero() ? (
           <div className="flex items-center text-th-fgd-2">
             <CheckCircleIcon className="mr-1.5 h-4 w-4 text-th-green" />
-            {t('close-account:claim-x-mngo', {
+            {t('close-account:claim-x-mngo-rewards', {
               amount: mangoGroup
                 ? nativeToUi(
                     mngoAccrued.toNumber(),

@@ -87,7 +87,7 @@ const PositionsTable = () => {
               className="h-8 whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs"
               onClick={handleSettleAll}
             >
-              {settling ? <Loading /> : 'Redeem All'}
+              {settling ? <Loading /> : t('redeem-all')}
             </Button>
           </div>
           <div className="grid grid-flow-row grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
