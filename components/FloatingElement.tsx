@@ -1,31 +1,10 @@
 import React, { FunctionComponent } from 'react'
-// import styled from '@emotion/styled'
 import { LinkIcon } from '@heroicons/react/outline'
 import useMangoStore from '../stores/useMangoStore'
 import { MoveIcon } from './icons'
 import EmptyState from './EmptyState'
 import { useTranslation } from 'next-i18next'
-
-// const StyledDragWrapperContent = styled.div`
-//   transition: all 0.25s ease-in;
-//   opacity: 0;
-// `
-
-// const StyledDragBkg = styled.div`
-//   transition: all 0.25s ease-in;
-//   opacity: 0;
-// `
-
-// const StyledDragWrapper = styled.div`
-//   :hover {
-//     ${StyledDragWrapperContent} {
-//       opacity: 1;
-//     }
-//     ${StyledDragBkg} {
-//       opacity: 0.9;
-//     }
-//   }
-// `
+import { useWalletModal } from '@solana/wallet-adapter-react-ui'
 
 interface FloatingElementProps {
   className?: string
@@ -40,7 +19,8 @@ const FloatingElement: FunctionComponent<FloatingElementProps> = ({
   const { t } = useTranslation('common')
   const { uiLocked } = useMangoStore((s) => s.settings)
   const connected = useMangoStore((s) => s.wallet.connected)
-  const wallet = useMangoStore((s) => s.wallet.current)
+  const { setVisible } = useWalletModal()
+
   return (
     <div
       className={`thin-scroll relative overflow-auto overflow-x-hidden rounded-lg bg-th-bkg-2 p-2.5 md:p-4 ${className}`}
@@ -51,7 +31,7 @@ const FloatingElement: FunctionComponent<FloatingElementProps> = ({
             <EmptyState
               buttonText={t('connect')}
               icon={<LinkIcon />}
-              onClickButton={() => (wallet ? wallet.connect() : null)}
+              onClickButton={() => setVisible(true)}
               title={t('connect-wallet')}
             />
           </div>

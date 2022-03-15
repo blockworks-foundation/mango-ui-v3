@@ -18,6 +18,7 @@ import {
   ReferrerIdRecord,
 } from '@blockworks-foundation/mango-client'
 import { useTranslation } from 'next-i18next'
+import { useWalletModal } from '@solana/wallet-adapter-react-ui'
 import EmptyState from '../components/EmptyState'
 import {
   CheckIcon,
@@ -100,6 +101,8 @@ export default function Referral() {
   >([])
   const [hasCopied, setHasCopied] = useState(null)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
+  const { setVisible } = useWalletModal()
+
   // const [hasReferrals] = useState(false) // Placeholder to show/hide users referral stats
   const [loading, setLoading] = useState(false)
   const [inputError, setInputError] = useState('')
@@ -517,6 +520,7 @@ export default function Referral() {
                     icon={<CurrencyDollarIcon />}
                     onClickButton={() => setShowAccountsModal(true)}
                     title={t('no-account-found')}
+                    disabled={!wallet || !mangoGroup}
                   />
                 </div>
               </>
@@ -530,7 +534,7 @@ export default function Referral() {
                 <EmptyState
                   buttonText={t('connect')}
                   icon={<LinkIcon />}
-                  onClickButton={() => wallet.connect()}
+                  onClickButton={() => setVisible(true)}
                   title={t('connect-wallet')}
                 />
               </div>
