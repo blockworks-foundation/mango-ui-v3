@@ -45,7 +45,6 @@ const BalancesTable = ({
   const actions = useMangoStore((s) => s.actions)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoGroupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
-  const mangoClient = useMangoStore((s) => s.connection.client)
   const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const setMangoStore = useMangoStore((s) => s.set)
@@ -107,6 +106,7 @@ const BalancesTable = ({
 
   async function handleSettleAll() {
     const markets = useMangoStore.getState().selectedMangoGroup.markets
+    const mangoClient = useMangoStore.getState().connection.client
 
     try {
       setSubmitting(true)
@@ -206,10 +206,10 @@ const BalancesTable = ({
                   <TrHead>
                     <Th>
                       <LinkButton
-                        className="flex items-center text-left font-normal no-underline"
+                        className="flex items-center text-left no-underline"
                         onClick={() => requestSort('symbol')}
                       >
-                        {t('asset')}
+                        <span className="font-normal">{t('asset')}</span>
                         <ArrowSmDownIcon
                           className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                             sortConfig?.key === 'symbol'
@@ -223,10 +223,10 @@ const BalancesTable = ({
                     </Th>
                     <Th>
                       <LinkButton
-                        className="flex items-center text-left font-normal no-underline"
+                        className="flex items-center text-left no-underline"
                         onClick={() => requestSort('deposits')}
                       >
-                        {t('deposits')}
+                        <span className="font-normal">{t('deposits')}</span>
                         <ArrowSmDownIcon
                           className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                             sortConfig?.key === 'deposits'
@@ -240,10 +240,10 @@ const BalancesTable = ({
                     </Th>
                     <Th>
                       <LinkButton
-                        className="flex items-center text-left font-normal no-underline"
+                        className="flex items-center text-left no-underline"
                         onClick={() => requestSort('borrows')}
                       >
-                        {t('borrows')}
+                        <span className="font-normal">{t('borrows')}</span>
                         <ArrowSmDownIcon
                           className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                             sortConfig?.key === 'borrows'
@@ -257,10 +257,10 @@ const BalancesTable = ({
                     </Th>
                     <Th>
                       <LinkButton
-                        className="flex items-center text-left font-normal no-underline"
+                        className="flex items-center text-left no-underline"
                         onClick={() => requestSort('orders')}
                       >
-                        {t('in-orders')}
+                        <span className="font-normal">{t('in-orders')}</span>
                         <ArrowSmDownIcon
                           className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                             sortConfig?.key === 'orders'
@@ -274,10 +274,10 @@ const BalancesTable = ({
                     </Th>
                     <Th>
                       <LinkButton
-                        className="flex items-center text-left font-normal no-underline"
+                        className="flex items-center text-left no-underline"
                         onClick={() => requestSort('unsettled')}
                       >
-                        {t('unsettled')}
+                        <span className="font-normal">{t('unsettled')}</span>
                         <ArrowSmDownIcon
                           className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                             sortConfig?.key === 'unsettled'
@@ -291,10 +291,10 @@ const BalancesTable = ({
                     </Th>
                     <Th>
                       <LinkButton
-                        className="flex items-center text-left font-normal no-underline"
+                        className="flex items-center text-left no-underline"
                         onClick={() => requestSort('net')}
                       >
-                        {t('net-balance')}
+                        <span className="font-normal">{t('net-balance')}</span>
                         <ArrowSmDownIcon
                           className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                             sortConfig?.key === 'net'
@@ -308,10 +308,10 @@ const BalancesTable = ({
                     </Th>
                     <Th>
                       <LinkButton
-                        className="flex items-center text-left font-normal no-underline"
+                        className="flex items-center text-left no-underline"
                         onClick={() => requestSort('value')}
                       >
-                        {t('value')}
+                        <span className="font-normal">{t('value')}</span>
                         <ArrowSmDownIcon
                           className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                             sortConfig?.key === 'value'
@@ -325,10 +325,10 @@ const BalancesTable = ({
                     </Th>
                     <Th>
                       <LinkButton
-                        className="flex items-center text-left font-normal no-underline"
+                        className="flex items-center text-left no-underline"
                         onClick={() => requestSort('depositRate')}
                       >
-                        {t('deposit-rate')}
+                        <span className="font-normal">{t('deposit-rate')}</span>
                         <ArrowSmDownIcon
                           className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                             sortConfig?.key === 'depositRate'
@@ -342,10 +342,10 @@ const BalancesTable = ({
                     </Th>
                     <Th>
                       <LinkButton
-                        className="flex items-center text-left font-normal no-underline"
+                        className="flex items-center text-left no-underline"
                         onClick={() => requestSort('borrowRate')}
                       >
-                        {t('borrow-rate')}
+                        <span className="font-normal">{t('borrow-rate')}</span>
                         <ArrowSmDownIcon
                           className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                             sortConfig?.key === 'borrowRate'

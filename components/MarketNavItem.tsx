@@ -32,7 +32,7 @@ const MarketNavItem: FunctionComponent<MarketNavItemProps> = ({
     }
   }
 
-  const getMarketLeverage = (market) => {
+  const getMarketLeverage = (mangoGroup, mangoGroupConfig, market) => {
     if (!mangoGroup) return 1
     const marketIndex = getMarketIndexBySymbol(
       mangoGroupConfig,
@@ -49,7 +49,7 @@ const MarketNavItem: FunctionComponent<MarketNavItemProps> = ({
     <div className="text-th-fgd-3">
       <div className="flex items-center">
         <button
-          className="font-normal flex items-center justify-between mr-2 w-full"
+          className="mr-2 flex w-full items-center justify-between font-normal"
           onClick={() => selectMarket(market)}
         >
           <div
@@ -70,7 +70,7 @@ const MarketNavItem: FunctionComponent<MarketNavItemProps> = ({
               <span className="ml-2">{market.name}</span>
             </div>
             <span className="ml-1.5 text-xs text-th-fgd-4">
-              {getMarketLeverage(market)}x
+              {getMarketLeverage(mangoGroup, mangoGroupConfig, market)}x
             </span>
           </div>
           <div

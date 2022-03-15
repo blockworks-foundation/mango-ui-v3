@@ -28,10 +28,10 @@ const AccountNameModal: FunctionComponent<AccountNameModalProps> = ({
   const [invalidNameMessage, setInvalidNameMessage] = useState('')
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
-  const mangoClient = useMangoStore((s) => s.connection.client)
   const actions = useMangoStore((s) => s.actions)
 
   const submitName = async () => {
+    const mangoClient = useMangoStore.getState().connection.client
     const wallet = useMangoStore.getState().wallet.current
 
     try {

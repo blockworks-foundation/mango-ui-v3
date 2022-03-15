@@ -94,13 +94,13 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                     <TrHead>
                       <Th>
                         <LinkButton
-                          className="flex items-center font-normal no-underline"
-                          onClick={() => requestSort('market')}
+                          className="flex items-center no-underline"
+                          onClick={() => requestSort('marketName')}
                         >
-                          {t('market')}
+                          <span className="font-normal">{t('market')}</span>
                           <ArrowSmDownIcon
                             className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
-                              sortConfig?.key === 'market'
+                              sortConfig?.key === 'marketName'
                                 ? sortConfig.direction === 'ascending'
                                   ? 'rotate-180 transform'
                                   : 'rotate-360 transform'
@@ -111,10 +111,10 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                       </Th>
                       <Th>
                         <LinkButton
-                          className="flex items-center font-normal no-underline"
+                          className="flex items-center no-underline"
                           onClick={() => requestSort('side')}
                         >
-                          {t('side')}
+                          <span className="font-normal">{t('side')}</span>
                           <ArrowSmDownIcon
                             className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                               sortConfig?.key === 'side'
@@ -128,10 +128,10 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                       </Th>
                       <Th>
                         <LinkButton
-                          className="flex items-center font-normal no-underline"
+                          className="flex items-center no-underline"
                           onClick={() => requestSort('size')}
                         >
-                          {t('size')}
+                          <span className="font-normal">{t('size')}</span>
                           <ArrowSmDownIcon
                             className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                               sortConfig?.key === 'size'
@@ -145,10 +145,10 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                       </Th>
                       <Th>
                         <LinkButton
-                          className="flex items-center font-normal no-underline"
+                          className="flex items-center no-underline"
                           onClick={() => requestSort('price')}
                         >
-                          {t('price')}
+                          <span className="font-normal">{t('price')}</span>
                           <ArrowSmDownIcon
                             className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                               sortConfig?.key === 'price'
@@ -162,10 +162,10 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                       </Th>
                       <Th>
                         <LinkButton
-                          className="flex items-center font-normal no-underline"
+                          className="flex items-center no-underline"
                           onClick={() => requestSort('value')}
                         >
-                          {t('value')}
+                          <span className="font-normal">{t('value')}</span>
                           <ArrowSmDownIcon
                             className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                               sortConfig?.key === 'value'
@@ -179,10 +179,10 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                       </Th>
                       <Th>
                         <LinkButton
-                          className="flex items-center font-normal no-underline"
+                          className="flex items-center no-underline"
                           onClick={() => requestSort('liquidity')}
                         >
-                          {t('liquidity')}
+                          <span className="font-normal">{t('liquidity')}</span>
                           <ArrowSmDownIcon
                             className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                               sortConfig?.key === 'liquidity'
@@ -196,10 +196,10 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                       </Th>
                       <Th>
                         <LinkButton
-                          className="flex items-center font-normal no-underline"
+                          className="flex items-center no-underline"
                           onClick={() => requestSort('feeCost')}
                         >
-                          {t('fee')}
+                          <span className="font-normal">{t('fee')}</span>
                           <ArrowSmDownIcon
                             className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                               sortConfig?.key === 'feeCost'
@@ -213,10 +213,12 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                       </Th>
                       <Th>
                         <LinkButton
-                          className="flex items-center font-normal no-underline"
+                          className="flex items-center no-underline"
                           onClick={() => requestSort('loadTimestamp')}
                         >
-                          {t('approximate-time')}
+                          <span className="font-normal">
+                            {t('approximate-time')}
+                          </span>
                           <ArrowSmDownIcon
                             className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                               sortConfig?.key === 'loadTimestamp'
@@ -228,11 +230,10 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                           />
                         </LinkButton>
                       </Th>
-                      <Th> </Th>
                     </TrHead>
                   </thead>
                   <tbody>
-                    {paginatedData.map((trade: any) => {
+                    {items.map((trade: any) => {
                       return (
                         <TrBody key={`${trade.seqNum}${trade.marketName}`}>
                           <Td className="!py-2 ">
