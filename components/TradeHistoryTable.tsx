@@ -171,13 +171,15 @@ const TradeHistoryTable = ({
               Reset Filters
             </LinkButton>
           ) : null}
-          <Button
-            className="flex h-8 items-center justify-center whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs"
-            onClick={() => setShowFiltersModal(true)}
-          >
-            <FilterIcon className="mr-1.5 h-4 w-4" />
-            Filter
-          </Button>
+          {tradeHistory.length >= 20 ? (
+            <Button
+              className="flex h-8 items-center justify-center whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs"
+              onClick={() => setShowFiltersModal(true)}
+            >
+              <FilterIcon className="mr-1.5 h-4 w-4" />
+              Filter
+            </Button>
+          ) : null}
           {canWithdraw() && showExportPnl ? (
             <Button
               className={`flex h-8 items-center justify-center whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs`}
@@ -510,6 +512,10 @@ const TradeHistoryTable = ({
                   />
                 ))
               )
+            ) : hasActiveFilter ? (
+              <div className="w-full rounded-md bg-th-bkg-1 py-6 text-center text-th-fgd-3">
+                No trades found...
+              </div>
             ) : (
               <div className="w-full rounded-md bg-th-bkg-1 py-6 text-center text-th-fgd-3">
                 {t('no-history')}
