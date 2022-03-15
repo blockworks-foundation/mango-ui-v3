@@ -136,8 +136,6 @@ const TradeHistoryTable = ({
     return tradeHistory.length !== filteredData.length
   }, [data, filteredData])
 
-  console.log(hasActiveFilter)
-
   return (
     <>
       <div className="flex items-center justify-between pb-3">
