@@ -8,7 +8,7 @@ import ManualRefresh from './ManualRefresh'
 import useOraclePrice from '../hooks/useOraclePrice'
 import DayHighLow from './DayHighLow'
 import {
-  getDecimalCount,
+  getPrecisionDigits,
   patchInternalMarketName,
   roundPerpSize,
   usdFormatter,
@@ -190,10 +190,10 @@ const MarketDetails = () => {
             <div className="text-th-fgd-1 md:text-xs">
               {oraclePrice && selectedMarket
                 ? oraclePrice.toNumber().toLocaleString(undefined, {
-                    minimumFractionDigits: getDecimalCount(
+                    minimumFractionDigits: getPrecisionDigits(
                       selectedMarket.tickSize
                     ),
-                    maximumFractionDigits: getDecimalCount(
+                    maximumFractionDigits: getPrecisionDigits(
                       selectedMarket.tickSize
                     ),
                   })
