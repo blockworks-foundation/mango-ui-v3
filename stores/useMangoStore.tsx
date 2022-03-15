@@ -626,8 +626,6 @@ const useMangoStore = create<MangoStore>((set, get) => {
             })
           )
             .then((serumTradeHistory) => {
-              console.log('serum Trade History', serumTradeHistory)
-
               set((state) => {
                 state.tradeHistory.spot = serumTradeHistory
               })
@@ -653,7 +651,6 @@ const useMangoStore = create<MangoStore>((set, get) => {
             state.selectedMangoAccount.lastUpdatedAt = new Date().toISOString()
             state.selectedMangoAccount.lastSlot = lastSlot
           })
-          console.log('reloaded mango account')
         }
       },
       async reloadOrders() {
