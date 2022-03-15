@@ -1,46 +1,34 @@
-import { Fragment, useCallback, useState } from 'react'
-import useMangoStore from '../stores/useMangoStore'
+import React, {
+  Fragment,
+  MouseEventHandler,
+  useCallback,
+  useState,
+} from 'react'
 import { Menu, Transition } from '@headlessui/react'
 import {
   CurrencyDollarIcon,
   DuplicateIcon,
   LogoutIcon,
 } from '@heroicons/react/outline'
-import { PROVIDER_LOCAL_STORAGE_KEY } from '../hooks/useWallet'
-import useLocalStorageState from '../hooks/useLocalStorageState'
-import { abbreviateAddress, copyToClipboard } from '../utils'
-import WalletSelect from './WalletSelect'
-import { WalletIcon, ProfileIcon } from './icons'
-import AccountsModal from './AccountsModal'
-import { useEffect } from 'react'
+import { abbreviateAddress, copyToClipboard } from 'utils'
+import AccountsModal from 'components/AccountsModal'
+import { useWallet } from '@solana/wallet-adapter-react'
+import useMangoStore from 'stores/useMangoStore'
+import { ProfileIcon, WalletIcon } from './icons'
 import { useTranslation } from 'next-i18next'
-import { DEFAULT_PROVIDER, WALLET_PROVIDERS } from '../utils/wallet-adapters'
+import { useWalletModal } from '@solana/wallet-adapter-react-ui'
 
-const ConnectWalletButton = () => {
+export const ConnectWalletButton: React.FC = () => {
+  const { connected, publicKey, disconnect } = useWallet()
   const { t } = useTranslation('common')
-  const wallet = useMangoStore((s) => s.wallet.current)
-  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const pfp = useMangoStore((s) => s.wallet.pfp)
-  const connected = useMangoStore((s) => s.wallet.connected)
-  const set = useMangoStore((s) => s.set)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
-  const [selectedWallet, setSelectedWallet] = useState(DEFAULT_PROVIDER.url)
-  const [savedProviderUrl] = useLocalStorageState(
-    PROVIDER_LOCAL_STORAGE_KEY,
-    DEFAULT_PROVIDER.url
-  )
+  const { setVisible } = useWalletModal()
 
-  // update in useEffect to prevent SRR error from next.js
-  useEffect(() => {
-    setSelectedWallet(savedProviderUrl)
-  }, [savedProviderUrl])
-
-  const handleWalletConect = () => {
-    wallet.connect()
-    set((state) => {
-      state.selectedMangoAccount.initialLoad = true
-    })
-  }
+  const handleConnect: MouseEventHandler<HTMLButtonElement> =
+    useCallback(() => {
+      setVisible(true)
+    }, [setVisible])
 
   const handleCloseAccounts = useCallback(() => {
     setShowAccountsModal(false)
@@ -48,7 +36,7 @@ const ConnectWalletButton = () => {
 
   return (
     <>
-      {connected && wallet?.publicKey ? (
+      {connected && publicKey ? (
         <Menu>
           {({ open }) => (
             <div className="relative" id="profile-menu-tip">
@@ -83,7 +71,7 @@ const ConnectWalletButton = () => {
                   <Menu.Item>
                     <button
                       className="flex w-full flex-row items-center rounded-none py-0.5 font-normal hover:cursor-pointer hover:text-th-primary focus:outline-none"
-                      onClick={() => copyToClipboard(wallet?.publicKey)}
+                      onClick={() => copyToClipboard(publicKey)}
                     >
                       <DuplicateIcon className="h-4 w-4" />
                       <div className="pl-2 text-left">{t('copy-address')}</div>
@@ -92,13 +80,13 @@ const ConnectWalletButton = () => {
                   <Menu.Item>
                     <button
                       className="flex w-full flex-row items-center rounded-none py-0.5 font-normal hover:cursor-pointer hover:text-th-primary focus:outline-none"
-                      onClick={() => wallet.disconnect()}
+                      onClick={() => disconnect()}
                     >
                       <LogoutIcon className="h-4 w-4" />
                       <div className="pl-2 text-left">
                         <div className="pb-0.5">{t('disconnect')}</div>
                         <div className="text-xs text-th-fgd-4">
-                          {abbreviateAddress(wallet?.publicKey)}
+                          {abbreviateAddress(publicKey)}
                         </div>
                       </div>
                     </button>
@@ -114,8 +102,7 @@ const ConnectWalletButton = () => {
           id="connect-wallet-tip"
         >
           <button
-            onClick={handleWalletConect}
-            disabled={!wallet || !mangoGroup}
+            onClick={handleConnect}
             className="rounded-none bg-th-primary-dark text-th-bkg-1 hover:brightness-[1.1] focus:outline-none disabled:cursor-wait disabled:text-th-bkg-2"
           >
             <div className="default-transition flex h-full flex-row items-center justify-center px-3">
@@ -124,25 +111,17 @@ const ConnectWalletButton = () => {
                 <div className="mb-0.5 whitespace-nowrap font-bold">
                   {t('connect')}
                 </div>
-                <div className="text-xxs font-normal leading-3 tracking-wider text-th-bkg-2">
-                  {WALLET_PROVIDERS.find((p) => p.url === selectedWallet)?.name}
-                </div>
               </div>
             </div>
           </button>
-          <div className="relative">
-            <WalletSelect />
-          </div>
         </div>
       )}
-      {showAccountsModal ? (
+      {showAccountsModal && (
         <AccountsModal
           onClose={handleCloseAccounts}
           isOpen={showAccountsModal}
         />
-      ) : null}
+      )}
     </>
   )
 }
-
-export default ConnectWalletButton
