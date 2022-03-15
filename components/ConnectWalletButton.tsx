@@ -1,9 +1,4 @@
-import React, {
-  Fragment,
-  MouseEventHandler,
-  useCallback,
-  useState,
-} from 'react'
+import React, { Fragment, useCallback, useState } from 'react'
 import { Menu, Transition } from '@headlessui/react'
 import {
   CurrencyDollarIcon,
@@ -25,10 +20,9 @@ export const ConnectWalletButton: React.FC = () => {
   const [showAccountsModal, setShowAccountsModal] = useState(false)
   const { setVisible } = useWalletModal()
 
-  const handleConnect: MouseEventHandler<HTMLButtonElement> =
-    useCallback(() => {
-      setVisible(true)
-    }, [setVisible])
+  const handleConnect = useCallback(() => {
+    setVisible(true)
+  }, [setVisible])
 
   const handleCloseAccounts = useCallback(() => {
     setShowAccountsModal(false)
