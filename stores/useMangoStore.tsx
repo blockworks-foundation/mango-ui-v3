@@ -55,7 +55,7 @@ export const ENDPOINTS: EndpointInfo[] = [
 ]
 
 type ClusterType = 'mainnet' | 'devnet'
-const DEFAULT_MANGO_GROUP_NAME = process.env.NEXT_PUBLIC_GROUP || 'mainnet.1'
+const DEFAULT_MANGO_GROUP_NAME = process.env.NEXT_PUBLIC_GROUP || 'devnet.2'
 export const CLUSTER = DEFAULT_MANGO_GROUP_NAME.split('.')[0] as ClusterType
 const ENDPOINT = ENDPOINTS.find((e) => e.name === CLUSTER)
 
@@ -299,6 +299,7 @@ const useMangoStore = create<MangoStore>((set, get) => {
       triggerPrice: '',
       triggerCondition: 'above',
     },
+    // TODO: Deprecate wallet once useWallet hook is fully implemented
     wallet: INITIAL_STATE.WALLET,
     settings: {
       uiLocked: true,
@@ -385,18 +386,18 @@ const useMangoStore = create<MangoStore>((set, get) => {
         const wallet = get().wallet.current
         const actions = get().actions
 
+        if (!wallet?.publicKey || !mangoGroup) return
+
         const delegateFilter = [
           {
             memcmp: {
               offset: MangoAccountLayout.offsetOf('delegate'),
-              bytes: wallet?.publicKey.toBase58(),
+              bytes: wallet?.publicKey?.toBase58(),
             },
           },
         ]
         const accountSorter = (a, b) =>
           a.publicKey.toBase58() > b.publicKey.toBase58() ? 1 : -1
-
-        if (!wallet?.publicKey || !mangoGroup) return
 
         return Promise.all([
           mangoClient.getMangoAccountsForOwner(
