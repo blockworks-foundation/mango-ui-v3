@@ -281,7 +281,10 @@ export default function AccountInfo() {
                   nativeToUi(
                     mngoAccrued.toNumber(),
                     mangoGroup.tokens[MNGO_INDEX].decimals
-                  )
+                  ).toLocaleString(undefined, {
+                    minimumSignificantDigits: 2,
+                    maximumFractionDigits: 2,
+                  })
                 ) : (
                   0
                 )}

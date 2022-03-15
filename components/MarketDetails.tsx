@@ -8,9 +8,9 @@ import ManualRefresh from './ManualRefresh'
 import useOraclePrice from '../hooks/useOraclePrice'
 import DayHighLow from './DayHighLow'
 import {
-  getPrecisionDigits,
+  getDecimalCount,
   patchInternalMarketName,
-  perpContractPrecision,
+  roundPerpSize,
   usdFormatter,
 } from '../utils'
 import { PerpMarket } from '@blockworks-foundation/mango-client'
@@ -190,7 +190,10 @@ const MarketDetails = () => {
             <div className="text-th-fgd-1 md:text-xs">
               {oraclePrice && selectedMarket
                 ? oraclePrice.toNumber().toLocaleString(undefined, {
-                    maximumFractionDigits: getPrecisionDigits(
+                    minimumFractionDigits: getDecimalCount(
+                      selectedMarket.tickSize
+                    ),
+                    maximumFractionDigits: getDecimalCount(
                       selectedMarket.tickSize
                     ),
                   })
@@ -256,11 +259,10 @@ const MarketDetails = () => {
                 </div>
                 <div className="text-th-fgd-1 md:text-xs">
                   {selectedMarket ? (
-                    `${parseOpenInterest(
-                      selectedMarket as PerpMarket
-                    ).toLocaleString(undefined, {
-                      maximumFractionDigits: perpContractPrecision[baseSymbol],
-                    })} ${baseSymbol}`
+                    `${roundPerpSize(
+                      parseOpenInterest(selectedMarket as PerpMarket),
+                      baseSymbol
+                    )} ${baseSymbol}`
                   ) : (
                     <MarketDataLoader />
                   )}
