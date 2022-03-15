@@ -29,6 +29,7 @@ import {
   ReferrerIdRecordLayout,
   ReferrerIdRecord,
 } from '@blockworks-foundation/mango-client'
+import '../styles/datepicker.css'
 
 const MangoStoreUpdater = () => {
   useHydrateStore()

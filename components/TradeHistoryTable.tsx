@@ -14,12 +14,13 @@ import { formatUsdValue } from '../utils'
 import { useTranslation } from 'next-i18next'
 import Pagination from './Pagination'
 import usePagination from '../hooks/usePagination'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useFilteredData } from '../hooks/useFilteredData'
 import TradeHistoryFilterModal from './TradeHistoryFilterModal'
 import {
   FilterIcon,
   InformationCircleIcon,
+  RefreshIcon,
   SaveIcon,
 } from '@heroicons/react/outline'
 import { fetchHourlyPerformanceStats } from './account_page/AccountOverview'
@@ -47,7 +48,13 @@ const renderTradeDateTime = (timestamp: BN | string) => {
   )
 }
 
-const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
+const TradeHistoryTable = ({
+  numTrades,
+  showExportPnl,
+}: {
+  numTrades?: number
+  showExportPnl?: boolean
+}) => {
   const { t } = useTranslation('common')
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const { asPath } = useRouter()
@@ -125,6 +132,12 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
     setLoadExportData(false)
   }
 
+  const hasActiveFilter = useMemo(() => {
+    return tradeHistory.length !== filteredData.length
+  }, [data, filteredData])
+
+  console.log(hasActiveFilter)
+
   return (
     <>
       <div className="flex items-center justify-between pb-3">
@@ -151,6 +164,15 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
           </Tooltip>
         </div>
         <div className="flex items-center space-x-3">
+          {hasActiveFilter ? (
+            <LinkButton
+              className="flex items-center text-xs"
+              onClick={() => setFilters({})}
+            >
+              <RefreshIcon className="mr-1.5 h-4 w-4" />
+              Reset Filters
+            </LinkButton>
+          ) : null}
           <Button
             className="flex h-8 items-center justify-center whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs"
             onClick={() => setShowFiltersModal(true)}
@@ -158,7 +180,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
             <FilterIcon className="mr-1.5 h-4 w-4" />
             Filter
           </Button>
-          {canWithdraw() ? (
+          {canWithdraw() && showExportPnl ? (
             <Button
               className={`flex h-8 items-center justify-center whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs`}
               onClick={exportPerformanceDataToCSV}

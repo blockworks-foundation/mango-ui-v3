@@ -1,7 +1,11 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'next-i18next'
-import { ArrowSmDownIcon, ExternalLinkIcon } from '@heroicons/react/outline'
-// import { SaveIcon } from '@heroicons/react/outline'
+import {
+  ArrowSmDownIcon,
+  ExternalLinkIcon,
+  InformationCircleIcon,
+  SaveIcon,
+} from '@heroicons/react/outline'
 import {
   getMarketByBaseSymbolAndKind,
   PerpMarket,
@@ -13,12 +17,10 @@ import { Table, TrHead, Th, TrBody, Td } from '../TableElements'
 import { LinkButton } from '../Button'
 import { useSortableData } from '../../hooks/useSortableData'
 import { formatUsdValue } from '../../utils'
-// import { exportDataToCSV } from '../../utils/export'
-// import { notify } from '../../utils/notifications'
-// import useTradeHistory from '../../hooks/useTradeHistory'
-// import Button from '../Button'
-// import Loading from '../Loading'
-// import { fetchHourlyPerformanceStats } from './AccountOverview'
+import Tooltip from '../Tooltip'
+import { exportDataToCSV } from '../../utils/export'
+import { notify } from '../../utils/notifications'
+import Button from '../Button'
 
 const historyViews = [
   { label: 'Trades', key: 'Trades' },
@@ -31,11 +33,7 @@ export default function AccountHistory() {
   const { t } = useTranslation('common')
   const [view, setView] = useState('Trades')
   const [history, setHistory] = useState(null)
-  // const [loadExportData, setLoadExportData] = useState(false)
-
-  // const wallet = useMangoStore((s) => s.wallet.current)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
-  // const tradeHistory = useTradeHistory({ excludePerpLiquidations: true })
 
   const mangoAccountPk = useMemo(() => {
     console.log('new mango account')
@@ -56,97 +54,6 @@ export default function AccountHistory() {
       fetchAccountActivity()
     }
   }, [mangoAccountPk])
-
-  // const exportPerformanceDataToCSV = async () => {
-  //   setLoadExportData(true)
-  //   const exportData = await fetchHourlyPerformanceStats(
-  //     mangoAccount.publicKey.toString(),
-  //     10000
-  //   )
-  //   const dataToExport = exportData.map((row) => {
-  //     const timestamp = new Date(row.time)
-  //     return {
-  //       timestamp: `${timestamp.toLocaleDateString()} ${timestamp.toLocaleTimeString()}`,
-  //       account_equity: row.account_equity,
-  //       pnl: row.pnl,
-  //     }
-  //   })
-
-  //   const title = `${
-  //     mangoAccount.name || mangoAccount.publicKey
-  //   }-Performance-${new Date().toLocaleDateString()}`
-  //   const headers = ['Timestamp', 'Account Equity', 'PNL']
-
-  //   exportDataToCSV(dataToExport, title, headers, t)
-  //   setLoadExportData(false)
-  // }
-
-  // const exportHistoryToCSV = () => {
-  //   let dataToExport
-  //   let headers
-
-  //   if (view == 'Trades') {
-  //     dataToExport = tradeHistory.map((trade) => {
-  //       const timestamp = new Date(trade.loadTimestamp)
-  //       return {
-  //         asset: trade.marketName,
-  //         orderType: trade.side.toUpperCase(),
-  //         quantity: trade.size,
-  //         price: trade.price,
-  //         value: trade.value,
-  //         liquidity: trade.liquidity,
-  //         fee: trade.feeCost,
-  //         date: `${timestamp.toLocaleDateString()} ${timestamp.toLocaleTimeString()}`,
-  //       }
-  //     })
-  //     headers = [
-  //       'Market',
-  //       'Side',
-  //       'Size',
-  //       'Price',
-  //       'Value',
-  //       'Liquidity',
-  //       'Fee',
-  //       'Approx. Time',
-  //     ]
-  //   } else {
-  //     dataToExport = history
-  //       .filter((val) => val.activity_type == view)
-  //       .map((row) => {
-  //         row = row.activity_details
-  //         const timestamp = new Date(row.block_datetime)
-
-  //         return {
-  //           date: `${timestamp.toLocaleDateString()} ${timestamp.toLocaleTimeString()}`,
-  //           asset: row.symbol,
-  //           quantity: row.quantity,
-  //           value: row.usd_equivalent,
-  //         }
-  //       })
-  //     headers = ['Timestamp', 'Asset', 'Quantity', 'Value']
-  //   }
-
-  //   if (dataToExport.length == 0) {
-  //     notify({
-  //       title: t('export-data-empty'),
-  //       description: '',
-  //       type: 'info',
-  //     })
-  //     return
-  //   }
-
-  //   const tab = historyViews.filter((v) => v.key == view)[0].label
-  //   const title = `${
-  //     mangoAccount.name || mangoAccount.publicKey
-  //   }-${tab}-${new Date().toLocaleDateString()}`
-
-  //   exportDataToCSV(dataToExport, title, headers, t)
-  // }
-
-  // const canWithdraw =
-  //   mangoAccount && wallet?.publicKey
-  //     ? mangoAccount.owner.equals(wallet.publicKey)
-  //     : false
 
   return (
     <>
@@ -169,47 +76,6 @@ export default function AccountHistory() {
           </div>
         ))}
       </div>
-      {/* <div className="flex flex-col pb-6 sm:flex-row sm:items-end sm:justify-between">
-        <div className="pb-4 sm:pb-0">
-          <h2 className="mb-1">{t(`${view.toLowerCase()}-history`)}</h2>
-          <div className="mr-4 text-xs text-th-fgd-3">
-            {t('delay-displaying-recent')} {t('use-explorer-one')}
-            <a
-              href={`https://explorer.solana.com/address/${mangoAccountPk}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {t('use-explorer-two')}
-            </a>
-            {t('use-explorer-three')}
-          </div>
-        </div>
-        {view !== 'Trades' ? (
-          <Button
-            className={`flex h-8 items-center justify-center whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs`}
-            onClick={exportHistoryToCSV}
-          >
-            <div className={`flex items-center`}>
-              <SaveIcon className={`mr-1.5 h-4 w-4`} />
-              {t('export-data')}
-            </div>
-          </Button>
-        ) : canWithdraw ? (
-          <Button
-            className={`flex h-8 items-center justify-center whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs`}
-            onClick={exportPerformanceDataToCSV}
-          >
-            {loadExportData ? (
-              <Loading />
-            ) : (
-              <div className={`flex items-center`}>
-                <SaveIcon className={`mr-1.5 h-4 w-4`} />
-                Export PnL CSV
-              </div>
-            )}
-          </Button>
-        ) : null}
-      </div> */}
       <ViewContent view={view} history={history} />
     </>
   )
@@ -218,7 +84,7 @@ export default function AccountHistory() {
 const ViewContent = ({ view, history }) => {
   switch (view) {
     case 'Trades':
-      return <TradeHistoryTable />
+      return <TradeHistoryTable showExportPnl />
     case 'Deposit':
       return <HistoryTable history={history} view={view} />
     case 'Withdraw':
@@ -226,7 +92,7 @@ const ViewContent = ({ view, history }) => {
     case 'Liquidation':
       return <LiquidationHistoryTable history={history} view={view} />
     default:
-      return <TradeHistoryTable />
+      return <TradeHistoryTable showExportPnl />
   }
 }
 
@@ -290,6 +156,7 @@ const parseActivityDetails = (activity_details, activity_type, perpMarket) => {
 
 const LiquidationHistoryTable = ({ history, view }) => {
   const { t } = useTranslation('common')
+  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const markets = useMangoStore((s) => s.selectedMangoGroup.markets)
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const filteredHistory = useMemo(() => {
@@ -299,8 +166,75 @@ const LiquidationHistoryTable = ({ history, view }) => {
   }, [history, view])
   const { items, requestSort, sortConfig } = useSortableData(filteredHistory)
 
+  const exportHistoryToCSV = () => {
+    const dataToExport = history
+      .filter((val) => val.activity_type == view)
+      .map((row) => {
+        row = row.activity_details
+        const timestamp = new Date(row.block_datetime)
+
+        return {
+          date: `${timestamp.toLocaleDateString()} ${timestamp.toLocaleTimeString()}`,
+          asset: row.symbol,
+          quantity: row.quantity,
+          value: row.usd_equivalent,
+        }
+      })
+    const headers = ['Timestamp', 'Asset', 'Quantity', 'Value']
+
+    if (dataToExport.length == 0) {
+      notify({
+        title: t('export-data-empty'),
+        description: '',
+        type: 'info',
+      })
+      return
+    }
+
+    const tab = historyViews.filter((v) => v.key == view)[0].label
+    const title = `${
+      mangoAccount.name || mangoAccount.publicKey
+    }-${tab}-${new Date().toLocaleDateString()}`
+
+    exportDataToCSV(dataToExport, title, headers, t)
+  }
+
   return (
     <>
+      <div className="flex items-center justify-between pb-3">
+        <div className="flex items-center">
+          <h4 className="mb-0 text-th-fgd-1">
+            {filteredHistory.length}{' '}
+            {filteredHistory.length === 1 ? view : `${view}s`}
+          </h4>
+          <Tooltip
+            content={
+              <div className="mr-4 text-xs text-th-fgd-3">
+                {t('delay-displaying-recent')} {t('use-explorer-one')}
+                <a
+                  href={`https://explorer.solana.com/address/${mangoAccount.publicKey.toString()}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {t('use-explorer-two')}
+                </a>
+                {t('use-explorer-three')}
+              </div>
+            }
+          >
+            <InformationCircleIcon className="ml-1.5 h-4 w-4 cursor-pointer text-th-fgd-3" />
+          </Tooltip>
+        </div>
+        <Button
+          className={`flex h-8 items-center justify-center whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs`}
+          onClick={exportHistoryToCSV}
+        >
+          <div className={`flex items-center`}>
+            <SaveIcon className={`mr-1.5 h-4 w-4`} />
+            {t('export-data')}
+          </div>
+        </Button>
+      </div>
       {items.length ? (
         <>
           <Table>
@@ -311,7 +245,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
                     className="flex items-center font-normal no-underline"
                     onClick={() => requestSort('block_datetime')}
                   >
-                    {t('date')}
+                    <span className="font-normal">{t('date')}</span>
                     <ArrowSmDownIcon
                       className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                         sortConfig?.key === 'block_datetime'
@@ -329,7 +263,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
                     className="flex items-center font-normal no-underline"
                     onClick={() => requestSort('asset_amount')}
                   >
-                    Asset Lost
+                    <span className="font-normal">Asset Lost</span>
                     <ArrowSmDownIcon
                       className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                         sortConfig?.key === 'asset_amount'
@@ -346,7 +280,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
                     className="flex items-center font-normal no-underline"
                     onClick={() => requestSort('asset_price')}
                   >
-                    Price
+                    <span className="font-normal">Price</span>
                     <ArrowSmDownIcon
                       className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                         sortConfig?.key === 'asset_price'
@@ -364,7 +298,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
                     className="flex items-center font-normal no-underline"
                     onClick={() => requestSort('liab_amount')}
                   >
-                    Asset Gained
+                    <span className="font-normal">Asset Gained</span>
                     <ArrowSmDownIcon
                       className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                         sortConfig?.key === 'liab_amount'
@@ -381,7 +315,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
                     className="flex items-center font-normal no-underline"
                     onClick={() => requestSort('liab_price')}
                   >
-                    Price
+                    <span className="font-normal">Price</span>
                     <ArrowSmDownIcon
                       className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                         sortConfig?.key === 'liab_price'
@@ -488,6 +422,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
 
 const HistoryTable = ({ history, view }) => {
   const { t } = useTranslation('common')
+  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const filteredHistory = useMemo(() => {
     return history?.length
       ? history
@@ -497,8 +432,81 @@ const HistoryTable = ({ history, view }) => {
   }, [history, view])
   const { items, requestSort, sortConfig } = useSortableData(filteredHistory)
 
+  const exportHistoryToCSV = () => {
+    const dataToExport = history
+      .filter((val) => val.activity_type == view)
+      .map((row) => {
+        row = row.activity_details
+        const timestamp = new Date(row.block_datetime)
+
+        return {
+          date: `${timestamp.toLocaleDateString()} ${timestamp.toLocaleTimeString()}`,
+          asset: row.symbol,
+          quantity: row.quantity,
+          value: row.usd_equivalent,
+        }
+      })
+    const headers = ['Timestamp', 'Asset', 'Quantity', 'Value']
+
+    if (dataToExport.length == 0) {
+      notify({
+        title: t('export-data-empty'),
+        description: '',
+        type: 'info',
+      })
+      return
+    }
+
+    const tab = historyViews.filter((v) => v.key == view)[0].label
+    const title = `${
+      mangoAccount.name || mangoAccount.publicKey
+    }-${tab}-${new Date().toLocaleDateString()}`
+
+    exportDataToCSV(dataToExport, title, headers, t)
+  }
+
   return (
     <>
+      <div className="flex items-center justify-between pb-3">
+        <div className="flex items-center">
+          <h4 className="mb-0 text-th-fgd-1">
+            {filteredHistory.length}{' '}
+            {filteredHistory.length === 1
+              ? view === 'Withdraw'
+                ? 'Withdrawal'
+                : view
+              : view === 'Withdraw'
+              ? 'Withdrawals'
+              : `${view}s`}
+          </h4>
+          <Tooltip
+            content={
+              <div className="mr-4 text-xs text-th-fgd-3">
+                {t('delay-displaying-recent')} {t('use-explorer-one')}
+                <a
+                  href={`https://explorer.solana.com/address/${mangoAccount.publicKey.toString()}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {t('use-explorer-two')}
+                </a>
+                {t('use-explorer-three')}
+              </div>
+            }
+          >
+            <InformationCircleIcon className="ml-1.5 h-4 w-4 cursor-pointer text-th-fgd-3" />
+          </Tooltip>
+        </div>
+        <Button
+          className={`flex h-8 items-center justify-center whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs`}
+          onClick={exportHistoryToCSV}
+        >
+          <div className={`flex items-center`}>
+            <SaveIcon className={`mr-1.5 h-4 w-4`} />
+            {t('export-data')}
+          </div>
+        </Button>
+      </div>
       {items.length ? (
         <>
           <Table>
@@ -509,7 +517,7 @@ const HistoryTable = ({ history, view }) => {
                     className="flex items-center font-normal no-underline"
                     onClick={() => requestSort('block_datetime')}
                   >
-                    {t('date')}
+                    <span className="font-normal">{t('date')}</span>
                     <ArrowSmDownIcon
                       className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                         sortConfig?.key === 'block_datetime'
@@ -526,7 +534,7 @@ const HistoryTable = ({ history, view }) => {
                     className="flex items-center font-normal no-underline"
                     onClick={() => requestSort('symbol')}
                   >
-                    {t('asset')}
+                    <span className="font-normal">{t('asset')}</span>
                     <ArrowSmDownIcon
                       className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                         sortConfig?.key === 'symbol'
@@ -543,7 +551,7 @@ const HistoryTable = ({ history, view }) => {
                     className="flex items-center font-normal no-underline"
                     onClick={() => requestSort('quantity')}
                   >
-                    {t('quantity')}
+                    <span className="font-normal">{t('quantity')}</span>
                     <ArrowSmDownIcon
                       className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                         sortConfig?.key === 'quantity'
@@ -560,7 +568,7 @@ const HistoryTable = ({ history, view }) => {
                     className="flex items-center font-normal no-underline"
                     onClick={() => requestSort('usd_equivalent')}
                   >
-                    {t('value')}
+                    <span className="font-normal">{t('value')}</span>
                     <ArrowSmDownIcon
                       className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                         sortConfig?.key === 'usd_equivalent'

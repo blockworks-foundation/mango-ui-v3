@@ -16,6 +16,9 @@ import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
 import { Popover, Transition } from '@headlessui/react'
 import Checkbox from './Checkbox'
 import dayjs from 'dayjs'
+import DatePicker from './DatePicker'
+
+import 'react-datepicker/dist/react-datepicker.css'
 
 interface TradeHistoryFilterModalProps {
   filters: any
@@ -173,19 +176,11 @@ const TradeHistoryFilterModal: FunctionComponent<
         <div className="flex items-center space-x-2">
           <div className="w-1/2">
             <Label>From</Label>
-            <Input
-              type="date"
-              value={dateFrom || ''}
-              onChange={(e) => setDateFrom(e.target.value)}
-            />
+            <DatePicker date={dateFrom} setDate={setDateFrom} />
           </div>
           <div className="w-1/2">
             <Label>To</Label>
-            <Input
-              type="date"
-              value={dateTo || ''}
-              onChange={(e) => setDateTo(e.target.value)}
-            />
+            <DatePicker date={dateTo} setDate={setDateTo} />
           </div>
         </div>
       </div>
