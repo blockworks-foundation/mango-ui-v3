@@ -413,7 +413,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
         </>
       ) : (
         <div className="w-full rounded-md bg-th-bkg-1 py-6 text-center text-th-fgd-3">
-          History empty
+          {t('history-empty')}
         </div>
       )}
     </>

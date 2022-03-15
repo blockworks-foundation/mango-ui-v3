@@ -140,10 +140,10 @@ const PerformanceChart = ({
       return t('pnl')
     }
     if (!showSpotPnl) {
-      return `${t('perp')} PnL`
+      return `${t('perp')} ${t('pnl')}`
     }
     if (!showPerpPnl) {
-      return `${t('spot')} PnL`
+      return `${t('spot')} ${t('pnl')}`
     }
   }
 
@@ -247,7 +247,7 @@ const PerformanceChart = ({
               activeValue={chartToShow}
               className="pb-2 pt-2 text-sm"
               onChange={(v) => setChartToShow(v)}
-              values={[t('value'), 'PnL']}
+              values={[t('value'), t('pnl')]}
             />
           </div>
 
