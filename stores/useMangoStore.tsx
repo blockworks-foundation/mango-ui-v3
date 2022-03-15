@@ -197,6 +197,10 @@ export interface MangoStore extends State {
     tokens: WalletToken[]
     pfp: ProfilePicture
   }
+  referrals: {
+    total: number
+    history: any[]
+  }
   settings: {
     uiLocked: boolean
   }
@@ -298,6 +302,9 @@ const useMangoStore = create<MangoStore>((set, get) => {
       price: '',
       triggerPrice: '',
       triggerCondition: 'above',
+    },
+    referrals: {
+      history: [],
     },
     wallet: INITIAL_STATE.WALLET,
     settings: {
@@ -722,6 +729,25 @@ const useMangoStore = create<MangoStore>((set, get) => {
         } catch (err) {
           console.log('Error fetching fills:', err)
         }
+      },
+      async loadReferralData() {
+        const set = get().set
+        const mangoAccount = get().selectedMangoAccount.current
+        const pk = mangoAccount.publicKey.toString()
+        const res = await fetch(
+          `https://mango-transaction-log.herokuapp.com/v3/stats/referral-fees-history?referrer-account=${pk}`
+        )
+        const data = await res.json()
+
+        const totalBalanceReq = await fetch(
+          `https://mango-transaction-log.herokuapp.com/v3/stats/referral-fees-total?referrer-account=${pk}`
+        )
+        const totalBalance = await totalBalanceReq.text()
+
+        set((state) => {
+          state.referrals.total = parseFloat(totalBalance)
+          state.referrals.history = data
+        })
       },
       async fetchMangoGroupCache() {
         const set = get().set

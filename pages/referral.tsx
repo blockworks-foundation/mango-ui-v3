@@ -11,7 +11,7 @@ import {
   walletSelector,
 } from '../stores/selectors'
 import Button, { IconButton } from '../components/Button'
-import { abbreviateAddress, copyToClipboard } from '../utils'
+import { abbreviateAddress, copyToClipboard, formatUsdValue } from '../utils'
 import { notify } from '../utils/notifications'
 import {
   getMarketIndexBySymbol,
@@ -47,7 +47,7 @@ export async function getStaticProps({ locale }) {
   }
 }
 
-const referralHistory = []
+// const referralHistory = []
 // [
 //   {
 //     time: '2022-02-09T19:28:59Z',
@@ -93,6 +93,11 @@ export default function Referral() {
   const client = useMangoStore(mangoClientSelector)
   const wallet = useMangoStore(walletSelector)
   const connected = useMangoStore((s) => s.wallet.connected)
+  const actions = useMangoStore((s) => s.actions)
+
+  const referralHistory = useMangoStore((s) => s.referrals.history)
+  const referralTotalAmount = useMangoStore((s) => s.referrals.total)
+  const hasReferrals = history.length > 0
 
   const [customRefLinkInput, setCustomRefLinkInput] = useState('')
   const [existingCustomRefLinks, setexistingCustomRefLinks] = useState<
@@ -129,6 +134,12 @@ export default function Referral() {
       clearTimeout(timer)
     }
   }, [hasCopied])
+
+  useEffect(() => {
+    if (mangoAccount) {
+      actions.loadReferralData()
+    }
+  }, [mangoAccount])
 
   const onChangeRefIdInput = (value) => {
     const id = value.replace(/ /g, '')
@@ -218,29 +229,29 @@ export default function Referral() {
           {connected ? (
             mangoAccount ? (
               <>
-                {/* {hasReferrals ? (
+                {hasReferrals ? (
                   <div className="col-span-12">
                     <h2 className="mb-4">{t('referrals:your-referrals')}</h2>
-                    <div className="border-b border-th-bkg-4 sm:border-b-0 grid grid-cols-2 grid-row-flow sm:gap-6">
-                      <div className="sm:border-b border-t border-th-bkg-4 col-span-2 sm:col-span-1 p-3 sm:p-4">
-                        <div className="pb-0.5 text-th-fgd-3 text-xs sm:text-sm">
+                    <div className="grid-row-flow grid grid-cols-2 border-b border-th-bkg-4 sm:gap-6 sm:border-b-0">
+                      <div className="col-span-2 border-t border-th-bkg-4 p-3 sm:col-span-1 sm:border-b sm:p-4">
+                        <div className="pb-0.5 text-xs text-th-fgd-3 sm:text-sm">
                           {t('referrals:total-earnings')}
                         </div>
-                        <div className="font-bold text-th-fgd-1 text-xl sm:text-2xl">
-                          $150.50
+                        <div className="text-xl font-bold text-th-fgd-1 sm:text-2xl">
+                          {formatUsdValue(referralTotalAmount)}
                         </div>
                       </div>
-                      <div className="sm:border-b border-t border-th-bkg-4 col-span-2 sm:col-span-1 p-3 sm:p-4">
-                        <div className="pb-0.5 text-th-fgd-3 text-xs sm:text-sm">
+                      <div className="col-span-2 border-t border-th-bkg-4 p-3 sm:col-span-1 sm:border-b sm:p-4">
+                        <div className="pb-0.5 text-xs text-th-fgd-3 sm:text-sm">
                           {t('referrals:total-referrals')}
                         </div>
-                        <div className="font-bold text-th-fgd-1 text-xl sm:text-2xl">
-                          15
+                        <div className="text-xl font-bold text-th-fgd-1 sm:text-2xl">
+                          {referralHistory.length}
                         </div>
                       </div>
                     </div>
                   </div>
-                ) : null} */}
+                ) : null}
                 <div className="col-span-12">
                   <div className="flex w-full flex-col space-y-4 xl:flex-row xl:space-x-6 xl:space-y-0">
                     <div className="min-w-[25%] flex-1 rounded-md bg-th-bkg-3 p-6">
