@@ -5,7 +5,6 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import useMangoStore from '../stores/useMangoStore'
 import {
   mangoCacheSelector,
-  mangoClientSelector,
   mangoGroupConfigSelector,
   mangoGroupSelector,
   walletSelector,
@@ -91,7 +90,6 @@ export default function Referral() {
   const mangoCache = useMangoStore(mangoCacheSelector)
   const { mangoAccount } = useMangoAccount()
   const groupConfig = useMangoStore(mangoGroupConfigSelector)
-  const client = useMangoStore(mangoClientSelector)
   const wallet = useMangoStore(walletSelector)
   const connected = useMangoStore((s) => s.wallet.connected)
 
@@ -111,7 +109,10 @@ export default function Referral() {
 
   const fetchCustomReferralLinks = useCallback(async () => {
     setLoading(true)
-    const referrerIds = await client.getReferrerIdsForMangoAccount(mangoAccount)
+    const mangoClient = useMangoStore.getState().connection.client
+    const referrerIds = await mangoClient.getReferrerIdsForMangoAccount(
+      mangoAccount
+    )
 
     setexistingCustomRefLinks(referrerIds)
     setLoading(false)
@@ -165,7 +166,8 @@ export default function Referral() {
 
     if (!inputError) {
       try {
-        const txid = await client.registerReferrerId(
+        const mangoClient = useMangoStore.getState().connection.client
+        const txid = await mangoClient.registerReferrerId(
           mangoGroup,
           mangoAccount,
           wallet,

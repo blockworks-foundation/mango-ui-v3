@@ -44,7 +44,6 @@ const PerpMarket = () => {
   const setMangoStore = useMangoStore((s) => s.set)
   const connected = useMangoStore(walletConnectedSelector)
   const mangoAccount = useMangoStore(mangoAccountSelector)
-  const mangoClient = useMangoStore((s) => s.connection.client)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const marketConfig = useMangoStore(marketConfigSelector)
   const actions = useMangoStore(actionsSelector)
@@ -57,6 +56,7 @@ const PerpMarket = () => {
     async function loadUnownedMangoAccount() {
       try {
         const unownedMangoAccountPubkey = new PublicKey(pubkey)
+        const mangoClient = useMangoStore.getState().connection.client
         if (mangoGroup) {
           const unOwnedMangoAccount = await mangoClient.getMangoAccount(
             unownedMangoAccountPubkey,
@@ -81,7 +81,7 @@ const PerpMarket = () => {
     if (pubkey) {
       loadUnownedMangoAccount()
     }
-  }, [pubkey, mangoClient, mangoGroup])
+  }, [pubkey, mangoGroup])
 
   useEffect(() => {
     const name = decodeURIComponent(router.asPath).split('name=')[1]

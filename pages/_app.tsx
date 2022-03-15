@@ -19,11 +19,7 @@ import { useOpenOrders } from '../hooks/useOpenOrders'
 import usePerpPositions from '../hooks/usePerpPositions'
 import { useEffect } from 'react'
 import { PublicKey } from '@solana/web3.js'
-import {
-  connectionSelector,
-  mangoClientSelector,
-  mangoGroupSelector,
-} from '../stores/selectors'
+import { connectionSelector, mangoGroupSelector } from '../stores/selectors'
 import {
   ReferrerIdRecordLayout,
   ReferrerIdRecord,
@@ -47,7 +43,6 @@ const PerpPositionsStoreUpdater = () => {
 
 const FetchReferrer = () => {
   const setMangoStore = useMangoStore((s) => s.set)
-  const mangoClient = useMangoStore(mangoClientSelector)
   const mangoGroup = useMangoStore(mangoGroupSelector)
   const connection = useMangoStore(connectionSelector)
   const router = useRouter()
@@ -66,6 +61,8 @@ const FetchReferrer = () => {
           } catch (e) {
             console.log('Failed to decode referrer link', e)
           }
+
+          const mangoClient = useMangoStore.getState().connection.client
           const { referrerPda } = await mangoClient.getReferrerPda(
             mangoGroup,
             decodedRefLink

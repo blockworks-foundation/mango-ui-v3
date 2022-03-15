@@ -67,7 +67,6 @@ export default function AdvancedTradeForm({
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const walletTokens = useMangoStore((s) => s.wallet.tokens)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
-  const mangoClient = useMangoStore((s) => s.connection.client)
   const market = useMangoStore((s) => s.selectedMarket.current)
   const isPerpMarket = market instanceof PerpMarket
   const [reduceOnly, setReduceOnly] = useState(false)
@@ -568,6 +567,7 @@ export default function AdvancedTradeForm({
       return
     }
 
+    const mangoClient = useMangoStore.getState().connection.client
     const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
     const askInfo =

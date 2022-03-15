@@ -96,7 +96,6 @@ export default function RiskCalculator() {
   // Get mango account data
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
-  const mangoClient = useMangoStore((s) => s.connection.client)
   const mangoConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const connected = useMangoStore((s) => s.wallet.connected)
@@ -128,6 +127,7 @@ export default function RiskCalculator() {
     async function loadUnownedMangoAccount() {
       try {
         const unownedMangoAccountPubkey = new PublicKey(pubkey)
+        const mangoClient = useMangoStore.getState().connection.client
         if (mangoGroup) {
           const unOwnedMangoAccount = await mangoClient.getMangoAccount(
             unownedMangoAccountPubkey,

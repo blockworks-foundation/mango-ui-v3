@@ -33,11 +33,11 @@ const DelegateModal: FunctionComponent<DelegateModalProps> = ({
   const [invalidKeyMessage, setInvalidKeyMessage] = useState('')
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
-  const mangoClient = useMangoStore((s) => s.connection.client)
   const actions = useMangoStore((s) => s.actions)
 
   const setDelegate = async () => {
     const wallet = useMangoStore.getState().wallet.current
+    const mangoClient = useMangoStore.getState().connection.client
 
     try {
       const key = keyBase58.length

@@ -78,7 +78,6 @@ export default function Account() {
   const { connected } = useWallet()
   const isLoading = useMangoStore((s) => s.selectedMangoAccount.initialLoad)
   const mangoAccount = useMangoStore(mangoAccountSelector)
-  const mangoClient = useMangoStore((s) => s.connection.client)
   const mangoGroup = useMangoStore(mangoGroupSelector)
   const wallet = useMangoStore((s) => s.wallet.current)
   const actions = useMangoStore(actionsSelector)
@@ -125,6 +124,7 @@ export default function Account() {
     async function loadUnownedMangoAccount() {
       try {
         const unownedMangoAccountPubkey = new PublicKey(pubkey)
+        const mangoClient = useMangoStore.getState().connection.client
         if (mangoGroup) {
           const unOwnedMangoAccount = await mangoClient.getMangoAccount(
             unownedMangoAccountPubkey,
@@ -198,6 +198,7 @@ export default function Account() {
 
   const handleRedeemMngo = async () => {
     const wallet = useMangoStore.getState().wallet.current
+    const mangoClient = useMangoStore.getState().connection.client
     const mngoNodeBank =
       mangoGroup.rootBankAccounts[MNGO_INDEX].nodeBankAccounts[0]
 
@@ -281,13 +282,15 @@ export default function Account() {
                     <div className="flex items-center whitespace-nowrap">
                       <GiftIcon className="mr-1.5 h-4 w-4 flex-shrink-0" />
                       {!mngoAccrued.eq(ZERO_BN)
-                        ? `Claim ${nativeToUi(
-                            mngoAccrued.toNumber(),
-                            mangoGroup.tokens[MNGO_INDEX].decimals
-                          ).toLocaleString(undefined, {
-                            minimumSignificantDigits: 1,
-                          })} MNGO`
-                        : '0 MNGO Rewards'}
+                        ? t('claim-x-mngo', {
+                            amount: nativeToUi(
+                              mngoAccrued.toNumber(),
+                              mangoGroup.tokens[MNGO_INDEX].decimals
+                            ).toLocaleString(undefined, {
+                              minimumSignificantDigits: 1,
+                            }),
+                          })
+                        : t('zero-mngo-rewards')}
                     </div>
                   </button>
                   <Menu>
@@ -297,7 +300,7 @@ export default function Account() {
                         id="profile-menu-tip"
                       >
                         <Menu.Button className="flex h-8 w-full items-center justify-center rounded-full bg-th-bkg-button pt-0 pb-0 pl-3 pr-2 text-xs font-bold hover:brightness-[1.1] hover:filter sm:w-auto">
-                          More
+                          {t('more')}
                           <ChevronDownIcon
                             className={`default-transition h-5 w-5 ${
                               open
@@ -349,7 +352,7 @@ export default function Account() {
                               >
                                 <div className="flex items-center">
                                   <SwitchHorizontalIcon className="mr-1.5 h-4 w-4" />
-                                  {t('switch-account')}
+                                  {t('change-account')}
                                 </div>
                               </button>
                             </Menu.Item>

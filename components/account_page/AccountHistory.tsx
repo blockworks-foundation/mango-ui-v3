@@ -204,7 +204,7 @@ export default function AccountHistory() {
             ) : (
               <div className={`flex items-center`}>
                 <SaveIcon className={`mr-1.5 h-4 w-4`} />
-                Export PnL CSV
+                {t('export-pnl-csv')}
               </div>
             )}
           </Button>
@@ -479,7 +479,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
         </>
       ) : (
         <div className="w-full rounded-md bg-th-bkg-1 py-6 text-center text-th-fgd-3">
-          History empty
+          {t('history-empty')}
         </div>
       )}
     </>
