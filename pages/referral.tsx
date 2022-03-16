@@ -46,28 +46,6 @@ export async function getStaticProps({ locale }) {
   }
 }
 
-// const referralHistory = []
-// [
-//   {
-//     time: '2022-02-09T19:28:59Z',
-//     referralLink: 'test2',
-//     referee: '22JS1jkvkLcdxhHo1LpWXUh6sTErkt54j1YaszYWZoCi',
-//     fee: 0.22,
-//   },
-//   {
-//     time: '2022-02-08T19:28:59Z',
-//     referralLink: 'test2',
-//     referee: '22JS1jkvkLcdxhHo1LpWXUh6sTErkt54j1YaszYWZoCi',
-//     fee: 0.21,
-//   },
-//   {
-//     time: '2022-02-07T19:28:59Z',
-//     referralLink: 'test2',
-//     referee: '22JS1jkvkLcdxhHo1LpWXUh6sTErkt54j1YaszYWZoCi',
-//     fee: 0.15,
-//   },
-// ]
-
 const ProgramDetails = () => {
   const { t } = useTranslation('referrals')
   return (
