@@ -9,11 +9,7 @@ import Button, { LinkButton } from '../components/Button'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { ExpandableRow, Table, Td, Th, TrBody, TrHead } from './TableElements'
-import {
-  formatUsdValue,
-  getPrecisionDigits,
-  perpContractPrecision,
-} from '../utils'
+import { formatUsdValue, getPrecisionDigits, roundPerpSize } from '../utils'
 import Loading from './Loading'
 import MarketCloseModal from './MarketCloseModal'
 import PerpSideBadge from './PerpSideBadge'
@@ -161,12 +157,10 @@ const PositionsTable = () => {
                       breakEvenPrice,
                       unrealizedPnl,
                     }) => {
-                      const basePositionUi = Math.abs(
-                        basePosition
-                      ).toLocaleString(undefined, {
-                        maximumFractionDigits:
-                          perpContractPrecision[marketConfig.baseSymbol],
-                      })
+                      const basePositionUi = roundPerpSize(
+                        basePosition,
+                        marketConfig.baseSymbol
+                      )
                       return (
                         <TrBody key={`${marketConfig.marketIndex}`}>
                           <Td>
@@ -268,12 +262,10 @@ const PositionsTable = () => {
                     },
                     index
                   ) => {
-                    const basePositionUi = Math.abs(
-                      basePosition
-                    ).toLocaleString(undefined, {
-                      maximumFractionDigits:
-                        perpContractPrecision[marketConfig.baseSymbol],
-                    })
+                    const basePositionUi = roundPerpSize(
+                      basePosition,
+                      marketConfig.baseSymbol
+                    )
                     return (
                       <ExpandableRow
                         buttonTemplate={
