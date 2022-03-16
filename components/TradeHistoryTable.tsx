@@ -171,7 +171,7 @@ const TradeHistoryTable = ({
               Reset Filters
             </LinkButton>
           ) : null}
-          {tradeHistory.length >= 20 ? (
+          {tradeHistory.length >= 15 && tradeHistory.length <= 10000 ? (
             <Button
               className="flex h-8 items-center justify-center whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs"
               onClick={() => setShowFiltersModal(true)}
