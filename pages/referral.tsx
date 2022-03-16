@@ -73,7 +73,7 @@ export default function Referral() {
 
   const referralHistory = useMangoStore((s) => s.referrals.history)
   const referralTotalAmount = useMangoStore((s) => s.referrals.total)
-  const hasReferrals = history.length > 0
+  const hasReferrals = referralHistory.length > 0
 
   const [customRefLinkInput, setCustomRefLinkInput] = useState('')
   const [existingCustomRefLinks, setexistingCustomRefLinks] = useState<
