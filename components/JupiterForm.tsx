@@ -945,7 +945,7 @@ const JupiterForm: FunctionComponent = () => {
                   disabled={swapDisabled}
                   onClick={async () => {
                     if (!connected && zeroKey !== publicKey) {
-                      wallet?.adapter?.connect()
+                      wallet?.adapter?.connect().catch(() => {})
                     } else if (!loading && selectedRoute && connected) {
                       setSwapping(true)
                       let txCount = 1

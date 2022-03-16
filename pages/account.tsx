@@ -444,7 +444,7 @@ export default function Account() {
               desc={t('connect-view')}
               disabled={!wallet || !mangoGroup}
               icon={<LinkIcon />}
-              onClickButton={() => wallet?.adapter?.connect()}
+              onClickButton={() => wallet?.adapter?.connect().catch(() => {})}
               title={t('connect-wallet')}
             />
           )}

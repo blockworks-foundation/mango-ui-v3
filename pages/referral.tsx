@@ -536,7 +536,9 @@ export default function Referral() {
                   buttonText={t('connect')}
                   disabled={!wallet || !mangoGroup}
                   icon={<LinkIcon />}
-                  onClickButton={() => wallet?.adapter?.connect()}
+                  onClickButton={() =>
+                    wallet?.adapter?.connect().catch(() => {})
+                  }
                   title={t('connect-wallet')}
                 />
               </div>

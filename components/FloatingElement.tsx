@@ -33,7 +33,7 @@ const FloatingElement: FunctionComponent<FloatingElementProps> = ({
               disabled={!wallet || !mangoGroup}
               buttonText={t('connect')}
               icon={<LinkIcon />}
-              onClickButton={() => wallet?.adapter?.connect()}
+              onClickButton={() => wallet?.adapter?.connect().catch(() => {})}
               title={t('connect-wallet')}
             />
           </div>
