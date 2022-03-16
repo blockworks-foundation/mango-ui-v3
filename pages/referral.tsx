@@ -92,6 +92,7 @@ export default function Referral() {
   const connected = useMangoStore((s) => s.wallet.connected)
 
   const { wallet } = useWallet()
+  const mangoStoreWallet = useMangoStore.getState().wallet.current
 
   const [customRefLinkInput, setCustomRefLinkInput] = useState('')
   const [existingCustomRefLinks, setexistingCustomRefLinks] = useState<
@@ -169,7 +170,7 @@ export default function Referral() {
         const txid = await mangoClient.registerReferrerId(
           mangoGroup,
           mangoAccount,
-          wallet,
+          mangoStoreWallet,
           encodedRefLink
         )
         notify({

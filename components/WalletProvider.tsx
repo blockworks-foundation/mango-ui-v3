@@ -4,17 +4,14 @@ import {
   useWallet,
   WalletProvider as SolanaWalletProvider,
 } from '@solana/wallet-adapter-react'
-import { useTranslation } from 'next-i18next'
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base'
 import { getWalletAdapters } from '@solana/wallet-adapter-wallets'
 import { clusterApiUrl } from '@solana/web3.js'
-import { notify } from 'utils/notifications'
 
 import useMangoStore from 'stores/useMangoStore'
 
 const WalletListener: React.FC = () => {
   const set = useMangoStore((s) => s.set)
-  const { t } = useTranslation('common')
 
   const actions = useMangoStore((s) => s.actions)
 
@@ -25,7 +22,6 @@ const WalletListener: React.FC = () => {
     signAllTransactions,
     connect,
     disconnect,
-    disconnecting,
     connected,
   } = useWallet()
 
@@ -70,21 +66,6 @@ const WalletListener: React.FC = () => {
     connect,
     disconnect,
   ])
-
-  useEffect(() => {
-    if (disconnecting) {
-      set((state) => {
-        state.wallet.connected = false
-        state.mangoAccounts = []
-        state.selectedMangoAccount.current = null
-        state.tradeHistory = { spot: [], perp: [] }
-      })
-      notify({
-        type: 'info',
-        title: t('wallet-disconnected'),
-      })
-    }
-  }, [disconnecting, set, t])
 
   return null
 }
