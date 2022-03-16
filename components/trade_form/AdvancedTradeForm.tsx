@@ -141,9 +141,8 @@ export default function AdvancedTradeForm({
   useEffect(
     () =>
       useMangoStore.subscribe(
-        // @ts-ignore
-        (orderBook) => (orderBookRef.current = orderBook),
-        (state) => state.selectedMarket.orderBook
+        (state) => state.selectedMarket.orderBook,
+        (orderBook) => (orderBookRef.current = orderBook)
       ),
     []
   )
@@ -308,8 +307,8 @@ export default function AdvancedTradeForm({
   useEffect(
     () =>
       useMangoStore.subscribe(
-        (markPrice) => (markPriceRef.current = markPrice as number),
-        (state) => state.selectedMarket.markPrice
+        (state) => state.selectedMarket.markPrice,
+        (markPrice) => (markPriceRef.current = markPrice as number)
       ),
     []
   )
