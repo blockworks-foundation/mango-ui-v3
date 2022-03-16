@@ -39,7 +39,6 @@ export default function AccountInfo() {
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const { mangoAccount, initialLoad } = useMangoAccount()
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
-  const mangoClient = useMangoStore((s) => s.connection.client)
   const wallet = useMangoStore((s) => s.wallet.current)
   const actions = useMangoStore((s) => s.actions)
   const { width } = useViewport()
@@ -77,6 +76,7 @@ export default function AccountInfo() {
 
   const handleRedeemMngo = async () => {
     const wallet = useMangoStore.getState().wallet.current
+    const mangoClient = useMangoStore.getState().connection.client
     const mngoNodeBank =
       mangoGroup.rootBankAccounts[MNGO_INDEX].nodeBankAccounts[0]
 
@@ -281,7 +281,10 @@ export default function AccountInfo() {
                   nativeToUi(
                     mngoAccrued.toNumber(),
                     mangoGroup.tokens[MNGO_INDEX].decimals
-                  )
+                  ).toLocaleString(undefined, {
+                    minimumSignificantDigits: 2,
+                    maximumFractionDigits: 2,
+                  })
                 ) : (
                   0
                 )}

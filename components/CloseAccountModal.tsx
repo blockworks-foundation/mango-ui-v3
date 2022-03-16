@@ -49,7 +49,6 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
   const [totalAccountSOL, setTotalAccountSOL] = useState(0)
   const actions = useMangoStore((s) => s.actions)
   const connection = useMangoStore((s) => s.connection.current)
-  const client = useMangoStore((s) => s.connection.client)
   const openOrders = useMangoStore((s) => s.selectedMangoAccount.openOrders)
   const setMangoStore = useMangoStore((s) => s.set)
 
@@ -96,8 +95,10 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
 
   const closeAccount = async () => {
     const wallet = useMangoStore.getState().wallet.current
+    const mangoClient = useMangoStore.getState().connection.client
+
     try {
-      const txids = await client.emptyAndCloseMangoAccount(
+      const txids = await mangoClient.emptyAndCloseMangoAccount(
         mangoGroup,
         mangoAccount,
         mangoCache,
@@ -172,7 +173,7 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
         {!mngoAccrued.isZero() ? (
           <div className="flex items-center text-th-fgd-2">
             <CheckCircleIcon className="mr-1.5 h-4 w-4 text-th-green" />
-            {t('close-account:claim-x-mngo', {
+            {t('close-account:claim-x-mngo-rewards', {
               amount: mangoGroup
                 ? nativeToUi(
                     mngoAccrued.toNumber(),

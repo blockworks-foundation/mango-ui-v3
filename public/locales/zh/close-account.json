@@ -1,7 +1,7 @@
 {
   "are-you-sure": "您确定吗？",
   "before-you-continue": "进行之前",
-  "claim-x-mngo": "收获{{amount}}MNGO奖励",
+  "claim-x-mngo-rewards": "收获{{amount}}MNGO奖励",
   "close-account": "关闭帐户",
   "close-all-borrows": "归还所有借贷",
   "close-open-orders": "取消所有挂单",

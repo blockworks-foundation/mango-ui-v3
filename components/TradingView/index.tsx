@@ -13,7 +13,7 @@ import { breakpoints } from '../TradePageGrid'
 import { Order, Market } from '@project-serum/serum/lib/market'
 import { PerpOrder, PerpMarket } from '@blockworks-foundation/mango-client'
 import { notify } from '../../utils/notifications'
-import { sleep, formatUsdValue, usdFormatter } from '../../utils'
+import { sleep, formatUsdValue, usdFormatter, roundPerpSize } from '../../utils'
 import useInterval from '../../hooks/useInterval'
 import { PerpTriggerOrder } from '../../@types/types'
 import { useTranslation } from 'next-i18next'
@@ -339,6 +339,7 @@ const TVChartContainer = () => {
   }
 
   function getLine(order, market) {
+    const orderSizeUi = roundPerpSize(order.size, market.config.baseSymbol)
     return tvWidgetRef.current
       .chart()
       .createOrderLine({ disableUndo: false })
@@ -374,7 +375,7 @@ const TVChartContainer = () => {
             tvWidgetRef.current.showConfirmDialog({
               title: t('tv-chart:modify-order'),
               body: t('tv-chart:modify-order-details', {
-                orderSize: order.size,
+                orderSize: orderSizeUi,
                 baseSymbol: market.config.baseSymbol,
                 orderSide: t(order.side),
                 currentOrderPrice: currentOrderPrice,
@@ -408,7 +409,7 @@ const TVChartContainer = () => {
         tvWidgetRef.current.showConfirmDialog({
           title: t('tv-chart:cancel-order'),
           body: t('tv-chart:cancel-order-details', {
-            orderSize: order.size,
+            orderSize: orderSizeUi,
             baseSymbol: market.config.baseSymbol,
             orderSide: t(order.side),
             orderPrice: order.price,
@@ -423,7 +424,7 @@ const TVChartContainer = () => {
         })
       })
       .setPrice(order.price)
-      .setQuantity(order.size)
+      .setQuantity(orderSizeUi)
       .setText(getLineText(order, market))
       .setTooltip(
         order.perpTrigger?.clientOrderId

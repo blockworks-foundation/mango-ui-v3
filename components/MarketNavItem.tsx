@@ -3,7 +3,23 @@ import { useRouter } from 'next/router'
 import { initialMarket } from './SettingsModal'
 import { FavoriteMarketButton } from './TradeNavMenu'
 import useMangoStore from '../stores/useMangoStore'
-import { getWeights } from '@blockworks-foundation/mango-client'
+import {
+  getWeights,
+  getMarketIndexBySymbol,
+} from '@blockworks-foundation/mango-client'
+
+const getMarketLeverage = (mangoGroup, mangoGroupConfig, market) => {
+  if (!mangoGroup) return 1
+  const marketIndex = getMarketIndexBySymbol(
+    mangoGroupConfig,
+    market.baseSymbol
+  )
+  const ws = getWeights(mangoGroup, marketIndex, 'Init')
+  const w = market.name.includes('PERP')
+    ? ws.perpAssetWeight
+    : ws.spotAssetWeight
+  return Math.round((100 * -1) / (w.toNumber() - 1)) / 100
+}
 
 interface MarketNavItemProps {
   market: any
@@ -19,6 +35,7 @@ const MarketNavItem: FunctionComponent<MarketNavItemProps> = ({
   const { asPath } = useRouter()
   const router = useRouter()
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  const mangoGroupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const marketInfo = useMangoStore((s) => s.marketInfo)
 
   const mktInfo = marketInfo.find((info) => info.name === market.name)
@@ -29,15 +46,6 @@ const MarketNavItem: FunctionComponent<MarketNavItemProps> = ({
     if (onClick) {
       onClick()
     }
-  }
-
-  const getMarketLeverage = (market) => {
-    if (!mangoGroup) return 1
-    const ws = getWeights(mangoGroup, market.marketIndex, 'Init')
-    const w = market.name.includes('PERP')
-      ? ws.perpAssetWeight
-      : ws.spotAssetWeight
-    return Math.round((100 * -1) / (w.toNumber() - 1)) / 100
   }
 
   return (
@@ -59,7 +67,7 @@ const MarketNavItem: FunctionComponent<MarketNavItemProps> = ({
           >
             <span className="ml-2">{market.name}</span>
             <span className="ml-1.5 text-xs text-th-fgd-4">
-              {getMarketLeverage(market)}x
+              {getMarketLeverage(mangoGroup, mangoGroupConfig, market)}x
             </span>
           </div>
           <div

@@ -9,11 +9,7 @@ import Button, { LinkButton } from '../components/Button'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { ExpandableRow, Table, Td, Th, TrBody, TrHead } from './TableElements'
-import {
-  formatUsdValue,
-  getPrecisionDigits,
-  perpContractPrecision,
-} from '../utils'
+import { formatUsdValue, getPrecisionDigits, roundPerpSize } from '../utils'
 import Loading from './Loading'
 import MarketCloseModal from './MarketCloseModal'
 import PerpSideBadge from './PerpSideBadge'
@@ -87,7 +83,7 @@ const PositionsTable = () => {
               className="h-8 whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs"
               onClick={handleSettleAll}
             >
-              {settling ? <Loading /> : 'Redeem All'}
+              {settling ? <Loading /> : t('redeem-all')}
             </Button>
           </div>
           <div className="grid grid-flow-row grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -161,12 +157,10 @@ const PositionsTable = () => {
                       breakEvenPrice,
                       unrealizedPnl,
                     }) => {
-                      const basePositionUi = Math.abs(
-                        basePosition
-                      ).toLocaleString(undefined, {
-                        maximumFractionDigits:
-                          perpContractPrecision[marketConfig.baseSymbol],
-                      })
+                      const basePositionUi = roundPerpSize(
+                        basePosition,
+                        marketConfig.baseSymbol
+                      )
                       return (
                         <TrBody key={`${marketConfig.marketIndex}`}>
                           <Td>
@@ -268,12 +262,10 @@ const PositionsTable = () => {
                     },
                     index
                   ) => {
-                    const basePositionUi = Math.abs(
-                      basePosition
-                    ).toLocaleString(undefined, {
-                      maximumFractionDigits:
-                        perpContractPrecision[marketConfig.baseSymbol],
-                    })
+                    const basePositionUi = roundPerpSize(
+                      basePosition,
+                      marketConfig.baseSymbol
+                    )
                     return (
                       <ExpandableRow
                         buttonTemplate={

@@ -16,9 +16,6 @@ export const mangoGroupConfigSelector = (state: MangoStore) =>
 export const mangoCacheSelector = (state: MangoStore) =>
   state.selectedMangoGroup.cache
 
-export const mangoClientSelector = (state: MangoStore) =>
-  state.connection.client
-
 export const actionsSelector = (state: MangoStore) => state.actions
 
 export const marketsSelector = (state: MangoStore) =>
