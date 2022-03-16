@@ -174,6 +174,7 @@ export default function StatsPerps({ perpStats }) {
               x.toLocaleString(undefined, { maximumFractionDigits: 4 })
             }
             type="area"
+            yAxisWidth={70}
           />
         </div>
         <div
