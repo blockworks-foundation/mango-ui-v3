@@ -11,9 +11,6 @@ import { clusterApiUrl } from '@solana/web3.js'
 import { notify } from 'utils/notifications'
 
 import useMangoStore from 'stores/useMangoStore'
-import { WalletModalProvider } from '@solana/wallet-adapter-react-ui'
-
-require('@solana/wallet-adapter-react-ui/styles.css')
 
 const WalletListener: React.FC = () => {
   const set = useMangoStore((s) => s.set)
@@ -29,8 +26,10 @@ const WalletListener: React.FC = () => {
     connect,
     disconnect,
     disconnecting,
-    connecting,
+    connected,
   } = useWallet()
+
+  const connecting = wallet?.adapter?.connecting
 
   useEffect(() => {
     const onConnect = async () => {
@@ -48,8 +47,6 @@ const WalletListener: React.FC = () => {
         }
       })
 
-      await actions.fetchMangoGroup()
-
       await actions.fetchAllMangoAccounts()
 
       actions.fetchProfilePicture()
@@ -63,6 +60,7 @@ const WalletListener: React.FC = () => {
     }
   }, [
     connecting,
+    connected,
     set,
     actions,
     wallet,
@@ -105,9 +103,9 @@ export const WalletProvider: React.FC = ({ children }) => {
 
   return (
     <ConnectionProvider endpoint={endpoint}>
-      <SolanaWalletProvider wallets={wallets} autoConnect>
+      <SolanaWalletProvider wallets={wallets}>
         <WalletListener />
-        <WalletModalProvider>{children}</WalletModalProvider>
+        {children}
       </SolanaWalletProvider>
     </ConnectionProvider>
   )

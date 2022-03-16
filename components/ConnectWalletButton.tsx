@@ -1,32 +1,74 @@
-import React, { Fragment, useCallback, useState } from 'react'
+import React, { Fragment, useCallback, useState, useMemo } from 'react'
 import { Menu, Transition } from '@headlessui/react'
+import { useWallet, Wallet } from '@solana/wallet-adapter-react'
+import { WalletReadyState } from '@solana/wallet-adapter-base'
 import {
   CurrencyDollarIcon,
   DuplicateIcon,
   LogoutIcon,
 } from '@heroicons/react/outline'
+import { notify } from 'utils/notifications'
 import { abbreviateAddress, copyToClipboard } from 'utils'
-import AccountsModal from 'components/AccountsModal'
-import { useWallet } from '@solana/wallet-adapter-react'
 import useMangoStore from 'stores/useMangoStore'
 import { ProfileIcon, WalletIcon } from './icons'
 import { useTranslation } from 'next-i18next'
-import { useWalletModal } from '@solana/wallet-adapter-react-ui'
+import { WalletSelect } from 'components/WalletSelect'
+import { WalletSuggestionModal } from 'components'
+import AccountsModal from './AccountsModal'
 
 export const ConnectWalletButton: React.FC = () => {
-  const { connected, publicKey, disconnect } = useWallet()
+  const { connected, publicKey, wallet, wallets } = useWallet()
   const { t } = useTranslation('common')
   const pfp = useMangoStore((s) => s.wallet.pfp)
+  const set = useMangoStore((s) => s.set)
+  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
-  const { setVisible } = useWalletModal()
+  const [showWalletSuggestionModal, setShowWalletSuggestionModal] =
+    useState(false)
+
+  const [installedWallets] = useMemo(() => {
+    const installed: Wallet[] = []
+    const notDetected: Wallet[] = []
+    const loadable: Wallet[] = []
+
+    for (const wallet of wallets) {
+      if (wallet.readyState === WalletReadyState.NotDetected) {
+        notDetected.push(wallet)
+      } else if (wallet.readyState === WalletReadyState.Loadable) {
+        loadable.push(wallet)
+      } else if (wallet.readyState === WalletReadyState.Installed) {
+        installed.push(wallet)
+      }
+    }
+
+    return [installed, [...loadable, ...notDetected]]
+  }, [wallets])
 
   const handleConnect = useCallback(() => {
-    setVisible(true)
-  }, [setVisible])
+    if (!installedWallets?.length) {
+      setShowWalletSuggestionModal(true)
+    } else {
+      wallet?.adapter?.connect().catch(() => {})
+    }
+  }, [installedWallets, setShowWalletSuggestionModal, wallet])
 
   const handleCloseAccounts = useCallback(() => {
     setShowAccountsModal(false)
   }, [])
+
+  const handleDisconnect = useCallback(() => {
+    wallet?.adapter?.disconnect()
+    set((state) => {
+      state.wallet.connected = false
+      state.mangoAccounts = []
+      state.selectedMangoAccount.current = null
+      state.tradeHistory = { spot: [], perp: [] }
+    })
+    notify({
+      type: 'info',
+      title: t('wallet-disconnected'),
+    })
+  }, [wallet, set, t])
 
   return (
     <>
@@ -74,7 +116,7 @@ export const ConnectWalletButton: React.FC = () => {
                   <Menu.Item>
                     <button
                       className="flex w-full flex-row items-center rounded-none py-0.5 font-normal hover:cursor-pointer hover:text-th-primary focus:outline-none"
-                      onClick={() => disconnect()}
+                      onClick={handleDisconnect}
                     >
                       <LogoutIcon className="h-4 w-4" />
                       <div className="pl-2 text-left">
@@ -97,6 +139,7 @@ export const ConnectWalletButton: React.FC = () => {
         >
           <button
             onClick={handleConnect}
+            disabled={!mangoGroup}
             className="rounded-none bg-th-primary-dark text-th-bkg-1 hover:brightness-[1.1] focus:outline-none disabled:cursor-wait disabled:text-th-bkg-2"
           >
             <div className="default-transition flex h-full flex-row items-center justify-center px-3">
@@ -105,15 +148,29 @@ export const ConnectWalletButton: React.FC = () => {
                 <div className="mb-0.5 whitespace-nowrap font-bold">
                   {t('connect')}
                 </div>
+                {wallet?.adapter?.name && (
+                  <div className="text-xxs font-normal leading-3 tracking-wider text-th-bkg-2">
+                    {wallet.adapter.name}
+                  </div>
+                )}
               </div>
             </div>
           </button>
+          <div className="relative">
+            <WalletSelect installedWallets={installedWallets} />
+          </div>
         </div>
       )}
       {showAccountsModal && (
         <AccountsModal
           onClose={handleCloseAccounts}
           isOpen={showAccountsModal}
+        />
+      )}
+      {showWalletSuggestionModal && (
+        <WalletSuggestionModal
+          onClose={() => setShowWalletSuggestionModal(false)}
+          isOpen={showWalletSuggestionModal}
         />
       )}
     </>

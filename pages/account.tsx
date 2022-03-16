@@ -52,7 +52,6 @@ import CreateAlertModal from 'components/CreateAlertModal'
 import { copyToClipboard } from 'utils'
 import DelegateModal from 'components/DelegateModal'
 import { Menu, Transition } from '@headlessui/react'
-import { useWalletModal } from '@solana/wallet-adapter-react-ui'
 import { useWallet } from '@solana/wallet-adapter-react'
 
 export async function getStaticProps({ locale }) {
@@ -75,14 +74,12 @@ export default function Account() {
   const { t } = useTranslation(['common', 'close-account', 'delegate'])
   const { width } = useViewport()
   const router = useRouter()
-  const { connected } = useWallet()
+  const { connected, wallet, publicKey } = useWallet()
   const isLoading = useMangoStore((s) => s.selectedMangoAccount.initialLoad)
   const mangoAccount = useMangoStore(mangoAccountSelector)
   const mangoGroup = useMangoStore(mangoGroupSelector)
-  const wallet = useMangoStore((s) => s.wallet.current)
   const actions = useMangoStore(actionsSelector)
   const setMangoStore = useMangoStore((s) => s.set)
-  const { setVisible } = useWalletModal()
   const [showAccountsModal, setShowAccountsModal] = useState(false)
   const [showNameModal, setShowNameModal] = useState(false)
   const [showCloseAccountModal, setShowCloseAccountModal] = useState(false)
@@ -96,8 +93,8 @@ export default function Account() {
 
   const isMobile = width ? width < breakpoints.sm : false
   const { pubkey } = router.query
-  const isDelegatedAccount = wallet?.publicKey
-    ? !mangoAccount?.owner?.equals(wallet?.publicKey)
+  const isDelegatedAccount = publicKey
+    ? !mangoAccount?.owner?.equals(publicKey)
     : false
 
   const handleCloseAlertModal = useCallback(() => {
@@ -445,8 +442,9 @@ export default function Account() {
             <EmptyState
               buttonText={t('connect')}
               desc={t('connect-view')}
+              disabled={!wallet || !mangoGroup}
               icon={<LinkIcon />}
-              onClickButton={() => setVisible(true)}
+              onClickButton={() => wallet?.adapter?.connect()}
               title={t('connect-wallet')}
             />
           )}

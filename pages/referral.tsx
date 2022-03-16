@@ -7,7 +7,6 @@ import {
   mangoCacheSelector,
   mangoGroupConfigSelector,
   mangoGroupSelector,
-  walletSelector,
 } from '../stores/selectors'
 import Button, { IconButton } from '../components/Button'
 import { abbreviateAddress, copyToClipboard } from '../utils'
@@ -17,7 +16,6 @@ import {
   ReferrerIdRecord,
 } from '@blockworks-foundation/mango-client'
 import { useTranslation } from 'next-i18next'
-import { useWalletModal } from '@solana/wallet-adapter-react-ui'
 import EmptyState from '../components/EmptyState'
 import {
   CheckIcon,
@@ -37,6 +35,7 @@ import MobileTableHeader from '../components/mobile/MobileTableHeader'
 import Input, { Label } from '../components/Input'
 import InlineNotification from '../components/InlineNotification'
 import useMangoAccount from '../hooks/useMangoAccount'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -90,8 +89,9 @@ export default function Referral() {
   const mangoCache = useMangoStore(mangoCacheSelector)
   const { mangoAccount } = useMangoAccount()
   const groupConfig = useMangoStore(mangoGroupConfigSelector)
-  const wallet = useMangoStore(walletSelector)
   const connected = useMangoStore((s) => s.wallet.connected)
+
+  const { wallet } = useWallet()
 
   const [customRefLinkInput, setCustomRefLinkInput] = useState('')
   const [existingCustomRefLinks, setexistingCustomRefLinks] = useState<
@@ -99,7 +99,6 @@ export default function Referral() {
   >([])
   const [hasCopied, setHasCopied] = useState(null)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
-  const { setVisible } = useWalletModal()
 
   // const [hasReferrals] = useState(false) // Placeholder to show/hide users referral stats
   const [loading, setLoading] = useState(false)
@@ -535,8 +534,9 @@ export default function Referral() {
               <div className="col-span-12 flex items-center justify-center rounded-md bg-th-bkg-3 p-6 lg:col-span-8">
                 <EmptyState
                   buttonText={t('connect')}
+                  disabled={!wallet || !mangoGroup}
                   icon={<LinkIcon />}
-                  onClickButton={() => setVisible(true)}
+                  onClickButton={() => wallet?.adapter?.connect()}
                   title={t('connect-wallet')}
                 />
               </div>

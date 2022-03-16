@@ -12,7 +12,6 @@ import useMangoStore from '../stores/useMangoStore'
 import {
   connectionSelector,
   walletConnectedSelector,
-  walletSelector,
 } from '../stores/selectors'
 import { sortBy, sum } from 'lodash'
 import {
@@ -46,6 +45,7 @@ import { numberFormatter } from './SwapTokenInfo'
 import { useTranslation } from 'next-i18next'
 import Tabs from './Tabs'
 import SwapTokenInsights from './SwapTokenInsights'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 const TABS = ['Market Data', 'Performance Insights']
 
@@ -53,10 +53,9 @@ type UseJupiterProps = Parameters<typeof useJupiter>[0]
 
 const JupiterForm: FunctionComponent = () => {
   const { t } = useTranslation(['common', 'swap'])
-  const wallet = useMangoStore(walletSelector)
   const connection = useMangoStore(connectionSelector)
   const connected = useMangoStore(walletConnectedSelector)
-
+  const { wallet, publicKey } = useWallet()
   const [showSettings, setShowSettings] = useState(false)
   const [depositAndFee, setDepositAndFee] = useState(null)
   const [selectedRoute, setSelectedRoute] = useState<RouteInfo>(null)
@@ -93,7 +92,7 @@ const JupiterForm: FunctionComponent = () => {
     const ownedTokens = []
     const ownedTokenAccounts = await getTokenAccountsByOwnerWithWrappedSol(
       connection,
-      wallet.publicKey
+      publicKey
     )
 
     ownedTokenAccounts.forEach((account) => {
@@ -373,11 +372,11 @@ const JupiterForm: FunctionComponent = () => {
                           </div>
                           <a
                             className="flex items-center text-xs text-th-fgd-3 hover:text-th-fgd-2"
-                            href={`https://explorer.solana.com/address/${wallet?.publicKey}`}
+                            href={`https://explorer.solana.com/address/${publicKey}`}
                             target="_blank"
                             rel="noopener noreferrer"
                           >
-                            {abbreviateAddress(wallet.publicKey)}
+                            {abbreviateAddress(publicKey)}
                             <ExternalLinkIcon className="ml-0.5 -mt-0.5 h-3.5 w-3.5" />
                           </a>
                         </div>
@@ -945,8 +944,8 @@ const JupiterForm: FunctionComponent = () => {
                 <Button
                   disabled={swapDisabled}
                   onClick={async () => {
-                    if (!connected && zeroKey !== wallet?.publicKey) {
-                      wallet.connect()
+                    if (!connected && zeroKey !== publicKey) {
+                      wallet?.adapter?.connect()
                     } else if (!loading && selectedRoute && connected) {
                       setSwapping(true)
                       let txCount = 1

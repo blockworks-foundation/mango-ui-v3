@@ -4,7 +4,7 @@ import useMangoStore from '../stores/useMangoStore'
 import { MoveIcon } from './icons'
 import EmptyState from './EmptyState'
 import { useTranslation } from 'next-i18next'
-import { useWalletModal } from '@solana/wallet-adapter-react-ui'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 interface FloatingElementProps {
   className?: string
@@ -17,9 +17,10 @@ const FloatingElement: FunctionComponent<FloatingElementProps> = ({
   showConnect,
 }) => {
   const { t } = useTranslation('common')
+  const { wallet } = useWallet()
   const { uiLocked } = useMangoStore((s) => s.settings)
+  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const connected = useMangoStore((s) => s.wallet.connected)
-  const { setVisible } = useWalletModal()
 
   return (
     <div
@@ -29,9 +30,10 @@ const FloatingElement: FunctionComponent<FloatingElementProps> = ({
         <div className="absolute top-0 left-0 z-10 h-full w-full">
           <div className="relative z-10 flex h-full flex-col items-center justify-center">
             <EmptyState
+              disabled={!wallet || !mangoGroup}
               buttonText={t('connect')}
               icon={<LinkIcon />}
-              onClickButton={() => setVisible(true)}
+              onClickButton={() => wallet?.adapter?.connect()}
               title={t('connect-wallet')}
             />
           </div>
