@@ -905,7 +905,7 @@ export default function AdvancedTradeForm({
                 <span>{closeBorrowString}</span>
               </div>
             ) : null)}
-          <div className="sm:flex">
+          <div className="flex-wrap sm:flex">
             {isLimitOrder && (
               <div className="flex">
                 <div className="mr-4 mt-3">
