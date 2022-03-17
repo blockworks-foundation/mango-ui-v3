@@ -10,6 +10,7 @@ import useLocalStorageState from '../hooks/useLocalStorageState'
 import Select from './Select'
 import { useTranslation } from 'next-i18next'
 import Switch from './Switch'
+import { MarketKind } from '@blockworks-foundation/mango-client'
 
 const NODE_URLS = [
   { label: 'Triton (RPC Pool)', value: 'https://mango.rpcpool.com' },
@@ -32,7 +33,7 @@ export const ORDERBOOK_FLASH_KEY = 'showOrderbookFlash'
 export const DEFAULT_SPOT_MARGIN_KEY = 'defaultSpotMargin'
 export const initialMarket = {
   base: 'SOL',
-  kind: 'perp',
+  kind: 'perp' as MarketKind,
   name: 'SOL-PERP',
   path: '/?name=SOL-PERP',
 }
