@@ -1,31 +1,11 @@
-import React, { FunctionComponent } from 'react'
-// import styled from '@emotion/styled'
+import React, { FunctionComponent, useCallback } from 'react'
 import { LinkIcon } from '@heroicons/react/outline'
 import useMangoStore from '../stores/useMangoStore'
 import { MoveIcon } from './icons'
 import EmptyState from './EmptyState'
 import { useTranslation } from 'next-i18next'
-
-// const StyledDragWrapperContent = styled.div`
-//   transition: all 0.25s ease-in;
-//   opacity: 0;
-// `
-
-// const StyledDragBkg = styled.div`
-//   transition: all 0.25s ease-in;
-//   opacity: 0;
-// `
-
-// const StyledDragWrapper = styled.div`
-//   :hover {
-//     ${StyledDragWrapperContent} {
-//       opacity: 1;
-//     }
-//     ${StyledDragBkg} {
-//       opacity: 0.9;
-//     }
-//   }
-// `
+import { useWallet } from '@solana/wallet-adapter-react'
+import { handleWalletConnect } from 'components/ConnectWalletButton'
 
 interface FloatingElementProps {
   className?: string
@@ -38,9 +18,15 @@ const FloatingElement: FunctionComponent<FloatingElementProps> = ({
   showConnect,
 }) => {
   const { t } = useTranslation('common')
+  const { wallet } = useWallet()
   const { uiLocked } = useMangoStore((s) => s.settings)
+  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const connected = useMangoStore((s) => s.wallet.connected)
-  const wallet = useMangoStore((s) => s.wallet.current)
+
+  const handleConnect = useCallback(() => {
+    handleWalletConnect(wallet)
+  }, [wallet])
+
   return (
     <div
       className={`thin-scroll relative overflow-auto overflow-x-hidden rounded-lg bg-th-bkg-2 p-2.5 md:p-4 ${className}`}
@@ -49,9 +35,10 @@ const FloatingElement: FunctionComponent<FloatingElementProps> = ({
         <div className="absolute top-0 left-0 z-10 h-full w-full">
           <div className="relative z-10 flex h-full flex-col items-center justify-center">
             <EmptyState
+              disabled={!wallet || !mangoGroup}
               buttonText={t('connect')}
               icon={<LinkIcon />}
-              onClickButton={() => (wallet ? wallet.connect() : null)}
+              onClickButton={handleConnect}
               title={t('connect-wallet')}
             />
           </div>
