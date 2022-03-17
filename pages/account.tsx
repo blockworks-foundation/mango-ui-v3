@@ -92,6 +92,7 @@ export default function Account() {
   const [viewIndex, setViewIndex] = useState(0)
   const [activeTab, setActiveTab] = useState(TABS[0])
 
+  const connecting = wallet?.adapter?.connecting
   const isMobile = width ? width < breakpoints.sm : false
   const { pubkey } = router.query
   const isDelegatedAccount = publicKey
@@ -140,6 +141,7 @@ export default function Account() {
           setResetOnLeave(true)
         }
       } catch (error) {
+        console.log('error', error)
         router.push('/account')
       }
     }
@@ -197,6 +199,14 @@ export default function Account() {
         : ZERO_BN
     )
   }, [mangoAccount])
+
+  console.log('connecting', connecting)
+
+  useEffect(() => {
+    if (connecting) {
+      router.push('/account')
+    }
+  }, [connecting, router])
 
   const handleRedeemMngo = async () => {
     const wallet = useMangoStore.getState().wallet.current
