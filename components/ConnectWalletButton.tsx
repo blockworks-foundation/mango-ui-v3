@@ -23,6 +23,9 @@ import AccountsModal from './AccountsModal'
 import { uniqBy } from 'lodash'
 
 export const handleWalletConnect = (wallet: Wallet) => {
+  if (!wallet) {
+    return
+  }
   if (wallet.readyState === WalletReadyState.NotDetected) {
     window.open(wallet.adapter.url, '_blank')
   } else {
@@ -101,8 +104,6 @@ export const ConnectWalletButton: React.FC = () => {
       select(displayedWallets[0].adapter.name)
     }
   }, [wallet, displayedWallets, select])
-
-  console.log('wallet', wallet)
 
   return (
     <>
