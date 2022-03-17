@@ -18,10 +18,6 @@ const NODE_URLS = [
     label: 'Genesys Go',
     value: 'https://mango.genesysgo.net/',
   },
-  {
-    label: 'Project Serum',
-    value: 'https://solana-api.projectserum.com/',
-  },
   { label: 'Custom', value: '' },
 ]
 
