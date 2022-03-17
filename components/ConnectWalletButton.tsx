@@ -1,4 +1,10 @@
-import React, { Fragment, useCallback, useState, useMemo } from 'react'
+import React, {
+  Fragment,
+  useCallback,
+  useState,
+  useMemo,
+  useEffect,
+} from 'react'
 import { Menu, Transition } from '@headlessui/react'
 import { useWallet, Wallet } from '@solana/wallet-adapter-react'
 import { WalletReadyState } from '@solana/wallet-adapter-base'
@@ -13,44 +19,64 @@ import useMangoStore from 'stores/useMangoStore'
 import { ProfileIcon, WalletIcon } from './icons'
 import { useTranslation } from 'next-i18next'
 import { WalletSelect } from 'components/WalletSelect'
-import { WalletSuggestionModal } from 'components'
 import AccountsModal from './AccountsModal'
+import { uniqBy } from 'lodash'
+
+export const handleWalletConnect = (wallet: Wallet) => {
+  if (wallet.readyState === WalletReadyState.NotDetected) {
+    window.open(wallet.adapter.url, '_blank')
+  } else {
+    wallet?.adapter?.connect().catch((e) => {
+      if (e.name.includes('WalletLoadError')) {
+        notify({
+          title: `${wallet.adapter.name} Error`,
+          type: 'error',
+          description: `Please install ${wallet.adapter.name} and then reload this page.`,
+        })
+      }
+    })
+  }
+}
 
 export const ConnectWalletButton: React.FC = () => {
-  const { connected, publicKey, wallet, wallets } = useWallet()
+  const { connected, publicKey, wallet, wallets, select } = useWallet()
   const { t } = useTranslation('common')
   const pfp = useMangoStore((s) => s.wallet.pfp)
   const set = useMangoStore((s) => s.set)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
-  const [showWalletSuggestionModal, setShowWalletSuggestionModal] =
-    useState(false)
 
-  const [installedWallets] = useMemo(() => {
+  const defaultWallets = useMemo(() => {
+    return ['Phantom', 'Solflare', 'Sollet']
+  }, [])
+
+  const installedWallets = useMemo(() => {
     const installed: Wallet[] = []
-    const notDetected: Wallet[] = []
-    const loadable: Wallet[] = []
 
     for (const wallet of wallets) {
-      if (wallet.readyState === WalletReadyState.NotDetected) {
-        notDetected.push(wallet)
-      } else if (wallet.readyState === WalletReadyState.Loadable) {
-        loadable.push(wallet)
-      } else if (wallet.readyState === WalletReadyState.Installed) {
+      if (wallet.readyState === WalletReadyState.Installed) {
         installed.push(wallet)
       }
     }
 
-    return [installed, [...loadable, ...notDetected]]
+    return installed
   }, [wallets])
 
+  const displayedWallets = useMemo(() => {
+    return uniqBy(
+      [
+        ...installedWallets,
+        ...wallets.filter((w) => defaultWallets.includes(w.adapter.name)),
+      ],
+      (w) => {
+        return w.adapter.name
+      }
+    )
+  }, [wallets, installedWallets, defaultWallets])
+
   const handleConnect = useCallback(() => {
-    if (!installedWallets?.length) {
-      setShowWalletSuggestionModal(true)
-    } else {
-      wallet?.adapter?.connect().catch(() => {})
-    }
-  }, [installedWallets, setShowWalletSuggestionModal, wallet])
+    handleWalletConnect(wallet)
+  }, [wallet])
 
   const handleCloseAccounts = useCallback(() => {
     setShowAccountsModal(false)
@@ -69,6 +95,14 @@ export const ConnectWalletButton: React.FC = () => {
       title: t('wallet-disconnected'),
     })
   }, [wallet, set, t])
+
+  useEffect(() => {
+    if (!wallet && displayedWallets?.length) {
+      select(displayedWallets[0].adapter.name)
+    }
+  }, [wallet, displayedWallets, select])
+
+  console.log('wallet', wallet)
 
   return (
     <>
@@ -157,7 +191,7 @@ export const ConnectWalletButton: React.FC = () => {
             </div>
           </button>
           <div className="relative">
-            <WalletSelect installedWallets={installedWallets} />
+            <WalletSelect wallets={displayedWallets} />
           </div>
         </div>
       )}
@@ -165,12 +199,6 @@ export const ConnectWalletButton: React.FC = () => {
         <AccountsModal
           onClose={handleCloseAccounts}
           isOpen={showAccountsModal}
-        />
-      )}
-      {showWalletSuggestionModal && (
-        <WalletSuggestionModal
-          onClose={() => setShowWalletSuggestionModal(false)}
-          isOpen={showWalletSuggestionModal}
         />
       )}
     </>

@@ -1,10 +1,11 @@
-import React, { FunctionComponent } from 'react'
+import React, { FunctionComponent, useCallback } from 'react'
 import { LinkIcon } from '@heroicons/react/outline'
 import useMangoStore from '../stores/useMangoStore'
 import { MoveIcon } from './icons'
 import EmptyState from './EmptyState'
 import { useTranslation } from 'next-i18next'
 import { useWallet } from '@solana/wallet-adapter-react'
+import { handleWalletConnect } from 'components/ConnectWalletButton'
 
 interface FloatingElementProps {
   className?: string
@@ -22,6 +23,10 @@ const FloatingElement: FunctionComponent<FloatingElementProps> = ({
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const connected = useMangoStore((s) => s.wallet.connected)
 
+  const handleConnect = useCallback(() => {
+    handleWalletConnect(wallet)
+  }, [wallet])
+
   return (
     <div
       className={`thin-scroll relative overflow-auto overflow-x-hidden rounded-lg bg-th-bkg-2 p-2.5 md:p-4 ${className}`}
@@ -33,7 +38,7 @@ const FloatingElement: FunctionComponent<FloatingElementProps> = ({
               disabled={!wallet || !mangoGroup}
               buttonText={t('connect')}
               icon={<LinkIcon />}
-              onClickButton={() => wallet?.adapter?.connect().catch(() => {})}
+              onClickButton={handleConnect}
               title={t('connect-wallet')}
             />
           </div>

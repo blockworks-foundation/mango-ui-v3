@@ -53,6 +53,7 @@ import { copyToClipboard } from 'utils'
 import DelegateModal from 'components/DelegateModal'
 import { Menu, Transition } from '@headlessui/react'
 import { useWallet } from '@solana/wallet-adapter-react'
+import { handleWalletConnect } from 'components/ConnectWalletButton'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -116,6 +117,10 @@ export default function Account() {
   const handleCloseDelegateModal = useCallback(() => {
     setShowDelegateModal(false)
   }, [])
+
+  const handleConnect = useCallback(() => {
+    handleWalletConnect(wallet)
+  }, [wallet])
 
   useEffect(() => {
     async function loadUnownedMangoAccount() {
@@ -444,7 +449,7 @@ export default function Account() {
               desc={t('connect-view')}
               disabled={!wallet || !mangoGroup}
               icon={<LinkIcon />}
-              onClickButton={() => wallet?.adapter?.connect().catch(() => {})}
+              onClickButton={handleConnect}
               title={t('connect-wallet')}
             />
           )}

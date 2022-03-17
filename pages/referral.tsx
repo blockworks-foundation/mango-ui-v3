@@ -36,6 +36,7 @@ import Input, { Label } from '../components/Input'
 import InlineNotification from '../components/InlineNotification'
 import useMangoAccount from '../hooks/useMangoAccount'
 import { useWallet } from '@solana/wallet-adapter-react'
+import { handleWalletConnect } from 'components/ConnectWalletButton'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -152,6 +153,10 @@ export default function Referral() {
       setInputError(t('referrals:enter-referral-id'))
     }
   }
+
+  const handleConnect = useCallback(() => {
+    handleWalletConnect(wallet)
+  }, [wallet])
 
   const submitRefLink = async () => {
     let encodedRefLink: string
@@ -537,9 +542,7 @@ export default function Referral() {
                   buttonText={t('connect')}
                   disabled={!wallet || !mangoGroup}
                   icon={<LinkIcon />}
-                  onClickButton={() =>
-                    wallet?.adapter?.connect().catch(() => {})
-                  }
+                  onClickButton={handleConnect}
                   title={t('connect-wallet')}
                 />
               </div>

@@ -3,12 +3,10 @@ import { Menu, Transition } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/solid'
 import { useWallet, Wallet } from '@solana/wallet-adapter-react'
 
-export const WalletSelect: React.FC<{ installedWallets: Wallet[] }> = ({
-  installedWallets,
-}) => {
+export const WalletSelect: React.FC<{ wallets: Wallet[] }> = ({ wallets }) => {
   const { select } = useWallet()
 
-  if (!installedWallets?.length) {
+  if (!wallets?.length) {
     return null
   }
 
@@ -37,7 +35,7 @@ export const WalletSelect: React.FC<{ installedWallets: Wallet[] }> = ({
             leaveTo="opacity-0"
           >
             <Menu.Items className="absolute right-0 z-20 w-44 rounded-b-md bg-th-bkg-3 px-4 py-2.5 outline-none">
-              {installedWallets?.map((wallet, index) => (
+              {wallets?.map((wallet, index) => (
                 <Menu.Item key={index}>
                   <button
                     className="flex w-full flex-row items-center justify-between rounded-none py-1.5 font-normal hover:cursor-pointer hover:text-th-primary focus:outline-none"
