@@ -53,6 +53,9 @@ const MarketDetails = () => {
             <div className="text-th-fgd-1 md:text-xs">
               {oraclePrice && selectedMarket
                 ? oraclePrice.toNumber().toLocaleString(undefined, {
+                    minimumFractionDigits: getPrecisionDigits(
+                      selectedMarket.tickSize
+                    ),
                     maximumFractionDigits: getPrecisionDigits(
                       selectedMarket.tickSize
                     ),

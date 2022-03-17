@@ -1,11 +1,7 @@
 import { useCallback, useMemo, useState } from 'react'
 import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
-import {
-  formatUsdValue,
-  getPrecisionDigits,
-  perpContractPrecision,
-} from '../utils'
+import { formatUsdValue, getPrecisionDigits, roundPerpSize } from '../utils'
 import Button, { LinkButton } from './Button'
 import Tooltip from './Tooltip'
 import PerpSideBadge from './PerpSideBadge'
@@ -182,9 +178,7 @@ export default function MarketPosition() {
                 className="cursor-pointer underline hover:no-underline"
                 onClick={() => handleSizeClick(basePosition)}
               >
-                {`${Math.abs(basePosition).toLocaleString(undefined, {
-                  maximumFractionDigits: perpContractPrecision[baseSymbol],
-                })} ${baseSymbol}`}
+                {`${roundPerpSize(basePosition, baseSymbol)} ${baseSymbol}`}
               </span>
             ) : (
               `0 ${baseSymbol}`
