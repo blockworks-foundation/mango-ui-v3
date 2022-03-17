@@ -103,7 +103,12 @@ const MarketDetails = () => {
 
     const perpVolume = await fetch(
       `https://event-history-api.herokuapp.com/stats/perps/${marketConfig.publicKey.toString()}`
-    )
+    ).catch((e) => {
+      console.log(e)
+    })
+    if (!perpVolume) {
+      return
+    }
     const parsedPerpVolume = await perpVolume.json()
     setPerpVolume(parsedPerpVolume?.data?.volume)
   }, [selectedMarketName, marketConfig, groupConfig.name])
