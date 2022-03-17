@@ -23,7 +23,7 @@ const NODE_URLS = [
 
 const CUSTOM_NODE = NODE_URLS.find((n) => n.label === 'Custom')
 
-export const NODE_URL_KEY = 'node-url-key-0.5'
+export const NODE_URL_KEY = 'node-url-key-0.6'
 export const DEFAULT_MARKET_KEY = 'defaultMarket-0.3'
 export const ORDERBOOK_FLASH_KEY = 'showOrderbookFlash'
 export const DEFAULT_SPOT_MARGIN_KEY = 'defaultSpotMargin'
