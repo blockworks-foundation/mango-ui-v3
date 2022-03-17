@@ -10,7 +10,12 @@ import {
   walletSelector,
 } from '../stores/selectors'
 import Button, { IconButton } from '../components/Button'
-import { abbreviateAddress, copyToClipboard, formatUsdValue } from '../utils'
+import {
+  abbreviateAddress,
+  copyToClipboard,
+  formatUsdValue,
+  usdFormatter,
+} from '../utils'
 import { notify } from '../utils/notifications'
 import {
   getMarketIndexBySymbol,
@@ -81,7 +86,7 @@ export default function Referral() {
   >([])
   const [hasCopied, setHasCopied] = useState(null)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
-  // const [hasReferrals] = useState(false) // Placeholder to show/hide users referral stats
+
   const [loading, setLoading] = useState(false)
   const [inputError, setInputError] = useState('')
   const { width } = useViewport()
@@ -413,7 +418,6 @@ export default function Referral() {
                         <thead>
                           <TrHead>
                             <Th>{t('date')}</Th>
-                            <Th>{t('referrals:referral-id')}</Th>
                             <Th>{t('referrals:referee')}</Th>
                             <Th>
                               <div className="flex justify-end">
@@ -423,27 +427,33 @@ export default function Referral() {
                           </TrHead>
                         </thead>
                         <tbody>
-                          {referralHistory.map((ref, index) => (
-                            <TrBody key={ref.fee + index}>
-                              <Td>
-                                {dayjs(ref.time).format('DD MMM YYYY h:mma')}
-                              </Td>
-                              <Td>{ref.referralLink}</Td>
-                              <Td>
-                                <Link
-                                  href={`/account?pubkey=${ref.referee}`}
-                                  shallow={true}
-                                >
-                                  <a className="text-th-fgd-2 underline hover:text-th-fgd-3 hover:no-underline">
-                                    {abbreviateAddress(mangoAccount.publicKey)}
-                                  </a>
-                                </Link>
-                              </Td>
-                              <Td className="flex items-center justify-end">
-                                ${ref.fee}
-                              </Td>
-                            </TrBody>
-                          ))}
+                          {referralHistory.map((ref) => {
+                            const pk = ref.referrer_mango_account
+                            const acct = pk.slice(0, 5) + '…' + pk.slice(-5)
+
+                            return (
+                              <TrBody key={ref.signature}>
+                                <Td>
+                                  {dayjs(ref.block_datetime).format(
+                                    'DD MMM YYYY h:mma'
+                                  )}
+                                </Td>
+                                <Td>
+                                  <Link
+                                    href={`/account?pubkey=${ref.referree_mango_account}`}
+                                    shallow={true}
+                                  >
+                                    <a className="text-th-fgd-2 underline hover:text-th-fgd-3 hover:no-underline">
+                                      {acct}
+                                    </a>
+                                  </Link>
+                                </Td>
+                                <Td className="flex items-center justify-end">
+                                  {usdFormatter(ref.referral_fee_accrual)}
+                                </Td>
+                              </TrBody>
+                            )
+                          })}
                         </tbody>
                       </Table>
                     ) : (

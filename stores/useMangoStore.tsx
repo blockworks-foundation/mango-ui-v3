@@ -734,6 +734,7 @@ const useMangoStore = create<MangoStore>((set, get) => {
         const set = get().set
         const mangoAccount = get().selectedMangoAccount.current
         const pk = mangoAccount.publicKey.toString()
+
         const res = await fetch(
           `https://mango-transaction-log.herokuapp.com/v3/stats/referral-fees-history?referrer-account=${pk}`
         )
