@@ -1020,10 +1020,10 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@blockworks-foundation/mango-client@^3.3.21":
-  version "3.3.21"
-  resolved "https://registry.yarnpkg.com/@blockworks-foundation/mango-client/-/mango-client-3.3.21.tgz#be0e4bfd96785212c8b1b96511779954c8635a1b"
-  integrity sha512-KCe+r3/pXH4z9DCtyfupILynvN4dQcPvTg2hohaToH2tUa7rfvYZK8bggl0L9M4rkCkgjCVO5HBJ1S8Xh8/1WQ==
+"@blockworks-foundation/mango-client@^3.3.20":
+  version "3.3.22"
+  resolved "https://registry.yarnpkg.com/@blockworks-foundation/mango-client/-/mango-client-3.3.22.tgz#cb7e2aeb4890bb6dfd4b321cb215720f2a9ec6c1"
+  integrity sha512-LkXLYbvb1fxYkaUfwxNusmRC/tk8qe8duqjnU2ek/pwLn1jXwY4jmHVmwzjSQC6fI/9RpUgl4ShN80XVBGssOg==
   dependencies:
     "@project-serum/anchor" "^0.21.0"
     "@project-serum/serum" "0.13.55"
