@@ -17,7 +17,7 @@
     "test-all": "yarn lint && yarn type-check && yarn test"
   },
   "dependencies": {
-    "@blockworks-foundation/mango-client": "git+https://github.com/blockworks-foundation/mango-client-v3.git#update-wallet-adapter-type",
+    "@blockworks-foundation/mango-client": "^3.3.21",
     "@headlessui/react": "^1.2.0",
     "@heroicons/react": "^1.0.0",
     "@jup-ag/react-hook": "^1.0.0-beta.16",
