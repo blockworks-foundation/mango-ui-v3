@@ -113,10 +113,7 @@ export default function AdvancedTradeForm({
 
   const isTriggerOrder = TRIGGER_ORDER_TYPES.includes(tradeType)
 
-  // TODO saml - create a tick box on the UI; Only available on perps
-  // eslint-disable-next-line
   const [postOnlySlide, setPostOnlySlide] = useState(false)
-
   const [postOnly, setPostOnly] = useState(false)
   const [ioc, setIoc] = useState(false)
 
@@ -403,8 +400,6 @@ export default function AdvancedTradeForm({
     }
   }
 
-  // TODO saml - use
-  // eslint-disable-next-line
   const postOnlySlideOnChange = (checked) => {
     if (checked) {
       setIoc(false)
@@ -412,7 +407,6 @@ export default function AdvancedTradeForm({
     }
     setPostOnlySlide(checked)
   }
-
   const postOnChange = (checked) => {
     if (checked) {
       setIoc(false)
@@ -630,7 +624,9 @@ export default function AdvancedTradeForm({
         let perpOrderPrice: number = orderPrice
 
         if (isMarketOrder) {
-          if (tradeType === 'Market' && maxSlippage !== undefined) {
+          if (postOnlySlide) {
+            perpOrderType = 'postOnlySlide'
+          } else if (tradeType === 'Market' && maxSlippage !== undefined) {
             perpOrderType = 'ioc'
             if (side === 'buy') {
               perpOrderPrice = markPrice * (1 + parseFloat(maxSlippage))
@@ -791,15 +787,19 @@ export default function AdvancedTradeForm({
                 min="0"
                 step={tickSize}
                 onChange={(e) => onSetPrice(e.target.value)}
-                value={price}
-                disabled={isMarketOrder}
+                value={postOnlySlide ? '' : price}
+                disabled={isMarketOrder || postOnlySlide}
                 placeholder={tradeType === 'Market' ? markPrice : null}
                 prefix={
-                  <img
-                    src={`/assets/icons/${groupConfig.quoteSymbol.toLowerCase()}.svg`}
-                    width="16"
-                    height="16"
-                  />
+                  <>
+                    {!postOnlySlide && (
+                      <img
+                        src={`/assets/icons/${groupConfig.quoteSymbol.toLowerCase()}.svg`}
+                        width="16"
+                        height="16"
+                      />
+                    )}
+                  </>
                 }
               />
             </>
@@ -893,8 +893,8 @@ export default function AdvancedTradeForm({
                 : ['10', '25', '50', '75', '100']
             }
           />
-          {marketConfig.kind === 'perp' ? (
-            side === 'sell' ? (
+          {marketConfig.kind === 'perp' &&
+            (side === 'sell' ? (
               roundedDeposits > 0 ? (
                 <div className="mt-2 text-xs tracking-normal text-th-fgd-4">
                   <span>{closeDepositString}</span>
@@ -904,10 +904,9 @@ export default function AdvancedTradeForm({
               <div className="mt-2 text-xs tracking-normal text-th-fgd-4">
                 <span>{closeBorrowString}</span>
               </div>
-            ) : null
-          ) : null}
+            ) : null)}
           <div className="sm:flex">
-            {isLimitOrder ? (
+            {isLimitOrder && (
               <div className="flex">
                 <div className="mr-4 mt-3">
                   <Tooltip
@@ -942,14 +941,14 @@ export default function AdvancedTradeForm({
                   </Tooltip>
                 </div>
               </div>
-            ) : null}
+            )}
             {/*
                 Add the following line to the ternary below once we are
                 auto updating the reduceOnly state when doing a market order:
                 && showReduceOnly(perpAccount?.basePosition.toNumber())
              */}
-            {marketConfig.kind === 'perp' ? (
-              <div className="mt-3">
+            {marketConfig.kind === 'perp' && (
+              <div className="mr-4 mt-3">
                 <Tooltip
                   className="hidden md:block"
                   delay={250}
@@ -965,8 +964,26 @@ export default function AdvancedTradeForm({
                   </Checkbox>
                 </Tooltip>
               </div>
-            ) : null}
-            {marketConfig.kind === 'spot' ? (
+            )}
+            {marketConfig.kind === 'perp' && (
+              <div className="mt-3">
+                <Tooltip
+                  className="hidden md:block"
+                  delay={250}
+                  placement="left"
+                  content={t('tooltip-post-and-slide')}
+                >
+                  <Checkbox
+                    checked={postOnlySlide}
+                    onChange={(e) => postOnlySlideOnChange(e.target.checked)}
+                    disabled={isTriggerOrder}
+                  >
+                    Post & Slide
+                  </Checkbox>
+                </Tooltip>
+              </div>
+            )}
+            {marketConfig.kind === 'spot' && (
               <div className="mt-3">
                 <Tooltip
                   delay={250}
@@ -981,16 +998,16 @@ export default function AdvancedTradeForm({
                   </Checkbox>
                 </Tooltip>
               </div>
-            ) : null}
+            )}
           </div>
-          {warnUserSlippage ? (
+          {warnUserSlippage && (
             <div className="mt-1 flex items-center text-th-red">
               <div>
                 <ExclamationIcon className="mr-2 h-5 w-5" />
               </div>
               <div className="text-xs">{t('slippage-warning')}</div>
             </div>
-          ) : null}
+          )}
           <div className={`mt-3 flex`}>
             {canTrade ? (
               <button
