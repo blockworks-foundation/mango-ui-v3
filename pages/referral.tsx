@@ -40,7 +40,7 @@ import MobileTableHeader from '../components/mobile/MobileTableHeader'
 import Input, { Label } from '../components/Input'
 import InlineNotification from '../components/InlineNotification'
 import useMangoAccount from '../hooks/useMangoAccount'
-import { DateDisplay } from 'components/DateDisplay'
+import { DateDisplay } from '../components/DateDisplay'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -378,7 +378,7 @@ export default function Referral() {
                         <div className="pb-6">
                           <Label>{t('referrals:referral-id')}</Label>
                           <Input
-                            error={!!inputError}
+                            error={inputError}
                             type="text"
                             placeholder="ElonMusk"
                             onBlur={validateRefIdInput}
@@ -471,7 +471,7 @@ export default function Referral() {
                                 </div>
                               </div>
                             }
-                            key={`${ref.fee + index}`}
+                            key={`${ref.referral_fee_accrual + index}`}
                             panelTemplate={
                               <>
                                 <div className="grid grid-flow-row grid-cols-2 gap-4">
