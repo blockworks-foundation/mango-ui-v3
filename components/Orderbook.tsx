@@ -3,7 +3,12 @@ import Big from 'big.js'
 import { isEqual as isEqualLodash } from 'lodash'
 import useInterval from '../hooks/useInterval'
 import usePrevious from '../hooks/usePrevious'
-import { isEqual, getDecimalCount, usdFormatter } from '../utils/'
+import {
+  isEqual,
+  getDecimalCount,
+  getPrecisionDigits,
+  usdFormatter,
+} from '../utils/'
 import {
   ArrowUpIcon,
   ArrowDownIcon,
@@ -597,11 +602,17 @@ export default function Orderbook({ depth = 8 }) {
 
 const OrderbookSpread = ({ orderbookData }) => {
   const { t } = useTranslation('common')
+  const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
 
   return (
     <div className="mb-0 mt-3 flex justify-between rounded-md bg-th-bkg-1 p-2 text-xs">
       <div className="hidden text-th-fgd-3 sm:block">{t('spread')}</div>
-      <div className="text-th-fgd-1">{orderbookData?.spread.toFixed(2)}</div>
+      <div className="text-th-fgd-1">
+        {orderbookData?.spread.toLocaleString(undefined, {
+          minimumFractionDigits: getPrecisionDigits(selectedMarket.tickSize),
+          maximumFractionDigits: getPrecisionDigits(selectedMarket.tickSize),
+        })}
+      </div>
       <div className="text-th-fgd-1">
         {orderbookData?.spreadPercentage.toFixed(2)}%
       </div>
