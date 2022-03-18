@@ -31,7 +31,6 @@ import {
 import { MngoMonoIcon } from '../components/icons'
 import Link from 'next/link'
 import { Table, Td, Th, TrBody, TrHead } from '../components/TableElements'
-import dayjs from 'dayjs'
 import AccountsModal from '../components/AccountsModal'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from '../components/TradePageGrid'
@@ -42,6 +41,7 @@ import InlineNotification from '../components/InlineNotification'
 import useMangoAccount from '../hooks/useMangoAccount'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { handleWalletConnect } from 'components/ConnectWalletButton'
+import { DateDisplay } from 'components/DateDisplay'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -441,9 +441,7 @@ export default function Referral() {
                             return (
                               <TrBody key={ref.signature}>
                                 <Td>
-                                  {dayjs(ref.block_datetime).format(
-                                    'DD MMM YYYY h:mma'
-                                  )}
+                                  <DateDisplay date={ref.block_datetime} />
                                 </Td>
                                 <Td>
                                   <Link
@@ -456,7 +454,7 @@ export default function Referral() {
                                   </Link>
                                 </Td>
                                 <Td className="flex items-center justify-end">
-                                  {usdFormatter(ref.referral_fee_accrual)}
+                                  {usdFormatter(ref.referral_fee_accrual, 4)}
                                 </Td>
                               </TrBody>
                             )
@@ -467,34 +465,30 @@ export default function Referral() {
                       <>
                         <MobileTableHeader
                           colOneHeader={t('date')}
-                          colTwoHeader={t('referrals:fee-eanred')}
+                          colTwoHeader={t('referrals:fee-earned')}
                         />
                         {referralHistory.map((ref, index) => (
                           <ExpandableRow
                             buttonTemplate={
                               <div className="flex w-full items-center justify-between text-th-fgd-1">
                                 <div>
-                                  {dayjs(ref.time).format('DD MMM YYYY h:mma')}
+                                  <DateDisplay date={ref.block_datetime} />
                                 </div>
-                                <div className="text-right">${ref.fee}</div>
+                                <div className="text-right">
+                                  {usdFormatter(ref.referral_fee_accrual, 4)}
+                                </div>
                               </div>
                             }
                             key={`${ref.fee + index}`}
                             panelTemplate={
                               <>
-                                <div className="grid grid-flow-row grid-cols-2 gap-4 pb-4">
-                                  <div className="text-left">
-                                    <div className="pb-0.5 text-xs text-th-fgd-3">
-                                      {t('referrals:referral-id')}
-                                    </div>
-                                    <div>{ref.referralLink}</div>
-                                  </div>
+                                <div className="grid grid-flow-row grid-cols-2 gap-4">
                                   <div className="text-left">
                                     <div className="pb-0.5 text-xs text-th-fgd-3">
                                       {t('referrals:referee')}
                                     </div>
                                     <Link
-                                      href={`/account?pubkey=${ref.referee}`}
+                                      href={`/account?pubkey=${ref.referree_mango_account}`}
                                       shallow={true}
                                     >
                                       <a className="text-th-fgd-2 underline hover:text-th-fgd-3 hover:no-underline">

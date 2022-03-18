@@ -751,15 +751,18 @@ const useMangoStore = create<
           const set = get().set
           const mangoAccount = get().selectedMangoAccount.current
           const pk = mangoAccount.publicKey.toString()
-          const res = await fetch(
-            `https://mango-transaction-log.herokuapp.com/v3/stats/referral-fees-history?referrer-account=${pk}`
-          )
-          const data = await res.json()
 
-          const totalBalanceReq = await fetch(
-            `https://mango-transaction-log.herokuapp.com/v3/stats/referral-fees-total?referrer-account=${pk}`
-          )
-          const totalBalance = await totalBalanceReq.text()
+          const getData = async (type: 'history' | 'total') => {
+            const res = await fetch(
+              `https://mango-transaction-log.herokuapp.com/v3/stats/referral-fees-${type}?referrer-account=${pk}`
+            )
+            const data =
+              type === 'history' ? await res.json() : await res.text()
+            return data
+          }
+
+          const data = await getData('history')
+          const totalBalance = await getData('total')
 
           set((state) => {
             state.referrals.total = parseFloat(totalBalance)
