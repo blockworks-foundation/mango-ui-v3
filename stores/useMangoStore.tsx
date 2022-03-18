@@ -244,6 +244,17 @@ const useMangoStore = create<
     }
 
     const connection = new Connection(rpcUrl, 'processed' as Commitment)
+    const client = new MangoClient(connection, programId, {
+      postSendTxCallback: ({ txid }: { txid: string }) => {
+        notify({
+          title: 'Transaction sent',
+          description: 'Waiting for confirmation',
+          type: 'confirm',
+          txid: txid,
+        })
+      },
+      maxStoredBlockhashes: CLUSTER === 'devnet' ? 1 : 3,
+    })
     return {
       marketInfo: [],
       notificationIdCounter: 0,
@@ -253,16 +264,7 @@ const useMangoStore = create<
         cluster: CLUSTER,
         current: connection,
         websocket: WEBSOCKET_CONNECTION,
-        client: new MangoClient(connection, programId, {
-          postSendTxCallback: ({ txid }: { txid: string }) => {
-            notify({
-              title: 'Transaction sent',
-              description: 'Waiting for confirmation',
-              type: 'confirm',
-              txid: txid,
-            })
-          },
-        }),
+        client,
         endpoint: ENDPOINT.url,
         slot: 0,
         blockhashTimes: [],
@@ -407,18 +409,18 @@ const useMangoStore = create<
           const wallet = get().wallet.current
           const actions = get().actions
 
-          if (!wallet?.publicKey || !mangoGroup) return
-
           const delegateFilter = [
             {
               memcmp: {
                 offset: MangoAccountLayout.offsetOf('delegate'),
-                bytes: wallet?.publicKey?.toBase58(),
+                bytes: wallet?.publicKey.toBase58(),
               },
             },
           ]
           const accountSorter = (a, b) =>
             a.publicKey.toBase58() > b.publicKey.toBase58() ? 1 : -1
+
+          if (!wallet?.publicKey || !mangoGroup) return
 
           return Promise.all([
             mangoClient.getMangoAccountsForOwner(

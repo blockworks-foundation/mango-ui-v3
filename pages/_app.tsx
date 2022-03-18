@@ -4,6 +4,7 @@ import '../node_modules/react-grid-layout/css/styles.css'
 import '../node_modules/react-resizable/css/styles.css'
 import 'intro.js/introjs.css'
 import '../styles/index.css'
+import useWallet from '../hooks/useWallet'
 import useHydrateStore from '../hooks/useHydrateStore'
 import Notifications from '../components/Notification'
 import useMangoStore from '../stores/useMangoStore'
@@ -24,10 +25,14 @@ import {
   ReferrerIdRecordLayout,
   ReferrerIdRecord,
 } from '@blockworks-foundation/mango-client'
-import { WalletProvider } from 'components'
 
 const MangoStoreUpdater = () => {
   useHydrateStore()
+  return null
+}
+
+const WalletStoreUpdater = () => {
+  useWallet()
   return null
 }
 
@@ -148,29 +153,28 @@ function App({ Component, pageProps }) {
         <ErrorBoundary>
           <PageTitle />
           <MangoStoreUpdater />
+          <WalletStoreUpdater />
           <OpenOrdersStoreUpdater />
           <PerpPositionsStoreUpdater />
           <FetchReferrer />
         </ErrorBoundary>
 
         <ThemeProvider defaultTheme="Mango">
-          <WalletProvider>
-            <ViewportProvider>
-              <div className="min-h-screen bg-th-bkg-1">
-                <ErrorBoundary>
-                  <GlobalNotification />
-                  <Component {...pageProps} />
-                </ErrorBoundary>
-              </div>
-              <div className="fixed bottom-0 left-0 z-20 w-full md:hidden">
-                <ErrorBoundary>
-                  <BottomBar />
-                </ErrorBoundary>
-              </div>
+          <ViewportProvider>
+            <div className="min-h-screen bg-th-bkg-1">
+              <ErrorBoundary>
+                <GlobalNotification />
+                <Component {...pageProps} />
+              </ErrorBoundary>
+            </div>
+            <div className="fixed bottom-0 left-0 z-20 w-full md:hidden">
+              <ErrorBoundary>
+                <BottomBar />
+              </ErrorBoundary>
+            </div>
 
-              <Notifications />
-            </ViewportProvider>
-          </WalletProvider>
+            <Notifications />
+          </ViewportProvider>
         </ThemeProvider>
       </ErrorBoundary>
     </>

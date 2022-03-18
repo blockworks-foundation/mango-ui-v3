@@ -95,7 +95,12 @@ const usePerpPositions = () => {
   const tradeHistory = useTradeHistory()
 
   useEffect(() => {
-    if (mangoAccount && mangoGroup && mangoCache) {
+    if (
+      mangoAccount &&
+      mangoGroup &&
+      mangoCache &&
+      Object.keys(allMarkets).length
+    ) {
       const perpAccounts = mangoAccount
         ? groupConfig.perpMarkets.map((m) =>
             collectPerpPosition(
