@@ -249,7 +249,7 @@ const useMangoStore = create<
           txid: txid,
         })
       },
-      maxStoredBlockhashes: CLUSTER === 'devnet' ? 1 : 7,
+      maxStoredBlockhashes: CLUSTER === 'devnet' ? 1 : 5,
     })
     return {
       marketInfo: [],
