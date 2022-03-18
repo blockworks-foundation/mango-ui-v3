@@ -1,13 +1,16 @@
-import React, { Fragment } from 'react'
+import { Fragment } from 'react'
 import { Menu, Transition } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/solid'
-import { useWallet, Wallet } from '@solana/wallet-adapter-react'
+import useMangoStore from '../stores/useMangoStore'
+import { WALLET_PROVIDERS } from '../utils/wallet-adapters'
 
-export const WalletSelect: React.FC<{ wallets: Wallet[] }> = ({ wallets }) => {
-  const { select } = useWallet()
+export default function WalletSelect() {
+  const setMangoStore = useMangoStore((s) => s.set)
 
-  if (!wallets?.length) {
-    return null
+  const handleSelectProvider = (url) => {
+    setMangoStore((state) => {
+      state.wallet.providerUrl = url
+    })
   }
 
   return (
@@ -35,21 +38,15 @@ export const WalletSelect: React.FC<{ wallets: Wallet[] }> = ({ wallets }) => {
             leaveTo="opacity-0"
           >
             <Menu.Items className="absolute right-0 z-20 w-44 rounded-b-md bg-th-bkg-3 px-4 py-2.5 outline-none">
-              {wallets?.map((wallet, index) => (
-                <Menu.Item key={index}>
+              {WALLET_PROVIDERS.map(({ name, url, icon }) => (
+                <Menu.Item key={name}>
                   <button
                     className="flex w-full flex-row items-center justify-between rounded-none py-1.5 font-normal hover:cursor-pointer hover:text-th-primary focus:outline-none"
-                    onClick={() => {
-                      select(wallet.adapter.name)
-                    }}
+                    onClick={() => handleSelectProvider(url)}
                   >
                     <div className="flex items-center">
-                      <img
-                        src={wallet.adapter.icon}
-                        className="mr-2 h-4 w-4"
-                        alt={`${wallet.adapter.name} icon`}
-                      />
-                      {wallet.adapter.name}
+                      <img src={icon} className="mr-2 h-4 w-4" />
+                      {name}
                     </div>
                   </button>
                 </Menu.Item>

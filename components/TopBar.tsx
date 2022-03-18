@@ -5,7 +5,7 @@ import useLocalStorageState from '../hooks/useLocalStorageState'
 import MenuItem from './MenuItem'
 import ThemeSwitch from './ThemeSwitch'
 import useMangoStore from '../stores/useMangoStore'
-import { ConnectWalletButton } from 'components'
+import ConnectWalletButton from './ConnectWalletButton'
 import NavDropMenu from './NavDropMenu'
 import AccountsModal from './AccountsModal'
 import LanguageSwitch from './LanguageSwitch'
@@ -15,6 +15,23 @@ import Settings from './Settings'
 import TradeNavMenu from './TradeNavMenu'
 import { CalculatorIcon, LightBulbIcon } from '@heroicons/react/outline'
 import { MangoIcon } from './icons'
+
+// const StyledNewLabel = ({ children, ...props }) => (
+//   <div style={{ fontSize: '0.5rem', marginLeft: '1px' }} {...props}>
+//     {children}
+//   </div>
+// )
+
+// <div className="relative">
+//   <MenuItem href="/referral">
+//     {t('referrals')}
+//     <div className="absolute flex items-center justify-center h-4 px-1.5 bg-gradient-to-br from-red-500 to-yellow-500 rounded-full -right-3 -top-3">
+//       <StyledNewLabel className="text-white uppercase">
+//         new
+//       </StyledNewLabel>
+//     </div>
+//   </MenuItem>
+// </div>
 
 const TopBar = () => {
   const { t } = useTranslation('common')
