@@ -240,6 +240,17 @@ const useMangoStore = create<
     }
 
     const connection = new Connection(rpcUrl, 'processed' as Commitment)
+    const client = new MangoClient(connection, programId, {
+      postSendTxCallback: ({ txid }: { txid: string }) => {
+        notify({
+          title: 'Transaction sent',
+          description: 'Waiting for confirmation',
+          type: 'confirm',
+          txid: txid,
+        })
+      },
+      maxStoredBlockhashes: CLUSTER === 'devnet' ? 1 : 7,
+    })
     return {
       marketInfo: [],
       notificationIdCounter: 0,
@@ -249,16 +260,7 @@ const useMangoStore = create<
         cluster: CLUSTER,
         current: connection,
         websocket: WEBSOCKET_CONNECTION,
-        client: new MangoClient(connection, programId, {
-          postSendTxCallback: ({ txid }: { txid: string }) => {
-            notify({
-              title: 'Transaction sent',
-              description: 'Waiting for confirmation',
-              type: 'confirm',
-              txid: txid,
-            })
-          },
-        }),
+        client,
         endpoint: ENDPOINT.url,
         slot: 0,
         blockhashTimes: [],

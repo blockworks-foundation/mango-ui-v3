@@ -17,7 +17,7 @@
     "test-all": "yarn lint && yarn type-check && yarn test"
   },
   "dependencies": {
-    "@blockworks-foundation/mango-client": "^3.3.21",
+    "@blockworks-foundation/mango-client": "^3.3.23",
     "@headlessui/react": "^1.2.0",
     "@heroicons/react": "^1.0.0",
     "@jup-ag/react-hook": "^1.0.0-beta.16",
