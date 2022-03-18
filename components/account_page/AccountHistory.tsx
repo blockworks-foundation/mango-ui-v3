@@ -15,10 +15,11 @@ import { useSortableData } from '../../hooks/useSortableData'
 import { formatUsdValue } from '../../utils'
 import { exportDataToCSV } from '../../utils/export'
 import { notify } from '../../utils/notifications'
-import useTradeHistory from '../../hooks/useTradeHistory'
 import Button from '../Button'
 import Loading from '../Loading'
 import { fetchHourlyPerformanceStats } from './AccountOverview'
+import Tooltip from '../Tooltip'
+import { InformationCircleIcon } from '@heroicons/react/outline'
 
 const historyViews = [
   { label: 'Trades', key: 'Trades' },
@@ -35,7 +36,6 @@ export default function AccountHistory() {
 
   const wallet = useMangoStore((s) => s.wallet.current)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
-  const tradeHistory = useTradeHistory({ excludePerpLiquidations: true })
 
   const mangoAccountPk = useMemo(() => {
     console.log('new mango account')
@@ -82,49 +82,20 @@ export default function AccountHistory() {
   }
 
   const exportHistoryToCSV = () => {
-    let dataToExport
-    let headers
+    const dataToExport = history
+      .filter((val) => val.activity_type == view)
+      .map((row) => {
+        row = row.activity_details
+        const timestamp = new Date(row.block_datetime)
 
-    if (view == 'Trades') {
-      dataToExport = tradeHistory.map((trade) => {
-        const timestamp = new Date(trade.loadTimestamp)
         return {
-          asset: trade.marketName,
-          orderType: trade.side.toUpperCase(),
-          quantity: trade.size,
-          price: trade.price,
-          value: trade.value,
-          liquidity: trade.liquidity,
-          fee: trade.feeCost,
           date: `${timestamp.toLocaleDateString()} ${timestamp.toLocaleTimeString()}`,
+          asset: row.symbol,
+          quantity: row.quantity,
+          value: row.usd_equivalent,
         }
       })
-      headers = [
-        'Market',
-        'Side',
-        'Size',
-        'Price',
-        'Value',
-        'Liquidity',
-        'Fee',
-        'Approx. Time',
-      ]
-    } else {
-      dataToExport = history
-        .filter((val) => val.activity_type == view)
-        .map((row) => {
-          row = row.activity_details
-          const timestamp = new Date(row.block_datetime)
-
-          return {
-            date: `${timestamp.toLocaleDateString()} ${timestamp.toLocaleTimeString()}`,
-            asset: row.symbol,
-            quantity: row.quantity,
-            value: row.usd_equivalent,
-          }
-        })
-      headers = ['Timestamp', 'Asset', 'Quantity', 'Value']
-    }
+    const headers = ['Timestamp', 'Asset', 'Quantity', 'Value']
 
     if (dataToExport.length == 0) {
       notify({
@@ -184,17 +155,7 @@ export default function AccountHistory() {
             {t('use-explorer-three')}
           </div>
         </div>
-        {view !== 'Trades' ? (
-          <Button
-            className={`flex h-8 items-center justify-center whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs`}
-            onClick={exportHistoryToCSV}
-          >
-            <div className={`flex items-center`}>
-              <SaveIcon className={`mr-1.5 h-4 w-4`} />
-              {t('export-data')}
-            </div>
-          </Button>
-        ) : canWithdraw ? (
+        {(view === 'Trades' && canWithdraw) ? (
           <Button
             className={`flex h-8 items-center justify-center whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs`}
             onClick={exportPerformanceDataToCSV}
@@ -207,6 +168,30 @@ export default function AccountHistory() {
                 {t('export-pnl-csv')}
               </div>
             )}
+          </Button>
+        ) : null}
+        {view !== 'Trades' ? (
+          <Button
+            className={`flex h-8 items-center justify-center whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs`}
+            onClick={exportHistoryToCSV}
+          >
+            <div className={`flex items-center`}>
+              <SaveIcon className={`mr-1.5 h-4 w-4`} />
+              {t('export-data')}
+            </div>
+          </Button>
+        ) : canWithdraw ? (
+          <Button
+          className={`flex h-8 items-center justify-center whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs`}
+          >
+            <div className={`flex items-center`}>
+              <SaveIcon className={`mr-1.5 h-4 w-4`} />
+              <a href={`https://event-history-api.herokuapp.com/all_trades_csv?mango_account=${mangoAccountPk}&open_orders=${mangoAccount.spotOpenOrders.filter(e => e.toString() !== '11111111111111111111111111111111').join(',')}`}
+              >Export Trades CSV</a>  
+            </div>
+            <Tooltip content={t('trade-export-disclaimer')}>
+              <InformationCircleIcon className="ml-1.5 h-5 w-5 cursor-help text-th-fgd-3" />
+            </Tooltip>
           </Button>
         ) : null}
       </div>

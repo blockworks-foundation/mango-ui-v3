@@ -390,6 +390,7 @@
   "total-srm": "Total SRM in Mango",
   "totals": "Totals",
   "trade": "Trade",
+  "trade-export-disclaimer": "Due to the nature of how trades are processed it is not possible to provide an absolute guarantee that all trades are exported. However, a best effort approach has been untaken combining several independent sources to reduce the likelihood of missing trades.",
   "trade-history": "Trade History",
   "trades": "Trades",
   "trades-history": "Trade History",
