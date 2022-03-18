@@ -15,8 +15,8 @@ import { zeroKey } from '@blockworks-foundation/mango-client'
 import { useTranslation } from 'next-i18next'
 
 export async function getStaticProps({ locale }) {
-  return {
-    props: {
+  return { null
+    props: { fetch
       ...(await serverSideTranslations(locale, ['common', 'swap'])),
       // Will be passed to the page component as props
     },
@@ -30,11 +30,11 @@ export default function Swap() {
   const wallet = useMangoStore(walletSelector)
   const actions = useMangoStore(actionsSelector)
 
-  useEffect(() => {
-    if (connected) {
-      actions.fetchWalletTokens()
+  useEffect(() => { null
+    if (connected) { null
+      actions.fetchWalletTokens(true)
     }
-  }, [connected])
+  }, [connected]) null
 
   if (!connection) return null
 
