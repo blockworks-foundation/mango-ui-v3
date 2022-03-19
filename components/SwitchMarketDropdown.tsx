@@ -62,7 +62,7 @@ const SwitchMarketDropdown = () => {
       {({ open }) => (
         <div className="relative flex flex-col">
           <Popover.Button
-            className={`border border-th-bkg-4 p-0.5 hover:border-th-fgd-4 focus:border-th-fgd-4 focus:outline-none ${
+            className={`border border-th-bkg-3 p-0.5 transition-none hover:border-th-bkg-4 focus:border-th-bkg-4 focus:outline-none ${
               open && 'border-th-fgd-4'
             }`}
             ref={buttonRef}
@@ -95,8 +95,6 @@ const SwitchMarketDropdown = () => {
             </div>
           </Popover.Button>
           <Transition
-            appear={true}
-            show={open}
             as={Fragment}
             enter="transition-all ease-in duration-200"
             enterFrom="opacity-0 transform scale-75"
@@ -106,8 +104,8 @@ const SwitchMarketDropdown = () => {
             leaveTo="opacity-0"
           >
             <Popover.Panel
-              className="thin-scroll absolute left-0 top-14 z-10 max-h-96 w-72 transform overflow-y-auto rounded-b-md rounded-tl-md bg-th-bkg-3 p-4"
-              static
+              className="thin-scroll absolute left-0 top-14 z-10 max-h-[75vh] w-72 transform overflow-y-auto rounded-b-md rounded-tl-md bg-th-bkg-3 p-4"
+              tabIndex={-1}
             >
               <div className="pb-2.5">
                 <Input
