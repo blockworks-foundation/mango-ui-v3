@@ -27,7 +27,7 @@ import {
 } from '@blockworks-foundation/mango-client'
 import { AccountInfo, Commitment, Connection, PublicKey } from '@solana/web3.js'
 import { EndpointInfo, WalletAdapter } from '../@types/types'
-import { isDefined, patchInternalMarketName, zipDict } from '../utils'
+import { isDefined, zipDict } from '../utils'
 import { Notification, notify } from '../utils/notifications'
 import { LAST_ACCOUNT_KEY } from '../components/AccountsModal'
 import {
@@ -213,7 +213,7 @@ export type MangoStore = {
     submitting: boolean
     success: string
   }
-  marketInfo: any[]
+  marketsInfo: any[]
 }
 
 const useMangoStore = create<
@@ -252,7 +252,7 @@ const useMangoStore = create<
       maxStoredBlockhashes: CLUSTER === 'devnet' ? 1 : 3,
     })
     return {
-      marketInfo: [],
+      marketsInfo: [],
       notificationIdCounter: 0,
       notifications: [],
       accountInfos: {},
@@ -570,7 +570,6 @@ const useMangoStore = create<
                   }
                 )
               })
-              // actions.fetchMarketInfo()
             })
             .catch((err) => {
               if (mangoGroupRetryAttempt < 2) {
@@ -924,30 +923,14 @@ const useMangoStore = create<
             })
           }
         },
-        async fetchMarketInfo() {
+        async fetchMarketsInfo() {
           const set = get().set
-          const marketInfos = []
-          const groupConfig = get().selectedMangoGroup.config
-          const markets = [
-            ...groupConfig.spotMarkets,
-            ...groupConfig.perpMarkets,
-          ]
-
-          if (!markets) return
-
-          await Promise.all(
-            markets.map(async (market) => {
-              const response = await fetch(
-                `https://event-history-api-candles.herokuapp.com/markets/${patchInternalMarketName(
-                  market.name
-                )}`
-              )
-              const parsedResponse = await response.json()
-              marketInfos.push(parsedResponse)
-            })
+          const data = await fetch(
+            `https://mango-all-markets-api.herokuapp.com/markets/`
           )
+          const parsedMarketsInfo = await data.json()
           set((state) => {
-            state.marketInfo = marketInfos
+            state.marketsInfo = parsedMarketsInfo
           })
         },
       },

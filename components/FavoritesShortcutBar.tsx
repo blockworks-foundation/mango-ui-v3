@@ -2,7 +2,6 @@ import useLocalStorageState from '../hooks/useLocalStorageState'
 import { FAVORITE_MARKETS_KEY } from './TradeNavMenu'
 import { StarIcon } from '@heroicons/react/solid'
 import { QuestionMarkCircleIcon } from '@heroicons/react/outline'
-import useMangoStore from '../stores/useMangoStore'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import Link from 'next/link'
@@ -13,7 +12,6 @@ import { Transition } from '@headlessui/react'
 
 const FavoritesShortcutBar = () => {
   const [favoriteMarkets] = useLocalStorageState(FAVORITE_MARKETS_KEY, [])
-  const marketInfo = useMangoStore((s) => s.marketInfo)
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
   const { asPath } = useRouter()
@@ -41,7 +39,6 @@ const FavoritesShortcutBar = () => {
     >
       <StarIcon className="h-5 w-5 text-th-fgd-4" />
       {favoriteMarkets.map((mkt) => {
-        const mktInfo = marketInfo.find((info) => info.name === mkt.name)
         return (
           <Link href={`/?name=${mkt.name}`} key={mkt.name} shallow={true}>
             <a
@@ -56,14 +53,14 @@ const FavoritesShortcutBar = () => {
               <span className="mb-0 mr-1.5 text-xs">{mkt.name}</span>
               <span
                 className={`text-xs ${
-                  mktInfo
-                    ? mktInfo.change24h >= 0
+                  mkt
+                    ? mkt.change24h >= 0
                       ? 'text-th-green'
                       : 'text-th-red'
                     : 'text-th-fgd-4'
                 }`}
               >
-                {mktInfo ? `${(mktInfo.change24h * 100).toFixed(1)}%` : ''}
+                {mkt ? `${(mkt.change24h * 100).toFixed(1)}%` : ''}
               </span>
             </a>
           </Link>

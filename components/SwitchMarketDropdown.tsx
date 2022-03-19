@@ -14,26 +14,29 @@ const SwitchMarketDropdown = () => {
   const baseSymbol = marketConfig.baseSymbol
   const isPerpMarket = marketConfig.kind === 'perp'
 
-  const markets = useMemo(
-    () => [...groupConfig.spotMarkets, ...groupConfig.perpMarkets],
-    [groupConfig]
-  )
-  const spotMarkets = useMemo(
+  const marketsInfo = useMangoStore((s) => s.marketsInfo)
+
+  const perpMarketsInfo = useMemo(
     () =>
-      [...groupConfig.spotMarkets].sort((a, b) => a.name.localeCompare(b.name)),
-    [groupConfig]
+      marketsInfo
+        .filter((mkt) => mkt?.name.includes('PERP'))
+        .sort((a, b) => b.volumeUsd24h - a.volumeUsd24h),
+    [marketsInfo]
   )
-  const perpMarkets = useMemo(
+
+  const spotMarketsInfo = useMemo(
     () =>
-      [...groupConfig.perpMarkets].sort((a, b) => a.name.localeCompare(b.name)),
-    [groupConfig]
+      marketsInfo
+        .filter((mkt) => mkt?.name.includes('USDC'))
+        .sort((a, b) => b.volumeUsd24h - a.volumeUsd24h),
+    [marketsInfo]
   )
 
   const [suggestions, setSuggestions] = useState([])
   const [searchString, setSearchString] = useState('')
   const buttonRef = useRef(null)
   const { t } = useTranslation('common')
-  const filteredMarkets = markets
+  const filteredMarkets = marketsInfo
     .filter((m) => m.name.toLowerCase().includes(searchString.toLowerCase()))
     .sort((a, b) => a.name.localeCompare(b.name))
 
@@ -134,11 +137,11 @@ const SwitchMarketDropdown = () => {
                 <div className="">
                   <div className="flex justify-between py-1.5">
                     <h4 className="text-xs">{t('perp')}</h4>
-                    <p className="mb-0 text-xs text-th-fgd-4">
-                      {/* {t('rolling-change')} */}
+                    <p className="mb-0 text-th-fgd-3 text-xs">
+                      {t('rolling-change')}
                     </p>
                   </div>
-                  {perpMarkets.map((mkt) => (
+                  {perpMarketsInfo.map((mkt) => (
                     <MarketNavItem
                       buttonRef={buttonRef}
                       onClick={() => setSearchString('')}
@@ -148,11 +151,11 @@ const SwitchMarketDropdown = () => {
                   ))}
                   <div className="flex justify-between py-1.5">
                     <h4 className="text-xs">{t('spot')}</h4>
-                    <p className="mb-0 text-xs text-th-fgd-4">
-                      {/* {t('rolling-change')} */}
+                    <p className="mb-0 text-th-fgd-3 text-xs">
+                      {t('rolling-change')}
                     </p>
                   </div>
-                  {spotMarkets.map((mkt) => (
+                  {spotMarketsInfo.map((mkt) => (
                     <MarketNavItem
                       buttonRef={buttonRef}
                       onClick={() => setSearchString('')}

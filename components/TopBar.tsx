@@ -13,7 +13,11 @@ import { DEFAULT_MARKET_KEY, initialMarket } from './SettingsModal'
 import { useTranslation } from 'next-i18next'
 import Settings from './Settings'
 import TradeNavMenu from './TradeNavMenu'
-import { CalculatorIcon, LightBulbIcon } from '@heroicons/react/outline'
+import {
+  CalculatorIcon,
+  LightBulbIcon,
+  UserAddIcon,
+} from '@heroicons/react/outline'
 import { MangoIcon } from './icons'
 
 // const StyledNewLabel = ({ children, ...props }) => (
@@ -69,14 +73,20 @@ const TopBar = () => {
               >
                 <TradeNavMenu />
                 <MenuItem href="/account">{t('account')}</MenuItem>
+                <MenuItem href="/markets">{t('markets')}</MenuItem>
                 <MenuItem href="/borrow">{t('borrow')}</MenuItem>
                 <MenuItem href="/swap">{t('swap')}</MenuItem>
                 <MenuItem href="/stats">{t('stats')}</MenuItem>
-                <MenuItem href="/referral">{t('referrals')}</MenuItem>
                 <NavDropMenu
                   menuTitle={t('more')}
                   // linksArray: [name: string, href: string, isExternal: boolean]
                   linksArray={[
+                    [
+                      t('referrals'),
+                      '/referral',
+                      false,
+                      <UserAddIcon className="h-4 w-4" key="calculator" />,
+                    ],
                     [
                       t('calculator'),
                       '/risk-calculator',

@@ -1,4 +1,11 @@
-import { Fragment, FunctionComponent, useEffect, useRef, useState } from 'react'
+import {
+  Fragment,
+  FunctionComponent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import { Popover, Transition } from '@headlessui/react'
 import { useTranslation } from 'next-i18next'
 import { StarIcon } from '@heroicons/react/outline'
@@ -6,9 +13,9 @@ import {
   ChevronDownIcon,
   StarIcon as FilledStarIcon,
 } from '@heroicons/react/solid'
-import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import MarketNavItem from './MarketNavItem'
+import useMangoStore from '../stores/useMangoStore'
 
 const initialMenuCategories = [
   { name: 'Perp', desc: 'perp-desc' },
@@ -22,15 +29,35 @@ const TradeNavMenu = () => {
   const [activeMenuCategory, setActiveMenuCategory] = useState('Perp')
   const [menuCategories, setMenuCategories] = useState(initialMenuCategories)
   const buttonRef = useRef(null)
-  const groupConfig = useMangoGroupConfig()
   const { t } = useTranslation('common')
 
-  const markets =
-    activeMenuCategory === 'Favorites'
-      ? favoriteMarkets
-      : activeMenuCategory === 'Spot'
-      ? [...groupConfig.spotMarkets]
-      : [...groupConfig.perpMarkets]
+  const marketsInfo = useMangoStore((s) => s.marketsInfo)
+
+  const perpMarketsInfo = useMemo(
+    () =>
+      marketsInfo
+        .filter((mkt) => mkt?.name.includes('PERP'))
+        .sort((a, b) => b.volumeUsd24h - a.volumeUsd24h),
+    [marketsInfo]
+  )
+
+  const spotMarketsInfo = useMemo(
+    () =>
+      marketsInfo
+        .filter((mkt) => mkt?.name.includes('USDC'))
+        .sort((a, b) => b.volumeUsd24h - a.volumeUsd24h),
+    [marketsInfo]
+  )
+
+  const markets = useMemo(
+    () =>
+      activeMenuCategory === 'Perp'
+        ? perpMarketsInfo
+        : activeMenuCategory === 'Spot'
+        ? spotMarketsInfo
+        : favoriteMarkets,
+    [activeMenuCategory, marketsInfo]
+  )
 
   const handleMenuCategoryChange = (categoryName) => {
     setActiveMenuCategory(categoryName)
@@ -119,8 +146,8 @@ const TradeNavMenu = () => {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Popover.Panel className="absolute top-14 grid min-h-[235px] w-[700px] grid-cols-3 grid-rows-1">
-              <div className="col-span-1 rounded-bl-lg bg-th-bkg-4">
+            <Popover.Panel className="absolute grid grid-cols-3 grid-rows-1 min-h-[235px] top-14 w-[760px]">
+              <div className="bg-th-bkg-4 col-span-1 rounded-bl-lg">
                 <MenuCategories
                   activeCategory={activeMenuCategory}
                   categories={menuCategories}
