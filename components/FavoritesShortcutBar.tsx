@@ -51,17 +51,6 @@ const FavoritesShortcutBar = () => {
             >
               {renderIcon(mkt.baseSymbol)}
               <span className="mb-0 mr-1.5 text-xs">{mkt.name}</span>
-              <span
-                className={`text-xs ${
-                  mkt
-                    ? mkt.change24h >= 0
-                      ? 'text-th-green'
-                      : 'text-th-red'
-                    : 'text-th-fgd-4'
-                }`}
-              >
-                {mkt ? `${(mkt.change24h * 100).toFixed(1)}%` : ''}
-              </span>
             </a>
           </Link>
         )
