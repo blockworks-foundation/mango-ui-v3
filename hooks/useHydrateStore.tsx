@@ -92,7 +92,10 @@ const useHydrateStore = () => {
   }, 120 * SECONDS)
 
   useEffect(() => {
+    if (!marketConfig || !markets) return
+
     const market = markets[marketConfig.publicKey.toString()]
+    if (!market) return
     setMangoStore((state) => {
       state.selectedMarket.current = market
       state.selectedMarket.orderBook.bids = decodeBookL2(

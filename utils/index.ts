@@ -44,6 +44,7 @@ export function roundToDecimal(
 export function getPrecisionDigits(x: number): number {
   return -Math.round(Math.log10(x))
 }
+
 export function getDecimalCount(value): number {
   if (
     !isNaN(value) &&
