@@ -5,6 +5,7 @@ import {
   ChartingLibraryWidgetOptions,
   IChartingLibraryWidget,
   ResolutionString,
+  IOrderLineAdapter,
 } from '../../public/charting_library'
 import { CHART_DATA_FEED } from '../../utils/chartDataConnector'
 import useMangoStore from '../../stores/useMangoStore'
@@ -14,7 +15,7 @@ import { Order, Market } from '@project-serum/serum/lib/market'
 import { PerpOrder, PerpMarket } from '@blockworks-foundation/mango-client'
 import { notify } from '../../utils/notifications'
 import { sleep, formatUsdValue, usdFormatter, roundPerpSize } from '../../utils'
-import useInterval from '../../hooks/useInterval'
+// import useInterval from '../../hooks/useInterval'
 import { PerpTriggerOrder } from '../../@types/types'
 import { useTranslation } from 'next-i18next'
 
@@ -37,8 +38,6 @@ export interface ChartContainerProps {
   theme: string
 }
 
-// export interface ChartContainerState {}
-
 const TVChartContainer = () => {
   const { t } = useTranslation(['common', 'tv-chart'])
   const selectedMarketConfig = useMangoStore((s) => s.selectedMarket.config)
@@ -49,13 +48,11 @@ const TVChartContainer = () => {
   const selectedMarketName = selectedMarketConfig.name
   const openOrders = useMangoStore((s) => s.selectedMangoAccount.openOrders)
   const actions = useMangoStore((s) => s.actions)
-  const connected = useMangoStore((s) => s.wallet.connected)
-  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const selectedMarketPrice = useMangoStore((s) => s.selectedMarket.markPrice)
-  const [lines, setLines] = useState(new Map())
-  const [moveInProgress, toggleMoveInProgress] = useState(false)
-  const [orderInProgress, toggleOrderInProgress] = useState(false)
-  const [priceReset, togglePriceReset] = useState(false)
+  const [orderLines, setOrderLines] = useState<Map<string, IOrderLineAdapter>>(
+    new Map()
+  )
+  const [chartReady, setChartReady] = useState(false)
   const [showOrderLines, toggleShowOrderLines] = useState(true)
   const mangoClient = useMangoStore.getState().connection.client
 
@@ -80,23 +77,24 @@ const TVChartContainer = () => {
 
   useEffect(() => {
     if (
-      tvWidgetRef.current &&
-      // @ts-ignore
-      tvWidgetRef.current._innerAPI() &&
+      chartReady &&
       selectedMarketConfig.name !== tvWidgetRef.current.activeChart().symbol()
     ) {
       tvWidgetRef.current.setSymbol(
         selectedMarketConfig.name,
         defaultProps.interval,
-        () => {}
+        () => {
+          if (showOrderLines) {
+            setOrderLines(drawLinesForMarket())
+          }
+        }
       )
-      setLines(deleteLines())
-      setLines(drawLines())
     }
-  }, [selectedMarketConfig.name])
+  }, [selectedMarketConfig.name, chartReady])
 
   useEffect(() => {
     const widgetOptions: ChartingLibraryWidgetOptions = {
+      debug: true,
       symbol: selectedMarketConfig.name,
       // BEWARE: no trailing slash is expected in feed URL
       // tslint:disable-next-line:no-any
@@ -168,10 +166,10 @@ const TVChartContainer = () => {
 
     const tvWidget = new widget(widgetOptions)
     tvWidgetRef.current = tvWidget
-    setLines(deleteLines())
 
     tvWidgetRef.current.onChartReady(function () {
       const button = tvWidgetRef.current.createButton()
+      setChartReady(true)
       button.textContent = 'OL'
       button.style.color =
         theme === 'Dark' || theme === 'Mango'
@@ -217,6 +215,7 @@ const TVChartContainer = () => {
           selectedMangoGroup,
           selectedMangoAccount,
           wallet,
+          // @ts-ignore
           market,
           order as Order
         )
@@ -240,7 +239,6 @@ const TVChartContainer = () => {
         }
       }
       notify({ title: t('cancel-success'), txid })
-      toggleOrderInProgress(false)
     } catch (e) {
       notify({
         title: t('cancel-error'),
@@ -252,8 +250,6 @@ const TVChartContainer = () => {
     } finally {
       actions.reloadMangoAccount()
       actions.reloadOrders()
-      toggleOrderInProgress(false)
-      toggleMoveInProgress(false)
     }
   }
 
@@ -291,6 +287,7 @@ const TVChartContainer = () => {
           mangoGroup,
           mangoAccount,
           mangoGroup.mangoCache,
+          // @ts-ignore
           market,
           wallet,
           order as Order,
@@ -319,7 +316,6 @@ const TVChartContainer = () => {
       }
 
       notify({ title: t('successfully-placed'), txid })
-      toggleOrderInProgress(false)
     } catch (e) {
       notify({
         title: t('order-error'),
@@ -327,25 +323,21 @@ const TVChartContainer = () => {
         txid: e.txid,
         type: 'error',
       })
-      togglePriceReset(true)
     } finally {
       sleep(1000).then(() => {
         actions.reloadMangoAccount()
         actions.reloadOrders()
-        toggleOrderInProgress(false)
-        toggleMoveInProgress(false)
       })
     }
   }
 
-  function getLine(order, market) {
+  function drawLine(order, market) {
     const orderSizeUi = roundPerpSize(order.size, market.config.baseSymbol)
+    if (!tvWidgetRef.current.chart()) return
     return tvWidgetRef.current
       .chart()
       .createOrderLine({ disableUndo: false })
       .onMove(function () {
-        toggleMoveInProgress(true)
-        toggleOrderInProgress(true)
         const currentOrderPrice = order.price
         const updatedOrderPrice = this.getPrice()
         if (!order.perpTrigger?.clientOrderId) {
@@ -367,8 +359,6 @@ const TVChartContainer = () => {
                 t('tv-chart:slippage-accept'),
               callback: () => {
                 this.setPrice(currentOrderPrice)
-                toggleMoveInProgress(false)
-                toggleOrderInProgress(false)
               },
             })
           } else {
@@ -386,8 +376,6 @@ const TVChartContainer = () => {
                   handleModifyOrder(order, market.account, updatedOrderPrice)
                 } else {
                   this.setPrice(currentOrderPrice)
-                  toggleOrderInProgress(false)
-                  toggleMoveInProgress(false)
                 }
               },
             })
@@ -398,14 +386,11 @@ const TVChartContainer = () => {
             body: t('tv-chart:advanced-order-details'),
             callback: () => {
               this.setPrice(currentOrderPrice)
-              toggleMoveInProgress(false)
-              toggleOrderInProgress(false)
             },
           })
         }
       })
       .onCancel(function () {
-        toggleOrderInProgress(true)
         tvWidgetRef.current.showConfirmDialog({
           title: t('tv-chart:cancel-order'),
           body: t('tv-chart:cancel-order-details', {
@@ -417,8 +402,6 @@ const TVChartContainer = () => {
           callback: (res) => {
             if (res) {
               handleCancelOrder(order, market.account)
-            } else {
-              toggleOrderInProgress(false)
             }
           },
         })
@@ -542,74 +525,60 @@ const TVChartContainer = () => {
     }
   }
 
-  function deleteLines() {
-    tvWidgetRef.current.onChartReady(() => {
-      if (lines?.size > 0) {
-        lines?.forEach((value, key) => {
-          lines.get(key).remove()
-        })
+  const drawLinesForMarket = () => {
+    const newOrderLines = new Map()
+    if (openOrders?.length) {
+      for (const { order, market } of openOrders) {
+        if (market.config.name == selectedMarketName) {
+          newOrderLines.set(order.orderId.toString(), drawLine(order, market))
+        }
       }
-    })
+    }
+    return newOrderLines
+  }
+
+  const deleteLines = () => {
+    if (orderLines.size > 0) {
+      orderLines?.forEach((value, key) => {
+        orderLines.get(key).remove()
+      })
+    }
+
     return new Map()
   }
 
-  function drawLines() {
-    const tempLines = new Map()
-    tvWidgetRef.current.onChartReady(() => {
-      openOrders?.map(({ order, market }) => {
-        if (market.config.name == selectedMarketName) {
-          tempLines.set(order.orderId.toString(), getLine(order, market))
-        }
-      })
-    })
-    return tempLines
-  }
+  useEffect(() => {
+    if (chartReady) {
+      tvWidgetRef.current.onChartReady(() => {
+        let matchingOrderLines = 0
+        let openOrdersForMarket = 0
 
-  useInterval(() => {
-    if (showOrderLines) {
-      if (
-        mangoAccount &&
-        connected &&
-        !moveInProgress &&
-        !orderInProgress &&
-        openOrders?.length > 0
-      ) {
-        let matches = 0
-        let openOrdersInSelectedMarket = 0
-        lines?.forEach((value, key) => {
-          openOrders?.map(({ order }) => {
+        for (const [key] of orderLines) {
+          openOrders?.forEach(({ order }) => {
             if (order.orderId == key) {
-              matches += 1
+              matchingOrderLines += 1
             }
           })
-        })
-
-        openOrders?.map(({ market }) => {
-          if (market.config.name == selectedMarketName) {
-            openOrdersInSelectedMarket += 1
-          }
-        })
-
-        if (
-          lines?.size != openOrdersInSelectedMarket ||
-          matches != openOrdersInSelectedMarket ||
-          (lines?.size > 0 && lines?.size != matches) ||
-          (lines?.size > 0 && !mangoAccount) ||
-          priceReset
-        ) {
-          if (priceReset) {
-            togglePriceReset(false)
-          }
-          setLines(deleteLines())
-          setLines(drawLines())
         }
-      } else if (lines?.size > 0 && !moveInProgress && !orderInProgress) {
-        setLines(deleteLines())
-      }
-    } else if (lines?.size > 0) {
-      setLines(deleteLines())
+
+        openOrders?.forEach(({ market }) => {
+          if (market.config.name == selectedMarketName) {
+            openOrdersForMarket += 1
+          }
+        })
+
+        tvWidgetRef.current.activeChart().dataReady(() => {
+          if (
+            (showOrderLines && matchingOrderLines !== openOrdersForMarket) ||
+            orderLines?.size != matchingOrderLines
+          ) {
+            setOrderLines(deleteLines())
+            setOrderLines(drawLinesForMarket())
+          }
+        })
+      })
     }
-  }, [500])
+  }, [chartReady, openOrders, showOrderLines])
 
   return <div id={defaultProps.containerId} className="tradingview-chart" />
 }
