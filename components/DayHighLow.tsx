@@ -1,18 +1,24 @@
+import useOraclePrice from '../hooks/useOraclePrice'
 import { formatUsdValue } from '../utils'
 import { MarketDataLoader } from './MarketDetails'
 
 interface DayHighLowProps {
   high: number
   low: number
-  latest: number
   isTableView?: boolean
 }
 
-const DayHighLow = ({ high, low, latest, isTableView }: DayHighLowProps) => {
+const DayHighLow = ({ high, low, isTableView }: DayHighLowProps) => {
+  const price = useOraclePrice()
   let rangePercent = 0
+  let latestPrice = 0
+
+  if (price) {
+    latestPrice = price?.toNumber()
+  }
 
   if (high) {
-    rangePercent = ((latest - low) * 100) / (high - low)
+    rangePercent = ((latestPrice - low) * 100) / (high - low)
   }
 
   return (
