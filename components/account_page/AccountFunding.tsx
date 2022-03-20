@@ -275,7 +275,13 @@ const AccountFunding = () => {
                             }`}
                           >
                             {stats.total_funding
-                              ? `${stats.total_funding?.toFixed(6)}`
+                              ? `${stats.total_funding?.toLocaleString(
+                                  undefined,
+                                  {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                  }
+                                )}`
                               : '-'}
                           </div>
                         </Td>

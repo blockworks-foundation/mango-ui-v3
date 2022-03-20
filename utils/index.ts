@@ -322,3 +322,10 @@ export function patchInternalMarketName(marketName: string) {
   }
   return marketName
 }
+
+export function roundPerpSize(size: number, symbol: string) {
+  return Math.abs(size).toLocaleString(undefined, {
+    minimumFractionDigits: perpContractPrecision[symbol],
+    maximumFractionDigits: perpContractPrecision[symbol],
+  })
+}
