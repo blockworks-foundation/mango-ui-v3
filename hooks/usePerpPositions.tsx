@@ -8,7 +8,6 @@ import {
   PerpMarket,
   PerpMarketConfig,
 } from '@blockworks-foundation/mango-client'
-import useTradeHistory from './useTradeHistory'
 import {
   mangoCacheSelector,
   mangoGroupConfigSelector,
@@ -92,7 +91,7 @@ const usePerpPositions = () => {
   const mangoGroup = useMangoStore(mangoGroupSelector)
   const mangoCache = useMangoStore(mangoCacheSelector)
   const allMarkets = useMangoStore(marketsSelector)
-  const tradeHistory = useTradeHistory()
+  const tradeHistory = useMangoStore.getState().tradeHistory.parsed
 
   useEffect(() => {
     if (

@@ -198,6 +198,7 @@ export type MangoStore = {
   tradeHistory: {
     spot: any[]
     perp: any[]
+    parsed: any[]
   }
   set: (x: (x: MangoStore) => void) => void
   actions: {
@@ -330,6 +331,7 @@ const useMangoStore = create<
       tradeHistory: {
         spot: [],
         perp: [],
+        parsed: [],
       },
       set: (fn) => set(produce(fn)),
       actions: {
