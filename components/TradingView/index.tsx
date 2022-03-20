@@ -5,7 +5,6 @@ import {
   ChartingLibraryWidgetOptions,
   IChartingLibraryWidget,
   ResolutionString,
-  IOrderLineAdapter,
 } from '../../public/charting_library'
 import { CHART_DATA_FEED } from '../../utils/chartDataConnector'
 import useMangoStore from '../../stores/useMangoStore'
@@ -15,12 +14,9 @@ import { Order, Market } from '@project-serum/serum/lib/market'
 import { PerpOrder, PerpMarket } from '@blockworks-foundation/mango-client'
 import { notify } from '../../utils/notifications'
 import { sleep, formatUsdValue, usdFormatter, roundPerpSize } from '../../utils'
-// import useInterval from '../../hooks/useInterval'
 import { PerpTriggerOrder } from '../../@types/types'
 import { useTranslation } from 'next-i18next'
-
-// This is a basic example of how to create a TV widget
-// You can add more feature such as storing charts in localStorage
+import useLocalStorageState from '../../hooks/useLocalStorageState'
 
 export interface ChartContainerProps {
   symbol: ChartingLibraryWidgetOptions['symbol']
@@ -38,23 +34,28 @@ export interface ChartContainerProps {
   theme: string
 }
 
+const SHOW_ORDER_LINES_KEY = 'showOrderLines-0.1'
+
 const TVChartContainer = () => {
   const { t } = useTranslation(['common', 'tv-chart'])
-  const selectedMarketConfig = useMangoStore((s) => s.selectedMarket.config)
   const { theme } = useTheme()
   const { width } = useViewport()
-  const isMobile = width ? width < breakpoints.sm : false
+  const [chartReady, setChartReady] = useState(false)
+  const [showOrderLinesLocalStorage, toggleShowOrderLinesLocalStorage] =
+    useLocalStorageState(SHOW_ORDER_LINES_KEY, true)
+  const [showOrderLines, toggleShowOrderLines] = useState(
+    showOrderLinesLocalStorage
+  )
 
-  const selectedMarketName = selectedMarketConfig.name
+  const setMangoStore = useMangoStore.getState().set
+  const selectedMarketConfig = useMangoStore((s) => s.selectedMarket.config)
   const openOrders = useMangoStore((s) => s.selectedMangoAccount.openOrders)
   const actions = useMangoStore((s) => s.actions)
   const selectedMarketPrice = useMangoStore((s) => s.selectedMarket.markPrice)
-  const [orderLines, setOrderLines] = useState<Map<string, IOrderLineAdapter>>(
-    new Map()
-  )
-  const [chartReady, setChartReady] = useState(false)
-  const [showOrderLines, toggleShowOrderLines] = useState(true)
+
+  const isMobile = width ? width < breakpoints.sm : false
   const mangoClient = useMangoStore.getState().connection.client
+  const selectedMarketName = selectedMarketConfig.name
 
   // @ts-ignore
   const defaultProps: ChartContainerProps = {
@@ -76,6 +77,12 @@ const TVChartContainer = () => {
   const tvWidgetRef = useRef<IChartingLibraryWidget | null>(null)
 
   useEffect(() => {
+    if (showOrderLines !== showOrderLinesLocalStorage) {
+      toggleShowOrderLinesLocalStorage(showOrderLines)
+    }
+  }, [showOrderLines])
+
+  useEffect(() => {
     if (
       chartReady &&
       selectedMarketConfig.name !== tvWidgetRef.current.activeChart().symbol()
@@ -85,7 +92,8 @@ const TVChartContainer = () => {
         defaultProps.interval,
         () => {
           if (showOrderLines) {
-            setOrderLines(drawLinesForMarket())
+            deleteLines()
+            drawLinesForMarket()
           }
         }
       )
@@ -94,7 +102,7 @@ const TVChartContainer = () => {
 
   useEffect(() => {
     const widgetOptions: ChartingLibraryWidgetOptions = {
-      debug: true,
+      // debug: true,
       symbol: selectedMarketConfig.name,
       // BEWARE: no trailing slash is expected in feed URL
       // tslint:disable-next-line:no-any
@@ -171,31 +179,40 @@ const TVChartContainer = () => {
       const button = tvWidgetRef.current.createButton()
       setChartReady(true)
       button.textContent = 'OL'
-      button.style.color =
-        theme === 'Dark' || theme === 'Mango'
-          ? 'rgb(242, 201, 76)'
-          : 'rgb(255, 156, 36)'
+      if (showOrderLinesLocalStorage) {
+        button.style.color =
+          theme === 'Dark' || theme === 'Mango'
+            ? 'rgb(242, 201, 76)'
+            : 'rgb(255, 156, 36)'
+      } else {
+        button.style.color =
+          theme === 'Dark' || theme === 'Mango'
+            ? 'rgb(138, 138, 138)'
+            : 'rgb(138, 138, 138)'
+      }
       button.setAttribute('title', t('tv-chart:toggle-order-line'))
-      button.addEventListener('click', function () {
-        toggleShowOrderLines((showOrderLines) => !showOrderLines)
-        if (
-          button.style.color === 'rgb(255, 156, 36)' ||
-          button.style.color === 'rgb(242, 201, 76)'
-        ) {
-          button.style.color =
-            theme === 'Dark' || theme === 'Mango'
-              ? 'rgb(138, 138, 138)'
-              : 'rgb(138, 138, 138)'
-        } else {
-          button.style.color =
-            theme === 'Dark' || theme === 'Mango'
-              ? 'rgb(242, 201, 76)'
-              : 'rgb(255, 156, 36)'
-        }
-      })
+      button.addEventListener('click', toggleOrderLines)
     })
     //eslint-disable-next-line
   }, [theme, isMobile])
+
+  function toggleOrderLines() {
+    toggleShowOrderLines((prevState) => !prevState)
+    if (
+      this.style.color === 'rgb(255, 156, 36)' ||
+      this.style.color === 'rgb(242, 201, 76)'
+    ) {
+      this.style.color =
+        theme === 'Dark' || theme === 'Mango'
+          ? 'rgb(138, 138, 138)'
+          : 'rgb(138, 138, 138)'
+    } else {
+      this.style.color =
+        theme === 'Dark' || theme === 'Mango'
+          ? 'rgb(242, 201, 76)'
+          : 'rgb(255, 156, 36)'
+    }
+  }
 
   const handleCancelOrder = async (
     order: Order | PerpOrder | PerpTriggerOrder,
@@ -453,8 +470,6 @@ const TVChartContainer = () => {
       .setCancelButtonBackgroundColor(
         theme === 'Dark' ? '#1B1B1F' : theme === 'Light' ? '#fff' : '#1D1832'
       )
-      .setBodyFont('Lato, sans-serif')
-      .setQuantityFont('Lato, sans-serif')
       .setLineColor(
         order.perpTrigger?.clientOrderId
           ? '#FF9C24'
@@ -534,21 +549,37 @@ const TVChartContainer = () => {
         }
       }
     }
-    return newOrderLines
+
+    setMangoStore((state) => {
+      state.tradingView.orderLines = newOrderLines
+    })
   }
 
   const deleteLines = () => {
+    const orderLines = useMangoStore.getState().tradingView.orderLines
+
     if (orderLines.size > 0) {
       orderLines?.forEach((value, key) => {
         orderLines.get(key).remove()
       })
-    }
 
-    return new Map()
+      setMangoStore((state) => {
+        state.tradingView.orderLines = new Map()
+      })
+    }
   }
 
+  // delete order lines if showOrderLines button is toggled
+  useEffect(() => {
+    if (!showOrderLines) {
+      deleteLines()
+    }
+  }, [showOrderLines])
+
+  // updated order lines if a user's open orders change
   useEffect(() => {
     if (chartReady) {
+      const orderLines = useMangoStore.getState().tradingView.orderLines
       tvWidgetRef.current.onChartReady(() => {
         let matchingOrderLines = 0
         let openOrdersForMarket = 0
@@ -572,8 +603,8 @@ const TVChartContainer = () => {
             (showOrderLines && matchingOrderLines !== openOrdersForMarket) ||
             orderLines?.size != matchingOrderLines
           ) {
-            setOrderLines(deleteLines())
-            setOrderLines(drawLinesForMarket())
+            deleteLines()
+            drawLinesForMarket()
           }
         })
       })
