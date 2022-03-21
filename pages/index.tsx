@@ -102,6 +102,11 @@ const PerpMarket = () => {
         groupConfig,
         marketBaseSymbol.toUpperCase()
       )
+
+      if (!newMarket?.baseSymbol) {
+        router.push('/')
+        return
+      }
     }
 
     if (newMarket?.name === marketConfig?.name) return
