@@ -18,7 +18,7 @@ import MarketNavItem from './MarketNavItem'
 import useMangoStore from '../stores/useMangoStore'
 
 const initialMenuCategories = [
-  { name: 'Perp', desc: 'perp-desc' },
+  { name: 'Futures', desc: 'perp-desc' },
   { name: 'Spot', desc: 'spot-desc' },
 ]
 
@@ -26,7 +26,7 @@ export const FAVORITE_MARKETS_KEY = 'favoriteMarkets'
 
 const TradeNavMenu = () => {
   const [favoriteMarkets] = useLocalStorageState(FAVORITE_MARKETS_KEY, [])
-  const [activeMenuCategory, setActiveMenuCategory] = useState('Perp')
+  const [activeMenuCategory, setActiveMenuCategory] = useState('Futures')
   const [menuCategories, setMenuCategories] = useState(initialMenuCategories)
   const buttonRef = useRef(null)
   const { t } = useTranslation('common')
@@ -51,7 +51,7 @@ const TradeNavMenu = () => {
 
   const markets = useMemo(
     () =>
-      activeMenuCategory === 'Perp'
+      activeMenuCategory === 'Futures'
         ? perpMarketsInfo
         : activeMenuCategory === 'Spot'
         ? spotMarketsInfo
@@ -68,7 +68,7 @@ const TradeNavMenu = () => {
     if (favoriteMarkets.length > 0) {
       setActiveMenuCategory('Favorites')
     } else {
-      setActiveMenuCategory('Perp')
+      setActiveMenuCategory('Futures')
     }
   }
 
@@ -105,7 +105,7 @@ const TradeNavMenu = () => {
         menuCategories.filter((cat) => cat.name !== 'Favorites')
       )
       if (activeMenuCategory === 'Favorites') {
-        setActiveMenuCategory('Perp')
+        setActiveMenuCategory('Futures')
       }
     }
   }, [favoriteMarkets])
@@ -146,8 +146,8 @@ const TradeNavMenu = () => {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Popover.Panel className="absolute grid grid-cols-3 grid-rows-1 min-h-[235px] top-14 w-[760px]">
-              <div className="bg-th-bkg-4 col-span-1 rounded-bl-lg">
+            <Popover.Panel className="absolute top-14 grid min-h-[235px] w-[760px] grid-cols-3 grid-rows-1">
+              <div className="col-span-1 rounded-bl-lg bg-th-bkg-4">
                 <MenuCategories
                   activeCategory={activeMenuCategory}
                   categories={menuCategories}
