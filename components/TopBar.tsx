@@ -13,25 +13,18 @@ import { DEFAULT_MARKET_KEY, initialMarket } from './SettingsModal'
 import { useTranslation } from 'next-i18next'
 import Settings from './Settings'
 import TradeNavMenu from './TradeNavMenu'
-import { CalculatorIcon, LightBulbIcon } from '@heroicons/react/outline'
+import {
+  CalculatorIcon,
+  LightBulbIcon,
+  UserAddIcon,
+} from '@heroicons/react/outline'
 import { MangoIcon } from './icons'
 
-// const StyledNewLabel = ({ children, ...props }) => (
-//   <div style={{ fontSize: '0.5rem', marginLeft: '1px' }} {...props}>
-//     {children}
-//   </div>
-// )
-
-// <div className="relative">
-//   <MenuItem href="/referral">
-//     {t('referrals')}
-//     <div className="absolute flex items-center justify-center h-4 px-1.5 bg-gradient-to-br from-red-500 to-yellow-500 rounded-full -right-3 -top-3">
-//       <StyledNewLabel className="text-white uppercase">
-//         new
-//       </StyledNewLabel>
-//     </div>
-//   </MenuItem>
-// </div>
+const StyledNewLabel = ({ children, ...props }) => (
+  <div style={{ fontSize: '0.5rem', marginLeft: '1px' }} {...props}>
+    {children}
+  </div>
+)
 
 const TopBar = () => {
   const { t } = useTranslation('common')
@@ -69,14 +62,29 @@ const TopBar = () => {
               >
                 <TradeNavMenu />
                 <MenuItem href="/account">{t('account')}</MenuItem>
+                <div className="relative">
+                  <MenuItem href="/markets">
+                    {t('markets')}
+                    <div className="absolute -right-3 -top-3 flex h-4 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-yellow-500 px-1.5">
+                      <StyledNewLabel className="uppercase text-white">
+                        new
+                      </StyledNewLabel>
+                    </div>
+                  </MenuItem>
+                </div>
                 <MenuItem href="/borrow">{t('borrow')}</MenuItem>
                 <MenuItem href="/swap">{t('swap')}</MenuItem>
                 <MenuItem href="/stats">{t('stats')}</MenuItem>
-                <MenuItem href="/referral">{t('referrals')}</MenuItem>
                 <NavDropMenu
                   menuTitle={t('more')}
                   // linksArray: [name: string, href: string, isExternal: boolean]
                   linksArray={[
+                    [
+                      t('referrals'),
+                      '/referral',
+                      false,
+                      <UserAddIcon className="h-4 w-4" key="calculator" />,
+                    ],
                     [
                       t('calculator'),
                       '/risk-calculator',

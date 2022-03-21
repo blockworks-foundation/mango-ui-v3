@@ -27,7 +27,7 @@ import {
 } from '@blockworks-foundation/mango-client'
 import { AccountInfo, Commitment, Connection, PublicKey } from '@solana/web3.js'
 import { EndpointInfo, WalletAdapter } from '../@types/types'
-import { isDefined, patchInternalMarketName, zipDict } from '../utils'
+import { isDefined, zipDict } from '../utils'
 import { Notification, notify } from '../utils/notifications'
 import { LAST_ACCOUNT_KEY } from '../components/AccountsModal'
 import {
@@ -38,6 +38,7 @@ import {
 import { MSRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
 import { getProfilePicture, ProfilePicture } from '@solflare-wallet/pfp'
 import { decodeBook } from '../hooks/useHydrateStore'
+import { IOrderLineAdapter } from '../public/charting_library/charting_library'
 
 export const ENDPOINTS: EndpointInfo[] = [
   {
@@ -157,6 +158,10 @@ export type MangoStore = {
     cache: MangoCache | null
   }
   mangoAccounts: MangoAccount[]
+  referrals: {
+    total: number
+    history: any[]
+  }
   referrerPk: PublicKey | null
   selectedMangoAccount: {
     current: MangoAccount | null
@@ -198,6 +203,7 @@ export type MangoStore = {
   tradeHistory: {
     spot: any[]
     perp: any[]
+    parsed: any[]
   }
   set: (x: (x: MangoStore) => void) => void
   actions: {
@@ -213,7 +219,10 @@ export type MangoStore = {
     submitting: boolean
     success: string
   }
-  marketInfo: any[]
+  marketsInfo: any[]
+  tradingView: {
+    orderLines: Map<string, IOrderLineAdapter>
+  }
 }
 
 const useMangoStore = create<
@@ -252,7 +261,7 @@ const useMangoStore = create<
       maxStoredBlockhashes: CLUSTER === 'devnet' ? 1 : 3,
     })
     return {
-      marketInfo: [],
+      marketsInfo: [],
       notificationIdCounter: 0,
       notifications: [],
       accountInfos: {},
@@ -287,6 +296,10 @@ const useMangoStore = create<
       },
       mangoGroups: [],
       mangoAccounts: [],
+      referrals: {
+        total: 0,
+        history: [],
+      },
       referrerPk: null,
       selectedMangoAccount: {
         current: null,
@@ -330,6 +343,10 @@ const useMangoStore = create<
       tradeHistory: {
         spot: [],
         perp: [],
+        parsed: [],
+      },
+      tradingView: {
+        orderLines: new Map(),
       },
       set: (fn) => set(produce(fn)),
       actions: {
@@ -570,7 +587,6 @@ const useMangoStore = create<
                   }
                 )
               })
-              // actions.fetchMarketInfo()
             })
             .catch((err) => {
               if (mangoGroupRetryAttempt < 2) {
@@ -740,6 +756,28 @@ const useMangoStore = create<
           } catch (err) {
             console.log('Error fetching fills:', err)
           }
+        },
+        async loadReferralData() {
+          const set = get().set
+          const mangoAccount = get().selectedMangoAccount.current
+          const pk = mangoAccount.publicKey.toString()
+
+          const getData = async (type: 'history' | 'total') => {
+            const res = await fetch(
+              `https://mango-transaction-log.herokuapp.com/v3/stats/referral-fees-${type}?referrer-account=${pk}`
+            )
+            const data =
+              type === 'history' ? await res.json() : await res.text()
+            return data
+          }
+
+          const data = await getData('history')
+          const totalBalance = await getData('total')
+
+          set((state) => {
+            state.referrals.total = parseFloat(totalBalance)
+            state.referrals.history = data
+          })
         },
         async fetchMangoGroupCache() {
           const set = get().set
@@ -924,30 +962,14 @@ const useMangoStore = create<
             })
           }
         },
-        async fetchMarketInfo() {
+        async fetchMarketsInfo() {
           const set = get().set
-          const marketInfos = []
-          const groupConfig = get().selectedMangoGroup.config
-          const markets = [
-            ...groupConfig.spotMarkets,
-            ...groupConfig.perpMarkets,
-          ]
-
-          if (!markets) return
-
-          await Promise.all(
-            markets.map(async (market) => {
-              const response = await fetch(
-                `https://event-history-api-candles.herokuapp.com/markets/${patchInternalMarketName(
-                  market.name
-                )}`
-              )
-              const parsedResponse = await response.json()
-              marketInfos.push(parsedResponse)
-            })
+          const data = await fetch(
+            `https://mango-all-markets-api.herokuapp.com/markets/`
           )
+          const parsedMarketsInfo = await data.json()
           set((state) => {
-            state.marketInfo = marketInfos
+            state.marketsInfo = parsedMarketsInfo
           })
         },
       },
