@@ -1,6 +1,5 @@
 import { ArrowSmDownIcon } from '@heroicons/react/solid'
 import BN from 'bn.js'
-import useTradeHistory from '../hooks/useTradeHistory'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import SideBadge from './SideBadge'
@@ -58,14 +57,20 @@ const TradeHistoryTable = ({
   const { t } = useTranslation('common')
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const { asPath } = useRouter()
-  const tradeHistory = useTradeHistory({ excludePerpLiquidations: true })
   const { width } = useViewport()
+  const tradeHistoryAndLiquidations = useMangoStore(
+    (state) => state.tradeHistory.parsed
+  )
+  const tradeHistory = tradeHistoryAndLiquidations.filter(
+    (t) => !('liqor' in t)
+  )
   const isMobile = width ? width < breakpoints.md : false
   const [filters, setFilters] = useState({})
   const [showFiltersModal, setShowFiltersModal] = useState(false)
   const [loadExportData, setLoadExportData] = useState(false)
 
   const filteredData = useFilteredData(tradeHistory, filters)
+  const initialLoad = useMangoStore((s) => s.tradeHistory.initialLoad)
 
   const {
     paginatedData,
@@ -140,8 +145,9 @@ const TradeHistoryTable = ({
     <>
       <div className="flex items-center justify-between pb-3">
         <div className="flex items-center">
-          <h4 className="mb-0 text-th-fgd-1">
-            {data.length} {data.length === 1 ? 'Trade' : 'Trades'}
+          <h4 className="mb-0 flex items-center text-th-fgd-1">
+            {!initialLoad ? <Loading className="mr-2" /> : data.length}{' '}
+            {data.length === 1 ? 'Trade' : 'Trades'}
           </h4>
           <Tooltip
             content={
@@ -171,7 +177,9 @@ const TradeHistoryTable = ({
               Reset Filters
             </LinkButton>
           ) : null}
-          {tradeHistory.length >= 15 && tradeHistory.length <= 10000 ? (
+          {tradeHistory.length >= 15 &&
+          tradeHistory.length <= 10000 &&
+          initialLoad ? (
             <Button
               className="flex h-8 items-center justify-center whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs"
               onClick={() => setShowFiltersModal(true)}
