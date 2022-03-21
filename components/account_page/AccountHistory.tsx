@@ -155,45 +155,51 @@ export default function AccountHistory() {
             {t('use-explorer-three')}
           </div>
         </div>
-        {(view === 'Trades' && canWithdraw) ? (
-          <Button
-            className={`flex h-8 items-center justify-center whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs`}
-            onClick={exportPerformanceDataToCSV}
-          >
-            {loadExportData ? (
-              <Loading />
-            ) : (
+        <div className="flex space-x-3">
+          {view === 'Trades' && canWithdraw ? (
+            <Button
+              className={`flex h-8 items-center justify-center whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs`}
+              onClick={exportPerformanceDataToCSV}
+            >
+              {loadExportData ? (
+                <Loading />
+              ) : (
+                <div className={`flex items-center`}>
+                  <SaveIcon className={`mr-1.5 h-4 w-4`} />
+                  {t('export-pnl-csv')}
+                </div>
+              )}
+            </Button>
+          ) : null}
+          {view !== 'Trades' ? (
+            <Button
+              className={`flex h-8 items-center justify-center whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs`}
+              onClick={exportHistoryToCSV}
+            >
               <div className={`flex items-center`}>
                 <SaveIcon className={`mr-1.5 h-4 w-4`} />
-                {t('export-pnl-csv')}
+                {t('export-data')}
               </div>
-            )}
-          </Button>
-        ) : null}
-        {view !== 'Trades' ? (
-          <Button
-            className={`flex h-8 items-center justify-center whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs`}
-            onClick={exportHistoryToCSV}
-          >
+            </Button>
+          ) : canWithdraw ? (
             <div className={`flex items-center`}>
-              <SaveIcon className={`mr-1.5 h-4 w-4`} />
-              {t('export-data')}
+              <a
+                className={`default-transition flex h-8 items-center justify-center whitespace-nowrap rounded-full bg-th-bkg-button pt-0 pb-0 pl-3 pr-3 text-xs font-bold text-th-fgd-1 hover:text-th-fgd-1 hover:brightness-[1.1]`}
+                href={`https://event-history-api.herokuapp.com/all_trades_csv?mango_account=${mangoAccountPk}&open_orders=${mangoAccount.spotOpenOrders
+                  .filter(
+                    (e) => e.toString() !== '11111111111111111111111111111111'
+                  )
+                  .join(',')}`}
+              >
+                <SaveIcon className={`mr-1.5 h-4 w-4`} />
+                Export Trades CSV
+              </a>
+              <Tooltip content={t('trade-export-disclaimer')}>
+                <InformationCircleIcon className="ml-1.5 h-5 w-5 cursor-help text-th-fgd-3" />
+              </Tooltip>
             </div>
-          </Button>
-        ) : canWithdraw ? (
-          <Button
-          className={`flex h-8 items-center justify-center whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs`}
-          >
-            <div className={`flex items-center`}>
-              <SaveIcon className={`mr-1.5 h-4 w-4`} />
-              <a href={`https://event-history-api.herokuapp.com/all_trades_csv?mango_account=${mangoAccountPk}&open_orders=${mangoAccount.spotOpenOrders.filter(e => e.toString() !== '11111111111111111111111111111111').join(',')}`}
-              >Export Trades CSV</a>  
-            </div>
-            <Tooltip content={t('trade-export-disclaimer')}>
-              <InformationCircleIcon className="ml-1.5 h-5 w-5 cursor-help text-th-fgd-3" />
-            </Tooltip>
-          </Button>
-        ) : null}
+          ) : null}
+        </div>
       </div>
       <ViewContent view={view} history={history} />
     </>
