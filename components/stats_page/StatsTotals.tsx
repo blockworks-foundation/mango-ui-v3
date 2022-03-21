@@ -409,8 +409,8 @@ export default function StatsTotals({ latestStats, stats }) {
               {t('average-deposit')}
             </div>
             {stats.length > 1
-              ? latestStats.map((stat, index) => (
-                  <Row key={stat.name} index={index}>
+              ? latestStats.map((stat) => (
+                  <Row key={stat.name}>
                     <div className="grid grid-cols-12 grid-rows-2 gap-2 text-left sm:grid-rows-1 sm:text-right">
                       <div className="text-fgd-1 col-span-12 flex items-center sm:col-span-3">
                         <div className="flex items-center">
@@ -447,8 +447,8 @@ export default function StatsTotals({ latestStats, stats }) {
             {t('average-borrow')}
           </div>
           {stats.length > 1
-            ? latestStats.map((stat, index) => (
-                <Row key={stat.name} index={index}>
+            ? latestStats.map((stat) => (
+                <Row key={stat.name}>
                   <div className="grid grid-cols-12 grid-rows-2 gap-2 text-left sm:grid-rows-1 sm:text-right">
                     <div className="text-fgd-1 col-span-12 flex items-center sm:col-span-3">
                       <div className="flex items-center">

@@ -86,15 +86,12 @@ export const ExpandableRow = ({
 
 type RowProps = {
   children: React.ReactNode
-  index: number
 }
 
-export const Row = ({ children, index }: RowProps) => {
+export const Row = ({ children }: RowProps) => {
   return (
     <div
-      className={`${
-        index % 2 === 0 ? `bg-th-bkg-3` : `bg-th-bkg-4`
-      } default-transition w-full rounded-none p-4 font-normal text-th-fgd-1`}
+      className={`default-transition w-full rounded-none border-t border-th-bkg-4 p-4 font-normal text-th-fgd-1`}
     >
       {children}
     </div>
