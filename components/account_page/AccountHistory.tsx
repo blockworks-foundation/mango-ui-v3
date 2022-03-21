@@ -15,7 +15,6 @@ import { useSortableData } from '../../hooks/useSortableData'
 import { formatUsdValue } from '../../utils'
 import { exportDataToCSV } from '../../utils/export'
 import { notify } from '../../utils/notifications'
-import useTradeHistory from '../../hooks/useTradeHistory'
 import Button from '../Button'
 import Loading from '../Loading'
 import { fetchHourlyPerformanceStats } from './AccountOverview'
@@ -35,7 +34,6 @@ export default function AccountHistory() {
 
   const wallet = useMangoStore((s) => s.wallet.current)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
-  const tradeHistory = useTradeHistory({ excludePerpLiquidations: true })
 
   const mangoAccountPk = useMemo(() => {
     console.log('new mango account')
@@ -86,6 +84,11 @@ export default function AccountHistory() {
     let headers
 
     if (view == 'Trades') {
+      // filter liquidations from history
+      const tradeHistory = useMangoStore
+        .getState()
+        .tradeHistory.parsed.filter((t) => !('liqor' in t))
+
       dataToExport = tradeHistory.map((trade) => {
         const timestamp = new Date(trade.loadTimestamp)
         return {

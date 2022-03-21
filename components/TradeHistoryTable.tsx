@@ -1,6 +1,5 @@
 import { ArrowSmDownIcon } from '@heroicons/react/solid'
 import BN from 'bn.js'
-import useTradeHistory from '../hooks/useTradeHistory'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import SideBadge from './SideBadge'
@@ -15,6 +14,7 @@ import { useTranslation } from 'next-i18next'
 import Pagination from './Pagination'
 import usePagination from '../hooks/usePagination'
 import { useEffect } from 'react'
+import useMangoStore from '../stores/useMangoStore'
 
 const renderTradeDateTime = (timestamp: BN | string) => {
   let date
@@ -37,8 +37,13 @@ const renderTradeDateTime = (timestamp: BN | string) => {
 const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
   const { t } = useTranslation('common')
   const { asPath } = useRouter()
-  const tradeHistory = useTradeHistory({ excludePerpLiquidations: true })
   const { width } = useViewport()
+  const tradeHistoryAndLiquidations = useMangoStore(
+    (state) => state.tradeHistory.parsed
+  )
+  const tradeHistory = tradeHistoryAndLiquidations.filter(
+    (t) => !('liqor' in t)
+  )
   const isMobile = width ? width < breakpoints.md : false
 
   const {

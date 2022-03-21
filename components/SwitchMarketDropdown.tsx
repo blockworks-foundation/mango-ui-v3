@@ -72,7 +72,7 @@ const SwitchMarketDropdown = () => {
                 alt=""
                 width="24"
                 height="24"
-                src={`/assets/icons/${baseSymbol.toLowerCase()}.svg`}
+                src={`/assets/icons/${baseSymbol?.toLowerCase()}.svg`}
                 className={`mr-2.5`}
               />
 

@@ -25,6 +25,7 @@ import {
   ReferrerIdRecordLayout,
   ReferrerIdRecord,
 } from '@blockworks-foundation/mango-client'
+import useTradeHistory from '../hooks/useTradeHistory'
 
 const MangoStoreUpdater = () => {
   useHydrateStore()
@@ -43,6 +44,11 @@ const OpenOrdersStoreUpdater = () => {
 
 const PerpPositionsStoreUpdater = () => {
   usePerpPositions()
+  return null
+}
+
+const TradeHistoryStoreUpdater = () => {
+  useTradeHistory()
   return null
 }
 
@@ -156,6 +162,7 @@ function App({ Component, pageProps }) {
           <WalletStoreUpdater />
           <OpenOrdersStoreUpdater />
           <PerpPositionsStoreUpdater />
+          <TradeHistoryStoreUpdater />
           <FetchReferrer />
         </ErrorBoundary>
 

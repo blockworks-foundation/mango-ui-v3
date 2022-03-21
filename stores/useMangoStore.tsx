@@ -38,6 +38,7 @@ import {
 import { MSRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
 import { getProfilePicture, ProfilePicture } from '@solflare-wallet/pfp'
 import { decodeBook } from '../hooks/useHydrateStore'
+import { IOrderLineAdapter } from '../public/charting_library/charting_library'
 
 export const ENDPOINTS: EndpointInfo[] = [
   {
@@ -202,6 +203,7 @@ export type MangoStore = {
   tradeHistory: {
     spot: any[]
     perp: any[]
+    parsed: any[]
   }
   set: (x: (x: MangoStore) => void) => void
   actions: {
@@ -218,6 +220,9 @@ export type MangoStore = {
     success: string
   }
   marketsInfo: any[]
+  tradingView: {
+    orderLines: Map<string, IOrderLineAdapter>
+  }
 }
 
 const useMangoStore = create<
@@ -338,6 +343,10 @@ const useMangoStore = create<
       tradeHistory: {
         spot: [],
         perp: [],
+        parsed: [],
+      },
+      tradingView: {
+        orderLines: new Map(),
       },
       set: (fn) => set(produce(fn)),
       actions: {
