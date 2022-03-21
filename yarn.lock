@@ -1020,10 +1020,10 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@blockworks-foundation/mango-client@^3.3.24":
-  version "3.3.24"
-  resolved "https://registry.yarnpkg.com/@blockworks-foundation/mango-client/-/mango-client-3.3.24.tgz#9bc95874b3b74c3b772a01b7fd9245c5992bb5b9"
-  integrity sha512-F66+myxgzZRu4Lm3ePlanOXoypzIVJLV+0RAIj/bwCU+oP/hj6IWAfxWxaNflTCB1O9gU3e8mWrpq4StJ7Zjtg==
+"@blockworks-foundation/mango-client@^3.3.25":
+  version "3.3.25"
+  resolved "https://registry.yarnpkg.com/@blockworks-foundation/mango-client/-/mango-client-3.3.25.tgz#7eb1dcb639c265d41436ff4809ea9b8e606b1a1c"
+  integrity sha512-N/jiqNWOi1X0cvOAsbaLj5N7oWWSaJIxzYe68VasS5a4FK/DpkUM0TSOGBvvrkcuFkp+t5TAzF1VcTCNPTXeOw==
   dependencies:
     "@project-serum/anchor" "^0.21.0"
     "@project-serum/serum" "0.13.55"
@@ -1035,6 +1035,7 @@
     buffer-layout "^1.2.1"
     cross-fetch "^3.1.5"
     dotenv "^10.0.0"
+    toformat "^2.0.0"
     yargs "^17.0.1"
 
 "@eslint/eslintrc@^0.4.3":
