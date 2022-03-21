@@ -157,6 +157,10 @@ export type MangoStore = {
     cache: MangoCache | null
   }
   mangoAccounts: MangoAccount[]
+  referrals: {
+    total: number
+    history: any[]
+  }
   referrerPk: PublicKey | null
   selectedMangoAccount: {
     current: MangoAccount | null
@@ -287,6 +291,10 @@ const useMangoStore = create<
       },
       mangoGroups: [],
       mangoAccounts: [],
+      referrals: {
+        total: 0,
+        history: [],
+      },
       referrerPk: null,
       selectedMangoAccount: {
         current: null,
@@ -739,6 +747,28 @@ const useMangoStore = create<
           } catch (err) {
             console.log('Error fetching fills:', err)
           }
+        },
+        async loadReferralData() {
+          const set = get().set
+          const mangoAccount = get().selectedMangoAccount.current
+          const pk = mangoAccount.publicKey.toString()
+
+          const getData = async (type: 'history' | 'total') => {
+            const res = await fetch(
+              `https://mango-transaction-log.herokuapp.com/v3/stats/referral-fees-${type}?referrer-account=${pk}`
+            )
+            const data =
+              type === 'history' ? await res.json() : await res.text()
+            return data
+          }
+
+          const data = await getData('history')
+          const totalBalance = await getData('total')
+
+          set((state) => {
+            state.referrals.total = parseFloat(totalBalance)
+            state.referrals.history = data
+          })
         },
         async fetchMangoGroupCache() {
           const set = get().set
