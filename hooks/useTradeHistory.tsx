@@ -1,5 +1,6 @@
 import { getMarketByPublicKey } from '@blockworks-foundation/mango-client'
 import { PublicKey } from '@solana/web3.js'
+import BigNumber from 'bignumber.js'
 import { useEffect } from 'react'
 import {
   fillsSelector,
@@ -8,7 +9,7 @@ import {
   marketConfigSelector,
 } from '../stores/selectors'
 import useMangoStore from '../stores/useMangoStore'
-import { roundPerpSize } from '../utils'
+import { perpContractPrecision } from '../utils'
 
 const byTimestamp = (a, b) => {
   return (
@@ -36,27 +37,20 @@ const parsedPerpEvent = (mangoAccountPk: PublicKey, event) => {
   const value = event.quantity * event.price
   const feeRate = maker ? event.makerFee : event.takerFee
   const side = maker ? reverseSide(event.takerSide) : event.takerSide
-  const allMarkets = useMangoStore.getState().selectedMangoGroup.markets
-  const market = allMarkets[event.address]
-  const mangoGroupConfig = useMangoStore.getState().selectedMangoGroup.config
-
-  let size = event.quantity
-  if (market && event.address) {
-    const marketInfo = getMarketByPublicKey(mangoGroupConfig, event.address)
-    const basePositionUi = roundPerpSize(size, marketInfo.baseSymbol)
-    size = basePositionUi
-  }
+  const marketName = getMarketName(event)
+  const sizeDecimalCount = perpContractPrecision[marketName.split('-')[0]]
+  const size = new BigNumber(event.quantity).toFormat(sizeDecimalCount)
 
   return {
     ...event,
     key: orderId?.toString(),
     liquidity: maker ? 'Maker' : 'Taker',
-    size: size,
+    size,
     price: event.price,
     value,
     feeCost: (feeRate * value).toFixed(4),
     side,
-    marketName: getMarketName(event),
+    marketName,
   }
 }
 
@@ -77,8 +71,8 @@ const parsedSerumEvent = (event) => {
   }
 }
 
-const formatTradeHistory = (mangoAccountPk: PublicKey, newTradeHistory) => {
-  return newTradeHistory
+const formatTradeHistory = (mangoAccountPk: PublicKey, tradeHistory: any[]) => {
+  return tradeHistory
     .flat()
     .map((event) => {
       if (event.eventFlags || event.nativeQuantityPaid) {
@@ -116,10 +110,12 @@ export const useTradeHistory = () => {
     const tradeHistoryFromEventQueue = fills
       .filter((fill) => {
         if (fill.openOrders) {
+          // handles serum event queue for spot trades
           return openOrdersAccount?.publicKey
             ? fill.openOrders.equals(openOrdersAccount?.publicKey)
             : false
         } else {
+          // handles mango event queue for perp trades
           return (
             fill.taker.equals(mangoAccount.publicKey) ||
             fill.maker.equals(mangoAccount.publicKey)
