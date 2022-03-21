@@ -16,7 +16,7 @@ const BottomBar = () => {
 
   return (
     <>
-      <div className="bg-th-bkg-1 default-transition grid grid-cols-4 grid-rows-1 py-2.5">
+      <div className="default-transition grid grid-cols-4 grid-rows-1 bg-th-bkg-1 py-2.5">
         <Link
           href={{
             pathname: '/select',
@@ -25,9 +25,9 @@ const BottomBar = () => {
           <div
             className={`${
               asPath === '/select' ? 'text-th-primary' : 'text-th-fgd-3'
-            } col-span-1 cursor-pointer default-transition flex flex-col items-center hover:text-th-primary`}
+            } default-transition col-span-1 flex cursor-pointer flex-col items-center hover:text-th-primary`}
           >
-            <BtcMonoIcon className="h-4 mb-1 w-4" />
+            <BtcMonoIcon className="mb-1 h-4 w-4" />
             <StyledBarItemLabel>{t('markets')}</StyledBarItemLabel>
           </div>
         </Link>
@@ -43,9 +43,9 @@ const BottomBar = () => {
               asPath === '/' || asPath.startsWith('/?name')
                 ? 'text-th-primary'
                 : 'text-th-fgd-3'
-            } col-span-1 cursor-pointer default-transition flex flex-col items-center hover:text-th-primary`}
+            } default-transition col-span-1 flex cursor-pointer flex-col items-center hover:text-th-primary`}
           >
-            <TradeIcon className="h-4 mb-1 w-4" />
+            <TradeIcon className="mb-1 h-4 w-4" />
             <StyledBarItemLabel>{t('trade')}</StyledBarItemLabel>
           </div>
         </Link>
@@ -53,9 +53,9 @@ const BottomBar = () => {
           <div
             className={`${
               asPath === '/account' ? 'text-th-primary' : 'text-th-fgd-3'
-            } col-span-1 cursor-pointer default-transition flex flex-col items-center hover:text-th-primary`}
+            } default-transition col-span-1 flex cursor-pointer flex-col items-center hover:text-th-primary`}
           >
-            <CurrencyDollarIcon className="h-4 mb-1 w-4" />
+            <CurrencyDollarIcon className="mb-1 h-4 w-4" />
             <StyledBarItemLabel>{t('account')}</StyledBarItemLabel>
           </div>
         </Link>
@@ -63,9 +63,9 @@ const BottomBar = () => {
           <div
             className={`${
               asPath === '/stats' ? 'text-th-primary' : 'text-th-fgd-3'
-            } col-span-1 cursor-pointer default-transition flex flex-col items-center hover:text-th-primary`}
+            } default-transition col-span-1 flex cursor-pointer flex-col items-center hover:text-th-primary`}
           >
-            <ChartBarIcon className="h-4 mb-1 w-4" />
+            <ChartBarIcon className="mb-1 h-4 w-4" />
             <StyledBarItemLabel>{t('stats')}</StyledBarItemLabel>
           </div>
         </Link>

@@ -36,18 +36,18 @@ export default function NavDropMenu({
           className="flex flex-col"
         >
           <Popover.Button
-            className={`-mr-3 px-3 rounded-none focus:outline-none focus:bg-th-bkg-3 ${
+            className={`-mr-3 rounded-none px-3 focus:bg-th-bkg-3 focus:outline-none ${
               open && 'bg-th-bkg-3'
             }`}
             ref={buttonRef}
           >
             <div
-              className={`flex font-bold h-14 items-center rounded-none hover:text-th-primary`}
+              className={`flex h-14 items-center rounded-none font-bold hover:text-th-primary`}
             >
               <span className="font-bold">{menuTitle}</span>
               <ChevronDownIcon
-                className={`default-transition h-5 ml-0.5 w-5 ${
-                  open ? 'transform rotate-180' : 'transform rotate-360'
+                className={`default-transition ml-0.5 h-5 w-5 ${
+                  open ? 'rotate-180 transform' : 'rotate-360 transform'
                 }`}
                 aria-hidden="true"
               />
@@ -65,18 +65,18 @@ export default function NavDropMenu({
             leaveTo="opacity-0"
           >
             <Popover.Panel className="absolute top-14 z-10">
-              <div className="relative bg-th-bkg-3 px-4 py-2.5 rounded-b-md">
+              <div className="relative rounded-b-md bg-th-bkg-3 px-4 py-2.5">
                 {linksArray.map(([name, href, isExternal, icon]) =>
                   !isExternal ? (
                     <Link href={href} key={href}>
-                      <a className="block default-transition flex items-center py-1.5 text-th-fgd-1 whitespace-nowrap hover:text-th-primary">
+                      <a className="default-transition flex items-center whitespace-nowrap py-1.5 text-th-fgd-1 hover:text-th-primary">
                         {icon ? <div className="mr-2">{icon}</div> : null}
                         {name}
                       </a>
                     </Link>
                   ) : (
                     <a
-                      className="block default-transition flex items-center py-1.5 text-th-fgd-1 whitespace-nowrap hover:text-th-primary"
+                      className="default-transition flex items-center whitespace-nowrap py-1.5 text-th-fgd-1 hover:text-th-primary"
                       href={href}
                       key={href}
                       target="_blank"

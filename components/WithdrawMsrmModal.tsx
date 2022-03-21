@@ -11,7 +11,6 @@ const WithdrawMsrmModal = ({ onClose, isOpen }) => {
   const { t } = useTranslation('common')
   const [submitting, setSubmitting] = useState(false)
   const actions = useMangoStore((s) => s.actions)
-  const mangoClient = useMangoStore((s) => s.connection.client)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const wallet = useMangoStore((s) => s.wallet.current)
@@ -20,6 +19,7 @@ const WithdrawMsrmModal = ({ onClose, isOpen }) => {
 
   const handleMsrmWithdraw = async () => {
     setSubmitting(true)
+    const mangoClient = useMangoStore.getState().connection.client
     const ownerMsrmAccount = walletTokens.find((t) =>
       t.account.mint.equals(msrmMints[cluster])
     )
@@ -52,13 +52,13 @@ const WithdrawMsrmModal = ({ onClose, isOpen }) => {
 
   return (
     <Modal onClose={onClose} isOpen={isOpen}>
-      <div className="text-th-fgd-1 text-lg flex justify-center">
+      <div className="flex justify-center text-lg text-th-fgd-1">
         {t('withdraw')}
       </div>
-      <div className="text-th-fgd-1 bg-th-bkg-1 text-lg text-center border border-th-bkg-3 p-6 mt-4">
+      <div className="mt-4 border border-th-bkg-3 bg-th-bkg-1 p-6 text-center text-lg text-th-fgd-1">
         1 MSRM
       </div>
-      <div className="flex items-center justify-center mt-6">
+      <div className="mt-6 flex items-center justify-center">
         <Button onClick={handleMsrmWithdraw}>
           {submitting ? <Loading /> : <span>{t('confirm')}</span>}
         </Button>

@@ -114,11 +114,11 @@ export default function StatsPerps({ perpStats }) {
 
   return (
     <>
-      <div className="flex flex-row-reverse items-center md:items-stretch justify-between md:flex-col mb-4">
+      <div className="mb-4 flex flex-row-reverse items-center justify-between md:flex-col md:items-stretch">
         <Select
           value={selectedAsset}
           onChange={(a) => setSelectedAsset(a)}
-          className="flex-shrink-0 ml-4 w-36 md:hidden"
+          className="ml-4 w-36 flex-shrink-0 md:hidden"
         >
           {marketConfigs.map((market) => (
             <Select.Option key={market.name} value={market.name}>
@@ -126,12 +126,12 @@ export default function StatsPerps({ perpStats }) {
             </Select.Option>
           ))}
         </Select>
-        <div className="bg-th-bkg-3 hidden md:flex mb-4 md:mb-6 md:-mt-6 md:-mx-6 px-3 md:px-4 py-2 rounded-md md:rounded-none md:rounded-t-md">
+        <div className="mb-4 hidden rounded-md bg-th-bkg-3 px-3 py-2 md:-mx-6 md:mb-6 md:-mt-6 md:flex md:rounded-none md:rounded-t-md md:px-4">
           {marketConfigs.map((market, index) => (
             <div
-              className={`font-bold md:px-2 py-1 text-xs md:text-sm ${
+              className={`py-1 text-xs font-bold md:px-2 md:text-sm ${
                 index > 0 ? 'ml-4 md:ml-2' : null
-              } rounded-md cursor-pointer default-transition
+              } default-transition cursor-pointer rounded-md
                           ${
                             selectedAsset === market.name
                               ? `text-th-primary`
@@ -159,9 +159,9 @@ export default function StatsPerps({ perpStats }) {
           </h2>
         </div>
       </div>
-      <div className="grid grid-flow-row grid-cols-1 grid-rows-2 md:grid-cols-2 md:grid-rows-2 gap-2 sm:gap-4">
+      <div className="grid grid-flow-row grid-cols-1 grid-rows-2 gap-2 sm:gap-4 md:grid-cols-2 md:grid-rows-2">
         <div
-          className="border border-th-bkg-3 relative p-4 rounded-md"
+          className="relative rounded-md border border-th-bkg-3 p-4"
           style={{ height: '330px' }}
         >
           <Chart
@@ -174,10 +174,11 @@ export default function StatsPerps({ perpStats }) {
               x.toLocaleString(undefined, { maximumFractionDigits: 4 })
             }
             type="area"
+            yAxisWidth={70}
           />
         </div>
         <div
-          className="border border-th-bkg-3 relative p-4 rounded-md"
+          className="relative rounded-md border border-th-bkg-3 p-4"
           style={{ height: '330px' }}
         >
           <Chart
@@ -197,9 +198,9 @@ export default function StatsPerps({ perpStats }) {
             type="area"
           />
         </div>
-        <div className="border border-th-bkg-3 relative p-4 rounded-md">
+        <div className="relative rounded-md border border-th-bkg-3 p-4">
           <h2>{t('liquidity-mining')}</h2>
-          <div className="flex justify-between mt-4">
+          <div className="mt-4 flex justify-between">
             <div>{t('depth-rewarded')}</div>
             <div>
               {maxDepthUi.toLocaleString() +
@@ -207,7 +208,7 @@ export default function StatsPerps({ perpStats }) {
                 selectedMarketConfig.baseSymbol}
             </div>
           </div>
-          <div className="flex justify-between mt-4">
+          <div className="mt-4 flex justify-between">
             <div>{t('target-period-length')}</div>
             <div>
               {(
@@ -217,7 +218,7 @@ export default function StatsPerps({ perpStats }) {
               {t('minutes')}
             </div>
           </div>
-          <div className="flex justify-between mt-4">
+          <div className="mt-4 flex justify-between">
             <div>{t('mngo-per-period')}</div>
             <div>
               {(
@@ -226,7 +227,7 @@ export default function StatsPerps({ perpStats }) {
               ).toFixed(2)}
             </div>
           </div>
-          <div className="flex justify-between mt-4">
+          <div className="mt-4 flex justify-between">
             <div>{t('mngo-left-period')}</div>
             <div>
               {(
@@ -236,11 +237,11 @@ export default function StatsPerps({ perpStats }) {
             </div>
           </div>
 
-          <div className="flex justify-between mt-4">
+          <div className="mt-4 flex justify-between">
             <div>{t('est-period-end')}</div>
             <div>{new Date(est * 1000).toUTCString()}</div>
           </div>
-          <div className="flex justify-between mt-4">
+          <div className="mt-4 flex justify-between">
             <div>{t('period-progress')}</div>
             <div>{(progress * 100).toFixed(2)}%</div>
           </div>

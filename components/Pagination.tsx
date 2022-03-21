@@ -14,29 +14,29 @@ export default function Pagination({
   previousPage,
 }) {
   return (
-    <div className="flex mt-4 items-center justify-end">
+    <div className="mt-4 flex items-center justify-end">
       <div className="flex justify-center">
         <button
           onClick={firstPage}
           disabled={page === 1}
           className={`bg-th-bkg-4 px-1 py-1 ${
             page !== 1
-              ? 'hover:text-th-primary hover:cursor-pointer'
+              ? 'hover:cursor-pointer hover:text-th-primary'
               : 'hover:cursor-not-allowed'
           } disabled:text-th-fgd-4`}
         >
-          <ChevronDoubleLeftIcon className={`w-5 h-5`} />
+          <ChevronDoubleLeftIcon className={`h-5 w-5`} />
         </button>
         <button
           onClick={previousPage}
           disabled={page === 1}
-          className={`bg-th-bkg-4 px-1 py-1 ml-2 ${
+          className={`ml-2 bg-th-bkg-4 px-1 py-1 ${
             page !== 1
-              ? 'hover:text-th-primary hover:cursor-pointer'
+              ? 'hover:cursor-pointer hover:text-th-primary'
               : 'hover:cursor-not-allowed'
           } disabled:text-th-fgd-4`}
         >
-          <ChevronLeftIcon className={`w-5 h-5`} />
+          <ChevronLeftIcon className={`h-5 w-5`} />
         </button>
       </div>
       <div className="ml-2">
@@ -46,24 +46,24 @@ export default function Pagination({
         <button
           onClick={nextPage}
           disabled={page === totalPages}
-          className={`px-1 py-1 bg-th-bkg-4 ml-2 ${
+          className={`ml-2 bg-th-bkg-4 px-1 py-1 ${
             page !== totalPages
-              ? 'hover:text-th-primary hover:cursor-pointer'
+              ? 'hover:cursor-pointer hover:text-th-primary'
               : 'hover:cursor-not-allowed'
           } disabled:text-th-fgd-4`}
         >
-          <ChevronRightIcon className={`w-5 h-5`} />
+          <ChevronRightIcon className={`h-5 w-5`} />
         </button>
         <button
           onClick={lastPage}
           disabled={page === totalPages}
-          className={`px-1 py-1 bg-th-bkg-4 ml-2 ${
+          className={`ml-2 bg-th-bkg-4 px-1 py-1 ${
             page !== totalPages
-              ? 'hover:text-th-primary hover:cursor-pointer'
+              ? 'hover:cursor-pointer hover:text-th-primary'
               : 'hover:cursor-not-allowed'
           } disabled:text-th-fgd-4`}
         >
-          <ChevronDoubleRightIcon className={`w-5 h-5`} />
+          <ChevronDoubleRightIcon className={`h-5 w-5`} />
         </button>
       </div>
     </div>

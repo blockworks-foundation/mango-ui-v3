@@ -1,13 +1,15 @@
 import { getMarketByPublicKey } from '@blockworks-foundation/mango-client'
 import { PublicKey } from '@solana/web3.js'
+import BigNumber from 'bignumber.js'
+import { useEffect } from 'react'
 import {
   fillsSelector,
   mangoAccountSelector,
   mangoGroupSelector,
   marketConfigSelector,
-  tradeHistorySelector,
 } from '../stores/selectors'
 import useMangoStore from '../stores/useMangoStore'
+import { perpContractPrecision } from '../utils'
 
 const byTimestamp = (a, b) => {
   return (
@@ -35,17 +37,20 @@ const parsedPerpEvent = (mangoAccountPk: PublicKey, event) => {
   const value = event.quantity * event.price
   const feeRate = maker ? event.makerFee : event.takerFee
   const side = maker ? reverseSide(event.takerSide) : event.takerSide
+  const marketName = getMarketName(event)
+  const sizeDecimalCount = perpContractPrecision[marketName.split('-')[0]]
+  const size = new BigNumber(event.quantity).toFormat(sizeDecimalCount)
 
   return {
     ...event,
     key: orderId?.toString(),
     liquidity: maker ? 'Maker' : 'Taker',
-    size: event.quantity,
+    size,
     price: event.price,
     value,
     feeCost: (feeRate * value).toFixed(4),
     side,
-    marketName: getMarketName(event),
+    marketName,
   }
 }
 
@@ -66,8 +71,8 @@ const parsedSerumEvent = (event) => {
   }
 }
 
-const formatTradeHistory = (mangoAccountPk: PublicKey, newTradeHistory) => {
-  return newTradeHistory
+const formatTradeHistory = (mangoAccountPk: PublicKey, tradeHistory: any[]) => {
+  return tradeHistory
     .flat()
     .map((event) => {
       if (event.eventFlags || event.nativeQuantityPaid) {
@@ -81,63 +86,70 @@ const formatTradeHistory = (mangoAccountPk: PublicKey, newTradeHistory) => {
     .sort(byTimestamp)
 }
 
-export const useTradeHistory = (
-  opts: { excludePerpLiquidations?: boolean } = {}
-) => {
+export const useTradeHistory = () => {
   const marketConfig = useMangoStore(marketConfigSelector)
   const fills = useMangoStore(fillsSelector)
   const mangoAccount = useMangoStore(mangoAccountSelector)
   const selectedMangoGroup = useMangoStore(mangoGroupSelector)
-  const tradeHistory = useMangoStore(tradeHistorySelector)
+  const spotTradeHistory = useMangoStore((s) => s.tradeHistory.spot)
+  const perpTradeHistory = useMangoStore((s) => s.tradeHistory.perp)
+  const setMangoStore = useMangoStore.getState().set
 
-  if (!mangoAccount || !selectedMangoGroup) return null
+  useEffect(() => {
+    if (!mangoAccount || !selectedMangoGroup) return null
+    const previousTradeHistory = useMangoStore.getState().tradeHistory.parsed
 
-  let combinedTradeHistory = [...tradeHistory.spot, ...tradeHistory.perp]
+    // combine the trade histories loaded from the DB
+    let tradeHistory = spotTradeHistory.concat(perpTradeHistory)
 
-  const openOrdersAccount =
-    mangoAccount.spotOpenOrdersAccounts[marketConfig.marketIndex]
+    const openOrdersAccount =
+      mangoAccount.spotOpenOrdersAccounts[marketConfig.marketIndex]
 
-  const mangoAccountFills = fills
-    .filter((fill) => {
-      if (fill.openOrders) {
-        return openOrdersAccount?.publicKey
-          ? fill.openOrders.equals(openOrdersAccount?.publicKey)
-          : false
-      } else {
-        return (
-          fill.taker.equals(mangoAccount.publicKey) ||
-          fill.maker.equals(mangoAccount.publicKey)
-        )
-      }
-    })
-    .map((fill) => ({ ...fill, marketName: marketConfig.name }))
+    // Look through the loaded fills from the event queue to see if
+    // there are any that match the user's open orders account
+    const tradeHistoryFromEventQueue = fills
+      .filter((fill) => {
+        if (fill.openOrders) {
+          // handles serum event queue for spot trades
+          return openOrdersAccount?.publicKey
+            ? fill.openOrders.equals(openOrdersAccount?.publicKey)
+            : false
+        } else {
+          // handles mango event queue for perp trades
+          return (
+            fill.taker.equals(mangoAccount.publicKey) ||
+            fill.maker.equals(mangoAccount.publicKey)
+          )
+        }
+      })
+      .map((fill) => ({ ...fill, marketName: marketConfig.name }))
 
-  const allTrades = []
-  if (mangoAccountFills && mangoAccountFills.length > 0) {
-    const newFills = mangoAccountFills.filter(
-      (fill) =>
-        !combinedTradeHistory.flat().find((t) => {
-          if (t.orderId) {
-            return t.orderId === fill.orderId?.toString()
-          } else {
-            return t.seqNum === fill.seqNum?.toString()
-          }
-        })
-    )
-    const newTradeHistory = [...newFills, ...combinedTradeHistory]
-    if (newFills.length > 0 && newTradeHistory.length !== allTrades.length) {
-      combinedTradeHistory = newTradeHistory
+    // filters the trades from tradeHistoryFromEventQueue to find the ones we don't already have in the DB
+    if (tradeHistoryFromEventQueue?.length) {
+      const newFills = tradeHistoryFromEventQueue.filter(
+        (fill) =>
+          !tradeHistory.find((t) => {
+            if (t.orderId) {
+              return t.orderId === fill.orderId?.toString()
+            } else {
+              return t.seqNum === fill.seqNum?.toString()
+            }
+          })
+      )
+      tradeHistory = [...newFills, ...tradeHistory]
     }
-  }
 
-  const formattedTradeHistory = formatTradeHistory(
-    mangoAccount.publicKey,
-    combinedTradeHistory
-  )
-  if (opts.excludePerpLiquidations) {
-    return formattedTradeHistory.filter((t) => !('liqor' in t))
-  }
-  return formattedTradeHistory
+    if (previousTradeHistory.length !== tradeHistory.length) {
+      const formattedTradeHistory = formatTradeHistory(
+        mangoAccount.publicKey,
+        tradeHistory
+      )
+
+      setMangoStore((state) => {
+        state.tradeHistory.parsed = formattedTradeHistory
+      })
+    }
+  }, [spotTradeHistory, perpTradeHistory, fills, mangoAccount])
 }
 
 export default useTradeHistory

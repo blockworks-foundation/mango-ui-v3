@@ -2,13 +2,10 @@
 // const defaultTheme = require('tailwindcss/defaultTheme')
 
 module.exports = {
-  mode: 'jit',
-  purge: ['./pages/**/*.{js,ts,jsx,tsx}', './components/**/*.{js,ts,jsx,tsx}'],
-  future: {
-    removeDeprecatedGapUtilities: true,
-    purgeLayersByDefault: true,
-  },
-  darkMode: false,
+  content: [
+    './pages/**/*.{js,ts,jsx,tsx}',
+    './components/**/*.{js,ts,jsx,tsx}',
+  ],
   theme: {
     fontFamily: {
       display: ['Lato, sans-serif'],
@@ -56,7 +53,7 @@ module.exports = {
           'fgd-2': '#C8C8C8',
           'fgd-3': '#B3B3B3',
           'fgd-4': '#878787',
-          'bkg-button': '#52514E',
+          'bkg-button': '#4E5152',
         },
         'mango-theme': {
           yellow: {
@@ -119,13 +116,13 @@ module.exports = {
       },
     },
   },
-  variants: {
-    extend: {
-      cursor: ['hover', 'focus', 'disabled'],
-      opacity: ['disabled'],
-      backgroundColor: ['disabled'],
-      textColor: ['disabled'],
-    },
-  },
+  // variants: {
+  //   extend: {
+  //     cursor: ['hover', 'focus', 'disabled'],
+  //     opacity: ['disabled'],
+  //     backgroundColor: ['disabled'],
+  //     textColor: ['disabled'],
+  //   },
+  // },
   plugins: [],
 }

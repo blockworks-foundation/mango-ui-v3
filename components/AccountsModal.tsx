@@ -84,12 +84,12 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
                   : t('your-account')}
               </div>
               <Button
-                className="text-xs flex items-center justify-center pt-0 pb-0 h-8 pl-3 pr-3"
+                className="flex h-8 items-center justify-center pt-0 pb-0 pl-3 pr-3 text-xs"
                 onClick={() => handleShowNewAccountForm()}
               >
                 <div className="flex items-center">
-                  <PlusCircleIcon className="h-5 w-5 mr-1.5" />
-                  {t('new')}
+                  <PlusCircleIcon className="mr-1.5 h-5 w-5" />
+                  {t('new-account')}
                 </div>
               </Button>
             </div>
@@ -108,20 +108,20 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
                     className={({ checked }) =>
                       `${
                         checked
-                          ? 'bg-th-bkg-3 ring-1 ring-th-green ring-inset'
+                          ? 'bg-th-bkg-3 ring-1 ring-inset ring-th-green'
                           : 'bg-th-bkg-1'
                       }
-                      relative rounded-md w-full px-3 py-3 cursor-pointer default-transition flex hover:bg-th-bkg-3 focus:outline-none`
+                      default-transition relative flex w-full cursor-pointer rounded-md px-3 py-3 hover:bg-th-bkg-3 focus:outline-none`
                     }
                   >
                     {({ checked }) => (
                       <>
-                        <div className="flex items-center justify-between w-full">
+                        <div className="flex w-full items-center justify-between">
                           <div className="flex items-center">
                             <div className="text-sm">
-                              <RadioGroup.Label className="cursor-pointer flex items-center text-th-fgd-1">
+                              <RadioGroup.Label className="flex cursor-pointer items-center text-th-fgd-1">
                                 <div>
-                                  <div className="pb-0.5 flex items-center">
+                                  <div className="flex items-center pb-0.5">
                                     {account?.name ||
                                       abbreviateAddress(account.publicKey)}
                                     {!account?.owner.equals(
@@ -132,14 +132,14 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
                                           'delegate:delegated-account'
                                         )}
                                       >
-                                        <UsersIcon className="h-3 w-3 ml-1.5" />
+                                        <UsersIcon className="ml-1.5 h-3 w-3" />
                                       </Tooltip>
                                     ) : (
                                       ''
                                     )}
                                   </div>
                                   {mangoGroup ? (
-                                    <div className="text-th-fgd-3 text-xs">
+                                    <div className="text-xs text-th-fgd-3">
                                       <AccountInfo
                                         mangoGroup={mangoGroup}
                                         mangoAccount={account}
@@ -152,7 +152,7 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
                           </div>
                           {checked && (
                             <div className="flex-shrink-0 text-th-green">
-                              <CheckCircleIcon className="w-5 h-5" />
+                              <CheckCircleIcon className="h-5 w-5" />
                             </div>
                           )}
                         </div>
@@ -167,7 +167,7 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
           <>
             <NewAccount onAccountCreation={handleNewAccountCreation} />
             <LinkButton
-              className="flex justify-center mt-4 w-full"
+              className="mt-4 flex w-full justify-center"
               onClick={() => setShowNewAccountForm(false)}
             >
               {t('cancel')}
@@ -193,7 +193,7 @@ const AccountInfo = ({
   const leverage = mangoAccount.getLeverage(mangoGroup, mangoCache).toFixed(2)
 
   return (
-    <div className="text-th-fgd-3 text-xs">
+    <div className="text-xs text-th-fgd-3">
       {formatUsdValue(accountEquity.toNumber())}
       <span className="px-1.5 text-th-fgd-4">|</span>
       <span

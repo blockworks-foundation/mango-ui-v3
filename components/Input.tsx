@@ -25,10 +25,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
     suffix,
   } = props
   return (
-    <div className={`flex relative ${wrapperClassName}`}>
+    <div className={`relative flex ${wrapperClassName}`}>
       {prefix ? (
         <div
-          className={`absolute left-2 top-1/2 transform -translate-y-1/2 ${prefixClassName}`}
+          className={`absolute left-2 top-1/2 -translate-y-1/2 transform ${prefixClassName}`}
         >
           {prefix}
         </div>
@@ -37,23 +37,24 @@ const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
         type={type}
         value={value}
         onChange={onChange}
-        className={`${className} bg-th-bkg-1 pb-px px-2 flex-1 rounded-md h-10 text-th-fgd-1 w-full
-          border ${
+        className={`${className} h-10 w-full flex-1 rounded-md border bg-th-bkg-1 px-2 pb-px
+          text-th-fgd-1 ${
             error ? 'border-th-red' : 'border-th-bkg-4'
           } default-transition hover:border-th-fgd-4 
           focus:border-th-fgd-4 focus:outline-none 
           ${
             disabled
-              ? 'bg-th-bkg-3 cursor-not-allowed hover:border-th-fgd-4 text-th-fgd-3'
+              ? 'cursor-not-allowed bg-th-bkg-3 text-th-fgd-3 hover:border-th-fgd-4'
               : ''
           }
-          ${prefix ? 'pl-7' : ''}`}
+          ${prefix ? 'pl-7' : ''}
+          ${suffix ? 'pr-11' : ''}`}
         disabled={disabled}
         ref={ref}
         {...props}
       />
       {suffix ? (
-        <span className="absolute right-0 text-xs flex items-center pr-2 h-full bg-transparent text-th-fgd-4">
+        <span className="absolute right-0 flex h-full items-center bg-transparent pr-2 text-xs text-th-fgd-4">
           {suffix}
         </span>
       ) : null}
@@ -69,7 +70,7 @@ interface LabelProps {
 }
 
 export const Label = ({ children, className }: LabelProps) => (
-  <label className={`block mb-1.5 text-th-fgd-2 ${className}`}>
+  <label className={`mb-1.5 block text-th-fgd-2 ${className}`}>
     {children}
   </label>
 )

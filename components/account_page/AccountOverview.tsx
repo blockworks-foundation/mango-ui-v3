@@ -1,38 +1,80 @@
-import { useMemo } from 'react'
-import {
-  ScaleIcon,
-  CurrencyDollarIcon,
-  GiftIcon,
-  HeartIcon,
-} from '@heroicons/react/outline'
-import { nativeToUi, ZERO_BN } from '@blockworks-foundation/mango-client'
-import useMangoStore, { MNGO_INDEX } from '../../stores/useMangoStore'
-import { formatUsdValue } from '../../utils'
-import { notify } from '../../utils/notifications'
-import { LinkButton } from '../Button'
-import BalancesTable from '../BalancesTable'
-import PositionsTable from '../PerpPositionsTable'
-import Switch from '../Switch'
-import useLocalStorageState from '../../hooks/useLocalStorageState'
+import { useEffect, useMemo, useState } from 'react'
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
 import { ExclamationIcon } from '@heroicons/react/solid'
 import { useTranslation } from 'next-i18next'
-import { useRouter } from 'next/router'
+
+import useMangoStore from '../../stores/useMangoStore'
+import { formatUsdValue } from '../../utils'
+import BalancesTable from '../BalancesTable'
+import Switch from '../Switch'
+import useLocalStorageState from '../../hooks/useLocalStorageState'
+import ButtonGroup from '../ButtonGroup'
+import PerformanceChart from './PerformanceChart'
+import PositionsTable from '../PerpPositionsTable'
+
+dayjs.extend(utc)
 
 const SHOW_ZERO_BALANCE_KEY = 'showZeroAccountBalances-0.2'
 
+const performanceRangePresets = [
+  { label: '24h', value: 1 },
+  { label: '7d', value: 7 },
+  { label: '30d', value: 30 },
+  { label: '3m', value: 90 },
+]
+const performanceRangePresetLabels = performanceRangePresets.map((x) => x.label)
+
+export const fetchHourlyPerformanceStats = async (
+  mangoAccountPk: string,
+  range: number
+) => {
+  const response = await fetch(
+    `https://mango-transaction-log.herokuapp.com/v3/stats/account-performance-detailed?mango-account=${mangoAccountPk}&start-date=${dayjs()
+      .subtract(range, 'day')
+      .format('YYYY-MM-DD')}`
+  )
+  const parsedResponse = await response.json()
+  const entries: any = Object.entries(parsedResponse)
+
+  const stats = entries
+    .map(([key, value]) => {
+      return { ...value, time: key }
+    })
+    .filter((x) => x)
+    .reverse()
+
+  return stats
+}
+
 export default function AccountOverview() {
   const { t } = useTranslation('common')
-  const actions = useMangoStore((s) => s.actions)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
-  const mangoClient = useMangoStore((s) => s.connection.client)
-  const router = useRouter()
-  const { pubkey } = router.query
   const [showZeroBalances, setShowZeroBalances] = useLocalStorageState(
     SHOW_ZERO_BALANCE_KEY,
     true
   )
+
+  const [pnl, setPnl] = useState(0)
+  const [performanceRange, setPerformanceRange] = useState('30d')
+  const [hourlyPerformanceStats, setHourlyPerformanceStats] = useState([])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const stats = await fetchHourlyPerformanceStats(
+        mangoAccount.publicKey.toString(),
+        performanceRangePresets[performanceRangePresets.length - 1].value
+      )
+
+      setPnl(stats?.length ? stats?.[0]?.['pnl'] : 0)
+      setHourlyPerformanceStats(stats)
+    }
+    if (mangoAccount) {
+      fetchData()
+    }
+  }, [mangoAccount?.publicKey])
 
   const maintHealthRatio = useMemo(() => {
     return mangoAccount
@@ -46,93 +88,72 @@ export default function AccountOverview() {
       : 100
   }, [mangoAccount, mangoGroup, mangoCache])
 
-  const mngoAccrued = useMemo(() => {
-    return mangoAccount
-      ? mangoAccount.perpAccounts.reduce((acc, perpAcct) => {
-          return perpAcct.mngoAccrued.add(acc)
-        }, ZERO_BN)
-      : ZERO_BN
+  const mangoAccountValue = useMemo(() => {
+    return mangoAccount ? +mangoAccount.computeValue(mangoGroup, mangoCache) : 0
   }, [mangoAccount])
-
-  const handleRedeemMngo = async () => {
-    const wallet = useMangoStore.getState().wallet.current
-    const mngoNodeBank =
-      mangoGroup.rootBankAccounts[MNGO_INDEX].nodeBankAccounts[0]
-
-    try {
-      const txid = await mangoClient.redeemAllMngo(
-        mangoGroup,
-        mangoAccount,
-        wallet,
-        mangoGroup.tokens[MNGO_INDEX].rootBank,
-        mngoNodeBank.publicKey,
-        mngoNodeBank.vault
-      )
-      actions.reloadMangoAccount()
-      notify({
-        title: t('redeem-success'),
-        description: '',
-        txid,
-      })
-    } catch (e) {
-      notify({
-        title: t('redeem-failure'),
-        description: e.message,
-        txid: e.txid,
-        type: 'error',
-      })
-    }
-  }
 
   return mangoAccount ? (
     <>
-      <div className="grid grid-flow-col grid-cols-2 grid-rows-2 lg:grid-cols-4 lg:grid-rows-1 gap-2 sm:gap-4 pb-8">
-        <div className="border border-th-bkg-4 p-3 sm:p-4 rounded-md sm:rounded-lg">
-          <div className="pb-0.5 sm:pb-2 text-th-fgd-3 text-xs sm:text-sm">
-            {t('account-value')}
-          </div>
-          <div className="flex items-center pb-1 sm:pb-3">
-            <CurrencyDollarIcon className="flex-shrink-0 h-5 w-5 sm:h-7 sm:w-7 mr-1.5 text-th-primary" />
-            <div className="font-bold text-th-fgd-1 text-xl sm:text-2xl">
-              {formatUsdValue(
-                +mangoAccount.computeValue(mangoGroup, mangoCache)
-              )}
-            </div>
-          </div>
+      <div className="flex flex-col pb-4 sm:flex-row sm:items-center sm:justify-between">
+        <h2 className="mb-4 sm:mb-0">{t('summary')}</h2>
+        <div className="w-full sm:w-56">
+          <ButtonGroup
+            activeValue={performanceRange}
+            onChange={(p) => setPerformanceRange(p)}
+            values={performanceRangePresetLabels}
+          />
         </div>
-        {/* <div className="border border-th-bkg-4 p-3 sm:p-4 rounded-md sm:rounded-lg">
-          <div className="pb-0.5 sm:pb-2 text-th-fgd-3 text-xs sm:text-sm">PNL</div>
-          <div className="flex items-center pb-1 sm:pb-3">
-            <ChartBarIcon className="flex-shrink-0 h-5 w-5 sm:h-7 sm:w-7 mr-1.5 text-th-primary" />
-            <div className="font-bold text-th-fgd-1 text-xl sm:text-2xl">
-              {formatUsdValue(
-                +mangoAccount.computeValue(mangoGroup, mangoCache)
-              )}
+      </div>
+      <div className="flex flex-col pb-8 lg:flex-row lg:space-x-6 lg:pb-12">
+        <div className="w-full border-t border-th-bkg-4 pb-6 lg:w-1/4 lg:pb-0">
+          <div className="border-b border-th-bkg-4 p-3 sm:p-4">
+            <div className="pb-0.5 text-xs text-th-fgd-3 sm:text-sm">
+              {t('account-value')}
+            </div>
+            <div className="text-xl font-bold text-th-fgd-1 sm:text-2xl">
+              {formatUsdValue(mangoAccountValue)}
             </div>
           </div>
-        </div> */}
-        <div className="border border-th-bkg-4 p-3 sm:p-4 rounded-md sm:rounded-lg">
-          <div className="pb-0.5 sm:pb-2 text-th-fgd-3 text-xs sm:text-sm">
-            {t('leverage')}
+          <div className="border-b border-th-bkg-4 p-3 sm:p-4">
+            <div className="flex items-center justify-between">
+              <div className="pb-0.5 text-xs text-th-fgd-3 sm:text-sm">
+                {t('pnl')}{' '}
+                {hourlyPerformanceStats?.length ? (
+                  <div className="text-xs text-th-fgd-4">
+                    {dayjs(hourlyPerformanceStats[0]['time']).format(
+                      'MMM D YYYY, h:mma'
+                    )}
+                  </div>
+                ) : null}
+              </div>
+            </div>
+            <div className="text-xl font-bold text-th-fgd-1 sm:text-2xl">
+              {formatUsdValue(pnl)}
+            </div>
           </div>
-          <div className="flex items-center pb-1 sm:pb-3">
-            <ScaleIcon className="flex-shrink-0 h-5 w-5 sm:h-7 sm:w-7 mr-1.5 text-th-primary" />
-            <div className="font-bold text-th-fgd-1 text-xl sm:text-2xl">
+          <div className="border-b border-th-bkg-4 p-3 sm:p-4">
+            <div className="pb-0.5 text-xs text-th-fgd-3 sm:text-sm">
+              {t('leverage')}
+            </div>
+            <div className="text-xl font-bold text-th-fgd-1 sm:text-2xl">
               {mangoAccount.getLeverage(mangoGroup, mangoCache).toFixed(2)}x
             </div>
           </div>
-        </div>
-        <div className="border border-th-bkg-4 p-3 sm:p-4 rounded-md sm:rounded-lg">
-          <div className="pb-0.5 sm:pb-2 text-th-fgd-3 text-xs sm:text-sm">
-            {t('health-ratio')}
-          </div>
-          <div className="flex items-center pb-3 sm:pb-4">
-            <HeartIcon className="flex-shrink-0 h-5 w-5 sm:h-7 sm:w-7 mr-1.5 text-th-primary" />
-            <div className="font-bold text-th-fgd-1 text-xl sm:text-2xl">
+          <div className="p-3 sm:p-4">
+            <div className="pb-0.5 text-xs text-th-fgd-3 sm:text-sm">
+              {t('health-ratio')}
+            </div>
+            <div className={`text-xl font-bold text-th-fgd-1 sm:text-2xl`}>
               {maintHealthRatio < 1000 ? maintHealthRatio.toFixed(2) : '>100'}%
             </div>
+            {mangoAccount.beingLiquidated ? (
+              <div className="flex items-center pt-0.5 text-xs sm:pt-2 sm:text-sm">
+                <ExclamationIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-th-red sm:h-7 sm:w-7" />
+                <span className="text-th-red">{t('being-liquidated')}</span>
+              </div>
+            ) : null}
           </div>
-          <div className="h-1.5 flex rounded bg-th-bkg-3">
+          <div className="flex h-1 rounded bg-th-bkg-3">
             <div
               style={{
                 width: `${maintHealthRatio}%`,
@@ -146,64 +167,36 @@ export default function AccountOverview() {
               }`}
             ></div>
           </div>
-          {mangoAccount.beingLiquidated ? (
-            <div className="pt-0.5 sm:pt-2 text-xs sm:text-sm flex items-center">
-              <ExclamationIcon className="flex-shrink-0 h-5 w-5 sm:h-7 sm:w-7 mr-1.5 text-th-red" />
-              <span className="text-th-red">{t('being-liquidated')}</span>
-            </div>
-          ) : null}
         </div>
-        <div className="border border-th-bkg-4 p-3 sm:p-4 rounded-md sm:rounded-lg">
-          <div className="pb-0.5 sm:pb-2 text-th-fgd-3 text-xs sm:text-sm">
-            {t('mngo-rewards')}
-          </div>
-          <div className="flex items-center pb-1 sm:pb-2">
-            <GiftIcon className="flex-shrink-0 h-5 w-5 sm:h-7 sm:w-7 mr-1.5 text-th-primary" />
-            <div className="font-bold text-th-fgd-1 text-xl sm:text-2xl">
-              {mangoGroup
-                ? nativeToUi(
-                    mngoAccrued.toNumber(),
-                    mangoGroup.tokens[MNGO_INDEX].decimals
-                  )
-                : 0}
-            </div>
-          </div>
-          {!pubkey ? (
-            <LinkButton
-              onClick={handleRedeemMngo}
-              disabled={mngoAccrued.eq(ZERO_BN)}
-              className="text-th-primary text-xs"
-            >
-              {t('claim-reward')}
-            </LinkButton>
-          ) : null}
+        <div className="h-80 w-full border-th-bkg-4 lg:h-auto lg:w-3/4 lg:border-t">
+          <PerformanceChart
+            hourlyPerformanceStats={hourlyPerformanceStats}
+            performanceRange={performanceRange}
+            accountValue={mangoAccountValue}
+          />
         </div>
       </div>
-      <div className="pb-8">
+      <div className="pb-8 pt-16 lg:pt-0">
         <h2 className="mb-4">{t('perp-positions')}</h2>
         <PositionsTable />
       </div>
       <h2 className="mb-4">{t('assets-liabilities')}</h2>
 
-      <div className="grid grid-flow-col grid-cols-1 grid-rows-2 md:grid-cols-2 md:grid-rows-1 gap-2 sm:gap-4 pb-8">
-        <div className="border border-th-bkg-4 p-3 sm:p-4 rounded-md sm:rounded-lg">
-          <div className="pb-0.5 text-xs text-th-fgd-3">
-            {t('total-assets')}
-          </div>
+      <div className="grid grid-flow-col grid-cols-1 grid-rows-2 pb-8 md:grid-cols-2 md:grid-rows-1 lg:gap-4 lg:pb-12">
+        <div className="rounded-md border-t border-th-bkg-4 p-3 sm:rounded-lg sm:p-4 lg:border-b">
+          <div className="pb-0.5 text-th-fgd-3">{t('total-assets')}</div>
           <div className="flex items-center">
-            <div className="text-lg text-th-fgd-1">
+            <div className="text-2xl font-bold text-th-fgd-1">
               {formatUsdValue(
                 +mangoAccount.getAssetsVal(mangoGroup, mangoCache)
               )}
             </div>
           </div>
         </div>
-        <div className="border border-th-bkg-4 p-3 sm:p-4 rounded-md sm:rounded-lg">
-          <div className="pb-0.5 text-xs text-th-fgd-3">
-            {t('total-liabilities')}
-          </div>
+        <div className="rounded-md border-b border-t border-th-bkg-4 p-3 sm:rounded-lg sm:p-4">
+          <div className="pb-0.5 text-th-fgd-3">{t('total-liabilities')}</div>
           <div className="flex items-center">
-            <div className="text-lg text-th-fgd-1">
+            <div className="text-2xl font-bold text-th-fgd-1">
               {formatUsdValue(
                 +mangoAccount.getLiabsVal(mangoGroup, mangoCache)
               )}

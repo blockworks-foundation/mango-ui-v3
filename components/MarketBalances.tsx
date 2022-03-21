@@ -1,11 +1,8 @@
 import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
-import { i80f48ToPercent, floorToDecimal } from '../utils/index'
+import { getPrecisionDigits, i80f48ToPercent } from '../utils'
 import Tooltip from './Tooltip'
-import {
-  getMarketIndexBySymbol,
-  nativeI80F48ToUi,
-} from '@blockworks-foundation/mango-client'
+import { nativeI80F48ToUi } from '@blockworks-foundation/mango-client'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { useTranslation } from 'next-i18next'
@@ -27,36 +24,44 @@ export default function MarketBalances() {
   const isMobile = width ? width < breakpoints.sm : false
 
   const handleSizeClick = (size, symbol) => {
-    const step = selectedMarket.minOrderSize
-    const marketIndex = getMarketIndexBySymbol(
-      mangoGroupConfig,
-      marketConfig.baseSymbol
-    )
+    const minOrderSize = selectedMarket.minOrderSize
+    const sizePrecisionDigits = getPrecisionDigits(minOrderSize)
+    const marketIndex = marketConfig.marketIndex
+
     const priceOrDefault = price
       ? price
-      : mangoGroup.getPrice(marketIndex, mangoGroupCache).toNumber()
+      : mangoGroup.getPriceUi(marketIndex, mangoGroupCache)
+
+    let roundedSize, side
     if (symbol === 'USDC') {
-      const baseSize = Math.floor(size / priceOrDefault / step) * step
-      setMangoStore((state) => {
-        state.tradeForm.baseSize = baseSize
-        state.tradeForm.quoteSize = baseSize * priceOrDefault
-        state.tradeForm.side = 'buy'
-      })
+      roundedSize = parseFloat(
+        (
+          Math.abs(size) / priceOrDefault +
+          (size < 0 ? minOrderSize / 2 : -minOrderSize / 2)
+        ) // round up so neg USDC gets cleared
+          .toFixed(sizePrecisionDigits)
+      )
+      side = size > 0 ? 'buy' : 'sell'
     } else {
-      const roundedSize = Math.round(size / step) * step
-      const quoteSize = roundedSize * priceOrDefault
-      setMangoStore((state) => {
-        state.tradeForm.baseSize = roundedSize
-        state.tradeForm.quoteSize = quoteSize
-        state.tradeForm.side = 'sell'
-      })
+      roundedSize = parseFloat(
+        (
+          Math.abs(size) + (size < 0 ? minOrderSize / 2 : -minOrderSize / 2)
+        ).toFixed(sizePrecisionDigits)
+      )
+      side = size > 0 ? 'sell' : 'buy'
     }
+    const quoteSize = parseFloat((roundedSize * priceOrDefault).toFixed(2))
+    setMangoStore((state) => {
+      state.tradeForm.baseSize = roundedSize
+      state.tradeForm.quoteSize = quoteSize
+      state.tradeForm.side = side
+    })
   }
 
   if (!mangoGroup || !selectedMarket) return null
 
   return (
-    <div className={!connected ? 'filter blur' : null}>
+    <div className={!connected ? 'blur filter' : null}>
       {!isMobile ? (
         <ElementTitle className="hidden 2xl:flex">Balances</ElementTitle>
       ) : null}
@@ -67,73 +72,65 @@ export default function MarketBalances() {
             .reverse()
             .map(({ decimals, symbol, mintKey }) => {
               const tokenIndex = mangoGroup.getTokenIndex(mintKey)
-              const deposit = mangoAccount
-                ? mangoAccount.getUiDeposit(
-                    mangoGroupCache.rootBankCache[tokenIndex],
-                    mangoGroup,
-                    tokenIndex
+              const balance = mangoAccount
+                ? nativeI80F48ToUi(
+                    mangoAccount.getNet(
+                      mangoGroupCache.rootBankCache[tokenIndex],
+                      tokenIndex
+                    ),
+                    decimals
                   )
-                : null
-              const borrow = mangoAccount
-                ? mangoAccount.getUiBorrow(
-                    mangoGroupCache.rootBankCache[tokenIndex],
-                    mangoGroup,
-                    tokenIndex
-                  )
-                : null
-
+                : 0
               const availableBalance = mangoAccount
-                ? floorToDecimal(
-                    nativeI80F48ToUi(
-                      mangoAccount.getAvailableBalance(
-                        mangoGroup,
-                        mangoGroupCache,
-                        tokenIndex
-                      ),
-                      decimals
-                    ).toNumber(),
+                ? nativeI80F48ToUi(
+                    mangoAccount.getAvailableBalance(
+                      mangoGroup,
+                      mangoGroupCache,
+                      tokenIndex
+                    ),
                     decimals
                   )
                 : 0
 
               return (
                 <div
-                  className="border border-th-bkg-4 p-4 rounded-md"
+                  className="rounded-md border border-th-bkg-4 p-4"
                   key={mintKey.toString()}
                 >
-                  <div className="flex items-center justify-between mb-4">
+                  <div className="mb-4 flex items-center justify-between">
                     <div className="flex items-center">
                       <img
                         alt=""
                         src={`/assets/icons/${symbol.toLowerCase()}.svg`}
-                        className={`h-5 mr-2.5 w-auto`}
+                        className={`mr-2.5 h-5 w-auto`}
                       />
                       <span className="text-th-fgd-2">{symbol}</span>
                     </div>
                   </div>
                   <div className="pb-3">
-                    <div className="pb-0.5 text-th-fgd-3 text-xs">
+                    <div className="pb-0.5 text-xs text-th-fgd-3">
                       {t('balance')}
                     </div>
-                    <div className={`text-th-fgd-1`}>
+                    <div
+                      className={`text-th-fgd-1 ${
+                        balance != 0
+                          ? 'cursor-pointer underline hover:no-underline'
+                          : ''
+                      }`}
+                      onClick={() => handleSizeClick(balance, symbol)}
+                    >
                       {isLoading ? (
                         <DataLoader />
-                      ) : mangoAccount ? (
-                        deposit.gt(borrow) ? (
-                          deposit.toFixed()
-                        ) : borrow.toNumber() > 0 ? (
-                          `-${borrow.toFixed()}`
-                        ) : (
-                          0
-                        )
                       ) : (
-                        0
+                        balance.toLocaleString(undefined, {
+                          maximumFractionDigits: decimals,
+                        })
                       )}
                     </div>
                   </div>
                   <div className="pb-3">
                     <Tooltip content={t('tooltip-available-after')}>
-                      <div className="pb-0.5 text-th-fgd-3 text-xs">
+                      <div className="pb-0.5 text-xs text-th-fgd-3">
                         {t('available-balance')}
                       </div>
                     </Tooltip>
@@ -147,17 +144,17 @@ export default function MarketBalances() {
                     >
                       {isLoading ? (
                         <DataLoader />
-                      ) : mangoAccount ? (
-                        availableBalance
                       ) : (
-                        0
+                        availableBalance.toLocaleString(undefined, {
+                          maximumFractionDigits: decimals,
+                        })
                       )}
                     </div>
                   </div>
                   <div>
                     <Tooltip content={t('tooltip-apy-apr')}>
                       <div
-                        className={`cursor-help font-normal pb-0.5 text-th-fgd-3 default-transition text-xs hover:border-th-bkg-2 hover:text-th-fgd-3`}
+                        className={`default-transition cursor-help pb-0.5 text-xs font-normal text-th-fgd-3 hover:border-th-bkg-2 hover:text-th-fgd-3`}
                       >
                         {t('rates')}
                       </div>
@@ -188,5 +185,5 @@ export default function MarketBalances() {
 }
 
 export const DataLoader = () => (
-  <div className="animate-pulse bg-th-bkg-3 h-5 w-10 rounded-sm" />
+  <div className="h-5 w-10 animate-pulse rounded-sm bg-th-bkg-3" />
 )

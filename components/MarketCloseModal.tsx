@@ -24,13 +24,13 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
   const { t } = useTranslation('common')
   const [submitting, setSubmitting] = useState(false)
   const actions = useMangoStore((s) => s.actions)
-  const mangoClient = useMangoStore((s) => s.connection.client)
   const config = useMangoStore.getState().selectedMarket.config
 
   async function handleMarketClose() {
     const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
     const marketConfig = useMangoStore.getState().selectedMarket.config
+    const mangoClient = useMangoStore.getState().connection.client
     const askInfo =
       useMangoStore.getState().accountInfos[marketConfig.asksKey.toString()]
     const bidInfo =
@@ -59,20 +59,20 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
       // hard coded for now; market orders are very dangerous and fault prone
       const maxSlippage: number | undefined = 0.025
 
-      const txid = await mangoClient.placePerpOrder(
+      const txid = await mangoClient.placePerpOrder2(
         mangoGroup,
         mangoAccount,
-        mangoGroup.mangoCache,
         market,
         wallet,
         side,
         referencePrice * (1 + (side === 'buy' ? 1 : -1) * maxSlippage),
         size,
-        'ioc',
-        0, // client order id
-        side === 'buy' ? askInfo : bidInfo,
-        true, // reduce only
-        referrerPk ? referrerPk : undefined
+        {
+          orderType: 'ioc',
+          bookSideInfo: side === 'buy' ? askInfo : bidInfo,
+          reduceOnly: true,
+          referrerMangoAccountPk: referrerPk ? referrerPk : undefined,
+        }
       )
       await sleep(500)
       actions.reloadMangoAccount()
@@ -92,7 +92,7 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
 
   return (
     <Modal onClose={onClose} isOpen={isOpen}>
-      <div className="pb-2 text-th-fgd-1 text-lg">
+      <div className="pb-2 text-lg text-th-fgd-1">
         {t('close-confirm', { config_name: config.name })}
       </div>
       <div className="pb-6 text-th-fgd-3">{t('price-expect')}</div>

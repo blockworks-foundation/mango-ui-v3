@@ -5,13 +5,17 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import useMangoStore from '../stores/useMangoStore'
 import {
   mangoCacheSelector,
-  mangoClientSelector,
   mangoGroupConfigSelector,
   mangoGroupSelector,
   walletSelector,
 } from '../stores/selectors'
 import Button, { IconButton } from '../components/Button'
-import { abbreviateAddress, copyToClipboard } from '../utils'
+import {
+  abbreviateAddress,
+  copyToClipboard,
+  formatUsdValue,
+  usdFormatter,
+} from '../utils'
 import { notify } from '../utils/notifications'
 import {
   getMarketIndexBySymbol,
@@ -28,7 +32,6 @@ import {
 import { MngoMonoIcon } from '../components/icons'
 import Link from 'next/link'
 import { Table, Td, Th, TrBody, TrHead } from '../components/TableElements'
-import dayjs from 'dayjs'
 import AccountsModal from '../components/AccountsModal'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from '../components/TradePageGrid'
@@ -37,6 +40,7 @@ import MobileTableHeader from '../components/mobile/MobileTableHeader'
 import Input, { Label } from '../components/Input'
 import InlineNotification from '../components/InlineNotification'
 import useMangoAccount from '../hooks/useMangoAccount'
+import { DateDisplay } from '../components/DateDisplay'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -46,28 +50,6 @@ export async function getStaticProps({ locale }) {
     },
   }
 }
-
-const referralHistory = []
-// [
-//   {
-//     time: '2022-02-09T19:28:59Z',
-//     referralLink: 'test2',
-//     referee: '22JS1jkvkLcdxhHo1LpWXUh6sTErkt54j1YaszYWZoCi',
-//     fee: 0.22,
-//   },
-//   {
-//     time: '2022-02-08T19:28:59Z',
-//     referralLink: 'test2',
-//     referee: '22JS1jkvkLcdxhHo1LpWXUh6sTErkt54j1YaszYWZoCi',
-//     fee: 0.21,
-//   },
-//   {
-//     time: '2022-02-07T19:28:59Z',
-//     referralLink: 'test2',
-//     referee: '22JS1jkvkLcdxhHo1LpWXUh6sTErkt54j1YaszYWZoCi',
-//     fee: 0.15,
-//   },
-// ]
 
 const ProgramDetails = () => {
   const { t } = useTranslation('referrals')
@@ -90,9 +72,13 @@ export default function Referral() {
   const mangoCache = useMangoStore(mangoCacheSelector)
   const { mangoAccount } = useMangoAccount()
   const groupConfig = useMangoStore(mangoGroupConfigSelector)
-  const client = useMangoStore(mangoClientSelector)
   const wallet = useMangoStore(walletSelector)
   const connected = useMangoStore((s) => s.wallet.connected)
+  const actions = useMangoStore((s) => s.actions)
+
+  const referralHistory = useMangoStore((s) => s.referrals.history)
+  const referralTotalAmount = useMangoStore((s) => s.referrals.total)
+  const hasReferrals = referralHistory.length > 0
 
   const [customRefLinkInput, setCustomRefLinkInput] = useState('')
   const [existingCustomRefLinks, setexistingCustomRefLinks] = useState<
@@ -100,7 +86,6 @@ export default function Referral() {
   >([])
   const [hasCopied, setHasCopied] = useState(null)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
-  // const [hasReferrals] = useState(false) // Placeholder to show/hide users referral stats
   const [loading, setLoading] = useState(false)
   const [inputError, setInputError] = useState('')
   const { width } = useViewport()
@@ -108,7 +93,10 @@ export default function Referral() {
 
   const fetchCustomReferralLinks = useCallback(async () => {
     setLoading(true)
-    const referrerIds = await client.getReferrerIdsForMangoAccount(mangoAccount)
+    const mangoClient = useMangoStore.getState().connection.client
+    const referrerIds = await mangoClient.getReferrerIdsForMangoAccount(
+      mangoAccount
+    )
 
     setexistingCustomRefLinks(referrerIds)
     setLoading(false)
@@ -129,6 +117,12 @@ export default function Referral() {
       clearTimeout(timer)
     }
   }, [hasCopied])
+
+  useEffect(() => {
+    if (mangoAccount) {
+      actions.loadReferralData()
+    }
+  }, [mangoAccount])
 
   const onChangeRefIdInput = (value) => {
     const id = value.replace(/ /g, '')
@@ -162,7 +156,8 @@ export default function Referral() {
 
     if (!inputError) {
       try {
-        const txid = await client.registerReferrerId(
+        const mangoClient = useMangoStore.getState().connection.client
+        const txid = await mangoClient.registerReferrerId(
           mangoGroup,
           mangoAccount,
           wallet,
@@ -210,45 +205,45 @@ export default function Referral() {
       <PageBodyContainer>
         <div className="py-4 md:pb-4 md:pt-10">
           <h1 className={`mb-1`}>{t('referrals:sow-seed')}</h1>
-          <div className="flex flex-col sm:flex-row items-start">
+          <div className="flex flex-col items-start sm:flex-row">
             <p className="mb-0 mr-2">{t('referrals:earn-16')}</p>
           </div>
         </div>
-        <div className="bg-th-bkg-2 grid grid-cols-12 grid-flow-row gap-x-6 gap-y-8 p-4 sm:p-6 rounded-lg">
+        <div className="grid grid-flow-row grid-cols-12 gap-x-6 gap-y-8 rounded-lg bg-th-bkg-2 p-4 sm:p-6">
           {connected ? (
             mangoAccount ? (
               <>
-                {/* {hasReferrals ? (
+                {hasReferrals ? (
                   <div className="col-span-12">
                     <h2 className="mb-4">{t('referrals:your-referrals')}</h2>
-                    <div className="border-b border-th-bkg-4 sm:border-b-0 grid grid-cols-2 grid-row-flow sm:gap-6">
-                      <div className="sm:border-b border-t border-th-bkg-4 col-span-2 sm:col-span-1 p-3 sm:p-4">
-                        <div className="pb-0.5 text-th-fgd-3 text-xs sm:text-sm">
+                    <div className="grid-row-flow grid grid-cols-2 border-b border-th-bkg-4 sm:gap-6 sm:border-b-0">
+                      <div className="col-span-2 border-t border-th-bkg-4 p-3 sm:col-span-1 sm:border-b sm:p-4">
+                        <div className="pb-0.5 text-xs text-th-fgd-3 sm:text-sm">
                           {t('referrals:total-earnings')}
                         </div>
-                        <div className="font-bold text-th-fgd-1 text-xl sm:text-2xl">
-                          $150.50
+                        <div className="text-xl font-bold text-th-fgd-1 sm:text-2xl">
+                          {formatUsdValue(referralTotalAmount)}
                         </div>
                       </div>
-                      <div className="sm:border-b border-t border-th-bkg-4 col-span-2 sm:col-span-1 p-3 sm:p-4">
-                        <div className="pb-0.5 text-th-fgd-3 text-xs sm:text-sm">
+                      <div className="col-span-2 border-t border-th-bkg-4 p-3 sm:col-span-1 sm:border-b sm:p-4">
+                        <div className="pb-0.5 text-xs text-th-fgd-3 sm:text-sm">
                           {t('referrals:total-referrals')}
                         </div>
-                        <div className="font-bold text-th-fgd-1 text-xl sm:text-2xl">
-                          15
+                        <div className="text-xl font-bold text-th-fgd-1 sm:text-2xl">
+                          {referralHistory.length}
                         </div>
                       </div>
                     </div>
                   </div>
-                ) : null} */}
+                ) : null}
                 <div className="col-span-12">
-                  <div className="flex flex-col xl:flex-row xl:space-x-6 space-y-4 xl:space-y-0 w-full">
-                    <div className="min-w-[25%] bg-th-bkg-3 flex-1 p-6 rounded-md">
+                  <div className="flex w-full flex-col space-y-4 xl:flex-row xl:space-x-6 xl:space-y-0">
+                    <div className="min-w-[25%] flex-1 rounded-md bg-th-bkg-3 p-6">
                       <ProgramDetails />
                     </div>
-                    <div className="flex flex-col w-full">
+                    <div className="flex w-full flex-col">
                       {hasRequiredMngo ? (
-                        <div className="bg-th-bkg-3 flex-1 p-6 rounded-md">
+                        <div className="flex-1 rounded-md bg-th-bkg-3 p-6">
                           <h2 className="mb-4">{t('referrals:your-links')}</h2>
                           {!loading ? (
                             !hasCustomRefLinks ? (
@@ -264,9 +259,9 @@ export default function Referral() {
                                     <Td>
                                       <div className="flex items-center">
                                         {!isMobile ? (
-                                          <LinkIcon className="h-4 mr-1.5 w-4" />
+                                          <LinkIcon className="mr-1.5 h-4 w-4" />
                                         ) : null}
-                                        <p className="mb-0 text-th-fgd-1 max-w-md">
+                                        <p className="mb-0 max-w-md text-th-fgd-1">
                                           {isMobile
                                             ? abbreviateAddress(
                                                 mangoAccount.publicKey
@@ -317,7 +312,7 @@ export default function Referral() {
                                         <Td>
                                           <div className="flex items-center">
                                             {!isMobile ? (
-                                              <LinkIcon className="h-4 mr-1.5 w-4" />
+                                              <LinkIcon className="mr-1.5 h-4 w-4" />
                                             ) : null}
                                             <p className="mb-0 text-th-fgd-1">
                                               {isMobile
@@ -355,19 +350,19 @@ export default function Referral() {
                             )
                           ) : (
                             <div className="space-y-2">
-                              <div className="animate-pulse bg-th-bkg-4 h-16" />
-                              <div className="animate-pulse bg-th-bkg-4 h-16" />
-                              <div className="animate-pulse bg-th-bkg-4 h-16" />
+                              <div className="h-16 animate-pulse bg-th-bkg-4" />
+                              <div className="h-16 animate-pulse bg-th-bkg-4" />
+                              <div className="h-16 animate-pulse bg-th-bkg-4" />
                             </div>
                           )}
                         </div>
                       ) : (
-                        <div className="bg-th-bkg-3 flex flex-col flex-1 items-center justify-center px-4 py-8 rounded-md text-center">
-                          <MngoMonoIcon className="h-6 mb-2 text-th-fgd-2 w-6" />
+                        <div className="flex flex-1 flex-col items-center justify-center rounded-md bg-th-bkg-3 px-4 py-8 text-center">
+                          <MngoMonoIcon className="mb-2 h-6 w-6 text-th-fgd-2" />
                           <p className="mb-0">{t('referrals:10k-mngo')}</p>
 
                           <Link href={'/?name=MNGO/USDC'} shallow={true}>
-                            <a className="mt-4 px-6 py-2 bg-th-bkg-button font-bold rounded-full text-th-fgd-1 hover:brightness-[1.15] hover:text-th-fgd-1 focus:outline-none">
+                            <a className="mt-4 rounded-full bg-th-bkg-button px-6 py-2 font-bold text-th-fgd-1 hover:text-th-fgd-1 hover:brightness-[1.15] focus:outline-none">
                               {t('referrals:buy-mngo')}
                             </a>
                           </Link>
@@ -375,7 +370,7 @@ export default function Referral() {
                       )}
                     </div>
                     {hasRequiredMngo ? (
-                      <div className="min-w-[25%] bg-th-bkg-3 p-6 rounded-md w-full xl:w-1/3">
+                      <div className="w-full min-w-[25%] rounded-md bg-th-bkg-3 p-6 xl:w-1/3">
                         <h2 className="mb-1">{t('referrals:custom-links')}</h2>
                         <p className="mb-4">
                           {t('referrals:custom-links-limit')}
@@ -383,7 +378,7 @@ export default function Referral() {
                         <div className="pb-6">
                           <Label>{t('referrals:referral-id')}</Label>
                           <Input
-                            error={!!inputError}
+                            error={inputError}
                             type="text"
                             placeholder="ElonMusk"
                             onBlur={validateRefIdInput}
@@ -405,7 +400,7 @@ export default function Referral() {
                           disabled={existingCustomRefLinks.length === 5}
                         >
                           <div className="flex items-center">
-                            <LinkIcon className="h-4 mr-1.5 w-4" />
+                            <LinkIcon className="mr-1.5 h-4 w-4" />
                             {t('referrals:generate-link')}
                           </div>
                         </Button>
@@ -422,7 +417,6 @@ export default function Referral() {
                         <thead>
                           <TrHead>
                             <Th>{t('date')}</Th>
-                            <Th>{t('referrals:referral-id')}</Th>
                             <Th>{t('referrals:referee')}</Th>
                             <Th>
                               <div className="flex justify-end">
@@ -432,65 +426,64 @@ export default function Referral() {
                           </TrHead>
                         </thead>
                         <tbody>
-                          {referralHistory.map((ref, index) => (
-                            <TrBody key={ref.fee + index}>
-                              <Td>
-                                {dayjs(ref.time).format('DD MMM YYYY h:mma')}
-                              </Td>
-                              <Td>{ref.referralLink}</Td>
-                              <Td>
-                                <Link
-                                  href={`/account?pubkey=${ref.referee}`}
-                                  shallow={true}
-                                >
-                                  <a className="text-th-fgd-2 underline hover:no-underline hover:text-th-fgd-3">
-                                    {abbreviateAddress(mangoAccount.publicKey)}
-                                  </a>
-                                </Link>
-                              </Td>
-                              <Td className="flex items-center justify-end">
-                                ${ref.fee}
-                              </Td>
-                            </TrBody>
-                          ))}
+                          {referralHistory.map((ref) => {
+                            const pk = ref.referrer_mango_account
+                            const acct = pk.slice(0, 5) + '…' + pk.slice(-5)
+
+                            return (
+                              <TrBody key={ref.signature}>
+                                <Td>
+                                  <DateDisplay date={ref.block_datetime} />
+                                </Td>
+                                <Td>
+                                  <Link
+                                    href={`/account?pubkey=${ref.referree_mango_account}`}
+                                    shallow={true}
+                                  >
+                                    <a className="text-th-fgd-2 underline hover:text-th-fgd-3 hover:no-underline">
+                                      {acct}
+                                    </a>
+                                  </Link>
+                                </Td>
+                                <Td className="flex items-center justify-end">
+                                  {usdFormatter(ref.referral_fee_accrual, 4)}
+                                </Td>
+                              </TrBody>
+                            )
+                          })}
                         </tbody>
                       </Table>
                     ) : (
                       <>
                         <MobileTableHeader
                           colOneHeader={t('date')}
-                          colTwoHeader={t('referrals:fee-eanred')}
+                          colTwoHeader={t('referrals:fee-earned')}
                         />
                         {referralHistory.map((ref, index) => (
                           <ExpandableRow
                             buttonTemplate={
-                              <div className="flex items-center justify-between text-th-fgd-1 w-full">
+                              <div className="flex w-full items-center justify-between text-th-fgd-1">
                                 <div>
-                                  {dayjs(ref.time).format('DD MMM YYYY h:mma')}
+                                  <DateDisplay date={ref.block_datetime} />
                                 </div>
-                                <div className="text-right">${ref.fee}</div>
+                                <div className="text-right">
+                                  {usdFormatter(ref.referral_fee_accrual, 4)}
+                                </div>
                               </div>
                             }
-                            key={`${ref.fee + index}`}
-                            index={index}
+                            key={`${ref.referral_fee_accrual + index}`}
                             panelTemplate={
                               <>
-                                <div className="grid grid-cols-2 grid-flow-row gap-4 pb-4">
+                                <div className="grid grid-flow-row grid-cols-2 gap-4">
                                   <div className="text-left">
-                                    <div className="pb-0.5 text-th-fgd-3 text-xs">
-                                      {t('referrals:referral-id')}
-                                    </div>
-                                    <div>{ref.referralLink}</div>
-                                  </div>
-                                  <div className="text-left">
-                                    <div className="pb-0.5 text-th-fgd-3 text-xs">
+                                    <div className="pb-0.5 text-xs text-th-fgd-3">
                                       {t('referrals:referee')}
                                     </div>
                                     <Link
-                                      href={`/account?pubkey=${ref.referee}`}
+                                      href={`/account?pubkey=${ref.referree_mango_account}`}
                                       shallow={true}
                                     >
-                                      <a className="text-th-fgd-2 underline hover:no-underline hover:text-th-fgd-3">
+                                      <a className="text-th-fgd-2 underline hover:text-th-fgd-3 hover:no-underline">
                                         {abbreviateAddress(
                                           mangoAccount.publicKey
                                         )}
@@ -509,10 +502,10 @@ export default function Referral() {
               </>
             ) : (
               <>
-                <div className="col-span-12 lg:col-span-4 bg-th-bkg-3 p-6 rounded-md">
+                <div className="col-span-12 rounded-md bg-th-bkg-3 p-6 lg:col-span-4">
                   <ProgramDetails />
                 </div>
-                <div className="col-span-12 lg:col-span-8 bg-th-bkg-3 p-6 rounded-md flex items-center justify-center">
+                <div className="col-span-12 flex items-center justify-center rounded-md bg-th-bkg-3 p-6 lg:col-span-8">
                   <EmptyState
                     buttonText={t('create-account')}
                     icon={<CurrencyDollarIcon />}
@@ -524,10 +517,10 @@ export default function Referral() {
             )
           ) : (
             <>
-              <div className="col-span-12 lg:col-span-4 bg-th-bkg-3 p-6 rounded-md">
+              <div className="col-span-12 rounded-md bg-th-bkg-3 p-6 lg:col-span-4">
                 <ProgramDetails />
               </div>
-              <div className="col-span-12 lg:col-span-8 bg-th-bkg-3 p-6 rounded-md flex items-center justify-center">
+              <div className="col-span-12 flex items-center justify-center rounded-md bg-th-bkg-3 p-6 lg:col-span-8">
                 <EmptyState
                   buttonText={t('connect')}
                   icon={<LinkIcon />}

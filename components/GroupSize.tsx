@@ -21,7 +21,7 @@ const GroupSize = ({ tickSize, value, onChange, className = '' }) => {
         {({ open }) => (
           <>
             <Listbox.Button
-              className={`bg-th-bkg-1 border border-th-bkg-4 font-normal py-0.5 hover:border-th-fgd-4 rounded focus:outline-none focus:border-th-fgd-4`}
+              className={`rounded border border-th-bkg-4 bg-th-bkg-1 py-0.5 font-normal hover:border-th-fgd-4 focus:border-th-fgd-4 focus:outline-none`}
             >
               <div
                 className={`flex items-center justify-between space-x-1 pr-1 pl-2 text-xs`}
@@ -30,7 +30,7 @@ const GroupSize = ({ tickSize, value, onChange, className = '' }) => {
 
                 <ChevronDownIcon
                   className={`default-transition h-4 w-4 text-th-fgd-1 ${
-                    open ? 'transform rotate-180' : 'transform rotate-360'
+                    open ? 'rotate-180 transform' : 'rotate-360 transform'
                   }`}
                 />
               </div>
@@ -38,13 +38,13 @@ const GroupSize = ({ tickSize, value, onChange, className = '' }) => {
             {open ? (
               <Listbox.Options
                 static
-                className={`absolute bg-th-bkg-3 left-0 max-h-60 mt-1 overflow-auto outline-none p-2 rounded-md text-th-fgd-1 thin-scroll top-5 w-full z-20`}
+                className={`thin-scroll absolute left-0 top-5 z-20 mt-1 max-h-60 w-full overflow-auto rounded-md bg-th-bkg-3 p-2 text-th-fgd-1 outline-none`}
               >
                 {sizes.map((size) => (
                   <Listbox.Option key={size} value={size}>
                     {({ selected }) => (
                       <div
-                        className={`default-transition text-th-fgd-1 hover:bg-th-bkg-3 hover:cursor-pointer hover:text-th-primary text-right ${
+                        className={`default-transition text-right text-th-fgd-1 hover:cursor-pointer hover:bg-th-bkg-3 hover:text-th-primary ${
                           selected && `text-th-primary`
                         }`}
                       >

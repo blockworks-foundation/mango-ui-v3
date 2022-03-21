@@ -31,7 +31,7 @@ const UserInfoTabs = ({ activeTab, setActiveTab }) => {
   }
 
   return (
-    <div className="pb-1 relative">
+    <div className="relative pb-1">
       <Tabs
         activeTab={activeTab}
         onChange={handleTabChange}
@@ -55,7 +55,7 @@ const TabContent = ({ activeTab }) => {
     case 'Orders':
       return <OpenOrdersTable />
     case 'Balances':
-      return <BalancesTable />
+      return <BalancesTable clickToPopulateTradeForm />
     case 'Trade History':
       return <TradeHistoryTable numTrades={100} />
     case 'Positions':
@@ -63,7 +63,7 @@ const TabContent = ({ activeTab }) => {
     case 'Fee Discount':
       return <FeeDiscountsTable />
     default:
-      return <BalancesTable />
+      return <BalancesTable clickToPopulateTradeForm />
   }
 }
 

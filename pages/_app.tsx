@@ -20,15 +20,12 @@ import { useOpenOrders } from '../hooks/useOpenOrders'
 import usePerpPositions from '../hooks/usePerpPositions'
 import { useEffect } from 'react'
 import { PublicKey } from '@solana/web3.js'
-import {
-  connectionSelector,
-  mangoClientSelector,
-  mangoGroupSelector,
-} from '../stores/selectors'
+import { connectionSelector, mangoGroupSelector } from '../stores/selectors'
 import {
   ReferrerIdRecordLayout,
   ReferrerIdRecord,
 } from '@blockworks-foundation/mango-client'
+import useTradeHistory from '../hooks/useTradeHistory'
 
 const MangoStoreUpdater = () => {
   useHydrateStore()
@@ -50,9 +47,13 @@ const PerpPositionsStoreUpdater = () => {
   return null
 }
 
+const TradeHistoryStoreUpdater = () => {
+  useTradeHistory()
+  return null
+}
+
 const FetchReferrer = () => {
   const setMangoStore = useMangoStore((s) => s.set)
-  const mangoClient = useMangoStore(mangoClientSelector)
   const mangoGroup = useMangoStore(mangoGroupSelector)
   const connection = useMangoStore(connectionSelector)
   const router = useRouter()
@@ -71,20 +72,19 @@ const FetchReferrer = () => {
           } catch (e) {
             console.log('Failed to decode referrer link', e)
           }
+
+          const mangoClient = useMangoStore.getState().connection.client
           const { referrerPda } = await mangoClient.getReferrerPda(
             mangoGroup,
             decodedRefLink
           )
-          console.log('in App referrerPda', referrerPda)
           const info = await connection.getAccountInfo(referrerPda)
-          console.log('in App referrerPda info', info)
           if (info) {
             const decoded = ReferrerIdRecordLayout.decode(info.data)
             const referrerRecord = new ReferrerIdRecord(decoded)
             referrerPk = referrerRecord.referrerMangoAccount
           }
         }
-        console.log('in App referrerPk from url is:', referrerPk)
         setMangoStore((state) => {
           state.referrerPk = referrerPk
         })
@@ -104,7 +104,7 @@ const PageTitle = () => {
   const oraclePrice = useOraclePrice()
   const selectedMarketName = marketConfig.name
   const marketTitleString =
-    marketConfig && router.pathname.includes('market')
+    marketConfig && router.pathname == '/'
       ? `${
           oraclePrice
             ? oraclePrice.toFixed(getDecimalCount(market?.tickSize)) + ' | '
@@ -124,11 +124,6 @@ function App({ Component, pageProps }) {
     <>
       <Head>
         <title>Mango Markets</title>
-        <link rel="preconnect" href="https://fonts.gstatic.com" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Lato:wght@200;300;400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
         <link rel="icon" href="/favicon.ico" />
         <meta property="og:title" content="Mango Markets" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -158,9 +153,6 @@ function App({ Component, pageProps }) {
           content="https://www.mango.markets/socials/twitter-image-1200x600.png?34567878"
         />
         <meta name="google" content="notranslate" />
-        <script src="/datafeeds/udf/dist/polyfills.js"></script>
-        <script src="/datafeeds/udf/dist/bundle.js"></script>
-
         <link rel="manifest" href="/manifest.json"></link>
       </Head>
       <ErrorBoundary>
@@ -170,18 +162,19 @@ function App({ Component, pageProps }) {
           <WalletStoreUpdater />
           <OpenOrdersStoreUpdater />
           <PerpPositionsStoreUpdater />
+          <TradeHistoryStoreUpdater />
           <FetchReferrer />
         </ErrorBoundary>
 
         <ThemeProvider defaultTheme="Mango">
           <ViewportProvider>
-            <div className="bg-th-bkg-1 min-h-screen">
+            <div className="min-h-screen bg-th-bkg-1">
               <ErrorBoundary>
                 <GlobalNotification />
                 <Component {...pageProps} />
               </ErrorBoundary>
             </div>
-            <div className="md:hidden fixed bottom-0 left-0 w-full z-20">
+            <div className="fixed bottom-0 left-0 z-20 w-full md:hidden">
               <ErrorBoundary>
                 <BottomBar />
               </ErrorBoundary>

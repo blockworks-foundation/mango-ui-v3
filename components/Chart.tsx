@@ -83,12 +83,12 @@ const Chart: FunctionComponent<ChartProps> = ({
 
   return (
     <div className="h-52 w-full" ref={observe}>
-      <div className="flex items-start justify-between pb-6 w-full">
+      <div className="flex w-full items-start justify-between pb-6">
         <div className="pl-2">
           <div className="pb-0.5 text-xs text-th-fgd-3">{title}</div>
           {mouseData ? (
             <>
-              <div className="font-bold pb-1 text-xl text-th-fgd-1">
+              <div className="pb-1 text-xl font-bold text-th-fgd-1">
                 {labelFormat(mouseData[yAxis])}
               </div>
               <div className="text-xs font-normal text-th-fgd-4">
@@ -97,12 +97,12 @@ const Chart: FunctionComponent<ChartProps> = ({
             </>
           ) : data.length > 0 ? (
             <>
-              <div className="font-bold pb-1 text-xl text-th-fgd-1">
+              <div className="pb-1 text-xl font-bold text-th-fgd-1">
                 {titleValue
                   ? labelFormat(titleValue)
                   : labelFormat(data[data.length - 1][yAxis])}
               </div>
-              <div className="text-xs font-normal h-4 text-th-fgd-4">
+              <div className="h-4 text-xs font-normal text-th-fgd-4">
                 {titleValue
                   ? ''
                   : new Date(data[data.length - 1][xAxis]).toDateString()}
@@ -110,15 +110,15 @@ const Chart: FunctionComponent<ChartProps> = ({
             </>
           ) : (
             <>
-              <div className="animate-pulse bg-th-bkg-3 h-8 mt-1 rounded w-48" />
-              <div className="animate-pulse bg-th-bkg-3 h-4 mt-1 rounded w-24" />
+              <div className="mt-1 h-8 w-48 animate-pulse rounded bg-th-bkg-3" />
+              <div className="mt-1 h-4 w-24 animate-pulse rounded bg-th-bkg-3" />
             </>
           )}
         </div>
         {!hideRangeFilters ? (
           <div className="flex h-5">
             <button
-              className={`default-transition font-bold mx-3 text-th-fgd-1 text-xs hover:text-th-primary focus:outline-none ${
+              className={`default-transition mx-3 text-xs font-bold text-th-fgd-1 hover:text-th-primary focus:outline-none ${
                 daysToShow === 1 && 'text-th-primary'
               }`}
               onClick={() => setDaysToShow(1)}
@@ -126,7 +126,7 @@ const Chart: FunctionComponent<ChartProps> = ({
               24H
             </button>
             <button
-              className={`default-transition font-bold mx-3 text-th-fgd-1 text-xs hover:text-th-primary focus:outline-none ${
+              className={`default-transition mx-3 text-xs font-bold text-th-fgd-1 hover:text-th-primary focus:outline-none ${
                 daysToShow === 7 && 'text-th-primary'
               }`}
               onClick={() => setDaysToShow(7)}
@@ -134,7 +134,7 @@ const Chart: FunctionComponent<ChartProps> = ({
               7D
             </button>
             <button
-              className={`default-transition font-bold ml-3 text-th-fgd-1 text-xs hover:text-th-primary focus:outline-none ${
+              className={`default-transition ml-3 text-xs font-bold text-th-fgd-1 hover:text-th-primary focus:outline-none ${
                 daysToShow === 30 && 'text-th-primary'
               }`}
               onClick={() => setDaysToShow(30)}
@@ -143,7 +143,7 @@ const Chart: FunctionComponent<ChartProps> = ({
             </button>
             {showAll ? (
               <button
-                className={`default-transition font-bold ml-3 text-th-fgd-1 text-xs hover:text-th-primary focus:outline-none ${
+                className={`default-transition ml-3 text-xs font-bold text-th-fgd-1 hover:text-th-primary focus:outline-none ${
                   daysToShow === 1000 && 'text-th-primary'
                 }`}
                 onClick={() => setDaysToShow(1000)}

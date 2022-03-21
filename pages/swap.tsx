@@ -53,15 +53,15 @@ export default function Swap() {
         <TopBar />
         <PageBodyContainer>
           <div className="grid grid-cols-12">
-            <div className="col-span-12 xl:col-span-10 xl:col-start-2 pt-8 pb-3 sm:pb-4 md:pt-10">
-              <div className="flex flex-col items-start md:flex-row md:items-end md:justify-between mb-1">
+            <div className="col-span-12 pt-8 pb-3 sm:pb-4 md:pt-10 xl:col-span-10 xl:col-start-2">
+              <div className="mb-1 flex flex-col items-start md:flex-row md:items-end md:justify-between">
                 <h1 className={`mb-1.5 md:mb-0`}>{t('swap')}</h1>
                 <div className="flex flex-col md:items-end">
                   <p className="mb-0 text-xs">
                     {t('swap:swap-between-hundreds')}
                   </p>
                   <a
-                    className="mb-0 text-th-fgd-2 text-xs"
+                    className="mb-0 text-xs text-th-fgd-2"
                     href="https://jup.ag/swap/USDC-MNGO"
                     target="_blank"
                     rel="noopener noreferrer"

@@ -135,12 +135,12 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
         <ElementTitle noMarginBottom>{t('create-account')}</ElementTitle>
         <p className="mt-1 text-center">{t('insufficient-sol')}</p>
       </Modal.Header>
-      <div className="border-b border-th-bkg-4 mb-4 pb-6">
+      <div className="mb-4 border-b border-th-bkg-4 pb-6">
         <Label className="flex items-center">
           {t('account-name')}{' '}
           <span className="ml-1 text-th-fgd-3">{t('optional')}</span>
           <Tooltip content={t('tooltip-name-onchain')}>
-            <InformationCircleIcon className="h-5 w-5 ml-2 text-th-primary" />
+            <InformationCircleIcon className="ml-2 h-5 w-5 text-th-primary" />
           </Tooltip>
         </Label>
         <Input
@@ -153,7 +153,7 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
         />
         {invalidNameMessage ? (
           <div className="flex items-center pt-1.5 text-th-red">
-            <ExclamationCircleIcon className="h-4 w-4 mr-1.5" />
+            <ExclamationCircleIcon className="mr-1.5 h-4 w-4" />
             {invalidNameMessage}
           </div>
         ) : null}
@@ -177,7 +177,7 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
       />
       {invalidAmountMessage ? (
         <div className="flex items-center pt-1.5 text-th-red">
-          <ExclamationCircleIcon className="h-4 w-4 mr-1.5" />
+          <ExclamationCircleIcon className="mr-1.5 h-4 w-4" />
           {invalidAmountMessage}
         </div>
       ) : null}

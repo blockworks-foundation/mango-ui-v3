@@ -10,6 +10,7 @@ import useLocalStorageState from '../hooks/useLocalStorageState'
 import Select from './Select'
 import { useTranslation } from 'next-i18next'
 import Switch from './Switch'
+import { MarketKind } from '@blockworks-foundation/mango-client'
 
 const NODE_URLS = [
   { label: 'Triton (RPC Pool)', value: 'https://mango.rpcpool.com' },
@@ -17,22 +18,18 @@ const NODE_URLS = [
     label: 'Genesys Go',
     value: 'https://mango.genesysgo.net/',
   },
-  {
-    label: 'Project Serum',
-    value: 'https://solana-api.projectserum.com/',
-  },
   { label: 'Custom', value: '' },
 ]
 
 const CUSTOM_NODE = NODE_URLS.find((n) => n.label === 'Custom')
 
-export const NODE_URL_KEY = 'node-url-key-0.5'
+export const NODE_URL_KEY = 'node-url-key-0.6'
 export const DEFAULT_MARKET_KEY = 'defaultMarket-0.3'
 export const ORDERBOOK_FLASH_KEY = 'showOrderbookFlash'
 export const DEFAULT_SPOT_MARGIN_KEY = 'defaultSpotMargin'
 export const initialMarket = {
   base: 'SOL',
-  kind: 'perp',
+  kind: 'perp' as MarketKind,
   name: 'SOL-PERP',
   path: '/?name=SOL-PERP',
 }
@@ -65,7 +62,7 @@ const SettingsModal = ({ isOpen, onClose }) => {
     <Modal isOpen={isOpen} onClose={onClose}>
       {settingsView !== '' ? (
         <LinkButton
-          className="absolute flex items-center left-2 top-3"
+          className="absolute left-2 top-3 flex items-center"
           onClick={() => setSettingsView('')}
         >
           <ChevronLeftIcon className="h-5 w-5" />
@@ -78,26 +75,26 @@ const SettingsModal = ({ isOpen, onClose }) => {
       {!settingsView ? (
         <div className="border-b border-th-bkg-4">
           <button
-            className="border-t border-th-bkg-4 default-transition flex font-normal items-center justify-between py-3 text-th-fgd-1 w-full hover:text-th-primary focus:outline-none"
+            className="default-transition flex w-full items-center justify-between border-t border-th-bkg-4 py-3 font-normal text-th-fgd-1 hover:text-th-primary focus:outline-none"
             onClick={() => setSettingsView('Default Market')}
           >
             <span>{t('default-market')}</span>
-            <div className="flex items-center text-th-fgd-3 text-xs">
+            <div className="flex items-center text-xs text-th-fgd-3">
               {defaultMarket.name}
-              <ChevronRightIcon className="h-5 ml-1 w-5 text-th-fgd-1" />
+              <ChevronRightIcon className="ml-1 h-5 w-5 text-th-fgd-1" />
             </div>
           </button>
           <button
-            className="border-t border-th-bkg-4 default-transition flex font-normal items-center justify-between py-3 text-th-fgd-1 w-full hover:text-th-primary focus:outline-none"
+            className="default-transition flex w-full items-center justify-between border-t border-th-bkg-4 py-3 font-normal text-th-fgd-1 hover:text-th-primary focus:outline-none"
             onClick={() => setSettingsView('RPC Endpoint')}
           >
             <span>{t('rpc-endpoint')}</span>
-            <div className="flex items-center text-th-fgd-3 text-xs">
+            <div className="flex items-center text-xs text-th-fgd-3">
               {rpcEndpoint.label}
-              <ChevronRightIcon className="h-5 ml-1 w-5 text-th-fgd-1" />
+              <ChevronRightIcon className="ml-1 h-5 w-5 text-th-fgd-1" />
             </div>
           </button>
-          <div className="border-t border-th-bkg-4 flex items-center justify-between py-3 text-th-fgd-1">
+          <div className="flex items-center justify-between border-t border-th-bkg-4 py-3 text-th-fgd-1">
             <span>{t('orderbook-animation')}</span>
             <Switch
               checked={showOrderbookFlash}
@@ -105,7 +102,7 @@ const SettingsModal = ({ isOpen, onClose }) => {
             />
           </div>
 
-          <div className="border-t border-th-bkg-4 flex items-center justify-between py-3 text-th-fgd-1">
+          <div className="flex items-center justify-between border-t border-th-bkg-4 py-3 text-th-fgd-1">
             <span>{t('default-spot-margin')}</span>
             <Switch
               checked={defaultSpotMargin}
@@ -178,7 +175,7 @@ const DefaultMarketSettings = ({ setSettingsView }) => {
       >
         {allMarkets.map((market) => (
           <Select.Option key={market.name} value={market.name}>
-            <div className="flex items-center justify-between w-full">
+            <div className="flex w-full items-center justify-between">
               {market.name}
             </div>
           </Select.Option>

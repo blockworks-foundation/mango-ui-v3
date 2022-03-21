@@ -39,7 +39,6 @@ export default function AccountInfo() {
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const { mangoAccount, initialLoad } = useMangoAccount()
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
-  const mangoClient = useMangoStore((s) => s.connection.client)
   const wallet = useMangoStore((s) => s.wallet.current)
   const actions = useMangoStore((s) => s.actions)
   const { width } = useViewport()
@@ -50,7 +49,10 @@ export default function AccountInfo() {
   const [showWithdrawModal, setShowWithdrawModal] = useState(false)
   const [showAlertsModal, setShowAlertsModal] = useState(false)
 
-  const canWithdraw = mangoAccount?.owner.equals(wallet.publicKey)
+  const canWithdraw =
+    mangoAccount?.owner && wallet?.publicKey
+      ? mangoAccount?.owner?.equals(wallet?.publicKey)
+      : false
 
   const handleCloseDeposit = useCallback(() => {
     setShowDepositModal(false)
@@ -77,6 +79,7 @@ export default function AccountInfo() {
 
   const handleRedeemMngo = async () => {
     const wallet = useMangoStore.getState().wallet.current
+    const mangoClient = useMangoStore.getState().connection.client
     const mngoNodeBank =
       mangoGroup.rootBankAccounts[MNGO_INDEX].nodeBankAccounts[0]
 
@@ -135,7 +138,7 @@ export default function AccountInfo() {
   return (
     <>
       <div
-        className={!connected && !isMobile ? 'filter blur-sm' : undefined}
+        className={!connected && !isMobile ? 'blur-sm filter' : undefined}
         id="account-details-tip"
       >
         {!isMobile ? (
@@ -160,7 +163,7 @@ export default function AccountInfo() {
                 </Tooltip>
               </ElementTitle>
               <IconButton onClick={() => setShowAlertsModal(true)}>
-                <BellIcon className={`w-4 h-4`} />
+                <BellIcon className={`h-4 w-4`} />
               </IconButton>
             </div>
           ) : (
@@ -169,7 +172,7 @@ export default function AccountInfo() {
         ) : null}
         <div>
           {mangoAccount ? (
-            <div className="flex justify-center text-xs -mt-2">
+            <div className="-mt-2 flex justify-center text-xs">
               <a
                 className="flex items-center text-th-fgd-4 hover:text-th-primary"
                 href={`https://explorer.solana.com/address/${mangoAccount?.publicKey}`}
@@ -177,13 +180,13 @@ export default function AccountInfo() {
                 rel="noopener noreferrer"
               >
                 {abbreviateAddress(mangoAccount.publicKey, 6)}
-                <ExternalLinkIcon className={`h-4 w-4 ml-1.5`} />
+                <ExternalLinkIcon className={`ml-1.5 h-4 w-4`} />
               </a>
             </div>
           ) : null}
           <div>
             <div className="flex justify-between pb-2">
-              <div className="font-normal text-th-fgd-3 leading-4">
+              <div className="font-normal leading-4 text-th-fgd-3">
                 {t('equity')}
               </div>
               <div className="text-th-fgd-1">
@@ -191,7 +194,7 @@ export default function AccountInfo() {
               </div>
             </div>
             <div className="flex justify-between pb-2">
-              <div className="font-normal text-th-fgd-3 leading-4">
+              <div className="font-normal leading-4 text-th-fgd-3">
                 {t('leverage')}
               </div>
               <div className="text-th-fgd-1">
@@ -207,7 +210,7 @@ export default function AccountInfo() {
               </div>
             </div>
             <div className={`flex justify-between pb-2`}>
-              <div className="font-normal text-th-fgd-3 leading-4">
+              <div className="font-normal leading-4 text-th-fgd-3">
                 {t('collateral-available')}
               </div>
               <div className={`text-th-fgd-1`}>
@@ -226,7 +229,7 @@ export default function AccountInfo() {
               </div>
             </div>
             <div className={`flex justify-between pb-2`}>
-              <div className="font-normal text-th-fgd-3 leading-4">
+              <div className="font-normal leading-4 text-th-fgd-3">
                 {marketConfig.name} {t('margin-available')}
               </div>
               <div className={`text-th-fgd-1`}>
@@ -246,7 +249,7 @@ export default function AccountInfo() {
               </div>
             </div>
             <div className={`flex justify-between pb-2`}>
-              <div className="font-normal text-th-fgd-3 leading-4">
+              <div className="font-normal leading-4 text-th-fgd-3">
                 {marketConfig.name} {t('estimated-liq-price')}
               </div>
               <div className={`text-th-fgd-1`}>
@@ -270,7 +273,7 @@ export default function AccountInfo() {
                   </div>
                 }
               >
-                <div className="cursor-help font-normal text-th-fgd-3 leading-4 border-b border-th-fgd-3 border-dashed border-opacity-20 default-transition hover:border-th-bkg-2">
+                <div className="default-transition cursor-help border-b border-dashed border-th-fgd-3 border-opacity-20 font-normal leading-4 text-th-fgd-3 hover:border-th-bkg-2">
                   {t('mngo-rewards')}
                 </div>
               </Tooltip>
@@ -281,7 +284,10 @@ export default function AccountInfo() {
                   nativeToUi(
                     mngoAccrued.toNumber(),
                     mangoGroup.tokens[MNGO_INDEX].decimals
-                  )
+                  ).toLocaleString(undefined, {
+                    minimumSignificantDigits: 2,
+                    maximumFractionDigits: 2,
+                  })
                 ) : (
                   0
                 )}
@@ -290,7 +296,7 @@ export default function AccountInfo() {
                 ) : (
                   <LinkButton
                     onClick={handleRedeemMngo}
-                    className="ml-2 text-th-primary text-xs disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:underline"
+                    className="ml-2 text-xs text-th-primary disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:underline"
                     disabled={mngoAccrued.eq(ZERO_BN)}
                   >
                     {t('claim')}
@@ -299,10 +305,10 @@ export default function AccountInfo() {
               </div>
             </div>
           </div>
-          <div className="border border-th-bkg-4 rounded flex items-center my-2 sm:my-1 p-2.5">
+          <div className="my-2 flex items-center rounded border border-th-bkg-4 p-2.5 sm:my-1">
             <div className="flex items-center pr-2">
               <HeartIcon
-                className="h-5 mr-1.5 w-5 text-th-primary"
+                className="mr-1.5 h-5 w-5 text-th-primary"
                 aria-hidden="true"
               />
               <span>
@@ -320,13 +326,13 @@ export default function AccountInfo() {
                     </div>
                   }
                 >
-                  <div className="cursor-help font-normal text-th-fgd-3 leading-4 border-b border-th-fgd-3 border-dashed border-opacity-20 default-transition hover:border-th-bkg-2">
+                  <div className="default-transition cursor-help border-b border-dashed border-th-fgd-3 border-opacity-20 font-normal leading-4 text-th-fgd-3 hover:border-th-bkg-2">
                     {t('health')}
                   </div>
                 </Tooltip>
               </span>
             </div>
-            <div className="h-1.5 flex flex-grow rounded bg-th-bkg-4">
+            <div className="flex h-1.5 flex-grow rounded bg-th-bkg-4">
               <div
                 style={{
                   width: `${maintHealthRatio}%`,
@@ -348,8 +354,8 @@ export default function AccountInfo() {
             </div>
           </div>
           {mangoAccount && mangoAccount.beingLiquidated ? (
-            <div className="pt-0.5 text-xs flex items-center justify-center">
-              <ExclamationIcon className="flex-shrink-0 h-5 w-5 mr-1.5 text-th-red" />
+            <div className="flex items-center justify-center pt-0.5 text-xs">
+              <ExclamationIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-th-red" />
               <span className="text-th-red">{t('being-liquidated')}</span>
             </div>
           ) : null}

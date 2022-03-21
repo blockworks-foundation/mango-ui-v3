@@ -1,9 +1,14 @@
-import React, { useRef, useEffect, useState } from 'react'
+import React, { useRef, useEffect, useState, useMemo } from 'react'
 import Big from 'big.js'
 import { isEqual as isEqualLodash } from 'lodash'
 import useInterval from '../hooks/useInterval'
 import usePrevious from '../hooks/usePrevious'
-import { isEqual, getDecimalCount, usdFormatter } from '../utils/'
+import {
+  isEqual,
+  getDecimalCount,
+  getPrecisionDigits,
+  usdFormatter,
+} from '../utils/'
 import {
   ArrowUpIcon,
   ArrowDownIcon,
@@ -261,57 +266,57 @@ export default function Orderbook({ depth = 8 }) {
       <FlipCardInner flip={defaultLayout}>
         {defaultLayout ? (
           <FlipCardFront>
-            <FloatingElement className="h-full fadein-floating-element">
+            <FloatingElement className="fadein-floating-element h-full">
               <div className="flex items-center justify-between pb-2.5">
-                <div className="flex relative">
+                <div className="relative flex">
                   <Tooltip
                     content={
                       displayCumulativeSize
                         ? t('tooltip-display-step')
                         : t('tooltip-display-cumulative')
                     }
-                    className="text-xs py-1"
+                    className="py-1 text-xs"
                   >
                     <button
                       onClick={() => {
                         setDisplayCumulativeSize(!displayCumulativeSize)
                       }}
-                      className="flex items-center justify-center rounded-full bg-th-bkg-4 w-7 h-7 hover:text-th-primary focus:outline-none"
+                      className="flex h-7 w-7 items-center justify-center rounded-full bg-th-bkg-4 hover:text-th-primary focus:outline-none"
                     >
                       {displayCumulativeSize ? (
-                        <StepSizeIcon className="w-4 h-4" />
+                        <StepSizeIcon className="h-4 w-4" />
                       ) : (
-                        <CumulativeSizeIcon className="w-4 h-4" />
+                        <CumulativeSizeIcon className="h-4 w-4" />
                       )}
                     </button>
                   </Tooltip>
                 </div>
                 <ElementTitle noMarginBottom>{t('orderbook')}</ElementTitle>
-                <div className="flex relative">
+                <div className="relative flex">
                   <Tooltip
                     content={t('tooltip-switch-layout')}
-                    className="text-xs py-1"
+                    className="py-1 text-xs"
                   >
                     <button
                       onClick={handleLayoutChange}
-                      className="flex items-center justify-center rounded-full bg-th-bkg-4 w-7 h-7 hover:text-th-primary focus:outline-none"
+                      className="flex h-7 w-7 items-center justify-center rounded-full bg-th-bkg-4 hover:text-th-primary focus:outline-none"
                     >
-                      <SwitchHorizontalIcon className="w-4 h-4" />
+                      <SwitchHorizontalIcon className="h-4 w-4" />
                     </button>
                   </Tooltip>
                 </div>
               </div>
-              <div className="flex justify-end items-center mb-3">
+              <div className="mb-3 flex items-center justify-end">
                 <MarkPriceComponent markPrice={markPrice} />
                 <GroupSize
                   tickSize={market?.tickSize}
                   onChange={onGroupSizeChange}
                   value={grouping}
-                  className="relative flex flex-col w-1/3 items-end"
+                  className="relative flex w-1/3 flex-col items-end"
                 />
               </div>
               <div
-                className={`text-th-fgd-4 flex justify-between mb-2 text-xs`}
+                className={`mb-2 flex justify-between text-xs text-th-fgd-4`}
               >
                 <div className={`text-left`}>
                   {displayCumulativeSize ? 'Cumulative ' : ''}
@@ -389,42 +394,42 @@ export default function Orderbook({ depth = 8 }) {
           </FlipCardFront>
         ) : (
           <FlipCardBack>
-            <FloatingElement className="h-full fadein-floating-element">
+            <FloatingElement className="fadein-floating-element h-full">
               <div className="flex items-center justify-between pb-2.5">
-                <div className="flex relative">
+                <div className="relative flex">
                   <Tooltip
                     content={
                       displayCumulativeSize
                         ? t('tooltip-display-step')
                         : t('tooltip-display-cumulative')
                     }
-                    className="text-xs py-1"
+                    className="py-1 text-xs"
                   >
                     <button
                       onClick={() => {
                         setDisplayCumulativeSize(!displayCumulativeSize)
                       }}
-                      className="flex items-center justify-center rounded-full bg-th-bkg-3 w-8 h-8 hover:text-th-primary focus:outline-none"
+                      className="flex h-8 w-8 items-center justify-center rounded-full bg-th-bkg-3 hover:text-th-primary focus:outline-none"
                     >
                       {displayCumulativeSize ? (
-                        <StepSizeIcon className="w-5 h-5" />
+                        <StepSizeIcon className="h-5 w-5" />
                       ) : (
-                        <CumulativeSizeIcon className="w-5 h-5" />
+                        <CumulativeSizeIcon className="h-5 w-5" />
                       )}
                     </button>
                   </Tooltip>
                 </div>
                 <ElementTitle noMarginBottom>{t('orderbook')}</ElementTitle>
-                <div className="flex relative">
+                <div className="relative flex">
                   <Tooltip
                     content={t('tooltip-switch-layout')}
-                    className="text-xs py-1"
+                    className="py-1 text-xs"
                   >
                     <button
                       onClick={handleLayoutChange}
-                      className="flex items-center justify-center rounded-full bg-th-bkg-3 w-8 h-8 hover:text-th-primary focus:outline-none"
+                      className="flex h-8 w-8 items-center justify-center rounded-full bg-th-bkg-3 hover:text-th-primary focus:outline-none"
                     >
-                      <SwitchHorizontalIcon className="w-5 h-5" />
+                      <SwitchHorizontalIcon className="h-5 w-5" />
                     </button>
                   </Tooltip>
                 </div>
@@ -435,10 +440,10 @@ export default function Orderbook({ depth = 8 }) {
                   tickSize={market?.tickSize}
                   onChange={onGroupSizeChange}
                   value={grouping}
-                  className="relative flex flex-col w-1/3 items-end"
+                  className="relative flex w-1/3 flex-col items-end"
                 />
               </div>
-              <div className={`text-th-fgd-4 flex justify-between mb-2`}>
+              <div className={`mb-2 flex justify-between text-th-fgd-4`}>
                 <div className={`text-left text-xs`}>
                   {displayCumulativeSize ? 'Cumulative ' : ''}
                   {t('size')} ({marketConfig.baseSymbol})
@@ -473,7 +478,7 @@ export default function Orderbook({ depth = 8 }) {
                   />
                 )
               )}
-              <div className="flex justify-between bg-th-bkg-1 p-2 my-2 rounded-md text-xs">
+              <div className="my-2 flex justify-between rounded-md bg-th-bkg-1 p-2 text-xs">
                 <div className="text-th-fgd-3">{t('spread')}</div>
                 <div className="text-th-fgd-1">
                   {orderbookData?.spread.toFixed(2)}
@@ -516,25 +521,25 @@ export default function Orderbook({ depth = 8 }) {
   ) : (
     <div>
       <div className="flex items-center justify-between pb-2.5">
-        <div className="flex relative">
+        <div className="relative flex">
           <Tooltip
             content={
               displayCumulativeSize
                 ? t('tooltip-display-step')
                 : t('tooltip-display-cumulative')
             }
-            className="text-xs py-1"
+            className="py-1 text-xs"
           >
             <button
               onClick={() => {
                 setDisplayCumulativeSize(!displayCumulativeSize)
               }}
-              className="flex items-center justify-center rounded-full bg-th-bkg-3 w-8 h-8 hover:text-th-primary focus:outline-none"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-th-bkg-3 hover:text-th-primary focus:outline-none"
             >
               {displayCumulativeSize ? (
-                <StepSizeIcon className="w-5 h-5" />
+                <StepSizeIcon className="h-5 w-5" />
               ) : (
-                <CumulativeSizeIcon className="w-5 h-5" />
+                <CumulativeSizeIcon className="h-5 w-5" />
               )}
             </button>
           </Tooltip>
@@ -544,10 +549,10 @@ export default function Orderbook({ depth = 8 }) {
           tickSize={market?.tickSize}
           onChange={onGroupSizeChange}
           value={grouping}
-          className="relative flex flex-col w-1/3 items-end mb-1"
+          className="relative mb-1 flex w-1/3 flex-col items-end"
         />
       </div>
-      <div className={`text-th-fgd-4 flex justify-between`}>
+      <div className={`flex justify-between text-th-fgd-4`}>
         <div className={`text-left text-xs`}>
           {displayCumulativeSize ? 'Cumulative ' : ''}
           {t('size')}
@@ -597,11 +602,18 @@ export default function Orderbook({ depth = 8 }) {
 
 const OrderbookSpread = ({ orderbookData }) => {
   const { t } = useTranslation('common')
+  const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
+  const decimals = useMemo(
+    () => getPrecisionDigits(selectedMarket?.tickSize),
+    [selectedMarket]
+  )
 
   return (
-    <div className="flex justify-between bg-th-bkg-1 p-2 mb-0 mt-3 rounded-md text-xs">
-      <div className="hidden sm:block text-th-fgd-3">{t('spread')}</div>
-      <div className="text-th-fgd-1">{orderbookData?.spread.toFixed(2)}</div>
+    <div className="mb-0 mt-3 flex justify-between rounded-md bg-th-bkg-1 p-2 text-xs">
+      <div className="hidden text-th-fgd-3 sm:block">{t('spread')}</div>
+      <div className="text-th-fgd-1">
+        {orderbookData?.spread.toFixed(decimals)}
+      </div>
       <div className="text-th-fgd-1">
         {orderbookData?.spreadPercentage.toFixed(2)}%
       </div>
@@ -676,7 +688,7 @@ const OrderbookRow = React.memo<any>(
 
     return (
       <div
-        className={`flex relative text-sm leading-6 justify-between cursor-pointer`}
+        className={`relative flex cursor-pointer justify-between text-sm leading-6`}
         ref={element}
       >
         {invert ? (
@@ -688,10 +700,10 @@ const OrderbookRow = React.memo<any>(
                 side === 'buy' ? `bg-th-green-muted` : `bg-th-red-muted`
               }`}
             />
-            <div className="flex justify-between w-full hover:font-semibold">
+            <div className="flex w-full justify-between hover:font-semibold">
               <div
                 onClick={handlePriceClick}
-                className={`z-10 text-xs leading-5 md:leading-6 md:pl-5 ${
+                className={`z-10 text-xs leading-5 md:pl-5 md:leading-6 ${
                   side === 'buy'
                     ? `text-th-green`
                     : `text-th-red brightness-125`
@@ -712,7 +724,7 @@ const OrderbookRow = React.memo<any>(
           </>
         ) : (
           <>
-            <div className="flex justify-between w-full hover:font-semibold">
+            <div className="flex w-full justify-between hover:font-semibold">
               <div
                 className={`z-10 text-xs leading-5 md:leading-6 ${
                   hasOpenOrder ? 'text-th-primary' : 'text-th-fgd-2'
@@ -722,7 +734,7 @@ const OrderbookRow = React.memo<any>(
                 {usdFormatter(formattedSize, minOrderSizeDecimals, false)}
               </div>
               <div
-                className={`z-10 text-xs leading-5 md:leading-6 md:pr-4 ${
+                className={`z-10 text-xs leading-5 md:pr-4 md:leading-6 ${
                   side === 'buy'
                     ? `text-th-green`
                     : `text-th-red brightness-125`
@@ -759,7 +771,7 @@ const MarkPriceComponent = React.memo<{ markPrice: number }>(
 
     return (
       <div
-        className={`flex justify-center items-center font-bold md:text-base md:w-1/3 ${
+        className={`flex items-center justify-center font-bold md:w-1/3 md:text-base ${
           markPrice > previousMarkPrice
             ? `text-th-green`
             : markPrice < previousMarkPrice
@@ -768,10 +780,10 @@ const MarkPriceComponent = React.memo<{ markPrice: number }>(
         }`}
       >
         {markPrice > previousMarkPrice && (
-          <ArrowUpIcon className={`h-4 w-4 mr-1 text-th-green`} />
+          <ArrowUpIcon className={`mr-1 h-4 w-4 text-th-green`} />
         )}
         {markPrice < previousMarkPrice && (
-          <ArrowDownIcon className={`h-4 w-4 mr-1 text-th-red`} />
+          <ArrowDownIcon className={`mr-1 h-4 w-4 text-th-red`} />
         )}
         {markPrice || '----'}
       </div>

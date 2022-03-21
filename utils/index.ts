@@ -5,6 +5,7 @@ import BN from 'bn.js'
 import { TRIGGER_ORDER_TYPES } from '../components/trade_form/AdvancedTradeForm'
 import { Orderbook } from '../stores/useMangoStore'
 import { MarketKind } from '@blockworks-foundation/mango-client'
+import BigNumber from 'bignumber.js'
 
 export async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))
@@ -12,8 +13,8 @@ export async function sleep(ms) {
 
 export const percentFormat = new Intl.NumberFormat(undefined, {
   style: 'percent',
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
+  minimumFractionDigits: 1,
+  maximumFractionDigits: 3,
 })
 
 export function floorToDecimal(
@@ -39,6 +40,10 @@ export function roundToDecimal(
   decimals: number | undefined | null
 ) {
   return decimals ? Math.round(value * 10 ** decimals) / 10 ** decimals : value
+}
+
+export function getPrecisionDigits(x: number): number {
+  return -Math.round(Math.log10(x))
 }
 
 export function getDecimalCount(value): number {
@@ -318,4 +323,8 @@ export function patchInternalMarketName(marketName: string) {
     marketName = marketName.replace('/USDC', '-SPOT')
   }
   return marketName
+}
+
+export function roundPerpSize(size: number, symbol: string) {
+  return new BigNumber(size).abs().toFormat(perpContractPrecision[symbol])
 }

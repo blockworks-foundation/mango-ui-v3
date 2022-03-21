@@ -12,8 +12,6 @@ import {
   ExclamationCircleIcon,
   InformationCircleIcon,
 } from '@heroicons/react/outline'
-import { ChevronDownIcon } from '@heroicons/react/solid'
-import { Disclosure } from '@headlessui/react'
 import Select from './Select'
 import { withdraw } from '../utils/mango'
 import {
@@ -24,6 +22,7 @@ import {
 } from '@blockworks-foundation/mango-client'
 import { notify } from '../utils/notifications'
 import { useTranslation } from 'next-i18next'
+import { ExpandableRow } from './TableElements'
 
 interface WithdrawModalProps {
   onClose: () => void
@@ -303,7 +302,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
             <Select
               value={
                 withdrawTokenSymbol && mangoAccount ? (
-                  <div className="flex items-center justify-between w-full">
+                  <div className="flex w-full items-center justify-between">
                     <div className="flex items-center">
                       <img
                         alt=""
@@ -346,12 +345,12 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                 </Select.Option>
               ))}
             </Select>
-            <div className="flex items-center jusitfy-between text-th-fgd-1 mt-4 p-2 rounded-md bg-th-bkg-3">
-              <div className="flex items-center text-fgd-1 pr-4">
+            <div className="jusitfy-between mt-4 flex items-center rounded-md bg-th-bkg-3 p-2 text-th-fgd-1">
+              <div className="text-fgd-1 flex items-center pr-4">
                 <span>{t('borrow-funds')}</span>
                 <Tooltip content={t('tooltip-interest-charged')}>
                   <InformationCircleIcon
-                    className={`h-5 w-5 ml-2 text-th-primary cursor-help`}
+                    className={`ml-2 h-5 w-5 cursor-help text-th-primary`}
                   />
                 </Tooltip>
               </div>
@@ -391,7 +390,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                   <span
                     className={`${getAccountStatusColor(
                       simulation.initHealthRatio
-                    )} bg-th-bkg-1 ring-1 ring-inset flex h-10 items-center justify-center ml-1 px-2 rounded`}
+                    )} ml-1 flex h-10 items-center justify-center rounded bg-th-bkg-1 px-2 ring-1 ring-inset`}
                   >
                     {simulation.leverage.toFixed(2)}x
                   </span>
@@ -400,7 +399,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
             </div>
             {invalidAmountMessage ? (
               <div className="flex items-center pt-1.5 text-th-red">
-                <ExclamationCircleIcon className="h-4 w-4 mr-1.5" />
+                <ExclamationCircleIcon className="mr-1.5 h-4 w-4" />
                 {invalidAmountMessage}
               </div>
             ) : null}
@@ -425,19 +424,19 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
               </ElementTitle>
             </Modal.Header>
             {simulation.initHealthRatio < 0 ? (
-              <div className="border border-th-red mb-4 p-2 rounded">
+              <div className="mb-4 rounded border border-th-red p-2">
                 <div className="flex items-center text-th-red">
-                  <ExclamationCircleIcon className="h-4 w-4 mr-1.5 flex-shrink-0" />
+                  <ExclamationCircleIcon className="mr-1.5 h-4 w-4 flex-shrink-0" />
                   {t('prices-changed')}
                 </div>
               </div>
             ) : null}
-            <div className="bg-th-bkg-1 p-4 rounded-lg text-th-fgd-1 text-center">
-              <div className="text-th-fgd-3 pb-1">{t('about-to-withdraw')}</div>
+            <div className="rounded-lg bg-th-bkg-1 p-4 text-center text-th-fgd-1">
+              <div className="pb-1 text-th-fgd-3">{t('about-to-withdraw')}</div>
               <div className="flex items-center justify-center">
-                <div className="font-semibold relative text-xl">
+                <div className="relative text-xl font-semibold">
                   {inputAmount}
-                  <span className="absolute bottom-0.5 font-normal ml-1.5 text-xs text-th-fgd-4">
+                  <span className="absolute bottom-0.5 ml-1.5 text-xs font-normal text-th-fgd-4">
                     {withdrawTokenSymbol}
                   </span>
                 </div>
@@ -450,85 +449,79 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                 )} ${withdrawTokenSymbol}`}</div>
               ) : null}
             </div>
-            <Disclosure>
-              {({ open }) => (
-                <>
-                  <Disclosure.Button
-                    className={`border border-th-bkg-4 default-transition font-normal mt-4 pl-3 pr-2 py-2.5 ${
-                      open ? 'rounded-b-none' : 'rounded-md'
-                    } text-th-fgd-1 w-full hover:border-th-fgd-4 focus:outline-none`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
-                        <span className="flex h-2 w-2 mr-2.5 relative">
-                          <span
-                            className={`animate-ping absolute inline-flex h-full w-full rounded-full ${getAccountStatusColor(
-                              simulation.initHealthRatio,
-                              false,
-                              true
-                            )} opacity-75`}
-                          ></span>
-                          <span
-                            className={`relative inline-flex rounded-full h-2 w-2 ${getAccountStatusColor(
-                              simulation.initHealthRatio,
-                              false,
-                              true
-                            )}`}
-                          ></span>
-                        </span>
-                        {t('health-check')}
-                        <Tooltip content={t('tooltip-after-withdrawal')}>
-                          <InformationCircleIcon
-                            className={`h-5 w-5 ml-2 text-th-primary cursor-help`}
-                          />
-                        </Tooltip>
-                      </div>
-                      <ChevronDownIcon
-                        className={`default-transition h-5 w-5 mr-1 ${
-                          open ? 'transform rotate-180' : 'transform rotate-360'
-                        }`}
-                      />
+            <div className="border-b border-th-bkg-4 pt-4">
+              <ExpandableRow
+                buttonTemplate={
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <span className="relative mr-2.5 flex h-2 w-2">
+                        <span
+                          className={`absolute inline-flex h-full w-full animate-ping rounded-full ${getAccountStatusColor(
+                            simulation.initHealthRatio,
+                            false,
+                            true
+                          )} opacity-75`}
+                        ></span>
+                        <span
+                          className={`relative inline-flex h-2 w-2 rounded-full ${getAccountStatusColor(
+                            simulation.initHealthRatio,
+                            false,
+                            true
+                          )}`}
+                        ></span>
+                      </span>
+                      {t('health-check')}
+                      <Tooltip content={t('tooltip-after-withdrawal')}>
+                        <InformationCircleIcon
+                          className={`ml-2 h-5 w-5 cursor-help text-th-primary`}
+                        />
+                      </Tooltip>
                     </div>
-                  </Disclosure.Button>
-                  <Disclosure.Panel
-                    className={`border border-th-bkg-4 border-t-0 p-4 rounded-b-md`}
-                  >
-                    {simulation ? (
-                      <div>
-                        <div className="flex justify-between pb-2">
-                          <p className="mb-0">{t('account-value')}</p>
-                          <div className="text-th-fgd-1">
-                            ${simulation.equity.toFixed(2)}
-                          </div>
-                        </div>
-                        <div className="flex justify-between pb-2">
-                          <p className="mb-0">{t('account-risk')}</p>
-                          <div className="text-th-fgd-1">
-                            {getAccountStatusColor(
-                              simulation.initHealthRatio,
-                              true
-                            )}
-                          </div>
-                        </div>
-                        <div className="flex justify-between pb-2">
-                          <p className="mb-0">{t('leverage')}</p>
-                          <div className="text-th-fgd-1">
-                            {simulation.leverage.toFixed(2)}x
-                          </div>
-                        </div>
-
-                        <div className="flex justify-between">
-                          <p className="mb-0">{t('borrow-value')}</p>
-                          <div className="text-th-fgd-1">
-                            ${simulation.liabsVal.toFixed(2)}
-                          </div>
+                  </div>
+                }
+                panelTemplate={
+                  simulation ? (
+                    <div>
+                      <div className="flex justify-between pb-2">
+                        <p className="mb-0">{t('account-value')}</p>
+                        <div className="text-th-fgd-1">
+                          $
+                          {simulation.equity.toLocaleString(undefined, {
+                            maximumFractionDigits: 2,
+                          })}
                         </div>
                       </div>
-                    ) : null}
-                  </Disclosure.Panel>
-                </>
-              )}
-            </Disclosure>
+                      <div className="flex justify-between pb-2">
+                        <p className="mb-0">{t('account-risk')}</p>
+                        <div className="text-th-fgd-1">
+                          {getAccountStatusColor(
+                            simulation.initHealthRatio,
+                            true
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex justify-between pb-2">
+                        <p className="mb-0">{t('leverage')}</p>
+                        <div className="text-th-fgd-1">
+                          {simulation.leverage.toFixed(2)}x
+                        </div>
+                      </div>
+
+                      <div className="flex justify-between">
+                        <p className="mb-0">{t('borrow-value')}</p>
+                        <div className="text-th-fgd-1">
+                          $
+                          {simulation.liabsVal.toLocaleString(undefined, {
+                            maximumFractionDigits: 2,
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  ) : null
+                }
+              />
+            </div>
+
             <div className={`mt-6 flex flex-col items-center`}>
               <Button
                 onClick={handleWithdraw}

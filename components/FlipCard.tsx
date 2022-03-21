@@ -9,7 +9,7 @@ export const FlipCard = ({ children, ...props }) => {
 export const FlipCardInner = (props) => {
   return (
     <div
-      className="relative w-full h-full text-center"
+      className="relative h-full w-full text-center"
       style={{
         transition: 'transform 0.8s ease-out',
         transformStyle: 'preserve-3d',
@@ -22,13 +22,13 @@ export const FlipCardInner = (props) => {
 }
 
 export const FlipCardFront = (props) => {
-  return <div className="w-full flipcard-front">{props.children}</div>
+  return <div className="flipcard-front h-full w-full">{props.children}</div>
 }
 
 export const FlipCardBack = ({ children }) => {
   return (
     <div
-      className="absolute w-full h-full"
+      className="absolute h-full w-full"
       style={{ transform: 'rotateY(180deg)' }}
     >
       {children}

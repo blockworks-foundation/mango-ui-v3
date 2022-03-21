@@ -96,7 +96,6 @@ export default function RiskCalculator() {
   // Get mango account data
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
-  const mangoClient = useMangoStore((s) => s.connection.client)
   const mangoConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const connected = useMangoStore((s) => s.wallet.connected)
@@ -128,6 +127,7 @@ export default function RiskCalculator() {
     async function loadUnownedMangoAccount() {
       try {
         const unownedMangoAccountPubkey = new PublicKey(pubkey)
+        const mangoClient = useMangoStore.getState().connection.client
         if (mangoGroup) {
           const unOwnedMangoAccount = await mangoClient.getMangoAccount(
             unownedMangoAccountPubkey,
@@ -1301,14 +1301,14 @@ export default function RiskCalculator() {
         {scenarioBars?.rowData.length > 0 ? (
           <div className="rounded-lg bg-th-bkg-2">
             <div className="grid grid-cols-12">
-              <div className="col-span-12 md:col-span-8 p-4">
-                <div className="flex justify-between pb-2 lg:pb-3 px-0 lg:px-3">
+              <div className="col-span-12 p-4 md:col-span-8">
+                <div className="flex justify-between px-0 pb-2 lg:px-3 lg:pb-3">
                   <h2 className="mb-4 lg:mb-0">
                     {t('calculator:scenario-balances')}
                   </h2>
                   <div className="flex justify-between lg:justify-start">
                     <Button
-                      className={`text-xs flex items-center justify-center sm:ml-3 pt-0 pb-0 h-8 pl-3 pr-3 rounded`}
+                      className={`flex h-8 items-center justify-center rounded pt-0 pb-0 pl-3 pr-3 text-xs sm:ml-3`}
                       onClick={() => {
                         setSliderPercentage(defaultSliderVal)
                         toggleOrdersAsBalance(false)
@@ -1316,14 +1316,14 @@ export default function RiskCalculator() {
                       }}
                     >
                       <div className="flex items-center hover:text-th-primary">
-                        <RefreshIcon className="h-5 w-5 mr-1.5" />
+                        <RefreshIcon className="mr-1.5 h-5 w-5" />
                         {t('reset')}
                       </div>
                     </Button>
                   </div>
                 </div>
-                <div className="bg-th-bkg-1 border border-th-fgd-4 flex items-center mb-3 lg:mx-3 px-3 h-8 rounded">
-                  <div className="pr-5 text-th-fgd-3 text-xs whitespace-nowrap">
+                <div className="mb-3 flex h-8 items-center rounded border border-th-fgd-4 bg-th-bkg-1 px-3 lg:mx-3">
+                  <div className="whitespace-nowrap pr-5 text-xs text-th-fgd-3">
                     {t('calculator:edit-all-prices')}
                   </div>
                   <div className="w-full">
@@ -1344,10 +1344,10 @@ export default function RiskCalculator() {
                       railStyle={{ backgroundColor: '#F2C94C' }}
                     />
                   </div>
-                  <div className="pl-4 text-th-fgd-1 text-xs w-16">
+                  <div className="w-16 pl-4 text-xs text-th-fgd-1">
                     {`${Number((sliderPercentage - 1) * 100).toFixed(0)}%`}
                   </div>
-                  <div className="pl-4 text-th-fgd-1 text-xs w-16 hover:text-th-primary">
+                  <div className="w-16 pl-4 text-xs text-th-fgd-1 hover:text-th-primary">
                     <LinkButton
                       onClick={() => setSliderPercentage(defaultSliderVal)}
                     >
@@ -1355,8 +1355,8 @@ export default function RiskCalculator() {
                     </LinkButton>
                   </div>
                 </div>
-                <div className="flex justify-between wrap pb-2 lg:pb-3 px-0 lg:px-3">
-                  <div className="flex items-center mb-3 lg:mx-3 px-3 h-8 rounded">
+                <div className="wrap flex justify-between px-0 pb-2 lg:px-3 lg:pb-3">
+                  <div className="mb-3 flex h-8 items-center rounded px-3 lg:mx-3">
                     <Switch
                       checked={showZeroBalances}
                       className="text-xs"
@@ -1365,7 +1365,7 @@ export default function RiskCalculator() {
                       {t('show-zero')}
                     </Switch>
                   </div>
-                  <div className="flex items-center mb-3 lg:mx-3 px-3 h-8 rounded">
+                  <div className="mb-3 flex h-8 items-center rounded px-3 lg:mx-3">
                     <Switch
                       checked={ordersAsBalance}
                       className="text-xs"
@@ -1377,14 +1377,14 @@ export default function RiskCalculator() {
                   <div className="flex justify-between lg:justify-start">
                     <Tooltip content={t('calculator:tooltip-anchor-slider')}>
                       <Button
-                        className={`text-xs flex items-center justify-center sm:ml-3 pt-0 pb-0 h-8 pl-3 pr-3 rounded`}
+                        className={`flex h-8 items-center justify-center rounded pt-0 pb-0 pl-3 pr-3 text-xs sm:ml-3`}
                         onClick={() => {
                           anchorPricing()
                           setSliderPercentage(defaultSliderVal)
                         }}
                       >
                         <div className="flex items-center hover:text-th-primary">
-                          <AnchorIcon className="h-5 w-5 mr-1.5" />
+                          <AnchorIcon className="mr-1.5 h-5 w-5" />
                           {t('calculator:anchor-slider')}
                         </div>
                       </Button>
@@ -1392,18 +1392,18 @@ export default function RiskCalculator() {
                   </div>
                 </div>
                 {/*Hidden panel that displays a short scenario summary on mobile instead of the detailed one*/}
-                <div className="bg-th-bkg-1 border border-th-fgd-4 md:hidden sticky w-full rounded mb-3">
+                <div className="sticky mb-3 w-full rounded border border-th-fgd-4 bg-th-bkg-1 md:hidden">
                   <Disclosure>
                     {({ open }) => (
                       <>
-                        <Disclosure.Button className="bg-th-bkg-1 default-transition flex items-center justify-between p-3 w-full hover:bg-th-bkg-1 focus:outline-none">
+                        <Disclosure.Button className="default-transition flex w-full items-center justify-between bg-th-bkg-1 p-3 hover:bg-th-bkg-1 focus:outline-none">
                           <p className="mb-0">
                             {open
                               ? t('calculator:scenario-details')
                               : t('calculator:scenario-maint-health')}
                           </p>
                           {open ? null : (
-                            <div className="text-th-fgd-3 text-xs">
+                            <div className="text-xs text-th-fgd-3">
                               {scenarioDetails.get('maintHealth') * 100 >= 9999
                                 ? '>10000'
                                 : scenarioDetails.get('maintHealth') * 100 < 0
@@ -1415,15 +1415,15 @@ export default function RiskCalculator() {
                             </div>
                           )}
                           <ChevronUpIcon
-                            className={`default-transition h-4 text-th-fgd-1 w-4 ${
+                            className={`default-transition h-4 w-4 text-th-fgd-1 ${
                               open
-                                ? 'transform rotate-360'
-                                : 'transform rotate-180'
+                                ? 'rotate-360 transform'
+                                : 'rotate-180 transform'
                             }`}
                           />
                         </Disclosure.Button>
                         <Disclosure.Panel className="p-3">
-                          <div className="text-th-fgd-1 text-xs">
+                          <div className="text-xs text-th-fgd-1">
                             <div className="flex items-center justify-between pb-3">
                               <div className="text-th-fgd-3">
                                 {t('maint-health')}
@@ -1528,20 +1528,20 @@ export default function RiskCalculator() {
                 <div className={`flex flex-col pb-2`}>
                   <div className={`-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8`}>
                     <div
-                      className={`align-middle inline-block min-w-full sm:px-6 lg:px-8`}
+                      className={`inline-block min-w-full align-middle sm:px-6 lg:px-8`}
                     >
                       <Table className="min-w-full divide-y divide-th-bkg-2">
                         <Thead>
-                          <Tr className="text-th-fgd-3 text-xs">
+                          <Tr className="text-xs text-th-fgd-3">
                             <Th
                               scope="col"
-                              className={`px-1 lg:px-3 py-1 text-left font-normal`}
+                              className={`px-1 py-1 text-left font-normal lg:px-3`}
                             >
                               {t('asset')}
                             </Th>
                             <Th
                               scope="col"
-                              className={`px-1 lg:px-3 py-1 text-left font-normal`}
+                              className={`px-1 py-1 text-left font-normal lg:px-3`}
                             >
                               <div className="flex justify-start md:justify-between">
                                 <div className="pr-2">{t('spot')}</div>
@@ -1554,7 +1554,7 @@ export default function RiskCalculator() {
                             </Th>
                             <Th
                               scope="col"
-                              className={`px-1 lg:px-3 py-1 text-left font-normal`}
+                              className={`px-1 py-1 text-left font-normal lg:px-3`}
                             >
                               <div className="flex justify-start md:justify-between">
                                 <div className="pr-2">{t('perp')}</div>
@@ -1569,7 +1569,7 @@ export default function RiskCalculator() {
                             </Th>
                             <Th
                               scope="col"
-                              className={`px-1 lg:px-3 py-1 text-left font-normal`}
+                              className={`px-1 py-1 text-left font-normal lg:px-3`}
                             >
                               <div className="flex justify-start md:justify-between">
                                 <div className="pr-2">
@@ -1586,7 +1586,7 @@ export default function RiskCalculator() {
                             </Th>
                             <Th
                               scope="col"
-                              className={`px-1 lg:px-3 py-1 font-normal`}
+                              className={`px-1 py-1 font-normal lg:px-3`}
                             >
                               <div className="flex justify-start md:justify-between">
                                 <div className="pr-2">{t('price')}</div>
@@ -1599,7 +1599,7 @@ export default function RiskCalculator() {
                             </Th>
                             <Th
                               scope="col"
-                              className={`px-1 lg:px-3 py-1 text-left font-normal`}
+                              className={`px-1 py-1 text-left font-normal lg:px-3`}
                             >
                               <div className="flex justify-start md:justify-between">
                                 <Tooltip
@@ -1611,7 +1611,7 @@ export default function RiskCalculator() {
                             </Th>
                             <Th
                               scope="col"
-                              className={`px-1 lg:px-3 py-1 text-left font-normal`}
+                              className={`px-1 py-1 text-left font-normal lg:px-3`}
                             >
                               <div className="flex justify-start md:justify-between">
                                 <Tooltip
@@ -1642,7 +1642,7 @@ export default function RiskCalculator() {
                                 key={`${i}`}
                               >
                                 <Td
-                                  className={`px-3 py-2 whitespace-nowrap text-sm text-th-fgd-1 w-24`}
+                                  className={`w-24 whitespace-nowrap px-3 py-2 text-sm text-th-fgd-1`}
                                 >
                                   <div className="flex items-center">
                                     <img
@@ -1656,7 +1656,7 @@ export default function RiskCalculator() {
                                   </div>
                                 </Td>
                                 <Td
-                                  className={`px-1 lg:px-3 py-2 text-sm text-th-fgd-1`}
+                                  className={`px-1 py-2 text-sm text-th-fgd-1 lg:px-3`}
                                 >
                                   <Input
                                     id={'spotNet_' + i}
@@ -1713,7 +1713,7 @@ export default function RiskCalculator() {
                                   />
                                 </Td>
                                 <Td
-                                  className={`px-1 lg:px-3 py-2 text-sm text-th-fgd-1`}
+                                  className={`px-1 py-2 text-sm text-th-fgd-1 lg:px-3`}
                                 >
                                   <Input
                                     id={'perpBasePosition_' + i}
@@ -1769,7 +1769,7 @@ export default function RiskCalculator() {
                                   />
                                 </Td>
                                 <Td
-                                  className={`px-1 lg:px-3 py-2 text-sm text-th-fgd-1`}
+                                  className={`px-1 py-2 text-sm text-th-fgd-1 lg:px-3`}
                                 >
                                   <Input
                                     id={'perpAvgEntryPrice_' + i}
@@ -1827,7 +1827,7 @@ export default function RiskCalculator() {
                                   />
                                 </Td>
                                 <Td
-                                  className={`px-1 lg:px-3 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
+                                  className={`whitespace-nowrap px-1 py-2 text-sm text-th-fgd-1 lg:px-3`}
                                 >
                                   <Input
                                     id={'price_' + i}
@@ -1889,7 +1889,7 @@ export default function RiskCalculator() {
                                   />
                                 </Td>
                                 <Td
-                                  className={`px-1 lg:px-3 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
+                                  className={`whitespace-nowrap px-1 py-2 text-sm text-th-fgd-1 lg:px-3`}
                                 >
                                   <Input
                                     type="text"
@@ -1920,7 +1920,7 @@ export default function RiskCalculator() {
                                   />
                                 </Td>
                                 <Td
-                                  className={`px-1 lg:px-3 py-2 whitespace-nowrap text-sm text-th-fgd-1`}
+                                  className={`whitespace-nowrap px-1 py-2 text-sm text-th-fgd-1 lg:px-3`}
                                 >
                                   <Input
                                     type="text"
@@ -1942,79 +1942,79 @@ export default function RiskCalculator() {
               </div>
               {/*Populate detailed scenario summary*/}
               {scenarioBars?.rowData.length > 0 ? (
-                <div className="bg-th-bkg-3 col-span-4 hidden md:block p-4 relative rounded-r-lg">
+                <div className="relative col-span-4 hidden rounded-r-lg bg-th-bkg-3 p-4 md:block">
                   <h2 className="mb-4">{t('calculator:scenario-details')}</h2>
                   {/* Joke Wrapper */}
                   <div className="relative col-span-4">
                     {scenarioDetails.get('liabilities') === 0 &&
                     scenarioDetails.get('equity') === 0 ? (
-                      <div className="bg-th-green-dark border border-th-green-dark flex flex-col items-center mb-6 p-3 rounded text-center text-th-fgd-1">
+                      <div className="mb-6 flex flex-col items-center rounded border border-th-green-dark bg-th-green-dark p-3 text-center text-th-fgd-1">
                         <div className="pb-0.5 text-th-fgd-1">
                           {t('calculator:joke-get-party-started')}
                         </div>
-                        <div className="text-th-fgd-1 text-xs">
+                        <div className="text-xs text-th-fgd-1">
                           {t('calculator:joke-mangoes-are-ripe')}
                         </div>
                       </div>
                     ) : null}
                     {scenarioDetails.get('liabilities') === 0 &&
                     scenarioDetails.get('equity') > 0 ? (
-                      <div className="border border-th-green flex flex-col items-center mb-6 p-3 rounded text-center text-th-fgd-1">
+                      <div className="mb-6 flex flex-col items-center rounded border border-th-green p-3 text-center text-th-fgd-1">
                         <div className="pb-0.5 text-th-fgd-1">
                           {t('calculator:joke-zero-borrows-risk')}
                         </div>
-                        <div className="text-th-fgd-3 text-xs">
+                        <div className="text-xs text-th-fgd-3">
                           {t('calculator:joke-live-a-little')}
                         </div>
                       </div>
                     ) : null}
                     {scenarioDetails.get('riskRanking') === riskRanks[0] &&
                     scenarioDetails.get('leverage') !== 0 ? (
-                      <div className="border border-th-green flex flex-col items-center mb-6 p-3 rounded text-center text-th-fgd-1">
+                      <div className="mb-6 flex flex-col items-center rounded border border-th-green p-3 text-center text-th-fgd-1">
                         <div className="pb-0.5 text-th-fgd-1">
                           {t('calculator:joke-looking-good')}
                         </div>
-                        <div className="text-th-fgd-3 text-xs">
+                        <div className="text-xs text-th-fgd-3">
                           {t('calculator:joke-sun-shining')}
                         </div>
                       </div>
                     ) : null}
                     {scenarioDetails.get('riskRanking') === riskRanks[1] ? (
-                      <div className="border border-th-orange flex flex-col items-center mb-6 p-3 rounded text-center text-th-fgd-1">
+                      <div className="mb-6 flex flex-col items-center rounded border border-th-orange p-3 text-center text-th-fgd-1">
                         <div className="pb-0.5 text-th-fgd-1">
                           {t('calculator:joke-liquidator-activity')}
                         </div>
-                        <div className="text-th-fgd-3 text-xs">
+                        <div className="text-xs text-th-fgd-3">
                           {t('calculator:joke-rethink-positions')}
                         </div>
                       </div>
                     ) : null}
                     {scenarioDetails.get('riskRanking') === riskRanks[2] ? (
-                      <div className="border border-th-red flex flex-col items-center mb-6 p-3 rounded text-center text-th-fgd-1">
+                      <div className="mb-6 flex flex-col items-center rounded border border-th-red p-3 text-center text-th-fgd-1">
                         <div className="pb-0.5 text-th-fgd-1">
                           {t('calculator:joke-liquidators-closing')}
                         </div>
-                        <div className="text-th-fgd-3 text-xs">
+                        <div className="text-xs text-th-fgd-3">
                           {t('calculator:joke-hit-em-with')}
                         </div>
                       </div>
                     ) : null}
                     {scenarioDetails.get('riskRanking') === riskRanks[3] ? (
-                      <div className="border border-th-red flex flex-col items-center mb-6 p-3 rounded text-center text-th-fgd-1">
+                      <div className="mb-6 flex flex-col items-center rounded border border-th-red p-3 text-center text-th-fgd-1">
                         <div className="pb-0.5 text-th-fgd-1">
                           {t('calculator:joke-liquidators-spotted-you')}
                         </div>
-                        <div className="text-th-fgd-3 text-xs">
+                        <div className="text-xs text-th-fgd-3">
                           {t('calculator:joke-throw-some-money')}
                         </div>
                       </div>
                     ) : null}
                     {scenarioDetails.get('riskRanking') === riskRanks[4] ? (
-                      <div className="bg-th-red border border-th-red flex flex-col items-center mb-6 p-3 rounded text-center text-th-fgd-1">
+                      <div className="mb-6 flex flex-col items-center rounded border border-th-red bg-th-red p-3 text-center text-th-fgd-1">
                         <div className="pb-0.5 text-th-fgd-1">
                           {t('calculator:joke-liquidated')}
                         </div>
-                        <div className="text-th-fgd-1 text-xs">
+                        <div className="text-xs text-th-fgd-1">
                           {t('calculator:joke-insert-coin')}
                         </div>
                       </div>
@@ -2066,7 +2066,7 @@ export default function RiskCalculator() {
                         : t('calculator:no')}
                     </div>
                   </div>
-                  <div className="flex items-center justify-between pb-3 mb-6">
+                  <div className="mb-6 flex items-center justify-between pb-3">
                     <div className="text-th-fgd-3">{t('account-health')}</div>
                     {
                       <div
@@ -2103,7 +2103,7 @@ export default function RiskCalculator() {
                       {formatUsdValue(scenarioDetails.get('assets'))}
                     </div>
                   </div>
-                  <div className="flex items-center justify-between pb-3 mb-6">
+                  <div className="mb-6 flex items-center justify-between pb-3">
                     <div className="text-th-fgd-3">{t('liabilities')}</div>
                     <div className="font-bold">
                       {formatUsdValue(scenarioDetails.get('liabilities'))}
@@ -2135,7 +2135,7 @@ export default function RiskCalculator() {
                       {formatUsdValue(scenarioDetails.get('initWeightAssets'))}
                     </div>
                   </div>
-                  <div className="flex items-center justify-between pb-3 mb-6">
+                  <div className="mb-6 flex items-center justify-between pb-3">
                     <div className="text-th-fgd-3">
                       {t('calculator:init-weighted-assets')}
                     </div>
@@ -2164,7 +2164,7 @@ export default function RiskCalculator() {
             </div>
           </div>
         ) : (
-          <div className="animate-pulse bg-th-bkg-3 h-64 rounded-lg w-full" />
+          <div className="h-64 w-full animate-pulse rounded-lg bg-th-bkg-3" />
         )}
       </PageBodyContainer>
     </div>

@@ -44,7 +44,6 @@ const PerpMarket = () => {
   const setMangoStore = useMangoStore((s) => s.set)
   const connected = useMangoStore(walletConnectedSelector)
   const mangoAccount = useMangoStore(mangoAccountSelector)
-  const mangoClient = useMangoStore((s) => s.connection.client)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const marketConfig = useMangoStore(marketConfigSelector)
   const actions = useMangoStore(actionsSelector)
@@ -57,6 +56,7 @@ const PerpMarket = () => {
     async function loadUnownedMangoAccount() {
       try {
         const unownedMangoAccountPubkey = new PublicKey(pubkey)
+        const mangoClient = useMangoStore.getState().connection.client
         if (mangoGroup) {
           const unOwnedMangoAccount = await mangoClient.getMangoAccount(
             unownedMangoAccountPubkey,
@@ -81,7 +81,7 @@ const PerpMarket = () => {
     if (pubkey) {
       loadUnownedMangoAccount()
     }
-  }, [pubkey, mangoClient, mangoGroup])
+  }, [pubkey, mangoGroup])
 
   useEffect(() => {
     const name = decodeURIComponent(router.asPath).split('name=')[1]
@@ -91,7 +91,7 @@ const PerpMarket = () => {
     if (name) {
       marketQueryParam = name.toString().split(/-|\//)
       marketBaseSymbol = marketQueryParam[0]
-      marketType = marketQueryParam[1] === 'PERP' ? 'perp' : 'spot'
+      marketType = marketQueryParam[1].includes('PERP') ? 'perp' : 'spot'
 
       newMarket = getMarketByBaseSymbolAndKind(
         groupConfig,
@@ -102,7 +102,14 @@ const PerpMarket = () => {
         groupConfig,
         marketBaseSymbol.toUpperCase()
       )
+
+      if (!newMarket?.baseSymbol) {
+        router.push('/')
+        return
+      }
     }
+
+    if (newMarket?.name === marketConfig?.name) return
 
     if (name && mangoGroup) {
       const mangoCache = useMangoStore.getState().selectedMangoGroup.cache
@@ -131,19 +138,21 @@ const PerpMarket = () => {
   }, [router, marketConfig])
 
   return (
-    <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
-      {showTour && !hideTips ? (
-        <IntroTips connected={connected} mangoAccount={mangoAccount} />
-      ) : null}
-      <TopBar />
-      <FavoritesShortcutBar />
-      <PageBodyWrapper className="p-1 sm:px-2 sm:py-1 md:px-2 md:py-1 xl:px-4">
-        <TradePageGrid />
-      </PageBodyWrapper>
-      {!alphaAccepted && (
-        <AlphaModal isOpen={!alphaAccepted} onClose={() => {}} />
-      )}
-    </div>
+    <>
+      <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
+        {showTour && !hideTips ? (
+          <IntroTips connected={connected} mangoAccount={mangoAccount} />
+        ) : null}
+        <TopBar />
+        <FavoritesShortcutBar />
+        <PageBodyWrapper className="p-1 sm:px-2 sm:py-1 md:px-2 md:py-1 xl:px-4">
+          <TradePageGrid />
+        </PageBodyWrapper>
+        {!alphaAccepted && (
+          <AlphaModal isOpen={!alphaAccepted} onClose={() => {}} />
+        )}
+      </div>
+    </>
   )
 }
 

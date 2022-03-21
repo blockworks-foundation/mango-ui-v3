@@ -19,17 +19,17 @@ const TriggerType = ({ value, onChange, className = '' }) => {
             <>
               <Listbox.Button
                 style={{ borderRight: '1px solid transparent' }}
-                className={`font-normal h-full w-full bg-th-bkg-1 border border-th-fgd-4 hover:border-th-primary rounded rounded-r-none focus:outline-none focus:border-th-primary`}
+                className={`h-full w-full rounded rounded-r-none border border-th-fgd-4 bg-th-bkg-1 font-normal hover:border-th-primary focus:border-th-primary focus:outline-none`}
               >
                 <div
                   className={`flex items-center justify-between space-x-4 pl-2 pr-1`}
                 >
                   <span>{value}</span>
                   {open ? (
-                    <ChevronUpIcon className={`h-5 w-5 mr-1 text-th-primary`} />
+                    <ChevronUpIcon className={`mr-1 h-5 w-5 text-th-primary`} />
                   ) : (
                     <ChevronDownIcon
-                      className={`h-5 w-5 mr-1 text-th-primary`}
+                      className={`mr-1 h-5 w-5 text-th-primary`}
                     />
                   )}
                 </div>
@@ -37,13 +37,13 @@ const TriggerType = ({ value, onChange, className = '' }) => {
               {open ? (
                 <Listbox.Options
                   static
-                  className={`z-20 w-full p-1 absolute left-0 mt-1 bg-th-bkg-1 origin-top-left divide-y divide-th-bkg-3 shadow-lg outline-none rounded-md`}
+                  className={`absolute left-0 z-20 mt-1 w-full origin-top-left divide-y divide-th-bkg-3 rounded-md bg-th-bkg-1 p-1 shadow-lg outline-none`}
                 >
                   {TRIGGER_TYPES.map((type) => (
                     <Listbox.Option key={type} value={type}>
                       {({ selected }) => (
                         <div
-                          className={`p-2 hover:bg-th-bkg-2 hover:cursor-pointer tracking-wider ${
+                          className={`p-2 tracking-wider hover:cursor-pointer hover:bg-th-bkg-2 ${
                             selected && `text-th-primary`
                           }`}
                         >
@@ -61,10 +61,10 @@ const TriggerType = ({ value, onChange, className = '' }) => {
         <div className="flex">
           {TRIGGER_TYPES.map((triggerType, i) => (
             <div
-              className={`px-2 py-1 ml-2 rounded-md cursor-pointer default-transition bg-th-bkg-4
+              className={`default-transition ml-2 cursor-pointer rounded-md bg-th-bkg-4 px-2 py-1
               ${
                 value === triggerType
-                  ? `ring-1 ring-inset ring-th-primary text-th-primary`
+                  ? `text-th-primary ring-1 ring-inset ring-th-primary`
                   : `text-th-fgd-1 opacity-50 hover:opacity-100`
               }
             `}

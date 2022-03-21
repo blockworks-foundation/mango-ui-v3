@@ -216,7 +216,7 @@ const AccountInterest = () => {
     }
 
     const getStats = async () => {
-      await fetchInterestStats()
+      fetchInterestStats()
       fetchHourlyInterestStats()
     }
     getStats()
@@ -274,11 +274,11 @@ const AccountInterest = () => {
         <h2>{t('interest-earned')}</h2>
         <div className="flex items-center">
           <Button
-            className={`float-right text-xs h-8 pt-0 pb-0 pl-3 pr-3`}
+            className={`float-right h-8 pt-0 pb-0 pl-3 pr-3 text-xs`}
             onClick={exportInterestDataToCSV}
           >
             <div className={`flex items-center whitespace-nowrap`}>
-              <SaveIcon className={`h-4 w-4 mr-1.5`} />
+              <SaveIcon className={`mr-1.5 h-4 w-4`} />
               {t('export-data')}
             </div>
           </Button>
@@ -295,9 +295,9 @@ const AccountInterest = () => {
         <div>
           {loadTotalStats ? (
             <div className="space-y-2">
-              <div className="animate-pulse bg-th-bkg-3 h-12 rounded-md w-full" />
-              <div className="animate-pulse bg-th-bkg-3 h-12 rounded-md w-full" />
-              <div className="animate-pulse bg-th-bkg-3 h-12 rounded-md w-full" />
+              <div className="h-12 w-full animate-pulse rounded-md bg-th-bkg-3" />
+              <div className="h-12 w-full animate-pulse rounded-md bg-th-bkg-3" />
+              <div className="h-12 w-full animate-pulse rounded-md bg-th-bkg-3" />
             </div>
           ) : !isMobile ? (
             <Table>
@@ -313,7 +313,7 @@ const AccountInterest = () => {
                 {interestStats.length === 0 ? (
                   <TrBody>
                     <td colSpan={4}>
-                      <div className="bg-th-bkg-3 flex rounded-md text-th-fgd-3">
+                      <div className="flex rounded-md bg-th-bkg-3 text-th-fgd-3">
                         <div className="mx-auto py-4">{t('no-interest')}</div>
                       </div>
                     </td>
@@ -361,7 +361,7 @@ const AccountInterest = () => {
               </tbody>
             </Table>
           ) : interestStats.length === 0 ? (
-            <div className="bg-th-bkg-3 flex rounded-md text-th-fgd-3">
+            <div className="flex rounded-md bg-th-bkg-3 text-th-fgd-3">
               <div className="mx-auto py-4">{t('no-interest')}</div>
             </div>
           ) : (
@@ -375,8 +375,8 @@ const AccountInterest = () => {
                 return (
                   <ExpandableRow
                     buttonTemplate={
-                      <div className="flex items-center justify-between text-fgd-1 w-full">
-                        <div className="flex items-center text-fgd-1">
+                      <div className="text-fgd-1 flex w-full items-center justify-between">
+                        <div className="text-fgd-1 flex items-center">
                           <img
                             alt=""
                             width="20"
@@ -397,19 +397,18 @@ const AccountInterest = () => {
                       </div>
                     }
                     key={`${symbol}${index}`}
-                    index={index}
                     panelTemplate={
                       <>
-                        <div className="grid grid-cols-2 grid-flow-row gap-4">
+                        <div className="grid grid-flow-row grid-cols-2 gap-4">
                           <div className="text-left">
-                            <div className="pb-0.5 text-th-fgd-3 text-xs">
+                            <div className="pb-0.5 text-xs text-th-fgd-3">
                               {t('total-deposit-interest')}
                             </div>
                             {stats.total_deposit_interest.toFixed(decimals)}{' '}
                             {symbol}
                           </div>
                           <div className="text-left">
-                            <div className="pb-0.5 text-th-fgd-3 text-xs">
+                            <div className="pb-0.5 text-xs text-th-fgd-3">
                               {t('total-borrow-interest')}
                             </div>
                             {stats.total_borrow_interest.toFixed(decimals)}{' '}
@@ -426,7 +425,7 @@ const AccountInterest = () => {
           <>
             {!isEmpty(hourlyInterestStats) && !loadHourlyStats ? (
               <>
-                <div className="flex items-center justify-between pb-4 pt-8 w-full">
+                <div className="flex w-full items-center justify-between pb-4 pt-8">
                   <h2>{t('history')}</h2>
                   <Select
                     value={selectedAsset}
@@ -438,22 +437,22 @@ const AccountInterest = () => {
                         <Select.Option
                           key={token}
                           value={token}
-                          className={`bg-th-bkg-1 relative rounded-md w-full px-3 py-3 cursor-pointer default-transition flex hover:bg-th-bkg-3 focus:outline-none`}
+                          className={`default-transition relative flex w-full cursor-pointer rounded-md bg-th-bkg-1 px-3 py-3 hover:bg-th-bkg-3 focus:outline-none`}
                         >
-                          <div className="flex items-center justify-between w-full">
+                          <div className="flex w-full items-center justify-between">
                             {token}
                           </div>
                         </Select.Option>
                       ))}
                     </div>
                   </Select>
-                  <div className="hidden md:flex pb-4 sm:pb-0">
+                  <div className="hidden pb-4 sm:pb-0 md:flex">
                     {Object.keys(hourlyInterestStats).map((token: string) => (
                       <div
-                        className={`px-2 py-1 ml-2 rounded-md cursor-pointer default-transition bg-th-bkg-3
+                        className={`default-transition ml-2 cursor-pointer rounded-md bg-th-bkg-3 px-2 py-1
                           ${
                             selectedAsset === token
-                              ? `ring-1 ring-inset ring-th-primary text-th-primary`
+                              ? `text-th-primary ring-1 ring-inset ring-th-primary`
                               : `text-th-fgd-1 opacity-50 hover:opacity-100`
                           }
                         `}
@@ -466,10 +465,10 @@ const AccountInterest = () => {
                   </div>
                 </div>
                 {selectedAsset && chartData.length > 0 ? (
-                  <div className="flex flex-col sm:flex-row space-x-0 sm:space-x-4 w-full">
+                  <div className="flex w-full flex-col space-x-0 sm:flex-row sm:space-x-4">
                     {chartData.find((d) => d.interest !== 0) ? (
                       <div
-                        className="border border-th-bkg-4 relative mb-6 p-4 rounded-md w-full sm:w-1/2"
+                        className="relative mb-6 w-full rounded-md border border-th-bkg-4 p-4 sm:w-1/2"
                         style={{ height: '330px' }}
                       >
                         <Chart
@@ -497,7 +496,7 @@ const AccountInterest = () => {
                     ) : null}
                     {chartData.find((d) => d.value !== 0) ? (
                       <div
-                        className="border border-th-bkg-4 relative mb-6 p-4 rounded-md w-full sm:w-1/2"
+                        className="relative mb-6 w-full rounded-md border border-th-bkg-4 p-4 sm:w-1/2"
                         style={{ height: '330px' }}
                       >
                         <Chart
@@ -574,7 +573,7 @@ const AccountInterest = () => {
                         </tbody>
                       </Table>
                     ) : (
-                      <div className="flex justify-center w-full bg-th-bkg-3 py-4 text-th-fgd-3">
+                      <div className="flex w-full justify-center bg-th-bkg-3 py-4 text-th-fgd-3">
                         {t('no-interest')}
                       </div>
                     )}
@@ -590,10 +589,10 @@ const AccountInterest = () => {
                 </div>
               </>
             ) : loadHourlyStats ? (
-              <div className="pt-8 space-y-2">
-                <div className="animate-pulse bg-th-bkg-3 h-12 rounded-md w-full" />
-                <div className="animate-pulse bg-th-bkg-3 h-12 rounded-md w-full" />
-                <div className="animate-pulse bg-th-bkg-3 h-12 rounded-md w-full" />
+              <div className="space-y-2 pt-8">
+                <div className="h-12 w-full animate-pulse rounded-md bg-th-bkg-3" />
+                <div className="h-12 w-full animate-pulse rounded-md bg-th-bkg-3" />
+                <div className="h-12 w-full animate-pulse rounded-md bg-th-bkg-3" />
               </div>
             ) : null}
           </>

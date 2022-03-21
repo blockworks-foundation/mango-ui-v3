@@ -28,10 +28,10 @@ const AccountNameModal: FunctionComponent<AccountNameModalProps> = ({
   const [invalidNameMessage, setInvalidNameMessage] = useState('')
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
-  const mangoClient = useMangoStore((s) => s.connection.client)
   const actions = useMangoStore((s) => s.actions)
 
   const submitName = async () => {
+    const mangoClient = useMangoStore.getState().connection.client
     const wallet = useMangoStore.getState().wallet.current
 
     try {
@@ -82,7 +82,7 @@ const AccountNameModal: FunctionComponent<AccountNameModalProps> = ({
         <p className="flex items-center justify-center">
           {t('edit-nickname')}
           <Tooltip content={t('tooltip-name-onchain')}>
-            <InformationCircleIcon className="h-5 w-5 ml-2 text-th-primary" />
+            <InformationCircleIcon className="ml-2 h-5 w-5 text-th-primary" />
           </Tooltip>
         </p>
       </Modal.Header>
@@ -97,7 +97,7 @@ const AccountNameModal: FunctionComponent<AccountNameModalProps> = ({
       />
       {invalidNameMessage ? (
         <div className="flex items-center pt-1.5 text-th-red">
-          <ExclamationCircleIcon className="h-4 w-4 mr-1.5" />
+          <ExclamationCircleIcon className="mr-1.5 h-4 w-4" />
           {invalidNameMessage}
         </div>
       ) : null}
