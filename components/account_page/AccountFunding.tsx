@@ -1,7 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import dayjs from 'dayjs'
 import useMangoStore from '../../stores/useMangoStore'
-import { Table, Td, Th, TrBody, TrHead } from '../TableElements'
+import {
+  Table,
+  TableDateDisplay,
+  Td,
+  Th,
+  TrBody,
+  TrHead,
+} from '../TableElements'
 import { isEmpty } from 'lodash'
 import { useTranslation } from 'next-i18next'
 import Select from '../Select'
@@ -386,7 +393,7 @@ const AccountFunding = () => {
                             return (
                               <TrBody key={stat.time}>
                                 <Td className="w-1/2">
-                                  {dayjs(utc).format('DD/MM/YY, h:mma')}
+                                  <TableDateDisplay date={utc} />
                                 </Td>
                                 <Td className="w-1/2">
                                   {stat.total_funding.toFixed(
