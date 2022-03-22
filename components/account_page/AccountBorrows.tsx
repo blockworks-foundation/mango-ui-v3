@@ -303,8 +303,8 @@ export default function AccountBorrows() {
                   <TrHead>
                     <Th>{t('asset')}</Th>
                     <Th>{t('price')}</Th>
-                    <Th>Deposit APR</Th>
-                    <Th>Borrow APR</Th>
+                    <Th>{t('deposit')} APR</Th>
+                    <Th>{t('borrow')} APR</Th>
                     {mangoAccount ? <Th>{t('max-borrow')}</Th> : null}
                     <Th>{t('liquidity')}</Th>
                   </TrHead>
