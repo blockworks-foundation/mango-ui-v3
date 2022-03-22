@@ -100,7 +100,7 @@ const MarketDetails = () => {
                     </div>
                   </div>
                   <Tooltip
-                    content="Funding is paid continuously. The 1hr rate displayed is a rolling average of the past 60 mins."
+                    content={t('tooltip-funding')}
                     placement={'bottom'}
                   >
                     <div className="flex items-center justify-between hover:cursor-help md:block">
