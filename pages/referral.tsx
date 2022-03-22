@@ -209,7 +209,7 @@ export default function Referral() {
             <p className="mb-0 mr-2">{t('referrals:earn-16')}</p>
           </div>
         </div>
-        <div className="grid grid-flow-row grid-cols-12 gap-x-6 gap-y-8 rounded-lg bg-th-bkg-2 p-4 sm:p-6">
+        <div className="grid grid-flow-row grid-cols-12 gap-x-6 gap-y-8 md:rounded-lg md:bg-th-bkg-2 md:p-6">
           {connected ? (
             mangoAccount ? (
               <>
@@ -454,7 +454,7 @@ export default function Referral() {
                         </tbody>
                       </Table>
                     ) : (
-                      <>
+                      <div className="mb-4 border-b border-th-bkg-4">
                         <MobileTableHeader
                           colOneHeader={t('date')}
                           colTwoHeader={t('referrals:fee-earned')}
@@ -495,7 +495,7 @@ export default function Referral() {
                             }
                           />
                         ))}
-                      </>
+                      </div>
                     )}
                   </div>
                 ) : null}

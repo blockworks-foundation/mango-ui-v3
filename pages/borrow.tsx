@@ -39,11 +39,9 @@ export default function Borrow() {
       <TopBar />
       <PageBodyContainer>
         <div className="flex flex-col py-4 sm:flex-row md:pb-4 md:pt-10">
-          <h1 className={`text-2xl font-semibold text-th-fgd-1`}>
-            {t('borrow')}
-          </h1>
+          <h1>{t('borrow')}</h1>
         </div>
-        <div className="overflow-none rounded-lg bg-th-bkg-2 p-4 sm:p-6">
+        <div className="md:rounded-lg md:bg-th-bkg-2 md:p-6">
           {mangoGroup ? <AccountBorrows /> : null}
         </div>
       </PageBodyContainer>

@@ -60,16 +60,20 @@ export default function StatsPage() {
         <div className="flex flex-col py-4 sm:flex-row md:pb-4 md:pt-10">
           <h1>{t('stats')}</h1>
         </div>
-        {!isMobile ? (
-          <Tabs activeTab={activeTab} onChange={handleTabChange} tabs={TABS} />
-        ) : (
-          <SwipeableTabs
-            onChange={handleChangeViewIndex}
-            tabs={TABS}
-            tabIndex={viewIndex}
-          />
-        )}
-        <div className="rounded-lg bg-th-bkg-2 p-4 sm:p-6">
+        <div className="md:rounded-lg md:bg-th-bkg-2 md:p-6">
+          {!isMobile ? (
+            <Tabs
+              activeTab={activeTab}
+              onChange={handleTabChange}
+              tabs={TABS}
+            />
+          ) : (
+            <SwipeableTabs
+              onChange={handleChangeViewIndex}
+              tabs={TABS}
+              tabIndex={viewIndex}
+            />
+          )}
           {!isMobile ? (
             <TabContent
               activeTab={activeTab}
