@@ -41,7 +41,6 @@ import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from '../components/TradePageGrid'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'next-i18next'
-import Select from '../components/Select'
 import { useRouter } from 'next/router'
 import { PublicKey } from '@solana/web3.js'
 import CloseAccountModal from '../components/CloseAccountModal'
@@ -193,6 +192,7 @@ export default function Account() {
 
   const handleTabChange = (tabName) => {
     setActiveTab(tabName)
+    setViewIndex(TABS.findIndex((t) => t === tabName))
   }
 
   useMemo(() => {
@@ -241,7 +241,7 @@ export default function Account() {
     <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
       <TopBar />
       <PageBodyContainer>
-        <div className="flex flex-col py-4 md:flex-row md:items-end md:justify-between md:pb-4 md:pt-10">
+        <div className="flex flex-col pt-4 pb-6 md:flex-row md:items-end md:justify-between md:pb-4 md:pt-10">
           {mangoAccount ? (
             <>
               <div className="pb-3 md:pb-0">
@@ -388,28 +388,13 @@ export default function Account() {
             </>
           ) : null}
         </div>
-        <div className="rounded-lg bg-th-bkg-2 p-4 sm:p-6">
+        <div className="md:rounded-lg md:bg-th-bkg-2 md:p-6">
           {mangoAccount ? (
-            !isMobile ? (
-              <Tabs
-                activeTab={activeTab}
-                onChange={handleTabChange}
-                tabs={TABS}
-              />
-            ) : (
-              <div className="pb-4">
-                <Select
-                  value={t(TABS[viewIndex].toLowerCase())}
-                  onChange={(e) => handleChangeViewIndex(e)}
-                >
-                  {TABS.map((tab, index) => (
-                    <Select.Option key={index + tab} value={index}>
-                      {t(tab.toLowerCase())}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </div>
-            )
+            <Tabs
+              activeTab={activeTab}
+              onChange={handleTabChange}
+              tabs={TABS}
+            />
           ) : null}
           {mangoAccount ? (
             !isMobile ? (

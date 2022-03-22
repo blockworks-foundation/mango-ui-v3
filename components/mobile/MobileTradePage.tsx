@@ -109,7 +109,7 @@ const MobileTradePage = () => {
       />
       <Swipeable index={viewIndex} onChangeIndex={handleChangeViewIndex}>
         <div>
-          <div className="mb-2 grid grid-cols-12 grid-rows-1 gap-4 rounded-lg bg-th-bkg-2 px-2 py-3">
+          <div className="mb-2 grid grid-cols-12 grid-rows-1 gap-4 rounded-lg py-2">
             <div className="col-span-7 pt-2">
               <AdvancedTradeForm />
             </div>
@@ -119,52 +119,36 @@ const MobileTradePage = () => {
           </div>
           <RecentMarketTrades />
         </div>
-        <div className="rounded-lg bg-th-bkg-2 px-2 py-3">
-          <div className="pb-3.5 text-base text-th-fgd-1">
-            {t('market-details')}
-          </div>
+        <div className="py-2">
+          <h2 className="mb-3 text-base">{t('market-details')}</h2>
           <MarketDetails />
         </div>
         {selectedMarket instanceof PerpMarket ? (
-          <FloatingElement className="py-0" showConnect>
-            <div
-              className={`${
-                !connected ? 'blur-sm filter' : ''
-              } rounded-lg bg-th-bkg-2 py-3`}
-            >
-              <div className="pb-3.5 text-base text-th-fgd-1">
+          <FloatingElement className="bg-transparent px-0 py-0" showConnect>
+            <div className={`${!connected ? 'blur-sm filter' : ''} py-2`}>
+              <h2 className="mb-3 text-base">
                 {`${marketConfig.name} ${t('position')}`}
-              </div>
+              </h2>
               <MarketPosition />
             </div>
           </FloatingElement>
         ) : (
-          <FloatingElement className="py-0" showConnect>
-            <div
-              className={`${
-                !connected ? 'blur-sm filter' : ''
-              } rounded-lg bg-th-bkg-2 py-3`}
-            >
-              <div className="pb-3.5 text-base text-th-fgd-1">
-                {t('balances')}
-              </div>
+          <FloatingElement className="bg-transparent px-0 py-0" showConnect>
+            <div className={`${!connected ? 'blur-sm filter' : ''} py-2`}>
+              <h2 className="mb-3 text-base">{t('balances')}</h2>
               <MarketBalances />
             </div>
           </FloatingElement>
         )}
         <div>
           <FloatingElement
-            className={`${!connected ? 'min-h-[216px]' : ''} py-0`}
+            className={`${
+              !connected ? 'min-h-[216px]' : ''
+            } bg-transparent px-0 py-0`}
             showConnect
           >
-            <div
-              className={`${
-                !connected ? 'blur-sm filter' : ''
-              } rounded-lg bg-th-bkg-2 py-3`}
-            >
-              <div className="pb-3.5 text-base text-th-fgd-1">
-                {t('open-orders')}
-              </div>
+            <div className={`${!connected ? 'blur-sm filter' : ''} py-2`}>
+              <h2 className="mb-3 text-base">{t('open-orders')}</h2>
               <OpenOrdersTable />
             </div>
           </FloatingElement>

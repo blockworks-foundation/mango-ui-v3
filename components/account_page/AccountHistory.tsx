@@ -153,7 +153,7 @@ export default function AccountHistory() {
 
   return (
     <>
-      <div className="mb-4 flex bg-th-bkg-3 px-3 py-2 md:-mx-6 md:mb-6 md:px-4">
+      <div className="mb-4 flex rounded-md bg-th-bkg-3 px-3 py-2 md:mb-6 md:px-4">
         {historyViews.map(({ label, key }, index) => (
           <div
             className={`py-1 text-xs font-bold md:px-2 md:text-sm ${

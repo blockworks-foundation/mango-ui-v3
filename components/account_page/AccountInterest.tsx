@@ -270,18 +270,9 @@ const AccountInterest = () => {
 
   return (
     <>
-      <div className="flex items-center justify-between pb-4">
-        <h2>{t('interest-earned')}</h2>
-        <div className="flex items-center">
-          <Button
-            className={`float-right h-8 pt-0 pb-0 pl-3 pr-3 text-xs`}
-            onClick={exportInterestDataToCSV}
-          >
-            <div className={`flex items-center whitespace-nowrap`}>
-              <SaveIcon className={`mr-1.5 h-4 w-4`} />
-              {t('export-data')}
-            </div>
-          </Button>
+      <div className="flex flex-col pb-4 sm:flex-row sm:items-center sm:space-x-3">
+        <div className="flex w-full items-center justify-between pb-4 sm:pb-0">
+          <h2>{t('interest-earned')}</h2>
           <Switch
             checked={hideInterestDust}
             className="ml-2 text-xs"
@@ -290,6 +281,15 @@ const AccountInterest = () => {
             {t('hide-dust')}
           </Switch>
         </div>
+        <Button
+          className={`h-8 pt-0 pb-0 pl-3 pr-3 text-xs`}
+          onClick={exportInterestDataToCSV}
+        >
+          <div className={`flex items-center justify-center whitespace-nowrap`}>
+            <SaveIcon className={`mr-1.5 h-4 w-4`} />
+            {t('export-data')}
+          </div>
+        </Button>
       </div>
       {mangoAccount ? (
         <div>

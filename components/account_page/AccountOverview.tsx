@@ -94,19 +94,10 @@ export default function AccountOverview() {
 
   return mangoAccount ? (
     <>
-      <div className="flex flex-col pb-4 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="mb-4 sm:mb-0">{t('summary')}</h2>
-        <div className="w-full sm:w-56">
-          <ButtonGroup
-            activeValue={performanceRange}
-            onChange={(p) => setPerformanceRange(p)}
-            values={performanceRangePresetLabels}
-          />
-        </div>
-      </div>
-      <div className="flex flex-col pb-8 lg:flex-row lg:space-x-6 lg:pb-12">
-        <div className="w-full border-t border-th-bkg-4 pb-6 lg:w-1/4 lg:pb-0">
-          <div className="border-b border-th-bkg-4 p-3 sm:p-4">
+      <div className="flex flex-col pb-8 md:flex-row md:space-x-6 md:pb-12">
+        <div className="w-full pb-8 md:w-1/3 md:pb-0 lg:w-1/4">
+          <h2 className="mb-4">{t('summary')}</h2>
+          <div className="border-y border-th-bkg-4 p-3 sm:p-4">
             <div className="pb-0.5 text-xs text-th-fgd-3 sm:text-sm">
               {t('account-value')}
             </div>
@@ -168,25 +159,34 @@ export default function AccountOverview() {
             ></div>
           </div>
         </div>
-        <div className="h-80 w-full border-th-bkg-4 lg:h-auto lg:w-3/4 lg:border-t">
-          <PerformanceChart
-            hourlyPerformanceStats={hourlyPerformanceStats}
-            performanceRange={performanceRange}
-            accountValue={mangoAccountValue}
-          />
+        <div className="h-80 w-full md:h-auto md:w-2/3 lg:w-3/4">
+          <div className="mb-4 ml-auto md:w-56">
+            <ButtonGroup
+              activeValue={performanceRange}
+              onChange={(p) => setPerformanceRange(p)}
+              values={performanceRangePresetLabels}
+            />
+          </div>
+          <div className="md:border-t md:border-th-bkg-4">
+            <PerformanceChart
+              hourlyPerformanceStats={hourlyPerformanceStats}
+              performanceRange={performanceRange}
+              accountValue={mangoAccountValue}
+            />
+          </div>
         </div>
       </div>
-      <div className="pb-8 pt-16 lg:pt-0">
+      <div className="pb-8 pt-20 md:pt-0">
         <h2 className="mb-4">{t('perp-positions')}</h2>
         <PositionsTable />
       </div>
       <h2 className="mb-4">{t('assets-liabilities')}</h2>
 
-      <div className="grid grid-flow-col grid-cols-1 grid-rows-2 pb-8 md:grid-cols-2 md:grid-rows-1 lg:gap-4 lg:pb-12">
-        <div className="rounded-md border-t border-th-bkg-4 p-3 sm:rounded-lg sm:p-4 lg:border-b">
+      <div className="grid grid-flow-col grid-cols-1 grid-rows-2 pb-8 md:grid-cols-2 md:grid-rows-1 md:gap-4 md:pb-12">
+        <div className="rounded-md border-t border-th-bkg-4 p-3 sm:rounded-lg sm:p-4 md:border-b">
           <div className="pb-0.5 text-th-fgd-3">{t('total-assets')}</div>
           <div className="flex items-center">
-            <div className="text-2xl font-bold text-th-fgd-1">
+            <div className="text-xl font-bold text-th-fgd-1 md:text-2xl">
               {formatUsdValue(
                 +mangoAccount.getAssetsVal(mangoGroup, mangoCache)
               )}
@@ -196,7 +196,7 @@ export default function AccountOverview() {
         <div className="rounded-md border-b border-t border-th-bkg-4 p-3 sm:rounded-lg sm:p-4">
           <div className="pb-0.5 text-th-fgd-3">{t('total-liabilities')}</div>
           <div className="flex items-center">
-            <div className="text-2xl font-bold text-th-fgd-1">
+            <div className="text-xl font-bold text-th-fgd-1 md:text-2xl">
               {formatUsdValue(
                 +mangoAccount.getLiabsVal(mangoGroup, mangoCache)
               )}
