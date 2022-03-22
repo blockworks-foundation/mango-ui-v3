@@ -17,15 +17,18 @@ import ErrorBoundary from '../components/ErrorBoundary'
 import GlobalNotification from '../components/GlobalNotification'
 import { useOpenOrders } from '../hooks/useOpenOrders'
 import usePerpPositions from '../hooks/usePerpPositions'
-import { useEffect } from 'react'
-import { PublicKey } from '@solana/web3.js'
+import { useEffect, useMemo } from 'react'
+import { clusterApiUrl, PublicKey } from '@solana/web3.js'
 import { connectionSelector, mangoGroupSelector } from '../stores/selectors'
 import {
   ReferrerIdRecordLayout,
   ReferrerIdRecord,
 } from '@blockworks-foundation/mango-client'
 import useTradeHistory from '../hooks/useTradeHistory'
-import { WalletProvider } from 'components'
+import { getWalletAdapters } from '@solana/wallet-adapter-wallets'
+import { WalletProvider, WalletListener } from 'components/WalletAdapter'
+import { WalletAdapterNetwork } from '@solana/wallet-adapter-base'
+import { ConnectionProvider } from '@solana/wallet-adapter-react'
 
 const MangoStoreUpdater = () => {
   useHydrateStore()
@@ -115,6 +118,10 @@ const PageTitle = () => {
 }
 
 function App({ Component, pageProps }) {
+  const network = WalletAdapterNetwork.Mainnet
+  const endpoint = useMemo(() => clusterApiUrl(network), [network])
+  const wallets = getWalletAdapters({ network })
+
   return (
     <>
       <Head>
@@ -161,23 +168,26 @@ function App({ Component, pageProps }) {
         </ErrorBoundary>
 
         <ThemeProvider defaultTheme="Mango">
-          <WalletProvider>
-            <ViewportProvider>
-              <div className="min-h-screen bg-th-bkg-1">
-                <ErrorBoundary>
-                  <GlobalNotification />
-                  <Component {...pageProps} />
-                </ErrorBoundary>
-              </div>
-              <div className="fixed bottom-0 left-0 z-20 w-full md:hidden">
-                <ErrorBoundary>
-                  <BottomBar />
-                </ErrorBoundary>
-              </div>
+          <ConnectionProvider endpoint={endpoint}>
+            <WalletProvider wallets={wallets}>
+              <WalletListener />
+              <ViewportProvider>
+                <div className="min-h-screen bg-th-bkg-1">
+                  <ErrorBoundary>
+                    <GlobalNotification />
+                    <Component {...pageProps} />
+                  </ErrorBoundary>
+                </div>
+                <div className="fixed bottom-0 left-0 z-20 w-full md:hidden">
+                  <ErrorBoundary>
+                    <BottomBar />
+                  </ErrorBoundary>
+                </div>
 
-              <Notifications />
-            </ViewportProvider>
-          </WalletProvider>
+                <Notifications />
+              </ViewportProvider>
+            </WalletProvider>
+          </ConnectionProvider>
         </ThemeProvider>
       </ErrorBoundary>
     </>
