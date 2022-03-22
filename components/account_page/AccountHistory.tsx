@@ -9,7 +9,14 @@ import {
 
 import TradeHistoryTable from '../TradeHistoryTable'
 import useMangoStore from '../../stores/useMangoStore'
-import { Table, TrHead, Th, TrBody, Td } from '../TableElements'
+import {
+  Table,
+  TrHead,
+  Th,
+  TrBody,
+  Td,
+  TableDateDisplay,
+} from '../TableElements'
 import { LinkButton } from '../Button'
 import { useSortableData } from '../../hooks/useSortableData'
 import { formatUsdValue } from '../../utils'
@@ -422,16 +429,14 @@ const LiquidationHistoryTable = ({ history, view }) => {
                   perpMarket
                 )
 
-                const date = new Date(activity_details.block_datetime)
                 const lostDecimals = assetLost.symbol === 'SOL' ? 9 : 6
                 const gainedDecimals = assetGained.symbol === 'SOL' ? 9 : 6
                 return (
                   <TrBody key={activity_details.signature}>
                     <Td>
-                      <div>{date.toLocaleDateString()}</div>
-                      <div className="text-xs text-th-fgd-3">
-                        {date.toLocaleTimeString()}
-                      </div>
+                      <TableDateDisplay
+                        date={activity_details.block_datetime}
+                      />
                     </Td>
 
                     <Td>
@@ -582,14 +587,12 @@ const HistoryTable = ({ history, view }) => {
             </thead>
             <tbody>
               {items.map((activity_details: any) => {
-                const date = new Date(activity_details.block_datetime)
                 return (
                   <TrBody key={activity_details.signature}>
                     <Td>
-                      <div>{date.toLocaleDateString()}</div>
-                      <div className="text-xs text-th-fgd-3">
-                        {date.toLocaleTimeString()}
-                      </div>
+                      <TableDateDisplay
+                        date={activity_details.block_datetime}
+                      />
                     </Td>
                     <Td>
                       <div className="flex items-center">
