@@ -7,7 +7,6 @@ import {
   mangoCacheSelector,
   mangoGroupConfigSelector,
   mangoGroupSelector,
-  walletSelector,
 } from '../stores/selectors'
 import Button, { IconButton } from '../components/Button'
 import {
@@ -41,6 +40,8 @@ import Input, { Label } from '../components/Input'
 import InlineNotification from '../components/InlineNotification'
 import useMangoAccount from '../hooks/useMangoAccount'
 import { DateDisplay } from '../components/DateDisplay'
+import { handleWalletConnect } from 'components/ConnectWalletButton'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -72,7 +73,6 @@ export default function Referral() {
   const mangoCache = useMangoStore(mangoCacheSelector)
   const { mangoAccount } = useMangoAccount()
   const groupConfig = useMangoStore(mangoGroupConfigSelector)
-  const wallet = useMangoStore(walletSelector)
   const connected = useMangoStore((s) => s.wallet.connected)
   const actions = useMangoStore((s) => s.actions)
 
@@ -80,12 +80,17 @@ export default function Referral() {
   const referralTotalAmount = useMangoStore((s) => s.referrals.total)
   const hasReferrals = referralHistory.length > 0
 
+  const { wallet } = useWallet()
+  const mangoStoreWallet = useMangoStore.getState().wallet.current
+
   const [customRefLinkInput, setCustomRefLinkInput] = useState('')
   const [existingCustomRefLinks, setexistingCustomRefLinks] = useState<
     ReferrerIdRecord[]
   >([])
   const [hasCopied, setHasCopied] = useState(null)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
+
+  // const [hasReferrals] = useState(false) // Placeholder to show/hide users referral stats
   const [loading, setLoading] = useState(false)
   const [inputError, setInputError] = useState('')
   const { width } = useViewport()
@@ -143,6 +148,10 @@ export default function Referral() {
     }
   }
 
+  const handleConnect = useCallback(() => {
+    handleWalletConnect(wallet)
+  }, [wallet])
+
   const submitRefLink = async () => {
     let encodedRefLink: string
     try {
@@ -160,7 +169,7 @@ export default function Referral() {
         const txid = await mangoClient.registerReferrerId(
           mangoGroup,
           mangoAccount,
-          wallet,
+          mangoStoreWallet,
           encodedRefLink
         )
         notify({
@@ -511,6 +520,7 @@ export default function Referral() {
                     icon={<CurrencyDollarIcon />}
                     onClickButton={() => setShowAccountsModal(true)}
                     title={t('no-account-found')}
+                    disabled={!wallet || !mangoGroup}
                   />
                 </div>
               </>
@@ -523,8 +533,9 @@ export default function Referral() {
               <div className="col-span-12 flex items-center justify-center rounded-md bg-th-bkg-3 p-6 lg:col-span-8">
                 <EmptyState
                   buttonText={t('connect')}
+                  disabled={!wallet || !mangoGroup}
                   icon={<LinkIcon />}
-                  onClickButton={() => wallet.connect()}
+                  onClickButton={handleConnect}
                   title={t('connect-wallet')}
                 />
               </div>
