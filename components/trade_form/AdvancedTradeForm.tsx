@@ -152,7 +152,7 @@ export default function AdvancedTradeForm({
     walletSol && connected
       ? setInsufficientSol(walletSol.uiBalance < 0.01)
       : null
-  }, [walletTokens])
+  }, [connected, walletTokens])
 
   useEffect(() => {
     if (tradeType === 'Market') {
