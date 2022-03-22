@@ -232,9 +232,7 @@ export default function StatsTotals({ latestStats, stats }) {
             )}
           </div>
           <div className="pb-8">
-            <div className="pb-4 text-lg text-th-fgd-1">
-              {t('average-deposit')}
-            </div>
+            <h2 className="mb-4">{t('average-deposit')}</h2>
             {stats.length > 1 ? (
               <Table>
                 <thead>
@@ -281,9 +279,7 @@ export default function StatsTotals({ latestStats, stats }) {
               </>
             )}
           </div>
-          <div className="pb-4 text-lg text-th-fgd-1">
-            {t('average-borrow')}
-          </div>
+          <h2 className="mb-4">{t('average-borrow')}</h2>
           {stats.length > 1 ? (
             <Table>
               <thead>
@@ -332,16 +328,13 @@ export default function StatsTotals({ latestStats, stats }) {
         </>
       ) : (
         <>
-          <div className="pb-8">
-            <div className="pb-4 text-lg text-th-fgd-1">
-              {t('current-stats')}
-            </div>
+          <div className="mb-8 border-b border-th-bkg-4">
+            <h2 className="mb-4">{t('current-stats')}</h2>
             {latestStats.map((stat) => (
-              // latestStats.length > 0 ? (
               <ExpandableRow
                 buttonTemplate={
-                  <div className="grid w-full grid-cols-12 grid-rows-2 gap-2 text-left sm:grid-rows-1 sm:text-right">
-                    <div className="text-fgd-1 col-span-12 flex items-center sm:col-span-6">
+                  <div className="grid w-full grid-cols-12 grid-rows-2  text-left sm:grid-rows-1 sm:text-right">
+                    <div className="text-fgd-1 col-span-12 sm:col-span-6">
                       <div className="flex items-center">
                         <img
                           alt=""
@@ -404,15 +397,13 @@ export default function StatsTotals({ latestStats, stats }) {
               />
             ))}
           </div>
-          <div className="pb-8">
-            <div className="pb-4 text-lg text-th-fgd-1">
-              {t('average-deposit')}
-            </div>
+          <div className="mb-8 border-b border-th-bkg-4">
+            <h2 className="mb-4">{t('average-deposit')}</h2>
             {stats.length > 1
-              ? latestStats.map((stat, index) => (
-                  <Row key={stat.name} index={index}>
-                    <div className="grid grid-cols-12 grid-rows-2 gap-2 text-left sm:grid-rows-1 sm:text-right">
-                      <div className="text-fgd-1 col-span-12 flex items-center sm:col-span-3">
+              ? latestStats.map((stat) => (
+                  <Row key={stat.name}>
+                    <div className="grid grid-cols-12 grid-rows-2 text-left sm:grid-rows-1 sm:text-right">
+                      <div className="text-fgd-1 col-span-12 sm:col-span-3">
                         <div className="flex items-center">
                           <img
                             alt=""
@@ -443,43 +434,43 @@ export default function StatsTotals({ latestStats, stats }) {
                 ))
               : null}
           </div>
-          <div className="pb-4 text-lg text-th-fgd-1">
-            {t('average-borrow')}
-          </div>
-          {stats.length > 1
-            ? latestStats.map((stat, index) => (
-                <Row key={stat.name} index={index}>
-                  <div className="grid grid-cols-12 grid-rows-2 gap-2 text-left sm:grid-rows-1 sm:text-right">
-                    <div className="text-fgd-1 col-span-12 flex items-center sm:col-span-3">
-                      <div className="flex items-center">
-                        <img
-                          alt=""
-                          width="20"
-                          height="20"
-                          src={`/assets/icons/${stat.name
-                            .split(/-|\//)[0]
-                            .toLowerCase()}.svg`}
-                          className={`mr-2.5`}
-                        />
-                        {stat.name}
+          <div className="mb-4 border-b border-th-bkg-4">
+            <h2 className="mb-4">{t('average-borrow')}</h2>
+            {stats.length > 1
+              ? latestStats.map((stat) => (
+                  <Row key={stat.name}>
+                    <div className="grid grid-cols-12 grid-rows-2 gap-2 text-left sm:grid-rows-1 sm:text-right">
+                      <div className="text-fgd-1 col-span-12 flex items-center sm:col-span-3">
+                        <div className="flex items-center">
+                          <img
+                            alt=""
+                            width="20"
+                            height="20"
+                            src={`/assets/icons/${stat.name
+                              .split(/-|\//)[0]
+                              .toLowerCase()}.svg`}
+                            className={`mr-2.5`}
+                          />
+                          {stat.name}
+                        </div>
+                      </div>
+                      <div className="col-span-4 sm:col-span-3">
+                        <div className="pb-0.5 text-xs text-th-fgd-3">24h</div>
+                        {getAverageStats(stats, 1, stat.name, 'borrowIndex')}
+                      </div>
+                      <div className="col-span-4 sm:col-span-3">
+                        <div className="pb-0.5 text-xs text-th-fgd-3">7d</div>
+                        {getAverageStats(stats, 7, stat.name, 'borrowIndex')}
+                      </div>
+                      <div className="col-span-4 sm:col-span-3">
+                        <div className="pb-0.5 text-xs text-th-fgd-3">30d</div>
+                        {getAverageStats(stats, 30, stat.name, 'borrowIndex')}
                       </div>
                     </div>
-                    <div className="col-span-4 sm:col-span-3">
-                      <div className="pb-0.5 text-xs text-th-fgd-3">24h</div>
-                      {getAverageStats(stats, 1, stat.name, 'borrowIndex')}
-                    </div>
-                    <div className="col-span-4 sm:col-span-3">
-                      <div className="pb-0.5 text-xs text-th-fgd-3">7d</div>
-                      {getAverageStats(stats, 7, stat.name, 'borrowIndex')}
-                    </div>
-                    <div className="col-span-4 sm:col-span-3">
-                      <div className="pb-0.5 text-xs text-th-fgd-3">30d</div>
-                      {getAverageStats(stats, 30, stat.name, 'borrowIndex')}
-                    </div>
-                  </div>
-                </Row>
-              ))
-            : null}
+                  </Row>
+                ))
+              : null}
+          </div>
         </>
       )}
     </>

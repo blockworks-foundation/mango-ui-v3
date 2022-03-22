@@ -39,12 +39,10 @@ export default function Markets() {
     <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
       <TopBar />
       <PageBodyContainer>
-        <div className="flex flex-col sm:flex-row py-4 md:pb-4 md:pt-10">
-          <h1 className={`text-th-fgd-1 text-2xl font-semibold`}>
-            {t('markets')}
-          </h1>
+        <div className="flex flex-col py-4 sm:flex-row md:pb-4 md:pt-10">
+          <h1>{t('markets')}</h1>
         </div>
-        <div className="bg-th-bkg-2 p-4 sm:p-6 rounded-lg">
+        <div className="md:rounded-lg md:bg-th-bkg-2 md:p-6">
           <Tabs activeTab={activeTab} onChange={handleTabChange} tabs={TABS} />
           <h2 className="mb-4">
             {isPerp

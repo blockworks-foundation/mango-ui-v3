@@ -91,7 +91,7 @@ const PerpMarket = () => {
     if (name) {
       marketQueryParam = name.toString().split(/-|\//)
       marketBaseSymbol = marketQueryParam[0]
-      marketType = marketQueryParam[1] === 'PERP' ? 'perp' : 'spot'
+      marketType = marketQueryParam[1].includes('PERP') ? 'perp' : 'spot'
 
       newMarket = getMarketByBaseSymbolAndKind(
         groupConfig,
@@ -102,7 +102,14 @@ const PerpMarket = () => {
         groupConfig,
         marketBaseSymbol.toUpperCase()
       )
+
+      if (!newMarket?.baseSymbol) {
+        router.push('/')
+        return
+      }
     }
+
+    if (newMarket?.name === marketConfig?.name) return
 
     if (name && mangoGroup) {
       const mangoCache = useMangoStore.getState().selectedMangoGroup.cache

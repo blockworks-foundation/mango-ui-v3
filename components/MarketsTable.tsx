@@ -46,16 +46,16 @@ const MarketsTable = ({ isPerpMarket }) => {
           <TrHead>
             <Th>
               <LinkButton
-                className="flex items-center no-underline font-normal"
+                className="flex items-center font-normal no-underline"
                 onClick={() => requestSort('name')}
               >
                 <span className="font-normal text-th-fgd-3">{t('market')}</span>
                 <ArrowSmDownIcon
-                  className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                  className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                     sortConfig?.key === 'name'
                       ? sortConfig.direction === 'ascending'
-                        ? 'transform rotate-180'
-                        : 'transform rotate-360'
+                        ? 'rotate-180 transform'
+                        : 'rotate-360 transform'
                       : null
                   }`}
                 />
@@ -63,16 +63,16 @@ const MarketsTable = ({ isPerpMarket }) => {
             </Th>
             <Th>
               <LinkButton
-                className="flex items-center no-underline font-normal"
+                className="flex items-center font-normal no-underline"
                 onClick={() => requestSort('last')}
               >
                 <span className="font-normal text-th-fgd-3">{t('price')}</span>
                 <ArrowSmDownIcon
-                  className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                  className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                     sortConfig?.key === 'last'
                       ? sortConfig.direction === 'ascending'
-                        ? 'transform rotate-180'
-                        : 'transform rotate-360'
+                        ? 'rotate-180 transform'
+                        : 'rotate-360 transform'
                       : null
                   }`}
                 />
@@ -80,18 +80,18 @@ const MarketsTable = ({ isPerpMarket }) => {
             </Th>
             <Th>
               <LinkButton
-                className="flex items-center no-underline font-normal"
+                className="flex items-center font-normal no-underline"
                 onClick={() => requestSort('change24h')}
               >
                 <span className="font-normal text-th-fgd-3">
                   {t('rolling-change')}
                 </span>
                 <ArrowSmDownIcon
-                  className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                  className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                     sortConfig?.key === 'change24h'
                       ? sortConfig.direction === 'ascending'
-                        ? 'transform rotate-180'
-                        : 'transform rotate-360'
+                        ? 'rotate-180 transform'
+                        : 'rotate-360 transform'
                       : null
                   }`}
                 />
@@ -99,18 +99,18 @@ const MarketsTable = ({ isPerpMarket }) => {
             </Th>
             <Th>
               <LinkButton
-                className="flex items-center no-underline font-normal"
+                className="flex items-center font-normal no-underline"
                 onClick={() => requestSort('low24h')}
               >
                 <span className="font-normal text-th-fgd-3">
                   {t('daily-low')}
                 </span>
                 <ArrowSmDownIcon
-                  className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                  className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                     sortConfig?.key === 'low24h'
                       ? sortConfig.direction === 'ascending'
-                        ? 'transform rotate-180'
-                        : 'transform rotate-360'
+                        ? 'rotate-180 transform'
+                        : 'rotate-360 transform'
                       : null
                   }`}
                 />
@@ -118,18 +118,18 @@ const MarketsTable = ({ isPerpMarket }) => {
             </Th>
             <Th>
               <LinkButton
-                className="flex items-center no-underline font-normal"
+                className="flex items-center font-normal no-underline"
                 onClick={() => requestSort('high24h')}
               >
                 <span className="font-normal text-th-fgd-3">
                   {t('daily-high')}
                 </span>
                 <ArrowSmDownIcon
-                  className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                  className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                     sortConfig?.key === 'high24h'
                       ? sortConfig.direction === 'ascending'
-                        ? 'transform rotate-180'
-                        : 'transform rotate-360'
+                        ? 'rotate-180 transform'
+                        : 'rotate-360 transform'
                       : null
                   }`}
                 />
@@ -137,18 +137,18 @@ const MarketsTable = ({ isPerpMarket }) => {
             </Th>
             <Th>
               <LinkButton
-                className="flex items-center no-underline font-normal"
+                className="flex items-center font-normal no-underline"
                 onClick={() => requestSort('volumeUsd24h')}
               >
                 <span className="font-normal text-th-fgd-3">
                   {t('daily-volume')}
                 </span>
                 <ArrowSmDownIcon
-                  className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                  className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                     sortConfig?.key === 'volumeUsd24h'
                       ? sortConfig.direction === 'ascending'
-                        ? 'transform rotate-180'
-                        : 'transform rotate-360'
+                        ? 'rotate-180 transform'
+                        : 'rotate-360 transform'
                       : null
                   }`}
                 />
@@ -158,18 +158,18 @@ const MarketsTable = ({ isPerpMarket }) => {
               <>
                 <Th>
                   <LinkButton
-                    className="flex items-center no-underline font-normal"
+                    className="flex items-center font-normal no-underline"
                     onClick={() => requestSort('funding1h')}
                   >
                     <span className="font-normal text-th-fgd-3">
                       {t('average-funding')}
                     </span>
                     <ArrowSmDownIcon
-                      className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                      className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                         sortConfig?.key === 'funding1h'
                           ? sortConfig.direction === 'ascending'
-                            ? 'transform rotate-180'
-                            : 'transform rotate-360'
+                            ? 'rotate-180 transform'
+                            : 'rotate-360 transform'
                           : null
                       }`}
                     />
@@ -184,11 +184,11 @@ const MarketsTable = ({ isPerpMarket }) => {
                       {t('open-interest')}
                     </span>
                     <ArrowSmDownIcon
-                      className={`default-transition flex-shrink-0 h-4 w-4 ml-1 ${
+                      className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                         sortConfig?.key === 'openInterest'
                           ? sortConfig.direction === 'ascending'
-                            ? 'transform rotate-180'
-                            : 'transform rotate-360'
+                            ? 'rotate-180 transform'
+                            : 'rotate-360 transform'
                           : null
                       }`}
                     />
@@ -281,7 +281,7 @@ const MarketsTable = ({ isPerpMarket }) => {
                           <span>{`${funding1h.toLocaleString(undefined, {
                             maximumSignificantDigits: 3,
                           })}%`}</span>{' '}
-                          <span className="text-th-fgd-3 text-xs">{`(${fundingApr}% APR)`}</span>
+                          <span className="text-xs text-th-fgd-3">{`(${fundingApr}% APR)`}</span>
                         </>
                       ) : (
                         <span className="text-th-fgd-4">Unavailable</span>
@@ -291,7 +291,7 @@ const MarketsTable = ({ isPerpMarket }) => {
                       {openInterest ? (
                         <>
                           <span>{openInterest.toLocaleString()}</span>{' '}
-                          <span className="text-th-fgd-3 text-xs">
+                          <span className="text-xs text-th-fgd-3">
                             {baseSymbol}
                           </span>
                         </>
@@ -312,7 +312,7 @@ const MarketsTable = ({ isPerpMarket }) => {
         </tbody>
       </Table>
     ) : (
-      <>
+      <div className="mb-4 border-b border-th-bkg-4">
         <MobileTableHeader
           colOneHeader={t('asset')}
           colTwoHeader={`${t('price')}/${t('rolling-change')}`}
@@ -334,7 +334,7 @@ const MarketsTable = ({ isPerpMarket }) => {
           return (
             <ExpandableRow
               buttonTemplate={
-                <div className="flex items-center justify-between text-th-fgd-1 w-full">
+                <div className="flex w-full items-center justify-between text-th-fgd-1">
                   <div className="flex items-center text-th-fgd-1">
                     <img
                       alt=""
@@ -346,7 +346,7 @@ const MarketsTable = ({ isPerpMarket }) => {
 
                     {market.baseSymbol}
                   </div>
-                  <div className="flex space-x-2.5 text-th-fgd-1 text-right">
+                  <div className="flex space-x-2.5 text-right text-th-fgd-1">
                     <div>{formatUsdValue(last)}</div>
                     <div className="text-th-fgd-4">|</div>
                     <div
@@ -366,9 +366,9 @@ const MarketsTable = ({ isPerpMarket }) => {
               key={`${name}${index}`}
               panelTemplate={
                 <>
-                  <div className="grid grid-cols-2 grid-flow-row gap-4 pb-4">
+                  <div className="grid grid-flow-row grid-cols-2 gap-4 pb-4">
                     <div className="text-left">
-                      <div className="pb-0.5 text-th-fgd-3 text-xs">
+                      <div className="pb-0.5 text-xs text-th-fgd-3">
                         {t('daily-low')}
                       </div>
                       {low24h ? (
@@ -378,7 +378,7 @@ const MarketsTable = ({ isPerpMarket }) => {
                       )}
                     </div>
                     <div className="text-left">
-                      <div className="pb-0.5 text-th-fgd-3 text-xs">
+                      <div className="pb-0.5 text-xs text-th-fgd-3">
                         {t('daily-high')}
                       </div>
                       {high24h ? (
@@ -390,7 +390,7 @@ const MarketsTable = ({ isPerpMarket }) => {
                     {isPerpMarket ? (
                       <>
                         <div className="text-left">
-                          <div className="pb-0.5 text-th-fgd-3 text-xs">
+                          <div className="pb-0.5 text-xs text-th-fgd-3">
                             {t('daily-volume')}
                           </div>
                           {volumeUsd24h ? (
@@ -400,7 +400,7 @@ const MarketsTable = ({ isPerpMarket }) => {
                           )}
                         </div>
                         <div className="text-left">
-                          <div className="pb-0.5 text-th-fgd-3 text-xs">
+                          <div className="pb-0.5 text-xs text-th-fgd-3">
                             {t('average-funding')}
                           </div>
                           {funding1h ? (
@@ -412,7 +412,7 @@ const MarketsTable = ({ isPerpMarket }) => {
                           )}
                         </div>
                         <div className="text-left">
-                          <div className="pb-0.5 text-th-fgd-3 text-xs">
+                          <div className="pb-0.5 text-xs text-th-fgd-3">
                             {t('open-interest')}
                           </div>
                           {openInterest ? (
@@ -431,7 +431,7 @@ const MarketsTable = ({ isPerpMarket }) => {
             />
           )
         })}
-      </>
+      </div>
     )
   ) : null
 }

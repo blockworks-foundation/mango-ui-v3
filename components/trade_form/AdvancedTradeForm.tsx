@@ -482,7 +482,7 @@ export default function AdvancedTradeForm({
   const closeBorrowString =
     percentToClose(baseSize, roundedBorrows) > 100
       ? t('close-open-long', {
-          size: (+baseSize - roundedDeposits).toFixed(sizeDecimalCount),
+          size: (+baseSize - roundedBorrows).toFixed(sizeDecimalCount),
           symbol: marketConfig.baseSymbol,
         })
       : `${percentToClose(baseSize, roundedBorrows).toFixed(0)}% ${t(

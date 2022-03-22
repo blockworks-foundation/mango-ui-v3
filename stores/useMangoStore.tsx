@@ -38,6 +38,7 @@ import {
 import { MSRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
 import { getProfilePicture, ProfilePicture } from '@solflare-wallet/pfp'
 import { decodeBook } from '../hooks/useHydrateStore'
+import { IOrderLineAdapter } from '../public/charting_library/charting_library'
 
 export const ENDPOINTS: EndpointInfo[] = [
   {
@@ -157,6 +158,10 @@ export type MangoStore = {
     cache: MangoCache | null
   }
   mangoAccounts: MangoAccount[]
+  referrals: {
+    total: number
+    history: any[]
+  }
   referrerPk: PublicKey | null
   selectedMangoAccount: {
     current: MangoAccount | null
@@ -198,6 +203,7 @@ export type MangoStore = {
   tradeHistory: {
     spot: any[]
     perp: any[]
+    parsed: any[]
   }
   set: (x: (x: MangoStore) => void) => void
   actions: {
@@ -214,6 +220,9 @@ export type MangoStore = {
     success: string
   }
   marketsInfo: any[]
+  tradingView: {
+    orderLines: Map<string, IOrderLineAdapter>
+  }
 }
 
 const useMangoStore = create<
@@ -287,6 +296,10 @@ const useMangoStore = create<
       },
       mangoGroups: [],
       mangoAccounts: [],
+      referrals: {
+        total: 0,
+        history: [],
+      },
       referrerPk: null,
       selectedMangoAccount: {
         current: null,
@@ -330,6 +343,10 @@ const useMangoStore = create<
       tradeHistory: {
         spot: [],
         perp: [],
+        parsed: [],
+      },
+      tradingView: {
+        orderLines: new Map(),
       },
       set: (fn) => set(produce(fn)),
       actions: {
@@ -597,25 +614,24 @@ const useMangoStore = create<
             .then((response) => response.json())
             .then((jsonPerpHistory) => {
               const perpHistory = jsonPerpHistory?.data || []
-              set((state) => {
-                state.tradeHistory.perp = perpHistory
-              })
               if (perpHistory.length === 5000) {
                 fetch(
                   `https://event-history-api.herokuapp.com/perp_trades/${selectedMangoAccount.publicKey.toString()}?page=2`
                 )
                   .then((response) => response.json())
                   .then((jsonPerpHistory) => {
-                    const perpHistory = jsonPerpHistory?.data || []
+                    const perpHistory2 = jsonPerpHistory?.data || []
                     set((state) => {
-                      state.tradeHistory.perp = [
-                        ...state.tradeHistory.perp,
-                      ].concat(perpHistory)
+                      state.tradeHistory.perp = perpHistory.concat(perpHistory2)
                     })
                   })
                   .catch((e) => {
                     console.error('Error fetching trade history', e)
                   })
+              } else {
+                set((state) => {
+                  state.tradeHistory.perp = perpHistory
+                })
               }
             })
             .catch((e) => {
@@ -739,6 +755,28 @@ const useMangoStore = create<
           } catch (err) {
             console.log('Error fetching fills:', err)
           }
+        },
+        async loadReferralData() {
+          const set = get().set
+          const mangoAccount = get().selectedMangoAccount.current
+          const pk = mangoAccount.publicKey.toString()
+
+          const getData = async (type: 'history' | 'total') => {
+            const res = await fetch(
+              `https://mango-transaction-log.herokuapp.com/v3/stats/referral-fees-${type}?referrer-account=${pk}`
+            )
+            const data =
+              type === 'history' ? await res.json() : await res.text()
+            return data
+          }
+
+          const data = await getData('history')
+          const totalBalance = await getData('total')
+
+          set((state) => {
+            state.referrals.total = parseFloat(totalBalance)
+            state.referrals.history = data
+          })
         },
         async fetchMangoGroupCache() {
           const set = get().set

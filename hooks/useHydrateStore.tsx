@@ -92,7 +92,10 @@ const useHydrateStore = () => {
   }, 120 * SECONDS)
 
   useEffect(() => {
+    if (!marketConfig || !markets) return
+
     const market = markets[marketConfig.publicKey.toString()]
+    if (!market) return
     setMangoStore((state) => {
       state.selectedMarket.current = market
       state.selectedMarket.orderBook.bids = decodeBookL2(
@@ -109,7 +112,7 @@ const useHydrateStore = () => {
   // watch selected Mango Account for changes
   useEffect(() => {
     if (!mangoAccount) return
-    console.log('in mango account WS useEffect')
+
     const subscriptionId = connection.onAccountChange(
       mangoAccount.publicKey,
       (info, context) => {
@@ -126,7 +129,6 @@ const useHydrateStore = () => {
 
         // only updated mango account if it's been more than 1 second since last update
         if (Math.abs(timeDiff / 1000) >= 1 && context.slot > lastSeenSlot) {
-          console.log('mango account WS update: ', info)
           const decodedMangoAccount = MangoAccountLayout.decode(info?.data)
           const newMangoAccount = Object.assign(
             mangoAccount,

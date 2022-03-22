@@ -15,11 +15,30 @@ import { useTranslation } from 'next-i18next'
 import SwitchMarketDropdown from './SwitchMarketDropdown'
 import Tooltip from './Tooltip'
 
+const OraclePrice = () => {
+  const oraclePrice = useOraclePrice()
+  const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
+
+  const decimals = useMemo(
+    () => getPrecisionDigits(selectedMarket?.tickSize),
+    [selectedMarket]
+  )
+
+  return (
+    <div className="text-th-fgd-1 md:text-xs">
+      {oraclePrice && selectedMarket
+        ? oraclePrice.toNumber().toLocaleString(undefined, {
+            minimumFractionDigits: decimals,
+            maximumFractionDigits: decimals,
+          })
+        : '--'}
+    </div>
+  )
+}
+
 const MarketDetails = () => {
   const { t } = useTranslation('common')
-  const oraclePrice = useOraclePrice()
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
-  const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
   const baseSymbol = marketConfig.baseSymbol
   const selectedMarketName = marketConfig.name
   const isPerpMarket = marketConfig.kind === 'perp'
@@ -45,28 +64,17 @@ const MarketDetails = () => {
             <SwitchMarketDropdown />
           </div>
         </div>
-        <div className="grid grid-flow-row grid-cols-1 gap-3 md:grid-cols-3 lg:grid-flow-col lg:grid-cols-none lg:grid-rows-1 lg:gap-6">
+        <div className="grid grid-flow-row grid-cols-1 gap-2 md:grid-cols-3 lg:grid-flow-col lg:grid-cols-none lg:grid-rows-1 lg:gap-6">
           <div className="flex items-center justify-between md:block">
-            <div className="tiny-text pb-0.5 text-th-fgd-3">
+            <div className="text-th-fgd-3 md:pb-0.5 md:text-[0.65rem]">
               {t('oracle-price')}
             </div>
-            <div className="text-th-fgd-1 md:text-xs">
-              {oraclePrice && selectedMarket
-                ? oraclePrice.toNumber().toLocaleString(undefined, {
-                    minimumFractionDigits: getPrecisionDigits(
-                      selectedMarket.tickSize
-                    ),
-                    maximumFractionDigits: getPrecisionDigits(
-                      selectedMarket.tickSize
-                    ),
-                  })
-                : '--'}
-            </div>
+            <OraclePrice />
           </div>
           {market ? (
             <>
               <div className="flex items-center justify-between md:block">
-                <div className="tiny-text pb-0.5 text-th-fgd-3">
+                <div className="text-th-fgd-3 md:pb-0.5 md:text-[0.65rem]">
                   {t('rolling-change')}
                 </div>
                 <div
@@ -84,7 +92,7 @@ const MarketDetails = () => {
               {isPerpMarket ? (
                 <>
                   <div className="flex items-center justify-between md:block">
-                    <div className="tiny-text pb-0.5 text-th-fgd-3">
+                    <div className="text-th-fgd-3 md:pb-0.5 md:text-[0.65rem]">
                       {t('daily-volume')}
                     </div>
                     <div className="text-th-fgd-1 md:text-xs">
@@ -96,7 +104,7 @@ const MarketDetails = () => {
                     placement={'bottom'}
                   >
                     <div className="flex items-center justify-between hover:cursor-help md:block">
-                      <div className="tiny-text flex items-center pb-0.5 text-th-fgd-3">
+                      <div className="flex items-center text-th-fgd-3 md:pb-0.5 md:text-[0.65rem]">
                         {t('average-funding')}
                       </div>
                       <div className="text-th-fgd-1 md:text-xs">
@@ -109,7 +117,7 @@ const MarketDetails = () => {
                     </div>
                   </Tooltip>
                   <div className="flex items-center justify-between md:block">
-                    <div className="tiny-text pb-0.5 text-th-fgd-3">
+                    <div className="text-th-fgd-3 md:pb-0.5 md:text-[0.65rem]">
                       {t('open-interest')}
                     </div>
                     <div className="text-th-fgd-1 md:text-xs">
@@ -121,15 +129,11 @@ const MarketDetails = () => {
                   </div>
                 </>
               ) : null}
-              <div>
-                <div className="tiny-text pb-0.5 text-left text-th-fgd-3 xl:text-center">
+              <div className="flex items-center justify-between md:block">
+                <div className="text-left text-th-fgd-3 md:pb-0.5 md:text-[0.65rem] xl:text-center">
                   {t('daily-range')}
                 </div>
-                <DayHighLow
-                  high={market?.high24h}
-                  low={market?.low24h}
-                  latest={oraclePrice?.toNumber()}
-                />
+                <DayHighLow high={market?.high24h} low={market?.low24h} />
               </div>
             </>
           ) : (

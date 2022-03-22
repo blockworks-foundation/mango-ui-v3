@@ -5,6 +5,7 @@ import BN from 'bn.js'
 import { TRIGGER_ORDER_TYPES } from '../components/trade_form/AdvancedTradeForm'
 import { Orderbook } from '../stores/useMangoStore'
 import { MarketKind } from '@blockworks-foundation/mango-client'
+import BigNumber from 'bignumber.js'
 
 export async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))
@@ -44,6 +45,7 @@ export function roundToDecimal(
 export function getPrecisionDigits(x: number): number {
   return -Math.round(Math.log10(x))
 }
+
 export function getDecimalCount(value): number {
   if (
     !isNaN(value) &&
@@ -324,8 +326,5 @@ export function patchInternalMarketName(marketName: string) {
 }
 
 export function roundPerpSize(size: number, symbol: string) {
-  return Math.abs(size).toLocaleString(undefined, {
-    minimumFractionDigits: perpContractPrecision[symbol],
-    maximumFractionDigits: perpContractPrecision[symbol],
-  })
+  return new BigNumber(size).abs().toFormat(perpContractPrecision[symbol])
 }

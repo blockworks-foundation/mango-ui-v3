@@ -67,7 +67,7 @@ export default function AccountBorrows() {
     <>
       {mangoGroup && mangoAccount ? (
         <>
-          <h2 className="mb-2">{t('your-borrows')}</h2>
+          <h2 className="mb-0">{t('your-borrows')}</h2>
           {/* TODO: calculate LiabsVal without perp markets
         <div className="border border-th-red flex items-center justify-between p-2 rounded">
           <div className="pr-4 text-xs text-th-fgd-3">{t('total-borrow-value')}:</div>
@@ -174,7 +174,7 @@ export default function AccountBorrows() {
                       </tbody>
                     </Table>
                   ) : (
-                    <>
+                    <div className="border-b border-th-bkg-4">
                       <MobileTableHeader
                         colOneHeader={t('asset')}
                         colTwoHeader={t('balance')}
@@ -279,7 +279,7 @@ export default function AccountBorrows() {
                             />
                           )
                         })}
-                    </>
+                    </div>
                   )
                 ) : (
                   <div
@@ -293,7 +293,7 @@ export default function AccountBorrows() {
           </div>
         </>
       ) : null}
-      <h2 className="mb-2">{t('all-assets')}</h2>
+      <h2 className="mb-0">{t('all-assets')}</h2>
       <div className="flex flex-col pb-2 pt-4">
         <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div className="inline-block min-w-full align-middle sm:px-6 lg:px-8">
@@ -413,7 +413,7 @@ export default function AccountBorrows() {
                 </tbody>
               </Table>
             ) : (
-              <>
+              <div className="border-b border-th-bkg-4">
                 <MobileTableHeader
                   colOneHeader={t('asset')}
                   colTwoHeader={`${t('deposit')}/${t('borrow-rate')}`}
@@ -517,7 +517,7 @@ export default function AccountBorrows() {
                     />
                   )
                 })}
-              </>
+              </div>
             )}
           </div>
         </div>
