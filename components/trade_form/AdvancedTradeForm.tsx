@@ -149,7 +149,9 @@ export default function AdvancedTradeForm({
 
   useEffect(() => {
     const walletSol = walletTokens.find((a) => a.config.symbol === 'SOL')
-    walletSol ? setInsufficientSol(walletSol.uiBalance < 0.01) : null
+    walletSol && connected
+      ? setInsufficientSol(walletSol.uiBalance < 0.01)
+      : null
   }, [walletTokens])
 
   useEffect(() => {
@@ -760,7 +762,7 @@ export default function AdvancedTradeForm({
   }
 
   return (
-    <div className="flex h-full flex-col">
+    <div>
       <ElementTitle className="hidden md:flex">
         {marketConfig.name}
         <span className="ml-2 rounded border border-th-primary px-1 py-0.5 text-xs text-th-primary">
@@ -768,7 +770,7 @@ export default function AdvancedTradeForm({
         </span>
       </ElementTitle>
       {insufficientSol ? (
-        <div className="pb-3 text-left">
+        <div className="mb-3 text-left">
           <InlineNotification desc={t('add-more-sol')} type="warning" />
         </div>
       ) : null}
