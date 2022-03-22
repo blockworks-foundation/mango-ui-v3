@@ -200,8 +200,6 @@ export default function Account() {
     )
   }, [mangoAccount])
 
-  console.log('connecting', connecting)
-
   useEffect(() => {
     if (connecting) {
       router.push('/account')
