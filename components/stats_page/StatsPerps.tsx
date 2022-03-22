@@ -58,7 +58,7 @@ export default function StatsPerps({ perpStats }) {
   }, [selectedMarketConfig, perpMarkets])
 
   const perpsData = useMemo(() => {
-    if (perpStats.length === 0) return []
+    if (perpStats.length === 0 || !selectedMarket) return []
 
     let selectedStatsData = perpStats.filter(
       (stat) => stat.name === selectedAsset
