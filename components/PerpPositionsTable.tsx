@@ -83,7 +83,7 @@ const PositionsTable = () => {
   }
 
   return (
-    <div className="flex flex-col pb-2">
+    <div className="flex flex-col md:pb-2">
       {unsettledPositions.length > 0 ? (
         <div className="mb-6 rounded-lg border border-th-bkg-4 p-4 sm:p-6">
           <div className="flex items-center justify-between pb-4">
@@ -271,7 +271,7 @@ const PositionsTable = () => {
                 </tbody>
               </Table>
             ) : (
-              <>
+              <div className="border-b border-th-bkg-4">
                 <MobileTableHeader
                   colOneHeader={t('market')}
                   colTwoHeader={t('unrealized-pnl')}
@@ -360,7 +360,7 @@ const PositionsTable = () => {
                     )
                   }
                 )}
-              </>
+              </div>
             )
           ) : (
             <div

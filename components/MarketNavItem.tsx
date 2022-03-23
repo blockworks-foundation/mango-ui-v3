@@ -71,6 +71,19 @@ const MarketNavItem: FunctionComponent<MarketNavItemProps> = ({
               {getMarketLeverage(mangoGroup, mangoGroupConfig, market)}x
             </span>
           </div>
+          {market?.change24h ? (
+            <div
+              className={`text-xs ${
+                market?.change24h
+                  ? market.change24h >= 0
+                    ? 'text-th-green'
+                    : 'text-th-red'
+                  : 'text-th-fgd-4'
+              }`}
+            >
+              {`${(market.change24h * 100).toFixed(1)}%`}
+            </div>
+          ) : null}
         </button>
         <div className="ml-2">
           <FavoriteMarketButton market={market} />

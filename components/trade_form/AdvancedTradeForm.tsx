@@ -149,8 +149,10 @@ export default function AdvancedTradeForm({
 
   useEffect(() => {
     const walletSol = walletTokens.find((a) => a.config.symbol === 'SOL')
-    walletSol ? setInsufficientSol(walletSol.uiBalance < 0.01) : null
-  }, [walletTokens])
+    walletSol && connected
+      ? setInsufficientSol(walletSol.uiBalance < 0.01)
+      : null
+  }, [connected, walletTokens])
 
   useEffect(() => {
     if (tradeType === 'Market') {
@@ -482,7 +484,7 @@ export default function AdvancedTradeForm({
   const closeBorrowString =
     percentToClose(baseSize, roundedBorrows) > 100
       ? t('close-open-long', {
-          size: (+baseSize - roundedDeposits).toFixed(sizeDecimalCount),
+          size: (+baseSize - roundedBorrows).toFixed(sizeDecimalCount),
           symbol: marketConfig.baseSymbol,
         })
       : `${percentToClose(baseSize, roundedBorrows).toFixed(0)}% ${t(
@@ -760,7 +762,7 @@ export default function AdvancedTradeForm({
   }
 
   return (
-    <div className="flex h-full flex-col">
+    <div>
       <ElementTitle className="hidden md:flex">
         {marketConfig.name}
         <span className="ml-2 rounded border border-th-primary px-1 py-0.5 text-xs text-th-primary">
@@ -768,7 +770,7 @@ export default function AdvancedTradeForm({
         </span>
       </ElementTitle>
       {insufficientSol ? (
-        <div className="pb-3 text-left">
+        <div className="mb-3 text-left">
           <InlineNotification desc={t('add-more-sol')} type="warning" />
         </div>
       ) : null}

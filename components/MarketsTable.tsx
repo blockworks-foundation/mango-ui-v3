@@ -278,9 +278,7 @@ const MarketsTable = ({ isPerpMarket }) => {
                     <Td>
                       {funding1h ? (
                         <>
-                          <span>{`${funding1h.toLocaleString(undefined, {
-                            maximumSignificantDigits: 3,
-                          })}%`}</span>{' '}
+                          <span>{`${funding1h.toFixed(4)}%`}</span>{' '}
                           <span className="text-xs text-th-fgd-3">{`(${fundingApr}% APR)`}</span>
                         </>
                       ) : (
@@ -312,7 +310,7 @@ const MarketsTable = ({ isPerpMarket }) => {
         </tbody>
       </Table>
     ) : (
-      <>
+      <div className="mb-4 border-b border-th-bkg-4">
         <MobileTableHeader
           colOneHeader={t('asset')}
           colTwoHeader={`${t('price')}/${t('rolling-change')}`}
@@ -431,7 +429,7 @@ const MarketsTable = ({ isPerpMarket }) => {
             />
           )
         })}
-      </>
+      </div>
     )
   ) : null
 }
