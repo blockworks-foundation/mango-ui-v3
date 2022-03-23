@@ -190,6 +190,9 @@ export default function AccountHistory() {
                     (e) => e.toString() !== '11111111111111111111111111111111'
                   )
                   .join(',')}`}
+                download
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 <SaveIcon className={`mr-1.5 h-4 w-4`} />
                 Export Trades CSV
