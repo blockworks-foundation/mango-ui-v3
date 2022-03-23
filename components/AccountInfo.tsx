@@ -49,7 +49,10 @@ export default function AccountInfo() {
   const [showWithdrawModal, setShowWithdrawModal] = useState(false)
   const [showAlertsModal, setShowAlertsModal] = useState(false)
 
-  const canWithdraw = mangoAccount?.owner.equals(wallet.publicKey)
+  const canWithdraw =
+    mangoAccount?.owner && wallet?.publicKey
+      ? mangoAccount?.owner?.equals(wallet?.publicKey)
+      : false
 
   const handleCloseDeposit = useCallback(() => {
     setShowDepositModal(false)

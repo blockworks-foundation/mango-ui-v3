@@ -392,16 +392,8 @@ const BalancesTable = ({
                           )}
                         </div>
                       </Td>
-                      <Td>
-                        {balance.deposits.toLocaleString(undefined, {
-                          maximumFractionDigits: balance.decimals,
-                        })}
-                      </Td>
-                      <Td>
-                        {balance.borrows.toLocaleString(undefined, {
-                          maximumFractionDigits: balance.decimals,
-                        })}
-                      </Td>
+                      <Td>{balance.deposits.toFormat(balance.decimals)}</Td>
+                      <Td>{balance.borrows.toFormat(balance.decimals)}</Td>
                       <Td>{balance.orders}</Td>
                       <Td>{balance.unsettled}</Td>
                       <Td>
@@ -419,14 +411,10 @@ const BalancesTable = ({
                               handleSizeClick(balance.net, balance.symbol)
                             }
                           >
-                            {balance.net.toLocaleString(undefined, {
-                              maximumFractionDigits: balance.decimals,
-                            })}
+                            {balance.net.toFormat(balance.decimals)}
                           </span>
                         ) : (
-                          balance.net.toLocaleString(undefined, {
-                            maximumFractionDigits: balance.decimals,
-                          })
+                          balance.net.toFormat(balance.decimals)
                         )}
                       </Td>
                       <Td>{formatUsdValue(balance.value.toNumber())}</Td>
@@ -489,7 +477,7 @@ const BalancesTable = ({
                 )}
               </Table>
             ) : (
-              <>
+              <div className="border-b border-th-bkg-4">
                 <MobileTableHeader
                   colOneHeader={t('asset')}
                   colTwoHeader={t('net-balance')}
@@ -510,9 +498,7 @@ const BalancesTable = ({
                           {balance.symbol}
                         </div>
                         <div className="text-right text-th-fgd-1">
-                          {balance.net.toLocaleString(undefined, {
-                            maximumFractionDigits: balance.decimals,
-                          })}
+                          {balance.net.toFormat(balance.decimals)}
                         </div>
                       </div>
                     }
@@ -524,17 +510,13 @@ const BalancesTable = ({
                             <div className="pb-0.5 text-xs text-th-fgd-3">
                               {t('deposits')}
                             </div>
-                            {balance.deposits.toLocaleString(undefined, {
-                              maximumFractionDigits: balance.decimals,
-                            })}
+                            {balance.deposits.toFormat(balance.decimals)}
                           </div>
                           <div className="text-left">
                             <div className="pb-0.5 text-xs text-th-fgd-3">
                               {t('borrows')}
                             </div>
-                            {balance.borrows.toLocaleString(undefined, {
-                              maximumFractionDigits: balance.decimals,
-                            })}
+                            {balance.borrows.toFormat(balance.decimals)}
                           </div>
                           <div className="text-left">
                             <div className="pb-0.5 text-xs text-th-fgd-3">
@@ -599,9 +581,7 @@ const BalancesTable = ({
                             tokenSymbol={actionSymbol}
                             repayAmount={
                               balance.borrows.toNumber() > 0
-                                ? balance.borrows.toLocaleString(undefined, {
-                                    maximumFractionDigits: balance.decimals,
-                                  })
+                                ? balance.borrows.toFormat(balance.decimals)
                                 : ''
                             }
                           />
@@ -617,7 +597,7 @@ const BalancesTable = ({
                     }
                   />
                 ))}
-              </>
+              </div>
             )
           ) : (
             <div

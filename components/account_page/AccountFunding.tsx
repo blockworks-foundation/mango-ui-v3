@@ -1,7 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import dayjs from 'dayjs'
 import useMangoStore from '../../stores/useMangoStore'
-import { Table, Td, Th, TrBody, TrHead } from '../TableElements'
+import {
+  Table,
+  TableDateDisplay,
+  Td,
+  Th,
+  TrBody,
+  TrHead,
+} from '../TableElements'
 import { isEmpty } from 'lodash'
 import { useTranslation } from 'next-i18next'
 import Select from '../Select'
@@ -200,18 +207,9 @@ const AccountFunding = () => {
 
   return (
     <>
-      <div className="flex items-center justify-between pb-4">
-        <h2>{t('total-funding')}</h2>
-        <div className="flex items-center">
-          <Button
-            className={`float-right h-8 pt-0 pb-0 pl-3 pr-3 text-xs`}
-            onClick={exportFundingDataToCSV}
-          >
-            <div className={`flex items-center whitespace-nowrap`}>
-              <SaveIcon className={`mr-1.5 h-4 w-4`} />
-              {t('export-data')}
-            </div>
-          </Button>
+      <div className="flex flex-col pb-4 sm:flex-row sm:items-center sm:space-x-3">
+        <div className="flex w-full items-center justify-between pb-4 sm:pb-0">
+          <h2>{t('total-funding')}</h2>
           <Switch
             checked={hideFundingDust}
             className="ml-2 text-xs"
@@ -220,6 +218,15 @@ const AccountFunding = () => {
             {t('hide-dust')}
           </Switch>
         </div>
+        <Button
+          className={`h-8 pt-0 pb-0 pl-3 pr-3 text-xs`}
+          onClick={exportFundingDataToCSV}
+        >
+          <div className={`flex items-center justify-center whitespace-nowrap`}>
+            <SaveIcon className={`mr-1.5 h-4 w-4`} />
+            {t('export-data')}
+          </div>
+        </Button>
       </div>
       {mangoAccount ? (
         <div>
@@ -275,7 +282,13 @@ const AccountFunding = () => {
                             }`}
                           >
                             {stats.total_funding
-                              ? `${stats.total_funding?.toFixed(6)}`
+                              ? `${stats.total_funding?.toLocaleString(
+                                  undefined,
+                                  {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                  }
+                                )}`
                               : '-'}
                           </div>
                         </Td>
@@ -380,7 +393,7 @@ const AccountFunding = () => {
                             return (
                               <TrBody key={stat.time}>
                                 <Td className="w-1/2">
-                                  {dayjs(utc).format('DD/MM/YY, h:mma')}
+                                  <TableDateDisplay date={utc} />
                                 </Td>
                                 <Td className="w-1/2">
                                   {stat.total_funding.toFixed(

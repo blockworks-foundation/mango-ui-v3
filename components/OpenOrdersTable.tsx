@@ -218,11 +218,11 @@ const MobileTable = ({
   }
 
   return (
-    <>
+    <div className="border-b border-th-bkg-4">
       {openOrders.map(({ market, order }, index) => {
         const editThisOrder = editOrderIndex === index
         return (
-          <Row key={`${order.orderId}${order.side}`} index={index}>
+          <Row key={`${order.orderId}${order.side}`}>
             <div className="text-fgd-1 col-span-12 flex items-center justify-between text-left">
               <div className="flex items-center">
                 <img
@@ -328,7 +328,7 @@ const MobileTable = ({
           </Row>
         )
       })}
-    </>
+    </div>
   )
 }
 

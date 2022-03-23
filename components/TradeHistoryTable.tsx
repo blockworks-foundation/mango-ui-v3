@@ -1,6 +1,5 @@
 import { ArrowSmDownIcon } from '@heroicons/react/solid'
 import BN from 'bn.js'
-import useTradeHistory from '../hooks/useTradeHistory'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import SideBadge from './SideBadge'
@@ -8,13 +7,21 @@ import { LinkButton } from './Button'
 import { useSortableData } from '../hooks/useSortableData'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
-import { Table, Td, Th, TrBody, TrHead } from './TableElements'
+import {
+  Table,
+  TableDateDisplay,
+  Td,
+  Th,
+  TrBody,
+  TrHead,
+} from './TableElements'
 import { ExpandableRow } from './TableElements'
 import { formatUsdValue } from '../utils'
 import { useTranslation } from 'next-i18next'
 import Pagination from './Pagination'
 import usePagination from '../hooks/usePagination'
 import { useEffect } from 'react'
+import useMangoStore from '../stores/useMangoStore'
 
 const renderTradeDateTime = (timestamp: BN | string) => {
   let date
@@ -37,8 +44,13 @@ const renderTradeDateTime = (timestamp: BN | string) => {
 const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
   const { t } = useTranslation('common')
   const { asPath } = useRouter()
-  const tradeHistory = useTradeHistory({ excludePerpLiquidations: true })
   const { width } = useViewport()
+  const tradeHistoryAndLiquidations = useMangoStore(
+    (state) => state.tradeHistory.parsed
+  )
+  const tradeHistory = tradeHistoryAndLiquidations.filter(
+    (t) => !('liqor' in t)
+  )
   const isMobile = width ? width < breakpoints.md : false
 
   const {
@@ -216,9 +228,7 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                           className="flex items-center no-underline"
                           onClick={() => requestSort('loadTimestamp')}
                         >
-                          <span className="font-normal">
-                            {t('approximate-time')}
-                          </span>
+                          <span className="font-normal">{t('date')}</span>
                           <ArrowSmDownIcon
                             className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                               sortConfig?.key === 'loadTimestamp'
@@ -267,12 +277,14 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                           <Td className="!py-2 ">
                             {formatUsdValue(trade.feeCost)}
                           </Td>
-                          <Td className="w-[0.1%] !py-2">
-                            {trade.loadTimestamp || trade.timestamp
-                              ? renderTradeDateTime(
-                                  trade.loadTimestamp || trade.timestamp
-                                )
-                              : t('recent')}
+                          <Td className="!py-2">
+                            {trade.loadTimestamp || trade.timestamp ? (
+                              <TableDateDisplay
+                                date={trade.loadTimestamp || trade.timestamp}
+                              />
+                            ) : (
+                              t('recent')
+                            )}
                           </Td>
                           <Td className="keep-break w-[0.1%] !py-2">
                             {trade.marketName.includes('PERP') ? (

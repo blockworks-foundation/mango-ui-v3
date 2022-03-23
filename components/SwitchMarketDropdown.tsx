@@ -14,26 +14,29 @@ const SwitchMarketDropdown = () => {
   const baseSymbol = marketConfig.baseSymbol
   const isPerpMarket = marketConfig.kind === 'perp'
 
-  const markets = useMemo(
-    () => [...groupConfig.spotMarkets, ...groupConfig.perpMarkets],
-    [groupConfig]
-  )
-  const spotMarkets = useMemo(
+  const marketsInfo = useMangoStore((s) => s.marketsInfo)
+
+  const perpMarketsInfo = useMemo(
     () =>
-      [...groupConfig.spotMarkets].sort((a, b) => a.name.localeCompare(b.name)),
-    [groupConfig]
+      marketsInfo
+        .filter((mkt) => mkt?.name.includes('PERP'))
+        .sort((a, b) => b.volumeUsd24h - a.volumeUsd24h),
+    [marketsInfo]
   )
-  const perpMarkets = useMemo(
+
+  const spotMarketsInfo = useMemo(
     () =>
-      [...groupConfig.perpMarkets].sort((a, b) => a.name.localeCompare(b.name)),
-    [groupConfig]
+      marketsInfo
+        .filter((mkt) => mkt?.name.includes('USDC'))
+        .sort((a, b) => b.volumeUsd24h - a.volumeUsd24h),
+    [marketsInfo]
   )
 
   const [suggestions, setSuggestions] = useState([])
   const [searchString, setSearchString] = useState('')
   const buttonRef = useRef(null)
   const { t } = useTranslation('common')
-  const filteredMarkets = markets
+  const filteredMarkets = marketsInfo
     .filter((m) => m.name.toLowerCase().includes(searchString.toLowerCase()))
     .sort((a, b) => a.name.localeCompare(b.name))
 
@@ -59,7 +62,7 @@ const SwitchMarketDropdown = () => {
       {({ open }) => (
         <div className="relative flex flex-col">
           <Popover.Button
-            className={`border border-th-bkg-4 p-0.5 hover:border-th-fgd-4 focus:border-th-fgd-4 focus:outline-none ${
+            className={`border border-th-bkg-3 p-0.5 transition-none hover:border-th-bkg-4 focus:border-th-bkg-4 focus:outline-none ${
               open && 'border-th-fgd-4'
             }`}
             ref={buttonRef}
@@ -69,7 +72,7 @@ const SwitchMarketDropdown = () => {
                 alt=""
                 width="24"
                 height="24"
-                src={`/assets/icons/${baseSymbol.toLowerCase()}.svg`}
+                src={`/assets/icons/${baseSymbol?.toLowerCase()}.svg`}
                 className={`mr-2.5`}
               />
 
@@ -92,8 +95,6 @@ const SwitchMarketDropdown = () => {
             </div>
           </Popover.Button>
           <Transition
-            appear={true}
-            show={open}
             as={Fragment}
             enter="transition-all ease-in duration-200"
             enterFrom="opacity-0 transform scale-75"
@@ -103,8 +104,8 @@ const SwitchMarketDropdown = () => {
             leaveTo="opacity-0"
           >
             <Popover.Panel
-              className="thin-scroll absolute left-0 top-14 z-10 max-h-96 w-72 transform overflow-y-auto rounded-b-md rounded-tl-md bg-th-bkg-3 p-4"
-              static
+              className="thin-scroll absolute left-0 top-14 z-10 max-h-[75vh] w-72 transform overflow-y-auto rounded-b-md rounded-tl-md bg-th-bkg-3 p-4"
+              tabIndex={-1}
             >
               <div className="pb-2.5">
                 <Input
@@ -133,12 +134,12 @@ const SwitchMarketDropdown = () => {
               ) : (
                 <div className="">
                   <div className="flex justify-between py-1.5">
-                    <h4 className="text-xs">{t('perp')}</h4>
-                    <p className="mb-0 text-xs text-th-fgd-4">
-                      {/* {t('rolling-change')} */}
+                    <h4 className="text-xs font-normal">{t('futures')}</h4>
+                    <p className="mb-0 text-xs text-th-fgd-3">
+                      {t('favorite')}
                     </p>
                   </div>
-                  {perpMarkets.map((mkt) => (
+                  {perpMarketsInfo.map((mkt) => (
                     <MarketNavItem
                       buttonRef={buttonRef}
                       onClick={() => setSearchString('')}
@@ -147,12 +148,12 @@ const SwitchMarketDropdown = () => {
                     />
                   ))}
                   <div className="flex justify-between py-1.5">
-                    <h4 className="text-xs">{t('spot')}</h4>
-                    <p className="mb-0 text-xs text-th-fgd-4">
-                      {/* {t('rolling-change')} */}
+                    <h4 className="text-xs font-normal">{t('spot')}</h4>
+                    <p className="mb-0 text-xs text-th-fgd-3">
+                      {t('favorite')}
                     </p>
                   </div>
-                  {spotMarkets.map((mkt) => (
+                  {spotMarketsInfo.map((mkt) => (
                     <MarketNavItem
                       buttonRef={buttonRef}
                       onClick={() => setSearchString('')}

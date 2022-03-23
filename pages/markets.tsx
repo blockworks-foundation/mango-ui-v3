@@ -1,12 +1,12 @@
-import { useCallback, useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import PageBodyContainer from '../components/PageBodyContainer'
 import TopBar from '../components/TopBar'
-import AccountsModal from '../components/AccountsModal'
-import AccountBorrows from '../components/account_page/AccountBorrows'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
-import useMangoStore from '../stores/useMangoStore'
-import { mangoGroupSelector } from '../stores/selectors'
 import { useTranslation } from 'next-i18next'
+import MarketsTable from '../components/MarketsTable'
+import Tabs from '../components/Tabs'
+
+const TABS = ['perp', 'spot']
 
 export async function getStaticProps({ locale }) {
   return {
@@ -17,14 +17,13 @@ export async function getStaticProps({ locale }) {
   }
 }
 
-export default function Borrow() {
-  const [showAccountsModal, setShowAccountsModal] = useState(false)
-  const mangoGroup = useMangoStore(mangoGroupSelector)
-  const { t } = useTranslation('common')
+export default function Markets() {
+  const [activeTab, setActiveTab] = useState('perp')
+  const { t } = useTranslation(['common'])
 
-  const handleCloseAccounts = useCallback(() => {
-    setShowAccountsModal(false)
-  }, [])
+  const handleTabChange = (tabName) => {
+    setActiveTab(tabName)
+  }
 
   useEffect(() => {
     // @ts-ignore
@@ -34,23 +33,25 @@ export default function Borrow() {
     }
   }, [])
 
+  const isPerp = activeTab === 'perp'
+
   return (
     <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
       <TopBar />
       <PageBodyContainer>
         <div className="flex flex-col py-4 sm:flex-row md:pb-4 md:pt-10">
-          <h1>{t('borrow')}</h1>
+          <h1>{t('markets')}</h1>
         </div>
         <div className="md:rounded-lg md:bg-th-bkg-2 md:p-6">
-          {mangoGroup ? <AccountBorrows /> : null}
+          <Tabs activeTab={activeTab} onChange={handleTabChange} tabs={TABS} />
+          <h2 className="mb-4">
+            {isPerp
+              ? `${t('perp')} ${t('markets')}`
+              : `${t('spot')} ${t('markets')}`}
+          </h2>
+          <MarketsTable isPerpMarket={activeTab === 'perp'} />
         </div>
       </PageBodyContainer>
-      {showAccountsModal ? (
-        <AccountsModal
-          onClose={handleCloseAccounts}
-          isOpen={showAccountsModal}
-        />
-      ) : null}
     </div>
   )
 }

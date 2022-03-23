@@ -23,7 +23,7 @@ export default function StatsAssets({ latestStats, stats }) {
             </Select.Option>
           ))}
         </Select>
-        <div className="mb-4 hidden rounded-md bg-th-bkg-3 px-3 py-2 md:-mx-6 md:mb-6 md:-mt-6 md:flex md:rounded-none md:rounded-t-md md:px-4">
+        <div className="mb-4 hidden rounded-md bg-th-bkg-3 px-3 py-2 md:mb-6 md:flex md:px-4">
           {latestStats.map((stat, index) => (
             <div
               className={`py-1 text-xs font-bold md:px-2 md:text-sm ${

@@ -69,14 +69,14 @@ export default function NavDropMenu({
                 {linksArray.map(([name, href, isExternal, icon]) =>
                   !isExternal ? (
                     <Link href={href} key={href}>
-                      <a className="default-transition block flex items-center whitespace-nowrap py-1.5 text-th-fgd-1 hover:text-th-primary">
+                      <a className="default-transition flex items-center whitespace-nowrap py-1.5 text-th-fgd-1 hover:text-th-primary">
                         {icon ? <div className="mr-2">{icon}</div> : null}
                         {name}
                       </a>
                     </Link>
                   ) : (
                     <a
-                      className="default-transition block flex items-center whitespace-nowrap py-1.5 text-th-fgd-1 hover:text-th-primary"
+                      className="default-transition flex items-center whitespace-nowrap py-1.5 text-th-fgd-1 hover:text-th-primary"
                       href={href}
                       key={href}
                       target="_blank"
