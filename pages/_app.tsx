@@ -51,9 +51,9 @@ const TradeHistoryStoreUpdater = () => {
 
 const FetchReferrer = () => {
   const setMangoStore = useMangoStore((s) => s.set)
+  const router = useRouter()
   const mangoGroup = useMangoStore(mangoGroupSelector)
   const connection = useMangoStore(connectionSelector)
-  const router = useRouter()
   const { query } = router
 
   useEffect(() => {
