@@ -26,7 +26,7 @@ import {
   BlockhashTimes,
 } from '@blockworks-foundation/mango-client'
 import { AccountInfo, Commitment, Connection, PublicKey } from '@solana/web3.js'
-import { EndpointInfo, WalletAdapter } from '../@types/types'
+import { EndpointInfo } from '../@types/types'
 import { isDefined, zipDict } from '../utils'
 import { Notification, notify } from '../utils/notifications'
 import { LAST_ACCOUNT_KEY } from '../components/AccountsModal'
@@ -39,6 +39,7 @@ import { MSRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
 import { getProfilePicture, ProfilePicture } from '@solflare-wallet/pfp'
 import { decodeBook } from '../hooks/useHydrateStore'
 import { IOrderLineAdapter } from '../public/charting_library/charting_library'
+import { Wallet } from '@solana/wallet-adapter-react'
 
 export const ENDPOINTS: EndpointInfo[] = [
   {
@@ -191,9 +192,6 @@ export type MangoStore = {
     triggerCondition: 'above' | 'below'
   }
   wallet: {
-    providerUrl: string
-    connected: boolean
-    current: WalletAdapter | undefined
     tokens: WalletToken[] | any[]
     pfp: ProfilePicture | undefined
   }
@@ -207,7 +205,7 @@ export type MangoStore = {
   }
   set: (x: (x: MangoStore) => void) => void
   actions: {
-    fetchAllMangoAccounts: () => Promise<void>
+    fetchAllMangoAccounts: (wallet: Wallet) => Promise<void>
     fetchMangoGroup: () => Promise<void>
     [key: string]: (args?) => void
   }
@@ -323,9 +321,6 @@ const useMangoStore = create<
         triggerCondition: 'above',
       },
       wallet: {
-        providerUrl: '',
-        connected: false,
-        current: undefined,
         tokens: [],
         pfp: undefined,
       },
@@ -350,19 +345,18 @@ const useMangoStore = create<
       },
       set: (fn) => set(produce(fn)),
       actions: {
-        async fetchWalletTokens() {
+        async fetchWalletTokens(wallet: Wallet) {
           const groupConfig = get().selectedMangoGroup.config
-          const wallet = get().wallet.current
-          const connected = get().wallet.connected
+          const connected = wallet?.adapter?.connected
           const connection = get().connection.current
           const cluster = get().connection.cluster
           const set = get().set
 
-          if (wallet?.publicKey && connected) {
+          if (wallet?.adapter?.publicKey && connected) {
             const ownedTokenAccounts =
               await getTokenAccountsByOwnerWithWrappedSol(
                 connection,
-                wallet.publicKey
+                wallet.adapter.publicKey
               )
             const tokens = []
             ownedTokenAccounts.forEach((account) => {
@@ -393,10 +387,9 @@ const useMangoStore = create<
             })
           }
         },
-        async fetchProfilePicture() {
+        async fetchProfilePicture(wallet: Wallet) {
           const set = get().set
-          const wallet = get().wallet.current
-          const walletPk = wallet?.publicKey
+          const walletPk = wallet?.adapter?.publicKey
           const connection = get().connection.current
 
           if (!walletPk) return
@@ -411,20 +404,19 @@ const useMangoStore = create<
             console.log('Could not get profile picture', e)
           }
         },
-        async fetchAllMangoAccounts() {
+        async fetchAllMangoAccounts(wallet) {
           const set = get().set
           const mangoGroup = get().selectedMangoGroup.current
           const mangoClient = get().connection.client
-          const wallet = get().wallet.current
           const actions = get().actions
 
-          if (!wallet?.publicKey || !mangoGroup) return
+          if (!wallet?.adapter?.publicKey || !mangoGroup) return
 
           const delegateFilter = [
             {
               memcmp: {
                 offset: MangoAccountLayout.offsetOf('delegate'),
-                bytes: wallet?.publicKey?.toBase58(),
+                bytes: wallet.adapter.publicKey?.toBase58(),
               },
             },
           ]
@@ -434,7 +426,7 @@ const useMangoStore = create<
           return Promise.all([
             mangoClient.getMangoAccountsForOwner(
               mangoGroup,
-              wallet?.publicKey,
+              wallet.adapter.publicKey,
               true
             ),
             mangoClient.getAllMangoAccounts(mangoGroup, delegateFilter, false),
@@ -472,7 +464,7 @@ const useMangoStore = create<
             })
             .catch((err) => {
               if (mangoAccountRetryAttempt < 2) {
-                actions.fetchAllMangoAccounts()
+                actions.fetchAllMangoAccounts(wallet)
                 mangoAccountRetryAttempt++
               } else {
                 notify({

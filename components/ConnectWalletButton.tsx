@@ -88,7 +88,6 @@ export const ConnectWalletButton: React.FC = () => {
   const handleDisconnect = useCallback(() => {
     wallet?.adapter?.disconnect()
     set((state) => {
-      state.wallet.connected = false
       state.mangoAccounts = []
       state.selectedMangoAccount.current = null
       state.tradeHistory = { spot: [], perp: [], parsed: [] }

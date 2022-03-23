@@ -12,15 +12,7 @@ export const WalletListener: React.FC = () => {
 
   const actions = useMangoStore((s) => s.actions)
 
-  const {
-    publicKey,
-    wallet,
-    signTransaction,
-    signAllTransactions,
-    connect,
-    disconnect,
-    connected,
-  } = useWallet()
+  const { wallet } = useWallet()
 
   const connecting = wallet?.adapter?.connecting
 
@@ -28,21 +20,11 @@ export const WalletListener: React.FC = () => {
     const onConnect = async () => {
       set((state) => {
         state.selectedMangoAccount.initialLoad = true
-        state.wallet.providerUrl = wallet.adapter.url
-        state.wallet.connected = true
-        state.wallet.current = {
-          publicKey,
-          connected: true,
-          signTransaction,
-          signAllTransactions,
-          connect,
-          disconnect,
-        }
       })
 
-      await actions.fetchAllMangoAccounts()
+      await actions.fetchAllMangoAccounts(wallet)
+      actions.fetchProfilePicture(wallet)
 
-      actions.fetchProfilePicture()
       actions.reloadOrders()
       actions.fetchTradeHistory()
       actions.fetchWalletTokens()
@@ -51,18 +33,7 @@ export const WalletListener: React.FC = () => {
     if (connecting) {
       onConnect()
     }
-  }, [
-    connecting,
-    connected,
-    set,
-    actions,
-    wallet,
-    publicKey,
-    signAllTransactions,
-    signTransaction,
-    connect,
-    disconnect,
-  ])
+  }, [connecting, set, actions, wallet])
 
   return null
 }

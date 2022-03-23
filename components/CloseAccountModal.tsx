@@ -107,7 +107,7 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
         wallet?.adapter
       )
 
-      await actions.fetchAllMangoAccounts()
+      await actions.fetchAllMangoAccounts(wallet)
       const mangoAccounts = useMangoStore.getState().mangoAccounts
 
       setMangoStore((state) => {

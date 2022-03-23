@@ -80,7 +80,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
         sleep(500).then(() => {
           mangoAccount
             ? actions.reloadMangoAccount()
-            : actions.fetchAllMangoAccounts()
+            : actions.fetchAllMangoAccounts(wallet)
           actions.fetchWalletTokens()
         })
       })

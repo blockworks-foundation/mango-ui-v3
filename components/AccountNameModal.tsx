@@ -42,7 +42,7 @@ const AccountNameModal: FunctionComponent<AccountNameModalProps> = ({
         wallet?.adapter,
         name
       )
-      actions.fetchAllMangoAccounts()
+      actions.fetchAllMangoAccounts(wallet)
       actions.reloadMangoAccount()
       onClose()
       notify({

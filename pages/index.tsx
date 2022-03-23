@@ -62,12 +62,10 @@ const PerpMarket: React.FC = () => {
             unownedMangoAccountPubkey,
             serumProgramId
           )
-          console.log('unOwnedMangoAccount: ', unOwnedMangoAccount)
 
           setMangoStore((state) => {
             state.selectedMangoAccount.current = unOwnedMangoAccount
             state.selectedMangoAccount.initialLoad = false
-            state.wallet.connected = true
           })
           actions.fetchTradeHistory()
           actions.reloadOrders()

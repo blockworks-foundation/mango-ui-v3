@@ -64,8 +64,8 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
     })
       .then(async (response) => {
         await sleep(1000)
-        actions.fetchWalletTokens()
-        actions.fetchAllMangoAccounts()
+        actions.fetchWalletTokens(wallet)
+        actions.fetchAllMangoAccounts(wallet)
         setSubmitting(false)
         onAccountCreation(response[0])
         notify({
