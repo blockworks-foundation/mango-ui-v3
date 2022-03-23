@@ -9,7 +9,14 @@ import {
 
 import TradeHistoryTable from '../TradeHistoryTable'
 import useMangoStore from '../../stores/useMangoStore'
-import { Table, TrHead, Th, TrBody, Td } from '../TableElements'
+import {
+  Table,
+  TrHead,
+  Th,
+  TrBody,
+  Td,
+  TableDateDisplay,
+} from '../TableElements'
 import { LinkButton } from '../Button'
 import { useSortableData } from '../../hooks/useSortableData'
 import { formatUsdValue } from '../../utils'
@@ -19,6 +26,8 @@ import Button from '../Button'
 import Loading from '../Loading'
 import { fetchHourlyPerformanceStats } from './AccountOverview'
 import { useWallet } from '@solana/wallet-adapter-react'
+import Tooltip from '../Tooltip'
+import { InformationCircleIcon } from '@heroicons/react/outline'
 
 const historyViews = [
   { label: 'Trades', key: 'Trades' },
@@ -80,54 +89,20 @@ export default function AccountHistory() {
   }
 
   const exportHistoryToCSV = () => {
-    let dataToExport
-    let headers
+    const dataToExport = history
+      .filter((val) => val.activity_type == view)
+      .map((row) => {
+        row = row.activity_details
+        const timestamp = new Date(row.block_datetime)
 
-    if (view == 'Trades') {
-      // filter liquidations from history
-      const tradeHistory = useMangoStore
-        .getState()
-        .tradeHistory.parsed.filter((t) => !('liqor' in t))
-
-      dataToExport = tradeHistory.map((trade) => {
-        const timestamp = new Date(trade.loadTimestamp)
         return {
-          asset: trade.marketName,
-          orderType: trade.side.toUpperCase(),
-          quantity: trade.size,
-          price: trade.price,
-          value: trade.value,
-          liquidity: trade.liquidity,
-          fee: trade.feeCost,
           date: `${timestamp.toLocaleDateString()} ${timestamp.toLocaleTimeString()}`,
+          asset: row.symbol,
+          quantity: row.quantity,
+          value: row.usd_equivalent,
         }
       })
-      headers = [
-        'Market',
-        'Side',
-        'Size',
-        'Price',
-        'Value',
-        'Liquidity',
-        'Fee',
-        'Approx. Time',
-      ]
-    } else {
-      dataToExport = history
-        .filter((val) => val.activity_type == view)
-        .map((row) => {
-          row = row.activity_details
-          const timestamp = new Date(row.block_datetime)
-
-          return {
-            date: `${timestamp.toLocaleDateString()} ${timestamp.toLocaleTimeString()}`,
-            asset: row.symbol,
-            quantity: row.quantity,
-            value: row.usd_equivalent,
-          }
-        })
-      headers = ['Timestamp', 'Asset', 'Quantity', 'Value']
-    }
+    const headers = ['Timestamp', 'Asset', 'Quantity', 'Value']
 
     if (dataToExport.length == 0) {
       notify({
@@ -185,31 +160,54 @@ export default function AccountHistory() {
             {t('use-explorer-three')}
           </div>
         </div>
-        {view !== 'Trades' ? (
-          <Button
-            className={`flex h-8 items-center justify-center whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs`}
-            onClick={exportHistoryToCSV}
-          >
-            <div className={`flex items-center`}>
-              <SaveIcon className={`mr-1.5 h-4 w-4`} />
-              {t('export-data')}
-            </div>
-          </Button>
-        ) : canWithdraw ? (
-          <Button
-            className={`flex h-8 items-center justify-center whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs`}
-            onClick={exportPerformanceDataToCSV}
-          >
-            {loadExportData ? (
-              <Loading />
-            ) : (
+        <div className="flex space-x-3">
+          {view === 'Trades' && canWithdraw ? (
+            <Button
+              className={`flex h-8 items-center justify-center whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs`}
+              onClick={exportPerformanceDataToCSV}
+            >
+              {loadExportData ? (
+                <Loading />
+              ) : (
+                <div className={`flex items-center`}>
+                  <SaveIcon className={`mr-1.5 h-4 w-4`} />
+                  {t('export-pnl-csv')}
+                </div>
+              )}
+            </Button>
+          ) : null}
+          {view !== 'Trades' ? (
+            <Button
+              className={`flex h-8 items-center justify-center whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs`}
+              onClick={exportHistoryToCSV}
+            >
               <div className={`flex items-center`}>
                 <SaveIcon className={`mr-1.5 h-4 w-4`} />
-                {t('export-pnl-csv')}
+                {t('export-data')}
               </div>
-            )}
-          </Button>
-        ) : null}
+            </Button>
+          ) : canWithdraw ? (
+            <div className={`flex items-center`}>
+              <a
+                className={`default-transition flex h-8 items-center justify-center whitespace-nowrap rounded-full bg-th-bkg-button pt-0 pb-0 pl-3 pr-3 text-xs font-bold text-th-fgd-1 hover:text-th-fgd-1 hover:brightness-[1.1]`}
+                href={`https://event-history-api.herokuapp.com/all_trades_csv?mango_account=${mangoAccountPk}&open_orders=${mangoAccount.spotOpenOrders
+                  .filter(
+                    (e) => e.toString() !== '11111111111111111111111111111111'
+                  )
+                  .join(',')}`}
+                download
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <SaveIcon className={`mr-1.5 h-4 w-4`} />
+                Export Trades CSV
+              </a>
+              <Tooltip content={t('trade-export-disclaimer')}>
+                <InformationCircleIcon className="ml-1.5 h-5 w-5 cursor-help text-th-fgd-3" />
+              </Tooltip>
+            </div>
+          ) : null}
+        </div>
       </div>
       <ViewContent view={view} history={history} />
     </>
@@ -420,16 +418,14 @@ const LiquidationHistoryTable = ({ history, view }) => {
                   perpMarket
                 )
 
-                const date = new Date(activity_details.block_datetime)
                 const lostDecimals = assetLost.symbol === 'SOL' ? 9 : 6
                 const gainedDecimals = assetGained.symbol === 'SOL' ? 9 : 6
                 return (
                   <TrBody key={activity_details.signature}>
                     <Td>
-                      <div>{date.toLocaleDateString()}</div>
-                      <div className="text-xs text-th-fgd-3">
-                        {date.toLocaleTimeString()}
-                      </div>
+                      <TableDateDisplay
+                        date={activity_details.block_datetime}
+                      />
                     </Td>
 
                     <Td>
@@ -580,14 +576,12 @@ const HistoryTable = ({ history, view }) => {
             </thead>
             <tbody>
               {items.map((activity_details: any) => {
-                const date = new Date(activity_details.block_datetime)
                 return (
                   <TrBody key={activity_details.signature}>
                     <Td>
-                      <div>{date.toLocaleDateString()}</div>
-                      <div className="text-xs text-th-fgd-3">
-                        {date.toLocaleTimeString()}
-                      </div>
+                      <TableDateDisplay
+                        date={activity_details.block_datetime}
+                      />
                     </Td>
                     <Td>
                       <div className="flex items-center">

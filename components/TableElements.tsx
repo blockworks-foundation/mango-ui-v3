@@ -1,6 +1,7 @@
 import { Disclosure, Transition } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/solid'
 import { Fragment, ReactNode } from 'react'
+import dayjs from 'dayjs'
 
 export const Table = ({ children }) => (
   <table className="min-w-full">{children}</table>
@@ -97,3 +98,10 @@ export const Row = ({ children }: RowProps) => {
     </div>
   )
 }
+
+export const TableDateDisplay = ({ date }: { date: string }) => (
+  <>
+    <p className="mb-0 text-th-fgd-2">{dayjs(date).format('DD MMM YYYY')}</p>
+    <p className="mb-0 text-xs">{dayjs(date).format('h:mma')}</p>
+  </>
+)

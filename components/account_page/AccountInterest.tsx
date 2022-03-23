@@ -3,7 +3,14 @@ import { useEffect, useMemo, useState } from 'react'
 import dayjs from 'dayjs'
 import useMangoStore from '../../stores/useMangoStore'
 import Select from '../Select'
-import { Table, Td, Th, TrBody, TrHead } from '../TableElements'
+import {
+  Table,
+  TableDateDisplay,
+  Td,
+  Th,
+  TrBody,
+  TrHead,
+} from '../TableElements'
 import { useTranslation } from 'next-i18next'
 import { isEmpty } from 'lodash'
 import usePagination from '../../hooks/usePagination'
@@ -546,7 +553,7 @@ const AccountInterest = () => {
                             return (
                               <TrBody key={stat.time}>
                                 <Td className="w-1/3">
-                                  {dayjs(utc).format('DD/MM/YY, h:mma')}
+                                  <TableDateDisplay date={utc} />
                                 </Td>
                                 <Td className="w-1/3">
                                   {stat.borrow_interest > 0

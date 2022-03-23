@@ -4,6 +4,7 @@ import { Connection } from '@solana/web3.js'
 import { sumBy } from 'lodash'
 import useInterval from '../hooks/useInterval'
 import { SECONDS } from '../stores/useMangoStore'
+import { useTranslation } from 'next-i18next'
 
 const connection = new Connection('https://solana-api.projectserum.com/')
 
@@ -29,6 +30,7 @@ const getRecentPerformance = async (setShow, setTps) => {
 const GlobalNotification = () => {
   const [show, setShow] = useState(false)
   const [tps, setTps] = useState(0)
+  const { t } = useTranslation('common')
 
   useEffect(() => {
     getRecentPerformance(setShow, setTps)
@@ -42,10 +44,7 @@ const GlobalNotification = () => {
     return (
       <div className="flex items-center bg-th-bkg-4 text-th-primary">
         <div className="w-full p-1 text-center">
-          <span>
-            Solana network is experiencing degraded performance. Transactions
-            may fail to send or confirm. (TPS: {tps?.toFixed(0)})
-          </span>
+          <span>{t('degraded-performance', { tps: tps?.toFixed(0) })}</span>
         </div>
 
         <button

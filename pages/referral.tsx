@@ -30,7 +30,14 @@ import {
 } from '@heroicons/react/outline'
 import { MngoMonoIcon } from '../components/icons'
 import Link from 'next/link'
-import { Table, Td, Th, TrBody, TrHead } from '../components/TableElements'
+import {
+  Table,
+  TableDateDisplay,
+  Td,
+  Th,
+  TrBody,
+  TrHead,
+} from '../components/TableElements'
 import AccountsModal from '../components/AccountsModal'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from '../components/TradePageGrid'
@@ -39,7 +46,6 @@ import MobileTableHeader from '../components/mobile/MobileTableHeader'
 import Input, { Label } from '../components/Input'
 import InlineNotification from '../components/InlineNotification'
 import useMangoAccount from '../hooks/useMangoAccount'
-import { DateDisplay } from '../components/DateDisplay'
 import { handleWalletConnect } from 'components/ConnectWalletButton'
 import { useWallet } from '@solana/wallet-adapter-react'
 
@@ -439,7 +445,7 @@ export default function Referral() {
                             return (
                               <TrBody key={ref.signature}>
                                 <Td>
-                                  <DateDisplay date={ref.block_datetime} />
+                                  <TableDateDisplay date={ref.block_datetime} />
                                 </Td>
                                 <Td>
                                   <Link
@@ -470,7 +476,7 @@ export default function Referral() {
                             buttonTemplate={
                               <div className="flex w-full items-center justify-between text-th-fgd-1">
                                 <div>
-                                  <DateDisplay date={ref.block_datetime} />
+                                  <TableDateDisplay date={ref.block_datetime} />
                                 </div>
                                 <div className="text-right">
                                   {usdFormatter(ref.referral_fee_accrual, 4)}
