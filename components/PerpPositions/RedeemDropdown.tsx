@@ -58,9 +58,7 @@ export const RedeemDropdown: React.FC = () => {
       console.log('settlePosPnl', p)
       await settlePosPnl([p.perpMarket], p.perpAccount, t, undefined)
     }
-    setTimeout(() => {
-      setSettlingPosPnl(false)
-    }, 2000)
+    setSettlingPosPnl(false)
   }
 
   const buttons = [
