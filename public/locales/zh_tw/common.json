@@ -392,6 +392,7 @@
   "trade": "交易",
   "trade-history": "交易紀錄",
   "trades": "成交",
+  "trade-export-disclaimer": "Due to the nature of how trades are processed, it is not possible to guarantee that all trades will be exported. However, a best effort approach has been taken, combining several independent sources to reduce the likelihood of missing trades.",
   "trades-history": "交易紀錄",
   "transaction-sent": "已下訂單",
   "trigger-price": "觸發價格",

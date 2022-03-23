@@ -392,6 +392,7 @@
   "trade": "Comercio",
   "trade-history": "Historial comercial",
   "trades": "Trades",
+  "trade-export-disclaimer": "Due to the nature of how trades are processed, it is not possible to guarantee that all trades will be exported. However, a best effort approach has been taken, combining several independent sources to reduce the likelihood of missing trades.",
   "trades-history": "Historial comercial",
   "transaction-sent": "Transacción enviada",
   "trigger-price": "Precio de activación",
