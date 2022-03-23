@@ -23,6 +23,7 @@ import {
 import { notify } from '../utils/notifications'
 import { useTranslation } from 'next-i18next'
 import { ExpandableRow } from './TableElements'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 interface WithdrawModalProps {
   onClose: () => void
@@ -50,7 +51,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   const [includeBorrow, setIncludeBorrow] = useState(borrow)
   const [simulation, setSimulation] = useState(null)
   const [showSimulation, setShowSimulation] = useState(false)
-
+  const { wallet } = useWallet()
   const actions = useMangoStore((s) => s.actions)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
@@ -161,6 +162,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
       amount: Number(inputAmount),
       token: mangoGroup.tokens[tokenIndex].mint,
       allowBorrow: includeBorrow,
+      wallet,
     })
       .then((txid: string) => {
         setSubmitting(false)

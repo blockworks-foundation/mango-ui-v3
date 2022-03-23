@@ -6,9 +6,11 @@ import { nativeI80F48ToUi } from '@blockworks-foundation/mango-client'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { useTranslation } from 'next-i18next'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 export default function MarketBalances() {
   const { t } = useTranslation('common')
+  const { connected } = useWallet()
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoGroupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const mangoGroupCache = useMangoStore((s) => s.selectedMangoGroup.cache)
@@ -17,7 +19,6 @@ export default function MarketBalances() {
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const setMangoStore = useMangoStore((s) => s.set)
   const price = useMangoStore((s) => s.tradeForm.price)
-  const connected = useMangoStore((s) => s.wallet.connected)
   const isLoading = useMangoStore((s) => s.selectedMangoAccount.initialLoad)
   const baseSymbol = marketConfig.baseSymbol
   const { width } = useViewport()

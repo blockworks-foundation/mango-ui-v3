@@ -45,6 +45,3 @@ export const accountInfosSelector = (state: MangoStore) => state.accountInfos
 export const tradeHistorySelector = (state: MangoStore) => state.tradeHistory
 
 export const walletSelector = (state: MangoStore) => state.wallet.current
-
-export const walletConnectedSelector = (state: MangoStore) =>
-  state.wallet.connected

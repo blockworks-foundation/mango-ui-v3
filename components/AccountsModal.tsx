@@ -12,6 +12,7 @@ import Button, { LinkButton } from './Button'
 import NewAccount from './NewAccount'
 import { useTranslation } from 'next-i18next'
 import Tooltip from './Tooltip'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 export const LAST_ACCOUNT_KEY = 'lastAccountViewed-3.0'
 
@@ -25,6 +26,7 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
   onClose,
 }) => {
   const { t } = useTranslation('common')
+  const { publicKey } = useWallet()
   const [showNewAccountForm, setShowNewAccountForm] = useState(false)
   const [newAccPublicKey, setNewAccPublicKey] = useState(null)
   const mangoAccounts = useMangoStore((s) => s.mangoAccounts)
@@ -35,7 +37,6 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
   const setMangoStore = useMangoStore((s) => s.set)
   const actions = useMangoStore((s) => s.actions)
   const [, setLastAccountViewed] = useLocalStorageState(LAST_ACCOUNT_KEY)
-  const wallet = useMangoStore.getState().wallet.current
 
   const handleMangoAccountChange = (mangoAccount: MangoAccount) => {
     setLastAccountViewed(mangoAccount.publicKey.toString())
@@ -124,9 +125,7 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
                                   <div className="flex items-center pb-0.5">
                                     {account?.name ||
                                       abbreviateAddress(account.publicKey)}
-                                    {!account?.owner.equals(
-                                      wallet?.publicKey
-                                    ) ? (
+                                    {!account?.owner.equals(publicKey) ? (
                                       <Tooltip
                                         content={t(
                                           'delegate:delegated-account'
@@ -138,14 +137,14 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
                                       ''
                                     )}
                                   </div>
-                                  {mangoGroup ? (
+                                  {mangoGroup && (
                                     <div className="text-xs text-th-fgd-3">
                                       <AccountInfo
                                         mangoGroup={mangoGroup}
                                         mangoAccount={account}
                                       />
                                     </div>
-                                  ) : null}
+                                  )}
                                 </div>
                               </RadioGroup.Label>
                             </div>

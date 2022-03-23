@@ -6,6 +6,7 @@ import Loading from './Loading'
 import Modal from './Modal'
 import { msrmMints } from '@blockworks-foundation/mango-client'
 import { useTranslation } from 'next-i18next'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 const DepositMsrmModal = ({ onClose, isOpen }) => {
   const { t } = useTranslation('common')
@@ -13,7 +14,7 @@ const DepositMsrmModal = ({ onClose, isOpen }) => {
   const actions = useMangoStore((s) => s.actions)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
-  const wallet = useMangoStore((s) => s.wallet.current)
+  const { wallet } = useWallet()
   const walletTokens = useMangoStore((s) => s.wallet.tokens)
   const cluster = useMangoStore.getState().connection.cluster
 
@@ -27,7 +28,7 @@ const DepositMsrmModal = ({ onClose, isOpen }) => {
       const txid = await mangoClient.depositMsrm(
         mangoGroup,
         mangoAccount,
-        wallet,
+        wallet?.adapter,
         ownerMsrmAccount?.account?.publicKey,
         1
       )

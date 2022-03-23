@@ -20,8 +20,8 @@ import { Table, Td, Th, TrBody, TrHead } from '../TableElements'
 import { ExpandableRow } from '../TableElements'
 import MobileTableHeader from '../mobile/MobileTableHeader'
 import { useTranslation } from 'next-i18next'
-import { walletSelector } from '../../stores/selectors'
 import Tooltip from '../Tooltip'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 export default function AccountBorrows() {
   const { t } = useTranslation('common')
@@ -30,11 +30,10 @@ export default function AccountBorrows() {
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const mangoConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
-  const wallet = useMangoStore(walletSelector)
+  const { publicKey, connected } = useWallet()
   const loadingMangoAccount = useMangoStore(
     (s) => s.selectedMangoAccount.initialLoad
   )
-  const connected = useMangoStore((s) => s.wallet.connected)
 
   const [borrowSymbol, setBorrowSymbol] = useState('')
   const [depositToSettle, setDepositToSettle] = useState(null)
@@ -42,7 +41,7 @@ export default function AccountBorrows() {
   const [showDepositModal, setShowDepositModal] = useState(false)
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
-  const canWithdraw = mangoAccount?.owner.equals(wallet.publicKey)
+  const canWithdraw = publicKey && mangoAccount?.owner.equals(publicKey)
 
   const handleCloseWithdraw = useCallback(() => {
     setShowBorrowModal(false)

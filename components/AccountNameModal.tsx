@@ -11,6 +11,7 @@ import { ElementTitle } from './styles'
 import Tooltip from './Tooltip'
 import { notify } from '../utils/notifications'
 import { useTranslation } from 'next-i18next'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 interface AccountNameModalProps {
   accountName?: string
@@ -24,6 +25,7 @@ const AccountNameModal: FunctionComponent<AccountNameModalProps> = ({
   onClose,
 }) => {
   const { t } = useTranslation('common')
+  const { wallet } = useWallet()
   const [name, setName] = useState(accountName || '')
   const [invalidNameMessage, setInvalidNameMessage] = useState('')
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
@@ -32,13 +34,12 @@ const AccountNameModal: FunctionComponent<AccountNameModalProps> = ({
 
   const submitName = async () => {
     const mangoClient = useMangoStore.getState().connection.client
-    const wallet = useMangoStore.getState().wallet.current
 
     try {
       const txid = await mangoClient.addMangoAccountInfo(
         mangoGroup,
         mangoAccount,
-        wallet,
+        wallet?.adapter,
         name
       )
       actions.fetchAllMangoAccounts()

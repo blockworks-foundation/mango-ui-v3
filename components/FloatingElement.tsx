@@ -18,10 +18,9 @@ const FloatingElement: FunctionComponent<FloatingElementProps> = ({
   showConnect,
 }) => {
   const { t } = useTranslation('common')
-  const { wallet } = useWallet()
+  const { wallet, connected } = useWallet()
   const { uiLocked } = useMangoStore((s) => s.settings)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
-  const connected = useMangoStore((s) => s.wallet.connected)
 
   const handleConnect = useCallback(() => {
     handleWalletConnect(wallet)

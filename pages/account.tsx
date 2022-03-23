@@ -207,7 +207,6 @@ export default function Account() {
   }, [connecting, router])
 
   const handleRedeemMngo = async () => {
-    const wallet = useMangoStore.getState().wallet.current
     const mangoClient = useMangoStore.getState().connection.client
     const mngoNodeBank =
       mangoGroup.rootBankAccounts[MNGO_INDEX].nodeBankAccounts[0]
@@ -216,7 +215,7 @@ export default function Account() {
       const txid = await mangoClient.redeemAllMngo(
         mangoGroup,
         mangoAccount,
-        wallet,
+        wallet?.adapter,
         mangoGroup.tokens[MNGO_INDEX].rootBank,
         mngoNodeBank.publicKey,
         mngoNodeBank.vault

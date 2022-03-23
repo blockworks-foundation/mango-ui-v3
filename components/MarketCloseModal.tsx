@@ -7,6 +7,7 @@ import Loading from './Loading'
 import { sleep } from '../utils'
 import Modal from './Modal'
 import { useTranslation } from 'next-i18next'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 interface MarketCloseModalProps {
   onClose: () => void
@@ -23,6 +24,7 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
 }) => {
   const { t } = useTranslation('common')
   const [submitting, setSubmitting] = useState(false)
+  const { wallet } = useWallet()
   const actions = useMangoStore((s) => s.actions)
   const config = useMangoStore.getState().selectedMarket.config
 
@@ -35,7 +37,6 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
       useMangoStore.getState().accountInfos[marketConfig.asksKey.toString()]
     const bidInfo =
       useMangoStore.getState().accountInfos[marketConfig.bidsKey.toString()]
-    const wallet = useMangoStore.getState().wallet.current
 
     const orderbook = useMangoStore.getState().selectedMarket.orderBook
     const markPrice = useMangoStore.getState().selectedMarket.markPrice
@@ -63,7 +64,7 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
         mangoGroup,
         mangoAccount,
         market,
-        wallet,
+        wallet?.adapter,
         side,
         referencePrice * (1 + (side === 'buy' ? 1 : -1) * maxSlippage),
         size,

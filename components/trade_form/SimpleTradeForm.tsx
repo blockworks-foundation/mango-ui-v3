@@ -23,12 +23,13 @@ import OrderSideTabs from './OrderSideTabs'
 import Tooltip from '../Tooltip'
 import EstPriceImpact from './EstPriceImpact'
 import { useTranslation } from 'next-i18next'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 export default function SimpleTradeForm({ initLeverage }) {
   const { t } = useTranslation('common')
   const set = useMangoStore((s) => s.set)
   const { ipAllowed, spotAllowed } = useIpAddress()
-  const connected = useMangoStore((s) => s.wallet.connected)
+  const { wallet, connected } = useWallet()
   const actions = useMangoStore((s) => s.actions)
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
@@ -277,9 +278,8 @@ export default function SimpleTradeForm({ initLeverage }) {
       useMangoStore.getState().accountInfos[marketConfig.asksKey.toString()]
     const bidInfo =
       useMangoStore.getState().accountInfos[marketConfig.bidsKey.toString()]
-    const wallet = useMangoStore.getState().wallet.current
 
-    if (!wallet || !mangoGroup || !mangoAccount || !market) return
+    if (!wallet?.adapter || !mangoGroup || !mangoAccount || !market) return
     setSubmitting(true)
 
     try {
@@ -308,7 +308,7 @@ export default function SimpleTradeForm({ initLeverage }) {
           mangoAccount,
           mangoGroup.mangoCache,
           market,
-          wallet,
+          wallet?.adapter,
           side,
           orderPrice,
           baseSize,
@@ -319,7 +319,7 @@ export default function SimpleTradeForm({ initLeverage }) {
           mangoGroup,
           mangoAccount,
           market,
-          wallet,
+          wallet?.adapter,
           side,
           orderPrice,
           baseSize,

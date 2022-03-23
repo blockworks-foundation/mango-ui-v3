@@ -13,11 +13,12 @@ import { msrmMints, ZERO_BN } from '@blockworks-foundation/mango-client'
 import DepositMsrmModal from './DepositMsrmModal'
 import WithdrawMsrmModal from './WithdrawMsrmModal'
 import { useState } from 'react'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 const FeeDiscountsTable = () => {
   const { t } = useTranslation('common')
+  const { connected } = useWallet()
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
-  const connected = useMangoStore((s) => s.wallet.connected)
   const walletTokens = useMangoStore((s) => s.wallet.tokens)
   const { totalSrm, totalMsrm, rates } = useSrmAccount()
   const [showDeposit, setShowDeposit] = useState(false)

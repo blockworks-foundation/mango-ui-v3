@@ -9,10 +9,7 @@ import { useJupiter, RouteInfo } from '@jup-ag/react-hook'
 import { TOKEN_LIST_URL } from '@jup-ag/core'
 import { PublicKey } from '@solana/web3.js'
 import useMangoStore from '../stores/useMangoStore'
-import {
-  connectionSelector,
-  walletConnectedSelector,
-} from '../stores/selectors'
+import { connectionSelector } from '../stores/selectors'
 import { sortBy, sum } from 'lodash'
 import {
   CogIcon,
@@ -54,9 +51,8 @@ type UseJupiterProps = Parameters<typeof useJupiter>[0]
 
 const JupiterForm: FunctionComponent = () => {
   const { t } = useTranslation(['common', 'swap'])
+  const { wallet, publicKey, connected } = useWallet()
   const connection = useMangoStore(connectionSelector)
-  const connected = useMangoStore(walletConnectedSelector)
-  const { wallet, publicKey } = useWallet()
   const [showSettings, setShowSettings] = useState(false)
   const [depositAndFee, setDepositAndFee] = useState(null)
   const [selectedRoute, setSelectedRoute] = useState<RouteInfo>(null)
@@ -90,6 +86,9 @@ const JupiterForm: FunctionComponent = () => {
   }
 
   const fetchWalletTokens = useCallback(async () => {
+    if (!publicKey) {
+      return
+    }
     const ownedTokens = []
     const ownedTokenAccounts = await getTokenAccountsByOwnerWithWrappedSol(
       connection,
@@ -104,9 +103,8 @@ const JupiterForm: FunctionComponent = () => {
       const uiBalance = nativeToUi(account.amount, decimals || 6)
       ownedTokens.push({ account, uiBalance })
     })
-    console.log('ownedToknes', ownedTokens)
     setWalletTokens(ownedTokens)
-  }, [wallet, connection, tokens])
+  }, [publicKey, connection, tokens])
 
   // @ts-ignore
   const [inputTokenInfo, outputTokenInfo] = useMemo(() => {

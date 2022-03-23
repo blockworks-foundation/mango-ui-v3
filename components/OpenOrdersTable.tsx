@@ -21,6 +21,7 @@ import { Row } from './TableElements'
 import { PerpTriggerOrder } from '../@types/types'
 import { useTranslation } from 'next-i18next'
 import Input, { Label } from './Input'
+import { useWallet, Wallet } from '@solana/wallet-adapter-react'
 
 const DesktopTable = ({
   cancelledOrderId,
@@ -33,6 +34,7 @@ const DesktopTable = ({
 }) => {
   const { t } = useTranslation('common')
   const { asPath } = useRouter()
+  const { wallet } = useWallet()
   const [modifiedOrderSize, setModifiedOrderSize] = useState('')
   const [modifiedOrderPrice, setModifiedOrderPrice] = useState('')
 
@@ -170,7 +172,8 @@ const DesktopTable = ({
                             order,
                             market.account,
                             modifiedOrderPrice || order.price,
-                            modifiedOrderSize || order.size
+                            modifiedOrderSize || order.size,
+                            wallet
                           )
                         }
                       >
@@ -208,6 +211,7 @@ const MobileTable = ({
   setEditOrderIndex,
 }) => {
   const { t } = useTranslation('common')
+  const { wallet } = useWallet()
   const [modifiedOrderSize, setModifiedOrderSize] = useState('')
   const [modifiedOrderPrice, setModifiedOrderPrice] = useState('')
 
@@ -313,7 +317,8 @@ const MobileTable = ({
                       order,
                       market.account,
                       modifiedOrderPrice || order.price,
-                      modifiedOrderSize || order.size
+                      modifiedOrderSize || order.size,
+                      wallet
                     )
                   }
                 >
@@ -335,6 +340,7 @@ const MobileTable = ({
 const OpenOrdersTable = () => {
   const { t } = useTranslation('common')
   const { asPath } = useRouter()
+  const { wallet } = useWallet()
   const openOrders = useMangoStore((s) => s.selectedMangoAccount.openOrders)
   const [cancelId, setCancelId] = useState(null)
   const [modifyId, setModifyId] = useState(null)
@@ -347,7 +353,6 @@ const OpenOrdersTable = () => {
     order: Order | PerpOrder | PerpTriggerOrder,
     market: Market | PerpMarket
   ) => {
-    const wallet = useMangoStore.getState().wallet.current
     const selectedMangoGroup =
       useMangoStore.getState().selectedMangoGroup.current
     const selectedMangoAccount =
@@ -361,7 +366,7 @@ const OpenOrdersTable = () => {
         txid = await mangoClient.cancelSpotOrder(
           selectedMangoGroup,
           selectedMangoAccount,
-          wallet,
+          wallet?.adapter,
           market,
           order as Order
         )
@@ -372,7 +377,7 @@ const OpenOrdersTable = () => {
           txid = await mangoClient.removeAdvancedOrder(
             selectedMangoGroup,
             selectedMangoAccount,
-            wallet,
+            wallet?.adapter,
             (order as PerpTriggerOrder).orderId
           )
           actions.reloadOrders()
@@ -380,7 +385,7 @@ const OpenOrdersTable = () => {
           txid = await mangoClient.cancelPerpOrder(
             selectedMangoGroup,
             selectedMangoAccount,
-            wallet,
+            wallet?.adapter,
             market,
             order as PerpOrder,
             false
@@ -407,7 +412,8 @@ const OpenOrdersTable = () => {
     order: Order | PerpOrder,
     market: Market | PerpMarket,
     price: number,
-    size: number
+    size: number,
+    wallet: Wallet
   ) => {
     const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
@@ -417,7 +423,6 @@ const OpenOrdersTable = () => {
       useMangoStore.getState().accountInfos[marketConfig.asksKey.toString()]
     const bidInfo =
       useMangoStore.getState().accountInfos[marketConfig.bidsKey.toString()]
-    const wallet = useMangoStore.getState().wallet.current
     const referrerPk = useMangoStore.getState().referrerPk
 
     if (!wallet || !mangoGroup || !mangoAccount || !market) return
@@ -440,7 +445,7 @@ const OpenOrdersTable = () => {
           mangoAccount,
           mangoGroup.mangoCache,
           market,
-          wallet,
+          wallet?.adapter,
           order as Order,
           order.side,
           orderPrice,
@@ -453,7 +458,7 @@ const OpenOrdersTable = () => {
           mangoAccount,
           mangoGroup.mangoCache,
           market,
-          wallet,
+          wallet?.adapter,
           order as PerpOrder,
           order.side,
           orderPrice,

@@ -17,6 +17,7 @@ import { sleep, formatUsdValue, usdFormatter, roundPerpSize } from '../../utils'
 import { PerpTriggerOrder } from '../../@types/types'
 import { useTranslation } from 'next-i18next'
 import useLocalStorageState from '../../hooks/useLocalStorageState'
+import { useWallet, Wallet } from '@solana/wallet-adapter-react'
 
 export interface ChartContainerProps {
   symbol: ChartingLibraryWidgetOptions['symbol']
@@ -40,6 +41,7 @@ const TVChartContainer = () => {
   const { t } = useTranslation(['common', 'tv-chart'])
   const { theme } = useTheme()
   const { width } = useViewport()
+  const { wallet } = useWallet()
   const [chartReady, setChartReady] = useState(false)
   const [showOrderLinesLocalStorage, toggleShowOrderLinesLocalStorage] =
     useLocalStorageState(SHOW_ORDER_LINES_KEY, true)
@@ -216,9 +218,9 @@ const TVChartContainer = () => {
 
   const handleCancelOrder = async (
     order: Order | PerpOrder | PerpTriggerOrder,
-    market: Market | PerpMarket
+    market: Market | PerpMarket,
+    wallet: Wallet
   ) => {
-    const wallet = useMangoStore.getState().wallet.current
     const selectedMangoGroup =
       useMangoStore.getState().selectedMangoGroup.current
     const selectedMangoAccount =
@@ -231,7 +233,7 @@ const TVChartContainer = () => {
         txid = await mangoClient.cancelSpotOrder(
           selectedMangoGroup,
           selectedMangoAccount,
-          wallet,
+          wallet?.adapter,
           // @ts-ignore
           market,
           order as Order
@@ -241,14 +243,14 @@ const TVChartContainer = () => {
           txid = await mangoClient.removeAdvancedOrder(
             selectedMangoGroup,
             selectedMangoAccount,
-            wallet,
+            wallet?.adapter,
             (order as PerpTriggerOrder).orderId
           )
         } else {
           txid = await mangoClient.cancelPerpOrder(
             selectedMangoGroup,
             selectedMangoAccount,
-            wallet,
+            wallet?.adapter,
             market,
             order as PerpOrder,
             false
@@ -273,7 +275,8 @@ const TVChartContainer = () => {
   const handleModifyOrder = async (
     order: Order | PerpOrder,
     market: Market | PerpMarket,
-    price: number
+    price: number,
+    wallet: Wallet
   ) => {
     const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
@@ -282,7 +285,6 @@ const TVChartContainer = () => {
       useMangoStore.getState().accountInfos[marketConfig.asksKey.toString()]
     const bidInfo =
       useMangoStore.getState().accountInfos[marketConfig.bidsKey.toString()]
-    const wallet = useMangoStore.getState().wallet.current
     const referrerPk = useMangoStore.getState().referrerPk
 
     if (!wallet || !mangoGroup || !mangoAccount || !market) return
@@ -306,7 +308,7 @@ const TVChartContainer = () => {
           mangoGroup.mangoCache,
           // @ts-ignore
           market,
-          wallet,
+          wallet?.adapter,
           order as Order,
           order.side,
           orderPrice,
@@ -319,7 +321,7 @@ const TVChartContainer = () => {
           mangoAccount,
           mangoGroup.mangoCache,
           market,
-          wallet,
+          wallet?.adapter,
           order as PerpOrder,
           order.side,
           orderPrice,
@@ -390,7 +392,12 @@ const TVChartContainer = () => {
               }),
               callback: (res) => {
                 if (res) {
-                  handleModifyOrder(order, market.account, updatedOrderPrice)
+                  handleModifyOrder(
+                    order,
+                    market.account,
+                    updatedOrderPrice,
+                    wallet
+                  )
                 } else {
                   this.setPrice(currentOrderPrice)
                 }
@@ -418,7 +425,7 @@ const TVChartContainer = () => {
           }),
           callback: (res) => {
             if (res) {
-              handleCancelOrder(order, market.account)
+              handleCancelOrder(order, market.account, wallet)
             }
           },
         })
