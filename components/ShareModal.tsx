@@ -17,7 +17,6 @@ import QRCode from 'react-qr-code'
 import useMangoAccount from '../hooks/useMangoAccount'
 import {
   mangoCacheSelector,
-  mangoClientSelector,
   mangoGroupConfigSelector,
   mangoGroupSelector,
   marketConfigSelector,
@@ -53,7 +52,7 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
   const { mangoAccount } = useMangoAccount()
   const mangoCache = useMangoStore(mangoCacheSelector)
   const groupConfig = useMangoStore(mangoGroupConfigSelector)
-  const client = useMangoStore(mangoClientSelector)
+  const client = useMangoStore.getState().connection.client
   const mangoGroup = useMangoStore(mangoGroupSelector)
   const [customRefLinks, setCustomRefLinks] = useState<ReferrerIdRecord[]>([])
   const [showSize, setShowSize] = useState(true)
@@ -163,14 +162,14 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
           : isProfit
           ? 'bg-short-profit'
           : 'bg-short-loss'
-      } bg-contain h-[337.5px] w-[600px] sm:max-w-7xl`}
+      } h-[337.5px] w-[600px] bg-contain sm:max-w-7xl`}
       noPadding
       hideClose
       ref={ref}
     >
       <div
         id="share-image"
-        className="drop-shadow-lg flex flex-col h-full items-center justify-center space-y-4 relative z-20"
+        className="relative z-20 flex h-full flex-col items-center justify-center space-y-4 drop-shadow-lg"
       >
         {hasRequiredMngo && showReferral ? (
           <div className="absolute right-4 top-4">
@@ -184,11 +183,11 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
             />
           </div>
         ) : null}
-        <div className="flex items-center text-lg text-th-fgd-3 text-center">
-          <SymbolIcon className="h-6 w-auto mr-2" />
+        <div className="flex items-center text-center text-lg text-th-fgd-3">
+          <SymbolIcon className="mr-2 h-6 w-auto" />
           <span className="mr-2">{position.marketConfig.name}</span>
           <span
-            className={`border px-1 rounded ${
+            className={`rounded border px-1 ${
               position.basePosition > 0
                 ? 'border-th-green text-th-green'
                 : 'border-th-red text-th-red'
@@ -198,7 +197,7 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
           </span>
         </div>
         <div
-          className={`font-bold text-6xl text-center ${
+          className={`text-center text-6xl font-bold ${
             isProfit
               ? 'border-th-green text-th-green'
               : 'border-th-red text-th-red'
@@ -207,7 +206,7 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
           {positionPercentage > 0 ? '+' : null}
           {positionPercentage.toFixed(2)}%
         </div>
-        <div className="pt-2 space-y-1 text-base text-th-fgd-1 w-1/2">
+        <div className="w-1/2 space-y-1 pt-2 text-base text-th-fgd-1">
           {showSize ? (
             <div className="flex items-center justify-between">
               <span className="text-th-fgd-2">Size</span>
@@ -232,10 +231,10 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
           </div>
         </div>
       </div>
-      <div className="absolute bg-th-bkg-2 left-1/2 mt-3 p-4 rounded-md transform -translate-x-1/2 w-[600px]">
+      <div className="absolute left-1/2 mt-3 w-[600px] -translate-x-1/2 transform rounded-md bg-th-bkg-2 p-4">
         <div className="flex flex-col items-center">
           {!copied ? (
-            <div className="flex pb-4 space-x-4">
+            <div className="flex space-x-4 pb-4">
               <div className="flex items-center">
                 <label className="mr-1.5 text-th-fgd-2">Show Size</label>
                 <Switch
@@ -258,19 +257,19 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
           ) : null}
           {copied ? (
             <a
-              className="bg-th-bkg-button flex items-center justify-center font-bold block px-6 py-2 rounded-full text-center text-th-fgd-1 hover:cursor-pointer hover:text-th-fgd-1 hover:brightness-[1.1]"
+              className="block flex items-center justify-center rounded-full bg-th-bkg-button px-6 py-2 text-center font-bold text-th-fgd-1 hover:cursor-pointer hover:text-th-fgd-1 hover:brightness-[1.1]"
               href={`https://twitter.com/intent/tweet?text=I'm ${side} %24${position.marketConfig.baseSymbol} perp on %40mangomarkets%0A[PASTE IMAGE HERE]`}
               target="_blank"
               rel="noreferrer"
             >
-              <TwitterIcon className="h-4 mr-1.5 w-4" />
+              <TwitterIcon className="mr-1.5 h-4 w-4" />
               <div>Tweet Position</div>
             </a>
           ) : (
             <div>
               <Button onClick={handleCopyToClipboard}>
                 <div className="flex items-center">
-                  <TwitterIcon className="h-4 mr-1.5 w-4" />
+                  <TwitterIcon className="mr-1.5 h-4 w-4" />
                   Copy Image and Share
                 </div>
               </Button>
