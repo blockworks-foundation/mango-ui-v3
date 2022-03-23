@@ -16,7 +16,7 @@ import PerpSideBadge from './PerpSideBadge'
 import PnlText from './PnlText'
 import { settlePnl } from './MarketPosition'
 import MobileTableHeader from './mobile/MobileTableHeader'
-import { RedeemDropdown } from 'components/perp_positions'
+import { RedeemDropdown } from 'components/PerpPositions'
 
 const PositionsTable = () => {
   const { t } = useTranslation('common')

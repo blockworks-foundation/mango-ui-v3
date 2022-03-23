@@ -7,11 +7,17 @@ import { useTranslation } from 'next-i18next'
 import Loading from 'components/Loading'
 import useMangoStore from 'stores/useMangoStore'
 
-const MenuButton = ({ onClick, text }) => {
+const MenuButton: React.FC<{
+  onClick: () => void
+  text: string
+  disabled?: boolean
+}> = ({ onClick, text, disabled }) => {
   return (
     <div
-      className="default-transition flex items-center justify-end whitespace-nowrap pb-2.5 text-xs tracking-wider text-th-fgd-1 hover:cursor-pointer hover:text-th-primary"
-      onClick={onClick}
+      className={`default-transition flex items-center justify-end whitespace-nowrap pb-2.5 text-xs tracking-wider hover:cursor-pointer hover:text-th-primary ${
+        disabled ? 'pointer-events-none text-th-fgd-4' : 'text-th-fgd-1'
+      }`}
+      onClick={disabled ? null : onClick}
     >
       {text}
     </div>
@@ -26,9 +32,11 @@ export const RedeemDropdown: React.FC = () => {
   const [open, setOpen] = useState(false)
   const unsettledPositions =
     useMangoStore.getState().selectedMangoAccount.unsettledPerpPositions
-  const openPositions = useMangoStore(
-    (s) => s.selectedMangoAccount.openPerpPositions
-  )
+  const unsettledPositivePositions = useMangoStore
+    .getState()
+    .selectedMangoAccount.unsettledPerpPositions?.filter(
+      (p) => p.unsettledPnl > 0
+    )
 
   const loading = settling || settlingPosPnl
 
@@ -46,16 +54,23 @@ export const RedeemDropdown: React.FC = () => {
   const handleSettlePosPnl = async () => {
     setOpen(false)
     setSettlingPosPnl(true)
-    for (const p of openPositions) {
-      if (p.unsettledPnl > 0) {
-        console.log('settlePosPnl', settlePosPnl)
-        // await settlePosPnl([p.perpMarket], p.perpAccount, t, undefined)
-      }
+    for (const p of unsettledPositivePositions) {
+      console.log('settlePosPnl', p)
+      await settlePosPnl([p.perpMarket], p.perpAccount, t, undefined)
     }
     setTimeout(() => {
       setSettlingPosPnl(false)
     }, 2000)
   }
+
+  const buttons = [
+    { onClick: handleSettleAll, disabled: false, text: t('redeem-all') },
+    {
+      onClick: handleSettlePosPnl,
+      disabled: !unsettledPositivePositions?.length,
+      text: t('redeem-positive'),
+    },
+  ]
 
   return (
     <div
@@ -63,7 +78,10 @@ export const RedeemDropdown: React.FC = () => {
       onMouseOver={() => setOpen(true)}
       onMouseOut={() => setOpen(false)}
     >
-      <Button className="flex h-8 w-full items-center justify-center rounded-full bg-th-bkg-button pt-0 pb-0 pl-3 pr-2 text-xs font-bold hover:brightness-[1.1] hover:filter sm:w-auto">
+      <Button
+        className="flex h-8 w-full items-center justify-center rounded-full bg-th-bkg-button pt-0 pb-0 pl-3 pr-2 text-xs font-bold hover:brightness-[1.1] hover:filter sm:w-auto"
+        disabled={!unsettledPositions?.length}
+      >
         {loading ? (
           <Loading />
         ) : (
@@ -89,11 +107,16 @@ export const RedeemDropdown: React.FC = () => {
         leaveTo="opacity-0"
       >
         <div className="absolute right-0 rounded-md bg-th-bkg-3 px-4 pt-2.5">
-          <MenuButton onClick={handleSettleAll} text={t('redeem-all')} />
-          <MenuButton
-            onClick={handleSettlePosPnl}
-            text={t('redeem-positive')}
-          />
+          {buttons.map((b) => {
+            return (
+              <MenuButton
+                key={b.text}
+                onClick={b.onClick}
+                text={b.text}
+                disabled={b.disabled}
+              />
+            )
+          })}
         </div>
       </Transition>
     </div>
