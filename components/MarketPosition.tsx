@@ -26,12 +26,12 @@ export const settlePosPnl = async (
   perpMarkets: PerpMarket[],
   perpAccount: PerpAccount,
   t,
-  mangoAccounts: MangoAccount[] | undefined
+  mangoAccounts: MangoAccount[] | undefined,
+  wallet: Wallet
 ) => {
   const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
   const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
   const mangoCache = useMangoStore.getState().selectedMangoGroup.cache
-  const wallet = useMangoStore.getState().wallet.current
   const actions = useMangoStore.getState().actions
   const mangoClient = useMangoStore.getState().connection.client
 
@@ -42,7 +42,7 @@ export const settlePosPnl = async (
       mangoAccount,
       perpMarkets,
       mangoGroup.rootBankAccounts[QUOTE_INDEX],
-      wallet,
+      wallet?.adapter,
       mangoAccounts
     )
     actions.reloadMangoAccount()
