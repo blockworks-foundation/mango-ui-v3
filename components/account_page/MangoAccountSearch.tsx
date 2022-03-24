@@ -32,12 +32,12 @@ export const MangoAccountSearch = () => {
   }
 
   return (
-    <div className="flex flex-col items-center rounded-lg px-4 pb-2 text-th-fgd-1 md:mt-6">
+    <div className="flex flex-col items-center rounded-lg px-4 text-th-fgd-1">
       <h2 className="mb-1 text-base">Search by Mango Account</h2>
       <p className="mb-2 text-center">
         Enter a Mango account address to show account details
       </p>
-      <div className="w-[400px] p-1">
+      <div className="w-[350px] p-1 md:w-[400px]">
         <Input
           type="text"
           error={isInvalid}
