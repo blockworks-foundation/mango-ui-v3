@@ -100,7 +100,7 @@ export const FiveOhFive = ({ error }) => {
           <div className="my-10 text-center">
             <div className="font-mono mt-8 rounded-lg bg-th-bkg-2 p-8 text-left text-th-fgd-1">
               <div className="flex">
-                <div className="text-th-red">{error.message}</div>
+                <div className="text-mango-theme-fgd-2">{error.message}</div>
                 <div className="flex-grow"></div>
                 <div className="flex-shrink-0 self-center">
                   <Icon
@@ -121,14 +121,28 @@ export const FiveOhFive = ({ error }) => {
                 <div className="mt-6">{stack}</div>
               </div>
             </div>
+            <div className="flex flex-col items-center">
+              <div className="mt-10 flex flex-row">
+                <button
+                  className="mx-2 whitespace-nowrap rounded-full bg-th-bkg-button px-6 py-2 font-bold text-th-fgd-1 hover:brightness-[1.1] focus:outline-none disabled:cursor-not-allowed disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:hover:brightness-100"
+                  onClick={() => location.reload()}
+                >
+                  Refresh and try again
+                </button>
 
-            <div className="mt-8">
-              <button
-                className="mx-auto mt-2 whitespace-nowrap rounded-full bg-th-bkg-button px-6 py-2 font-bold text-th-fgd-1 hover:brightness-[1.1] focus:outline-none disabled:cursor-not-allowed disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:hover:brightness-100"
-                onClick={() => location.reload()}
-              >
-                Refresh and try again
-              </button>
+                <a
+                  className="whitespace-nowrap rounded-full bg-mango-theme-bkg-3 px-6 py-2 font-bold text-th-fgd-1 hover:brightness-[1.1] focus:outline-none disabled:cursor-not-allowed disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:hover:brightness-100"
+                  href="https://discord.gg/mangomarkets"
+                >
+                  <div className="flex">
+                    <img
+                      className="mr-2 h-[20px] w-[20px]"
+                      src="/assets/icons/discord.svg"
+                    />
+                    Join Discord
+                  </div>
+                </a>
+              </div>
             </div>
           </div>
         </div>
