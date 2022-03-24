@@ -355,7 +355,7 @@ const JupiterForm: FunctionComponent = () => {
       <div className="col-span-12 xl:col-span-10 xl:col-start-2 ">
         <div className="flex flex-col md:flex-row md:space-x-6">
           <div className="w-full md:w-1/2  lg:w-1/3">
-            <div className="relative z-10">
+            <div className="relative">
               {connected &&
               walletTokensWithInfos.length &&
               walletTokenPrices &&

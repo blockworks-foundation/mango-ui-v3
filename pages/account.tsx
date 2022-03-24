@@ -53,6 +53,7 @@ import DelegateModal from 'components/DelegateModal'
 import { Menu, Transition } from '@headlessui/react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { handleWalletConnect } from 'components/ConnectWalletButton'
+import { MangoAccountSearch } from 'components/account_page/MangoAccountSearch'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -446,6 +447,11 @@ export default function Account() {
             />
           )}
         </div>
+        {!connected && (
+          <div className="mt-6 md:mt-3 md:rounded-lg md:bg-th-bkg-2 md:p-6">
+            <MangoAccountSearch />
+          </div>
+        )}
       </PageBodyContainer>
       {showAccountsModal ? (
         <AccountsModal
