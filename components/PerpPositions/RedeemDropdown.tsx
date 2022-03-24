@@ -56,7 +56,7 @@ export const RedeemDropdown: React.FC = () => {
     setSettlingPosPnl(true)
     for (const p of unsettledPositivePositions) {
       console.log('settlePosPnl', p)
-      await settlePosPnl([p.perpMarket], p.perpAccount, t, undefined)
+      await settlePosPnl([p.perpMarket], p.perpAccount, t, null)
     }
     setSettlingPosPnl(false)
   }

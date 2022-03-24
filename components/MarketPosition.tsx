@@ -35,7 +35,7 @@ export const settlePosPnl = async (
   const mangoClient = useMangoStore.getState().connection.client
 
   try {
-    await mangoClient.settlePosPnl(
+    const txids = await mangoClient.settlePosPnl(
       mangoGroup,
       mangoCache,
       mangoAccount,
@@ -45,10 +45,15 @@ export const settlePosPnl = async (
       mangoAccounts
     )
     actions.reloadMangoAccount()
-    notify({
-      title: t('pnl-success'),
-      description: '',
-    })
+    for (const txid of txids) {
+      if (txid) {
+        notify({
+          title: t('pnl-success'),
+          description: '',
+          txid,
+        })
+      }
+    }
   } catch (e) {
     console.log('Error settling PNL: ', `${e}`, `${perpAccount}`)
     notify({
