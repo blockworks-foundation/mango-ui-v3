@@ -477,7 +477,7 @@ const BalancesTable = ({
                 )}
               </Table>
             ) : (
-              <>
+              <div className="border-b border-th-bkg-4">
                 <MobileTableHeader
                   colOneHeader={t('asset')}
                   colTwoHeader={t('net-balance')}
@@ -597,7 +597,7 @@ const BalancesTable = ({
                     }
                   />
                 ))}
-              </>
+              </div>
             )
           ) : (
             <div

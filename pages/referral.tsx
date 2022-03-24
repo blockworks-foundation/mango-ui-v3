@@ -31,7 +31,14 @@ import {
 } from '@heroicons/react/outline'
 import { MngoMonoIcon } from '../components/icons'
 import Link from 'next/link'
-import { Table, Td, Th, TrBody, TrHead } from '../components/TableElements'
+import {
+  Table,
+  TableDateDisplay,
+  Td,
+  Th,
+  TrBody,
+  TrHead,
+} from '../components/TableElements'
 import AccountsModal from '../components/AccountsModal'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from '../components/TradePageGrid'
@@ -40,7 +47,6 @@ import MobileTableHeader from '../components/mobile/MobileTableHeader'
 import Input, { Label } from '../components/Input'
 import InlineNotification from '../components/InlineNotification'
 import useMangoAccount from '../hooks/useMangoAccount'
-import { DateDisplay } from '../components/DateDisplay'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -209,7 +215,7 @@ export default function Referral() {
             <p className="mb-0 mr-2">{t('referrals:earn-16')}</p>
           </div>
         </div>
-        <div className="grid grid-flow-row grid-cols-12 gap-x-6 gap-y-8 rounded-lg bg-th-bkg-2 p-4 sm:p-6">
+        <div className="grid grid-flow-row grid-cols-12 gap-x-6 gap-y-8 md:rounded-lg md:bg-th-bkg-2 md:p-6">
           {connected ? (
             mangoAccount ? (
               <>
@@ -433,7 +439,7 @@ export default function Referral() {
                             return (
                               <TrBody key={ref.signature}>
                                 <Td>
-                                  <DateDisplay date={ref.block_datetime} />
+                                  <TableDateDisplay date={ref.block_datetime} />
                                 </Td>
                                 <Td>
                                   <Link
@@ -454,7 +460,7 @@ export default function Referral() {
                         </tbody>
                       </Table>
                     ) : (
-                      <>
+                      <div className="mb-4 border-b border-th-bkg-4">
                         <MobileTableHeader
                           colOneHeader={t('date')}
                           colTwoHeader={t('referrals:fee-earned')}
@@ -464,7 +470,7 @@ export default function Referral() {
                             buttonTemplate={
                               <div className="flex w-full items-center justify-between text-th-fgd-1">
                                 <div>
-                                  <DateDisplay date={ref.block_datetime} />
+                                  <TableDateDisplay date={ref.block_datetime} />
                                 </div>
                                 <div className="text-right">
                                   {usdFormatter(ref.referral_fee_accrual, 4)}
@@ -495,7 +501,7 @@ export default function Referral() {
                             }
                           />
                         ))}
-                      </>
+                      </div>
                     )}
                   </div>
                 ) : null}

@@ -7,7 +7,14 @@ import Button, { LinkButton } from './Button'
 import { useSortableData } from '../hooks/useSortableData'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
-import { Table, Td, Th, TrBody, TrHead } from './TableElements'
+import {
+  Table,
+  TableDateDisplay,
+  Td,
+  Th,
+  TrBody,
+  TrHead,
+} from './TableElements'
 import { ExpandableRow } from './TableElements'
 import { formatUsdValue } from '../utils'
 import { useTranslation } from 'next-i18next'
@@ -29,22 +36,14 @@ import { canWithdraw } from '../utils/mango'
 import { exportDataToCSV } from '../utils/export'
 import Tooltip from './Tooltip'
 
-const renderTradeDateTime = (timestamp: BN | string) => {
-  let date
+const formatTradeDateTime = (timestamp: BN | string) => {
   // don't compare to BN because of npm maddness
   // prototypes can be different due to multiple versions being imported
   if (typeof timestamp === 'string') {
-    date = new Date(timestamp)
+    return timestamp
   } else {
-    date = new Date(timestamp.toNumber() * 1000)
+    return (timestamp.toNumber() * 1000).toString()
   }
-
-  return (
-    <>
-      <div>{date.toLocaleDateString()}</div>
-      <div className="text-xs text-th-fgd-3">{date.toLocaleTimeString()}</div>
-    </>
-  )
 }
 
 const TradeHistoryTable = ({
@@ -141,9 +140,15 @@ const TradeHistoryTable = ({
     return tradeHistory.length !== filteredData.length
   }, [data, filteredData])
 
+  const mangoAccountPk = useMemo(() => {
+    console.log('new mango account')
+
+    return mangoAccount.publicKey.toString()
+  }, [mangoAccount])
+
   return (
     <>
-      <div className="flex items-center justify-between pb-3">
+      <div className="flex flex-col pb-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center">
           <h4 className="mb-0 flex items-center text-th-fgd-1">
             {!initialLoad ? <Loading className="mr-2" /> : data.length}{' '}
@@ -164,16 +169,16 @@ const TradeHistoryTable = ({
               </div>
             }
           >
-            <InformationCircleIcon className="ml-1.5 h-4 w-4 cursor-pointer text-th-fgd-3" />
+            <InformationCircleIcon className="ml-1.5 h-5 w-5 cursor-pointer text-th-fgd-3" />
           </Tooltip>
         </div>
-        <div className="flex items-center space-x-3">
+        <div className="flex flex-col space-y-3 pl-2 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-3">
           {hasActiveFilter ? (
             <LinkButton
-              className="flex items-center text-xs"
+              className="order-4 mt-3 flex items-center justify-end whitespace-nowrap text-xs sm:order-first sm:mt-0"
               onClick={() => setFilters({})}
             >
-              <RefreshIcon className="mr-1.5 h-4 w-4" />
+              <RefreshIcon className="mr-1.5 h-4 w-4 flex-shrink-0" />
               Reset Filters
             </LinkButton>
           ) : null}
@@ -181,7 +186,7 @@ const TradeHistoryTable = ({
           tradeHistory.length <= 10000 &&
           initialLoad ? (
             <Button
-              className="flex h-8 items-center justify-center whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs"
+              className="order-3 mt-3 flex h-8 items-center justify-center whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs sm:order-first sm:mt-0"
               onClick={() => setShowFiltersModal(true)}
             >
               <FilterIcon className="mr-1.5 h-4 w-4" />
@@ -202,6 +207,27 @@ const TradeHistoryTable = ({
                 </div>
               )}
             </Button>
+          ) : null}
+          {canWithdraw() ? (
+            <div className={`flex items-center`}>
+              <a
+                className={`default-transition flex h-8 w-full items-center justify-center whitespace-nowrap rounded-full bg-th-bkg-button pt-0 pb-0 pl-3 pr-3 text-xs font-bold text-th-fgd-1 hover:text-th-fgd-1 hover:brightness-[1.1]`}
+                href={`https://event-history-api.herokuapp.com/all_trades_csv?mango_account=${mangoAccountPk}&open_orders=${mangoAccount.spotOpenOrders
+                  .filter(
+                    (e) => e.toString() !== '11111111111111111111111111111111'
+                  )
+                  .join(',')}`}
+                download
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <SaveIcon className={`mr-1.5 h-4 w-4`} />
+                Export Trades CSV
+                <Tooltip content={t('trade-export-disclaimer')}>
+                  <InformationCircleIcon className="ml-1.5 h-5 w-5 cursor-help text-th-fgd-3" />
+                </Tooltip>
+              </a>
+            </div>
           ) : null}
         </div>
       </div>
@@ -395,12 +421,16 @@ const TradeHistoryTable = ({
                             <Td className="!py-2 ">
                               {formatUsdValue(trade.feeCost)}
                             </Td>
-                            <Td className="w-[0.1%] !py-2">
-                              {trade.loadTimestamp || trade.timestamp
-                                ? renderTradeDateTime(
+                            <Td className="!py-2">
+                              {trade.loadTimestamp || trade.timestamp ? (
+                                <TableDateDisplay
+                                  date={formatTradeDateTime(
                                     trade.loadTimestamp || trade.timestamp
-                                  )
-                                : t('recent')}
+                                  )}
+                                />
+                              ) : (
+                                t('recent')
+                              )}
                             </Td>
                             <Td className="keep-break w-[0.1%] !py-2">
                               {trade.marketName.includes('PERP') ? (
@@ -449,11 +479,15 @@ const TradeHistoryTable = ({
                       <>
                         <div className="text-fgd-1 flex w-full items-center justify-between">
                           <div className="text-left">
-                            {trade.loadTimestamp || trade.timestamp
-                              ? renderTradeDateTime(
+                            {trade.loadTimestamp || trade.timestamp ? (
+                              <TableDateDisplay
+                                date={formatTradeDateTime(
                                   trade.loadTimestamp || trade.timestamp
-                                )
-                              : t('recent')}
+                                )}
+                              />
+                            ) : (
+                              t('recent')
+                            )}
                           </div>
                           <div>
                             <div className="text-right">

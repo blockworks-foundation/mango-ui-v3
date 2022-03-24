@@ -16,7 +16,7 @@ const BottomBar = () => {
 
   return (
     <>
-      <div className="default-transition grid grid-cols-4 grid-rows-1 bg-th-bkg-1 py-2.5">
+      <div className="default-transition grid grid-cols-4 grid-rows-1 bg-th-bkg-3 py-2.5">
         <Link
           href={{
             pathname: '/select',

@@ -93,44 +93,45 @@ export default function RecentMarketTrades() {
       )}
     </>
   ) : (
-    <ExpandableRow
-      buttonTemplate={
-        <div className="flex w-full justify-between text-left">
-          <div className="text-fgd-1 mb-0.5">{t('recent-trades')}</div>
-        </div>
-      }
-      panelTemplate={
-        !!trades.length && (
-          <div className="col-span-2">
-            {trades.map((trade: ChartTradeType, i: number) => (
-              <div key={i} className={`grid grid-cols-3 text-xs leading-5`}>
-                <div
-                  className={`${
-                    trade.side === 'buy' ? `text-th-green` : `text-th-red`
-                  }`}
-                >
-                  {market?.tickSize && !isNaN(trade.price)
-                    ? Number(trade.price).toFixed(
-                        getDecimalCount(market.tickSize)
-                      )
-                    : ''}
-                </div>
-                <div className={`text-right`}>
-                  {market?.minOrderSize && !isNaN(trade.size)
-                    ? Number(trade.size).toFixed(
-                        getDecimalCount(market.minOrderSize)
-                      )
-                    : ''}
-                </div>
-                <div className={`text-right text-th-fgd-4`}>
-                  {trade.time && new Date(trade.time).toLocaleTimeString()}
-                </div>
-              </div>
-            ))}
+    <div className="my-3 border-b border-th-bkg-4">
+      <ExpandableRow
+        buttonTemplate={
+          <div className="flex w-full justify-between text-left">
+            <div className="text-fgd-1 mb-0.5">{t('recent-trades')}</div>
           </div>
-        )
-      }
-      rounded
-    />
+        }
+        panelTemplate={
+          !!trades.length && (
+            <div className="col-span-2">
+              {trades.map((trade: ChartTradeType, i: number) => (
+                <div key={i} className={`grid grid-cols-3 text-xs leading-5`}>
+                  <div
+                    className={`${
+                      trade.side === 'buy' ? `text-th-green` : `text-th-red`
+                    }`}
+                  >
+                    {market?.tickSize && !isNaN(trade.price)
+                      ? Number(trade.price).toFixed(
+                          getDecimalCount(market.tickSize)
+                        )
+                      : ''}
+                  </div>
+                  <div className={`text-right`}>
+                    {market?.minOrderSize && !isNaN(trade.size)
+                      ? Number(trade.size).toFixed(
+                          getDecimalCount(market.minOrderSize)
+                        )
+                      : ''}
+                  </div>
+                  <div className={`text-right text-th-fgd-4`}>
+                    {trade.time && new Date(trade.time).toLocaleTimeString()}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )
+        }
+      />
+    </div>
   )
 }

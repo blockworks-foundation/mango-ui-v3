@@ -326,5 +326,5 @@ export function patchInternalMarketName(marketName: string) {
 }
 
 export function roundPerpSize(size: number, symbol: string) {
-  return new BigNumber(size).toFormat(perpContractPrecision[symbol])
+  return new BigNumber(size).abs().toFormat(perpContractPrecision[symbol])
 }
