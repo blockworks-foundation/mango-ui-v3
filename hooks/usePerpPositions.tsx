@@ -91,8 +91,7 @@ const usePerpPositions = () => {
   const mangoGroup = useMangoStore(mangoGroupSelector)
   const mangoCache = useMangoStore(mangoCacheSelector)
   const allMarkets = useMangoStore(marketsSelector)
-  const tradeHistory = useMangoStore.getState().tradeHistory.parsed
-
+  const tradeHistory = useMangoStore((s) => s.tradeHistory.parsed)
   useEffect(() => {
     if (
       mangoAccount &&
