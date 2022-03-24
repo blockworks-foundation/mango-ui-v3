@@ -41,7 +41,6 @@ import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from '../components/TradePageGrid'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'next-i18next'
-import Select from '../components/Select'
 import { useRouter } from 'next/router'
 import { PublicKey } from '@solana/web3.js'
 import CloseAccountModal from '../components/CloseAccountModal'
@@ -56,6 +55,7 @@ import CreateAlertModal from '../components/CreateAlertModal'
 import { copyToClipboard } from '../utils'
 import DelegateModal from '../components/DelegateModal'
 import { Menu, Transition } from '@headlessui/react'
+import { MangoAccountSearch } from 'components/account_page/MangoAccountSearch'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -80,7 +80,6 @@ export default function Account() {
 
   const connected = useMangoStore(walletConnectedSelector)
   const mangoAccount = useMangoStore(mangoAccountSelector)
-  const mangoClient = useMangoStore((s) => s.connection.client)
   const mangoGroup = useMangoStore(mangoGroupSelector)
   const wallet = useMangoStore((s) => s.wallet.current)
   const isLoading = useMangoStore((s) => s.selectedMangoAccount.initialLoad)
@@ -128,6 +127,7 @@ export default function Account() {
     async function loadUnownedMangoAccount() {
       try {
         const unownedMangoAccountPubkey = new PublicKey(pubkey)
+        const mangoClient = useMangoStore.getState().connection.client
         if (mangoGroup) {
           const unOwnedMangoAccount = await mangoClient.getMangoAccount(
             unownedMangoAccountPubkey,
@@ -193,6 +193,7 @@ export default function Account() {
 
   const handleTabChange = (tabName) => {
     setActiveTab(tabName)
+    setViewIndex(TABS.findIndex((t) => t === tabName))
   }
 
   useMemo(() => {
@@ -207,6 +208,7 @@ export default function Account() {
 
   const handleRedeemMngo = async () => {
     const wallet = useMangoStore.getState().wallet.current
+    const mangoClient = useMangoStore.getState().connection.client
     const mngoNodeBank =
       mangoGroup.rootBankAccounts[MNGO_INDEX].nodeBankAccounts[0]
 
@@ -240,7 +242,7 @@ export default function Account() {
     <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
       <TopBar />
       <PageBodyContainer>
-        <div className="flex flex-col py-4 md:flex-row md:items-end md:justify-between md:pb-4 md:pt-10">
+        <div className="flex flex-col pt-4 pb-6 md:flex-row md:items-end md:justify-between md:pb-4 md:pt-10">
           {mangoAccount ? (
             <>
               <div className="pb-3 md:pb-0">
@@ -290,13 +292,15 @@ export default function Account() {
                     <div className="flex items-center whitespace-nowrap">
                       <GiftIcon className="mr-1.5 h-4 w-4 flex-shrink-0" />
                       {!mngoAccrued.eq(ZERO_BN)
-                        ? `Claim ${nativeToUi(
-                            mngoAccrued.toNumber(),
-                            mangoGroup.tokens[MNGO_INDEX].decimals
-                          ).toLocaleString(undefined, {
-                            minimumSignificantDigits: 1,
-                          })} MNGO`
-                        : '0 MNGO Rewards'}
+                        ? t('claim-x-mngo', {
+                            amount: nativeToUi(
+                              mngoAccrued.toNumber(),
+                              mangoGroup.tokens[MNGO_INDEX].decimals
+                            ).toLocaleString(undefined, {
+                              minimumSignificantDigits: 1,
+                            }),
+                          })
+                        : t('zero-mngo-rewards')}
                     </div>
                   </button>
                   <Menu>
@@ -306,7 +310,7 @@ export default function Account() {
                         id="profile-menu-tip"
                       >
                         <Menu.Button className="flex h-8 w-full items-center justify-center rounded-full bg-th-bkg-button pt-0 pb-0 pl-3 pr-2 text-xs font-bold hover:brightness-[1.1] hover:filter sm:w-auto">
-                          More
+                          {t('more')}
                           <ChevronDownIcon
                             className={`default-transition h-5 w-5 ${
                               open
@@ -358,7 +362,7 @@ export default function Account() {
                               >
                                 <div className="flex items-center">
                                   <SwitchHorizontalIcon className="mr-1.5 h-4 w-4" />
-                                  {t('switch-account')}
+                                  {t('change-account')}
                                 </div>
                               </button>
                             </Menu.Item>
@@ -385,28 +389,13 @@ export default function Account() {
             </>
           ) : null}
         </div>
-        <div className="rounded-lg bg-th-bkg-2 p-4 sm:p-6">
+        <div className="md:rounded-lg md:bg-th-bkg-2 md:p-6">
           {mangoAccount ? (
-            !isMobile ? (
-              <Tabs
-                activeTab={activeTab}
-                onChange={handleTabChange}
-                tabs={TABS}
-              />
-            ) : (
-              <div className="pb-4">
-                <Select
-                  value={t(TABS[viewIndex].toLowerCase())}
-                  onChange={(e) => handleChangeViewIndex(e)}
-                >
-                  {TABS.map((tab, index) => (
-                    <Select.Option key={index + tab} value={index}>
-                      {t(tab.toLowerCase())}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </div>
-            )
+            <Tabs
+              activeTab={activeTab}
+              onChange={handleTabChange}
+              tabs={TABS}
+            />
           ) : null}
           {mangoAccount ? (
             !isMobile ? (
@@ -456,6 +445,11 @@ export default function Account() {
             />
           )}
         </div>
+        {!connected && (
+          <div className="mt-6 md:mt-3 md:rounded-lg md:bg-th-bkg-2 md:p-6">
+            <MangoAccountSearch />
+          </div>
+        )}
       </PageBodyContainer>
       {showAccountsModal ? (
         <AccountsModal

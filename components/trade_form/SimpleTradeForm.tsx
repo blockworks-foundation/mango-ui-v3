@@ -35,7 +35,6 @@ export default function SimpleTradeForm({ initLeverage }) {
   const walletTokens = useMangoStore((s) => s.wallet.tokens)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
-  const mangoClient = useMangoStore((s) => s.connection.client)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const marketIndex = getMarketIndexBySymbol(
     groupConfig,
@@ -62,9 +61,8 @@ export default function SimpleTradeForm({ initLeverage }) {
   useEffect(
     () =>
       useMangoStore.subscribe(
-        // @ts-ignore
-        (orderBook) => (orderBookRef.current = orderBook),
-        (state) => state.selectedMarket.orderBook
+        (state) => state.selectedMarket.orderBook,
+        (orderBook) => (orderBookRef.current = orderBook)
       ),
     []
   )
@@ -139,8 +137,8 @@ export default function SimpleTradeForm({ initLeverage }) {
   useEffect(
     () =>
       useMangoStore.subscribe(
-        (markPrice) => (markPriceRef.current = markPrice as number),
-        (state) => state.selectedMarket.markPrice
+        (state) => state.selectedMarket.markPrice,
+        (markPrice) => (markPriceRef.current = markPrice as number)
       ),
     []
   )
@@ -272,6 +270,7 @@ export default function SimpleTradeForm({ initLeverage }) {
       return
     }
 
+    const mangoClient = useMangoStore.getState().connection.client
     const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
     const askInfo =

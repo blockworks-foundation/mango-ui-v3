@@ -1,4 +1,11 @@
-import { Fragment, FunctionComponent, useEffect, useRef, useState } from 'react'
+import {
+  Fragment,
+  FunctionComponent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import { Popover, Transition } from '@headlessui/react'
 import { useTranslation } from 'next-i18next'
 import { StarIcon } from '@heroicons/react/outline'
@@ -6,12 +13,12 @@ import {
   ChevronDownIcon,
   StarIcon as FilledStarIcon,
 } from '@heroicons/react/solid'
-import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import MarketNavItem from './MarketNavItem'
+import useMangoStore from '../stores/useMangoStore'
 
 const initialMenuCategories = [
-  { name: 'Perp', desc: 'perp-desc' },
+  { name: 'Futures', desc: 'perp-desc' },
   { name: 'Spot', desc: 'spot-desc' },
 ]
 
@@ -19,18 +26,38 @@ export const FAVORITE_MARKETS_KEY = 'favoriteMarkets'
 
 const TradeNavMenu = () => {
   const [favoriteMarkets] = useLocalStorageState(FAVORITE_MARKETS_KEY, [])
-  const [activeMenuCategory, setActiveMenuCategory] = useState('Perp')
+  const [activeMenuCategory, setActiveMenuCategory] = useState('Futures')
   const [menuCategories, setMenuCategories] = useState(initialMenuCategories)
   const buttonRef = useRef(null)
-  const groupConfig = useMangoGroupConfig()
   const { t } = useTranslation('common')
 
-  const markets =
-    activeMenuCategory === 'Favorites'
-      ? favoriteMarkets
-      : activeMenuCategory === 'Spot'
-      ? [...groupConfig.spotMarkets]
-      : [...groupConfig.perpMarkets]
+  const marketsInfo = useMangoStore((s) => s.marketsInfo)
+
+  const perpMarketsInfo = useMemo(
+    () =>
+      marketsInfo
+        .filter((mkt) => mkt?.name.includes('PERP'))
+        .sort((a, b) => b.volumeUsd24h - a.volumeUsd24h),
+    [marketsInfo]
+  )
+
+  const spotMarketsInfo = useMemo(
+    () =>
+      marketsInfo
+        .filter((mkt) => mkt?.name.includes('USDC'))
+        .sort((a, b) => b.volumeUsd24h - a.volumeUsd24h),
+    [marketsInfo]
+  )
+
+  const markets = useMemo(
+    () =>
+      activeMenuCategory === 'Futures'
+        ? perpMarketsInfo
+        : activeMenuCategory === 'Spot'
+        ? spotMarketsInfo
+        : favoriteMarkets,
+    [activeMenuCategory, marketsInfo]
+  )
 
   const handleMenuCategoryChange = (categoryName) => {
     setActiveMenuCategory(categoryName)
@@ -41,7 +68,7 @@ const TradeNavMenu = () => {
     if (favoriteMarkets.length > 0) {
       setActiveMenuCategory('Favorites')
     } else {
-      setActiveMenuCategory('Perp')
+      setActiveMenuCategory('Futures')
     }
   }
 
@@ -78,7 +105,7 @@ const TradeNavMenu = () => {
         menuCategories.filter((cat) => cat.name !== 'Favorites')
       )
       if (activeMenuCategory === 'Favorites') {
-        setActiveMenuCategory('Perp')
+        setActiveMenuCategory('Futures')
       }
     }
   }, [favoriteMarkets])
@@ -119,7 +146,7 @@ const TradeNavMenu = () => {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Popover.Panel className="absolute top-14 grid min-h-[235px] w-[700px] grid-cols-3 grid-rows-1">
+            <Popover.Panel className="absolute top-14 grid min-h-[235px] w-[760px] grid-cols-3 grid-rows-1">
               <div className="col-span-1 rounded-bl-lg bg-th-bkg-4">
                 <MenuCategories
                   activeCategory={activeMenuCategory}
@@ -213,14 +240,14 @@ export const FavoriteMarketButton = ({ market }) => {
 
   return favoriteMarkets.find((mkt) => mkt.name === market.name) ? (
     <button
-      className="default-transition text-th-primary hover:text-th-fgd-3"
+      className="default-transition flex items-center justify-center text-th-primary hover:text-th-fgd-3"
       onClick={() => removeFromFavorites(market)}
     >
       <FilledStarIcon className="h-5 w-5" />
     </button>
   ) : (
     <button
-      className="default-transition text-th-fgd-4 hover:text-th-primary"
+      className="default-transition flex items-center justify-center text-th-fgd-4 hover:text-th-primary"
       onClick={() => addToFavorites(market)}
     >
       <StarIcon className="h-5 w-5" />

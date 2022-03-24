@@ -45,7 +45,6 @@ const BalancesTable = ({
   const actions = useMangoStore((s) => s.actions)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoGroupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
-  const mangoClient = useMangoStore((s) => s.connection.client)
   const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const setMangoStore = useMangoStore((s) => s.set)
@@ -107,6 +106,7 @@ const BalancesTable = ({
 
   async function handleSettleAll() {
     const markets = useMangoStore.getState().selectedMangoGroup.markets
+    const mangoClient = useMangoStore.getState().connection.client
 
     try {
       setSubmitting(true)
@@ -360,113 +360,107 @@ const BalancesTable = ({
                   </TrHead>
                 </thead>
                 <tbody>
-                  {items.map((balance, index) => (
-                    <TrBody key={`${balance.symbol}${index}`}>
-                      <Td>
-                        <div className="flex items-center">
-                          <img
-                            alt=""
-                            width="20"
-                            height="20"
-                            src={`/assets/icons/${balance.symbol.toLowerCase()}.svg`}
-                            className={`mr-2.5`}
-                          />
-
-                          {balance.symbol === 'USDC' ||
-                          decodeURIComponent(asPath).includes(
-                            `${balance.symbol}/USDC`
-                          ) ? (
-                            <span>{balance.symbol}</span>
-                          ) : (
-                            <Link
-                              href={{
-                                pathname: '/',
-                                query: { name: `${balance.symbol}/USDC` },
-                              }}
-                              shallow={true}
-                            >
-                              <a className="text-th-fgd-1 underline hover:text-th-fgd-1 hover:no-underline">
-                                {balance.symbol}
-                              </a>
-                            </Link>
-                          )}
-                        </div>
-                      </Td>
-                      <Td>
-                        {balance.deposits.toLocaleString(undefined, {
-                          maximumFractionDigits: balance.decimals,
-                        })}
-                      </Td>
-                      <Td>
-                        {balance.borrows.toLocaleString(undefined, {
-                          maximumFractionDigits: balance.decimals,
-                        })}
-                      </Td>
-                      <Td>{balance.orders}</Td>
-                      <Td>{balance.unsettled}</Td>
-                      <Td>
-                        {marketConfig.kind === 'spot' &&
-                        marketConfig.name.includes(balance.symbol) &&
-                        selectedMarket &&
-                        clickToPopulateTradeForm ? (
-                          <span
-                            className={
-                              balance.net.toNumber() != 0
-                                ? 'cursor-pointer underline hover:no-underline'
-                                : ''
-                            }
-                            onClick={() =>
-                              handleSizeClick(balance.net, balance.symbol)
-                            }
-                          >
-                            {balance.net.toLocaleString(undefined, {
-                              maximumFractionDigits: balance.decimals,
-                            })}
-                          </span>
-                        ) : (
-                          balance.net.toLocaleString(undefined, {
-                            maximumFractionDigits: balance.decimals,
-                          })
-                        )}
-                      </Td>
-                      <Td>{formatUsdValue(balance.value.toNumber())}</Td>
-                      <Td>
-                        <span className="text-th-green">
-                          {balance.depositRate.toFixed(2)}%
-                        </span>
-                      </Td>
-                      <Td>
-                        <span className="text-th-red">
-                          {balance.borrowRate.toFixed(2)}%
-                        </span>
-                      </Td>
-                      {showDepositWithdraw ? (
+                  {items.map((balance, index) => {
+                    console.log('balance', balance)
+                    if (!balance) {
+                      return null
+                    }
+                    return (
+                      <TrBody key={`${balance.symbol}${index}`}>
                         <Td>
-                          <div className="flex justify-end">
-                            <Button
-                              className="h-7 pt-0 pb-0 pl-3 pr-3 text-xs"
-                              onClick={() =>
-                                handleOpenDepositModal(balance.symbol)
-                              }
-                            >
-                              {balance.borrows.toNumber() > 0
-                                ? t('repay')
-                                : t('deposit')}
-                            </Button>
-                            <Button
-                              className="ml-4 h-7 pt-0 pb-0 pl-3 pr-3 text-xs"
-                              onClick={() =>
-                                handleOpenWithdrawModal(balance.symbol)
-                              }
-                              disabled={!canWithdraw}
-                            >
-                              {t('withdraw')}
-                            </Button>
+                          <div className="flex items-center">
+                            <img
+                              alt=""
+                              width="20"
+                              height="20"
+                              src={`/assets/icons/${balance.symbol.toLowerCase()}.svg`}
+                              className={`mr-2.5`}
+                            />
+
+                            {balance.symbol === 'USDC' ||
+                            decodeURIComponent(asPath).includes(
+                              `${balance.symbol}/USDC`
+                            ) ? (
+                              <span>{balance.symbol}</span>
+                            ) : (
+                              <Link
+                                href={{
+                                  pathname: '/',
+                                  query: { name: `${balance.symbol}/USDC` },
+                                }}
+                                shallow={true}
+                              >
+                                <a className="text-th-fgd-1 underline hover:text-th-fgd-1 hover:no-underline">
+                                  {balance.symbol}
+                                </a>
+                              </Link>
+                            )}
                           </div>
                         </Td>
-                      ) : null}
-                    </TrBody>
-                  ))}
+                        <Td>{balance.deposits.toFormat(balance.decimals)}</Td>
+                        <Td>{balance.borrows.toFormat(balance.decimals)}</Td>
+                        <Td>{balance.orders}</Td>
+                        <Td>{balance.unsettled}</Td>
+                        <Td>
+                          {marketConfig.kind === 'spot' &&
+                          marketConfig.name.includes(balance.symbol) &&
+                          selectedMarket &&
+                          clickToPopulateTradeForm ? (
+                            <span
+                              className={
+                                balance.net.toNumber() != 0
+                                  ? 'cursor-pointer underline hover:no-underline'
+                                  : ''
+                              }
+                              onClick={() =>
+                                handleSizeClick(balance.net, balance.symbol)
+                              }
+                            >
+                              {balance.net.toFormat(balance.decimals)}
+                            </span>
+                          ) : (
+                            balance.net.toFormat(balance.decimals)
+                          )}
+                        </Td>
+                        <Td>{formatUsdValue(balance.value.toNumber())}</Td>
+                        <Td>
+                          <span className="text-th-green">
+                            {balance.depositRate.toFixed(2)}%
+                          </span>
+                        </Td>
+                        <Td>
+                          <span className="text-th-red">
+                            {balance.borrowRate.toFixed(2)}%
+                          </span>
+                        </Td>
+                        {showDepositWithdraw ? (
+                          <Td>
+                            <div className="flex justify-end">
+                              <Button
+                                className="h-7 pt-0 pb-0 pl-3 pr-3 text-xs"
+                                onClick={() =>
+                                  handleOpenDepositModal(balance.symbol)
+                                }
+                              >
+                                {balance.borrows.toNumber() > 0
+                                  ? t('repay')
+                                  : t('deposit')}
+                              </Button>
+                              <Button
+                                className="ml-4 h-7 pt-0 pb-0 pl-3 pr-3 text-xs"
+                                onClick={() =>
+                                  handleOpenWithdrawModal(balance.symbol)
+                                }
+                                disabled={!canWithdraw}
+                              >
+                                {t('withdraw')}
+                              </Button>
+                            </div>
+                          </Td>
+                        ) : null}
+                      </TrBody>
+                    )
+                  })}
                 </tbody>
                 {showDepositModal && (
                   <DepositModal
@@ -489,7 +483,7 @@ const BalancesTable = ({
                 )}
               </Table>
             ) : (
-              <>
+              <div className="border-b border-th-bkg-4">
                 <MobileTableHeader
                   colOneHeader={t('asset')}
                   colTwoHeader={t('net-balance')}
@@ -510,9 +504,7 @@ const BalancesTable = ({
                           {balance.symbol}
                         </div>
                         <div className="text-right text-th-fgd-1">
-                          {balance.net.toLocaleString(undefined, {
-                            maximumFractionDigits: balance.decimals,
-                          })}
+                          {balance.net.toFormat(balance.decimals)}
                         </div>
                       </div>
                     }
@@ -524,17 +516,13 @@ const BalancesTable = ({
                             <div className="pb-0.5 text-xs text-th-fgd-3">
                               {t('deposits')}
                             </div>
-                            {balance.deposits.toLocaleString(undefined, {
-                              maximumFractionDigits: balance.decimals,
-                            })}
+                            {balance.deposits.toFormat(balance.decimals)}
                           </div>
                           <div className="text-left">
                             <div className="pb-0.5 text-xs text-th-fgd-3">
                               {t('borrows')}
                             </div>
-                            {balance.borrows.toLocaleString(undefined, {
-                              maximumFractionDigits: balance.decimals,
-                            })}
+                            {balance.borrows.toFormat(balance.decimals)}
                           </div>
                           <div className="text-left">
                             <div className="pb-0.5 text-xs text-th-fgd-3">
@@ -599,9 +587,7 @@ const BalancesTable = ({
                             tokenSymbol={actionSymbol}
                             repayAmount={
                               balance.borrows.toNumber() > 0
-                                ? balance.borrows.toLocaleString(undefined, {
-                                    maximumFractionDigits: balance.decimals,
-                                  })
+                                ? balance.borrows.toFormat(balance.decimals)
                                 : ''
                             }
                           />
@@ -617,7 +603,7 @@ const BalancesTable = ({
                     }
                   />
                 ))}
-              </>
+              </div>
             )
           ) : (
             <div

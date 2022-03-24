@@ -1,7 +1,7 @@
 {
   "are-you-sure": "Are you sure?",
   "before-you-continue": "Before you can continue",
-  "claim-x-mngo": "Claim {{amount}} MNGO rewards",
+  "claim-x-mngo-rewards": "Claim {{amount}} MNGO rewards",
   "close-account": "Close Account",
   "close-all-borrows": "Close all borrows",
   "close-open-orders": "Close all open orders",

@@ -67,7 +67,6 @@ export default function AdvancedTradeForm({
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const walletTokens = useMangoStore((s) => s.wallet.tokens)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
-  const mangoClient = useMangoStore((s) => s.connection.client)
   const market = useMangoStore((s) => s.selectedMarket.current)
   const isPerpMarket = market instanceof PerpMarket
   const [reduceOnly, setReduceOnly] = useState(false)
@@ -142,17 +141,18 @@ export default function AdvancedTradeForm({
   useEffect(
     () =>
       useMangoStore.subscribe(
-        // @ts-ignore
-        (orderBook) => (orderBookRef.current = orderBook),
-        (state) => state.selectedMarket.orderBook
+        (state) => state.selectedMarket.orderBook,
+        (orderBook) => (orderBookRef.current = orderBook)
       ),
     []
   )
 
   useEffect(() => {
     const walletSol = walletTokens.find((a) => a.config.symbol === 'SOL')
-    walletSol ? setInsufficientSol(walletSol.uiBalance < 0.01) : null
-  }, [walletTokens])
+    walletSol && connected
+      ? setInsufficientSol(walletSol.uiBalance < 0.01)
+      : null
+  }, [connected, walletTokens])
 
   useEffect(() => {
     if (tradeType === 'Market') {
@@ -309,8 +309,8 @@ export default function AdvancedTradeForm({
   useEffect(
     () =>
       useMangoStore.subscribe(
-        (markPrice) => (markPriceRef.current = markPrice as number),
-        (state) => state.selectedMarket.markPrice
+        (state) => state.selectedMarket.markPrice,
+        (markPrice) => (markPriceRef.current = markPrice as number)
       ),
     []
   )
@@ -484,7 +484,7 @@ export default function AdvancedTradeForm({
   const closeBorrowString =
     percentToClose(baseSize, roundedBorrows) > 100
       ? t('close-open-long', {
-          size: (+baseSize - roundedDeposits).toFixed(sizeDecimalCount),
+          size: (+baseSize - roundedBorrows).toFixed(sizeDecimalCount),
           symbol: marketConfig.baseSymbol,
         })
       : `${percentToClose(baseSize, roundedBorrows).toFixed(0)}% ${t(
@@ -568,6 +568,7 @@ export default function AdvancedTradeForm({
       return
     }
 
+    const mangoClient = useMangoStore.getState().connection.client
     const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
     const askInfo =
@@ -761,7 +762,7 @@ export default function AdvancedTradeForm({
   }
 
   return (
-    <div className="flex h-full flex-col">
+    <div>
       <ElementTitle className="hidden md:flex">
         {marketConfig.name}
         <span className="ml-2 rounded border border-th-primary px-1 py-0.5 text-xs text-th-primary">
@@ -769,7 +770,7 @@ export default function AdvancedTradeForm({
         </span>
       </ElementTitle>
       {insufficientSol ? (
-        <div className="pb-3 text-left">
+        <div className="mb-3 text-left">
           <InlineNotification desc={t('add-more-sol')} type="warning" />
         </div>
       ) : null}

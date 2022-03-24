@@ -64,6 +64,7 @@ const useHydrateStore = () => {
   // Fetches mango group as soon as page loads
   useEffect(() => {
     actions.fetchMangoGroup()
+    actions.fetchMarketsInfo()
   }, [actions])
 
   useInterval(() => {
@@ -87,10 +88,14 @@ const useHydrateStore = () => {
   useInterval(() => {
     actions.fetchMangoGroup()
     actions.fetchWalletTokens()
+    actions.fetchMarketsInfo()
   }, 120 * SECONDS)
 
   useEffect(() => {
+    if (!marketConfig || !markets) return
+
     const market = markets[marketConfig.publicKey.toString()]
+    if (!market) return
     setMangoStore((state) => {
       state.selectedMarket.current = market
       state.selectedMarket.orderBook.bids = decodeBookL2(
@@ -107,7 +112,7 @@ const useHydrateStore = () => {
   // watch selected Mango Account for changes
   useEffect(() => {
     if (!mangoAccount) return
-    console.log('in mango account WS useEffect')
+
     const subscriptionId = connection.onAccountChange(
       mangoAccount.publicKey,
       (info, context) => {
@@ -124,7 +129,6 @@ const useHydrateStore = () => {
 
         // only updated mango account if it's been more than 1 second since last update
         if (Math.abs(timeDiff / 1000) >= 1 && context.slot > lastSeenSlot) {
-          console.log('mango account WS update: ', info)
           const decodedMangoAccount = MangoAccountLayout.decode(info?.data)
           const newMangoAccount = Object.assign(
             mangoAccount,
@@ -241,6 +245,19 @@ const useHydrateStore = () => {
   useInterval(() => {
     actions.loadMarketFills()
   }, 20 * SECONDS)
+
+  useInterval(() => {
+    const blockhashTimes = useMangoStore.getState().connection.blockhashTimes
+    const blockhashTimesCopy = [...blockhashTimes]
+    const mangoClient = useMangoStore.getState().connection.client
+
+    mangoClient.updateRecentBlockhash(blockhashTimesCopy).then(() => {
+      setMangoStore((state) => {
+        state.connection.client = mangoClient
+        state.connection.blockhashTimes = blockhashTimesCopy
+      })
+    })
+  }, 10 * SECONDS)
 
   useEffect(() => {
     actions.loadMarketFills()

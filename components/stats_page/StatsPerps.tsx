@@ -8,6 +8,7 @@ import { perpContractPrecision } from '../../utils'
 import { useTranslation } from 'next-i18next'
 import Select from '../Select'
 import { marketsSelector } from '../../stores/selectors'
+import dayjs from 'dayjs'
 
 function calculateFundingRate(
   oldestLongFunding,
@@ -57,7 +58,7 @@ export default function StatsPerps({ perpStats }) {
   }, [selectedMarketConfig, perpMarkets])
 
   const perpsData = useMemo(() => {
-    if (perpStats.length === 0) return []
+    if (perpStats.length === 0 || !selectedMarket) return []
 
     let selectedStatsData = perpStats.filter(
       (stat) => stat.name === selectedAsset
@@ -126,7 +127,7 @@ export default function StatsPerps({ perpStats }) {
             </Select.Option>
           ))}
         </Select>
-        <div className="mb-4 hidden rounded-md bg-th-bkg-3 px-3 py-2 md:-mx-6 md:mb-6 md:-mt-6 md:flex md:rounded-none md:rounded-t-md md:px-4">
+        <div className="mb-4 hidden rounded-md bg-th-bkg-3 px-3 py-2 md:mb-6 md:flex md:px-4">
           {marketConfigs.map((market, index) => (
             <div
               className={`py-1 text-xs font-bold md:px-2 md:text-sm ${
@@ -159,7 +160,7 @@ export default function StatsPerps({ perpStats }) {
           </h2>
         </div>
       </div>
-      <div className="grid grid-flow-row grid-cols-1 grid-rows-2 gap-2 sm:gap-4 md:grid-cols-2 md:grid-rows-2">
+      <div className="grid grid-flow-row grid-cols-1 gap-2 pb-8 sm:gap-4 md:grid-cols-2">
         <div
           className="relative rounded-md border border-th-bkg-3 p-4"
           style={{ height: '330px' }}
@@ -174,6 +175,7 @@ export default function StatsPerps({ perpStats }) {
               x.toLocaleString(undefined, { maximumFractionDigits: 4 })
             }
             type="area"
+            yAxisWidth={70}
           />
         </div>
         <div
@@ -197,19 +199,22 @@ export default function StatsPerps({ perpStats }) {
             type="area"
           />
         </div>
-        <div className="relative rounded-md border border-th-bkg-3 p-4">
-          <h2>{t('liquidity-mining')}</h2>
-          <div className="mt-4 flex justify-between">
-            <div>{t('depth-rewarded')}</div>
-            <div>
-              {maxDepthUi.toLocaleString() +
-                ' ' +
-                selectedMarketConfig.baseSymbol}
+      </div>
+      <div className="mb-4">
+        <h2 className="mb-4">{t('liquidity-mining')}</h2>
+        <div className="grid grid-cols-2 gap-x-3 md:grid-cols-3 lg:grid-cols-6">
+          <div className="col-span-1 border-y border-th-bkg-4 py-3">
+            <p className="mb-0">{t('depth-rewarded')}</p>
+            <div className="text-lg font-bold">
+              {maxDepthUi.toLocaleString() + ' '}
+              <span className="text-xs font-normal text-th-fgd-3">
+                {selectedMarketConfig.baseSymbol}
+              </span>
             </div>
           </div>
-          <div className="mt-4 flex justify-between">
-            <div>{t('target-period-length')}</div>
-            <div>
+          <div className="col-span-1 border-y border-th-bkg-4 py-3">
+            <p className="mb-0">{t('target-period-length')}</p>
+            <div className="text-lg font-bold">
               {(
                 selectedMarket.liquidityMiningInfo.targetPeriodLength.toNumber() /
                 60
@@ -217,18 +222,18 @@ export default function StatsPerps({ perpStats }) {
               {t('minutes')}
             </div>
           </div>
-          <div className="mt-4 flex justify-between">
-            <div>{t('mngo-per-period')}</div>
-            <div>
+          <div className="col-span-1 border-b border-th-bkg-4 py-3 md:border-y">
+            <p className="mb-0">{t('mngo-per-period')}</p>
+            <div className="text-lg font-bold">
               {(
                 selectedMarket.liquidityMiningInfo.mngoPerPeriod.toNumber() /
                 Math.pow(10, 6)
               ).toFixed(2)}
             </div>
           </div>
-          <div className="mt-4 flex justify-between">
-            <div>{t('mngo-left-period')}</div>
-            <div>
+          <div className="col-span-1 border-b border-th-bkg-4 py-3 lg:border-y">
+            <p className="mb-0">{t('mngo-left-period')}</p>
+            <div className="text-lg font-bold">
               {(
                 selectedMarket.liquidityMiningInfo.mngoLeft.toNumber() /
                 Math.pow(10, 6)
@@ -236,13 +241,20 @@ export default function StatsPerps({ perpStats }) {
             </div>
           </div>
 
-          <div className="mt-4 flex justify-between">
-            <div>{t('est-period-end')}</div>
-            <div>{new Date(est * 1000).toUTCString()}</div>
+          <div className="col-span-1 border-b border-th-bkg-4 py-3 lg:border-y">
+            <p className="mb-0">{t('est-period-end')}</p>
+            <div className="text-lg font-bold">
+              {dayjs(est * 1000).format('DD MMM YYYY')}
+            </div>
+            <div className="text-xs text-th-fgd-3">
+              {dayjs(est * 1000).format('h:mma')}
+            </div>
           </div>
-          <div className="mt-4 flex justify-between">
-            <div>{t('period-progress')}</div>
-            <div>{(progress * 100).toFixed(2)}%</div>
+          <div className="col-span-1 border-b border-th-bkg-4 py-3 lg:border-y">
+            <p className="mb-0">{t('period-progress')}</p>
+            <div className="text-lg font-bold">
+              {(progress * 100).toFixed(2)}%
+            </div>
           </div>
         </div>
       </div>

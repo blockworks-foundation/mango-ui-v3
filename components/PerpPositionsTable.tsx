@@ -5,26 +5,21 @@ import { useTranslation } from 'next-i18next'
 import { ExclamationIcon } from '@heroicons/react/outline'
 
 import useMangoStore from '../stores/useMangoStore'
-import Button, { LinkButton } from '../components/Button'
+import { LinkButton } from '../components/Button'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { ExpandableRow, Table, Td, Th, TrBody, TrHead } from './TableElements'
-import {
-  formatUsdValue,
-  getPrecisionDigits,
-  perpContractPrecision,
-} from '../utils'
+import { formatUsdValue, getPrecisionDigits, roundPerpSize } from '../utils'
 import Loading from './Loading'
 import MarketCloseModal from './MarketCloseModal'
 import PerpSideBadge from './PerpSideBadge'
 import PnlText from './PnlText'
 import { settlePnl } from './MarketPosition'
 import MobileTableHeader from './mobile/MobileTableHeader'
+import { RedeemDropdown } from 'components/PerpPositions'
 
 const PositionsTable = () => {
   const { t } = useTranslation('common')
-  const { reloadMangoAccount } = useMangoStore((s) => s.actions)
-  const [settling, setSettling] = useState(false)
   const [settleSinglePos, setSettleSinglePos] = useState(null)
 
   const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
@@ -57,16 +52,6 @@ const PositionsTable = () => {
     })
   }
 
-  const handleSettleAll = async () => {
-    setSettling(true)
-    for (const p of unsettledPositions) {
-      await settlePnl(p.perpMarket, p.perpAccount, t, undefined)
-    }
-
-    reloadMangoAccount()
-    setSettling(false)
-  }
-
   const handleSettlePnl = async (perpMarket, perpAccount, index) => {
     setSettleSinglePos(index)
     await settlePnl(perpMarket, perpAccount, t, undefined)
@@ -74,7 +59,7 @@ const PositionsTable = () => {
   }
 
   return (
-    <div className="flex flex-col pb-2">
+    <div className="flex flex-col md:pb-2">
       {unsettledPositions.length > 0 ? (
         <div className="mb-6 rounded-lg border border-th-bkg-4 p-4 sm:p-6">
           <div className="flex items-center justify-between pb-4">
@@ -83,12 +68,7 @@ const PositionsTable = () => {
               <h3>{t('unsettled-positions')}</h3>
             </div>
 
-            <Button
-              className="h-8 whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs"
-              onClick={handleSettleAll}
-            >
-              {settling ? <Loading /> : 'Redeem All'}
-            </Button>
+            <RedeemDropdown />
           </div>
           <div className="grid grid-flow-row grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
             {unsettledPositions.map((p, index) => {
@@ -161,12 +141,10 @@ const PositionsTable = () => {
                       breakEvenPrice,
                       unrealizedPnl,
                     }) => {
-                      const basePositionUi = Math.abs(
-                        basePosition
-                      ).toLocaleString(undefined, {
-                        maximumFractionDigits:
-                          perpContractPrecision[marketConfig.baseSymbol],
-                      })
+                      const basePositionUi = roundPerpSize(
+                        basePosition,
+                        marketConfig.baseSymbol
+                      )
                       return (
                         <TrBody key={`${marketConfig.marketIndex}`}>
                           <Td>
@@ -251,7 +229,7 @@ const PositionsTable = () => {
                 </tbody>
               </Table>
             ) : (
-              <>
+              <div className="border-b border-th-bkg-4">
                 <MobileTableHeader
                   colOneHeader={t('market')}
                   colTwoHeader={t('unrealized-pnl')}
@@ -268,12 +246,10 @@ const PositionsTable = () => {
                     },
                     index
                   ) => {
-                    const basePositionUi = Math.abs(
-                      basePosition
-                    ).toLocaleString(undefined, {
-                      maximumFractionDigits:
-                        perpContractPrecision[marketConfig.baseSymbol],
-                    })
+                    const basePositionUi = roundPerpSize(
+                      basePosition,
+                      marketConfig.baseSymbol
+                    )
                     return (
                       <ExpandableRow
                         buttonTemplate={
@@ -342,7 +318,7 @@ const PositionsTable = () => {
                     )
                   }
                 )}
-              </>
+              </div>
             )
           ) : (
             <div

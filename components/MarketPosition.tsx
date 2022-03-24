@@ -1,11 +1,7 @@
 import { useCallback, useMemo, useState } from 'react'
 import { ElementTitle } from './styles'
 import useMangoStore from '../stores/useMangoStore'
-import {
-  formatUsdValue,
-  getPrecisionDigits,
-  perpContractPrecision,
-} from '../utils'
+import { formatUsdValue, getPrecisionDigits, roundPerpSize } from '../utils'
 import Button, { LinkButton } from './Button'
 import Tooltip from './Tooltip'
 import PerpSideBadge from './PerpSideBadge'
@@ -24,6 +20,50 @@ import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { useTranslation } from 'next-i18next'
 import useMangoAccount from '../hooks/useMangoAccount'
+
+export const settlePosPnl = async (
+  perpMarkets: PerpMarket[],
+  perpAccount: PerpAccount,
+  t,
+  mangoAccounts: MangoAccount[] | undefined
+) => {
+  const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
+  const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
+  const mangoCache = useMangoStore.getState().selectedMangoGroup.cache
+  const wallet = useMangoStore.getState().wallet.current
+  const actions = useMangoStore.getState().actions
+  const mangoClient = useMangoStore.getState().connection.client
+
+  try {
+    const txids = await mangoClient.settlePosPnl(
+      mangoGroup,
+      mangoCache,
+      mangoAccount,
+      perpMarkets,
+      mangoGroup.rootBankAccounts[QUOTE_INDEX],
+      wallet,
+      mangoAccounts
+    )
+    actions.reloadMangoAccount()
+    for (const txid of txids) {
+      if (txid) {
+        notify({
+          title: t('pnl-success'),
+          description: '',
+          txid,
+        })
+      }
+    }
+  } catch (e) {
+    console.log('Error settling PNL: ', `${e}`, `${perpAccount}`)
+    notify({
+      title: t('pnl-error'),
+      description: e.message,
+      txid: e.txid,
+      type: 'error',
+    })
+  }
+}
 
 export const settlePnl = async (
   perpMarket: PerpMarket,
@@ -182,9 +222,7 @@ export default function MarketPosition() {
                 className="cursor-pointer underline hover:no-underline"
                 onClick={() => handleSizeClick(basePosition)}
               >
-                {`${Math.abs(basePosition).toLocaleString(undefined, {
-                  maximumFractionDigits: perpContractPrecision[baseSymbol],
-                })} ${baseSymbol}`}
+                {`${roundPerpSize(basePosition, baseSymbol)} ${baseSymbol}`}
               </span>
             ) : (
               `0 ${baseSymbol}`
