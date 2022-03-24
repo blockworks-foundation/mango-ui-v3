@@ -49,10 +49,6 @@ export const ConnectWalletButton: React.FC = () => {
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
 
-  const defaultWallets = useMemo(() => {
-    return ['Phantom', 'Solflare', 'Sollet']
-  }, [])
-
   const installedWallets = useMemo(() => {
     const installed: Wallet[] = []
 
@@ -66,16 +62,10 @@ export const ConnectWalletButton: React.FC = () => {
   }, [wallets])
 
   const displayedWallets = useMemo(() => {
-    return uniqBy(
-      [
-        ...installedWallets,
-        ...wallets.filter((w) => defaultWallets.includes(w.adapter.name)),
-      ],
-      (w) => {
-        return w.adapter.name
-      }
-    )
-  }, [wallets, installedWallets, defaultWallets])
+    return uniqBy([...installedWallets, ...wallets], (w) => {
+      return w.adapter.name
+    })
+  }, [wallets, installedWallets])
 
   const handleConnect = useCallback(() => {
     handleWalletConnect(wallet)

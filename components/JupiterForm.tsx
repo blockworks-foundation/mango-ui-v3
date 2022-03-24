@@ -51,7 +51,8 @@ type UseJupiterProps = Parameters<typeof useJupiter>[0]
 
 const JupiterForm: FunctionComponent = () => {
   const { t } = useTranslation(['common', 'swap'])
-  const { wallet, publicKey, connected } = useWallet()
+  const { wallet, publicKey, connected, signAllTransactions, signTransaction } =
+    useWallet()
   const connection = useMangoStore(connectionSelector)
   const [showSettings, setShowSettings] = useState(false)
   const [depositAndFee, setDepositAndFee] = useState(null)
@@ -954,9 +955,14 @@ const JupiterForm: FunctionComponent = () => {
                       let txCount = 1
                       let errorTxid
                       const swapResult = await exchange({
-                        wallet: wallet as any,
-                        route: selectedRoute,
-                        confirmationWaiterFactory: async (txid, totalTxs) => {
+                        wallet: {
+                          sendTransaction: wallet?.adapter?.sendTransaction,
+                          publicKey: wallet?.adapter?.publicKey,
+                          signAllTransactions,
+                          signTransaction,
+                        },
+                        routeInfo: selectedRoute,
+                        onTransaction: async (txid, totalTxs) => {
                           console.log('txid, totalTxs', txid, totalTxs)
                           if (txCount === totalTxs) {
                             errorTxid = txid

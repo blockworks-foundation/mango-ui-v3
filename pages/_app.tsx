@@ -17,7 +17,7 @@ import ErrorBoundary from '../components/ErrorBoundary'
 import GlobalNotification from '../components/GlobalNotification'
 import { useOpenOrders } from '../hooks/useOpenOrders'
 import usePerpPositions from '../hooks/usePerpPositions'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { PublicKey } from '@solana/web3.js'
 import { connectionSelector, mangoGroupSelector } from '../stores/selectors'
 import {
@@ -25,9 +25,14 @@ import {
   ReferrerIdRecord,
 } from '@blockworks-foundation/mango-client'
 import useTradeHistory from '../hooks/useTradeHistory'
-import { getWalletAdapters } from '@solana/wallet-adapter-wallets'
 import { WalletProvider, WalletListener } from 'components/WalletAdapter'
-import { WalletAdapterNetwork } from '@solana/wallet-adapter-base'
+import { PhantomWalletAdapter } from '@solana/wallet-adapter-phantom'
+import { SolflareWalletAdapter } from '@solana/wallet-adapter-solflare'
+import { SolletWalletAdapter } from '@solana/wallet-adapter-sollet'
+import { SlopeWalletAdapter } from '@solana/wallet-adapter-slope'
+import { BitpieWalletAdapter } from '@solana/wallet-adapter-bitpie'
+import { HuobiWalletAdapter } from '@solana/wallet-adapter-huobi'
+import { GlowWalletAdapter } from '@solana/wallet-adapter-glow'
 
 const MangoStoreUpdater = () => {
   useHydrateStore()
@@ -117,9 +122,18 @@ const PageTitle = () => {
 }
 
 function App({ Component, pageProps }) {
-  const network = WalletAdapterNetwork.Mainnet
-  // const endpoint = useMemo(() => clusterApiUrl(network), [network])
-  const wallets = getWalletAdapters({ network })
+  const wallets = useMemo(
+    () => [
+      new PhantomWalletAdapter(),
+      new SolflareWalletAdapter(),
+      new SolletWalletAdapter(),
+      new SlopeWalletAdapter(),
+      new BitpieWalletAdapter(),
+      new HuobiWalletAdapter(),
+      new GlowWalletAdapter(),
+    ],
+    []
+  )
 
   return (
     <>
