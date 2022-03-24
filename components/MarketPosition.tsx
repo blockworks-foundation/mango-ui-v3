@@ -22,6 +22,50 @@ import { useTranslation } from 'next-i18next'
 import useMangoAccount from '../hooks/useMangoAccount'
 import { useWallet, Wallet } from '@solana/wallet-adapter-react'
 
+export const settlePosPnl = async (
+  perpMarkets: PerpMarket[],
+  perpAccount: PerpAccount,
+  t,
+  mangoAccounts: MangoAccount[] | undefined
+) => {
+  const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
+  const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
+  const mangoCache = useMangoStore.getState().selectedMangoGroup.cache
+  const wallet = useMangoStore.getState().wallet.current
+  const actions = useMangoStore.getState().actions
+  const mangoClient = useMangoStore.getState().connection.client
+
+  try {
+    const txids = await mangoClient.settlePosPnl(
+      mangoGroup,
+      mangoCache,
+      mangoAccount,
+      perpMarkets,
+      mangoGroup.rootBankAccounts[QUOTE_INDEX],
+      wallet,
+      mangoAccounts
+    )
+    actions.reloadMangoAccount()
+    for (const txid of txids) {
+      if (txid) {
+        notify({
+          title: t('pnl-success'),
+          description: '',
+          txid,
+        })
+      }
+    }
+  } catch (e) {
+    console.log('Error settling PNL: ', `${e}`, `${perpAccount}`)
+    notify({
+      title: t('pnl-error'),
+      description: e.message,
+      txid: e.txid,
+      type: 'error',
+    })
+  }
+}
+
 export const settlePnl = async (
   perpMarket: PerpMarket,
   perpAccount: PerpAccount,

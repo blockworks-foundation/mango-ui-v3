@@ -278,9 +278,7 @@ const MarketsTable = ({ isPerpMarket }) => {
                     <Td>
                       {funding1h ? (
                         <>
-                          <span>{`${funding1h.toLocaleString(undefined, {
-                            maximumSignificantDigits: 3,
-                          })}%`}</span>{' '}
+                          <span>{`${funding1h.toFixed(4)}%`}</span>{' '}
                           <span className="text-xs text-th-fgd-3">{`(${fundingApr}% APR)`}</span>
                         </>
                       ) : (
