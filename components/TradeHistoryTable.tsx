@@ -23,22 +23,14 @@ import usePagination from '../hooks/usePagination'
 import { useEffect } from 'react'
 import useMangoStore from '../stores/useMangoStore'
 
-const renderTradeDateTime = (timestamp: BN | string) => {
-  let date
+const formatTradeDateTime = (timestamp: BN | string) => {
   // don't compare to BN because of npm maddness
   // prototypes can be different due to multiple versions being imported
   if (typeof timestamp === 'string') {
-    date = new Date(timestamp)
+    return timestamp
   } else {
-    date = new Date(timestamp.toNumber() * 1000)
+    return (timestamp.toNumber() * 1000).toString()
   }
-
-  return (
-    <>
-      <div>{date.toLocaleDateString()}</div>
-      <div className="text-xs text-th-fgd-3">{date.toLocaleTimeString()}</div>
-    </>
-  )
 }
 
 const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
@@ -280,7 +272,9 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                           <Td className="!py-2">
                             {trade.loadTimestamp || trade.timestamp ? (
                               <TableDateDisplay
-                                date={trade.loadTimestamp || trade.timestamp}
+                                date={formatTradeDateTime(
+                                  trade.loadTimestamp || trade.timestamp
+                                )}
                               />
                             ) : (
                               t('recent')
@@ -333,11 +327,15 @@ const TradeHistoryTable = ({ numTrades }: { numTrades?: number }) => {
                     <>
                       <div className="text-fgd-1 flex w-full items-center justify-between">
                         <div className="text-left">
-                          {trade.loadTimestamp || trade.timestamp
-                            ? renderTradeDateTime(
+                          {trade.loadTimestamp || trade.timestamp ? (
+                            <TableDateDisplay
+                              date={formatTradeDateTime(
                                 trade.loadTimestamp || trade.timestamp
-                              )
-                            : t('recent')}
+                              )}
+                            />
+                          ) : (
+                            t('recent')
+                          )}
                         </div>
                         <div>
                           <div className="text-right">
