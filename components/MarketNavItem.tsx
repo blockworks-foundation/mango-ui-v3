@@ -38,6 +38,12 @@ const MarketNavItem: FunctionComponent<MarketNavItemProps> = ({
       mangoGroupConfig,
       market.baseSymbol
     )
+
+    // The following if statement is for markets not on devnet
+    if (!mangoGroup.spotMarkets[marketIndex]) {
+      return 1
+    }
+
     const ws = getWeights(mangoGroup, marketIndex, 'Init')
     const w = market.name.includes('PERP')
       ? ws.perpAssetWeight
