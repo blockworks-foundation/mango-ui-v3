@@ -1,5 +1,9 @@
 const { i18n } = require('./next-i18next.config')
 
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+})
+
 const moduleExports = {
   i18n,
   async redirects() {
@@ -26,31 +30,14 @@ const moduleExports = {
     if (!isServer) {
       config.resolve.fallback.fs = false
     }
+
     config.module.rules.push({
-      test: /\.svg?$/,
-      oneOf: [
-        {
-          use: [
-            {
-              loader: '@svgr/webpack',
-              options: {
-                prettier: false,
-                svgo: true,
-                svgoConfig: {
-                  plugins: [{ removeViewBox: false }],
-                },
-                titleProp: true,
-              },
-            },
-          ],
-          issuer: {
-            and: [/\.(ts|tsx|js|jsx|md|mdx)$/],
-          },
-        },
-      ],
+      test: /\.svg$/,
+      use: ['@svgr/webpack'],
     })
+
     return config
   },
 }
 
-module.exports = moduleExports
+module.exports = withBundleAnalyzer(moduleExports)
