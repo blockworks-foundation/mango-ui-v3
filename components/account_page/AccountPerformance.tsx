@@ -74,7 +74,9 @@ const AccountPerformance = () => {
         `https://mango-transaction-log.herokuapp.com/v3/stats/account-performance?mango-account=${mangoAccountPk}`
       )
       const parsedResponse = await response.json()
-      const entries: any = Object.entries(parsedResponse).sort((a,b) => b[0].localeCompare(a[0]))
+      const entries: any = Object.entries(parsedResponse).sort((a, b) =>
+        b[0].localeCompare(a[0])
+      )
 
       const stats = entries
         .map(([key, value]) => {
