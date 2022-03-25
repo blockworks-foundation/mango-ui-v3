@@ -6,16 +6,9 @@ import PositionsTable from './PerpPositionsTable'
 import TradeHistoryTable from './TradeHistoryTable'
 import ManualRefresh from './ManualRefresh'
 import Tabs from './Tabs'
-import FeeDiscountsTable from './FeeDiscountsTable'
 import { marketConfigSelector } from '../stores/selectors'
 
-const TABS = [
-  'Balances',
-  'Orders',
-  'Positions',
-  'Trade History',
-  'Fee Discount',
-]
+const TABS = ['Balances', 'Orders', 'Positions', 'Trade History']
 
 const UserInfoTabs = ({ activeTab, setActiveTab }) => {
   const totalOpenOrders = useMangoStore(
@@ -60,8 +53,6 @@ const TabContent = ({ activeTab }) => {
       return <TradeHistoryTable numTrades={100} />
     case 'Positions':
       return <PositionsTable />
-    case 'Fee Discount':
-      return <FeeDiscountsTable />
     default:
       return <BalancesTable clickToPopulateTradeForm />
   }
