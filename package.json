@@ -13,7 +13,6 @@
     "format": "prettier --write .",
     "lint": "eslint . --ext ts --ext tsx --ext js --quiet",
     "lint-staged": "lint-staged --config lint-staged.js",
-    "test": "jest",
     "lint-all": "yarn lint && yarn type-check"
   },
   "dependencies": {
@@ -70,7 +69,6 @@
     "eslint-plugin-react-hooks": "^4.3.0",
     "husky": "^7.0.4",
     "identity-obj-proxy": "^3.0.0",
-    "jest": "^27.4.7",
     "jest-watch-typeahead": "^0.6.1",
     "lint-staged": "^12.3.6",
     "postcss": "^8.4.7",
