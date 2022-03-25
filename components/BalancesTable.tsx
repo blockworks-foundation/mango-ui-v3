@@ -149,7 +149,7 @@ const BalancesTable = ({
   const unsettledBalances = balances.filter((bal) => bal.unsettled > 0)
 
   const trimDecimals = useCallback((num: string) => {
-    if (parseInt(num) === 0) {
+    if (parseFloat(num) === 0) {
       return '0'
     }
     // Trim the decimals depending on the length of the whole number
