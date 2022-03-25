@@ -953,8 +953,8 @@ const JupiterForm: FunctionComponent = () => {
                       let errorTxid
                       const swapResult = await exchange({
                         wallet: wallet as any,
-                        routeInfo: selectedRoute,
-                        onTransaction: async (txid, totalTxs) => {
+                        route: selectedRoute,
+                        confirmationWaiterFactory: async (txid, totalTxs) => {
                           console.log('txid, totalTxs', txid, totalTxs)
                           if (txCount === totalTxs) {
                             errorTxid = txid
