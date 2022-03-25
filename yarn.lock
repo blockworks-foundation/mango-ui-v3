@@ -1488,82 +1488,15 @@
     buffer-layout "^1.2.0"
     dotenv "10.0.0"
 
-"@solana/wallet-adapter-base@^0.9.3", "@solana/wallet-adapter-base@^0.9.4", "@solana/wallet-adapter-base@^0.9.5":
-  version "0.9.5"
-  resolved "https://registry.yarnpkg.com/@solana/wallet-adapter-base/-/wallet-adapter-base-0.9.5.tgz#6780dd096d30f0e1ffc9c7869029ec37b2a2fc9e"
-  integrity sha512-KCrSB2s8lA38Bd+aPvHlwPEHZU1owD6LSCikjumUaR3HCcpv+V1lxgQX+tdNaDyEVTKlAYNd0uJU+yQfQlkiOA==
+"@solana/web3.js@^1.17.0", "@solana/web3.js@^1.21.0", "@solana/web3.js@^1.30.2", "@solana/web3.js@^1.31.0":
+  version "1.36.0"
+  resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.36.0.tgz#79d7d5217b49b80139f4de68953adc5b9a9a264f"
+  integrity sha512-RNT1451iRR7TyW7EJKMCrH/0OXawIe4zVm0DWQASwXlR/u1jmW6FrmH0lujIh7cGTlfOVbH+2ZU9AVUPLBFzwA==
   dependencies:
     "@solana/web3.js" "^1.36.0"
     eventemitter3 "^4.0.0"
 
-"@solana/wallet-adapter-bitpie@^0.5.3":
-  version "0.5.3"
-  resolved "https://registry.yarnpkg.com/@solana/wallet-adapter-bitpie/-/wallet-adapter-bitpie-0.5.3.tgz#af6740a4ec9c531e55f6adcdb45dfda0191c4267"
-  integrity sha512-hRD91Pfj47taJgIwYaqLVNZ3bJqmlL9SpvL2RVWBqKDIRZ0zwSuiv0+QyOWfcwAJUCxZh4qT1Hr4Fd9EnC1OOQ==
-  dependencies:
-    "@solana/wallet-adapter-base" "^0.9.3"
-    "@solana/web3.js" "^1.20.0"
-
-"@solana/wallet-adapter-glow@^0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@solana/wallet-adapter-glow/-/wallet-adapter-glow-0.1.1.tgz#4db395b2ccf73eb2d6c1d9362e26cbfd260fc19f"
-  integrity sha512-ZYVNtplMAbUQUAzWQ+bhPpIiUO2Jz8Pvx6Ypas+xuZJBgc0vb+iaYFGLHEdg+SE19P20QIPQE75qPRQvsMqpCQ==
-  dependencies:
-    "@solana/wallet-adapter-base" "^0.9.3"
-    "@solana/web3.js" "^1.36.0"
-
-"@solana/wallet-adapter-huobi@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@solana/wallet-adapter-huobi/-/wallet-adapter-huobi-0.1.0.tgz#aa5158e9b2d79e753c2da55f26609777eb4651c6"
-  integrity sha512-VdJT/eSO1qhVYODV+BYEptqlZoy3YhZHJsP0+4EdrBcyFqg8MHu1+kZujhMThccWoZmpl+CcetnYHuxz7EYZdg==
-  dependencies:
-    "@solana/wallet-adapter-base" "^0.9.4"
-    "@solana/web3.js" "^1.20.0"
-
-"@solana/wallet-adapter-phantom@^0.9.3":
-  version "0.9.3"
-  resolved "https://registry.yarnpkg.com/@solana/wallet-adapter-phantom/-/wallet-adapter-phantom-0.9.3.tgz#68832deccf43af0043d70498fcd11a9006e27b46"
-  integrity sha512-XBDgG5BzxRolHW2OchaIccvsPeQ0PKl/Xy303x7oHS3rW+HUwjIMqaKKpmV66A6rMr1x+ytL+tp6p7t3M2oD3Q==
-  dependencies:
-    "@solana/wallet-adapter-base" "^0.9.3"
-    "@solana/web3.js" "^1.20.0"
-
-"@solana/wallet-adapter-react@^0.15.4":
-  version "0.15.4"
-  resolved "https://registry.yarnpkg.com/@solana/wallet-adapter-react/-/wallet-adapter-react-0.15.4.tgz#413c3fa6893e9d809e5a6dd4730695fba942967b"
-  integrity sha512-QB8tE1IqYxvHrdDZP3DGICuCq6xydvjUYhW+usIahORmHniFF62Mp/LPfdAGZRDFF7U2/rZPktGFiOxWUJA7Qw==
-  dependencies:
-    "@solana/wallet-adapter-base" "^0.9.4"
-    "@solana/web3.js" "^1.36.0"
-
-"@solana/wallet-adapter-slope@^0.5.4":
-  version "0.5.4"
-  resolved "https://registry.yarnpkg.com/@solana/wallet-adapter-slope/-/wallet-adapter-slope-0.5.4.tgz#41056cbd870b8a0866e4e908cfe6575773fb0383"
-  integrity sha512-I8WgeomiQSnhxn1ebsPNhiHqzNx0clWGwQG0fOEFcoxxE3puKpNF27Vk+XFx8XS1igWPTPntFbiOUocKT3A63A==
-  dependencies:
-    "@solana/wallet-adapter-base" "^0.9.4"
-    "@solana/web3.js" "^1.20.0"
-    bs58 "^4.0.0"
-
-"@solana/wallet-adapter-solflare@^0.6.6":
-  version "0.6.6"
-  resolved "https://registry.yarnpkg.com/@solana/wallet-adapter-solflare/-/wallet-adapter-solflare-0.6.6.tgz#70ffd87db78e65bd7f53910996f8c50c032a0b54"
-  integrity sha512-4H4FbRpvUeCGQ9HevLpCc9hCtwjRL4pf7kk/4QoGdu+jLbXo1doKTiT8sY1svksNS8JWrcr0kn7SpePmiy7xhg==
-  dependencies:
-    "@solana/wallet-adapter-base" "^0.9.4"
-    "@solana/web3.js" "^1.20.0"
-    "@solflare-wallet/sdk" "^1.0.11"
-
-"@solana/wallet-adapter-sollet@^0.11.1":
-  version "0.11.1"
-  resolved "https://registry.yarnpkg.com/@solana/wallet-adapter-sollet/-/wallet-adapter-sollet-0.11.1.tgz#021ec1c8f402601c8898175e1fb39b504a25cb43"
-  integrity sha512-lRgz8+57g2piBqxYHA4HqKuHY/gDCVY5vCqEa2pColfKtIETqKRcpF1P34R4MD5mLuMjLEQP9Hjt285NIOeVjQ==
-  dependencies:
-    "@project-serum/sol-wallet-adapter" "^0.2.6"
-    "@solana/wallet-adapter-base" "^0.9.4"
-    "@solana/web3.js" "^1.20.0"
-
-"@solana/web3.js@1.31.0":
+"@solana/web3.js@~1.31.0":
   version "1.31.0"
   resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.31.0.tgz#7a313d4c1a90b77f27ddbfe845a10d6883e06452"
   integrity sha512-7nHHx1JNFnrt15e9y8m38I/EJCbaB+bFC3KZVM1+QhybCikFxGMtGA5r7PDC3GEL1R2RZA8yKoLkDKo3vzzqnw==
@@ -1584,15 +1517,15 @@
     tweetnacl "^1.0.0"
 
 "@solana/web3.js@^1.17.0", "@solana/web3.js@^1.20.0", "@solana/web3.js@^1.21.0", "@solana/web3.js@^1.30.2", "@solana/web3.js@^1.31.0", "@solana/web3.js@^1.36.0":
-  version "1.36.0"
-  resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.36.0.tgz#79d7d5217b49b80139f4de68953adc5b9a9a264f"
-  integrity sha512-RNT1451iRR7TyW7EJKMCrH/0OXawIe4zVm0DWQASwXlR/u1jmW6FrmH0lujIh7cGTlfOVbH+2ZU9AVUPLBFzwA==
+  version "1.37.0"
+  resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.37.0.tgz#167b5b5d4aedc151237d9230b6142da068b0af34"
+  integrity sha512-O2iCcgkGdi2FXwVLztPIZHcBuZXdhbVLavMsG+RdEyFGzFD0tQN1rOJ+Xb5eaexjqtgcqRN+Fyg3wAhLcHJbiA==
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@ethersproject/sha2" "^5.5.0"
-    "@solana/buffer-layout" "^3.0.0"
+    "@solana/buffer-layout" "^4.0.0"
     bn.js "^5.0.0"
-    borsh "^0.4.0"
+    borsh "^0.7.0"
     bs58 "^4.0.1"
     buffer "6.0.1"
     cross-fetch "^3.1.4"
@@ -4543,9 +4476,9 @@ postcss@8.4.5:
     source-map-js "^1.0.1"
 
 postcss@^8.1.6, postcss@^8.1.8, postcss@^8.3.5, postcss@^8.4.6, postcss@^8.4.7:
-  version "8.4.12"
-  resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.4.12.tgz#1e7de78733b28970fa4743f7da6f3763648b1905"
-  integrity sha512-lg6eITwYe9v6Hr5CncVbK70SoioNQIq81nsaG86ev5hAidQvmOeETBqs7jm43K2F5/Ley3ytDtriImV6TpNiSg==
+  version "8.4.7"
+  resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.4.7.tgz#f99862069ec4541de386bf57f5660a6c7a0875a8"
+  integrity sha512-L9Ye3r6hkkCeOETQX6iOaWZgjp3LL6Lpqm6EtgbKrgqGGteRMNb9vzBfRL96YOSu8o7x3MfIH9Mo5cPJFGrW6A==
   dependencies:
     nanoid "^3.3.1"
     picocolors "^1.0.0"
