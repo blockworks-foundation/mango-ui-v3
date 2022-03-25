@@ -895,8 +895,8 @@ export default function AdvancedTradeForm({
                 : ['10', '25', '50', '75', '100']
             }
           />
-          {marketConfig.kind === 'perp' &&
-            (side === 'sell' ? (
+          {marketConfig.kind === 'perp' ? (
+            side === 'sell' ? (
               roundedDeposits > 0 ? (
                 <div className="mt-2 text-xs tracking-normal text-th-fgd-4">
                   <span>{closeDepositString}</span>
@@ -906,9 +906,10 @@ export default function AdvancedTradeForm({
               <div className="mt-2 text-xs tracking-normal text-th-fgd-4">
                 <span>{closeBorrowString}</span>
               </div>
-            ) : null)}
+            ) : null
+          ) : null}
           <div className="flex-wrap sm:flex">
-            {isLimitOrder && (
+            {isLimitOrder ? (
               <div className="flex">
                 <div className="mr-4 mt-3">
                   <Tooltip
@@ -943,13 +944,13 @@ export default function AdvancedTradeForm({
                   </Tooltip>
                 </div>
               </div>
-            )}
+            ) : null}
             {/*
                 Add the following line to the ternary below once we are
                 auto updating the reduceOnly state when doing a market order:
                 && showReduceOnly(perpAccount?.basePosition.toNumber())
              */}
-            {marketConfig.kind === 'perp' && (
+            {marketConfig.kind === 'perp' ? (
               <div className="mr-4 mt-3">
                 <Tooltip
                   className="hidden md:block"
@@ -966,8 +967,8 @@ export default function AdvancedTradeForm({
                   </Checkbox>
                 </Tooltip>
               </div>
-            )}
-            {marketConfig.kind === 'perp' && (
+            ) : null}
+            {marketConfig.kind === 'perp' ? (
               <div className="mt-3">
                 <Tooltip
                   className="hidden md:block"
@@ -984,8 +985,8 @@ export default function AdvancedTradeForm({
                   </Checkbox>
                 </Tooltip>
               </div>
-            )}
-            {marketConfig.kind === 'spot' && (
+            ) : null}
+            {marketConfig.kind === 'spot' ? (
               <div className="mt-3">
                 <Tooltip
                   delay={250}
@@ -1000,16 +1001,16 @@ export default function AdvancedTradeForm({
                   </Checkbox>
                 </Tooltip>
               </div>
-            )}
+            ) : null}
           </div>
-          {warnUserSlippage && (
+          {warnUserSlippage ? (
             <div className="mt-1 flex items-center text-th-red">
               <div>
                 <ExclamationIcon className="mr-2 h-5 w-5" />
               </div>
               <div className="text-xs">{t('slippage-warning')}</div>
             </div>
-          )}
+          ) : null}
           <div className={`mt-3 flex`}>
             {canTrade ? (
               <button
