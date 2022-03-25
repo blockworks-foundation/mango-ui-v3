@@ -62,10 +62,11 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
     () => tokens.find((t) => t.symbol === withdrawTokenSymbol),
     [withdrawTokenSymbol, tokens]
   )
-  const tokenIndex = mangoGroup.getTokenIndex(token.mintKey)
+  const tokenIndex = mangoGroup ? mangoGroup.getTokenIndex(token.mintKey) : 0
 
   useEffect(() => {
-    if (!mangoGroup || !mangoAccount || !withdrawTokenSymbol) return
+    if (!mangoGroup || !mangoAccount || !withdrawTokenSymbol || !mangoCache)
+      return
 
     const mintDecimals = mangoGroup.tokens[tokenIndex].decimals
     const tokenDeposits = mangoAccount.getUiDeposit(
@@ -155,6 +156,9 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   ])
 
   const handleWithdraw = () => {
+    if (!mangoGroup) {
+      return
+    }
     setSubmitting(true)
 
     withdraw({
@@ -192,7 +196,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   }
 
   const getDepositsForSelectedAsset = (): I80F48 => {
-    return mangoAccount
+    return mangoAccount && mangoCache && mangoGroup
       ? mangoAccount.getUiDeposit(
           mangoCache.rootBankCache[tokenIndex],
           mangoGroup,

@@ -78,6 +78,9 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
   }
 
   useEffect(() => {
+    if (!inputTokenId || !outputTokenId) {
+      return
+    }
     if (['usd-coin', 'tether'].includes(inputTokenId)) {
       setBaseTokenId(outputTokenId)
       setQuoteTokenId(inputTokenId)

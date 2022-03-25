@@ -194,6 +194,9 @@ export default function RiskCalculator() {
 
   // Retrieve the data to create the scenario table
   const createScenario = (type) => {
+    if (!mangoGroup || !mangoCache || !mangoAccount) {
+      return null
+    }
     const rowData = []
     let calculatorRowData
     for (let i = -1; i < mangoGroup.numOracles; i++) {
@@ -583,6 +586,9 @@ export default function RiskCalculator() {
 
   // Reset column details
   const resetScenarioColumn = (column) => {
+    if (!mangoCache || !mangoAccount || !scenarioBars) {
+      return
+    }
     let resetRowData
     mangoGroup
       ? (resetRowData = scenarioBars.rowData.map((asset) => {

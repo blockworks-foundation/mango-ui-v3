@@ -68,6 +68,9 @@ const useMangoStats = () => {
             }
             return bank.publicKey.toBase58() == token.rootKey.toBase58()
           })
+          if (!rootBank) {
+            return
+          }
           const totalDeposits = rootBank.getUiTotalDeposit(mangoGroup)
           const totalBorrows = rootBank.getUiTotalBorrow(mangoGroup)
 

@@ -23,7 +23,7 @@ export function useBalances(): Balances[] {
     baseSymbol,
     name,
   } of mangoGroupConfig.spotMarkets) {
-    if (!mangoAccount || !mangoGroup) {
+    if (!mangoAccount || !mangoGroup || !mangoCache) {
       return []
     }
 

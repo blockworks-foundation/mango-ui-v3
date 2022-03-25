@@ -133,6 +133,9 @@ export function useOpenOrders() {
 
     const openOrders = Object.entries(markets).map(([address, market]) => {
       const marketConfig = getMarketByPublicKey(groupConfig, address)
+      if (!marketConfig) {
+        return
+      }
       if (market instanceof Market) {
         return parseSpotOrders(market, marketConfig, mangoAccount, accountInfos)
       } else if (market instanceof PerpMarket) {
