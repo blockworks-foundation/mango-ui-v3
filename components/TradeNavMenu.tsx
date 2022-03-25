@@ -240,14 +240,14 @@ export const FavoriteMarketButton = ({ market }) => {
 
   return favoriteMarkets.find((mkt) => mkt.name === market.name) ? (
     <button
-      className="default-transition text-th-primary hover:text-th-fgd-3"
+      className="default-transition flex items-center justify-center text-th-primary hover:text-th-fgd-3"
       onClick={() => removeFromFavorites(market)}
     >
       <FilledStarIcon className="h-5 w-5" />
     </button>
   ) : (
     <button
-      className="default-transition text-th-fgd-4 hover:text-th-primary"
+      className="default-transition flex items-center justify-center text-th-fgd-4 hover:text-th-primary"
       onClick={() => addToFavorites(market)}
     >
       <StarIcon className="h-5 w-5" />

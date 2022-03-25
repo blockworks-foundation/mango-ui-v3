@@ -14,7 +14,7 @@
     "lint": "eslint . --ext ts --ext tsx --ext js --quiet",
     "lint-staged": "lint-staged --config lint-staged.js",
     "test": "jest",
-    "test-all": "yarn lint && yarn type-check && yarn test"
+    "lint-all": "yarn lint && yarn type-check"
   },
   "dependencies": {
     "@blockworks-foundation/mango-client": "^3.3.25",

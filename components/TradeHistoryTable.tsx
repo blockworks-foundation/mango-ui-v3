@@ -42,7 +42,7 @@ const formatTradeDateTime = (timestamp: BN | string) => {
   if (typeof timestamp === 'string') {
     return timestamp
   } else {
-    return (timestamp.toNumber() * 1000).toString()
+    return timestamp.toNumber() * 1000
   }
 }
 
