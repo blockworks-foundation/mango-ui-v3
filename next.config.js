@@ -26,29 +26,12 @@ const moduleExports = {
     if (!isServer) {
       config.resolve.fallback.fs = false
     }
+
     config.module.rules.push({
-      test: /\.svg?$/,
-      oneOf: [
-        {
-          use: [
-            {
-              loader: '@svgr/webpack',
-              options: {
-                prettier: false,
-                svgo: true,
-                svgoConfig: {
-                  plugins: [{ removeViewBox: false }],
-                },
-                titleProp: true,
-              },
-            },
-          ],
-          issuer: {
-            and: [/\.(ts|tsx|js|jsx|md|mdx)$/],
-          },
-        },
-      ],
+      test: /\.svg$/,
+      use: ['@svgr/webpack'],
     })
+
     return config
   },
 }
