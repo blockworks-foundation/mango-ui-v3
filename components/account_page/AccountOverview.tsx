@@ -35,14 +35,13 @@ export const fetchHourlyPerformanceStats = async (
       .format('YYYY-MM-DD')}`
   )
   const parsedResponse = await response.json()
-  const entries: any = Object.entries(parsedResponse)
+  const entries: any = Object.entries(parsedResponse).sort((a,b) => b[0].localeCompare(a[0]))
 
   const stats = entries
     .map(([key, value]) => {
       return { ...value, time: key }
     })
     .filter((x) => x)
-    .reverse()
 
   return stats
 }
