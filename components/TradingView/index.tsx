@@ -51,7 +51,6 @@ const TVChartContainer = () => {
   const selectedMarketConfig = useMangoStore((s) => s.selectedMarket.config)
   const openOrders = useMangoStore((s) => s.selectedMangoAccount.openOrders)
   const actions = useMangoStore((s) => s.actions)
-  const selectedMarketPrice = useMangoStore((s) => s.selectedMarket.markPrice)
 
   const isMobile = width ? width < breakpoints.sm : false
   const mangoClient = useMangoStore.getState().connection.client
@@ -351,12 +350,15 @@ const TVChartContainer = () => {
   function drawLine(order, market) {
     const orderSizeUi = roundPerpSize(order.size, market.config.baseSymbol)
     if (!tvWidgetRef.current.chart()) return
+
     return tvWidgetRef.current
       .chart()
       .createOrderLine({ disableUndo: false })
       .onMove(function () {
         const currentOrderPrice = order.price
         const updatedOrderPrice = this.getPrice()
+        const selectedMarketPrice =
+          useMangoStore.getState().selectedMarket.markPrice
         if (!order.perpTrigger?.clientOrderId) {
           if (
             (order.side === 'buy' &&
