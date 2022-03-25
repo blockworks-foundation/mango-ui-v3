@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/solid'
 import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
 import Modal from './Modal'
@@ -11,6 +11,15 @@ import Select from './Select'
 import { useTranslation } from 'next-i18next'
 import Switch from './Switch'
 import { MarketKind } from '@blockworks-foundation/mango-client'
+import { useTheme } from 'next-themes'
+import { useRouter } from 'next/router'
+import ButtonGroup from './ButtonGroup'
+import dayjs from 'dayjs'
+
+require('dayjs/locale/en')
+require('dayjs/locale/es')
+require('dayjs/locale/zh')
+require('dayjs/locale/zh-tw')
 
 const NODE_URLS = [
   { label: 'Triton (RPC Pool)', value: 'https://mango.rpcpool.com' },
@@ -19,6 +28,19 @@ const NODE_URLS = [
     value: 'https://mango.genesysgo.net/',
   },
   { label: 'Custom', value: '' },
+]
+
+const THEMES = ['Light', 'Dark', 'Mango']
+
+export const LANGS = [
+  { locale: 'en', name: 'english', description: 'english' },
+  { locale: 'es', name: 'spanish', description: 'spanish' },
+  {
+    locale: 'zh_tw',
+    name: 'chinese-traditional',
+    description: 'traditional chinese',
+  },
+  { locale: 'zh', name: 'chinese', description: 'simplified chinese' },
 ]
 
 const CUSTOM_NODE = NODE_URLS.find((n) => n.label === 'Custom')
@@ -37,6 +59,8 @@ export const initialMarket = {
 const SettingsModal = ({ isOpen, onClose }) => {
   const { t } = useTranslation('common')
   const [settingsView, setSettingsView] = useState('')
+  const { theme } = useTheme()
+  const [savedLanguage] = useLocalStorageState('language', '')
   const [rpcEndpointUrl] = useLocalStorageState(
     NODE_URL_KEY,
     NODE_URLS[0].value
@@ -58,6 +82,12 @@ const SettingsModal = ({ isOpen, onClose }) => {
 
   const rpcEndpoint =
     NODE_URLS.find((node) => node.value === rpcEndpointUrl) || CUSTOM_NODE
+
+  const savedLanguageName = useMemo(
+    () => LANGS.find((l) => l.locale === savedLanguage).name,
+    [savedLanguage]
+  )
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       {settingsView !== '' ? (
@@ -75,7 +105,7 @@ const SettingsModal = ({ isOpen, onClose }) => {
       {!settingsView ? (
         <div className="border-b border-th-bkg-4">
           <button
-            className="default-transition flex w-full items-center justify-between border-t border-th-bkg-4 py-3 font-normal text-th-fgd-1 hover:text-th-primary focus:outline-none"
+            className="default-transition flex w-full items-center justify-between rounded-none border-t border-th-bkg-4 py-3 font-normal text-th-fgd-1 hover:text-th-primary focus:outline-none"
             onClick={() => setSettingsView('Default Market')}
           >
             <span>{t('default-market')}</span>
@@ -85,7 +115,27 @@ const SettingsModal = ({ isOpen, onClose }) => {
             </div>
           </button>
           <button
-            className="default-transition flex w-full items-center justify-between border-t border-th-bkg-4 py-3 font-normal text-th-fgd-1 hover:text-th-primary focus:outline-none"
+            className="default-transition flex w-full items-center justify-between rounded-none border-t border-th-bkg-4 py-3 font-normal text-th-fgd-1 hover:text-th-primary focus:outline-none"
+            onClick={() => setSettingsView('Theme')}
+          >
+            <span>{t('theme')}</span>
+            <div className="flex items-center text-xs text-th-fgd-3">
+              {theme}
+              <ChevronRightIcon className="ml-1 h-5 w-5 text-th-fgd-1" />
+            </div>
+          </button>
+          <button
+            className="default-transition flex w-full items-center justify-between rounded-none border-t border-th-bkg-4 py-3 font-normal text-th-fgd-1 hover:text-th-primary focus:outline-none"
+            onClick={() => setSettingsView('Language')}
+          >
+            <span>{t('language')}</span>
+            <div className="flex items-center text-xs text-th-fgd-3">
+              {t(savedLanguageName)}
+              <ChevronRightIcon className="ml-1 h-5 w-5 text-th-fgd-1" />
+            </div>
+          </button>
+          <button
+            className="default-transition flex w-full items-center justify-between rounded-none border-t border-th-bkg-4 py-3 font-normal text-th-fgd-1 hover:text-th-primary focus:outline-none"
             onClick={() => setSettingsView('RPC Endpoint')}
           >
             <span>{t('rpc-endpoint')}</span>
@@ -132,6 +182,10 @@ const SettingsContent = ({ settingsView, setSettingsView }) => {
       return <DefaultMarketSettings setSettingsView={setSettingsView} />
     case 'RPC Endpoint':
       return <RpcEndpointSettings setSettingsView={setSettingsView} />
+    case 'Theme':
+      return <ThemeSettings setSettingsView={setSettingsView} />
+    case 'Language':
+      return <LanguageSettings />
     case '':
       return null
   }
@@ -238,5 +292,51 @@ const RpcEndpointSettings = ({ setSettingsView }) => {
         <div className={`flex items-center justify-center`}>{t('save')}</div>
       </Button>
     </div>
+  )
+}
+
+const ThemeSettings = ({ setSettingsView }) => {
+  const { theme, setTheme } = useTheme()
+  const { t } = useTranslation('common')
+
+  return (
+    <>
+      <Label>{t('theme')}</Label>
+      <ButtonGroup
+        activeValue={theme}
+        onChange={(t) => setTheme(t)}
+        values={THEMES}
+      />
+      <Button onClick={() => setSettingsView('')} className="mt-6 w-full">
+        <div className={`flex items-center justify-center`}>{t('save')}</div>
+      </Button>
+    </>
+  )
+}
+
+const LanguageSettings = () => {
+  const [savedLanguage, setSavedLanguage] = useLocalStorageState('language', '')
+  const router = useRouter()
+  const { pathname, asPath, query } = router
+  const { t } = useTranslation('common')
+
+  const handleLangChange = () => {
+    router.push({ pathname, query }, asPath, { locale: savedLanguage })
+    dayjs.locale(savedLanguage == 'zh_tw' ? 'zh-tw' : savedLanguage)
+  }
+
+  return (
+    <>
+      <Label>{t('language')}</Label>
+      <ButtonGroup
+        activeValue={savedLanguage}
+        onChange={(l) => setSavedLanguage(l)}
+        values={LANGS.map((val) => val.locale)}
+        names={LANGS.map((val) => t(val.name))}
+      />
+      <Button onClick={() => handleLangChange()} className="mt-6 w-full">
+        <div className={`flex items-center justify-center`}>{t('save')}</div>
+      </Button>
+    </>
   )
 }

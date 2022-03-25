@@ -3,12 +3,10 @@ import Link from 'next/link'
 import { abbreviateAddress } from '../utils/index'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import MenuItem from './MenuItem'
-import ThemeSwitch from './ThemeSwitch'
 import useMangoStore from '../stores/useMangoStore'
 import ConnectWalletButton from './ConnectWalletButton'
 import NavDropMenu from './NavDropMenu'
 import AccountsModal from './AccountsModal'
-import LanguageSwitch from './LanguageSwitch'
 import { DEFAULT_MARKET_KEY, initialMarket } from './SettingsModal'
 import { useTranslation } from 'next-i18next'
 import Settings from './Settings'
@@ -119,38 +117,26 @@ const TopBar = () => {
                 />
               </div>
             </div>
-            <div className="flex items-center">
-              <div className={`pl-2`}>
-                <LanguageSwitch />
-              </div>
-              <div className={`pl-2`}>
-                <ThemeSwitch />
-              </div>
+            <div className="flex items-center space-x-2.5">
               <div className="pl-2">
                 <Settings />
               </div>
               {mangoAccount &&
               mangoAccount.owner.toBase58() ===
                 wallet?.publicKey?.toBase58() ? (
-                <div className="pl-2">
-                  <button
-                    className="rounded border border-th-bkg-4 py-1 px-2 text-xs hover:border-th-fgd-4 focus:outline-none"
-                    onClick={() => setShowAccountsModal(true)}
-                  >
-                    <div className="text-xs font-normal text-th-primary">
-                      {t('account')}
-                    </div>
-                    {mangoAccount.name
-                      ? mangoAccount.name
-                      : abbreviateAddress(mangoAccount.publicKey)}
-                  </button>
-                </div>
+                <button
+                  className="rounded border border-th-bkg-4 py-1 px-2 text-xs hover:border-th-fgd-4 focus:outline-none"
+                  onClick={() => setShowAccountsModal(true)}
+                >
+                  <div className="text-xs font-normal text-th-primary">
+                    {t('account')}
+                  </div>
+                  {mangoAccount.name
+                    ? mangoAccount.name
+                    : abbreviateAddress(mangoAccount.publicKey)}
+                </button>
               ) : null}
-              <div className="flex">
-                <div className="pl-4">
-                  <ConnectWalletButton />
-                </div>
-              </div>
+              <ConnectWalletButton />
             </div>
           </div>
         </div>
