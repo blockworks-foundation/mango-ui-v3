@@ -35,14 +35,15 @@ export const fetchHourlyPerformanceStats = async (
       .format('YYYY-MM-DD')}`
   )
   const parsedResponse = await response.json()
-  const entries: any = Object.entries(parsedResponse)
+  const entries: any = Object.entries(parsedResponse).sort((a, b) =>
+    b[0].localeCompare(a[0])
+  )
 
   const stats = entries
     .map(([key, value]) => {
       return { ...value, time: key }
     })
     .filter((x) => x)
-    .reverse()
 
   return stats
 }
@@ -183,7 +184,7 @@ export default function AccountOverview() {
       <h2 className="mb-4">{t('assets-liabilities')}</h2>
 
       <div className="grid grid-flow-col grid-cols-1 grid-rows-2 pb-8 md:grid-cols-2 md:grid-rows-1 md:gap-4 md:pb-12">
-        <div className="rounded-md border-t border-th-bkg-4 p-3 sm:rounded-lg sm:p-4 md:border-b">
+        <div className="border-t border-th-bkg-4 p-3 sm:p-4 md:border-b">
           <div className="pb-0.5 text-th-fgd-3">{t('total-assets')}</div>
           <div className="flex items-center">
             <div className="text-xl font-bold text-th-fgd-1 md:text-2xl">
@@ -193,7 +194,7 @@ export default function AccountOverview() {
             </div>
           </div>
         </div>
-        <div className="rounded-md border-b border-t border-th-bkg-4 p-3 sm:rounded-lg sm:p-4">
+        <div className="border-b border-t border-th-bkg-4 p-3 sm:p-4">
           <div className="pb-0.5 text-th-fgd-3">{t('total-liabilities')}</div>
           <div className="flex items-center">
             <div className="text-xl font-bold text-th-fgd-1 md:text-2xl">

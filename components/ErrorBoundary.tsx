@@ -1,4 +1,5 @@
 import React from 'react'
+import { FiveOhFive } from './FiveOhFive'
 
 class ErrorBoundary extends React.Component<
   any,
@@ -39,16 +40,7 @@ class ErrorBoundary extends React.Component<
   render() {
     if (this.state.hasError) {
       // You can render any custom fallback UI
-      return (
-        <div className="pt-1 text-center text-th-fgd-2">
-          <div>Something went wrong.</div>
-          <div className="text-th-red">{this.state.error.message}</div>
-          <button className="mt-2" onClick={() => location.reload()}>
-            Refresh and try again
-          </button>
-          <div className="mx-8 mt-4 px-8">{this.state.error.stack}</div>
-        </div>
-      )
+      return <FiveOhFive error={this.state.error} />
     }
 
     return this.props.children
