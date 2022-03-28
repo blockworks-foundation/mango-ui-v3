@@ -36,7 +36,7 @@ const ConnectWalletButton = () => {
   }, [savedProviderUrl])
 
   const handleWalletConect = () => {
-    wallet.connect()
+    wallet?.connect()
     set((state) => {
       state.selectedMangoAccount.initialLoad = true
     })

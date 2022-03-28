@@ -40,8 +40,8 @@ function calculateFundingRate(
 export default function StatsPerps({ perpStats }) {
   const { t } = useTranslation('common')
   const [selectedAsset, setSelectedAsset] = useState<string>('BTC-PERP')
-  const marketConfigs = useMangoGroupConfig().perpMarkets
-  const selectedMarketConfig = marketConfigs.find(
+  const marketConfigs = useMangoGroupConfig()?.perpMarkets
+  const selectedMarketConfig = marketConfigs?.find(
     (m) => m.name === selectedAsset
   )
   const marketDirectory = useMangoStore(marketsSelector)
@@ -123,14 +123,14 @@ export default function StatsPerps({ perpStats }) {
           onChange={(a) => setSelectedAsset(a)}
           className="ml-4 w-36 flex-shrink-0 md:hidden"
         >
-          {marketConfigs.map((market) => (
+          {marketConfigs?.map((market) => (
             <Select.Option key={market.name} value={market.name}>
               {market.name}
             </Select.Option>
           ))}
         </Select>
         <div className="mb-4 hidden rounded-md bg-th-bkg-3 px-3 py-2 md:mb-6 md:flex md:px-4">
-          {marketConfigs.map((market, index) => (
+          {marketConfigs?.map((market, index) => (
             <div
               className={`py-1 text-xs font-bold md:px-2 md:text-sm ${
                 index > 0 ? 'ml-4 md:ml-2' : null

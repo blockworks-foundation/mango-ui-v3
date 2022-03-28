@@ -38,7 +38,7 @@ const PerformanceChart = ({
   const { t } = useTranslation('common')
   const { observe, width, height } = useDimensions()
 
-  const [chartData, setChartData] = useState([])
+  const [chartData, setChartData] = useState<any[]>([])
   const [mouseData, setMouseData] = useState<string | null>(null)
   const [chartToShow, setChartToShow] = useState('Value')
   const [showSpotPnl, setShowSpotPnl] = useState(true)

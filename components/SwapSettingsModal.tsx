@@ -33,7 +33,7 @@ const SwapSettingsModal = ({
 
   const handleSave = () => {
     setSlippage(inputValue ? parseFloat(inputValue) : tempSlippage)
-    onClose()
+    onClose?.()
   }
 
   useEffect(() => {

@@ -12,7 +12,7 @@ export default function NavDropMenu({
   menuTitle = '',
   linksArray = [],
 }: NavDropMenuProps) {
-  const buttonRef = useRef(null)
+  const buttonRef = useRef<HTMLButtonElement>(null)
 
   const toggleMenu = () => {
     buttonRef?.current?.click()

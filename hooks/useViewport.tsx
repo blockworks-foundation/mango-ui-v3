@@ -8,10 +8,12 @@ const ViewportContext = createContext({} as ViewportContextProps)
 
 export const ViewportProvider = ({ children }) => {
   const [mounted, setMounted] = useState(false)
-  const [width, setWidth] = useState(null)
+  const [width, setWidth] = useState<number>(0)
 
   const handleWindowResize = () => {
-    setWidth(window.innerWidth)
+    if (typeof window !== 'undefined') {
+      setWidth(window.innerWidth)
+    }
   }
 
   useEffect(() => {

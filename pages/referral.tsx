@@ -98,6 +98,7 @@ export default function Referral() {
   const isMobile = width ? width < breakpoints.sm : false
 
   const fetchCustomReferralLinks = useCallback(async () => {
+    if (!mangoAccount) return
     setLoading(true)
     const mangoClient = useMangoStore.getState().connection.client
     const referrerIds = await mangoClient.getReferrerIdsForMangoAccount(

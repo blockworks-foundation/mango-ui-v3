@@ -27,7 +27,10 @@ const SelectMarket = () => {
   const [markets, setMarkets] = useState<any[]>([])
   useEffect(() => {
     const markets: any[] = []
-    const allMarkets = [...groupConfig.spotMarkets, ...groupConfig.perpMarkets]
+    const allMarkets =
+      groupConfig?.spotMarkets && groupConfig?.perpMarkets
+        ? [...groupConfig.spotMarkets, ...groupConfig.perpMarkets]
+        : []
     allMarkets.forEach((market) => {
       const base = market.name.slice(0, -5)
       const found = markets.find((b) => b.baseAsset === base)

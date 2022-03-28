@@ -41,6 +41,7 @@ const PositionsTable = () => {
   }, [])
 
   const handleSizeClick = (size, indexPrice) => {
+    if (!selectedMarket) return
     const sizePrecisionDigits = getPrecisionDigits(selectedMarket.minOrderSize)
     const priceOrDefault = price ? price : indexPrice
     const roundedSize = parseFloat(Math.abs(size).toFixed(sizePrecisionDigits))

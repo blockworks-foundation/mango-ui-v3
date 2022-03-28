@@ -81,7 +81,7 @@ const SwitchMarketDropdown = () => {
                 {isPerpMarket ? '-' : '/'}
               </span>
               <div className="pl-0.5 text-xl font-semibold">
-                {isPerpMarket ? 'PERP' : groupConfig.quoteSymbol}
+                {isPerpMarket ? 'PERP' : groupConfig?.quoteSymbol}
               </div>
               <div
                 className={`flex h-10 w-8 items-center justify-center rounded-none`}
