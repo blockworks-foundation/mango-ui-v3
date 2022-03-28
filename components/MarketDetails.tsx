@@ -106,11 +106,11 @@ const MarketDetails = () => {
                         {t('average-funding')}
                       </div>
                       <div className="text-th-fgd-1 md:text-xs">
-                        {`${market?.funding1h.toLocaleString(undefined, {
-                          maximumSignificantDigits: 3,
-                        })}% (${(market?.funding1h * 24 * 365).toFixed(
-                          2
-                        )}% APR)`}
+                        {`${market?.funding1h.toFixed(4)}% (${(
+                          market?.funding1h *
+                          24 *
+                          365
+                        ).toFixed(2)}% APR)`}
                       </div>
                     </div>
                   </Tooltip>

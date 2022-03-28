@@ -1001,9 +1001,10 @@
     "@babel/helper-validator-identifier" "^7.16.7"
     to-fast-properties "^2.0.0"
 
-"@blockworks-foundation/mango-client@git+https://github.com/blockworks-foundation/mango-client-v3.git#update-wallet-type":
-  version "3.3.25"
-  resolved "git+https://github.com/blockworks-foundation/mango-client-v3.git#bada6221280b35dcdb8bf64225091bebb3e68f60"
+"@blockworks-foundation/mango-client@^3.3.27":
+  version "3.3.27"
+  resolved "https://registry.yarnpkg.com/@blockworks-foundation/mango-client/-/mango-client-3.3.27.tgz#a3133bf2073e0b211b5133290deed2f9d18ee1cf"
+  integrity sha512-P3StybDO57Tg288BxxEfIs2SEC//55eHogwoJ9hAcX0gmHOxzrW3uTodSMRFV1h6S5dgxCqMRCqWPF946401vQ==
   dependencies:
     "@project-serum/anchor" "^0.21.0"
     "@project-serum/serum" "0.13.55"
