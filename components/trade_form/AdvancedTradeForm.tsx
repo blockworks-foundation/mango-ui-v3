@@ -623,7 +623,7 @@ export default function AdvancedTradeForm({
           orderPrice,
           baseSize,
           orderType,
-          null,
+          undefined,
           totalMsrm > 0
         )
         actions.reloadOrders()

@@ -90,7 +90,7 @@ export default function Referral() {
   const [existingCustomRefLinks, setexistingCustomRefLinks] = useState<
     ReferrerIdRecord[]
   >([])
-  const [hasCopied, setHasCopied] = useState(null)
+  const [hasCopied, setHasCopied] = useState<number | null>(null)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
   const [loading, setLoading] = useState(false)
   const [inputError, setInputError] = useState('')
@@ -158,9 +158,10 @@ export default function Referral() {
         type: 'error',
         title: 'Invalid custom referral link',
       })
+      return
     }
 
-    if (!inputError) {
+    if (!inputError && mangoGroup) {
       try {
         const mangoClient = useMangoStore.getState().connection.client
         const txid = await mangoClient.registerReferrerId(
@@ -193,7 +194,7 @@ export default function Referral() {
   const mngoIndex = getMarketIndexBySymbol(groupConfig, 'MNGO')
 
   const hasRequiredMngo =
-    mangoGroup && mangoAccount
+    mangoGroup && mangoAccount && mangoCache
       ? mangoAccount
           .getUiDeposit(
             mangoCache.rootBankCache[mngoIndex],
@@ -281,7 +282,7 @@ export default function Referral() {
                                         className={`flex-shrink-0 ${
                                           hasCopied === 1 && 'bg-th-green'
                                         }`}
-                                        disabled={hasCopied}
+                                        disabled={typeof hasCopied === 'number'}
                                         onClick={() =>
                                           handleCopyLink(
                                             `https://trade.mango.markets?ref=${mangoAccount.publicKey.toString()}`,
@@ -333,7 +334,9 @@ export default function Referral() {
                                               hasCopied === index + 1 &&
                                               'bg-th-green'
                                             }`}
-                                            disabled={hasCopied}
+                                            disabled={
+                                              typeof hasCopied === 'number'
+                                            }
                                             onClick={() =>
                                               handleCopyLink(
                                                 `https://trade.mango.markets?ref=${customRefs.referrerId}`,

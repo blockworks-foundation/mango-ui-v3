@@ -19,6 +19,7 @@ export async function deposit({
   const mangoClient = useMangoStore.getState().connection.client
   const referrer = useMangoStore.getState().referrerPk
   console.log('referrerPk', referrer)
+  if (!mangoGroup) return
 
   if (mangoAccount) {
     return await mangoClient.deposit(
@@ -68,14 +69,36 @@ export async function withdraw({
   const tokenIndex = mangoGroup.getTokenIndex(token)
   const mangoClient = useMangoStore.getState().connection.client
 
-  return await mangoClient.withdraw(
-    mangoGroup,
-    mangoAccount,
-    wallet,
-    mangoGroup.tokens[tokenIndex].rootBank,
-    mangoGroup.rootBankAccounts[tokenIndex].nodeBankAccounts[0].publicKey,
-    mangoGroup.rootBankAccounts[tokenIndex].nodeBankAccounts[0].vault,
-    Number(amount),
-    allowBorrow
-  )
+  if (
+    typeof tokenIndex !== 'number' ||
+    !mangoGroup ||
+    !mangoAccount ||
+    !wallet ||
+    !mangoGroup.rootBankAccounts[tokenIndex]
+  ) {
+    return
+  }
+  if (
+    typeof tokenIndex === 'number' &&
+    mangoGroup &&
+    mangoAccount &&
+    wallet &&
+    mangoGroup.rootBankAccounts?.[tokenIndex] &&
+    mangoGroup.rootBankAccounts[tokenIndex] !== undefined &&
+    mangoGroup.rootBankAccounts[tokenIndex]?.nodeBankAccounts?.[0]
+      ?.publicKey !== undefined &&
+    mangoGroup.rootBankAccounts[tokenIndex]?.nodeBankAccounts?.[0].vault !==
+      undefined
+  ) {
+    return await mangoClient.withdraw(
+      mangoGroup,
+      mangoAccount,
+      wallet,
+      mangoGroup.tokens[tokenIndex].rootBank,
+      mangoGroup.rootBankAccounts[tokenIndex].nodeBankAccounts[0].publicKey,
+      mangoGroup.rootBankAccounts[tokenIndex].nodeBankAccounts[0].vault,
+      Number(amount),
+      allowBorrow
+    )
+  }
 }

@@ -361,7 +361,6 @@ const BalancesTable = ({
                 </thead>
                 <tbody>
                   {items.map((balance, index) => {
-                    console.log('balance', balance)
                     if (!balance) {
                       return null
                     }

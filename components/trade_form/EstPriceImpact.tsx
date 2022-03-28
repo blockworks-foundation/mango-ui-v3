@@ -7,8 +7,12 @@ const EstPriceImpact = ({
   priceImpact?: { slippage: number[]; takerFee: number[] }
 }) => {
   const { t } = useTranslation('common')
-  const priceImpactAbs = priceImpact.slippage[0]
-  const priceImpactRel = priceImpact.slippage[1]
+  const priceImpactAbs = priceImpact?.slippage[0]
+  const priceImpactRel = priceImpact?.slippage[1]
+
+  if (!priceImpactAbs || !priceImpactRel) {
+    return null
+  }
 
   return (
     <div className={`text-xs text-th-fgd-3`}>
@@ -31,9 +35,11 @@ const EstPriceImpact = ({
       <div className="flex justify-between">
         {t('taker-fee')}
         <span className="text-th-fgd-1">
-          ${priceImpact.takerFee[0].toFixed(2)}
+          ${priceImpact?.takerFee[0].toFixed(2)}
           <span className="px-1 text-th-fgd-4">|</span>
-          {percentFormat.format(priceImpact.takerFee[1])}
+          {priceImpact?.takerFee[1]
+            ? percentFormat.format(priceImpact.takerFee[1])
+            : null}
         </span>
       </div>
     </div>

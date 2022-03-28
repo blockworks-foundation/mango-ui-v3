@@ -26,7 +26,9 @@ function getMarketName(event) {
   let marketName
   if (!event.marketName && event.address) {
     const marketInfo = getMarketByPublicKey(mangoGroupConfig, event.address)
-    marketName = marketInfo.name
+    if (marketInfo) {
+      marketName = marketInfo.name
+    }
   }
   return event.marketName || marketName
 }
@@ -96,7 +98,7 @@ export const useTradeHistory = () => {
   const setMangoStore = useMangoStore.getState().set
 
   useEffect(() => {
-    if (!mangoAccount || !selectedMangoGroup) return null
+    if (!mangoAccount || !selectedMangoGroup) return
     const previousTradeHistory = useMangoStore.getState().tradeHistory.parsed
 
     // combine the trade histories loaded from the DB

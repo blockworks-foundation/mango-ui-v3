@@ -1,7 +1,7 @@
 type MobileTableHeaderProps = {
   colOneHeader: string
   colTwoHeader: string
-  colThreeHeader?: string
+  colThreeHeader?: string | null
 }
 
 const MobileTableHeader = ({

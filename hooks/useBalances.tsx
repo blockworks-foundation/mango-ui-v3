@@ -147,6 +147,10 @@ export function useBalances(): Balances[] {
   const quoteInOrders = sumBy(quoteBalances, 'orders')
   const unsettled = sumBy(quoteBalances, 'unsettled')
 
+  if (!mangoGroup || !mangoCache) {
+    return []
+  }
+
   const net: I80F48 = quoteMeta.deposits
     .add(I80F48.fromNumber(unsettled))
     .sub(quoteMeta.borrows)

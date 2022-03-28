@@ -51,8 +51,8 @@ export function getFeeTier(msrmBalance: number, srmBalance: number): number {
 const useSrmAccount = () => {
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const connection = useMangoStore((s) => s.connection.current)
-  const [srmAccount, setSrmAccount] = useState(null)
-  const [msrmAccount, setMsrmAccount] = useState(null)
+  const [srmAccount, setSrmAccount] = useState<any>(null)
+  const [msrmAccount, setMsrmAccount] = useState<any>(null)
 
   useEffect(() => {
     if (mangoGroup) {

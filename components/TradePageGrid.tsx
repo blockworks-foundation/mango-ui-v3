@@ -87,7 +87,6 @@ const TradePageGrid = () => {
   }
 
   const onBreakpointChange = (newBreakpoint: string) => {
-    console.log('new breakpoint', newBreakpoint)
     setCurrentBreakpoint(newBreakpoint)
   }
 
