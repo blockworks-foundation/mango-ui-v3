@@ -53,30 +53,6 @@ class IntroTips extends Component<Props, State> {
           disableInteraction: true,
         },
         {
-          element: '#themes-tip',
-          intro: (
-            <div>
-              <h4>{this.props.t('themes-tip-title')}</h4>
-              <p>{this.props.t('themes-tip-desc')}</p>
-            </div>
-          ),
-          tooltipClass: 'intro-tooltip',
-          highlightClass: 'intro-highlight',
-          disableInteraction: true,
-        },
-        {
-          element: '#languages-tip',
-          intro: (
-            <div>
-              <h4>{this.props.t('languages-tip-title')}</h4>
-              <p>{this.props.t('languages-tip-desc')}</p>
-            </div>
-          ),
-          tooltipClass: 'intro-tooltip',
-          highlightClass: 'intro-highlight',
-          disableInteraction: true,
-        },
-        {
           element: '#data-refresh-tip',
           intro: (
             <div>
