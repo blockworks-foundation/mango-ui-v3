@@ -17,7 +17,7 @@ const MenuButton: React.FC<{
       className={`default-transition flex items-center justify-end whitespace-nowrap pb-2.5 text-xs tracking-wider hover:cursor-pointer hover:text-th-primary ${
         disabled ? 'pointer-events-none text-th-fgd-4' : 'text-th-fgd-1'
       }`}
-      onClick={disabled ? null : onClick}
+      onClick={disabled ? () => null : onClick}
     >
       {text}
     </div>
@@ -55,8 +55,7 @@ export const RedeemDropdown: React.FC = () => {
     setOpen(false)
     setSettlingPosPnl(true)
     for (const p of unsettledPositivePositions) {
-      console.log('settlePosPnl', p)
-      await settlePosPnl([p.perpMarket], p.perpAccount, t, null)
+      await settlePosPnl([p.perpMarket], p.perpAccount, t, undefined)
     }
     setSettlingPosPnl(false)
   }

@@ -20,13 +20,16 @@ const OraclePrice = () => {
   const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
 
   const decimals = useMemo(
-    () => getPrecisionDigits(selectedMarket?.tickSize),
+    () =>
+      selectedMarket?.tickSize !== undefined
+        ? getPrecisionDigits(selectedMarket?.tickSize)
+        : null,
     [selectedMarket]
   )
 
   return (
     <div className="text-th-fgd-1 md:text-xs">
-      {oraclePrice && selectedMarket
+      {decimals && oraclePrice && selectedMarket
         ? oraclePrice.toNumber().toLocaleString(undefined, {
             minimumFractionDigits: decimals,
             maximumFractionDigits: decimals,

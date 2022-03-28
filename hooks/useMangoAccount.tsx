@@ -3,7 +3,7 @@ import { MangoAccount } from '@blockworks-foundation/mango-client'
 import shallow from 'zustand/shallow'
 
 export default function useMangoAccount(): {
-  mangoAccount: MangoAccount
+  mangoAccount: MangoAccount | null
   initialLoad: boolean
 } {
   const { mangoAccount, initialLoad } = useMangoStore(

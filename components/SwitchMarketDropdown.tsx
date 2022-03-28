@@ -32,7 +32,7 @@ const SwitchMarketDropdown = () => {
     [marketsInfo]
   )
 
-  const [suggestions, setSuggestions] = useState([])
+  const [suggestions, setSuggestions] = useState<any[]>([])
   const [searchString, setSearchString] = useState('')
   const buttonRef = useRef(null)
   const { t } = useTranslation('common')
@@ -43,7 +43,7 @@ const SwitchMarketDropdown = () => {
   const onSearch = (searchString) => {
     if (searchString.length > 0) {
       const newSuggestions = suggestions.filter((v) =>
-        v.name.toLowerCase().includes(searchString.toLowerCase())
+        v.name?.toLowerCase().includes(searchString.toLowerCase())
       )
       setSuggestions(newSuggestions)
     }

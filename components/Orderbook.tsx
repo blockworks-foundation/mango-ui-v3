@@ -135,12 +135,12 @@ export default function Orderbook({ depth = 8 }) {
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
 
-  const currentOrderbookData = useRef(null)
+  const currentOrderbookData = useRef<any>(null)
   const nextOrderbookData = useRef(null)
   const previousDepth = usePrevious(depth)
 
   const [openOrderPrices, setOpenOrderPrices] = useState([])
-  const [orderbookData, setOrderbookData] = useState(null)
+  const [orderbookData, setOrderbookData] = useState<any | null>(null)
   const [defaultLayout, setDefaultLayout] = useState(true)
   const [displayCumulativeSize, setDisplayCumulativeSize] = useState(false)
   const [grouping, setGrouping] = useState(0.01)
@@ -641,7 +641,7 @@ const OrderbookRow = React.memo<any>(
     grouping: number
     market: Market | PerpMarket
   }) => {
-    const element = useRef(null)
+    const element = useRef<HTMLDivElement>(null)
     const setMangoStore = useMangoStore(setStoreSelector)
     const [showOrderbookFlash] = useLocalStorageState(ORDERBOOK_FLASH_KEY, true)
     const flashClassName = side === 'sell' ? 'red-flash' : 'green-flash'

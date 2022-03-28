@@ -23,7 +23,7 @@ const ThemeSwitch = () => {
         <DropMenu
           button={
             <div className="default-transition flex h-8 w-8 items-center justify-center rounded-full bg-th-bkg-4 text-th-fgd-1 hover:text-th-primary focus:outline-none">
-              {THEMES.find((t) => t.name === theme).icon}
+              {THEMES?.find((t) => t?.name === theme)?.icon}
             </div>
           }
           value={theme}

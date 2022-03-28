@@ -1095,9 +1095,11 @@ export default function AdvancedTradeForm({
                         </Tooltip>
                       </div>
                       <div className="flex">
-                        <span className="text-th-fgd-1">
-                          {(parseFloat(maxSlippage) * 100).toFixed(2)}%
-                        </span>
+                        {maxSlippage ? (
+                          <span className="text-th-fgd-1">
+                            {(parseFloat(maxSlippage) * 100).toFixed(2)}%
+                          </span>
+                        ) : null}
                         <LinkButton
                           className="ml-2 text-xs"
                           onClick={() => setEditMaxSlippage(true)}
