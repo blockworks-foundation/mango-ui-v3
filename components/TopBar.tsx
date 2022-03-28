@@ -130,18 +130,18 @@ const TopBar = () => {
                 <Settings />
               </div>
               {mangoAccount &&
-                mangoAccount.owner.toBase58() === publicKey?.toBase58() ? (
-                  <button
-                    className="rounded border border-th-bkg-4 py-1 px-2 text-xs hover:border-th-fgd-4 focus:outline-none"
-                    onClick={() => setShowAccountsModal(true)}
-                  >
-                    <div className="text-xs font-normal text-th-primary">
-                      {t('account')}
-                    </div>
-                    {mangoAccount.name
-                      ? mangoAccount.name
-                      : abbreviateAddress(mangoAccount.publicKey)}
-                  </button>
+              mangoAccount.owner.toBase58() === publicKey?.toBase58() ? (
+                <button
+                  className="rounded border border-th-bkg-4 py-1 px-2 text-xs hover:border-th-fgd-4 focus:outline-none"
+                  onClick={() => setShowAccountsModal(true)}
+                >
+                  <div className="text-xs font-normal text-th-primary">
+                    {t('account')}
+                  </div>
+                  {mangoAccount.name
+                    ? mangoAccount.name
+                    : abbreviateAddress(mangoAccount.publicKey)}
+                </button>
               ) : null}
               <ConnectWalletButton />
             </div>
