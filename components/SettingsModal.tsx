@@ -13,10 +13,7 @@ import Switch from './Switch'
 import { MarketKind } from '@blockworks-foundation/mango-client'
 
 const NODE_URLS = [
-  {
-    label: 'Triton (RPC Pool)',
-    value: 'https://api.rpcpool.com/5c127268deeecc007bdb592be80e',
-  },
+  { label: 'Triton (RPC Pool)', value: 'https://mango.rpcpool.com' },
   {
     label: 'Genesys Go',
     value: 'https://mango.genesysgo.net/',
