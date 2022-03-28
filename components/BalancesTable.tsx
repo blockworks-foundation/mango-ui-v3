@@ -147,6 +147,24 @@ const BalancesTable = ({
 
   const unsettledBalances = balances.filter((bal) => bal.unsettled > 0)
 
+  const trimDecimals = useCallback((num: string) => {
+    if (parseFloat(num) === 0) {
+      return '0'
+    }
+    // Trim the decimals depending on the length of the whole number
+    const splitNum = num.split('.')
+    if (splitNum.length > 1) {
+      const wholeNum = splitNum[0]
+      const decimals = splitNum[1]
+      if (wholeNum.length > 8) {
+        return `${wholeNum}.${decimals.substring(0, 2)}`
+      } else if (wholeNum.length > 3) {
+        return `${wholeNum}.${decimals.substring(0, 3)}`
+      }
+    }
+    return num
+  }, [])
+
   return (
     <div className={`flex flex-col pb-2 sm:pb-4`}>
       {unsettledBalances.length > 0 ? (
@@ -360,7 +378,6 @@ const BalancesTable = ({
                 </thead>
                 <tbody>
                   {items.map((balance, index) => {
-                    console.log('balance', balance)
                     if (!balance) {
                       return null
                     }
@@ -396,8 +413,16 @@ const BalancesTable = ({
                             )}
                           </div>
                         </Td>
-                        <Td>{balance.deposits.toFormat(balance.decimals)}</Td>
-                        <Td>{balance.borrows.toFormat(balance.decimals)}</Td>
+                        <Td>
+                          {trimDecimals(
+                            balance.deposits.toFormat(balance.decimals)
+                          )}
+                        </Td>
+                        <Td>
+                          {trimDecimals(
+                            balance.borrows.toFormat(balance.decimals)
+                          )}
+                        </Td>
                         <Td>{balance.orders}</Td>
                         <Td>{balance.unsettled}</Td>
                         <Td>
@@ -415,10 +440,12 @@ const BalancesTable = ({
                                 handleSizeClick(balance.net, balance.symbol)
                               }
                             >
-                              {balance.net.toFormat(balance.decimals)}
+                              {trimDecimals(
+                                balance.net.toFormat(balance.decimals)
+                              )}
                             </span>
                           ) : (
-                            balance.net.toFormat(balance.decimals)
+                            trimDecimals(balance.net.toFormat(balance.decimals))
                           )}
                         </Td>
                         <Td>{formatUsdValue(balance.value.toNumber())}</Td>
