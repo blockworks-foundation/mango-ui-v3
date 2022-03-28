@@ -384,6 +384,7 @@
   "tooltip-lock-layout": "Lock Layout",
   "tooltip-name-onchain": "Account names are stored on-chain",
   "tooltip-post": "Post only orders are guaranteed to be the maker order or else it will be canceled.",
+  "tooltip-post-and-slide": "Post only slide is a type of limit order that will place your order one tick less than the opposite side of the book.",
   "tooltip-projected-leverage": "Projected Leverage",
   "tooltip-reduce": "Reduce only orders will only reduce your overall position.",
   "tooltip-reset-layout": "Reset Layout",
