@@ -199,6 +199,7 @@ export type MangoStore = {
     uiLocked: boolean
   }
   tradeHistory: {
+    initialLoad: boolean
     spot: any[]
     perp: any[]
     parsed: any[]
@@ -336,6 +337,7 @@ const useMangoStore = create<
         success: '',
       },
       tradeHistory: {
+        initialLoad: false,
         spot: [],
         perp: [],
         parsed: [],
@@ -654,6 +656,9 @@ const useMangoStore = create<
                 console.error('Error fetching trade history', e)
               })
           }
+          set((state) => {
+            state.tradeHistory.initialLoad = true
+          })
         },
         async reloadMangoAccount() {
           const set = get().set
