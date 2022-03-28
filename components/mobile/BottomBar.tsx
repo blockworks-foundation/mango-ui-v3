@@ -143,7 +143,7 @@ const MoreMenuPanel = ({
         />
         <MoreMenuItem
           title={t('referrals')}
-          path="/referrals"
+          path="/referral"
           icon={<UserAddIcon className="h-5 w-5" />}
         />
         <MoreMenuItem
