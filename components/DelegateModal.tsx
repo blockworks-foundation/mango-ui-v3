@@ -70,7 +70,7 @@ const DelegateModal: FunctionComponent<DelegateModalProps> = ({
     if (isKeyValid()) {
       setInvalidKeyMessage('')
     } else {
-      setInvalidKeyMessage(t('delegate:invalid-key'))
+      setInvalidKeyMessage(t('invalid-address'))
     }
   }
 

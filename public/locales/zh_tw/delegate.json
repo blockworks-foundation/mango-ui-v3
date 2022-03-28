@@ -5,6 +5,5 @@
     "info": "將此帳戶委託其他Solana帳戶控制。",
     "public-key": "受託錢包地址",
     "delegate-updated": "已更換受託錢包",
-    "set-error": "設置委託錢包出錯",
-    "invalid-key": "您輸入的地址有問題"
+    "set-error": "設置委託錢包出錯"
 }
