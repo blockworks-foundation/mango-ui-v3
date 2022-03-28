@@ -23,7 +23,7 @@ import InlineNotification from './InlineNotification'
 import Modal from './Modal'
 
 interface NewAccountProps {
-  onAccountCreation?: (x?) => void
+  onAccountCreation: (x?) => void
 }
 
 const NewAccount: FunctionComponent<NewAccountProps> = ({
@@ -63,12 +63,14 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
         await sleep(1000)
         actions.fetchWalletTokens()
         actions.fetchAllMangoAccounts()
+        if (response && response?.length > 0) {
+          onAccountCreation(response[0])
+          notify({
+            title: 'Mango Account Created',
+            txid: response[1],
+          })
+        }
         setSubmitting(false)
-        onAccountCreation(response[0])
-        notify({
-          title: 'Mango Account Created',
-          txid: response[1],
-        })
       })
       .catch((e) => {
         setSubmitting(false)
