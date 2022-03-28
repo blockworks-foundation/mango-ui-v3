@@ -6,5 +6,4 @@
     "public-key": "Delegate Public Key",
     "delegate-updated": "Delegate Updated",
     "set-error": "Could not set Delegate",
-    "invalid-key": "Invalid public key"
 }
