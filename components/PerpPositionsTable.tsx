@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { useTranslation } from 'next-i18next'
@@ -16,12 +16,13 @@ import PerpSideBadge from './PerpSideBadge'
 import PnlText from './PnlText'
 import { settlePnl } from './MarketPosition'
 import MobileTableHeader from './mobile/MobileTableHeader'
+import { useWallet } from '@solana/wallet-adapter-react'
 import { RedeemDropdown } from 'components/PerpPositions'
 
-const PositionsTable = () => {
+const PositionsTable: React.FC = () => {
   const { t } = useTranslation('common')
   const [settleSinglePos, setSettleSinglePos] = useState(null)
-
+  const { wallet } = useWallet()
   const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
   const selectedMarketConfig = useMangoStore((s) => s.selectedMarket.config)
   const price = useMangoStore((s) => s.tradeForm.price)
@@ -54,7 +55,7 @@ const PositionsTable = () => {
 
   const handleSettlePnl = async (perpMarket, perpAccount, index) => {
     setSettleSinglePos(index)
-    await settlePnl(perpMarket, perpAccount, t, undefined)
+    await settlePnl(perpMarket, perpAccount, t, undefined, wallet)
     setSettleSinglePos(null)
   }
 

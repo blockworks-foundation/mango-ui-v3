@@ -1,5 +1,4 @@
 import { FunctionComponent, ReactNode } from 'react'
-import useMangoStore from '../stores/useMangoStore'
 import Button from './Button'
 
 interface EmptyStateProps {
@@ -8,6 +7,7 @@ interface EmptyStateProps {
   onClickButton?: () => void
   desc?: string
   title: string
+  disabled?: boolean
 }
 
 const EmptyState: FunctionComponent<EmptyStateProps> = ({
@@ -16,10 +16,8 @@ const EmptyState: FunctionComponent<EmptyStateProps> = ({
   onClickButton,
   desc,
   title,
+  disabled = false,
 }) => {
-  const wallet = useMangoStore((s) => s.wallet.current)
-  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
-
   return (
     <div className="flex flex-col items-center rounded-lg px-4 pb-2 text-th-fgd-1">
       <div className="mb-1 h-6 w-6 text-th-primary">{icon}</div>
@@ -34,11 +32,7 @@ const EmptyState: FunctionComponent<EmptyStateProps> = ({
         </p>
       ) : null}
       {buttonText && onClickButton ? (
-        <Button
-          className="mt-2"
-          onClick={onClickButton}
-          disabled={!wallet || !mangoGroup}
-        >
+        <Button className="mt-2" onClick={onClickButton} disabled={disabled}>
           {buttonText}
         </Button>
       ) : null}

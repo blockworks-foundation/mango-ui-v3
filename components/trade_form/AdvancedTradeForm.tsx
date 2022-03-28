@@ -42,6 +42,7 @@ import useLocalStorageState, {
 } from '../../hooks/useLocalStorageState'
 import InlineNotification from '../InlineNotification'
 import { DEFAULT_SPOT_MARGIN_KEY } from '../SettingsModal'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 const MAX_SLIPPAGE_KEY = 'maxSlippage'
 
@@ -61,7 +62,7 @@ export default function AdvancedTradeForm({
   const { t } = useTranslation('common')
   const set = useMangoStore((s) => s.set)
   const { ipAllowed, spotAllowed } = useIpAddress()
-  const connected = useMangoStore((s) => s.wallet.connected)
+  const { wallet, connected } = useWallet()
   const actions = useMangoStore((s) => s.actions)
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
@@ -569,7 +570,6 @@ export default function AdvancedTradeForm({
       useMangoStore.getState().accountInfos[marketConfig.asksKey.toString()]
     const bidInfo =
       useMangoStore.getState().accountInfos[marketConfig.bidsKey.toString()]
-    const wallet = useMangoStore.getState().wallet.current
     const referrerPk = useMangoStore.getState().referrerPk
 
     if (!wallet || !mangoGroup || !mangoAccount || !market) return
@@ -612,7 +612,7 @@ export default function AdvancedTradeForm({
           mangoGroup,
           mangoAccount,
           market,
-          wallet,
+          wallet?.adapter,
           side,
           orderPrice,
           baseSize,
@@ -648,7 +648,7 @@ export default function AdvancedTradeForm({
             mangoGroup,
             mangoAccount,
             market,
-            wallet,
+            wallet?.adapter,
             perpOrderType,
             side,
             perpOrderPrice,
@@ -663,7 +663,7 @@ export default function AdvancedTradeForm({
             mangoGroup,
             mangoAccount,
             market,
-            wallet,
+            wallet?.adapter,
             side,
             perpOrderPrice,
             baseSize,

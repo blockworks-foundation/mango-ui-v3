@@ -1,4 +1,4 @@
-import { AccountInfo, PublicKey, Transaction } from '@solana/web3.js'
+import { AccountInfo, PublicKey } from '@solana/web3.js'
 import { Market, OpenOrders } from '@project-serum/serum'
 import { Event } from '@project-serum/serum/lib/queue'
 import { I80F48 } from '@blockworks-foundation/mango-client'
@@ -121,17 +121,6 @@ export interface KnownToken {
 export const DEFAULT_PUBLIC_KEY = new PublicKey(
   '11111111111111111111111111111111'
 )
-
-export interface WalletAdapter {
-  publicKey: PublicKey
-  autoApprove: boolean
-  connected: boolean
-  signTransaction: (transaction: Transaction) => Promise<Transaction>
-  signAllTransactions: (transaction: Transaction[]) => Promise<Transaction[]>
-  connect: () => any
-  disconnect: () => any
-  on(event: string, fn: () => void): this
-}
 
 export interface PerpTriggerOrder {
   orderId: number

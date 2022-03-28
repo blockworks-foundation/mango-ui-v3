@@ -25,6 +25,7 @@ import { notify } from '../../utils/notifications'
 import Button from '../Button'
 import Loading from '../Loading'
 import { fetchHourlyPerformanceStats } from './AccountOverview'
+import { useWallet } from '@solana/wallet-adapter-react'
 import Tooltip from '../Tooltip'
 import { InformationCircleIcon } from '@heroicons/react/outline'
 
@@ -40,8 +41,7 @@ export default function AccountHistory() {
   const [view, setView] = useState('Trades')
   const [history, setHistory] = useState(null)
   const [loadExportData, setLoadExportData] = useState(false)
-
-  const wallet = useMangoStore((s) => s.wallet.current)
+  const { publicKey } = useWallet()
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
 
   const mangoAccountPk = useMemo(() => {
@@ -122,9 +122,7 @@ export default function AccountHistory() {
   }
 
   const canWithdraw =
-    mangoAccount && wallet?.publicKey
-      ? mangoAccount.owner.equals(wallet.publicKey)
-      : false
+    mangoAccount && publicKey ? mangoAccount.owner.equals(publicKey) : false
 
   return (
     <>

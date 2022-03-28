@@ -19,6 +19,7 @@ import { useTranslation } from 'next-i18next'
 import { TransactionSignature } from '@solana/web3.js'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 const BalancesTable = ({
   showZeroBalances = false,
@@ -54,10 +55,8 @@ const BalancesTable = ({
   const [submitting, setSubmitting] = useState(false)
   const isMobile = width ? width < breakpoints.md : false
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
-  const wallet = useMangoStore((s) => s.wallet.current)
-  const canWithdraw = wallet?.publicKey
-    ? mangoAccount?.owner.equals(wallet.publicKey)
-    : true
+  const { wallet, publicKey } = useWallet()
+  const canWithdraw = publicKey ? mangoAccount?.owner.equals(publicKey) : true
   const { asPath } = useRouter()
 
   const handleSizeClick = (size, symbol) => {
@@ -118,7 +117,7 @@ const BalancesTable = ({
         mangoGroup,
         mangoAccount,
         spotMarkets,
-        wallet
+        wallet?.adapter
       )
 
       for (const txid of txids) {

@@ -4,7 +4,7 @@ import { abbreviateAddress } from '../utils/index'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import MenuItem from './MenuItem'
 import useMangoStore from '../stores/useMangoStore'
-import ConnectWalletButton from './ConnectWalletButton'
+import { ConnectWalletButton } from 'components'
 import NavDropMenu from './NavDropMenu'
 import AccountsModal from './AccountsModal'
 import { DEFAULT_MARKET_KEY, initialMarket } from './SettingsModal'
@@ -18,6 +18,7 @@ import {
   UserAddIcon,
 } from '@heroicons/react/outline'
 import { MangoIcon } from './icons'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 const StyledNewLabel = ({ children, ...props }) => (
   <div style={{ fontSize: '0.5rem', marginLeft: '1px' }} {...props}>
@@ -27,8 +28,8 @@ const StyledNewLabel = ({ children, ...props }) => (
 
 const TopBar = () => {
   const { t } = useTranslation('common')
+  const { publicKey } = useWallet()
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
-  const wallet = useMangoStore((s) => s.wallet.current)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
   const [defaultMarket] = useLocalStorageState(
     DEFAULT_MARKET_KEY,
@@ -129,8 +130,7 @@ const TopBar = () => {
                 <Settings />
               </div>
               {mangoAccount &&
-              mangoAccount.owner.toBase58() ===
-                wallet?.publicKey?.toBase58() ? (
+              mangoAccount.owner.toBase58() === publicKey?.toBase58() ? (
                 <button
                   className="rounded border border-th-bkg-4 py-1 px-2 text-xs hover:border-th-fgd-4 focus:outline-none"
                   onClick={() => setShowAccountsModal(true)}
@@ -148,12 +148,12 @@ const TopBar = () => {
           </div>
         </div>
       </nav>
-      {showAccountsModal ? (
+      {showAccountsModal && (
         <AccountsModal
           onClose={handleCloseAccounts}
           isOpen={showAccountsModal}
         />
-      ) : null}
+      )}
     </>
   )
 }
