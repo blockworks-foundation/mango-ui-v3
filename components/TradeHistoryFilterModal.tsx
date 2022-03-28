@@ -209,13 +209,13 @@ const TradeHistoryFilterModal: FunctionComponent<
             filters={newFilters}
             filterKey="side"
             onClick={() => handleUpdateFilterButtons('side', 'buy')}
-            value={t('buy')}
+            value="buy"
           />
           <FilterButton
             filters={newFilters}
             filterKey="side"
             onClick={() => handleUpdateFilterButtons('side', 'sell')}
-            value={t('sell')}
+            value="sell"
           />
         </div>
       </div>
@@ -276,13 +276,13 @@ const TradeHistoryFilterModal: FunctionComponent<
             filters={newFilters}
             filterKey="liquidity"
             onClick={() => handleUpdateFilterButtons('liquidity', 'Maker')}
-            value={t('maker')}
+            value="Maker"
           />
           <FilterButton
             filters={newFilters}
             filterKey="liquidity"
             onClick={() => handleUpdateFilterButtons('liquidity', 'Taker')}
-            value={t('taker')}
+            value="Taker"
           />
         </div>
       </div>
@@ -294,6 +294,7 @@ const TradeHistoryFilterModal: FunctionComponent<
 }
 
 const FilterButton = ({ filters, filterKey, value, onClick }) => {
+  const { t } = useTranslation('common')
   return (
     <button
       className={`default-transitions rounded-full border border-th-fgd-3 px-3 py-1 text-xs text-th-fgd-1 ${
@@ -302,7 +303,7 @@ const FilterButton = ({ filters, filterKey, value, onClick }) => {
       } hover:border-th-primary hover:text-th-primary`}
       onClick={onClick}
     >
-      {value.toUpperCase()}
+      {t(value.toLowerCase())}
     </button>
   )
 }
@@ -320,7 +321,7 @@ const MultiSelectDropdown = ({ options, selected, toggleOption }) => {
           >
             <div className={`flex items-center justify-between`}>
               <span>
-                {t('filters-selected', { filtersSelected: selected.length })}
+                {t('filters-selected', { selectedFilters: selected.length })}
               </span>
               <ChevronDownIcon
                 className={`default-transition ml-0.5 h-5 w-5 ${
