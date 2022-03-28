@@ -169,7 +169,9 @@ const TradeHistoryFilterModal: FunctionComponent<
     <Modal onClose={onClose} isOpen={isOpen}>
       <Modal.Header>
         <div className="flex w-full items-start justify-between pt-2">
-          <ElementTitle noMarginBottom>Filter Trade History</ElementTitle>
+          <ElementTitle noMarginBottom>
+            {t('filter-trade-history')}
+          </ElementTitle>
           <LinkButton
             className="flex items-center text-th-primary"
             onClick={() => handleResetFilters()}
@@ -183,11 +185,11 @@ const TradeHistoryFilterModal: FunctionComponent<
         <p className="font-bold text-th-fgd-1">{t('date')}</p>
         <div className="flex items-center space-x-2">
           <div className="w-1/2">
-            <Label>From</Label>
+            <Label>{t('from')}</Label>
             <DatePicker date={dateFrom} setDate={setDateFrom} />
           </div>
           <div className="w-1/2">
-            <Label>To</Label>
+            <Label>{t('to')}</Label>
             <DatePicker date={dateTo} setDate={setDateTo} />
           </div>
         </div>
@@ -207,13 +209,13 @@ const TradeHistoryFilterModal: FunctionComponent<
             filters={newFilters}
             filterKey="side"
             onClick={() => handleUpdateFilterButtons('side', 'buy')}
-            value="buy"
+            value={t('buy')}
           />
           <FilterButton
             filters={newFilters}
             filterKey="side"
             onClick={() => handleUpdateFilterButtons('side', 'sell')}
-            value="sell"
+            value={t('sell')}
           />
         </div>
       </div>
@@ -221,7 +223,7 @@ const TradeHistoryFilterModal: FunctionComponent<
         <p className="font-bold text-th-fgd-1">{t('size')}</p>
         <div className="flex items-center space-x-2">
           <div className="w-1/2">
-            <Label>From</Label>
+            <Label>{t('from')}</Label>
             <Input
               type="number"
               min="0"
@@ -231,7 +233,7 @@ const TradeHistoryFilterModal: FunctionComponent<
             />
           </div>
           <div className="w-1/2">
-            <Label>To</Label>
+            <Label>{t('to')}</Label>
             <Input
               type="number"
               min="0"
@@ -243,10 +245,10 @@ const TradeHistoryFilterModal: FunctionComponent<
         </div>
       </div>
       <div className="pb-4">
-        <p className="font-bold text-th-fgd-1">Value</p>
+        <p className="font-bold text-th-fgd-1">{t('value')}</p>
         <div className="flex items-center space-x-2">
           <div className="w-1/2">
-            <Label>From</Label>
+            <Label>{t('from')}</Label>
             <Input
               type="number"
               min="0"
@@ -256,7 +258,7 @@ const TradeHistoryFilterModal: FunctionComponent<
             />
           </div>
           <div className="w-1/2">
-            <Label>To</Label>
+            <Label>{t('to')}</Label>
             <Input
               type="number"
               min="0"
@@ -274,18 +276,18 @@ const TradeHistoryFilterModal: FunctionComponent<
             filters={newFilters}
             filterKey="liquidity"
             onClick={() => handleUpdateFilterButtons('liquidity', 'Maker')}
-            value="Maker"
+            value={t('maker')}
           />
           <FilterButton
             filters={newFilters}
             filterKey="liquidity"
             onClick={() => handleUpdateFilterButtons('liquidity', 'Taker')}
-            value="Taker"
+            value={t('taker')}
           />
         </div>
       </div>
       <Button className="w-full" onClick={() => updateFilters(newFilters)}>
-        {Object.keys(filters).length > 0 ? 'Update Filters' : 'Filter'}
+        {Object.keys(filters).length > 0 ? t('update-filters') : t('filter')}
       </Button>
     </Modal>
   )
@@ -306,6 +308,7 @@ const FilterButton = ({ filters, filterKey, value, onClick }) => {
 }
 
 const MultiSelectDropdown = ({ options, selected, toggleOption }) => {
+  const { t } = useTranslation('common')
   return (
     <Popover className="relative">
       {({ open }) => (
@@ -316,7 +319,9 @@ const MultiSelectDropdown = ({ options, selected, toggleOption }) => {
             }`}
           >
             <div className={`flex items-center justify-between`}>
-              <span>{selected.length} selected</span>
+              <span>
+                {t('filters-selected', { filtersSelected: selected.length })}
+              </span>
               <ChevronDownIcon
                 className={`default-transition ml-0.5 h-5 w-5 ${
                   open ? 'rotate-180 transform' : 'rotate-360 transform'

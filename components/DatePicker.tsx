@@ -1,4 +1,4 @@
-import DatePicker from 'react-datepicker'
+import DatePicker from 'react-datepicker/dist/react-datepicker'
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/solid'
 import Select from './Select'
 

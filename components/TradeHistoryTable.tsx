@@ -179,7 +179,7 @@ const TradeHistoryTable = ({
               onClick={() => setFilters({})}
             >
               <RefreshIcon className="mr-1.5 h-4 w-4 flex-shrink-0" />
-              Reset Filters
+              {t('reset-filters')}
             </LinkButton>
           ) : null}
           {tradeHistory.length >= 15 &&
@@ -190,7 +190,7 @@ const TradeHistoryTable = ({
               onClick={() => setShowFiltersModal(true)}
             >
               <FilterIcon className="mr-1.5 h-4 w-4" />
-              Filter
+              {t('filter')}
             </Button>
           ) : null}
           {canWithdraw() && showExportPnl ? (
@@ -203,7 +203,7 @@ const TradeHistoryTable = ({
               ) : (
                 <div className={`flex items-center`}>
                   <SaveIcon className={`mr-1.5 h-4 w-4`} />
-                  Export PnL CSV
+                  {t('export-pnl-csv')}
                 </div>
               )}
             </Button>
@@ -222,7 +222,7 @@ const TradeHistoryTable = ({
                 rel="noopener noreferrer"
               >
                 <SaveIcon className={`mr-1.5 h-4 w-4`} />
-                Export Trades CSV
+                {t('export-trades-csv')}
                 <Tooltip content={t('trade-export-disclaimer')}>
                   <InformationCircleIcon className="ml-1.5 h-5 w-5 cursor-help text-th-fgd-3" />
                 </Tooltip>
@@ -556,7 +556,7 @@ const TradeHistoryTable = ({
               )
             ) : hasActiveFilter ? (
               <div className="w-full rounded-md bg-th-bkg-1 py-6 text-center text-th-fgd-3">
-                No trades found...
+                {t('no-trades-found')}
               </div>
             ) : (
               <div className="w-full rounded-md bg-th-bkg-1 py-6 text-center text-th-fgd-3">
