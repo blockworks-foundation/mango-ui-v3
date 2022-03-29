@@ -55,7 +55,7 @@ const TradeNavMenu = () => {
         ? perpMarketsInfo
         : activeMenuCategory === 'Spot'
         ? spotMarketsInfo
-        : favoriteMarkets,
+        : marketsInfo.filter((mkt) => favoriteMarkets.includes(mkt.name)),
     [activeMenuCategory, marketsInfo]
   )
 
@@ -235,20 +235,20 @@ export const FavoriteMarketButton = ({ market }) => {
   }
 
   const removeFromFavorites = (mkt) => {
-    setFavoriteMarkets(favoriteMarkets.filter((m) => m.name !== mkt.name))
+    setFavoriteMarkets(favoriteMarkets.filter((m) => m.name !== mkt))
   }
 
-  return favoriteMarkets.find((mkt) => mkt.name === market.name) ? (
+  return favoriteMarkets.find((mkt) => mkt === market.name) ? (
     <button
       className="default-transition flex items-center justify-center text-th-primary hover:text-th-fgd-3"
-      onClick={() => removeFromFavorites(market)}
+      onClick={() => removeFromFavorites(market.name)}
     >
       <FilledStarIcon className="h-5 w-5" />
     </button>
   ) : (
     <button
       className="default-transition flex items-center justify-center text-th-fgd-4 hover:text-th-primary"
-      onClick={() => addToFavorites(market)}
+      onClick={() => addToFavorites(market.name)}
     >
       <StarIcon className="h-5 w-5" />
     </button>
