@@ -26,6 +26,13 @@ import {
   ReferrerIdRecord,
 } from '@blockworks-foundation/mango-client'
 import useTradeHistory from '../hooks/useTradeHistory'
+import * as Sentry from '@sentry/react'
+import { BrowserTracing } from '@sentry/tracing'
+
+Sentry.init({
+  dsn: 'https://657354c743f24ac686c979e77d9759d9@o1177229.ingest.sentry.io/6276097',
+  integrations: [new BrowserTracing()],
+})
 
 const MangoStoreUpdater = () => {
   useHydrateStore()
