@@ -53,10 +53,12 @@ export function useLocalStorageStringState(
   return [state, setState]
 }
 
-export default function useLocalStorageState<T = any>(
+type LocalStoreState = any[] | any
+
+export default function useLocalLocalStoreState(
   key: string,
-  defaultState: T | null = null
-): [T, (newState: T) => void] {
+  defaultState: LocalStoreState | null = null
+): [LocalStoreState, (newState: LocalStoreState) => void] {
   const [stringState, setStringState] = useLocalStorageStringState(
     key,
     JSON.stringify(defaultState)

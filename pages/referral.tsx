@@ -168,7 +168,7 @@ export default function Referral() {
       return
     }
 
-    if (!inputError && mangoGroup) {
+    if (!inputError && mangoGroup && mangoAccount) {
       try {
         const mangoClient = useMangoStore.getState().connection.client
         const txid = await mangoClient.registerReferrerId(

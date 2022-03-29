@@ -12,7 +12,7 @@ import { I80F48 } from '@blockworks-foundation/mango-client'
 import useMangoAccount from './useMangoAccount'
 
 export function useBalances(): Balances[] {
-  const balances = []
+  const balances: any[] = []
   const { mangoAccount } = useMangoAccount()
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoGroupConfig = useMangoStore((s) => s.selectedMangoGroup.config)

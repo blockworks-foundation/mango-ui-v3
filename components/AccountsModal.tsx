@@ -51,9 +51,10 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
   useEffect(() => {
     if (newAccPublicKey) {
       setMangoStore((state) => {
-        state.selectedMangoAccount.current = mangoAccounts.find(
-          (ma) => ma.publicKey.toString() === newAccPublicKey
-        )
+        state.selectedMangoAccount.current =
+          mangoAccounts.find(
+            (ma) => ma.publicKey.toString() === newAccPublicKey
+          ) ?? null
       })
     }
   }, [mangoAccounts, newAccPublicKey])
@@ -96,7 +97,11 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
             </div>
             <RadioGroup
               value={selectedMangoAccount}
-              onChange={(acc) => handleMangoAccountChange(acc)}
+              onChange={(acc) => {
+                if (acc) {
+                  handleMangoAccountChange(acc)
+                }
+              }}
             >
               <RadioGroup.Label className="sr-only">
                 {t('select-account')}
@@ -125,7 +130,8 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
                                   <div className="flex items-center pb-0.5">
                                     {account?.name ||
                                       abbreviateAddress(account.publicKey)}
-                                    {!account?.owner.equals(publicKey) ? (
+                                    {publicKey &&
+                                    !account?.owner.equals(publicKey) ? (
                                       <Tooltip
                                         content={t(
                                           'delegate:delegated-account'
@@ -188,6 +194,9 @@ const AccountInfo = ({
   mangoAccount: MangoAccount
 }) => {
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
+  if (!mangoCache) {
+    return null
+  }
   const accountEquity = mangoAccount.computeValue(mangoGroup, mangoCache)
   const leverage = mangoAccount.getLeverage(mangoGroup, mangoCache).toFixed(2)
 

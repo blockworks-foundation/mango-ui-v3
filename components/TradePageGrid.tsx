@@ -103,7 +103,10 @@ const TradePageGrid: React.FC = () => {
         return obj.i === 'orderbook'
       })
       let depth = orderbookLayout.h * 0.891 - 5
-      depth = round(max([1, depth]))
+      const maxNum = max([1, depth])
+      if (typeof maxNum === 'number') {
+        depth = round(maxNum)
+      }
       setOrderbookDepth(depth)
     }
 

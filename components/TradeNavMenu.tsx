@@ -28,7 +28,7 @@ const TradeNavMenu = () => {
   const [favoriteMarkets] = useLocalStorageState(FAVORITE_MARKETS_KEY, [])
   const [activeMenuCategory, setActiveMenuCategory] = useState('Futures')
   const [menuCategories, setMenuCategories] = useState(initialMenuCategories)
-  const buttonRef = useRef(null)
+  const buttonRef = useRef<HTMLButtonElement>(null)
   const { t } = useTranslation('common')
 
   const marketsInfo = useMangoStore((s) => s.marketsInfo)
@@ -230,15 +230,15 @@ export const FavoriteMarketButton = ({ market }) => {
   )
 
   const addToFavorites = (mkt) => {
-    const newFavorites = [...favoriteMarkets, mkt]
+    const newFavorites: any = [...favoriteMarkets, mkt]
     setFavoriteMarkets(newFavorites)
   }
 
   const removeFromFavorites = (mkt) => {
-    setFavoriteMarkets(favoriteMarkets.filter((m) => m.name !== mkt.name))
+    setFavoriteMarkets(favoriteMarkets.filter((m: any) => m.name !== mkt.name))
   }
 
-  return favoriteMarkets.find((mkt) => mkt.name === market.name) ? (
+  return favoriteMarkets.find((mkt: any) => mkt.name === market.name) ? (
     <button
       className="default-transition flex items-center justify-center text-th-primary hover:text-th-fgd-3"
       onClick={() => removeFromFavorites(market)}
