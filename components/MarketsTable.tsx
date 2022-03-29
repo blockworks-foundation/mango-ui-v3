@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import Link from 'next/link'
-import { formatUsdValue, usdFormatter } from '../utils'
+import { formatUsdValue, perpContractPrecision, usdFormatter } from '../utils'
 import { Table, Td, Th, TrBody, TrHead } from './TableElements'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
@@ -178,14 +178,14 @@ const MarketsTable = ({ isPerpMarket }) => {
                 <Th>
                   <LinkButton
                     className="flex items-center no-underline"
-                    onClick={() => requestSort('openInterest')}
+                    onClick={() => requestSort('openInterestUsd')}
                   >
                     <span className="font-normal text-th-fgd-3">
                       {t('open-interest')}
                     </span>
                     <ArrowSmDownIcon
                       className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
-                        sortConfig?.key === 'openInterest'
+                        sortConfig?.key === 'openInterestUsd'
                           ? sortConfig.direction === 'ascending'
                             ? 'rotate-180 transform'
                             : 'rotate-360 transform'
@@ -212,6 +212,7 @@ const MarketsTable = ({ isPerpMarket }) => {
               low24h,
               name,
               openInterest,
+              openInterestUsd,
               volumeUsd24h,
             } = market
             const fundingApr = funding1h
@@ -286,12 +287,18 @@ const MarketsTable = ({ isPerpMarket }) => {
                       )}
                     </Td>
                     <Td>
-                      {openInterest ? (
+                      {openInterestUsd ? (
                         <>
-                          <span>{openInterest.toLocaleString()}</span>{' '}
-                          <span className="text-xs text-th-fgd-3">
-                            {baseSymbol}
-                          </span>
+                          <span>{usdFormatter(openInterestUsd, 0)}</span>{' '}
+                          {openInterest ? (
+                            <div className="text-xs text-th-fgd-4">
+                              {openInterest.toLocaleString(undefined, {
+                                maximumFractionDigits:
+                                  perpContractPrecision[baseSymbol],
+                              })}{' '}
+                              {baseSymbol}
+                            </div>
+                          ) : null}
                         </>
                       ) : (
                         <span className="text-th-fgd-4">Unavailable</span>
