@@ -70,7 +70,7 @@ module.exports = {
           'fgd-1': '#E5E3EC',
           'fgd-2': '#D2CEDE',
           'fgd-3': '#C1BED3',
-          'fgd-4': '#706C81',
+          'fgd-4': '#7E7A90',
           'bkg-button': '#464063',
         },
         'th-bkg-1': 'var(--bkg-1)',
