@@ -2,8 +2,6 @@ import DatePicker from 'react-datepicker/dist/react-datepicker'
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/solid'
 import Select from './Select'
 
-import 'react-datepicker/dist/react-datepicker.css'
-
 const months = [
   'January',
   'February',
