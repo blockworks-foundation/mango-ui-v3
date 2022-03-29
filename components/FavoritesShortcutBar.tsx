@@ -9,14 +9,17 @@ import { useRouter } from 'next/router'
 import { initialMarket } from './SettingsModal'
 import * as MonoIcons from './icons'
 import { Transition } from '@headlessui/react'
+import useMangoStore from '../stores/useMangoStore'
 
 const FavoritesShortcutBar = () => {
   const [favoriteMarkets] = useLocalStorageState(FAVORITE_MARKETS_KEY, [])
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
   const { asPath } = useRouter()
+  const marketsInfo = useMangoStore((s) => s.marketsInfo)
 
-  const renderIcon = (symbol) => {
+  const renderIcon = (mktName) => {
+    const symbol = mktName.slice(0, -5)
     const iconName = `${symbol.slice(0, 1)}${symbol
       .slice(1, 4)
       .toLowerCase()}MonoIcon`
@@ -39,18 +42,32 @@ const FavoritesShortcutBar = () => {
     >
       <StarIcon className="h-5 w-5 text-th-fgd-4" />
       {favoriteMarkets.map((mkt) => {
+        const change24h = marketsInfo?.find((m) => m.name === mkt)?.change24h
         return (
-          <Link href={`/?name=${mkt.name}`} key={mkt.name} shallow={true}>
+          <Link href={`/?name=${mkt}`} key={mkt} shallow={true}>
             <a
               className={`default-transition flex items-center whitespace-nowrap py-1 text-xs hover:text-th-primary ${
-                asPath.includes(mkt.name) ||
-                (asPath === '/' && initialMarket.name === mkt.name)
+                asPath.includes(mkt) ||
+                (asPath === '/' && initialMarket.name === mkt)
                   ? 'text-th-primary'
                   : 'text-th-fgd-3'
               }`}
             >
-              {renderIcon(mkt.baseSymbol)}
-              <span className="mb-0 mr-1.5 text-xs">{mkt.name}</span>
+              {renderIcon(mkt)}
+              <span className="mb-0 mr-1.5 text-xs">{mkt}</span>
+              {change24h ? (
+                <div
+                  className={`text-xs ${
+                    change24h
+                      ? change24h >= 0
+                        ? 'text-th-green'
+                        : 'text-th-red'
+                      : 'text-th-fgd-4'
+                  }`}
+                >
+                  {`${(change24h * 100).toFixed(1)}%`}
+                </div>
+              ) : null}
             </a>
           </Link>
         )
