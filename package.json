@@ -13,13 +13,15 @@
     "format": "prettier --write .",
     "lint": "eslint . --ext ts --ext tsx --ext js --quiet",
     "lint-staged": "lint-staged --config lint-staged.js",
-    "lint-all": "yarn lint && yarn type-check"
+    "lint-all": "yarn lint && yarn type-check",
+    "analyze": "ANALYZE=true yarn build"
   },
   "dependencies": {
     "@blockworks-foundation/mango-client": "^3.3.27",
     "@headlessui/react": "^0.0.0-insiders.2dbc38c",
     "@heroicons/react": "^1.0.0",
     "@jup-ag/react-hook": "^1.0.0-beta.16",
+    "@next/bundle-analyzer": "^12.1.0",
     "@project-serum/serum": "0.13.55",
     "@project-serum/sol-wallet-adapter": "0.2.0",
     "@solana/wallet-adapter-base": "^0.9.5",
