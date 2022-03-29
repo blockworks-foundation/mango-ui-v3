@@ -15,7 +15,7 @@ export const MangoAccountLookup = () => {
   const validatePubKey = (key: string) => {
     try {
       const pubkey = new PublicKey(key)
-      return PublicKey.isOnCurve(pubkey.toBuffer())
+      return !!pubkey
     } catch (e) {
       return false
     }
