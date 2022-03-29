@@ -29,17 +29,17 @@ import { useTranslation } from 'next-i18next'
 import useMangoAccount from '../hooks/useMangoAccount'
 import Loading from './Loading'
 import CreateAlertModal from './CreateAlertModal'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 const I80F48_100 = I80F48.fromString('100')
 
 export default function AccountInfo() {
   const { t } = useTranslation('common')
-  const connected = useMangoStore((s) => s.wallet.connected)
+  const { publicKey, wallet, connected } = useWallet()
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const { mangoAccount, initialLoad } = useMangoAccount()
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
-  const wallet = useMangoStore((s) => s.wallet.current)
   const actions = useMangoStore((s) => s.actions)
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
@@ -50,8 +50,8 @@ export default function AccountInfo() {
   const [showAlertsModal, setShowAlertsModal] = useState(false)
 
   const canWithdraw =
-    mangoAccount?.owner && wallet?.publicKey
-      ? mangoAccount?.owner?.equals(wallet?.publicKey)
+    mangoAccount?.owner && publicKey
+      ? mangoAccount?.owner?.equals(publicKey)
       : false
 
   const handleCloseDeposit = useCallback(() => {
@@ -78,7 +78,6 @@ export default function AccountInfo() {
   // console.log('rerendering account info', mangoAccount, mngoAccrued.toNumber())
 
   const handleRedeemMngo = async () => {
-    const wallet = useMangoStore.getState().wallet.current
     const mangoClient = useMangoStore.getState().connection.client
     const mngoNodeBank =
       mangoGroup.rootBankAccounts[MNGO_INDEX].nodeBankAccounts[0]
@@ -88,7 +87,7 @@ export default function AccountInfo() {
       const txid = await mangoClient.redeemAllMngo(
         mangoGroup,
         mangoAccount,
-        wallet,
+        wallet?.adapter,
         mangoGroup.tokens[MNGO_INDEX].rootBank,
         mngoNodeBank.publicKey,
         mngoNodeBank.vault

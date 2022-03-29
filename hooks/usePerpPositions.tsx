@@ -39,19 +39,23 @@ export const collectPerpPosition = (
 
   let avgEntryPrice = 0,
     breakEvenPrice = 0
+  const perpTradeHistory = tradeHistory.filter(
+    (t) => t.marketName === marketConfig.name
+  )
   try {
-    const perpTradeHistory = tradeHistory.filter(
-      (t) => t.marketName === marketConfig.name
-    )
-
     avgEntryPrice = perpAccount
       .getAverageOpenPrice(mangoAccount, perpMarket, perpTradeHistory)
       .toNumber()
+  } catch (e) {
+    console.error(marketConfig.name, e)
+  }
+
+  try {
     breakEvenPrice = perpAccount
       .getBreakEvenPrice(mangoAccount, perpMarket, perpTradeHistory)
       .toNumber()
   } catch (e) {
-    // console.error(e)
+    console.error(marketConfig.name, e)
   }
 
   const basePosition = perpMarket?.baseLotsToNumber(perpAccount.basePosition)
@@ -92,6 +96,7 @@ const usePerpPositions = () => {
   const mangoCache = useMangoStore(mangoCacheSelector)
   const allMarkets = useMangoStore(marketsSelector)
   const tradeHistory = useMangoStore((s) => s.tradeHistory.parsed)
+
   useEffect(() => {
     if (
       mangoAccount &&

@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { useRouter } from 'next/router'
 import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
 import useMangoStore, { serumProgramId } from '../stores/useMangoStore'
@@ -19,10 +19,10 @@ import {
   actionsSelector,
   mangoAccountSelector,
   marketConfigSelector,
-  walletConnectedSelector,
 } from '../stores/selectors'
 import { PublicKey } from '@solana/web3.js'
 import FavoritesShortcutBar from '../components/FavoritesShortcutBar'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -37,12 +37,12 @@ export async function getStaticProps({ locale }) {
   }
 }
 
-const PerpMarket = () => {
+const PerpMarket: React.FC = () => {
   const [alphaAccepted] = useLocalStorageState(ALPHA_MODAL_KEY, false)
   const [showTour] = useLocalStorageState(SHOW_TOUR_KEY, false)
+  const { connected } = useWallet()
   const groupConfig = useMangoGroupConfig()
   const setMangoStore = useMangoStore((s) => s.set)
-  const connected = useMangoStore(walletConnectedSelector)
   const mangoAccount = useMangoStore(mangoAccountSelector)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const marketConfig = useMangoStore(marketConfigSelector)
@@ -62,12 +62,10 @@ const PerpMarket = () => {
             unownedMangoAccountPubkey,
             serumProgramId
           )
-          console.log('unOwnedMangoAccount: ', unOwnedMangoAccount)
 
           setMangoStore((state) => {
             state.selectedMangoAccount.current = unOwnedMangoAccount
             state.selectedMangoAccount.initialLoad = false
-            state.wallet.connected = true
           })
           actions.fetchTradeHistory()
           actions.reloadOrders()

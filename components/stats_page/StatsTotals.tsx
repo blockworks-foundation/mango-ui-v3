@@ -15,29 +15,32 @@ function formatNumberString(x: number, decimals): string {
 }
 
 const getAverageStats = (
-  stats,
+  stats: any[],
   daysAgo: number,
   symbol: string,
   type: string
-) => {
-  const priorDate = new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000)
-  const selectedStatsData = stats.filter((s) => s.name === symbol)
-  const timeFilteredStats = selectedStatsData.filter(
-    (d) => new Date(d.time).getTime() >= priorDate.getTime()
-  )
+): string => {
+  if (stats?.length) {
+    const priorDate = new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000)
+    const selectedStatsData = stats.filter((s) => s.name === symbol)
+    const timeFilteredStats = selectedStatsData.filter(
+      (d) => new Date(d.time).getTime() >= priorDate.getTime()
+    )
 
-  const oldestStat = timeFilteredStats[0]
-  const latestStat = timeFilteredStats[timeFilteredStats.length - 1]
-  const avg =
-    Math.pow(latestStat[type] / oldestStat[type], 365 / daysAgo) * 100 - 100
+    const oldestStat = timeFilteredStats[0]
+    const latestStat = timeFilteredStats[timeFilteredStats.length - 1]
+    const avg =
+      Math.pow(latestStat[type] / oldestStat[type], 365 / daysAgo) * 100 - 100
 
-  priorDate.setHours(priorDate.getHours() + 1)
+    priorDate.setHours(priorDate.getHours() + 1)
 
-  if (new Date(oldestStat.hourly).getDate() > priorDate.getDate()) {
-    return '-'
-  } else {
-    return `${avg.toFixed(4)}%`
+    if (new Date(oldestStat.hourly).getDate() > priorDate.getDate()) {
+      return '-'
+    } else {
+      return `${avg.toFixed(4)}%`
+    }
   }
+  return '-'
 }
 
 export default function StatsTotals({ latestStats, stats }) {

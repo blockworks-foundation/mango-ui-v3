@@ -42,6 +42,7 @@ import useLocalStorageState, {
 } from '../../hooks/useLocalStorageState'
 import InlineNotification from '../InlineNotification'
 import { DEFAULT_SPOT_MARGIN_KEY } from '../SettingsModal'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 const MAX_SLIPPAGE_KEY = 'maxSlippage'
 
@@ -61,7 +62,7 @@ export default function AdvancedTradeForm({
   const { t } = useTranslation('common')
   const set = useMangoStore((s) => s.set)
   const { ipAllowed, spotAllowed } = useIpAddress()
-  const connected = useMangoStore((s) => s.wallet.connected)
+  const { wallet, connected } = useWallet()
   const actions = useMangoStore((s) => s.actions)
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
@@ -113,10 +114,7 @@ export default function AdvancedTradeForm({
 
   const isTriggerOrder = TRIGGER_ORDER_TYPES.includes(tradeType)
 
-  // TODO saml - create a tick box on the UI; Only available on perps
-  // eslint-disable-next-line
   const [postOnlySlide, setPostOnlySlide] = useState(false)
-
   const [postOnly, setPostOnly] = useState(false)
   const [ioc, setIoc] = useState(false)
 
@@ -405,8 +403,6 @@ export default function AdvancedTradeForm({
     }
   }
 
-  // TODO saml - use
-  // eslint-disable-next-line
   const postOnlySlideOnChange = (checked) => {
     if (checked) {
       setIoc(false)
@@ -414,7 +410,6 @@ export default function AdvancedTradeForm({
     }
     setPostOnlySlide(checked)
   }
-
   const postOnChange = (checked) => {
     if (checked) {
       setIoc(false)
@@ -575,7 +570,6 @@ export default function AdvancedTradeForm({
       useMangoStore.getState().accountInfos[marketConfig.asksKey.toString()]
     const bidInfo =
       useMangoStore.getState().accountInfos[marketConfig.bidsKey.toString()]
-    const wallet = useMangoStore.getState().wallet.current
     const referrerPk = useMangoStore.getState().referrerPk
 
     if (!wallet || !mangoGroup || !mangoAccount || !market) return
@@ -618,7 +612,7 @@ export default function AdvancedTradeForm({
           mangoGroup,
           mangoAccount,
           market,
-          wallet,
+          wallet?.adapter,
           side,
           orderPrice,
           baseSize,
@@ -632,7 +626,9 @@ export default function AdvancedTradeForm({
         let perpOrderPrice: number = orderPrice
 
         if (isMarketOrder) {
-          if (tradeType === 'Market' && maxSlippage !== undefined) {
+          if (postOnlySlide) {
+            perpOrderType = 'postOnlySlide'
+          } else if (tradeType === 'Market' && maxSlippage !== undefined) {
             perpOrderType = 'ioc'
             if (side === 'buy') {
               perpOrderPrice = markPrice * (1 + parseFloat(maxSlippage))
@@ -652,7 +648,7 @@ export default function AdvancedTradeForm({
             mangoGroup,
             mangoAccount,
             market,
-            wallet,
+            wallet?.adapter,
             perpOrderType,
             side,
             perpOrderPrice,
@@ -667,7 +663,7 @@ export default function AdvancedTradeForm({
             mangoGroup,
             mangoAccount,
             market,
-            wallet,
+            wallet?.adapter,
             side,
             perpOrderPrice,
             baseSize,
@@ -793,15 +789,19 @@ export default function AdvancedTradeForm({
                 min="0"
                 step={tickSize}
                 onChange={(e) => onSetPrice(e.target.value)}
-                value={price}
-                disabled={isMarketOrder}
+                value={postOnlySlide ? '' : price}
+                disabled={isMarketOrder || postOnlySlide}
                 placeholder={tradeType === 'Market' ? markPrice : null}
                 prefix={
-                  <img
-                    src={`/assets/icons/${groupConfig.quoteSymbol.toLowerCase()}.svg`}
-                    width="16"
-                    height="16"
-                  />
+                  <>
+                    {!postOnlySlide && (
+                      <img
+                        src={`/assets/icons/${groupConfig.quoteSymbol.toLowerCase()}.svg`}
+                        width="16"
+                        height="16"
+                      />
+                    )}
+                  </>
                 }
               />
             </>
@@ -908,7 +908,7 @@ export default function AdvancedTradeForm({
               </div>
             ) : null
           ) : null}
-          <div className="sm:flex">
+          <div className="flex-wrap sm:flex">
             {isLimitOrder ? (
               <div className="flex">
                 <div className="mr-4 mt-3">
@@ -951,7 +951,7 @@ export default function AdvancedTradeForm({
                 && showReduceOnly(perpAccount?.basePosition.toNumber())
              */}
             {marketConfig.kind === 'perp' ? (
-              <div className="mt-3">
+              <div className="mr-4 mt-3">
                 <Tooltip
                   className="hidden md:block"
                   delay={250}
@@ -964,6 +964,24 @@ export default function AdvancedTradeForm({
                     disabled={isTriggerOrder}
                   >
                     Reduce Only
+                  </Checkbox>
+                </Tooltip>
+              </div>
+            ) : null}
+            {marketConfig.kind === 'perp' ? (
+              <div className="mt-3">
+                <Tooltip
+                  className="hidden md:block"
+                  delay={250}
+                  placement="left"
+                  content={t('tooltip-post-and-slide')}
+                >
+                  <Checkbox
+                    checked={postOnlySlide}
+                    onChange={(e) => postOnlySlideOnChange(e.target.checked)}
+                    disabled={isTriggerOrder}
+                  >
+                    Post & Slide
                   </Checkbox>
                 </Tooltip>
               </div>

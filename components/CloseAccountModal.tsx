@@ -23,6 +23,7 @@ import {
   ZERO_I80F48,
 } from '@blockworks-foundation/mango-client'
 import { formatUsdValue } from '../utils'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 interface CloseAccountModalProps {
   lamports?: number
@@ -35,6 +36,7 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
   onClose,
 }) => {
   const { t } = useTranslation(['common', 'close-account'])
+  const { wallet } = useWallet()
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
@@ -94,7 +96,6 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
   }, [mangoAccount])
 
   const closeAccount = async () => {
-    const wallet = useMangoStore.getState().wallet.current
     const mangoClient = useMangoStore.getState().connection.client
 
     try {
@@ -103,10 +104,10 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
         mangoAccount,
         mangoCache,
         MNGO_INDEX,
-        wallet
+        wallet?.adapter
       )
 
-      await actions.fetchAllMangoAccounts()
+      await actions.fetchAllMangoAccounts(wallet)
       const mangoAccounts = useMangoStore.getState().mangoAccounts
 
       setMangoStore((state) => {

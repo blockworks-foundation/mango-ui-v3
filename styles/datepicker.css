@@ -1,0 +1,45 @@
+/* Date Picker */
+
+.react-datepicker {
+  @apply rounded-md border-0 bg-th-bkg-3 font-body text-th-fgd-2 ring-1 ring-th-fgd-4;
+}
+
+.react-datepicker-popper[data-placement^='bottom'] {
+  @apply pt-1;
+}
+
+.react-datepicker__header {
+  @apply rounded-tl-md border-none bg-th-bkg-1 text-th-fgd-1;
+}
+
+.react-datepicker__header:not(.react-datepicker__header--has-time-select) {
+  @apply rounded-tr-md;
+}
+
+.react-datepicker__current-month {
+  @apply text-th-fgd-1;
+}
+
+.react-datepicker__day-name {
+  @apply text-th-fgd-2;
+}
+
+.react-datepicker__triangle {
+  @apply hidden;
+}
+
+.react-datepicker__day {
+  @apply text-th-fgd-2 hover:bg-th-bkg-4;
+}
+
+.react-datepicker__day--selected {
+  @apply bg-th-primary text-th-bkg-1 hover:bg-th-primary hover:text-th-bkg-1;
+}
+
+.react-datepicker__day--keyboard-selected {
+  @apply bg-transparent ring-2 ring-inset ring-th-fgd-4;
+}
+
+.react-datepicker__day--today {
+  @apply rounded-md ring-2 ring-inset ring-th-fgd-4;
+}

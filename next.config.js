@@ -21,34 +21,29 @@ const moduleExports = {
       },
     ]
   },
-  webpack: (config, { isServer }) => {
+  webpack: (config, options) => {
     // Important: return the modified config
-    if (!isServer) {
+    if (!options.isServer) {
       config.resolve.fallback.fs = false
     }
+
     config.module.rules.push({
-      test: /\.svg?$/,
-      oneOf: [
-        {
-          use: [
-            {
-              loader: '@svgr/webpack',
-              options: {
-                prettier: false,
-                svgo: true,
-                svgoConfig: {
-                  plugins: [{ removeViewBox: false }],
-                },
-                titleProp: true,
-              },
-            },
-          ],
-          issuer: {
-            and: [/\.(ts|tsx|js|jsx|md|mdx)$/],
-          },
-        },
-      ],
+      test: /\.svg$/,
+      use: ['@svgr/webpack'],
     })
+
+    if (process.env.ANALYZE === 'true') {
+      const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
+      config.plugins.push(
+        new BundleAnalyzerPlugin({
+          analyzerMode: 'static',
+          reportFilename: options.isServer
+            ? './analyze/server.html'
+            : './analyze/client.html',
+        })
+      )
+    }
+
     return config
   },
 }

@@ -2,9 +2,10 @@ import Head from 'next/head'
 import { ThemeProvider } from 'next-themes'
 import '../node_modules/react-grid-layout/css/styles.css'
 import '../node_modules/react-resizable/css/styles.css'
+import '../node_modules/react-datepicker/dist/react-datepicker.css'
 import 'intro.js/introjs.css'
 import '../styles/index.css'
-import useWallet from '../hooks/useWallet'
+import '../styles/datepicker.css'
 import useHydrateStore from '../hooks/useHydrateStore'
 import Notifications from '../components/Notification'
 import useMangoStore from '../stores/useMangoStore'
@@ -18,7 +19,7 @@ import ErrorBoundary from '../components/ErrorBoundary'
 import GlobalNotification from '../components/GlobalNotification'
 import { useOpenOrders } from '../hooks/useOpenOrders'
 import usePerpPositions from '../hooks/usePerpPositions'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { PublicKey } from '@solana/web3.js'
 import { connectionSelector, mangoGroupSelector } from '../stores/selectors'
 import {
@@ -33,14 +34,17 @@ Sentry.init({
   dsn: 'https://657354c743f24ac686c979e77d9759d9@o1177229.ingest.sentry.io/6276097',
   integrations: [new BrowserTracing()],
 })
+import { WalletProvider, WalletListener } from 'components/WalletAdapter'
+import { PhantomWalletAdapter } from '@solana/wallet-adapter-phantom'
+import { SolflareWalletAdapter } from '@solana/wallet-adapter-solflare'
+import { SolletWalletAdapter } from '@solana/wallet-adapter-sollet'
+import { SlopeWalletAdapter } from '@solana/wallet-adapter-slope'
+import { BitpieWalletAdapter } from '@solana/wallet-adapter-bitpie'
+import { HuobiWalletAdapter } from '@solana/wallet-adapter-huobi'
+import { GlowWalletAdapter } from '@solana/wallet-adapter-glow'
 
 const MangoStoreUpdater = () => {
   useHydrateStore()
-  return null
-}
-
-const WalletStoreUpdater = () => {
-  useWallet()
   return null
 }
 
@@ -61,9 +65,9 @@ const TradeHistoryStoreUpdater = () => {
 
 const FetchReferrer = () => {
   const setMangoStore = useMangoStore((s) => s.set)
+  const router = useRouter()
   const mangoGroup = useMangoStore(mangoGroupSelector)
   const connection = useMangoStore(connectionSelector)
-  const router = useRouter()
   const { query } = router
 
   useEffect(() => {
@@ -127,6 +131,19 @@ const PageTitle = () => {
 }
 
 function App({ Component, pageProps }) {
+  const wallets = useMemo(
+    () => [
+      new PhantomWalletAdapter(),
+      new SolflareWalletAdapter(),
+      new SolletWalletAdapter(),
+      new SlopeWalletAdapter(),
+      new BitpieWalletAdapter(),
+      new HuobiWalletAdapter(),
+      new GlowWalletAdapter(),
+    ],
+    []
+  )
+
   return (
     <>
       <Head>
@@ -166,7 +183,6 @@ function App({ Component, pageProps }) {
         <ErrorBoundary>
           <PageTitle />
           <MangoStoreUpdater />
-          <WalletStoreUpdater />
           <OpenOrdersStoreUpdater />
           <PerpPositionsStoreUpdater />
           <TradeHistoryStoreUpdater />
@@ -174,21 +190,24 @@ function App({ Component, pageProps }) {
         </ErrorBoundary>
 
         <ThemeProvider defaultTheme="Mango">
-          <ViewportProvider>
-            <div className="min-h-screen bg-th-bkg-1">
-              <ErrorBoundary>
-                <GlobalNotification />
-                <Component {...pageProps} />
-              </ErrorBoundary>
-            </div>
-            <div className="fixed bottom-0 left-0 z-20 w-full md:hidden">
-              <ErrorBoundary>
-                <BottomBar />
-              </ErrorBoundary>
-            </div>
+          <WalletProvider wallets={wallets}>
+            <WalletListener />
+            <ViewportProvider>
+              <div className="min-h-screen bg-th-bkg-1">
+                <ErrorBoundary>
+                  <GlobalNotification />
+                  <Component {...pageProps} />
+                </ErrorBoundary>
+              </div>
+              <div className="fixed bottom-0 left-0 z-20 w-full md:hidden">
+                <ErrorBoundary>
+                  <BottomBar />
+                </ErrorBoundary>
+              </div>
 
-            <Notifications />
-          </ViewportProvider>
+              <Notifications />
+            </ViewportProvider>
+          </WalletProvider>
         </ThemeProvider>
       </ErrorBoundary>
     </>

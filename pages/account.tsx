@@ -19,43 +19,41 @@ import {
 } from '@heroicons/react/outline'
 import { ChevronDownIcon } from '@heroicons/react/solid'
 import { nativeToUi, ZERO_BN } from '@blockworks-foundation/mango-client'
-import useMangoStore, {
-  serumProgramId,
-  MNGO_INDEX,
-} from '../stores/useMangoStore'
-import PageBodyContainer from '../components/PageBodyContainer'
-import TopBar from '../components/TopBar'
-import AccountOrders from '../components/account_page/AccountOrders'
-import AccountHistory from '../components/account_page/AccountHistory'
-import AccountsModal from '../components/AccountsModal'
-import AccountOverview from '../components/account_page/AccountOverview'
-import AccountInterest from '../components/account_page/AccountInterest'
-import AccountFunding from '../components/account_page/AccountFunding'
-import AccountNameModal from '../components/AccountNameModal'
-import { IconButton, LinkButton } from '../components/Button'
-import EmptyState from '../components/EmptyState'
-import Loading from '../components/Loading'
-import Swipeable from '../components/mobile/Swipeable'
-import Tabs from '../components/Tabs'
-import { useViewport } from '../hooks/useViewport'
-import { breakpoints } from '../components/TradePageGrid'
+import useMangoStore, { serumProgramId, MNGO_INDEX } from 'stores/useMangoStore'
+import PageBodyContainer from 'components/PageBodyContainer'
+import TopBar from 'components/TopBar'
+import AccountOrders from 'components/account_page/AccountOrders'
+import AccountHistory from 'components/account_page/AccountHistory'
+import AccountsModal from 'components/AccountsModal'
+import AccountOverview from 'components/account_page/AccountOverview'
+import AccountInterest from 'components/account_page/AccountInterest'
+import AccountFunding from 'components/account_page/AccountFunding'
+import AccountNameModal from 'components/AccountNameModal'
+import { IconButton, LinkButton } from 'components/Button'
+import EmptyState from 'components/EmptyState'
+import Loading from 'components/Loading'
+import Swipeable from 'components/mobile/Swipeable'
+import Tabs from 'components/Tabs'
+import { useViewport } from 'hooks/useViewport'
+import { breakpoints } from 'components/TradePageGrid'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
 import { PublicKey } from '@solana/web3.js'
-import CloseAccountModal from '../components/CloseAccountModal'
-import { notify } from '../utils/notifications'
+import CloseAccountModal from 'components/CloseAccountModal'
+import { notify } from 'utils/notifications'
 import {
   actionsSelector,
   mangoAccountSelector,
   mangoGroupSelector,
-  walletConnectedSelector,
-} from '../stores/selectors'
-import CreateAlertModal from '../components/CreateAlertModal'
-import { copyToClipboard } from '../utils'
-import DelegateModal from '../components/DelegateModal'
+} from 'stores/selectors'
+import CreateAlertModal from 'components/CreateAlertModal'
+import { copyToClipboard } from 'utils'
+import DelegateModal from 'components/DelegateModal'
 import { Menu, Transition } from '@headlessui/react'
-import { MangoAccountSearch } from 'components/account_page/MangoAccountSearch'
+import { useWallet } from '@solana/wallet-adapter-react'
+import { handleWalletConnect } from 'components/ConnectWalletButton'
+import { MangoAccountLookup } from 'components/account_page/MangoAccountLookup'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -77,15 +75,12 @@ export default function Account() {
   const { t } = useTranslation(['common', 'close-account', 'delegate'])
   const { width } = useViewport()
   const router = useRouter()
-
-  const connected = useMangoStore(walletConnectedSelector)
+  const { connected, wallet, publicKey } = useWallet()
+  const isLoading = useMangoStore((s) => s.selectedMangoAccount.initialLoad)
   const mangoAccount = useMangoStore(mangoAccountSelector)
   const mangoGroup = useMangoStore(mangoGroupSelector)
-  const wallet = useMangoStore((s) => s.wallet.current)
-  const isLoading = useMangoStore((s) => s.selectedMangoAccount.initialLoad)
   const actions = useMangoStore(actionsSelector)
   const setMangoStore = useMangoStore((s) => s.set)
-
   const [showAccountsModal, setShowAccountsModal] = useState(false)
   const [showNameModal, setShowNameModal] = useState(false)
   const [showCloseAccountModal, setShowCloseAccountModal] = useState(false)
@@ -97,10 +92,11 @@ export default function Account() {
   const [viewIndex, setViewIndex] = useState(0)
   const [activeTab, setActiveTab] = useState(TABS[0])
 
+  const connecting = wallet?.adapter?.connecting
   const isMobile = width ? width < breakpoints.sm : false
   const { pubkey } = router.query
-  const isDelegatedAccount = wallet?.publicKey
-    ? !mangoAccount?.owner?.equals(wallet?.publicKey)
+  const isDelegatedAccount = publicKey
+    ? !mangoAccount?.owner?.equals(publicKey)
     : false
 
   const handleCloseAlertModal = useCallback(() => {
@@ -123,6 +119,10 @@ export default function Account() {
     setShowDelegateModal(false)
   }, [])
 
+  const handleConnect = useCallback(() => {
+    handleWalletConnect(wallet)
+  }, [wallet])
+
   useEffect(() => {
     async function loadUnownedMangoAccount() {
       try {
@@ -141,6 +141,7 @@ export default function Account() {
           setResetOnLeave(true)
         }
       } catch (error) {
+        console.log('error', error)
         router.push('/account')
       }
     }
@@ -152,12 +153,6 @@ export default function Account() {
       loadUnownedMangoAccount()
     }
   }, [pubkey, mangoGroup])
-
-  useEffect(() => {
-    if (connected) {
-      router.push('/account')
-    }
-  }, [connected])
 
   useEffect(() => {
     const handleRouteChange = () => {
@@ -206,8 +201,13 @@ export default function Account() {
     )
   }, [mangoAccount])
 
+  useEffect(() => {
+    if (connecting) {
+      router.push('/account')
+    }
+  }, [connecting, router])
+
   const handleRedeemMngo = async () => {
-    const wallet = useMangoStore.getState().wallet.current
     const mangoClient = useMangoStore.getState().connection.client
     const mngoNodeBank =
       mangoGroup.rootBankAccounts[MNGO_INDEX].nodeBankAccounts[0]
@@ -216,7 +216,7 @@ export default function Account() {
       const txid = await mangoClient.redeemAllMngo(
         mangoGroup,
         mangoAccount,
-        wallet,
+        wallet?.adapter,
         mangoGroup.tokens[MNGO_INDEX].rootBank,
         mngoNodeBank.publicKey,
         mngoNodeBank.vault
@@ -433,21 +433,23 @@ export default function Account() {
                 icon={<CurrencyDollarIcon />}
                 onClickButton={() => setShowAccountsModal(true)}
                 title={t('no-account-found')}
+                disabled={!wallet || !mangoGroup}
               />
             )
           ) : (
             <EmptyState
               buttonText={t('connect')}
               desc={t('connect-view')}
+              disabled={!wallet || !mangoGroup}
               icon={<LinkIcon />}
-              onClickButton={() => wallet.connect()}
+              onClickButton={handleConnect}
               title={t('connect-wallet')}
             />
           )}
         </div>
         {!connected && (
           <div className="mt-6 md:mt-3 md:rounded-lg md:bg-th-bkg-2 md:p-6">
-            <MangoAccountSearch />
+            <MangoAccountLookup />
           </div>
         )}
       </PageBodyContainer>

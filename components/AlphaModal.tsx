@@ -9,7 +9,7 @@ import { SHOW_TOUR_KEY } from './IntroTips'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { useRouter } from 'next/router'
-import { LANGS } from './LanguageSwitch'
+import { LANGS } from './SettingsModal'
 import { RadioGroup } from '@headlessui/react'
 
 export const ALPHA_MODAL_KEY = 'mangoAlphaAccepted-3.06'

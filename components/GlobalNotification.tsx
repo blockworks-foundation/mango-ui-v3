@@ -44,9 +44,7 @@ const GlobalNotification = () => {
     return (
       <div className="flex items-center bg-th-bkg-4 text-th-primary">
         <div className="w-full p-1 text-center">
-          <span>
-            {t('degraded-performance', {tps: tps?.toFixed(0)})}
-          </span>
+          <span>{t('degraded-performance', { tps: tps?.toFixed(0) })}</span>
         </div>
 
         <button

@@ -109,10 +109,7 @@ export const FiveOhFive = ({ error }) => {
         </div>
       </main>
       <footer className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="border-t border-gray-200 py-12 text-center md:flex md:justify-between">
-          <p className="text-base text-gray-400">
-            &copy; Workflow, Inc. All rights reserved.
-          </p>
+        <div className="border-t border-gray-200 py-10 text-center md:flex md:justify-between">
           <div className="mt-6 flex justify-center space-x-8 md:mt-0">
             {social.map((item, itemIdx) => (
               <a
