@@ -11,12 +11,13 @@ import {
   FlipCardInner,
 } from '../FlipCard'
 import FloatingElement from '../FloatingElement'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 export default function TradeForm() {
   const [showAdvancedForm, setShowAdvancedForm] = useState(true)
+  const { connected } = useWallet()
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
-  const connected = useMangoStore((s) => s.wallet.connected)
 
   const handleFormChange = () => {
     setShowAdvancedForm(!showAdvancedForm)

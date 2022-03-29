@@ -13,6 +13,7 @@ import { notify } from '../utils/notifications'
 import { sleep, trimDecimals } from '../utils'
 import { useTranslation } from 'next-i18next'
 import ButtonGroup from './ButtonGroup'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 interface DepositModalProps {
   onClose: () => void
@@ -28,6 +29,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
   tokenSymbol = '',
 }) => {
   const { t } = useTranslation('common')
+  const { wallet } = useWallet()
   const [inputAmount, setInputAmount] = useState<string>(repayAmount || '')
   const [submitting, setSubmitting] = useState(false)
   const [invalidAmountMessage, setInvalidAmountMessage] = useState('')
@@ -65,6 +67,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
       amount: parseFloat(inputAmount),
       fromTokenAcc: selectedAccount.account,
       mangoAccount,
+      wallet,
     })
       .then((response) => {
         notify({
@@ -77,7 +80,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
         sleep(500).then(() => {
           mangoAccount
             ? actions.reloadMangoAccount()
-            : actions.fetchAllMangoAccounts()
+            : actions.fetchAllMangoAccounts(wallet)
           actions.fetchWalletTokens()
         })
       })

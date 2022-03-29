@@ -4,15 +4,11 @@ import useMangoStore from '../stores/useMangoStore'
 import PageBodyContainer from '../components/PageBodyContainer'
 import TopBar from '../components/TopBar'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
-import {
-  actionsSelector,
-  connectionSelector,
-  walletConnectedSelector,
-  walletSelector,
-} from '../stores/selectors'
+import { actionsSelector, connectionSelector } from '../stores/selectors'
 import JupiterForm from '../components/JupiterForm'
 import { zeroKey } from '@blockworks-foundation/mango-client'
 import { useTranslation } from 'next-i18next'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -26,22 +22,19 @@ export async function getStaticProps({ locale }) {
 export default function Swap() {
   const { t } = useTranslation(['common', 'swap'])
   const connection = useMangoStore(connectionSelector)
-  const connected = useMangoStore(walletConnectedSelector)
-  const wallet = useMangoStore(walletSelector)
+  const { connected, publicKey } = useWallet()
   const actions = useMangoStore(actionsSelector)
 
   useEffect(() => {
     if (connected) {
       actions.fetchWalletTokens()
     }
-  }, [connected])
+  }, [connected, actions])
 
   if (!connection) return null
 
   const userPublicKey =
-    wallet?.publicKey && !zeroKey.equals(wallet.publicKey)
-      ? wallet.publicKey
-      : undefined
+    publicKey && !zeroKey.equals(publicKey) ? publicKey : null
 
   return (
     <JupiterProvider

@@ -5,7 +5,7 @@ interface ButtonGroupProps {
   className?: string
   onChange: (x) => void
   unit?: string
-  values: Array<string>
+  values: Array<any>
   names?: Array<string>
 }
 

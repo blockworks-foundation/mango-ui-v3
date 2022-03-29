@@ -6,6 +6,7 @@ import { Transition } from '@headlessui/react'
 import { useTranslation } from 'next-i18next'
 import Loading from 'components/Loading'
 import useMangoStore from 'stores/useMangoStore'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 const MenuButton: React.FC<{
   onClick: () => void
@@ -28,6 +29,7 @@ export const RedeemDropdown: React.FC = () => {
   const { t } = useTranslation('common')
   const { reloadMangoAccount } = useMangoStore((s) => s.actions)
   const [settling, setSettling] = useState(false)
+  const { wallet } = useWallet()
   const [settlingPosPnl, setSettlingPosPnl] = useState(false)
   const [open, setOpen] = useState(false)
   const unsettledPositions =
@@ -44,7 +46,7 @@ export const RedeemDropdown: React.FC = () => {
     setOpen(false)
     setSettling(true)
     for (const p of unsettledPositions) {
-      await settlePnl(p.perpMarket, p.perpAccount, t, undefined)
+      await settlePnl(p.perpMarket, p.perpAccount, t, undefined, wallet)
     }
 
     reloadMangoAccount()
@@ -55,7 +57,7 @@ export const RedeemDropdown: React.FC = () => {
     setOpen(false)
     setSettlingPosPnl(true)
     for (const p of unsettledPositivePositions) {
-      await settlePosPnl([p.perpMarket], p.perpAccount, t, undefined)
+      await settlePosPnl([p.perpMarket], p.perpAccount, t, undefined, wallet)
     }
     setSettlingPosPnl(false)
   }

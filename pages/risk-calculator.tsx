@@ -29,6 +29,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
 import { PublicKey } from '@solana/web3.js'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -98,9 +99,9 @@ export default function RiskCalculator() {
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const mangoConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
-  const connected = useMangoStore((s) => s.wallet.connected)
   const setMangoStore = useMangoStore((s) => s.set)
   const router = useRouter()
+  const { connected } = useWallet()
   const { pubkey } = router.query
 
   // Set default state variables
@@ -123,7 +124,7 @@ export default function RiskCalculator() {
       router.push('/risk-calculator')
       setScenarioInitialized(false)
     }
-  }, [connected])
+  }, [connected, router])
 
   useEffect(() => {
     async function loadUnownedMangoAccount() {
@@ -152,7 +153,7 @@ export default function RiskCalculator() {
     if (pubkey) {
       loadUnownedMangoAccount()
     }
-  }, [pubkey, mangoGroup])
+  }, [pubkey, mangoGroup, router, setMangoStore])
 
   useEffect(() => {
     const handleRouteChange = () => {
@@ -166,7 +167,7 @@ export default function RiskCalculator() {
     return () => {
       router.events.off('routeChangeStart', handleRouteChange)
     }
-  }, [resetOnLeave])
+  }, [resetOnLeave, setMangoStore])
 
   // Set rules for updating the scenario
   useEffect(() => {

@@ -17,6 +17,7 @@ import FloatingElement from '../FloatingElement'
 import Swipeable from './Swipeable'
 import { useTranslation } from 'next-i18next'
 import Link from 'next/link'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 const TVChartContainer = dynamic(
   () => import('../../components/TradingView/index'),
@@ -26,10 +27,10 @@ const TVChartContainer = dynamic(
 const MobileTradePage = () => {
   const { t } = useTranslation('common')
   const [viewIndex, setViewIndex] = useState(0)
+  const { connected } = useWallet()
   const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
-  const connected = useMangoStore((s) => s.wallet.connected)
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const baseSymbol = marketConfig.baseSymbol
   const isPerpMarket = marketConfig.kind === 'perp'

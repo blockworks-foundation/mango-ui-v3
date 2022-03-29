@@ -17,6 +17,7 @@ import { LinkButton } from '../components/Button'
 import useMangoStore from '../stores/useMangoStore'
 import { msrmMints, ZERO_BN } from '@blockworks-foundation/mango-client'
 import useFees from '../hooks/useFees'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -31,10 +32,10 @@ export default function Fees() {
   const { t } = useTranslation('common')
   const { totalSrm, totalMsrm, rates } = useSrmAccount()
   const { takerFee, makerFee } = useFees()
+  const { connected } = useWallet()
   const [showDeposit, setShowDeposit] = useState(false)
   const [showWithdraw, setShowWithdraw] = useState(false)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
-  const connected = useMangoStore((s) => s.wallet.connected)
   const walletTokens = useMangoStore((s) => s.wallet.tokens)
   const cluster = useMangoStore.getState().connection.cluster
   const ownerMsrmAccount = walletTokens.find((t) =>

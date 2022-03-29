@@ -9,11 +9,7 @@ import { useJupiter, RouteInfo } from '@jup-ag/react-hook'
 import { TOKEN_LIST_URL } from '@jup-ag/core'
 import { PublicKey } from '@solana/web3.js'
 import useMangoStore from '../stores/useMangoStore'
-import {
-  connectionSelector,
-  walletConnectedSelector,
-  walletSelector,
-} from '../stores/selectors'
+import { connectionSelector } from '../stores/selectors'
 import { sortBy, sum } from 'lodash'
 import {
   CogIcon,
@@ -46,6 +42,8 @@ import { numberFormatter } from './SwapTokenInfo'
 import { useTranslation } from 'next-i18next'
 import Tabs from './Tabs'
 import SwapTokenInsights from './SwapTokenInsights'
+import { useWallet } from '@solana/wallet-adapter-react'
+import { handleWalletConnect } from 'components/ConnectWalletButton'
 
 const TABS = ['Market Data', 'Performance Insights']
 
@@ -53,10 +51,9 @@ type UseJupiterProps = Parameters<typeof useJupiter>[0]
 
 const JupiterForm: FunctionComponent = () => {
   const { t } = useTranslation(['common', 'swap'])
-  const wallet = useMangoStore(walletSelector)
+  const { wallet, publicKey, connected, signAllTransactions, signTransaction } =
+    useWallet()
   const connection = useMangoStore(connectionSelector)
-  const connected = useMangoStore(walletConnectedSelector)
-
   const [showSettings, setShowSettings] = useState(false)
   const [depositAndFee, setDepositAndFee] = useState(null)
   const [selectedRoute, setSelectedRoute] = useState<RouteInfo>(null)
@@ -90,10 +87,13 @@ const JupiterForm: FunctionComponent = () => {
   }
 
   const fetchWalletTokens = useCallback(async () => {
+    if (!publicKey) {
+      return
+    }
     const ownedTokens = []
     const ownedTokenAccounts = await getTokenAccountsByOwnerWithWrappedSol(
       connection,
-      wallet.publicKey
+      publicKey
     )
 
     ownedTokenAccounts.forEach((account) => {
@@ -104,9 +104,8 @@ const JupiterForm: FunctionComponent = () => {
       const uiBalance = nativeToUi(account.amount, decimals || 6)
       ownedTokens.push({ account, uiBalance })
     })
-    console.log('ownedToknes', ownedTokens)
     setWalletTokens(ownedTokens)
-  }, [wallet, connection, tokens])
+  }, [publicKey, connection, tokens])
 
   // @ts-ignore
   const [inputTokenInfo, outputTokenInfo] = useMemo(() => {
@@ -236,6 +235,10 @@ const JupiterForm: FunctionComponent = () => {
       return sortedTokenMints
     }
   }, [routeMap, tokens, formValue.inputMint])
+
+  const handleConnect = useCallback(() => {
+    handleWalletConnect(wallet)
+  }, [wallet])
 
   const inputWalletBalance = () => {
     if (walletTokens.length) {
@@ -373,11 +376,11 @@ const JupiterForm: FunctionComponent = () => {
                           </div>
                           <a
                             className="flex items-center text-xs text-th-fgd-3 hover:text-th-fgd-2"
-                            href={`https://explorer.solana.com/address/${wallet?.publicKey}`}
+                            href={`https://explorer.solana.com/address/${publicKey}`}
                             target="_blank"
                             rel="noopener noreferrer"
                           >
-                            {abbreviateAddress(wallet.publicKey)}
+                            {abbreviateAddress(publicKey)}
                             <ExternalLinkIcon className="ml-0.5 -mt-0.5 h-3.5 w-3.5" />
                           </a>
                         </div>
@@ -945,16 +948,21 @@ const JupiterForm: FunctionComponent = () => {
                 <Button
                   disabled={swapDisabled}
                   onClick={async () => {
-                    if (!connected && zeroKey !== wallet?.publicKey) {
-                      wallet.connect()
+                    if (!connected && zeroKey !== publicKey) {
+                      handleConnect()
                     } else if (!loading && selectedRoute && connected) {
                       setSwapping(true)
                       let txCount = 1
                       let errorTxid
                       const swapResult = await exchange({
-                        wallet: wallet as any,
-                        route: selectedRoute,
-                        confirmationWaiterFactory: async (txid, totalTxs) => {
+                        wallet: {
+                          sendTransaction: wallet?.adapter?.sendTransaction,
+                          publicKey: wallet?.adapter?.publicKey,
+                          signAllTransactions,
+                          signTransaction,
+                        },
+                        routeInfo: selectedRoute,
+                        onTransaction: async (txid, totalTxs) => {
                           console.log('txid, totalTxs', txid, totalTxs)
                           if (txCount === totalTxs) {
                             errorTxid = txid

@@ -14,6 +14,7 @@ import { breakpoints } from './TradePageGrid'
 import { useTranslation } from 'next-i18next'
 import SwitchMarketDropdown from './SwitchMarketDropdown'
 import Tooltip from './Tooltip'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 const OraclePrice = () => {
   const oraclePrice = useOraclePrice()
@@ -41,12 +42,12 @@ const OraclePrice = () => {
 
 const MarketDetails = () => {
   const { t } = useTranslation('common')
+  const { connected } = useWallet()
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const baseSymbol = marketConfig.baseSymbol
   const selectedMarketName = marketConfig.name
   const isPerpMarket = marketConfig.kind === 'perp'
 
-  const connected = useMangoStore((s) => s.wallet.connected)
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
 
@@ -108,11 +109,11 @@ const MarketDetails = () => {
                         {t('average-funding')}
                       </div>
                       <div className="text-th-fgd-1 md:text-xs">
-                        {`${market?.funding1h.toLocaleString(undefined, {
-                          maximumSignificantDigits: 3,
-                        })}% (${(market?.funding1h * 24 * 365).toFixed(
-                          2
-                        )}% APR)`}
+                        {`${market?.funding1h.toFixed(4)}% (${(
+                          market?.funding1h *
+                          24 *
+                          365
+                        ).toFixed(2)}% APR)`}
                       </div>
                     </div>
                   </Tooltip>

@@ -6,6 +6,7 @@ import Loading from './Loading'
 import Modal from './Modal'
 import { msrmMints } from '@blockworks-foundation/mango-client'
 import { useTranslation } from 'next-i18next'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 const WithdrawMsrmModal = ({ onClose, isOpen }) => {
   const { t } = useTranslation('common')
@@ -13,8 +14,8 @@ const WithdrawMsrmModal = ({ onClose, isOpen }) => {
   const actions = useMangoStore((s) => s.actions)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
-  const wallet = useMangoStore((s) => s.wallet.current)
   const walletTokens = useMangoStore((s) => s.wallet.tokens)
+  const { wallet } = useWallet()
   const cluster = useMangoStore.getState().connection.cluster
 
   const handleMsrmWithdraw = async () => {
@@ -30,7 +31,7 @@ const WithdrawMsrmModal = ({ onClose, isOpen }) => {
       const txid = await mangoClient.withdrawMsrm(
         mangoGroup,
         mangoAccount,
-        wallet,
+        wallet?.adapter,
         ownerMsrmAccount.account.publicKey,
         1
       )

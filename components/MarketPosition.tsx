@@ -20,17 +20,18 @@ import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { useTranslation } from 'next-i18next'
 import useMangoAccount from '../hooks/useMangoAccount'
+import { useWallet, Wallet } from '@solana/wallet-adapter-react'
 
 export const settlePosPnl = async (
   perpMarkets: PerpMarket[],
   perpAccount: PerpAccount,
   t,
-  mangoAccounts: MangoAccount[] | undefined
+  mangoAccounts: MangoAccount[] | undefined,
+  wallet: Wallet
 ) => {
   const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
   const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
   const mangoCache = useMangoStore.getState().selectedMangoGroup.cache
-  const wallet = useMangoStore.getState().wallet.current
   const actions = useMangoStore.getState().actions
   const mangoClient = useMangoStore.getState().connection.client
 
@@ -41,7 +42,7 @@ export const settlePosPnl = async (
       mangoAccount,
       perpMarkets,
       mangoGroup.rootBankAccounts[QUOTE_INDEX],
-      wallet,
+      wallet?.adapter,
       mangoAccounts
     )
     actions.reloadMangoAccount()
@@ -69,12 +70,12 @@ export const settlePnl = async (
   perpMarket: PerpMarket,
   perpAccount: PerpAccount,
   t,
-  mangoAccounts: MangoAccount[] | undefined
+  mangoAccounts: MangoAccount[] | undefined,
+  wallet: Wallet
 ) => {
   const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
   const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
   const mangoCache = useMangoStore.getState().selectedMangoGroup.cache
-  const wallet = useMangoStore.getState().wallet.current
   const actions = useMangoStore.getState().actions
   const marketIndex = mangoGroup.getPerpMarketIndex(perpMarket.publicKey)
   const mangoClient = useMangoStore.getState().connection.client
@@ -87,7 +88,7 @@ export const settlePnl = async (
       perpMarket,
       mangoGroup.rootBankAccounts[QUOTE_INDEX],
       mangoCache.priceCache[marketIndex].price,
-      wallet,
+      wallet?.adapter,
       mangoAccounts
     )
     actions.reloadMangoAccount()
@@ -109,13 +110,13 @@ export const settlePnl = async (
 
 export default function MarketPosition() {
   const { t } = useTranslation('common')
+  const { wallet, connected } = useWallet()
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoGroupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const { mangoAccount, initialLoad } = useMangoAccount()
   const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
-  const connected = useMangoStore((s) => s.wallet.connected)
   const setMangoStore = useMangoStore((s) => s.set)
   const price = useMangoStore((s) => s.tradeForm.price)
   const perpAccounts = useMangoStore((s) => s.selectedMangoAccount.perpAccounts)
@@ -156,7 +157,7 @@ export default function MarketPosition() {
 
   const handleSettlePnl = (perpMarket, perpAccount) => {
     setSettling(true)
-    settlePnl(perpMarket, perpAccount, t, undefined).then(() => {
+    settlePnl(perpMarket, perpAccount, t, undefined, wallet).then(() => {
       setSettling(false)
     })
   }
@@ -292,23 +293,23 @@ export default function MarketPosition() {
             )}
           </div>
         </div>
-        {basePosition ? (
+        {basePosition && (
           <Button
             onClick={() => setShowMarketCloseModal(true)}
             className="mt-2.5 w-full"
           >
             <span>{t('market-close')}</span>
           </Button>
-        ) : null}
+        )}
       </div>
-      {showMarketCloseModal ? (
+      {showMarketCloseModal && (
         <MarketCloseModal
           isOpen={showMarketCloseModal}
           onClose={handleCloseWarning}
           market={selectedMarket}
           marketIndex={marketIndex}
         />
-      ) : null}
+      )}
     </>
   )
 }
