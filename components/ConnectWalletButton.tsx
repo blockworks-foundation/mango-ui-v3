@@ -80,7 +80,12 @@ export const ConnectWalletButton: React.FC = () => {
     set((state) => {
       state.mangoAccounts = []
       state.selectedMangoAccount.current = null
-      state.tradeHistory = { spot: [], perp: [], parsed: [] }
+      state.tradeHistory = {
+        spot: [],
+        perp: [],
+        parsed: [],
+        initialLoad: false,
+      }
     })
     notify({
       type: 'info',

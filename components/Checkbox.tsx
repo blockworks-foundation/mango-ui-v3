@@ -2,7 +2,7 @@ import React from 'react'
 import { CheckIcon } from '@heroicons/react/solid'
 
 const Checkbox = ({ checked, children, disabled = false, ...props }) => (
-  <label className="flex cursor-pointer items-center text-th-fgd-3">
+  <label className="default-transition flex cursor-pointer items-center text-th-fgd-3 hover:text-th-fgd-2">
     <input
       checked={checked}
       {...props}
@@ -32,7 +32,11 @@ const Checkbox = ({ checked, children, disabled = false, ...props }) => (
         }`}
       />
     </div>
-    <span className="ml-2 text-xs">{children}</span>
+    <span
+      className={`ml-2 text-xs ${checked && !disabled ? 'text-th-fgd-2' : ''}`}
+    >
+      {children}
+    </span>
   </label>
 )
 
