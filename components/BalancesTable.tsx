@@ -19,6 +19,7 @@ import { useTranslation } from 'next-i18next'
 import { TransactionSignature } from '@solana/web3.js'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 const BalancesTable = ({
   showZeroBalances = false,
@@ -54,10 +55,8 @@ const BalancesTable = ({
   const [submitting, setSubmitting] = useState(false)
   const isMobile = width ? width < breakpoints.md : false
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
-  const wallet = useMangoStore((s) => s.wallet.current)
-  const canWithdraw = wallet?.publicKey
-    ? mangoAccount?.owner.equals(wallet.publicKey)
-    : true
+  const { wallet, publicKey } = useWallet()
+  const canWithdraw = publicKey ? mangoAccount?.owner.equals(publicKey) : true
   const { asPath } = useRouter()
 
   const handleSizeClick = (size, symbol) => {
@@ -118,7 +117,7 @@ const BalancesTable = ({
         mangoGroup,
         mangoAccount,
         spotMarkets,
-        wallet
+        wallet?.adapter
       )
 
       for (const txid of txids) {
@@ -147,6 +146,24 @@ const BalancesTable = ({
   }
 
   const unsettledBalances = balances.filter((bal) => bal.unsettled > 0)
+
+  const trimDecimals = useCallback((num: string) => {
+    if (parseFloat(num) === 0) {
+      return '0'
+    }
+    // Trim the decimals depending on the length of the whole number
+    const splitNum = num.split('.')
+    if (splitNum.length > 1) {
+      const wholeNum = splitNum[0]
+      const decimals = splitNum[1]
+      if (wholeNum.length > 8) {
+        return `${wholeNum}.${decimals.substring(0, 2)}`
+      } else if (wholeNum.length > 3) {
+        return `${wholeNum}.${decimals.substring(0, 3)}`
+      }
+    }
+    return num
+  }, [])
 
   return (
     <div className={`flex flex-col pb-2 sm:pb-4`}>
@@ -360,101 +377,116 @@ const BalancesTable = ({
                   </TrHead>
                 </thead>
                 <tbody>
-                  {items.map((balance, index) => (
-                    <TrBody key={`${balance.symbol}${index}`}>
-                      <Td>
-                        <div className="flex items-center">
-                          <img
-                            alt=""
-                            width="20"
-                            height="20"
-                            src={`/assets/icons/${balance.symbol.toLowerCase()}.svg`}
-                            className={`mr-2.5`}
-                          />
-
-                          {balance.symbol === 'USDC' ||
-                          decodeURIComponent(asPath).includes(
-                            `${balance.symbol}/USDC`
-                          ) ? (
-                            <span>{balance.symbol}</span>
-                          ) : (
-                            <Link
-                              href={{
-                                pathname: '/',
-                                query: { name: `${balance.symbol}/USDC` },
-                              }}
-                              shallow={true}
-                            >
-                              <a className="text-th-fgd-1 underline hover:text-th-fgd-1 hover:no-underline">
-                                {balance.symbol}
-                              </a>
-                            </Link>
-                          )}
-                        </div>
-                      </Td>
-                      <Td>{balance.deposits.toFormat(balance.decimals)}</Td>
-                      <Td>{balance.borrows.toFormat(balance.decimals)}</Td>
-                      <Td>{balance.orders}</Td>
-                      <Td>{balance.unsettled}</Td>
-                      <Td>
-                        {marketConfig.kind === 'spot' &&
-                        marketConfig.name.includes(balance.symbol) &&
-                        selectedMarket &&
-                        clickToPopulateTradeForm ? (
-                          <span
-                            className={
-                              balance.net.toNumber() != 0
-                                ? 'cursor-pointer underline hover:no-underline'
-                                : ''
-                            }
-                            onClick={() =>
-                              handleSizeClick(balance.net, balance.symbol)
-                            }
-                          >
-                            {balance.net.toFormat(balance.decimals)}
-                          </span>
-                        ) : (
-                          balance.net.toFormat(balance.decimals)
-                        )}
-                      </Td>
-                      <Td>{formatUsdValue(balance.value.toNumber())}</Td>
-                      <Td>
-                        <span className="text-th-green">
-                          {balance.depositRate.toFixed(2)}%
-                        </span>
-                      </Td>
-                      <Td>
-                        <span className="text-th-red">
-                          {balance.borrowRate.toFixed(2)}%
-                        </span>
-                      </Td>
-                      {showDepositWithdraw ? (
+                  {items.map((balance, index) => {
+                    if (!balance) {
+                      return null
+                    }
+                    return (
+                      <TrBody key={`${balance.symbol}${index}`}>
                         <Td>
-                          <div className="flex justify-end">
-                            <Button
-                              className="h-7 pt-0 pb-0 pl-3 pr-3 text-xs"
-                              onClick={() =>
-                                handleOpenDepositModal(balance.symbol)
-                              }
-                            >
-                              {balance.borrows.toNumber() > 0
-                                ? t('repay')
-                                : t('deposit')}
-                            </Button>
-                            <Button
-                              className="ml-4 h-7 pt-0 pb-0 pl-3 pr-3 text-xs"
-                              onClick={() =>
-                                handleOpenWithdrawModal(balance.symbol)
-                              }
-                              disabled={!canWithdraw}
-                            >
-                              {t('withdraw')}
-                            </Button>
+                          <div className="flex items-center">
+                            <img
+                              alt=""
+                              width="20"
+                              height="20"
+                              src={`/assets/icons/${balance.symbol.toLowerCase()}.svg`}
+                              className={`mr-2.5`}
+                            />
+
+                            {balance.symbol === 'USDC' ||
+                            decodeURIComponent(asPath).includes(
+                              `${balance.symbol}/USDC`
+                            ) ? (
+                              <span>{balance.symbol}</span>
+                            ) : (
+                              <Link
+                                href={{
+                                  pathname: '/',
+                                  query: { name: `${balance.symbol}/USDC` },
+                                }}
+                                shallow={true}
+                              >
+                                <a className="text-th-fgd-1 underline hover:text-th-fgd-1 hover:no-underline">
+                                  {balance.symbol}
+                                </a>
+                              </Link>
+                            )}
                           </div>
                         </Td>
-                      ) : null}
-                    </TrBody>
-                  ))}
+                        <Td>
+                          {trimDecimals(
+                            balance.deposits.toFormat(balance.decimals)
+                          )}
+                        </Td>
+                        <Td>
+                          {trimDecimals(
+                            balance.borrows.toFormat(balance.decimals)
+                          )}
+                        </Td>
+                        <Td>{balance.orders}</Td>
+                        <Td>{balance.unsettled}</Td>
+                        <Td>
+                          {marketConfig.kind === 'spot' &&
+                          marketConfig.name.includes(balance.symbol) &&
+                          selectedMarket &&
+                          clickToPopulateTradeForm ? (
+                            <span
+                              className={
+                                balance.net.toNumber() != 0
+                                  ? 'cursor-pointer underline hover:no-underline'
+                                  : ''
+                              }
+                              onClick={() =>
+                                handleSizeClick(balance.net, balance.symbol)
+                              }
+                            >
+                              {trimDecimals(
+                                balance.net.toFormat(balance.decimals)
+                              )}
+                            </span>
+                          ) : (
+                            trimDecimals(balance.net.toFormat(balance.decimals))
+                          )}
+                        </Td>
+                        <Td>{formatUsdValue(balance.value.toNumber())}</Td>
+                        <Td>
+                          <span className="text-th-green">
+                            {balance.depositRate.toFixed(2)}%
+                          </span>
+                        </Td>
+                        <Td>
+                          <span className="text-th-red">
+                            {balance.borrowRate.toFixed(2)}%
+                          </span>
+                        </Td>
+                        {showDepositWithdraw ? (
+                          <Td>
+                            <div className="flex justify-end">
+                              <Button
+                                className="h-7 pt-0 pb-0 pl-3 pr-3 text-xs"
+                                onClick={() =>
+                                  handleOpenDepositModal(balance.symbol)
+                                }
+                              >
+                                {balance.borrows.toNumber() > 0
+                                  ? t('repay')
+                                  : t('deposit')}
+                              </Button>
+                              <Button
+                                className="ml-4 h-7 pt-0 pb-0 pl-3 pr-3 text-xs"
+                                onClick={() =>
+                                  handleOpenWithdrawModal(balance.symbol)
+                                }
+                                disabled={!canWithdraw}
+                              >
+                                {t('withdraw')}
+                              </Button>
+                            </div>
+                          </Td>
+                        ) : null}
+                      </TrBody>
+                    )
+                  })}
                 </tbody>
                 {showDepositModal && (
                   <DepositModal

@@ -99,7 +99,7 @@ export const Row = ({ children }: RowProps) => {
   )
 }
 
-export const TableDateDisplay = ({ date }: { date: string }) => (
+export const TableDateDisplay = ({ date }: { date: string | number }) => (
   <>
     <p className="mb-0 text-th-fgd-2">{dayjs(date).format('DD MMM YYYY')}</p>
     <p className="mb-0 text-xs">{dayjs(date).format('h:mma')}</p>

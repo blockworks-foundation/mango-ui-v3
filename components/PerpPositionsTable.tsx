@@ -1,11 +1,11 @@
-import { useCallback, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { useTranslation } from 'next-i18next'
 import { ExclamationIcon } from '@heroicons/react/outline'
 
 import useMangoStore from '../stores/useMangoStore'
-import Button, { LinkButton } from '../components/Button'
+import { LinkButton } from '../components/Button'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { ExpandableRow, Table, Td, Th, TrBody, TrHead } from './TableElements'
@@ -19,17 +19,18 @@ import MobileTableHeader from './mobile/MobileTableHeader'
 import ShareModal from './ShareModal'
 import { TwitterIcon } from './icons'
 import { marketSelector } from '../stores/selectors'
+import { useWallet } from '@solana/wallet-adapter-react'
+import { RedeemDropdown } from 'components/PerpPositions'
 
-const PositionsTable = () => {
+const PositionsTable: React.FC = () => {
   const { t } = useTranslation('common')
-  const { reloadMangoAccount } = useMangoStore((s) => s.actions)
-  const [settling, setSettling] = useState(false)
   const [showShareModal, setShowShareModal] = useState(false)
   const [showMarketCloseModal, setShowMarketCloseModal] = useState(false)
   const [positionToShare, setPositionToShare] = useState(null)
   const [settleSinglePos, setSettleSinglePos] = useState(null)
 
   const market = useMangoStore(marketSelector)
+  const { wallet } = useWallet()
   const price = useMangoStore((s) => s.tradeForm.price)
   const setMangoStore = useMangoStore((s) => s.set)
   const openPositions = useMangoStore(
@@ -57,16 +58,6 @@ const PositionsTable = () => {
     })
   }
 
-  const handleSettleAll = async () => {
-    setSettling(true)
-    for (const p of unsettledPositions) {
-      await settlePnl(p.perpMarket, p.perpAccount, t, undefined)
-    }
-
-    reloadMangoAccount()
-    setSettling(false)
-  }
-
   const handleCloseShare = useCallback(() => {
     setShowShareModal(false)
   }, [])
@@ -78,7 +69,7 @@ const PositionsTable = () => {
 
   const handleSettlePnl = async (perpMarket, perpAccount, index) => {
     setSettleSinglePos(index)
-    await settlePnl(perpMarket, perpAccount, t, undefined)
+    await settlePnl(perpMarket, perpAccount, t, undefined, wallet)
     setSettleSinglePos(null)
   }
 
@@ -92,12 +83,7 @@ const PositionsTable = () => {
               <h3>{t('unsettled-positions')}</h3>
             </div>
 
-            <Button
-              className="h-8 whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs"
-              onClick={handleSettleAll}
-            >
-              {settling ? <Loading /> : t('redeem-all')}
-            </Button>
+            <RedeemDropdown />
           </div>
           <div className="grid grid-flow-row grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
             {unsettledPositions.map((p, index) => {
