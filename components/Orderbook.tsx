@@ -604,10 +604,11 @@ export default function Orderbook({ depth = 8 }) {
 const OrderbookSpread = ({ orderbookData }) => {
   const { t } = useTranslation('common')
   const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
-  const decimals = useMemo(
-    () => getPrecisionDigits(selectedMarket?.tickSize),
-    [selectedMarket]
-  )
+  const decimals = useMemo(() => {
+    if (selectedMarket) {
+      getPrecisionDigits(selectedMarket?.tickSize)
+    }
+  }, [selectedMarket])
 
   return (
     <div className="mb-0 mt-3 flex justify-between rounded-md bg-th-bkg-1 p-2 text-xs">

@@ -159,7 +159,7 @@ export default function RiskCalculator() {
     const handleRouteChange = () => {
       if (resetOnLeave) {
         setMangoStore((state) => {
-          state.selectedMangoAccount.current = undefined
+          state.selectedMangoAccount.current = null
         })
       }
     }
@@ -209,6 +209,12 @@ export default function RiskCalculator() {
       if (!mangoAccount?.spotOpenOrdersAccounts[i]) {
         return
       }
+      const iBaseTokenTotal =
+        mangoAccount?.spotOpenOrdersAccounts?.[i]?.baseTokenTotal
+      const iBaseTokenFree =
+        mangoAccount?.spotOpenOrdersAccounts?.[i]?.baseTokenFree
+      const iQuoteTokenFree =
+        mangoAccount?.spotOpenOrdersAccounts?.[i]?.quoteTokenFree
       // Get market configuration data
       const spotMarketConfig =
         i < 0
@@ -265,18 +271,15 @@ export default function RiskCalculator() {
             : 0
         ) || 0
       const spotBaseTokenLocked =
-        mangoAccount && spotMarketConfig
-          ? Number(
-              mangoAccount.spotOpenOrdersAccounts[i]?.baseTokenTotal.sub(
-                mangoAccount.spotOpenOrdersAccounts[i].baseTokenFree
-              )
-            ) / Math.pow(10, spotMarketConfig.baseDecimals) || 0
+        mangoAccount && spotMarketConfig && iBaseTokenTotal && iBaseTokenFree
+          ? Number(iBaseTokenTotal.sub(iBaseTokenFree)) /
+              Math.pow(10, spotMarketConfig.baseDecimals) || 0
           : 0
       const spotQuoteTokenLocked =
-        mangoAccount && spotMarketConfig
+        mangoAccount && spotMarketConfig && iQuoteTokenFree
           ? Number(
               mangoAccount.spotOpenOrdersAccounts[i]?.quoteTokenTotal.sub(
-                mangoAccount.spotOpenOrdersAccounts[i].quoteTokenFree
+                iQuoteTokenFree
               )
             ) / Math.pow(10, 6) || 0
           : 0
@@ -293,19 +296,20 @@ export default function RiskCalculator() {
       let inOrders = 0
       if (symbol === 'USDC' && ordersAsBalance) {
         for (let j = 0; j < mangoGroup.tokens.length; j++) {
+          const jQuoteTokenTotal =
+            mangoAccount?.spotOpenOrdersAccounts[j]?.quoteTokenTotal
           const inOrder =
             j !== QUOTE_INDEX &&
             mangoConfig.spotMarkets[j]?.publicKey &&
-            mangoAccount?.spotOpenOrdersAccounts[j]?.quoteTokenTotal
-              ? mangoAccount.spotOpenOrdersAccounts[j].quoteTokenTotal
+            jQuoteTokenTotal
+              ? jQuoteTokenTotal
               : 0
           inOrders += Number(inOrder) / Math.pow(10, 6)
         }
       } else {
         inOrders =
-          spotMarketConfig &&
-          mangoAccount?.spotOpenOrdersAccounts[i]?.baseTokenTotal
-            ? Number(mangoAccount.spotOpenOrdersAccounts[i].baseTokenTotal) /
+          spotMarketConfig && iBaseTokenTotal
+            ? Number(iBaseTokenTotal) /
               Math.pow(10, spotMarketConfig.baseDecimals)
             : 0
       }
@@ -706,20 +710,26 @@ export default function RiskCalculator() {
 
                 if (asset.symbolName === 'USDC' && ordersAsBalance) {
                   for (let j = 0; j < mangoGroup.tokens.length; j++) {
+                    const jQuoteTokenTotal =
+                      mangoAccount?.spotOpenOrdersAccounts?.[j]?.quoteTokenTotal
                     const inOrder =
-                      j !== QUOTE_INDEX && mangoConfig.spotMarkets[j]?.publicKey
-                        ? mangoAccount.spotOpenOrdersAccounts[j].quoteTokenTotal
+                      j !== QUOTE_INDEX &&
+                      mangoConfig.spotMarkets[j]?.publicKey &&
+                      jQuoteTokenTotal
+                        ? jQuoteTokenTotal
                         : 0
                     resetInOrders += Number(inOrder) / Math.pow(10, 6)
                   }
                 } else {
+                  const baseTokenTotal =
+                    mangoAccount?.spotOpenOrdersAccounts?.[asset.oracleIndex]
+                      ?.baseTokenTotal
                   spotMarketConfig &&
                   typeof asset?.oracleIndex === 'number' &&
-                  mangoAccount.spotOpenOrdersAccounts[asset.oracleIndex]
-                    ? Number(
-                        mangoAccount.spotOpenOrdersAccounts[asset.oracleIndex]
-                          .baseTokenTotal
-                      ) / Math.pow(10, spotMarketConfig.baseDecimals)
+                  mangoAccount.spotOpenOrdersAccounts[asset.oracleIndex] &&
+                  baseTokenTotal
+                    ? Number(baseTokenTotal) /
+                      Math.pow(10, spotMarketConfig.baseDecimals)
                     : 0
                 }
                 resetValue = floorToDecimal(

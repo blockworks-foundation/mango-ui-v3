@@ -185,13 +185,15 @@ const JupiterForm: FunctionComponent = () => {
   }, [inputTokenInfo, outputTokenInfo, coinGeckoList])
 
   const amountInDecimal = useMemo(() => {
-    return formValue.amount * 10 ** (inputTokenInfo?.decimals || 1)
+    if (typeof formValue?.amount === 'number') {
+      return formValue.amount * 10 ** (inputTokenInfo?.decimals || 1)
+    }
   }, [inputTokenInfo, formValue.amount])
 
   const { routeMap, allTokenMints, routes, loading, exchange, error, refresh } =
     useJupiter({
       ...formValue,
-      amount: amountInDecimal,
+      amount: amountInDecimal ? amountInDecimal : null,
       slippage,
     })
 
@@ -215,23 +217,26 @@ const JupiterForm: FunctionComponent = () => {
 
   useEffect(() => {
     const getDepositAndFee = async () => {
-      const fees = await selectedRoute.getDepositAndFee()
-      setDepositAndFee(fees)
+      const fees = await selectedRoute?.getDepositAndFee()
+      if (fees) {
+        setDepositAndFee(fees)
+      }
     }
     if (selectedRoute && connected) {
       getDepositAndFee()
     }
   }, [selectedRoute])
 
-  const outputTokenMints = useMemo(() => {
+  const outputTokenMints: any[] = useMemo(() => {
     if (routeMap.size && formValue.inputMint) {
       const routeOptions = routeMap.get(formValue.inputMint.toString())
 
-      const routeOptionTokens = routeOptions?.map((address) => {
-        return tokens.find((t) => {
-          return t?.address === address
-        })
-      })
+      const routeOptionTokens =
+        routeOptions?.map((address) => {
+          return tokens.find((t) => {
+            return t.address === address
+          })
+        }) ?? []
 
       return routeOptionTokens
     } else {
@@ -240,7 +245,9 @@ const JupiterForm: FunctionComponent = () => {
   }, [routeMap, tokens, formValue.inputMint])
 
   const handleConnect = useCallback(() => {
-    handleWalletConnect(wallet)
+    if (wallet) {
+      handleWalletConnect(wallet)
+    }
   }, [wallet])
 
   const inputWalletBalance = () => {
@@ -307,6 +314,8 @@ const JupiterForm: FunctionComponent = () => {
 
     const feeValue = selectedRoute.marketInfos.reduce((a, c) => {
       const feeToken = tokens.find((item) => item?.address === c.lpFee?.mint)
+      // FIXME: Remove ts-ignore possibly move the logic out of a reduce
+      // @ts-ignore
       const amount = c.lpFee?.amount / Math.pow(10, feeToken.decimals)
       if (data[c.lpFee?.mint]) {
         return a + data[c.lpFee?.mint].usd * amount
@@ -315,7 +324,9 @@ const JupiterForm: FunctionComponent = () => {
         return a + 1 * amount
       }
     }, 0)
-    setFeeValue(feeValue)
+    if (feeValue) {
+      setFeeValue(feeValue)
+    }
   }
 
   useEffect(() => {
@@ -342,7 +353,7 @@ const JupiterForm: FunctionComponent = () => {
   }
 
   const sortedTokenMints = sortBy(tokens, (token) => {
-    return token?.symbol?.toLowerCase()
+    return token.symbol.toLowerCase()
   })
 
   const outAmountUi = selectedRoute
@@ -695,7 +706,7 @@ const JupiterForm: FunctionComponent = () => {
                           </IconButton>
                         </div>
                       </div>
-                      {outAmountUi ? (
+                      {outAmountUi && formValue?.amount ? (
                         <div className="flex justify-between">
                           <span>{t('swap:rate')}</span>
                           <div>
@@ -773,13 +784,15 @@ const JupiterForm: FunctionComponent = () => {
                       </div>
                       <div className="flex justify-between">
                         <span>{t('swap:minimum-received')}</span>
-                        <div className="text-right text-th-fgd-1">
-                          {numberFormatter.format(
-                            selectedRoute?.outAmountWithSlippage /
-                              10 ** outputTokenInfo?.decimals || 1
-                          )}{' '}
-                          {outputTokenInfo?.symbol}
-                        </div>
+                        {outputTokenInfo?.decimals ? (
+                          <div className="text-right text-th-fgd-1">
+                            {numberFormatter.format(
+                              selectedRoute?.outAmountWithSlippage /
+                                10 ** outputTokenInfo.decimals || 1
+                            )}{' '}
+                            {outputTokenInfo?.symbol}
+                          </div>
+                        ) : null}
                       </div>
                       {typeof feeValue === 'number' ? (
                         <div className="flex justify-between">
@@ -805,15 +818,17 @@ const JupiterForm: FunctionComponent = () => {
                                                 info.marketMeta?.amm?.label,
                                             })}
                                           </span>
-                                          <div className="text-th-fgd-1">
-                                            {(
-                                              info.lpFee?.amount /
-                                              Math.pow(10, feeToken?.decimals)
-                                            ).toFixed(6)}{' '}
-                                            {feeToken?.symbol} (
-                                            {info.lpFee?.pct * 100}
-                                            %)
-                                          </div>
+                                          {feeToken?.decimals && (
+                                            <div className="text-th-fgd-1">
+                                              {(
+                                                info.lpFee?.amount /
+                                                Math.pow(10, feeToken?.decimals)
+                                              ).toFixed(6)}{' '}
+                                              {feeToken?.symbol} (
+                                              {info.lpFee?.pct * 100}
+                                              %)
+                                            </div>
+                                          )}
                                         </div>
                                       )
                                     }
@@ -838,13 +853,15 @@ const JupiterForm: FunctionComponent = () => {
                                   feeRecipient: info.marketMeta?.amm?.label,
                                 })}
                               </span>
-                              <div className="text-right text-th-fgd-1">
-                                {(
-                                  info.lpFee?.amount /
-                                  Math.pow(10, feeToken?.decimals)
-                                ).toFixed(6)}{' '}
-                                {feeToken?.symbol} ({info.lpFee?.pct * 100}%)
-                              </div>
+                              {feeToken?.decimals && (
+                                <div className="text-right text-th-fgd-1">
+                                  {(
+                                    info.lpFee?.amount /
+                                    Math.pow(10, feeToken.decimals)
+                                  ).toFixed(6)}{' '}
+                                  {feeToken?.symbol} ({info.lpFee?.pct * 100}%)
+                                </div>
+                              )}
                             </div>
                           )
                         })

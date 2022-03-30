@@ -124,9 +124,9 @@ export default function AdvancedTradeForm({
     MAX_SLIPPAGE_KEY,
     '0.025'
   )
-  const [maxSlippagePercentage, setMaxSlippagePercentage] = useState(
-    clamp(parseFloat(maxSlippage), 0, 1) * 100
-  )
+  const [maxSlippagePercentage, setMaxSlippagePercentage] = useState<
+    number | null
+  >(null)
   const [editMaxSlippage, setEditMaxSlippage] = useState(false)
   const [showCustomSlippageForm, setShowCustomSlippageForm] = useState(false)
   const slippagePresets = ['1', '1.5', '2', '2.5', '3']
@@ -135,6 +135,12 @@ export default function AdvancedTradeForm({
     setMaxSlippage(clamp(slippage / 100, 0, 1).toString())
     setEditMaxSlippage(false)
   }
+
+  useEffect(() => {
+    if (maxSlippage && !maxSlippagePercentage) {
+      setMaxSlippagePercentage(clamp(parseFloat(maxSlippage), 0, 1) * 100)
+    }
+  }, [setMaxSlippagePercentage, maxSlippage, maxSlippagePercentage])
 
   useEffect(
     () =>
@@ -180,7 +186,9 @@ export default function AdvancedTradeForm({
   }, [set, tradeType, side])
 
   const { max, deposits, borrows, spotMax, reduceMax } = useMemo(() => {
-    if (!mangoAccount) return { max: 0 }
+    if (!mangoAccount || !mangoGroup || !mangoCache || !market) {
+      return { max: 0, deposits: 0, borrows: 0 }
+    }
     const priceOrDefault = price
       ? I80F48.fromNumber(price)
       : mangoGroup.getPrice(marketIndex, mangoCache)
@@ -463,8 +471,11 @@ export default function AdvancedTradeForm({
     return (size / total) * 100
   }
 
-  const roundedDeposits = parseFloat(deposits?.toFixed(sizeDecimalCount))
-  const roundedBorrows = parseFloat(borrows?.toFixed(sizeDecimalCount))
+  const roundedDeposits = parseFloat(deposits.toFixed(sizeDecimalCount))
+  const roundedBorrows =
+    typeof borrows === 'number'
+      ? parseFloat(borrows.toFixed(sizeDecimalCount))
+      : 0
 
   const closeDepositString =
     percentToClose(baseSize, roundedDeposits) > 100
@@ -591,6 +602,7 @@ export default function AdvancedTradeForm({
           description: t('try-again'),
           type: 'error',
         })
+        return
       }
 
       // TODO: this has a race condition when switching between markets or buy & sell
@@ -628,7 +640,7 @@ export default function AdvancedTradeForm({
         if (isMarketOrder) {
           if (postOnlySlide) {
             perpOrderType = 'postOnlySlide'
-          } else if (tradeType === 'Market' && maxSlippage !== undefined) {
+          } else if (tradeType === 'Market' && maxSlippage) {
             perpOrderType = 'ioc'
             if (side === 'buy') {
               perpOrderPrice = markPrice * (1 + parseFloat(maxSlippage))
@@ -1085,7 +1097,11 @@ export default function AdvancedTradeForm({
                       />
                     ) : (
                       <ButtonGroup
-                        activeValue={maxSlippagePercentage.toString()}
+                        activeValue={
+                          maxSlippagePercentage
+                            ? maxSlippagePercentage.toString()
+                            : ''
+                        }
                         className="h-10"
                         onChange={(p) => setMaxSlippagePercentage(p)}
                         unit="%"

@@ -13,24 +13,29 @@ const MarketSelect = () => {
   const { t } = useTranslation('common')
   const [showMarketsModal, setShowMarketsModal] = useState(false)
   const [hiddenMarkets] = useLocalStorageState('hiddenMarkets', [])
-  const [sortedMarkets, setSortedMarkets] = useState([])
+  const [sortedMarkets, setSortedMarkets] = useState<any[]>([])
   const groupConfig = useMangoGroupConfig()
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.md : false
 
   useEffect(() => {
-    const markets = []
-    const allMarkets = [...groupConfig.spotMarkets, ...groupConfig.perpMarkets]
-    allMarkets.forEach((market) => {
-      const base = market.name.slice(0, -5)
-      const found = markets.find((b) => b.baseAsset === base)
-      if (!found) {
-        markets.push({ baseAsset: base, markets: [market] })
-      } else {
-        found.markets.push(market)
-      }
-    })
-    setSortedMarkets(markets)
+    if (groupConfig) {
+      const markets: any[] = []
+      const allMarkets = [
+        ...groupConfig.spotMarkets,
+        ...groupConfig.perpMarkets,
+      ]
+      allMarkets.forEach((market) => {
+        const base = market.name.slice(0, -5)
+        const found = markets.find((b) => b.baseAsset === base)
+        if (!found) {
+          markets.push({ baseAsset: base, markets: [market] })
+        } else {
+          found.markets.push(market)
+        }
+      })
+      setSortedMarkets(markets)
+    }
   }, [groupConfig])
 
   return (

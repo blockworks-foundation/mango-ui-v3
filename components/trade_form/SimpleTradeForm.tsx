@@ -400,8 +400,10 @@ export default function SimpleTradeForm({ initLeverage }) {
     return (size / total) * 100
   }
 
-  const roundedDeposits = parseFloat(deposits?.toFixed(sizeDecimalCount))
-  const roundedBorrows = parseFloat(borrows?.toFixed(sizeDecimalCount))
+  if (!deposits || !borrows) return null
+
+  const roundedDeposits = parseFloat(deposits.toFixed(sizeDecimalCount))
+  const roundedBorrows = parseFloat(borrows.toFixed(sizeDecimalCount))
 
   const closeDepositString =
     percentToClose(baseSize, roundedDeposits) > 100

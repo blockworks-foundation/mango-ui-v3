@@ -154,7 +154,7 @@ export type MangoStore = {
     name: string
     current: MangoGroup | null
     markets: {
-      [address: string]: Market | PerpMarket
+      [address: string]: Market | PerpMarket | undefined
     }
     cache: MangoCache | null
   }

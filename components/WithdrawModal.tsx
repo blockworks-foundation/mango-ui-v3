@@ -121,6 +121,8 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
     newBorrow = newBorrow.add(tokenBorrows)
 
     // clone MangoAccount and arrays to not modify selectedMangoAccount
+    // FIXME: MangoAccount needs type updated to accept null for pubKey
+    // @ts-ignore
     const simulation = new MangoAccount(null, mangoAccount)
     simulation.deposits = [...mangoAccount.deposits]
     simulation.borrows = [...mangoAccount.borrows]
