@@ -16,9 +16,7 @@ import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
 import { Popover, Transition } from '@headlessui/react'
 import Checkbox from './Checkbox'
 import dayjs from 'dayjs'
-import DatePicker from './DatePicker'
-
-import 'react-datepicker/dist/react-datepicker.css'
+import DateRangePicker from './DateRangePicker'
 
 interface TradeHistoryFilterModalProps {
   filters: any
@@ -123,8 +121,8 @@ const TradeHistoryFilterModal: FunctionComponent<
 
   useEffect(() => {
     if (dateFrom && dateTo) {
-      const dateFromTimestamp = dayjs(dateFrom).unix() * 1000
-      const dateToTimestamp = dayjs(dateTo).unix() * 1000
+      const dateFromTimestamp = dayjs.utc(dateFrom).unix() * 1000
+      const dateToTimestamp = dayjs.utc(dateTo).unix() * 1000
       // filter should still work if users get from/to backwards
       const from =
         dateFromTimestamp < dateToTimestamp
@@ -184,13 +182,13 @@ const TradeHistoryFilterModal: FunctionComponent<
       <div className="pb-4">
         <p className="font-bold text-th-fgd-1">{t('date')}</p>
         <div className="flex items-center space-x-2">
-          <div className="w-1/2">
-            <Label>{t('from')}</Label>
-            <DatePicker date={dateFrom} setDate={setDateFrom} />
-          </div>
-          <div className="w-1/2">
-            <Label>{t('to')}</Label>
-            <DatePicker date={dateTo} setDate={setDateTo} />
+          <div className="w-full">
+            <DateRangePicker
+              startDate={dateFrom}
+              setStartDate={setDateFrom}
+              endDate={dateTo}
+              setEndDate={setDateTo}
+            />
           </div>
         </div>
       </div>
