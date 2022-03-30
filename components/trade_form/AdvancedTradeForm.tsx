@@ -8,6 +8,7 @@ import {
   nativeI80F48ToUi,
   PerpMarket,
   PerpOrderType,
+  ZERO_I80F48,
 } from '@blockworks-foundation/mango-client'
 import {
   ExclamationIcon,
@@ -186,8 +187,15 @@ export default function AdvancedTradeForm({
   }, [set, tradeType, side])
 
   const { max, deposits, borrows, spotMax, reduceMax } = useMemo(() => {
+    const defaultValues = {
+      max: ZERO_I80F48,
+      deposits: ZERO_I80F48,
+      borrows: ZERO_I80F48,
+      spotMax: 0,
+      reduceMax: 0,
+    }
     if (!mangoAccount || !mangoGroup || !mangoCache || !market) {
-      return { max: 0, deposits: 0, borrows: 0 }
+      return defaultValues
     }
     const priceOrDefault = price
       ? I80F48.fromNumber(price)
@@ -236,7 +244,7 @@ export default function AdvancedTradeForm({
       reduceMax = 0
     }
 
-    if (maxQuote.toNumber() <= 0) return { max: 0 }
+    if (maxQuote.toNumber() <= 0) return defaultValues
     // multiply the maxQuote by a scaler value to account for
     // srm fees or rounding issues in getMaxLeverageForMarket
     const maxScaler = market instanceof PerpMarket ? 0.99 : 0.95
@@ -472,10 +480,7 @@ export default function AdvancedTradeForm({
   }
 
   const roundedDeposits = parseFloat(deposits.toFixed(sizeDecimalCount))
-  const roundedBorrows =
-    typeof borrows === 'number'
-      ? parseFloat(borrows.toFixed(sizeDecimalCount))
-      : 0
+  const roundedBorrows = parseFloat(borrows.toFixed(sizeDecimalCount))
 
   const closeDepositString =
     percentToClose(baseSize, roundedDeposits) > 100
@@ -624,7 +629,7 @@ export default function AdvancedTradeForm({
           mangoGroup,
           mangoAccount,
           market,
-          wallet?.adapter,
+          wallet.adapter,
           side,
           orderPrice,
           baseSize,
@@ -660,7 +665,7 @@ export default function AdvancedTradeForm({
             mangoGroup,
             mangoAccount,
             market,
-            wallet?.adapter,
+            wallet.adapter,
             perpOrderType,
             side,
             perpOrderPrice,
@@ -675,7 +680,7 @@ export default function AdvancedTradeForm({
             mangoGroup,
             mangoAccount,
             market,
-            wallet?.adapter,
+            wallet.adapter,
             side,
             perpOrderPrice,
             baseSize,
