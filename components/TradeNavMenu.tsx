@@ -22,7 +22,7 @@ const initialMenuCategories = [
   { name: 'Spot', desc: 'spot-desc' },
 ]
 
-export const FAVORITE_MARKETS_KEY = 'favoriteMarkets'
+export const FAVORITE_MARKETS_KEY = 'favoriteMarkets-0.1'
 
 const TradeNavMenu = () => {
   const [favoriteMarkets] = useLocalStorageState(FAVORITE_MARKETS_KEY, [])
