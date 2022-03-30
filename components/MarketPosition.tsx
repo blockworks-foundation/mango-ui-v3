@@ -81,8 +81,18 @@ export const settlePnl = async (
   const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
   const mangoCache = useMangoStore.getState().selectedMangoGroup.cache
   const actions = useMangoStore.getState().actions
-  const marketIndex = mangoGroup.getPerpMarketIndex(perpMarket.publicKey)
+  const marketIndex = mangoGroup?.getPerpMarketIndex(perpMarket.publicKey)
   const mangoClient = useMangoStore.getState().connection.client
+  const rootBank = mangoGroup?.rootBankAccounts[QUOTE_INDEX]
+
+  if (
+    !rootBank ||
+    !mangoGroup ||
+    !mangoCache ||
+    !mangoAccount ||
+    typeof marketIndex !== 'number'
+  )
+    return
 
   try {
     const txid = await mangoClient.settlePnl(
@@ -90,17 +100,20 @@ export const settlePnl = async (
       mangoCache,
       mangoAccount,
       perpMarket,
-      mangoGroup.rootBankAccounts[QUOTE_INDEX],
+      rootBank,
       mangoCache.priceCache[marketIndex].price,
       wallet?.adapter,
       mangoAccounts
     )
     actions.reloadMangoAccount()
-    notify({
-      title: t('pnl-success'),
-      description: '',
-      txid,
-    })
+    // FIXME: If no txid throw error
+    if (txid) {
+      notify({
+        title: t('pnl-success'),
+        description: '',
+        txid,
+      })
+    }
   } catch (e) {
     console.log('Error settling PNL: ', `${e}`, `${perpAccount}`)
     notify({
@@ -142,6 +155,7 @@ export default function MarketPosition() {
   }
 
   const handleSizeClick = (size) => {
+    if (!mangoGroup || !mangoCache || !selectedMarket) return
     const sizePrecisionDigits = getPrecisionDigits(selectedMarket.minOrderSize)
     const priceOrDefault = price
       ? price
@@ -160,10 +174,12 @@ export default function MarketPosition() {
   }, [])
 
   const handleSettlePnl = (perpMarket, perpAccount) => {
-    setSettling(true)
-    settlePnl(perpMarket, perpAccount, t, undefined, wallet).then(() => {
-      setSettling(false)
-    })
+    if (wallet) {
+      setSettling(true)
+      settlePnl(perpMarket, perpAccount, t, undefined, wallet).then(() => {
+        setSettling(false)
+      })
+    }
   }
 
   if (!mangoGroup || !selectedMarket || !(selectedMarket instanceof PerpMarket))
@@ -199,7 +215,7 @@ export default function MarketPosition() {
   return (
     <>
       <div
-        className={!connected && !isMobile ? 'blur-sm filter' : null}
+        className={!connected && !isMobile ? 'blur-sm filter' : ''}
         id="perp-positions-tip"
       >
         {!isMobile ? (

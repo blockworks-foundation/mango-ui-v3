@@ -41,9 +41,11 @@ const TradeHistoryFilterModal: FunctionComponent<
   const groupConfig = useMangoGroupConfig()
   const markets = useMemo(
     () =>
-      [...groupConfig.perpMarkets, ...groupConfig.spotMarkets].sort((a, b) =>
-        a.name.localeCompare(b.name)
-      ),
+      groupConfig
+        ? [...groupConfig.perpMarkets, ...groupConfig.spotMarkets].sort(
+            (a, b) => a.name.localeCompare(b.name)
+          )
+        : [],
     [groupConfig]
   )
 

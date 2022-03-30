@@ -552,11 +552,15 @@ const useMangoStore = create<
                 allMarketAccounts
               )
 
+              const currentSelectedMarket = allMarketAccounts.find((mkt) =>
+                mkt?.publicKey.equals(selectedMarketConfig.publicKey)
+              )
+
               set((state) => {
                 state.selectedMangoGroup.markets = allMarkets
-                state.selectedMarket.current = allMarketAccounts.find((mkt) =>
-                  mkt?.publicKey.equals(selectedMarketConfig.publicKey)
-                )
+                state.selectedMarket.current = currentSelectedMarket
+                  ? currentSelectedMarket
+                  : null
 
                 allBidsAndAsksAccountInfos.forEach(
                   ({ publicKey, context, accountInfo }) => {
