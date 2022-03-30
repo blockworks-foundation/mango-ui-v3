@@ -43,6 +43,7 @@ export const RedeemDropdown: React.FC = () => {
   const loading = settling || settlingPosPnl
 
   const handleSettleAll = async () => {
+    if (!wallet) return
     setOpen(false)
     setSettling(true)
     for (const p of unsettledPositions) {
@@ -54,6 +55,7 @@ export const RedeemDropdown: React.FC = () => {
   }
 
   const handleSettlePosPnl = async () => {
+    if (!wallet) return
     setOpen(false)
     setSettlingPosPnl(true)
     for (const p of unsettledPositivePositions) {

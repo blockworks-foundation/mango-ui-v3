@@ -55,6 +55,7 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
   }
 
   const handleNewAccountDeposit = () => {
+    if (!wallet) return
     setSubmitting(true)
     deposit({
       amount: parseFloat(inputAmount),

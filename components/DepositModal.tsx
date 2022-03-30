@@ -61,6 +61,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
 
   const handleDeposit = () => {
     const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
+    if (!wallet || !mangoAccount) return
 
     setSubmitting(true)
     deposit({

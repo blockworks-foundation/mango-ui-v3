@@ -153,7 +153,9 @@ export default function Referral() {
   }
 
   const handleConnect = useCallback(() => {
-    handleWalletConnect(wallet)
+    if (wallet) {
+      handleWalletConnect(wallet)
+    }
   }, [wallet])
 
   const submitRefLink = async () => {
@@ -168,13 +170,13 @@ export default function Referral() {
       return
     }
 
-    if (!inputError && mangoGroup && mangoAccount) {
+    if (!inputError && mangoGroup && mangoAccount && wallet) {
       try {
         const mangoClient = useMangoStore.getState().connection.client
         const txid = await mangoClient.registerReferrerId(
           mangoGroup,
           mangoAccount,
-          wallet?.adapter,
+          wallet.adapter,
           encodedRefLink
         )
         notify({

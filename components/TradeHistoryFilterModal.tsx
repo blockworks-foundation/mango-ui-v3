@@ -32,8 +32,8 @@ const TradeHistoryFilterModal: FunctionComponent<
 > = ({ filters, setFilters, isOpen, onClose }) => {
   const { t } = useTranslation('common')
   const [newFilters, setNewFilters] = useState({ ...filters })
-  const [dateFrom, setDateFrom] = useState(null)
-  const [dateTo, setDateTo] = useState(null)
+  const [dateFrom, setDateFrom] = useState<Date | null>(null)
+  const [dateTo, setDateTo] = useState<Date | null>(null)
   const [sizeFrom, setSizeFrom] = useState(filters?.size?.values?.from || '')
   const [sizeTo, setSizeTo] = useState(filters?.size?.values?.to || '')
   const [valueFrom, setValueFrom] = useState(filters?.value?.values?.from || '')
@@ -152,8 +152,8 @@ const TradeHistoryFilterModal: FunctionComponent<
   const handleResetFilters = () => {
     setFilters({})
     setNewFilters({})
-    setDateFrom('')
-    setDateTo('')
+    setDateFrom(null)
+    setDateTo(null)
     setSizeFrom('')
     setSizeTo('')
     setValueFrom('')

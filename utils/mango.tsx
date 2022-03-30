@@ -21,7 +21,7 @@ export async function deposit({
   const mangoClient = useMangoStore.getState().connection.client
   const referrer = useMangoStore.getState().referrerPk
 
-  if (typeof tokenIndex !== 'number') {
+  if (typeof tokenIndex !== 'number' || !referrer) {
     return
   }
 
@@ -78,8 +78,10 @@ export async function withdraw({
 }) {
   const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
   const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
-  const tokenIndex = mangoGroup.getTokenIndex(token)
+  const tokenIndex = mangoGroup?.getTokenIndex(token)
   const mangoClient = useMangoStore.getState().connection.client
+
+  if (!tokenIndex) return
 
   const publicKey =
     mangoGroup?.rootBankAccounts?.[tokenIndex]?.nodeBankAccounts[0].publicKey

@@ -55,9 +55,11 @@ const PositionsTable: React.FC = () => {
   }
 
   const handleSettlePnl = async (perpMarket, perpAccount, index) => {
-    setSettleSinglePos(index)
-    await settlePnl(perpMarket, perpAccount, t, undefined, wallet)
-    setSettleSinglePos(null)
+    if (wallet) {
+      setSettleSinglePos(index)
+      await settlePnl(perpMarket, perpAccount, t, undefined, wallet)
+      setSettleSinglePos(null)
+    }
   }
 
   return (

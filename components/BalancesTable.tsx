@@ -132,15 +132,19 @@ const BalancesTable = ({
         return
       }
 
-      const txids: TransactionSignature[] = await mangoClient.settleAll(
-        mangoGroup,
-        mangoAccount,
-        spotMarkets,
-        wallet?.adapter
-      )
+      const txids: TransactionSignature[] | undefined =
+        await mangoClient.settleAll(
+          mangoGroup,
+          mangoAccount,
+          spotMarkets,
+          wallet?.adapter
+        )
+      // FIXME: Add error if txids is undefined
 
-      for (const txid of txids) {
-        notify({ title: t('settle-success'), txid })
+      if (txids) {
+        for (const txid of txids) {
+          notify({ title: t('settle-success'), txid })
+        }
       }
     } catch (e) {
       console.warn('Error settling all:', e)

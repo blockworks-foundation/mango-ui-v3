@@ -98,7 +98,7 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
   const closeAccount = async () => {
     const mangoClient = useMangoStore.getState().connection.client
 
-    if (!mangoGroup || !mangoAccount || !mangoCache) {
+    if (!mangoGroup || !mangoAccount || !mangoCache || !wallet) {
       return
     }
 
@@ -108,7 +108,7 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
         mangoAccount,
         mangoCache,
         MNGO_INDEX,
-        wallet?.adapter
+        wallet.adapter
       )
 
       await actions.fetchAllMangoAccounts(wallet)
@@ -121,11 +121,14 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
       })
 
       onClose?.()
-      for (const txid of txids) {
-        notify({
-          title: t('close-account:transaction-confirmed'),
-          txid,
-        })
+      // FIXME: Throw error if txids is undefined
+      if (txids) {
+        for (const txid of txids) {
+          notify({
+            title: t('close-account:transaction-confirmed'),
+            txid,
+          })
+        }
       }
     } catch (err) {
       console.warn('Error deleting account:', err)

@@ -34,7 +34,7 @@ const AccountNameModal: FunctionComponent<AccountNameModalProps> = ({
 
   const submitName = async () => {
     const mangoClient = useMangoStore.getState().connection.client
-
+    if (!wallet || !mangoAccount || !mangoGroup) return
     try {
       const txid = await mangoClient.addMangoAccountInfo(
         mangoGroup,

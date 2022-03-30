@@ -34,7 +34,7 @@ export default function Swap() {
   if (!connection) return null
 
   const userPublicKey =
-    publicKey && !zeroKey.equals(publicKey) ? publicKey : null
+    publicKey && !zeroKey.equals(publicKey) ? publicKey : undefined
 
   return (
     <JupiterProvider

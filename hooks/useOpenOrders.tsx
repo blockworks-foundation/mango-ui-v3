@@ -90,7 +90,7 @@ function parsePerpOpenOrders(
   const advancedOrdersForMarket = mangoAccount.advancedOrders
     .map((o, i) => {
       const pto = o.perpTrigger
-      if (pto.isActive && pto.marketIndex == config.marketIndex) {
+      if (pto && pto.isActive && pto.marketIndex == config.marketIndex) {
         return {
           ...o,
           orderId: i,

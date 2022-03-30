@@ -217,7 +217,7 @@ export default function Account() {
     const mngoNodeBank =
       mangoGroup?.rootBankAccounts?.[MNGO_INDEX]?.nodeBankAccounts?.[0]
 
-    if (!mangoAccount || !mngoNodeBank || !mangoGroup) {
+    if (!mangoAccount || !mngoNodeBank || !mangoGroup || !wallet) {
       return
     }
 
@@ -225,19 +225,22 @@ export default function Account() {
       const txids = await mangoClient.redeemAllMngo(
         mangoGroup,
         mangoAccount,
-        wallet?.adapter,
+        wallet.adapter,
         mangoGroup.tokens[MNGO_INDEX].rootBank,
         mngoNodeBank.publicKey,
         mngoNodeBank.vault
       )
       actions.reloadMangoAccount()
       setMngoAccrued(ZERO_BN)
-      for (const txid of txids) {
-        notify({
-          title: t('redeem-success'),
-          description: '',
-          txid,
-        })
+      // FIXME: Throw error if txids is undefined
+      if (txids) {
+        for (const txid of txids) {
+          notify({
+            title: t('redeem-success'),
+            description: '',
+            txid,
+          })
+        }
       }
     } catch (e) {
       notify({

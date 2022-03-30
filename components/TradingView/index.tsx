@@ -355,7 +355,7 @@ const TVChartContainer = () => {
 
   function drawLine(order, market) {
     const orderSizeUi = roundPerpSize(order.size, market.config.baseSymbol)
-    if (!tvWidgetRef?.current?.chart()) return
+    if (!tvWidgetRef?.current?.chart() || !wallet) return
     return tvWidgetRef.current
       .chart()
       .createOrderLine({ disableUndo: false })

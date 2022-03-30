@@ -76,14 +76,13 @@ export default function AccountInfo() {
         return perpAcct.mngoAccrued.add(acc)
       }, ZERO_BN)
     : ZERO_BN
-  // console.log('rerendering account info', mangoAccount, mngoAccrued.toNumber())
 
   const handleRedeemMngo = async () => {
     const mangoClient = useMangoStore.getState().connection.client
     const mngoNodeBank =
       mangoGroup?.rootBankAccounts?.[MNGO_INDEX]?.nodeBankAccounts[0]
 
-    if (!mngoNodeBank || !mangoAccount) {
+    if (!mngoNodeBank || !mangoAccount || !wallet) {
       return
     }
 
@@ -92,17 +91,19 @@ export default function AccountInfo() {
       const txids = await mangoClient.redeemAllMngo(
         mangoGroup,
         mangoAccount,
-        wallet?.adapter,
+        wallet.adapter,
         mangoGroup.tokens[MNGO_INDEX].rootBank,
         mngoNodeBank.publicKey,
         mngoNodeBank.vault
       )
-      for (const txid of txids) {
-        notify({
-          title: t('redeem-success'),
-          description: '',
-          txid,
-        })
+      if (txids) {
+        for (const txid of txids) {
+          notify({
+            title: t('redeem-success'),
+            description: '',
+            txid,
+          })
+        }
       }
     } catch (e) {
       notify({

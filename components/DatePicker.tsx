@@ -21,7 +21,7 @@ const MangoDatePicker = ({ date, setDate, ...props }) => {
   const generateArrayOfYears = () => {
     const max = new Date().getFullYear()
     const min = max - (max - 2020)
-    const years = []
+    const years: number[] = []
 
     for (let i = max; i >= min; i--) {
       years.push(i)

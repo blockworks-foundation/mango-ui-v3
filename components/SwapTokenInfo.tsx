@@ -38,7 +38,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
   const [outputTokenInfo, setOutputTokenInfo] = useState<any>(null)
   const [mouseData, setMouseData] = useState<string | null>(null)
   const [daysToShow, setDaysToShow] = useState(1)
-  const [topHolders, setTopHolders] = useState(null)
+  const [topHolders, setTopHolders] = useState<any>(null)
   const { observe, width, height } = useDimensions()
   const { t } = useTranslation(['common', 'swap'])
 
@@ -102,7 +102,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
     const inputData = await inputResponse.json()
     const outputData = await outputResponse.json()
 
-    let data = []
+    let data: any[] = []
     if (Array.isArray(inputData)) {
       data = data.concat(inputData)
     }

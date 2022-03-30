@@ -136,10 +136,10 @@ export default function Orderbook({ depth = 8 }) {
   const isMobile = width ? width < breakpoints.sm : false
 
   const currentOrderbookData = useRef<any>(null)
-  const nextOrderbookData = useRef(null)
+  const nextOrderbookData = useRef<any>(null)
   const previousDepth = usePrevious(depth)
 
-  const [openOrderPrices, setOpenOrderPrices] = useState([])
+  const [openOrderPrices, setOpenOrderPrices] = useState<any[]>([])
   const [orderbookData, setOrderbookData] = useState<any | null>(null)
   const [defaultLayout, setDefaultLayout] = useState(true)
   const [displayCumulativeSize, setDisplayCumulativeSize] = useState(false)
@@ -156,17 +156,18 @@ export default function Orderbook({ depth = 8 }) {
 
   useInterval(() => {
     if (
-      !currentOrderbookData.current ||
-      !isEqualLodash(
-        currentOrderbookData.current.bids,
-        nextOrderbookData.current.bids
-      ) ||
-      !isEqualLodash(
-        currentOrderbookData.current.asks,
-        nextOrderbookData.current.asks
-      ) ||
-      previousDepth !== depth ||
-      previousGrouping !== grouping
+      nextOrderbookData?.current?.bids &&
+      (!currentOrderbookData.current ||
+        !isEqualLodash(
+          currentOrderbookData.current.bids,
+          nextOrderbookData.current.bids
+        ) ||
+        !isEqualLodash(
+          currentOrderbookData.current.asks,
+          nextOrderbookData.current.asks
+        ) ||
+        previousDepth !== depth ||
+        previousGrouping !== grouping)
     ) {
       // check if user has open orders so we can highlight them on orderbook
       const openOrders =

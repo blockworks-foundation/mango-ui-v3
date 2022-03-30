@@ -35,13 +35,17 @@ export const settlePosPnl = async (
   const actions = useMangoStore.getState().actions
   const mangoClient = useMangoStore.getState().connection.client
 
+  const rootBankAccount = mangoGroup?.rootBankAccounts[QUOTE_INDEX]
+
+  if (!mangoGroup || !mangoCache || !mangoAccount || !rootBankAccount) return
+
   try {
     const txids = await mangoClient.settlePosPnl(
       mangoGroup,
       mangoCache,
       mangoAccount,
       perpMarkets,
-      mangoGroup.rootBankAccounts[QUOTE_INDEX],
+      rootBankAccount,
       wallet?.adapter,
       mangoAccounts
     )
