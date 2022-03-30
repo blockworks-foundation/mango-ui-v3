@@ -106,7 +106,7 @@ const TopBar = () => {
                     ],
                     [
                       t('governance'),
-                      'https://dao-beta.mango.markets/dao/MNGO',
+                      'https://dao.mango.markets/',
                       true,
                       <LibraryIcon className="h-4 w-4" key="governance" />,
                     ],
