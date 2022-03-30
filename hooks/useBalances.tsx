@@ -7,7 +7,7 @@ import {
 } from '@blockworks-foundation/mango-client'
 import useMangoStore from '../stores/useMangoStore'
 import { i80f48ToPercent } from '../utils/index'
-import { sumBy } from 'lodash'
+import sumBy from 'lodash/sumBy'
 import { I80F48 } from '@blockworks-foundation/mango-client'
 import useMangoAccount from './useMangoAccount'
 

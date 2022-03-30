@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { XIcon } from '@heroicons/react/solid'
 import { Connection } from '@solana/web3.js'
-import { sumBy } from 'lodash'
+import sumBy from 'lodash/sumBy'
 import useInterval from '../hooks/useInterval'
 import { SECONDS } from '../stores/useMangoStore'
 import { useTranslation } from 'next-i18next'
