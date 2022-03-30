@@ -84,7 +84,7 @@ export default function AccountInfo() {
 
     try {
       setRedeeming(true)
-      const txid = await mangoClient.redeemAllMngo(
+      const txids = await mangoClient.redeemAllMngo(
         mangoGroup,
         mangoAccount,
         wallet?.adapter,
@@ -92,11 +92,14 @@ export default function AccountInfo() {
         mngoNodeBank.publicKey,
         mngoNodeBank.vault
       )
-      notify({
-        title: t('redeem-success'),
-        description: '',
-        txid,
-      })
+
+      for (const txid of txids) {
+        notify({
+          title: t('redeem-success'),
+          description: '',
+          txid,
+        })
+      }
     } catch (e) {
       notify({
         title: t('redeem-failure'),
