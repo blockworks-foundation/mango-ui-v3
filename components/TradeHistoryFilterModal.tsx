@@ -121,8 +121,8 @@ const TradeHistoryFilterModal: FunctionComponent<
 
   useEffect(() => {
     if (dateFrom && dateTo) {
-      const dateFromTimestamp = dayjs.utc(dateFrom).unix() * 1000
-      const dateToTimestamp = dayjs.utc(dateTo).unix() * 1000
+      const dateFromTimestamp = dayjs(dateFrom).unix() * 1000
+      const dateToTimestamp = (dayjs(dateTo).unix() + 86399) * 1000
       // filter should still work if users get from/to backwards
       const from =
         dateFromTimestamp < dateToTimestamp
@@ -150,8 +150,8 @@ const TradeHistoryFilterModal: FunctionComponent<
   const handleResetFilters = () => {
     setFilters({})
     setNewFilters({})
-    setDateFrom('')
-    setDateTo('')
+    setDateFrom(null)
+    setDateTo(null)
     setSizeFrom('')
     setSizeTo('')
     setValueFrom('')

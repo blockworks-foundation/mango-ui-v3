@@ -1,6 +1,6 @@
 import { ChevronRightIcon } from '@heroicons/react/solid'
 import { useTranslation } from 'next-i18next'
-import { enGB } from 'date-fns/locale'
+import { enAU } from 'date-fns/locale'
 import { DateRangePicker } from 'react-nice-dates'
 import { Label } from './Input'
 
@@ -22,7 +22,7 @@ const MangoDateRangePicker = ({
       maximumDate={new Date()}
       minimumLength={1}
       format="dd MMM yyyy"
-      locale={enGB}
+      locale={enAU}
     >
       {({ startDateInputProps, endDateInputProps }) => (
         <div className="date-range flex items-end">
