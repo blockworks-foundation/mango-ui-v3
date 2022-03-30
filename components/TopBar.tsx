@@ -14,6 +14,7 @@ import TradeNavMenu from './TradeNavMenu'
 import {
   CalculatorIcon,
   CurrencyDollarIcon,
+  LibraryIcon,
   LightBulbIcon,
   UserAddIcon,
 } from '@heroicons/react/outline'
@@ -102,6 +103,12 @@ const TopBar = () => {
                       'https://docs.mango.markets/',
                       true,
                       <LightBulbIcon className="h-4 w-4" key="learn" />,
+                    ],
+                    [
+                      t('governance'),
+                      'https://dao-beta.mango.markets/dao/MNGO',
+                      true,
+                      <LibraryIcon className="h-4 w-4" key="governance" />,
                     ],
                     [
                       'Mango v2',
