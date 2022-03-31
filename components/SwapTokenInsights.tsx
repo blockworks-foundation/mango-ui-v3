@@ -17,7 +17,6 @@ const insightTypeVals = ['best', 'worst']
 dayjs.extend(relativeTime)
 
 const SwapTokenInsights = ({ formState, jupiterTokens, setOutputToken }) => {
-  // FIXME: Add correct type for
   const [tokenInsights, setTokenInsights] = useState<any>([])
   const [filteredTokenInsights, setFilteredTokenInsights] = useState<any>([])
   const [insightType, setInsightType] = useState(insightTypeVals[0])

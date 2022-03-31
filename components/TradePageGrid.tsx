@@ -1,6 +1,7 @@
 import dynamic from 'next/dynamic'
 import { Responsive, WidthProvider } from 'react-grid-layout'
-import { round, max } from 'lodash'
+import round from 'lodash/round'
+import max from 'lodash/max'
 import MobileTradePage from './mobile/MobileTradePage'
 
 const TVChartContainer = dynamic(

@@ -20,7 +20,7 @@ import { ProfileIcon, WalletIcon } from './icons'
 import { useTranslation } from 'next-i18next'
 import { WalletSelect } from 'components/WalletSelect'
 import AccountsModal from './AccountsModal'
-import { uniqBy } from 'lodash'
+import uniqBy from 'lodash/uniqBy'
 
 export const handleWalletConnect = (wallet: Wallet) => {
   if (!wallet) {

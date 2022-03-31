@@ -12,7 +12,7 @@ import {
   TrHead,
 } from '../TableElements'
 import { useTranslation } from 'next-i18next'
-import { isEmpty } from 'lodash'
+import isEmpty from 'lodash/isEmpty'
 import usePagination from '../../hooks/usePagination'
 import { numberCompactFormatter, roundToDecimal } from '../../utils/'
 import Pagination from '../Pagination'

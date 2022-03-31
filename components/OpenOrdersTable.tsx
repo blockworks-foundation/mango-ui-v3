@@ -251,10 +251,14 @@ const MobileTable = ({
                       {order.side.toUpperCase()}
                     </span>
                     {order.perpTrigger
-                      ? `${order.size} ${
-                          order.triggerCondition
-                        } ${formatUsdValue(order.triggerPrice)}`
-                      : `${order.size} at ${formatUsdValue(order.price)}`}
+                      ? `${order.size.toLocaleString(undefined, {
+                          maximumFractionDigits: 4,
+                        })} ${order.triggerCondition} ${formatUsdValue(
+                          order.triggerPrice
+                        )}`
+                      : `${order.size.toLocaleString(undefined, {
+                          maximumFractionDigits: 4,
+                        })} at ${formatUsdValue(order.price)}`}
                   </div>
                 </div>
               </div>

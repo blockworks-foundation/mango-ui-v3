@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState, useMemo } from 'react'
 import Big from 'big.js'
-import { isEqual as isEqualLodash } from 'lodash'
+import isEqualLodash from 'lodash/isEqual'
 import useInterval from '../hooks/useInterval'
 import usePrevious from '../hooks/usePrevious'
 import {
