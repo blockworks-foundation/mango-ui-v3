@@ -38,7 +38,7 @@ const useMangoStats = () => {
   useEffect(() => {
     const fetchHistoricalStats = async () => {
       const response = await fetch(
-        `https://mango-stats-v3.herokuapp.com/spot?mangoGroup=${mangoGroupName}`
+        `https://mango-transaction-log.herokuapp.com/v3/stats/spot_stats_hourly?mango-group=${mangoGroupName}`
       )
       const stats = await response.json()
       setStats(stats)
@@ -49,7 +49,7 @@ const useMangoStats = () => {
   useEffect(() => {
     const fetchHistoricalPerpStats = async () => {
       const response = await fetch(
-        `https://mango-stats-v3.herokuapp.com/perp?mangoGroup=${mangoGroupName}`
+        `https://mango-transaction-log.herokuapp.com/v3/stats/perp_stats_hourly?mango-group=${mangoGroupName}`
       )
       const stats = await response.json()
       setPerpStats(stats)
