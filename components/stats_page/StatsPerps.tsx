@@ -1,6 +1,5 @@
 import { PerpMarket } from '@blockworks-foundation/mango-client'
 import { useState, useMemo } from 'react'
-import useMangoGroupConfig from '../../hooks/useMangoGroupConfig'
 import useMangoStore from '../../stores/useMangoStore'
 import Chart from '../Chart'
 import BN from 'bn.js'
@@ -40,7 +39,9 @@ function calculateFundingRate(
 export default function StatsPerps({ perpStats }) {
   const { t } = useTranslation('common')
   const [selectedAsset, setSelectedAsset] = useState<string>('BTC-PERP')
-  const marketConfigs = useMangoGroupConfig().perpMarkets
+  const marketConfigs = useMangoStore(
+    (s) => s.selectedMangoGroup.config
+  ).perpMarkets
   const selectedMarketConfig = marketConfigs.find(
     (m) => m.name === selectedAsset
   )

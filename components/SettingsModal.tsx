@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from 'react'
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/solid'
-import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
 import Modal from './Modal'
 import { ElementTitle } from './styles'
 import Button, { LinkButton } from './Button'
@@ -197,7 +196,7 @@ const SettingsContent = ({ settingsView, setSettingsView }) => {
 
 const DefaultMarketSettings = ({ setSettingsView }) => {
   const { t } = useTranslation('common')
-  const groupConfig = useMangoGroupConfig()
+  const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const allMarkets = [
     ...groupConfig.spotMarkets,
     ...groupConfig.perpMarkets,

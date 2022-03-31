@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react'
 import { useRouter } from 'next/router'
-import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
 import useMangoStore, { serumProgramId } from '../stores/useMangoStore'
 import {
   getMarketByBaseSymbolAndKind,
@@ -41,7 +40,7 @@ const PerpMarket: React.FC = () => {
   const [alphaAccepted] = useLocalStorageState(ALPHA_MODAL_KEY, false)
   const [showTour] = useLocalStorageState(SHOW_TOUR_KEY, false)
   const { connected } = useWallet()
-  const groupConfig = useMangoGroupConfig()
+  const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const setMangoStore = useMangoStore((s) => s.set)
   const mangoAccount = useMangoStore(mangoAccountSelector)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)

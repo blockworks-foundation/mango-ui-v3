@@ -4,7 +4,6 @@ import { ChevronDownIcon } from '@heroicons/react/solid'
 import { abbreviateAddress } from '../utils'
 import useMangoStore, { WalletToken } from '../stores/useMangoStore'
 import { RefreshClockwiseIcon } from './icons'
-import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
 import { useTranslation } from 'next-i18next'
 import { LinkButton } from './Button'
 import { Label } from './Input'
@@ -23,7 +22,7 @@ const AccountSelect = ({
   hideAddress = false,
 }: AccountSelectProps) => {
   const { t } = useTranslation('common')
-  const groupConfig = useMangoGroupConfig()
+  const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const tokenSymbols = useMemo(
     () => groupConfig.tokens.map((t) => t.symbol),
     [groupConfig]

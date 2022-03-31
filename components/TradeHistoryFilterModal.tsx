@@ -12,11 +12,11 @@ import Button, { LinkButton } from './Button'
 import Modal from './Modal'
 import { ElementTitle } from './styles'
 import { useTranslation } from 'next-i18next'
-import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
 import { Popover, Transition } from '@headlessui/react'
 import Checkbox from './Checkbox'
 import dayjs from 'dayjs'
 import DateRangePicker from './DateRangePicker'
+import useMangoStore from 'stores/useMangoStore'
 
 interface TradeHistoryFilterModalProps {
   filters: any
@@ -36,7 +36,7 @@ const TradeHistoryFilterModal: FunctionComponent<
   const [sizeTo, setSizeTo] = useState(filters?.size?.values?.to || '')
   const [valueFrom, setValueFrom] = useState(filters?.value?.values?.from || '')
   const [valueTo, setValueTo] = useState(filters?.value?.values?.to || '')
-  const groupConfig = useMangoGroupConfig()
+  const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const markets = useMemo(
     () =>
       [...groupConfig.perpMarkets, ...groupConfig.spotMarkets].sort((a, b) =>
