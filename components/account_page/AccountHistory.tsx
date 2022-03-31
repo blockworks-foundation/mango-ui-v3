@@ -91,7 +91,7 @@ export default function AccountHistory() {
 const ViewContent = ({ view, history }) => {
   switch (view) {
     case 'Trades':
-      return <TradeHistoryTable showExportPnl />
+      return <TradeHistoryTable showActions />
     case 'Deposit':
       return <HistoryTable history={history} view={view} />
     case 'Withdraw':
@@ -99,7 +99,7 @@ const ViewContent = ({ view, history }) => {
     case 'Liquidation':
       return <LiquidationHistoryTable history={history} view={view} />
     default:
-      return <TradeHistoryTable showExportPnl />
+      return <TradeHistoryTable showActions />
   }
 }
 

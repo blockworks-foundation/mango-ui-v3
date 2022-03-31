@@ -741,7 +741,7 @@ export default function AdvancedTradeForm({
       : baseSize > spotMax*/
 
   const disabledTradeButton =
-    (!price && isLimitOrder) ||
+    (!price && isLimitOrder && !postOnlySlide) ||
     !baseSize ||
     !connected ||
     !mangoAccount ||
