@@ -121,7 +121,6 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
       })
 
       onClose?.()
-      // FIXME: Throw error if txids is undefined
       if (txids) {
         for (const txid of txids) {
           notify({
@@ -129,6 +128,12 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
             txid,
           })
         }
+      } else {
+        notify({
+          title: t('close-account:error-deleting-account'),
+          description: 'Transaction failed',
+          type: 'error',
+        })
       }
     } catch (err) {
       console.warn('Error deleting account:', err)

@@ -232,7 +232,6 @@ export default function Account() {
       )
       actions.reloadMangoAccount()
       setMngoAccrued(ZERO_BN)
-      // FIXME: Throw error if txids is undefined
       if (txids) {
         for (const txid of txids) {
           notify({
@@ -241,6 +240,12 @@ export default function Account() {
             txid,
           })
         }
+      } else {
+        notify({
+          title: t('redeem-failure'),
+          description: 'Transaction failed',
+          type: 'error',
+        })
       }
     } catch (e) {
       notify({

@@ -139,12 +139,15 @@ const BalancesTable = ({
           spotMarkets,
           wallet?.adapter
         )
-      // FIXME: Add error if txids is undefined
-
       if (txids) {
         for (const txid of txids) {
           notify({ title: t('settle-success'), txid })
         }
+      } else {
+        notify({
+          title: t('settle-error'),
+          type: 'error',
+        })
       }
     } catch (e) {
       console.warn('Error settling all:', e)

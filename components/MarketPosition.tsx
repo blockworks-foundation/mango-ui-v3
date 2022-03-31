@@ -50,14 +50,24 @@ export const settlePosPnl = async (
       mangoAccounts
     )
     actions.reloadMangoAccount()
-    for (const txid of txids) {
-      if (txid) {
+    // FIXME: Remove filter when settlePosPnl return type is undefined or string[]
+    const filteredTxids = txids?.filter(
+      (x) => typeof x === 'string'
+    ) as string[]
+    if (filteredTxids) {
+      for (const txid of filteredTxids) {
         notify({
           title: t('pnl-success'),
           description: '',
           txid,
         })
       }
+    } else {
+      notify({
+        title: t('pnl-error'),
+        description: 'Transaction failed',
+        type: 'error',
+      })
     }
   } catch (e) {
     console.log('Error settling PNL: ', `${e}`, `${perpAccount}`)
@@ -106,12 +116,17 @@ export const settlePnl = async (
       mangoAccounts
     )
     actions.reloadMangoAccount()
-    // FIXME: If no txid throw error
     if (txid) {
       notify({
         title: t('pnl-success'),
         description: '',
         txid,
+      })
+    } else {
+      notify({
+        title: t('pnl-error'),
+        description: 'Transaction failed',
+        type: 'error',
       })
     }
   } catch (e) {

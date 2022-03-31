@@ -104,6 +104,11 @@ export default function AccountInfo() {
             txid,
           })
         }
+      } else {
+        notify({
+          title: t('redeem-failure'),
+          description: 'Transaction failed',
+        })
       }
     } catch (e) {
       notify({
