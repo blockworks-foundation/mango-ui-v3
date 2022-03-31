@@ -10,7 +10,8 @@ import { TOKEN_LIST_URL } from '@jup-ag/core'
 import { PublicKey } from '@solana/web3.js'
 import useMangoStore from '../stores/useMangoStore'
 import { connectionSelector } from '../stores/selectors'
-import { sortBy, sum } from 'lodash'
+import sortBy from 'lodash/sortBy'
+import sum from 'lodash/sum'
 import {
   CogIcon,
   ExclamationCircleIcon,

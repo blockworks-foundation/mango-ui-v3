@@ -213,7 +213,7 @@ export default function Account() {
       mangoGroup.rootBankAccounts[MNGO_INDEX].nodeBankAccounts[0]
 
     try {
-      const txid = await mangoClient.redeemAllMngo(
+      const txids = await mangoClient.redeemAllMngo(
         mangoGroup,
         mangoAccount,
         wallet?.adapter,
@@ -223,11 +223,13 @@ export default function Account() {
       )
       actions.reloadMangoAccount()
       setMngoAccrued(ZERO_BN)
-      notify({
-        title: t('redeem-success'),
-        description: '',
-        txid,
-      })
+      for (const txid of txids) {
+        notify({
+          title: t('redeem-success'),
+          description: '',
+          txid,
+        })
+      }
     } catch (e) {
       notify({
         title: t('redeem-failure'),

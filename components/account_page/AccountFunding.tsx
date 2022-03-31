@@ -9,7 +9,7 @@ import {
   TrBody,
   TrHead,
 } from '../TableElements'
-import { isEmpty } from 'lodash'
+import isEmpty from 'lodash/isEmpty'
 import { useTranslation } from 'next-i18next'
 import Select from '../Select'
 import Pagination from '../Pagination'
