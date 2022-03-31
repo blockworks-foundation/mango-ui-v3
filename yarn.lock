@@ -1001,10 +1001,9 @@
     "@babel/helper-validator-identifier" "^7.16.7"
     to-fast-properties "^2.0.0"
 
-"@blockworks-foundation/mango-client@^3.3.28":
+"@blockworks-foundation/mango-client@git+https://github.com/blockworks-foundation/mango-client-v3.git#kieran-adapter-type":
   version "3.3.28"
-  resolved "https://registry.yarnpkg.com/@blockworks-foundation/mango-client/-/mango-client-3.3.28.tgz#cb42a86552e166ed33e2ab9548dda1e37072a050"
-  integrity sha512-nOAeF3EEibH4Wm9bOTifDvlbLQ8doqfXuCJGcH/AXdyJATNXJnWCj2sHnTFZUP0P1EYXkjynDVZUbqwdPMllCw==
+  resolved "git+https://github.com/blockworks-foundation/mango-client-v3.git#e4d032607967670bafb058fa538ef055550ee9b6"
   dependencies:
     "@project-serum/anchor" "^0.21.0"
     "@project-serum/serum" "0.13.55"
