@@ -293,23 +293,23 @@ export default function MarketPosition() {
             )}
           </div>
         </div>
-        {basePosition && (
+        {basePosition ? (
           <Button
             onClick={() => setShowMarketCloseModal(true)}
             className="mt-2.5 w-full"
           >
             <span>{t('market-close')}</span>
           </Button>
-        )}
+        ) : null}
       </div>
-      {showMarketCloseModal && (
+      {showMarketCloseModal ? (
         <MarketCloseModal
           isOpen={showMarketCloseModal}
           onClose={handleCloseWarning}
           market={selectedMarket}
           marketIndex={marketIndex}
         />
-      )}
+      ) : null}
     </>
   )
 }
