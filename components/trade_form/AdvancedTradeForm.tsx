@@ -808,7 +808,9 @@ export default function AdvancedTradeForm({
                 onChange={(e) => onSetPrice(e.target.value)}
                 value={postOnlySlide ? '' : price}
                 disabled={isMarketOrder || postOnlySlide}
-                placeholder={tradeType === 'Market' ? markPrice : null}
+                placeholder={
+                  tradeType === 'Market' && !postOnlySlide ? markPrice : ''
+                }
                 prefix={
                   <>
                     {!postOnlySlide && (
