@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react'
 import { SwitchHorizontalIcon } from '@heroicons/react/outline'
 import { getWeights } from '@blockworks-foundation/mango-client'
 import useMangoStore from '../../stores/useMangoStore'
-import AdvancedTradeForm from './AdvancedTradeForm'
 import SimpleTradeForm from './SimpleTradeForm'
 import {
   FlipCard,
@@ -12,6 +11,7 @@ import {
 } from '../FlipCard'
 import FloatingElement from '../FloatingElement'
 import { useWallet } from '@solana/wallet-adapter-react'
+import { AdvancedTradeForm } from 'components/trade_form/AdvancedTradeForm'
 
 export default function TradeForm() {
   const [showAdvancedForm, setShowAdvancedForm] = useState(true)

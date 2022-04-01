@@ -6,7 +6,6 @@ import useMangoStore from '../../stores/useMangoStore'
 import { getWeights, PerpMarket } from '@blockworks-foundation/mango-client'
 import { CandlesIcon } from '../icons'
 import SwipeableTabs from './SwipeableTabs'
-import AdvancedTradeForm from '../trade_form/AdvancedTradeForm'
 import Orderbook from '../Orderbook'
 import MarketBalances from '../MarketBalances'
 import MarketDetails from '../MarketDetails'
@@ -18,6 +17,7 @@ import Swipeable from './Swipeable'
 import { useTranslation } from 'next-i18next'
 import Link from 'next/link'
 import { useWallet } from '@solana/wallet-adapter-react'
+import { AdvancedTradeForm } from 'components/trade_form/AdvancedTradeForm'
 
 const TVChartContainer = dynamic(
   () => import('../../components/TradingView/index'),
