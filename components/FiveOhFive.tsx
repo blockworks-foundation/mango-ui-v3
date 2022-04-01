@@ -48,7 +48,7 @@ export const FiveOhFive = ({ error }) => {
         <div className="mx-auto max-w-xl py-16 sm:py-24">
           <div className="text-center">
             <p className="text-sm font-semibold uppercase tracking-wide">
-              <GradientText>505 error</GradientText>
+              <GradientText>500 error</GradientText>
             </p>
             <h1 className="mt-2 text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
               Something went wrong

@@ -27,6 +27,9 @@ import {
   ReferrerIdRecord,
 } from '@blockworks-foundation/mango-client'
 import useTradeHistory from '../hooks/useTradeHistory'
+import * as Sentry from '@sentry/react'
+import { BrowserTracing } from '@sentry/tracing'
+
 import { WalletProvider, WalletListener } from 'components/WalletAdapter'
 import { PhantomWalletAdapter } from '@solana/wallet-adapter-phantom'
 import { SolflareWalletAdapter } from '@solana/wallet-adapter-solflare'
@@ -35,6 +38,14 @@ import { SlopeWalletAdapter } from '@solana/wallet-adapter-slope'
 import { BitpieWalletAdapter } from '@solana/wallet-adapter-bitpie'
 import { HuobiWalletAdapter } from '@solana/wallet-adapter-huobi'
 import { GlowWalletAdapter } from '@solana/wallet-adapter-glow'
+
+const SENTRY_URL = process.env.NEXT_PUBLIC_SENTRY_URL
+if (SENTRY_URL) {
+  Sentry.init({
+    dsn: SENTRY_URL,
+    integrations: [new BrowserTracing()],
+  })
+}
 
 const MangoStoreUpdater = () => {
   useHydrateStore()

@@ -23,6 +23,8 @@
     "@jup-ag/react-hook": "^1.0.0-beta.19",
     "@project-serum/serum": "0.13.55",
     "@project-serum/sol-wallet-adapter": "0.2.0",
+    "@sentry/react": "^6.19.2",
+    "@sentry/tracing": "^6.19.2",
     "@solana/wallet-adapter-base": "^0.9.5",
     "@solana/wallet-adapter-bitpie": "^0.5.3",
     "@solana/wallet-adapter-glow": "^0.1.1",
