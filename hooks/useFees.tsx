@@ -42,11 +42,12 @@ export default function useFees(): { makerFee: number; takerFee: number } {
     const refShare = mangoGroup.refShareCentibps / CENTIBPS_PER_UNIT
 
     const mngoConfig = getSpotMarketByBaseSymbol(groupConfig, 'MNGO')
-    const mngoRequired =
-      mangoGroup.refMngoRequired.toNumber() /
-      Math.pow(10, mngoConfig.baseDecimals)
+    const mngoRequired = mngoConfig
+      ? mangoGroup.refMngoRequired.toNumber() /
+        Math.pow(10, mngoConfig.baseDecimals)
+      : null
 
-    if (mangoAccount) {
+    if (mangoAccount && mangoCache && mngoConfig) {
       const mngoBalance = mangoAccount
         .getUiDeposit(
           mangoCache.rootBankCache[mngoConfig.marketIndex],
@@ -57,7 +58,7 @@ export default function useFees(): { makerFee: number; takerFee: number } {
 
       const hasReferrer = useMangoStore.getState().referrerPk
 
-      if (mngoBalance >= mngoRequired) {
+      if (typeof mngoRequired === 'number' && mngoBalance >= mngoRequired) {
         discount = refSurcharge
       } else {
         discount = hasReferrer ? refSurcharge - refShare : 0

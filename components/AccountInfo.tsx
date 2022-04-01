@@ -66,38 +66,48 @@ export default function AccountInfo() {
     setShowAlertsModal(false)
   }, [])
 
-  const equity = mangoAccount
-    ? mangoAccount.computeValue(mangoGroup, mangoCache)
-    : ZERO_I80F48
+  const equity =
+    mangoAccount && mangoGroup && mangoCache
+      ? mangoAccount.computeValue(mangoGroup, mangoCache)
+      : ZERO_I80F48
 
   const mngoAccrued = mangoAccount
     ? mangoAccount.perpAccounts.reduce((acc, perpAcct) => {
         return perpAcct.mngoAccrued.add(acc)
       }, ZERO_BN)
     : ZERO_BN
-  // console.log('rerendering account info', mangoAccount, mngoAccrued.toNumber())
 
   const handleRedeemMngo = async () => {
     const mangoClient = useMangoStore.getState().connection.client
     const mngoNodeBank =
-      mangoGroup.rootBankAccounts[MNGO_INDEX].nodeBankAccounts[0]
+      mangoGroup?.rootBankAccounts?.[MNGO_INDEX]?.nodeBankAccounts[0]
+
+    if (!mngoNodeBank || !mangoAccount || !wallet) {
+      return
+    }
 
     try {
       setRedeeming(true)
       const txids = await mangoClient.redeemAllMngo(
         mangoGroup,
         mangoAccount,
-        wallet?.adapter,
+        wallet.adapter,
         mangoGroup.tokens[MNGO_INDEX].rootBank,
         mngoNodeBank.publicKey,
         mngoNodeBank.vault
       )
-
-      for (const txid of txids) {
+      if (txids) {
+        for (const txid of txids) {
+          notify({
+            title: t('redeem-success'),
+            description: '',
+            txid,
+          })
+        }
+      } else {
         notify({
-          title: t('redeem-success'),
-          description: '',
-          txid,
+          title: t('redeem-failure'),
+          description: 'Transaction failed',
         })
       }
     } catch (e) {
@@ -113,23 +123,27 @@ export default function AccountInfo() {
     }
   }
 
-  const maintHealthRatio = mangoAccount
-    ? mangoAccount.getHealthRatio(mangoGroup, mangoCache, 'Maint')
-    : I80F48_100
+  const maintHealthRatio =
+    mangoAccount && mangoGroup && mangoCache
+      ? mangoAccount.getHealthRatio(mangoGroup, mangoCache, 'Maint')
+      : I80F48_100
 
-  const initHealthRatio = mangoAccount
-    ? mangoAccount.getHealthRatio(mangoGroup, mangoCache, 'Init')
-    : I80F48_100
+  const initHealthRatio =
+    mangoAccount && mangoGroup && mangoCache
+      ? mangoAccount.getHealthRatio(mangoGroup, mangoCache, 'Init')
+      : I80F48_100
 
-  const maintHealth = mangoAccount
-    ? mangoAccount.getHealth(mangoGroup, mangoCache, 'Maint')
-    : I80F48_100
-  const initHealth = mangoAccount
-    ? mangoAccount.getHealth(mangoGroup, mangoCache, 'Init')
-    : I80F48_100
+  const maintHealth =
+    mangoAccount && mangoGroup && mangoCache
+      ? mangoAccount.getHealth(mangoGroup, mangoCache, 'Maint')
+      : I80F48_100
+  const initHealth =
+    mangoAccount && mangoGroup && mangoCache
+      ? mangoAccount.getHealth(mangoGroup, mangoCache, 'Init')
+      : I80F48_100
 
   const liquidationPrice =
-    mangoGroup && mangoAccount && marketConfig
+    mangoGroup && mangoAccount && marketConfig && mangoGroup && mangoCache
       ? mangoAccount.getLiquidationPrice(
           mangoGroup,
           mangoCache,
@@ -202,7 +216,7 @@ export default function AccountInfo() {
               <div className="text-th-fgd-1">
                 {initialLoad ? (
                   <DataLoader />
-                ) : mangoAccount ? (
+                ) : mangoAccount && mangoGroup && mangoCache ? (
                   `${mangoAccount
                     .getLeverage(mangoGroup, mangoCache)
                     .toFixed(2)}x`
@@ -218,7 +232,7 @@ export default function AccountInfo() {
               <div className={`text-th-fgd-1`}>
                 {initialLoad ? (
                   <DataLoader />
-                ) : mangoAccount ? (
+                ) : mangoAccount && mangoGroup ? (
                   usdFormatter(
                     nativeI80F48ToUi(
                       initHealth,
@@ -235,7 +249,7 @@ export default function AccountInfo() {
                 {marketConfig.name} {t('margin-available')}
               </div>
               <div className={`text-th-fgd-1`}>
-                {mangoAccount
+                {mangoAccount && mangoGroup && mangoCache
                   ? usdFormatter(
                       nativeI80F48ToUi(
                         mangoAccount.getMarketMarginAvailable(

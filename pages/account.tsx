@@ -120,12 +120,17 @@ export default function Account() {
   }, [])
 
   const handleConnect = useCallback(() => {
-    handleWalletConnect(wallet)
+    if (wallet) {
+      handleWalletConnect(wallet)
+    }
   }, [wallet])
 
   useEffect(() => {
     async function loadUnownedMangoAccount() {
       try {
+        if (!pubkey) {
+          return
+        }
         const unownedMangoAccountPubkey = new PublicKey(pubkey)
         const mangoClient = useMangoStore.getState().connection.client
         if (mangoGroup) {
@@ -158,7 +163,7 @@ export default function Account() {
     const handleRouteChange = () => {
       if (resetOnLeave) {
         setMangoStore((state) => {
-          state.selectedMangoAccount.current = undefined
+          state.selectedMangoAccount.current = null
         })
       }
     }
@@ -210,24 +215,36 @@ export default function Account() {
   const handleRedeemMngo = async () => {
     const mangoClient = useMangoStore.getState().connection.client
     const mngoNodeBank =
-      mangoGroup.rootBankAccounts[MNGO_INDEX].nodeBankAccounts[0]
+      mangoGroup?.rootBankAccounts?.[MNGO_INDEX]?.nodeBankAccounts?.[0]
+
+    if (!mangoAccount || !mngoNodeBank || !mangoGroup || !wallet) {
+      return
+    }
 
     try {
       const txids = await mangoClient.redeemAllMngo(
         mangoGroup,
         mangoAccount,
-        wallet?.adapter,
+        wallet.adapter,
         mangoGroup.tokens[MNGO_INDEX].rootBank,
         mngoNodeBank.publicKey,
         mngoNodeBank.vault
       )
       actions.reloadMangoAccount()
       setMngoAccrued(ZERO_BN)
-      for (const txid of txids) {
+      if (txids) {
+        for (const txid of txids) {
+          notify({
+            title: t('redeem-success'),
+            description: '',
+            txid,
+          })
+        }
+      } else {
         notify({
-          title: t('redeem-success'),
-          description: '',
-          txid,
+          title: t('redeem-failure'),
+          description: 'Transaction failed',
+          type: 'error',
         })
       }
     } catch (e) {
@@ -293,7 +310,7 @@ export default function Account() {
                   >
                     <div className="flex items-center whitespace-nowrap">
                       <GiftIcon className="mr-1.5 h-4 w-4 flex-shrink-0" />
-                      {!mngoAccrued.eq(ZERO_BN)
+                      {!mngoAccrued.eq(ZERO_BN) && mangoGroup
                         ? t('claim-x-mngo', {
                             amount: nativeToUi(
                               mngoAccrued.toNumber(),

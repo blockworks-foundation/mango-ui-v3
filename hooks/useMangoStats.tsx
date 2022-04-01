@@ -61,6 +61,7 @@ const useMangoStats = () => {
     const getLatestStats = async () => {
       if (mangoGroup) {
         const rootBanks = await mangoGroup.loadRootBanks(connection)
+        if (!config) return
         const latestStats = config.tokens.map((token) => {
           const rootBank = rootBanks.find((bank) => {
             if (!bank) {
@@ -68,6 +69,9 @@ const useMangoStats = () => {
             }
             return bank.publicKey.toBase58() == token.rootKey.toBase58()
           })
+          if (!rootBank) {
+            return
+          }
           const totalDeposits = rootBank.getUiTotalDeposit(mangoGroup)
           const totalBorrows = rootBank.getUiTotalBorrow(mangoGroup)
 

@@ -135,12 +135,12 @@ export default function Orderbook({ depth = 8 }) {
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
 
-  const currentOrderbookData = useRef(null)
-  const nextOrderbookData = useRef(null)
+  const currentOrderbookData = useRef<any>(null)
+  const nextOrderbookData = useRef<any>(null)
   const previousDepth = usePrevious(depth)
 
-  const [openOrderPrices, setOpenOrderPrices] = useState([])
-  const [orderbookData, setOrderbookData] = useState(null)
+  const [openOrderPrices, setOpenOrderPrices] = useState<any[]>([])
+  const [orderbookData, setOrderbookData] = useState<any | null>(null)
   const [defaultLayout, setDefaultLayout] = useState(true)
   const [displayCumulativeSize, setDisplayCumulativeSize] = useState(false)
   const [grouping, setGrouping] = useState(0.01)
@@ -156,17 +156,18 @@ export default function Orderbook({ depth = 8 }) {
 
   useInterval(() => {
     if (
-      !currentOrderbookData.current ||
-      !isEqualLodash(
-        currentOrderbookData.current.bids,
-        nextOrderbookData.current.bids
-      ) ||
-      !isEqualLodash(
-        currentOrderbookData.current.asks,
-        nextOrderbookData.current.asks
-      ) ||
-      previousDepth !== depth ||
-      previousGrouping !== grouping
+      nextOrderbookData?.current?.bids &&
+      (!currentOrderbookData.current ||
+        !isEqualLodash(
+          currentOrderbookData.current.bids,
+          nextOrderbookData.current.bids
+        ) ||
+        !isEqualLodash(
+          currentOrderbookData.current.asks,
+          nextOrderbookData.current.asks
+        ) ||
+        previousDepth !== depth ||
+        previousGrouping !== grouping)
     ) {
       // check if user has open orders so we can highlight them on orderbook
       const openOrders =
@@ -603,10 +604,11 @@ export default function Orderbook({ depth = 8 }) {
 const OrderbookSpread = ({ orderbookData }) => {
   const { t } = useTranslation('common')
   const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
-  const decimals = useMemo(
-    () => getPrecisionDigits(selectedMarket?.tickSize),
-    [selectedMarket]
-  )
+  const decimals = useMemo(() => {
+    if (selectedMarket) {
+      getPrecisionDigits(selectedMarket?.tickSize)
+    }
+  }, [selectedMarket])
 
   return (
     <div className="mb-0 mt-3 flex justify-between rounded-md bg-th-bkg-1 p-2 text-xs">
@@ -641,7 +643,7 @@ const OrderbookRow = React.memo<any>(
     grouping: number
     market: Market | PerpMarket
   }) => {
-    const element = useRef(null)
+    const element = useRef<HTMLDivElement>(null)
     const setMangoStore = useMangoStore(setStoreSelector)
     const [showOrderbookFlash] = useLocalStorageState(ORDERBOOK_FLASH_KEY, true)
     const flashClassName = side === 'sell' ? 'red-flash' : 'green-flash'

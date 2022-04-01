@@ -86,7 +86,7 @@ const SwapTokenSelect = ({
   useEffect(() => {
     function onEscape(e) {
       if (e.keyCode === 27) {
-        onClose()
+        onClose?.()
       }
     }
     window.addEventListener('keydown', onEscape)

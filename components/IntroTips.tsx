@@ -178,8 +178,10 @@ class IntroTips extends Component<Props, State> {
     if (nextStepIndex === 1) {
       this.steps.updateStepElement(nextStepIndex)
       const el = document.querySelector<HTMLElement>('.introjs-nextbutton')
-      el.style.pointerEvents = 'auto'
-      el.style.opacity = '100%'
+      if (el) {
+        el.style.pointerEvents = 'auto'
+        el.style.opacity = '100%'
+      }
     }
   }
 

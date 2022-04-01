@@ -17,8 +17,8 @@ const insightTypeVals = ['best', 'worst']
 dayjs.extend(relativeTime)
 
 const SwapTokenInsights = ({ formState, jupiterTokens, setOutputToken }) => {
-  const [tokenInsights, setTokenInsights] = useState([])
-  const [filteredTokenInsights, setFilteredTokenInsights] = useState([])
+  const [tokenInsights, setTokenInsights] = useState<any>([])
+  const [filteredTokenInsights, setFilteredTokenInsights] = useState<any>([])
   const [insightType, setInsightType] = useState(insightTypeVals[0])
   const [filterBy, setFilterBy] = useState(filterByVals[0])
   const [timeframe, setTimeframe] = useState(timeFrameVals[0])
@@ -156,6 +156,9 @@ const SwapTokenInsights = ({ formState, jupiterTokens, setOutputToken }) => {
       ) : filteredTokenInsights.length > 0 ? (
         <div className="border-b border-th-bkg-4">
           {filteredTokenInsights.map((insight) => {
+            if (!insight) {
+              return null
+            }
             const jupToken = jupiterTokens.find(
               (t) => t?.extensions?.coingeckoId === insight.id
             )

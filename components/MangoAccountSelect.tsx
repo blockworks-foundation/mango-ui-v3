@@ -34,6 +34,9 @@ const MangoAccountSelect = ({
     const mangoAccount = mangoAccounts.find(
       (ma) => ma.publicKey.toString() === value
     )
+    if (!mangoAccount) {
+      return
+    }
     setSelectedMangoAccount(mangoAccount)
     if (onChange) {
       onChange(mangoAccount)

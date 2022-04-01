@@ -40,8 +40,8 @@ function calculateFundingRate(
 export default function StatsPerps({ perpStats }) {
   const { t } = useTranslation('common')
   const [selectedAsset, setSelectedAsset] = useState<string>('BTC-PERP')
-  const marketConfigs = useMangoGroupConfig().perpMarkets
-  const selectedMarketConfig = marketConfigs.find(
+  const marketConfigs = useMangoGroupConfig()?.perpMarkets
+  const selectedMarketConfig = marketConfigs?.find(
     (m) => m.name === selectedAsset
   )
   const marketDirectory = useMangoStore(marketsSelector)
@@ -52,9 +52,11 @@ export default function StatsPerps({ perpStats }) {
   }, [markets])
 
   const selectedMarket = useMemo(() => {
-    return perpMarkets.find((m) =>
-      m.publicKey.equals(selectedMarketConfig.publicKey)
-    )
+    if (selectedMarketConfig) {
+      return perpMarkets.find((m) =>
+        m.publicKey.equals(selectedMarketConfig.publicKey)
+      )
+    }
   }, [selectedMarketConfig, perpMarkets])
 
   const perpsData = useMemo(() => {
@@ -121,14 +123,14 @@ export default function StatsPerps({ perpStats }) {
           onChange={(a) => setSelectedAsset(a)}
           className="ml-4 w-36 flex-shrink-0 md:hidden"
         >
-          {marketConfigs.map((market) => (
+          {marketConfigs?.map((market) => (
             <Select.Option key={market.name} value={market.name}>
               {market.name}
             </Select.Option>
           ))}
         </Select>
         <div className="mb-4 hidden rounded-md bg-th-bkg-3 px-3 py-2 md:mb-6 md:flex md:px-4">
-          {marketConfigs.map((market, index) => (
+          {marketConfigs?.map((market, index) => (
             <div
               className={`py-1 text-xs font-bold md:px-2 md:text-sm ${
                 index > 0 ? 'ml-4 md:ml-2' : null
@@ -182,22 +184,24 @@ export default function StatsPerps({ perpStats }) {
           className="relative rounded-md border border-th-bkg-3 p-4"
           style={{ height: '330px' }}
         >
-          <Chart
-            title={t('open-interest')}
-            xAxis="time"
-            yAxis="openInterest"
-            data={perpsData}
-            labelFormat={(x) =>
-              x &&
-              x.toLocaleString(undefined, {
-                maximumFractionDigits:
-                  perpContractPrecision[selectedMarketConfig.baseSymbol],
-              }) +
-                ' ' +
-                selectedMarketConfig.baseSymbol
-            }
-            type="area"
-          />
+          {selectedMarketConfig?.baseSymbol ? (
+            <Chart
+              title={t('open-interest')}
+              xAxis="time"
+              yAxis="openInterest"
+              data={perpsData}
+              labelFormat={(x) =>
+                x &&
+                x.toLocaleString(undefined, {
+                  maximumFractionDigits:
+                    perpContractPrecision[selectedMarketConfig.baseSymbol],
+                }) +
+                  ' ' +
+                  selectedMarketConfig.baseSymbol
+              }
+              type="area"
+            />
+          ) : null}
         </div>
       </div>
       <div className="mb-4">
@@ -207,9 +211,11 @@ export default function StatsPerps({ perpStats }) {
             <p className="mb-0">{t('depth-rewarded')}</p>
             <div className="text-lg font-bold">
               {maxDepthUi.toLocaleString() + ' '}
-              <span className="text-xs font-normal text-th-fgd-3">
-                {selectedMarketConfig.baseSymbol}
-              </span>
+              {selectedMarketConfig?.baseSymbol ? (
+                <span className="text-xs font-normal text-th-fgd-3">
+                  {selectedMarketConfig.baseSymbol}
+                </span>
+              ) : null}
             </div>
           </div>
           <div className="col-span-1 border-y border-th-bkg-4 py-3">

@@ -29,18 +29,18 @@ export default function Swap() {
     if (connected) {
       actions.fetchWalletTokens()
     }
-  }, [connected])
+  }, [connected, actions])
 
   if (!connection) return null
 
   const userPublicKey =
-    publicKey && !zeroKey.equals(publicKey) ? publicKey : null
+    publicKey && !zeroKey.equals(publicKey) ? publicKey : undefined
 
   return (
     <JupiterProvider
       connection={connection}
       cluster="mainnet-beta"
-      userPublicKey={connected ? userPublicKey : null}
+      userPublicKey={connected ? userPublicKey : undefined}
     >
       <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
         <TopBar />

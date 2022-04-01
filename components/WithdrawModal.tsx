@@ -49,7 +49,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   const [maxAmount, setMaxAmount] = useState(0)
   const [submitting, setSubmitting] = useState(false)
   const [includeBorrow, setIncludeBorrow] = useState(borrow)
-  const [simulation, setSimulation] = useState(null)
+  const [simulation, setSimulation] = useState<any | null>(null)
   const [showSimulation, setShowSimulation] = useState(false)
   const { wallet } = useWallet()
   const actions = useMangoStore((s) => s.actions)
@@ -63,10 +63,12 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
     () => tokens.find((t) => t.symbol === withdrawTokenSymbol),
     [withdrawTokenSymbol, tokens]
   )
-  const tokenIndex = mangoGroup.getTokenIndex(token.mintKey)
+  const tokenIndex =
+    mangoGroup && token ? mangoGroup.getTokenIndex(token.mintKey) : 0
 
   useEffect(() => {
-    if (!mangoGroup || !mangoAccount || !withdrawTokenSymbol) return
+    if (!mangoGroup || !mangoAccount || !withdrawTokenSymbol || !mangoCache)
+      return
 
     const mintDecimals = mangoGroup.tokens[tokenIndex].decimals
     const tokenDeposits = mangoAccount.getUiDeposit(
@@ -99,7 +101,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
         : maxWithBorrows
     }
 
-    if (maxWithdraw.gt(I80F48.fromNumber(0))) {
+    if (maxWithdraw.gt(I80F48.fromNumber(0)) && token) {
       setMaxAmount(
         floorToDecimal(parseFloat(maxWithdraw.toFixed()), token.decimals)
       )
@@ -119,6 +121,8 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
     newBorrow = newBorrow.add(tokenBorrows)
 
     // clone MangoAccount and arrays to not modify selectedMangoAccount
+    // FIXME: MangoAccount needs type updated to accept null for pubKey
+    // @ts-ignore
     const simulation = new MangoAccount(null, mangoAccount)
     simulation.deposits = [...mangoAccount.deposits]
     simulation.borrows = [...mangoAccount.borrows]
@@ -156,6 +160,9 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   ])
 
   const handleWithdraw = () => {
+    if (!mangoGroup || !wallet) {
+      return
+    }
     setSubmitting(true)
 
     withdraw({
@@ -194,7 +201,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   }
 
   const getDepositsForSelectedAsset = (): I80F48 => {
-    return mangoAccount
+    return mangoAccount && mangoCache && mangoGroup
       ? mangoAccount.getUiDeposit(
           mangoCache.rootBankCache[tokenIndex],
           mangoGroup,
@@ -273,19 +280,21 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
     const mangoCache = useMangoStore.getState().selectedMangoGroup.cache
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
 
-    return tokens.map((token) => {
-      const tokenIndex = mangoGroup.getTokenIndex(token.mintKey)
-      return {
-        symbol: token.symbol,
-        balance: mangoAccount
-          ?.getUiDeposit(
-            mangoCache.rootBankCache[tokenIndex],
-            mangoGroup,
-            tokenIndex
-          )
-          ?.toFixed(tokenPrecision[token.symbol]),
-      }
-    })
+    if (mangoGroup && mangoCache) {
+      return tokens.map((token) => {
+        const tokenIndex = mangoGroup.getTokenIndex(token.mintKey)
+        return {
+          symbol: token.symbol,
+          balance: mangoAccount
+            ?.getUiDeposit(
+              mangoCache.rootBankCache[tokenIndex],
+              mangoGroup,
+              tokenIndex
+            )
+            ?.toFixed(tokenPrecision[token.symbol]),
+        }
+      })
+    }
   }
 
   if (!withdrawTokenSymbol) return null
@@ -293,7 +302,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <>
-        {!showSimulation ? (
+        {!showSimulation && mangoCache && mangoGroup ? (
           <>
             <Modal.Header>
               <ElementTitle noMarginBottom>
@@ -329,7 +338,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
               }
               onChange={(asset) => handleSetSelectedAsset(asset)}
             >
-              {getTokenBalances().map(({ symbol, balance }) => (
+              {getTokenBalances()?.map(({ symbol, balance }) => (
                 <Select.Option key={symbol} value={symbol}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
@@ -447,7 +456,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                 <div className="pt-2 text-th-fgd-4">{`${t(
                   'includes-borrow'
                 )} ~${getBorrowAmount().toFixed(
-                  mangoGroup.tokens[tokenIndex].decimals
+                  mangoGroup?.tokens[tokenIndex].decimals
                 )} ${withdrawTokenSymbol}`}</div>
               ) : null}
             </div>

@@ -43,9 +43,9 @@ export default function AccountHistory() {
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
 
   const mangoAccountPk = useMemo(() => {
-    console.log('new mango account')
-
-    return mangoAccount.publicKey.toString()
+    if (mangoAccount) {
+      return mangoAccount.publicKey.toString()
+    }
   }, [mangoAccount])
 
   useEffect(() => {
@@ -200,7 +200,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
 
     const tab = historyViews.filter((v) => v.key == view)[0].label
     const title = `${
-      mangoAccount.name || mangoAccount.publicKey
+      mangoAccount?.name || mangoAccount?.publicKey
     }-${tab}-${new Date().toLocaleDateString()}`
 
     exportDataToCSV(dataToExport, title, headers, t)
@@ -219,7 +219,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
               <div className="mr-4 text-xs text-th-fgd-3">
                 {t('delay-displaying-recent')} {t('use-explorer-one')}
                 <a
-                  href={`https://explorer.solana.com/address/${mangoAccount.publicKey.toString()}`}
+                  href={`https://explorer.solana.com/address/${mangoAccount?.publicKey?.toString()}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -341,7 +341,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
             </thead>
             <tbody>
               {items.map(({ activity_details, activity_type }) => {
-                let perpMarket: PerpMarket
+                let perpMarket: PerpMarket | null = null
                 if (activity_type.includes('perp')) {
                   const symbol = activity_details.perp_market.split('-')[0]
                   const marketConfig = getMarketByBaseSymbolAndKind(
@@ -464,7 +464,7 @@ const HistoryTable = ({ history, view }) => {
 
     const tab = historyViews.filter((v) => v.key == view)[0].label
     const title = `${
-      mangoAccount.name || mangoAccount.publicKey
+      mangoAccount?.name || mangoAccount?.publicKey
     }-${tab}-${new Date().toLocaleDateString()}`
 
     exportDataToCSV(dataToExport, title, headers, t)
@@ -489,7 +489,7 @@ const HistoryTable = ({ history, view }) => {
               <div className="mr-4 text-xs text-th-fgd-3">
                 {t('delay-displaying-recent')} {t('use-explorer-one')}
                 <a
-                  href={`https://explorer.solana.com/address/${mangoAccount.publicKey.toString()}`}
+                  href={`https://explorer.solana.com/address/${mangoAccount?.publicKey?.toString()}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >

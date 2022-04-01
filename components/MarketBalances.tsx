@@ -25,6 +25,7 @@ export default function MarketBalances() {
   const isMobile = width ? width < breakpoints.sm : false
 
   const handleSizeClick = (size, symbol) => {
+    if (!selectedMarket || !mangoGroup || !mangoGroupCache) return
     const minOrderSize = selectedMarket.minOrderSize
     const sizePrecisionDigits = getPrecisionDigits(minOrderSize)
     const marketIndex = marketConfig.marketIndex
@@ -59,10 +60,10 @@ export default function MarketBalances() {
     })
   }
 
-  if (!mangoGroup || !selectedMarket) return null
+  if (!mangoGroup || !selectedMarket || !mangoGroupCache) return null
 
   return (
-    <div className={!connected ? 'blur filter' : null}>
+    <div className={!connected ? 'blur filter' : ''}>
       {!isMobile ? (
         <ElementTitle className="hidden 2xl:flex">{t('balances')}</ElementTitle>
       ) : null}

@@ -8,6 +8,7 @@ import {
   nativeI80F48ToUi,
   PerpMarket,
   PerpOrderType,
+  ZERO_I80F48,
 } from '@blockworks-foundation/mango-client'
 import {
   ExclamationIcon,
@@ -124,9 +125,9 @@ export default function AdvancedTradeForm({
     MAX_SLIPPAGE_KEY,
     '0.025'
   )
-  const [maxSlippagePercentage, setMaxSlippagePercentage] = useState(
-    clamp(parseFloat(maxSlippage), 0, 1) * 100
-  )
+  const [maxSlippagePercentage, setMaxSlippagePercentage] = useState<
+    number | null
+  >(null)
   const [editMaxSlippage, setEditMaxSlippage] = useState(false)
   const [showCustomSlippageForm, setShowCustomSlippageForm] = useState(false)
   const slippagePresets = ['1', '1.5', '2', '2.5', '3']
@@ -135,6 +136,12 @@ export default function AdvancedTradeForm({
     setMaxSlippage(clamp(slippage / 100, 0, 1).toString())
     setEditMaxSlippage(false)
   }
+
+  useEffect(() => {
+    if (maxSlippage && !maxSlippagePercentage) {
+      setMaxSlippagePercentage(clamp(parseFloat(maxSlippage), 0, 1) * 100)
+    }
+  }, [setMaxSlippagePercentage, maxSlippage, maxSlippagePercentage])
 
   useEffect(
     () =>
@@ -180,7 +187,16 @@ export default function AdvancedTradeForm({
   }, [set, tradeType, side])
 
   const { max, deposits, borrows, spotMax, reduceMax } = useMemo(() => {
-    if (!mangoAccount) return { max: 0 }
+    const defaultValues = {
+      max: ZERO_I80F48,
+      deposits: ZERO_I80F48,
+      borrows: ZERO_I80F48,
+      spotMax: 0,
+      reduceMax: 0,
+    }
+    if (!mangoAccount || !mangoGroup || !mangoCache || !market) {
+      return defaultValues
+    }
     const priceOrDefault = price
       ? I80F48.fromNumber(price)
       : mangoGroup.getPrice(marketIndex, mangoCache)
@@ -228,7 +244,7 @@ export default function AdvancedTradeForm({
       reduceMax = 0
     }
 
-    if (maxQuote.toNumber() <= 0) return { max: 0 }
+    if (maxQuote.toNumber() <= 0) return defaultValues
     // multiply the maxQuote by a scaler value to account for
     // srm fees or rounding issues in getMaxLeverageForMarket
     const maxScaler = market instanceof PerpMarket ? 0.99 : 0.95
@@ -463,8 +479,8 @@ export default function AdvancedTradeForm({
     return (size / total) * 100
   }
 
-  const roundedDeposits = parseFloat(deposits?.toFixed(sizeDecimalCount))
-  const roundedBorrows = parseFloat(borrows?.toFixed(sizeDecimalCount))
+  const roundedDeposits = parseFloat(deposits.toFixed(sizeDecimalCount))
+  const roundedBorrows = parseFloat(borrows.toFixed(sizeDecimalCount))
 
   const closeDepositString =
     percentToClose(baseSize, roundedDeposits) > 100
@@ -591,6 +607,7 @@ export default function AdvancedTradeForm({
           description: t('try-again'),
           type: 'error',
         })
+        return
       }
 
       // TODO: this has a race condition when switching between markets or buy & sell
@@ -612,12 +629,12 @@ export default function AdvancedTradeForm({
           mangoGroup,
           mangoAccount,
           market,
-          wallet?.adapter,
+          wallet.adapter,
           side,
           orderPrice,
           baseSize,
           orderType,
-          null,
+          undefined,
           totalMsrm > 0
         )
         actions.reloadOrders()
@@ -628,7 +645,7 @@ export default function AdvancedTradeForm({
         if (isMarketOrder) {
           if (postOnlySlide) {
             perpOrderType = 'postOnlySlide'
-          } else if (tradeType === 'Market' && maxSlippage !== undefined) {
+          } else if (tradeType === 'Market' && maxSlippage) {
             perpOrderType = 'ioc'
             if (side === 'buy') {
               perpOrderPrice = markPrice * (1 + parseFloat(maxSlippage))
@@ -648,7 +665,7 @@ export default function AdvancedTradeForm({
             mangoGroup,
             mangoAccount,
             market,
-            wallet?.adapter,
+            wallet.adapter,
             perpOrderType,
             side,
             perpOrderPrice,
@@ -663,7 +680,7 @@ export default function AdvancedTradeForm({
             mangoGroup,
             mangoAccount,
             market,
-            wallet?.adapter,
+            wallet.adapter,
             side,
             perpOrderPrice,
             baseSize,
@@ -1085,7 +1102,11 @@ export default function AdvancedTradeForm({
                       />
                     ) : (
                       <ButtonGroup
-                        activeValue={maxSlippagePercentage.toString()}
+                        activeValue={
+                          maxSlippagePercentage
+                            ? maxSlippagePercentage.toString()
+                            : ''
+                        }
                         className="h-10"
                         onChange={(p) => setMaxSlippagePercentage(p)}
                         unit="%"
@@ -1113,9 +1134,11 @@ export default function AdvancedTradeForm({
                         </Tooltip>
                       </div>
                       <div className="flex">
-                        <span className="text-th-fgd-1">
-                          {(parseFloat(maxSlippage) * 100).toFixed(2)}%
-                        </span>
+                        {maxSlippage ? (
+                          <span className="text-th-fgd-1">
+                            {(parseFloat(maxSlippage) * 100).toFixed(2)}%
+                          </span>
+                        ) : null}
                         <LinkButton
                           className="ml-2 text-xs"
                           onClick={() => setEditMaxSlippage(true)}

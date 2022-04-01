@@ -114,6 +114,7 @@ const TradeHistoryTable = ({
   }
 
   const exportPerformanceDataToCSV = async () => {
+    if (!mangoAccount) return
     setLoadExportData(true)
     const exportData = await fetchHourlyPerformanceStats(
       mangoAccount.publicKey.toString(),
@@ -142,9 +143,9 @@ const TradeHistoryTable = ({
   }, [data, filteredData])
 
   const mangoAccountPk = useMemo(() => {
-    console.log('new mango account')
-
-    return mangoAccount.publicKey.toString()
+    if (mangoAccount) {
+      return mangoAccount.publicKey.toString()
+    }
   }, [mangoAccount])
 
   const canWithdraw =
@@ -159,23 +160,26 @@ const TradeHistoryTable = ({
               {!initialLoad ? <Loading className="mr-2" /> : data.length}{' '}
               {data.length === 1 ? 'Trade' : 'Trades'}
             </h4>
-            <Tooltip
-              content={
-                <div className="mr-4 text-xs text-th-fgd-3">
-                  {t('delay-displaying-recent')} {t('use-explorer-one')}
-                  <a
-                    href={`https://explorer.solana.com/address/${mangoAccount.publicKey.toString()}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {t('use-explorer-two')}
-                  </a>
-                  {t('use-explorer-three')}
-                </div>
-              }
-            >
-              <InformationCircleIcon className="ml-1.5 h-5 w-5 cursor-pointer text-th-fgd-3" />
-            </Tooltip>
+
+            {mangoAccount ? (
+              <Tooltip
+                content={
+                  <div className="mr-4 text-xs text-th-fgd-3">
+                    {t('delay-displaying-recent')} {t('use-explorer-one')}
+                    <a
+                      href={`https://explorer.solana.com/address/${mangoAccount.publicKey.toString()}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {t('use-explorer-two')}
+                    </a>
+                    {t('use-explorer-three')}
+                  </div>
+                }
+              >
+                <InformationCircleIcon className="ml-1.5 h-5 w-5 cursor-pointer text-th-fgd-3" />
+              </Tooltip>
+            ) : null}
           </div>
 
           <div className="flex flex-col space-y-3 pl-2 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-3">
@@ -214,7 +218,7 @@ const TradeHistoryTable = ({
                 )}
               </Button>
             ) : null}
-            {canWithdraw ? (
+            {canWithdraw && mangoAccount ? (
               <div className={`flex items-center`}>
                 <a
                   className={`default-transition flex h-8 w-full items-center justify-center whitespace-nowrap rounded-full bg-th-bkg-button pt-0 pb-0 pl-3 pr-3 text-xs font-bold text-th-fgd-1 hover:text-th-fgd-1 hover:brightness-[1.1]`}

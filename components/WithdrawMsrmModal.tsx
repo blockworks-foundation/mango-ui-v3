@@ -19,6 +19,9 @@ const WithdrawMsrmModal = ({ onClose, isOpen }) => {
   const cluster = useMangoStore.getState().connection.cluster
 
   const handleMsrmWithdraw = async () => {
+    if (!mangoGroup || !mangoAccount || !wallet) {
+      return
+    }
     setSubmitting(true)
     const mangoClient = useMangoStore.getState().connection.client
     const ownerMsrmAccount = walletTokens.find((t) =>

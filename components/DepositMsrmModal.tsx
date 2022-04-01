@@ -19,6 +19,9 @@ const DepositMsrmModal = ({ onClose, isOpen }) => {
   const cluster = useMangoStore.getState().connection.cluster
 
   const handleMsrmDeposit = async () => {
+    if (!mangoGroup || !mangoAccount || !wallet) {
+      return
+    }
     setSubmitting(true)
     const mangoClient = useMangoStore.getState().connection.client
     const ownerMsrmAccount = walletTokens.find((t) =>

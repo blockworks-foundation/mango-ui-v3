@@ -28,7 +28,7 @@ const TradeNavMenu = () => {
   const [favoriteMarkets] = useLocalStorageState(FAVORITE_MARKETS_KEY, [])
   const [activeMenuCategory, setActiveMenuCategory] = useState('Futures')
   const [menuCategories, setMenuCategories] = useState(initialMenuCategories)
-  const buttonRef = useRef(null)
+  const buttonRef = useRef<HTMLButtonElement>(null)
   const { t } = useTranslation('common')
 
   const marketsInfo = useMangoStore((s) => s.marketsInfo)
@@ -230,7 +230,7 @@ export const FavoriteMarketButton = ({ market }) => {
   )
 
   const addToFavorites = (mkt) => {
-    const newFavorites = [...favoriteMarkets, mkt]
+    const newFavorites: any = [...favoriteMarkets, mkt]
     setFavoriteMarkets(newFavorites)
   }
 
