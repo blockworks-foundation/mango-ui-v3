@@ -673,13 +673,13 @@ const OrderbookRow = React.memo<any>(
 
     const handlePriceClick = () => {
       setMangoStore((state) => {
-        state.tradeForm.price = price
+        state.tradeForm.price = Number(formattedPrice)
       })
     }
 
     const handleSizeClick = () => {
       setMangoStore((state) => {
-        state.tradeForm.baseSize = size
+        state.tradeForm.baseSize = Number(formattedSize)
       })
     }
 
@@ -702,7 +702,7 @@ const OrderbookRow = React.memo<any>(
                 side === 'buy' ? `bg-th-green-muted` : `bg-th-red-muted`
               }`}
             />
-            <div className="flex w-full justify-between hover:font-semibold">
+            <div className="flex w-full items-center justify-between hover:font-semibold">
               <div
                 onClick={handlePriceClick}
                 className={`z-10 text-xs leading-5 md:pl-5 md:leading-6 ${
@@ -726,7 +726,7 @@ const OrderbookRow = React.memo<any>(
           </>
         ) : (
           <>
-            <div className="flex w-full justify-between hover:font-semibold">
+            <div className="flex w-full items-center justify-between hover:font-semibold">
               <div
                 className={`z-10 text-xs leading-5 md:leading-6 ${
                   hasOpenOrder ? 'text-th-primary' : 'text-th-fgd-2'
