@@ -90,7 +90,7 @@ export default function Referral() {
   const [existingCustomRefLinks, setexistingCustomRefLinks] = useState<
     ReferrerIdRecord[]
   >([])
-  const [hasCopied, setHasCopied] = useState(null)
+  const [hasCopied, setHasCopied] = useState<number | null>(null)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
 
   // const [hasReferrals] = useState(false) // Placeholder to show/hide users referral stats
@@ -100,6 +100,7 @@ export default function Referral() {
   const isMobile = width ? width < breakpoints.sm : false
 
   const fetchCustomReferralLinks = useCallback(async () => {
+    if (!mangoAccount) return
     setLoading(true)
     const mangoClient = useMangoStore.getState().connection.client
     const referrerIds = await mangoClient.getReferrerIdsForMangoAccount(
@@ -152,7 +153,9 @@ export default function Referral() {
   }
 
   const handleConnect = useCallback(() => {
-    handleWalletConnect(wallet)
+    if (wallet) {
+      handleWalletConnect(wallet)
+    }
   }, [wallet])
 
   const submitRefLink = async () => {
@@ -164,15 +167,16 @@ export default function Referral() {
         type: 'error',
         title: 'Invalid custom referral link',
       })
+      return
     }
 
-    if (!inputError) {
+    if (!inputError && mangoGroup && mangoAccount && wallet) {
       try {
         const mangoClient = useMangoStore.getState().connection.client
         const txid = await mangoClient.registerReferrerId(
           mangoGroup,
           mangoAccount,
-          wallet?.adapter,
+          wallet.adapter,
           encodedRefLink
         )
         notify({
@@ -199,7 +203,7 @@ export default function Referral() {
   const mngoIndex = getMarketIndexBySymbol(groupConfig, 'MNGO')
 
   const hasRequiredMngo =
-    mangoGroup && mangoAccount
+    mangoGroup && mangoAccount && mangoCache
       ? mangoAccount
           .getUiDeposit(
             mangoCache.rootBankCache[mngoIndex],
@@ -287,7 +291,7 @@ export default function Referral() {
                                         className={`flex-shrink-0 ${
                                           hasCopied === 1 && 'bg-th-green'
                                         }`}
-                                        disabled={hasCopied}
+                                        disabled={typeof hasCopied === 'number'}
                                         onClick={() =>
                                           handleCopyLink(
                                             `https://trade.mango.markets?ref=${mangoAccount.publicKey.toString()}`,
@@ -339,7 +343,9 @@ export default function Referral() {
                                               hasCopied === index + 1 &&
                                               'bg-th-green'
                                             }`}
-                                            disabled={hasCopied}
+                                            disabled={
+                                              typeof hasCopied === 'number'
+                                            }
                                             onClick={() =>
                                               handleCopyLink(
                                                 `https://trade.mango.markets?ref=${customRefs.referrerId}`,

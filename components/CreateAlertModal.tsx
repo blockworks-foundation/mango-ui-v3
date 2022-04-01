@@ -63,8 +63,8 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
       return
     }
     const body = {
-      mangoGroupPk: mangoGroup.publicKey.toString(),
-      mangoAccountPk: mangoAccount.publicKey.toString(),
+      mangoGroupPk: mangoGroup?.publicKey.toString(),
+      mangoAccountPk: mangoAccount?.publicKey.toString(),
       health,
       alertProvider: 'mail',
       email,
@@ -84,7 +84,7 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
   }
 
   useEffect(() => {
-    actions.loadAlerts(mangoAccount.publicKey)
+    actions.loadAlerts(mangoAccount?.publicKey)
   }, [])
 
   return (

@@ -35,25 +35,39 @@ export const settlePosPnl = async (
   const actions = useMangoStore.getState().actions
   const mangoClient = useMangoStore.getState().connection.client
 
+  const rootBankAccount = mangoGroup?.rootBankAccounts[QUOTE_INDEX]
+
+  if (!mangoGroup || !mangoCache || !mangoAccount || !rootBankAccount) return
+
   try {
     const txids = await mangoClient.settlePosPnl(
       mangoGroup,
       mangoCache,
       mangoAccount,
       perpMarkets,
-      mangoGroup.rootBankAccounts[QUOTE_INDEX],
+      rootBankAccount,
       wallet?.adapter,
       mangoAccounts
     )
     actions.reloadMangoAccount()
-    for (const txid of txids) {
-      if (txid) {
+    // FIXME: Remove filter when settlePosPnl return type is undefined or string[]
+    const filteredTxids = txids?.filter(
+      (x) => typeof x === 'string'
+    ) as string[]
+    if (filteredTxids) {
+      for (const txid of filteredTxids) {
         notify({
           title: t('pnl-success'),
           description: '',
           txid,
         })
       }
+    } else {
+      notify({
+        title: t('pnl-error'),
+        description: 'Transaction failed',
+        type: 'error',
+      })
     }
   } catch (e) {
     console.log('Error settling PNL: ', `${e}`, `${perpAccount}`)
@@ -77,8 +91,18 @@ export const settlePnl = async (
   const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
   const mangoCache = useMangoStore.getState().selectedMangoGroup.cache
   const actions = useMangoStore.getState().actions
-  const marketIndex = mangoGroup.getPerpMarketIndex(perpMarket.publicKey)
+  const marketIndex = mangoGroup?.getPerpMarketIndex(perpMarket.publicKey)
   const mangoClient = useMangoStore.getState().connection.client
+  const rootBank = mangoGroup?.rootBankAccounts[QUOTE_INDEX]
+
+  if (
+    !rootBank ||
+    !mangoGroup ||
+    !mangoCache ||
+    !mangoAccount ||
+    typeof marketIndex !== 'number'
+  )
+    return
 
   try {
     const txid = await mangoClient.settlePnl(
@@ -86,17 +110,25 @@ export const settlePnl = async (
       mangoCache,
       mangoAccount,
       perpMarket,
-      mangoGroup.rootBankAccounts[QUOTE_INDEX],
+      rootBank,
       mangoCache.priceCache[marketIndex].price,
       wallet?.adapter,
       mangoAccounts
     )
     actions.reloadMangoAccount()
-    notify({
-      title: t('pnl-success'),
-      description: '',
-      txid,
-    })
+    if (txid) {
+      notify({
+        title: t('pnl-success'),
+        description: '',
+        txid,
+      })
+    } else {
+      notify({
+        title: t('pnl-error'),
+        description: 'Transaction failed',
+        type: 'error',
+      })
+    }
   } catch (e) {
     console.log('Error settling PNL: ', `${e}`, `${perpAccount}`)
     notify({
@@ -138,6 +170,7 @@ export default function MarketPosition() {
   }
 
   const handleSizeClick = (size) => {
+    if (!mangoGroup || !mangoCache || !selectedMarket) return
     const sizePrecisionDigits = getPrecisionDigits(selectedMarket.minOrderSize)
     const priceOrDefault = price
       ? price
@@ -156,10 +189,12 @@ export default function MarketPosition() {
   }, [])
 
   const handleSettlePnl = (perpMarket, perpAccount) => {
-    setSettling(true)
-    settlePnl(perpMarket, perpAccount, t, undefined, wallet).then(() => {
-      setSettling(false)
-    })
+    if (wallet) {
+      setSettling(true)
+      settlePnl(perpMarket, perpAccount, t, undefined, wallet).then(() => {
+        setSettling(false)
+      })
+    }
   }
 
   if (!mangoGroup || !selectedMarket || !(selectedMarket instanceof PerpMarket))
@@ -195,7 +230,7 @@ export default function MarketPosition() {
   return (
     <>
       <div
-        className={!connected && !isMobile ? 'blur-sm filter' : null}
+        className={!connected && !isMobile ? 'blur-sm filter' : ''}
         id="perp-positions-tip"
       >
         {!isMobile ? (

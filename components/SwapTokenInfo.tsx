@@ -34,11 +34,11 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
   const [hideChart, setHideChart] = useState(false)
   const [baseTokenId, setBaseTokenId] = useState('')
   const [quoteTokenId, setQuoteTokenId] = useState('')
-  const [inputTokenInfo, setInputTokenInfo] = useState(null)
-  const [outputTokenInfo, setOutputTokenInfo] = useState(null)
+  const [inputTokenInfo, setInputTokenInfo] = useState<any>(null)
+  const [outputTokenInfo, setOutputTokenInfo] = useState<any>(null)
   const [mouseData, setMouseData] = useState<string | null>(null)
   const [daysToShow, setDaysToShow] = useState(1)
-  const [topHolders, setTopHolders] = useState(null)
+  const [topHolders, setTopHolders] = useState<any>(null)
   const { observe, width, height } = useDimensions()
   const { t } = useTranslation(['common', 'swap'])
 
@@ -78,6 +78,9 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
   }
 
   useEffect(() => {
+    if (!inputTokenId || !outputTokenId) {
+      return
+    }
     if (['usd-coin', 'tether'].includes(inputTokenId)) {
       setBaseTokenId(outputTokenId)
       setQuoteTokenId(inputTokenId)
@@ -99,7 +102,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
     const inputData = await inputResponse.json()
     const outputData = await outputResponse.json()
 
-    let data = []
+    let data: any[] = []
     if (Array.isArray(inputData)) {
       data = data.concat(inputData)
     }

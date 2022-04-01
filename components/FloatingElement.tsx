@@ -23,7 +23,9 @@ const FloatingElement: FunctionComponent<FloatingElementProps> = ({
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
 
   const handleConnect = useCallback(() => {
-    handleWalletConnect(wallet)
+    if (wallet) {
+      handleWalletConnect(wallet)
+    }
   }, [wallet])
 
   return (

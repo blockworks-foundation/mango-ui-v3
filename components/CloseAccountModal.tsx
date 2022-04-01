@@ -98,13 +98,17 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
   const closeAccount = async () => {
     const mangoClient = useMangoStore.getState().connection.client
 
+    if (!mangoGroup || !mangoAccount || !mangoCache || !wallet) {
+      return
+    }
+
     try {
       const txids = await mangoClient.emptyAndCloseMangoAccount(
         mangoGroup,
         mangoAccount,
         mangoCache,
         MNGO_INDEX,
-        wallet?.adapter
+        wallet.adapter
       )
 
       await actions.fetchAllMangoAccounts(wallet)
@@ -116,11 +120,19 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
           : null
       })
 
-      onClose()
-      for (const txid of txids) {
+      onClose?.()
+      if (txids) {
+        for (const txid of txids) {
+          notify({
+            title: t('close-account:transaction-confirmed'),
+            txid,
+          })
+        }
+      } else {
         notify({
-          title: t('close-account:transaction-confirmed'),
-          txid,
+          title: t('close-account:error-deleting-account'),
+          description: 'Transaction failed',
+          type: 'error',
         })
       }
     } catch (err) {
@@ -153,6 +165,8 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
           {t('close-account:delete-your-account')}
         </div>
         {mangoAccount &&
+        mangoGroup &&
+        mangoCache &&
         mangoAccount.getAssetsVal(mangoGroup, mangoCache).gt(ZERO_I80F48) ? (
           <div className="flex items-center text-th-fgd-2">
             <CheckCircleIcon className="mr-1.5 h-4 w-4 text-th-green" />

@@ -48,10 +48,10 @@ const formatTradeDateTime = (timestamp: BN | string) => {
 
 const TradeHistoryTable = ({
   numTrades,
-  showExportPnl,
+  showActions,
 }: {
   numTrades?: number
-  showExportPnl?: boolean
+  showActions?: boolean
 }) => {
   const { t } = useTranslation('common')
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
@@ -114,6 +114,7 @@ const TradeHistoryTable = ({
   }
 
   const exportPerformanceDataToCSV = async () => {
+    if (!mangoAccount) return
     setLoadExportData(true)
     const exportData = await fetchHourlyPerformanceStats(
       mangoAccount.publicKey.toString(),
@@ -142,9 +143,9 @@ const TradeHistoryTable = ({
   }, [data, filteredData])
 
   const mangoAccountPk = useMemo(() => {
-    console.log('new mango account')
-
-    return mangoAccount.publicKey.toString()
+    if (mangoAccount) {
+      return mangoAccount.publicKey.toString()
+    }
   }, [mangoAccount])
 
   const canWithdraw =
@@ -152,89 +153,95 @@ const TradeHistoryTable = ({
 
   return (
     <>
-      <div className="flex flex-col pb-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center">
-          <h4 className="mb-0 flex items-center text-th-fgd-1">
-            {!initialLoad ? <Loading className="mr-2" /> : data.length}{' '}
-            {data.length === 1 ? 'Trade' : 'Trades'}
-          </h4>
-          <Tooltip
-            content={
-              <div className="mr-4 text-xs text-th-fgd-3">
-                {t('delay-displaying-recent')} {t('use-explorer-one')}
+      {showActions ? (
+        <div className="flex flex-col pb-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center">
+            <h4 className="mb-0 flex items-center text-th-fgd-1">
+              {!initialLoad ? <Loading className="mr-2" /> : data.length}{' '}
+              {data.length === 1 ? 'Trade' : 'Trades'}
+            </h4>
+
+            {mangoAccount ? (
+              <Tooltip
+                content={
+                  <div className="mr-4 text-xs text-th-fgd-3">
+                    {t('delay-displaying-recent')} {t('use-explorer-one')}
+                    <a
+                      href={`https://explorer.solana.com/address/${mangoAccount.publicKey.toString()}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {t('use-explorer-two')}
+                    </a>
+                    {t('use-explorer-three')}
+                  </div>
+                }
+              >
+                <InformationCircleIcon className="ml-1.5 h-5 w-5 cursor-pointer text-th-fgd-3" />
+              </Tooltip>
+            ) : null}
+          </div>
+
+          <div className="flex flex-col space-y-3 pl-2 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-3">
+            {hasActiveFilter ? (
+              <LinkButton
+                className="order-4 mt-3 flex items-center justify-end whitespace-nowrap text-xs sm:order-first sm:mt-0"
+                onClick={() => setFilters({})}
+              >
+                <RefreshIcon className="mr-1.5 h-4 w-4 flex-shrink-0" />
+                {t('reset-filters')}
+              </LinkButton>
+            ) : null}
+            {tradeHistory.length >= 15 &&
+            tradeHistory.length <= 10000 &&
+            initialLoad ? (
+              <Button
+                className="order-3 mt-3 flex h-8 items-center justify-center whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs sm:order-first sm:mt-0"
+                onClick={() => setShowFiltersModal(true)}
+              >
+                <FilterIcon className="mr-1.5 h-4 w-4" />
+                {t('filter')}
+              </Button>
+            ) : null}
+            {canWithdraw ? (
+              <Button
+                className={`flex h-8 items-center justify-center whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs`}
+                onClick={exportPerformanceDataToCSV}
+              >
+                {loadExportData ? (
+                  <Loading />
+                ) : (
+                  <div className={`flex items-center`}>
+                    <SaveIcon className={`mr-1.5 h-4 w-4`} />
+                    {t('export-pnl-csv')}
+                  </div>
+                )}
+              </Button>
+            ) : null}
+            {canWithdraw && mangoAccount ? (
+              <div className={`flex items-center`}>
                 <a
-                  href={`https://explorer.solana.com/address/${mangoAccount.publicKey.toString()}`}
+                  className={`default-transition flex h-8 w-full items-center justify-center whitespace-nowrap rounded-full bg-th-bkg-button pt-0 pb-0 pl-3 pr-3 text-xs font-bold text-th-fgd-1 hover:text-th-fgd-1 hover:brightness-[1.1]`}
+                  href={`https://event-history-api.herokuapp.com/all_trades_csv?mango_account=${mangoAccountPk}&open_orders=${mangoAccount.spotOpenOrders
+                    .filter(
+                      (e) => e.toString() !== '11111111111111111111111111111111'
+                    )
+                    .join(',')}`}
+                  download
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  {t('use-explorer-two')}
-                </a>
-                {t('use-explorer-three')}
-              </div>
-            }
-          >
-            <InformationCircleIcon className="ml-1.5 h-5 w-5 cursor-pointer text-th-fgd-3" />
-          </Tooltip>
-        </div>
-        <div className="flex flex-col space-y-3 pl-2 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-3">
-          {hasActiveFilter ? (
-            <LinkButton
-              className="order-4 mt-3 flex items-center justify-end whitespace-nowrap text-xs sm:order-first sm:mt-0"
-              onClick={() => setFilters({})}
-            >
-              <RefreshIcon className="mr-1.5 h-4 w-4 flex-shrink-0" />
-              {t('reset-filters')}
-            </LinkButton>
-          ) : null}
-          {tradeHistory.length >= 15 &&
-          tradeHistory.length <= 10000 &&
-          initialLoad ? (
-            <Button
-              className="order-3 mt-3 flex h-8 items-center justify-center whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs sm:order-first sm:mt-0"
-              onClick={() => setShowFiltersModal(true)}
-            >
-              <FilterIcon className="mr-1.5 h-4 w-4" />
-              {t('filter')}
-            </Button>
-          ) : null}
-          {canWithdraw && showExportPnl ? (
-            <Button
-              className={`flex h-8 items-center justify-center whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs`}
-              onClick={exportPerformanceDataToCSV}
-            >
-              {loadExportData ? (
-                <Loading />
-              ) : (
-                <div className={`flex items-center`}>
                   <SaveIcon className={`mr-1.5 h-4 w-4`} />
-                  {t('export-pnl-csv')}
-                </div>
-              )}
-            </Button>
-          ) : null}
-          {canWithdraw ? (
-            <div className={`flex items-center`}>
-              <a
-                className={`default-transition flex h-8 w-full items-center justify-center whitespace-nowrap rounded-full bg-th-bkg-button pt-0 pb-0 pl-3 pr-3 text-xs font-bold text-th-fgd-1 hover:text-th-fgd-1 hover:brightness-[1.1]`}
-                href={`https://event-history-api.herokuapp.com/all_trades_csv?mango_account=${mangoAccountPk}&open_orders=${mangoAccount.spotOpenOrders
-                  .filter(
-                    (e) => e.toString() !== '11111111111111111111111111111111'
-                  )
-                  .join(',')}`}
-                download
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <SaveIcon className={`mr-1.5 h-4 w-4`} />
-                {t('export-trades-csv')}
-                <Tooltip content={t('trade-export-disclaimer')}>
-                  <InformationCircleIcon className="ml-1.5 h-5 w-5 cursor-help text-th-fgd-3" />
-                </Tooltip>
-              </a>
-            </div>
-          ) : null}
+                  {t('export-trades-csv')}
+                  <Tooltip content={t('trade-export-disclaimer')}>
+                    <InformationCircleIcon className="ml-1.5 h-5 w-5 cursor-help text-th-fgd-3" />
+                  </Tooltip>
+                </a>
+              </div>
+            ) : null}
+          </div>
         </div>
-      </div>
+      ) : null}
       <div className={`flex flex-col sm:pb-4`}>
         <div className={`overflow-x-auto sm:-mx-6 lg:-mx-8`}>
           <div

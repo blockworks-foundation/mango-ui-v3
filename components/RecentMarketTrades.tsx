@@ -17,7 +17,7 @@ export default function RecentMarketTrades() {
   const market = useMangoStore((s) => s.selectedMarket.current)
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
-  const [trades, setTrades] = useState([])
+  const [trades, setTrades] = useState<any[]>([])
 
   const fetchTradesForChart = useCallback(async () => {
     if (!marketConfig) return

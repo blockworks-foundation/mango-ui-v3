@@ -170,10 +170,10 @@ export const WalletProvider: FC<WalletProviderProps> = ({
   const handleDisconnect = useCallback(() => {
     setState((state) => ({
       ...state,
-      connected: adapter.connected,
+      connected: false,
       publicKey: null,
     }))
-  }, [adapter])
+  }, [])
 
   // Handle the adapter's error event, and local errors
   const handleError = useCallback(

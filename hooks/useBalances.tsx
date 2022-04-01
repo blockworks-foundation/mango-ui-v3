@@ -12,7 +12,7 @@ import { I80F48 } from '@blockworks-foundation/mango-client'
 import useMangoAccount from './useMangoAccount'
 
 export function useBalances(): Balances[] {
-  const balances = []
+  const balances: any[] = []
   const { mangoAccount } = useMangoAccount()
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoGroupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
@@ -23,7 +23,7 @@ export function useBalances(): Balances[] {
     baseSymbol,
     name,
   } of mangoGroupConfig.spotMarkets) {
-    if (!mangoAccount || !mangoGroup) {
+    if (!mangoAccount || !mangoGroup || !mangoCache) {
       return []
     }
 
@@ -146,6 +146,10 @@ export function useBalances(): Balances[] {
   const quoteMeta = quoteBalances[0]
   const quoteInOrders = sumBy(quoteBalances, 'orders')
   const unsettled = sumBy(quoteBalances, 'unsettled')
+
+  if (!mangoGroup || !mangoCache) {
+    return []
+  }
 
   const net: I80F48 = quoteMeta.deposits
     .add(I80F48.fromNumber(unsettled))

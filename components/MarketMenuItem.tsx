@@ -5,9 +5,10 @@ import Link from 'next/link'
 import * as MonoIcons from './icons'
 import { initialMarket } from './SettingsModal'
 
-// const isMarketSelected = ()
-
-export default function MarketMenuItem({ menuTitle = '', linksArray = [] }) {
+const MarketMenuItem: React.FC<{ menuTitle: string; linksArray: any[] }> = ({
+  menuTitle = '',
+  linksArray = [],
+}) => {
   const { asPath } = useRouter()
   const [openState, setOpenState] = useState(false)
 
@@ -76,3 +77,5 @@ export default function MarketMenuItem({ menuTitle = '', linksArray = [] }) {
     </div>
   )
 }
+
+export default MarketMenuItem

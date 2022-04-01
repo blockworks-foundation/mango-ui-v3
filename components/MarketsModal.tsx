@@ -111,11 +111,13 @@ const MarketsModal = ({
                     {m.name}
                     <div className="flex items-center">
                       <span className="w-20 text-right">
-                        {formatUsdValue(
-                          mangoGroup
-                            .getPrice(m.marketIndex, mangoCache)
-                            .toNumber()
-                        )}
+                        {mangoGroup && mangoCache
+                          ? formatUsdValue(
+                              mangoGroup
+                                .getPrice(m.marketIndex, mangoCache)
+                                .toNumber()
+                            )
+                          : null}
                       </span>
                       {/* <span className="text-th-green text-right w-20">
                         +2.44%

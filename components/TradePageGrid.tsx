@@ -72,7 +72,8 @@ const getCurrentBreakpoint = () => {
   )
 }
 
-const TradePageGrid = () => {
+const TradePageGrid: React.FC = () => {
+  const [mounted, setMounted] = useState(false)
   const { uiLocked } = useMangoStore((s) => s.settings)
   const [savedLayouts, setSavedLayouts] = useLocalStorageState(
     GRID_LAYOUT_KEY,
@@ -87,14 +88,14 @@ const TradePageGrid = () => {
     }
   }
 
+  const [orderbookDepth, setOrderbookDepth] = useState(10)
+  const [currentBreakpoint, setCurrentBreakpoint] = useState<string | null>(
+    null
+  )
+
   const onBreakpointChange = (newBreakpoint: string) => {
-    console.log('new breakpoint', newBreakpoint)
     setCurrentBreakpoint(newBreakpoint)
   }
-
-  const [orderbookDepth, setOrderbookDepth] = useState(10)
-  const [currentBreakpoint, setCurrentBreakpoint] = useState(null)
-  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     const adjustOrderBook = (layouts, breakpoint?: string | null) => {
@@ -103,7 +104,10 @@ const TradePageGrid = () => {
         return obj.i === 'orderbook'
       })
       let depth = orderbookLayout.h * 0.891 - 5
-      depth = round(max([1, depth]))
+      const maxNum = max([1, depth])
+      if (typeof maxNum === 'number') {
+        depth = round(maxNum)
+      }
       setOrderbookDepth(depth)
     }
 

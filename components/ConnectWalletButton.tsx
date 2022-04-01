@@ -68,7 +68,9 @@ export const ConnectWalletButton: React.FC = () => {
   }, [wallets, installedWallets])
 
   const handleConnect = useCallback(() => {
-    handleWalletConnect(wallet)
+    if (wallet) {
+      handleWalletConnect(wallet)
+    }
   }, [wallet])
 
   const handleCloseAccounts = useCallback(() => {

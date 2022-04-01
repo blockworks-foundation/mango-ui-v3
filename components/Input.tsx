@@ -36,9 +36,6 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           </div>
         ) : null}
         <input
-          type={type}
-          value={value}
-          onChange={onChange}
           className={`${className} h-10 w-full flex-1 rounded-md border bg-th-bkg-1 px-2 pb-px
           text-th-fgd-1 ${
             error ? 'border-th-red' : 'border-th-bkg-4'
@@ -54,6 +51,9 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           disabled={disabled}
           ref={ref}
           {...props}
+          type={type}
+          value={value}
+          onChange={onChange}
         />
         {suffix ? (
           <span className="absolute right-0 flex h-full items-center bg-transparent pr-2 text-xs text-th-fgd-4">

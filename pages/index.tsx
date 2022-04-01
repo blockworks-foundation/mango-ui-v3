@@ -53,6 +53,7 @@ const PerpMarket: React.FC = () => {
 
   useEffect(() => {
     async function loadUnownedMangoAccount() {
+      if (!pubkey) return
       try {
         const unownedMangoAccountPubkey = new PublicKey(pubkey)
         const mangoClient = useMangoStore.getState().connection.client
@@ -85,7 +86,7 @@ const PerpMarket: React.FC = () => {
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
 
     let marketQueryParam, marketBaseSymbol, marketType, newMarket, marketIndex
-    if (name) {
+    if (name && groupConfig) {
       marketQueryParam = name.toString().split(/-|\//)
       marketBaseSymbol = marketQueryParam[0]
       marketType = marketQueryParam[1].includes('PERP') ? 'perp' : 'spot'
@@ -116,7 +117,7 @@ const PerpMarket: React.FC = () => {
           // state.selectedMarket.current = null
           state.selectedMarket.config = newMarket
           state.tradeForm.price =
-            state.tradeForm.tradeType === 'Limit'
+            state.tradeForm.tradeType === 'Limit' && mangoCache
               ? parseFloat(
                   mangoGroup.getPrice(marketIndex, mangoCache).toFixed(2)
                 )

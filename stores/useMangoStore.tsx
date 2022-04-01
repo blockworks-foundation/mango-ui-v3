@@ -154,7 +154,7 @@ export type MangoStore = {
     name: string
     current: MangoGroup | null
     markets: {
-      [address: string]: Market | PerpMarket
+      [address: string]: Market | PerpMarket | undefined
     }
     cache: MangoCache | null
   }
@@ -360,8 +360,8 @@ const useMangoStore = create<
                 connection,
                 wallet.adapter.publicKey
               )
-            const tokens = []
-            ownedTokenAccounts.forEach((account) => {
+            const tokens: any = []
+            ownedTokenAccounts?.forEach((account) => {
               const config = getTokenByMint(groupConfig, account.mint)
               if (config) {
                 const uiBalance = nativeToUi(account.amount, config.decimals)
@@ -552,11 +552,15 @@ const useMangoStore = create<
                 allMarketAccounts
               )
 
+              const currentSelectedMarket = allMarketAccounts.find((mkt) =>
+                mkt?.publicKey.equals(selectedMarketConfig.publicKey)
+              )
+
               set((state) => {
                 state.selectedMangoGroup.markets = allMarkets
-                state.selectedMarket.current = allMarketAccounts.find((mkt) =>
-                  mkt.publicKey.equals(selectedMarketConfig.publicKey)
-                )
+                state.selectedMarket.current = currentSelectedMarket
+                  ? currentSelectedMarket
+                  : null
 
                 allBidsAndAsksAccountInfos.forEach(
                   ({ publicKey, context, accountInfo }) => {
@@ -666,6 +670,8 @@ const useMangoStore = create<
           const connection = get().connection.current
           const mangoClient = get().connection.client
 
+          if (!mangoAccount) return
+
           const [reloadedMangoAccount, lastSlot] =
             await mangoAccount.reloadFromSlot(connection, mangoClient.lastSlot)
           const lastSeenSlot = get().selectedMangoAccount.lastSlot
@@ -756,7 +762,10 @@ const useMangoStore = create<
         async loadReferralData() {
           const set = get().set
           const mangoAccount = get().selectedMangoAccount.current
-          const pk = mangoAccount.publicKey.toString()
+          const pk = mangoAccount?.publicKey.toString()
+          if (!pk) {
+            return
+          }
 
           const getData = async (type: 'history' | 'total') => {
             const res = await fetch(
@@ -823,6 +832,7 @@ const useMangoStore = create<
           const mangoAccount = get().selectedMangoAccount.current
           const mangoGroup = get().selectedMangoGroup.current
           const mangoCache = get().selectedMangoGroup.cache
+          if (!mangoGroup || !mangoAccount || !mangoCache) return
           const currentAccHealth = await mangoAccount.getHealthRatio(
             mangoGroup,
             mangoCache,

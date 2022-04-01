@@ -42,6 +42,7 @@ const PositionsTable: React.FC = () => {
   }, [])
 
   const handleSizeClick = (size, indexPrice) => {
+    if (!selectedMarket) return
     const sizePrecisionDigits = getPrecisionDigits(selectedMarket.minOrderSize)
     const priceOrDefault = price ? price : indexPrice
     const roundedSize = parseFloat(Math.abs(size).toFixed(sizePrecisionDigits))
@@ -54,9 +55,11 @@ const PositionsTable: React.FC = () => {
   }
 
   const handleSettlePnl = async (perpMarket, perpAccount, index) => {
-    setSettleSinglePos(index)
-    await settlePnl(perpMarket, perpAccount, t, undefined, wallet)
-    setSettleSinglePos(null)
+    if (wallet) {
+      setSettleSinglePos(index)
+      await settlePnl(perpMarket, perpAccount, t, undefined, wallet)
+      setSettleSinglePos(null)
+    }
   }
 
   return (

@@ -86,6 +86,7 @@ const TVChartContainer = () => {
   useEffect(() => {
     if (
       chartReady &&
+      tvWidgetRef.current &&
       selectedMarketConfig.name !== tvWidgetRef.current.activeChart().symbol()
     ) {
       tvWidgetRef.current.setSymbol(
@@ -121,7 +122,7 @@ const TVChartContainer = () => {
         'use_localstorage_for_settings',
         'timeframes_toolbar',
         // 'volume_force_overlay',
-        isMobile && 'left_toolbar',
+        isMobile ? 'left_toolbar' : '',
         'show_logo_on_all_charts',
         'caption_buttons_text_if_possible',
         'header_settings',
@@ -177,7 +178,10 @@ const TVChartContainer = () => {
     tvWidgetRef.current = tvWidget
 
     tvWidgetRef.current.onChartReady(function () {
-      const button = tvWidgetRef.current.createButton()
+      const button = tvWidgetRef?.current?.createButton()
+      if (!button) {
+        return
+      }
       setChartReady(true)
       button.textContent = 'OL'
       if (showOrderLinesLocalStorage) {
@@ -351,8 +355,7 @@ const TVChartContainer = () => {
 
   function drawLine(order, market) {
     const orderSizeUi = roundPerpSize(order.size, market.config.baseSymbol)
-    if (!tvWidgetRef.current.chart()) return
-
+    if (!tvWidgetRef?.current?.chart() || !wallet) return
     return tvWidgetRef.current
       .chart()
       .createOrderLine({ disableUndo: false })
@@ -368,7 +371,7 @@ const TVChartContainer = () => {
             (order.side === 'sell' &&
               updatedOrderPrice < 0.95 * selectedMarketPrice)
           ) {
-            tvWidgetRef.current.showNoticeDialog({
+            tvWidgetRef.current?.showNoticeDialog({
               title: t('tv-chart:outside-range'),
               body:
                 t('tv-chart:slippage-warning', {
@@ -383,7 +386,7 @@ const TVChartContainer = () => {
               },
             })
           } else {
-            tvWidgetRef.current.showConfirmDialog({
+            tvWidgetRef.current?.showConfirmDialog({
               title: t('tv-chart:modify-order'),
               body: t('tv-chart:modify-order-details', {
                 orderSize: orderSizeUi,
@@ -407,7 +410,7 @@ const TVChartContainer = () => {
             })
           }
         } else {
-          tvWidgetRef.current.showNoticeDialog({
+          tvWidgetRef.current?.showNoticeDialog({
             title: t('tv-chart:advanced-order'),
             body: t('tv-chart:advanced-order-details'),
             callback: () => {
@@ -417,7 +420,7 @@ const TVChartContainer = () => {
         }
       })
       .onCancel(function () {
-        tvWidgetRef.current.showConfirmDialog({
+        tvWidgetRef.current?.showConfirmDialog({
           title: t('tv-chart:cancel-order'),
           body: t('tv-chart:cancel-order-details', {
             orderSize: orderSizeUi,
@@ -569,7 +572,7 @@ const TVChartContainer = () => {
 
     if (orderLines.size > 0) {
       orderLines?.forEach((value, key) => {
-        orderLines.get(key).remove()
+        orderLines.get(key)?.remove()
       })
 
       setMangoStore((state) => {
@@ -587,7 +590,7 @@ const TVChartContainer = () => {
 
   // updated order lines if a user's open orders change
   useEffect(() => {
-    if (chartReady) {
+    if (chartReady && tvWidgetRef?.current) {
       const orderLines = useMangoStore.getState().tradingView.orderLines
       tvWidgetRef.current.onChartReady(() => {
         let matchingOrderLines = 0
@@ -607,7 +610,7 @@ const TVChartContainer = () => {
           }
         })
 
-        tvWidgetRef.current.activeChart().dataReady(() => {
+        tvWidgetRef.current?.activeChart().dataReady(() => {
           if (
             (showOrderLines && matchingOrderLines !== openOrdersForMarket) ||
             orderLines?.size != matchingOrderLines

@@ -50,15 +50,17 @@ const AccountFunding = () => {
     'hideFundingDust',
     false
   )
-  const [chartData, setChartData] = useState([])
+  const [chartData, setChartData] = useState<any[]>([])
 
   const mangoAccountPk = useMemo(() => {
-    return mangoAccount.publicKey.toString()
+    if (mangoAccount) {
+      return mangoAccount.publicKey.toString()
+    }
   }, [mangoAccount])
 
   const exportFundingDataToCSV = () => {
     const assets = Object.keys(hourlyFunding)
-    let dataToExport = []
+    let dataToExport: any[] = []
 
     for (const asset of assets) {
       dataToExport = [
@@ -75,7 +77,7 @@ const AccountFunding = () => {
     }
 
     const title = `${
-      mangoAccount.name || mangoAccount.publicKey
+      mangoAccount?.name || mangoAccount?.publicKey
     }-Funding-${new Date().toLocaleDateString()}`
     const columns = ['Timestamp', 'Asset', 'Amount']
 
@@ -89,7 +91,7 @@ const AccountFunding = () => {
   }, [selectedAsset, hourlyFunding])
 
   useEffect(() => {
-    const hideDust = []
+    const hideDust: any[] = []
     const fetchFundingStats = async () => {
       setLoadTotalStats(true)
       const response = await fetch(
@@ -172,7 +174,7 @@ const AccountFunding = () => {
         (d) => new Date(d.time).getTime() > start
       )
 
-      const dailyFunding = []
+      const dailyFunding: any[] = []
 
       for (let i = 0; i < 30; i++) {
         dailyFunding.push({
