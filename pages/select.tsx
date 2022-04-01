@@ -1,7 +1,6 @@
 import { useTranslation } from 'next-i18next'
 import { useEffect, useState } from 'react'
 import { ChevronRightIcon } from '@heroicons/react/solid'
-import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
 import useMangoStore from '../stores/useMangoStore'
 import Link from 'next/link'
 import { formatUsdValue } from '../utils'
@@ -20,7 +19,7 @@ export async function getStaticProps({ locale }) {
 
 const SelectMarket = () => {
   const { t } = useTranslation('common')
-  const groupConfig = useMangoGroupConfig()
+  const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
 

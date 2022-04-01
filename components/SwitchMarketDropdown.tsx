@@ -1,5 +1,4 @@
 import { Fragment, useCallback, useMemo, useRef, useState } from 'react'
-import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
 import { Popover, Transition } from '@headlessui/react'
 import { SearchIcon } from '@heroicons/react/outline'
 import { ChevronDownIcon } from '@heroicons/react/solid'
@@ -9,7 +8,7 @@ import MarketNavItem from './MarketNavItem'
 import useMangoStore from '../stores/useMangoStore'
 
 const SwitchMarketDropdown = () => {
-  const groupConfig = useMangoGroupConfig()
+  const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const baseSymbol = marketConfig.baseSymbol
   const isPerpMarket = marketConfig.kind === 'perp'
