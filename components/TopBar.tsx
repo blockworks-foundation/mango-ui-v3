@@ -31,11 +31,13 @@ const TopBar = () => {
   const { t } = useTranslation('common')
   const { publicKey } = useWallet()
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
+  const cluster = useMangoStore((s) => s.connection.cluster)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
   const [defaultMarket] = useLocalStorageState(
     DEFAULT_MARKET_KEY,
     initialMarket
   )
+  const isDevnet = cluster === 'devnet'
 
   const handleCloseAccounts = useCallback(() => {
     setShowAccountsModal(false)
@@ -133,6 +135,7 @@ const TopBar = () => {
               </div>
             </div>
             <div className="flex items-center space-x-2.5">
+              {isDevnet ? <div className="pl-2 text-xxs">Devnet</div> : null}
               <div className="pl-2">
                 <Settings />
               </div>
