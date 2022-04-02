@@ -607,14 +607,14 @@ const useMangoStore = create<
           if (!selectedMangoAccount) return
 
           fetch(
-            `https://event-history-api.herokuapp.com/perp_trades/${selectedMangoAccount.publicKey.toString()}`
+            `https://trade-history-api-v3.onrender.com/perp_trades/${selectedMangoAccount.publicKey.toString()}`
           )
             .then((response) => response.json())
             .then((jsonPerpHistory) => {
               const perpHistory = jsonPerpHistory?.data || []
               if (perpHistory.length === 5000) {
                 fetch(
-                  `https://event-history-api.herokuapp.com/perp_trades/${selectedMangoAccount.publicKey.toString()}?page=2`
+                  `https://trade-history-api-v3.onrender.com/perp_trades/${selectedMangoAccount.publicKey.toString()}?page=2`
                 )
                   .then((response) => response.json())
                   .then((jsonPerpHistory) => {
@@ -645,7 +645,7 @@ const useMangoStore = create<
             Promise.all(
               publicKeys.map(async (pk) => {
                 const response = await fetch(
-                  `https://event-history-api.herokuapp.com/trades/open_orders/${pk.toString()}`
+                  `https://trade-history-api-v3.onrender.com/trades/open_orders/${pk.toString()}`
                 )
                 const parsedResponse = await response.json()
                 return parsedResponse?.data ? parsedResponse.data : []
