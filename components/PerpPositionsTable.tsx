@@ -287,7 +287,11 @@ const PositionsTable: React.FC = () => {
                                   </div>
                                 </div>
                               </div>
-                              <PnlText pnl={unrealizedPnl} />
+                              {breakEvenPrice ? (
+                                <PnlText pnl={unrealizedPnl} />
+                              ) : (
+                                '--'
+                              )}
                             </div>
                           </>
                         }
