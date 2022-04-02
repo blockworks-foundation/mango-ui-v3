@@ -107,7 +107,7 @@ export default function AccountInfo() {
       } else {
         notify({
           title: t('redeem-failure'),
-          description: 'Transaction failed',
+          description: t('transaction-failed'),
         })
       }
     } catch (e) {

@@ -243,7 +243,7 @@ export default function Account() {
       } else {
         notify({
           title: t('redeem-failure'),
-          description: 'Transaction failed',
+          description: t('transaction-failed'),
           type: 'error',
         })
       }

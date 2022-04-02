@@ -131,7 +131,7 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
       } else {
         notify({
           title: t('close-account:error-deleting-account'),
-          description: 'Transaction failed',
+          description: t('transaction-failed'),
           type: 'error',
         })
       }
