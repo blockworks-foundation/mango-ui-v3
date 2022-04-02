@@ -87,11 +87,11 @@ const TVChartContainer = () => {
     if (
       chartReady &&
       tvWidgetRef.current &&
-      selectedMarketConfig.name !== tvWidgetRef.current.activeChart().symbol()
+      selectedMarketConfig.name !== tvWidgetRef.current?.activeChart()?.symbol()
     ) {
       tvWidgetRef.current.setSymbol(
         selectedMarketConfig.name,
-        defaultProps.interval,
+        tvWidgetRef.current.activeChart().resolution(),
         () => {
           if (showOrderLines) {
             deleteLines()
