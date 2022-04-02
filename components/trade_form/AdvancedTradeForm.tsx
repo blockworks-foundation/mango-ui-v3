@@ -813,13 +813,13 @@ export default function AdvancedTradeForm({
                 placeholder={tradeType === 'Market' ? markPrice : ''}
                 prefix={
                   <>
-                    {!postOnlySlide && tradeType === 'Limit' ? (
+                    {postOnlySlide && tradeType === 'Limit' ? null : (
                       <img
                         src={`/assets/icons/${groupConfig.quoteSymbol.toLowerCase()}.svg`}
                         width="16"
                         height="16"
                       />
-                    ) : null}
+                    )}
                   </>
                 }
               />
