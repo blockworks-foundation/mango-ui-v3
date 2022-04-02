@@ -806,20 +806,20 @@ export default function AdvancedTradeForm({
                 min="0"
                 step={tickSize}
                 onChange={(e) => onSetPrice(e.target.value)}
-                value={postOnlySlide ? '' : price}
-                disabled={isMarketOrder || postOnlySlide}
-                placeholder={
-                  tradeType === 'Market' && !postOnlySlide ? markPrice : ''
+                value={postOnlySlide && tradeType === 'Limit' ? '' : price}
+                disabled={
+                  isMarketOrder || (postOnlySlide && tradeType === 'Limit')
                 }
+                placeholder={tradeType === 'Market' ? markPrice : ''}
                 prefix={
                   <>
-                    {!postOnlySlide && (
+                    {!postOnlySlide && tradeType === 'Limit' ? (
                       <img
                         src={`/assets/icons/${groupConfig.quoteSymbol.toLowerCase()}.svg`}
                         width="16"
                         height="16"
                       />
-                    )}
+                    ) : null}
                   </>
                 }
               />
@@ -987,7 +987,7 @@ export default function AdvancedTradeForm({
                 </Tooltip>
               </div>
             ) : null}
-            {marketConfig.kind === 'perp' ? (
+            {marketConfig.kind === 'perp' && tradeType === 'Limit' ? (
               <div className="mt-3">
                 <Tooltip
                   className="hidden md:block"
