@@ -1002,9 +1002,9 @@
     to-fast-properties "^2.0.0"
 
 "@blockworks-foundation/mango-client@^3.4.0":
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/@blockworks-foundation/mango-client/-/mango-client-3.4.0.tgz#9cbacf4deedb092270cbd4d1ff69451f1a420cb8"
-  integrity sha512-nmBbr0zq7BsR8jFMVt3yuM+XC7pzKyTpglUWVRk+iL+DxX3foGQ9Tdv7943yFNN2kGLzQ1pkDmEsW3DZAaHyLg==
+  version "3.4.1"
+  resolved "https://registry.yarnpkg.com/@blockworks-foundation/mango-client/-/mango-client-3.4.1.tgz#83ec71dad8c4a523086796355c2700740b0a2020"
+  integrity sha512-07+d/D8klH1y7RO8lu6m2uEB5aw6idEu/C1Vz2OdGgqqVothZ74lHjB+L8duLZrsIHRsTKkevzwPT9IwK/3VRg==
   dependencies:
     "@project-serum/anchor" "^0.21.0"
     "@project-serum/serum" "0.13.55"
@@ -4377,9 +4377,9 @@ node-fetch@2.6.7:
     whatwg-url "^5.0.0"
 
 node-gyp-build@^4.2.0, node-gyp-build@^4.3.0:
-  version "4.3.0"
-  resolved "https://registry.yarnpkg.com/node-gyp-build/-/node-gyp-build-4.3.0.tgz#9f256b03e5826150be39c764bf51e993946d71a3"
-  integrity sha512-iWjXZvmboq0ja1pUGULQBexmxq8CV4xBhX7VDOTbL7ZR4FOowwY/VOtRxBN/yKxmdGoIp4j5ysNT4u3S2pDQ3Q==
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/node-gyp-build/-/node-gyp-build-4.4.0.tgz#42e99687ce87ddeaf3a10b99dc06abc11021f3f4"
+  integrity sha512-amJnQCcgtRVw9SvoebO3BKGESClrfXGCUTX9hSn1OuGQTQBOZmVd0Z0OlecpuRksKvbsUqALE8jls/ErClAPuQ==
 
 node-releases@^2.0.2:
   version "2.0.2"
