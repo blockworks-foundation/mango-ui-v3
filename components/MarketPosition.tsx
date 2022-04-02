@@ -65,7 +65,7 @@ export const settlePosPnl = async (
     } else {
       notify({
         title: t('pnl-error'),
-        description: 'Transaction failed',
+        description: t('transaction-failed'),
         type: 'error',
       })
     }
@@ -125,7 +125,7 @@ export const settlePnl = async (
     } else {
       notify({
         title: t('pnl-error'),
-        description: 'Transaction failed',
+        description: t('transaction-failed'),
         type: 'error',
       })
     }

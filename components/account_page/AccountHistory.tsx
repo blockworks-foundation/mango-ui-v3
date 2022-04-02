@@ -211,8 +211,9 @@ const LiquidationHistoryTable = ({ history, view }) => {
       <div className="flex items-center justify-between pb-3">
         <div className="flex items-center">
           <h4 className="mb-0 text-th-fgd-1">
-            {filteredHistory.length}{' '}
-            {filteredHistory.length === 1 ? view : `${view}s`}
+            {filteredHistory.length === 1 
+              ? t('number-liquidation', {number: filteredHistory.length}) 
+              : t('number-liquidations', {number: filteredHistory.length})}
           </h4>
           <Tooltip
             content={
@@ -475,14 +476,13 @@ const HistoryTable = ({ history, view }) => {
       <div className="flex items-center justify-between pb-3">
         <div className="flex items-center">
           <h4 className="mb-0 text-th-fgd-1">
-            {filteredHistory.length}{' '}
             {filteredHistory.length === 1
               ? view === 'Withdraw'
-                ? 'Withdrawal'
-                : view
+                ? t('number-withdrawal', {number: filteredHistory.length})
+                : t('number-deposit', {number: filteredHistory.length})
               : view === 'Withdraw'
-              ? 'Withdrawals'
-              : `${view}s`}
+                ? t('number-withdrawals', {number: filteredHistory.length})
+                : t('number-deposits', {number: filteredHistory.length})}
           </h4>
           <Tooltip
             content={

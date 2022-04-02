@@ -157,8 +157,10 @@ const TradeHistoryTable = ({
         <div className="flex flex-col pb-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center">
             <h4 className="mb-0 flex items-center text-th-fgd-1">
-              {!initialLoad ? <Loading className="mr-2" /> : data.length}{' '}
-              {data.length === 1 ? 'Trade' : 'Trades'}
+              {data.length === 1 
+                ? t('number-trade', {number: !initialLoad ? <Loading className="mr-2" /> : data.length}) 
+                : t('number-trades', {number: !initialLoad ? <Loading className="mr-2" /> : data.length})
+              }
             </h4>
 
             {mangoAccount ? (
