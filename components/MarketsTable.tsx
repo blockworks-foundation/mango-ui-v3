@@ -220,20 +220,22 @@ const MarketsTable = ({ isPerpMarket }) => {
               : '-'
 
             return (
-              <TrBody key={name}>
+              <TrBody key={name} className="hover:bg-th-bkg-3">
                 <Td>
-                  <div className="flex items-center">
-                    <img
-                      alt=""
-                      width="20"
-                      height="20"
-                      src={`/assets/icons/${baseSymbol.toLowerCase()}.svg`}
-                      className={`mr-2.5`}
-                    />
-                    <Link href={`/?name=${name}`} shallow={true}>
-                      <a className="default-transition text-th-fgd-2">{name}</a>
-                    </Link>
-                  </div>
+                  <Link href={`/?name=${name}`} shallow={true}>
+                    <a className="hover:cursor-pointer">
+                      <div className="flex h-full items-center text-th-fgd-2 hover:text-th-primary">
+                        <img
+                          alt=""
+                          width="20"
+                          height="20"
+                          src={`/assets/icons/${baseSymbol.toLowerCase()}.svg`}
+                          className={`mr-2.5`}
+                        />
+                        <span className="default-transition">{name}</span>
+                      </div>
+                    </a>
+                  </Link>
                 </Td>
                 <Td>
                   {last ? (
