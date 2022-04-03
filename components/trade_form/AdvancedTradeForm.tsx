@@ -1000,7 +1000,7 @@ export default function AdvancedTradeForm({
                     onChange={(e) => postOnlySlideOnChange(e.target.checked)}
                     disabled={isTriggerOrder}
                   >
-                    Post & Slide
+                    Slide
                   </Checkbox>
                 </Tooltip>
               </div>
