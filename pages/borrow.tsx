@@ -1,4 +1,4 @@
-import { useCallback, useState, useEffect } from 'react'
+import { useCallback, useState } from 'react'
 import PageBodyContainer from '../components/PageBodyContainer'
 import TopBar from '../components/TopBar'
 import AccountsModal from '../components/AccountsModal'
@@ -24,14 +24,6 @@ export default function Borrow() {
 
   const handleCloseAccounts = useCallback(() => {
     setShowAccountsModal(false)
-  }, [])
-
-  useEffect(() => {
-    // @ts-ignore
-    if (window.solana) {
-      // @ts-ignore
-      window.solana.connect({ onlyIfTrusted: true })
-    }
   }, [])
 
   return (
