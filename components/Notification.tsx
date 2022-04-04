@@ -103,7 +103,7 @@ const Notification = ({ notification }: { notification: Notification }) => {
           hideNotification()
         }
       },
-      parsedTitle || type === 'confirm' || type === 'error' ? 90000 : 8000
+      parsedTitle || type === 'confirm' || type === 'error' ? 45000 : 8000
     )
 
     return () => {
