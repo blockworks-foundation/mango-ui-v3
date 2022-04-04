@@ -34,14 +34,13 @@ import InlineNotification from 'components/InlineNotification'
 import { DEFAULT_SPOT_MARGIN_KEY } from 'components/SettingsModal'
 import { useWallet } from '@solana/wallet-adapter-react'
 import {
-  CheckBox,
   SlippageWarning,
   SubmitButton,
   PerpMarketMaxSlippage,
   EditMaxSlippage,
   Fees,
 } from 'components/trade_form/AdvancedTradeForm/index'
-import { AdvancedTradeFromCheckbox } from './CheckBox'
+import { CheckBoxes } from './CheckBoxes'
 
 const MAX_SLIPPAGE_KEY = 'maxSlippage'
 
@@ -51,11 +50,16 @@ export const TRIGGER_ORDER_TYPES = [
   'Stop Limit',
   'Take Profit Limit',
 ]
-interface AdvancedTradeFormProps {
-  initLeverage?: number
+
+export type Options = {
+  postOnlySlide: boolean
+  postOnly: boolean
+  ioc: boolean
+  reduceOnly: boolean
+  spotMargin: boolean
 }
 
-export const AdvancedTradeForm: React.FC<AdvancedTradeFormProps> = ({
+export const AdvancedTradeForm: React.FC<{ initLeverage?: number }> = ({
   initLeverage,
 }) => {
   const { t } = useTranslation('common')
@@ -69,12 +73,10 @@ export const AdvancedTradeForm: React.FC<AdvancedTradeFormProps> = ({
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const market = useMangoStore((s) => s.selectedMarket.current)
   const isPerpMarket = market instanceof PerpMarket
-  const [reduceOnly, setReduceOnly] = useState(false)
   const [defaultSpotMargin] = useLocalStorageState(
     DEFAULT_SPOT_MARGIN_KEY,
     false
   )
-  const [spotMargin, setSpotMargin] = useState(defaultSpotMargin)
   const [positionSizePercent, setPositionSizePercent] = useState('')
   const [insufficientSol, setInsufficientSol] = useState(false)
   const { takerFee, makerFee } = useFees()
@@ -113,9 +115,13 @@ export const AdvancedTradeForm: React.FC<AdvancedTradeFormProps> = ({
 
   const isTriggerOrder = TRIGGER_ORDER_TYPES.includes(tradeType)
 
-  const [postOnlySlide, setPostOnlySlide] = useState(false)
-  const [postOnly, setPostOnly] = useState(false)
-  const [ioc, setIoc] = useState(false)
+  const [options, setOptions] = useState<Options>({
+    postOnlySlide: false,
+    postOnly: false,
+    ioc: false,
+    reduceOnly: false,
+    spotMargin: defaultSpotMargin,
+  })
 
   const orderBookRef = useRef(useMangoStore.getState().selectedMarket.orderBook)
   const orderbook = orderBookRef.current
@@ -258,7 +264,8 @@ export const AdvancedTradeForm: React.FC<AdvancedTradeFormProps> = ({
     market,
     side,
     price,
-    reduceOnly,
+    options.reduceOnly,
+    groupConfig,
   ])
 
   const onChangeSide = (side) => {
@@ -396,13 +403,13 @@ export const AdvancedTradeForm: React.FC<AdvancedTradeFormProps> = ({
 
   const onTradeTypeChange = (tradeType) => {
     setTradeType(tradeType)
-    setPostOnly(false)
-    setReduceOnly(false)
+    let _reduceOnly = false
+    let _ioc = options.ioc
     if (TRIGGER_ORDER_TYPES.includes(tradeType)) {
-      setReduceOnly(true)
+      _reduceOnly = true
     }
     if (['Market', 'Stop Loss', 'Take Profit'].includes(tradeType)) {
-      setIoc(true)
+      _ioc = true
       if (isTriggerOrder) {
         setPrice(triggerPrice)
       }
@@ -411,42 +418,14 @@ export const AdvancedTradeForm: React.FC<AdvancedTradeFormProps> = ({
       if (priceOnBook && priceOnBook.length > 0 && priceOnBook[0].length > 0) {
         setPrice(priceOnBook[0][0])
       }
-      setIoc(false)
+      _ioc = false
     }
-  }
-
-  const postOnlySlideOnChange = (checked) => {
-    if (checked) {
-      setIoc(false)
-      setPostOnly(false)
-    }
-    setPostOnlySlide(checked)
-  }
-  const postOnChange = (checked) => {
-    if (checked) {
-      setIoc(false)
-      setPostOnlySlide(false)
-    }
-    setPostOnly(checked)
-  }
-  const iocOnChange = (checked) => {
-    if (checked) {
-      setPostOnly(false)
-      setPostOnlySlide(false)
-    }
-    setIoc(checked)
-  }
-  const reduceOnChange = (checked) => {
-    if (positionSizePercent) {
-      handleSetPositionSize(positionSizePercent, spotMargin, checked)
-    }
-    setReduceOnly(checked)
-  }
-  const marginOnChange = (checked) => {
-    setSpotMargin(checked)
-    if (positionSizePercent) {
-      handleSetPositionSize(positionSizePercent, checked, reduceOnly)
-    }
+    setOptions({
+      ...options,
+      reduceOnly: _reduceOnly,
+      postOnly: false,
+      ioc: _ioc,
+    })
   }
 
   const handleSetPositionSize = (percent, spotMargin, reduceOnly) => {
@@ -534,7 +513,7 @@ export const AdvancedTradeForm: React.FC<AdvancedTradeFormProps> = ({
     }
 
     const estimatedSize =
-      perpAccount && reduceOnly && market instanceof PerpMarket
+      perpAccount && options.reduceOnly && market instanceof PerpMarket
         ? Math.abs(market.baseLotsToNumber(perpAccount.basePosition))
         : baseSize
     estimatedPrice = estimateMarketPrice(orderbook, estimatedSize || 0, side)
@@ -555,7 +534,7 @@ export const AdvancedTradeForm: React.FC<AdvancedTradeFormProps> = ({
   }
 
   async function onSubmit() {
-    if (!price && isLimitOrder && !postOnlySlide) {
+    if (!price && isLimitOrder && !options.postOnlySlide) {
       notify({
         title: t('missing-price'),
         type: 'error',
@@ -608,7 +587,11 @@ export const AdvancedTradeForm: React.FC<AdvancedTradeFormProps> = ({
 
       // TODO: this has a race condition when switching between markets or buy & sell
       // spot market orders will sometimes not be ioc but limit
-      const orderType = ioc ? 'ioc' : postOnly ? 'postOnly' : 'limit'
+      const orderType = options.ioc
+        ? 'ioc'
+        : options.postOnly
+        ? 'postOnly'
+        : 'limit'
 
       console.log(
         'submit',
@@ -639,7 +622,7 @@ export const AdvancedTradeForm: React.FC<AdvancedTradeFormProps> = ({
         let perpOrderPrice: number = orderPrice
 
         if (isMarketOrder) {
-          if (postOnlySlide) {
+          if (options.postOnlySlide) {
             perpOrderType = 'postOnlySlide'
           } else if (tradeType === 'Market' && maxSlippage) {
             perpOrderType = 'ioc'
@@ -684,7 +667,7 @@ export const AdvancedTradeForm: React.FC<AdvancedTradeFormProps> = ({
               orderType: perpOrderType,
               clientOrderId: Date.now(),
               bookSideInfo: side === 'buy' ? askInfo : bidInfo, // book side used for ConsumeEvents
-              reduceOnly,
+              reduceOnly: options.reduceOnly,
               referrerMangoAccountPk: referrerPk ? referrerPk : undefined,
             }
           )
@@ -718,13 +701,6 @@ export const AdvancedTradeForm: React.FC<AdvancedTradeFormProps> = ({
     }
   }
 
-  // const showReduceOnly = (basePosition: number) => {
-  //   return (
-  //     (basePosition > 0 && side === 'sell') ||
-  //     (basePosition < 0 && side === 'buy')
-  //   )
-  // }
-
   /*
   const roundedMax = (
     Math.round(max / parseFloat(minOrderSize)) * parseFloat(minOrderSize)
@@ -737,7 +713,7 @@ export const AdvancedTradeForm: React.FC<AdvancedTradeFormProps> = ({
       : baseSize > spotMax*/
 
   const disabledTradeButton =
-    (!price && isLimitOrder && !postOnlySlide) ||
+    (!price && isLimitOrder && !options.postOnlySlide) ||
     !baseSize ||
     !connected ||
     !mangoAccount ||
@@ -769,49 +745,6 @@ export const AdvancedTradeForm: React.FC<AdvancedTradeFormProps> = ({
       warnUserSlippage = Math.abs(avgPrice / referencePrice - 1) > 0.025
     }
   }
-
-  const checkBoxes: AdvancedTradeFromCheckbox[] = [
-    {
-      tooltipContent: t('tooltip-post'),
-      checked: postOnly,
-      onChange: (e) => postOnChange(e.target.checked),
-      text: 'POST',
-      show: isLimitOrder,
-      disabled: false,
-    },
-    {
-      tooltipContent: t('tooltip-ioc'),
-      checked: ioc,
-      onChange: (e) => iocOnChange(e.target.checked),
-      text: 'IOC',
-      show: isLimitOrder,
-      disabled: false,
-    },
-    {
-      tooltipContent: t('tooltip-reduce'),
-      checked: reduceOnly,
-      onChange: (e) => reduceOnChange(e.target.checked),
-      text: 'Reduce Only',
-      show: marketConfig.kind === 'perp',
-      disabled: isTriggerOrder,
-    },
-    {
-      tooltipContent: t('tooltip-post-and-slide'),
-      checked: postOnlySlide,
-      onChange: (e) => postOnlySlideOnChange(e.target.checked),
-      text: 'Slide',
-      show: marketConfig.kind === 'perp' && tradeType === 'Limit',
-      disabled: isTriggerOrder,
-    },
-    {
-      tooltipContent: t('tooltip-enable-margin'),
-      checked: spotMargin,
-      onChange: (e) => marginOnChange(e.target.checked),
-      text: t('margin'),
-      show: marketConfig.kind === 'spot',
-      disabled: false,
-    },
-  ]
 
   return (
     <div>
@@ -845,14 +778,17 @@ export const AdvancedTradeForm: React.FC<AdvancedTradeFormProps> = ({
                 min="0"
                 step={tickSize}
                 onChange={(e) => onSetPrice(e.target.value)}
-                value={postOnlySlide && tradeType === 'Limit' ? '' : price}
+                value={
+                  options.postOnlySlide && tradeType === 'Limit' ? '' : price
+                }
                 disabled={
-                  isMarketOrder || (postOnlySlide && tradeType === 'Limit')
+                  isMarketOrder ||
+                  (options.postOnlySlide && tradeType === 'Limit')
                 }
                 placeholder={tradeType === 'Market' ? markPrice : ''}
                 prefix={
                   <>
-                    {postOnlySlide && tradeType === 'Limit' ? null : (
+                    {options.postOnlySlide && tradeType === 'Limit' ? null : (
                       <img
                         src={`/assets/icons/${groupConfig.quoteSymbol.toLowerCase()}.svg`}
                         width="16"
@@ -945,7 +881,9 @@ export const AdvancedTradeForm: React.FC<AdvancedTradeFormProps> = ({
         <div className="col-span-12 mt-1">
           <ButtonGroup
             activeValue={positionSizePercent}
-            onChange={(p) => handleSetPositionSize(p, spotMargin, reduceOnly)}
+            onChange={(p) =>
+              handleSetPositionSize(p, options.spotMargin, options.reduceOnly)
+            }
             unit="%"
             values={
               isMobile
@@ -967,19 +905,14 @@ export const AdvancedTradeForm: React.FC<AdvancedTradeFormProps> = ({
             ) : null
           ) : null}
           <div className="flex-wrap sm:flex">
-            {checkBoxes.map((c, index) => {
-              return (
-                <CheckBox
-                  key={index}
-                  tooltipContent={c.tooltipContent}
-                  checked={c.checked}
-                  onChange={c.onChange}
-                  text={c.text}
-                  show={c.show}
-                  disabled={c.disabled}
-                />
-              )
-            })}
+            <CheckBoxes
+              options={options}
+              setOptions={setOptions}
+              isLimitOrder={isLimitOrder}
+              isTriggerOrder={isTriggerOrder}
+              positionSizePercent={positionSizePercent}
+              handleSetPositionSize={handleSetPositionSize}
+            />
           </div>
           <SlippageWarning show={warnUserSlippage} />
           <SubmitButton
