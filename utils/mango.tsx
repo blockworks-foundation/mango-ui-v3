@@ -17,13 +17,11 @@ export async function deposit({
   wallet: Wallet
 }) {
   const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
-  const tokenIndex = mangoGroup?.getTokenIndex(fromTokenAcc.mint)
-  const mangoClient = useMangoStore.getState().connection.client
-  const referrer = useMangoStore.getState().referrerPk
+  if (!mangoGroup) throw new Error('Deposit failed. Mango group is undefined.')
 
-  if (typeof tokenIndex !== 'number' || !referrer) {
-    return
-  }
+  const tokenIndex = mangoGroup.getTokenIndex(fromTokenAcc.mint)
+  const mangoClient = useMangoStore.getState().connection.client
+  const referrer = useMangoStore.getState().referrerPk || undefined
 
   const mangoGroupPublicKey =
     mangoGroup?.rootBankAccounts?.[tokenIndex]?.nodeBankAccounts[0].publicKey
