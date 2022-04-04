@@ -100,44 +100,6 @@ const MarketsTable = ({ isPerpMarket }) => {
             <Th>
               <LinkButton
                 className="flex items-center font-normal no-underline"
-                onClick={() => requestSort('low24h')}
-              >
-                <span className="font-normal text-th-fgd-3">
-                  {t('daily-low')}
-                </span>
-                <ArrowSmDownIcon
-                  className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
-                    sortConfig?.key === 'low24h'
-                      ? sortConfig.direction === 'ascending'
-                        ? 'rotate-180 transform'
-                        : 'rotate-360 transform'
-                      : null
-                  }`}
-                />
-              </LinkButton>
-            </Th>
-            <Th>
-              <LinkButton
-                className="flex items-center font-normal no-underline"
-                onClick={() => requestSort('high24h')}
-              >
-                <span className="font-normal text-th-fgd-3">
-                  {t('daily-high')}
-                </span>
-                <ArrowSmDownIcon
-                  className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
-                    sortConfig?.key === 'high24h'
-                      ? sortConfig.direction === 'ascending'
-                        ? 'rotate-180 transform'
-                        : 'rotate-360 transform'
-                      : null
-                  }`}
-                />
-              </LinkButton>
-            </Th>
-            <Th>
-              <LinkButton
-                className="flex items-center font-normal no-underline"
                 onClick={() => requestSort('volumeUsd24h')}
               >
                 <span className="font-normal text-th-fgd-3">
@@ -207,9 +169,7 @@ const MarketsTable = ({ isPerpMarket }) => {
               baseSymbol,
               change24h,
               funding1h,
-              high24h,
               last,
-              low24h,
               name,
               openInterest,
               openInterestUsd,
@@ -254,20 +214,6 @@ const MarketsTable = ({ isPerpMarket }) => {
                       <span className="text-th-fgd-4">Unavailable</span>
                     )}
                   </span>
-                </Td>
-                <Td>
-                  {low24h ? (
-                    formatUsdValue(low24h)
-                  ) : (
-                    <span className="text-th-fgd-4">Unavailable</span>
-                  )}
-                </Td>
-                <Td>
-                  {high24h ? (
-                    formatUsdValue(high24h)
-                  ) : (
-                    <span className="text-th-fgd-4">Unavailable</span>
-                  )}
                 </Td>
                 <Td>
                   {volumeUsd24h ? (
