@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import PageBodyContainer from '../components/PageBodyContainer'
 import TopBar from '../components/TopBar'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
@@ -24,14 +24,6 @@ export default function Markets() {
   const handleTabChange = (tabName) => {
     setActiveTab(tabName)
   }
-
-  useEffect(() => {
-    // @ts-ignore
-    if (window.solana) {
-      // @ts-ignore
-      window.solana.connect({ onlyIfTrusted: true })
-    }
-  }, [])
 
   const isPerp = activeTab === 'perp'
 

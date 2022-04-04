@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useMemo, useState, useCallback } from 'react'
 import PageBodyContainer from '../components/PageBodyContainer'
 import TopBar from '../components/TopBar'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
@@ -110,6 +110,17 @@ export default function Referral() {
     setexistingCustomRefLinks(referrerIds)
     setLoading(false)
   }, [mangoAccount])
+
+  const uniqueReferrals = useMemo(
+    () =>
+      hasReferrals
+        ? referralHistory.reduce(
+            (resultSet, item) => resultSet.add(item['referree_mango_account']),
+            new Set()
+          ).size
+        : 0,
+    [hasReferrals]
+  )
 
   useEffect(() => {
     if (mangoAccount) {
@@ -246,7 +257,7 @@ export default function Referral() {
                           {t('referrals:total-referrals')}
                         </div>
                         <div className="text-xl font-bold text-th-fgd-1 sm:text-2xl">
-                          {referralHistory.length}
+                          {uniqueReferrals}
                         </div>
                       </div>
                     </div>
@@ -445,7 +456,7 @@ export default function Referral() {
                         </thead>
                         <tbody>
                           {referralHistory.map((ref) => {
-                            const pk = ref.referrer_mango_account
+                            const pk = ref.referree_mango_account
                             const acct = pk.slice(0, 5) + '…' + pk.slice(-5)
 
                             return (

@@ -249,19 +249,6 @@ const useHydrateStore = () => {
     actions.loadMarketFills()
   }, 20 * SECONDS)
 
-  useInterval(() => {
-    const blockhashTimes = useMangoStore.getState().connection.blockhashTimes
-    const blockhashTimesCopy = [...blockhashTimes]
-    const mangoClient = useMangoStore.getState().connection.client
-
-    mangoClient.updateRecentBlockhash(blockhashTimesCopy).then(() => {
-      setMangoStore((state) => {
-        state.connection.client = mangoClient
-        state.connection.blockhashTimes = blockhashTimesCopy
-      })
-    })
-  }, 10 * SECONDS)
-
   useEffect(() => {
     actions.loadMarketFills()
   }, [selectedMarket])

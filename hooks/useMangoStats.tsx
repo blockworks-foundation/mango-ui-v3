@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { I80F48 } from '@blockworks-foundation/mango-client'
 import useMangoStore from '../stores/useMangoStore'
-import useMangoGroupConfig from './useMangoGroupConfig'
 import { tokenPrecision } from '../utils'
 
 const useMangoStats = () => {
@@ -33,7 +32,7 @@ const useMangoStats = () => {
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoGroupName = useMangoStore((s) => s.selectedMangoGroup.name)
   const connection = useMangoStore((s) => s.connection.current)
-  const config = useMangoGroupConfig()
+  const config = useMangoStore((s) => s.selectedMangoGroup.config)
 
   useEffect(() => {
     const fetchHistoricalStats = async () => {

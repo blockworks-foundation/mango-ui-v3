@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import TopBar from '../components/TopBar'
 import PageBodyContainer from '../components/PageBodyContainer'
 import StatsTotals from '../components/stats_page/StatsTotals'
@@ -44,14 +44,6 @@ export default function StatsPage() {
   const handleTabChange = (tabName) => {
     setActiveTab(tabName)
   }
-
-  useEffect(() => {
-    // @ts-ignore
-    if (window.solana) {
-      // @ts-ignore
-      window.solana.connect({ onlyIfTrusted: true })
-    }
-  }, [])
 
   return (
     <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>

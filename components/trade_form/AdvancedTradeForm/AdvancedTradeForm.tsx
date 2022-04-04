@@ -555,7 +555,7 @@ export const AdvancedTradeForm: React.FC<AdvancedTradeFormProps> = ({
   }
 
   async function onSubmit() {
-    if (!price && isLimitOrder) {
+    if (!price && isLimitOrder && !postOnlySlide) {
       notify({
         title: t('missing-price'),
         type: 'error',
@@ -799,8 +799,8 @@ export const AdvancedTradeForm: React.FC<AdvancedTradeFormProps> = ({
       tooltipContent: t('tooltip-post-and-slide'),
       checked: postOnlySlide,
       onChange: (e) => postOnlySlideOnChange(e.target.checked),
-      text: 'Post & Slide',
-      show: marketConfig.kind === 'perp',
+      text: 'Slide',
+      show: marketConfig.kind === 'perp' && tradeType === 'Limit',
       disabled: isTriggerOrder,
     },
     {
@@ -845,12 +845,14 @@ export const AdvancedTradeForm: React.FC<AdvancedTradeFormProps> = ({
                 min="0"
                 step={tickSize}
                 onChange={(e) => onSetPrice(e.target.value)}
-                value={postOnlySlide ? '' : price}
-                disabled={isMarketOrder || postOnlySlide}
-                placeholder={tradeType === 'Market' ? markPrice : null}
+                value={postOnlySlide && tradeType === 'Limit' ? '' : price}
+                disabled={
+                  isMarketOrder || (postOnlySlide && tradeType === 'Limit')
+                }
+                placeholder={tradeType === 'Market' ? markPrice : ''}
                 prefix={
                   <>
-                    {!postOnlySlide && (
+                    {postOnlySlide && tradeType === 'Limit' ? null : (
                       <img
                         src={`/assets/icons/${groupConfig.quoteSymbol.toLowerCase()}.svg`}
                         width="16"

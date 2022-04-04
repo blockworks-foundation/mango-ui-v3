@@ -157,8 +157,21 @@ const TradeHistoryTable = ({
         <div className="flex flex-col pb-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center">
             <h4 className="mb-0 flex items-center text-th-fgd-1">
-              {!initialLoad ? <Loading className="mr-2" /> : data.length}{' '}
-              {data.length === 1 ? 'Trade' : 'Trades'}
+              {data.length === 1
+                ? t('number-trade', {
+                    number: !initialLoad ? (
+                      <Loading className="mr-2" />
+                    ) : (
+                      data.length
+                    ),
+                  })
+                : t('number-trades', {
+                    number: !initialLoad ? (
+                      <Loading className="mr-2" />
+                    ) : (
+                      data.length
+                    ),
+                  })}
             </h4>
 
             {mangoAccount ? (
@@ -203,7 +216,7 @@ const TradeHistoryTable = ({
                 {t('filter')}
               </Button>
             ) : null}
-            {canWithdraw ? (
+            {canWithdraw && !isMobile ? (
               <Button
                 className={`flex h-8 items-center justify-center whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs`}
                 onClick={exportPerformanceDataToCSV}
@@ -218,7 +231,7 @@ const TradeHistoryTable = ({
                 )}
               </Button>
             ) : null}
-            {canWithdraw && mangoAccount ? (
+            {canWithdraw && mangoAccount && !isMobile ? (
               <div className={`flex items-center`}>
                 <a
                   className={`default-transition flex h-8 w-full items-center justify-center whitespace-nowrap rounded-full bg-th-bkg-button pt-0 pb-0 pl-3 pr-3 text-xs font-bold text-th-fgd-1 hover:text-th-fgd-1 hover:brightness-[1.1]`}
