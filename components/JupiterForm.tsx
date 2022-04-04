@@ -235,7 +235,7 @@ const JupiterForm: FunctionComponent = () => {
       const routeOptionTokens =
         routeOptions?.map((address) => {
           return tokens.find((t) => {
-            return t.address === address
+            return t?.address === address
           })
         }) ?? []
 
@@ -354,7 +354,7 @@ const JupiterForm: FunctionComponent = () => {
   }
 
   const sortedTokenMints = sortBy(tokens, (token) => {
-    return token.symbol.toLowerCase()
+    return token?.symbol.toLowerCase()
   })
 
   const outAmountUi = selectedRoute
