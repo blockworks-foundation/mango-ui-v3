@@ -559,7 +559,7 @@ export default function AdvancedTradeForm({
   }
 
   async function onSubmit() {
-    if (!price && isLimitOrder) {
+    if (!price && isLimitOrder && !postOnlySlide) {
       notify({
         title: t('missing-price'),
         type: 'error',
