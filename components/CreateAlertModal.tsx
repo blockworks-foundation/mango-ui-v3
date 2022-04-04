@@ -3,7 +3,7 @@ import { PlusCircleIcon, TrashIcon } from '@heroicons/react/outline'
 import Modal from './Modal'
 import Input, { Label } from './Input'
 import { ElementTitle } from './styles'
-import useMangoStore from '../stores/useMangoStore'
+import useMangoStore, { AlertRequest } from '../stores/useMangoStore'
 import Button, { LinkButton } from './Button'
 import { notify } from '../utils/notifications'
 import { useTranslation } from 'next-i18next'
@@ -49,23 +49,25 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
   }
 
   async function onCreateAlert() {
+    if (!mangoGroup || !mangoAccount) return
+    const parsedHealth = parseFloat(health)
     if (!email) {
       notify({
         title: t('alerts:email-address-required'),
         type: 'error',
       })
       return
-    } else if (!health) {
+    } else if (typeof parsedHealth !== 'number') {
       notify({
         title: t('alerts:alert-health-required'),
         type: 'error',
       })
       return
     }
-    const body = {
-      mangoGroupPk: mangoGroup?.publicKey.toString(),
-      mangoAccountPk: mangoAccount?.publicKey.toString(),
-      health,
+    const body: AlertRequest = {
+      mangoGroupPk: mangoGroup.publicKey.toString(),
+      mangoAccountPk: mangoAccount.publicKey.toString(),
+      health: parsedHealth,
       alertProvider: 'mail',
       email,
     }
@@ -84,7 +86,9 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
   }
 
   useEffect(() => {
-    actions.loadAlerts(mangoAccount?.publicKey)
+    if (mangoAccount) {
+      actions.loadAlerts(mangoAccount?.publicKey)
+    }
   }, [])
 
   return (
@@ -208,7 +212,11 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
               <InlineNotification title={error} type="error" />
               <Button
                 className="mx-auto mt-6 flex justify-center"
-                onClick={() => actions.loadAlerts()}
+                onClick={() =>
+                  mangoAccount
+                    ? actions.loadAlerts(mangoAccount.publicKey)
+                    : null
+                }
               >
                 {t('try-again')}
               </Button>

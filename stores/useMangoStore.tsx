@@ -119,7 +119,7 @@ export interface Alert {
   triggeredTimestamp: number | undefined
 }
 
-interface AlertRequest {
+export interface AlertRequest {
   alertProvider: 'mail'
   health: number
   mangoGroupPk: string
@@ -206,9 +206,22 @@ export type MangoStore = {
   }
   set: (x: (x: MangoStore) => void) => void
   actions: {
+    fetchWalletTokens: (wallet: Wallet) => void
+    fetchProfilePicture: (wallet: Wallet) => void
     fetchAllMangoAccounts: (wallet: Wallet) => Promise<void>
     fetchMangoGroup: () => Promise<void>
-    [key: string]: (args?) => void
+    fetchTradeHistory: () => void
+    reloadMangoAccount: () => void
+    reloadOrders: () => void
+    updateOpenOrders: () => void
+    loadMarketFills: () => void
+    loadReferralData: () => void
+    fetchMangoGroupCache: () => void
+    updateConnection: (url: string) => void
+    createAlert: (alert: AlertRequest) => void
+    deleteAlert: (id: string) => void
+    loadAlerts: (pk: PublicKey) => void
+    fetchMarketsInfo: () => void
   }
   alerts: {
     activeAlerts: Array<Alert>
@@ -600,9 +613,8 @@ const useMangoStore = create<
               }
             })
         },
-        async fetchTradeHistory(mangoAccount = null) {
-          const selectedMangoAccount =
-            mangoAccount || get().selectedMangoAccount.current
+        async fetchTradeHistory() {
+          const selectedMangoAccount = get().selectedMangoAccount.current
           const set = get().set
           if (!selectedMangoAccount) return
 
@@ -800,7 +812,7 @@ const useMangoStore = create<
             }
           }
         },
-        async updateConnection(endpointUrl) {
+        updateConnection(endpointUrl) {
           const set = get().set
 
           const newConnection = new Connection(endpointUrl, 'processed')

@@ -19,6 +19,7 @@ import {
   marketSelector,
   marketsSelector,
 } from '../stores/selectors'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 function decodeBookL2(market, accInfo: AccountInfo<Buffer>): number[][] {
   if (market && accInfo?.data) {
@@ -63,6 +64,7 @@ const useHydrateStore = () => {
   const selectedMarket = useMangoStore(marketSelector)
   const connection = useMangoStore(connectionSelector)
   const mangoAccount = useMangoStore(mangoAccountSelector)
+  const { wallet } = useWallet()
 
   // Fetches mango group as soon as page loads
   useEffect(() => {
@@ -90,8 +92,10 @@ const useHydrateStore = () => {
 
   useInterval(() => {
     actions.fetchMangoGroup()
-    actions.fetchWalletTokens()
     actions.fetchMarketsInfo()
+    if (wallet) {
+      actions.fetchWalletTokens(wallet)
+    }
   }, 120 * SECONDS)
 
   useEffect(() => {

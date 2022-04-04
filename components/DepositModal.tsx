@@ -82,7 +82,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
           mangoAccount
             ? actions.reloadMangoAccount()
             : actions.fetchAllMangoAccounts(wallet)
-          actions.fetchWalletTokens()
+          actions.fetchWalletTokens(wallet)
         })
       })
       .catch((err) => {

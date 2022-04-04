@@ -14,7 +14,7 @@ function calculateFundingRate(
   oldestShortFunding,
   latestLongFunding,
   latestShortFunding,
-  perpMarket,
+  perpMarket: PerpMarket,
   oraclePrice
 ) {
   if (!perpMarket || !oraclePrice) return 0.0

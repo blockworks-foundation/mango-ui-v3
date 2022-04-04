@@ -22,12 +22,12 @@ export async function getStaticProps({ locale }) {
 export default function Swap() {
   const { t } = useTranslation(['common', 'swap'])
   const connection = useMangoStore(connectionSelector)
-  const { connected, publicKey } = useWallet()
+  const { connected, publicKey, wallet } = useWallet()
   const actions = useMangoStore(actionsSelector)
 
   useEffect(() => {
-    if (connected) {
-      actions.fetchWalletTokens()
+    if (wallet && connected) {
+      actions.fetchWalletTokens(wallet)
     }
   }, [connected, actions])
 
