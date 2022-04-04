@@ -270,40 +270,40 @@ export const WalletProvider: FC<WalletProviderProps> = ({
   )
 
   // Sign a transaction if the wallet supports it
-  const signTransaction = useMemo(
-    () =>
-      adapter && 'signTransaction' in adapter
-        ? async (transaction: Transaction): Promise<Transaction> => {
-            if (!connected) throw handleError(new WalletNotConnectedError())
-            return await adapter.signTransaction(transaction)
-          }
-        : undefined,
-    [adapter, handleError, connected]
-  )
+  const signTransaction = useMemo(() => {
+    if (adapter && 'signTransaction' in adapter) {
+      return async (transaction: Transaction): Promise<Transaction> => {
+        if (!connected) throw handleError(new WalletNotConnectedError())
+        return await adapter.signTransaction(transaction)
+      }
+    } else {
+      return undefined
+    }
+  }, [adapter, handleError, connected])
 
   // Sign multiple transactions if the wallet supports it
-  const signAllTransactions = useMemo(
-    () =>
-      adapter && 'signAllTransactions' in adapter
-        ? async (transactions: Transaction[]): Promise<Transaction[]> => {
-            if (!connected) throw handleError(new WalletNotConnectedError())
-            return await adapter.signAllTransactions(transactions)
-          }
-        : undefined,
-    [adapter, handleError, connected]
-  )
+  const signAllTransactions = useMemo(() => {
+    if (adapter && 'signAllTransactions' in adapter) {
+      return async (transactions: Transaction[]): Promise<Transaction[]> => {
+        if (!connected) throw handleError(new WalletNotConnectedError())
+        return await adapter.signAllTransactions(transactions)
+      }
+    } else {
+      return undefined
+    }
+  }, [adapter, handleError, connected])
 
   // Sign an arbitrary message if the wallet supports it
-  const signMessage = useMemo(
-    () =>
-      adapter && 'signMessage' in adapter
-        ? async (message: Uint8Array): Promise<Uint8Array> => {
-            if (!connected) throw handleError(new WalletNotConnectedError())
-            return await adapter.signMessage(message)
-          }
-        : undefined,
-    [adapter, handleError, connected]
-  )
+  const signMessage = useMemo(() => {
+    if (adapter && 'signMessage' in adapter) {
+      return async (message: Uint8Array): Promise<Uint8Array> => {
+        if (!connected) throw handleError(new WalletNotConnectedError())
+        return await adapter.signMessage(message)
+      }
+    } else {
+      return undefined
+    }
+  }, [adapter, handleError, connected])
 
   return (
     <WalletContext.Provider
