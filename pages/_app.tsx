@@ -197,8 +197,10 @@ function App({ Component, pageProps }) {
             <WalletListener />
             <ViewportProvider>
               <div className="min-h-screen bg-th-bkg-1">
-                <GlobalNotification />
-                <Component {...pageProps} />
+                <ErrorBoundary>
+                  <GlobalNotification />
+                  <Component {...pageProps} />
+                </ErrorBoundary>
               </div>
               <div className="fixed bottom-0 left-0 z-20 w-full md:hidden">
                 <BottomBar />
