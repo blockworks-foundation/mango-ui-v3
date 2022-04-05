@@ -643,9 +643,7 @@ export default function AdvancedTradeForm({
         let perpOrderPrice: number = orderPrice
 
         if (isMarketOrder) {
-          if (postOnlySlide) {
-            perpOrderType = 'postOnlySlide'
-          } else if (tradeType === 'Market' && maxSlippage) {
+          if (tradeType === 'Market' && maxSlippage) {
             perpOrderType = 'ioc'
             if (side === 'buy') {
               perpOrderPrice = markPrice * (1 + parseFloat(maxSlippage))
@@ -658,6 +656,8 @@ export default function AdvancedTradeForm({
           } else {
             perpOrderType = 'market'
           }
+        } else {
+          perpOrderType = postOnlySlide ? 'postOnlySlide' : orderType
         }
 
         if (isTriggerOrder) {
