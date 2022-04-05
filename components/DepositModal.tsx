@@ -61,7 +61,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
 
   const handleDeposit = () => {
     const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
-    if (!wallet || !mangoAccount) return
+    if (!wallet) return
 
     setSubmitting(true)
     deposit({
@@ -239,7 +239,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
           disabled={submitting || inputDisabled}
         >
           <div className={`flex items-center justify-center`}>
-            {submitting && <Loading className="-ml-1 mr-3" />}
+            {submitting ? <Loading className="-ml-1 mr-3" /> : null}
             {t('deposit')}
           </div>
         </Button>

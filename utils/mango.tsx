@@ -12,7 +12,7 @@ export async function deposit({
 }: {
   amount: number
   fromTokenAcc: TokenAccount
-  mangoAccount?: MangoAccount
+  mangoAccount?: MangoAccount | null
   accountName?: string
   wallet: Wallet
 }) {
