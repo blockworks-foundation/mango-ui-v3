@@ -982,13 +982,17 @@ const useMangoStore = create<
         },
         async fetchMarketsInfo() {
           const set = get().set
-          const data = await fetch(
-            `https://mango-all-markets-api.herokuapp.com/markets/`
-          )
-          const parsedMarketsInfo = await data.json()
-          set((state) => {
-            state.marketsInfo = parsedMarketsInfo
-          })
+          try {
+            const data = await fetch(
+              `https://mango-all-markets-api.herokuapp.com/markets/`
+            )
+            const parsedMarketsInfo = await data.json()
+            set((state) => {
+              state.marketsInfo = parsedMarketsInfo
+            })
+          } catch (e) {
+            console.log('ERORR: Unable to load all market info')
+          }
         },
       },
     }
