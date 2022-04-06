@@ -262,6 +262,7 @@ const useMangoStore = create<
 
     const connection = new Connection(rpcUrl, 'processed' as Commitment)
     const client = new MangoClient(connection, programId, {
+      timeout: 45000,
       postSendTxCallback: ({ txid }: { txid: string }) => {
         notify({
           title: 'Transaction sent',
