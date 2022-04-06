@@ -426,6 +426,25 @@ export default function AdvancedTradeForm({
     }
     setPostOnlySlide(checked)
   }
+
+  const postOnlySlidePrice = useMemo(() => {
+    const priceOnBook = side === 'buy' ? orderbook?.asks : orderbook?.bids
+    if (
+      priceOnBook &&
+      priceOnBook.length > 0 &&
+      priceOnBook[0].length > 0 &&
+      market?.tickSize
+    ) {
+      return side === 'buy'
+        ? (priceOnBook[0][0] - market.tickSize).toFixed(
+            getDecimalCount(market.tickSize)
+          )
+        : (priceOnBook[0][0] + market.tickSize).toFixed(
+            getDecimalCount(market.tickSize)
+          )
+    }
+  }, [market, orderbook])
+
   const postOnChange = (checked) => {
     if (checked) {
       setIoc(false)
@@ -810,17 +829,19 @@ export default function AdvancedTradeForm({
                 disabled={
                   isMarketOrder || (postOnlySlide && tradeType === 'Limit')
                 }
-                placeholder={tradeType === 'Market' ? markPrice : ''}
+                placeholder={
+                  tradeType === 'Market'
+                    ? markPrice
+                    : postOnlySlide && tradeType === 'Limit'
+                    ? postOnlySlidePrice
+                    : ''
+                }
                 prefix={
-                  <>
-                    {postOnlySlide && tradeType === 'Limit' ? null : (
-                      <img
-                        src={`/assets/icons/${groupConfig.quoteSymbol.toLowerCase()}.svg`}
-                        width="16"
-                        height="16"
-                      />
-                    )}
-                  </>
+                  <img
+                    src={`/assets/icons/${groupConfig.quoteSymbol.toLowerCase()}.svg`}
+                    width="16"
+                    height="16"
+                  />
                 }
               />
             </>
