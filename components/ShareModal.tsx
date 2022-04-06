@@ -166,7 +166,7 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
           : isProfit
           ? 'bg-short-profit'
           : 'bg-short-loss'
-      } h-[337.5px] w-[600px] bg-contain sm:max-w-7xl`}
+      } h-[337.5px] w-[600px] bg-contain leading-[0.5] sm:max-w-7xl`}
       noPadding
       hideClose
       ref={ref}
@@ -200,13 +200,7 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
             {side}
           </span>
         </div>
-        <div
-          className={`text-center text-6xl font-bold ${
-            isProfit
-              ? 'border-th-green text-th-green'
-              : 'border-th-red text-th-red'
-          }`}
-        >
+        <div className={`text-center text-6xl font-bold`}>
           {positionPercentage > 0 ? '+' : null}
           {positionPercentage.toFixed(2)}%
         </div>
