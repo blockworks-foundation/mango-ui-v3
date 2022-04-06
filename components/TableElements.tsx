@@ -17,8 +17,8 @@ export const Th = ({ children }) => (
   </th>
 )
 
-export const TrBody = ({ children }) => (
-  <tr className="border-b border-th-bkg-4">{children}</tr>
+export const TrBody = ({ children, className = '' }) => (
+  <tr className={`border-b border-th-bkg-4 ${className}`}>{children}</tr>
 )
 
 export const Td = ({

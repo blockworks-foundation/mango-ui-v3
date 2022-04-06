@@ -12,7 +12,7 @@ import {
   TrHead,
 } from '../TableElements'
 import { useTranslation } from 'next-i18next'
-import { isEmpty } from 'lodash'
+import isEmpty from 'lodash/isEmpty'
 import usePagination from '../../hooks/usePagination'
 import { numberCompactFormatter, roundToDecimal } from '../../utils/'
 import Pagination from '../Pagination'
@@ -62,7 +62,7 @@ const AccountInterest = () => {
   const [loadHourlyStats, setLoadHourlyStats] = useState(false)
   const [loadTotalStats, setLoadTotalStats] = useState(false)
   const [selectedAsset, setSelectedAsset] = useState<string>('')
-  const [chartData, setChartData] = useState([])
+  const [chartData, setChartData] = useState<any[]>([])
   const {
     paginatedData,
     setData,
@@ -81,7 +81,9 @@ const AccountInterest = () => {
   )
 
   const mangoAccountPk = useMemo(() => {
-    return mangoAccount.publicKey.toString()
+    if (mangoAccount) {
+      return mangoAccount.publicKey.toString()
+    }
   }, [mangoAccount])
 
   const token = useMemo(() => {
@@ -92,7 +94,7 @@ const AccountInterest = () => {
 
   const exportInterestDataToCSV = () => {
     const assets = Object.keys(hourlyInterestStats)
-    let dataToExport = []
+    let dataToExport: any[] = []
 
     for (const asset of assets) {
       dataToExport = [
@@ -110,7 +112,7 @@ const AccountInterest = () => {
     }
 
     const title = `${
-      mangoAccount.name || mangoAccount.publicKey
+      mangoAccount?.name || mangoAccount?.publicKey
     }-Interest-${new Date().toLocaleDateString()}`
     const headers = [
       'Timestamp',
@@ -135,7 +137,7 @@ const AccountInterest = () => {
   }, [hourlyInterestStats])
 
   useEffect(() => {
-    const hideDust = []
+    const hideDust: any[] = []
     const fetchInterestStats = async () => {
       setLoadTotalStats(true)
       const response = await fetch(
@@ -147,6 +149,9 @@ const AccountInterest = () => {
         Object.entries(parsedResponse).forEach((r) => {
           const tokens = groupConfig.tokens
           const token = tokens.find((t) => t.symbol === r[0])
+          if (!token || !mangoGroup || !mangoCache) {
+            return
+          }
           const tokenIndex = mangoGroup.getTokenIndex(token.mintKey)
           const price = mangoGroup.getPrice(tokenIndex, mangoCache).toNumber()
           const interest =
@@ -240,7 +245,7 @@ const AccountInterest = () => {
         (d) => new Date(d.time).getTime() > start
       )
 
-      const dailyInterest = []
+      const dailyInterest: any[] = []
 
       for (let i = 0; i < 30; i++) {
         dailyInterest.push({
@@ -486,9 +491,13 @@ const AccountInterest = () => {
                           xAxis="time"
                           yAxis="interest"
                           data={chartData}
-                          labelFormat={(x) =>
-                            x === 0 ? 0 : x.toFixed(token.decimals + 1)
-                          }
+                          labelFormat={(x) => {
+                            return x === 0
+                              ? 0
+                              : token
+                              ? x.toFixed(token.decimals + 1)
+                              : null
+                          }}
                           tickFormat={handleDustTicks}
                           titleValue={chartData.reduce(
                             (a, c) => a + c.interest,
@@ -506,31 +515,35 @@ const AccountInterest = () => {
                         className="relative mb-6 w-full rounded-md border border-th-bkg-4 p-4 sm:w-1/2"
                         style={{ height: '330px' }}
                       >
-                        <Chart
-                          hideRangeFilters
-                          title={t('interest-chart-value-title', {
-                            symbol: selectedAsset,
-                          })}
-                          xAxis="time"
-                          yAxis="value"
-                          data={chartData}
-                          labelFormat={(x) =>
-                            x === 0
-                              ? 0
-                              : x < 0
-                              ? `-$${Math.abs(x)?.toFixed(token.decimals + 1)}`
-                              : `$${x?.toFixed(token.decimals + 1)}`
-                          }
-                          tickFormat={handleUsdDustTicks}
-                          titleValue={chartData.reduce(
-                            (a, c) => a + c.value,
-                            0
-                          )}
-                          type="bar"
-                          useMulticoloredBars
-                          yAxisWidth={increaseYAxisWidth ? 70 : 50}
-                          zeroLine
-                        />
+                        {token ? (
+                          <Chart
+                            hideRangeFilters
+                            title={t('interest-chart-value-title', {
+                              symbol: selectedAsset,
+                            })}
+                            xAxis="time"
+                            yAxis="value"
+                            data={chartData}
+                            labelFormat={(x) =>
+                              x === 0
+                                ? 0
+                                : x < 0
+                                ? `-$${Math.abs(x)?.toFixed(
+                                    token.decimals + 1
+                                  )}`
+                                : `$${x?.toFixed(token.decimals + 1)}`
+                            }
+                            tickFormat={handleUsdDustTicks}
+                            titleValue={chartData.reduce(
+                              (a, c) => a + c.value,
+                              0
+                            )}
+                            type="bar"
+                            useMulticoloredBars
+                            yAxisWidth={increaseYAxisWidth ? 70 : 50}
+                            zeroLine
+                          />
+                        ) : null}
                       </div>
                     ) : null}
                   </div>
@@ -555,25 +568,29 @@ const AccountInterest = () => {
                                 <Td className="w-1/3">
                                   <TableDateDisplay date={utc} />
                                 </Td>
-                                <Td className="w-1/3">
-                                  {stat.borrow_interest > 0
-                                    ? `-${stat.borrow_interest.toFixed(
-                                        token.decimals + 1
-                                      )}`
-                                    : stat.deposit_interest.toFixed(
-                                        token.decimals + 1
-                                      )}{' '}
-                                  {selectedAsset}
-                                </Td>
-                                <Td className="w-1/3">
-                                  {stat.borrow_interest > 0
-                                    ? `-$${(
-                                        stat.borrow_interest * stat.price
-                                      ).toFixed(token.decimals + 1)}`
-                                    : `$${(
-                                        stat.deposit_interest * stat.price
-                                      ).toFixed(token.decimals + 1)}`}
-                                </Td>
+                                {token ? (
+                                  <Td className="w-1/3">
+                                    {stat.borrow_interest > 0
+                                      ? `-${stat.borrow_interest.toFixed(
+                                          token.decimals + 1
+                                        )}`
+                                      : stat.deposit_interest.toFixed(
+                                          token.decimals + 1
+                                        )}{' '}
+                                    {selectedAsset}
+                                  </Td>
+                                ) : null}
+                                {token ? (
+                                  <Td className="w-1/3">
+                                    {stat.borrow_interest > 0
+                                      ? `-$${(
+                                          stat.borrow_interest * stat.price
+                                        ).toFixed(token.decimals + 1)}`
+                                      : `$${(
+                                          stat.deposit_interest * stat.price
+                                        ).toFixed(token.decimals + 1)}`}
+                                  </Td>
+                                ) : null}
                               </TrBody>
                             )
                           })}

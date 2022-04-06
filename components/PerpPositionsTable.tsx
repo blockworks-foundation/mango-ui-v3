@@ -47,7 +47,7 @@ const PositionsTable: React.FC = () => {
   }, [])
 
   const handleSizeClick = (size, indexPrice) => {
-    const sizePrecisionDigits = getPrecisionDigits(market.minOrderSize)
+    const sizePrecisionDigits = getPrecisionDigits(market!.minOrderSize)
     const priceOrDefault = price ? price : indexPrice
     const roundedSize = parseFloat(Math.abs(size).toFixed(sizePrecisionDigits))
     const quoteSize = parseFloat((roundedSize * priceOrDefault).toFixed(2))
@@ -68,9 +68,11 @@ const PositionsTable: React.FC = () => {
   }
 
   const handleSettlePnl = async (perpMarket, perpAccount, index) => {
-    setSettleSinglePos(index)
-    await settlePnl(perpMarket, perpAccount, t, undefined, wallet)
-    setSettleSinglePos(null)
+    if (wallet) {
+      setSettleSinglePos(index)
+      await settlePnl(perpMarket, perpAccount, t, undefined, wallet)
+      setSettleSinglePos(null)
+    }
   }
 
   return (
@@ -311,7 +313,11 @@ const PositionsTable: React.FC = () => {
                                   </div>
                                 </div>
                               </div>
-                              <PnlText pnl={unrealizedPnl} />
+                              {breakEvenPrice ? (
+                                <PnlText pnl={unrealizedPnl} />
+                              ) : (
+                                '--'
+                              )}
                             </div>
                           </>
                         }
@@ -361,7 +367,7 @@ const PositionsTable: React.FC = () => {
         <ShareModal
           isOpen={showShareModal}
           onClose={handleCloseShare}
-          position={positionToShare}
+          position={positionToShare!}
         />
       ) : null}
     </div>

@@ -90,23 +90,25 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
   }
 
   useEffect(() => {
-    const mngoIndex = getMarketIndexBySymbol(groupConfig, 'MNGO')
+    if (mangoCache) {
+      const mngoIndex = getMarketIndexBySymbol(groupConfig, 'MNGO')
 
-    const hasRequiredMngo =
-      mangoGroup && mangoAccount
-        ? mangoAccount
-            .getUiDeposit(
-              mangoCache.rootBankCache[mngoIndex],
-              mangoGroup,
-              mngoIndex
-            )
-            .toNumber() >= 10000
-        : false
+      const hasRequiredMngo =
+        mangoGroup && mangoAccount
+          ? mangoAccount
+              .getUiDeposit(
+                mangoCache.rootBankCache[mngoIndex],
+                mangoGroup,
+                mngoIndex
+              )
+              .toNumber() >= 10000
+          : false
 
-    if (hasRequiredMngo) {
-      setHasRequiredMngo(true)
+      if (hasRequiredMngo) {
+        setHasRequiredMngo(true)
+      }
     }
-  }, [mangoAccount, mangoGroup])
+  }, [mangoAccount, mangoGroup, mangoCache])
 
   useEffect(() => {
     if (image) {
@@ -119,7 +121,7 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
   useEffect(() => {
     // if the button is hidden we are taking a screenshot
     if (!showButton) {
-      takeScreenshot(ref.current)
+      takeScreenshot(ref.current as HTMLElement)
     }
   }, [showButton])
 
@@ -129,7 +131,9 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
 
   const fetchCustomReferralLinks = useCallback(async () => {
     // setLoading(true)
-    const referrerIds = await client.getReferrerIdsForMangoAccount(mangoAccount)
+    const referrerIds = await client.getReferrerIdsForMangoAccount(
+      mangoAccount!
+    )
 
     setCustomRefLinks(referrerIds)
     // setLoading(false)
@@ -178,7 +182,7 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
               value={
                 customRefLinks.length > 0
                   ? `https://trade.mango.markets?ref=${customRefLinks[0].referrerId}`
-                  : `https://trade.mango.markets?ref=${mangoAccount.publicKey.toString()}`
+                  : `https://trade.mango.markets?ref=${mangoAccount?.publicKey.toString()}`
               }
             />
           </div>

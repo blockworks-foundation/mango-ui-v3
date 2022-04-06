@@ -111,7 +111,7 @@ export function calculateTradePrice(
   side: 'buy' | 'sell',
   price: string | number,
   triggerPrice?: string | number
-): number {
+): number | undefined {
   if (tradeType === 'Market' && kind === 'spot') {
     return calculateMarketPrice(orderBook, baseSize, side)
   } else if (TRIGGER_ORDER_TYPES.includes(tradeType)) {
@@ -128,7 +128,7 @@ export const calculateMarketPrice = (
   orderBook: Orderbook,
   size: number,
   side: 'buy' | 'sell'
-): number => {
+): number | undefined => {
   const orders = side === 'buy' ? orderBook.asks : orderBook.bids
   let acc = 0
   let selectedOrder
@@ -311,7 +311,10 @@ export function getBrowserDocumentHiddenProp() {
 }
 
 export function getIsDocumentHidden() {
-  return !document[getBrowserDocumentHiddenProp()]
+  const index = getBrowserDocumentHiddenProp()
+  if (typeof index === 'number') {
+    return !document[index]
+  }
 }
 
 export const numberCompactFormatter = Intl.NumberFormat('en', {

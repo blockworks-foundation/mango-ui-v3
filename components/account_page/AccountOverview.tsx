@@ -63,34 +63,40 @@ export default function AccountOverview() {
   const [hourlyPerformanceStats, setHourlyPerformanceStats] = useState([])
 
   useEffect(() => {
+    const pubKey = mangoAccount?.publicKey?.toString()
     const fetchData = async () => {
+      if (!pubKey) {
+        return
+      }
       const stats = await fetchHourlyPerformanceStats(
-        mangoAccount.publicKey.toString(),
+        pubKey,
         performanceRangePresets[performanceRangePresets.length - 1].value
       )
 
       setPnl(stats?.length ? stats?.[0]?.['pnl'] : 0)
       setHourlyPerformanceStats(stats)
     }
-    if (mangoAccount) {
+    if (pubKey) {
       fetchData()
     }
   }, [mangoAccount?.publicKey])
 
   const maintHealthRatio = useMemo(() => {
-    return mangoAccount
+    return mangoAccount && mangoGroup && mangoCache
       ? mangoAccount.getHealthRatio(mangoGroup, mangoCache, 'Maint')
       : 100
   }, [mangoAccount, mangoGroup, mangoCache])
 
   const initHealthRatio = useMemo(() => {
-    return mangoAccount
+    return mangoAccount && mangoGroup && mangoCache
       ? mangoAccount.getHealthRatio(mangoGroup, mangoCache, 'Init')
       : 100
   }, [mangoAccount, mangoGroup, mangoCache])
 
   const mangoAccountValue = useMemo(() => {
-    return mangoAccount ? +mangoAccount.computeValue(mangoGroup, mangoCache) : 0
+    return mangoAccount && mangoGroup && mangoCache
+      ? +mangoAccount.computeValue(mangoGroup, mangoCache)
+      : 0
   }, [mangoAccount])
 
   return mangoAccount ? (
@@ -127,9 +133,11 @@ export default function AccountOverview() {
             <div className="pb-0.5 text-xs text-th-fgd-3 sm:text-sm">
               {t('leverage')}
             </div>
-            <div className="text-xl font-bold text-th-fgd-1 sm:text-2xl">
-              {mangoAccount.getLeverage(mangoGroup, mangoCache).toFixed(2)}x
-            </div>
+            {mangoGroup && mangoCache ? (
+              <div className="text-xl font-bold text-th-fgd-1 sm:text-2xl">
+                {mangoAccount.getLeverage(mangoGroup, mangoCache).toFixed(2)}x
+              </div>
+            ) : null}
           </div>
           <div className="p-3 sm:p-4">
             <div className="pb-0.5 text-xs text-th-fgd-3 sm:text-sm">
@@ -187,21 +195,25 @@ export default function AccountOverview() {
         <div className="border-t border-th-bkg-4 p-3 sm:p-4 md:border-b">
           <div className="pb-0.5 text-th-fgd-3">{t('total-assets')}</div>
           <div className="flex items-center">
-            <div className="text-xl font-bold text-th-fgd-1 md:text-2xl">
-              {formatUsdValue(
-                +mangoAccount.getAssetsVal(mangoGroup, mangoCache)
-              )}
-            </div>
+            {mangoGroup && mangoCache ? (
+              <div className="text-xl font-bold text-th-fgd-1 md:text-2xl">
+                {formatUsdValue(
+                  +mangoAccount.getAssetsVal(mangoGroup, mangoCache)
+                )}
+              </div>
+            ) : null}
           </div>
         </div>
         <div className="border-b border-t border-th-bkg-4 p-3 sm:p-4">
           <div className="pb-0.5 text-th-fgd-3">{t('total-liabilities')}</div>
           <div className="flex items-center">
-            <div className="text-xl font-bold text-th-fgd-1 md:text-2xl">
-              {formatUsdValue(
-                +mangoAccount.getLiabsVal(mangoGroup, mangoCache)
-              )}
-            </div>
+            {mangoGroup && mangoCache ? (
+              <div className="text-xl font-bold text-th-fgd-1 md:text-2xl">
+                {formatUsdValue(
+                  +mangoAccount.getLiabsVal(mangoGroup, mangoCache)
+                )}
+              </div>
+            ) : null}
           </div>
         </div>
       </div>

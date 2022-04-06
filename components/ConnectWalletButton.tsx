@@ -20,7 +20,7 @@ import { ProfileIcon, WalletIcon } from './icons'
 import { useTranslation } from 'next-i18next'
 import { WalletSelect } from 'components/WalletSelect'
 import AccountsModal from './AccountsModal'
-import { uniqBy } from 'lodash'
+import uniqBy from 'lodash/uniqBy'
 
 export const handleWalletConnect = (wallet: Wallet) => {
   if (!wallet) {
@@ -68,7 +68,9 @@ export const ConnectWalletButton: React.FC = () => {
   }, [wallets, installedWallets])
 
   const handleConnect = useCallback(() => {
-    handleWalletConnect(wallet)
+    if (wallet) {
+      handleWalletConnect(wallet)
+    }
   }, [wallet])
 
   const handleCloseAccounts = useCallback(() => {

@@ -10,7 +10,8 @@ import { TOKEN_LIST_URL } from '@jup-ag/core'
 import { PublicKey } from '@solana/web3.js'
 import useMangoStore from '../stores/useMangoStore'
 import { connectionSelector } from '../stores/selectors'
-import { sortBy, sum } from 'lodash'
+import sortBy from 'lodash/sortBy'
+import sum from 'lodash/sum'
 import {
   CogIcon,
   ExclamationCircleIcon,
@@ -48,6 +49,9 @@ import { handleWalletConnect } from 'components/ConnectWalletButton'
 const TABS = ['Market Data', 'Performance Insights']
 
 type UseJupiterProps = Parameters<typeof useJupiter>[0]
+type UseFormValue = Omit<UseJupiterProps, 'amount'> & {
+  amount: null | number
+}
 
 const JupiterForm: FunctionComponent = () => {
   const { t } = useTranslation(['common', 'swap'])
@@ -55,17 +59,17 @@ const JupiterForm: FunctionComponent = () => {
     useWallet()
   const connection = useMangoStore(connectionSelector)
   const [showSettings, setShowSettings] = useState(false)
-  const [depositAndFee, setDepositAndFee] = useState(null)
-  const [selectedRoute, setSelectedRoute] = useState<RouteInfo>(null)
+  const [depositAndFee, setDepositAndFee] = useState<any | null>(null)
+  const [selectedRoute, setSelectedRoute] = useState<RouteInfo | null>(null)
   const [showInputTokenSelect, setShowInputTokenSelect] = useState(false)
   const [showOutputTokenSelect, setShowOutputTokenSelect] = useState(false)
   const [swapping, setSwapping] = useState(false)
   const [tokens, setTokens] = useState<Token[]>([])
-  const [tokenPrices, setTokenPrices] = useState(null)
-  const [coinGeckoList, setCoinGeckoList] = useState(null)
-  const [walletTokens, setWalletTokens] = useState([])
+  const [tokenPrices, setTokenPrices] = useState<any | null>(null)
+  const [coinGeckoList, setCoinGeckoList] = useState<any[] | null>(null)
+  const [walletTokens, setWalletTokens] = useState<any[]>([])
   const [slippage, setSlippage] = useState(0.5)
-  const [formValue, setFormValue] = useState<UseJupiterProps>({
+  const [formValue, setFormValue] = useState<UseFormValue>({
     amount: null,
     inputMint: new PublicKey('EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'),
     outputMint: new PublicKey('MangoCzJ36AjZyKwVj3VnYU4GTonjfVEnJmvvWaxLac'),
@@ -73,10 +77,10 @@ const JupiterForm: FunctionComponent = () => {
   })
   const [hasSwapped, setHasSwapped] = useLocalStorageState('hasSwapped', false)
   const [showWalletDraw, setShowWalletDraw] = useState(false)
-  const [walletTokenPrices, setWalletTokenPrices] = useState(null)
+  const [walletTokenPrices, setWalletTokenPrices] = useState<any[] | null>(null)
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
-  const [feeValue, setFeeValue] = useState(null)
+  const [feeValue, setFeeValue] = useState<number | null>(null)
   const [showRoutesModal, setShowRoutesModal] = useState(false)
   const [loadWalletTokens, setLoadWalletTokens] = useState(false)
   const [swapRate, setSwapRate] = useState(false)
@@ -90,7 +94,7 @@ const JupiterForm: FunctionComponent = () => {
     if (!publicKey) {
       return
     }
-    const ownedTokens = []
+    const ownedTokens: any[] = []
     const ownedTokenAccounts = await getTokenAccountsByOwnerWithWrappedSol(
       connection,
       publicKey
@@ -182,13 +186,15 @@ const JupiterForm: FunctionComponent = () => {
   }, [inputTokenInfo, outputTokenInfo, coinGeckoList])
 
   const amountInDecimal = useMemo(() => {
-    return formValue.amount * 10 ** (inputTokenInfo?.decimals || 1)
+    if (typeof formValue?.amount === 'number') {
+      return formValue.amount * 10 ** (inputTokenInfo?.decimals || 1)
+    }
   }, [inputTokenInfo, formValue.amount])
 
   const { routeMap, allTokenMints, routes, loading, exchange, error, refresh } =
     useJupiter({
       ...formValue,
-      amount: amountInDecimal,
+      amount: amountInDecimal ? amountInDecimal : 0,
       slippage,
     })
 
@@ -212,23 +218,26 @@ const JupiterForm: FunctionComponent = () => {
 
   useEffect(() => {
     const getDepositAndFee = async () => {
-      const fees = await selectedRoute.getDepositAndFee()
-      setDepositAndFee(fees)
+      const fees = await selectedRoute?.getDepositAndFee()
+      if (fees) {
+        setDepositAndFee(fees)
+      }
     }
     if (selectedRoute && connected) {
       getDepositAndFee()
     }
   }, [selectedRoute])
 
-  const outputTokenMints = useMemo(() => {
+  const outputTokenMints: any[] = useMemo(() => {
     if (routeMap.size && formValue.inputMint) {
       const routeOptions = routeMap.get(formValue.inputMint.toString())
 
-      const routeOptionTokens = routeOptions.map((address) => {
-        return tokens.find((t) => {
-          return t?.address === address
-        })
-      })
+      const routeOptionTokens =
+        routeOptions?.map((address) => {
+          return tokens.find((t) => {
+            return t?.address === address
+          })
+        }) ?? []
 
       return routeOptionTokens
     } else {
@@ -237,7 +246,9 @@ const JupiterForm: FunctionComponent = () => {
   }, [routeMap, tokens, formValue.inputMint])
 
   const handleConnect = useCallback(() => {
-    handleWalletConnect(wallet)
+    if (wallet) {
+      handleWalletConnect(wallet)
+    }
   }, [wallet])
 
   const inputWalletBalance = () => {
@@ -264,7 +275,7 @@ const JupiterForm: FunctionComponent = () => {
   }
 
   const [walletTokensWithInfos] = useMemo(() => {
-    const userTokens = []
+    const userTokens: any[] = []
     tokens.map((item) => {
       const found = walletTokens.find(
         (token) => token.account.mint.toBase58() === item?.address
@@ -295,6 +306,7 @@ const JupiterForm: FunctionComponent = () => {
   }
 
   const getSwapFeeTokenValue = async () => {
+    if (!selectedRoute) return
     const mints = selectedRoute.marketInfos.map((info) => info.lpFee.mint)
     const response = await fetch(
       `https://api.coingecko.com/api/v3/simple/token_price/solana?contract_addresses=${mints.toString()}&vs_currencies=usd`
@@ -303,7 +315,9 @@ const JupiterForm: FunctionComponent = () => {
 
     const feeValue = selectedRoute.marketInfos.reduce((a, c) => {
       const feeToken = tokens.find((item) => item?.address === c.lpFee?.mint)
-      const amount = c.lpFee?.amount / Math.pow(10, feeToken?.decimals)
+      // FIXME: Remove ts-ignore possibly move the logic out of a reduce
+      // @ts-ignore
+      const amount = c.lpFee?.amount / Math.pow(10, feeToken.decimals)
       if (data[c.lpFee?.mint]) {
         return a + data[c.lpFee?.mint].usd * amount
       }
@@ -311,7 +325,9 @@ const JupiterForm: FunctionComponent = () => {
         return a + 1 * amount
       }
     }, 0)
-    setFeeValue(feeValue)
+    if (feeValue) {
+      setFeeValue(feeValue)
+    }
   }
 
   useEffect(() => {
@@ -338,7 +354,7 @@ const JupiterForm: FunctionComponent = () => {
   }
 
   const sortedTokenMints = sortBy(tokens, (token) => {
-    return token?.symbol?.toLowerCase()
+    return token?.symbol.toLowerCase()
   })
 
   const outAmountUi = selectedRoute
@@ -374,15 +390,17 @@ const JupiterForm: FunctionComponent = () => {
                           <div className="text-base font-bold text-th-fgd-1">
                             {t('wallet')}
                           </div>
-                          <a
-                            className="flex items-center text-xs text-th-fgd-3 hover:text-th-fgd-2"
-                            href={`https://explorer.solana.com/address/${publicKey}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            {abbreviateAddress(publicKey)}
-                            <ExternalLinkIcon className="ml-0.5 -mt-0.5 h-3.5 w-3.5" />
-                          </a>
+                          {publicKey ? (
+                            <a
+                              className="flex items-center text-xs text-th-fgd-3 hover:text-th-fgd-2"
+                              href={`https://explorer.solana.com/address/${publicKey}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {abbreviateAddress(publicKey)}
+                              <ExternalLinkIcon className="ml-0.5 -mt-0.5 h-3.5 w-3.5" />
+                            </a>
+                          ) : null}
                         </div>
                         <IconButton onClick={() => refreshWallet()}>
                           <RefreshClockwiseIcon
@@ -689,70 +707,72 @@ const JupiterForm: FunctionComponent = () => {
                           </IconButton>
                         </div>
                       </div>
-                      <div className="flex justify-between">
-                        <span>{t('swap:rate')}</span>
-                        <div>
-                          <div className="flex items-center justify-end">
-                            <div className="text-right text-th-fgd-1">
-                              {swapRate ? (
-                                <>
-                                  1 {inputTokenInfo?.symbol} ≈{' '}
-                                  {numberFormatter.format(
-                                    outAmountUi / formValue?.amount
-                                  )}{' '}
-                                  {outputTokenInfo?.symbol}
-                                </>
-                              ) : (
-                                <>
-                                  1 {outputTokenInfo?.symbol} ≈{' '}
-                                  {numberFormatter.format(
-                                    formValue?.amount / outAmountUi
-                                  )}{' '}
-                                  {inputTokenInfo?.symbol}
-                                </>
-                              )}
+                      {outAmountUi && formValue?.amount ? (
+                        <div className="flex justify-between">
+                          <span>{t('swap:rate')}</span>
+                          <div>
+                            <div className="flex items-center justify-end">
+                              <div className="text-right text-th-fgd-1">
+                                {swapRate ? (
+                                  <>
+                                    1 {inputTokenInfo?.symbol} ≈{' '}
+                                    {numberFormatter.format(
+                                      outAmountUi / formValue?.amount
+                                    )}{' '}
+                                    {outputTokenInfo?.symbol}
+                                  </>
+                                ) : (
+                                  <>
+                                    1 {outputTokenInfo?.symbol} ≈{' '}
+                                    {numberFormatter.format(
+                                      formValue?.amount / outAmountUi
+                                    )}{' '}
+                                    {inputTokenInfo?.symbol}
+                                  </>
+                                )}
+                              </div>
+                              <SwitchHorizontalIcon
+                                className="default-transition ml-1 h-4 w-4 cursor-pointer text-th-fgd-3 hover:text-th-fgd-2"
+                                onClick={() => setSwapRate(!swapRate)}
+                              />
                             </div>
-                            <SwitchHorizontalIcon
-                              className="default-transition ml-1 h-4 w-4 cursor-pointer text-th-fgd-3 hover:text-th-fgd-2"
-                              onClick={() => setSwapRate(!swapRate)}
-                            />
+                            {tokenPrices?.outputTokenPrice &&
+                            tokenPrices?.inputTokenPrice ? (
+                              <div
+                                className={`text-right ${
+                                  ((formValue?.amount / outAmountUi -
+                                    tokenPrices?.outputTokenPrice /
+                                      tokenPrices?.inputTokenPrice) /
+                                    (formValue?.amount / outAmountUi)) *
+                                    100 <=
+                                  0
+                                    ? 'text-th-green'
+                                    : 'text-th-red'
+                                }`}
+                              >
+                                {Math.abs(
+                                  ((formValue?.amount / outAmountUi -
+                                    tokenPrices?.outputTokenPrice /
+                                      tokenPrices?.inputTokenPrice) /
+                                    (formValue?.amount / outAmountUi)) *
+                                    100
+                                ).toFixed(1)}
+                                %{' '}
+                                <span className="text-th-fgd-4">{`${
+                                  ((formValue?.amount / outAmountUi -
+                                    tokenPrices?.outputTokenPrice /
+                                      tokenPrices?.inputTokenPrice) /
+                                    (formValue?.amount / outAmountUi)) *
+                                    100 <=
+                                  0
+                                    ? t('swap:cheaper')
+                                    : t('swap:more-expensive')
+                                } CoinGecko`}</span>
+                              </div>
+                            ) : null}
                           </div>
-                          {tokenPrices?.outputTokenPrice &&
-                          tokenPrices?.inputTokenPrice ? (
-                            <div
-                              className={`text-right ${
-                                ((formValue?.amount / outAmountUi -
-                                  tokenPrices?.outputTokenPrice /
-                                    tokenPrices?.inputTokenPrice) /
-                                  (formValue?.amount / outAmountUi)) *
-                                  100 <=
-                                0
-                                  ? 'text-th-green'
-                                  : 'text-th-red'
-                              }`}
-                            >
-                              {Math.abs(
-                                ((formValue?.amount / outAmountUi -
-                                  tokenPrices?.outputTokenPrice /
-                                    tokenPrices?.inputTokenPrice) /
-                                  (formValue?.amount / outAmountUi)) *
-                                  100
-                              ).toFixed(1)}
-                              %{' '}
-                              <span className="text-th-fgd-4">{`${
-                                ((formValue?.amount / outAmountUi -
-                                  tokenPrices?.outputTokenPrice /
-                                    tokenPrices?.inputTokenPrice) /
-                                  (formValue?.amount / outAmountUi)) *
-                                  100 <=
-                                0
-                                  ? t('swap:cheaper')
-                                  : t('swap:more-expensive')
-                              } CoinGecko`}</span>
-                            </div>
-                          ) : null}
                         </div>
-                      </div>
+                      ) : null}
                       <div className="flex justify-between">
                         <span>{t('swap:price-impact')}</span>
                         <div className="text-right text-th-fgd-1">
@@ -765,15 +785,17 @@ const JupiterForm: FunctionComponent = () => {
                       </div>
                       <div className="flex justify-between">
                         <span>{t('swap:minimum-received')}</span>
-                        <div className="text-right text-th-fgd-1">
-                          {numberFormatter.format(
-                            selectedRoute?.outAmountWithSlippage /
-                              10 ** outputTokenInfo?.decimals || 1
-                          )}{' '}
-                          {outputTokenInfo?.symbol}
-                        </div>
+                        {outputTokenInfo?.decimals ? (
+                          <div className="text-right text-th-fgd-1">
+                            {numberFormatter.format(
+                              selectedRoute?.outAmountWithSlippage /
+                                10 ** outputTokenInfo.decimals || 1
+                            )}{' '}
+                            {outputTokenInfo?.symbol}
+                          </div>
+                        ) : null}
                       </div>
-                      {!isNaN(feeValue) ? (
+                      {typeof feeValue === 'number' ? (
                         <div className="flex justify-between">
                           <span>{t('swap:swap-fee')}</span>
                           <div className="flex items-center">
@@ -797,15 +819,17 @@ const JupiterForm: FunctionComponent = () => {
                                                 info.marketMeta?.amm?.label,
                                             })}
                                           </span>
-                                          <div className="text-th-fgd-1">
-                                            {(
-                                              info.lpFee?.amount /
-                                              Math.pow(10, feeToken?.decimals)
-                                            ).toFixed(6)}{' '}
-                                            {feeToken?.symbol} (
-                                            {info.lpFee?.pct * 100}
-                                            %)
-                                          </div>
+                                          {feeToken?.decimals && (
+                                            <div className="text-th-fgd-1">
+                                              {(
+                                                info.lpFee?.amount /
+                                                Math.pow(10, feeToken?.decimals)
+                                              ).toFixed(6)}{' '}
+                                              {feeToken?.symbol} (
+                                              {info.lpFee?.pct * 100}
+                                              %)
+                                            </div>
+                                          )}
                                         </div>
                                       )
                                     }
@@ -830,13 +854,15 @@ const JupiterForm: FunctionComponent = () => {
                                   feeRecipient: info.marketMeta?.amm?.label,
                                 })}
                               </span>
-                              <div className="text-right text-th-fgd-1">
-                                {(
-                                  info.lpFee?.amount /
-                                  Math.pow(10, feeToken?.decimals)
-                                ).toFixed(6)}{' '}
-                                {feeToken?.symbol} ({info.lpFee?.pct * 100}%)
-                              </div>
+                              {feeToken?.decimals && (
+                                <div className="text-right text-th-fgd-1">
+                                  {(
+                                    info.lpFee?.amount /
+                                    Math.pow(10, feeToken.decimals)
+                                  ).toFixed(6)}{' '}
+                                  {feeToken?.symbol} ({info.lpFee?.pct * 100}%)
+                                </div>
+                              )}
                             </div>
                           )
                         })
@@ -950,7 +976,14 @@ const JupiterForm: FunctionComponent = () => {
                   onClick={async () => {
                     if (!connected && zeroKey !== publicKey) {
                       handleConnect()
-                    } else if (!loading && selectedRoute && connected) {
+                    } else if (
+                      !loading &&
+                      selectedRoute &&
+                      connected &&
+                      wallet &&
+                      signAllTransactions &&
+                      signTransaction
+                    ) {
                       setSwapping(true)
                       let txCount = 1
                       let errorTxid
@@ -988,21 +1021,27 @@ const JupiterForm: FunctionComponent = () => {
                         console.log('Error:', swapResult.error)
                         notify({
                           type: 'error',
-                          title: swapResult.error.name,
-                          description: swapResult.error.message,
+                          title: swapResult?.error?.name
+                            ? swapResult.error.name
+                            : '',
+                          description: swapResult?.error?.message,
                           txid: errorTxid,
                         })
                       } else if ('txid' in swapResult) {
+                        const description =
+                          swapResult?.inputAmount && swapResult.outputAmount
+                            ? `Swapped ${
+                                swapResult.inputAmount /
+                                10 ** (inputTokenInfo?.decimals || 1)
+                              } ${inputTokenInfo?.symbol} to ${
+                                swapResult.outputAmount /
+                                10 ** (outputTokenInfo?.decimals || 1)
+                              } ${outputTokenInfo?.symbol}`
+                            : ''
                         notify({
                           type: 'success',
                           title: 'Swap Successful',
-                          description: `Swapped ${
-                            swapResult.inputAmount /
-                            10 ** (inputTokenInfo?.decimals || 1)
-                          } ${inputTokenInfo?.symbol} to ${
-                            swapResult.outputAmount /
-                            10 ** (outputTokenInfo?.decimals || 1)
-                          } ${outputTokenInfo?.symbol}`,
+                          description,
                           txid: swapResult.txid,
                         })
                         setFormValue((val) => ({
@@ -1033,7 +1072,7 @@ const JupiterForm: FunctionComponent = () => {
                     })}
                   </div>
                   <div className="thin-scroll max-h-96 overflow-y-auto overflow-x-hidden pr-1">
-                    {routes.map((route, index) => {
+                    {routes?.map((route, index) => {
                       const selected = selectedRoute === route
                       return (
                         <div

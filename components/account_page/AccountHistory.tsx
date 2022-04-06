@@ -43,9 +43,9 @@ export default function AccountHistory() {
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
 
   const mangoAccountPk = useMemo(() => {
-    console.log('new mango account')
-
-    return mangoAccount.publicKey.toString()
+    if (mangoAccount) {
+      return mangoAccount.publicKey.toString()
+    }
   }, [mangoAccount])
 
   useEffect(() => {
@@ -91,7 +91,7 @@ export default function AccountHistory() {
 const ViewContent = ({ view, history }) => {
   switch (view) {
     case 'Trades':
-      return <TradeHistoryTable showExportPnl />
+      return <TradeHistoryTable showActions />
     case 'Deposit':
       return <HistoryTable history={history} view={view} />
     case 'Withdraw':
@@ -99,7 +99,7 @@ const ViewContent = ({ view, history }) => {
     case 'Liquidation':
       return <LiquidationHistoryTable history={history} view={view} />
     default:
-      return <TradeHistoryTable showExportPnl />
+      return <TradeHistoryTable showActions />
   }
 }
 
@@ -200,7 +200,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
 
     const tab = historyViews.filter((v) => v.key == view)[0].label
     const title = `${
-      mangoAccount.name || mangoAccount.publicKey
+      mangoAccount?.name || mangoAccount?.publicKey
     }-${tab}-${new Date().toLocaleDateString()}`
 
     exportDataToCSV(dataToExport, title, headers, t)
@@ -211,15 +211,16 @@ const LiquidationHistoryTable = ({ history, view }) => {
       <div className="flex items-center justify-between pb-3">
         <div className="flex items-center">
           <h4 className="mb-0 text-th-fgd-1">
-            {filteredHistory.length}{' '}
-            {filteredHistory.length === 1 ? view : `${view}s`}
+            {filteredHistory.length === 1
+              ? t('number-liquidation', { number: filteredHistory.length })
+              : t('number-liquidations', { number: filteredHistory.length })}
           </h4>
           <Tooltip
             content={
               <div className="mr-4 text-xs text-th-fgd-3">
                 {t('delay-displaying-recent')} {t('use-explorer-one')}
                 <a
-                  href={`https://explorer.solana.com/address/${mangoAccount.publicKey.toString()}`}
+                  href={`https://explorer.solana.com/address/${mangoAccount?.publicKey?.toString()}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -341,7 +342,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
             </thead>
             <tbody>
               {items.map(({ activity_details, activity_type }) => {
-                let perpMarket: PerpMarket
+                let perpMarket: PerpMarket | null = null
                 if (activity_type.includes('perp')) {
                   const symbol = activity_details.perp_market.split('-')[0]
                   const marketConfig = getMarketByBaseSymbolAndKind(
@@ -464,7 +465,7 @@ const HistoryTable = ({ history, view }) => {
 
     const tab = historyViews.filter((v) => v.key == view)[0].label
     const title = `${
-      mangoAccount.name || mangoAccount.publicKey
+      mangoAccount?.name || mangoAccount?.publicKey
     }-${tab}-${new Date().toLocaleDateString()}`
 
     exportDataToCSV(dataToExport, title, headers, t)
@@ -475,21 +476,20 @@ const HistoryTable = ({ history, view }) => {
       <div className="flex items-center justify-between pb-3">
         <div className="flex items-center">
           <h4 className="mb-0 text-th-fgd-1">
-            {filteredHistory.length}{' '}
             {filteredHistory.length === 1
               ? view === 'Withdraw'
-                ? 'Withdrawal'
-                : view
+                ? t('number-withdrawal', { number: filteredHistory.length })
+                : t('number-deposit', { number: filteredHistory.length })
               : view === 'Withdraw'
-              ? 'Withdrawals'
-              : `${view}s`}
+              ? t('number-withdrawals', { number: filteredHistory.length })
+              : t('number-deposits', { number: filteredHistory.length })}
           </h4>
           <Tooltip
             content={
               <div className="mr-4 text-xs text-th-fgd-3">
                 {t('delay-displaying-recent')} {t('use-explorer-one')}
                 <a
-                  href={`https://explorer.solana.com/address/${mangoAccount.publicKey.toString()}`}
+                  href={`https://explorer.solana.com/address/${mangoAccount?.publicKey?.toString()}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >

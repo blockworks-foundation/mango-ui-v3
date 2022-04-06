@@ -1,5 +1,4 @@
 import { Fragment, useCallback, useMemo, useRef, useState } from 'react'
-import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
 import { Popover, Transition } from '@headlessui/react'
 import { SearchIcon } from '@heroicons/react/outline'
 import { ChevronDownIcon } from '@heroicons/react/solid'
@@ -9,7 +8,7 @@ import MarketNavItem from './MarketNavItem'
 import useMangoStore from '../stores/useMangoStore'
 
 const SwitchMarketDropdown = () => {
-  const groupConfig = useMangoGroupConfig()
+  const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const baseSymbol = marketConfig.baseSymbol
   const isPerpMarket = marketConfig.kind === 'perp'
@@ -32,7 +31,7 @@ const SwitchMarketDropdown = () => {
     [marketsInfo]
   )
 
-  const [suggestions, setSuggestions] = useState([])
+  const [suggestions, setSuggestions] = useState<any[]>([])
   const [searchString, setSearchString] = useState('')
   const buttonRef = useRef(null)
   const { t } = useTranslation('common')
@@ -43,7 +42,7 @@ const SwitchMarketDropdown = () => {
   const onSearch = (searchString) => {
     if (searchString.length > 0) {
       const newSuggestions = suggestions.filter((v) =>
-        v.name.toLowerCase().includes(searchString.toLowerCase())
+        v.name?.toLowerCase().includes(searchString.toLowerCase())
       )
       setSuggestions(newSuggestions)
     }
@@ -81,7 +80,7 @@ const SwitchMarketDropdown = () => {
                 {isPerpMarket ? '-' : '/'}
               </span>
               <div className="pl-0.5 text-xl font-semibold">
-                {isPerpMarket ? 'PERP' : groupConfig.quoteSymbol}
+                {isPerpMarket ? 'PERP' : groupConfig?.quoteSymbol}
               </div>
               <div
                 className={`flex h-10 w-8 items-center justify-center rounded-none`}

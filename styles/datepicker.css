@@ -1,45 +1,53 @@
-/* Date Picker */
+/* Range Picker */
 
-.react-datepicker {
-  @apply rounded-md border-0 bg-th-bkg-3 font-body text-th-fgd-2 ring-1 ring-th-fgd-4;
+.nice-dates .nice-dates-popover {
+  @apply max-w-[384px] bg-th-bkg-4;
 }
 
-.react-datepicker-popper[data-placement^='bottom'] {
-  @apply pt-1;
+.nice-dates .nice-dates-navigation {
+  @apply font-bold text-th-fgd-1;
 }
 
-.react-datepicker__header {
-  @apply rounded-tl-md border-none bg-th-bkg-1 text-th-fgd-1;
+.nice-dates .nice-dates-navigation_next:before {
+  @apply border-th-fgd-2 hover:border-th-primary;
 }
 
-.react-datepicker__header:not(.react-datepicker__header--has-time-select) {
-  @apply rounded-tr-md;
+.nice-dates .nice-dates-navigation_next:hover:before {
+  @apply border-th-primary;
 }
 
-.react-datepicker__current-month {
-  @apply text-th-fgd-1;
+.nice-dates .nice-dates-navigation_previous:before {
+  @apply border-th-fgd-2 hover:border-th-primary;
 }
 
-.react-datepicker__day-name {
+.nice-dates .nice-dates-navigation_previous:hover:before {
+  @apply border-th-primary;
+}
+
+.nice-dates .nice-dates-week-header_day {
   @apply text-th-fgd-2;
 }
 
-.react-datepicker__triangle {
-  @apply hidden;
+.nice-dates .nice-dates-day_date {
+  @apply text-th-fgd-3;
 }
 
-.react-datepicker__day {
-  @apply text-th-fgd-2 hover:bg-th-bkg-4;
+.nice-dates .-outside .nice-dates-day_date {
+  @apply text-th-fgd-4;
 }
 
-.react-datepicker__day--selected {
-  @apply bg-th-primary text-th-bkg-1 hover:bg-th-primary hover:text-th-bkg-1;
+.nice-dates .nice-dates-day_month {
+  @apply text-th-fgd-4;
 }
 
-.react-datepicker__day--keyboard-selected {
-  @apply bg-transparent ring-2 ring-inset ring-th-fgd-4;
+.nice-dates .nice-dates-day:after {
+  @apply border-th-fgd-4;
 }
 
-.react-datepicker__day--today {
-  @apply rounded-md ring-2 ring-inset ring-th-fgd-4;
+.nice-dates .nice-dates-day:before {
+  @apply bg-th-bkg-1;
+}
+
+.nice-dates .nice-dates-day.-selected:hover:after {
+  @apply bg-th-bkg-3;
 }

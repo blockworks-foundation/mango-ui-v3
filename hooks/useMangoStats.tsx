@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { I80F48 } from '@blockworks-foundation/mango-client'
 import useMangoStore from '../stores/useMangoStore'
-import useMangoGroupConfig from './useMangoGroupConfig'
 import { tokenPrecision } from '../utils'
 
 const useMangoStats = () => {
@@ -33,12 +32,12 @@ const useMangoStats = () => {
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoGroupName = useMangoStore((s) => s.selectedMangoGroup.name)
   const connection = useMangoStore((s) => s.connection.current)
-  const config = useMangoGroupConfig()
+  const config = useMangoStore((s) => s.selectedMangoGroup.config)
 
   useEffect(() => {
     const fetchHistoricalStats = async () => {
       const response = await fetch(
-        `https://mango-stats-v3.herokuapp.com/spot?mangoGroup=${mangoGroupName}`
+        `https://mango-transaction-log.herokuapp.com/v3/stats/spot_stats_hourly?mango-group=${mangoGroupName}`
       )
       const stats = await response.json()
       setStats(stats)
@@ -49,7 +48,7 @@ const useMangoStats = () => {
   useEffect(() => {
     const fetchHistoricalPerpStats = async () => {
       const response = await fetch(
-        `https://mango-stats-v3.herokuapp.com/perp?mangoGroup=${mangoGroupName}`
+        `https://mango-transaction-log.herokuapp.com/v3/stats/perp_stats_hourly?mango-group=${mangoGroupName}`
       )
       const stats = await response.json()
       setPerpStats(stats)
@@ -61,6 +60,7 @@ const useMangoStats = () => {
     const getLatestStats = async () => {
       if (mangoGroup) {
         const rootBanks = await mangoGroup.loadRootBanks(connection)
+        if (!config) return
         const latestStats = config.tokens.map((token) => {
           const rootBank = rootBanks.find((bank) => {
             if (!bank) {
@@ -68,6 +68,9 @@ const useMangoStats = () => {
             }
             return bank.publicKey.toBase58() == token.rootKey.toBase58()
           })
+          if (!rootBank) {
+            return
+          }
           const totalDeposits = rootBank.getUiTotalDeposit(mangoGroup)
           const totalBorrows = rootBank.getUiTotalBorrow(mangoGroup)
 

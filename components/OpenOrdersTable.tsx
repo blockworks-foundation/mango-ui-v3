@@ -251,10 +251,14 @@ const MobileTable = ({
                       {order.side.toUpperCase()}
                     </span>
                     {order.perpTrigger
-                      ? `${order.size} ${
-                          order.triggerCondition
-                        } ${formatUsdValue(order.triggerPrice)}`
-                      : `${order.size} at ${formatUsdValue(order.price)}`}
+                      ? `${order.size.toLocaleString(undefined, {
+                          maximumFractionDigits: 4,
+                        })} ${order.triggerCondition} ${formatUsdValue(
+                          order.triggerPrice
+                        )}`
+                      : `${order.size.toLocaleString(undefined, {
+                          maximumFractionDigits: 4,
+                        })} at ${formatUsdValue(order.price)}`}
                   </div>
                 </div>
               </div>
@@ -342,8 +346,8 @@ const OpenOrdersTable = () => {
   const { asPath } = useRouter()
   const { wallet } = useWallet()
   const openOrders = useMangoStore((s) => s.selectedMangoAccount.openOrders)
-  const [cancelId, setCancelId] = useState(null)
-  const [modifyId, setModifyId] = useState(null)
+  const [cancelId, setCancelId] = useState<any>(null)
+  const [modifyId, setModifyId] = useState<any>(null)
   const [editOrderIndex, setEditOrderIndex] = useState(null)
   const actions = useMangoStore((s) => s.actions)
   const { width } = useViewport()
@@ -361,12 +365,12 @@ const OpenOrdersTable = () => {
     setCancelId(order.orderId)
     let txid
     try {
-      if (!selectedMangoGroup || !selectedMangoAccount) return
+      if (!selectedMangoGroup || !selectedMangoAccount || !wallet) return
       if (market instanceof Market) {
         txid = await mangoClient.cancelSpotOrder(
           selectedMangoGroup,
           selectedMangoAccount,
-          wallet?.adapter,
+          wallet.adapter,
           market,
           order as Order
         )
@@ -377,7 +381,7 @@ const OpenOrdersTable = () => {
           txid = await mangoClient.removeAdvancedOrder(
             selectedMangoGroup,
             selectedMangoAccount,
-            wallet?.adapter,
+            wallet.adapter,
             (order as PerpTriggerOrder).orderId
           )
           actions.reloadOrders()
@@ -385,7 +389,7 @@ const OpenOrdersTable = () => {
           txid = await mangoClient.cancelPerpOrder(
             selectedMangoGroup,
             selectedMangoAccount,
-            wallet?.adapter,
+            wallet.adapter,
             market,
             order as PerpOrder,
             false

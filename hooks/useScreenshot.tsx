@@ -14,14 +14,18 @@ import html2canvas from 'html2canvas'
  * hook for creating screenshot from html node
  * @returns {HookReturn}
  */
-const useScreenshot = () => {
-  const [image, setImage] = useState(null)
+const useScreenshot: () => [
+  HTMLCanvasElement | null,
+  (node: HTMLElement) => Promise<void | HTMLCanvasElement>,
+  { error: null }
+] = () => {
+  const [image, setImage] = useState<HTMLCanvasElement | null>(null)
   const [error, setError] = useState(null)
   /**
    * convert html node to image
    * @param {HTMLElement} node
    */
-  const takeScreenShot = (node) => {
+  const takeScreenshot = (node: HTMLElement) => {
     if (!node) {
       throw new Error('You should provide correct html node.')
     }
@@ -38,7 +42,7 @@ const useScreenshot = () => {
         croppedCanvas.width = cropWidth
         croppedCanvas.height = cropHeight
 
-        croppedCanvasContext.drawImage(
+        croppedCanvasContext?.drawImage(
           canvas,
           cropPositionLeft,
           cropPositionTop
@@ -52,7 +56,7 @@ const useScreenshot = () => {
 
   return [
     image,
-    takeScreenShot,
+    takeScreenshot,
     {
       error,
     },

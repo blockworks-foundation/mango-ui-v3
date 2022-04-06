@@ -11,8 +11,9 @@ interface InputProps {
   [x: string]: any
 }
 
-const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
-  const {
+const Input = forwardRef<HTMLInputElement, InputProps>(
+  ({
+    ref,
     type,
     value,
     onChange,
@@ -23,21 +24,19 @@ const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
     prefix,
     prefixClassName,
     suffix,
-  } = props
-  return (
-    <div className={`relative flex ${wrapperClassName}`}>
-      {prefix ? (
-        <div
-          className={`absolute left-2 top-1/2 -translate-y-1/2 transform ${prefixClassName}`}
-        >
-          {prefix}
-        </div>
-      ) : null}
-      <input
-        type={type}
-        value={value}
-        onChange={onChange}
-        className={`${className} h-10 w-full flex-1 rounded-md border bg-th-bkg-1 px-2 pb-px
+    ...props
+  }) => {
+    return (
+      <div className={`relative flex ${wrapperClassName}`}>
+        {prefix ? (
+          <div
+            className={`absolute left-2 top-1/2 -translate-y-1/2 transform ${prefixClassName}`}
+          >
+            {prefix}
+          </div>
+        ) : null}
+        <input
+          className={`${className} h-10 w-full flex-1 rounded-md border bg-th-bkg-1 px-2 pb-px
           text-th-fgd-1 ${
             error ? 'border-th-red' : 'border-th-bkg-4'
           } default-transition hover:border-th-fgd-4 
@@ -49,18 +48,22 @@ const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
           }
           ${prefix ? 'pl-7' : ''}
           ${suffix ? 'pr-11' : ''}`}
-        disabled={disabled}
-        ref={ref}
-        {...props}
-      />
-      {suffix ? (
-        <span className="absolute right-0 flex h-full items-center bg-transparent pr-2 text-xs text-th-fgd-4">
-          {suffix}
-        </span>
-      ) : null}
-    </div>
-  )
-})
+          disabled={disabled}
+          ref={ref}
+          {...props}
+          type={type}
+          value={value}
+          onChange={onChange}
+        />
+        {suffix ? (
+          <span className="absolute right-0 flex h-full items-center bg-transparent pr-2 text-xs text-th-fgd-4">
+            {suffix}
+          </span>
+        ) : null}
+      </div>
+    )
+  }
+)
 
 export default Input
 

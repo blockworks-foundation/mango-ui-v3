@@ -22,13 +22,13 @@ const initialMenuCategories = [
   { name: 'Spot', desc: 'spot-desc' },
 ]
 
-export const FAVORITE_MARKETS_KEY = 'favoriteMarkets'
+export const FAVORITE_MARKETS_KEY = 'favoriteMarkets-0.1'
 
 const TradeNavMenu = () => {
   const [favoriteMarkets] = useLocalStorageState(FAVORITE_MARKETS_KEY, [])
   const [activeMenuCategory, setActiveMenuCategory] = useState('Futures')
   const [menuCategories, setMenuCategories] = useState(initialMenuCategories)
-  const buttonRef = useRef(null)
+  const buttonRef = useRef<HTMLButtonElement>(null)
   const { t } = useTranslation('common')
 
   const marketsInfo = useMangoStore((s) => s.marketsInfo)
@@ -55,7 +55,7 @@ const TradeNavMenu = () => {
         ? perpMarketsInfo
         : activeMenuCategory === 'Spot'
         ? spotMarketsInfo
-        : favoriteMarkets,
+        : marketsInfo.filter((mkt) => favoriteMarkets.includes(mkt.name)),
     [activeMenuCategory, marketsInfo]
   )
 
@@ -230,25 +230,25 @@ export const FavoriteMarketButton = ({ market }) => {
   )
 
   const addToFavorites = (mkt) => {
-    const newFavorites = [...favoriteMarkets, mkt]
+    const newFavorites: any = [...favoriteMarkets, mkt]
     setFavoriteMarkets(newFavorites)
   }
 
   const removeFromFavorites = (mkt) => {
-    setFavoriteMarkets(favoriteMarkets.filter((m) => m.name !== mkt.name))
+    setFavoriteMarkets(favoriteMarkets.filter((m) => m.name !== mkt))
   }
 
-  return favoriteMarkets.find((mkt) => mkt.name === market.name) ? (
+  return favoriteMarkets.find((mkt) => mkt === market.name) ? (
     <button
       className="default-transition flex items-center justify-center text-th-primary hover:text-th-fgd-3"
-      onClick={() => removeFromFavorites(market)}
+      onClick={() => removeFromFavorites(market.name)}
     >
       <FilledStarIcon className="h-5 w-5" />
     </button>
   ) : (
     <button
       className="default-transition flex items-center justify-center text-th-fgd-4 hover:text-th-primary"
-      onClick={() => addToFavorites(market)}
+      onClick={() => addToFavorites(market.name)}
     >
       <StarIcon className="h-5 w-5" />
     </button>

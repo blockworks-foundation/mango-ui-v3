@@ -61,6 +61,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
 
   const handleDeposit = () => {
     const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
+    if (!wallet || !mangoAccount) return
 
     setSubmitting(true)
     deposit({
@@ -135,19 +136,25 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
     validateAmountInput(amount)
   }
 
-  const percentage = (parseFloat(inputAmount) / parseFloat(repayAmount)) * 100
-  const net = parseFloat(inputAmount) - parseFloat(repayAmount)
+  const percentage = repayAmount
+    ? (parseFloat(inputAmount) / parseFloat(repayAmount)) * 100
+    : null
+  const net = repayAmount
+    ? parseFloat(inputAmount) - parseFloat(repayAmount)
+    : null
   const repayMessage =
     percentage === 100
       ? t('repay-full')
-      : percentage > 100
+      : typeof percentage === 'number' && percentage > 100
       ? t('repay-and-deposit', {
           amount: trimDecimals(net, 6).toString(),
           symbol: selectedAccount.config.symbol,
         })
-      : t('repay-partial', {
+      : typeof percentage === 'number'
+      ? t('repay-partial', {
           percentage: percentage.toFixed(2),
         })
+      : ''
 
   const inputDisabled =
     selectedAccount &&

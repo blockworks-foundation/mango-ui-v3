@@ -2,9 +2,9 @@ import Head from 'next/head'
 import { ThemeProvider } from 'next-themes'
 import '../node_modules/react-grid-layout/css/styles.css'
 import '../node_modules/react-resizable/css/styles.css'
-import '../node_modules/react-datepicker/dist/react-datepicker.css'
 import 'intro.js/introjs.css'
 import '../styles/index.css'
+import 'react-nice-dates/build/style.css'
 import '../styles/datepicker.css'
 import useHydrateStore from '../hooks/useHydrateStore'
 import Notifications from '../components/Notification'
@@ -27,6 +27,9 @@ import {
   ReferrerIdRecord,
 } from '@blockworks-foundation/mango-client'
 import useTradeHistory from '../hooks/useTradeHistory'
+import * as Sentry from '@sentry/react'
+import { BrowserTracing } from '@sentry/tracing'
+
 import { WalletProvider, WalletListener } from 'components/WalletAdapter'
 import { PhantomWalletAdapter } from '@solana/wallet-adapter-phantom'
 import { SolflareWalletAdapter } from '@solana/wallet-adapter-solflare'
@@ -35,6 +38,14 @@ import { SlopeWalletAdapter } from '@solana/wallet-adapter-slope'
 import { BitpieWalletAdapter } from '@solana/wallet-adapter-bitpie'
 import { HuobiWalletAdapter } from '@solana/wallet-adapter-huobi'
 import { GlowWalletAdapter } from '@solana/wallet-adapter-glow'
+
+const SENTRY_URL = process.env.NEXT_PUBLIC_SENTRY_URL
+if (SENTRY_URL) {
+  Sentry.init({
+    dsn: SENTRY_URL,
+    integrations: [new BrowserTracing()],
+  })
+}
 
 const MangoStoreUpdater = () => {
   useHydrateStore()
@@ -70,14 +81,15 @@ const FetchReferrer = () => {
         if (query.ref.length === 44) {
           referrerPk = new PublicKey(query.ref)
         } else {
-          let decodedRefLink: string
+          let decodedRefLink: string | null = null
           try {
             decodedRefLink = decodeURIComponent(query.ref as string)
           } catch (e) {
             console.log('Failed to decode referrer link', e)
           }
-
           const mangoClient = useMangoStore.getState().connection.client
+          if (!decodedRefLink) return
+
           const { referrerPda } = await mangoClient.getReferrerPda(
             mangoGroup,
             decodedRefLink
@@ -173,29 +185,23 @@ function App({ Component, pageProps }) {
         <link rel="manifest" href="/manifest.json"></link>
       </Head>
       <ErrorBoundary>
-        <ErrorBoundary>
-          <PageTitle />
-          <MangoStoreUpdater />
-          <OpenOrdersStoreUpdater />
-          <PerpPositionsStoreUpdater />
-          <TradeHistoryStoreUpdater />
-          <FetchReferrer />
-        </ErrorBoundary>
+        <PageTitle />
+        <MangoStoreUpdater />
+        <OpenOrdersStoreUpdater />
+        <PerpPositionsStoreUpdater />
+        <TradeHistoryStoreUpdater />
+        <FetchReferrer />
 
         <ThemeProvider defaultTheme="Mango">
           <WalletProvider wallets={wallets}>
             <WalletListener />
             <ViewportProvider>
               <div className="min-h-screen bg-th-bkg-1">
-                <ErrorBoundary>
-                  <GlobalNotification />
-                  <Component {...pageProps} />
-                </ErrorBoundary>
+                <GlobalNotification />
+                <Component {...pageProps} />
               </div>
               <div className="fixed bottom-0 left-0 z-20 w-full md:hidden">
-                <ErrorBoundary>
-                  <BottomBar />
-                </ErrorBoundary>
+                <BottomBar />
               </div>
 
               <Notifications />

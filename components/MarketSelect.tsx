@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { MenuIcon, PlusCircleIcon } from '@heroicons/react/outline'
-import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
 import MarketMenuItem from './MarketMenuItem'
 import { LinkButton } from './Button'
 import MarketsModal from './MarketsModal'
@@ -8,29 +7,35 @@ import useLocalStorageState from '../hooks/useLocalStorageState'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { useTranslation } from 'next-i18next'
+import useMangoStore from 'stores/useMangoStore'
 
 const MarketSelect = () => {
   const { t } = useTranslation('common')
+  const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const [showMarketsModal, setShowMarketsModal] = useState(false)
   const [hiddenMarkets] = useLocalStorageState('hiddenMarkets', [])
-  const [sortedMarkets, setSortedMarkets] = useState([])
-  const groupConfig = useMangoGroupConfig()
+  const [sortedMarkets, setSortedMarkets] = useState<any[]>([])
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.md : false
 
   useEffect(() => {
-    const markets = []
-    const allMarkets = [...groupConfig.spotMarkets, ...groupConfig.perpMarkets]
-    allMarkets.forEach((market) => {
-      const base = market.name.slice(0, -5)
-      const found = markets.find((b) => b.baseAsset === base)
-      if (!found) {
-        markets.push({ baseAsset: base, markets: [market] })
-      } else {
-        found.markets.push(market)
-      }
-    })
-    setSortedMarkets(markets)
+    if (groupConfig) {
+      const markets: any[] = []
+      const allMarkets = [
+        ...groupConfig.spotMarkets,
+        ...groupConfig.perpMarkets,
+      ]
+      allMarkets.forEach((market) => {
+        const base = market.name.slice(0, -5)
+        const found = markets.find((b) => b.baseAsset === base)
+        if (!found) {
+          markets.push({ baseAsset: base, markets: [market] })
+        } else {
+          found.markets.push(market)
+        }
+      })
+      setSortedMarkets(markets)
+    }
   }, [groupConfig])
 
   return (

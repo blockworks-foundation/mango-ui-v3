@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from 'react'
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/solid'
-import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
 import Modal from './Modal'
 import { ElementTitle } from './styles'
 import Button, { LinkButton } from './Button'
@@ -87,10 +86,12 @@ const SettingsModal = ({ isOpen, onClose }) => {
   const rpcEndpoint =
     NODE_URLS.find((node) => node.value === rpcEndpointUrl) || CUSTOM_NODE
 
-  const savedLanguageName = useMemo(
-    () => LANGS.find((l) => l.locale === savedLanguage).name,
-    [savedLanguage]
-  )
+  const savedLanguageName = useMemo(() => {
+    const matchingLang = LANGS.find((l) => l.locale === savedLanguage)
+    if (matchingLang) {
+      return matchingLang.name
+    }
+  }, [savedLanguage])
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -133,10 +134,12 @@ const SettingsModal = ({ isOpen, onClose }) => {
             onClick={() => setSettingsView('Language')}
           >
             <span>{t('language')}</span>
-            <div className="flex items-center text-xs text-th-fgd-3">
-              {t(savedLanguageName)}
-              <ChevronRightIcon className="ml-1 h-5 w-5 text-th-fgd-1" />
-            </div>
+            {savedLanguageName ? (
+              <div className="flex items-center text-xs text-th-fgd-3">
+                {t(savedLanguageName)}
+                <ChevronRightIcon className="ml-1 h-5 w-5 text-th-fgd-1" />
+              </div>
+            ) : null}
           </button>
           <button
             className="default-transition flex w-full items-center justify-between rounded-none border-t border-th-bkg-4 py-3 font-normal text-th-fgd-1 hover:text-th-primary focus:outline-none"
@@ -144,7 +147,7 @@ const SettingsModal = ({ isOpen, onClose }) => {
           >
             <span>{t('rpc-endpoint')}</span>
             <div className="flex items-center text-xs text-th-fgd-3">
-              {rpcEndpoint.label}
+              {rpcEndpoint?.label}
               <ChevronRightIcon className="ml-1 h-5 w-5 text-th-fgd-1" />
             </div>
           </button>
@@ -190,18 +193,19 @@ const SettingsContent = ({ settingsView, setSettingsView }) => {
       return <ThemeSettings setSettingsView={setSettingsView} />
     case 'Language':
       return <LanguageSettings />
-    case '':
+    default:
       return null
   }
 }
 
 const DefaultMarketSettings = ({ setSettingsView }) => {
   const { t } = useTranslation('common')
-  const groupConfig = useMangoGroupConfig()
-  const allMarkets = [
-    ...groupConfig.spotMarkets,
-    ...groupConfig.perpMarkets,
-  ].sort((a, b) => a.name.localeCompare(b.name))
+  const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
+  const allMarkets = groupConfig
+    ? [...groupConfig.spotMarkets, ...groupConfig.perpMarkets].sort((a, b) =>
+        a.name.localeCompare(b.name)
+      )
+    : []
   const [defaultMarket, setDefaultMarket] = useLocalStorageState(
     DEFAULT_MARKET_KEY,
     {
@@ -269,7 +273,7 @@ const RpcEndpointSettings = ({ setSettingsView }) => {
     <div className="flex flex-col text-th-fgd-1">
       <Label>{t('rpc-endpoint')}</Label>
       <Select
-        value={rpcEndpoint.label}
+        value={rpcEndpoint?.label}
         onChange={(url) => handleSelectEndpointUrl(url)}
         className="w-full"
       >
@@ -279,7 +283,7 @@ const RpcEndpointSettings = ({ setSettingsView }) => {
           </Select.Option>
         ))}
       </Select>
-      {rpcEndpoint.label === 'Custom' ? (
+      {rpcEndpoint?.label === 'Custom' ? (
         <div className="pt-4">
           <Label>{t('node-url')}</Label>
           <Input

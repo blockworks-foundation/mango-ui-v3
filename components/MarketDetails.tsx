@@ -15,19 +15,23 @@ import { useTranslation } from 'next-i18next'
 import SwitchMarketDropdown from './SwitchMarketDropdown'
 import Tooltip from './Tooltip'
 import { useWallet } from '@solana/wallet-adapter-react'
+import { InformationCircleIcon } from '@heroicons/react/outline'
 
 const OraclePrice = () => {
   const oraclePrice = useOraclePrice()
   const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
 
   const decimals = useMemo(
-    () => getPrecisionDigits(selectedMarket?.tickSize),
+    () =>
+      selectedMarket?.tickSize !== undefined
+        ? getPrecisionDigits(selectedMarket?.tickSize)
+        : null,
     [selectedMarket]
   )
 
   return (
     <div className="text-th-fgd-1 md:text-xs">
-      {oraclePrice && selectedMarket
+      {decimals && oraclePrice && selectedMarket
         ? oraclePrice.toNumber().toLocaleString(undefined, {
             minimumFractionDigits: decimals,
             maximumFractionDigits: decimals,
@@ -100,29 +104,42 @@ const MarketDetails = () => {
                       {usdFormatter(market?.volumeUsd24h, 0)}
                     </div>
                   </div>
-                  <Tooltip content={t('tooltip-funding')} placement={'bottom'}>
-                    <div className="flex items-center justify-between hover:cursor-help md:block">
-                      <div className="flex items-center text-th-fgd-3 md:pb-0.5 md:text-[0.65rem]">
-                        {t('average-funding')}
-                      </div>
-                      <div className="text-th-fgd-1 md:text-xs">
-                        {`${market?.funding1h.toFixed(4)}% (${(
-                          market?.funding1h *
-                          24 *
-                          365
-                        ).toFixed(2)}% APR)`}
-                      </div>
+                  <div className="flex items-center justify-between md:block">
+                    <div className="flex items-center text-th-fgd-3 md:pb-0.5 md:text-[0.65rem]">
+                      {t('average-funding')}
+                      <Tooltip
+                        content={t('tooltip-funding')}
+                        placement={'bottom'}
+                      >
+                        <InformationCircleIcon className="ml-1.5 h-4 w-4 text-th-fgd-3 hover:cursor-help" />
+                      </Tooltip>
                     </div>
-                  </Tooltip>
+                    <div className="text-th-fgd-1 md:text-xs">
+                      {`${market?.funding1h.toFixed(4)}% (${(
+                        market?.funding1h *
+                        24 *
+                        365
+                      ).toFixed(2)}% APR)`}
+                    </div>
+                  </div>
                   <div className="flex items-center justify-between md:block">
                     <div className="text-th-fgd-3 md:pb-0.5 md:text-[0.65rem]">
                       {t('open-interest')}
                     </div>
-                    <div className="text-th-fgd-1 md:text-xs">
-                      {`${market?.openInterest.toLocaleString(undefined, {
-                        maximumFractionDigits:
-                          perpContractPrecision[baseSymbol],
-                      })} ${baseSymbol}`}
+                    <div className="flex items-center text-th-fgd-1 md:text-xs">
+                      {usdFormatter(market?.openInterestUsd, 0)}
+                      <Tooltip
+                        content={`${market?.openInterest.toLocaleString(
+                          undefined,
+                          {
+                            maximumFractionDigits:
+                              perpContractPrecision[baseSymbol],
+                          }
+                        )} ${baseSymbol}`}
+                        placement={'bottom'}
+                      >
+                        <InformationCircleIcon className="ml-1.5 h-4 w-4 text-th-fgd-3 hover:cursor-help" />
+                      </Tooltip>
                     </div>
                   </div>
                 </>

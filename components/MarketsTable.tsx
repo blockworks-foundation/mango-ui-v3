@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import Link from 'next/link'
-import { formatUsdValue, usdFormatter } from '../utils'
+import { formatUsdValue, perpContractPrecision, usdFormatter } from '../utils'
 import { Table, Td, Th, TrBody, TrHead } from './TableElements'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
@@ -100,44 +100,6 @@ const MarketsTable = ({ isPerpMarket }) => {
             <Th>
               <LinkButton
                 className="flex items-center font-normal no-underline"
-                onClick={() => requestSort('low24h')}
-              >
-                <span className="font-normal text-th-fgd-3">
-                  {t('daily-low')}
-                </span>
-                <ArrowSmDownIcon
-                  className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
-                    sortConfig?.key === 'low24h'
-                      ? sortConfig.direction === 'ascending'
-                        ? 'rotate-180 transform'
-                        : 'rotate-360 transform'
-                      : null
-                  }`}
-                />
-              </LinkButton>
-            </Th>
-            <Th>
-              <LinkButton
-                className="flex items-center font-normal no-underline"
-                onClick={() => requestSort('high24h')}
-              >
-                <span className="font-normal text-th-fgd-3">
-                  {t('daily-high')}
-                </span>
-                <ArrowSmDownIcon
-                  className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
-                    sortConfig?.key === 'high24h'
-                      ? sortConfig.direction === 'ascending'
-                        ? 'rotate-180 transform'
-                        : 'rotate-360 transform'
-                      : null
-                  }`}
-                />
-              </LinkButton>
-            </Th>
-            <Th>
-              <LinkButton
-                className="flex items-center font-normal no-underline"
                 onClick={() => requestSort('volumeUsd24h')}
               >
                 <span className="font-normal text-th-fgd-3">
@@ -178,14 +140,14 @@ const MarketsTable = ({ isPerpMarket }) => {
                 <Th>
                   <LinkButton
                     className="flex items-center no-underline"
-                    onClick={() => requestSort('openInterest')}
+                    onClick={() => requestSort('openInterestUsd')}
                   >
                     <span className="font-normal text-th-fgd-3">
                       {t('open-interest')}
                     </span>
                     <ArrowSmDownIcon
                       className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
-                        sortConfig?.key === 'openInterest'
+                        sortConfig?.key === 'openInterestUsd'
                           ? sortConfig.direction === 'ascending'
                             ? 'rotate-180 transform'
                             : 'rotate-360 transform'
@@ -207,11 +169,10 @@ const MarketsTable = ({ isPerpMarket }) => {
               baseSymbol,
               change24h,
               funding1h,
-              high24h,
               last,
-              low24h,
               name,
               openInterest,
+              openInterestUsd,
               volumeUsd24h,
             } = market
             const fundingApr = funding1h
@@ -219,20 +180,22 @@ const MarketsTable = ({ isPerpMarket }) => {
               : '-'
 
             return (
-              <TrBody key={name}>
+              <TrBody key={name} className="hover:bg-th-bkg-3">
                 <Td>
-                  <div className="flex items-center">
-                    <img
-                      alt=""
-                      width="20"
-                      height="20"
-                      src={`/assets/icons/${baseSymbol.toLowerCase()}.svg`}
-                      className={`mr-2.5`}
-                    />
-                    <Link href={`/?name=${name}`} shallow={true}>
-                      <a className="default-transition text-th-fgd-2">{name}</a>
-                    </Link>
-                  </div>
+                  <Link href={`/?name=${name}`} shallow={true}>
+                    <a className="hover:cursor-pointer">
+                      <div className="flex h-full items-center text-th-fgd-2 hover:text-th-primary">
+                        <img
+                          alt=""
+                          width="20"
+                          height="20"
+                          src={`/assets/icons/${baseSymbol.toLowerCase()}.svg`}
+                          className={`mr-2.5`}
+                        />
+                        <span className="default-transition">{name}</span>
+                      </div>
+                    </a>
+                  </Link>
                 </Td>
                 <Td>
                   {last ? (
@@ -251,20 +214,6 @@ const MarketsTable = ({ isPerpMarket }) => {
                       <span className="text-th-fgd-4">Unavailable</span>
                     )}
                   </span>
-                </Td>
-                <Td>
-                  {low24h ? (
-                    formatUsdValue(low24h)
-                  ) : (
-                    <span className="text-th-fgd-4">Unavailable</span>
-                  )}
-                </Td>
-                <Td>
-                  {high24h ? (
-                    formatUsdValue(high24h)
-                  ) : (
-                    <span className="text-th-fgd-4">Unavailable</span>
-                  )}
                 </Td>
                 <Td>
                   {volumeUsd24h ? (
@@ -286,12 +235,18 @@ const MarketsTable = ({ isPerpMarket }) => {
                       )}
                     </Td>
                     <Td>
-                      {openInterest ? (
+                      {openInterestUsd ? (
                         <>
-                          <span>{openInterest.toLocaleString()}</span>{' '}
-                          <span className="text-xs text-th-fgd-3">
-                            {baseSymbol}
-                          </span>
+                          <span>{usdFormatter(openInterestUsd, 0)}</span>{' '}
+                          {openInterest ? (
+                            <div className="text-xs text-th-fgd-4">
+                              {openInterest.toLocaleString(undefined, {
+                                maximumFractionDigits:
+                                  perpContractPrecision[baseSymbol],
+                              })}{' '}
+                              {baseSymbol}
+                            </div>
+                          ) : null}
                         </>
                       ) : (
                         <span className="text-th-fgd-4">Unavailable</span>

@@ -3,7 +3,7 @@ import dayjs from 'dayjs'
 import useMangoStore from '../../stores/useMangoStore'
 import { Table, Td, Th, TrBody, TrHead } from '../TableElements'
 import { useTranslation } from 'next-i18next'
-import { isEmpty } from 'lodash'
+import isEmpty from 'lodash/isEmpty'
 import usePagination from '../../hooks/usePagination'
 import { numberCompactFormatter } from '../../utils/'
 import Pagination from '../Pagination'
@@ -40,7 +40,9 @@ const AccountPerformance = () => {
   } = usePagination(hourlyPerformanceStats)
 
   const mangoAccountPk = useMemo(() => {
-    return mangoAccount.publicKey.toString()
+    if (mangoAccount) {
+      return mangoAccount.publicKey.toString()
+    }
   }, [mangoAccount])
 
   const exportPerformanceDataToCSV = () => {
@@ -54,7 +56,7 @@ const AccountPerformance = () => {
     })
 
     const title = `${
-      mangoAccount.name || mangoAccount.publicKey
+      mangoAccount?.name || mangoAccount?.publicKey
     }-Performance-${new Date().toLocaleDateString()}`
     const headers = ['Timestamp', 'Account Equity', 'PNL']
 
@@ -97,7 +99,7 @@ const AccountPerformance = () => {
     }
   }, [hourlyPerformanceStats])
 
-  const increaseYAxisWidth = !!chartData.find((data) => data.value < 0.001)
+  const increaseYAxisWidth = !!chartData.find((data: any) => data.value < 0.001)
 
   return (
     <>

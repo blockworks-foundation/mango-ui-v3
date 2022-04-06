@@ -4,7 +4,6 @@ import { ChevronDownIcon } from '@heroicons/react/solid'
 import { abbreviateAddress } from '../utils'
 import useMangoStore, { WalletToken } from '../stores/useMangoStore'
 import { RefreshClockwiseIcon } from './icons'
-import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
 import { useTranslation } from 'next-i18next'
 import { LinkButton } from './Button'
 import { Label } from './Input'
@@ -23,14 +22,14 @@ const AccountSelect = ({
   hideAddress = false,
 }: AccountSelectProps) => {
   const { t } = useTranslation('common')
-  const groupConfig = useMangoGroupConfig()
+  const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const tokenSymbols = useMemo(
-    () => groupConfig.tokens.map((t) => t.symbol),
+    () => groupConfig?.tokens.map((t) => t.symbol),
     [groupConfig]
   )
   const missingTokenSymbols = useMemo(() => {
     const symbolsForAccounts = accounts.map((a) => a.config.symbol)
-    return tokenSymbols.filter((sym) => !symbolsForAccounts.includes(sym))
+    return tokenSymbols?.filter((sym) => !symbolsForAccounts.includes(sym))
   }, [accounts, tokenSymbols])
 
   const actions = useMangoStore((s) => s.actions)
@@ -53,7 +52,7 @@ const AccountSelect = ({
     <div className={`relative inline-block w-full`}>
       <div className="flex justify-between">
         <Label>{t('asset')}</Label>
-        {missingTokenSymbols.length > 0 ? (
+        {missingTokenSymbols && missingTokenSymbols.length > 0 ? (
           <LinkButton className="mb-1.5 ml-2" onClick={handleRefreshBalances}>
             <div className="flex items-center">
               <RefreshClockwiseIcon
@@ -160,7 +159,7 @@ const AccountSelect = ({
                   </Listbox.Option>
                 )
               })}
-              {missingTokenSymbols.map((token) => (
+              {missingTokenSymbols?.map((token) => (
                 <Listbox.Option disabled key={token} value={token}>
                   <div
                     className={`px-2 py-1 opacity-50 hover:cursor-not-allowed`}

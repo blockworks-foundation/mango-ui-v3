@@ -27,26 +27,29 @@ function decodeBookL2(market, accInfo: AccountInfo<Buffer>): number[][] {
       const book = SpotOrderBook.decode(market, accInfo.data)
       return book.getL2(depth).map(([price, size]) => [price, size])
     } else if (market instanceof PerpMarket) {
+      // FIXME: Review the null being passed here
       const book = new BookSide(
+        // @ts-ignore
         null,
         market,
         BookSideLayout.decode(accInfo.data)
       )
       return book.getL2Ui(depth)
     }
-  } else {
-    return []
   }
+  return []
 }
 
 export function decodeBook(
   market,
   accInfo: AccountInfo<Buffer>
-): BookSide | SpotOrderBook {
+): BookSide | SpotOrderBook | undefined {
   if (market && accInfo?.data) {
     if (market instanceof Market) {
       return SpotOrderBook.decode(market, accInfo.data)
     } else if (market instanceof PerpMarket) {
+      // FIXME: Review the null being passed here
+      // @ts-ignore
       return new BookSide(null, market, BookSideLayout.decode(accInfo.data))
     }
   }
@@ -245,19 +248,6 @@ const useHydrateStore = () => {
   useInterval(() => {
     actions.loadMarketFills()
   }, 20 * SECONDS)
-
-  useInterval(() => {
-    const blockhashTimes = useMangoStore.getState().connection.blockhashTimes
-    const blockhashTimesCopy = [...blockhashTimes]
-    const mangoClient = useMangoStore.getState().connection.client
-
-    mangoClient.updateRecentBlockhash(blockhashTimesCopy).then(() => {
-      setMangoStore((state) => {
-        state.connection.client = mangoClient
-        state.connection.blockhashTimes = blockhashTimesCopy
-      })
-    })
-  }, 10 * SECONDS)
 
   useEffect(() => {
     actions.loadMarketFills()

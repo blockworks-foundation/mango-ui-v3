@@ -12,13 +12,11 @@ import Button, { LinkButton } from './Button'
 import Modal from './Modal'
 import { ElementTitle } from './styles'
 import { useTranslation } from 'next-i18next'
-import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
 import { Popover, Transition } from '@headlessui/react'
 import Checkbox from './Checkbox'
 import dayjs from 'dayjs'
-import DatePicker from './DatePicker'
-
-import 'react-datepicker/dist/react-datepicker.css'
+import DateRangePicker from './DateRangePicker'
+import useMangoStore from 'stores/useMangoStore'
 
 interface TradeHistoryFilterModalProps {
   filters: any
@@ -32,18 +30,20 @@ const TradeHistoryFilterModal: FunctionComponent<
 > = ({ filters, setFilters, isOpen, onClose }) => {
   const { t } = useTranslation('common')
   const [newFilters, setNewFilters] = useState({ ...filters })
-  const [dateFrom, setDateFrom] = useState(null)
-  const [dateTo, setDateTo] = useState(null)
+  const [dateFrom, setDateFrom] = useState<Date | null>(null)
+  const [dateTo, setDateTo] = useState<Date | null>(null)
   const [sizeFrom, setSizeFrom] = useState(filters?.size?.values?.from || '')
   const [sizeTo, setSizeTo] = useState(filters?.size?.values?.to || '')
   const [valueFrom, setValueFrom] = useState(filters?.value?.values?.from || '')
   const [valueTo, setValueTo] = useState(filters?.value?.values?.to || '')
-  const groupConfig = useMangoGroupConfig()
+  const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const markets = useMemo(
     () =>
-      [...groupConfig.perpMarkets, ...groupConfig.spotMarkets].sort((a, b) =>
-        a.name.localeCompare(b.name)
-      ),
+      groupConfig
+        ? [...groupConfig.perpMarkets, ...groupConfig.spotMarkets].sort(
+            (a, b) => a.name.localeCompare(b.name)
+          )
+        : [],
     [groupConfig]
   )
 
@@ -124,7 +124,7 @@ const TradeHistoryFilterModal: FunctionComponent<
   useEffect(() => {
     if (dateFrom && dateTo) {
       const dateFromTimestamp = dayjs(dateFrom).unix() * 1000
-      const dateToTimestamp = dayjs(dateTo).unix() * 1000
+      const dateToTimestamp = (dayjs(dateTo).unix() + 86399) * 1000
       // filter should still work if users get from/to backwards
       const from =
         dateFromTimestamp < dateToTimestamp
@@ -152,8 +152,8 @@ const TradeHistoryFilterModal: FunctionComponent<
   const handleResetFilters = () => {
     setFilters({})
     setNewFilters({})
-    setDateFrom('')
-    setDateTo('')
+    setDateFrom(null)
+    setDateTo(null)
     setSizeFrom('')
     setSizeTo('')
     setValueFrom('')
@@ -184,13 +184,13 @@ const TradeHistoryFilterModal: FunctionComponent<
       <div className="pb-4">
         <p className="font-bold text-th-fgd-1">{t('date')}</p>
         <div className="flex items-center space-x-2">
-          <div className="w-1/2">
-            <Label>{t('from')}</Label>
-            <DatePicker date={dateFrom} setDate={setDateFrom} />
-          </div>
-          <div className="w-1/2">
-            <Label>{t('to')}</Label>
-            <DatePicker date={dateTo} setDate={setDateTo} />
+          <div className="w-full">
+            <DateRangePicker
+              startDate={dateFrom}
+              setStartDate={setDateFrom}
+              endDate={dateTo}
+              setEndDate={setDateTo}
+            />
           </div>
         </div>
       </div>

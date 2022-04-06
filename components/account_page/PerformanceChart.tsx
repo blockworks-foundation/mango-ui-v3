@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useTheme } from 'next-themes'
-import { cloneDeep } from 'lodash'
+import cloneDeep from 'lodash/cloneDeep'
 import dayjs from 'dayjs'
 import {
   AreaChart,
@@ -38,7 +38,7 @@ const PerformanceChart = ({
   const { t } = useTranslation('common')
   const { observe, width, height } = useDimensions()
 
-  const [chartData, setChartData] = useState([])
+  const [chartData, setChartData] = useState<any[]>([])
   const [mouseData, setMouseData] = useState<string | null>(null)
   const [chartToShow, setChartToShow] = useState('Value')
   const [showSpotPnl, setShowSpotPnl] = useState(true)

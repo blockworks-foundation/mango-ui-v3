@@ -7,6 +7,17 @@ import { Table, Td, Th, TrBody, TrHead } from '../TableElements'
 import { ExpandableRow, Row } from '../TableElements'
 import { useTranslation } from 'next-i18next'
 
+interface Values {
+  name: string
+  value: number
+  time: string
+}
+
+interface Points {
+  value: number
+  time: string
+}
+
 function formatNumberString(x: number, decimals): string {
   return new Intl.NumberFormat('en-US', {
     minimumFractionDigits: decimals,
@@ -49,10 +60,12 @@ export default function StatsTotals({ latestStats, stats }) {
   const isMobile = width ? width < breakpoints.sm : false
 
   // get deposit and borrow values from stats
-  const depositValues = []
-  const borrowValues = []
+  const depositValues: Values[] = []
+  const borrowValues: Values[] = []
 
   for (let i = 0; i < stats.length; i++) {
+    const time = stats[i].hourly
+    const name = stats[i].name
     const depositValue =
       stats[i].name === 'USDC'
         ? stats[i].totalDeposits
@@ -63,19 +76,19 @@ export default function StatsTotals({ latestStats, stats }) {
         ? stats[i].totalBorrows
         : stats[i].totalBorrows * stats[i].baseOraclePrice
 
-    if (depositValue) {
+    if (typeof depositValue === 'number' && name && time) {
       depositValues.push({
-        name: stats[i].name,
+        name,
         value: depositValue,
-        time: stats[i].hourly,
+        time,
       })
     }
 
-    if (borrowValue) {
+    if (typeof borrowValue === 'number' && name && time) {
       borrowValues.push({
-        name: stats[i].name,
+        name,
         value: borrowValue,
-        time: stats[i].hourly,
+        time,
       })
     }
   }
@@ -108,7 +121,7 @@ export default function StatsTotals({ latestStats, stats }) {
       }
     })
 
-    const points = []
+    const points: Points[] = []
 
     for (const prop in holder) {
       points.push({ time: prop, value: holder[prop] })

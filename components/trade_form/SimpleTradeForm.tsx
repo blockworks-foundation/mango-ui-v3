@@ -298,6 +298,7 @@ export default function SimpleTradeForm({ initLeverage }) {
           description: t('try-again'),
           type: 'error',
         })
+        return
       }
 
       const orderType = ioc ? 'ioc' : postOnly ? 'postOnly' : 'limit'
@@ -348,7 +349,8 @@ export default function SimpleTradeForm({ initLeverage }) {
   }
 
   const { max, deposits, borrows } = useMemo(() => {
-    if (!mangoAccount) return { max: 0 }
+    if (!mangoAccount || !mangoGroup || !mangoCache || !market)
+      return { max: 0 }
     const priceOrDefault = price
       ? I80F48.fromNumber(price)
       : mangoGroup.getPrice(marketIndex, mangoCache)
@@ -398,8 +400,10 @@ export default function SimpleTradeForm({ initLeverage }) {
     return (size / total) * 100
   }
 
-  const roundedDeposits = parseFloat(deposits?.toFixed(sizeDecimalCount))
-  const roundedBorrows = parseFloat(borrows?.toFixed(sizeDecimalCount))
+  if (!deposits || !borrows) return null
+
+  const roundedDeposits = parseFloat(deposits.toFixed(sizeDecimalCount))
+  const roundedBorrows = parseFloat(borrows.toFixed(sizeDecimalCount))
 
   const closeDepositString =
     percentToClose(baseSize, roundedDeposits) > 100
