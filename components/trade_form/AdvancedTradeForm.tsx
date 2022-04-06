@@ -413,7 +413,10 @@ export default function AdvancedTradeForm({
     } else {
       const priceOnBook = side === 'buy' ? orderbook?.asks : orderbook?.bids
       if (priceOnBook && priceOnBook.length > 0 && priceOnBook[0].length > 0) {
-        setPrice(priceOnBook[0][0])
+        const formattedPrice = market?.tickSize
+          ? priceOnBook[0][0].toFixed(getDecimalCount(market?.tickSize))
+          : priceOnBook[0][0]
+        setPrice(formattedPrice)
       }
       setIoc(false)
     }
