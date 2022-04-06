@@ -93,6 +93,14 @@ export const CheckBoxes: React.FC<Props> = ({
     }
   }
 
+  // FIXME: Add this logic to reduce
+  // const showReduceOnly = (basePosition: number) => {
+  //   return (
+  //     (basePosition > 0 && side === 'sell') ||
+  //     (basePosition < 0 && side === 'buy')
+  //   )
+  // }
+
   const checkBoxes: AdvancedTradeFromCheckbox[] = [
     {
       tooltipContent: t('tooltip-post'),
