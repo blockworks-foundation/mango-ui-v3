@@ -174,7 +174,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
       .then((txid: string) => {
         setSubmitting(false)
         actions.reloadMangoAccount()
-        actions.fetchWalletTokens()
+        actions.fetchWalletTokens(wallet)
         notify({
           title: t('withdraw-success'),
           type: 'success',

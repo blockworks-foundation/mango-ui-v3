@@ -622,9 +622,8 @@ export const AdvancedTradeForm: React.FC<{ initLeverage?: number }> = ({
         let perpOrderPrice: number = orderPrice
 
         if (isMarketOrder) {
-          if (options.postOnlySlide) {
-            perpOrderType = 'postOnlySlide'
-          } else if (tradeType === 'Market' && maxSlippage) {
+          perpOrderType = 'postOnlySlide'
+          if (tradeType === 'Market' && maxSlippage) {
             perpOrderType = 'ioc'
             if (side === 'buy') {
               perpOrderPrice = markPrice * (1 + parseFloat(maxSlippage))
@@ -637,6 +636,8 @@ export const AdvancedTradeForm: React.FC<{ initLeverage?: number }> = ({
           } else {
             perpOrderType = 'market'
           }
+        } else {
+          perpOrderType = options.postOnlySlide ? 'postOnlySlide' : orderType
         }
 
         if (isTriggerOrder) {
