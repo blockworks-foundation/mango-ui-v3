@@ -988,9 +988,11 @@ const useMangoStore = create<
               `https://mango-all-markets-api.herokuapp.com/markets/`
             )
             const parsedMarketsInfo = await data.json()
-            set((state) => {
-              state.marketsInfo = parsedMarketsInfo
-            })
+            if (parsedMarketsInfo?.length) {
+              set((state) => {
+                state.marketsInfo = parsedMarketsInfo
+              })
+            }
           } catch (e) {
             console.log('ERORR: Unable to load all market info')
           }
