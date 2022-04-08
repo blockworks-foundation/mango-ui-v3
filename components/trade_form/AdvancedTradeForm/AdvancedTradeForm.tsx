@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import useIpAddress from '../../hooks/useIpAddress'
+import useIpAddress from 'hooks/useIpAddress'
 import {
   clamp,
   getMarketIndexBySymbol,
@@ -10,40 +10,37 @@ import {
   PerpOrderType,
   ZERO_I80F48,
 } from '@blockworks-foundation/mango-client'
-import {
-  ExclamationIcon,
-  InformationCircleIcon,
-} from '@heroicons/react/outline'
-import { notify } from '../../utils/notifications'
-import {
-  calculateTradePrice,
-  getDecimalCount,
-  percentFormat,
-} from '../../utils'
-import { floorToDecimal } from '../../utils/index'
-import useMangoStore, { Orderbook } from '../../stores/useMangoStore'
-import Button, { LinkButton } from '../Button'
-import TradeType from './TradeType'
-import Input from '../Input'
+import { notify } from 'utils/notifications'
+import { calculateTradePrice, getDecimalCount } from 'utils'
+import { floorToDecimal } from 'utils/index'
+import useMangoStore, { Orderbook } from 'stores/useMangoStore'
+import TradeType from 'components/trade_form/TradeType'
+import Input from 'components/Input'
 import { Market } from '@project-serum/serum'
 import Big from 'big.js'
-import Tooltip from '../Tooltip'
-import OrderSideTabs from './OrderSideTabs'
-import { ElementTitle } from '../styles'
-import ButtonGroup from '../ButtonGroup'
-import Checkbox from '../Checkbox'
-import { useViewport } from '../../hooks/useViewport'
-import { breakpoints } from '../TradePageGrid'
-import EstPriceImpact from './EstPriceImpact'
-import useFees from '../../hooks/useFees'
+import OrderSideTabs from 'components/trade_form/OrderSideTabs'
+import { ElementTitle } from 'components/styles'
+import ButtonGroup from 'components/ButtonGroup'
+import { useViewport } from 'hooks/useViewport'
+import { breakpoints } from 'components/TradePageGrid'
+import EstPriceImpact from 'components/trade_form/EstPriceImpact'
+import useFees from 'hooks/useFees'
 import { useTranslation } from 'next-i18next'
-import useSrmAccount from '../../hooks/useSrmAccount'
+import useSrmAccount from 'hooks/useSrmAccount'
 import useLocalStorageState, {
   useLocalStorageStringState,
-} from '../../hooks/useLocalStorageState'
-import InlineNotification from '../InlineNotification'
-import { DEFAULT_SPOT_MARGIN_KEY } from '../SettingsModal'
+} from 'hooks/useLocalStorageState'
+import InlineNotification from 'components/InlineNotification'
+import { DEFAULT_SPOT_MARGIN_KEY } from 'components/SettingsModal'
 import { useWallet } from '@solana/wallet-adapter-react'
+import {
+  SlippageWarning,
+  SubmitButton,
+  PerpMarketMaxSlippage,
+  EditMaxSlippage,
+  Fees,
+} from 'components/trade_form/AdvancedTradeForm/index'
+import { CheckBoxes } from './CheckBoxes'
 
 const MAX_SLIPPAGE_KEY = 'maxSlippage'
 
@@ -53,13 +50,18 @@ export const TRIGGER_ORDER_TYPES = [
   'Stop Limit',
   'Take Profit Limit',
 ]
-interface AdvancedTradeFormProps {
-  initLeverage?: number
+
+export type Options = {
+  postOnlySlide: boolean
+  postOnly: boolean
+  ioc: boolean
+  reduceOnly: boolean
+  spotMargin: boolean
 }
 
-export default function AdvancedTradeForm({
+export const AdvancedTradeForm: React.FC<{ initLeverage?: number }> = ({
   initLeverage,
-}: AdvancedTradeFormProps) {
+}) => {
   const { t } = useTranslation('common')
   const set = useMangoStore((s) => s.set)
   const { ipAllowed, spotAllowed } = useIpAddress()
@@ -71,12 +73,10 @@ export default function AdvancedTradeForm({
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const market = useMangoStore((s) => s.selectedMarket.current)
   const isPerpMarket = market instanceof PerpMarket
-  const [reduceOnly, setReduceOnly] = useState(false)
   const [defaultSpotMargin] = useLocalStorageState(
     DEFAULT_SPOT_MARGIN_KEY,
     false
   )
-  const [spotMargin, setSpotMargin] = useState(defaultSpotMargin)
   const [positionSizePercent, setPositionSizePercent] = useState('')
   const [insufficientSol, setInsufficientSol] = useState(false)
   const { takerFee, makerFee } = useFees()
@@ -115,9 +115,13 @@ export default function AdvancedTradeForm({
 
   const isTriggerOrder = TRIGGER_ORDER_TYPES.includes(tradeType)
 
-  const [postOnlySlide, setPostOnlySlide] = useState(false)
-  const [postOnly, setPostOnly] = useState(false)
-  const [ioc, setIoc] = useState(false)
+  const [options, setOptions] = useState<Options>({
+    postOnlySlide: false,
+    postOnly: false,
+    ioc: false,
+    reduceOnly: false,
+    spotMargin: defaultSpotMargin,
+  })
 
   const orderBookRef = useRef(useMangoStore.getState().selectedMarket.orderBook)
   const orderbook = orderBookRef.current
@@ -129,8 +133,6 @@ export default function AdvancedTradeForm({
     number | null
   >(null)
   const [editMaxSlippage, setEditMaxSlippage] = useState(false)
-  const [showCustomSlippageForm, setShowCustomSlippageForm] = useState(false)
-  const slippagePresets = ['1', '1.5', '2', '2.5', '3']
 
   const saveMaxSlippage = (slippage) => {
     setMaxSlippage(clamp(slippage / 100, 0, 1).toString())
@@ -262,7 +264,8 @@ export default function AdvancedTradeForm({
     market,
     side,
     price,
-    reduceOnly,
+    options.reduceOnly,
+    groupConfig,
   ])
 
   const onChangeSide = (side) => {
@@ -400,13 +403,13 @@ export default function AdvancedTradeForm({
 
   const onTradeTypeChange = (tradeType) => {
     setTradeType(tradeType)
-    setPostOnly(false)
-    setReduceOnly(false)
+    let _reduceOnly = false
+    let _ioc = options.ioc
     if (TRIGGER_ORDER_TYPES.includes(tradeType)) {
-      setReduceOnly(true)
+      _reduceOnly = true
     }
     if (['Market', 'Stop Loss', 'Take Profit'].includes(tradeType)) {
-      setIoc(true)
+      _ioc = true
       if (isTriggerOrder) {
         setPrice(triggerPrice)
       }
@@ -415,42 +418,14 @@ export default function AdvancedTradeForm({
       if (priceOnBook && priceOnBook.length > 0 && priceOnBook[0].length > 0) {
         setPrice(priceOnBook[0][0])
       }
-      setIoc(false)
+      _ioc = false
     }
-  }
-
-  const postOnlySlideOnChange = (checked) => {
-    if (checked) {
-      setIoc(false)
-      setPostOnly(false)
-    }
-    setPostOnlySlide(checked)
-  }
-  const postOnChange = (checked) => {
-    if (checked) {
-      setIoc(false)
-      setPostOnlySlide(false)
-    }
-    setPostOnly(checked)
-  }
-  const iocOnChange = (checked) => {
-    if (checked) {
-      setPostOnly(false)
-      setPostOnlySlide(false)
-    }
-    setIoc(checked)
-  }
-  const reduceOnChange = (checked) => {
-    if (positionSizePercent) {
-      handleSetPositionSize(positionSizePercent, spotMargin, checked)
-    }
-    setReduceOnly(checked)
-  }
-  const marginOnChange = (checked) => {
-    setSpotMargin(checked)
-    if (positionSizePercent) {
-      handleSetPositionSize(positionSizePercent, checked, reduceOnly)
-    }
+    setOptions({
+      ...options,
+      reduceOnly: _reduceOnly,
+      postOnly: false,
+      ioc: _ioc,
+    })
   }
 
   const handleSetPositionSize = (percent, spotMargin, reduceOnly) => {
@@ -538,7 +513,7 @@ export default function AdvancedTradeForm({
     }
 
     const estimatedSize =
-      perpAccount && reduceOnly && market instanceof PerpMarket
+      perpAccount && options.reduceOnly && market instanceof PerpMarket
         ? Math.abs(market.baseLotsToNumber(perpAccount.basePosition))
         : baseSize
     estimatedPrice = estimateMarketPrice(orderbook, estimatedSize || 0, side)
@@ -559,7 +534,7 @@ export default function AdvancedTradeForm({
   }
 
   async function onSubmit() {
-    if (!price && isLimitOrder && !postOnlySlide) {
+    if (!price && isLimitOrder && !options.postOnlySlide) {
       notify({
         title: t('missing-price'),
         type: 'error',
@@ -612,7 +587,11 @@ export default function AdvancedTradeForm({
 
       // TODO: this has a race condition when switching between markets or buy & sell
       // spot market orders will sometimes not be ioc but limit
-      const orderType = ioc ? 'ioc' : postOnly ? 'postOnly' : 'limit'
+      const orderType = options.ioc
+        ? 'ioc'
+        : options.postOnly
+        ? 'postOnly'
+        : 'limit'
 
       console.log(
         'submit',
@@ -643,6 +622,7 @@ export default function AdvancedTradeForm({
         let perpOrderPrice: number = orderPrice
 
         if (isMarketOrder) {
+          perpOrderType = 'postOnlySlide'
           if (tradeType === 'Market' && maxSlippage) {
             perpOrderType = 'ioc'
             if (side === 'buy') {
@@ -657,7 +637,7 @@ export default function AdvancedTradeForm({
             perpOrderType = 'market'
           }
         } else {
-          perpOrderType = postOnlySlide ? 'postOnlySlide' : orderType
+          perpOrderType = options.postOnlySlide ? 'postOnlySlide' : orderType
         }
 
         if (isTriggerOrder) {
@@ -688,7 +668,7 @@ export default function AdvancedTradeForm({
               orderType: perpOrderType,
               clientOrderId: Date.now(),
               bookSideInfo: side === 'buy' ? askInfo : bidInfo, // book side used for ConsumeEvents
-              reduceOnly,
+              reduceOnly: options.reduceOnly,
               referrerMangoAccountPk: referrerPk ? referrerPk : undefined,
             }
           )
@@ -722,13 +702,6 @@ export default function AdvancedTradeForm({
     }
   }
 
-  // const showReduceOnly = (basePosition: number) => {
-  //   return (
-  //     (basePosition > 0 && side === 'sell') ||
-  //     (basePosition < 0 && side === 'buy')
-  //   )
-  // }
-
   /*
   const roundedMax = (
     Math.round(max / parseFloat(minOrderSize)) * parseFloat(minOrderSize)
@@ -741,7 +714,7 @@ export default function AdvancedTradeForm({
       : baseSize > spotMax*/
 
   const disabledTradeButton =
-    (!price && isLimitOrder && !postOnlySlide) ||
+    (!price && isLimitOrder && !options.postOnlySlide) ||
     !baseSize ||
     !connected ||
     !mangoAccount ||
@@ -806,14 +779,17 @@ export default function AdvancedTradeForm({
                 min="0"
                 step={tickSize}
                 onChange={(e) => onSetPrice(e.target.value)}
-                value={postOnlySlide && tradeType === 'Limit' ? '' : price}
+                value={
+                  options.postOnlySlide && tradeType === 'Limit' ? '' : price
+                }
                 disabled={
-                  isMarketOrder || (postOnlySlide && tradeType === 'Limit')
+                  isMarketOrder ||
+                  (options.postOnlySlide && tradeType === 'Limit')
                 }
                 placeholder={tradeType === 'Market' ? markPrice : ''}
                 prefix={
                   <>
-                    {postOnlySlide && tradeType === 'Limit' ? null : (
+                    {options.postOnlySlide && tradeType === 'Limit' ? null : (
                       <img
                         src={`/assets/icons/${groupConfig.quoteSymbol.toLowerCase()}.svg`}
                         width="16"
@@ -906,7 +882,9 @@ export default function AdvancedTradeForm({
         <div className="col-span-12 mt-1">
           <ButtonGroup
             activeValue={positionSizePercent}
-            onChange={(p) => handleSetPositionSize(p, spotMargin, reduceOnly)}
+            onChange={(p) =>
+              handleSetPositionSize(p, options.spotMargin, options.reduceOnly)
+            }
             unit="%"
             values={
               isMobile
@@ -928,243 +906,47 @@ export default function AdvancedTradeForm({
             ) : null
           ) : null}
           <div className="flex-wrap sm:flex">
-            {isLimitOrder ? (
-              <div className="flex">
-                <div className="mr-4 mt-3">
-                  <Tooltip
-                    className="hidden md:block"
-                    delay={250}
-                    placement="left"
-                    content={t('tooltip-post')}
-                  >
-                    <Checkbox
-                      checked={postOnly}
-                      onChange={(e) => postOnChange(e.target.checked)}
-                    >
-                      POST
-                    </Checkbox>
-                  </Tooltip>
-                </div>
-                <div className="mr-4 mt-3">
-                  <Tooltip
-                    className="hidden md:block"
-                    delay={250}
-                    placement="left"
-                    content={t('tooltip-ioc')}
-                  >
-                    <div className="flex items-center text-xs text-th-fgd-3">
-                      <Checkbox
-                        checked={ioc}
-                        onChange={(e) => iocOnChange(e.target.checked)}
-                      >
-                        IOC
-                      </Checkbox>
-                    </div>
-                  </Tooltip>
-                </div>
-              </div>
-            ) : null}
-            {/*
-                Add the following line to the ternary below once we are
-                auto updating the reduceOnly state when doing a market order:
-                && showReduceOnly(perpAccount?.basePosition.toNumber())
-             */}
-            {marketConfig.kind === 'perp' ? (
-              <div className="mr-4 mt-3">
-                <Tooltip
-                  className="hidden md:block"
-                  delay={250}
-                  placement="left"
-                  content={t('tooltip-reduce')}
-                >
-                  <Checkbox
-                    checked={reduceOnly}
-                    onChange={(e) => reduceOnChange(e.target.checked)}
-                    disabled={isTriggerOrder}
-                  >
-                    Reduce Only
-                  </Checkbox>
-                </Tooltip>
-              </div>
-            ) : null}
-            {marketConfig.kind === 'perp' && tradeType === 'Limit' ? (
-              <div className="mt-3">
-                <Tooltip
-                  className="hidden md:block"
-                  delay={250}
-                  placement="left"
-                  content={t('tooltip-post-and-slide')}
-                >
-                  <Checkbox
-                    checked={postOnlySlide}
-                    onChange={(e) => postOnlySlideOnChange(e.target.checked)}
-                    disabled={isTriggerOrder}
-                  >
-                    Slide
-                  </Checkbox>
-                </Tooltip>
-              </div>
-            ) : null}
-            {marketConfig.kind === 'spot' ? (
-              <div className="mt-3">
-                <Tooltip
-                  delay={250}
-                  placement="left"
-                  content={t('tooltip-enable-margin')}
-                >
-                  <Checkbox
-                    checked={spotMargin}
-                    onChange={(e) => marginOnChange(e.target.checked)}
-                  >
-                    {t('margin')}
-                  </Checkbox>
-                </Tooltip>
-              </div>
-            ) : null}
+            <CheckBoxes
+              options={options}
+              setOptions={setOptions}
+              isLimitOrder={isLimitOrder}
+              isTriggerOrder={isTriggerOrder}
+              positionSizePercent={positionSizePercent}
+              handleSetPositionSize={handleSetPositionSize}
+            />
           </div>
-          {warnUserSlippage ? (
-            <div className="mt-1 flex items-center text-th-red">
-              <div>
-                <ExclamationIcon className="mr-2 h-5 w-5" />
-              </div>
-              <div className="text-xs">{t('slippage-warning')}</div>
-            </div>
-          ) : null}
-          <div className={`mt-3 flex`}>
-            {canTrade ? (
-              <button
-                disabled={disabledTradeButton}
-                onClick={onSubmit}
-                className={`flex-grow rounded-full px-6 py-2 font-bold text-white hover:brightness-[1.1] focus:outline-none disabled:cursor-not-allowed disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:hover:brightness-100 ${
-                  side === 'buy' ? 'bg-th-green-dark' : 'bg-th-red'
-                }`}
-              >
-                {sizeTooLarge
-                  ? t('too-large')
-                  : side === 'buy'
-                  ? `${
-                      baseSize > 0 ? `${t('buy')} ` + baseSize : `${t('buy')} `
-                    } ${
-                      isPerpMarket ? marketConfig.name : marketConfig.baseSymbol
-                    }`
-                  : `${
-                      baseSize > 0
-                        ? `${t('sell')} ` + baseSize
-                        : `${t('sell')} `
-                    } ${
-                      isPerpMarket ? marketConfig.name : marketConfig.baseSymbol
-                    }`}
-              </button>
-            ) : (
-              <div className="flex-grow">
-                <Tooltip content={t('country-not-allowed-tooltip')}>
-                  <div className="flex">
-                    <Button disabled className="flex-grow">
-                      <span>{t('country-not-allowed')}</span>
-                    </Button>
-                  </div>
-                </Tooltip>
-              </div>
-            )}
-          </div>
+          <SlippageWarning show={warnUserSlippage} />
+          <SubmitButton
+            canTrade={canTrade}
+            isPerpMarket={isPerpMarket}
+            onSubmit={onSubmit}
+            disabled={disabledTradeButton}
+            sizeTooLarge={sizeTooLarge}
+            side={side}
+            baseSize={baseSize}
+          />
           {tradeType === 'Market' && priceImpact ? (
             <div className="col-span-12 mt-4 md:col-span-10 md:col-start-3">
               {editMaxSlippage ? (
-                <div className="flex items-end">
-                  <div className="w-full">
-                    <div className="mb-1 flex justify-between">
-                      <div className="text-xs text-th-fgd-3">
-                        {t('max-slippage')}
-                      </div>
-                      {!isMobile ? (
-                        <LinkButton
-                          className="text-xs font-normal"
-                          onClick={() =>
-                            setShowCustomSlippageForm(!showCustomSlippageForm)
-                          }
-                        >
-                          {showCustomSlippageForm ? t('presets') : t('custom')}
-                        </LinkButton>
-                      ) : null}
-                    </div>
-                    {showCustomSlippageForm || isMobile ? (
-                      <Input
-                        type="number"
-                        min="0"
-                        max="100"
-                        onChange={(e) =>
-                          setMaxSlippagePercentage(e.target.value)
-                        }
-                        suffix={
-                          <div className="text-base font-bold text-th-fgd-3">
-                            %
-                          </div>
-                        }
-                        value={maxSlippagePercentage}
-                      />
-                    ) : (
-                      <ButtonGroup
-                        activeValue={
-                          maxSlippagePercentage
-                            ? maxSlippagePercentage.toString()
-                            : ''
-                        }
-                        className="h-10"
-                        onChange={(p) => setMaxSlippagePercentage(p)}
-                        unit="%"
-                        values={slippagePresets}
-                      />
-                    )}
-                  </div>
-                  <Button
-                    className="ml-3 h-10"
-                    onClick={() => saveMaxSlippage(maxSlippagePercentage)}
-                  >
-                    {t('save')}
-                  </Button>
-                </div>
+                <EditMaxSlippage
+                  isMobile={isMobile}
+                  onSave={() => saveMaxSlippage(maxSlippagePercentage)}
+                  maxSlippagePercentage={maxSlippagePercentage}
+                  setMaxSlippagePercentage={setMaxSlippagePercentage}
+                />
               ) : (
                 <>
-                  {isPerpMarket ? (
-                    <div className="mb-1 flex justify-between text-xs text-th-fgd-3">
-                      <div className="flex items-center">
-                        {t('max-slippage')}
-                        <Tooltip content={t('tooltip-slippage')}>
-                          <div className="outline-none focus:outline-none">
-                            <InformationCircleIcon className="ml-1.5 h-4 w-4 text-th-fgd-3" />
-                          </div>
-                        </Tooltip>
-                      </div>
-                      <div className="flex">
-                        {maxSlippage ? (
-                          <span className="text-th-fgd-1">
-                            {(parseFloat(maxSlippage) * 100).toFixed(2)}%
-                          </span>
-                        ) : null}
-                        <LinkButton
-                          className="ml-2 text-xs"
-                          onClick={() => setEditMaxSlippage(true)}
-                        >
-                          {t('edit')}
-                        </LinkButton>
-                      </div>
-                    </div>
-                  ) : null}
+                  <PerpMarketMaxSlippage
+                    show={isPerpMarket}
+                    maxSlippage={maxSlippage}
+                    onClickEdit={() => setEditMaxSlippage(true)}
+                  />
                   <EstPriceImpact priceImpact={priceImpact} />
                 </>
               )}
             </div>
           ) : (
-            <div className="mt-2.5 flex flex-col items-center justify-center px-6 text-xs text-th-fgd-4 md:flex-row">
-              <div>
-                {t('maker-fee')}: {percentFormat.format(makerFee)}{' '}
-              </div>
-              <span className="hidden md:block md:px-1">|</span>
-              <div>
-                {' '}
-                {t('taker-fee')}: {percentFormat.format(takerFee)}
-              </div>
-            </div>
+            <Fees makerFee={makerFee} takerFee={takerFee} />
           )}
         </div>
       </div>
