@@ -112,13 +112,13 @@ export interface Orderbook {
 
 export interface Alert {
   acc: PublicKey
-  alertProvider: 'mail'
+  alertProvider: 'mail' | 'notifi'
   health: number
   _id: string
   open: boolean
   timestamp: number
   triggeredTimestamp: number | undefined
-  notifiAlertId: string
+  notifiAlertId: string | undefined
 }
 
 export interface AlertRequest {
@@ -127,7 +127,7 @@ export interface AlertRequest {
   mangoGroupPk: string
   mangoAccountPk: string
   email: string | undefined
-  notifiAlertId: string
+  notifiAlertId: string | undefined
 }
 
 export type MangoStore = {

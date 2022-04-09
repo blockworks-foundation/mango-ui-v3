@@ -11,7 +11,6 @@ import { useTranslation } from 'next-i18next'
 import ButtonGroup from './ButtonGroup'
 import InlineNotification from './InlineNotification'
 import { NotifiIcon } from './icons'
-import { EndpointTypes } from '../@types/types'
 import {
   BlockchainEnvironment,
   GqlError,
@@ -52,16 +51,12 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
   const healthPresets = ['5', '10', '15', '25', '30']
   const ALERT_LIMIT = 5
 
-  const endpoint = cluster ? (cluster as EndpointTypes) : 'mainnet'
   let env = BlockchainEnvironment.MainNetBeta
-  switch (endpoint) {
+  switch (cluster) {
     case 'mainnet':
       break
     case 'devnet':
       env = BlockchainEnvironment.DevNet
-      break
-    case 'localnet':
-      env = BlockchainEnvironment.LocalNet
       break
   }
   const { publicKey, connected, signMessage } = useWallet()
