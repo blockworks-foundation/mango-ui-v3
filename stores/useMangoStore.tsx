@@ -195,8 +195,6 @@ export type MangoStore = {
     triggerCondition: 'above' | 'below'
   }
   wallet: {
-    connected: boolean
-    current: Wallet | undefined
     tokens: WalletToken[] | any[]
     pfp: ProfilePicture | undefined
   }
@@ -341,8 +339,6 @@ const useMangoStore = create<
         triggerCondition: 'above',
       },
       wallet: {
-        connected: false,
-        current: undefined,
         tokens: [],
         pfp: undefined,
       },
@@ -409,11 +405,6 @@ const useMangoStore = create<
               state.wallet.tokens = []
             })
           }
-          // set current and connected for notifi use
-          set((state) => {
-            state.wallet.current = wallet
-            state.wallet.connected = wallet?.adapter?.connected
-          })
         },
         async fetchProfilePicture(wallet: Wallet) {
           const set = get().set

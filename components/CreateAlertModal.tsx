@@ -18,6 +18,7 @@ import {
   useNotifiClient,
   isAlertObsolete,
 } from '@notifi-network/notifi-react-hooks'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 interface CreateAlertModalProps {
   onClose: () => void
@@ -41,8 +42,6 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
   const submitting = useMangoStore((s) => s.alerts.submitting)
   const error = useMangoStore((s) => s.alerts.error)
   const cluster = useMangoStore((s) => s.connection.cluster)
-  const wallet = useMangoStore((s) => s.wallet.current)
-  const connected = useMangoStore((s) => s.wallet.connected)
   const [invalidAmountMessage, setInvalidAmountMessage] = useState('')
   const [health, setHealth] = useState('')
   const [showCustomHealthForm, setShowCustomHealthForm] = useState(false)
@@ -65,10 +64,11 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
       env = BlockchainEnvironment.LocalNet
       break
   }
+  const { publicKey, connected, signMessage } = useWallet()
   const { data, fetchData, logIn, isAuthenticated, createAlert, deleteAlert } =
     useNotifiClient({
       dappAddress: programId.toBase58(),
-      walletPublicKey: wallet?.adapter?.publicKey?.toString() ?? '',
+      walletPublicKey: publicKey?.toString() ?? '',
       env,
     })
   const [email, setEmail] = useState<string>('')
@@ -109,22 +109,14 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
     }
   }
 
-  // message signer to login from SDK
-  const adapter = async (message: Uint8Array) => {
-    // @ts-ignore: signMessage should exist in MessageSignerWalletAdapter
-    const signed = await wallet?.adapter?.signMessage(message)
-    // Sollet Adapter signMessage returns Uint8Array
-    if (signed instanceof Uint8Array) {
-      return signed
-    }
-    return signed.signature
-  }
-
   const createNotifiAlert = async function () {
     // user is not authenticated
-    if (!isAuthenticated() && wallet && wallet.adapter?.publicKey) {
+    if (!isAuthenticated() && publicKey) {
       try {
-        await logIn({ signMessage: adapter })
+        if (signMessage === undefined) {
+          throw new Error('signMessage is not defined')
+        }
+        await logIn({ signMessage })
       } catch (e) {
         handleError([e])
         throw e
@@ -166,9 +158,12 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
 
   const deleteNotifiAlert = async function (alert) {
     // user is not authenticated
-    if (!isAuthenticated() && wallet && wallet.adapter?.publicKey) {
+    if (!isAuthenticated() && publicKey) {
       try {
-        await logIn({ signMessage: adapter })
+        if (signMessage === undefined) {
+          throw new Error('signMessage is not defined')
+        }
+        await logIn({ signMessage })
       } catch (e) {
         handleError([e])
         throw e
