@@ -11,6 +11,7 @@ import {
   PerpAccount,
   PerpMarket,
   QUOTE_INDEX,
+  ZERO_I80F48,
 } from '@blockworks-foundation/mango-client'
 import { notify } from '../utils/notifications'
 import MarketCloseModal from './MarketCloseModal'
@@ -227,6 +228,15 @@ export default function MarketPosition() {
     )
   }
 
+  const liquidationPrice =
+    mangoGroup && mangoAccount && marketConfig && mangoGroup && mangoCache
+      ? mangoAccount.getLiquidationPrice(
+          mangoGroup,
+          mangoCache,
+          marketConfig.marketIndex
+        )
+      : undefined
+
   return (
     <>
       <div
@@ -277,6 +287,16 @@ export default function MarketPosition() {
             ) : (
               '$0'
             )}
+          </div>
+        </div>
+        <div className={`flex justify-between pb-2`}>
+          <div className="font-normal leading-4 text-th-fgd-3">
+            {t('estimated-liq-price')}
+          </div>
+          <div className={`text-th-fgd-1`}>
+            {liquidationPrice && liquidationPrice.gt(ZERO_I80F48)
+              ? formatUsdValue(Number(liquidationPrice))
+              : 'N/A'}
           </div>
         </div>
         <div className="flex justify-between pb-2">

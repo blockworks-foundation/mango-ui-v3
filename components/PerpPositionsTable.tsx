@@ -18,6 +18,8 @@ import { settlePnl } from './MarketPosition'
 import MobileTableHeader from './mobile/MobileTableHeader'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { RedeemDropdown } from 'components/PerpPositions'
+import useMangoAccount from '../hooks/useMangoAccount'
+import { ZERO_I80F48 } from '@blockworks-foundation/mango-client'
 
 const PositionsTable: React.FC = () => {
   const { t } = useTranslation('common')
@@ -25,6 +27,9 @@ const PositionsTable: React.FC = () => {
   const { wallet } = useWallet()
   const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
   const selectedMarketConfig = useMangoStore((s) => s.selectedMarket.config)
+  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
+  const { mangoAccount } = useMangoAccount()
   const price = useMangoStore((s) => s.tradeForm.price)
   const [showMarketCloseModal, setShowMarketCloseModal] = useState(false)
   const setMangoStore = useMangoStore((s) => s.set)
@@ -127,6 +132,7 @@ const PositionsTable: React.FC = () => {
                     <Th>{t('side')}</Th>
                     <Th>{t('position-size')}</Th>
                     <Th>{t('notional-size')}</Th>
+                    <Th>{t('estimated-liq-price')}</Th>
                     <Th>{t('average-entry')}</Th>
                     <Th>{t('break-even')}</Th>
                     <Th>{t('unrealized-pnl')}</Th>
@@ -149,6 +155,18 @@ const PositionsTable: React.FC = () => {
                         basePosition,
                         marketConfig.baseSymbol
                       )
+                      const liquidationPrice =
+                        mangoGroup &&
+                        mangoAccount &&
+                        marketConfig &&
+                        mangoGroup &&
+                        mangoCache
+                          ? mangoAccount.getLiquidationPrice(
+                              mangoGroup,
+                              mangoCache,
+                              marketConfig.marketIndex
+                            )
+                          : undefined
                       return (
                         <TrBody key={`${marketConfig.marketIndex}`}>
                           <Td>
@@ -202,6 +220,12 @@ const PositionsTable: React.FC = () => {
                           </Td>
                           <Td>{formatUsdValue(Math.abs(notionalSize))}</Td>
                           <Td>
+                            {liquidationPrice &&
+                            liquidationPrice.gt(ZERO_I80F48)
+                              ? formatUsdValue(Number(liquidationPrice))
+                              : 'N/A'}
+                          </Td>
+                          <Td>
                             {avgEntryPrice
                               ? formatUsdValue(avgEntryPrice)
                               : '--'}
@@ -254,6 +278,18 @@ const PositionsTable: React.FC = () => {
                       basePosition,
                       marketConfig.baseSymbol
                     )
+                    const liquidationPrice =
+                      mangoGroup &&
+                      mangoAccount &&
+                      marketConfig &&
+                      mangoGroup &&
+                      mangoCache
+                        ? mangoAccount.getLiquidationPrice(
+                            mangoGroup,
+                            mangoCache,
+                            marketConfig.marketIndex
+                          )
+                        : undefined
                     return (
                       <ExpandableRow
                         buttonTemplate={
@@ -319,6 +355,15 @@ const PositionsTable: React.FC = () => {
                               {breakEvenPrice
                                 ? formatUsdValue(breakEvenPrice)
                                 : '--'}
+                            </div>
+                            <div className="col-span-1 text-left">
+                              <div className="pb-0.5 text-xs text-th-fgd-3">
+                                {t('estimated-liq-price')}
+                              </div>
+                              {liquidationPrice &&
+                              liquidationPrice.gt(ZERO_I80F48)
+                                ? formatUsdValue(Number(liquidationPrice))
+                                : 'N/A'}
                             </div>
                           </div>
                         }
