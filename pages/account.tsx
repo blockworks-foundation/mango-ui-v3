@@ -302,9 +302,9 @@ export default function Account() {
                 </div>
               </div>
               {!pubkey ? (
-                <div className="flex flex-col items-center space-y-3 pb-1.5 sm:flex-row sm:space-y-0 sm:space-x-2">
+                <div className="flex items-center space-x-2">
                   <button
-                    className="flex h-8 w-full items-center justify-center rounded-full bg-th-primary px-3 py-0 text-xs font-bold text-th-bkg-1 hover:brightness-[1.15] focus:outline-none disabled:cursor-not-allowed disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:hover:brightness-100 sm:w-auto"
+                    className="flex h-8 w-full items-center justify-center rounded-full bg-th-primary px-3 py-0 text-xs font-bold text-th-bkg-1 hover:brightness-[1.15] focus:outline-none disabled:cursor-not-allowed disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:hover:brightness-100"
                     disabled={mngoAccrued.eq(ZERO_BN)}
                     onClick={handleRedeemMngo}
                   >
@@ -324,11 +324,8 @@ export default function Account() {
                   </button>
                   <Menu>
                     {({ open }) => (
-                      <div
-                        className="relative w-full sm:w-auto"
-                        id="profile-menu-tip"
-                      >
-                        <Menu.Button className="flex h-8 w-full items-center justify-center rounded-full bg-th-bkg-button pt-0 pb-0 pl-3 pr-2 text-xs font-bold hover:brightness-[1.1] hover:filter sm:w-auto">
+                      <div className="relative sm:w-full">
+                        <Menu.Button className="flex h-8 items-center justify-center rounded-full bg-th-bkg-button pt-0 pb-0 pl-3 pr-2 text-xs font-bold hover:brightness-[1.1] hover:filter sm:w-full">
                           {t('more')}
                           <ChevronDownIcon
                             className={`default-transition h-5 w-5 ${

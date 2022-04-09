@@ -154,7 +154,7 @@ const TradeHistoryTable = ({
   return (
     <>
       {showActions ? (
-        <div className="flex flex-col pb-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center justify-between pb-3">
           <div className="flex items-center">
             <h4 className="mb-0 flex items-center text-th-fgd-1">
               {data.length === 1
@@ -195,7 +195,7 @@ const TradeHistoryTable = ({
             ) : null}
           </div>
 
-          <div className="flex flex-col space-y-3 pl-2 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-3">
+          <div className="flex items-center space-x-3">
             {hasActiveFilter ? (
               <LinkButton
                 className="order-4 mt-3 flex items-center justify-end whitespace-nowrap text-xs sm:order-first sm:mt-0"
@@ -209,7 +209,7 @@ const TradeHistoryTable = ({
             tradeHistory.length <= 10000 &&
             initialLoad ? (
               <Button
-                className="order-3 mt-3 flex h-8 items-center justify-center whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs sm:order-first sm:mt-0"
+                className="order-3 flex h-8 items-center justify-center whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs sm:order-first"
                 onClick={() => setShowFiltersModal(true)}
               >
                 <FilterIcon className="mr-1.5 h-4 w-4" />
