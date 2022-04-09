@@ -111,6 +111,7 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
 
   // message signer to login from SDK
   const adapter = async (message: Uint8Array) => {
+    // @ts-ignore: signMessage should exist in MessageSignerWalletAdapter
     const signed = await wallet?.adapter?.signMessage(message)
     // Sollet Adapter signMessage returns Uint8Array
     if (signed instanceof Uint8Array) {
