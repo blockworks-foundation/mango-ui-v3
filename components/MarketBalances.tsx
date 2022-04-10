@@ -7,6 +7,7 @@ import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { useTranslation } from 'next-i18next'
 import { useWallet } from '@solana/wallet-adapter-react'
+import { useRouter } from 'next/router'
 
 export default function MarketBalances() {
   const { t } = useTranslation('common')
@@ -23,6 +24,8 @@ export default function MarketBalances() {
   const baseSymbol = marketConfig.baseSymbol
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
+  const router = useRouter()
+  const { pubkey } = router.query
 
   const handleSizeClick = (size, symbol) => {
     if (!selectedMarket || !mangoGroup || !mangoGroupCache) return
@@ -63,7 +66,7 @@ export default function MarketBalances() {
   if (!mangoGroup || !selectedMarket || !mangoGroupCache) return null
 
   return (
-    <div className={!connected ? 'blur filter' : ''}>
+    <div className={!connected && !pubkey ? 'blur filter' : ''}>
       {!isMobile ? (
         <ElementTitle className="hidden 2xl:flex">{t('balances')}</ElementTitle>
       ) : null}
