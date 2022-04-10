@@ -21,6 +21,7 @@ import { breakpoints } from './TradePageGrid'
 import { useTranslation } from 'next-i18next'
 import useMangoAccount from '../hooks/useMangoAccount'
 import { useWallet, Wallet } from '@solana/wallet-adapter-react'
+import { useRouter } from 'next/router'
 
 export const settlePosPnl = async (
   perpMarkets: PerpMarket[],
@@ -154,6 +155,8 @@ export default function MarketPosition() {
   const perpAccounts = useMangoStore((s) => s.selectedMangoAccount.perpAccounts)
   const baseSymbol = marketConfig.baseSymbol
   const marketName = marketConfig.name
+  const router = useRouter()
+  const { pubkey } = router.query
 
   const [showMarketCloseModal, setShowMarketCloseModal] = useState(false)
   const [settling, setSettling] = useState(false)
@@ -230,7 +233,7 @@ export default function MarketPosition() {
   return (
     <>
       <div
-        className={!connected && !isMobile ? 'blur-sm filter' : ''}
+        className={!connected && !isMobile && !pubkey ? 'blur-sm filter' : ''}
         id="perp-positions-tip"
       >
         {!isMobile ? (

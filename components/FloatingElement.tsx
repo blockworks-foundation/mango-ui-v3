@@ -6,6 +6,7 @@ import EmptyState from './EmptyState'
 import { useTranslation } from 'next-i18next'
 import { handleWalletConnect } from 'components/ConnectWalletButton'
 import { useWallet } from '@solana/wallet-adapter-react'
+import { useRouter } from 'next/router'
 
 interface FloatingElementProps {
   className?: string
@@ -21,6 +22,8 @@ const FloatingElement: FunctionComponent<FloatingElementProps> = ({
   const { wallet, connected } = useWallet()
   const { uiLocked } = useMangoStore((s) => s.settings)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  const router = useRouter()
+  const { pubkey } = router.query
 
   const handleConnect = useCallback(() => {
     if (wallet) {
@@ -32,7 +35,7 @@ const FloatingElement: FunctionComponent<FloatingElementProps> = ({
     <div
       className={`thin-scroll relative overflow-auto overflow-x-hidden rounded-lg bg-th-bkg-2 p-2.5 md:p-4 ${className}`}
     >
-      {!connected && showConnect ? (
+      {!connected && showConnect && !pubkey ? (
         <div className="absolute top-0 left-0 z-10 h-full w-full">
           <div className="relative z-10 flex h-full flex-col items-center justify-center">
             <EmptyState
