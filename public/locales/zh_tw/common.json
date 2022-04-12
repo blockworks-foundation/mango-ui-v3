@@ -401,7 +401,7 @@
   "tooltip-lock-layout": "鎖定頁面佈局",
   "tooltip-name-onchain": "帳戶標籤是在區塊鏈上存保的",
   "tooltip-post": "Post交易若不掛單就會被取消。",
-  "tooltip-post-and-slide": "Post and slide is a limit order that will set your price one tick more/less than the opposite side of the book.",
+  "tooltip-post-and-slide": "Post and slide is a limit order that if crosses the book will set your price one tick more/less than the opposite side of the book.",
   "tooltip-projected-leverage": "預計槓桿",
   "tooltip-reduce": "Reduce交易只能減少您的持倉。",
   "tooltip-reset-layout": "重置頁面佈局",
