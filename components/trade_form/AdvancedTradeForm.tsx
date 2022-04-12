@@ -741,7 +741,7 @@ export default function AdvancedTradeForm({
       : baseSize > spotMax*/
 
   const disabledTradeButton =
-    (!price && isLimitOrder && !postOnlySlide) ||
+    (!price && isLimitOrder) ||
     !baseSize ||
     !connected ||
     !mangoAccount ||
@@ -806,21 +806,15 @@ export default function AdvancedTradeForm({
                 min="0"
                 step={tickSize}
                 onChange={(e) => onSetPrice(e.target.value)}
-                value={postOnlySlide && tradeType === 'Limit' ? '' : price}
-                disabled={
-                  isMarketOrder || (postOnlySlide && tradeType === 'Limit')
-                }
+                value={price}
+                disabled={isMarketOrder}
                 placeholder={tradeType === 'Market' ? markPrice : ''}
                 prefix={
-                  <>
-                    {postOnlySlide && tradeType === 'Limit' ? null : (
-                      <img
-                        src={`/assets/icons/${groupConfig.quoteSymbol.toLowerCase()}.svg`}
-                        width="16"
-                        height="16"
-                      />
-                    )}
-                  </>
+                  <img
+                    src={`/assets/icons/${groupConfig.quoteSymbol.toLowerCase()}.svg`}
+                    width="16"
+                    height="16"
+                  />
                 }
               />
             </>
