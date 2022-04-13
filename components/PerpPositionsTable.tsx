@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { useTranslation } from 'next-i18next'
@@ -26,7 +26,7 @@ const PositionsTable: React.FC = () => {
   const { t } = useTranslation('common')
   const [showShareModal, setShowShareModal] = useState(false)
   const [showMarketCloseModal, setShowMarketCloseModal] = useState(false)
-  const [positionToShare, setPositionToShare] = useState(null)
+  const [positionToShare, setPositionToShare] = useState<any>(null)
   const [settleSinglePos, setSettleSinglePos] = useState(null)
 
   const market = useMangoStore(marketSelector)
@@ -41,6 +41,15 @@ const PositionsTable: React.FC = () => {
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.md : false
   const { asPath } = useRouter()
+
+  useEffect(() => {
+    if (positionToShare) {
+      const updatedPosition = openPositions.find(
+        (p) => p.marketConfig === positionToShare.marketConfig
+      )
+      setPositionToShare(updatedPosition)
+    }
+  }, [openPositions])
 
   const handleCloseWarning = useCallback(() => {
     setShowMarketCloseModal(false)
@@ -60,6 +69,7 @@ const PositionsTable: React.FC = () => {
 
   const handleCloseShare = useCallback(() => {
     setShowShareModal(false)
+    setPositionToShare(null)
   }, [])
 
   const handleShowShare = (position) => {

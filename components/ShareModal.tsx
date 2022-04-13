@@ -28,6 +28,28 @@ import {
 import Button from './Button'
 import Switch from './Switch'
 
+const calculatePositionPercentage = (
+  position,
+  mangoGroup,
+  mangoCache,
+  mangoAccount
+) => {
+  let pnl = 0
+  if (position.basePosition > 0) {
+    pnl = (position.indexPrice - position.avgEntryPrice) * position.basePosition
+    return (
+      (pnl / mangoAccount?.computeValue(mangoGroup, mangoCache).toNumber()) *
+      100
+    )
+  } else {
+    pnl = (position.avgEntryPrice - position.indexPrice) * position.basePosition
+    return (
+      (pnl / mangoAccount?.computeValue(mangoGroup, mangoCache).toNumber()) *
+      100
+    )
+  }
+}
+
 interface ShareModalProps {
   onClose: () => void
   isOpen: boolean
@@ -36,6 +58,7 @@ interface ShareModalProps {
     avgEntryPrice: number
     basePosition: number
     marketConfig: MarketConfig
+    notionalSize: number
   }
 }
 
@@ -66,16 +89,12 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
     return Math.round((100 * -1) / (ws.perpAssetWeight.toNumber() - 1)) / 100
   }, [mangoGroup, marketConfig])
 
-  const positionPercentage =
-    position.basePosition > 0
-      ? ((position.indexPrice - position.avgEntryPrice) /
-          position.avgEntryPrice) *
-        100 *
-        initLeverage
-      : ((position.avgEntryPrice - position.indexPrice) /
-          position.avgEntryPrice) *
-        100 *
-        initLeverage
+  const positionPercentage = calculatePositionPercentage(
+    position,
+    mangoGroup,
+    mangoCache,
+    mangoAccount
+  )
 
   const side = position.basePosition > 0 ? 'LONG' : 'SHORT'
 
@@ -187,20 +206,36 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
             />
           </div>
         ) : null}
-        <div className="flex items-center text-center text-lg text-th-fgd-3">
+        <div className="flex items-center text-lg text-th-fgd-3">
           <SymbolIcon className="mr-2 h-6 w-auto" />
-          <span className="mr-2">{position.marketConfig.name}</span>
           <span
-            className={`rounded border px-1 ${
+            className={`mr-2 ${
+              !showButton ? 'inline-block h-full align-top leading-none' : ''
+            }`}
+          >
+            {position.marketConfig.name}
+          </span>
+          <span
+            className={`h-full rounded border px-1 ${
               position.basePosition > 0
                 ? 'border-th-green text-th-green'
                 : 'border-th-red text-th-red'
             }`}
           >
-            {side}
+            <span
+              className={`${
+                !showButton ? 'inline-block h-full align-top leading-none' : ''
+              }`}
+            >
+              {side}
+            </span>
           </span>
         </div>
-        <div className={`text-center text-6xl font-bold`}>
+        <div
+          className={`text-center text-6xl font-bold ${
+            isProfit ? 'text-th-green' : 'text-th-red'
+          }`}
+        >
           {positionPercentage > 0 ? '+' : null}
           {positionPercentage.toFixed(2)}%
         </div>
@@ -216,12 +251,22 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
           <div className="flex items-center justify-between">
             <span className="text-th-fgd-2">Avg Entry Price</span>
             <span className="font-bold">
-              ${position.avgEntryPrice.toFixed(2)}
+              $
+              {position.avgEntryPrice.toLocaleString(undefined, {
+                maximumFractionDigits: 2,
+                minimumFractionDigits: 2,
+              })}
             </span>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-th-fgd-2">Mark Price</span>
-            <span className="font-bold">${position.indexPrice.toFixed(2)}</span>
+            <span className="font-bold">
+              $
+              {position.indexPrice.toLocaleString(undefined, {
+                maximumFractionDigits: 2,
+                minimumFractionDigits: 2,
+              })}
+            </span>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-th-fgd-2">Max Leverage</span>
