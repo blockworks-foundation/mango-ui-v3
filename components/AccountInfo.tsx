@@ -30,6 +30,7 @@ import useMangoAccount from '../hooks/useMangoAccount'
 import Loading from './Loading'
 import CreateAlertModal from './CreateAlertModal'
 import { useWallet } from '@solana/wallet-adapter-react'
+import { useRouter } from 'next/router'
 
 const I80F48_100 = I80F48.fromString('100')
 
@@ -48,6 +49,8 @@ export default function AccountInfo() {
   const [showDepositModal, setShowDepositModal] = useState(false)
   const [showWithdrawModal, setShowWithdrawModal] = useState(false)
   const [showAlertsModal, setShowAlertsModal] = useState(false)
+  const router = useRouter()
+  const { pubkey } = router.query
 
   const canWithdraw =
     mangoAccount?.owner && publicKey
@@ -154,7 +157,9 @@ export default function AccountInfo() {
   return (
     <>
       <div
-        className={!connected && !isMobile ? 'blur-sm filter' : undefined}
+        className={
+          !connected && !isMobile && !pubkey ? 'blur-sm filter' : undefined
+        }
         id="account-details-tip"
       >
         {!isMobile ? (

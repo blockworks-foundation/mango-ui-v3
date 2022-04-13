@@ -7,6 +7,7 @@ import { RefreshClockwiseIcon } from './icons'
 import { useTranslation } from 'next-i18next'
 import { LinkButton } from './Button'
 import { Label } from './Input'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 type AccountSelectProps = {
   accounts: WalletToken[]
@@ -21,6 +22,7 @@ const AccountSelect = ({
   onSelectAccount,
   hideAddress = false,
 }: AccountSelectProps) => {
+  const { wallet } = useWallet()
   const { t } = useTranslation('common')
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const tokenSymbols = useMemo(
@@ -43,8 +45,9 @@ const AccountSelect = ({
   }
 
   const handleRefreshBalances = async () => {
+    if (!wallet) return
     setLoading(true)
-    await actions.fetchWalletTokens()
+    await actions.fetchWalletTokens(wallet)
     setLoading(false)
   }
 

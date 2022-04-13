@@ -12,18 +12,16 @@ export async function deposit({
 }: {
   amount: number
   fromTokenAcc: TokenAccount
-  mangoAccount?: MangoAccount
+  mangoAccount?: MangoAccount | null
   accountName?: string
   wallet: Wallet
 }) {
   const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
-  const tokenIndex = mangoGroup?.getTokenIndex(fromTokenAcc.mint)
-  const mangoClient = useMangoStore.getState().connection.client
-  const referrer = useMangoStore.getState().referrerPk
+  if (!mangoGroup) throw new Error('Deposit failed. Mango group is undefined.')
 
-  if (typeof tokenIndex !== 'number' || !referrer) {
-    return
-  }
+  const tokenIndex = mangoGroup.getTokenIndex(fromTokenAcc.mint)
+  const mangoClient = useMangoStore.getState().connection.client
+  const referrer = useMangoStore.getState().referrerPk || undefined
 
   const mangoGroupPublicKey =
     mangoGroup?.rootBankAccounts?.[tokenIndex]?.nodeBankAccounts[0].publicKey
@@ -81,7 +79,7 @@ export async function withdraw({
   const tokenIndex = mangoGroup?.getTokenIndex(token)
   const mangoClient = useMangoStore.getState().connection.client
 
-  if (!tokenIndex) return
+  if (tokenIndex === undefined) return
 
   const publicKey =
     mangoGroup?.rootBankAccounts?.[tokenIndex]?.nodeBankAccounts[0].publicKey

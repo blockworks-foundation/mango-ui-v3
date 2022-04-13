@@ -606,8 +606,9 @@ const OrderbookSpread = ({ orderbookData }) => {
   const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
   const decimals = useMemo(() => {
     if (selectedMarket) {
-      getPrecisionDigits(selectedMarket?.tickSize)
+      return getPrecisionDigits(selectedMarket?.tickSize)
     }
+    return 2
   }, [selectedMarket])
 
   return (

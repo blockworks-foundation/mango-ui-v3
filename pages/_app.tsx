@@ -185,20 +185,22 @@ function App({ Component, pageProps }) {
         <link rel="manifest" href="/manifest.json"></link>
       </Head>
       <ErrorBoundary>
-        <PageTitle />
-        <MangoStoreUpdater />
-        <OpenOrdersStoreUpdater />
-        <PerpPositionsStoreUpdater />
-        <TradeHistoryStoreUpdater />
-        <FetchReferrer />
+        <WalletProvider wallets={wallets}>
+          <PageTitle />
+          <MangoStoreUpdater />
+          <OpenOrdersStoreUpdater />
+          <PerpPositionsStoreUpdater />
+          <TradeHistoryStoreUpdater />
+          <FetchReferrer />
 
-        <ThemeProvider defaultTheme="Mango">
-          <WalletProvider wallets={wallets}>
+          <ThemeProvider defaultTheme="Mango">
             <WalletListener />
             <ViewportProvider>
               <div className="min-h-screen bg-th-bkg-1">
-                <GlobalNotification />
-                <Component {...pageProps} />
+                <ErrorBoundary>
+                  <GlobalNotification />
+                  <Component {...pageProps} />
+                </ErrorBoundary>
               </div>
               <div className="fixed bottom-0 left-0 z-20 w-full md:hidden">
                 <BottomBar />
@@ -206,8 +208,8 @@ function App({ Component, pageProps }) {
 
               <Notifications />
             </ViewportProvider>
-          </WalletProvider>
-        </ThemeProvider>
+          </ThemeProvider>
+        </WalletProvider>
       </ErrorBoundary>
     </>
   )

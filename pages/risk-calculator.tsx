@@ -100,8 +100,8 @@ export default function RiskCalculator() {
   const mangoConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const setMangoStore = useMangoStore((s) => s.set)
-  const router = useRouter()
   const { connected } = useWallet()
+  const router = useRouter()
   const { pubkey } = router.query
 
   // Set default state variables
@@ -109,9 +109,7 @@ export default function RiskCalculator() {
   const [scenarioInitialized, setScenarioInitialized] = useState(false)
   const [blankScenarioInitialized, setBlankScenarioInitialized] =
     useState(false)
-  const [scenarioBars, setScenarioBars] = useState<ScenarioCalculator>({
-    rowData: [],
-  })
+  const [scenarioBars, setScenarioBars] = useState<ScenarioCalculator>()
   const [accountConnected, setAccountConnected] = useState(false)
   const [showZeroBalances, setShowZeroBalances] = useState(true)
   const [interimValue, setInterimValue] = useState(new Map())
@@ -124,14 +122,11 @@ export default function RiskCalculator() {
       router.push('/risk-calculator')
       setScenarioInitialized(false)
     }
-  }, [connected, router])
+  }, [connected])
 
   useEffect(() => {
-    async function loadUnownedMangoAccount() {
+    async function loadUnownedMangoAccount(pubkey) {
       try {
-        if (!pubkey) {
-          return
-        }
         const unownedMangoAccountPubkey = new PublicKey(pubkey)
         const mangoClient = useMangoStore.getState().connection.client
         if (mangoGroup) {
@@ -151,9 +146,9 @@ export default function RiskCalculator() {
     }
 
     if (pubkey) {
-      loadUnownedMangoAccount()
+      loadUnownedMangoAccount(pubkey)
     }
-  }, [pubkey, mangoGroup, router, setMangoStore])
+  }, [pubkey, mangoGroup])
 
   useEffect(() => {
     const handleRouteChange = () => {
@@ -167,7 +162,7 @@ export default function RiskCalculator() {
     return () => {
       router.events.off('routeChangeStart', handleRouteChange)
     }
-  }, [resetOnLeave, setMangoStore])
+  }, [resetOnLeave])
 
   // Set rules for updating the scenario
   useEffect(() => {
@@ -200,21 +195,10 @@ export default function RiskCalculator() {
 
   // Retrieve the data to create the scenario table
   const createScenario = (type) => {
-    if (!mangoGroup || !mangoCache || !mangoAccount) {
-      return null
-    }
-    const rowData: any[] = []
+    if (!mangoGroup || !mangoCache) return
+    const rowData = []
     let calculatorRowData
     for (let i = -1; i < mangoGroup.numOracles; i++) {
-      if (!mangoAccount?.spotOpenOrdersAccounts[i]) {
-        return
-      }
-      const iBaseTokenTotal =
-        mangoAccount?.spotOpenOrdersAccounts?.[i]?.baseTokenTotal
-      const iBaseTokenFree =
-        mangoAccount?.spotOpenOrdersAccounts?.[i]?.baseTokenFree
-      const iQuoteTokenFree =
-        mangoAccount?.spotOpenOrdersAccounts?.[i]?.quoteTokenFree
       // Get market configuration data
       const spotMarketConfig =
         i < 0
@@ -270,6 +254,14 @@ export default function RiskCalculator() {
               )
             : 0
         ) || 0
+
+      const iBaseTokenTotal =
+        mangoAccount?.spotOpenOrdersAccounts?.[i]?.baseTokenTotal
+      const iBaseTokenFree =
+        mangoAccount?.spotOpenOrdersAccounts?.[i]?.baseTokenFree
+      const iQuoteTokenFree =
+        mangoAccount?.spotOpenOrdersAccounts?.[i]?.quoteTokenFree
+
       const spotBaseTokenLocked =
         mangoAccount && spotMarketConfig && iBaseTokenTotal && iBaseTokenFree
           ? Number(iBaseTokenTotal.sub(iBaseTokenFree)) /
@@ -313,33 +305,30 @@ export default function RiskCalculator() {
               Math.pow(10, spotMarketConfig.baseDecimals)
             : 0
       }
-
+      if (!symbol) return
       // Retrieve perp positions if present
       const perpPosition =
         perpMarketConfig?.publicKey && mangoAccount
           ? mangoAccount?.perpAccounts[i]
           : null
       const perpMarketIndex =
-        perpMarketConfig?.publicKey && mangoAccount && symbol
+        perpMarketConfig?.publicKey && mangoAccount
           ? getMarketIndexBySymbol(mangoConfig, symbol)
           : null
-      if (typeof perpMarketIndex !== 'number') {
-        return
-      }
       const perpAccount =
-        perpMarketConfig?.publicKey && mangoAccount
+        perpMarketConfig?.publicKey && mangoAccount && perpMarketIndex
           ? mangoAccount?.perpAccounts[perpMarketIndex]
           : null
       const perpMarketCache =
-        perpMarketConfig?.publicKey && mangoAccount
+        perpMarketConfig?.publicKey && mangoAccount && perpMarketIndex
           ? mangoCache?.perpMarketCache[perpMarketIndex]
           : null
       const perpMarketInfo =
-        perpMarketConfig?.publicKey && mangoAccount
+        perpMarketConfig?.publicKey && mangoAccount && perpMarketIndex
           ? mangoGroup?.perpMarkets[perpMarketIndex]
           : null
       const basePosition =
-        perpMarketConfig?.publicKey && mangoAccount && symbol
+        perpMarketConfig?.publicKey && mangoAccount
           ? Number(perpAccount?.basePosition) /
               Math.pow(10, perpContractPrecision[symbol]) || 0
           : 0
@@ -352,6 +341,7 @@ export default function RiskCalculator() {
       const positionPnL =
         perpMarketConfig?.publicKey &&
         mangoAccount &&
+        perpMarketIndex &&
         perpMarketInfo &&
         perpMarketCache
           ? Number(
@@ -363,12 +353,12 @@ export default function RiskCalculator() {
             ) / Math.pow(10, 6) || 0
           : 0
       const perpBids =
-        perpMarketConfig?.publicKey && mangoAccount && symbol
+        perpMarketConfig?.publicKey && mangoAccount
           ? Number(perpPosition?.bidsQuantity) /
               Math.pow(10, perpContractPrecision[symbol]) || 0
           : Number(0)
       const perpAsks =
-        perpMarketConfig?.publicKey && mangoAccount && symbol
+        perpMarketConfig?.publicKey && mangoAccount
           ? Number(perpPosition?.asksQuantity) /
               Math.pow(10, perpContractPrecision[symbol]) || 0
           : Number(0)
@@ -590,7 +580,7 @@ export default function RiskCalculator() {
                   tokenPrecision[perpMarketConfig?.baseSymbol]) ||
                 6,
         }
-
+        // @ts-ignore
         rowData.push(calculatorRowData)
       }
     }
@@ -608,21 +598,18 @@ export default function RiskCalculator() {
 
   // Reset column details
   const resetScenarioColumn = (column) => {
-    if (!mangoCache || !mangoAccount || !scenarioBars) {
-      return
-    }
     let resetRowData
+    if (!mangoCache || !scenarioBars) return
+    let resetValue: number
+    let resetDeposit: number
+    let resetBorrow: number
+    let resetInOrders: number
+    let resetPositionSide: string
+    let resetPerpPositionPnL: number
+    let resetPerpUnsettledFunding: number
+    let resetPerpInOrders: number
     mangoGroup
       ? (resetRowData = scenarioBars.rowData.map((asset) => {
-          let resetValue: number | null = null
-          let resetDeposit: number | null = null
-          let resetBorrow: number | null = null
-          let resetInOrders: number | null = null
-          let resetPositionSide: string | null = null
-          let resetPerpPositionPnL: number | null = null
-          let resetPerpUnsettledFunding: number | null = null
-          let resetPerpInOrders: number | null = null
-
           switch (column) {
             case 'price':
               setSliderPercentage(defaultSliderVal)
@@ -710,27 +697,26 @@ export default function RiskCalculator() {
 
                 if (asset.symbolName === 'USDC' && ordersAsBalance) {
                   for (let j = 0; j < mangoGroup.tokens.length; j++) {
-                    const jQuoteTokenTotal =
-                      mangoAccount?.spotOpenOrdersAccounts?.[j]?.quoteTokenTotal
                     const inOrder =
                       j !== QUOTE_INDEX &&
                       mangoConfig.spotMarkets[j]?.publicKey &&
-                      jQuoteTokenTotal
-                        ? jQuoteTokenTotal
+                      mangoAccount?.spotOpenOrdersAccounts[j]?.quoteTokenTotal
+                        ? mangoAccount?.spotOpenOrdersAccounts[j]
+                            ?.quoteTokenTotal
                         : 0
                     resetInOrders += Number(inOrder) / Math.pow(10, 6)
                   }
                 } else {
-                  const baseTokenTotal =
-                    mangoAccount?.spotOpenOrdersAccounts?.[asset.oracleIndex]
+                  resetInOrders =
+                    spotMarketConfig &&
+                    mangoAccount?.spotOpenOrdersAccounts[asset.oracleIndex]
                       ?.baseTokenTotal
-                  spotMarketConfig &&
-                  typeof asset?.oracleIndex === 'number' &&
-                  mangoAccount.spotOpenOrdersAccounts[asset.oracleIndex] &&
-                  baseTokenTotal
-                    ? Number(baseTokenTotal) /
-                      Math.pow(10, spotMarketConfig.baseDecimals)
-                    : 0
+                      ? Number(
+                          mangoAccount?.spotOpenOrdersAccounts[
+                            asset.oracleIndex
+                          ]?.baseTokenTotal
+                        ) / Math.pow(10, spotMarketConfig.baseDecimals)
+                      : 0
                 }
                 resetValue = floorToDecimal(
                   resetDeposit -
@@ -761,23 +747,16 @@ export default function RiskCalculator() {
                   perpMarketConfig?.publicKey && mangoAccount
                     ? getMarketIndexBySymbol(mangoConfig, symbol)
                     : null
-                const hasPerpMarketIndex = typeof perpMarketIndex === 'number'
                 const perpAccount =
-                  perpMarketConfig?.publicKey &&
-                  mangoAccount &&
-                  hasPerpMarketIndex
+                  perpMarketConfig?.publicKey && mangoAccount && perpMarketIndex
                     ? mangoAccount?.perpAccounts[perpMarketIndex]
                     : null
                 const perpMarketCache =
-                  perpMarketConfig?.publicKey &&
-                  mangoAccount &&
-                  hasPerpMarketIndex
+                  perpMarketConfig?.publicKey && mangoAccount && perpMarketIndex
                     ? mangoCache?.perpMarketCache[perpMarketIndex]
                     : null
                 const perpMarketInfo =
-                  perpMarketConfig?.publicKey &&
-                  mangoAccount &&
-                  hasPerpMarketIndex
+                  perpMarketConfig?.publicKey && mangoAccount && perpMarketIndex
                     ? mangoGroup?.perpMarkets[perpMarketIndex]
                     : null
                 const basePosition =
@@ -796,9 +775,9 @@ export default function RiskCalculator() {
                 const positionPnL =
                   perpMarketConfig?.publicKey &&
                   mangoAccount &&
+                  perpMarketIndex &&
                   perpMarketInfo &&
-                  perpMarketCache &&
-                  hasPerpMarketIndex
+                  perpMarketCache
                     ? Number(
                         perpAccount?.getPnl(
                           perpMarketInfo,
@@ -860,7 +839,7 @@ export default function RiskCalculator() {
   const updateValue = (symbol, field, val) => {
     const updateValue = Number(val)
     if (!Number.isNaN(val)) {
-      const updatedRowData: any[] = scenarioBars?.rowData?.map((asset) => {
+      const updatedRowData = scenarioBars?.rowData.map((asset) => {
         if (asset.symbolName.toLowerCase() === symbol.toLowerCase()) {
           switch (field) {
             case 'spotNet':
@@ -895,11 +874,9 @@ export default function RiskCalculator() {
           return asset
         }
       })
-
-      if (updatedRowData) {
-        const calcData = updateCalculator(updatedRowData)
-        setScenarioBars(calcData)
-      }
+      // @ts-ignore
+      const calcData = updateCalculator(updatedRowData)
+      setScenarioBars(calcData)
     }
   }
 
@@ -912,11 +889,9 @@ export default function RiskCalculator() {
           Math.abs(asset.price) * (asset.priceDisabled ? 1 : sliderPercentage),
       }
     })
-
-    if (updatedRowData) {
-      const calcData = updateCalculator(updatedRowData)
-      setScenarioBars(calcData)
-    }
+    // @ts-ignore
+    const calcData = updateCalculator(updatedRowData)
+    setScenarioBars(calcData)
   }
 
   // Handle slider usage
@@ -1344,7 +1319,7 @@ export default function RiskCalculator() {
           <h1 className={`mb-2`}>{t('calculator:risk-calculator')}</h1>
           <p className="mb-0">{t('calculator:in-testing-warning')}</p>
         </div>
-        {scenarioBars?.rowData?.length && scenarioBars.rowData.length > 0 ? (
+        {scenarioBars?.rowData?.length ? (
           <div className="rounded-lg bg-th-bkg-2">
             <div className="grid grid-cols-12">
               <div className="col-span-12 p-4 md:col-span-8">

@@ -97,6 +97,7 @@ const Notification = ({ notification }: { notification: Notification }) => {
   }
 
   // auto hide a notification after 8 seconds unless it is a confirming or time out notification
+  // if no status is provided for a tx notification after 90s, hide it
   useEffect(() => {
     const id = setTimeout(
       () => {
@@ -104,7 +105,7 @@ const Notification = ({ notification }: { notification: Notification }) => {
           hideNotification()
         }
       },
-      parsedTitle || type === 'confirm' || type === 'error' ? 40000 : 8000
+      parsedTitle || type === 'confirm' || type === 'error' ? 90000 : 8000
     )
 
     return () => {
@@ -118,11 +119,11 @@ const Notification = ({ notification }: { notification: Notification }) => {
       as={Fragment}
       appear={true}
       enter="transform ease-out duration-500 transition"
-      enterFrom="translate-y-2 opacity-0 sm:translate-y-0 sm:-translate-x-8"
+      enterFrom="translate-y-2 opacity-0 sm:translate-y-0 sm:-translate-x-48"
       enterTo="translate-y-0 opacity-100 sm:translate-x-0"
-      leave="transform ease-in duration-300 transition"
-      leaveFrom="translate-y-0 opacity-100 sm:translate-x-0"
-      leaveTo="-translate-y-2 opacity-0 sm:translate-y-0 sm:-translate-x-8"
+      leave="transform ease-in duration-200 transition"
+      leaveFrom="translate-y-0 sm:translate-x-0"
+      leaveTo="-translate-y-2 sm:translate-y-0 sm:-translate-x-48"
     >
       <div
         className={`pointer-events-auto mt-2 w-full max-w-sm overflow-hidden rounded-md border border-th-bkg-4 bg-th-bkg-3 shadow-lg ring-1 ring-black ring-opacity-5`}

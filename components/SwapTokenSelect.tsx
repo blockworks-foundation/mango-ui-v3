@@ -94,9 +94,13 @@ const SwapTokenSelect = ({
   }, [])
 
   const tokenInfos = useMemo(() => {
-    return sortedTokenMints.filter((token) => {
-      return !token?.name || !token?.symbol ? false : true
-    })
+    if (sortedTokenMints?.length) {
+      return sortedTokenMints.filter((token) => {
+        return !token?.name || !token?.symbol ? false : true
+      })
+    } else {
+      return []
+    }
   }, [sortedTokenMints])
 
   const handleUpdateSearch = (e) => {

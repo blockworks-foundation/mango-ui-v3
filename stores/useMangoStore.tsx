@@ -86,6 +86,7 @@ export const serumProgramId = new PublicKey(
 const mangoGroupPk = new PublicKey(defaultMangoGroupIds!.publicKey)
 
 export const SECONDS = 1000
+export const CLIENT_TX_TIMEOUT = 45000
 
 // Used to retry loading the MangoGroup and MangoAccount if an rpc node error occurs
 let mangoGroupRetryAttempt = 0
@@ -119,7 +120,7 @@ export interface Alert {
   triggeredTimestamp: number | undefined
 }
 
-interface AlertRequest {
+export interface AlertRequest {
   alertProvider: 'mail'
   health: number
   mangoGroupPk: string
@@ -206,9 +207,22 @@ export type MangoStore = {
   }
   set: (x: (x: MangoStore) => void) => void
   actions: {
+    fetchWalletTokens: (wallet: Wallet) => void
+    fetchProfilePicture: (wallet: Wallet) => void
     fetchAllMangoAccounts: (wallet: Wallet) => Promise<void>
     fetchMangoGroup: () => Promise<void>
-    [key: string]: (args?) => void
+    fetchTradeHistory: () => void
+    reloadMangoAccount: () => void
+    reloadOrders: () => void
+    updateOpenOrders: () => void
+    loadMarketFills: () => void
+    loadReferralData: () => void
+    fetchMangoGroupCache: () => void
+    updateConnection: (url: string) => void
+    createAlert: (alert: AlertRequest) => void
+    deleteAlert: (id: string) => void
+    loadAlerts: (pk: PublicKey) => void
+    fetchMarketsInfo: () => void
   }
   alerts: {
     activeAlerts: Array<Alert>
@@ -249,6 +263,7 @@ const useMangoStore = create<
 
     const connection = new Connection(rpcUrl, 'processed' as Commitment)
     const client = new MangoClient(connection, programId, {
+      timeout: CLIENT_TX_TIMEOUT,
       postSendTxCallback: ({ txid }: { txid: string }) => {
         notify({
           title: 'Transaction sent',
@@ -600,9 +615,8 @@ const useMangoStore = create<
               }
             })
         },
-        async fetchTradeHistory(mangoAccount = null) {
-          const selectedMangoAccount =
-            mangoAccount || get().selectedMangoAccount.current
+        async fetchTradeHistory() {
+          const selectedMangoAccount = get().selectedMangoAccount.current
           const set = get().set
           if (!selectedMangoAccount) return
 
@@ -800,7 +814,7 @@ const useMangoStore = create<
             }
           }
         },
-        async updateConnection(endpointUrl) {
+        updateConnection(endpointUrl) {
           const set = get().set
 
           const newConnection = new Connection(endpointUrl, 'processed')
@@ -970,13 +984,21 @@ const useMangoStore = create<
         },
         async fetchMarketsInfo() {
           const set = get().set
-          const data = await fetch(
-            `https://mango-all-markets-api.herokuapp.com/markets/`
-          )
-          const parsedMarketsInfo = await data.json()
-          set((state) => {
-            state.marketsInfo = parsedMarketsInfo
-          })
+          try {
+            const data = await fetch(
+              `https://mango-all-markets-api.herokuapp.com/markets/`
+            )
+
+            if (data?.status === 200) {
+              const parsedMarketsInfo = await data.json()
+
+              set((state) => {
+                state.marketsInfo = parsedMarketsInfo
+              })
+            }
+          } catch (e) {
+            console.log('ERORR: Unable to load all market info')
+          }
         },
       },
     }
