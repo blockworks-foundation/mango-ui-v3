@@ -31,7 +31,8 @@ export async function getStaticProps({ locale }) {
 export default function Fees() {
   const { t } = useTranslation('common')
   const { totalSrm, totalMsrm, rates } = useSrmAccount()
-  const { takerFee, makerFee } = useFees()
+  const { takerFeeBeforeDiscount, takerFeeWithMaxDiscount, makerFee } =
+    useFees()
   const { connected } = useWallet()
   const [showDeposit, setShowDeposit] = useState(false)
   const [showWithdraw, setShowWithdraw] = useState(false)
@@ -64,16 +65,16 @@ export default function Fees() {
               <div className="pb-0.5 text-th-fgd-3">{t('taker-fee')}</div>
               <div className="flex items-center">
                 <div className="text-xl font-bold text-th-fgd-1 md:text-2xl">
-                  {percentFormat.format(takerFee)}
+                  {percentFormat.format(takerFeeBeforeDiscount)}
                 </div>
               </div>
               <div className="flex items-center">
                 <p className="mb-0">
                   {t('if-referred', {
                     fee: percentFormat.format(
-                      takerFee < 0
-                        ? takerFee + takerFee * 0.04
-                        : takerFee - takerFee * 0.04
+                      takerFeeBeforeDiscount < 0
+                        ? takerFeeBeforeDiscount + takerFeeBeforeDiscount * 0.04
+                        : takerFeeBeforeDiscount - takerFeeBeforeDiscount * 0.04
                     ),
                   })}
                 </p>
@@ -85,6 +86,11 @@ export default function Fees() {
                     />
                   </div>
                 </Tooltip>
+              </div>
+              <div className="flex items-center">
+                <p className="mb-0">
+                  {percentFormat.format(takerFeeWithMaxDiscount)} if 10k MNGO
+                </p>
               </div>
             </div>
           </div>
