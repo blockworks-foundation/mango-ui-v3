@@ -59,25 +59,6 @@ export default function Fees() {
                   {percentFormat.format(makerFee)}
                 </div>
               </div>
-              <div className="flex items-center">
-                <p className="mb-0">
-                  {t('if-referred', {
-                    fee: percentFormat.format(
-                      makerFee < 0
-                        ? makerFee + makerFee * 0.04
-                        : makerFee - makerFee * 0.04
-                    ),
-                  })}
-                </p>
-
-                <Tooltip content={t('if-referred-tooltip')}>
-                  <div>
-                    <InformationCircleIcon
-                      className={`ml-1.5 h-5 w-5 cursor-help text-th-fgd-3`}
-                    />
-                  </div>
-                </Tooltip>
-              </div>
             </div>
             <div className="border-b border-t border-th-bkg-4 p-3 sm:p-4">
               <div className="pb-0.5 text-th-fgd-3">{t('taker-fee')}</div>
