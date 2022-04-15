@@ -135,7 +135,7 @@ button.transition-none {
 }
 
 .tradingview-chart {
-  height: calc(100% - 24px);
+  display: contents;
 }
 
 /* Grid */

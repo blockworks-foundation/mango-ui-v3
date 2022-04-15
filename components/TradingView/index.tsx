@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTheme } from 'next-themes'
 import {
   widget,
@@ -623,25 +623,7 @@ const TVChartContainer = () => {
     }
   }, [chartReady, openOrders, showOrderLines])
 
-  const attributionUrl = useMemo(
-    () =>
-      `https://tradingview.com/symbols/${defaultProps.symbol?.slice(0, -5)}USD`,
-    [defaultProps]
-  )
-
-  return (
-    <>
-      <div id={defaultProps.containerId} className="tradingview-chart" />
-      <a
-        className="default-transition tiny-text flex justify-end px-3 py-1 text-th-fgd-4 hover:text-th-fgd-3"
-        href={attributionUrl}
-        rel="noopener noreferrer"
-        target="_blank"
-      >
-        Chart by TradingView
-      </a>
-    </>
-  )
+  return <div id={defaultProps.containerId} className="tradingview-chart" />
 }
 
 export default TVChartContainer
