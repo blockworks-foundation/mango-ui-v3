@@ -89,7 +89,7 @@ const PerpMarket: React.FC = () => {
     if (name && groupConfig) {
       marketQueryParam = name.toString().split(/-|\//)
       marketBaseSymbol = marketQueryParam[0]
-      marketType = marketQueryParam[1].includes('PERP') ? 'perp' : 'spot'
+      marketType = marketQueryParam[1]?.includes('PERP') ? 'perp' : 'spot'
 
       newMarket = getMarketByBaseSymbolAndKind(
         groupConfig,
