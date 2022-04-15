@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { PencilIcon, TrashIcon, XIcon } from '@heroicons/react/outline'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -27,10 +27,12 @@ const DesktopTable = ({
   cancelledOrderId,
   editOrderIndex,
   handleCancelOrder,
+  handleCancelAllPerpOrders,
   handleModifyOrder,
   modifiedOrderId,
   openOrders,
   setEditOrderIndex,
+  showCancelAllPerpOrders,
 }) => {
   const { t } = useTranslation('common')
   const { asPath } = useRouter()
@@ -61,154 +63,171 @@ const DesktopTable = ({
       return <span>{market.name}</span>
     }
   }
+
   return (
-    <Table>
-      <thead>
-        <TrHead>
-          <Th>{t('market')}</Th>
-          <Th>{t('side')}</Th>
-          <Th>{t('size')}</Th>
-          <Th>{t('price')}</Th>
-          <Th>{t('value')}</Th>
-          <Th>{t('condition')}</Th>
-          <Th>
-            <span className={`sr-only`}>{t('edit')}</span>
-          </Th>
-        </TrHead>
-      </thead>
-      <tbody>
-        {openOrders.map(({ order, market }, index) => {
-          const decimals = getDecimalCount(market.account.tickSize)
-          const editThisOrder = editOrderIndex === index
-          return (
-            <TrBody key={`${order.orderId}${order.side}`}>
-              <Td className="w-[14.286%]">
-                <div className="flex items-center">
-                  <img
-                    alt=""
-                    width="20"
-                    height="20"
-                    src={`/assets/icons/${market.config.baseSymbol.toLowerCase()}.svg`}
-                    className={`mr-2.5`}
-                  />
-                  <span className="whitespace-nowrap">
-                    {renderMarketName(market.config)}
-                  </span>
-                </div>
-              </Td>
-              <Td className="w-[14.286%]">
-                <SideBadge side={order.side} />
-              </Td>
-              {editOrderIndex !== index ? (
-                <>
-                  <Td className="w-[14.286%]">
-                    {order.size.toLocaleString(undefined, {
-                      maximumFractionDigits: 4,
-                    })}
-                  </Td>
-                  <Td className="w-[14.286%]">
-                    {usdFormatter(order.price, decimals)}
-                  </Td>
-                </>
-              ) : (
-                <>
-                  <Td className="w-[14.286%]">
-                    <Input
-                      className="default-transition h-7 rounded-none border-b-2 border-l-0 border-r-0 border-t-0 border-th-fgd-4 bg-transparent px-0 hover:border-th-fgd-3 focus:border-th-fgd-3 focus:outline-none"
-                      type="number"
-                      value={modifiedOrderSize}
-                      onChange={(e) => setModifiedOrderSize(e.target.value)}
+    <>
+      {showCancelAllPerpOrders ? (
+        <Button
+          className="ml-auto flex h-7 items-center pt-0 pb-0 pl-3 pr-3 text-xs"
+          onClick={() => handleCancelAllPerpOrders()}
+        >
+          {t('cancel-all-perp-orders')}
+        </Button>
+      ) : null}
+      <Table>
+        <thead>
+          <TrHead>
+            <Th>{t('market')}</Th>
+            <Th>{t('side')}</Th>
+            <Th>{t('size')}</Th>
+            <Th>{t('price')}</Th>
+            <Th>{t('value')}</Th>
+            <Th>{t('condition')}</Th>
+            <Th>
+              <span className={`sr-only`}>{t('edit')}</span>
+            </Th>
+          </TrHead>
+        </thead>
+        <tbody>
+          {openOrders.map(({ order, market }, index) => {
+            const decimals = getDecimalCount(market.account.tickSize)
+            const editThisOrder = editOrderIndex === index
+            return (
+              <TrBody key={`${order.orderId}${order.side}`}>
+                <Td className="w-[14.286%]">
+                  <div className="flex items-center">
+                    <img
+                      alt=""
+                      width="20"
+                      height="20"
+                      src={`/assets/icons/${market.config.baseSymbol.toLowerCase()}.svg`}
+                      className={`mr-2.5`}
                     />
-                  </Td>
-                  <Td className="w-[14.286%]">
-                    <Input
-                      autoFocus
-                      className="default-transition h-7 rounded-none border-b-2 border-l-0 border-r-0 border-t-0 border-th-fgd-4 bg-transparent px-0 hover:border-th-fgd-3 focus:border-th-fgd-3 focus:outline-none"
-                      type="number"
-                      value={modifiedOrderPrice}
-                      onChange={(e) => setModifiedOrderPrice(e.target.value)}
-                    />
-                  </Td>
-                </>
-              )}
-              <Td className="w-[14.286%]">
-                {editThisOrder ? '' : formatUsdValue(order.price * order.size)}
-              </Td>
-              <Td className="w-[14.286%]">
-                {order.perpTrigger &&
-                  `${t(order.orderType)} ${t(
-                    order.triggerCondition
-                  )} $${order.triggerPrice.toFixed(2)}`}
-              </Td>
-              <Td className="w-[14.286%]">
-                <div className={`flex justify-end space-x-3`}>
-                  {editOrderIndex !== index ? (
-                    <>
-                      {!order.perpTrigger ? (
+                    <span className="whitespace-nowrap">
+                      {renderMarketName(market.config)}
+                    </span>
+                  </div>
+                </Td>
+                <Td className="w-[14.286%]">
+                  <SideBadge side={order.side} />
+                </Td>
+                {editOrderIndex !== index ? (
+                  <>
+                    <Td className="w-[14.286%]">
+                      {order.size.toLocaleString(undefined, {
+                        maximumFractionDigits: 4,
+                      })}
+                    </Td>
+                    <Td className="w-[14.286%]">
+                      {usdFormatter(order.price, decimals)}
+                    </Td>
+                  </>
+                ) : (
+                  <>
+                    <Td className="w-[14.286%]">
+                      <Input
+                        className="default-transition h-7 rounded-none border-b-2 border-l-0 border-r-0 border-t-0 border-th-fgd-4 bg-transparent px-0 hover:border-th-fgd-3 focus:border-th-fgd-3 focus:outline-none"
+                        type="number"
+                        value={modifiedOrderSize}
+                        onChange={(e) => setModifiedOrderSize(e.target.value)}
+                      />
+                    </Td>
+                    <Td className="w-[14.286%]">
+                      <Input
+                        autoFocus
+                        className="default-transition h-7 rounded-none border-b-2 border-l-0 border-r-0 border-t-0 border-th-fgd-4 bg-transparent px-0 hover:border-th-fgd-3 focus:border-th-fgd-3 focus:outline-none"
+                        type="number"
+                        value={modifiedOrderPrice}
+                        onChange={(e) => setModifiedOrderPrice(e.target.value)}
+                      />
+                    </Td>
+                  </>
+                )}
+                <Td className="w-[14.286%]">
+                  {editThisOrder
+                    ? ''
+                    : formatUsdValue(order.price * order.size)}
+                </Td>
+                <Td className="w-[14.286%]">
+                  {order.perpTrigger &&
+                    `${t(order.orderType)} ${t(
+                      order.triggerCondition
+                    )} $${order.triggerPrice.toFixed(2)}`}
+                </Td>
+                <Td className="w-[14.286%]">
+                  <div className={`flex justify-end space-x-3`}>
+                    {editOrderIndex !== index ? (
+                      <>
+                        {!order.perpTrigger ? (
+                          <Button
+                            onClick={() => showEditOrderForm(index, order)}
+                            className="-my-1 h-7 pt-0 pb-0 pl-3 pr-3 text-xs"
+                          >
+                            {t('edit')}
+                          </Button>
+                        ) : null}
                         <Button
-                          onClick={() => showEditOrderForm(index, order)}
+                          onClick={() =>
+                            handleCancelOrder(order, market.account)
+                          }
                           className="-my-1 h-7 pt-0 pb-0 pl-3 pr-3 text-xs"
                         >
-                          {t('edit')}
+                          {cancelledOrderId + '' === order.orderId + '' ? (
+                            <Loading />
+                          ) : (
+                            <span>{t('cancel')}</span>
+                          )}
                         </Button>
-                      ) : null}
-                      <Button
-                        onClick={() => handleCancelOrder(order, market.account)}
-                        className="-my-1 h-7 pt-0 pb-0 pl-3 pr-3 text-xs"
-                      >
-                        {cancelledOrderId + '' === order.orderId + '' ? (
-                          <Loading />
-                        ) : (
-                          <span>{t('cancel')}</span>
-                        )}
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      <Button
-                        className="h-7 pt-0 pb-0 pl-3 pr-3 text-xs"
-                        onClick={() =>
-                          handleModifyOrder(
-                            order,
-                            market.account,
-                            modifiedOrderPrice || order.price,
-                            modifiedOrderSize || order.size,
-                            wallet
-                          )
-                        }
-                      >
-                        {modifiedOrderId + '' === order.orderId + '' ? (
-                          <Loading />
-                        ) : (
-                          <span>{t('save')}</span>
-                        )}
-                      </Button>
-                      <Button
-                        className="h-7 pt-0 pb-0 pl-3 pr-3 text-xs"
-                        onClick={() => setEditOrderIndex(null)}
-                      >
-                        Cancel Edit
-                      </Button>
-                    </>
-                  )}
-                </div>
-              </Td>
-            </TrBody>
-          )
-        })}
-      </tbody>
-    </Table>
+                      </>
+                    ) : (
+                      <>
+                        <Button
+                          className="h-7 pt-0 pb-0 pl-3 pr-3 text-xs"
+                          onClick={() =>
+                            handleModifyOrder(
+                              order,
+                              market.account,
+                              modifiedOrderPrice || order.price,
+                              modifiedOrderSize || order.size,
+                              wallet
+                            )
+                          }
+                        >
+                          {modifiedOrderId + '' === order.orderId + '' ? (
+                            <Loading />
+                          ) : (
+                            <span>{t('save')}</span>
+                          )}
+                        </Button>
+                        <Button
+                          className="h-7 pt-0 pb-0 pl-3 pr-3 text-xs"
+                          onClick={() => setEditOrderIndex(null)}
+                        >
+                          Cancel Edit
+                        </Button>
+                      </>
+                    )}
+                  </div>
+                </Td>
+              </TrBody>
+            )
+          })}
+        </tbody>
+      </Table>
+    </>
   )
 }
 
 const MobileTable = ({
   cancelledOrderId,
   editOrderIndex,
+  handleCancelAllPerpOrders,
   handleCancelOrder,
   handleModifyOrder,
   modifiedOrderId,
   openOrders,
   setEditOrderIndex,
+  showCancelAllPerpOrders,
 }) => {
   const { t } = useTranslation('common')
   const { wallet } = useWallet()
@@ -223,6 +242,14 @@ const MobileTable = ({
 
   return (
     <div className="border-b border-th-bkg-4">
+      {showCancelAllPerpOrders ? (
+        <Button
+          className="mb-4 flex h-7 w-full items-center justify-center pt-0 pb-0 pl-3 pr-3 text-xs"
+          onClick={() => handleCancelAllPerpOrders()}
+        >
+          {t('cancel-all-perp-orders')}
+        </Button>
+      ) : null}
       {openOrders.map(({ market, order }, index) => {
         const editThisOrder = editOrderIndex === index
         return (
@@ -348,10 +375,54 @@ const OpenOrdersTable = () => {
   const openOrders = useMangoStore((s) => s.selectedMangoAccount.openOrders)
   const [cancelId, setCancelId] = useState<any>(null)
   const [modifyId, setModifyId] = useState<any>(null)
+  const [perpOrdersCancelled, setPerpOrdersCancelled] = useState(false)
   const [editOrderIndex, setEditOrderIndex] = useState(null)
   const actions = useMangoStore((s) => s.actions)
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.md : false
+
+  const handleCancelAllPerpOrders = async () => {
+    setPerpOrdersCancelled(true)
+    const selectedMangoGroup =
+      useMangoStore.getState().selectedMangoGroup.current
+    const selectedMangoAccount =
+      useMangoStore.getState().selectedMangoAccount.current
+    const mangoClient = useMangoStore.getState().connection.client
+    const perpMarkets = openOrders
+      .filter((order) => order.market.config.kind === 'perp')
+      .map(({ market }) => market.account)
+    let txid
+    try {
+      if (!selectedMangoGroup || !selectedMangoAccount || !wallet) return
+
+      txid = await mangoClient.cancelAllPerpOrders(
+        selectedMangoGroup,
+        perpMarkets,
+        selectedMangoAccount,
+        wallet.adapter
+      )
+      await actions.reloadMangoAccount()
+      await actions.updateOpenOrders()
+      if (txid) {
+        for (const id of txid) {
+          notify({
+            title: t('cancel-all-success'),
+            txid: id,
+          })
+        }
+      }
+      setPerpOrdersCancelled(false)
+    } catch (e) {
+      notify({
+        title: t('cancel-all-error'),
+        description: e.message,
+        txid: e.txid,
+        type: 'error',
+      })
+      console.log('error', `${e}`)
+      setPerpOrdersCancelled(false)
+    }
+  }
 
   const handleCancelOrder = async (
     order: Order | PerpOrder | PerpTriggerOrder,
@@ -493,14 +564,23 @@ const OpenOrdersTable = () => {
     }
   }
 
+  const showCancelAllPerpOrders = useMemo(
+    () =>
+      openOrders.filter((order) => order.market.config.kind === 'perp').length >
+      1,
+    [openOrders]
+  )
+
   const tableProps = {
     openOrders,
     cancelledOrderId: cancelId,
     editOrderIndex,
     handleCancelOrder,
+    handleCancelAllPerpOrders,
     handleModifyOrder,
     modifiedOrderId: modifyId,
     setEditOrderIndex,
+    showCancelAllPerpOrders,
   }
 
   return (
@@ -508,7 +588,16 @@ const OpenOrdersTable = () => {
       <div className={`overflow-x-auto sm:-mx-6 lg:-mx-8`}>
         <div className={`inline-block min-w-full align-middle sm:px-6 lg:px-8`}>
           {openOrders && openOrders.length > 0 ? (
-            !isMobile ? (
+            perpOrdersCancelled ? (
+              <div className="mt-10 space-y-2">
+                {openOrders.map(({ order }) => (
+                  <div
+                    className="h-14 w-full animate-pulse rounded-md bg-th-bkg-3"
+                    key={order.orderId.toString()}
+                  />
+                ))}
+              </div>
+            ) : !isMobile ? (
               <DesktopTable {...tableProps} />
             ) : (
               <MobileTable {...tableProps} />
