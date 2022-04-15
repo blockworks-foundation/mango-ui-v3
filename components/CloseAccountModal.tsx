@@ -53,6 +53,7 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
   const connection = useMangoStore((s) => s.connection.current)
   const openOrders = useMangoStore((s) => s.selectedMangoAccount.openOrders)
   const setMangoStore = useMangoStore((s) => s.set)
+  const activeAlerts = useMangoStore((s) => s.alerts.activeAlerts)
 
   const fetchTotalAccountSOL = useCallback(async () => {
     if (!mangoAccount) {
@@ -95,11 +96,25 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
       : ZERO_BN
   }, [mangoAccount])
 
+  const deleteAlerts = () => {
+    try {
+      for (const alert of activeAlerts) {
+        actions.deleteAlert(alert._id)
+      }
+    } catch (err) {
+      console.warn('Error deleting active alerts:', err)
+    }
+  }
+
   const closeAccount = async () => {
     const mangoClient = useMangoStore.getState().connection.client
 
     if (!mangoGroup || !mangoAccount || !mangoCache || !wallet) {
       return
+    }
+
+    if (activeAlerts.length > 0) {
+      deleteAlerts()
     }
 
     try {

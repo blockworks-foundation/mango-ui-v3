@@ -108,6 +108,12 @@ module.exports = {
           },
         },
       },
+      backgroundImage: {
+        'long-loss': "url('/share_images/bg-long-loss.png')",
+        'long-profit': "url('/share_images/bg-long-profit.png')",
+        'short-loss': "url('/share_images/bg-short-loss.png')",
+        'short-profit': "url('/share_images/bg-short-profit.png')",
+      },
     },
   },
   // variants: {

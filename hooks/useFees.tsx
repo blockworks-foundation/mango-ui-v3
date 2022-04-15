@@ -8,7 +8,12 @@ import useSrmAccount from '../hooks/useSrmAccount'
 import { mangoGroupConfigSelector } from '../stores/selectors'
 import useMangoStore from '../stores/useMangoStore'
 
-export default function useFees(): { makerFee: number; takerFee: number } {
+export default function useFees(): {
+  makerFee: number
+  takerFee: number
+  takerFeeBeforeDiscount: number
+  takerFeeWithMaxDiscount: number
+} {
   const { rates } = useSrmAccount()
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoGroupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
@@ -23,7 +28,13 @@ export default function useFees(): { makerFee: number; takerFee: number } {
     marketConfig.baseSymbol
   )
 
-  if (!mangoGroup || !market) return { makerFee: 0, takerFee: 0 }
+  if (!mangoGroup || !market)
+    return {
+      makerFee: 0,
+      takerFee: 0,
+      takerFeeBeforeDiscount: 0,
+      takerFeeWithMaxDiscount: 0,
+    }
 
   let takerFee: number, makerFee: number
   let discount = 0
@@ -72,5 +83,7 @@ export default function useFees(): { makerFee: number; takerFee: number } {
   return {
     makerFee: makerFee,
     takerFee: takerFee + refSurcharge - discount,
+    takerFeeBeforeDiscount: takerFee + refSurcharge,
+    takerFeeWithMaxDiscount: takerFee - discount,
   }
 }

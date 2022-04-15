@@ -1,14 +1,18 @@
+import React from 'react'
 import { Portal } from 'react-portal'
 import { XIcon } from '@heroicons/react/outline'
 
-const Modal = ({
-  isOpen,
-  onClose,
-  children,
-  hideClose = false,
-  noPadding = false,
-  alignTop = false,
-}) => {
+const Modal: any = React.forwardRef<any, any>((props, ref) => {
+  const {
+    isOpen,
+    onClose,
+    children,
+    hideClose = false,
+    noPadding = false,
+    alignTop = false,
+    className = '',
+  } = props
+
   return (
     <Portal>
       <div
@@ -40,7 +44,8 @@ const Modal = ({
               className={`inline-block min-h-screen bg-th-bkg-2 text-left
               sm:min-h-full sm:rounded-lg ${
                 noPadding ? '' : 'px-8 pt-6 pb-6'
-              } w-full transform align-middle shadow-lg transition-all sm:max-w-md`}
+              } w-full transform align-middle shadow-lg transition-all sm:max-w-md ${className}`}
+              ref={ref}
             >
               {!hideClose ? (
                 <div className="">
@@ -59,7 +64,7 @@ const Modal = ({
       </div>
     </Portal>
   )
-}
+})
 
 const Header = ({ children }) => {
   return <div className={`flex flex-col items-center pb-2`}>{children}</div>
