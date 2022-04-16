@@ -210,7 +210,6 @@ const PositionsTable: React.FC = () => {
                           </Td>
                           <Td>
                             {basePosition &&
-                            marketConfig.kind === 'perp' &&
                             asPath.includes(marketConfig.baseSymbol) ? (
                               <span
                                 className="cursor-pointer underline hover:no-underline"
