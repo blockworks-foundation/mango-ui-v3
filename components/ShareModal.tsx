@@ -19,7 +19,6 @@ import {
   mangoCacheSelector,
   mangoGroupConfigSelector,
   mangoGroupSelector,
-  marketConfigSelector,
 } from '../stores/selectors'
 import {
   getMarketIndexBySymbol,
@@ -74,7 +73,6 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
   const ref = createRef()
   const [copied, setCopied] = useState(false)
   const [showButton, setShowButton] = useState(true)
-  const marketConfig = useMangoStore(marketConfigSelector)
   const [image, takeScreenshot] = useScreenshot()
   const { mangoAccount } = useMangoAccount()
   const mangoCache = useMangoStore(mangoCacheSelector)
@@ -85,9 +83,10 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
   const [showSize, setShowSize] = useState(true)
   const [showReferral, setShowReferral] = useState(false)
   const [hasRequiredMngo, setHasRequiredMngo] = useState(false)
+  const marketConfig = position.marketConfig
 
   const initLeverage = useMemo(() => {
-    if (!mangoGroup || !marketConfig) return 1
+    if (!mangoGroup) return 1
 
     const ws = getWeights(mangoGroup, marketConfig.marketIndex, 'Init')
     return Math.round((100 * -1) / (ws.perpAssetWeight.toNumber() - 1)) / 100
