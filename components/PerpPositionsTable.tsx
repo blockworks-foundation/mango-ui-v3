@@ -248,7 +248,7 @@ const PositionsTable: React.FC = () => {
                               onClick={() =>
                                 handleShowShare(openPositions[index])
                               }
-                              disabled={!avgEntryPrice ? true : false}
+                              disabled={!breakEvenPrice ? true : false}
                             >
                               <TwitterIcon className="h-4 w-4" />
                             </LinkButton>

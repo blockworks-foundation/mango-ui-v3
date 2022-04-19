@@ -36,13 +36,17 @@ const calculatePositionPercentage = (
 ) => {
   let pnl = 0
   if (position.basePosition > 0) {
-    pnl = (position.indexPrice - position.avgEntryPrice) * position.basePosition
+    pnl =
+      (position.indexPrice - position.breakEvenPrice) * position.basePosition
     return (
       (pnl / mangoAccount?.computeValue(mangoGroup, mangoCache).toNumber()) *
       100
     )
   } else {
-    pnl = (position.avgEntryPrice - position.indexPrice) * position.basePosition
+    pnl =
+      (position.breakEvenPrice - position.indexPrice) *
+      Math.abs(position.basePosition)
+
     return (
       (pnl / mangoAccount?.computeValue(mangoGroup, mangoCache).toNumber()) *
       100
@@ -55,7 +59,7 @@ interface ShareModalProps {
   isOpen: boolean
   position: {
     indexPrice: number
-    avgEntryPrice: number
+    breakEvenPrice: number
     basePosition: number
     marketConfig: MarketConfig
     notionalSize: number
@@ -249,10 +253,10 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
             </div>
           ) : null}
           <div className="flex items-center justify-between">
-            <span className="text-th-fgd-2">Avg Entry Price</span>
+            <span className="text-th-fgd-2">Break-even price</span>
             <span className="font-bold">
               $
-              {position.avgEntryPrice.toLocaleString(undefined, {
+              {position.breakEvenPrice.toLocaleString(undefined, {
                 maximumFractionDigits: 2,
                 minimumFractionDigits: 2,
               })}
