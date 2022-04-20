@@ -20,7 +20,7 @@
     "@blockworks-foundation/mango-client": "^3.4.4",
     "@headlessui/react": "^0.0.0-insiders.2dbc38c",
     "@heroicons/react": "^1.0.0",
-    "@jup-ag/react-hook": "^1.0.0-beta.19",
+    "@jup-ag/react-hook": "^1.0.0-beta.22",
     "@project-serum/serum": "0.13.55",
     "@project-serum/sol-wallet-adapter": "0.2.0",
     "@sentry/react": "^6.19.2",
