@@ -58,7 +58,7 @@ export const ConnectWalletButton: React.FC = () => {
       }
     }
 
-    return installed
+    return installed?.length ? installed : wallets
   }, [wallets])
 
   const displayedWallets = useMemo(() => {
