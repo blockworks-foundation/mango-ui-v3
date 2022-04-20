@@ -63,6 +63,7 @@ export async function getStaticProps({ locale }) {
         'close-account',
         'delegate',
         'alerts',
+        'share-modal',
       ])),
       // Will be passed to the page component as props
     },
