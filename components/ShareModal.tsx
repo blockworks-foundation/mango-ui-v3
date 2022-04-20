@@ -27,29 +27,15 @@ import {
 import Button from './Button'
 import Switch from './Switch'
 
-const calculatePositionPercentage = (
-  position,
-  mangoGroup,
-  mangoCache,
-  mangoAccount
-) => {
-  let pnl = 0
+const calculatePositionPercentage = (position, maxLeverage) => {
   if (position.basePosition > 0) {
-    pnl =
-      (position.indexPrice - position.breakEvenPrice) * position.basePosition
-    return (
-      (pnl / mangoAccount?.computeValue(mangoGroup, mangoCache).toNumber()) *
-      100
-    )
+    const returnsPercentage =
+      (position.indexPrice / position.avgEntryPrice - 1) * 100
+    return returnsPercentage * maxLeverage
   } else {
-    pnl =
-      (position.breakEvenPrice - position.indexPrice) *
-      Math.abs(position.basePosition)
-
-    return (
-      (pnl / mangoAccount?.computeValue(mangoGroup, mangoCache).toNumber()) *
-      100
-    )
+    const returnsPercentage =
+      (position.avgEntryPrice / position.indexPrice - 1) * 100
+    return returnsPercentage * maxLeverage
   }
 }
 
@@ -85,19 +71,14 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
   const [hasRequiredMngo, setHasRequiredMngo] = useState(false)
   const marketConfig = position.marketConfig
 
-  const initLeverage = useMemo(() => {
+  const maxLeverage = useMemo(() => {
     if (!mangoGroup) return 1
 
     const ws = getWeights(mangoGroup, marketConfig.marketIndex, 'Init')
     return Math.round((100 * -1) / (ws.perpAssetWeight.toNumber() - 1)) / 100
   }, [mangoGroup, marketConfig])
 
-  const positionPercentage = calculatePositionPercentage(
-    position,
-    mangoGroup,
-    mangoCache,
-    mangoAccount
-  )
+  const positionPercentage = calculatePositionPercentage(position, maxLeverage)
 
   const side = position.basePosition > 0 ? 'LONG' : 'SHORT'
 
@@ -273,7 +254,7 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
           </div>
           <div className="flex items-center justify-between">
             <span className="text-th-fgd-2">Max Leverage</span>
-            <span className="font-bold">{initLeverage}x</span>
+            <span className="font-bold">{maxLeverage}x</span>
           </div>
         </div>
       </div>
