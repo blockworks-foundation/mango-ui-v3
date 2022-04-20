@@ -30,7 +30,7 @@ export async function getStaticProps({ locale }) {
         'common',
         'tv-chart',
         'alerts',
-        'share-modal'
+        'share-modal',
       ])),
       // Will be passed to the page component as props
     },

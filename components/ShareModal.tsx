@@ -259,7 +259,9 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
             </span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-th-fgd-2">{t('share-modal:max-leverage')}</span>
+            <span className="text-th-fgd-2">
+              {t('share-modal:max-leverage')}
+            </span>
             <span className="font-bold">{maxLeverage}x</span>
           </div>
         </div>
@@ -269,7 +271,9 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
           {!copied ? (
             <div className="flex space-x-4 pb-4">
               <div className="flex items-center">
-                <label className="mr-1.5 text-th-fgd-2">{t('share-modal:show-size')}</label>
+                <label className="mr-1.5 text-th-fgd-2">
+                  {t('share-modal:show-size')}
+                </label>
                 <Switch
                   checked={showSize}
                   onChange={(checked) => setShowSize(checked)}
@@ -291,7 +295,9 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
           {copied ? (
             <a
               className="block flex items-center justify-center rounded-full bg-th-bkg-button px-6 py-2 text-center font-bold text-th-fgd-1 hover:cursor-pointer hover:text-th-fgd-1 hover:brightness-[1.1]"
-              href={`https://twitter.com/intent/tweet?text=I'm ${side.toUpperCase()} %24${position.marketConfig.baseSymbol} perp on %40mangomarkets%0A[PASTE IMAGE HERE]`}
+              href={`https://twitter.com/intent/tweet?text=I'm ${side.toUpperCase()} %24${
+                position.marketConfig.baseSymbol
+              } perp on %40mangomarkets%0A[PASTE IMAGE HERE]`}
               target="_blank"
               rel="noreferrer"
             >
