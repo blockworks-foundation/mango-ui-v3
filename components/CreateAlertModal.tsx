@@ -25,8 +25,8 @@ interface CreateAlertModalProps {
   repayAmount?: string
   tokenSymbol?: string
 }
-const nameForAlert = (health: number, email: string, phone: string): string =>
-  `Alert for Email: ${email} Phone: ${phone} When Health <= ${health}`
+const nameForAlert = (health: number, email: string, phone: string, telegram: string): string =>
+  `Alert for Email: ${email} Phone: ${phone} Telegram: ${telegram} When Health <= ${health}`
 
 const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
   isOpen,
@@ -68,6 +68,7 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
     })
   const [email, setEmail] = useState<string>('')
   const [phone, setPhone] = useState<string>('')
+  const [telegramId, setTelegramId] = useState<string>('')
 
   const handleError = (errors: { message: string }[]) => {
     const err = errors.length > 0 ? errors[0] : null
@@ -104,6 +105,10 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
     }
   }
 
+  const handleTelegramId = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTelegramId(e.target.value)
+  }
+
   const createNotifiAlert = async function () {
     // user is not authenticated
     if (!isAuthenticated() && publicKey) {
@@ -133,15 +138,25 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
           filterId: filter.id,
           sourceId: sourceToUse.id,
           groupName: mangoAccount?.publicKey.toBase58(),
-          name: nameForAlert(healthInt, email, phone),
+          name: nameForAlert(healthInt, email, phone, telegramId),
           emailAddress: email === '' ? null : email,
           phoneNumber: phone.length < 12 ? null : phone,
-          telegramId: null,
+          telegramId: telegramId === '' ? null: telegramId,
           filterOptions: {
             alertFrequency: 'SINGLE',
             threshold: healthInt,
           },
         })
+
+        if (telegramId) {
+          const telegramTarget = res.targetGroup?.telegramTargets.find(
+            telegramTarget => telegramTarget.telegramId === telegramId
+          )
+          if (telegramTarget && !telegramTarget.isConfirmed && telegramTarget.confirmationUrl) {
+            window.open(telegramTarget.confirmationUrl, '_blank')
+          }
+        }
+
         // return notifiAlertId
         return res.id
       } catch (e) {
@@ -207,7 +222,7 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
     if (!mangoGroup || !mangoAccount) return
     const parsedHealth = parseFloat(health)
 
-    if (!email && !phone) {
+    if (!email && !phone  && !telegramId) {
       notify({
         title: t('alerts:notifi-type-required'),
         type: 'error',
@@ -374,6 +389,8 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
                 <span>{t('alerts:phone-number-note')}</span>
               </Label>
               <Input type="tel" value={phone} onChange={handlePhone} />
+              <Label className="mt-4">{t('telegram')}</Label>
+              <Input type="text" value={telegramId} onChange={handleTelegramId} />
               <div className="mt-4 flex items-end">
                 <div className="w-full">
                   <div className="flex justify-between">
@@ -425,7 +442,7 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
               <Button
                 className="mt-6 w-full"
                 onClick={() => onCreateAlert()}
-                disabled={!email && !phone}
+                disabled={!email && !phone && !telegramId}
               >
                 {t('alerts:create-alert')}
               </Button>

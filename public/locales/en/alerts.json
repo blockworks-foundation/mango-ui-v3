@@ -9,7 +9,7 @@
   "new-alert": "New Alert",
   "no-alerts": "No Active Alerts",
   "no-alerts-desc": "Create an alert to be notified when your account health is low.",
-  "notifi-type-required": "An email address or a phone number is required",
+  "notifi-type-required": "An email address, a phone number or a telegram id is required",
   "powered-by": "Powered by",
   "prompted-to-sign-transaction": "When prompted, sign the transaction.",
   "phone-number-note": "US Only (+1 xxx-xxx-xxxx)"

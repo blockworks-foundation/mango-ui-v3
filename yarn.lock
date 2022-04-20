@@ -1394,34 +1394,34 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@notifi-network/notifi-axios-adapter@^0.8.1":
-  version "0.8.1"
-  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-axios-adapter/-/notifi-axios-adapter-0.8.1.tgz#2c7acf7a5d4ceb991398309a19235ef0ad59b865"
-  integrity sha512-evkndRX0+SEG3eNbycigW092oDkGLBDbMbBMBRDX1Z6SlJ+UwM/gC1acd7k83ogWVuq+bjQo13NOUgaf5Zf79w==
+"@notifi-network/notifi-axios-adapter@^0.12.1":
+  version "0.12.1"
+  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-axios-adapter/-/notifi-axios-adapter-0.12.1.tgz#aae412465230b7a3d7e86c93a7d43210568282c6"
+  integrity sha512-vRVPN1uJHXNrxMzZ1F4OsmwbkytXy2kYBCnq+riRHKIgPykun51LGi5Y2ljW545j1YedtafY4vpPJNmMOhTuFw==
   dependencies:
-    "@notifi-network/notifi-axios-utils" "^0.8.0"
+    "@notifi-network/notifi-axios-utils" "^0.12.0"
 
-"@notifi-network/notifi-axios-utils@^0.8.0":
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-axios-utils/-/notifi-axios-utils-0.8.0.tgz#83ac4a649ee9facbd32a8d121748bb5c827f9c4f"
-  integrity sha512-q+RDUZ2gRkLl0gfKy6pVQrZHe9fGwLa+zH1Fy+dm3U6SCyAZX8cjqiLpFLYVJE89nguMMc28tnp3T5K39+wBlQ==
+"@notifi-network/notifi-axios-utils@^0.12.0":
+  version "0.12.0"
+  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-axios-utils/-/notifi-axios-utils-0.12.0.tgz#4eea3088cab39c9a2c1482e94c9d020296f42339"
+  integrity sha512-NVyS7x+z5wSLdNOSyxfB7XePZ1sSaSEKVPGEBnJuH5xpXkLBz1o+WlJTkA9/IcQFdSwLeLCdXGEb8jQPSjEWrA==
 
 "@notifi-network/notifi-core@^0.8.0":
   version "0.8.0"
   resolved "https://registry.yarnpkg.com/@notifi-network/notifi-core/-/notifi-core-0.8.0.tgz#e3a3eed8a6e2995d75a736239959bf42bbf32fe1"
   integrity sha512-az+ux5QhvBS+AZnjb9+RBuzh0MWWOIUdmpVzOiNazBxX1O1XVnokfaCImeTpYpe7eEoAvwOLirTnFMsfvF0gdQ==
 
-"@notifi-network/notifi-react-hooks@^0.8.1":
-  version "0.8.1"
-  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-react-hooks/-/notifi-react-hooks-0.8.1.tgz#99620ec5364b6793bfdc9a606e4538e9e4d6ec9e"
-  integrity sha512-cGmjgLZsPg8F5kj7RVS3Q7u6DEkQEGruMTi9byfe5NSqmpoorxViK6AV0meIImJASehLRjj15TTrUlF6m7L9Fw==
+"@notifi-network/notifi-react-hooks@^0.12.1":
+  version "0.12.1"
+  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-react-hooks/-/notifi-react-hooks-0.12.1.tgz#e84dcb751a0f0bbd9ceb2e0378b46014a9570bc7"
+  integrity sha512-77bxZ/r19023x+yPjzW3LBMYxL4VyP7aR6owak51x76dEUqgi/oqzOh9+YSNXXeTvwr37jhtjYE+DHMVXD+y+g==
   dependencies:
-    "@notifi-network/notifi-axios-adapter" "^0.8.1"
-    "@notifi-network/notifi-axios-utils" "^0.8.0"
+    "@notifi-network/notifi-axios-adapter" "^0.12.1"
+    "@notifi-network/notifi-axios-utils" "^0.12.0"
     axios "^0.26.0"
+    localforage "^1.10.0"
     typedoc-plugin-missing-exports "^0.22.6"
     typescript "^4.5.5"
-    use-local-storage-state "^15.0.0"
 
 "@orca-so/whirlpool-client-sdk@npm:@jup-ag/whirlpool-client-sdk@0.0.7":
   version "0.0.7"
@@ -4371,6 +4371,11 @@ ignore@^5.1.8, ignore@^5.2.0:
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-5.2.0.tgz#6d3bac8fa7fe0d45d9f9be7bac2fc279577e345a"
   integrity sha512-CmxgYGiEPCLhfLnpPp1MoRmifwEIOgjcHXxOBjv7mY96c+eWScsOP9c112ZyLdWHi0FxHjI+4uVhKYp/gcdRmQ==
 
+immediate@~3.0.5:
+  version "3.0.6"
+  resolved "https://registry.yarnpkg.com/immediate/-/immediate-3.0.6.tgz#9db1dbd0faf8de6fbe0f5dd5e56bb606280de69b"
+  integrity sha1-nbHb0Pr43m++D13V5Wu2BigN5ps=
+
 immer@^9.0.1:
   version "9.0.12"
   resolved "https://registry.yarnpkg.com/immer/-/immer-9.0.12.tgz#2d33ddf3ee1d247deab9d707ca472c8c942a0f20"
@@ -4766,6 +4771,13 @@ levn@^0.4.1:
     prelude-ls "^1.2.1"
     type-check "~0.4.0"
 
+lie@3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/lie/-/lie-3.1.1.tgz#9a436b2cc7746ca59de7a41fa469b3efb76bd87e"
+  integrity sha1-mkNrLMd0bKWd56QfpGmz77dr2H4=
+  dependencies:
+    immediate "~3.0.5"
+
 lilconfig@2.0.4:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/lilconfig/-/lilconfig-2.0.4.tgz#f4507d043d7058b380b6a8f5cb7bcd4b34cee082"
@@ -4819,6 +4831,13 @@ lodash-es@^4.17.21:
   version "4.17.21"
   resolved "https://registry.yarnpkg.com/lodash-es/-/lodash-es-4.17.21.tgz#43e626c46e6591b7750beb2b50117390c609e3ee"
   integrity sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==
+
+localforage@^1.10.0:
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/localforage/-/localforage-1.10.0.tgz#5c465dc5f62b2807c3a84c0c6a1b1b3212781dd4"
+  integrity sha512-14/H1aX7hzBBmmh7sGPd+AOMkkIrHM3Z1PAyGgZigA1H1p5O5ANnMyWzvpAETtG68/dC4pC0ncy3+PPGzXZHPg==
+  dependencies:
+    lie "3.1.1"
 
 lodash.debounce@^4.0.8:
   version "4.0.8"
@@ -6612,11 +6631,6 @@ uri-js@^4.2.2:
   integrity sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==
   dependencies:
     punycode "^2.1.0"
-
-use-local-storage-state@^15.0.0:
-  version "15.0.0"
-  resolved "https://registry.yarnpkg.com/use-local-storage-state/-/use-local-storage-state-15.0.0.tgz#fc012654bc459798efd66c574e52414abab949d7"
-  integrity sha512-0Dh4DiqgsxpyZDa7PRNs7Mct9OHqTuuZl/V3zzPwNJaR9NVuO4HAZdKSJeelgq8h8bE83ZKMlXMLWzMRxu3ZLg==
 
 use-subscription@1.5.1:
   version "1.5.1"
