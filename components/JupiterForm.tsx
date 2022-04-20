@@ -640,6 +640,8 @@ const JupiterForm: FunctionComponent = () => {
                         <div>
                           <span className="overflow-ellipsis whitespace-nowrap text-sm font-bold text-th-fgd-1">
                             {selectedRoute?.marketInfos.map((info, index) => {
+                              console.log('info', info)
+
                               let includeSeparator = false
                               if (
                                 selectedRoute?.marketInfos.length > 1 &&
@@ -648,9 +650,9 @@ const JupiterForm: FunctionComponent = () => {
                                 includeSeparator = true
                               }
                               return (
-                                <span key={index}>{`${
-                                  info.marketMeta.amm.label
-                                } ${includeSeparator ? 'x ' : ''}`}</span>
+                                <span key={index}>{`${info.amm.label} ${
+                                  includeSeparator ? 'x ' : ''
+                                }`}</span>
                               )
                             })}
                           </span>
@@ -815,8 +817,7 @@ const JupiterForm: FunctionComponent = () => {
                                         <div key={index}>
                                           <span>
                                             {t('swap:fees-paid-to', {
-                                              feeRecipient:
-                                                info.marketMeta?.amm?.label,
+                                              feeRecipient: info?.amm?.label,
                                             })}
                                           </span>
                                           {feeToken?.decimals && (
@@ -851,7 +852,7 @@ const JupiterForm: FunctionComponent = () => {
                             <div className="flex justify-between" key={index}>
                               <span>
                                 {t('swap:fees-paid-to', {
-                                  feeRecipient: info.marketMeta?.amm?.label,
+                                  feeRecipient: info?.amm?.label,
                                 })}
                               </span>
                               {feeToken?.decimals && (
@@ -1099,9 +1100,9 @@ const JupiterForm: FunctionComponent = () => {
                                       includeSeparator = true
                                     }
                                     return (
-                                      <span key={index}>{`${
-                                        info.marketMeta.amm.label
-                                      } ${includeSeparator ? 'x ' : ''}`}</span>
+                                      <span key={index}>{`${info.amm.label} ${
+                                        includeSeparator ? 'x ' : ''
+                                      }`}</span>
                                     )
                                   })}
                                 </div>
@@ -1184,7 +1185,7 @@ const JupiterForm: FunctionComponent = () => {
                   <ElementTitle>{t('swap:get-started')}</ElementTitle>
                   <div className="flex flex-col justify-center">
                     <div className="text-center text-th-fgd-3">
-                      {t('swap-in-wallet')}
+                      {t('swap:swap-in-wallet')}
                     </div>
                   </div>
                 </Modal>
