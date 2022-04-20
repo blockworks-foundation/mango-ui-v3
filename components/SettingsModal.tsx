@@ -23,10 +23,6 @@ require('dayjs/locale/zh-tw')
 const NODE_URLS = [
   { label: 'Triton (RPC Pool)', value: 'https://mango.rpcpool.com' },
   {
-    label: 'Genesys Go',
-    value: 'https://mango.genesysgo.net/',
-  },
-  {
     label: 'Project Serum',
     value: 'https://solana-api.projectserum.com/',
   },
@@ -48,7 +44,7 @@ export const LANGS = [
 
 const CUSTOM_NODE = NODE_URLS.find((n) => n.label === 'Custom')
 
-export const NODE_URL_KEY = 'node-url-key-0.7'
+export const NODE_URL_KEY = 'node-url-key-0.8'
 export const DEFAULT_MARKET_KEY = 'defaultMarket-0.3'
 export const ORDERBOOK_FLASH_KEY = 'showOrderbookFlash'
 export const DEFAULT_SPOT_MARGIN_KEY = 'defaultSpotMargin'
