@@ -26,6 +26,7 @@ import {
 } from '@blockworks-foundation/mango-client'
 import Button from './Button'
 import Switch from './Switch'
+import { roundPerpSize } from 'utils'
 
 const calculatePositionPercentage = (position, maxLeverage) => {
   if (position.basePosition > 0) {
@@ -228,7 +229,10 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
             <div className="flex items-center justify-between">
               <span className="text-th-fgd-2">Size</span>
               <span className="font-bold">
-                {Math.abs(position.basePosition)}
+                {roundPerpSize(
+                  position.basePosition,
+                  position.marketConfig.baseSymbol
+                )}
               </span>
             </div>
           ) : null}
