@@ -45,7 +45,7 @@ interface ShareModalProps {
   isOpen: boolean
   position: {
     indexPrice: number
-    breakEvenPrice: number
+    avgEntryPrice: number
     basePosition: number
     marketConfig: MarketConfig
     notionalSize: number
@@ -237,10 +237,10 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
             </div>
           ) : null}
           <div className="flex items-center justify-between">
-            <span className="text-th-fgd-2">Break-even price</span>
+            <span className="text-th-fgd-2">Avg entry price</span>
             <span className="font-bold">
               $
-              {position.breakEvenPrice.toLocaleString(undefined, {
+              {position.avgEntryPrice.toLocaleString(undefined, {
                 maximumFractionDigits: 2,
                 minimumFractionDigits: 2,
               })}
