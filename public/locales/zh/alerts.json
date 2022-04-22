@@ -11,6 +11,5 @@
   "no-alerts-desc": "以创建警报而收到健康度通知。",
   "notifi-type-required": "您必须输入电子邮件地址、电话号码或电报号",
   "powered-by": "技术支持由",
-  "prompted-to-sign-transaction": "出現提示時，簽署交易。",
-  "phone-number-note": "仅限美国 (+1 xxx-xxx-xxxx)"
+  "prompted-to-sign-transaction": "出現提示時，簽署交易。"
 }

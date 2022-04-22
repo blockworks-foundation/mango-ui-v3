@@ -11,6 +11,5 @@
   "no-alerts-desc": "Create an alert to be notified when your account health is low.",
   "notifi-type-required": "An email address, a phone number or a telegram id is required",
   "powered-by": "Powered by",
-  "prompted-to-sign-transaction": "When prompted, sign the transaction.",
-  "phone-number-note": "US Only (+1 xxx-xxx-xxxx)"
+  "prompted-to-sign-transaction": "When prompted, sign the transaction."
 }

@@ -11,6 +11,5 @@
   "no-alerts-desc": "Cree una alerta para recibir una notificación cuando el estado de su cuenta sea bajo.",
   "notifi-type-required": "Se requiere una dirección de correo electrónico, un número de teléfono o una identificación de Telegram",
   "powered-by": "Desarrollada por",
-  "prompted-to-sign-transaction": "Cuando se le solicite, firme la transacción.",
-  "phone-number-note": "Solo US (+1 xxx-xxx-xxxx)"
+  "prompted-to-sign-transaction": "Cuando se le solicite, firme la transacción."
 }

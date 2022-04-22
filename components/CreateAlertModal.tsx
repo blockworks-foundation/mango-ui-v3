@@ -67,7 +67,7 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
       env,
     })
   const [email, setEmail] = useState<string>('')
-  const [phone, setPhone] = useState<string>('')
+  const [phone, setPhone] = useState<string>('+')
   const [telegramId, setTelegramId] = useState<string>('')
 
   const handleError = (errors: { message: string }[]) => {
@@ -95,13 +95,13 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
 
   const handlePhone = (e: React.ChangeEvent<HTMLInputElement>) => {
     let val = e.target.value
-    if (val.length > 1) {
-      val = val.substring(2)
+    if (val.length > 0) {
+      val = val.substring(1)
     }
 
     const re = /^[0-9\b]+$/
-    if (val === '' || (re.test(val) && val.length <= 10)) {
-      setPhone('+1' + val)
+    if (val === '' || (re.test(val) && val.length <= 15)) {
+      setPhone('+' + val)
     }
   }
 
@@ -140,7 +140,7 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
           groupName: mangoAccount?.publicKey.toBase58(),
           name: nameForAlert(healthInt, email, phone, telegramId),
           emailAddress: email === '' ? null : email,
-          phoneNumber: phone.length < 12 ? null : phone,
+          phoneNumber: phone.length < 12 || phone.length > 16 ? null : phone,
           telegramId: telegramId === '' ? null: telegramId,
           filterOptions: {
             alertFrequency: 'SINGLE',
@@ -222,7 +222,7 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
     if (!mangoGroup || !mangoAccount) return
     const parsedHealth = parseFloat(health)
 
-    if (!email && !phone  && !telegramId) {
+    if (!email && !phone && !telegramId) {
       notify({
         title: t('alerts:notifi-type-required'),
         type: 'error',
@@ -384,11 +384,8 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
                 value={email || ''}
                 onChange={(e) => onChangeEmailInput(e.target.value)}
               />
-              <Label className="mt-4 flex items-center justify-between">
-                <span>{t('phone-number')}</span>
-                <span>{t('alerts:phone-number-note')}</span>
-              </Label>
-              <Input type="tel" value={phone} onChange={handlePhone} />
+              <Label className="mt-4">{t('phone-number')}</Label>
+              <Input type="tel" value={phone} onChange={handlePhone}/>
               <Label className="mt-4">{t('telegram')}</Label>
               <Input type="text" value={telegramId} onChange={handleTelegramId} />
               <div className="mt-4 flex items-end">
@@ -442,7 +439,7 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
               <Button
                 className="mt-6 w-full"
                 onClick={() => onCreateAlert()}
-                disabled={!email && !phone && !telegramId}
+                disabled={!email && !phone && !telegramId || !health}
               >
                 {t('alerts:create-alert')}
               </Button>
