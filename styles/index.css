@@ -135,7 +135,7 @@ button.transition-none {
 }
 
 .tradingview-chart {
-  display: contents;
+  height: calc(100% - 24px);
 }
 
 /* Grid */
@@ -206,24 +206,26 @@ body::-webkit-scrollbar-corner {
 }
 
 .thin-scroll::-webkit-scrollbar {
-  width: 4px;
+  width: 8px;
+  height: 8px;
 }
 
-/* Track */
-.thin-scroll::-webkit-scrollbar-track {
-  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-  -webkit-border-radius: 2px;
-  border-radius: 2px;
-}
-
-/* Handle */
 .thin-scroll::-webkit-scrollbar-thumb {
-  -webkit-border-radius: 2px;
-  border-radius: 2px;
-  background: var(--bkg-4);
+  @apply rounded bg-th-bkg-4;
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
+
+.thin-scroll::-webkit-scrollbar-thumb:hover {
+  border: 0;
+}
+
+.thin-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 .thin-scroll::-webkit-scrollbar-thumb:window-inactive {
-  background: var(--bkg-4);
+  @apply bg-th-bkg-4;
 }
 
 /* Responsive table */
