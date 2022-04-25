@@ -21,6 +21,7 @@
     "@headlessui/react": "^0.0.0-insiders.2dbc38c",
     "@heroicons/react": "^1.0.0",
     "@jup-ag/react-hook": "^1.0.0-beta.22",
+    "@notifi-network/notifi-react-hooks": "^0.12.1",
     "@project-serum/serum": "0.13.55",
     "@project-serum/sol-wallet-adapter": "0.2.0",
     "@sentry/react": "^6.19.2",
@@ -64,6 +65,7 @@
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^12.1.0",
+    "@notifi-network/notifi-core": "^0.8.0",
     "@svgr/webpack": "^6.1.2",
     "@testing-library/react": "^11.2.5",
     "@types/node": "^14.14.25",

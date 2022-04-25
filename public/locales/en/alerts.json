@@ -6,8 +6,10 @@
   "alerts-disclaimer": "Do not rely solely on alerts to protect your account. We can't guarantee they will be delivered.",
   "alerts-max": "You've reached the maximum number of active alerts.",
   "create-alert": "Create Alert",
-  "email-address-required": "An email address is required",
   "new-alert": "New Alert",
   "no-alerts": "No Active Alerts",
-  "no-alerts-desc": "Create an alert to be notified when your account health is low."
+  "no-alerts-desc": "Create an alert to be notified when your account health is low.",
+  "notifi-type-required": "An email address, a phone number or a telegram id is required",
+  "powered-by": "Powered by",
+  "prompted-to-sign-transaction": "When prompted, sign the transaction."
 }

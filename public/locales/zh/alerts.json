@@ -6,8 +6,10 @@
   "alerts-disclaimer": "请别全靠警报来保护资产。我们无法保证会准时发出。",
   "alerts-max": "您已达到警报数量最多限制",
   "create-alert": "创建警报",
-  "email-address-required": "您必须输入电子邮件地址",
   "new-alert": "创建警报",
   "no-alerts": "您没有活动警报",
-  "no-alerts-desc": "以创建警报而收到健康度通知。"
+  "no-alerts-desc": "以创建警报而收到健康度通知。",
+  "notifi-type-required": "您必须输入电子邮件地址、电话号码或电报号",
+  "powered-by": "技术支持由",
+  "prompted-to-sign-transaction": "出現提示時，簽署交易。"
 }
