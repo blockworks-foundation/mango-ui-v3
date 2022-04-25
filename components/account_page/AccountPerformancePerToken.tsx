@@ -6,15 +6,7 @@ import isEmpty from 'lodash/isEmpty'
 import { numberCompactFormatter } from '../../utils/'
 import ButtonGroup from '../ButtonGroup'
 import { numberCompacter } from '../SwapTokenInfo'
-import {
-  LineChart,
-  XAxis,
-  YAxis,
-  Line,
-  Tooltip,
-  Legend
-} from 'recharts'
-
+import { LineChart, XAxis, YAxis, Line, Tooltip, Legend } from 'recharts'
 
 const utc = require('dayjs/plugin/utc')
 dayjs.extend(utc)
@@ -40,10 +32,26 @@ const AccountPerformance = () => {
   const [selectedSymbols, setSelectedSymbols] = useState(['ALL'])
   const [chartToShow, setChartToShow] = useState('value')
 
-
   // Each line added to the graph will use one of these colors in sequence
   // TODO: These colors are not great
-  const colors = ['maroon', 'red', 'purple', 'fuchsia', 'green', 'lime', 'olive', 'yellow', 'navy', 'blue', 'teal', 'aqua', 'chartreuse', 'chocolate', 'darkcyan', 'darkgreen']
+  const colors = [
+    'maroon',
+    'red',
+    'purple',
+    'fuchsia',
+    'green',
+    'lime',
+    'olive',
+    'yellow',
+    'navy',
+    'blue',
+    'teal',
+    'aqua',
+    'chartreuse',
+    'chocolate',
+    'darkcyan',
+    'darkgreen',
+  ]
 
   const mangoAccountPk = useMemo(() => {
     if (mangoAccount) {
@@ -52,7 +60,6 @@ const AccountPerformance = () => {
   }, [mangoAccount])
 
   const exportPerformanceDataToCSV = () => {
-
     const headers = [
       'time',
       'symbol',
@@ -71,52 +78,90 @@ const AccountPerformance = () => {
       'borrow_interest',
       'deposit_interest_cumulative',
       'borrow_interest_cumulative',
-      'price']
+      'price',
+    ]
 
-    const dataToExport = hourlyPerformanceStats.map(
-      ([time, tokenObjects]) => {
+    const dataToExport = hourlyPerformanceStats
+      .map(([time, tokenObjects]) => {
         return tokenObjects.map(([token, values]) => {
           return { time: time, symbol: token, ...values }
         })
-      }
-    ).flat()
+      })
+      .flat()
 
-    const title = `${mangoAccount?.name || mangoAccount?.publicKey
-      }-Performance-${new Date().toLocaleDateString()}`
+    const title = `${
+      mangoAccount?.name || mangoAccount?.publicKey
+    }-Performance-${new Date().toLocaleDateString()}`
 
     exportDataToCSV(dataToExport, title, headers, t)
   }
 
   const calculateChartData = (chartToShow) => {
-
     const metrics = {
-      'value': (values) => { return values['spot_value'] + values['perp_value'] + values['open_orders_value'] },
-      'pnl': (values) => { return values['spot_value'] + values['perp_value'] + values['open_orders_value'] - values['transfer_balance'] },
-      'perp pnl': (values) => { return values['perp_value'] + values['perp_spot_transfers_balance'] + values['mngo_rewards_value'] },
-      'perp pnl ex rewards': (values) => { return values['perp_value'] + values['perp_spot_transfers_balance'] },
-      'interest cumulative (in USDC)': (values) => { return (values['deposit_interest_cumulative'] + values['borrow_interest_cumulative']) * values['price'] },
-      'interest discrete (in USDC)': (values) => { return (values['deposit_interest'] + values['borrow_interest']) * values['price'] },
-      'funding cumulative': (values) => { return values['long_funding_cumulative'] + values['short_funding_cumulative'] },
-      'funding discrete': (values) => { return values['long_funding'] + values['short_funding'] }
+      value: (values) => {
+        return (
+          values['spot_value'] +
+          values['perp_value'] +
+          values['open_orders_value']
+        )
+      },
+      pnl: (values) => {
+        return (
+          values['spot_value'] +
+          values['perp_value'] +
+          values['open_orders_value'] -
+          values['transfer_balance']
+        )
+      },
+      'perp pnl': (values) => {
+        return (
+          values['perp_value'] +
+          values['perp_spot_transfers_balance'] +
+          values['mngo_rewards_value']
+        )
+      },
+      'perp pnl ex rewards': (values) => {
+        return values['perp_value'] + values['perp_spot_transfers_balance']
+      },
+      'interest cumulative (in USDC)': (values) => {
+        return (
+          (values['deposit_interest_cumulative'] +
+            values['borrow_interest_cumulative']) *
+          values['price']
+        )
+      },
+      'interest discrete (in USDC)': (values) => {
+        return (
+          (values['deposit_interest'] + values['borrow_interest']) *
+          values['price']
+        )
+      },
+      'funding cumulative': (values) => {
+        return (
+          values['long_funding_cumulative'] + values['short_funding_cumulative']
+        )
+      },
+      'funding discrete': (values) => {
+        return values['long_funding'] + values['short_funding']
+      },
     }
 
     const metric: (values: []) => void = metrics[chartToShow]
 
-    const stats = hourlyPerformanceStats.map(
-      ([time, tokenObjects]) => {
-        return {
-          time: time,
-          ...Object.fromEntries(tokenObjects.map(([token, values]) => [
-            token,
-            metric(values)
-          ])),
-          ALL: tokenObjects.map(([_, values]) => metric(values)).reduce((a, b) => a + b, 0)
-        }
+    const stats = hourlyPerformanceStats.map(([time, tokenObjects]) => {
+      return {
+        time: time,
+        ...Object.fromEntries(
+          tokenObjects.map(([token, values]) => [token, metric(values)])
+        ),
+        ALL: tokenObjects
+          .map(([_, values]) => metric(values))
+          .reduce((a, b) => a + b, 0),
       }
-    )
+    })
 
     setChartData(stats)
-    setChartToShow(chartToShow);
+    setChartToShow(chartToShow)
   }
 
   useEffect(() => {
@@ -124,23 +169,28 @@ const AccountPerformance = () => {
       setLoading(true)
 
       // TODO: this should be dynamic
-      const range = 30;
+      const range = 30
       const response = await fetch(
         `https://mango-transaction-log.herokuapp.com/v3/stats/account-performance-per-token?mango-account=${mangoAccountPk}&start-date=${dayjs()
-        .subtract(range, 'day')
-        .format('YYYY-MM-DD')}`
+          .subtract(range, 'day')
+          .format('YYYY-MM-DD')}`
       )
       const parsedResponse = await response.json()
       let entries: any = Object.entries(parsedResponse)
-      entries = entries.map(([key, value]) => [key, Object.entries(value)]).reverse()
+      entries = entries
+        .map(([key, value]) => [key, Object.entries(value)])
+        .reverse()
 
-      setUniqueSymbols([... new Set(([] as string[]).concat(
-        ['ALL'],
-        ...entries.map(([_, tokens]) => tokens.map(([token, _]) => token)),
-      ))])
+      setUniqueSymbols([
+        ...new Set(
+          ([] as string[]).concat(
+            ['ALL'],
+            ...entries.map(([_, tokens]) => tokens.map(([token, _]) => token))
+          )
+        ),
+      ])
 
       setHourlyPerformanceStats(entries)
-      // calculateChartData()
 
       setLoading(false)
     }
@@ -176,22 +226,35 @@ const AccountPerformance = () => {
           onChange={(v) => {
             calculateChartData(v)
           }}
-          values={['value', 'pnl', 'perp pnl', 'perp pnl ex rewards', 'interest cumulative (in USDC)', 'interest discrete (in USDC)', 'funding cumulative', 'funding discrete']}
+          values={[
+            'value',
+            'pnl',
+            'perp pnl',
+            'perp pnl ex rewards',
+            'interest cumulative (in USDC)',
+            'interest discrete (in USDC)',
+            'funding cumulative',
+            'funding discrete',
+          ]}
         />
       </div>
 
       <div>
         {uniqueSymbols.map((v, i) => (
           <Button
-            className={`${selectedSymbols.includes(v)
-              ? `text-th-primary`
-              : `text-th-fgd-2 hover:text-th-primary`
-              }
+            className={`${
+              selectedSymbols.includes(v)
+                ? `text-th-primary`
+                : `text-th-fgd-2 hover:text-th-primary`
+            }
                     `}
             key={`${v}${i}`}
-            onClick={() => selectedSymbols.includes(v)
-              ? setSelectedSymbols(selectedSymbols.filter(item => item !== v))
-              : setSelectedSymbols([...selectedSymbols, v])
+            onClick={() =>
+              selectedSymbols.includes(v)
+                ? setSelectedSymbols(
+                    selectedSymbols.filter((item) => item !== v)
+                  )
+                : setSelectedSymbols([...selectedSymbols, v])
             }
           >
             {`${v}`}
@@ -224,7 +287,6 @@ const AccountPerformance = () => {
                       tickLine={false}
                       tickFormatter={(v) => dayjs(v).format('D MMM')}
                     />
-                    {/* <YAxis /> */}
                     <YAxis
                       // dataKey={chartToShow}
                       type="number"
@@ -241,11 +303,15 @@ const AccountPerformance = () => {
                     <Tooltip />
                     <Legend />
                     {selectedSymbols.map((v, i) => (
-                      <Line key={`${v}${i}`} type="monotone" dataKey={`${v}`} stroke={`${colors[i]}`} dot={false} />
+                      <Line
+                        key={`${v}${i}`}
+                        type="monotone"
+                        dataKey={`${v}`}
+                        stroke={`${colors[i]}`}
+                        dot={false}
+                      />
                     ))}
-
                   </LineChart>
-
                 ) : null}
               </>
             ) : loading ? (
@@ -265,4 +331,3 @@ const AccountPerformance = () => {
 }
 
 export default AccountPerformance
-
