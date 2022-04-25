@@ -55,7 +55,6 @@ import { Menu, Transition } from '@headlessui/react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { handleWalletConnect } from 'components/ConnectWalletButton'
 import { MangoAccountLookup } from 'components/account_page/MangoAccountLookup'
-import AccountPerformance from 'components/account_page/AccountPerformance'
 
 export async function getStaticProps({ locale }) {
   return {

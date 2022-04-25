@@ -34,7 +34,7 @@ const AccountPerformance = () => {
 
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const [hourlyPerformanceStats, setHourlyPerformanceStats] = useState<any>([])
-  const [uniqueSymbols, setUniqueSymbols] = useState([])
+  const [uniqueSymbols, setUniqueSymbols] = useState<string[]>([])
   const [chartData, setChartData] = useState([])
   const [loading, setLoading] = useState(false)
   const [selectedSymbols, setSelectedSymbols] = useState(['ALL'])
@@ -134,7 +134,7 @@ const AccountPerformance = () => {
       let entries: any = Object.entries(parsedResponse)
       entries = entries.map(([key, value]) => [key, Object.entries(value)]).reverse()
 
-      setUniqueSymbols([... new Set([].concat(
+      setUniqueSymbols([... new Set(([] as string[]).concat(
         ['ALL'],
         ...entries.map(([_, tokens]) => tokens.map(([token, _]) => token)),
       ))])
