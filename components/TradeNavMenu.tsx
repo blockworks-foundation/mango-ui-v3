@@ -56,7 +56,7 @@ const TradeNavMenu = () => {
         : activeMenuCategory === 'Spot'
         ? spotMarketsInfo
         : marketsInfo.filter((mkt) => favoriteMarkets.includes(mkt.name)),
-    [activeMenuCategory, marketsInfo]
+    [activeMenuCategory, marketsInfo, favoriteMarkets]
   )
 
   const handleMenuCategoryChange = (categoryName) => {
@@ -235,7 +235,7 @@ export const FavoriteMarketButton = ({ market }) => {
   }
 
   const removeFromFavorites = (mkt) => {
-    setFavoriteMarkets(favoriteMarkets.filter((m) => m.name !== mkt))
+    setFavoriteMarkets(favoriteMarkets.filter((m) => m !== mkt))
   }
 
   return favoriteMarkets.find((mkt) => mkt === market.name) ? (
