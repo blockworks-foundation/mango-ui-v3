@@ -25,7 +25,12 @@ interface CreateAlertModalProps {
   repayAmount?: string
   tokenSymbol?: string
 }
-const nameForAlert = (health: number, email: string, phone: string, telegram: string): string =>
+const nameForAlert = (
+  health: number,
+  email: string,
+  phone: string,
+  telegram: string
+): string =>
   `Alert for Email: ${email} Phone: ${phone} Telegram: ${telegram} When Health <= ${health}`
 
 const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
@@ -121,6 +126,7 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
         handleError([e])
         throw e
       }
+
       // refresh data after login
       ({ alerts, sources } = await fetchData())
       sourceToUse = getSourceToUse(sources)
@@ -141,7 +147,7 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
           name: nameForAlert(healthInt, email, phone, telegramId),
           emailAddress: email === '' ? null : email,
           phoneNumber: phone.length < 12 || phone.length > 16 ? null : phone,
-          telegramId: telegramId === '' ? null: telegramId,
+          telegramId: telegramId === '' ? null : telegramId,
           filterOptions: {
             alertFrequency: 'SINGLE',
             threshold: healthInt,
@@ -150,9 +156,13 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
 
         if (telegramId) {
           const telegramTarget = res.targetGroup?.telegramTargets.find(
-            telegramTarget => telegramTarget.telegramId === telegramId
+            (telegramTarget) => telegramTarget.telegramId === telegramId
           )
-          if (telegramTarget && !telegramTarget.isConfirmed && telegramTarget.confirmationUrl) {
+          if (
+            telegramTarget &&
+            !telegramTarget.isConfirmed &&
+            telegramTarget.confirmationUrl
+          ) {
             window.open(telegramTarget.confirmationUrl, '_blank')
           }
         }
@@ -385,9 +395,13 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
                 onChange={(e) => onChangeEmailInput(e.target.value)}
               />
               <Label className="mt-4">{t('phone-number')}</Label>
-              <Input type="tel" value={phone} onChange={handlePhone}/>
+              <Input type="tel" value={phone} onChange={handlePhone} />
               <Label className="mt-4">{t('telegram')}</Label>
-              <Input type="text" value={telegramId} onChange={handleTelegramId} />
+              <Input
+                type="text"
+                value={telegramId}
+                onChange={handleTelegramId}
+              />
               <div className="mt-4 flex items-end">
                 <div className="w-full">
                   <div className="flex justify-between">
@@ -439,7 +453,7 @@ const CreateAlertModal: FunctionComponent<CreateAlertModalProps> = ({
               <Button
                 className="mt-6 w-full"
                 onClick={() => onCreateAlert()}
-                disabled={!email && !phone && !telegramId || !health}
+                disabled={(!email && !phone && !telegramId) || !health}
               >
                 {t('alerts:create-alert')}
               </Button>
