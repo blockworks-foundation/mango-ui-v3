@@ -552,7 +552,7 @@ const JupiterForm: FunctionComponent = () => {
 
                         setFormValue((val) => ({
                           ...val,
-                          amount: newValue,
+                          amount: Number(newValue),
                         }))
                       }}
                     />
