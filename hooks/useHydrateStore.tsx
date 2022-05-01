@@ -33,7 +33,9 @@ function decodeBookL2(market, accInfo: AccountInfo<Buffer>): number[][] {
         // @ts-ignore
         null,
         market,
-        BookSideLayout.decode(accInfo.data)
+        BookSideLayout.decode(accInfo.data),
+        undefined,
+        100000
       )
       return book.getL2Ui(depth)
     }
