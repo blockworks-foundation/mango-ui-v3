@@ -52,8 +52,14 @@ export function decodeBook(
       return SpotOrderBook.decode(market, accInfo.data)
     } else if (market instanceof PerpMarket) {
       // FIXME: Review the null being passed here
-      // @ts-ignore
-      return new BookSide(null, market, BookSideLayout.decode(accInfo.data))
+      return new BookSide(
+        // @ts-ignore
+        null,
+        market,
+        BookSideLayout.decode(accInfo.data),
+        undefined,
+        100000
+      )
     }
   }
 }
