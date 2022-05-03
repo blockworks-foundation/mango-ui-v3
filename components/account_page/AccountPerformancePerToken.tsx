@@ -1,25 +1,69 @@
 import { useEffect, useMemo, useState } from 'react'
 import dayjs from 'dayjs'
-import useMangoStore from '../../stores/useMangoStore'
-import { useTranslation } from 'next-i18next'
 import isEmpty from 'lodash/isEmpty'
+import { useTranslation } from 'next-i18next'
+import { LineChart, XAxis, YAxis, Line, Tooltip, Legend } from 'recharts'
+import { SaveIcon } from '@heroicons/react/outline'
+
+import useMangoStore from '../../stores/useMangoStore'
 import { numberCompactFormatter } from '../../utils/'
 import ButtonGroup from '../ButtonGroup'
 import { numberCompacter } from '../SwapTokenInfo'
-import { LineChart, XAxis, YAxis, Line, Tooltip, Legend } from 'recharts'
+import { exportDataToCSV } from '../../utils/export'
+import Button from '../Button'
 
 const utc = require('dayjs/plugin/utc')
 dayjs.extend(utc)
-import { exportDataToCSV } from '../../utils/export'
-import { SaveIcon } from '@heroicons/react/outline'
-import Button from '../Button'
 
-export const handleDustTicks = (v) =>
-  v < 0.000001
+export const handleDustTicks = (v) => {
+  return v < 0.000001
     ? v === 0
       ? 0
       : v.toExponential()
     : numberCompactFormatter.format(v)
+}
+
+// Each line added to the graph will use one of these colors in sequence
+// TODO: These colors are not great
+const COLORS = [
+  'maroon',
+  'red',
+  'purple',
+  'fuchsia',
+  'green',
+  'lime',
+  'olive',
+  'yellow',
+  'navy',
+  'blue',
+  'teal',
+  'aqua',
+  'chartreuse',
+  'chocolate',
+  'darkcyan',
+  'darkgreen',
+]
+
+const HEADERS = [
+  'time',
+  'symbol',
+  'spot_value',
+  'perp_value',
+  'open_orders_value',
+  'transfer_balance',
+  'perp_spot_transfers_balance',
+  'mngo_rewards_value',
+  'mngo_rewards_quantity',
+  'long_funding',
+  'short_funding',
+  'long_funding_cumulative',
+  'short_funding_cumulative',
+  'deposit_interest',
+  'borrow_interest',
+  'deposit_interest_cumulative',
+  'borrow_interest_cumulative',
+  'price',
+]
 
 const AccountPerformance = () => {
   const { t } = useTranslation('common')
@@ -32,27 +76,6 @@ const AccountPerformance = () => {
   const [selectedSymbols, setSelectedSymbols] = useState(['ALL'])
   const [chartToShow, setChartToShow] = useState('value')
 
-  // Each line added to the graph will use one of these colors in sequence
-  // TODO: These colors are not great
-  const colors = [
-    'maroon',
-    'red',
-    'purple',
-    'fuchsia',
-    'green',
-    'lime',
-    'olive',
-    'yellow',
-    'navy',
-    'blue',
-    'teal',
-    'aqua',
-    'chartreuse',
-    'chocolate',
-    'darkcyan',
-    'darkgreen',
-  ]
-
   const mangoAccountPk = useMemo(() => {
     if (mangoAccount) {
       return mangoAccount.publicKey.toString()
@@ -60,27 +83,6 @@ const AccountPerformance = () => {
   }, [mangoAccount])
 
   const exportPerformanceDataToCSV = () => {
-    const headers = [
-      'time',
-      'symbol',
-      'spot_value',
-      'perp_value',
-      'open_orders_value',
-      'transfer_balance',
-      'perp_spot_transfers_balance',
-      'mngo_rewards_value',
-      'mngo_rewards_quantity',
-      'long_funding',
-      'short_funding',
-      'long_funding_cumulative',
-      'short_funding_cumulative',
-      'deposit_interest',
-      'borrow_interest',
-      'deposit_interest_cumulative',
-      'borrow_interest_cumulative',
-      'price',
-    ]
-
     const dataToExport = hourlyPerformanceStats
       .map(([time, tokenObjects]) => {
         return tokenObjects.map(([token, values]) => {
@@ -93,7 +95,7 @@ const AccountPerformance = () => {
       mangoAccount?.name || mangoAccount?.publicKey
     }-Performance-${new Date().toLocaleDateString()}`
 
-    exportDataToCSV(dataToExport, title, headers, t)
+    exportDataToCSV(dataToExport, title, HEADERS, t)
   }
 
   const calculateChartData = (chartToShow) => {
@@ -307,7 +309,7 @@ const AccountPerformance = () => {
                         key={`${v}${i}`}
                         type="monotone"
                         dataKey={`${v}`}
-                        stroke={`${colors[i]}`}
+                        stroke={`${COLORS[i]}`}
                         dot={false}
                       />
                     ))}
