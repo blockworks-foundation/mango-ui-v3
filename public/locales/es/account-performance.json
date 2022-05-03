@@ -1,0 +1,11 @@
+{
+  "account-pnl": "Account PnL",
+  "account-value": "Account Value",
+  "funding-cumulative": "Funding (cumulative)",
+  "funding-discrete": "Funding (discrete)",
+  "interest-cumulative": "Interest",
+  "interest-discrete" : "Interest",
+  "perp-pnl": "Perp PnL",
+  "perp-pnl-ex-rewards": "Perp PnL (ex. rewards)",
+  "vs-time": "vs. Time"
+}
