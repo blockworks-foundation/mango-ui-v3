@@ -347,7 +347,7 @@ const AccountPerformance = () => {
                     width={width}
                     height={height}
                     data={chartData}
-                    margin={{ top: 5, bottom: 5 }}
+                    margin={{ top: 5, left: 16, right: 8, bottom: 5 }}
                   >
                     <XAxis
                       dataKey="time"
@@ -389,7 +389,7 @@ const AccountPerformance = () => {
                 ) : null
               ) : loading ? (
                 <div
-                  style={{ height: height - 24 }}
+                  style={{ height: height - 16 }}
                   className="w-full animate-pulse rounded-md bg-th-bkg-3"
                 />
               ) : null}
