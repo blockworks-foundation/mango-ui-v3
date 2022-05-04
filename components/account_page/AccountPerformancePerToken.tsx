@@ -223,13 +223,15 @@ const AccountPerformance = () => {
       : setSelectedSymbols([...selectedSymbols, v])
   }
 
-  useEffect(() => {
-    if (selectAll) {
+  const handleSelectAll = () => {
+    if (!selectAll) {
       setSelectedSymbols([...uniqueSymbols])
+      setSelectAll(true)
     } else {
       setSelectedSymbols([])
+      setSelectAll(false)
     }
-  }, [selectAll])
+  }
 
   const renderLegend = (props) => {
     const { payload } = props
@@ -358,7 +360,7 @@ const AccountPerformance = () => {
                           uniqueSymbols.length !== selectedSymbols.length
                         }
                         checked={selectAll}
-                        onChange={(e) => setSelectAll(e.target.checked)}
+                        onChange={handleSelectAll}
                       >
                         {t('select-all')}
                       </Checkbox>
