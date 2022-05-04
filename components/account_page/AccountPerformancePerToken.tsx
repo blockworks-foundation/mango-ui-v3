@@ -388,10 +388,10 @@ const AccountPerformance = () => {
             <div className="-ml-1 flex flex-wrap">
               {uniqueSymbols.map((s) => (
                 <button
-                  className={`m-1 flex items-center rounded-full border py-1 px-2 text-xs font-bold ${
+                  className={`default-transition m-1 flex items-center rounded-full border py-1 px-2 text-xs font-bold ${
                     selectedSymbols.includes(s)
                       ? ''
-                      : 'border-th-fgd-4 text-th-fgd-4'
+                      : 'border-th-fgd-4 text-th-fgd-4 hover:border-th-fgd-3 hover:text-th-fgd-3 focus:border-th-fgd-3 focus:text-th-fgd-3 focus:outline-none'
                   }`}
                   onClick={() => toggleOption(s)}
                   style={
