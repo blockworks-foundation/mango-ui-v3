@@ -12,6 +12,7 @@ import Button from '../Button'
 import MultiSelectDropdown from 'components/MultiSelectDropdown'
 import useDimensions from 'react-cool-dimensions'
 import Select from 'components/Select'
+import Checkbox from 'components/Checkbox'
 
 const utc = require('dayjs/plugin/utc')
 dayjs.extend(utc)
@@ -82,8 +83,9 @@ const AccountPerformance = () => {
   const [uniqueSymbols, setUniqueSymbols] = useState<string[]>([])
   const [chartData, setChartData] = useState([])
   const [loading, setLoading] = useState(false)
-  const [selectedSymbols, setSelectedSymbols] = useState(['ALL'])
+  const [selectedSymbols, setSelectedSymbols] = useState(['All'])
   const [chartToShow, setChartToShow] = useState('account-value')
+  const [selectAll, setSelectAll] = useState(false)
   const { observe, width, height } = useDimensions()
 
   const mangoAccountPk = useMemo(() => {
@@ -166,7 +168,7 @@ const AccountPerformance = () => {
         ...Object.fromEntries(
           tokenObjects.map(([token, values]) => [token, metric(values)])
         ),
-        ALL: tokenObjects
+        All: tokenObjects
           .map(([_, values]) => metric(values))
           .reduce((a, b) => a + b, 0),
       }
@@ -196,7 +198,8 @@ const AccountPerformance = () => {
       setUniqueSymbols([
         ...new Set(
           ([] as string[]).concat(
-            ['ALL'],
+            // ['Select All'],
+            ['All'],
             ...entries.map(([_, tokens]) => tokens.map(([token, _]) => token))
           )
         ),
@@ -219,6 +222,14 @@ const AccountPerformance = () => {
       ? setSelectedSymbols(selectedSymbols.filter((item) => item !== v))
       : setSelectedSymbols([...selectedSymbols, v])
   }
+
+  useEffect(() => {
+    if (selectAll) {
+      setSelectedSymbols([...uniqueSymbols])
+    } else {
+      setSelectedSymbols([])
+    }
+  }, [selectAll])
 
   const renderLegend = (props) => {
     const { payload } = props
@@ -243,7 +254,7 @@ const AccountPerformance = () => {
 
   const renderTooltip = (props) => {
     const { payload } = props
-    return (
+    return payload ? (
       <div className="space-y-1.5 rounded-md bg-th-bkg-1 p-3">
         <p className="text-xs">
           {dayjs(payload[0]?.payload.time).format('ddd D MMM YYYY')}
@@ -264,7 +275,7 @@ const AccountPerformance = () => {
           )
         })}
       </div>
-    )
+    ) : null
   }
 
   const numberCompacter = Intl.NumberFormat('en', {
@@ -333,16 +344,30 @@ const AccountPerformance = () => {
                   `account-performance:${chartToShow}`
                 )} ${t('account-performance:vs-time')}`}</h3>
                 <div className="flex flex-col sm:flex-row sm:items-center">
-                  <p className="mb-0 mr-2 hidden sm:block">{t('assets')}</p>
-                  <MultiSelectDropdown
-                    options={uniqueSymbols}
-                    selected={selectedSymbols || []}
-                    toggleOption={toggleOption}
-                  />
+                  <div className="flex items-center">
+                    <p className="mb-0 mr-2 hidden sm:block">{t('assets')}</p>
+                    <MultiSelectDropdown
+                      options={uniqueSymbols}
+                      selected={selectedSymbols || []}
+                      toggleOption={toggleOption}
+                    />
+                    <div className="ml-3">
+                      <Checkbox
+                        halfState={
+                          selectedSymbols.length !== 0 &&
+                          uniqueSymbols.length !== selectedSymbols.length
+                        }
+                        checked={selectAll}
+                        onChange={(e) => setSelectAll(e.target.checked)}
+                      >
+                        {t('select-all')}
+                      </Checkbox>
+                    </div>
+                  </div>
                 </div>
               </div>
               {!isEmpty(hourlyPerformanceStats) && !loading ? (
-                chartData.length > 0 ? (
+                chartData.length > 0 && selectedSymbols.length > 0 ? (
                   <LineChart
                     width={width}
                     height={height}
@@ -386,6 +411,12 @@ const AccountPerformance = () => {
                       />
                     ))}
                   </LineChart>
+                ) : selectedSymbols.length === 0 ? (
+                  <div className="w-full bg-th-bkg-3 p-4 text-center">
+                    <p className="mb-0">
+                      Select one or more assets to view their performance.
+                    </p>
+                  </div>
                 ) : null
               ) : loading ? (
                 <div

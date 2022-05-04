@@ -7,7 +7,7 @@ import Checkbox from './Checkbox'
 const MultiSelectDropdown = ({ options, selected, toggleOption }) => {
   const { t } = useTranslation('common')
   return (
-    <Popover className="relative min-w-[120px]">
+    <Popover className="relative w-full min-w-[120px]">
       {({ open }) => (
         <div className="flex flex-col">
           <Popover.Button
