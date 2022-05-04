@@ -82,6 +82,7 @@ const AccountPerformance = () => {
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const [hourlyPerformanceStats, setHourlyPerformanceStats] = useState<any>([])
   const [uniqueSymbols, setUniqueSymbols] = useState<string[]>([])
+  const [filteredSymbols, setFilteredSymbols] = useState<string[]>([])
   const [chartData, setChartData] = useState([])
   const [loading, setLoading] = useState(false)
   const [selectedSymbols, setSelectedSymbols] = useState(['All'])
@@ -188,14 +189,17 @@ const AccountPerformance = () => {
         .map(([key, value]) => [key, Object.entries(value)])
         .reverse()
 
-      setUniqueSymbols([
+      const uniqueSymbols = [
         ...new Set(
           ([] as string[]).concat(
             ['All'],
             ...entries.map(([_, tokens]) => tokens.map(([token, _]) => token))
           )
         ),
-      ])
+      ]
+
+      setUniqueSymbols(uniqueSymbols)
+      setFilteredSymbols(uniqueSymbols)
 
       setHourlyPerformanceStats(entries)
 
@@ -208,6 +212,24 @@ const AccountPerformance = () => {
   useEffect(() => {
     calculateChartData(chartToShow)
   }, [hourlyPerformanceStats])
+
+  useEffect(() => {
+    if (
+      ['perp-pnl', 'perp-pnl-ex-rewards', 'funding-cumulative'].includes(
+        chartToShow
+      )
+    ) {
+      setFilteredSymbols(uniqueSymbols.filter((s) => s !== 'USDC'))
+      if (selectedSymbols.includes('USDC')) {
+        setSelectedSymbols(selectedSymbols.filter((s) => s !== 'USDC'))
+      }
+    } else {
+      if (selectAll) {
+        setSelectedSymbols(uniqueSymbols)
+      }
+      setFilteredSymbols(uniqueSymbols)
+    }
+  }, [chartToShow, selectedSymbols])
 
   const toggleOption = (v) => {
     selectedSymbols.includes(v)
@@ -282,10 +304,10 @@ const AccountPerformance = () => {
           </Button>
         </div>
       </div>
-      <div className="hidden pb-4 sm:block">
+      <div className="hidden pb-3 sm:block">
         <ButtonGroup
           activeValue={chartToShow}
-          className="pt-3 pb-3 xl:text-sm"
+          className="pt-3 pb-3 font-bold"
           onChange={(cat) => calculateChartData(cat)}
           values={DATA_CATEGORIES}
           names={DATA_CATEGORIES.map((val) => t(`account-performance:${val}`))}
@@ -366,7 +388,7 @@ const AccountPerformance = () => {
                   ))}
                 </LineChart>
               ) : selectedSymbols.length === 0 ? (
-                <div className="flex h-full w-full items-center justify-center bg-th-bkg-3 p-4">
+                <div className="flex h-full w-full items-center justify-center p-4">
                   <p className="mb-0">
                     {t('account-performance:select-an-asset')}
                   </p>
@@ -385,7 +407,7 @@ const AccountPerformance = () => {
               <Checkbox
                 halfState={
                   selectedSymbols.length !== 0 &&
-                  uniqueSymbols.length !== selectedSymbols.length
+                  filteredSymbols.length !== selectedSymbols.length
                 }
                 checked={selectAll}
                 onChange={handleSelectAll}
@@ -394,7 +416,7 @@ const AccountPerformance = () => {
               </Checkbox>
             </div>
             <div className="-ml-1 flex flex-wrap">
-              {uniqueSymbols.map((s) => (
+              {filteredSymbols.map((s) => (
                 <button
                   className={`default-transition m-1 flex items-center rounded-full border py-1 px-2 text-xs font-bold ${
                     selectedSymbols.includes(s)
