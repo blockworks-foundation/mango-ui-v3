@@ -7,5 +7,6 @@
   "interest-discrete" : "Interest",
   "perp-pnl": "Perp PnL",
   "perp-pnl-ex-rewards": "Perp PnL (ex. rewards)",
+  "select-an-asset": "Select one or more assets to view their performance.",
   "vs-time": "vs. Time"
 }

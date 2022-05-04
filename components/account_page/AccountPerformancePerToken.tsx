@@ -414,7 +414,7 @@ const AccountPerformance = () => {
                 ) : selectedSymbols.length === 0 ? (
                   <div className="w-full bg-th-bkg-3 p-4 text-center">
                     <p className="mb-0">
-                      Select one or more assets to view their performance.
+                      {t('account-performance:select-an-asset')}
                     </p>
                   </div>
                 ) : null
