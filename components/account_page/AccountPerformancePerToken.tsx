@@ -15,6 +15,7 @@ import Checkbox from 'components/Checkbox'
 import ButtonGroup from 'components/ButtonGroup'
 import * as MonoIcons from '../icons'
 import { QuestionMarkCircleIcon } from '@heroicons/react/outline'
+import { useTheme } from 'next-themes'
 
 const utc = require('dayjs/plugin/utc')
 dayjs.extend(utc)
@@ -32,17 +33,17 @@ const COLORS = {
   All: '#ff7c43',
   USDC: '#ffa600',
   SRM: '#8dd3c7',
-  SOL: '#ffffb3',
+  SOL: '#A288E3',
   RAY: '#bebada',
   MSOL: '#fb8072',
   MNGO: '#80b1d3',
   LUNA: '#fdb462',
   AVAX: '#b3de69',
-  BNB: '#fccde5',
-  FTT: '#d9d9d9',
+  BNB: '#FF47A6',
+  FTT: '#A38560',
   BTC: '#bc80bd',
-  ETH: '#ccebc5',
-  ADA: '#ffed6f',
+  ETH: '#05C793',
+  ADA: '#3F8EFC',
 }
 
 const HEADERS = [
@@ -87,6 +88,7 @@ const AccountPerformance = () => {
   const [chartToShow, setChartToShow] = useState('account-value')
   const [selectAll, setSelectAll] = useState(false)
   const { observe, width, height } = useDimensions()
+  const { theme } = useTheme()
 
   const mangoAccountPk = useMemo(() => {
     if (mangoAccount) {
@@ -328,7 +330,10 @@ const AccountPerformance = () => {
                     dy={10}
                     minTickGap={20}
                     tick={{
-                      fill: 'rgba(255,255,255,0.35)',
+                      fill:
+                        theme === 'Light'
+                          ? 'rgba(0,0,0,0.4)'
+                          : 'rgba(255,255,255,0.35)',
                       fontSize: 10,
                     }}
                     tickLine={false}
@@ -340,7 +345,10 @@ const AccountPerformance = () => {
                     axisLine={false}
                     dx={-10}
                     tick={{
-                      fill: 'rgba(255,255,255,0.35)',
+                      fill:
+                        theme === 'Light'
+                          ? 'rgba(0,0,0,0.4)'
+                          : 'rgba(255,255,255,0.35)',
                       fontSize: 10,
                     }}
                     tickLine={false}
