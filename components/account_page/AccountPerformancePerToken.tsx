@@ -2,17 +2,19 @@ import { useEffect, useMemo, useState } from 'react'
 import dayjs from 'dayjs'
 import isEmpty from 'lodash/isEmpty'
 import { useTranslation } from 'next-i18next'
-import { LineChart, XAxis, YAxis, Line, Tooltip, Legend } from 'recharts'
+import { LineChart, XAxis, YAxis, Line, Tooltip } from 'recharts'
 import { SaveIcon } from '@heroicons/react/outline'
 
 import useMangoStore from '../../stores/useMangoStore'
 import { numberCompactFormatter } from '../../utils/'
 import { exportDataToCSV } from '../../utils/export'
 import Button from '../Button'
-import MultiSelectDropdown from 'components/MultiSelectDropdown'
 import useDimensions from 'react-cool-dimensions'
 import Select from 'components/Select'
 import Checkbox from 'components/Checkbox'
+import ButtonGroup from 'components/ButtonGroup'
+import * as MonoIcons from '../icons'
+import { QuestionMarkCircleIcon } from '@heroicons/react/outline'
 
 const utc = require('dayjs/plugin/utc')
 dayjs.extend(utc)
@@ -25,23 +27,23 @@ export const handleDustTicks = (v) => {
     : numberCompactFormatter.format(v)
 }
 
-// Each line added to the graph will use one of these colors in sequence
-const COLORS = [
-  '#ff7c43',
-  '#ffa600',
-  '#8dd3c7',
-  '#ffffb3',
-  '#bebada',
-  '#fb8072',
-  '#80b1d3',
-  '#fdb462',
-  '#b3de69',
-  '#fccde5',
-  '#d9d9d9',
-  '#bc80bd',
-  '#ccebc5',
-  '#ffed6f',
-]
+// Each line added to the graph will use one of these colors
+const COLORS = {
+  All: '#ff7c43',
+  USDC: '#ffa600',
+  SRM: '#8dd3c7',
+  SOL: '#ffffb3',
+  RAY: '#bebada',
+  MSOL: '#fb8072',
+  MNGO: '#80b1d3',
+  LUNA: '#fdb462',
+  AVAX: '#b3de69',
+  BNB: '#fccde5',
+  FTT: '#d9d9d9',
+  BTC: '#bc80bd',
+  ETH: '#ccebc5',
+  ADA: '#ffed6f',
+}
 
 const HEADERS = [
   'time',
@@ -70,9 +72,7 @@ const DATA_CATEGORIES = [
   'perp-pnl',
   'perp-pnl-ex-rewards',
   'interest-cumulative',
-  'interest-discrete',
   'funding-cumulative',
-  'funding-discrete',
 ]
 
 const AccountPerformance = () => {
@@ -144,19 +144,10 @@ const AccountPerformance = () => {
           values['price']
         )
       },
-      'interest-discrete': (values) => {
-        return (
-          (values['deposit_interest'] + values['borrow_interest']) *
-          values['price']
-        )
-      },
       'funding-cumulative': (values) => {
         return (
           values['long_funding_cumulative'] + values['short_funding_cumulative']
         )
-      },
-      'funding-discrete': (values) => {
-        return values['long_funding'] + values['short_funding']
       },
     }
 
@@ -198,7 +189,6 @@ const AccountPerformance = () => {
       setUniqueSymbols([
         ...new Set(
           ([] as string[]).concat(
-            // ['Select All'],
             ['All'],
             ...entries.map(([_, tokens]) => tokens.map(([token, _]) => token))
           )
@@ -231,27 +221,6 @@ const AccountPerformance = () => {
       setSelectedSymbols([])
       setSelectAll(false)
     }
-  }
-
-  const renderLegend = (props) => {
-    const { payload } = props
-    return (
-      <div className="mt-4 flex w-full justify-center">
-        <div className="flex w-full flex-wrap justify-center space-x-3">
-          {payload.map((entry, index) => (
-            <div className="mb-1.5 flex items-center" key={`item-${index}`}>
-              <div
-                className="mr-1 h-3 w-3 rounded-full border-2"
-                style={{ borderColor: entry.color }}
-              />
-              <span style={{ color: entry.color }} className="text-xs">
-                {entry.value}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-    )
   }
 
   const renderTooltip = (props) => {
@@ -287,6 +256,14 @@ const AccountPerformance = () => {
     maximumFractionDigits: 2,
   })
 
+  const renderSymbolIcon = (s) => {
+    if (s !== 'All') {
+      const iconName = `${s.slice(0, 1)}${s.slice(1, 4).toLowerCase()}MonoIcon`
+      const SymbolIcon = MonoIcons[iconName] || QuestionMarkCircleIcon
+      return <SymbolIcon className="mr-1.5 h-3.5 w-auto" />
+    }
+  }
+
   return (
     <>
       <div className="flex items-center justify-between pb-4">
@@ -303,135 +280,137 @@ const AccountPerformance = () => {
           </Button>
         </div>
       </div>
-      <div className="grid grid-cols-12 gap-4 lg:gap-6">
-        <div className="col-span-12 lg:col-span-3">
-          <Select
-            value={chartToShow}
-            onChange={(cat) => calculateChartData(cat)}
-            className="lg:hidden"
-          >
-            {DATA_CATEGORIES.map((cat) => (
-              <Select.Option key={cat} value={cat}>
-                <div className="flex w-full items-center justify-between">
-                  {t(cat)}
-                </div>
-              </Select.Option>
-            ))}
-          </Select>
-          <div className="hidden space-y-2 lg:block">
-            {DATA_CATEGORIES.map((cat) => (
-              <button
-                className={`default-transition block w-full rounded-md p-4 text-left font-bold hover:bg-th-bkg-4 ${
-                  chartToShow === cat
-                    ? 'bg-th-bkg-4 text-th-primary'
-                    : 'bg-th-bkg-3 text-th-fgd-3'
-                }`}
-                onClick={() => calculateChartData(cat)}
-                key={cat}
-              >
-                {t(`account-performance:${cat}`)}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="col-span-12 lg:col-span-9">
-          {mangoAccount ? (
-            <div
-              className="h-[540px] w-full rounded-lg border border-th-bkg-4 p-6 pb-28 sm:pb-16"
-              ref={observe}
-            >
-              <div className="flex flex-col pb-4 sm:flex-row sm:items-center sm:justify-between">
-                <h3 className="mb-4 sm:mb-0">{`${t(
-                  `account-performance:${chartToShow}`
-                )} ${t('account-performance:vs-time')}`}</h3>
-                <div className="flex flex-col sm:flex-row sm:items-center">
-                  <div className="flex items-center">
-                    <p className="mb-0 mr-2 hidden sm:block">{t('assets')}</p>
-                    <MultiSelectDropdown
-                      options={uniqueSymbols}
-                      selected={selectedSymbols || []}
-                      toggleOption={toggleOption}
-                    />
-                    <div className="ml-3">
-                      <Checkbox
-                        halfState={
-                          selectedSymbols.length !== 0 &&
-                          uniqueSymbols.length !== selectedSymbols.length
-                        }
-                        checked={selectAll}
-                        onChange={handleSelectAll}
-                      >
-                        {t('select-all')}
-                      </Checkbox>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              {!isEmpty(hourlyPerformanceStats) && !loading ? (
-                chartData.length > 0 && selectedSymbols.length > 0 ? (
-                  <LineChart
-                    width={width}
-                    height={height}
-                    data={chartData}
-                    margin={{ top: 5, left: 16, right: 8, bottom: 5 }}
-                  >
-                    <XAxis
-                      dataKey="time"
-                      axisLine={false}
-                      hide={chartData.length > 0 ? false : true}
-                      dy={10}
-                      minTickGap={20}
-                      tick={{
-                        fill: 'rgba(255,255,255,0.35)',
-                        fontSize: 10,
-                      }}
-                      tickLine={false}
-                      tickFormatter={(v) => dayjs(v).format('D MMM')}
-                    />
-                    <YAxis
-                      type="number"
-                      domain={['dataMin', 'dataMax']}
-                      axisLine={false}
-                      dx={-10}
-                      tick={{
-                        fill: 'rgba(255,255,255,0.35)',
-                        fontSize: 10,
-                      }}
-                      tickLine={false}
-                      tickFormatter={(v) => numberCompacter.format(v)}
-                    />
-                    <Tooltip content={renderTooltip} cursor={false} />
-                    <Legend content={renderLegend} />
-                    {selectedSymbols.map((v, i) => (
-                      <Line
-                        key={`${v}${i}`}
-                        type="monotone"
-                        dataKey={`${v}`}
-                        stroke={`${COLORS[i]}`}
-                        dot={false}
-                      />
-                    ))}
-                  </LineChart>
-                ) : selectedSymbols.length === 0 ? (
-                  <div className="w-full bg-th-bkg-3 p-4 text-center">
-                    <p className="mb-0">
-                      {t('account-performance:select-an-asset')}
-                    </p>
-                  </div>
-                ) : null
-              ) : loading ? (
-                <div
-                  style={{ height: height - 16 }}
-                  className="w-full animate-pulse rounded-md bg-th-bkg-3"
-                />
-              ) : null}
-            </div>
-          ) : (
-            <div>{t('connect-wallet')}</div>
-          )}
-        </div>
+      <div className="hidden pb-4 sm:block">
+        <ButtonGroup
+          activeValue={chartToShow}
+          className="pt-3 pb-3 xl:text-sm"
+          onChange={(cat) => calculateChartData(cat)}
+          values={DATA_CATEGORIES}
+          names={DATA_CATEGORIES.map((val) => t(`account-performance:${val}`))}
+        />
       </div>
+      <Select
+        value={chartToShow}
+        onChange={(cat) => calculateChartData(cat)}
+        className="mb-3 sm:hidden"
+      >
+        {DATA_CATEGORIES.map((cat) => (
+          <Select.Option key={cat} value={cat}>
+            <div className="flex w-full items-center justify-between">
+              {t(cat)}
+            </div>
+          </Select.Option>
+        ))}
+      </Select>
+      {mangoAccount ? (
+        <>
+          <div
+            className="h-[540px] w-full rounded-lg rounded-b-none border border-th-bkg-4 p-6 pb-16"
+            ref={observe}
+          >
+            <div className="pb-4">
+              <h3 className="mb-4 sm:mb-0">{`${t(
+                `account-performance:${chartToShow}`
+              )} ${t('account-performance:vs-time')}`}</h3>
+            </div>
+            {!isEmpty(hourlyPerformanceStats) && !loading ? (
+              chartData.length > 0 && selectedSymbols.length > 0 ? (
+                <LineChart
+                  width={width}
+                  height={height}
+                  data={chartData}
+                  margin={{ top: 5, left: 16, right: 8, bottom: 5 }}
+                >
+                  <XAxis
+                    dataKey="time"
+                    axisLine={false}
+                    hide={chartData.length > 0 ? false : true}
+                    dy={10}
+                    minTickGap={20}
+                    tick={{
+                      fill: 'rgba(255,255,255,0.35)',
+                      fontSize: 10,
+                    }}
+                    tickLine={false}
+                    tickFormatter={(v) => dayjs(v).format('D MMM')}
+                  />
+                  <YAxis
+                    type="number"
+                    domain={['dataMin', 'dataMax']}
+                    axisLine={false}
+                    dx={-10}
+                    tick={{
+                      fill: 'rgba(255,255,255,0.35)',
+                      fontSize: 10,
+                    }}
+                    tickLine={false}
+                    tickFormatter={(v) => numberCompacter.format(v)}
+                  />
+                  <Tooltip content={renderTooltip} cursor={false} />
+                  {selectedSymbols.map((v, i) => (
+                    <Line
+                      key={`${v}${i}`}
+                      type="monotone"
+                      dataKey={`${v}`}
+                      stroke={`${COLORS[v]}`}
+                      dot={false}
+                    />
+                  ))}
+                </LineChart>
+              ) : selectedSymbols.length === 0 ? (
+                <div className="flex h-full w-full items-center justify-center bg-th-bkg-3 p-4">
+                  <p className="mb-0">
+                    {t('account-performance:select-an-asset')}
+                  </p>
+                </div>
+              ) : null
+            ) : loading ? (
+              <div
+                style={{ height: height - 16 }}
+                className="w-full animate-pulse rounded-md bg-th-bkg-3"
+              />
+            ) : null}
+          </div>
+          <div className="-mt-[1px] rounded-b-lg border border-th-bkg-4 py-3 px-6">
+            <div className="mb-2 flex items-center justify-between">
+              <p className="mb-0 font-bold">{t('assets')}</p>
+              <Checkbox
+                halfState={
+                  selectedSymbols.length !== 0 &&
+                  uniqueSymbols.length !== selectedSymbols.length
+                }
+                checked={selectAll}
+                onChange={handleSelectAll}
+              >
+                {t('select-all')}
+              </Checkbox>
+            </div>
+            <div className="-ml-1 flex flex-wrap">
+              {uniqueSymbols.map((s) => (
+                <button
+                  className={`m-1 flex items-center rounded-full border py-1 px-2 text-xs font-bold ${
+                    selectedSymbols.includes(s)
+                      ? ''
+                      : 'border-th-fgd-4 text-th-fgd-4'
+                  }`}
+                  onClick={() => toggleOption(s)}
+                  style={
+                    selectedSymbols.includes(s)
+                      ? { borderColor: COLORS[s], color: COLORS[s] }
+                      : {}
+                  }
+                  key={s}
+                >
+                  {renderSymbolIcon(s)}
+                  {s}
+                </button>
+              ))}
+            </div>
+          </div>
+        </>
+      ) : (
+        <div>{t('connect-wallet')}</div>
+      )}
     </>
   )
 }

@@ -1,10 +1,8 @@
 {
   "account-pnl": "Account PnL",
   "account-value": "Account Value",
-  "funding-cumulative": "Funding (cumulative)",
-  "funding-discrete": "Funding (discrete)",
+  "funding-cumulative": "Funding",
   "interest-cumulative": "Interest",
-  "interest-discrete" : "Interest",
   "perp-pnl": "Perp PnL",
   "perp-pnl-ex-rewards": "Perp PnL (ex. rewards)",
   "select-an-asset": "Select one or more assets to view their performance.",
