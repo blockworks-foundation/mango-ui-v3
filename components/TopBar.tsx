@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react'
+import * as anchor from '@project-serum/anchor'
 import Link from 'next/link'
 import { abbreviateAddress } from '../utils/index'
 import useLocalStorageState from '../hooks/useLocalStorageState'
@@ -20,6 +21,11 @@ import {
 } from '@heroicons/react/outline'
 import { MangoIcon } from './icons'
 import { useWallet } from '@solana/wallet-adapter-react'
+import {
+  IncomingThemeVariables,
+  NotificationsButton,
+} from '@dialectlabs/react-ui'
+import { WalletType } from '@dialectlabs/react'
 
 // const StyledNewLabel = ({ children, ...props }) => (
 //   <div style={{ fontSize: '0.5rem', marginLeft: '1px' }} {...props}>
@@ -27,8 +33,40 @@ import { useWallet } from '@solana/wallet-adapter-react'
 //   </div>
 // )
 
+const MANGO_PUBLIC_KEY = new anchor.web3.PublicKey(
+  'BUxZD6aECR5B5MopyvvYqJxwSKDBhx2jSSo1U32en6mj'
+)
+
+const themeVariables: IncomingThemeVariables = {
+  light: {
+    colors: {
+      bg: 'bg-bkg-1',
+    },
+    button: `bg-primary-light border-primary-light font-bold rounded-full hover:bg-primary-dark`,
+    buttonLoading: `rounded-full min-h-[40px]`,
+    secondaryDangerButton: `rounded-full`,
+    bellButton: `!bg-bkg-2 !shadow-none text-fgd-1 h-10 rounded-full w-10 hover:bg-bkg-3`,
+    modal: `sm:border sm:rounded-md sm:border-fgd-4 sm:shadow-md`,
+    modalWrapper: `sm:top-14`,
+  },
+  dark: {
+    colors: {
+      bg: 'bg-bkg-1',
+      highlight: 'border border-fgd-4',
+    },
+    button: ` bg-primary-light border-primary-light font-bold rounded-full hover:bg-primary-dark`,
+    buttonLoading: ` rounded-full min-h-[40px]`,
+    secondaryDangerButton: ` rounded-full`,
+    bellButton:
+      '!bg-bkg-2 !shadow-none text-fgd-1 h-10 rounded-full w-10 hover:bg-bkg-3',
+    modal: ` bg-bkg-1 sm:border sm:border-fgd-4 shadow-md sm:rounded-md`,
+    modalWrapper: ` sm:top-14`,
+  },
+}
+
 const TopBar = () => {
   const { t } = useTranslation('common')
+  const wallet = useWallet()
   const { publicKey } = useWallet()
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const cluster = useMangoStore((s) => s.connection.cluster)
@@ -127,6 +165,15 @@ const TopBar = () => {
             </div>
             <div className="flex items-center space-x-2.5">
               {isDevnet ? <div className="pl-2 text-xxs">Devnet</div> : null}
+              <NotificationsButton
+                wallet={(wallet as unknown) as WalletType}
+                network={cluster as string}
+                publicKey={MANGO_PUBLIC_KEY}
+                theme={'light'}
+                variables={themeVariables}
+                notifications={[{ name: 'Filled Orders', detail: 'Event' }]}
+                channels={['web3']}
+              />
               <div className="pl-2">
                 <Settings />
               </div>
