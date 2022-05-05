@@ -238,7 +238,7 @@ const AccountPerformance = () => {
       }
       setFilteredSymbols(uniqueSymbols)
     }
-  }, [chartToShow, selectedSymbols])
+  }, [chartToShow, selectedSymbols, hourlyPerformanceStats])
 
   const toggleOption = (v) => {
     selectedSymbols.includes(v)
