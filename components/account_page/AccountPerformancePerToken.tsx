@@ -34,7 +34,7 @@ const COLORS = {
   USDC: '#ffa600',
   SRM: '#8dd3c7',
   SOL: '#A288E3',
-  RAY: '#bebada',
+  RAY: '#4AB839',
   MSOL: '#fb8072',
   MNGO: '#80b1d3',
   LUNA: '#fdb462',
@@ -71,10 +71,19 @@ const DATA_CATEGORIES = [
   'account-value',
   'account-pnl',
   'perp-pnl',
-  'perp-pnl-ex-rewards',
   'interest-cumulative',
   'funding-cumulative',
+  'mngo-rewards',
 ]
+
+const performanceRangePresets = [
+  { label: '24h', value: '1' },
+  { label: '7d', value: '7' },
+  { label: '30d', value: '30' },
+  { label: '3m', value: '90' },
+]
+const performanceRangePresetLabels = performanceRangePresets.map((x) => x.label)
+const performanceRangePresetValues = performanceRangePresets.map((x) => x.value)
 
 const AccountPerformance = () => {
   const { t } = useTranslation(['common', 'account-performance'])
@@ -88,6 +97,7 @@ const AccountPerformance = () => {
   const [selectedSymbols, setSelectedSymbols] = useState(['All'])
   const [chartToShow, setChartToShow] = useState('account-value')
   const [selectAll, setSelectAll] = useState(false)
+  const [performanceRange, setPerformanceRange] = useState('30')
   const { observe, width, height } = useDimensions()
   const { theme } = useTheme()
 
@@ -152,6 +162,9 @@ const AccountPerformance = () => {
           values['long_funding_cumulative'] + values['short_funding_cumulative']
         )
       },
+      'mngo-rewards': (values) => {
+        return values['mngo_rewards_value']
+      },
     }
 
     const metric: (values: []) => void = metrics[chartToShow]
@@ -176,11 +189,9 @@ const AccountPerformance = () => {
     const fetchHourlyPerformanceStats = async () => {
       setLoading(true)
 
-      // TODO: this should be dynamic
-      const range = 30
       const response = await fetch(
         `https://mango-transaction-log.herokuapp.com/v3/stats/account-performance-per-token?mango-account=${mangoAccountPk}&start-date=${dayjs()
-          .subtract(range, 'day')
+          .subtract(parseInt(performanceRange), 'day')
           .format('YYYY-MM-DD')}`
       )
       const parsedResponse = await response.json()
@@ -207,7 +218,7 @@ const AccountPerformance = () => {
     }
 
     fetchHourlyPerformanceStats()
-  }, [mangoAccountPk])
+  }, [mangoAccountPk, performanceRange])
 
   useEffect(() => {
     calculateChartData(chartToShow)
@@ -215,9 +226,7 @@ const AccountPerformance = () => {
 
   useEffect(() => {
     if (
-      ['perp-pnl', 'perp-pnl-ex-rewards', 'funding-cumulative'].includes(
-        chartToShow
-      )
+      ['perp-pnl', 'mngo-rewards', 'funding-cumulative'].includes(chartToShow)
     ) {
       setFilteredSymbols(uniqueSymbols.filter((s) => s !== 'USDC'))
       if (selectedSymbols.includes('USDC')) {
@@ -292,36 +301,34 @@ const AccountPerformance = () => {
     <>
       <div className="flex items-center justify-between pb-4">
         <h2>{t('account-performance')}</h2>
-        <div className="flex items-center">
-          <Button
-            className={`float-right h-8 pt-0 pb-0 pl-3 pr-3 text-xs`}
-            onClick={exportPerformanceDataToCSV}
-          >
-            <div className={`flex items-center whitespace-nowrap`}>
-              <SaveIcon className={`mr-1.5 h-4 w-4`} />
-              {t('export-data')}
-            </div>
-          </Button>
-        </div>
+        <Button
+          className={`float-right h-8 pt-0 pb-0 pl-3 pr-3 text-xs`}
+          onClick={exportPerformanceDataToCSV}
+        >
+          <div className={`flex items-center whitespace-nowrap`}>
+            <SaveIcon className={`mr-1.5 h-4 w-4`} />
+            {t('export-data')}
+          </div>
+        </Button>
       </div>
       <div className="hidden pb-3 sm:block">
         <ButtonGroup
           activeValue={chartToShow}
-          className="pt-3 pb-3 font-bold"
+          className="min-h-[32px]"
           onChange={(cat) => calculateChartData(cat)}
           values={DATA_CATEGORIES}
           names={DATA_CATEGORIES.map((val) => t(`account-performance:${val}`))}
         />
       </div>
       <Select
-        value={chartToShow}
+        value={t(`account-performance:${chartToShow}`)}
         onChange={(cat) => calculateChartData(cat)}
         className="mb-3 sm:hidden"
       >
         {DATA_CATEGORIES.map((cat) => (
           <Select.Option key={cat} value={cat}>
             <div className="flex w-full items-center justify-between">
-              {t(cat)}
+              {t(`account-performance:${cat}`)}
             </div>
           </Select.Option>
         ))}
@@ -329,13 +336,22 @@ const AccountPerformance = () => {
       {mangoAccount ? (
         <>
           <div
-            className="h-[540px] w-full rounded-lg rounded-b-none border border-th-bkg-4 p-6 pb-16"
+            className="h-[540px] w-full rounded-lg rounded-b-none border border-th-bkg-4 p-6 pb-24 sm:pb-16"
             ref={observe}
           >
-            <div className="pb-4">
+            <div className="flex flex-col pb-4 sm:flex-row sm:items-center sm:justify-between">
               <h3 className="mb-4 sm:mb-0">{`${t(
                 `account-performance:${chartToShow}`
               )} ${t('account-performance:vs-time')}`}</h3>
+              <div className="w-full sm:ml-auto sm:w-56">
+                <ButtonGroup
+                  activeValue={performanceRange}
+                  className="h-8"
+                  onChange={(p) => setPerformanceRange(p)}
+                  values={performanceRangePresetValues}
+                  names={performanceRangePresetLabels}
+                />
+              </div>
             </div>
             {!isEmpty(hourlyPerformanceStats) && !loading ? (
               chartData.length > 0 && selectedSymbols.length > 0 ? (

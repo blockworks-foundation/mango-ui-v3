@@ -1,8 +1,9 @@
 {
   "account-pnl": "Account PnL",
   "account-value": "Account Value",
-  "funding-cumulative": "Funding",
-  "interest-cumulative": "Interest",
+  "funding-cumulative": "Cumulative Funding",
+  "interest-cumulative": "Cumulative Interest",
+  "mngo-rewards": "MNGO Rewards",
   "perp-pnl": "Perp PnL",
   "perp-pnl-ex-rewards": "Perp PnL (ex. rewards)",
   "select-an-asset": "Select one or more assets to view their performance.",
