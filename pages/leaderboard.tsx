@@ -19,8 +19,8 @@ export default function Leaderboard() {
     <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
       <TopBar />
       <PageBodyContainer>
-        <div className="flex items-center justify-between pt-8 pb-3 sm:pb-6 md:pt-10">
-          <h1 className={`text-2xl font-semibold text-th-fgd-1`}>
+        <div className="flex flex-col pt-8 pb-3 sm:flex-row sm:items-center sm:justify-between sm:pb-6 md:pt-10">
+          <h1 className={`mb-4 text-2xl font-semibold text-th-fgd-1 sm:mb-0`}>
             Leaderboard
           </h1>
           <div className="w-full sm:ml-auto sm:w-56">
