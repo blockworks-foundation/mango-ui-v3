@@ -2,9 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 import dayjs from 'dayjs'
 import { Table, Td, Th, TrBody, TrHead } from './TableElements'
 import { usdFormatter } from '../utils'
-import { AwardIcon, TrophyIcon } from './icons'
+import { AwardIcon, MedalIcon, TrophyIcon } from './icons'
 import { useTranslation } from 'next-i18next'
-import { BronzeMedalIcon, SilverMedalIcon, GoldMedalIcon } from './icons'
 import { ChartPieIcon, TrendingUpIcon } from '@heroicons/react/outline'
 
 const utc = require('dayjs/plugin/utc')
@@ -215,16 +214,34 @@ export default LeaderboardTable
 
 const TopThreeCard = ({ rank, acc, pnl }) => {
   const { t } = useTranslation('common')
+  const medalColors =
+    rank === 1
+      ? {
+          darkest: '#E4AF11',
+          dark: '#F2C94C',
+          light: '#FFCF40',
+          lightest: '#FDE877',
+        }
+      : rank === 2
+      ? {
+          darkest: '#B8B8B8',
+          dark: '#C0C0C0',
+          light: '#C7C7C7',
+          lightest: '#D8D6D6',
+        }
+      : {
+          darkest: '#CD7F32',
+          dark: '#E5994E',
+          light: '#DBA36B',
+          lightest: '#EFBF8D',
+        }
   return (
     <div className="flex items-center rounded-lg border border-th-bkg-4 p-4">
       <p className="mb-0 mr-4">{rank}</p>
-      {rank === 1 ? (
-        <GoldMedalIcon className="mr-3 h-10 w-auto drop-shadow-lg sm:h-12" />
-      ) : rank === 2 ? (
-        <SilverMedalIcon className="mr-3 h-10 w-auto drop-shadow-lg sm:h-12" />
-      ) : (
-        <BronzeMedalIcon className="mr-3 h-10 w-auto drop-shadow-lg sm:h-12" />
-      )}
+      <MedalIcon
+        className="mr-3 h-10 w-auto drop-shadow-lg sm:h-12"
+        colors={medalColors}
+      />
       <div className="flex w-full flex-col sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="mb-0">{`${acc.slice(0, 5)}...${acc.slice(-5)}`}</p>
