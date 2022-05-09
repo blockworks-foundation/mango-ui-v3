@@ -25,6 +25,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import {
   IncomingThemeVariables,
   NotificationsButton,
+  defaultVariables,
 } from '@dialectlabs/react-ui'
 import { WalletType } from '@dialectlabs/react'
 import '@dialectlabs/react-ui/index.css'
@@ -49,18 +50,29 @@ const themeVariables: IncomingThemeVariables = {
   light: {
     colors: {
       bg: 'bg-th-bkg-3',
+      toggleBackgroundActive: 'bg-th-primary'
     },
+    section: 'bg-th-bkg-2 p-2 rounded-2xl',
     bellButton:
       'default-transition flex h-8 w-8 items-center justify-center rounded-full text-th-fgd-1 hover:text-th-primary focus:outline-none',
+    button: '!rounded-full !bg-th-bkg-button px-6 py-2 font-bold text-th-fgd-1 hover:brightness-[1.1] focus:outline-none disabled:cursor-not-allowed disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:hover:brightness-100 w-full',
+    disabledButton: 'flex-grow !rounded-full px-6 py-2 font-bold text-white hover:brightness-[1.1] focus:outline-none disabled:cursor-not-allowed disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:hover:brightness-100 bg-th-green-dark',
+    secondaryDangerButton: `${defaultVariables.light.secondaryDangerButton} !rounded-full`,
+    secondaryButton: `${defaultVariables.light.secondaryButton} !rounded-full`,
   },
   dark: {
     colors: {
       bg: 'bg-th-bkg-3',
+      toggleBackgroundActive: 'bg-th-primary'
     },
     bellButton:
       'default-transition flex h-8 w-8 items-center justify-center rounded-full text-th-fgd-1 hover:text-th-primary focus:outline-none',
     section: 'bg-th-bkg-2 p-2 rounded-2xl',
-  },
+    button: "whitespace-nowrap !rounded-full !bg-th-bkg-button px-6 py-2 font-bold text-th-fgd-1 hover:brightness-[1.1] focus:outline-none disabled:cursor-not-allowed disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:hover:brightness-100 w-full",
+    disabledButton: "flex-grow !rounded-full px-6 py-2 font-bold text-white hover:brightness-[1.1] focus:outline-none disabled:cursor-not-allowed disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:hover:brightness-100 bg-th-green-dark",
+    secondaryDangerButton: `${defaultVariables.dark.secondaryDangerButton} !rounded-full`,
+    secondaryButton: `${defaultVariables.dark.secondaryButton} !rounded-full`,
+  }
 }
 
 const TopBar = () => {
