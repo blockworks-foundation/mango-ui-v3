@@ -247,7 +247,8 @@ const PerformanceChart = ({
               activeValue={chartToShow}
               className="pb-2 pt-2 text-sm"
               onChange={(v) => setChartToShow(v)}
-              values={[t('value'), t('pnl')]}
+              values={['Value', 'PnL']}
+              names={[t('value'), t('pnl')]}
             />
           </div>
 
