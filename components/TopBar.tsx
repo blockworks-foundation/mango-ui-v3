@@ -50,28 +50,36 @@ const themeVariables: IncomingThemeVariables = {
   light: {
     colors: {
       bg: 'bg-th-bkg-3',
-      toggleBackgroundActive: 'bg-th-primary'
+      toggleBackgroundActive: 'bg-th-primary',
+      primary: '!text-th-fgd-1'
     },
+    modal: 'z-20 !rounded-md',
     section: 'bg-th-bkg-2 p-2 rounded-2xl',
     bellButton:
-      'default-transition flex h-8 w-8 items-center justify-center rounded-full text-th-fgd-1 hover:text-th-primary focus:outline-none',
+      'default-transition flex h-8 w-8 items-center justify-center rounded-full text-th-fgd-1 hover:text-th-primary focus:outline-none !shadow-none',
     button: '!rounded-full !bg-th-bkg-button px-6 py-2 font-bold text-th-fgd-1 hover:brightness-[1.1] focus:outline-none disabled:cursor-not-allowed disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:hover:brightness-100 w-full',
     disabledButton: 'flex-grow !rounded-full px-6 py-2 font-bold text-white hover:brightness-[1.1] focus:outline-none disabled:cursor-not-allowed disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:hover:brightness-100 bg-th-green-dark',
     secondaryDangerButton: `${defaultVariables.light.secondaryDangerButton} !rounded-full`,
     secondaryButton: `${defaultVariables.light.secondaryButton} !rounded-full`,
+    divider: 'dt-h-px !bg-th-bkg-4',
+    outlinedInput: 'h-10 rounded-md border bg-th-bkg-1 text-th-fgd-1 border-th-bkg-4 default-transition hover:border-th-fgd-4 focus:border-th-fgd-4 focus:outline-none pl-2'
   },
   dark: {
     colors: {
       bg: 'bg-th-bkg-3',
-      toggleBackgroundActive: 'bg-th-primary'
+      toggleBackgroundActive: 'bg-th-primary',
+      primary: '!text-th-fgd-1'
     },
+    modal: 'z-20 !rounded-md',
     bellButton:
-      'default-transition flex h-8 w-8 items-center justify-center rounded-full text-th-fgd-1 hover:text-th-primary focus:outline-none',
+      'default-transition flex h-8 w-8 items-center justify-center rounded-full text-th-fgd-1 hover:text-th-primary focus:outline-none !shadow-none',
     section: 'bg-th-bkg-2 p-2 rounded-2xl',
     button: "whitespace-nowrap !rounded-full !bg-th-bkg-button px-6 py-2 font-bold text-th-fgd-1 hover:brightness-[1.1] focus:outline-none disabled:cursor-not-allowed disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:hover:brightness-100 w-full",
     disabledButton: "flex-grow !rounded-full px-6 py-2 font-bold text-white hover:brightness-[1.1] focus:outline-none disabled:cursor-not-allowed disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:hover:brightness-100 bg-th-green-dark",
     secondaryDangerButton: `${defaultVariables.dark.secondaryDangerButton} !rounded-full`,
     secondaryButton: `${defaultVariables.dark.secondaryButton} !rounded-full`,
+    divider: 'dt-h-px !bg-th-bkg-4',
+    outlinedInput: `h-10 rounded-md border bg-th-bkg-1 px-2 pb-px text-th-fgd-1 border-th-bkg-4 default-transition hover:border-th-fgd-4 focus:border-th-fgd-4 focus:outline-none pl-2`
   }
 }
 
