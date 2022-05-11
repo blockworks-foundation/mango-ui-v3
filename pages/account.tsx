@@ -96,7 +96,6 @@ export default function Account() {
   const [viewIndex, setViewIndex] = useState(0)
   const [activeTab, setActiveTab] = useState(TABS[0])
   const [showProfilePicModal, setShowProfilePicModal] = useState(false)
-  const pfp = useMangoStore((s) => s.wallet.pfp)
   const loadingTransaction = useMangoStore(
     (s) => s.wallet.nfts.loadingTransaction
   )
@@ -287,17 +286,12 @@ export default function Account() {
                   }`}
                   onClick={() => setShowProfilePicModal(true)}
                 >
-                  {pfp?.isAvailable ? (
-                    <img
-                      alt=""
-                      src={pfp.url}
-                      className={`default-transition h-20 w-20 rounded-full hover:opacity-60 ${
-                        loadingTransaction ? 'opacity-40' : ''
-                      }`}
-                    />
-                  ) : (
-                    <ProfileIcon className="h-12 w-12 text-th-fgd-3" />
-                  )}
+                  <ProfileThumb
+                    thumbHeightClass="h-20"
+                    thumbWidthClass="w-20"
+                    placeholderHeightClass="h-12"
+                    placeholderWidthClass="w-12"
+                  />
                   <div className="default-transition absolute bottom-0 top-0 left-0 right-0 flex h-full w-full items-center justify-center rounded-full bg-[rgba(0,0,0,0.6)] opacity-0 hover:opacity-100">
                     <PencilIcon className="h-5 w-5 text-th-fgd-1" />
                   </div>
@@ -565,4 +559,29 @@ const TabContent = ({ activeTab }) => {
     default:
       return <AccountOverview />
   }
+}
+
+export const ProfileThumb = ({
+  thumbHeightClass,
+  thumbWidthClass,
+  placeholderHeightClass,
+  placeholderWidthClass,
+}) => {
+  const pfp = useMangoStore((s) => s.wallet.pfp)
+  const loadingTransaction = useMangoStore(
+    (s) => s.wallet.nfts.loadingTransaction
+  )
+  return pfp?.isAvailable ? (
+    <img
+      alt=""
+      src={pfp.url}
+      className={`default-transition rounded-full hover:opacity-60 ${thumbHeightClass} ${thumbWidthClass} ${
+        loadingTransaction ? 'opacity-40' : ''
+      }`}
+    />
+  ) : (
+    <ProfileIcon
+      className={`h-12 w-12 text-th-fgd-3 ${placeholderHeightClass} ${placeholderWidthClass}`}
+    />
+  )
 }

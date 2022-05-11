@@ -17,12 +17,13 @@ import {
 import { notify } from 'utils/notifications'
 import { abbreviateAddress, copyToClipboard } from 'utils'
 import useMangoStore from 'stores/useMangoStore'
-import { WalletIcon, ProfileIcon } from './icons'
+import { WalletIcon } from './icons'
 import { useTranslation } from 'next-i18next'
 import { WalletSelect } from 'components/WalletSelect'
 import AccountsModal from './AccountsModal'
 import uniqBy from 'lodash/uniqBy'
 import NftProfilePicModal from './NftProfilePicModal'
+import { ProfileThumb } from 'pages/account'
 
 export const handleWalletConnect = (wallet: Wallet) => {
   if (!wallet) {
@@ -122,17 +123,12 @@ export const ConnectWalletButton: React.FC = () => {
                   loadingTransaction ? 'animate-pulse bg-th-bkg-4' : ''
                 }`}
               >
-                {pfp?.isAvailable ? (
-                  <img
-                    alt=""
-                    src={pfp.url}
-                    className={`default-transition h-10 w-10 rounded-full hover:opacity-60 ${
-                      loadingTransaction ? 'opacity-40' : ''
-                    }`}
-                  />
-                ) : (
-                  <ProfileIcon className="h-6 w-6 text-th-fgd-3" />
-                )}
+                <ProfileThumb
+                  thumbHeightClass="h-10"
+                  thumbWidthClass="w-10"
+                  placeholderHeightClass="h-6"
+                  placeholderWidthClass="w-6"
+                />
               </Menu.Button>
               <Transition
                 appear={true}
