@@ -40,6 +40,8 @@ import { getProfilePicture, ProfilePicture } from '@solflare-wallet/pfp'
 import { decodeBook } from '../hooks/useHydrateStore'
 import { IOrderLineAdapter } from '../public/charting_library/charting_library'
 import { Wallet } from '@solana/wallet-adapter-react'
+import { getParsedNftAccountsByOwner } from '@nfteyez/sol-rayz'
+import { getTokenAccountsByMint } from 'utils/tokens'
 
 export const ENDPOINTS: EndpointInfo[] = [
   {
@@ -130,6 +132,32 @@ export interface AlertRequest {
   notifiAlertId: string | undefined
 }
 
+interface NFTFiles {
+  type: string
+  uri: string
+}
+interface NFTProperties {
+  category: string
+  files: NFTFiles[]
+}
+
+interface NFTData {
+  image: string
+  name: string
+  description: string
+  properties: NFTProperties
+  collection: {
+    family: string
+    name: string
+  }
+}
+
+interface NFTWithMint {
+  val: NFTData
+  mint: string
+  tokenAddress: string
+}
+
 export type MangoStore = {
   notificationIdCounter: number
   notifications: Array<Notification>
@@ -197,6 +225,13 @@ export type MangoStore = {
   wallet: {
     tokens: WalletToken[] | any[]
     pfp: ProfilePicture | undefined
+    nfts: {
+      data: NFTWithMint[] | []
+      initialLoad: boolean
+      loading: boolean
+      accounts: any[]
+      loadingTransaction: boolean
+    }
   }
   settings: {
     uiLocked: boolean
@@ -211,6 +246,12 @@ export type MangoStore = {
   actions: {
     fetchWalletTokens: (wallet: Wallet) => void
     fetchProfilePicture: (wallet: Wallet) => void
+    fetchNfts: (
+      connection: Connection,
+      walletPk: PublicKey | null,
+      offset?: number
+    ) => void
+    fetchNftAccounts: (connection: Connection, walletPk: PublicKey) => void
     fetchAllMangoAccounts: (wallet: Wallet) => Promise<void>
     fetchMangoGroup: () => Promise<void>
     fetchTradeHistory: () => void
@@ -341,6 +382,13 @@ const useMangoStore = create<
       wallet: {
         tokens: [],
         pfp: undefined,
+        nfts: {
+          data: [],
+          initialLoad: false,
+          loading: false,
+          accounts: [],
+          loadingTransaction: false,
+        },
       },
       settings: {
         uiLocked: true,
@@ -421,6 +469,82 @@ const useMangoStore = create<
             })
           } catch (e) {
             console.log('Could not get profile picture', e)
+          }
+        },
+        async fetchNftAccounts(connection: Connection, walletPk: PublicKey) {
+          const set = get().set
+          try {
+            const nfts = await getParsedNftAccountsByOwner({
+              publicAddress: walletPk.toBase58(),
+              connection: connection,
+            })
+            const data = Object.keys(nfts)
+              .map((key) => nfts[key])
+              .filter((data) => data.primarySaleHappened)
+            set((state) => {
+              state.wallet.nfts.accounts = data
+            })
+          } catch (error) {
+            console.log(error)
+          }
+        },
+        async fetchNfts(
+          connection: Connection,
+          walletPk: PublicKey,
+          offset = 0
+        ) {
+          const set = get().set
+          set((state) => {
+            state.wallet.nfts.loading = true
+          })
+          try {
+            const nftAccounts = get().wallet.nfts.accounts
+            const loadedNfts = get().wallet.nfts.data
+            const arr: NFTWithMint[] = []
+            if (loadedNfts.length < nftAccounts.length) {
+              for (let i = offset; i < offset + 9; i++) {
+                try {
+                  const response = await fetch(nftAccounts[i].data.uri)
+                  const val = await response.json()
+                  const tokenAccounts = await getTokenAccountsByMint(
+                    connection,
+                    nftAccounts[i].mint
+                  )
+                  arr.push({
+                    val,
+                    mint: nftAccounts[i].mint,
+                    tokenAddress: tokenAccounts
+                      .find(
+                        (x) =>
+                          x.account.owner.toBase58() === walletPk.toBase58()
+                      )!
+                      .publicKey.toBase58(),
+                  })
+                } catch (e) {
+                  console.log(e)
+                }
+              }
+            }
+            if (loadedNfts.length === 0) {
+              set((state) => {
+                state.wallet.nfts.data = arr
+                state.wallet.nfts.initialLoad = true
+                state.wallet.nfts.loading = false
+              })
+            } else {
+              set((state) => {
+                state.wallet.nfts.data = [...loadedNfts, ...arr]
+                state.wallet.nfts.loading = false
+              })
+            }
+          } catch (error) {
+            notify({
+              title: 'Unable to fetch nfts',
+              description: '',
+            })
+            set((state) => {
+              state.wallet.nfts.loading = false
+            })
           }
         },
         async fetchAllMangoAccounts(wallet) {

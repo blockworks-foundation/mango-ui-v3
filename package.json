@@ -21,6 +21,7 @@
     "@headlessui/react": "^0.0.0-insiders.2dbc38c",
     "@heroicons/react": "^1.0.0",
     "@jup-ag/react-hook": "^1.0.0-beta.22",
+    "@nfteyez/sol-rayz": "^0.10.2",
     "@notifi-network/notifi-react-hooks": "^0.12.1",
     "@project-serum/serum": "0.13.55",
     "@project-serum/sol-wallet-adapter": "0.2.0",

@@ -54,6 +54,8 @@ import { Menu, Transition } from '@headlessui/react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { handleWalletConnect } from 'components/ConnectWalletButton'
 import { MangoAccountLookup } from 'components/account_page/MangoAccountLookup'
+import NftProfilePicModal from 'components/NftProfilePicModal'
+import { ProfileIcon } from 'components'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -64,6 +66,7 @@ export async function getStaticProps({ locale }) {
         'delegate',
         'alerts',
         'share-modal',
+        'profile',
       ])),
       // Will be passed to the page component as props
     },
@@ -92,6 +95,11 @@ export default function Account() {
   const [mngoAccrued, setMngoAccrued] = useState(ZERO_BN)
   const [viewIndex, setViewIndex] = useState(0)
   const [activeTab, setActiveTab] = useState(TABS[0])
+  const [showProfilePicModal, setShowProfilePicModal] = useState(false)
+  const pfp = useMangoStore((s) => s.wallet.pfp)
+  const loadingTransaction = useMangoStore(
+    (s) => s.wallet.nfts.loadingTransaction
+  )
 
   const connecting = wallet?.adapter?.connecting
   const isMobile = width ? width < breakpoints.sm : false
@@ -118,6 +126,10 @@ export default function Account() {
 
   const handleCloseDelegateModal = useCallback(() => {
     setShowDelegateModal(false)
+  }, [])
+
+  const handleCloseProfilePicModal = useCallback(() => {
+    setShowProfilePicModal(false)
   }, [])
 
   const handleConnect = useCallback(() => {
@@ -265,41 +277,67 @@ export default function Account() {
         <div className="flex flex-col pt-4 pb-6 md:flex-row md:items-end md:justify-between md:pb-4 md:pt-10">
           {mangoAccount ? (
             <>
-              <div className="pb-3 md:pb-0">
-                <div className="mb-1 flex items-center">
-                  <h1 className={`mr-3`}>
-                    {mangoAccount?.name || t('account')}
-                  </h1>
-                  {!pubkey ? (
-                    <IconButton
-                      className="h-7 w-7"
-                      onClick={() => setShowNameModal(true)}
+              <div className="flex items-center pb-3 md:pb-0">
+                <button
+                  disabled={!!pubkey}
+                  className={`relative mr-4 flex h-20 w-20 items-center justify-center rounded-full ${
+                    loadingTransaction
+                      ? 'animate-pulse bg-th-bkg-4'
+                      : 'bg-th-bkg-button'
+                  }`}
+                  onClick={() => setShowProfilePicModal(true)}
+                >
+                  {pfp?.isAvailable ? (
+                    <img
+                      alt=""
+                      src={pfp.url}
+                      className={`default-transition h-20 w-20 rounded-full hover:opacity-60 ${
+                        loadingTransaction ? 'opacity-40' : ''
+                      }`}
+                    />
+                  ) : (
+                    <ProfileIcon className="h-12 w-12 text-th-fgd-3" />
+                  )}
+                  <div className="default-transition absolute bottom-0 top-0 left-0 right-0 flex h-full w-full items-center justify-center rounded-full bg-[rgba(0,0,0,0.6)] opacity-0 hover:opacity-100">
+                    <PencilIcon className="h-5 w-5 text-th-fgd-1" />
+                  </div>
+                </button>
+                <div>
+                  <div className="mb-1 flex items-center">
+                    <h1 className={`mr-3`}>
+                      {mangoAccount?.name || t('account')}
+                    </h1>
+                    {!pubkey ? (
+                      <IconButton
+                        className="h-7 w-7"
+                        onClick={() => setShowNameModal(true)}
+                      >
+                        <PencilIcon className="h-3.5 w-3.5" />
+                      </IconButton>
+                    ) : null}
+                  </div>
+                  <div className="flex h-4 items-center">
+                    <LinkButton
+                      className="flex items-center text-th-fgd-4 no-underline"
+                      onClick={() =>
+                        handleCopyAddress(mangoAccount.publicKey.toString())
+                      }
                     >
-                      <PencilIcon className="h-3.5 w-3.5" />
-                    </IconButton>
-                  ) : null}
-                </div>
-                <div className="flex h-4 items-center">
-                  <LinkButton
-                    className="flex items-center text-th-fgd-4 no-underline"
-                    onClick={() =>
-                      handleCopyAddress(mangoAccount.publicKey.toString())
-                    }
-                  >
-                    <span className="text-xxs font-normal sm:text-xs">
-                      {mangoAccount.publicKey.toBase58()}
-                    </span>
-                    <DuplicateIcon className="ml-1.5 h-4 w-4" />
-                  </LinkButton>
-                  {isCopied ? (
-                    <span className="ml-2 rounded bg-th-bkg-3 px-1.5 py-0.5 text-xs">
-                      Copied
-                    </span>
-                  ) : null}
-                </div>
-                <div className="flex items-center text-xxs text-th-fgd-4">
-                  <ExclamationCircleIcon className="mr-1.5 h-4 w-4" />
-                  {t('account-address-warning')}
+                      <span className="text-xxs font-normal sm:text-xs">
+                        {mangoAccount.publicKey.toBase58()}
+                      </span>
+                      <DuplicateIcon className="ml-1.5 h-4 w-4" />
+                    </LinkButton>
+                    {isCopied ? (
+                      <span className="ml-2 rounded bg-th-bkg-3 px-1.5 py-0.5 text-xs">
+                        Copied
+                      </span>
+                    ) : null}
+                  </div>
+                  <div className="flex items-center text-xxs text-th-fgd-4">
+                    <ExclamationCircleIcon className="mr-1.5 h-4 w-4" />
+                    {t('account-address-warning')}
+                  </div>
                 </div>
               </div>
               {!pubkey ? (
@@ -500,6 +538,12 @@ export default function Account() {
           delegate={mangoAccount?.delegate}
           isOpen={showDelegateModal}
           onClose={handleCloseDelegateModal}
+        />
+      ) : null}
+      {showProfilePicModal ? (
+        <NftProfilePicModal
+          isOpen={showProfilePicModal}
+          onClose={handleCloseProfilePicModal}
         />
       ) : null}
     </div>

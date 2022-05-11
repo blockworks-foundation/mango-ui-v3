@@ -11,7 +11,11 @@ import TopBar from '../components/TopBar'
 export async function getStaticProps({ locale }) {
   return {
     props: {
-      ...(await serverSideTranslations(locale, ['common', 'tv-chart'])),
+      ...(await serverSideTranslations(locale, [
+        'common',
+        'tv-chart',
+        'profile',
+      ])),
       // Will be passed to the page component as props
     },
   }
