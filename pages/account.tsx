@@ -277,10 +277,10 @@ export default function Account() {
         <div className="flex flex-col pt-4 pb-6 md:flex-row md:items-end md:justify-between md:pb-4 md:pt-10">
           {mangoAccount ? (
             <>
-              <div className="flex items-center pb-3 md:pb-0">
+              <div className="flex flex-col pb-3 sm:flex-row sm:items-center md:pb-0">
                 <button
                   disabled={!!pubkey}
-                  className={`relative mr-4 flex h-20 w-20 items-center justify-center rounded-full ${
+                  className={`relative mb-2 mr-4 flex h-20 w-20 items-center justify-center rounded-full sm:mb-0 ${
                     loadingTransaction
                       ? 'animate-pulse bg-th-bkg-4'
                       : 'bg-th-bkg-button'

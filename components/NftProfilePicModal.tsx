@@ -183,11 +183,11 @@ const NftProfilePicModal = ({ isOpen, onClose }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <Modal.Header>
-        <div className="my-3 flex w-full items-center justify-between">
+        <div className="mb-3 flex w-full flex-col items-center sm:mt-3 sm:flex-row sm:justify-between">
           <ElementTitle noMarginBottom>
             {t('profile:choose-profile')}
           </ElementTitle>
-          <div className="flex items-center space-x-4">
+          <div className="mt-3 flex items-center space-x-4 sm:mt-0">
             <Button
               disabled={!selectedProfile}
               onClick={() => handleSaveProfilePic()}
@@ -211,7 +211,7 @@ const NftProfilePicModal = ({ isOpen, onClose }) => {
             {nfts.map((n) => {
               return (
                 <button
-                  className={`default-transitions col-span-1 flex items-center justify-center rounded-md border bg-th-bkg-3 py-4 hover:bg-th-bkg-4 ${
+                  className={`default-transitions col-span-1 flex items-center justify-center rounded-md border bg-th-bkg-3 py-3 hover:bg-th-bkg-4 sm:py-4 ${
                     selectedProfile?.tokenAddress.toString() === n.tokenAddress
                       ? 'border-th-primary'
                       : 'border-th-bkg-3'
@@ -225,7 +225,7 @@ const NftProfilePicModal = ({ isOpen, onClose }) => {
                   }
                 >
                   <ImgWithLoader
-                    className="h-20 w-20 flex-shrink-0 rounded-full"
+                    className="h-16 w-16 flex-shrink-0 rounded-full sm:h-20 sm:w-20"
                     src={n.val.image}
                   />
                 </button>
@@ -240,7 +240,7 @@ const NftProfilePicModal = ({ isOpen, onClose }) => {
                   ),
                 ].map((i) => (
                   <div
-                    className="col-span-1 h-28 animate-pulse rounded-md bg-th-bkg-3"
+                    className="col-span-1 h-[90px] animate-pulse rounded-md bg-th-bkg-3 sm:h-28"
                     key={i}
                   />
                 ))
