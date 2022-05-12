@@ -581,7 +581,7 @@ export const ProfileThumb = ({
     />
   ) : (
     <ProfileIcon
-      className={`h-12 w-12 text-th-fgd-3 ${placeholderHeightClass} ${placeholderWidthClass}`}
+      className={`text-th-fgd-3 ${placeholderHeightClass} ${placeholderWidthClass}`}
     />
   )
 }
