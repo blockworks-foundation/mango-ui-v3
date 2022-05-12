@@ -169,6 +169,16 @@ export default function AdvancedTradeForm({
   }, [tradeType, set])
 
   useEffect(() => {
+    if (marketConfig.baseSymbol == 'LUNA') {
+      setIsLuna(true)
+      setReduceOnly(true)
+    } else {
+      setIsLuna(false)
+      setReduceOnly(false)
+    }
+  }, [marketConfig])
+
+  useEffect(() => {
     let condition
     switch (tradeType) {
       case 'Stop Loss':
@@ -222,11 +232,6 @@ export default function AdvancedTradeForm({
         side === 'buy'
           ? availableBalance / priceOrDefault.toNumber()
           : availableBalance
-    }
-
-    if (marketConfig.baseSymbol == 'LUNA') {
-      setIsLuna(true)
-      setReduceOnly(true)
     }
 
     const {
@@ -787,16 +792,18 @@ export default function AdvancedTradeForm({
         <span className="ml-2 rounded border border-th-primary px-1 py-0.5 text-xs text-th-primary">
           {initLeverage}x
         </span>
-        { isLuna ? (<Tooltip
-              content={
-                <div className="text-center">
-                  LUNA is currently in reduce only mode. No new positions may be entered.
-                </div>
-              }
-            >
-              <ExclamationIcon className="ml-2 h-5 w-5 text-th-primary" />
-        </Tooltip>) : null }
-            
+        {isLuna ? (
+          <Tooltip
+            content={
+              <div className="text-center">
+                LUNA is currently in reduce only mode. No new positions may be
+                entered.
+              </div>
+            }
+          >
+            <ExclamationIcon className="ml-2 h-5 w-5 text-th-primary" />
+          </Tooltip>
+        ) : null}
       </ElementTitle>
       {insufficientSol ? (
         <div className="mb-3 text-left">
