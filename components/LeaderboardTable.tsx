@@ -2,9 +2,12 @@ import { useEffect, useMemo, useState } from 'react'
 import dayjs from 'dayjs'
 import { Table, Td, Th, TrBody, TrHead } from './TableElements'
 import { usdFormatter } from '../utils'
-import { AwardIcon, MedalIcon, TrophyIcon } from './icons'
+import { AwardIcon, MedalIcon, ProfileIcon, TrophyIcon } from './icons'
 import { useTranslation } from 'next-i18next'
 import { ChartPieIcon, TrendingUpIcon } from '@heroicons/react/outline'
+import { getProfilePicture } from '@solflare-wallet/pfp'
+import useMangoStore from '../stores/useMangoStore'
+import { connectionSelector } from '../stores/selectors'
 
 const utc = require('dayjs/plugin/utc')
 dayjs.extend(utc)
@@ -17,6 +20,7 @@ const LeaderboardTable = ({ range = '30' }) => {
   )
   const [leaderboardType, setLeaderboardType] = useState<string>('total-pnl')
   const [loading, setLoading] = useState(false)
+  const connection = useMangoStore(connectionSelector)
 
   const fetchPnlLeaderboard = async () => {
     setLoading(true)
@@ -26,8 +30,18 @@ const LeaderboardTable = ({ range = '30' }) => {
         .format('YYYY-MM-DD')}`
     )
     const parsedResponse = await response.json()
-    setPnlLeaderboardData(parsedResponse)
-
+    const leaderboardData = [] as any[]
+    for (const item of parsedResponse) {
+      const { isAvailable, url } = await getProfilePicture(
+        connection,
+        item.wallet_pk
+      )
+      leaderboardData.push({
+        ...item,
+        pfp: { isAvailable: isAvailable, url: url },
+      })
+    }
+    setPnlLeaderboardData(leaderboardData)
     setLoading(false)
   }
 
@@ -99,6 +113,7 @@ const LeaderboardTable = ({ range = '30' }) => {
                   ? usdFormatter(leaderboardData[0].pnl)
                   : usdFormatter(leaderboardData[0].perp_pnl)
               }
+              pfp={leaderboardData[0].pfp}
             />
             <TopThreeCard
               rank={2}
@@ -108,6 +123,7 @@ const LeaderboardTable = ({ range = '30' }) => {
                   ? usdFormatter(leaderboardData[1].pnl)
                   : usdFormatter(leaderboardData[1].perp_pnl)
               }
+              pfp={leaderboardData[0].pfp}
             />
             <TopThreeCard
               rank={3}
@@ -117,6 +133,7 @@ const LeaderboardTable = ({ range = '30' }) => {
                   ? usdFormatter(leaderboardData[2].pnl)
                   : usdFormatter(leaderboardData[2].perp_pnl)
               }
+              pfp={leaderboardData[0].pfp}
             />
           </div>
         ) : null}
@@ -151,10 +168,26 @@ const LeaderboardTable = ({ range = '30' }) => {
                             </div>
                           </Td>
                           <Td className="w-1/3">
-                            {`${acc.mango_account.slice(
-                              0,
-                              5
-                            )}...${acc.mango_account.slice(-5)}`}
+                            <div className="flex items-center">
+                              <div className="mr-2 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-th-bkg-4">
+                                {acc.pfp?.isAvailable ? (
+                                  <img
+                                    alt=""
+                                    src={acc.pfp.url}
+                                    className={`default-transition h-8 w-8 rounded-full hover:opacity-60
+      `}
+                                  />
+                                ) : (
+                                  <ProfileIcon
+                                    className={`h-5 w-5 text-th-fgd-3`}
+                                  />
+                                )}
+                              </div>
+                              {`${acc.mango_account.slice(
+                                0,
+                                5
+                              )}...${acc.mango_account.slice(-5)}`}
+                            </div>
                           </Td>
                           <Td className="w-1/3">
                             {leaderboardType === 'total-pnl'
@@ -212,7 +245,7 @@ const LeaderboardTable = ({ range = '30' }) => {
 
 export default LeaderboardTable
 
-const TopThreeCard = ({ rank, acc, pnl }) => {
+const TopThreeCard = ({ rank, acc, pnl, pfp }) => {
   const { t } = useTranslation('common')
   const medalColors =
     rank === 1
@@ -238,10 +271,22 @@ const TopThreeCard = ({ rank, acc, pnl }) => {
   return (
     <div className="flex items-center rounded-lg border border-th-bkg-4 p-4">
       <p className="mb-0 mr-4">{rank}</p>
-      <MedalIcon
-        className="mr-3 h-10 w-auto drop-shadow-lg sm:h-12"
-        colors={medalColors}
-      />
+      <div className="relative mr-3 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-th-bkg-4">
+        <MedalIcon
+          className="absolute -top-2 -left-2 h-5 w-auto drop-shadow-lg"
+          colors={medalColors}
+        />
+        {pfp?.isAvailable ? (
+          <img
+            alt=""
+            src={pfp.url}
+            className={`default-transition h-10 w-10 rounded-full hover:opacity-60
+      `}
+          />
+        ) : (
+          <ProfileIcon className={`h-6 w-6 text-th-fgd-3`} />
+        )}
+      </div>
       <div className="flex w-full flex-col sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="mb-0">{`${acc.slice(0, 5)}...${acc.slice(-5)}`}</p>
