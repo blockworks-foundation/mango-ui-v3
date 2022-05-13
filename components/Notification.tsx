@@ -100,6 +100,7 @@ const Notification = ({ notification }: { notification: Notification }) => {
   }
 
   // auto hide a notification after 8 seconds unless it is a confirming or time out notification
+  // if no status is provided for a tx notification after 90s, hide it
   useEffect(() => {
     const id = setTimeout(
       () => {

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { useTranslation } from 'next-i18next'
@@ -16,17 +16,22 @@ import PerpSideBadge from './PerpSideBadge'
 import PnlText from './PnlText'
 import { settlePnl } from './MarketPosition'
 import MobileTableHeader from './mobile/MobileTableHeader'
+import ShareModal from './ShareModal'
+import { TwitterIcon } from './icons'
+import { marketSelector } from '../stores/selectors'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { RedeemDropdown } from 'components/PerpPositions'
 
 const PositionsTable: React.FC = () => {
   const { t } = useTranslation('common')
-  const [settleSinglePos, setSettleSinglePos] = useState(null)
-  const { wallet } = useWallet()
-  const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
-  const selectedMarketConfig = useMangoStore((s) => s.selectedMarket.config)
-  const price = useMangoStore((s) => s.tradeForm.price)
+  const [showShareModal, setShowShareModal] = useState(false)
   const [showMarketCloseModal, setShowMarketCloseModal] = useState(false)
+  const [positionToShare, setPositionToShare] = useState<any>(null)
+  const [settleSinglePos, setSettleSinglePos] = useState(null)
+
+  const market = useMangoStore(marketSelector)
+  const { wallet } = useWallet()
+  const price = useMangoStore((s) => s.tradeForm.price)
   const setMangoStore = useMangoStore((s) => s.set)
   const openPositions = useMangoStore(
     (s) => s.selectedMangoAccount.openPerpPositions
@@ -37,13 +42,21 @@ const PositionsTable: React.FC = () => {
   const isMobile = width ? width < breakpoints.md : false
   const { asPath } = useRouter()
 
+  useEffect(() => {
+    if (positionToShare) {
+      const updatedPosition = openPositions.find(
+        (p) => p.marketConfig === positionToShare.marketConfig
+      )
+      setPositionToShare(updatedPosition)
+    }
+  }, [openPositions])
+
   const handleCloseWarning = useCallback(() => {
     setShowMarketCloseModal(false)
   }, [])
 
   const handleSizeClick = (size, indexPrice) => {
-    if (!selectedMarket) return
-    const sizePrecisionDigits = getPrecisionDigits(selectedMarket.minOrderSize)
+    const sizePrecisionDigits = getPrecisionDigits(market!.minOrderSize)
     const priceOrDefault = price ? price : indexPrice
     const roundedSize = parseFloat(Math.abs(size).toFixed(sizePrecisionDigits))
     const quoteSize = parseFloat((roundedSize * priceOrDefault).toFixed(2))
@@ -52,6 +65,16 @@ const PositionsTable: React.FC = () => {
       state.tradeForm.quoteSize = quoteSize
       state.tradeForm.side = size > 0 ? 'sell' : 'buy'
     })
+  }
+
+  const handleCloseShare = useCallback(() => {
+    setShowShareModal(false)
+    setPositionToShare(null)
+  }, [])
+
+  const handleShowShare = (position) => {
+    setPositionToShare(position)
+    setShowShareModal(true)
   }
 
   const handleSettlePnl = async (perpMarket, perpAccount, index) => {
@@ -134,17 +157,20 @@ const PositionsTable: React.FC = () => {
                 </thead>
                 <tbody>
                   {openPositions.map(
-                    ({
-                      marketConfig,
-                      perpMarket,
-                      perpAccount,
-                      basePosition,
-                      notionalSize,
-                      indexPrice,
-                      avgEntryPrice,
-                      breakEvenPrice,
-                      unrealizedPnl,
-                    }) => {
+                    (
+                      {
+                        marketConfig,
+                        perpMarket,
+                        perpAccount,
+                        basePosition,
+                        notionalSize,
+                        indexPrice,
+                        avgEntryPrice,
+                        breakEvenPrice,
+                        unrealizedPnl,
+                      },
+                      index
+                    ) => {
                       const basePositionUi = roundPerpSize(
                         basePosition,
                         marketConfig.baseSymbol
@@ -184,7 +210,6 @@ const PositionsTable: React.FC = () => {
                           </Td>
                           <Td>
                             {basePosition &&
-                            selectedMarketConfig.kind === 'perp' &&
                             asPath.includes(marketConfig.baseSymbol) ? (
                               <span
                                 className="cursor-pointer underline hover:no-underline"
@@ -217,6 +242,16 @@ const PositionsTable: React.FC = () => {
                             ) : (
                               '--'
                             )}
+                          </Td>
+                          <Td>
+                            <LinkButton
+                              onClick={() =>
+                                handleShowShare(openPositions[index])
+                              }
+                              disabled={!avgEntryPrice ? true : false}
+                            >
+                              <TwitterIcon className="h-4 w-4" />
+                            </LinkButton>
                           </Td>
                           {showMarketCloseModal ? (
                             <MarketCloseModal
@@ -337,6 +372,13 @@ const PositionsTable: React.FC = () => {
           )}
         </div>
       </div>
+      {showShareModal ? (
+        <ShareModal
+          isOpen={showShareModal}
+          onClose={handleCloseShare}
+          position={positionToShare!}
+        />
+      ) : null}
     </div>
   )
 }

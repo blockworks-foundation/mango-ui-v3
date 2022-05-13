@@ -420,7 +420,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
             <div className={`flex justify-center pt-6`}>
               <Button
                 onClick={() => setShowSimulation(true)}
-                disabled={Number(inputAmount) <= 0 || invalidAmountMessage.length > 0}
+                disabled={Number(inputAmount) <= 0}
                 className="w-full"
               >
                 {t('next')}

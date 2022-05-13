@@ -32,6 +32,7 @@ import { BrowserTracing } from '@sentry/tracing'
 
 import { WalletProvider, WalletListener } from 'components/WalletAdapter'
 import {
+  ExodusWalletAdapter,
   PhantomWalletAdapter,
   SolflareWalletAdapter,
   SolletWalletAdapter,
@@ -142,11 +143,12 @@ function App({ Component, pageProps }) {
     () => [
       new PhantomWalletAdapter(),
       new SolflareWalletAdapter(),
+      new ExodusWalletAdapter(),
       new SolletWalletAdapter(),
+      new GlowWalletAdapter(),
       new SlopeWalletAdapter(),
       new BitpieWalletAdapter(),
       new HuobiWalletAdapter(),
-      new GlowWalletAdapter(),
     ],
     []
   )

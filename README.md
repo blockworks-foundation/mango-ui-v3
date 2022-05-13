@@ -16,3 +16,9 @@ Uses:
 4. Run `yarn install` to install dependencies
 5. Run `yarn dev` to start the webserver
 6. Navigate to `http://localhost:3000` in your browser
+
+## Branches
+
+- `production` is deployed to trade.mango.markets and app.mango.markets
+- `main` is deployed to alpha.mango.markets
+- `devnet` is deployed to devnet.mango.markets
