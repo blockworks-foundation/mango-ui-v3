@@ -1795,6 +1795,13 @@
     "@solana/wallet-adapter-base" "^0.9.3"
     "@solana/web3.js" "^1.20.0"
 
+"@solana/wallet-adapter-exodus@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@solana/wallet-adapter-exodus/-/wallet-adapter-exodus-0.1.0.tgz#8d1d375fa2f3e43499ab0d763d4e04298ede3d57"
+  integrity sha512-dfkiIDiPwPD+ueU3DXJOn2TY+s0/1IKUA6/8Vi2HvRaCeZ75Ol8YE8CG2tHe49Hiz6iy+Fd+Nl9voEhQeYML1g==
+  dependencies:
+    "@solana/wallet-adapter-base" "^0.9.4"
+
 "@solana/wallet-adapter-glow@^0.1.0":
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/@solana/wallet-adapter-glow/-/wallet-adapter-glow-0.1.1.tgz#4db395b2ccf73eb2d6c1d9362e26cbfd260fc19f"
@@ -1909,10 +1916,10 @@
     process "^0.11.10"
     stream-browserify "^3.0.0"
 
-"@solana/wallet-adapter-wallets@^0.16.0":
-  version "0.16.0"
-  resolved "https://registry.yarnpkg.com/@solana/wallet-adapter-wallets/-/wallet-adapter-wallets-0.16.0.tgz#0a30eaac10b04ac3e8aa7f3e001d7fd69f92c22a"
-  integrity sha512-blg/0eGDvQlvPkfaLD24vgB3+RxbksjLoKPRVF/4/Dj+XTc0Yx8PxXUDwCQSC5Xic51Q7ZfLhMxj8caXN+RM/Q==
+"@solana/wallet-adapter-wallets@^0.16.1":
+  version "0.16.1"
+  resolved "https://registry.yarnpkg.com/@solana/wallet-adapter-wallets/-/wallet-adapter-wallets-0.16.1.tgz#cf151debda130044a0a72c3c50e8632764d797ff"
+  integrity sha512-ztrR9ieXpMVKx95JrH4MOtvhz048UmbiVJvEM97MhdKL6zpP09DNeqAQ9uuGjvjKy1WVJQ8r5+TK7+lLCgMimw==
   dependencies:
     "@solana/wallet-adapter-base" "^0.9.4"
     "@solana/wallet-adapter-bitkeep" "^0.3.2"
@@ -1921,6 +1928,7 @@
     "@solana/wallet-adapter-clover" "^0.4.2"
     "@solana/wallet-adapter-coin98" "^0.5.2"
     "@solana/wallet-adapter-coinhub" "^0.3.2"
+    "@solana/wallet-adapter-exodus" "^0.1.0"
     "@solana/wallet-adapter-glow" "^0.1.0"
     "@solana/wallet-adapter-huobi" "^0.1.0"
     "@solana/wallet-adapter-ledger" "^0.9.8"
@@ -4827,17 +4835,17 @@ listr2@^4.0.1:
     through "^2.3.8"
     wrap-ansi "^7.0.0"
 
-lodash-es@^4.17.21:
-  version "4.17.21"
-  resolved "https://registry.yarnpkg.com/lodash-es/-/lodash-es-4.17.21.tgz#43e626c46e6591b7750beb2b50117390c609e3ee"
-  integrity sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==
-
 localforage@^1.10.0:
   version "1.10.0"
   resolved "https://registry.yarnpkg.com/localforage/-/localforage-1.10.0.tgz#5c465dc5f62b2807c3a84c0c6a1b1b3212781dd4"
   integrity sha512-14/H1aX7hzBBmmh7sGPd+AOMkkIrHM3Z1PAyGgZigA1H1p5O5ANnMyWzvpAETtG68/dC4pC0ncy3+PPGzXZHPg==
   dependencies:
     lie "3.1.1"
+
+lodash-es@^4.17.21:
+  version "4.17.21"
+  resolved "https://registry.yarnpkg.com/lodash-es/-/lodash-es-4.17.21.tgz#43e626c46e6591b7750beb2b50117390c609e3ee"
+  integrity sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==
 
 lodash.debounce@^4.0.8:
   version "4.0.8"
