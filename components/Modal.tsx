@@ -70,11 +70,6 @@ const Header = ({ children }) => {
   return <div className={`flex flex-col items-center pb-2`}>{children}</div>
 }
 
-const Footer = ({ children }) => {
-  return <div className={`flex flex-col items-center pb-2`}>{children}</div>
-}
-
 Modal.Header = Header
-Modal.Footer = Footer
 
 export default Modal

@@ -118,6 +118,7 @@ export default function AdvancedTradeForm({
   const [postOnlySlide, setPostOnlySlide] = useState(false)
   const [postOnly, setPostOnly] = useState(false)
   const [ioc, setIoc] = useState(false)
+  const [isLuna, setIsLuna] = useState(false)
 
   const orderBookRef = useRef(useMangoStore.getState().selectedMarket.orderBook)
   const orderbook = orderBookRef.current
@@ -166,6 +167,16 @@ export default function AdvancedTradeForm({
       })
     }
   }, [tradeType, set])
+
+  useEffect(() => {
+    if (marketConfig.baseSymbol == 'LUNA') {
+      setIsLuna(true)
+      setReduceOnly(true)
+    } else {
+      setIsLuna(false)
+      setReduceOnly(false)
+    }
+  }, [marketConfig])
 
   useEffect(() => {
     let condition
@@ -784,6 +795,18 @@ export default function AdvancedTradeForm({
         <span className="ml-2 rounded border border-th-primary px-1 py-0.5 text-xs text-th-primary">
           {initLeverage}x
         </span>
+        {isLuna ? (
+          <Tooltip
+            content={
+              <div className="text-center">
+                LUNA is currently in reduce only mode. No new positions may be
+                entered.
+              </div>
+            }
+          >
+            <ExclamationIcon className="ml-2 h-5 w-5 text-th-primary" />
+          </Tooltip>
+        ) : null}
       </ElementTitle>
       {insufficientSol ? (
         <div className="mb-3 text-left">
@@ -966,7 +989,7 @@ export default function AdvancedTradeForm({
                 auto updating the reduceOnly state when doing a market order:
                 && showReduceOnly(perpAccount?.basePosition.toNumber())
              */}
-            {marketConfig.kind === 'perp' ? (
+            {marketConfig.kind === 'perp' || isLuna ? (
               <div className="mr-4 mt-3">
                 <Tooltip
                   className="hidden md:block"
@@ -977,7 +1000,7 @@ export default function AdvancedTradeForm({
                   <Checkbox
                     checked={reduceOnly}
                     onChange={(e) => reduceOnChange(e.target.checked)}
-                    disabled={isTriggerOrder}
+                    disabled={isTriggerOrder || isLuna}
                   >
                     Reduce Only
                   </Checkbox>
