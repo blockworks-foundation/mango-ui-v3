@@ -17,12 +17,11 @@
     "analyze": "ANALYZE=true yarn build"
   },
   "dependencies": {
-    "@blockworks-foundation/mango-client": "^3.4.4",
+    "@blockworks-foundation/mango-client": "^3.4.5",
     "@headlessui/react": "^0.0.0-insiders.2dbc38c",
     "@heroicons/react": "^1.0.0",
     "@jup-ag/react-hook": "^1.0.0-beta.22",
     "@nfteyez/sol-rayz": "^0.10.2",
-    "@notifi-network/notifi-react-hooks": "^0.12.1",
     "@project-serum/serum": "0.13.55",
     "@project-serum/sol-wallet-adapter": "0.2.0",
     "@sentry/react": "^6.19.2",
@@ -30,7 +29,7 @@
     "@solana/wallet-adapter-base": "^0.9.5",
     "@solana/wallet-adapter-huobi": "^0.1.0",
     "@solana/wallet-adapter-react": "^0.15.4",
-    "@solana/wallet-adapter-wallets": "^0.16.0",
+    "@solana/wallet-adapter-wallets": "^0.16.1",
     "@solana/web3.js": "^1.36.0",
     "@solflare-wallet/pfp": "^0.0.6",
     "@tippyjs/react": "^4.2.5",
@@ -66,7 +65,6 @@
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^12.1.0",
-    "@notifi-network/notifi-core": "^0.8.0",
     "@svgr/webpack": "^6.1.2",
     "@testing-library/react": "^11.2.5",
     "@types/node": "^14.14.25",

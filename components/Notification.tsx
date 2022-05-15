@@ -5,7 +5,10 @@ import {
   InformationCircleIcon,
   XCircleIcon,
 } from '@heroicons/react/outline'
-import useMangoStore, { CLUSTER } from '../stores/useMangoStore'
+import useMangoStore, {
+  CLIENT_TX_TIMEOUT,
+  CLUSTER,
+} from '../stores/useMangoStore'
 import { Notification, notify } from '../utils/notifications'
 import { useTranslation } from 'next-i18next'
 import Loading from './Loading'
@@ -105,7 +108,9 @@ const Notification = ({ notification }: { notification: Notification }) => {
           hideNotification()
         }
       },
-      parsedTitle || type === 'confirm' || type === 'error' ? 90000 : 8000
+      parsedTitle || type === 'confirm' || type === 'error'
+        ? CLIENT_TX_TIMEOUT
+        : 8000
     )
 
     return () => {

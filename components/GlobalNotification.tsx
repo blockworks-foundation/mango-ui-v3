@@ -16,7 +16,7 @@ const getRecentPerformance = async (setShow, setTps) => {
     const totalTransactions = sumBy(response, 'numTransactions')
     const tps = totalTransactions / totalSecs
 
-    if (tps < 1500) {
+    if (tps < 1800) {
       setShow(true)
       setTps(tps)
     } else {

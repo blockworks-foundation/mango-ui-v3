@@ -114,22 +114,20 @@ export interface Orderbook {
 
 export interface Alert {
   acc: PublicKey
-  alertProvider: 'mail' | 'notifi'
+  alertProvider: 'mail'
   health: number
   _id: string
   open: boolean
   timestamp: number
   triggeredTimestamp: number | undefined
-  notifiAlertId: string | undefined
 }
 
 export interface AlertRequest {
-  alertProvider: 'mail' | 'notifi'
+  alertProvider: 'mail'
   health: number
   mangoGroupPk: string
   mangoAccountPk: string
   email: string | undefined
-  notifiAlertId: string | undefined
 }
 
 interface NFTFiles {
@@ -961,7 +959,6 @@ const useMangoStore = create<
             health: req.health,
             open: true,
             timestamp: Date.now(),
-            notifiAlertId: req.notifiAlertId,
           }
 
           set((state) => {

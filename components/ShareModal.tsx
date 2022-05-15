@@ -36,7 +36,7 @@ const calculatePositionPercentage = (position, maxLeverage) => {
     return returnsPercentage * maxLeverage
   } else {
     const returnsPercentage =
-      (position.avgEntryPrice / position.indexPrice - 1) * 100
+      (position.indexPrice / position.avgEntryPrice - 1) * -100
     return returnsPercentage * maxLeverage
   }
 }
