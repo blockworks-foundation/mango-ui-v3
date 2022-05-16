@@ -359,28 +359,32 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                 </Select.Option>
               ))}
             </Select>
-            { withdrawTokenSymbol != 'LUNA' ? (<div className="jusitfy-between mt-4 flex items-center rounded-md bg-th-bkg-3 p-2 text-th-fgd-1">
-              <div className="text-fgd-1 flex items-center pr-4">
-                <span>{t('borrow-funds')}</span>
-                <Tooltip content={t('tooltip-interest-charged')}>
-                  <InformationCircleIcon
-                    className={`ml-2 h-5 w-5 cursor-help text-th-primary`}
-                  />
-                </Tooltip>
+            {withdrawTokenSymbol != 'LUNA' ? (
+              <div className="jusitfy-between mt-4 flex items-center rounded-md bg-th-bkg-3 p-2 text-th-fgd-1">
+                <div className="text-fgd-1 flex items-center pr-4">
+                  <span>{t('borrow-funds')}</span>
+                  <Tooltip content={t('tooltip-interest-charged')}>
+                    <InformationCircleIcon
+                      className={`ml-2 h-5 w-5 cursor-help text-th-primary`}
+                    />
+                  </Tooltip>
+                </div>
+                <Switch
+                  checked={includeBorrow}
+                  className="ml-auto"
+                  onChange={(checked) => handleIncludeBorrowSwitch(checked)}
+                />
               </div>
-              <Switch
-                checked={includeBorrow}
-                className="ml-auto"
-                onChange={(checked) => handleIncludeBorrowSwitch(checked)}
-              />
-            </div>) : null }
+            ) : null}
             <div className="flex justify-between pt-4">
               <Label>{t('amount')}</Label>
               <LinkButton
                 className="mb-1.5"
                 onClick={() => setInputAmount(maxAmount.toString())}
               >
-                {includeBorrow && withdrawTokenSymbol != 'LUNA' ? t('max-with-borrow') : t('max')}
+                {includeBorrow && withdrawTokenSymbol != 'LUNA'
+                  ? t('max-with-borrow')
+                  : t('max')}
               </LinkButton>
             </div>
             <div className="flex">
