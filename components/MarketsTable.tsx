@@ -10,14 +10,16 @@ import MobileTableHeader from './mobile/MobileTableHeader'
 import { ExpandableRow } from './TableElements'
 import { FavoriteMarketButton } from './TradeNavMenu'
 import { useSortableData } from '../hooks/useSortableData'
-import { LinkButton } from './Button'
+import Button, { LinkButton } from './Button'
 import { ArrowSmDownIcon } from '@heroicons/react/solid'
+import { useRouter } from 'next/router'
 
 const MarketsTable = ({ isPerpMarket }) => {
   const { t } = useTranslation('common')
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.md : false
   const marketsInfo = useMangoStore((s) => s.marketsInfo)
+  const router = useRouter()
 
   const perpMarketsInfo = useMemo(
     () =>
@@ -267,7 +269,7 @@ const MarketsTable = ({ isPerpMarket }) => {
     ) : (
       <div className="mb-4 border-b border-th-bkg-4">
         <MobileTableHeader
-          colOneHeader={t('asset')}
+          colOneHeader={t('market')}
           colTwoHeader={`${t('price')}/${t('rolling-change')}`}
         />
         {items.map((market, index) => {
@@ -297,9 +299,9 @@ const MarketsTable = ({ isPerpMarket }) => {
                       className={`mr-2.5`}
                     />
 
-                    {market.baseSymbol}
+                    {name}
                   </div>
-                  <div className="flex space-x-2.5 text-right text-th-fgd-1">
+                  <div className="flex space-x-1.5 text-right text-th-fgd-1">
                     <div>{formatUsdValue(last)}</div>
                     <div className="text-th-fgd-4">|</div>
                     <div
@@ -319,7 +321,7 @@ const MarketsTable = ({ isPerpMarket }) => {
               key={`${name}${index}`}
               panelTemplate={
                 <>
-                  <div className="grid grid-flow-row grid-cols-2 gap-4 pb-4">
+                  <div className="grid grid-flow-row grid-cols-2 gap-4">
                     <div className="text-left">
                       <div className="pb-0.5 text-xs text-th-fgd-3">
                         {t('daily-low')}
@@ -378,6 +380,16 @@ const MarketsTable = ({ isPerpMarket }) => {
                         </div>
                       </>
                     ) : null}
+                    <Button
+                      className="col-span-2"
+                      onClick={() =>
+                        router.push(`/?name=${name}`, undefined, {
+                          shallow: true,
+                        })
+                      }
+                    >
+                      {t('trade')}
+                    </Button>
                   </div>
                 </>
               }

@@ -15,11 +15,7 @@ import {
   InformationCircleIcon,
 } from '@heroicons/react/outline'
 import { notify } from '../../utils/notifications'
-import {
-  calculateTradePrice,
-  getDecimalCount,
-  percentFormat,
-} from '../../utils'
+import { calculateTradePrice, getDecimalCount } from '../../utils'
 import { floorToDecimal } from '../../utils/index'
 import useMangoStore, { Orderbook } from '../../stores/useMangoStore'
 import Button, { LinkButton } from '../Button'
@@ -79,7 +75,7 @@ export default function AdvancedTradeForm({
   const [spotMargin, setSpotMargin] = useState(defaultSpotMargin)
   const [positionSizePercent, setPositionSizePercent] = useState('')
   const [insufficientSol, setInsufficientSol] = useState(false)
-  const { takerFee, makerFee } = useFees()
+  const { takerFee } = useFees()
   const { totalMsrm } = useSrmAccount()
 
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
@@ -947,7 +943,7 @@ export default function AdvancedTradeForm({
               </div>
             ) : null
           ) : null}
-          <div className="flex-wrap sm:flex">
+          <div className="mt-1 flex-wrap sm:flex">
             {isLimitOrder ? (
               <div className="flex">
                 <div className="mr-4 mt-3">
@@ -989,42 +985,44 @@ export default function AdvancedTradeForm({
                 auto updating the reduceOnly state when doing a market order:
                 && showReduceOnly(perpAccount?.basePosition.toNumber())
              */}
-            {marketConfig.kind === 'perp' || isLuna ? (
-              <div className="mr-4 mt-3">
-                <Tooltip
-                  className="hidden md:block"
-                  delay={250}
-                  placement="left"
-                  content={t('tooltip-reduce')}
-                >
-                  <Checkbox
-                    checked={reduceOnly}
-                    onChange={(e) => reduceOnChange(e.target.checked)}
-                    disabled={isTriggerOrder || isLuna}
+            <div className="flex">
+              {marketConfig.kind === 'perp' || isLuna ? (
+                <div className="mr-4 mt-3">
+                  <Tooltip
+                    className="hidden md:block"
+                    delay={250}
+                    placement="left"
+                    content={t('tooltip-reduce')}
                   >
-                    Reduce Only
-                  </Checkbox>
-                </Tooltip>
-              </div>
-            ) : null}
-            {marketConfig.kind === 'perp' && tradeType === 'Limit' ? (
-              <div className="mt-3">
-                <Tooltip
-                  className="hidden md:block"
-                  delay={250}
-                  placement="left"
-                  content={t('tooltip-post-and-slide')}
-                >
-                  <Checkbox
-                    checked={postOnlySlide}
-                    onChange={(e) => postOnlySlideOnChange(e.target.checked)}
-                    disabled={isTriggerOrder}
+                    <Checkbox
+                      checked={reduceOnly}
+                      onChange={(e) => reduceOnChange(e.target.checked)}
+                      disabled={isTriggerOrder || isLuna}
+                    >
+                      Reduce Only
+                    </Checkbox>
+                  </Tooltip>
+                </div>
+              ) : null}
+              {marketConfig.kind === 'perp' && tradeType === 'Limit' ? (
+                <div className="mt-3">
+                  <Tooltip
+                    className="hidden md:block"
+                    delay={250}
+                    placement="left"
+                    content={t('tooltip-post-and-slide')}
                   >
-                    Slide
-                  </Checkbox>
-                </Tooltip>
-              </div>
-            ) : null}
+                    <Checkbox
+                      checked={postOnlySlide}
+                      onChange={(e) => postOnlySlideOnChange(e.target.checked)}
+                      disabled={isTriggerOrder}
+                    >
+                      Slide
+                    </Checkbox>
+                  </Tooltip>
+                </div>
+              ) : null}
+            </div>
             {marketConfig.kind === 'spot' ? (
               <div className="mt-3">
                 <Tooltip
@@ -1050,7 +1048,7 @@ export default function AdvancedTradeForm({
               <div className="text-xs">{t('slippage-warning')}</div>
             </div>
           ) : null}
-          <div className={`mt-3 flex`}>
+          <div className={`mt-4 flex`}>
             {canTrade ? (
               <button
                 disabled={disabledTradeButton}
@@ -1174,18 +1172,7 @@ export default function AdvancedTradeForm({
                 </>
               )}
             </div>
-          ) : (
-            <div className="mt-2.5 flex flex-col items-center justify-center px-6 text-xs text-th-fgd-4 md:flex-row">
-              <div>
-                {t('maker-fee')}: {percentFormat.format(makerFee)}{' '}
-              </div>
-              <span className="hidden md:block md:px-1">|</span>
-              <div>
-                {' '}
-                {t('taker-fee')}: {percentFormat.format(takerFee)}
-              </div>
-            </div>
-          )}
+          ) : null}
         </div>
       </div>
     </div>
