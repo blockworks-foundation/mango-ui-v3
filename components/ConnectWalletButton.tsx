@@ -23,7 +23,7 @@ import { WalletSelect } from 'components/WalletSelect'
 import AccountsModal from './AccountsModal'
 import uniqBy from 'lodash/uniqBy'
 import NftProfilePicModal from './NftProfilePicModal'
-import { ProfileThumb } from 'pages/account'
+import ProfileImage from './ProfileImage'
 
 export const handleWalletConnect = (wallet: Wallet) => {
   if (!wallet) {
@@ -120,7 +120,7 @@ export const ConnectWalletButton: React.FC = () => {
                   loadingTransaction ? 'animate-pulse bg-th-bkg-4' : ''
                 }`}
               >
-                <ProfileThumb
+                <ProfileImage
                   thumbHeightClass="h-10"
                   thumbWidthClass="w-10"
                   placeholderHeightClass="h-6"

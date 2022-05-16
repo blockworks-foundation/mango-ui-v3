@@ -55,7 +55,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { handleWalletConnect } from 'components/ConnectWalletButton'
 import { MangoAccountLookup } from 'components/account_page/MangoAccountLookup'
 import NftProfilePicModal from 'components/NftProfilePicModal'
-import { ProfileIcon } from 'components'
+import ProfileImage from 'components/ProfileImage'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -286,7 +286,7 @@ export default function Account() {
                   }`}
                   onClick={() => setShowProfilePicModal(true)}
                 >
-                  <ProfileThumb
+                  <ProfileImage
                     thumbHeightClass="h-20"
                     thumbWidthClass="w-20"
                     placeholderHeightClass="h-12"
@@ -559,29 +559,4 @@ const TabContent = ({ activeTab }) => {
     default:
       return <AccountOverview />
   }
-}
-
-export const ProfileThumb = ({
-  thumbHeightClass,
-  thumbWidthClass,
-  placeholderHeightClass,
-  placeholderWidthClass,
-}) => {
-  const pfp = useMangoStore((s) => s.wallet.pfp)
-  const loadingTransaction = useMangoStore(
-    (s) => s.wallet.nfts.loadingTransaction
-  )
-  return pfp?.isAvailable ? (
-    <img
-      alt=""
-      src={pfp.url}
-      className={`default-transition rounded-full hover:opacity-60 ${thumbHeightClass} ${thumbWidthClass} ${
-        loadingTransaction ? 'opacity-40' : ''
-      }`}
-    />
-  ) : (
-    <ProfileIcon
-      className={`text-th-fgd-3 ${placeholderHeightClass} ${placeholderWidthClass}`}
-    />
-  )
 }

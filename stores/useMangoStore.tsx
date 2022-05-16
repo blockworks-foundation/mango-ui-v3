@@ -502,16 +502,17 @@ const useMangoStore = create<
             if (loadedNfts.length < nftAccounts.length) {
               for (let i = offset; i < offset + 9; i++) {
                 try {
-                  const response = await fetch(nftAccounts[i].data.uri)
-                  const val = await response.json()
-                  const tokenAccounts = await getTokenAccountsByMint(
-                    connection,
-                    nftAccounts[i].mint
+                  const [nftAccountsResp, tokenAcctsByMint] = await Promise.all(
+                    [
+                      fetch(nftAccounts[i].data.uri),
+                      getTokenAccountsByMint(connection, nftAccounts[i].mint),
+                    ]
                   )
+                  const val = await nftAccountsResp.json()
                   arr.push({
                     val,
                     mint: nftAccounts[i].mint,
-                    tokenAddress: tokenAccounts
+                    tokenAddress: tokenAcctsByMint
                       .find(
                         (x) =>
                           x.account.owner.toBase58() === walletPk.toBase58()
@@ -545,6 +546,65 @@ const useMangoStore = create<
             })
           }
         },
+        // async fetchNfts(
+        //   connection: Connection,
+        //   walletPk: PublicKey,
+        //   offset = 0
+        // ) {
+        //   const set = get().set
+        //   set((state) => {
+        //     state.wallet.nfts.loading = true
+        //   })
+        //   try {
+        //     const nftAccounts = get().wallet.nfts.accounts
+        //     const loadedNfts = get().wallet.nfts.data
+        //     const arr: NFTWithMint[] = []
+        //     if (loadedNfts.length < nftAccounts.length) {
+        //       for (let i = offset; i < offset + 9; i++) {
+        //         try {
+        //           const response = await fetch(nftAccounts[i].data.uri)
+        //           const val = await response.json()
+        //           const tokenAccounts = await getTokenAccountsByMint(
+        //             connection,
+        //             nftAccounts[i].mint
+        //           )
+        //           arr.push({
+        //             val,
+        //             mint: nftAccounts[i].mint,
+        //             tokenAddress: tokenAccounts
+        //               .find(
+        //                 (x) =>
+        //                   x.account.owner.toBase58() === walletPk.toBase58()
+        //               )!
+        //               .publicKey.toBase58(),
+        //           })
+        //         } catch (e) {
+        //           console.log(e)
+        //         }
+        //       }
+        //     }
+        //     if (loadedNfts.length === 0) {
+        //       set((state) => {
+        //         state.wallet.nfts.data = arr
+        //         state.wallet.nfts.initialLoad = true
+        //         state.wallet.nfts.loading = false
+        //       })
+        //     } else {
+        //       set((state) => {
+        //         state.wallet.nfts.data = [...loadedNfts, ...arr]
+        //         state.wallet.nfts.loading = false
+        //       })
+        //     }
+        //   } catch (error) {
+        //     notify({
+        //       title: 'Unable to fetch nfts',
+        //       description: '',
+        //     })
+        //     set((state) => {
+        //       state.wallet.nfts.loading = false
+        //     })
+        //   }
+        // },
         async fetchAllMangoAccounts(wallet) {
           const set = get().set
           const mangoGroup = get().selectedMangoGroup.current
