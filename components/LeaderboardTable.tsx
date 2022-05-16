@@ -12,7 +12,7 @@ import { connectionSelector } from '../stores/selectors'
 const utc = require('dayjs/plugin/utc')
 dayjs.extend(utc)
 
-const LeaderboardTable = ({ range = '30' }) => {
+const LeaderboardTable = ({ range = '29' }) => {
   const { t } = useTranslation('common')
   const [pnlLeaderboardData, setPnlLeaderboardData] = useState<any[]>([])
   const [perpPnlLeaderboardData, setPerpPnlLeaderboardData] = useState<any[]>(
@@ -26,8 +26,12 @@ const LeaderboardTable = ({ range = '30' }) => {
     setLoading(true)
     const response = await fetch(
       `https://mango-transaction-log.herokuapp.com/v3/stats/pnl-leaderboard?start-date=${dayjs()
+        .utc()
+        .hour(0)
+        .minute(0)
         .subtract(parseInt(range), 'day')
-        .format('YYYY-MM-DD')}`
+        .add(1, 'hour')
+        .format('YYYY-MM-DDThh:00:00')}`
     )
     const parsedResponse = await response.json()
     const leaderboardData = [] as any[]
@@ -49,8 +53,11 @@ const LeaderboardTable = ({ range = '30' }) => {
     setLoading(true)
     const response = await fetch(
       `https://mango-transaction-log.herokuapp.com/v3/stats/perp-pnl-leaderboard?start-date=${dayjs()
+        .hour(0)
+        .minute(0)
+        .utc()
         .subtract(parseInt(range), 'day')
-        .format('YYYY-MM-DD')}`
+        .format('YYYY-MM-DDThh:00:00')}`
     )
     const parsedResponse = await response.json()
     setPerpPnlLeaderboardData(parsedResponse)
@@ -330,7 +337,11 @@ const LeaderboardTypeButton = ({
       <div>
         <div className="font-bold sm:text-base">{t(label)}</div>
         <span className="text-th-fgd-4">
-          {range === '9999' ? 'All-time' : `${range}-day`}
+          {range === '9999'
+            ? 'All-time'
+            : range === '29'
+            ? '30-day'
+            : `${range}-day`}
         </span>
       </div>
     </button>

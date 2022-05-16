@@ -17,14 +17,14 @@ export async function getStaticProps({ locale }) {
 
 const leaderboardRangePresets = [
   { label: '7d', value: '7' },
-  { label: '30d', value: '30' },
+  { label: '30d', value: '29' },
   { label: 'All', value: '9999' },
 ]
 const leaderboardRangePresetLabels = leaderboardRangePresets.map((x) => x.label)
 const leaderboardRangePresetValues = leaderboardRangePresets.map((x) => x.value)
 
 export default function Leaderboard() {
-  const [leaderboardRange, setLeaderboardRange] = useState('30')
+  const [leaderboardRange, setLeaderboardRange] = useState('29')
   const { t } = useTranslation('common')
 
   return (
