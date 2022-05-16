@@ -60,18 +60,18 @@ const HEADERS = [
   'short_funding',
   'long_funding_cumulative',
   'short_funding_cumulative',
-  'deposit_interest',
-  'borrow_interest',
-  'deposit_interest_cumulative',
-  'borrow_interest_cumulative',
-  'price',
+  // 'deposit_interest',
+  // 'borrow_interest',
+  // 'deposit_interest_cumulative',
+  // 'borrow_interest_cumulative',
+  // 'price',
 ]
 
 const DATA_CATEGORIES = [
   'account-value',
   'account-pnl',
   'perp-pnl',
-  'interest-cumulative',
+  // 'interest-cumulative',
   'funding-cumulative',
   'mngo-rewards',
 ]
@@ -150,13 +150,13 @@ const AccountPerformance = () => {
       'perp-pnl-ex-rewards': (values) => {
         return values['perp_value'] + values['perp_spot_transfers_balance']
       },
-      'interest-cumulative': (values) => {
-        return (
-          (values['deposit_interest_cumulative'] +
-            values['borrow_interest_cumulative']) *
-          values['price']
-        )
-      },
+      // 'interest-cumulative': (values) => {
+      //   return (
+      //     (values['deposit_interest_cumulative'] +
+      //       values['borrow_interest_cumulative']) *
+      //     values['price']
+      //   )
+      // },
       'funding-cumulative': (values) => {
         return (
           values['long_funding_cumulative'] + values['short_funding_cumulative']
