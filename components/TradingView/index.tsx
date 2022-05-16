@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTheme } from 'next-themes'
 import {
   widget,
@@ -103,6 +103,35 @@ const TVChartContainer = () => {
   }, [selectedMarketConfig.name, chartReady])
 
   useEffect(() => {
+    const mainSeriesProperties = [
+      'candleStyle',
+      'hollowCandleStyle',
+      'haStyle',
+      'barStyle',
+    ]
+    let chartStyleOverrides = {}
+    mainSeriesProperties.forEach((prop) => {
+      chartStyleOverrides = {
+        ...chartStyleOverrides,
+        [`mainSeriesProperties.${prop}.barColorsOnPrevClose`]: true,
+        [`mainSeriesProperties.${prop}.drawWick`]: true,
+        [`mainSeriesProperties.${prop}.drawBorder`]: true,
+        [`mainSeriesProperties.${prop}.upColor`]:
+          theme === 'Mango' ? '#AFD803' : '#5EBF4D',
+        [`mainSeriesProperties.${prop}.downColor`]:
+          theme === 'Mango' ? '#E54033' : '#CC2929',
+        [`mainSeriesProperties.${prop}.borderColor`]:
+          theme === 'Mango' ? '#AFD803' : '#5EBF4D',
+        [`mainSeriesProperties.${prop}.borderUpColor`]:
+          theme === 'Mango' ? '#AFD803' : '#5EBF4D',
+        [`mainSeriesProperties.${prop}.borderDownColor`]:
+          theme === 'Mango' ? '#E54033' : '#CC2929',
+        [`mainSeriesProperties.${prop}.wickUpColor`]:
+          theme === 'Mango' ? '#AFD803' : '#5EBF4D',
+        [`mainSeriesProperties.${prop}.wickDownColor`]:
+          theme === 'Mango' ? '#E54033' : '#CC2929',
+      }
+    })
     const widgetOptions: ChartingLibraryWidgetOptions = {
       // debug: true,
       symbol: selectedMarketConfig.name,
@@ -126,7 +155,7 @@ const TVChartContainer = () => {
         'show_logo_on_all_charts',
         'caption_buttons_text_if_possible',
         'header_settings',
-        'header_chart_type',
+        // 'header_chart_type',
         'header_compare',
         'compare_symbol',
         'header_screenshot',
@@ -154,23 +183,7 @@ const TVChartContainer = () => {
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         'paneProperties.background':
           theme === 'Dark' ? '#1B1B1F' : theme === 'Light' ? '#fff' : '#1D1832',
-        'mainSeriesProperties.candleStyle.barColorsOnPrevClose': true,
-        'mainSeriesProperties.candleStyle.drawWick': true,
-        'mainSeriesProperties.candleStyle.drawBorder': true,
-        'mainSeriesProperties.candleStyle.upColor':
-          theme === 'Mango' ? '#AFD803' : '#5EBF4D',
-        'mainSeriesProperties.candleStyle.downColor':
-          theme === 'Mango' ? '#E54033' : '#CC2929',
-        'mainSeriesProperties.candleStyle.borderColor':
-          theme === 'Mango' ? '#AFD803' : '#5EBF4D',
-        'mainSeriesProperties.candleStyle.borderUpColor':
-          theme === 'Mango' ? '#AFD803' : '#5EBF4D',
-        'mainSeriesProperties.candleStyle.borderDownColor':
-          theme === 'Mango' ? '#E54033' : '#CC2929',
-        'mainSeriesProperties.candleStyle.wickUpColor':
-          theme === 'Mango' ? '#AFD803' : '#5EBF4D',
-        'mainSeriesProperties.candleStyle.wickDownColor':
-          theme === 'Mango' ? '#E54033' : '#CC2929',
+        ...chartStyleOverrides,
       },
     }
 
@@ -623,25 +636,7 @@ const TVChartContainer = () => {
     }
   }, [chartReady, openOrders, showOrderLines])
 
-  const attributionUrl = useMemo(
-    () =>
-      `https://tradingview.com/symbols/${defaultProps.symbol?.slice(0, -5)}USD`,
-    [defaultProps]
-  )
-
-  return (
-    <>
-      <div id={defaultProps.containerId} className="tradingview-chart" />
-      <a
-        className="default-transition tiny-text flex justify-end px-3 py-1 text-th-fgd-4 hover:text-th-fgd-3"
-        href={attributionUrl}
-        rel="noopener noreferrer"
-        target="_blank"
-      >
-        Chart by TradingView
-      </a>
-    </>
-  )
+  return <div id={defaultProps.containerId} className="tradingview-chart" />
 }
 
 export default TVChartContainer

@@ -17,7 +17,7 @@
     "analyze": "ANALYZE=true yarn build"
   },
   "dependencies": {
-    "@blockworks-foundation/mango-client": "^3.4.4",
+    "@blockworks-foundation/mango-client": "^3.4.7",
     "@headlessui/react": "^0.0.0-insiders.2dbc38c",
     "@heroicons/react": "^1.0.0",
     "@jup-ag/react-hook": "^1.0.0-beta.22",
@@ -28,7 +28,7 @@
     "@solana/wallet-adapter-base": "^0.9.5",
     "@solana/wallet-adapter-huobi": "^0.1.0",
     "@solana/wallet-adapter-react": "^0.15.4",
-    "@solana/wallet-adapter-wallets": "^0.16.0",
+    "@solana/wallet-adapter-wallets": "^0.16.1",
     "@solana/web3.js": "^1.36.0",
     "@solflare-wallet/pfp": "^0.0.6",
     "@tippyjs/react": "^4.2.5",

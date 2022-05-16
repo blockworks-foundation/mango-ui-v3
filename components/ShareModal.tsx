@@ -14,6 +14,7 @@ import { useScreenshot } from '../hooks/useScreenshot'
 import * as MonoIcons from './icons'
 import { TwitterIcon } from './icons'
 import QRCode from 'react-qr-code'
+import { useTranslation } from 'next-i18next'
 import useMangoAccount from '../hooks/useMangoAccount'
 import {
   mangoCacheSelector,
@@ -35,7 +36,7 @@ const calculatePositionPercentage = (position, maxLeverage) => {
     return returnsPercentage * maxLeverage
   } else {
     const returnsPercentage =
-      (position.avgEntryPrice / position.indexPrice - 1) * 100
+      (position.indexPrice / position.avgEntryPrice - 1) * -100
     return returnsPercentage * maxLeverage
   }
 }
@@ -57,6 +58,7 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
   onClose,
   position,
 }) => {
+  const { t } = useTranslation(['common', 'share-modal'])
   const ref = createRef()
   const [copied, setCopied] = useState(false)
   const [showButton, setShowButton] = useState(true)
@@ -81,7 +83,7 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
 
   const positionPercentage = calculatePositionPercentage(position, maxLeverage)
 
-  const side = position.basePosition > 0 ? 'LONG' : 'SHORT'
+  const side = position.basePosition > 0 ? 'long' : 'short'
 
   async function copyToClipboard(image) {
     try {
@@ -163,7 +165,7 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
       isOpen={isOpen}
       onClose={onClose}
       className={`-mt-40 ${
-        side === 'LONG'
+        side === 'long'
           ? isProfit
             ? 'bg-long-profit'
             : 'bg-long-loss'
@@ -212,7 +214,7 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
                 !showButton ? 'inline-block h-full align-top leading-none' : ''
               }`}
             >
-              {side}
+              {t(side).toLocaleUpperCase()}
             </span>
           </span>
         </div>
@@ -227,7 +229,7 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
         <div className="w-1/2 space-y-1 pt-2 text-base text-th-fgd-1">
           {showSize ? (
             <div className="flex items-center justify-between">
-              <span className="text-th-fgd-2">Size</span>
+              <span className="text-th-fgd-2">{t('size')}</span>
               <span className="font-bold">
                 {roundPerpSize(
                   position.basePosition,
@@ -237,7 +239,7 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
             </div>
           ) : null}
           <div className="flex items-center justify-between">
-            <span className="text-th-fgd-2">Avg entry price</span>
+            <span className="text-th-fgd-2">{t('average-entry')}</span>
             <span className="font-bold">
               $
               {position.avgEntryPrice.toLocaleString(undefined, {
@@ -247,7 +249,7 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
             </span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-th-fgd-2">Mark Price</span>
+            <span className="text-th-fgd-2">{t('share-modal:mark-price')}</span>
             <span className="font-bold">
               $
               {position.indexPrice.toLocaleString(undefined, {
@@ -256,10 +258,12 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
               })}
             </span>
           </div>
-          <div className="flex items-center justify-between">
-            <span className="text-th-fgd-2">Max Leverage</span>
+          {/* <div className="flex items-center justify-between">
+            <span className="text-th-fgd-2">
+              {t('share-modal:max-leverage')}
+            </span>
             <span className="font-bold">{maxLeverage}x</span>
-          </div>
+          </div> */}
         </div>
       </div>
       <div className="absolute left-1/2 mt-3 w-[600px] -translate-x-1/2 transform rounded-md bg-th-bkg-2 p-4">
@@ -267,7 +271,9 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
           {!copied ? (
             <div className="flex space-x-4 pb-4">
               <div className="flex items-center">
-                <label className="mr-1.5 text-th-fgd-2">Show Size</label>
+                <label className="mr-1.5 text-th-fgd-2">
+                  {t('share-modal:show-size')}
+                </label>
                 <Switch
                   checked={showSize}
                   onChange={(checked) => setShowSize(checked)}
@@ -276,7 +282,7 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
               {hasRequiredMngo ? (
                 <div className="flex items-center">
                   <label className="mr-1.5 text-th-fgd-2">
-                    Show Referral QR
+                    {t('share-modal:show-referral-qr')}
                   </label>
                   <Switch
                     checked={showReferral}
@@ -289,19 +295,21 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
           {copied ? (
             <a
               className="block flex items-center justify-center rounded-full bg-th-bkg-button px-6 py-2 text-center font-bold text-th-fgd-1 hover:cursor-pointer hover:text-th-fgd-1 hover:brightness-[1.1]"
-              href={`https://twitter.com/intent/tweet?text=I'm ${side} %24${position.marketConfig.baseSymbol} perp on %40mangomarkets%0A[PASTE IMAGE HERE]`}
+              href={`https://twitter.com/intent/tweet?text=I'm ${side.toUpperCase()} %24${
+                position.marketConfig.baseSymbol
+              } perp on %40mangomarkets%0A[PASTE IMAGE HERE]`}
               target="_blank"
               rel="noreferrer"
             >
               <TwitterIcon className="mr-1.5 h-4 w-4" />
-              <div>Tweet Position</div>
+              <div>{t('share-modal:tweet-position')}</div>
             </a>
           ) : (
             <div>
               <Button onClick={handleCopyToClipboard}>
                 <div className="flex items-center">
                   <TwitterIcon className="mr-1.5 h-4 w-4" />
-                  Copy Image and Share
+                  {t('share-modal:copy-and-share')}
                 </div>
               </Button>
             </div>

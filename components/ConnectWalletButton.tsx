@@ -26,19 +26,16 @@ export const handleWalletConnect = (wallet: Wallet) => {
   if (!wallet) {
     return
   }
-  if (wallet.readyState === WalletReadyState.NotDetected) {
-    window.open(wallet.adapter.url, '_blank')
-  } else {
-    wallet?.adapter?.connect().catch((e) => {
-      if (e.name.includes('WalletLoadError')) {
-        notify({
-          title: `${wallet.adapter.name} Error`,
-          type: 'error',
-          description: `Please install ${wallet.adapter.name} and then reload this page.`,
-        })
-      }
-    })
-  }
+
+  wallet?.adapter?.connect().catch((e) => {
+    if (e.name.includes('WalletLoadError')) {
+      notify({
+        title: `${wallet.adapter.name} Error`,
+        type: 'error',
+        description: `Please install ${wallet.adapter.name} and then reload this page.`,
+      })
+    }
+  })
 }
 
 export const ConnectWalletButton: React.FC = () => {
