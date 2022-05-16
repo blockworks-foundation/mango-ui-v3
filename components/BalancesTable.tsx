@@ -465,8 +465,16 @@ const BalancesTable = ({
                             balance.borrows.toFormat(balance.decimals)
                           )}
                         </Td>
-                        <Td>{balance.orders}</Td>
-                        <Td>{balance.unsettled}</Td>
+                        <Td>
+                          {balance.orders?.toLocaleString(undefined, {
+                            maximumFractionDigits: balance.decimals,
+                          })}
+                        </Td>
+                        <Td>
+                          {balance.unsettled?.toLocaleString(undefined, {
+                            maximumFractionDigits: balance.decimals,
+                          })}
+                        </Td>
                         <Td>
                           {marketConfig.kind === 'spot' &&
                           marketConfig.name.includes(balance.symbol) &&

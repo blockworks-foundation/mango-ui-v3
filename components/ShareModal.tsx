@@ -258,12 +258,12 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
               })}
             </span>
           </div>
-          <div className="flex items-center justify-between">
+          {/* <div className="flex items-center justify-between">
             <span className="text-th-fgd-2">
               {t('share-modal:max-leverage')}
             </span>
             <span className="font-bold">{maxLeverage}x</span>
-          </div>
+          </div> */}
         </div>
       </div>
       <div className="absolute left-1/2 mt-3 w-[600px] -translate-x-1/2 transform rounded-md bg-th-bkg-2 p-4">
