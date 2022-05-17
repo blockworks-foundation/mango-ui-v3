@@ -5,7 +5,7 @@ import {
   ParsedAccountData,
 } from '@solana/web3.js'
 import chunks from 'lodash/chunk'
-import orderBy from 'lodash/orderby'
+import orderBy from 'lodash/orderBy'
 import {
   StringPublicKey,
   PromiseSettledResult,
