@@ -21,16 +21,12 @@
     "@headlessui/react": "^0.0.0-insiders.2dbc38c",
     "@heroicons/react": "^1.0.0",
     "@jup-ag/react-hook": "^1.0.0-beta.22",
-    "@nfteyez/sol-rayz": "^0.10.2",
-    "@project-serum/serum": "0.13.55",
-    "@project-serum/sol-wallet-adapter": "0.2.0",
     "@sentry/react": "^6.19.2",
     "@sentry/tracing": "^6.19.2",
     "@solana/wallet-adapter-base": "^0.9.5",
     "@solana/wallet-adapter-huobi": "^0.1.0",
     "@solana/wallet-adapter-react": "^0.15.4",
     "@solana/wallet-adapter-wallets": "^0.16.1",
-    "@solana/web3.js": "^1.36.0",
     "@solflare-wallet/pfp": "^0.0.6",
     "@tippyjs/react": "^4.2.5",
     "big.js": "^6.1.1",
@@ -63,6 +59,11 @@
     "recharts": "^2.1.9",
     "zustand": "^3.7.0"
   },
+  "peerDependencies": {
+    "@project-serum/serum": ">=0.13.55",
+    "@solana/web3.js": "^1.36.0",
+    "borsh": "^0.7.0"
+  },
   "devDependencies": {
     "@next/bundle-analyzer": "^12.1.0",
     "@svgr/webpack": "^6.1.2",
@@ -78,7 +79,6 @@
     "eslint-plugin-react": "^7.26.0",
     "eslint-plugin-react-hooks": "^4.3.0",
     "husky": "^7.0.4",
-    "identity-obj-proxy": "^3.0.0",
     "lint-staged": "^12.3.6",
     "postcss": "^8.4.7",
     "prettier": "^2.0.2",
