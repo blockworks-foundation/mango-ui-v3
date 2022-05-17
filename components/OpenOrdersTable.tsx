@@ -27,6 +27,7 @@ const DesktopTable = ({
   cancelledOrderId,
   editOrderIndex,
   handleCancelOrder,
+  handleCancelAllOrders,
   handleModifyOrder,
   modifiedOrderId,
   openOrders,
@@ -37,6 +38,7 @@ const DesktopTable = ({
   const { wallet } = useWallet()
   const [modifiedOrderSize, setModifiedOrderSize] = useState('')
   const [modifiedOrderPrice, setModifiedOrderPrice] = useState('')
+  const selectedMarket = useMangoStore.getState().selectedMarket
 
   const showEditOrderForm = (index, order) => {
     setEditOrderIndex(index)
@@ -61,6 +63,7 @@ const DesktopTable = ({
       return <span>{market.name}</span>
     }
   }
+
   return (
     <Table>
       <thead>
@@ -72,6 +75,14 @@ const DesktopTable = ({
           <Th>{t('value')}</Th>
           <Th>{t('condition')}</Th>
           <Th>
+            <div className={`flex justify-end`}>
+              <Button 
+                onClick={() => handleCancelAllOrders()}
+                className="h-7 pt-0 pb-0 pl-3 pr-3 text-xs"
+                disabled={!openOrders.some(o => o.market.config.name === selectedMarket.config.name)}
+              >{t('cancel-all') + ' ' + selectedMarket.config.name}
+              </Button>            
+            </div>
             <span className={`sr-only`}>{t('edit')}</span>
           </Th>
         </TrHead>
@@ -353,6 +364,44 @@ const OpenOrdersTable = () => {
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.md : false
 
+  const handleCancelAllOrders = async (   
+  ) => {
+    const selectedMangoGroup =
+      useMangoStore.getState().selectedMangoGroup.current
+    const selectedMangoAccount =
+      useMangoStore.getState().selectedMangoAccount.current
+    const mangoClient = 
+      useMangoStore.getState().connection.client
+    const market = 
+      useMangoStore.getState().selectedMarket.current      
+
+    let txid
+    try {
+      if (!selectedMangoGroup || !selectedMangoAccount || !wallet) return            
+      if (market instanceof PerpMarket) {             
+        txid = await mangoClient.cancelAllPerpOrders(
+          selectedMangoGroup,
+          [market],          
+          selectedMangoAccount,
+          wallet.adapter
+        )        
+        actions.reloadOrders()
+      }
+      notify({ title: t('cancel-all-success'), txid })
+    } catch (e) {
+      notify({
+        title: t('cancel-all-error'),
+        description: e.message,
+        txid: e.txid,
+        type: 'error',
+      })
+      console.log('error', `${e}`)
+    } finally {
+      actions.reloadMangoAccount()
+      actions.updateOpenOrders()
+    }
+  }
+
   const handleCancelOrder = async (
     order: Order | PerpOrder | PerpTriggerOrder,
     market: Market | PerpMarket
@@ -498,6 +547,7 @@ const OpenOrdersTable = () => {
     cancelledOrderId: cancelId,
     editOrderIndex,
     handleCancelOrder,
+    handleCancelAllOrders,
     handleModifyOrder,
     modifiedOrderId: modifyId,
     setEditOrderIndex,
