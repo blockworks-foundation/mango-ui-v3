@@ -20,6 +20,7 @@ import {
   TrBody,
   Td,
   TableDateDisplay,
+  Row,
 } from '../TableElements'
 import { LinkButton } from '../Button'
 import { useSortableData } from '../../hooks/useSortableData'
@@ -28,6 +29,9 @@ import Tooltip from '../Tooltip'
 import { exportDataToCSV } from '../../utils/export'
 import { notify } from '../../utils/notifications'
 import Button from '../Button'
+import { useViewport } from '../../hooks/useViewport'
+import { breakpoints } from '.././TradePageGrid'
+import MobileTableHeader from 'components/mobile/MobileTableHeader'
 
 const historyViews = [
   { label: 'Trades', key: 'Trades' },
@@ -429,6 +433,8 @@ const LiquidationHistoryTable = ({ history, view }) => {
 const HistoryTable = ({ history, view }) => {
   const { t } = useTranslation('common')
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
+  const { width } = useViewport()
+  const isMobile = width ? width < breakpoints.md : false
   const filteredHistory = useMemo(() => {
     return history?.length
       ? history
@@ -513,7 +519,7 @@ const HistoryTable = ({ history, view }) => {
         </Button>
       </div>
       {items.length ? (
-        <>
+        !isMobile ? (
           <Table>
             <thead>
               <TrHead>
@@ -592,12 +598,17 @@ const HistoryTable = ({ history, view }) => {
             </thead>
             <tbody>
               {items.map((activity_details: any) => {
+                const {
+                  signature,
+                  block_datetime,
+                  symbol,
+                  quantity,
+                  usd_equivalent,
+                } = activity_details
                 return (
-                  <TrBody key={activity_details.signature}>
+                  <TrBody key={signature}>
                     <Td>
-                      <TableDateDisplay
-                        date={activity_details.block_datetime}
-                      />
+                      <TableDateDisplay date={block_datetime} />
                     </Td>
                     <Td>
                       <div className="flex items-center">
@@ -605,18 +616,18 @@ const HistoryTable = ({ history, view }) => {
                           alt=""
                           width="20"
                           height="20"
-                          src={`/assets/icons/${activity_details.symbol.toLowerCase()}.svg`}
+                          src={`/assets/icons/${symbol.toLowerCase()}.svg`}
                           className={`mr-2.5`}
                         />
-                        {activity_details.symbol}
+                        {symbol}
                       </div>
                     </Td>
-                    <Td>{activity_details.quantity.toLocaleString()}</Td>
-                    <Td>{formatUsdValue(activity_details.usd_equivalent)}</Td>
+                    <Td>{quantity.toLocaleString()}</Td>
+                    <Td>{formatUsdValue(usd_equivalent)}</Td>
                     <Td>
                       <a
                         className="default-transition flex items-center justify-end text-th-fgd-2"
-                        href={`https://explorer.solana.com/tx/${activity_details.signature}`}
+                        href={`https://explorer.solana.com/tx/${signature}`}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -629,7 +640,50 @@ const HistoryTable = ({ history, view }) => {
               })}
             </tbody>
           </Table>
-        </>
+        ) : (
+          <div className="mb-4 border-b border-th-bkg-4">
+            <MobileTableHeader
+              colOneHeader={t('date')}
+              colTwoHeader={t('asset')}
+            />
+            {items.map((activity_details: any) => {
+              const {
+                signature,
+                block_datetime,
+                symbol,
+                quantity,
+                usd_equivalent,
+              } = activity_details
+              return (
+                <Row key={signature}>
+                  <div className="flex w-full items-center justify-between text-th-fgd-1">
+                    <div className="text-left">
+                      <TableDateDisplay date={block_datetime} />
+                    </div>
+                    <div className="flex items-center">
+                      <div className="text-right">
+                        <p className="mb-0 text-th-fgd-2">
+                          {`${quantity.toLocaleString()} ${symbol}`}
+                        </p>
+                        <p className="mb-0 text-xs text-th-fgd-3">
+                          {formatUsdValue(usd_equivalent)}
+                        </p>
+                      </div>
+                      <a
+                        className="default-transition flex items-center justify-end text-th-fgd-2"
+                        href={`https://explorer.solana.com/tx/${signature}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <ExternalLinkIcon className={`ml-3.5 h-5 w-5`} />
+                      </a>
+                    </div>
+                  </div>
+                </Row>
+              )
+            })}
+          </div>
+        )
       ) : (
         <div className="w-full rounded-md bg-th-bkg-1 py-6 text-center text-th-fgd-3">
           {t('history-empty')}
