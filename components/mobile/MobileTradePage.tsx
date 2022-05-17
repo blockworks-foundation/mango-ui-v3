@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Disclosure } from '@headlessui/react'
 import dynamic from 'next/dynamic'
-import { SwitchHorizontalIcon, XIcon } from '@heroicons/react/outline'
+import { XIcon } from '@heroicons/react/outline'
 import useMangoStore from '../../stores/useMangoStore'
 import { getWeights, PerpMarket } from '@blockworks-foundation/mango-client'
 import { CandlesIcon } from '../icons'
@@ -16,8 +16,8 @@ import RecentMarketTrades from '../RecentMarketTrades'
 import FloatingElement from '../FloatingElement'
 import Swipeable from './Swipeable'
 import { useTranslation } from 'next-i18next'
-import Link from 'next/link'
 import { useWallet } from '@solana/wallet-adapter-react'
+import SwitchMarketDropdown from 'components/SwitchMarketDropdown'
 
 const TVChartContainer = dynamic(
   () => import('../../components/TradingView/index'),
@@ -31,9 +31,6 @@ const MobileTradePage = () => {
   const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
-  const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
-  const baseSymbol = marketConfig.baseSymbol
-  const isPerpMarket = marketConfig.kind === 'perp'
 
   const handleChangeViewIndex = (index) => {
     setViewIndex(index)
@@ -57,30 +54,10 @@ const MobileTradePage = () => {
     <div className="px-2 pb-14 pt-4">
       <div className="relative">
         <div className="flex items-center">
-          <img
-            alt=""
-            width="30"
-            height="30"
-            src={`/assets/icons/${baseSymbol.toLowerCase()}.svg`}
-            className="mr-2"
-          />
-          <div className="flex items-center">
-            <div className="pr-0.5 text-xl font-semibold">{baseSymbol}</div>
-            <span className="text-xl text-th-fgd-4">
-              {isPerpMarket ? '-' : '/'}
-            </span>
-            <div className="pl-0.5 text-xl font-semibold">
-              {isPerpMarket ? 'PERP' : groupConfig.quoteSymbol}
-            </div>
-          </div>
+          <SwitchMarketDropdown />
           <span className="ml-2 rounded border border-th-primary px-1 py-0.5 text-xs text-th-primary">
             {initLeverage}x
           </span>
-          <Link href="/select">
-            <div className="ml-2 flex h-10 w-10 items-center justify-center">
-              <SwitchHorizontalIcon className="h-5 w-5" />
-            </div>
-          </Link>
         </div>
         <Disclosure>
           {({ open }) => (

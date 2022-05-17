@@ -91,7 +91,7 @@ const MarketNavItem: FunctionComponent<MarketNavItemProps> = ({
             </div>
           ) : null}
         </button>
-        <div className="ml-1">
+        <div className="ml-1 hidden sm:block">
           <FavoriteMarketButton market={market} />
         </div>
       </div>

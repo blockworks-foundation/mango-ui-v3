@@ -36,12 +36,12 @@ const BottomBar = () => {
       <div className="default-transition grid grid-cols-5 grid-rows-1 bg-th-bkg-3 py-2.5">
         <Link
           href={{
-            pathname: '/select',
+            pathname: '/markets',
           }}
         >
           <div
             className={`${
-              asPath === '/select' ? 'text-th-primary' : 'text-th-fgd-3'
+              asPath === '/markets' ? 'text-th-primary' : 'text-th-fgd-3'
             } default-transition col-span-1 flex cursor-pointer flex-col items-center hover:text-th-primary`}
           >
             <BtcMonoIcon className="mb-1 h-4 w-4" />

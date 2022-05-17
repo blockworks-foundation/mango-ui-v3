@@ -6,7 +6,7 @@ import { useTranslation } from 'next-i18next'
 import MarketsTable from '../components/MarketsTable'
 import Tabs from '../components/Tabs'
 
-const TABS = ['perp', 'spot']
+const TABS = ['futures', 'spot']
 
 export async function getStaticProps({ locale }) {
   return {
@@ -18,14 +18,12 @@ export async function getStaticProps({ locale }) {
 }
 
 export default function Markets() {
-  const [activeTab, setActiveTab] = useState('perp')
+  const [activeTab, setActiveTab] = useState('futures')
   const { t } = useTranslation(['common'])
 
   const handleTabChange = (tabName) => {
     setActiveTab(tabName)
   }
-
-  const isPerp = activeTab === 'perp'
 
   return (
     <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
@@ -35,13 +33,14 @@ export default function Markets() {
           <h1>{t('markets')}</h1>
         </div>
         <div className="md:rounded-lg md:bg-th-bkg-2 md:p-6">
-          <Tabs activeTab={activeTab} onChange={handleTabChange} tabs={TABS} />
-          <h2 className="mb-4">
-            {isPerp
-              ? `${t('perp')} ${t('markets')}`
-              : `${t('spot')} ${t('markets')}`}
-          </h2>
-          <MarketsTable isPerpMarket={activeTab === 'perp'} />
+          <div className="mb-0 sm:mb-6">
+            <Tabs
+              activeTab={activeTab}
+              onChange={handleTabChange}
+              tabs={TABS}
+            />
+          </div>
+          <MarketsTable isPerpMarket={activeTab === 'futures'} />
         </div>
       </PageBodyContainer>
     </div>

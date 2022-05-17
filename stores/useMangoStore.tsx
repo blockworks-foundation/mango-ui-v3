@@ -40,6 +40,7 @@ import { getProfilePicture, ProfilePicture } from '@solflare-wallet/pfp'
 import { decodeBook } from '../hooks/useHydrateStore'
 import { IOrderLineAdapter } from '../public/charting_library/charting_library'
 import { Wallet } from '@solana/wallet-adapter-react'
+import { coingeckoIds } from 'utils/tokens'
 import { getTokenAccountsByMint } from 'utils/tokens'
 import { getParsedNftAccountsByOwner } from 'utils/getParsedNftAccountsByOwner'
 
@@ -264,6 +265,7 @@ export type MangoStore = {
     deleteAlert: (id: string) => void
     loadAlerts: (pk: PublicKey) => void
     fetchMarketsInfo: () => void
+    fetchCoingeckoPrices: () => void
   }
   alerts: {
     activeAlerts: Array<Alert>
@@ -277,6 +279,7 @@ export type MangoStore = {
   tradingView: {
     orderLines: Map<string, IOrderLineAdapter>
   }
+  coingeckoPrices: any[]
 }
 
 const useMangoStore = create<
@@ -408,6 +411,7 @@ const useMangoStore = create<
       tradingView: {
         orderLines: new Map(),
       },
+      coingeckoPrices: [],
       set: (fn) => set(produce(fn)),
       actions: {
         async fetchWalletTokens(wallet: Wallet) {
@@ -1123,6 +1127,29 @@ const useMangoStore = create<
             }
           } catch (e) {
             console.log('ERORR: Unable to load all market info')
+          }
+        },
+        async fetchCoingeckoPrices() {
+          const set = get().set
+          try {
+            const promises: any = []
+            for (const asset of coingeckoIds) {
+              promises.push(
+                fetch(
+                  `https://api.coingecko.com/api/v3/coins/${asset.id}/market_chart?vs_currency=usd&days=2`
+                ).then((res) => res.json())
+              )
+            }
+
+            const data = await Promise.all(promises)
+            for (let i = 0; i < data.length; i++) {
+              data[i].symbol = coingeckoIds[i].symbol
+            }
+            set((state) => {
+              state.coingeckoPrices = data
+            })
+          } catch (e) {
+            console.log('ERORR: Unable to load Coingecko prices')
           }
         },
       },
