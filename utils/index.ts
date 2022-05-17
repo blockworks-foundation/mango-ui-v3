@@ -331,3 +331,18 @@ export function patchInternalMarketName(marketName: string) {
 export function roundPerpSize(size: number, symbol: string) {
   return new BigNumber(size).abs().toFormat(perpContractPrecision[symbol])
 }
+
+/**
+ * Check if passed address is Solana address
+ */
+export const isValidSolanaAddress = (address: string) => {
+  try {
+    // this fn accepts Base58 character
+    // and if it pass we suppose Solana address is valid
+    new PublicKey(address)
+    return true
+  } catch (error) {
+    // Non-base58 character or can't be used as Solana address
+    return false
+  }
+}
