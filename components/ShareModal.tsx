@@ -1,12 +1,12 @@
 import {
   FunctionComponent,
-  useCallback,
   useEffect,
   useMemo,
   createRef,
   useState,
 } from 'react'
-import { getWeights, MarketConfig } from '@blockworks-foundation/mango-client'
+// import { getWeights, MarketConfig } from '@blockworks-foundation/mango-client'
+import { MarketConfig } from '@blockworks-foundation/mango-client'
 
 import useMangoStore from '../stores/useMangoStore'
 import Modal from './Modal'
@@ -29,15 +29,25 @@ import Button from './Button'
 import Switch from './Switch'
 import { roundPerpSize } from 'utils'
 
-const calculatePositionPercentage = (position, maxLeverage) => {
+const calculatePositionPercentage = (position) => {
   if (position.basePosition > 0) {
     const returnsPercentage =
       (position.indexPrice / position.avgEntryPrice - 1) * 100
-    return returnsPercentage * maxLeverage
+    return returnsPercentage
   } else {
     const returnsPercentage =
       (position.indexPrice / position.avgEntryPrice - 1) * -100
-    return returnsPercentage * maxLeverage
+    return returnsPercentage
+  }
+}
+
+async function copyToClipboard(image) {
+  try {
+    image.toBlob((blob) => {
+      navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })])
+    }, 'image/png')
+  } catch (error) {
+    console.error(error)
   }
 }
 
@@ -70,51 +80,34 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
   const mangoGroup = useMangoStore(mangoGroupSelector)
   const [customRefLinks, setCustomRefLinks] = useState<ReferrerIdRecord[]>([])
   const [showSize, setShowSize] = useState(true)
-  const [showReferral, setShowReferral] = useState(false)
-  const [hasRequiredMngo, setHasRequiredMngo] = useState(false)
+  const mngoIndex = getMarketIndexBySymbol(groupConfig, 'MNGO')
+  const hasRequiredMngo = useMemo(() => {
+    return mangoGroup && mangoAccount && mangoCache
+      ? mangoAccount
+          .getUiDeposit(
+            mangoCache.rootBankCache[mngoIndex],
+            mangoGroup,
+            mngoIndex
+          )
+          .toNumber() >= 10000
+      : false
+  }, [mangoAccount, mangoGroup])
+  const [showReferral, setShowReferral] = useState(
+    hasRequiredMngo ? true : false
+  )
+
   const marketConfig = position.marketConfig
 
-  const maxLeverage = useMemo(() => {
-    if (!mangoGroup) return 1
+  // const maxLeverage = useMemo(() => {
+  //   if (!mangoGroup) return 1
 
-    const ws = getWeights(mangoGroup, marketConfig.marketIndex, 'Init')
-    return Math.round((100 * -1) / (ws.perpAssetWeight.toNumber() - 1)) / 100
-  }, [mangoGroup, marketConfig])
+  //   const ws = getWeights(mangoGroup, marketConfig.marketIndex, 'Init')
+  //   return Math.round((100 * -1) / (ws.perpAssetWeight.toNumber() - 1)) / 100
+  // }, [mangoGroup, marketConfig])
 
-  const positionPercentage = calculatePositionPercentage(position, maxLeverage)
+  const positionPercentage = calculatePositionPercentage(position)
 
   const side = position.basePosition > 0 ? 'long' : 'short'
-
-  async function copyToClipboard(image) {
-    try {
-      image.toBlob((blob) => {
-        navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })])
-      }, 'image/png')
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
-  useEffect(() => {
-    if (mangoCache) {
-      const mngoIndex = getMarketIndexBySymbol(groupConfig, 'MNGO')
-
-      const hasRequiredMngo =
-        mangoGroup && mangoAccount
-          ? mangoAccount
-              .getUiDeposit(
-                mangoCache.rootBankCache[mngoIndex],
-                mangoGroup,
-                mngoIndex
-              )
-              .toNumber() >= 10000
-          : false
-
-      if (hasRequiredMngo) {
-        setHasRequiredMngo(true)
-      }
-    }
-  }, [mangoAccount, mangoGroup, mangoCache])
 
   useEffect(() => {
     if (image) {
@@ -135,19 +128,17 @@ const ShareModal: FunctionComponent<ShareModalProps> = ({
     setShowButton(false)
   }
 
-  const fetchCustomReferralLinks = useCallback(async () => {
-    // setLoading(true)
-    const referrerIds = await client.getReferrerIdsForMangoAccount(
-      mangoAccount!
-    )
-
-    setCustomRefLinks(referrerIds)
-    // setLoading(false)
-  }, [mangoAccount])
-
   useEffect(() => {
-    if (mangoAccount) {
-      fetchCustomReferralLinks()
+    const fetchCustomReferralLinks = async (mangoAccount) => {
+      const referrerIds = await client.getReferrerIdsForMangoAccount(
+        mangoAccount
+      )
+
+      setCustomRefLinks(referrerIds)
+    }
+
+    if (mangoAccount && customRefLinks?.length === 0) {
+      fetchCustomReferralLinks(mangoAccount)
     }
   }, [mangoAccount])
 
