@@ -21,14 +21,6 @@ export interface MarketInfo {
   baseLabel?: string
 }
 
-export interface CustomMarketInfo {
-  address: string
-  name: string
-  programId: string
-  quoteLabel?: string
-  baseLabel?: string
-}
-
 export interface TokenAccount {
   pubkey: PublicKey
   account: AccountInfo<Buffer> | null
@@ -132,3 +124,19 @@ export interface PerpTriggerOrder {
   triggerCondition: 'above' | 'below'
   triggerPrice: number
 }
+
+export type StringPublicKey = string
+
+export interface PromiseFulfilledResult<T> {
+  status: 'fulfilled'
+  value: T
+}
+
+export interface PromiseRejectedResult {
+  status: 'rejected'
+  reason: any
+}
+
+export type PromiseSettledResult<T> =
+  | PromiseFulfilledResult<T>
+  | PromiseRejectedResult

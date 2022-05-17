@@ -40,8 +40,8 @@ import { getProfilePicture, ProfilePicture } from '@solflare-wallet/pfp'
 import { decodeBook } from '../hooks/useHydrateStore'
 import { IOrderLineAdapter } from '../public/charting_library/charting_library'
 import { Wallet } from '@solana/wallet-adapter-react'
-import { getParsedNftAccountsByOwner } from '@nfteyez/sol-rayz'
 import { getTokenAccountsByMint } from 'utils/tokens'
+import { getParsedNftAccountsByOwner } from 'utils/getParsedNftAccountsByOwner'
 
 export const ENDPOINTS: EndpointInfo[] = [
   {
