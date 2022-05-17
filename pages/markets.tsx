@@ -11,7 +11,7 @@ const TABS = ['futures', 'spot']
 export async function getStaticProps({ locale }) {
   return {
     props: {
-      ...(await serverSideTranslations(locale, ['common'])),
+      ...(await serverSideTranslations(locale, ['common', 'profile'])),
       // Will be passed to the page component as props
     },
   }

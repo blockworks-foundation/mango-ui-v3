@@ -34,7 +34,11 @@ import { useWallet } from '@solana/wallet-adapter-react'
 export async function getStaticProps({ locale }) {
   return {
     props: {
-      ...(await serverSideTranslations(locale, ['common', 'calculator'])),
+      ...(await serverSideTranslations(locale, [
+        'common',
+        'calculator',
+        'profile',
+      ])),
     },
   }
 }

@@ -12,15 +12,18 @@ import {
   CurrencyDollarIcon,
   DuplicateIcon,
   LogoutIcon,
+  UserCircleIcon,
 } from '@heroicons/react/outline'
 import { notify } from 'utils/notifications'
 import { abbreviateAddress, copyToClipboard } from 'utils'
 import useMangoStore from 'stores/useMangoStore'
-import { ProfileIcon, WalletIcon } from './icons'
+import { WalletIcon } from './icons'
 import { useTranslation } from 'next-i18next'
 import { WalletSelect } from 'components/WalletSelect'
 import AccountsModal from './AccountsModal'
 import uniqBy from 'lodash/uniqBy'
+import NftProfilePicModal from './NftProfilePicModal'
+import ProfileImage from './ProfileImage'
 
 export const handleWalletConnect = (wallet: Wallet) => {
   if (!wallet) {
@@ -40,11 +43,15 @@ export const handleWalletConnect = (wallet: Wallet) => {
 
 export const ConnectWalletButton: React.FC = () => {
   const { connected, publicKey, wallet, wallets, select } = useWallet()
-  const { t } = useTranslation('common')
+  const { t } = useTranslation(['common', 'profile'])
   const pfp = useMangoStore((s) => s.wallet.pfp)
+  const loadingTransaction = useMangoStore(
+    (s) => s.wallet.nfts.loadingTransaction
+  )
   const set = useMangoStore((s) => s.set)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
+  const [showProfilePicModal, setShowProfilePicModal] = useState(false)
 
   const installedWallets = useMemo(() => {
     const installed: Wallet[] = []
@@ -72,6 +79,10 @@ export const ConnectWalletButton: React.FC = () => {
 
   const handleCloseAccounts = useCallback(() => {
     setShowAccountsModal(false)
+  }, [])
+
+  const handleCloseProfilePicModal = useCallback(() => {
+    setShowProfilePicModal(false)
   }, [])
 
   const handleDisconnect = useCallback(() => {
@@ -104,12 +115,17 @@ export const ConnectWalletButton: React.FC = () => {
         <Menu>
           {({ open }) => (
             <div className="relative" id="profile-menu-tip">
-              <Menu.Button className="flex h-10 w-10 items-center justify-center rounded-full bg-th-bkg-4 text-white hover:bg-th-bkg-4 hover:text-th-fgd-3 focus:outline-none">
-                {pfp?.isAvailable ? (
-                  <img alt="" src={pfp.url} className="rounded-full" />
-                ) : (
-                  <ProfileIcon className="h-6 w-6" />
-                )}
+              <Menu.Button
+                className={`flex h-10 w-10 items-center justify-center rounded-full bg-th-bkg-button hover:bg-th-bkg-4 hover:bg-th-bkg-4 hover:text-th-fgd-3 focus:outline-none ${
+                  loadingTransaction ? 'animate-pulse bg-th-bkg-4' : ''
+                }`}
+              >
+                <ProfileImage
+                  thumbHeightClass="h-10"
+                  thumbWidthClass="w-10"
+                  placeholderHeightClass="h-6"
+                  placeholderWidthClass="w-6"
+                />
               </Menu.Button>
               <Transition
                 appear={true}
@@ -130,6 +146,19 @@ export const ConnectWalletButton: React.FC = () => {
                     >
                       <CurrencyDollarIcon className="h-4 w-4" />
                       <div className="pl-2 text-left">{t('accounts')}</div>
+                    </button>
+                  </Menu.Item>
+                  <Menu.Item>
+                    <button
+                      className="flex w-full flex-row items-center rounded-none py-0.5 font-normal hover:cursor-pointer hover:text-th-primary focus:outline-none"
+                      onClick={() => setShowProfilePicModal(true)}
+                    >
+                      <UserCircleIcon className="h-4 w-4" />
+                      <div className="pl-2 text-left">
+                        {pfp?.isAvailable
+                          ? t('profile:edit-profile-pic')
+                          : t('profile:set-profile-pic')}
+                      </div>
                     </button>
                   </Menu.Item>
                   <Menu.Item>
@@ -193,6 +222,12 @@ export const ConnectWalletButton: React.FC = () => {
         <AccountsModal
           onClose={handleCloseAccounts}
           isOpen={showAccountsModal}
+        />
+      )}
+      {showProfilePicModal && (
+        <NftProfilePicModal
+          onClose={handleCloseProfilePicModal}
+          isOpen={showProfilePicModal}
         />
       )}
     </>
