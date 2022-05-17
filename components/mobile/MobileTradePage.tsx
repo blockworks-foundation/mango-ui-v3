@@ -1,9 +1,9 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Disclosure } from '@headlessui/react'
 import dynamic from 'next/dynamic'
 import { XIcon } from '@heroicons/react/outline'
 import useMangoStore from '../../stores/useMangoStore'
-import { PerpMarket } from '@blockworks-foundation/mango-client'
+import { getWeights, PerpMarket } from '@blockworks-foundation/mango-client'
 import { CandlesIcon } from '../icons'
 import SwipeableTabs from './SwipeableTabs'
 import AdvancedTradeForm from '../trade_form/AdvancedTradeForm'
@@ -30,10 +30,20 @@ const MobileTradePage = () => {
   const { connected } = useWallet()
   const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
+  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
 
   const handleChangeViewIndex = (index) => {
     setViewIndex(index)
   }
+
+  const initLeverage = useMemo(() => {
+    if (!mangoGroup || !marketConfig) return 1
+
+    const ws = getWeights(mangoGroup, marketConfig.marketIndex, 'Init')
+    const w =
+      marketConfig.kind === 'perp' ? ws.perpAssetWeight : ws.spotAssetWeight
+    return Math.round((100 * -1) / (w.toNumber() - 1)) / 100
+  }, [mangoGroup, marketConfig])
 
   const TABS =
     selectedMarket instanceof PerpMarket
@@ -45,6 +55,9 @@ const MobileTradePage = () => {
       <div className="relative">
         <div className="flex items-center">
           <SwitchMarketDropdown />
+          <span className="ml-2 rounded border border-th-primary px-1 py-0.5 text-xs text-th-primary">
+            {initLeverage}x
+          </span>
         </div>
         <Disclosure>
           {({ open }) => (

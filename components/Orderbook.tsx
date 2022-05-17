@@ -523,27 +523,18 @@ export default function Orderbook({ depth = 8 }) {
     <div>
       <div className="flex items-center justify-between pb-2.5">
         <div className="relative flex">
-          <Tooltip
-            content={
-              displayCumulativeSize
-                ? t('tooltip-display-step')
-                : t('tooltip-display-cumulative')
-            }
-            className="py-1 text-xs"
+          <button
+            onClick={() => {
+              setDisplayCumulativeSize(!displayCumulativeSize)
+            }}
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-th-bkg-3 hover:text-th-primary focus:outline-none"
           >
-            <button
-              onClick={() => {
-                setDisplayCumulativeSize(!displayCumulativeSize)
-              }}
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-th-bkg-3 hover:text-th-primary focus:outline-none"
-            >
-              {displayCumulativeSize ? (
-                <StepSizeIcon className="h-5 w-5" />
-              ) : (
-                <CumulativeSizeIcon className="h-5 w-5" />
-              )}
-            </button>
-          </Tooltip>
+            {displayCumulativeSize ? (
+              <StepSizeIcon className="h-5 w-5" />
+            ) : (
+              <CumulativeSizeIcon className="h-5 w-5" />
+            )}
+          </button>
         </div>
 
         <GroupSize

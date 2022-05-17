@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import { formatUsdValue, perpContractPrecision, usdFormatter } from '../utils'
 import { Table, Td, Th, TrBody, TrHead } from './TableElements'
@@ -6,20 +6,29 @@ import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { useTranslation } from 'next-i18next'
 import useMangoStore from '../stores/useMangoStore'
-import MobileTableHeader from './mobile/MobileTableHeader'
-import { ExpandableRow } from './TableElements'
 import { FavoriteMarketButton } from './TradeNavMenu'
 import { useSortableData } from '../hooks/useSortableData'
-import Button, { LinkButton } from './Button'
+import { LinkButton } from './Button'
 import { ArrowSmDownIcon } from '@heroicons/react/solid'
 import { useRouter } from 'next/router'
+import { AreaChart, Area, XAxis, YAxis } from 'recharts'
+import { InformationCircleIcon } from '@heroicons/react/outline'
+import Tooltip from './Tooltip'
 
 const MarketsTable = ({ isPerpMarket }) => {
   const { t } = useTranslation('common')
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.md : false
   const marketsInfo = useMangoStore((s) => s.marketsInfo)
+  const actions = useMangoStore((s) => s.actions)
+  const coingeckoPrices = useMangoStore((s) => s.coingeckoPrices)
   const router = useRouter()
+
+  useEffect(() => {
+    if (coingeckoPrices.length === 0) {
+      actions.fetchCoingeckoPrices()
+    }
+  }, [coingeckoPrices])
 
   const perpMarketsInfo = useMemo(
     () =>
@@ -51,7 +60,9 @@ const MarketsTable = ({ isPerpMarket }) => {
                 className="flex items-center font-normal no-underline"
                 onClick={() => requestSort('name')}
               >
-                <span className="font-normal text-th-fgd-3">{t('market')}</span>
+                <span className="text-left font-normal text-th-fgd-3">
+                  {t('market')}
+                </span>
                 <ArrowSmDownIcon
                   className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                     sortConfig?.key === 'name'
@@ -68,7 +79,9 @@ const MarketsTable = ({ isPerpMarket }) => {
                 className="flex items-center font-normal no-underline"
                 onClick={() => requestSort('last')}
               >
-                <span className="font-normal text-th-fgd-3">{t('price')}</span>
+                <span className="text-left font-normal text-th-fgd-3">
+                  {t('price')}
+                </span>
                 <ArrowSmDownIcon
                   className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                     sortConfig?.key === 'last'
@@ -85,7 +98,7 @@ const MarketsTable = ({ isPerpMarket }) => {
                 className="flex items-center font-normal no-underline"
                 onClick={() => requestSort('change24h')}
               >
-                <span className="font-normal text-th-fgd-3">
+                <span className="text-left font-normal text-th-fgd-3">
                   {t('rolling-change')}
                 </span>
                 <ArrowSmDownIcon
@@ -104,7 +117,7 @@ const MarketsTable = ({ isPerpMarket }) => {
                 className="flex items-center font-normal no-underline"
                 onClick={() => requestSort('volumeUsd24h')}
               >
-                <span className="font-normal text-th-fgd-3">
+                <span className="text-left font-normal text-th-fgd-3">
                   {t('daily-volume')}
                 </span>
                 <ArrowSmDownIcon
@@ -125,7 +138,7 @@ const MarketsTable = ({ isPerpMarket }) => {
                     className="flex items-center font-normal no-underline"
                     onClick={() => requestSort('funding1h')}
                   >
-                    <span className="font-normal text-th-fgd-3">
+                    <span className="text-left font-normal text-th-fgd-3">
                       {t('average-funding')}
                     </span>
                     <ArrowSmDownIcon
@@ -144,7 +157,7 @@ const MarketsTable = ({ isPerpMarket }) => {
                     className="flex items-center no-underline"
                     onClick={() => requestSort('openInterestUsd')}
                   >
-                    <span className="font-normal text-th-fgd-3">
+                    <span className="text-left font-normal text-th-fgd-3">
                       {t('open-interest')}
                     </span>
                     <ArrowSmDownIcon
@@ -180,7 +193,10 @@ const MarketsTable = ({ isPerpMarket }) => {
             const fundingApr = funding1h
               ? (funding1h * 24 * 365).toFixed(2)
               : '-'
-
+            const coingeckoData = coingeckoPrices.find(
+              (asset) => asset.symbol === baseSymbol
+            )
+            const chartData = coingeckoData ? coingeckoData.prices : undefined
             return (
               <TrBody key={name} className="hover:bg-th-bkg-3">
                 <Td>
@@ -199,12 +215,36 @@ const MarketsTable = ({ isPerpMarket }) => {
                     </a>
                   </Link>
                 </Td>
-                <Td>
-                  {last ? (
-                    formatUsdValue(last)
-                  ) : (
-                    <span className="text-th-fgd-4">Unavailable</span>
-                  )}
+                <Td className="flex items-center">
+                  <div className="w-20">
+                    {last ? (
+                      formatUsdValue(last)
+                    ) : (
+                      <span className="text-th-fgd-4">{t('unavailable')}</span>
+                    )}
+                  </div>
+                  <div className="pl-6">
+                    {chartData !== undefined ? (
+                      <AreaChart width={104} height={40} data={chartData}>
+                        <Area
+                          isAnimationActive={false}
+                          type="monotone"
+                          dataKey="1"
+                          stroke="#FF9C24"
+                          fill="#FF9C24"
+                          fillOpacity={0.1}
+                        />
+                        <XAxis dataKey="0" hide />
+                        <YAxis
+                          domain={['dataMin', 'dataMax']}
+                          dataKey="1"
+                          hide
+                        />
+                      </AreaChart>
+                    ) : (
+                      t('unavailable')
+                    )}
+                  </div>
                 </Td>
                 <Td>
                   <span
@@ -213,7 +253,7 @@ const MarketsTable = ({ isPerpMarket }) => {
                     {change24h || change24h === 0 ? (
                       `${(change24h * 100).toFixed(2)}%`
                     ) : (
-                      <span className="text-th-fgd-4">Unavailable</span>
+                      <span className="text-th-fgd-4">{t('unavailable')}</span>
                     )}
                   </span>
                 </Td>
@@ -221,7 +261,7 @@ const MarketsTable = ({ isPerpMarket }) => {
                   {volumeUsd24h ? (
                     usdFormatter(volumeUsd24h, 0)
                   ) : (
-                    <span className="text-th-fgd-4">Unavailable</span>
+                    <span className="text-th-fgd-4">{t('unavailable')}</span>
                   )}
                 </Td>
                 {isPerpMarket ? (
@@ -233,7 +273,9 @@ const MarketsTable = ({ isPerpMarket }) => {
                           <span className="text-xs text-th-fgd-3">{`(${fundingApr}% APR)`}</span>
                         </>
                       ) : (
-                        <span className="text-th-fgd-4">Unavailable</span>
+                        <span className="text-th-fgd-4">
+                          {t('unavailable')}
+                        </span>
                       )}
                     </Td>
                     <Td>
@@ -251,7 +293,9 @@ const MarketsTable = ({ isPerpMarket }) => {
                           ) : null}
                         </>
                       ) : (
-                        <span className="text-th-fgd-4">Unavailable</span>
+                        <span className="text-th-fgd-4">
+                          {t('unavailable')}
+                        </span>
                       )}
                     </Td>
                   </>
@@ -267,139 +311,89 @@ const MarketsTable = ({ isPerpMarket }) => {
         </tbody>
       </Table>
     ) : (
-      <div className="mb-4 border-b border-th-bkg-4">
-        <MobileTableHeader
-          colOneHeader={t('market')}
-          colTwoHeader={`${t('price')}/${t('rolling-change')}`}
-        />
-        {items.map((market, index) => {
-          const {
-            baseSymbol,
-            change24h,
-            funding1h,
-            high24h,
-            last,
-            low24h,
-            name,
-            openInterest,
-            volumeUsd24h,
-          } = market
-          const fundingApr = funding1h ? (funding1h * 24 * 365).toFixed(2) : '-'
+      items.map((market) => {
+        const { baseSymbol, change24h, funding1h, last, name } = market
+        const fundingApr = funding1h ? (funding1h * 24 * 365).toFixed(2) : '-'
+        const coingeckoData = coingeckoPrices.find(
+          (asset) => asset.symbol === baseSymbol
+        )
+        const chartData = coingeckoData ? coingeckoData.prices : undefined
+        return (
+          <button
+            className="mb-2.5 w-full rounded-lg bg-th-bkg-2 p-4 pb-2.5 md:bg-th-bkg-3"
+            onClick={() =>
+              router.push(`/?name=${name}`, undefined, {
+                shallow: true,
+              })
+            }
+            key={name}
+          >
+            <div className="mb-1 flex justify-between">
+              <div>
+                <div className="mb-2 flex items-center font-bold text-th-fgd-3">
+                  <img
+                    alt=""
+                    width="24"
+                    height="24"
+                    src={`/assets/icons/${baseSymbol.toLowerCase()}.svg`}
+                    className="mr-2"
+                  />
 
-          return (
-            <ExpandableRow
-              buttonTemplate={
-                <div className="flex w-full items-center justify-between text-th-fgd-1">
-                  <div className="flex items-center text-th-fgd-1">
-                    <img
-                      alt=""
-                      width="20"
-                      height="20"
-                      src={`/assets/icons/${baseSymbol.toLowerCase()}.svg`}
-                      className={`mr-2.5`}
-                    />
-
-                    {name}
-                  </div>
-                  <div className="flex space-x-1.5 text-right text-th-fgd-1">
-                    <div>{formatUsdValue(last)}</div>
-                    <div className="text-th-fgd-4">|</div>
-                    <div
-                      className={
-                        change24h >= 0 ? 'text-th-green' : 'text-th-red'
-                      }
-                    >
-                      {change24h || change24h === 0 ? (
-                        `${(change24h * 100).toFixed(2)}%`
-                      ) : (
-                        <span className="text-th-fgd-4">Unavailable</span>
-                      )}
-                    </div>
-                  </div>
+                  {name}
                 </div>
-              }
-              key={`${name}${index}`}
-              panelTemplate={
-                <>
-                  <div className="grid grid-flow-row grid-cols-2 gap-4">
-                    <div className="text-left">
-                      <div className="pb-0.5 text-xs text-th-fgd-3">
-                        {t('daily-low')}
+                {chartData !== undefined ? (
+                  <AreaChart width={144} height={40} data={chartData}>
+                    <Area
+                      isAnimationActive={false}
+                      type="monotone"
+                      dataKey="1"
+                      stroke="#FF9C24"
+                      fill="#FF9C24"
+                      fillOpacity={0.1}
+                    />
+                    <XAxis dataKey="0" hide />
+                    <YAxis domain={['dataMin', 'dataMax']} dataKey="1" hide />
+                  </AreaChart>
+                ) : (
+                  t('unavailable')
+                )}
+              </div>
+              <div className="text-right">
+                <p className="mb-0 text-xl font-bold">
+                  {last ? (
+                    formatUsdValue(last)
+                  ) : (
+                    <span className="text-th-fgd-4">{t('unavailable')}</span>
+                  )}
+                </p>
+                <div
+                  className={change24h >= 0 ? 'text-th-green' : 'text-th-red'}
+                >
+                  {change24h || change24h === 0 ? (
+                    `${(change24h * 100).toFixed(2)}%`
+                  ) : (
+                    <span className="text-th-fgd-4">{t('unavailable')}</span>
+                  )}
+                </div>
+                {isPerpMarket ? (
+                  funding1h ? (
+                    <Tooltip content={t('average-funding')}>
+                      <div className="mt-1 flex items-center justify-end text-th-fgd-3">
+                        <span className="text-xs">{`${fundingApr}% APR`}</span>
+                        <InformationCircleIcon className="ml-1 h-4 w-4" />
                       </div>
-                      {low24h ? (
-                        formatUsdValue(low24h)
-                      ) : (
-                        <span className="text-th-fgd-4">Unavailable</span>
-                      )}
-                    </div>
-                    <div className="text-left">
-                      <div className="pb-0.5 text-xs text-th-fgd-3">
-                        {t('daily-high')}
-                      </div>
-                      {high24h ? (
-                        formatUsdValue(high24h)
-                      ) : (
-                        <span className="text-th-fgd-4">Unavailable</span>
-                      )}
-                    </div>
-                    {isPerpMarket ? (
-                      <>
-                        <div className="text-left">
-                          <div className="pb-0.5 text-xs text-th-fgd-3">
-                            {t('daily-volume')}
-                          </div>
-                          {volumeUsd24h ? (
-                            usdFormatter(volumeUsd24h, 0)
-                          ) : (
-                            <span className="text-th-fgd-4">Unavailable</span>
-                          )}
-                        </div>
-                        <div className="text-left">
-                          <div className="pb-0.5 text-xs text-th-fgd-3">
-                            {t('average-funding')}
-                          </div>
-                          {funding1h ? (
-                            <>
-                              <span>{`${funding1h.toFixed(4)}%`}</span>{' '}
-                              <span className="text-xs text-th-fgd-3">{`(${fundingApr}% APR)`}</span>
-                            </>
-                          ) : (
-                            <span className="text-th-fgd-4">Unavailable</span>
-                          )}
-                        </div>
-                        <div className="text-left">
-                          <div className="pb-0.5 text-xs text-th-fgd-3">
-                            {t('open-interest')}
-                          </div>
-                          {openInterest ? (
-                            `${openInterest.toLocaleString()} ${
-                              market.baseSymbol
-                            }`
-                          ) : (
-                            <span className="text-th-fgd-4">Unavailable</span>
-                          )}
-                        </div>
-                      </>
-                    ) : null}
-                    <Button
-                      className="col-span-2"
-                      onClick={() =>
-                        router.push(`/?name=${name}`, undefined, {
-                          shallow: true,
-                        })
-                      }
-                    >
-                      {t('trade')}
-                    </Button>
-                  </div>
-                </>
-              }
-            />
-          )
-        })}
-      </div>
+                    </Tooltip>
+                  ) : (
+                    <span className="text-th-fgd-4">{t('unavailable')}</span>
+                  )
+                ) : null}
+              </div>
+            </div>
+          </button>
+        )
+      })
     )
   ) : null
 }
 
-export default MarketsTable
+export default MarketsTable as any
