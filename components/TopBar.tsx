@@ -18,7 +18,7 @@ import {
   LightBulbIcon,
   UserAddIcon,
 } from '@heroicons/react/outline'
-import { MangoIcon } from './icons'
+import { MangoIcon, TrophyIcon } from './icons'
 import { useWallet } from '@solana/wallet-adapter-react'
 
 // const StyledNewLabel = ({ children, ...props }) => (
@@ -78,6 +78,12 @@ const TopBar = () => {
                       '/referral',
                       false,
                       <UserAddIcon className="h-4 w-4" key="referrals" />,
+                    ],
+                    [
+                      t('leaderboard'),
+                      '/leaderboard',
+                      false,
+                      <TrophyIcon className="h-4 w-4" key="leaderboard" />,
                     ],
                     [
                       t('calculator'),
