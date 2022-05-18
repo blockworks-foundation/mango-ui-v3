@@ -75,15 +75,18 @@ const DesktopTable = ({
           <Th>{t('value')}</Th>
           <Th>{t('condition')}</Th>
           <Th>
-            {openOrders.some(o => o.market.config.name === selectedMarket.config.name) && selectedMarket.current instanceof PerpMarket ? (
+            {openOrders.some(
+              (o) => o.market.config.name === selectedMarket.config.name
+            ) && selectedMarket.current instanceof PerpMarket ? (
               <div className={`flex justify-end`}>
-              <Button 
-                onClick={() => handleCancelAllOrders()}
-                className="h-7 pt-0 pb-0 pl-3 pr-3 text-xs"                
-              >{t('cancel-all') + ' ' + selectedMarket.config.name}
-              </Button>            
-            </div>
-            ) : null}            
+                <Button
+                  onClick={() => handleCancelAllOrders()}
+                  className="h-7 pt-0 pb-0 pl-3 pr-3 text-xs"
+                >
+                  {t('cancel-all') + ' ' + selectedMarket.config.name}
+                </Button>
+              </div>
+            ) : null}
             <span className={`sr-only`}>{t('edit')}</span>
           </Th>
         </TrHead>
@@ -237,16 +240,15 @@ const MobileTable = ({
 
   return (
     <div className="border-b border-th-bkg-4">
-      {(openOrders.some(o => o.market.config.name === selectedMarket.config.name) && selectedMarket.current instanceof PerpMarket) ? 
-      (
-        <div className={`flex justify-end p-4`}>            
-          <IconButton                            
-            onClick={() => handleCancelAllOrders()}            
-          >
-            <TrashIcon className="h-5 w-5" />          
-            </IconButton>
-        </div>      
-      ):null }      
+      {openOrders.some(
+        (o) => o.market.config.name === selectedMarket.config.name
+      ) && selectedMarket.current instanceof PerpMarket ? (
+        <div className={`flex justify-end p-4`}>
+          <IconButton onClick={() => handleCancelAllOrders()}>
+            <TrashIcon className="h-5 w-5" />
+          </IconButton>
+        </div>
+      ) : null}
       {openOrders.map(({ market, order }, index) => {
         const editThisOrder = editOrderIndex === index
         return (
@@ -377,25 +379,22 @@ const OpenOrdersTable = () => {
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.md : false
 
-  const handleCancelAllOrders = async (
-  ) => {
+  const handleCancelAllOrders = async () => {
     const selectedMangoGroup =
       useMangoStore.getState().selectedMangoGroup.current
     const selectedMangoAccount =
       useMangoStore.getState().selectedMangoAccount.current
-    const mangoClient = 
-      useMangoStore.getState().connection.client
-    const market = 
-      useMangoStore.getState().selectedMarket.current              
+    const mangoClient = useMangoStore.getState().connection.client
+    const market = useMangoStore.getState().selectedMarket.current
     try {
-      if (!selectedMangoGroup || !selectedMangoAccount || !wallet) return                  
-      if (market instanceof PerpMarket) {             
+      if (!selectedMangoGroup || !selectedMangoAccount || !wallet) return
+      if (market instanceof PerpMarket) {
         const txids = await mangoClient.cancelAllPerpOrders(
           selectedMangoGroup,
-          [market],          
+          [market],
           selectedMangoAccount,
           wallet.adapter
-        )        
+        )
         if (txids) {
           for (const txid of txids) {
             notify({
@@ -410,8 +409,8 @@ const OpenOrdersTable = () => {
             description: t('transaction-failed'),
           })
         }
-        actions.reloadOrders()     
-      }      
+        actions.reloadOrders()
+      }
     } catch (e) {
       notify({
         title: t('cancel-all-error'),
