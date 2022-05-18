@@ -1136,7 +1136,7 @@ const useMangoStore = create<
             for (const asset of coingeckoIds) {
               promises.push(
                 fetch(
-                  `https://api.coingecko.com/api/v3/coins/${asset.id}/market_chart?vs_currency=usd&days=2`
+                  `https://api.coingecko.com/api/v3/coins/${asset.id}/market_chart?vs_currency=usd&days=1`
                 ).then((res) => res.json())
               )
             }

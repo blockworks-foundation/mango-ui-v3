@@ -12,8 +12,6 @@ import { LinkButton } from './Button'
 import { ArrowSmDownIcon } from '@heroicons/react/solid'
 import { useRouter } from 'next/router'
 import { AreaChart, Area, XAxis, YAxis } from 'recharts'
-import { InformationCircleIcon } from '@heroicons/react/outline'
-import Tooltip from './Tooltip'
 
 const MarketsTable = ({ isPerpMarket }) => {
   const { t } = useTranslation('common')
@@ -319,77 +317,82 @@ const MarketsTable = ({ isPerpMarket }) => {
         )
         const chartData = coingeckoData ? coingeckoData.prices : undefined
         return (
-          <button
-            className="mb-2.5 w-full rounded-lg bg-th-bkg-2 p-4 pb-2.5 md:bg-th-bkg-3"
-            onClick={() =>
-              router.push(`/?name=${name}`, undefined, {
-                shallow: true,
-              })
-            }
-            key={name}
-          >
-            <div className="mb-1 flex justify-between">
-              <div>
-                <div className="mb-2 flex items-center font-bold text-th-fgd-3">
-                  <img
-                    alt=""
-                    width="24"
-                    height="24"
-                    src={`/assets/icons/${baseSymbol.toLowerCase()}.svg`}
-                    className="mr-2"
-                  />
-
-                  {name}
-                </div>
-                {chartData !== undefined ? (
-                  <AreaChart width={144} height={40} data={chartData}>
-                    <Area
-                      isAnimationActive={false}
-                      type="monotone"
-                      dataKey="1"
-                      stroke="#FF9C24"
-                      fill="#FF9C24"
-                      fillOpacity={0.1}
+          <Link href={`/?name=${name}`} shallow={true} key={name}>
+            <a
+              className="mb-2.5 block w-full rounded-lg bg-th-bkg-3 p-4 pb-2.5"
+              onClick={() =>
+                router.push(`/?name=${name}`, undefined, {
+                  shallow: true,
+                })
+              }
+            >
+              <div className="mb-1 flex justify-between">
+                <div>
+                  <div className="mb-2 flex items-center font-bold text-th-fgd-2">
+                    <img
+                      alt=""
+                      width="20"
+                      height="20"
+                      src={`/assets/icons/${baseSymbol.toLowerCase()}.svg`}
+                      className="mr-2"
                     />
-                    <XAxis dataKey="0" hide />
-                    <YAxis domain={['dataMin', 'dataMax']} dataKey="1" hide />
-                  </AreaChart>
-                ) : (
-                  t('unavailable')
-                )}
-              </div>
-              <div className="text-right">
-                <p className="mb-0 text-xl font-bold">
-                  {last ? (
-                    formatUsdValue(last)
+
+                    {name}
+                    <div
+                      className={`ml-3 ${
+                        change24h >= 0 ? 'text-th-green' : 'text-th-red'
+                      }`}
+                    >
+                      {change24h || change24h === 0 ? (
+                        `${(change24h * 100).toFixed(2)}%`
+                      ) : (
+                        <span className="text-th-fgd-4">
+                          {t('unavailable')}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  {chartData !== undefined ? (
+                    <AreaChart width={128} height={48} data={chartData}>
+                      <Area
+                        isAnimationActive={false}
+                        type="monotone"
+                        dataKey="1"
+                        stroke="#FF9C24"
+                        fill="#FF9C24"
+                        fillOpacity={0.1}
+                      />
+                      <XAxis dataKey="0" hide />
+                      <YAxis domain={['dataMin', 'dataMax']} dataKey="1" hide />
+                    </AreaChart>
                   ) : (
-                    <span className="text-th-fgd-4">{t('unavailable')}</span>
-                  )}
-                </p>
-                <div
-                  className={change24h >= 0 ? 'text-th-green' : 'text-th-red'}
-                >
-                  {change24h || change24h === 0 ? (
-                    `${(change24h * 100).toFixed(2)}%`
-                  ) : (
-                    <span className="text-th-fgd-4">{t('unavailable')}</span>
+                    t('unavailable')
                   )}
                 </div>
-                {isPerpMarket ? (
-                  funding1h ? (
-                    <Tooltip content={t('average-funding')}>
-                      <div className="mt-1 flex items-center justify-end text-th-fgd-3">
+                <div className="text-right">
+                  <p className="mb-0 mb-3 text-xl font-bold leading-none text-th-fgd-2">
+                    {last ? (
+                      formatUsdValue(last)
+                    ) : (
+                      <span className="text-th-fgd-4">{t('unavailable')}</span>
+                    )}
+                  </p>
+                  {isPerpMarket ? (
+                    funding1h ? (
+                      <div className="mt-1 justify-end text-th-fgd-3">
+                        <div className="text-[10px] leading-tight text-th-fgd-4">
+                          {t('average-funding')}
+                        </div>
                         <span className="text-xs">{`${fundingApr}% APR`}</span>
-                        <InformationCircleIcon className="ml-1 h-4 w-4" />
                       </div>
-                    </Tooltip>
-                  ) : (
-                    <span className="text-th-fgd-4">{t('unavailable')}</span>
-                  )
-                ) : null}
+                    ) : (
+                      <span className="text-th-fgd-4">{t('unavailable')}</span>
+                    )
+                  ) : null}
+                </div>
               </div>
-            </div>
-          </button>
+            </a>
+          </Link>
         )
       })
     )
