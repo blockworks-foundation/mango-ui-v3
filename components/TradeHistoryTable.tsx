@@ -451,6 +451,7 @@ const TradeHistoryTable = ({
                                   date={formatTradeDateTime(
                                     trade.loadTimestamp || trade.timestamp
                                   )}
+                                  showSeconds
                                 />
                               ) : (
                                 t('recent')
@@ -508,6 +509,7 @@ const TradeHistoryTable = ({
                                 date={formatTradeDateTime(
                                   trade.loadTimestamp || trade.timestamp
                                 )}
+                                showSeconds
                               />
                             ) : (
                               t('recent')
