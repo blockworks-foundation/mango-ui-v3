@@ -1,7 +1,13 @@
 import React from 'react'
 import { CheckIcon } from '@heroicons/react/solid'
 
-const Checkbox = ({ checked, children, disabled = false, ...props }) => (
+const Checkbox = ({
+  checked,
+  children,
+  disabled = false,
+  halfState = false,
+  ...props
+}) => (
   <label className="default-transition flex cursor-pointer items-center text-th-fgd-3 hover:text-th-fgd-2">
     <input
       checked={checked}
@@ -23,17 +29,25 @@ const Checkbox = ({ checked, children, disabled = false, ...props }) => (
     />
     <div
       className={`${
-        checked && !disabled ? 'border-th-primary' : 'border-th-fgd-4'
-      } default-transition flex h-4 w-4 cursor-pointer items-center justify-center rounded border`}
+        checked && !disabled && !halfState
+          ? 'border-th-primary'
+          : 'border-th-fgd-4'
+      } default-transition flex h-4 w-4 flex-shrink-0 cursor-pointer items-center justify-center rounded border`}
     >
-      <CheckIcon
-        className={`${checked ? 'block' : 'hidden'} h-4 w-4 ${
-          disabled ? 'text-th-fgd-4' : 'text-th-primary'
-        }`}
-      />
+      {halfState ? (
+        <div className="mb-0.5 font-bold">–</div>
+      ) : (
+        <CheckIcon
+          className={`${checked ? 'block' : 'hidden'} h-4 w-4 ${
+            disabled ? 'text-th-fgd-4' : 'text-th-primary'
+          }`}
+        />
+      )}
     </div>
     <span
-      className={`ml-2 text-xs ${checked && !disabled ? 'text-th-fgd-2' : ''}`}
+      className={`ml-2 whitespace-nowrap text-xs ${
+        checked && !disabled ? 'text-th-fgd-2' : ''
+      }`}
     >
       {children}
     </span>

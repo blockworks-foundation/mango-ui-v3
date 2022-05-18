@@ -28,6 +28,7 @@ import AccountsModal from 'components/AccountsModal'
 import AccountOverview from 'components/account_page/AccountOverview'
 import AccountInterest from 'components/account_page/AccountInterest'
 import AccountFunding from 'components/account_page/AccountFunding'
+import AccountPerformancePerToken from 'components/account_page/AccountPerformancePerToken'
 import AccountNameModal from 'components/AccountNameModal'
 import { IconButton, LinkButton } from 'components/Button'
 import EmptyState from 'components/EmptyState'
@@ -65,6 +66,7 @@ export async function getStaticProps({ locale }) {
         'close-account',
         'delegate',
         'alerts',
+        'account-performance',
         'share-modal',
         'profile',
       ])),
@@ -73,7 +75,14 @@ export async function getStaticProps({ locale }) {
   }
 }
 
-const TABS = ['Portfolio', 'Orders', 'History', 'Interest', 'Funding']
+const TABS = [
+  'Portfolio',
+  'Orders',
+  'History',
+  'Interest',
+  'Funding',
+  'Performance',
+]
 
 export default function Account() {
   const { t } = useTranslation(['common', 'close-account', 'delegate'])
@@ -469,6 +478,9 @@ export default function Account() {
                 <div>
                   <AccountFunding />
                 </div>
+                <div>
+                  <AccountPerformancePerToken />
+                </div>
               </Swipeable>
             )
           ) : connected ? (
@@ -556,6 +568,8 @@ const TabContent = ({ activeTab }) => {
       return <AccountInterest />
     case 'Funding':
       return <AccountFunding />
+    case 'Performance':
+      return <AccountPerformancePerToken />
     default:
       return <AccountOverview />
   }
