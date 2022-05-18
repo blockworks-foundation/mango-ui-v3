@@ -386,20 +386,32 @@ const OpenOrdersTable = () => {
     const mangoClient = 
       useMangoStore.getState().connection.client
     const market = 
-      useMangoStore.getState().selectedMarket.current            
-    let txid
+      useMangoStore.getState().selectedMarket.current              
     try {
-      if (!selectedMangoGroup || !selectedMangoAccount || !wallet) return            
+      if (!selectedMangoGroup || !selectedMangoAccount || !wallet) return                  
       if (market instanceof PerpMarket) {             
-        txid = await mangoClient.cancelAllPerpOrders(
+        const txids = await mangoClient.cancelAllPerpOrders(
           selectedMangoGroup,
           [market],          
           selectedMangoAccount,
           wallet.adapter
         )        
-        actions.reloadOrders()
-      }
-      notify({ title: t('cancel-all-success'), txid })
+        if (txids) {
+          for (const txid of txids) {
+            notify({
+              title: t('cancel-all-success'),
+              description: '',
+              txid,
+            })
+          }
+        } else {
+          notify({
+            title: t('cancel-all-error'),
+            description: t('transaction-failed'),
+          })
+        }
+        actions.reloadOrders()     
+      }      
     } catch (e) {
       notify({
         title: t('cancel-all-error'),
