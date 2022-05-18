@@ -3,8 +3,12 @@ import PageBodyContainer from '../components/PageBodyContainer'
 import TopBar from '../components/TopBar'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'next-i18next'
-import MarketsTable from '../components/MarketsTable'
+import { PerpMarketsTable, SpotMarketsTable } from '../components/MarketsTable'
 import Tabs from '../components/Tabs'
+import SwipeableTabs from '../components/mobile/SwipeableTabs'
+import Swipeable from '../components/mobile/Swipeable'
+import { useViewport } from '../hooks/useViewport'
+import { breakpoints } from '../components/TradePageGrid'
 
 const TABS = ['futures', 'spot']
 
@@ -19,10 +23,17 @@ export async function getStaticProps({ locale }) {
 
 export default function Markets() {
   const [activeTab, setActiveTab] = useState('futures')
+  const [viewIndex, setViewIndex] = useState(0)
   const { t } = useTranslation(['common'])
+  const { width } = useViewport()
+  const isMobile = width ? width < breakpoints.sm : false
 
   const handleTabChange = (tabName) => {
     setActiveTab(tabName)
+  }
+
+  const handleChangeViewIndex = (index) => {
+    setViewIndex(index)
   }
 
   return (
@@ -34,13 +45,36 @@ export default function Markets() {
         </div>
         <div className="md:rounded-lg md:bg-th-bkg-2 md:p-6">
           <div className="mb-0 sm:mb-6">
-            <Tabs
-              activeTab={activeTab}
-              onChange={handleTabChange}
-              tabs={TABS}
-            />
+            {!isMobile ? (
+              <Tabs
+                activeTab={activeTab}
+                onChange={handleTabChange}
+                tabs={TABS}
+              />
+            ) : (
+              <SwipeableTabs
+                onChange={handleChangeViewIndex}
+                tabs={TABS}
+                tabIndex={viewIndex}
+              />
+            )}
           </div>
-          <MarketsTable isPerpMarket={activeTab === 'futures'} />
+          {!isMobile ? (
+            activeTab === 'futures' ? (
+              <PerpMarketsTable />
+            ) : (
+              <SpotMarketsTable />
+            )
+          ) : (
+            <Swipeable index={viewIndex} onChangeIndex={handleChangeViewIndex}>
+              <div className="px-1">
+                <PerpMarketsTable />
+              </div>
+              <div className="px-1">
+                <SpotMarketsTable />
+              </div>
+            </Swipeable>
+          )}
         </div>
       </PageBodyContainer>
     </div>

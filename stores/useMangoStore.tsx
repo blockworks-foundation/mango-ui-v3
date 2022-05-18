@@ -279,7 +279,7 @@ export type MangoStore = {
   tradingView: {
     orderLines: Map<string, IOrderLineAdapter>
   }
-  coingeckoPrices: any[]
+  coingeckoPrices: { data: any[]; loading: boolean }
 }
 
 const useMangoStore = create<
@@ -411,7 +411,7 @@ const useMangoStore = create<
       tradingView: {
         orderLines: new Map(),
       },
-      coingeckoPrices: [],
+      coingeckoPrices: { data: [], loading: false },
       set: (fn) => set(produce(fn)),
       actions: {
         async fetchWalletTokens(wallet: Wallet) {
@@ -1131,12 +1131,15 @@ const useMangoStore = create<
         },
         async fetchCoingeckoPrices() {
           const set = get().set
+          set((state) => {
+            state.coingeckoPrices.loading = true
+          })
           try {
             const promises: any = []
             for (const asset of coingeckoIds) {
               promises.push(
                 fetch(
-                  `https://api.coingecko.com/api/v3/coins/${asset.id}/market_chart?vs_currency=usd&days=2`
+                  `https://api.coingecko.com/api/v3/coins/${asset.id}/market_chart?vs_currency=usd&days=1`
                 ).then((res) => res.json())
               )
             }
@@ -1146,10 +1149,14 @@ const useMangoStore = create<
               data[i].symbol = coingeckoIds[i].symbol
             }
             set((state) => {
-              state.coingeckoPrices = data
+              state.coingeckoPrices.data = data
+              state.coingeckoPrices.loading = false
             })
           } catch (e) {
             console.log('ERORR: Unable to load Coingecko prices')
+            set((state) => {
+              state.coingeckoPrices.loading = false
+            })
           }
         },
       },

@@ -33,7 +33,7 @@ const BottomBar = () => {
 
   return (
     <>
-      <div className="default-transition grid grid-cols-5 grid-rows-1 bg-th-bkg-3 py-2.5">
+      <div className="default-transition grid grid-cols-5 grid-rows-1 bg-th-bkg-4 py-2.5">
         <Link
           href={{
             pathname: '/markets',
