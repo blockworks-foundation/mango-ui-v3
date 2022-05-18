@@ -100,7 +100,7 @@
     "date": "日期",
     "default-market": "预设市场",
     "default-spot-margin": "预设开启现货杠杆",
-    "degraded-performance": "Solana网格速度正在降低。交易也许会失败。(TPS: {{tps}})",
+    "degraded-performance": "Solana网格速度正在降低。交易也许会失败。",
     "delay-displaying-recent": "显示最近状态也许有所延误。",
     "delayed-info": "资料每小时更新",
     "deposit": "存款",
