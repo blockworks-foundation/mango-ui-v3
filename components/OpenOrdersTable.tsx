@@ -75,14 +75,15 @@ const DesktopTable = ({
           <Th>{t('value')}</Th>
           <Th>{t('condition')}</Th>
           <Th>
-            <div className={`flex justify-end`}>
+            {openOrders.some(o => o.market.config.name === selectedMarket.config.name) && selectedMarket.current instanceof PerpMarket ? (
+              <div className={`flex justify-end`}>
               <Button 
                 onClick={() => handleCancelAllOrders()}
-                className="h-7 pt-0 pb-0 pl-3 pr-3 text-xs"
-                disabled={!openOrders.some(o => o.market.config.name === selectedMarket.config.name)}
+                className="h-7 pt-0 pb-0 pl-3 pr-3 text-xs"                
               >{t('cancel-all') + ' ' + selectedMarket.config.name}
               </Button>            
             </div>
+            ) : null}            
             <span className={`sr-only`}>{t('edit')}</span>
           </Th>
         </TrHead>
@@ -216,6 +217,7 @@ const MobileTable = ({
   cancelledOrderId,
   editOrderIndex,
   handleCancelOrder,
+  handleCancelAllOrders,
   handleModifyOrder,
   modifiedOrderId,
   openOrders,
@@ -225,6 +227,7 @@ const MobileTable = ({
   const { wallet } = useWallet()
   const [modifiedOrderSize, setModifiedOrderSize] = useState('')
   const [modifiedOrderPrice, setModifiedOrderPrice] = useState('')
+  const selectedMarket = useMangoStore.getState().selectedMarket
 
   const showEditOrderForm = (index) => {
     setEditOrderIndex(index)
@@ -234,6 +237,16 @@ const MobileTable = ({
 
   return (
     <div className="border-b border-th-bkg-4">
+      {(openOrders.some(o => o.market.config.name === selectedMarket.config.name) && selectedMarket.current instanceof PerpMarket) ? 
+      (
+        <div className={`flex justify-end p-4`}>            
+          <IconButton                            
+            onClick={() => handleCancelAllOrders()}            
+          >
+            <TrashIcon className="h-5 w-5" />          
+            </IconButton>
+        </div>      
+      ):null }      
       {openOrders.map(({ market, order }, index) => {
         const editThisOrder = editOrderIndex === index
         return (
@@ -364,7 +377,7 @@ const OpenOrdersTable = () => {
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.md : false
 
-  const handleCancelAllOrders = async (   
+  const handleCancelAllOrders = async (
   ) => {
     const selectedMangoGroup =
       useMangoStore.getState().selectedMangoGroup.current
@@ -373,8 +386,7 @@ const OpenOrdersTable = () => {
     const mangoClient = 
       useMangoStore.getState().connection.client
     const market = 
-      useMangoStore.getState().selectedMarket.current      
-
+      useMangoStore.getState().selectedMarket.current            
     let txid
     try {
       if (!selectedMangoGroup || !selectedMangoAccount || !wallet) return            
