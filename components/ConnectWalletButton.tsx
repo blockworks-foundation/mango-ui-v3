@@ -10,12 +10,11 @@ import { useWallet, Wallet } from '@solana/wallet-adapter-react'
 import { WalletReadyState } from '@solana/wallet-adapter-base'
 import {
   CurrencyDollarIcon,
-  DuplicateIcon,
   LogoutIcon,
   UserCircleIcon,
 } from '@heroicons/react/outline'
 import { notify } from 'utils/notifications'
-import { abbreviateAddress, copyToClipboard } from 'utils'
+import { abbreviateAddress } from 'utils'
 import useMangoStore from 'stores/useMangoStore'
 import { WalletIcon } from './icons'
 import { useTranslation } from 'next-i18next'
@@ -159,15 +158,6 @@ export const ConnectWalletButton: React.FC = () => {
                           ? t('profile:edit-profile-pic')
                           : t('profile:set-profile-pic')}
                       </div>
-                    </button>
-                  </Menu.Item>
-                  <Menu.Item>
-                    <button
-                      className="flex w-full flex-row items-center rounded-none py-0.5 font-normal hover:cursor-pointer hover:text-th-primary focus:outline-none"
-                      onClick={() => copyToClipboard(publicKey)}
-                    >
-                      <DuplicateIcon className="h-4 w-4" />
-                      <div className="pl-2 text-left">{t('copy-address')}</div>
                     </button>
                   </Menu.Item>
                   <Menu.Item>
