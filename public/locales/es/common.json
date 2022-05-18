@@ -100,7 +100,7 @@
    "date": "Fecha",
    "default-market": "Mercado predeterminado",
    "default-spot-margin": "Comercia con margen por defecto",
-   "degraded-performance": "Solana network is experiencing degraded performance. Transactions may fail to send or confirm. (TPS: {{tps}})",
+   "degraded-performance": "Solana performance is degraded. Transactions may fail.",
    "delay-displaying-recent": "Puede haber un retraso en la visualización de la última actividad.",
    "delayed-info": "Data updates hourly",
    "deposit": "Depositar",

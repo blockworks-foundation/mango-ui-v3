@@ -100,7 +100,7 @@
   "date": "日期",
   "default-market": "預設市場",
   "default-spot-margin": "預設開啟現貨槓桿",
-  "degraded-performance": "Solana網格速度正在降低。交易也許會失敗。(TPS: {{tps}})",
+  "degraded-performance": "Solana網格速度正在降低。交易也許會失敗。",
   "delay-displaying-recent": "顯示最近狀態也許有所延誤。",
   "delayed-info": "資料每小時更新",
   "deposit": "存款",

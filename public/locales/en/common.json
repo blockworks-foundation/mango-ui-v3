@@ -100,7 +100,7 @@
    "date": "Date",
    "default-market": "Default Market",
    "default-spot-margin": "Spot margin enabled by default",
-   "degraded-performance": "Solana network is experiencing degraded performance. Transactions may fail to send or confirm. (TPS: {{tps}})",
+   "degraded-performance": "Solana performance is degraded. Transactions may fail.",
    "delay-displaying-recent": "There may be a delay in displaying the latest activity.",
    "delayed-info": "Data updates hourly",
    "deposit": "Deposit",

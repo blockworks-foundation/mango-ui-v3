@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
-import { XIcon } from '@heroicons/react/solid'
 import { Connection } from '@solana/web3.js'
 import sumBy from 'lodash/sumBy'
 import useInterval from '../hooks/useInterval'
 import { SECONDS } from '../stores/useMangoStore'
 import { useTranslation } from 'next-i18next'
+import { ExclamationIcon } from '@heroicons/react/outline'
 
 const connection = new Connection('https://solana-api.projectserum.com/')
 
@@ -42,17 +42,27 @@ const GlobalNotification = () => {
 
   if (show) {
     return (
-      <div className="flex items-center bg-th-bkg-4 text-th-primary">
-        <div className="w-full p-1 text-center">
-          <span>{t('degraded-performance', { tps: tps?.toFixed(0) })}</span>
+      <div className="flex items-center bg-th-bkg-4 text-th-fgd-2">
+        <div className="flex w-full items-center justify-center p-1">
+          <ExclamationIcon
+            className={`mr-1.5 mt-0.5 h-5 w-5 flex-shrink-0 ${
+              tps < 1500 ? 'text-th-red' : 'text-th-orange'
+            }`}
+          />
+          <span>{t('degraded-performance')}</span>
+          <div
+            className={`ml-2 whitespace-nowrap rounded-full px-1.5 py-0.5 text-xs ${
+              tps < 1500 ? 'bg-th-red text-white' : 'bg-th-orange text-th-bkg-1'
+            }`}
+          >
+            TPS:{' '}
+            <span className="font-bold">
+              {tps?.toLocaleString(undefined, {
+                maximumFractionDigits: 0,
+              })}
+            </span>
+          </div>
         </div>
-
-        <button
-          className="mr-4 text-th-primary hover:text-th-primary"
-          onClick={() => setShow(false)}
-        >
-          <XIcon className="h-5 w-5" />
-        </button>
       </div>
     )
   } else {
