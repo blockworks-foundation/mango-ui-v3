@@ -252,7 +252,9 @@ const NftProfilePicModal = ({ isOpen, onClose }) => {
             </LinkButton>
           ) : null}
         </div>
-      ) : null}
+      ) : (
+        <p className="text-center">{t('profile:no-nfts')}</p>
+      )}
     </Modal>
   )
 }
