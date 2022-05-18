@@ -12,6 +12,7 @@ import { LinkButton } from './Button'
 import { ArrowSmDownIcon } from '@heroicons/react/solid'
 import { useRouter } from 'next/router'
 import { AreaChart, Area, XAxis, YAxis } from 'recharts'
+import { useTheme } from 'next-themes'
 
 const MarketsTable = ({ isPerpMarket }) => {
   const { t } = useTranslation('common')
@@ -19,8 +20,10 @@ const MarketsTable = ({ isPerpMarket }) => {
   const isMobile = width ? width < breakpoints.md : false
   const marketsInfo = useMangoStore((s) => s.marketsInfo)
   const actions = useMangoStore((s) => s.actions)
-  const coingeckoPrices = useMangoStore((s) => s.coingeckoPrices)
+  const coingeckoPrices = useMangoStore((s) => s.coingeckoPrices.data)
+  const loadingCoingeckoPrices = useMangoStore((s) => s.coingeckoPrices.loading)
   const router = useRouter()
+  const { theme } = useTheme()
 
   useEffect(() => {
     if (coingeckoPrices.length === 0) {
@@ -195,6 +198,14 @@ const MarketsTable = ({ isPerpMarket }) => {
               (asset) => asset.symbol === baseSymbol
             )
             const chartData = coingeckoData ? coingeckoData.prices : undefined
+            const chartColor =
+              change24h >= 0
+                ? theme === 'Mango'
+                  ? '#AFD803'
+                  : '#5EBF4D'
+                : theme === 'Mango'
+                ? '#F84638'
+                : '#CC2929'
             return (
               <TrBody key={name} className="hover:bg-th-bkg-3">
                 <Td>
@@ -222,25 +233,29 @@ const MarketsTable = ({ isPerpMarket }) => {
                     )}
                   </div>
                   <div className="pl-6">
-                    {chartData !== undefined ? (
-                      <AreaChart width={104} height={40} data={chartData}>
-                        <Area
-                          isAnimationActive={false}
-                          type="monotone"
-                          dataKey="1"
-                          stroke="#FF9C24"
-                          fill="#FF9C24"
-                          fillOpacity={0.1}
-                        />
-                        <XAxis dataKey="0" hide />
-                        <YAxis
-                          domain={['dataMin', 'dataMax']}
-                          dataKey="1"
-                          hide
-                        />
-                      </AreaChart>
+                    {!loadingCoingeckoPrices ? (
+                      chartData !== undefined ? (
+                        <AreaChart width={104} height={40} data={chartData}>
+                          <Area
+                            isAnimationActive={false}
+                            type="monotone"
+                            dataKey="1"
+                            stroke={chartColor}
+                            fill={chartColor}
+                            fillOpacity={0.1}
+                          />
+                          <XAxis dataKey="0" hide />
+                          <YAxis
+                            domain={['dataMin', 'dataMax']}
+                            dataKey="1"
+                            hide
+                          />
+                        </AreaChart>
+                      ) : (
+                        t('unavailable')
+                      )
                     ) : (
-                      t('unavailable')
+                      <div className="h-10 w-[104px] animate-pulse rounded bg-th-bkg-3" />
                     )}
                   </div>
                 </Td>
@@ -316,6 +331,14 @@ const MarketsTable = ({ isPerpMarket }) => {
           (asset) => asset.symbol === baseSymbol
         )
         const chartData = coingeckoData ? coingeckoData.prices : undefined
+        const chartColor =
+          change24h >= 0
+            ? theme === 'Mango'
+              ? '#AFD803'
+              : '#5EBF4D'
+            : theme === 'Mango'
+            ? '#F84638'
+            : '#CC2929'
         return (
           <Link href={`/?name=${name}`} shallow={true} key={name}>
             <a
@@ -352,21 +375,29 @@ const MarketsTable = ({ isPerpMarket }) => {
                       )}
                     </div>
                   </div>
-                  {chartData !== undefined ? (
-                    <AreaChart width={128} height={48} data={chartData}>
-                      <Area
-                        isAnimationActive={false}
-                        type="monotone"
-                        dataKey="1"
-                        stroke="#FF9C24"
-                        fill="#FF9C24"
-                        fillOpacity={0.1}
-                      />
-                      <XAxis dataKey="0" hide />
-                      <YAxis domain={['dataMin', 'dataMax']} dataKey="1" hide />
-                    </AreaChart>
+                  {!loadingCoingeckoPrices ? (
+                    chartData !== undefined ? (
+                      <AreaChart width={128} height={48} data={chartData}>
+                        <Area
+                          isAnimationActive={false}
+                          type="monotone"
+                          dataKey="1"
+                          stroke={chartColor}
+                          fill={chartColor}
+                          fillOpacity={0.1}
+                        />
+                        <XAxis dataKey="0" hide />
+                        <YAxis
+                          domain={['dataMin', 'dataMax']}
+                          dataKey="1"
+                          hide
+                        />
+                      </AreaChart>
+                    ) : (
+                      t('unavailable')
+                    )
                   ) : (
-                    t('unavailable')
+                    <div className="h-12 w-[128px] animate-pulse rounded bg-th-bkg-4" />
                   )}
                 </div>
                 <div className="text-right">
