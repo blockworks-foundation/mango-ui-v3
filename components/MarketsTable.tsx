@@ -235,22 +235,12 @@ const MarketsTable = ({ isPerpMarket }) => {
                   <div className="pl-6">
                     {!loadingCoingeckoPrices ? (
                       chartData !== undefined ? (
-                        <AreaChart width={104} height={40} data={chartData}>
-                          <Area
-                            isAnimationActive={false}
-                            type="monotone"
-                            dataKey="1"
-                            stroke={chartColor}
-                            fill={chartColor}
-                            fillOpacity={0.1}
-                          />
-                          <XAxis dataKey="0" hide />
-                          <YAxis
-                            domain={['dataMin', 'dataMax']}
-                            dataKey="1"
-                            hide
-                          />
-                        </AreaChart>
+                        <PriceChart
+                          color={chartColor}
+                          data={chartData}
+                          height={40}
+                          width={104}
+                        />
                       ) : (
                         t('unavailable')
                       )
@@ -377,22 +367,12 @@ const MarketsTable = ({ isPerpMarket }) => {
                   </div>
                   {!loadingCoingeckoPrices ? (
                     chartData !== undefined ? (
-                      <AreaChart width={128} height={48} data={chartData}>
-                        <Area
-                          isAnimationActive={false}
-                          type="monotone"
-                          dataKey="1"
-                          stroke={chartColor}
-                          fill={chartColor}
-                          fillOpacity={0.1}
-                        />
-                        <XAxis dataKey="0" hide />
-                        <YAxis
-                          domain={['dataMin', 'dataMax']}
-                          dataKey="1"
-                          hide
-                        />
-                      </AreaChart>
+                      <PriceChart
+                        color={chartColor}
+                        data={chartData}
+                        height={48}
+                        width={128}
+                      />
                     ) : (
                       t('unavailable')
                     )
@@ -431,3 +411,23 @@ const MarketsTable = ({ isPerpMarket }) => {
 }
 
 export default MarketsTable as any
+
+const PriceChart = ({ data, width, height, color }) => (
+  <AreaChart width={width} height={height} data={data}>
+    <defs>
+      <linearGradient id="gradientArea" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stopColor={color} stopOpacity={0.6} />
+        <stop offset="100%" stopColor={color} stopOpacity={0} />
+      </linearGradient>
+    </defs>
+    <Area
+      isAnimationActive={false}
+      type="monotone"
+      dataKey="1"
+      stroke={color}
+      fill="url(#gradientArea)"
+    />
+    <XAxis dataKey="0" hide />
+    <YAxis domain={['dataMin', 'dataMax']} dataKey="1" hide />
+  </AreaChart>
+)
