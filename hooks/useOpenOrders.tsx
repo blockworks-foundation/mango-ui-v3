@@ -71,7 +71,13 @@ function parsePerpOpenOrders(
     const bidData = accountInfos[market.bids.toBase58()]?.data
     bidOrderBook =
       market && bidData
-        ? new BookSide(market.bids, market, BookSideLayout.decode(bidData))
+        ? new BookSide(
+            market.bids,
+            market,
+            BookSideLayout.decode(bidData),
+            undefined,
+            100000
+          )
         : []
   }
 
@@ -79,7 +85,13 @@ function parsePerpOpenOrders(
     const askData = accountInfos[market.asks.toBase58()]?.data
     askOrderBook =
       market && askData
-        ? new BookSide(market.asks, market, BookSideLayout.decode(askData))
+        ? new BookSide(
+            market.asks,
+            market,
+            BookSideLayout.decode(askData),
+            undefined,
+            100000
+          )
         : []
   }
 

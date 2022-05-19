@@ -172,6 +172,7 @@ export default function AccountOverview() {
           <div className="mb-4 ml-auto md:w-56">
             <ButtonGroup
               activeValue={performanceRange}
+              className="h-8"
               onChange={(p) => setPerformanceRange(p)}
               values={performanceRangePresetLabels}
             />

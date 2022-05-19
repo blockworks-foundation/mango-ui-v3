@@ -20,7 +20,7 @@ import {
   LightBulbIcon,
   UserAddIcon,
 } from '@heroicons/react/outline'
-import { MangoIcon } from './icons'
+import { MangoIcon, TrophyIcon } from './icons'
 import { useWallet } from '@solana/wallet-adapter-react'
 import {
   IncomingThemeVariables,
@@ -43,7 +43,7 @@ const themeToDialectTheme = {
 }
 
 const MANGO_PUBLIC_KEY = new anchor.web3.PublicKey(
-  'BUxZD6aECR5B5MopyvvYqJxwSKDBhx2jSSo1U32en6mj'
+  'ACku9v81NK49xb8FfjciufbhFsQd8Dz2xKTMZgxAXCzp'
 )
 
 const themeVariables: IncomingThemeVariables = {
@@ -136,6 +136,12 @@ const TopBar = () => {
                       '/referral',
                       false,
                       <UserAddIcon className="h-4 w-4" key="referrals" />,
+                    ],
+                    [
+                      t('leaderboard'),
+                      '/leaderboard',
+                      false,
+                      <TrophyIcon className="h-4 w-4" key="leaderboard" />,
                     ],
                     [
                       t('calculator'),
