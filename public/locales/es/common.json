@@ -21,6 +21,7 @@
    "accounts": "Cuentas",
    "add-more-sol": "Agregue más SOL a su billetera para evitar transacciones fallidas.",
    "add-name": "Añadir nombre",
+   "advanced-orders-warning": "Advanced order execution may be delayed due to Solana network issues. Use them at your own risk",
    "alerts": "Alertas",
    "all-assets": "Todos los activos",
    "all-time": "All Time",

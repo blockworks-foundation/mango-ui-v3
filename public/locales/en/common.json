@@ -21,6 +21,7 @@
    "accounts": "Accounts",
    "add-more-sol": "Add more SOL to your wallet to avoid failed transactions.",
    "add-name": "Add Name",
+   "advanced-orders-warning": "Advanced order execution may be delayed due to Solana network issues. Use them at your own risk",
    "alerts": "Alerts",
    "all-assets": "All Assets",
    "all-time": "All Time",

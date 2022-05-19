@@ -810,6 +810,14 @@ export default function AdvancedTradeForm({
         </div>
       ) : null}
       <OrderSideTabs onChange={onChangeSide} side={side} />
+      {isTriggerOrder ? (
+        <div className="mb-2">
+          <InlineNotification
+            desc={t('advanced-orders-warning')}
+            type="warning"
+          />
+        </div>
+      ) : null}
       <div className="grid grid-cols-12 gap-x-1.5 gap-y-0.5 text-left">
         <div className="col-span-12 md:col-span-6">
           <label className="text-xxs text-th-fgd-3">{t('type')}</label>

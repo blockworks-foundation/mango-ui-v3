@@ -21,6 +21,7 @@
   "accounts": "帳戶",
   "add-more-sol": "為了避免交易出錯請給被連結的錢包多存入一點SOL。",
   "add-name": "加標籤",
+  "advanced-orders-warning": "Advanced order execution may be delayed due to Solana network issues. Use them at your own risk",
   "alerts": "警報",
   "all-assets": "所有資產",
   "all-time": "全歷史",
