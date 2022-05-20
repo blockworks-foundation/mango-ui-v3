@@ -90,6 +90,7 @@ const TopBar = () => {
   const { theme } = useTheme()
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const cluster = useMangoStore((s) => s.connection.cluster)
+  const url = useMangoStore((s) => s.connection.endpoint)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
   const [defaultMarket] = useLocalStorageState(
     DEFAULT_MARKET_KEY,
@@ -193,12 +194,17 @@ const TopBar = () => {
               {isDevnet ? <div className="pl-2 text-xxs">Devnet</div> : null}
               <NotificationsButton
                 wallet={wallet as unknown as WalletType}
+                rpcUrl={url}
                 network={cluster as string}
                 publicKey={MANGO_PUBLIC_KEY}
                 theme={themeToDialectTheme[theme]}
                 variables={themeVariables}
-                notifications={[{ name: 'Filled Orders', detail: 'Event' }]}
-                channels={['web3', 'email', 'sms']}
+                notifications={[
+                  { name: 'Filled orders', detail: 'On fill' },
+                  { name: 'Liquidation warnings', detail: 'On low health' },
+                  { name: 'DAO proposals', detail: 'On creation' },
+                ]}
+                channels={['web3', 'telegram', 'email', 'sms']}
               />
               <div className="pl-2">
                 <Settings />
