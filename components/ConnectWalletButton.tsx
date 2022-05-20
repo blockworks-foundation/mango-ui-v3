@@ -119,12 +119,7 @@ export const ConnectWalletButton: React.FC = () => {
                   loadingTransaction ? 'animate-pulse bg-th-bkg-4' : ''
                 }`}
               >
-                <ProfileImage
-                  thumbHeightClass="h-10"
-                  thumbWidthClass="w-10"
-                  placeholderHeightClass="h-6"
-                  placeholderWidthClass="w-6"
-                />
+                <ProfileImage imageSize="10" placeholderSize="6" />
               </Menu.Button>
               <Transition
                 appear={true}

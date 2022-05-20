@@ -29,7 +29,6 @@ import { AccountInfo, Commitment, Connection, PublicKey } from '@solana/web3.js'
 import { EndpointInfo } from '../@types/types'
 import { isDefined, zipDict } from '../utils'
 import { Notification, notify } from '../utils/notifications'
-import { LAST_ACCOUNT_KEY } from '../components/AccountsModal'
 import {
   DEFAULT_MARKET_KEY,
   initialMarket,
@@ -90,6 +89,8 @@ const mangoGroupPk = new PublicKey(defaultMangoGroupIds!.publicKey)
 
 export const SECONDS = 1000
 export const CLIENT_TX_TIMEOUT = 45000
+
+export const LAST_ACCOUNT_KEY = 'lastAccountViewed-3.0'
 
 // Used to retry loading the MangoGroup and MangoAccount if an rpc node error occurs
 let mangoGroupRetryAttempt = 0

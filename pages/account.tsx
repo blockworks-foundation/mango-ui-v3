@@ -56,7 +56,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { handleWalletConnect } from 'components/ConnectWalletButton'
 import { MangoAccountLookup } from 'components/account_page/MangoAccountLookup'
 import NftProfilePicModal from 'components/NftProfilePicModal'
-import ProfileImage from 'components/ProfileImage'
+import ProfileImageButton from 'components/ProfileImageButton'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -105,9 +105,6 @@ export default function Account() {
   const [viewIndex, setViewIndex] = useState(0)
   const [activeTab, setActiveTab] = useState(TABS[0])
   const [showProfilePicModal, setShowProfilePicModal] = useState(false)
-  const loadingTransaction = useMangoStore(
-    (s) => s.wallet.nfts.loadingTransaction
-  )
 
   const connecting = wallet?.adapter?.connecting
   const isMobile = width ? width < breakpoints.sm : false
@@ -286,25 +283,11 @@ export default function Account() {
           {mangoAccount ? (
             <>
               <div className="flex flex-col pb-3 sm:flex-row sm:items-center md:pb-0">
-                <button
+                <ProfileImageButton
                   disabled={!!pubkey}
-                  className={`relative mb-2 mr-4 flex h-20 w-20 items-center justify-center rounded-full sm:mb-0 ${
-                    loadingTransaction
-                      ? 'animate-pulse bg-th-bkg-4'
-                      : 'bg-th-bkg-button'
-                  }`}
-                  onClick={() => setShowProfilePicModal(true)}
-                >
-                  <ProfileImage
-                    thumbHeightClass="h-20"
-                    thumbWidthClass="w-20"
-                    placeholderHeightClass="h-12"
-                    placeholderWidthClass="w-12"
-                  />
-                  <div className="default-transition absolute bottom-0 top-0 left-0 right-0 flex h-full w-full items-center justify-center rounded-full bg-[rgba(0,0,0,0.6)] opacity-0 hover:opacity-100">
-                    <PencilIcon className="h-5 w-5 text-th-fgd-1" />
-                  </div>
-                </button>
+                  imageSize="80"
+                  placeholderSize="56"
+                />
                 <div>
                   <div className="mb-1 flex items-center">
                     <h1 className={`mr-3`}>
