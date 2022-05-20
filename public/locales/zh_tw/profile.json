@@ -1,11 +1,11 @@
 {
-    "choose-profile": "Choose a Profile Pic",
-    "edit-profile-pic": "Edit Profile Pic",
-    "no-nfts": "😞 No NFTs found...",
-    "profile-pic-failure": "Failed to set profile pic",
-    "profile-pic-success": "Successfully set profile pic",
-    "profile-pic-remove-failure": "Failed to remove profile pic",
-    "profile-pic-remove-success": "Successfully removed profile pic",
-    "remove": "Remove",
-    "set-profile-pic": "Set Profile Pic"
+    "choose-profile": "選擇頭像",
+    "edit-profile-pic": "切換頭像",
+    "no-nfts": "😞 未找到NFT...",
+    "profile-pic-failure": "設置頭像失敗",
+    "profile-pic-success": "設置頭像成功",
+    "profile-pic-remove-failure": "刪除頭像失敗",
+    "profile-pic-remove-success": "刪除頭像成功",
+    "remove": "刪除",
+    "set-profile-pic": "設置頭像"
 }
