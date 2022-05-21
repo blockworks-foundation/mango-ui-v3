@@ -204,7 +204,7 @@ const TopBar = () => {
                   { name: 'Liquidation warnings', detail: 'On low health' },
                   { name: 'DAO proposals', detail: 'On creation' },
                 ]}
-                channels={['web3', 'telegram', 'email', 'sms']}
+                channels={['web3', 'telegram', 'email']}
               />
               <div className="pl-2">
                 <Settings />
