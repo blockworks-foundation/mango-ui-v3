@@ -37,19 +37,26 @@ const ProfileImage = ({
     <img
       alt=""
       src={publicKey ? unownedPfp?.url : pfp?.url}
-      className={`default-transition rounded-full hover:opacity-60 h-${imageSize} w-${imageSize} ${
+      className={`default-transition rounded-full ${
         loadingTransaction ? 'opacity-40' : ''
       }`}
+      style={{ width: `${imageSize}px`, height: `${imageSize}px` }}
     />
   ) : (
     <div
-      className={`flex items-center justify-center h-${imageSize} w-${imageSize} rounded-full ${
-        loadingTransaction ? 'animate-pulse bg-th-bkg-4' : 'bg-th-bkg-button'
+      className={`flex items-center justify-center rounded-full ${
+        loadingTransaction ? 'animate-pulse bg-th-bkg-4' : 'bg-th-bkg-4'
       }`}
+      style={{ width: `${imageSize}px`, height: `${imageSize}px` }}
     >
-      <ProfileIcon
-        className={`text-th-fgd-3 h-${placeholderSize} w-${placeholderSize}`}
-      />
+      <div
+        style={{
+          width: `${placeholderSize}px`,
+          height: `${placeholderSize}px`,
+        }}
+      >
+        <ProfileIcon className={`h-full w-full text-th-fgd-3`} />
+      </div>
     </div>
   )
 }

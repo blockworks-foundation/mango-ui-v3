@@ -286,7 +286,7 @@ export default function Account() {
                 <ProfileImageButton
                   disabled={!!pubkey}
                   imageSize="80"
-                  placeholderSize="56"
+                  placeholderSize="40"
                 />
                 <div>
                   <div className="mb-1 flex items-center">

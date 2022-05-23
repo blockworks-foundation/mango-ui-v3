@@ -115,11 +115,11 @@ export const ConnectWalletButton: React.FC = () => {
           {({ open }) => (
             <div className="relative" id="profile-menu-tip">
               <Menu.Button
-                className={`flex h-10 w-10 items-center justify-center rounded-full bg-th-bkg-button hover:bg-th-bkg-4 hover:bg-th-bkg-4 hover:text-th-fgd-3 focus:outline-none ${
+                className={`flex h-10 w-10 items-center justify-center rounded-full bg-th-bkg-button hover:opacity-60 focus:outline-none ${
                   loadingTransaction ? 'animate-pulse bg-th-bkg-4' : ''
                 }`}
               >
-                <ProfileImage imageSize="10" placeholderSize="6" />
+                <ProfileImage imageSize="40" placeholderSize="24" />
               </Menu.Button>
               <Transition
                 appear={true}
