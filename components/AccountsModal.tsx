@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useEffect, useState } from 'react'
 import { RadioGroup } from '@headlessui/react'
 import { CheckCircleIcon } from '@heroicons/react/solid'
-import { PlusCircleIcon, UsersIcon } from '@heroicons/react/outline'
+import { HeartIcon, PlusCircleIcon, UsersIcon } from '@heroicons/react/outline'
 import useMangoStore from '../stores/useMangoStore'
 import { MangoAccount, MangoGroup } from '@blockworks-foundation/mango-client'
 import { abbreviateAddress, formatUsdValue } from '../utils'
@@ -144,7 +144,7 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
                                     )}
                                   </div>
                                   {mangoGroup && (
-                                    <div className="text-xs text-th-fgd-3">
+                                    <div className="mt-0.5 text-xs text-th-fgd-3">
                                       <AccountInfo
                                         mangoGroup={mangoGroup}
                                         mangoAccount={account}
@@ -198,22 +198,23 @@ const AccountInfo = ({
     return null
   }
   const accountEquity = mangoAccount.computeValue(mangoGroup, mangoCache)
-  const leverage = mangoAccount.getLeverage(mangoGroup, mangoCache).toFixed(2)
+  const health = mangoAccount.getHealthRatio(mangoGroup, mangoCache, 'Maint')
 
   return (
-    <div className="text-xs text-th-fgd-3">
+    <div className="flex items-center text-xs text-th-fgd-3">
       {formatUsdValue(accountEquity.toNumber())}
       <span className="px-1.5 text-th-fgd-4">|</span>
       <span
-        className={
-          parseFloat(leverage) > 4
+        className={`flex items-center ${
+          Number(health) < 15
             ? 'text-th-red'
-            : parseFloat(leverage) > 2
+            : Number(health) < 30
             ? 'text-th-orange'
             : 'text-th-green'
-        }
+        }`}
       >
-        {leverage}x
+        <HeartIcon className="mr-0.5 h-4 w-4" />
+        {health.toFixed(2)}%
       </span>
     </div>
   )
