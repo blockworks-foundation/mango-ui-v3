@@ -65,6 +65,19 @@ const followingRes = [
   },
 ]
 
+const followerRes = [
+  {
+    wallet_pk: 'AMMS71iywhGZJ3Hdb9jJgkT8hRd7E1rPvAbB6vMyfDRL',
+    profile_name: 'Alphonse Mangotano',
+    trader_category: 'Degen',
+  },
+  {
+    wallet_pk: 'E8fEXpzHwgYRgzeRnEw71HKNih7YKK19MJYKvCAHf5AU',
+    profile_name: 'Satoshi Nakamoto',
+    trader_category: 'Degen',
+  },
+]
+
 // const feed = [
 //   {
 //     wallet_pk: 'AMMS71iywhGZJ3Hdb9jJgkT8hRd7E1rPvAbB6vMyfDRL',
@@ -298,7 +311,10 @@ export default function Profile() {
                   <ProfileImageButton
                     imageSize="80"
                     placeholderSize="40"
-                    disabled={profileData?.wallet_pk !== publicKey?.toString()}
+                    disabled={
+                      !connected ||
+                      profileData?.wallet_pk !== publicKey?.toString()
+                    }
                     publicKey={profileData?.wallet_pk || wallet}
                   />
                   <div>
@@ -441,6 +457,35 @@ export default function Profile() {
                             </div>
                           </a>
                         </div>
+                      )
+                    })
+                  : null}
+                {activeTab === 'followers'
+                  ? followerRes.map((user) => {
+                      return (
+                        <button
+                          className="default-transition block flex w-full items-center justify-between rounded-md bg-th-bkg-3 p-4 hover:bg-th-bkg-4"
+                          onClick={() =>
+                            router.push(
+                              `/profile?wallet=${user.wallet_pk}`,
+                              undefined,
+                              { shallow: true }
+                            )
+                          }
+                          key={user.wallet_pk}
+                        >
+                          <ProfileImage
+                            imageSize="56"
+                            placeholderSize="32"
+                            publicKey={user.wallet_pk}
+                          />
+                          <p className="mb-0 ml-3 font-bold text-th-fgd-1">
+                            {user.profile_name}
+                          </p>
+                          <div className="my-auto ml-auto">
+                            <ChevronRightIcon className="ml-2 mt-0.5 h-5 w-5 text-th-fgd-3" />
+                          </div>
+                        </button>
                       )
                     })
                   : null}
