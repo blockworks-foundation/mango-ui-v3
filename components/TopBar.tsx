@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { abbreviateAddress } from '../utils/index'
 import useLocalStorageState from '../hooks/useLocalStorageState'
@@ -29,15 +29,31 @@ import { useWallet } from '@solana/wallet-adapter-react'
 
 const TopBar = () => {
   const { t } = useTranslation('common')
-  const { publicKey } = useWallet()
+  const { connected, publicKey } = useWallet()
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
+  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const cluster = useMangoStore((s) => s.connection.cluster)
+  const mangoClient = useMangoStore((s) => s.connection.client)
+  const [numberOfAccounts, setNumberOfAccounts] = useState<number | null>(null)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
   const [defaultMarket] = useLocalStorageState(
     DEFAULT_MARKET_KEY,
     initialMarket
   )
   const isDevnet = cluster === 'devnet'
+
+  useEffect(() => {
+    if (mangoAccount && mangoGroup && publicKey) {
+      const getMangoAccounts = async () => {
+        const mangoAccounts = await mangoClient.getMangoAccountsForOwner(
+          mangoGroup,
+          publicKey
+        )
+        setNumberOfAccounts(mangoAccounts.length)
+      }
+      getMangoAccounts()
+    }
+  }, [mangoAccount, mangoGroup, publicKey])
 
   const handleCloseAccounts = useCallback(() => {
     setShowAccountsModal(false)
@@ -143,11 +159,25 @@ const TopBar = () => {
                   onClick={() => setShowAccountsModal(true)}
                 >
                   <div className="text-xs font-normal text-th-primary">
-                    {t('account')}
+                    {numberOfAccounts
+                      ? numberOfAccounts === 1
+                        ? `1 ${t('account')}`
+                        : `${numberOfAccounts} ${t('accounts')}`
+                      : t('account')}
                   </div>
                   {mangoAccount.name
                     ? mangoAccount.name
                     : abbreviateAddress(mangoAccount.publicKey)}
+                </button>
+              ) : connected && !mangoAccount ? (
+                <button
+                  className="rounded border border-th-bkg-4 py-1 px-2 text-xs hover:border-th-fgd-4 focus:outline-none"
+                  onClick={() => setShowAccountsModal(true)}
+                >
+                  <div className="text-xs font-normal text-th-primary">
+                    {`0 ${t('accounts')}`}
+                  </div>
+                  {t('get-started')} 😎
                 </button>
               ) : null}
               <ConnectWalletButton />

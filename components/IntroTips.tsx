@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Steps } from 'intro.js-react'
 import { withTranslation } from 'react-i18next'
 import { MangoAccount } from '@blockworks-foundation/mango-client'
-import DepositModal from './DepositModal'
+import AccountsModal from './AccountsModal'
 
 export const SHOW_TOUR_KEY = 'showTour'
 
@@ -16,7 +16,7 @@ interface State {
   steps: any
   stepsEnabled: boolean
   initialStep: number
-  showDeposit: boolean
+  showCreateAccount: boolean
 }
 
 class IntroTips extends Component<Props, State> {
@@ -24,7 +24,7 @@ class IntroTips extends Component<Props, State> {
   constructor(props) {
     super(props)
     this.state = {
-      showDeposit: false,
+      showCreateAccount: false,
       stepsEnabled: true,
       initialStep: 0,
       steps: [
@@ -163,14 +163,14 @@ class IntroTips extends Component<Props, State> {
   }
 
   closeCreateAccountModal = () => {
-    this.setState({ showDeposit: false })
+    this.setState({ showCreateAccount: false })
   }
 
   handleEndTour = () => {
     localStorage.setItem('showTour', 'false')
     this.setState({ stepsEnabled: false })
     if (!this.props.mangoAccount) {
-      this.setState({ showDeposit: true })
+      this.setState({ showCreateAccount: true })
     }
   }
 
@@ -192,7 +192,7 @@ class IntroTips extends Component<Props, State> {
   }
 
   render() {
-    const { initialStep, showDeposit, stepsEnabled, steps } = this.state
+    const { initialStep, showCreateAccount, stepsEnabled, steps } = this.state
 
     return (
       <>
@@ -214,9 +214,9 @@ class IntroTips extends Component<Props, State> {
           }}
           ref={(steps) => (this.steps = steps)}
         />
-        {showDeposit ? (
-          <DepositModal
-            isOpen={showDeposit}
+        {showCreateAccount ? (
+          <AccountsModal
+            isOpen={showCreateAccount}
             onClose={this.closeCreateAccountModal}
           />
         ) : null}

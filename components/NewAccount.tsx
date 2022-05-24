@@ -139,14 +139,16 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
     <>
       <Modal.Header>
         <ElementTitle noMarginBottom>{t('create-account')}</ElementTitle>
-        <p className="mt-1 text-center">{t('insufficient-sol')}</p>
+        <div className="my-2">
+          <InlineNotification type="info" desc={t('insufficient-sol')} />
+        </div>
       </Modal.Header>
       <div className="mb-4 border-b border-th-bkg-4 pb-6">
         <Label className="flex items-center">
           {t('account-name')}{' '}
           <span className="ml-1 text-th-fgd-3">{t('optional')}</span>
           <Tooltip content={t('tooltip-name-onchain')}>
-            <InformationCircleIcon className="ml-2 h-5 w-5 text-th-primary" />
+            <InformationCircleIcon className="ml-2 h-5 w-5 text-th-fgd-3" />
           </Tooltip>
         </Label>
         <Input
@@ -164,7 +166,7 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
           </div>
         ) : null}
       </div>
-      <h3 className="mb-2 text-center">{t('initial-deposit')}</h3>
+      <h3 className="mb-1 text-center">{t('initial-deposit')}</h3>
       <AccountSelect
         accounts={walletTokens}
         selectedAccount={selectedAccount}
@@ -209,9 +211,6 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
             {t('lets-go')}
           </div>
         </Button>
-      </div>
-      <div className="pt-3">
-        <InlineNotification desc={t('interest-info')} type="info" />
       </div>
     </>
   )
