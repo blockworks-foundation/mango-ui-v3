@@ -181,6 +181,18 @@ const AccountPerformance = () => {
       }
     })
 
+    // Normalise chart to start from 0 (except for account value)
+    if (parseInt(performanceRange) !== 90 && chartToShow !== 'account-value') {
+      const startValues = Object.assign({}, stats[0]);
+      for (let i = 0; i < stats.length; i++ ) {
+        for (const key in stats[i]) {
+          if (key !== 'time') {
+            stats[i][key] = stats[i][key] - startValues[key];
+          }
+        }
+      }
+    }
+
     setChartData(stats)
     setChartToShow(chartToShow)
   }
@@ -342,7 +354,7 @@ const AccountPerformance = () => {
             <div className="flex flex-col pb-4 sm:flex-row sm:items-center sm:justify-between">
               <h3 className="mb-4 sm:mb-0">{`${t(
                 `account-performance:${chartToShow}`
-              )} ${t('account-performance:vs-time')}`}</h3>
+              )}`}</h3>
               <div className="w-full sm:ml-auto sm:w-56">
                 <ButtonGroup
                   activeValue={performanceRange}
