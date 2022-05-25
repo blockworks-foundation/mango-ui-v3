@@ -21,8 +21,8 @@ import { useTranslation } from 'next-i18next'
 import { WalletSelect } from 'components/WalletSelect'
 import AccountsModal from './AccountsModal'
 import uniqBy from 'lodash/uniqBy'
-import NftProfilePicModal from './NftProfilePicModal'
 import ProfileImage from './ProfileImage'
+import { useRouter } from 'next/router'
 
 export const handleWalletConnect = (wallet: Wallet) => {
   if (!wallet) {
@@ -43,14 +43,13 @@ export const handleWalletConnect = (wallet: Wallet) => {
 export const ConnectWalletButton: React.FC = () => {
   const { connected, publicKey, wallet, wallets, select } = useWallet()
   const { t } = useTranslation(['common', 'profile'])
-  const pfp = useMangoStore((s) => s.wallet.pfp)
+  const router = useRouter()
   const loadingTransaction = useMangoStore(
     (s) => s.wallet.nfts.loadingTransaction
   )
   const set = useMangoStore((s) => s.set)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
-  const [showProfilePicModal, setShowProfilePicModal] = useState(false)
 
   const installedWallets = useMemo(() => {
     const installed: Wallet[] = []
@@ -78,10 +77,6 @@ export const ConnectWalletButton: React.FC = () => {
 
   const handleCloseAccounts = useCallback(() => {
     setShowAccountsModal(false)
-  }, [])
-
-  const handleCloseProfilePicModal = useCallback(() => {
-    setShowProfilePicModal(false)
   }, [])
 
   const handleDisconnect = useCallback(() => {
@@ -136,23 +131,19 @@ export const ConnectWalletButton: React.FC = () => {
                   <Menu.Item>
                     <button
                       className="flex w-full flex-row items-center rounded-none py-0.5 font-normal hover:cursor-pointer hover:text-th-primary focus:outline-none"
-                      onClick={() => setShowAccountsModal(true)}
+                      onClick={() => router.push('/profile')}
                     >
-                      <CurrencyDollarIcon className="h-4 w-4" />
-                      <div className="pl-2 text-left">{t('accounts')}</div>
+                      <UserCircleIcon className="h-4 w-4" />
+                      <div className="pl-2 text-left">{t('profile')}</div>
                     </button>
                   </Menu.Item>
                   <Menu.Item>
                     <button
                       className="flex w-full flex-row items-center rounded-none py-0.5 font-normal hover:cursor-pointer hover:text-th-primary focus:outline-none"
-                      onClick={() => setShowProfilePicModal(true)}
+                      onClick={() => setShowAccountsModal(true)}
                     >
-                      <UserCircleIcon className="h-4 w-4" />
-                      <div className="pl-2 text-left">
-                        {pfp?.isAvailable
-                          ? t('profile:edit-profile-pic')
-                          : t('profile:set-profile-pic')}
-                      </div>
+                      <CurrencyDollarIcon className="h-4 w-4" />
+                      <div className="pl-2 text-left">{t('accounts')}</div>
                     </button>
                   </Menu.Item>
                   <Menu.Item>
@@ -207,12 +198,6 @@ export const ConnectWalletButton: React.FC = () => {
         <AccountsModal
           onClose={handleCloseAccounts}
           isOpen={showAccountsModal}
-        />
-      )}
-      {showProfilePicModal && (
-        <NftProfilePicModal
-          onClose={handleCloseProfilePicModal}
-          isOpen={showProfilePicModal}
         />
       )}
     </>

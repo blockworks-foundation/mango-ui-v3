@@ -42,6 +42,8 @@ import { Wallet } from '@solana/wallet-adapter-react'
 import { coingeckoIds } from 'utils/tokens'
 import { getTokenAccountsByMint } from 'utils/tokens'
 import { getParsedNftAccountsByOwner } from 'utils/getParsedNftAccountsByOwner'
+import { sign } from 'tweetnacl'
+import bs58 from 'bs58'
 
 export const ENDPOINTS: EndpointInfo[] = [
   {
@@ -242,6 +244,12 @@ export type MangoStore = {
     perp: any[]
     parsed: any[]
   }
+  profile: {
+    loadProfileFollowing: boolean
+    loadFollowers: boolean
+    details: any[]
+    following: any[]
+  }
   set: (x: (x: MangoStore) => void) => void
   actions: {
     fetchWalletTokens: (wallet: Wallet) => void
@@ -267,6 +275,17 @@ export type MangoStore = {
     loadAlerts: (pk: PublicKey) => void
     fetchMarketsInfo: () => void
     fetchCoingeckoPrices: () => void
+    fetchProfileFollowing: (pk: string) => void
+    followAccount: (
+      mangoAccountPk: string,
+      publicKey: PublicKey,
+      signMessage: any
+    ) => void
+    unfollowAccount: (
+      mangoAccountPk: string,
+      publicKey: PublicKey,
+      signMessage: any
+    ) => void
   }
   alerts: {
     activeAlerts: Array<Alert>
@@ -413,6 +432,12 @@ const useMangoStore = create<
         orderLines: new Map(),
       },
       coingeckoPrices: { data: [], loading: false },
+      profile: {
+        loadProfileFollowing: false,
+        loadFollowers: false,
+        details: [],
+        following: [],
+      },
       set: (fn) => set(produce(fn)),
       actions: {
         async fetchWalletTokens(wallet: Wallet) {
@@ -1158,6 +1183,109 @@ const useMangoStore = create<
             set((state) => {
               state.coingeckoPrices.loading = false
             })
+          }
+        },
+        async fetchProfileFollowing(pk: string) {
+          const set = get().set
+          if (!pk) return
+          set((state) => {
+            state.profile.loadProfileFollowing = true
+          })
+          try {
+            const followingRes = await fetch(
+              `https://mango-transaction-log.herokuapp.com/v3/user-data/following?wallet-pk=${pk}`
+            )
+            const parsedResponse = await followingRes.json()
+            set((state) => {
+              state.profile.loadProfileFollowing = false
+              state.profile.following = parsedResponse
+            })
+          } catch {
+            notify({
+              type: 'error',
+              title: 'Unable to load following',
+            })
+            set((state) => {
+              state.profile.loadProfileFollowing = false
+            })
+          }
+        },
+        async followAccount(
+          mangoAccountPk: string,
+          publicKey: PublicKey,
+          signMessage: (x) => Uint8Array
+        ) {
+          try {
+            if (!publicKey) throw new Error('Wallet not connected!')
+            if (!signMessage)
+              throw new Error('Wallet does not support message signing!')
+
+            const messageString = JSON.stringify({
+              mango_account: mangoAccountPk,
+              action: 'insert',
+            })
+            const message = new TextEncoder().encode(messageString)
+            const signature = await signMessage(message)
+            if (!sign.detached.verify(message, signature, publicKey.toBytes()))
+              throw new Error('Invalid signature!')
+
+            const requestOptions = {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                wallet_pk: publicKey.toString(),
+                message: messageString,
+                signature: bs58.encode(signature),
+              }),
+            }
+            const response = await fetch(
+              'https://mango-transaction-log.herokuapp.com/v3/user-data/following',
+              requestOptions
+            )
+            if (response.status === 200) {
+              notify({ type: 'success', title: 'Account followed' })
+            }
+          } catch (error: any) {
+            notify({ type: 'error', title: 'Failed to follow account' })
+          }
+        },
+        async unfollowAccount(
+          mangoAccountPk: string,
+          publicKey: PublicKey,
+          signMessage: (x) => Uint8Array
+        ) {
+          try {
+            if (!publicKey) throw new Error('Wallet not connected!')
+            if (!signMessage)
+              throw new Error('Wallet does not support message signing!')
+
+            const messageString = JSON.stringify({
+              mango_account: mangoAccountPk,
+              action: 'delete',
+            })
+            const message = new TextEncoder().encode(messageString)
+            const signature = await signMessage(message)
+            if (!sign.detached.verify(message, signature, publicKey.toBytes()))
+              throw new Error('Invalid signature!')
+
+            const requestOptions = {
+              method: 'DELETE',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                wallet_pk: publicKey.toString(),
+                message: messageString,
+                signature: bs58.encode(signature),
+              }),
+            }
+            const response = await fetch(
+              'https://mango-transaction-log.herokuapp.com/v3/user-data/following',
+              requestOptions
+            )
+            if (response.status === 200) {
+              notify({ type: 'success', title: 'Account unfollowed' })
+            }
+          } catch (error: any) {
+            notify({ type: 'error', title: 'Failed to unfollow account' })
           }
         },
       },
