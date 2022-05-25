@@ -312,21 +312,43 @@ export default function RiskCalculator() {
       if (!symbol) return
       // Retrieve perp positions if present
       const perpPosition = mangoAccount?.perpAccounts[i] || null
-      const basePosition = Number(mangoAccount?.perpAccounts[getMarketIndexBySymbol(mangoConfig, symbol)]?.basePosition) 
-      / Math.pow(10, perpContractPrecision[symbol]) || 0
-      const unsettledFunding = Number(mangoAccount?.perpAccounts[getMarketIndexBySymbol(mangoConfig, symbol)]?.getUnsettledFunding(mangoCache?.perpMarketCache[getMarketIndexBySymbol(mangoConfig, symbol)])) 
-      / Math.pow(10, 6) || 0
-      const positionPnL = Number(
-            mangoAccount?.perpAccounts[getMarketIndexBySymbol(mangoConfig, symbol)]?.getPnl(
-                mangoGroup?.perpMarkets[getMarketIndexBySymbol(mangoConfig, symbol)],
-                mangoCache?.perpMarketCache[getMarketIndexBySymbol(mangoConfig, symbol)],
-                mangoCache.priceCache[getMarketIndexBySymbol(mangoConfig, symbol)].price
-              )
-            ) / Math.pow(10, 6) || 0
-      const perpBids = Number(perpPosition?.bidsQuantity) 
-      / Math.pow(10, perpContractPrecision[symbol]) || 0
-      const perpAsks = Number(perpPosition?.asksQuantity) 
-      / Math.pow(10, perpContractPrecision[symbol]) || 0
+      const basePosition =
+        Number(
+          mangoAccount?.perpAccounts[
+            getMarketIndexBySymbol(mangoConfig, symbol)
+          ]?.basePosition
+        ) / Math.pow(10, perpContractPrecision[symbol]) || 0
+      const unsettledFunding =
+        Number(
+          mangoAccount?.perpAccounts[
+            getMarketIndexBySymbol(mangoConfig, symbol)
+          ]?.getUnsettledFunding(
+            mangoCache?.perpMarketCache[
+              getMarketIndexBySymbol(mangoConfig, symbol)
+            ]
+          )
+        ) / Math.pow(10, 6) || 0
+      const positionPnL =
+        Number(
+          mangoAccount?.perpAccounts[
+            getMarketIndexBySymbol(mangoConfig, symbol)
+          ]?.getPnl(
+            mangoGroup?.perpMarkets[
+              getMarketIndexBySymbol(mangoConfig, symbol)
+            ],
+            mangoCache?.perpMarketCache[
+              getMarketIndexBySymbol(mangoConfig, symbol)
+            ],
+            mangoCache.priceCache[getMarketIndexBySymbol(mangoConfig, symbol)]
+              .price
+          )
+        ) / Math.pow(10, 6) || 0
+      const perpBids =
+        Number(perpPosition?.bidsQuantity) /
+          Math.pow(10, perpContractPrecision[symbol]) || 0
+      const perpAsks =
+        Number(perpPosition?.asksQuantity) /
+          Math.pow(10, perpContractPrecision[symbol]) || 0
 
       if (
         spotMarketConfig?.publicKey ||
@@ -704,18 +726,40 @@ export default function RiskCalculator() {
                       )
 
                 // Retrieve perp positions if present
-                const perpPosition = mangoAccount?.perpAccounts[asset.oracleIndex] || null
-                const basePosition = Number(mangoAccount?.perpAccounts[getMarketIndexBySymbol(mangoConfig, symbol)]?.basePosition)
-                  / Math.pow(10, perpContractPrecision[symbol]) || 0
-                const unsettledFunding = Number(mangoAccount?.perpAccounts[getMarketIndexBySymbol(mangoConfig, symbol)]?.getUnsettledFunding(mangoCache?.perpMarketCache[getMarketIndexBySymbol(mangoConfig, symbol)]))
-                  / Math.pow(10, 6) || 0
-                const positionPnL = Number(
-                  mangoAccount?.perpAccounts[getMarketIndexBySymbol(mangoConfig, symbol)]?.getPnl(
-                    mangoGroup?.perpMarkets[getMarketIndexBySymbol(mangoConfig, symbol)],
-                    mangoCache?.perpMarketCache[getMarketIndexBySymbol(mangoConfig, symbol)],
-                    mangoCache.priceCache[getMarketIndexBySymbol(mangoConfig, symbol)].price
-                  )
-                ) / Math.pow(10, 6) || 0
+                const perpPosition =
+                  mangoAccount?.perpAccounts[asset.oracleIndex] || null
+                const basePosition =
+                  Number(
+                    mangoAccount?.perpAccounts[
+                      getMarketIndexBySymbol(mangoConfig, symbol)
+                    ]?.basePosition
+                  ) / Math.pow(10, perpContractPrecision[symbol]) || 0
+                const unsettledFunding =
+                  Number(
+                    mangoAccount?.perpAccounts[
+                      getMarketIndexBySymbol(mangoConfig, symbol)
+                    ]?.getUnsettledFunding(
+                      mangoCache?.perpMarketCache[
+                        getMarketIndexBySymbol(mangoConfig, symbol)
+                      ]
+                    )
+                  ) / Math.pow(10, 6) || 0
+                const positionPnL =
+                  Number(
+                    mangoAccount?.perpAccounts[
+                      getMarketIndexBySymbol(mangoConfig, symbol)
+                    ]?.getPnl(
+                      mangoGroup?.perpMarkets[
+                        getMarketIndexBySymbol(mangoConfig, symbol)
+                      ],
+                      mangoCache?.perpMarketCache[
+                        getMarketIndexBySymbol(mangoConfig, symbol)
+                      ],
+                      mangoCache.priceCache[
+                        getMarketIndexBySymbol(mangoConfig, symbol)
+                      ].price
+                    )
+                  ) / Math.pow(10, 6) || 0
                 const perpInOrders = perpMarketConfig?.publicKey
                   ? Number(perpPosition?.bidsQuantity) >
                     Math.abs(Number(perpPosition?.asksQuantity))
