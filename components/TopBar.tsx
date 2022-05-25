@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import Link from 'next/link'
 import { abbreviateAddress } from '../utils/index'
 import useLocalStorageState from '../hooks/useLocalStorageState'
@@ -31,29 +31,14 @@ const TopBar = () => {
   const { t } = useTranslation('common')
   const { connected, publicKey } = useWallet()
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
-  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  const mangoAccounts = useMangoStore((s) => s.mangoAccounts)
   const cluster = useMangoStore((s) => s.connection.cluster)
-  const mangoClient = useMangoStore((s) => s.connection.client)
-  const [numberOfAccounts, setNumberOfAccounts] = useState<number | null>(null)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
   const [defaultMarket] = useLocalStorageState(
     DEFAULT_MARKET_KEY,
     initialMarket
   )
   const isDevnet = cluster === 'devnet'
-
-  useEffect(() => {
-    if (mangoAccount && mangoGroup && publicKey) {
-      const getMangoAccounts = async () => {
-        const mangoAccounts = await mangoClient.getMangoAccountsForOwner(
-          mangoGroup,
-          publicKey
-        )
-        setNumberOfAccounts(mangoAccounts.length)
-      }
-      getMangoAccounts()
-    }
-  }, [mangoAccount, mangoGroup, publicKey])
 
   const handleCloseAccounts = useCallback(() => {
     setShowAccountsModal(false)
@@ -159,10 +144,10 @@ const TopBar = () => {
                   onClick={() => setShowAccountsModal(true)}
                 >
                   <div className="text-xs font-normal text-th-primary">
-                    {numberOfAccounts
-                      ? numberOfAccounts === 1
+                    {mangoAccounts
+                      ? mangoAccounts.length === 1
                         ? `1 ${t('account')}`
-                        : `${numberOfAccounts} ${t('accounts')}`
+                        : `${mangoAccounts.length} ${t('accounts')}`
                       : t('account')}
                   </div>
                   {mangoAccount.name
