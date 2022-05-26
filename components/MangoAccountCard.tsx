@@ -31,7 +31,20 @@ const MangoAccountCard = ({
   return (
     <div>
       <p className="mb-1 flex items-center font-bold text-th-fgd-1">
-        {mangoAccount?.name || abbreviateAddress(mangoAccount.publicKey)}
+        {pnl ? (
+          <a
+            className="default-transition text-th-fgd-1 hover:text-th-fgd-3"
+            href={`https://trade.mango.markets/account?pubkey=${mangoAccount.publicKey.toString()}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {mangoAccount?.name || abbreviateAddress(mangoAccount.publicKey)}
+          </a>
+        ) : (
+          <span>
+            {mangoAccount?.name || abbreviateAddress(mangoAccount.publicKey)}
+          </span>
+        )}
         {publicKey && !mangoAccount?.owner.equals(publicKey) ? (
           <Tooltip content={t('delegate:delegated-account')}>
             <UsersIcon className="ml-1.5 h-3 w-3 text-th-fgd-3" />

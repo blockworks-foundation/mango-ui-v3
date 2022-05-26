@@ -49,7 +49,7 @@ const SelectMangoAccount = ({ onClose }: { onClose?: () => void }) => {
               `${
                 checked
                   ? 'bg-th-bkg-3 ring-1 ring-inset ring-th-green'
-                  : 'bg-th-bkg-1'
+                  : 'ring-1 ring-inset ring-th-fgd-4'
               }
                       default-transition relative flex w-full cursor-pointer rounded-md px-3 py-3 hover:bg-th-bkg-3 focus:outline-none`
             }

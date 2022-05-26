@@ -1,5 +1,5 @@
 {
-    "browse-profiles": "Browse Profiles",
+    "browse-profiles": "Browse",
     "choose-profile": "Choose a Profile Pic",
     "connect-view-profile": "Connect your wallet to view your profile",
     "day-trader": "Day Trader",
@@ -13,9 +13,9 @@
     "length-error": "Names must be less than 10 characters",
     "market-maker": "Market Maker",
     "no-followers": "No Followers",
-    "no-followers-desc": "You're trading in stealth mode 😎",
+    "no-followers-desc": "Trading in stealth mode 😎",
     "no-following": "No Accounts Followed",
-    "no-following-desc": "Time to put your detective hat on 🕵️",
+    "no-following-desc": "The lone sheep is in danger of the wolf",
     "no-nfts": "😞 No NFTs found...",
     "profile": "Profile",
     "profile-name": "Profile Name",
@@ -31,5 +31,6 @@
     "total-value": "Total Value",
     "trader-category": "Trader Category",
     "unfollow": "Unfollow",
-    "yolo": "YOLO"
+    "yolo": "YOLO",
+    "your-profile": "Your Profile"
 }

@@ -8,6 +8,7 @@ import {
   ArrowSmUpIcon,
   LinkIcon,
   ExclamationCircleIcon,
+  UserCircleIcon,
 } from '@heroicons/react/outline'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { PublicKey } from '@solana/web3.js'
@@ -145,14 +146,15 @@ export default function Profile() {
       const parsedResponse = await followerRes.json()
       if (parsedResponse.length > 0) {
         setFollowers(parsedResponse)
-        setLoadFollowers(false)
       } else {
-        setLoadFollowers(false)
+        setFollowers([])
       }
+      setLoadFollowers(false)
     } catch {
+      setLoadFollowers(false)
       notify({
         type: 'error',
-        title: 'Unable to load following',
+        title: 'Unable to load followers',
       })
     }
   }
@@ -284,10 +286,21 @@ export default function Profile() {
             <h1 className={`text-2xl font-semibold text-th-fgd-1 sm:mb-0`}>
               {t('profile:profile')}
             </h1>
-            <Button className="flex items-center">
-              <UserGroupIcon className="mr-2 h-5 w-5" />
-              {t('profile:browse-profiles')}
-            </Button>
+            <div className="flex items-center space-x-3">
+              {!canEdit && publicKey ? (
+                <Button
+                  className="flex items-center pl-4 pr-4"
+                  onClick={() => router.push('/profile')}
+                >
+                  <UserCircleIcon className="mr-2 h-5 w-5" />
+                  {t('profile:your-profile')}
+                </Button>
+              ) : null}
+              <Button className="flex items-center pl-4 pr-4">
+                <UserGroupIcon className="mr-2 h-5 w-5" />
+                {t('profile:browse-profiles')}
+              </Button>
+            </div>
           </div>
         </div>
         <div className="md:rounded-lg md:bg-th-bkg-2 md:p-6">
@@ -727,8 +740,6 @@ const Accounts = ({
       fetchFollowers()
     }
   }
-
-  console.log(following)
 
   return (
     <div className="rounded-lg border border-th-bkg-4 p-6">
