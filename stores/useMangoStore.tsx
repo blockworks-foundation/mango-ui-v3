@@ -1196,6 +1196,7 @@ const useMangoStore = create<
               `https://mango-transaction-log.herokuapp.com/v3/user-data/following?wallet-pk=${pk}`
             )
             const parsedResponse = await followingRes.json()
+            console.log(parsedResponse)
             set((state) => {
               state.profile.loadProfileFollowing = false
               state.profile.following = parsedResponse
@@ -1215,6 +1216,7 @@ const useMangoStore = create<
           publicKey: PublicKey,
           signMessage: (x) => Uint8Array
         ) {
+          const actions = get().actions
           try {
             if (!publicKey) throw new Error('Wallet not connected!')
             if (!signMessage)
@@ -1243,6 +1245,7 @@ const useMangoStore = create<
               requestOptions
             )
             if (response.status === 200) {
+              await actions.fetchProfileFollowing(publicKey.toString())
               notify({ type: 'success', title: 'Account followed' })
             }
           } catch (error: any) {
@@ -1254,6 +1257,7 @@ const useMangoStore = create<
           publicKey: PublicKey,
           signMessage: (x) => Uint8Array
         ) {
+          const actions = get().actions
           try {
             if (!publicKey) throw new Error('Wallet not connected!')
             if (!signMessage)
@@ -1282,6 +1286,7 @@ const useMangoStore = create<
               requestOptions
             )
             if (response.status === 200) {
+              await actions.fetchProfileFollowing(publicKey.toString())
               notify({ type: 'success', title: 'Account unfollowed' })
             }
           } catch (error: any) {

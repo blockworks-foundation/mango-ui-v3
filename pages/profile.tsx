@@ -7,6 +7,7 @@ import {
   ArrowSmDownIcon,
   ArrowSmUpIcon,
   LinkIcon,
+  ExclamationCircleIcon,
 } from '@heroicons/react/outline'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { PublicKey } from '@solana/web3.js'
@@ -37,11 +38,13 @@ import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from '../components/TradePageGrid'
 import EmptyState from 'components/EmptyState'
 import { handleWalletConnect } from 'components/ConnectWalletButton'
+import { sign } from 'tweetnacl'
+import bs58 from 'bs58'
 
 export async function getStaticProps({ locale }) {
   return {
     props: {
-      ...(await serverSideTranslations(locale, ['common'])),
+      ...(await serverSideTranslations(locale, ['common', 'profile'])),
       // Will be passed to the page component as props
     },
   }
@@ -277,18 +280,18 @@ export default function Profile() {
       <TopBar />
       <PageBodyContainer>
         <div className="flex flex-col pt-8 pb-3 sm:flex-row sm:items-center sm:justify-between sm:pb-6 md:pt-10">
-          <div className="mb-4 flex w-full items-center justify-between">
+          <div className="flex w-full items-center justify-between">
             <h1 className={`text-2xl font-semibold text-th-fgd-1 sm:mb-0`}>
-              Profile
+              {t('profile:profile')}
             </h1>
             <Button className="flex items-center">
               <UserGroupIcon className="mr-2 h-5 w-5" />
-              Browse Profiles
+              {t('profile:browse-profiles')}
             </Button>
           </div>
         </div>
-        {connected || pk ? (
-          <div className="md:rounded-lg md:bg-th-bkg-2 md:p-6">
+        <div className="md:rounded-lg md:bg-th-bkg-2 md:p-6">
+          {connected || pk ? (
             <div className="grid grid-cols-12 gap-6">
               <div className="col-span-12 lg:col-span-8">
                 <div className="mb-8 flex items-start justify-between rounded-lg ">
@@ -306,7 +309,7 @@ export default function Profile() {
                       <h2 className="mb-2">{profileData?.profile_name}</h2>
                       <div className="mb-1.5 flex items-center space-x-3">
                         <div className="w-max rounded-full px-2 py-1 text-xs text-th-fgd-4 ring-1 ring-inset ring-th-fgd-4">
-                          Market Maker
+                          {`profile:${profileData?.trader_category}`}
                         </div>
                         {/* <div className="flex items-center space-x-1.5">
                           <CalendarIcon className="h-4 w-4 text-th-fgd-3" />
@@ -318,7 +321,7 @@ export default function Profile() {
                           <p className="mb-0 font-bold text-th-fgd-1">
                             {following.length}{' '}
                             <span className="font-normal text-th-fgd-4">
-                              Following
+                              {t('following')}
                             </span>
                           </p>
                         ) : (
@@ -328,7 +331,7 @@ export default function Profile() {
                           <p className="mb-0 font-bold text-th-fgd-1">
                             {followers.length}{' '}
                             <span className="font-normal text-th-fgd-4">
-                              Followers
+                              {t('followers')}
                             </span>
                           </p>
                         ) : (
@@ -339,7 +342,7 @@ export default function Profile() {
                   </div>
                   {canEdit ? (
                     <Button onClick={() => setShowEditProfile(true)}>
-                      Edit
+                      {t('edit')}
                     </Button>
                   ) : publicKey ? (
                     <></>
@@ -350,13 +353,17 @@ export default function Profile() {
                 </div>
                 <div className="mb-8 grid grid-flow-col grid-cols-1 grid-rows-2 border-b border-th-bkg-4 md:grid-cols-2 md:grid-rows-1 md:gap-4">
                   <div className="border-t border-th-bkg-4 p-3 sm:p-4 md:border-b">
-                    <div className="pb-0.5 text-th-fgd-3">Total Value</div>
+                    <div className="pb-0.5 text-th-fgd-3">
+                      {t('profile:total-value')}
+                    </div>
                     <div className="text-xl font-bold text-th-fgd-1 md:text-2xl">
                       {formatUsdValue(totalValue)}
                     </div>
                   </div>
                   <div className="border-t border-th-bkg-4 p-3 sm:p-4 md:border-b">
-                    <div className="pb-0.5 text-th-fgd-3">Total PnL</div>
+                    <div className="pb-0.5 text-th-fgd-3">
+                      {t('profile:total-pnl')}
+                    </div>
                     <div className="text-xl font-bold text-th-fgd-1 md:text-2xl">
                       {formatUsdValue(totalPnl)}
                     </div>
@@ -368,6 +375,7 @@ export default function Profile() {
                       accounts={walletMangoAccounts}
                       accountsStats={walletMangoAccountsStats}
                       canEdit={canEdit}
+                      fetchFollowers={fetchFollowers}
                     />
                   </div>
                 ) : null}
@@ -377,20 +385,22 @@ export default function Profile() {
                   tabs={TABS}
                 />
                 <div className="space-y-2">
-                  {activeTab === 'following'
-                    ? following.map((user, i) => {
+                  {activeTab === 'following' ? (
+                    loadFollowing ? (
+                      <div className="space-y-2">
+                        <div className="h-24 animate-pulse rounded-md bg-th-bkg-3" />
+                        <div className="h-24 animate-pulse rounded-md bg-th-bkg-3" />
+                        <div className="h-24 animate-pulse rounded-md bg-th-bkg-3" />
+                      </div>
+                    ) : following.length > 0 ? (
+                      following.map((user) => {
                         const accountEquity = user.mango_account.computeValue(
                           mangoGroup,
                           mangoCache
                         )
                         const pnl: number =
                           user.stats.length > 0 ? user.stats[0].pnl : 0
-                        return loadFollowing ? (
-                          <div
-                            className="h-24 animate-pulse rounded-md bg-th-bkg-3"
-                            key={i}
-                          />
-                        ) : (
+                        return (
                           <div
                             className="relative"
                             key={user.mango_account.publicKey.toString()}
@@ -458,9 +468,25 @@ export default function Profile() {
                           </div>
                         )
                       })
-                    : null}
-                  {activeTab === 'followers'
-                    ? followers.map((user) => {
+                    ) : (
+                      <div className="rounded-lg bg-th-bkg-3 p-4">
+                        <EmptyState
+                          desc={t('profile:no-following-desc')}
+                          icon={<UserGroupIcon />}
+                          title={t('profile:no-following')}
+                        />
+                      </div>
+                    )
+                  ) : null}
+                  {activeTab === 'followers' ? (
+                    loadFollowers ? (
+                      <div className="space-y-2">
+                        <div className="h-24 animate-pulse rounded-md bg-th-bkg-3" />
+                        <div className="h-24 animate-pulse rounded-md bg-th-bkg-3" />
+                        <div className="h-24 animate-pulse rounded-md bg-th-bkg-3" />
+                      </div>
+                    ) : followers.length > 0 ? (
+                      followers.map((user) => {
                         return (
                           <button
                             className="default-transition block flex w-full items-center justify-between rounded-md bg-th-bkg-3 p-4 hover:bg-th-bkg-4"
@@ -487,7 +513,16 @@ export default function Profile() {
                           </button>
                         )
                       })
-                    : null}
+                    ) : (
+                      <div className="rounded-lg bg-th-bkg-3 p-4">
+                        <EmptyState
+                          desc={t('profile:no-followers-desc')}
+                          icon={<UserGroupIcon />}
+                          title={t('profile:no-followers')}
+                        />
+                      </div>
+                    )
+                  ) : null}
                 </div>
               </div>
               {!isMobile ? (
@@ -496,21 +531,22 @@ export default function Profile() {
                     accounts={walletMangoAccounts}
                     accountsStats={walletMangoAccountsStats}
                     canEdit={canEdit}
+                    fetchFollowers={fetchFollowers}
                   />
                 </div>
               ) : null}
             </div>
-          </div>
-        ) : (
-          <EmptyState
-            buttonText={t('connect')}
-            desc={t('connect-view')}
-            disabled={!wallet || !mangoGroup}
-            icon={<LinkIcon />}
-            onClickButton={handleConnect}
-            title={t('connect-wallet')}
-          />
-        )}
+          ) : (
+            <EmptyState
+              buttonText={t('connect')}
+              desc={t('profile:connect-view-profile')}
+              disabled={!wallet || !mangoGroup}
+              icon={<LinkIcon />}
+              onClickButton={handleConnect}
+              title={t('connect-wallet')}
+            />
+          )}
+        </div>
       </PageBodyContainer>
       {showEditProfile ? (
         <EditProfileModal
@@ -542,27 +578,99 @@ const EditProfileModal = ({
   profile?: any
 }) => {
   const { t } = useTranslation(['common', 'profile'])
+  const { publicKey, signMessage } = useWallet()
   const [profileName, setProfileName] = useState(profile?.profile_name || '')
   const [traderCategory, setTraderCategory] = useState(
     profile?.trader_category || TRADER_CATEGORIES[0]
   )
+  const [inputErrors, setInputErrors] = useState({})
+
+  const validateProfileName = (name) => {
+    const re = /^([a-zA-Z0-9]+\s)*[a-zA-Z0-9]+$/
+    if (!re.test(name)) {
+      setInputErrors({
+        ...inputErrors,
+        regex: t('profile:invalid-characters'),
+      })
+    }
+    if (name.length > 10) {
+      setInputErrors({
+        ...inputErrors,
+        length: t('profile:length-error'),
+      })
+    }
+  }
+
+  const onChangeNameInput = (name) => {
+    setProfileName(name)
+    setInputErrors({})
+  }
+
+  const saveProfile = async () => {
+    try {
+      if (!publicKey) throw new Error('Wallet not connected!')
+      if (!signMessage)
+        throw new Error('Wallet does not support message signing!')
+
+      const messageString = JSON.stringify({
+        profile_name: profileName,
+        trader_category: traderCategory,
+        action: 'insert',
+      })
+      const message = new TextEncoder().encode(messageString)
+      const signature = await signMessage(message)
+      if (!sign.detached.verify(message, signature, publicKey.toBytes()))
+        throw new Error('Invalid signature!')
+
+      const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          wallet_pk: publicKey.toString(),
+          message: messageString,
+          signature: bs58.encode(signature),
+        }),
+      }
+      const response = await fetch(
+        'https://mango-transaction-log.herokuapp.com/v3/user-data/settings',
+        requestOptions
+      )
+      // console.log(response)
+      if (response.status === 200) {
+        notify({ type: 'success', title: 'Profile updated' })
+      }
+    } catch (error: any) {
+      notify({ type: 'error', title: 'Failed to update profile' })
+    }
+  }
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <Modal.Header>
         <ElementTitle noMarginBottom>{t('profile:edit-profile')}</ElementTitle>
       </Modal.Header>
       <div className="pb-4">
-        <Label>Profile Name</Label>
+        <Label>{t('profile:profile-name')}</Label>
         <Input
           type="text"
+          error={Object.keys(inputErrors).length}
           value={profileName}
-          onChange={(e) => setProfileName(e.target.value)}
+          onChange={(e) => onChangeNameInput(e.target.value)}
+          onBlur={(e) => validateProfileName(e.target.value)}
         />
+        {Object.keys(inputErrors).length ? (
+          <div className="mt-1.5 flex items-center space-x-1">
+            <ExclamationCircleIcon className="h-4 w-4 text-th-red" />
+            <p className="mb-0 text-xs text-th-red">
+              {Object.values(inputErrors).toString()}
+            </p>
+          </div>
+        ) : null}
       </div>
       <div className="pb-6">
-        <Label>Trader Category</Label>
+        <Label>{t('profile:trader-category')}</Label>
         <Select
-          value={traderCategory}
+          value={t(`profile:${traderCategory}`)}
           onChange={(cat) => setTraderCategory(cat)}
           className="w-full"
         >
@@ -575,7 +683,13 @@ const EditProfileModal = ({
           ))}
         </Select>
       </div>
-      <Button className="w-full">Save Profile</Button>
+      <Button
+        className="w-full"
+        disabled={!!Object.keys(inputErrors).length}
+        onClick={() => saveProfile()}
+      >
+        {t('profile:save-profile')}
+      </Button>
     </Modal>
   )
 }
@@ -584,22 +698,23 @@ const Accounts = ({
   accounts,
   accountsStats,
   canEdit,
+  fetchFollowers,
 }: {
   accounts: any[]
   accountsStats: any[]
   canEdit: boolean
+  fetchFollowers: () => void
 }) => {
   const { t } = useTranslation(['common', 'profile'])
   const { publicKey, signMessage } = useWallet()
   const actions = useMangoStore((s) => s.actions)
-  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const following = useMangoStore((s) => s.profile.following)
 
   useEffect(() => {
-    if (mangoGroup && publicKey && !canEdit) {
+    if (publicKey && !canEdit) {
       actions.fetchProfileFollowing(publicKey?.toString())
     }
-  }, [mangoGroup, publicKey, canEdit])
+  }, [publicKey, canEdit])
 
   const handleToggleFollow = async (
     isFollowed: boolean,
@@ -609,9 +724,11 @@ const Accounts = ({
       isFollowed
         ? await actions.unfollowAccount(mangoAccountPk, publicKey, signMessage)
         : await actions.followAccount(mangoAccountPk, publicKey, signMessage)
-      actions.fetchProfileFollowing(publicKey?.toString())
+      fetchFollowers()
     }
   }
+
+  console.log(following)
 
   return (
     <div className="rounded-lg border border-th-bkg-4 p-6">
@@ -635,6 +752,7 @@ const Accounts = ({
             const isFollowed = following.find(
               (a) => a.mango_account === acc.publicKey.toString()
             )
+
             return (
               <div
                 className="flex flex-col rounded-md bg-th-bkg-3 p-4 md:flex-row md:items-center md:justify-between lg:flex-col lg:items-start xl:flex-row xl:items-center xl:justify-between"
@@ -643,16 +761,14 @@ const Accounts = ({
                 <MangoAccountCard mangoAccount={acc} pnl={pnl} />
                 {isFollowed ? (
                   <Button
-                    className="mt-4 w-24 bg-transparent pl-4 pr-4 text-xs ring-1 ring-inset ring-th-fgd-3 before:content-['Following'] hover:ring-th-red before:hover:block before:hover:text-th-red before:hover:content-['Unfollow'] md:mt-0 lg:mt-4 xl:mt-0 xl:mt-0"
+                    className={`mt-4 w-24 bg-transparent pl-4 pr-4 text-xs ring-1 ring-inset ring-th-fgd-3 before:content-[attr(data-before)] hover:ring-th-red before:hover:block before:hover:text-th-red before:hover:content-[attr(data-before-hover)] md:mt-0 lg:mt-4 xl:mt-0 xl:mt-0`}
                     disabled={!publicKey}
                     onClick={() =>
                       handleToggleFollow(isFollowed, acc.publicKey.toString())
                     }
-                  >
-                    {/* <span className="h-full hover:hidden">
-                      {t('profile:following')}
-                    </span> */}
-                  </Button>
+                    data-before={t('profile:following')}
+                    data-before-hover={t('profile:unfollow')}
+                  />
                 ) : (
                   <Button
                     className="mt-4 w-24 pl-4 pr-4 text-xs md:mt-0 lg:mt-4 xl:mt-0 xl:mt-0"

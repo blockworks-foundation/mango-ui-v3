@@ -134,7 +134,9 @@ export const ConnectWalletButton: React.FC = () => {
                       onClick={() => router.push('/profile')}
                     >
                       <UserCircleIcon className="h-4 w-4" />
-                      <div className="pl-2 text-left">{t('profile')}</div>
+                      <div className="pl-2 text-left">
+                        {t('profile:profile')}
+                      </div>
                     </button>
                   </Menu.Item>
                   <Menu.Item>
