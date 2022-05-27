@@ -54,7 +54,7 @@ export default function Markets() {
             ) : (
               <SwipeableTabs
                 onChange={handleChangeViewIndex}
-                tabs={TABS}
+                items={TABS}
                 tabIndex={viewIndex}
               />
             )}
