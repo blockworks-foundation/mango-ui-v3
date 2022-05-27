@@ -598,7 +598,7 @@ const EditProfileModal = ({
   )
   const [inputErrors, setInputErrors] = useState({})
 
-  const validateProfileName = (name) => {
+  const validateProfileName = async (name) => {
     const re = /^([a-zA-Z0-9]+\s)*[a-zA-Z0-9]+$/
     if (!re.test(name)) {
       setInputErrors({
@@ -606,10 +606,27 @@ const EditProfileModal = ({
         regex: t('profile:invalid-characters'),
       })
     }
-    if (name.length > 10) {
+    if (name.length > 29) {
       setInputErrors({
         ...inputErrors,
         length: t('profile:length-error'),
+      })
+    }
+    try {
+      const response = await fetch(
+        `https://mango-transaction-log.herokuapp.com/v3/user-data/check-profile-name-unique?profile-name=${name}`
+      )
+      const uniquenessCheck = await response.json()
+      if (response.status === 200 && !uniquenessCheck) {
+        setInputErrors({
+          ...inputErrors,
+          uniqueness: t('profile:uniqueness-fail'),
+        })
+      }
+    } catch {
+      setInputErrors({
+        ...inputErrors,
+        api: t('profile:uniqueness-api-fail'),
       })
     }
   }
@@ -648,7 +665,6 @@ const EditProfileModal = ({
         'https://mango-transaction-log.herokuapp.com/v3/user-data/settings',
         requestOptions
       )
-      // console.log(response)
       if (response.status === 200) {
         notify({ type: 'success', title: 'Profile updated' })
       }

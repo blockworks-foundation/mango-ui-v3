@@ -1196,10 +1196,17 @@ const useMangoStore = create<
               `https://mango-transaction-log.herokuapp.com/v3/user-data/following?wallet-pk=${pk}`
             )
             const parsedResponse = await followingRes.json()
-            console.log(parsedResponse)
+            if (Array.isArray(parsedResponse)) {
+              set((state) => {
+                state.profile.following = parsedResponse
+              })
+            } else {
+              set((state) => {
+                state.profile.following = []
+              })
+            }
             set((state) => {
               state.profile.loadProfileFollowing = false
-              state.profile.following = parsedResponse
             })
           } catch {
             notify({
