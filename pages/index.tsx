@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import useMangoStore, { serumProgramId } from '../stores/useMangoStore'
 import {
@@ -22,6 +22,9 @@ import {
 import { PublicKey } from '@solana/web3.js'
 import FavoritesShortcutBar from '../components/FavoritesShortcutBar'
 import { useWallet } from '@solana/wallet-adapter-react'
+import AccountsModal from 'components/AccountsModal'
+
+const DISMISS_CREATE_ACCOUNT_KEY = 'show-create-account'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -41,6 +44,11 @@ export async function getStaticProps({ locale }) {
 const PerpMarket: React.FC = () => {
   const [alphaAccepted] = useLocalStorageState(ALPHA_MODAL_KEY, false)
   const [showTour] = useLocalStorageState(SHOW_TOUR_KEY, false)
+  const [dismissCreateAccount, setDismissCreateAccount] = useLocalStorageState(
+    DISMISS_CREATE_ACCOUNT_KEY,
+    false
+  )
+  const [showCreateAccount, setShowCreateAccount] = useState(false)
   const { connected } = useWallet()
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
   const setMangoStore = useMangoStore((s) => s.set)
@@ -52,6 +60,17 @@ const PerpMarket: React.FC = () => {
   const { pubkey } = router.query
   const { width } = useViewport()
   const hideTips = width ? width < breakpoints.md : false
+
+  useEffect(() => {
+    if (connected && !mangoAccount && !dismissCreateAccount) {
+      setShowCreateAccount(true)
+    }
+  }, [connected, mangoAccount])
+
+  const handleCloseCreateAccount = useCallback(() => {
+    setShowCreateAccount(false)
+    setDismissCreateAccount(true)
+  }, [])
 
   useEffect(() => {
     async function loadUnownedMangoAccount() {
@@ -151,6 +170,12 @@ const PerpMarket: React.FC = () => {
         {!alphaAccepted && (
           <AlphaModal isOpen={!alphaAccepted} onClose={() => {}} />
         )}
+        {showCreateAccount ? (
+          <AccountsModal
+            isOpen={showCreateAccount}
+            onClose={() => handleCloseCreateAccount()}
+          />
+        ) : null}
       </div>
     </>
   )

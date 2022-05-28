@@ -176,7 +176,7 @@
    "initial-deposit": "Initial Deposit",
    "insufficient-balance-deposit": "Insufficient balance. Reduce the amount to deposit",
    "insufficient-balance-withdraw": "Insufficient balance. Borrow funds to withdraw",
-   "insufficient-sol": "There is a one-time cost of 0.035 SOL to create a Mango Account. This covers the rent on the Solana Blockchain.",
+   "insufficient-sol": "The Solana blockchain requires 0.035 SOL to create a Mango Account. This covers rent for your account and will be refunded if you close your account.",
    "interest": "Interest",
    "interest-chart-title": "{{symbol}} Interest – Last 30 days (current bar is delayed)",
    "interest-chart-value-title": "{{symbol}} Interest Value – Last 30 days (current bar is delayed)",

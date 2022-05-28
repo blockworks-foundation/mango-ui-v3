@@ -29,8 +29,9 @@ import { useWallet } from '@solana/wallet-adapter-react'
 
 const TopBar = () => {
   const { t } = useTranslation('common')
-  const { publicKey } = useWallet()
+  const { connected, publicKey } = useWallet()
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
+  const mangoAccounts = useMangoStore((s) => s.mangoAccounts)
   const cluster = useMangoStore((s) => s.connection.cluster)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
   const [defaultMarket] = useLocalStorageState(
@@ -143,11 +144,25 @@ const TopBar = () => {
                   onClick={() => setShowAccountsModal(true)}
                 >
                   <div className="text-xs font-normal text-th-primary">
-                    {t('account')}
+                    {mangoAccounts
+                      ? mangoAccounts.length === 1
+                        ? `1 ${t('account')}`
+                        : `${mangoAccounts.length} ${t('accounts')}`
+                      : t('account')}
                   </div>
                   {mangoAccount.name
                     ? mangoAccount.name
                     : abbreviateAddress(mangoAccount.publicKey)}
+                </button>
+              ) : connected && !mangoAccount ? (
+                <button
+                  className="rounded border border-th-bkg-4 py-1 px-2 text-xs hover:border-th-fgd-4 focus:outline-none"
+                  onClick={() => setShowAccountsModal(true)}
+                >
+                  <div className="text-xs font-normal text-th-primary">
+                    {`0 ${t('accounts')}`}
+                  </div>
+                  {t('get-started')} 😎
                 </button>
               ) : null}
               <ConnectWalletButton />
