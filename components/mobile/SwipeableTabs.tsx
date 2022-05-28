@@ -34,10 +34,7 @@ function SwipeableTabs({ items, onChange, tabIndex }) {
     }
 
   return (
-    <div
-      onMouseLeave={dragStop}
-      className="thin-scroll relative mb-4 border-b border-th-fgd-4 px-4"
-    >
+    <div onMouseLeave={dragStop} className="thin-scroll relative mb-4">
       <ScrollMenu
         LeftArrow={LeftArrow}
         RightArrow={RightArrow}
@@ -67,7 +64,7 @@ function SwipeableTabs({ items, onChange, tabIndex }) {
           }}
       >
         {items.map((item, i) => (
-          <Card
+          <Tab
             title={item}
             itemId={i.toString()}
             key={item}
@@ -109,7 +106,7 @@ function onWheel(
   }
 }
 
-function Card({
+function Tab({
   selected,
   onClick,
   title,
@@ -133,10 +130,10 @@ function Card({
       onClick={() => onClick(visibility)}
       role="button"
       tabIndex={0}
-      className={`flex h-10 w-32 items-center justify-center ${
+      className={`relative flex h-10 w-28 items-center justify-center font-bold focus:text-th-primary focus:outline-none ${
         selected
           ? 'border-b-2 border-th-primary text-th-primary'
-          : 'border-b-2 border-transparent text-th-fgd-3'
+          : 'border-b border-th-fgd-4 text-th-fgd-3'
       }`}
     >
       {t(title)}
@@ -159,7 +156,7 @@ function Arrow({
     <button
       disabled={disabled}
       onClick={onClick}
-      className={`top-1/2 -translate-y-1/2 transform rounded-none ${
+      className={`top-1/2 -translate-y-1/2 transform rounded-none text-th-fgd-3 focus:text-th-primary focus:outline-none ${
         disabled ? 'hidden' : 'absolute'
       } ${className}`}
     >
@@ -186,8 +183,12 @@ function LeftArrow() {
   }, [isFirstItemVisible, visibleItemsWithoutSeparators])
 
   return (
-    <Arrow disabled={disabled} onClick={() => scrollPrev()} className="-left-2">
-      <ChevronLeftIcon className="h-5 w-5 text-th-fgd-3" />
+    <Arrow
+      disabled={disabled}
+      onClick={() => scrollPrev()}
+      className="-left-3 z-10 flex h-10 w-12 items-center justify-start bg-gradient-to-r from-th-bkg-1 to-transparent"
+    >
+      <ChevronLeftIcon className="h-5 w-5" />
     </Arrow>
   )
 }
@@ -209,9 +210,9 @@ function RightArrow() {
     <Arrow
       disabled={disabled}
       onClick={() => scrollNext()}
-      className="-right-2"
+      className="-right-3 z-10 flex h-10 w-12 items-center justify-end bg-gradient-to-l from-th-bkg-1 to-transparent"
     >
-      <ChevronRightIcon className="h-5 w-5 text-th-fgd-3" />
+      <ChevronRightIcon className="h-5 w-5" />
     </Arrow>
   )
 }
