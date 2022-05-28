@@ -183,11 +183,11 @@ const AccountPerformance = () => {
 
     // Normalise chart to start from 0 (except for account value)
     if (parseInt(performanceRange) !== 90 && chartToShow !== 'account-value') {
-      const startValues = Object.assign({}, stats[0]);
-      for (let i = 0; i < stats.length; i++ ) {
+      const startValues = Object.assign({}, stats[0])
+      for (let i = 0; i < stats.length; i++) {
         for (const key in stats[i]) {
           if (key !== 'time') {
-            stats[i][key] = stats[i][key] - startValues[key];
+            stats[i][key] = stats[i][key] - startValues[key]
           }
         }
       }
