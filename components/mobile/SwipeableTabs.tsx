@@ -11,7 +11,17 @@ import {
 
 type scrollVisibilityApiType = React.ContextType<typeof VisibilityContext>
 
-function SwipeableTabs({ items, onChange, tabIndex }) {
+function SwipeableTabs({
+  items,
+  onChange,
+  tabIndex,
+  width,
+}: {
+  items: any[]
+  onChange: (x) => void
+  tabIndex: number
+  width?: string
+}) {
   const { dragStart, dragStop, dragMove, dragging } = useDrag()
 
   const handleDrag =
@@ -70,6 +80,7 @@ function SwipeableTabs({ items, onChange, tabIndex }) {
             key={item}
             onClick={handleItemClick(i.toString())}
             selected={i === tabIndex}
+            width={width}
           />
         ))}
       </ScrollMenu>
@@ -110,11 +121,13 @@ function Tab({
   selected,
   onClick,
   title,
+  width,
 }: {
   itemId: string
   selected: boolean
   onClick: (x) => void
   title: string
+  width?: string
 }) {
   const { t } = useTranslation('common')
   const visibility = React.useContext(VisibilityContext)
@@ -130,7 +143,9 @@ function Tab({
       onClick={() => onClick(visibility)}
       role="button"
       tabIndex={0}
-      className={`relative flex h-10 w-28 items-center justify-center font-bold focus:text-th-primary focus:outline-none ${
+      className={`relative flex h-10 ${
+        width ? width : 'w-28'
+      } items-center justify-center font-bold focus:text-th-primary focus:outline-none ${
         selected
           ? 'border-b-2 border-th-primary text-th-primary'
           : 'border-b border-th-fgd-4 text-th-fgd-3'

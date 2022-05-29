@@ -56,6 +56,7 @@ export default function Markets() {
                 onChange={handleChangeViewIndex}
                 items={TABS}
                 tabIndex={viewIndex}
+                width="w-full"
               />
             )}
           </div>

@@ -524,3 +524,7 @@ body::-webkit-scrollbar-corner {
 .keep-break {
   word-break: keep-all;
 }
+
+.react-horizontal-scrolling-menu--item {
+  @apply w-full;
+}
