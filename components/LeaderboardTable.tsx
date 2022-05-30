@@ -113,6 +113,9 @@ const LeaderboardTable = ({ range = '29' }) => {
                 rank={i + 1}
                 acc={acc.mango_account}
                 key={acc.mango_account}
+                rawPnl={
+                  leaderboardType === 'total-pnl' ? acc.pnl : acc.perp_pnl
+                }
                 pnl={
                   leaderboardType === 'total-pnl'
                     ? acc.pnl.toLocaleString('en-US', {
@@ -157,7 +160,7 @@ const LeaderboardTable = ({ range = '29' }) => {
 
 export default LeaderboardTable
 
-const AccountCard = ({ rank, acc, pnl, pfp }) => {
+const AccountCard = ({ rank, acc, pnl, pfp, rawPnl }) => {
   const medalColors =
     rank === 1
       ? {
@@ -213,7 +216,11 @@ const AccountCard = ({ rank, acc, pnl, pfp }) => {
         </div>
         <div>
           <div className="flex items-center">
-            <span className={`text-base font-bold text-th-fgd-2 sm:text-lg`}>
+            <span
+              className={`text-base font-bold text-th-fgd-2 sm:text-lg ${
+                rawPnl > 0 ? 'text-th-green' : 'text-th-red'
+              }`}
+            >
               {pnl}
             </span>
           </div>
