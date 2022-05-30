@@ -57,6 +57,7 @@ import { handleWalletConnect } from 'components/ConnectWalletButton'
 import { MangoAccountLookup } from 'components/account_page/MangoAccountLookup'
 import NftProfilePicModal from 'components/NftProfilePicModal'
 import ProfileImage from 'components/ProfileImage'
+import SwipeableTabs from 'components/mobile/SwipeableTabs'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -449,39 +450,46 @@ export default function Account() {
         </div>
         <div className="md:rounded-lg md:bg-th-bkg-2 md:p-6">
           {mangoAccount ? (
-            <Tabs
-              activeTab={activeTab}
-              onChange={handleTabChange}
-              tabs={TABS}
-            />
-          ) : null}
-          {mangoAccount ? (
             !isMobile ? (
-              <TabContent activeTab={activeTab} />
+              <>
+                <Tabs
+                  activeTab={activeTab}
+                  onChange={handleTabChange}
+                  tabs={TABS}
+                />
+                <TabContent activeTab={activeTab} />
+              </>
             ) : (
-              <Swipeable
-                index={viewIndex}
-                onChangeIndex={handleChangeViewIndex}
-              >
-                <div>
-                  <AccountOverview />
-                </div>
-                <div>
-                  <AccountOrders />
-                </div>
-                <div>
-                  <AccountHistory />
-                </div>
-                <div>
-                  <AccountInterest />
-                </div>
-                <div>
-                  <AccountFunding />
-                </div>
-                <div>
-                  <AccountPerformancePerToken />
-                </div>
-              </Swipeable>
+              <>
+                <SwipeableTabs
+                  onChange={handleChangeViewIndex}
+                  items={TABS}
+                  tabIndex={viewIndex}
+                />
+                <Swipeable
+                  index={viewIndex}
+                  onChangeIndex={handleChangeViewIndex}
+                >
+                  <div>
+                    <AccountOverview />
+                  </div>
+                  <div>
+                    <AccountOrders />
+                  </div>
+                  <div>
+                    <AccountHistory />
+                  </div>
+                  <div>
+                    <AccountInterest />
+                  </div>
+                  <div>
+                    <AccountFunding />
+                  </div>
+                  <div>
+                    <AccountPerformancePerToken />
+                  </div>
+                </Swipeable>
+              </>
             )
           ) : connected ? (
             isLoading ? (
