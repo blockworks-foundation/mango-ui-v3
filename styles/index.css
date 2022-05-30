@@ -110,7 +110,7 @@ button {
   @apply rounded-md tracking-wider;
 }
 
-button.transition-none {
+.transition-none {
   transition: none;
 }
 
