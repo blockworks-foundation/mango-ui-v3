@@ -169,7 +169,7 @@ export default function AccountOverview() {
           </div>
         </div>
         <div className="h-80 w-full md:h-auto md:w-2/3 lg:w-3/4">
-          <div className="mb-4 ml-auto md:w-56">
+          <div className="mb-3 ml-auto md:w-56">
             <ButtonGroup
               activeValue={performanceRange}
               className="h-8"

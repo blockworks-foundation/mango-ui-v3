@@ -498,87 +498,109 @@ const TradeHistoryTable = ({
                   )}
                 </>
               ) : (
-                paginatedData.map((trade: any, index) => (
-                  <ExpandableRow
-                    buttonTemplate={
-                      <>
-                        <div className="text-fgd-1 flex w-full items-center justify-between">
-                          <div className="text-left">
-                            {trade.loadTimestamp || trade.timestamp ? (
-                              <TableDateDisplay
-                                date={formatTradeDateTime(
-                                  trade.loadTimestamp || trade.timestamp
+                <div className="mb-6">
+                  <div className="border-b border-th-bkg-4">
+                    {paginatedData.map((trade: any, index) => (
+                      <ExpandableRow
+                        buttonTemplate={
+                          <>
+                            <div className="text-fgd-1 flex w-full items-center justify-between">
+                              <div className="text-left">
+                                {trade.loadTimestamp || trade.timestamp ? (
+                                  <TableDateDisplay
+                                    date={formatTradeDateTime(
+                                      trade.loadTimestamp || trade.timestamp
+                                    )}
+                                    showSeconds
+                                  />
+                                ) : (
+                                  t('recent')
                                 )}
-                                showSeconds
-                              />
-                            ) : (
-                              t('recent')
-                            )}
-                          </div>
-                          <div>
-                            <div className="text-right">
-                              <div className="mb-0.5 flex items-center text-left">
-                                <img
-                                  alt=""
-                                  width="16"
-                                  height="16"
-                                  src={`/assets/icons/${trade.marketName
-                                    .split(/-|\//)[0]
-                                    .toLowerCase()}.svg`}
-                                  className={`mr-1.5`}
-                                />
-                                {trade.marketName}
                               </div>
-                              <div className="text-xs text-th-fgd-3">
-                                <span
-                                  className={`mr-1
+                              <div>
+                                <div className="text-right">
+                                  <div className="mb-0.5 flex items-center text-left">
+                                    <img
+                                      alt=""
+                                      width="16"
+                                      height="16"
+                                      src={`/assets/icons/${trade.marketName
+                                        .split(/-|\//)[0]
+                                        .toLowerCase()}.svg`}
+                                      className={`mr-1.5`}
+                                    />
+                                    {trade.marketName}
+                                  </div>
+                                  <div className="text-xs text-th-fgd-3">
+                                    <span
+                                      className={`mr-1
                                 ${
                                   trade.side === 'buy' || trade.side === 'long'
                                     ? 'text-th-green'
                                     : 'text-th-red'
                                 }
                               `}
-                                >
-                                  {trade.side.toUpperCase()}
-                                </span>
-                                {trade.size}
+                                    >
+                                      {trade.side.toUpperCase()}
+                                    </span>
+                                    {trade.size.toLocaleString()}
+                                  </div>
+                                </div>
                               </div>
                             </div>
+                          </>
+                        }
+                        key={`${index}`}
+                        panelTemplate={
+                          <div className="grid grid-flow-row grid-cols-2 gap-4">
+                            <div className="text-left">
+                              <div className="pb-0.5 text-xs text-th-fgd-3">
+                                {t('price')}
+                              </div>
+                              {formatUsdValue(trade.price)}
+                            </div>
+                            <div className="text-left">
+                              <div className="pb-0.5 text-xs text-th-fgd-3">
+                                {t('value')}
+                              </div>
+                              {formatUsdValue(trade.value)}
+                            </div>
+                            <div className="text-left">
+                              <div className="pb-0.5 text-xs text-th-fgd-3">
+                                {t('liquidity')}
+                              </div>
+                              {trade.liquidity}
+                            </div>
+                            <div className="text-left">
+                              <div className="pb-0.5 text-xs text-th-fgd-3">
+                                {t('fee')}
+                              </div>
+                              {formatUsdValue(trade.feeCost)}
+                            </div>
                           </div>
-                        </div>
-                      </>
-                    }
-                    key={`${index}`}
-                    panelTemplate={
-                      <div className="grid grid-flow-row grid-cols-2 gap-4">
-                        <div className="text-left">
-                          <div className="pb-0.5 text-xs text-th-fgd-3">
-                            {t('price')}
-                          </div>
-                          {formatUsdValue(trade.price)}
-                        </div>
-                        <div className="text-left">
-                          <div className="pb-0.5 text-xs text-th-fgd-3">
-                            {t('value')}
-                          </div>
-                          {formatUsdValue(trade.value)}
-                        </div>
-                        <div className="text-left">
-                          <div className="pb-0.5 text-xs text-th-fgd-3">
-                            {t('liquidity')}
-                          </div>
-                          {trade.liquidity}
-                        </div>
-                        <div className="text-left">
-                          <div className="pb-0.5 text-xs text-th-fgd-3">
-                            {t('fee')}
-                          </div>
-                          {formatUsdValue(trade.feeCost)}
-                        </div>
-                      </div>
-                    }
-                  />
-                ))
+                        }
+                      />
+                    ))}
+                  </div>
+                  {numTrades && items.length > numTrades ? (
+                    <div className="mt-4 flex items-center justify-center">
+                      <Link href="/account" shallow={true}>
+                        {t('view-all-trades')}
+                      </Link>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center md:justify-end">
+                      <Pagination
+                        page={page}
+                        totalPages={totalPages}
+                        nextPage={nextPage}
+                        lastPage={lastPage}
+                        firstPage={firstPage}
+                        previousPage={previousPage}
+                      />
+                    </div>
+                  )}
+                </div>
               )
             ) : hasActiveFilter ? (
               <div className="w-full rounded-md bg-th-bkg-1 py-6 text-center text-th-fgd-3">
