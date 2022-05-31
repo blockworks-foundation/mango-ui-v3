@@ -1,9 +1,7 @@
 import { MangoAccountLayout } from '@blockworks-foundation/mango-client'
 import {
-  // CalendarIcon,
   ChevronRightIcon,
   UserGroupIcon,
-  // MailIcon,
   ArrowSmDownIcon,
   ArrowSmUpIcon,
   LinkIcon,
@@ -92,10 +90,6 @@ export default function Profile() {
     setInitialFollowingLoad(false)
     setActiveTab('following')
   }, [pk, publicKey])
-
-  // const profilePk = useMemo(() => {
-  //   return pk ? pk : publicKey ? publicKey.toString() : ''
-  // }, [pk, publicKey])
 
   const fetchProfileDetails = async () => {
     setLoadProfileDetails(true)
@@ -326,16 +320,12 @@ export default function Profile() {
                               `profile:${profileData?.trader_category.toLowerCase()}`
                             )}
                           </div>
-                          {/* <div className="flex items-center space-x-1.5">
-                          <CalendarIcon className="h-4 w-4 text-th-fgd-3" />
-                          <p className="mb-0">Joined April 2020</p>
-                        </div> */}
                         </div>
                       </>
                     ) : (
-                      <div className="mb-1.5 space-y-2">
+                      <div className="mb-1.5 flex space-x-3">
                         <div className="h-7 w-40 animate-pulse rounded bg-th-bkg-3" />
-                        <div className="h-5 w-12 animate-pulse rounded bg-th-bkg-3" />
+                        <div className="h-7 w-12 animate-pulse rounded bg-th-bkg-3" />
                       </div>
                     )}
                     <div className="flex space-x-4">
@@ -372,12 +362,7 @@ export default function Profile() {
                     <PencilIcon className="mr-2 h-5 w-5" />
                     {t('profile:edit-profile')}
                   </Button>
-                ) : publicKey ? (
-                  <></>
-                ) : // <IconButton className="h-10 w-10">
-                //   <MailIcon className="h-5 w-5" />
-                // </IconButton>
-                null}
+                ) : null}
                 {!canEdit && publicKey ? (
                   <Button
                     className="flex items-center pl-4 pr-4"
@@ -387,10 +372,6 @@ export default function Profile() {
                     {t('profile:your-profile')}
                   </Button>
                 ) : null}
-                {/* <Button className="flex items-center pl-4 pr-4">
-                <UserGroupIcon className="mr-2 h-5 w-5" />
-                {t('profile:browse-profiles')}
-              </Button> */}
               </div>
             </div>
           ) : null}
