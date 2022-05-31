@@ -9,6 +9,7 @@ import {
   LinkIcon,
   ExclamationCircleIcon,
   UserCircleIcon,
+  PencilIcon,
 } from '@heroicons/react/outline'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { PublicKey } from '@solana/web3.js'
@@ -299,103 +300,107 @@ export default function Profile() {
     <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
       <TopBar />
       <PageBodyContainer>
-        <div className="flex flex-col pt-8 pb-3 sm:flex-row sm:items-center sm:justify-between sm:pb-6 md:pt-10">
-          <div className="flex w-full items-center justify-between">
-            <h1 className={`text-2xl font-semibold text-th-fgd-1 sm:mb-0`}>
-              {t('profile:profile')}
-            </h1>
-            <div className="flex items-center space-x-3">
-              {!canEdit && publicKey ? (
-                <Button
-                  className="flex items-center pl-4 pr-4"
-                  onClick={() => router.push('/profile')}
-                >
-                  <UserCircleIcon className="mr-2 h-5 w-5" />
-                  {t('profile:your-profile')}
-                </Button>
-              ) : null}
-              <Button className="flex items-center pl-4 pr-4">
+        <div className="flex flex-col pt-4 pb-6 md:flex-row md:items-end md:justify-between md:pb-4 md:pt-10">
+          {connected || pk ? (
+            <div className="flex w-full items-end justify-between">
+              <div className="flex items-start justify-between rounded-lg">
+                <div className="flex flex-col sm:flex-row sm:items-center">
+                  <ProfileImageButton
+                    imageSize="80"
+                    placeholderSize="40"
+                    disabled={
+                      !connected ||
+                      profileData?.wallet_pk !== publicKey?.toString()
+                    }
+                    publicKey={profileData?.wallet_pk || pk}
+                  />
+                  <div>
+                    {!loadProfileDetails ? (
+                      <>
+                        <div className="mb-1.5 flex items-center space-x-3">
+                          <h1 className="capitalize">
+                            {profileData?.profile_name}
+                          </h1>
+                          <div className="w-max rounded-full px-2 py-1 text-xs text-th-fgd-4 ring-1 ring-inset ring-th-fgd-4">
+                            {t(
+                              `profile:${profileData?.trader_category.toLowerCase()}`
+                            )}
+                          </div>
+                          {/* <div className="flex items-center space-x-1.5">
+                          <CalendarIcon className="h-4 w-4 text-th-fgd-3" />
+                          <p className="mb-0">Joined April 2020</p>
+                        </div> */}
+                        </div>
+                      </>
+                    ) : (
+                      <div className="mb-1.5 space-y-2">
+                        <div className="h-7 w-40 animate-pulse rounded bg-th-bkg-3" />
+                        <div className="h-5 w-12 animate-pulse rounded bg-th-bkg-3" />
+                      </div>
+                    )}
+                    <div className="flex space-x-4">
+                      {!loadFollowing ? (
+                        <p className="mb-0 font-bold text-th-fgd-1">
+                          {following.length}{' '}
+                          <span className="font-normal text-th-fgd-4">
+                            {t('following')}
+                          </span>
+                        </p>
+                      ) : (
+                        <div className="h-5 w-20 animate-pulse rounded bg-th-bkg-3" />
+                      )}
+                      {!loadFollowers ? (
+                        <p className="mb-0 font-bold text-th-fgd-1">
+                          {followers.length}{' '}
+                          <span className="font-normal text-th-fgd-4">
+                            {t('followers')}
+                          </span>
+                        </p>
+                      ) : (
+                        <div className="h-5 w-20 animate-pulse rounded bg-th-bkg-3" />
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center space-x-3">
+                {canEdit ? (
+                  <Button
+                    className="flex items-center pl-4 pr-4"
+                    onClick={() => setShowEditProfile(true)}
+                  >
+                    <PencilIcon className="mr-2 h-5 w-5" />
+                    {t('profile:edit-profile')}
+                  </Button>
+                ) : publicKey ? (
+                  <></>
+                ) : // <IconButton className="h-10 w-10">
+                //   <MailIcon className="h-5 w-5" />
+                // </IconButton>
+                null}
+                {!canEdit && publicKey ? (
+                  <Button
+                    className="flex items-center pl-4 pr-4"
+                    onClick={() => router.push('/profile')}
+                  >
+                    <UserCircleIcon className="mr-2 h-5 w-5" />
+                    {t('profile:your-profile')}
+                  </Button>
+                ) : null}
+                {/* <Button className="flex items-center pl-4 pr-4">
                 <UserGroupIcon className="mr-2 h-5 w-5" />
                 {t('profile:browse-profiles')}
-              </Button>
+              </Button> */}
+              </div>
             </div>
-          </div>
+          ) : null}
         </div>
         <div className="md:rounded-lg md:bg-th-bkg-2 md:p-6">
           {connected || pk ? (
             <div className="grid grid-cols-12 gap-6">
               <div className="col-span-12 lg:col-span-8">
-                <div className="mb-8 flex items-start justify-between rounded-lg ">
-                  <div className="flex flex-col sm:flex-row sm:items-center">
-                    <ProfileImageButton
-                      imageSize="80"
-                      placeholderSize="40"
-                      disabled={
-                        !connected ||
-                        profileData?.wallet_pk !== publicKey?.toString()
-                      }
-                      publicKey={profileData?.wallet_pk || pk}
-                    />
-                    <div>
-                      {!loadProfileDetails ? (
-                        <>
-                          <h2 className="mb-2 capitalize">
-                            {profileData?.profile_name}
-                          </h2>
-                          <div className="mb-1.5 flex items-center space-x-3">
-                            <div className="w-max rounded-full px-2 py-1 text-xs text-th-fgd-4 ring-1 ring-inset ring-th-fgd-4">
-                              {t(
-                                `profile:${profileData?.trader_category.toLowerCase()}`
-                              )}
-                            </div>
-                            {/* <div className="flex items-center space-x-1.5">
-                          <CalendarIcon className="h-4 w-4 text-th-fgd-3" />
-                          <p className="mb-0">Joined April 2020</p>
-                        </div> */}
-                          </div>
-                        </>
-                      ) : (
-                        <div className="mb-1.5 space-y-2">
-                          <div className="h-7 w-40 animate-pulse rounded bg-th-bkg-3" />
-                          <div className="h-5 w-12 animate-pulse rounded bg-th-bkg-3" />
-                        </div>
-                      )}
-                      <div className="flex space-x-4">
-                        {!loadFollowing ? (
-                          <p className="mb-0 font-bold text-th-fgd-1">
-                            {following.length}{' '}
-                            <span className="font-normal text-th-fgd-4">
-                              {t('following')}
-                            </span>
-                          </p>
-                        ) : (
-                          <div className="h-5 w-20 animate-pulse rounded bg-th-bkg-3" />
-                        )}
-                        {!loadFollowers ? (
-                          <p className="mb-0 font-bold text-th-fgd-1">
-                            {followers.length}{' '}
-                            <span className="font-normal text-th-fgd-4">
-                              {t('followers')}
-                            </span>
-                          </p>
-                        ) : (
-                          <div className="h-5 w-20 animate-pulse rounded bg-th-bkg-3" />
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  {canEdit ? (
-                    <Button onClick={() => setShowEditProfile(true)}>
-                      {t('edit')}
-                    </Button>
-                  ) : publicKey ? (
-                    <></>
-                  ) : // <IconButton className="h-10 w-10">
-                  //   <MailIcon className="h-5 w-5" />
-                  // </IconButton>
-                  null}
-                </div>
-                <div className="mb-8 grid grid-flow-col grid-cols-1 grid-rows-2 border-b border-th-bkg-4 md:grid-cols-2 md:grid-rows-1 md:gap-4">
+                <h3 className="mb-4">{t('portfolio')}</h3>
+                <div className="mb-8 grid grid-flow-col grid-cols-1 grid-rows-2 md:grid-cols-2 md:grid-rows-1 md:gap-4">
                   <div className="border-t border-th-bkg-4 p-3 sm:p-4 md:border-b">
                     <div className="pb-0.5 text-th-fgd-3">
                       {t('profile:total-value')}

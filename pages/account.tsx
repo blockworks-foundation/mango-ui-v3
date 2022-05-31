@@ -30,7 +30,7 @@ import AccountInterest from 'components/account_page/AccountInterest'
 import AccountFunding from 'components/account_page/AccountFunding'
 import AccountPerformancePerToken from 'components/account_page/AccountPerformancePerToken'
 import AccountNameModal from 'components/AccountNameModal'
-import { IconButton, LinkButton } from 'components/Button'
+import { LinkButton } from 'components/Button'
 import EmptyState from 'components/EmptyState'
 import Loading from 'components/Loading'
 import Swipeable from 'components/mobile/Swipeable'
@@ -49,14 +49,14 @@ import {
   mangoGroupSelector,
 } from 'stores/selectors'
 import CreateAlertModal from 'components/CreateAlertModal'
-import { copyToClipboard } from 'utils'
+import { abbreviateAddress, copyToClipboard } from 'utils'
 import DelegateModal from 'components/DelegateModal'
 import { Menu, Transition } from '@headlessui/react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { handleWalletConnect } from 'components/ConnectWalletButton'
 import { MangoAccountLookup } from 'components/account_page/MangoAccountLookup'
 import NftProfilePicModal from 'components/NftProfilePicModal'
-import ProfileImageButton from 'components/ProfileImageButton'
+import Tooltip from 'components/Tooltip'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -76,7 +76,7 @@ export async function getStaticProps({ locale }) {
 }
 
 const TABS = [
-  'Portfolio',
+  'Overview',
   'Orders',
   'History',
   'Interest',
@@ -283,37 +283,22 @@ export default function Account() {
           {mangoAccount ? (
             <>
               <div className="flex flex-col pb-3 sm:flex-row sm:items-center md:pb-0">
-                <ProfileImageButton
-                  disabled={!!pubkey}
-                  imageSize="80"
-                  placeholderSize="40"
-                />
                 <div>
-                  <div className="mb-1 flex items-center">
-                    <h1 className={`mr-3`}>
-                      {mangoAccount?.name || t('account')}
-                    </h1>
-                    {!pubkey ? (
-                      <IconButton
-                        className="h-7 w-7"
-                        onClick={() => setShowNameModal(true)}
+                  <div className="flex h-8 items-center">
+                    <Tooltip content="Copy account address">
+                      <LinkButton
+                        className="flex items-center text-th-fgd-4 no-underline"
+                        onClick={() =>
+                          handleCopyAddress(mangoAccount.publicKey.toString())
+                        }
                       >
-                        <PencilIcon className="h-3.5 w-3.5" />
-                      </IconButton>
-                    ) : null}
-                  </div>
-                  <div className="flex h-4 items-center">
-                    <LinkButton
-                      className="flex items-center text-th-fgd-4 no-underline"
-                      onClick={() =>
-                        handleCopyAddress(mangoAccount.publicKey.toString())
-                      }
-                    >
-                      <span className="text-xxs font-normal sm:text-xs">
-                        {mangoAccount.publicKey.toBase58()}
-                      </span>
-                      <DuplicateIcon className="ml-1.5 h-4 w-4" />
-                    </LinkButton>
+                        <h1>
+                          {mangoAccount?.name ||
+                            abbreviateAddress(mangoAccount.publicKey)}
+                        </h1>
+                        <DuplicateIcon className="ml-1.5 h-5 w-5" />
+                      </LinkButton>
+                    </Tooltip>
                     {isCopied ? (
                       <span className="ml-2 rounded bg-th-bkg-3 px-1.5 py-0.5 text-xs">
                         Copied
@@ -380,6 +365,19 @@ export default function Account() {
                                 <div className="flex items-center">
                                   <BellIcon className="mr-1.5 h-4 w-4" />
                                   {t('alerts')}
+                                </div>
+                              </button>
+                            </Menu.Item>
+                            <Menu.Item>
+                              <button
+                                className="flex w-full flex-row items-center rounded-none py-0.5 font-normal hover:cursor-pointer hover:text-th-primary focus:outline-none"
+                                onClick={() => setShowNameModal(true)}
+                              >
+                                <div className="flex items-center">
+                                  <PencilIcon className="mr-1.5 h-4 w-4" />
+                                  {mangoAccount?.name
+                                    ? 'Edit Account Name'
+                                    : 'Add Account Name'}
                                 </div>
                               </button>
                             </Menu.Item>
@@ -541,7 +539,7 @@ export default function Account() {
 
 const TabContent = ({ activeTab }) => {
   switch (activeTab) {
-    case 'Portfolio':
+    case 'Overview':
       return <AccountOverview />
     case 'Orders':
       return <AccountOrders />
