@@ -58,6 +58,8 @@ import { MangoAccountLookup } from 'components/account_page/MangoAccountLookup'
 import NftProfilePicModal from 'components/NftProfilePicModal'
 import Tooltip from 'components/Tooltip'
 import SwipeableTabs from 'components/mobile/SwipeableTabs'
+import ProfileImage from 'components/ProfileImage'
+import Link from 'next/link'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -105,6 +107,8 @@ export default function Account() {
   const [mngoAccrued, setMngoAccrued] = useState(ZERO_BN)
   const [viewIndex, setViewIndex] = useState(0)
   const [activeTab, setActiveTab] = useState(TABS[0])
+  const [profileData, setProfileData] = useState<any>(null)
+  const [loadProfileDetails, setLoadProfileDetails] = useState(false)
   const [showProfilePicModal, setShowProfilePicModal] = useState(false)
 
   const connecting = wallet?.adapter?.connecting
@@ -276,6 +280,28 @@ export default function Account() {
     }
   }
 
+  const fetchProfileDetails = async () => {
+    setLoadProfileDetails(true)
+    try {
+      const response = await fetch(
+        `https://mango-transaction-log.herokuapp.com/v3/user-data/profile-details?wallet-pk=${mangoAccount?.owner.toString()}`
+      )
+      const data = await response.json()
+      setProfileData(data)
+      setLoadProfileDetails(false)
+    } catch (e) {
+      notify({ type: 'error', title: t('profile:profile-fetch-fail') })
+      console.log(e)
+      setLoadProfileDetails(false)
+    }
+  }
+
+  useEffect(() => {
+    if (mangoAccount) {
+      fetchProfileDetails()
+    }
+  }, [mangoAccount])
+
   return (
     <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
       <TopBar />
@@ -306,10 +332,35 @@ export default function Account() {
                       </span>
                     ) : null}
                   </div>
-                  <div className="flex items-center text-xxs text-th-fgd-4">
+                  <div className="mb-2 flex items-center text-xxs text-th-fgd-4">
                     <ExclamationCircleIcon className="mr-1.5 h-4 w-4" />
                     {t('account-address-warning')}
                   </div>
+                  {!loadProfileDetails && mangoAccount ? (
+                    profileData ? (
+                      <Link
+                        href={
+                          pubkey
+                            ? `/profile?pk=${mangoAccount.owner.toString()}`
+                            : '/profile'
+                        }
+                        shallow={true}
+                      >
+                        <a className="default-transition flex items-center space-x-2 text-th-fgd-3 hover:text-th-fgd-2">
+                          <ProfileImage
+                            imageSize="24"
+                            placeholderSize="12"
+                            publicKey={mangoAccount.owner.toString()}
+                          />
+                          <span className="mb-0 capitalize">
+                            {profileData?.profile_name}
+                          </span>
+                        </a>
+                      </Link>
+                    ) : null
+                  ) : (
+                    <div className="h-7 w-40 animate-pulse rounded bg-th-bkg-3" />
+                  )}
                 </div>
               </div>
               {!pubkey ? (
