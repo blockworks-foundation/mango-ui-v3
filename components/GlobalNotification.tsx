@@ -6,7 +6,7 @@ import { SECONDS } from '../stores/useMangoStore'
 import { useTranslation } from 'next-i18next'
 import { ExclamationIcon } from '@heroicons/react/outline'
 
-const connection = new Connection('https://solana-api.projectserum.com/')
+const connection = new Connection('https://mango.genesysgo.net/')
 
 const getRecentPerformance = async (setShow, setTps) => {
   try {

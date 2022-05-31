@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import dayjs from 'dayjs'
 import { usdFormatter } from '../utils'
 import { MedalIcon, ProfileIcon } from './icons'
@@ -11,95 +11,98 @@ import {
 import { getProfilePicture } from '@solflare-wallet/pfp'
 import useMangoStore from '../stores/useMangoStore'
 import { connectionSelector } from '../stores/selectors'
+import { PublicKey } from '@solana/web3.js'
 
 const utc = require('dayjs/plugin/utc')
 dayjs.extend(utc)
 
-const LeaderboardTable = ({ range = '29' }) => {
-  const [pnlLeaderboardData, setPnlLeaderboardData] = useState<any[]>([])
-  const [perpPnlLeaderboardData, setPerpPnlLeaderboardData] = useState<any[]>(
+type LeaderboardRow = Record<string, string>
+type LeaderboardDataType = Record<string, Record<string, LeaderboardRow[]>>
+type LeaderBoardType = 'total-pnl' | 'futures-only'
+export type LeaderBoardRange = '30' | 'all-time' | '7'
+
+const rangeMap = {
+  '30': '30d',
+  '7': '7d',
+  'all-time': 'allTime',
+}
+
+const walletProfilePics: Record<string, any> = {}
+
+const LeaderboardTable = ({ range = '30' }: { range: LeaderBoardRange }) => {
+  const [leaderboardData, setLeaderboardData] = useState<LeaderboardDataType>(
+    {}
+  )
+  const [selectedLeaderboardData, setSelectedLeaderboardData] = useState<any[]>(
     []
   )
-  const [leaderboardType, setLeaderboardType] = useState<string>('total-pnl')
+  const [leaderboardType, setLeaderboardType] =
+    useState<LeaderBoardType>('total-pnl')
   const [loading, setLoading] = useState(false)
   const connection = useMangoStore(connectionSelector)
 
   const fetchPnlLeaderboard = async () => {
     setLoading(true)
     const response = await fetch(
-      `https://mango-transaction-log.herokuapp.com/v3/stats/pnl-leaderboard?start-date=${dayjs()
-        .utc()
-        .hour(0)
-        .minute(0)
-        .subtract(parseInt(range), 'day')
-        .add(1, 'hour')
-        .format('YYYY-MM-DDThh:00:00')}`
+      'https://mango-all-markets-api.herokuapp.com/leaderboard'
     )
     const parsedResponse = await response.json()
-    const leaderboardData = [] as any[]
-    for (const item of parsedResponse) {
+
+    setLeaderboardData(parsedResponse)
+    setLoading(false)
+  }
+
+  const getProfilePics = async (leaderboardData: LeaderboardRow[]) => {
+    const pnlWalletPks = Object.values(leaderboardData).map((x) => x.wallet_pk)
+
+    for (const walletPk of pnlWalletPks) {
+      if (Object.prototype.hasOwnProperty.call(walletProfilePics, walletPk))
+        continue
+
       const { isAvailable, url } = await getProfilePicture(
         connection,
-        item.wallet_pk
+        new PublicKey(walletPk)
       )
-      leaderboardData.push({
-        ...item,
-        pfp: { isAvailable: isAvailable, url: url },
-      })
+      walletProfilePics[walletPk] = { isAvailable: isAvailable, url: url }
     }
-    setPnlLeaderboardData(leaderboardData)
-    setLoading(false)
-  }
-
-  const fetchPerpPnlLeaderboard = async () => {
-    setLoading(true)
-    const response = await fetch(
-      `https://mango-transaction-log.herokuapp.com/v3/stats/perp-pnl-leaderboard?start-date=${dayjs()
-        .hour(0)
-        .minute(0)
-        .utc()
-        .subtract(parseInt(range), 'day')
-        .format('YYYY-MM-DDThh:00:00')}`
-    )
-    const parsedResponse = await response.json()
-    setPerpPnlLeaderboardData(parsedResponse)
-
-    setLoading(false)
   }
 
   useEffect(() => {
-    if (leaderboardType === 'total-pnl') {
-      fetchPnlLeaderboard()
-    } else {
-      fetchPerpPnlLeaderboard()
+    if (leaderboardData?.total) {
+      const rangeKey = rangeMap[range]
+
+      const filteredLeaderboardData =
+        leaderboardType === 'total-pnl'
+          ? leaderboardData.total[rangeKey]
+          : leaderboardData.perp[rangeKey]
+
+      setSelectedLeaderboardData(filteredLeaderboardData)
+      getProfilePics(filteredLeaderboardData)
     }
-  }, [range, leaderboardType])
+  }, [leaderboardData, range, leaderboardType])
 
   useEffect(() => {
-    fetchPerpPnlLeaderboard()
+    fetchPnlLeaderboard()
   }, [])
 
-  const leaderboardData = useMemo(
-    () =>
-      leaderboardType === 'total-pnl'
-        ? pnlLeaderboardData
-        : perpPnlLeaderboardData,
-    [leaderboardType, pnlLeaderboardData, perpPnlLeaderboardData]
-  )
+  const handleLeaderboardType = (type) => {
+    setSelectedLeaderboardData([])
+    setLeaderboardType(type)
+  }
 
   return (
     <div className="grid grid-cols-12 gap-6">
       <div className="col-span-12 flex space-x-3 lg:col-span-4 lg:flex-col lg:space-y-2 lg:space-x-0">
         <LeaderboardTypeButton
           leaderboardType={leaderboardType}
-          setLeaderboardType={setLeaderboardType}
+          setLeaderboardType={handleLeaderboardType}
           range={range}
           label="total-pnl"
           icon={<ChartPieIcon className="mr-3 hidden h-6 w-6 lg:block" />}
         />
         <LeaderboardTypeButton
           leaderboardType={leaderboardType}
-          setLeaderboardType={setLeaderboardType}
+          setLeaderboardType={handleLeaderboardType}
           range={range}
           label="futures-only"
           icon={<TrendingUpIcon className="mr-3 hidden h-6 w-6 lg:block" />}
@@ -108,7 +111,7 @@ const LeaderboardTable = ({ range = '29' }) => {
       <div className="col-span-12 lg:col-span-8">
         {!loading ? (
           <div className="space-y-2">
-            {leaderboardData.map((acc, i) => (
+            {selectedLeaderboardData.map((acc, i) => (
               <AccountCard
                 rank={i + 1}
                 acc={acc.mango_account}
@@ -125,7 +128,7 @@ const LeaderboardTable = ({ range = '29' }) => {
                       })
                     : usdFormatter(acc.perp_pnl)
                 }
-                pfp={acc.pfp}
+                walletPk={acc.wallet_pk}
               />
             ))}
           </div>
@@ -160,7 +163,7 @@ const LeaderboardTable = ({ range = '29' }) => {
 
 export default LeaderboardTable
 
-const AccountCard = ({ rank, acc, pnl, pfp, rawPnl }) => {
+const AccountCard = ({ rank, acc, pnl, walletPk, rawPnl }) => {
   const medalColors =
     rank === 1
       ? {
@@ -182,6 +185,7 @@ const AccountCard = ({ rank, acc, pnl, pfp, rawPnl }) => {
           light: '#DBA36B',
           lightest: '#EFBF8D',
         }
+  const pfp = walletProfilePics[walletPk]
   return (
     <a
       href={`https://trade.mango.markets/account?pubkey=${acc}`}
@@ -252,9 +256,9 @@ const LeaderboardTypeButton = ({
       <div>
         <div className="font-bold sm:text-lg">{t(label)}</div>
         <span className="text-th-fgd-4">
-          {range === '9999'
+          {range === 'all-time'
             ? 'All-time'
-            : range === '29'
+            : range === '30'
             ? '30-day'
             : `${range}-day`}
         </span>

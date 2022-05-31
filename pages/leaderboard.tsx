@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import PageBodyContainer from '../components/PageBodyContainer'
 import TopBar from '../components/TopBar'
-import LeaderboardTable from '../components/LeaderboardTable'
+import LeaderboardTable, {
+  LeaderBoardRange,
+} from '../components/LeaderboardTable'
 import ButtonGroup from 'components/ButtonGroup'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'next-i18next'
@@ -15,16 +17,20 @@ export async function getStaticProps({ locale }) {
   }
 }
 
-const leaderboardRangePresets = [
+const leaderboardRangePresets: Array<{
+  label: string
+  value: LeaderBoardRange
+}> = [
   { label: '7d', value: '7' },
-  { label: '30d', value: '29' },
-  { label: 'All', value: '9999' },
+  { label: '30d', value: '30' },
+  { label: 'All', value: 'all-time' },
 ]
 const leaderboardRangePresetLabels = leaderboardRangePresets.map((x) => x.label)
 const leaderboardRangePresetValues = leaderboardRangePresets.map((x) => x.value)
 
 export default function Leaderboard() {
-  const [leaderboardRange, setLeaderboardRange] = useState('29')
+  const [leaderboardRange, setLeaderboardRange] =
+    useState<LeaderBoardRange>('30')
   const { t } = useTranslation('common')
 
   return (
