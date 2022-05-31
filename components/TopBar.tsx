@@ -21,11 +21,11 @@ import {
 import { MangoIcon, TrophyIcon } from './icons'
 import { useWallet } from '@solana/wallet-adapter-react'
 
-// const StyledNewLabel = ({ children, ...props }) => (
-//   <div style={{ fontSize: '0.5rem', marginLeft: '1px' }} {...props}>
-//     {children}
-//   </div>
-// )
+const StyledNewLabel = ({ children, ...props }) => (
+  <div style={{ fontSize: '0.5rem', marginLeft: '1px' }} {...props}>
+    {children}
+  </div>
+)
 
 const TopBar = () => {
   const { t } = useTranslation('common')
@@ -69,6 +69,16 @@ const TopBar = () => {
                 <MenuItem href="/markets">{t('markets')}</MenuItem>
                 <MenuItem href="/borrow">{t('borrow')}</MenuItem>
                 <MenuItem href="/swap">{t('swap')}</MenuItem>
+                <div className="relative">
+                  <MenuItem href="/leaderboard">
+                    {t('leaderboard')}
+                    <div className="absolute -right-3 -top-3 flex h-4 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-yellow-500 px-1.5">
+                      <StyledNewLabel className="uppercase text-white">
+                        new
+                      </StyledNewLabel>
+                    </div>
+                  </MenuItem>
+                </div>
                 <MenuItem href="/stats">{t('stats')}</MenuItem>
                 <NavDropMenu
                   menuTitle={t('more')}

@@ -131,6 +131,9 @@ const LeaderboardTable = ({ range = '29' }) => {
                 rank={i + 1}
                 acc={acc.mango_account}
                 key={acc.mango_account}
+                rawPnl={
+                  leaderboardType === 'total-pnl' ? acc.pnl : acc.perp_pnl
+                }
                 pnl={
                   leaderboardType === 'total-pnl'
                     ? acc.pnl.toLocaleString('en-US', {
@@ -176,7 +179,7 @@ const LeaderboardTable = ({ range = '29' }) => {
 
 export default LeaderboardTable
 
-const AccountCard = ({ rank, acc, pnl, profile, walletPk }) => {
+const AccountCard = ({ rank, acc, rawPnl, profile, pnl, walletPk }) => {
   const router = useRouter()
   const medalColors =
     rank === 1
@@ -238,7 +241,11 @@ const AccountCard = ({ rank, acc, pnl, profile, walletPk }) => {
             {abbreviateAddress(new PublicKey(acc))}
           </p>
 
-          <span className={`flex items-center text-lg font-bold text-th-fgd-1`}>
+          <span
+            className={`flex items-center text-lg font-bold ${
+              rawPnl > 0 ? 'text-th-green' : 'text-th-red'
+            }`}
+          >
             {pnl}
           </span>
         </div>

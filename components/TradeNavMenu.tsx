@@ -119,7 +119,7 @@ const TradeNavMenu = () => {
           className="relative z-50 flex flex-col"
         >
           <Popover.Button
-            className={`-mr-3 rounded-none px-3 focus:bg-th-bkg-3 focus:outline-none ${
+            className={`-mr-3 rounded-none px-3 transition-none focus:bg-th-bkg-3 focus:outline-none ${
               open && 'bg-th-bkg-3'
             }`}
             ref={buttonRef}

@@ -62,7 +62,7 @@ export default function StatsPage() {
           ) : (
             <SwipeableTabs
               onChange={handleChangeViewIndex}
-              tabs={TABS}
+              items={TABS}
               tabIndex={viewIndex}
             />
           )}

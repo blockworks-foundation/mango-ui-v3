@@ -82,7 +82,7 @@ const MobileTradePage = () => {
       </div>
       <SwipeableTabs
         onChange={handleChangeViewIndex}
-        tabs={TABS}
+        items={TABS}
         tabIndex={viewIndex}
       />
       <Swipeable index={viewIndex} onChangeIndex={handleChangeViewIndex}>

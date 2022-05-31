@@ -110,7 +110,7 @@ button {
   @apply rounded-md tracking-wider;
 }
 
-button.transition-none {
+.transition-none {
   transition: none;
 }
 
@@ -523,4 +523,8 @@ body::-webkit-scrollbar-corner {
 /* CJK characters */
 .keep-break {
   word-break: keep-all;
+}
+
+.react-horizontal-scrolling-menu--item {
+  @apply w-full;
 }
