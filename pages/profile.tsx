@@ -41,6 +41,8 @@ import EmptyState from 'components/EmptyState'
 import { handleWalletConnect } from 'components/ConnectWalletButton'
 import { sign } from 'tweetnacl'
 import bs58 from 'bs58'
+import Loading from 'components/Loading'
+import InlineNotification from 'components/InlineNotification'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -66,6 +68,9 @@ export default function Profile() {
   const [loadFollowing, setLoadFollowing] = useState(false)
   const [loadFollowers, setLoadFollowers] = useState(false)
   const [showEditProfile, setShowEditProfile] = useState(false)
+  const [initialFollowingLoad, setInitialFollowingLoad] = useState(false)
+  const [loadProfileDetails, setLoadProfileDetails] = useState(false)
+  const [profilePk, setProfilePk] = useState<string | string[]>('')
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoClient = useMangoStore((s) => s.connection.client)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
@@ -81,29 +86,40 @@ export default function Profile() {
     }
   }, [wallet])
 
-  const profilePk = useMemo(() => {
-    return pk ? pk : publicKey ? publicKey.toString() : ''
+  useEffect(() => {
+    setProfilePk(pk ? pk : publicKey ? publicKey.toString() : '')
+    setInitialFollowingLoad(false)
+    setActiveTab('following')
   }, [pk, publicKey])
 
-  useEffect(() => {
-    const getProfile = async () => {
-      try {
-        const response = await fetch(
-          `https://mango-transaction-log.herokuapp.com/v3/user-data/settings?wallet-pk=${profilePk}`
-        )
-        const data = await response.json()
-        setProfileData(data)
-      } catch (e) {
-        console.log(e)
-      }
+  // const profilePk = useMemo(() => {
+  //   return pk ? pk : publicKey ? publicKey.toString() : ''
+  // }, [pk, publicKey])
+
+  const fetchProfileDetails = async () => {
+    setLoadProfileDetails(true)
+    try {
+      const response = await fetch(
+        `https://mango-transaction-log.herokuapp.com/v3/user-data/profile-details?wallet-pk=${profilePk}`
+      )
+      const data = await response.json()
+      setProfileData(data)
+      setLoadProfileDetails(false)
+    } catch (e) {
+      notify({ type: 'error', title: t('profile:profile-fetch-fail') })
+      console.log(e)
+      setLoadProfileDetails(false)
     }
+  }
+
+  useEffect(() => {
     if (profilePk) {
-      getProfile()
+      fetchProfileDetails()
     }
   }, [profilePk])
 
   useEffect(() => {
-    if (mangoGroup && profilePk) {
+    if (mangoGroup && profilePk && !initialFollowingLoad) {
       fetchFollowing()
     }
   }, [mangoGroup, profilePk])
@@ -183,11 +199,13 @@ export default function Profile() {
       }
       setFollowing(followingInfo)
       setLoadFollowing(false)
+      setInitialFollowingLoad(true)
     } catch {
       notify({
         type: 'error',
         title: 'Unable to load following',
       })
+      setLoadFollowing(false)
     }
   }
 
@@ -319,16 +337,29 @@ export default function Profile() {
                       publicKey={profileData?.wallet_pk || pk}
                     />
                     <div>
-                      <h2 className="mb-2">{profileData?.profile_name}</h2>
-                      <div className="mb-1.5 flex items-center space-x-3">
-                        <div className="w-max rounded-full px-2 py-1 text-xs text-th-fgd-4 ring-1 ring-inset ring-th-fgd-4">
-                          {`profile:${profileData?.trader_category}`}
-                        </div>
-                        {/* <div className="flex items-center space-x-1.5">
+                      {!loadProfileDetails ? (
+                        <>
+                          <h2 className="mb-2 capitalize">
+                            {profileData?.profile_name}
+                          </h2>
+                          <div className="mb-1.5 flex items-center space-x-3">
+                            <div className="w-max rounded-full px-2 py-1 text-xs text-th-fgd-4 ring-1 ring-inset ring-th-fgd-4">
+                              {t(
+                                `profile:${profileData?.trader_category.toLowerCase()}`
+                              )}
+                            </div>
+                            {/* <div className="flex items-center space-x-1.5">
                           <CalendarIcon className="h-4 w-4 text-th-fgd-3" />
                           <p className="mb-0">Joined April 2020</p>
                         </div> */}
-                      </div>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="mb-1.5 space-y-2">
+                          <div className="h-7 w-40 animate-pulse rounded bg-th-bkg-3" />
+                          <div className="h-5 w-12 animate-pulse rounded bg-th-bkg-3" />
+                        </div>
+                      )}
                       <div className="flex space-x-4">
                         {!loadFollowing ? (
                           <p className="mb-0 font-bold text-th-fgd-1">
@@ -428,12 +459,12 @@ export default function Profile() {
                                 )
                               }
                             >
-                              <p className="mb-0 text-xs text-th-fgd-3">
+                              <p className="mb-0 text-xs capitalize text-th-fgd-3">
                                 {user.profile_name}
                               </p>
                             </button>
                             <a
-                              className="default-transition block flex h-[104px] w-full rounded-md bg-th-bkg-3 p-4 hover:bg-th-bkg-4 sm:h-[88px] sm:justify-between sm:pb-4"
+                              className="default-transition block flex h-[104px] w-full rounded-md bg-th-bkg-3 p-4 hover:bg-th-bkg-4 sm:h-[84px] sm:justify-between sm:pb-4"
                               href={`https://trade.mango.markets/account?pubkey=${user.mango_account.publicKey.toString()}`}
                               target="_blank"
                               rel="noopener noreferrer"
@@ -517,7 +548,7 @@ export default function Profile() {
                               placeholderSize="32"
                               publicKey={user.wallet_pk}
                             />
-                            <p className="mb-0 ml-3 font-bold text-th-fgd-1">
+                            <p className="mb-0 ml-3 font-bold capitalize text-th-fgd-1">
                               {user.profile_name}
                             </p>
                             <div className="my-auto ml-auto">
@@ -566,6 +597,7 @@ export default function Profile() {
           isOpen={showEditProfile}
           onClose={() => setShowEditProfile(false)}
           profile={profileData}
+          fetchProfileDetails={fetchProfileDetails}
         />
       ) : null}
     </div>
@@ -578,6 +610,7 @@ const TRADER_CATEGORIES = [
   'discretionary',
   'market-maker',
   'swing-trader',
+  'trader',
   'yolo',
 ]
 
@@ -585,10 +618,12 @@ const EditProfileModal = ({
   isOpen,
   onClose,
   profile,
+  fetchProfileDetails,
 }: {
   isOpen: boolean
   onClose: () => void
   profile?: any
+  fetchProfileDetails: () => void
 }) => {
   const { t } = useTranslation(['common', 'profile'])
   const { publicKey, signMessage } = useWallet()
@@ -597,6 +632,9 @@ const EditProfileModal = ({
     profile?.trader_category || TRADER_CATEGORIES[0]
   )
   const [inputErrors, setInputErrors] = useState({})
+  const [loadUniquenessCheck, setLoadUniquenessCheck] = useState(false)
+  const [loadUpdateProfile, setLoadUpdateProfile] = useState(false)
+  const [updateError, setUpdateError] = useState('')
 
   const validateProfileName = async (name) => {
     const re = /^([a-zA-Z0-9]+\s)*[a-zA-Z0-9]+$/
@@ -613,10 +651,13 @@ const EditProfileModal = ({
       })
     }
     try {
+      setLoadUniquenessCheck(true)
       const response = await fetch(
-        `https://mango-transaction-log.herokuapp.com/v3/user-data/check-profile-name-unique?profile-name=${name}`
+        `https://mango-transaction-log.herokuapp.com/v3/user-data/check-profile-name-unique?profile-name=${name.toLowerCase()}`
       )
       const uniquenessCheck = await response.json()
+      setLoadUniquenessCheck(false)
+
       if (response.status === 200 && !uniquenessCheck) {
         setInputErrors({
           ...inputErrors,
@@ -628,6 +669,7 @@ const EditProfileModal = ({
         ...inputErrors,
         api: t('profile:uniqueness-api-fail'),
       })
+      setLoadUniquenessCheck(false)
     }
   }
 
@@ -637,39 +679,51 @@ const EditProfileModal = ({
   }
 
   const saveProfile = async () => {
-    try {
-      if (!publicKey) throw new Error('Wallet not connected!')
-      if (!signMessage)
-        throw new Error('Wallet does not support message signing!')
+    setUpdateError('')
+    const name = profileName.toLowerCase()
+    await validateProfileName(name)
+    if (!Object.keys(inputErrors).length) {
+      setLoadUpdateProfile(true)
+      try {
+        if (!publicKey) throw new Error('Wallet not connected!')
+        if (!signMessage)
+          throw new Error('Wallet does not support message signing!')
 
-      const messageString = JSON.stringify({
-        profile_name: profileName,
-        trader_category: traderCategory,
-        action: 'insert',
-      })
-      const message = new TextEncoder().encode(messageString)
-      const signature = await signMessage(message)
-      if (!sign.detached.verify(message, signature, publicKey.toBytes()))
-        throw new Error('Invalid signature!')
+        const messageString = JSON.stringify({
+          profile_name: name,
+          trader_category: traderCategory,
+        })
+        const message = new TextEncoder().encode(messageString)
+        const signature = await signMessage(message)
+        if (!sign.detached.verify(message, signature, publicKey.toBytes()))
+          throw new Error('Invalid signature!')
 
-      const requestOptions = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          wallet_pk: publicKey.toString(),
-          message: messageString,
-          signature: bs58.encode(signature),
-        }),
+        const requestOptions = {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            wallet_pk: publicKey.toString(),
+            message: messageString,
+            signature: bs58.encode(signature),
+          }),
+        }
+        const response = await fetch(
+          'https://mango-transaction-log.herokuapp.com/v3/user-data/profile-details',
+          requestOptions
+        )
+        if (response.status === 200) {
+          setLoadUpdateProfile(false)
+          await fetchProfileDetails()
+          onClose()
+          notify({
+            type: 'success',
+            title: t('profile:profile-update-success'),
+          })
+        }
+      } catch {
+        setLoadUpdateProfile(false)
+        setUpdateError(t('profile:profile-update-fail'))
       }
-      const response = await fetch(
-        'https://mango-transaction-log.herokuapp.com/v3/user-data/settings',
-        requestOptions
-      )
-      if (response.status === 200) {
-        notify({ type: 'success', title: 'Profile updated' })
-      }
-    } catch (error: any) {
-      notify({ type: 'error', title: 'Failed to update profile' })
     }
   }
 
@@ -678,6 +732,11 @@ const EditProfileModal = ({
       <Modal.Header>
         <ElementTitle noMarginBottom>{t('profile:edit-profile')}</ElementTitle>
       </Modal.Header>
+      {updateError ? (
+        <div className="pb-3">
+          <InlineNotification type="error" desc={updateError} />
+        </div>
+      ) : null}
       <div className="pb-4">
         <Label>{t('profile:profile-name')}</Label>
         <Input
@@ -685,7 +744,6 @@ const EditProfileModal = ({
           error={Object.keys(inputErrors).length}
           value={profileName}
           onChange={(e) => onChangeNameInput(e.target.value)}
-          onBlur={(e) => validateProfileName(e.target.value)}
         />
         {Object.keys(inputErrors).length ? (
           <div className="mt-1.5 flex items-center space-x-1">
@@ -713,11 +771,19 @@ const EditProfileModal = ({
         </Select>
       </div>
       <Button
-        className="w-full"
-        disabled={!!Object.keys(inputErrors).length}
+        className="flex w-full justify-center"
+        disabled={
+          !!Object.keys(inputErrors).length ||
+          loadUniquenessCheck ||
+          !profileName
+        }
         onClick={() => saveProfile()}
       >
-        {t('profile:save-profile')}
+        {loadUniquenessCheck || loadUpdateProfile ? (
+          <Loading />
+        ) : (
+          t('profile:save-profile')
+        )}
       </Button>
     </Modal>
   )
