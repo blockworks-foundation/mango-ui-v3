@@ -366,6 +366,7 @@
     "side": "方向",
     "size": "数量",
     "slippage-warning": "此订单也许会遭受大量滑点！使用限价止损或限价止盈可能比较适合。",
+    "solana-down": "The solana network is down.",
     "spanish": "Español",
     "spot": "现货",
     "spot-desc": "现货市场以USDC报价",

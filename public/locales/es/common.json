@@ -366,6 +366,7 @@
    "side": "Lado",
    "size": "Tamaño",
    "slippage-warning": "¡Esta orden probablemente tendrá un deslizamiento extremadamente grande! Considere usar la orden 'Límite de parada' o 'Tomar el límite de ganancias' en su lugar.",
+   "solana-down": "The solana network is down.",
    "spanish": "Español",
    "spot": "Al contado",
    "spot-desc": "Margen al contado cotizado en USDC",

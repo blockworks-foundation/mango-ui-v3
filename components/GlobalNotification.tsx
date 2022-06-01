@@ -1,22 +1,24 @@
 import { useEffect, useState } from 'react'
-import { Connection } from '@solana/web3.js'
 import sumBy from 'lodash/sumBy'
 import useInterval from '../hooks/useInterval'
 import { SECONDS } from '../stores/useMangoStore'
 import { useTranslation } from 'next-i18next'
 import { ExclamationIcon } from '@heroicons/react/outline'
+import { Connection } from '@solana/web3.js'
 
-const connection = new Connection('https://solana-api.projectserum.com/')
+const tpsWarningThreshold = 1300
+
+const connection = new Connection('https://mango.genesysgo.net')
 
 const getRecentPerformance = async (setShow, setTps) => {
   try {
-    const samples = 3
+    const samples = 5
     const response = await connection.getRecentPerformanceSamples(samples)
     const totalSecs = sumBy(response, 'samplePeriodSecs')
     const totalTransactions = sumBy(response, 'numTransactions')
     const tps = totalTransactions / totalSecs
 
-    if (tps < 1800) {
+    if (tps < 1500) {
       setShow(true)
       setTps(tps)
     } else {
@@ -28,7 +30,7 @@ const getRecentPerformance = async (setShow, setTps) => {
 }
 
 const GlobalNotification = () => {
-  const [show, setShow] = useState(false)
+  const [show, setShow] = useState(true)
   const [tps, setTps] = useState(0)
   const { t } = useTranslation('common')
 
@@ -46,13 +48,19 @@ const GlobalNotification = () => {
         <div className="flex w-full items-center justify-center p-1">
           <ExclamationIcon
             className={`mr-1.5 mt-0.5 h-5 w-5 flex-shrink-0 ${
-              tps < 1500 ? 'text-th-red' : 'text-th-orange'
+              tps < tpsWarningThreshold ? 'text-th-red' : 'text-th-orange'
             }`}
           />
-          <span>{t('degraded-performance')}</span>
+          {tps < 50 ? (
+            <span>{t('solana-down')}</span>
+          ) : (
+            <span>{t('degraded-performance')}</span>
+          )}
           <div
             className={`ml-2 whitespace-nowrap rounded-full px-1.5 py-0.5 text-xs ${
-              tps < 1500 ? 'bg-th-red text-white' : 'bg-th-orange text-th-bkg-1'
+              tps < tpsWarningThreshold
+                ? 'bg-th-red text-white'
+                : 'bg-th-orange text-th-bkg-1'
             }`}
           >
             TPS:{' '}
