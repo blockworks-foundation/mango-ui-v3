@@ -20,7 +20,7 @@ export default function Leaderboard() {
     <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
       <TopBar />
       <PageBodyContainer>
-        <div className="pt-8 pb-3 sm:pb-6 md:pt-10">
+        <div className="flex flex-col py-4 sm:flex-row md:pb-4 md:pt-10">
           <h1 className={`mb-4 text-2xl font-semibold text-th-fgd-1 sm:mb-0`}>
             {t('leaderboard')}
           </h1>

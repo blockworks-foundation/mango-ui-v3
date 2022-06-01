@@ -120,8 +120,8 @@ const LeaderboardTable = () => {
 
   return (
     <div className="grid grid-cols-12 gap-6">
-      <div className="col-span-12 flex space-x-3 lg:col-span-4 lg:flex-col lg:space-y-2 lg:space-x-0">
-        <div className="w-full">
+      <div className="col-span-12 lg:col-span-4">
+        <div className="mb-3 w-full lg:mb-2">
           <ButtonGroup
             activeValue={leaderboardRange}
             className="h-8"
@@ -130,38 +130,28 @@ const LeaderboardTable = () => {
             names={leaderboardRangePresetLabels}
           />
         </div>
-        <LeaderboardTypeButton
-          leaderboardType={leaderboardType}
-          setLeaderboardType={setLeaderboardType}
-          label="total-pnl"
-          icon={<ChartPieIcon className="mr-3 hidden h-6 w-6 lg:block" />}
-          fetchPerpPnlLeaderboard={fetchPerpPnlLeaderboard}
-          fetchPnlLeaderboard={fetchPnlLeaderboard}
-          leaderboardRange={leaderboardRange}
-        />
-        <LeaderboardTypeButton
-          leaderboardType={leaderboardType}
-          setLeaderboardType={setLeaderboardType}
-          label="futures-only"
-          icon={<TrendingUpIcon className="mr-3 hidden h-6 w-6 lg:block" />}
-          fetchPerpPnlLeaderboard={fetchPerpPnlLeaderboard}
-          fetchPnlLeaderboard={fetchPnlLeaderboard}
-          leaderboardRange={leaderboardRange}
-        />
+        <div className="flex space-x-3 lg:flex-col lg:space-y-2 lg:space-x-0">
+          <LeaderboardTypeButton
+            leaderboardType={leaderboardType}
+            setLeaderboardType={setLeaderboardType}
+            label="total-pnl"
+            icon={<ChartPieIcon className="mr-3 hidden h-6 w-6 lg:block" />}
+            fetchPerpPnlLeaderboard={fetchPerpPnlLeaderboard}
+            fetchPnlLeaderboard={fetchPnlLeaderboard}
+            leaderboardRange={leaderboardRange}
+          />
+          <LeaderboardTypeButton
+            leaderboardType={leaderboardType}
+            setLeaderboardType={setLeaderboardType}
+            label="futures-only"
+            icon={<TrendingUpIcon className="mr-3 hidden h-6 w-6 lg:block" />}
+            fetchPerpPnlLeaderboard={fetchPerpPnlLeaderboard}
+            fetchPnlLeaderboard={fetchPnlLeaderboard}
+            leaderboardRange={leaderboardRange}
+          />
+        </div>
       </div>
       <div className="col-span-12 lg:col-span-8">
-        <h3 className="mb-4">
-          Top 20{' '}
-          <span className="text-sm font-normal text-th-fgd-4">
-            (
-            {leaderboardRange === '9999'
-              ? 'All-time'
-              : leaderboardRange === '29'
-              ? 'Last 30 days'
-              : `Last ${leaderboardRange} days`}
-            )
-          </span>
-        </h3>
         {!loading ? (
           <div className="space-y-2">
             {leaderboardData.map((acc, i) => (
@@ -316,7 +306,7 @@ const LeaderboardTypeButton = ({
   }
   return (
     <button
-      className={`relative flex w-full items-center justify-center rounded-md p-4 text-center lg:h-[84px] lg:justify-start lg:text-left ${
+      className={`relative flex w-full items-center justify-center rounded-md p-4 text-center lg:justify-start lg:text-left ${
         leaderboardType === label
           ? 'bg-th-bkg-4 text-th-fgd-1 after:absolute after:top-[100%] after:left-1/2 after:-translate-x-1/2 after:transform after:border-l-[12px] after:border-r-[12px] after:border-t-[12px] after:border-l-transparent after:border-t-th-bkg-4 after:border-r-transparent lg:after:left-[100%] lg:after:top-1/2  lg:after:-translate-x-0 lg:after:-translate-y-1/2 lg:after:border-r-0 lg:after:border-b-[12px] lg:after:border-t-transparent lg:after:border-b-transparent lg:after:border-l-th-bkg-4'
           : 'bg-th-bkg-3 text-th-fgd-4 hover:bg-th-bkg-4'
@@ -324,7 +314,16 @@ const LeaderboardTypeButton = ({
       onClick={() => onClick(label)}
     >
       {icon}
-      <div className="font-bold sm:text-lg">{t(label)}</div>
+      <div>
+        <div className="font-bold sm:text-lg">{t(label)}</div>
+        <span className="text-sm text-th-fgd-4">
+          {leaderboardRange === '9999'
+            ? 'All-time'
+            : leaderboardRange === '29'
+            ? 'Last 30 days'
+            : `Last ${leaderboardRange} days`}
+        </span>
+      </div>
     </button>
   )
 }
