@@ -12,11 +12,20 @@ import { notify } from 'utils/notifications'
 import ProfileImage from './ProfileImage'
 import { useRouter } from 'next/router'
 import { PublicKey } from '@solana/web3.js'
+import ButtonGroup from './ButtonGroup'
 
 const utc = require('dayjs/plugin/utc')
 dayjs.extend(utc)
 
-const LeaderboardTable = ({ range = '29' }) => {
+const leaderboardRangePresets = [
+  { label: '7d', value: '7' },
+  { label: '30d', value: '29' },
+  { label: 'All', value: '9999' },
+]
+const leaderboardRangePresetLabels = leaderboardRangePresets.map((x) => x.label)
+const leaderboardRangePresetValues = leaderboardRangePresets.map((x) => x.value)
+
+const LeaderboardTable = () => {
   const { t } = useTranslation('common')
   const [pnlLeaderboardData, setPnlLeaderboardData] = useState<any[]>([])
   const [perpPnlLeaderboardData, setPerpPnlLeaderboardData] = useState<any[]>(
@@ -24,8 +33,10 @@ const LeaderboardTable = ({ range = '29' }) => {
   )
   const [leaderboardType, setLeaderboardType] = useState<string>('total-pnl')
   const [loading, setLoading] = useState(false)
+  const [leaderboardRange, setLeaderboardRange] = useState('29')
 
   const formatLeaderboardData = async (leaderboard) => {
+    console.log(leaderboard)
     const walletPks = leaderboard.map((u) => u.wallet_pk)
     const profileDetailsResponse = await fetch(
       `https://mango-transaction-log.herokuapp.com/v3/user-data/multiple-profile-details?wallet-pks=${walletPks.toString()}`
@@ -42,7 +53,7 @@ const LeaderboardTable = ({ range = '29' }) => {
     return leaderboardData
   }
 
-  const fetchPnlLeaderboard = async () => {
+  const fetchPnlLeaderboard = async (range = '29') => {
     setLoading(true)
     try {
       const response = await fetch(
@@ -56,6 +67,7 @@ const LeaderboardTable = ({ range = '29' }) => {
       )
       const parsedResponse = await response.json()
       const leaderboardData = await formatLeaderboardData(parsedResponse)
+      console.log(leaderboardData)
       setPnlLeaderboardData(leaderboardData)
       setLoading(false)
     } catch {
@@ -64,7 +76,7 @@ const LeaderboardTable = ({ range = '29' }) => {
     }
   }
 
-  const fetchPerpPnlLeaderboard = async () => {
+  const fetchPerpPnlLeaderboard = async (range = '29') => {
     setLoading(true)
     try {
       const response = await fetch(
@@ -86,16 +98,17 @@ const LeaderboardTable = ({ range = '29' }) => {
   }
 
   useEffect(() => {
-    if (leaderboardType === 'total-pnl') {
-      fetchPnlLeaderboard()
-    } else {
-      fetchPerpPnlLeaderboard()
-    }
-  }, [range, leaderboardType])
-
-  useEffect(() => {
-    fetchPerpPnlLeaderboard()
+    fetchPnlLeaderboard()
   }, [])
+
+  const handleChangeRange = (range) => {
+    setLeaderboardRange(range)
+    if (leaderboardType === 'total-pnl') {
+      fetchPnlLeaderboard(range)
+    } else {
+      fetchPerpPnlLeaderboard(range)
+    }
+  }
 
   const leaderboardData = useMemo(
     () =>
@@ -108,22 +121,45 @@ const LeaderboardTable = ({ range = '29' }) => {
   return (
     <div className="grid grid-cols-12 gap-6">
       <div className="col-span-12 flex space-x-3 lg:col-span-4 lg:flex-col lg:space-y-2 lg:space-x-0">
+        <div className="w-full">
+          <ButtonGroup
+            activeValue={leaderboardRange}
+            className="h-8"
+            onChange={(r) => handleChangeRange(r)}
+            values={leaderboardRangePresetValues}
+            names={leaderboardRangePresetLabels}
+          />
+        </div>
         <LeaderboardTypeButton
           leaderboardType={leaderboardType}
           setLeaderboardType={setLeaderboardType}
-          range={range}
           label="total-pnl"
           icon={<ChartPieIcon className="mr-3 hidden h-6 w-6 lg:block" />}
+          fetchPerpPnlLeaderboard={fetchPerpPnlLeaderboard}
+          fetchPnlLeaderboard={fetchPnlLeaderboard}
         />
         <LeaderboardTypeButton
           leaderboardType={leaderboardType}
           setLeaderboardType={setLeaderboardType}
-          range={range}
           label="futures-only"
           icon={<TrendingUpIcon className="mr-3 hidden h-6 w-6 lg:block" />}
+          fetchPerpPnlLeaderboard={fetchPerpPnlLeaderboard}
+          fetchPnlLeaderboard={fetchPnlLeaderboard}
         />
       </div>
       <div className="col-span-12 lg:col-span-8">
+        <h3 className="mb-4">
+          Top 20{' '}
+          <span className="text-sm font-normal text-th-fgd-4">
+            (
+            {leaderboardRange === '9999'
+              ? 'All-time'
+              : leaderboardRange === '29'
+              ? 'Last 30 days'
+              : `Last ${leaderboardRange} days`}
+            )
+          </span>
+        </h3>
         {!loading ? (
           <div className="space-y-2">
             {leaderboardData.map((acc, i) => (
@@ -150,26 +186,26 @@ const LeaderboardTable = ({ range = '29' }) => {
           </div>
         ) : (
           <div className="space-y-2">
-            <div className="h-20 w-full animate-pulse rounded-md bg-th-bkg-3" />
-            <div className="h-20 w-full animate-pulse rounded-md bg-th-bkg-3" />
-            <div className="h-20 w-full animate-pulse rounded-md bg-th-bkg-3" />
-            <div className="h-20 w-full animate-pulse rounded-md bg-th-bkg-3" />
-            <div className="h-20 w-full animate-pulse rounded-md bg-th-bkg-3" />
-            <div className="h-20 w-full animate-pulse rounded-md bg-th-bkg-3" />
-            <div className="h-20 w-full animate-pulse rounded-md bg-th-bkg-3" />
-            <div className="h-20 w-full animate-pulse rounded-md bg-th-bkg-3" />
-            <div className="h-20 w-full animate-pulse rounded-md bg-th-bkg-3" />
-            <div className="h-20 w-full animate-pulse rounded-md bg-th-bkg-3" />
-            <div className="h-20 w-full animate-pulse rounded-md bg-th-bkg-3" />
-            <div className="h-20 w-full animate-pulse rounded-md bg-th-bkg-3" />
-            <div className="h-20 w-full animate-pulse rounded-md bg-th-bkg-3" />
-            <div className="h-20 w-full animate-pulse rounded-md bg-th-bkg-3" />
-            <div className="h-20 w-full animate-pulse rounded-md bg-th-bkg-3" />
-            <div className="h-20 w-full animate-pulse rounded-md bg-th-bkg-3" />
-            <div className="h-20 w-full animate-pulse rounded-md bg-th-bkg-3" />
-            <div className="h-20 w-full animate-pulse rounded-md bg-th-bkg-3" />
-            <div className="h-20 w-full animate-pulse rounded-md bg-th-bkg-3" />
-            <div className="h-20 w-full animate-pulse rounded-md bg-th-bkg-3" />
+            <div className="h-[84px] w-full animate-pulse rounded-md bg-th-bkg-3" />
+            <div className="h-[84px] w-full animate-pulse rounded-md bg-th-bkg-3" />
+            <div className="h-[84px] w-full animate-pulse rounded-md bg-th-bkg-3" />
+            <div className="h-[84px] w-full animate-pulse rounded-md bg-th-bkg-3" />
+            <div className="h-[84px] w-full animate-pulse rounded-md bg-th-bkg-3" />
+            <div className="h-[84px] w-full animate-pulse rounded-md bg-th-bkg-3" />
+            <div className="h-[84px] w-full animate-pulse rounded-md bg-th-bkg-3" />
+            <div className="h-[84px] w-full animate-pulse rounded-md bg-th-bkg-3" />
+            <div className="h-[84px] w-full animate-pulse rounded-md bg-th-bkg-3" />
+            <div className="h-[84px] w-full animate-pulse rounded-md bg-th-bkg-3" />
+            <div className="h-[84px] w-full animate-pulse rounded-md bg-th-bkg-3" />
+            <div className="h-[84px] w-full animate-pulse rounded-md bg-th-bkg-3" />
+            <div className="h-[84px] w-full animate-pulse rounded-md bg-th-bkg-3" />
+            <div className="h-[84px] w-full animate-pulse rounded-md bg-th-bkg-3" />
+            <div className="h-[84px] w-full animate-pulse rounded-md bg-th-bkg-3" />
+            <div className="h-[84px] w-full animate-pulse rounded-md bg-th-bkg-3" />
+            <div className="h-[84px] w-full animate-pulse rounded-md bg-th-bkg-3" />
+            <div className="h-[84px] w-full animate-pulse rounded-md bg-th-bkg-3" />
+            <div className="h-[84px] w-full animate-pulse rounded-md bg-th-bkg-3" />
+            <div className="h-[84px] w-full animate-pulse rounded-md bg-th-bkg-3" />
           </div>
         )}
       </div>
@@ -260,31 +296,32 @@ const AccountCard = ({ rank, acc, rawPnl, profile, pnl, walletPk }) => {
 const LeaderboardTypeButton = ({
   leaderboardType,
   setLeaderboardType,
-  range,
   icon,
   label,
+  fetchPnlLeaderboard,
+  fetchPerpPnlLeaderboard,
 }) => {
   const { t } = useTranslation('common')
+
+  const onClick = (type) => {
+    setLeaderboardType(type)
+    if (type === 'total-pnl') {
+      fetchPnlLeaderboard()
+    } else {
+      fetchPerpPnlLeaderboard()
+    }
+  }
   return (
     <button
-      className={`relative flex w-full items-center justify-center rounded-md p-4 text-center lg:h-20 lg:justify-start lg:text-left ${
+      className={`relative flex w-full items-center justify-center rounded-md p-4 text-center lg:h-[84px] lg:justify-start lg:text-left ${
         leaderboardType === label
           ? 'bg-th-bkg-4 text-th-fgd-1 after:absolute after:top-[100%] after:left-1/2 after:-translate-x-1/2 after:transform after:border-l-[12px] after:border-r-[12px] after:border-t-[12px] after:border-l-transparent after:border-t-th-bkg-4 after:border-r-transparent lg:after:left-[100%] lg:after:top-1/2  lg:after:-translate-x-0 lg:after:-translate-y-1/2 lg:after:border-r-0 lg:after:border-b-[12px] lg:after:border-t-transparent lg:after:border-b-transparent lg:after:border-l-th-bkg-4'
           : 'bg-th-bkg-3 text-th-fgd-4 hover:bg-th-bkg-4'
       }`}
-      onClick={() => setLeaderboardType(label)}
+      onClick={() => onClick(label)}
     >
       {icon}
-      <div>
-        <div className="font-bold sm:text-lg">{t(label)}</div>
-        <span className="text-th-fgd-4">
-          {range === '9999'
-            ? 'All-time'
-            : range === '29'
-            ? '30-day'
-            : `${range}-day`}
-        </span>
-      </div>
+      <div className="font-bold sm:text-lg">{t(label)}</div>
     </button>
   )
 }
