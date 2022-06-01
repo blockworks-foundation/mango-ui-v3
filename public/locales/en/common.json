@@ -430,6 +430,7 @@
    "trade": "Trade",
    "trade-export-disclaimer": "Due to the nature of how trades are processed, it is not possible to guarantee that all trades will be exported. However, a best effort approach has been taken, combining several independent sources to reduce the likelihood of missing trades.",
    "trade-history": "Trade History",
+   "trade-history-api-warning": "Trade history shows a maximum of 10,000 trades. Some trades will not be found.",
    "trades": "Trades",
    "trades-history": "Trade History",
    "transaction-failed": "Transaction failed",

@@ -9,17 +9,19 @@ import dayjs from 'dayjs'
 import DateRangePicker from './DateRangePicker'
 import useMangoStore from 'stores/useMangoStore'
 import MultiSelectDropdown from './MultiSelectDropdown'
+import InlineNotification from './InlineNotification'
 
 interface TradeHistoryFilterModalProps {
   filters: any
   setFilters: any
   isOpen: boolean
   onClose: () => void
+  showApiWarning: boolean
 }
 
 const TradeHistoryFilterModal: FunctionComponent<
   TradeHistoryFilterModalProps
-> = ({ filters, setFilters, isOpen, onClose }) => {
+> = ({ filters, setFilters, isOpen, onClose, showApiWarning }) => {
   const { t } = useTranslation('common')
   const [newFilters, setNewFilters] = useState({ ...filters })
   const [dateFrom, setDateFrom] = useState<Date | null>(null)
@@ -173,6 +175,14 @@ const TradeHistoryFilterModal: FunctionComponent<
           </LinkButton>
         </div>
       </Modal.Header>
+      {showApiWarning ? (
+        <div className="mt-1 mb-3">
+          <InlineNotification
+            type="warning"
+            desc={t('trade-history-api-warning')}
+          />
+        </div>
+      ) : null}
       <div className="pb-4">
         <p className="font-bold text-th-fgd-1">{t('date')}</p>
         <div className="flex items-center space-x-2">
