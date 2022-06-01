@@ -430,6 +430,7 @@
   "trade": "交易",
   "trade-export-disclaimer": "Mango儘量以幾個獨立的來源結合成完整交易歷史，但由於交易處理方式，Mango無法保證所有交易都會導出。",
   "trade-history": "交易紀錄",
+  "trade-history-api-warning": "Trade history shows a maximum of 10,000 trades. Some trades will not be found.",
   "trades": "交易",
   "trades-history": "交易紀錄",
   "transaction-failed": "交易失敗",

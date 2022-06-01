@@ -205,9 +205,7 @@ const TradeHistoryTable = ({
                 {t('reset-filters')}
               </LinkButton>
             ) : null}
-            {tradeHistory.length >= 15 &&
-            tradeHistory.length <= 10000 &&
-            initialLoad ? (
+            {tradeHistory.length >= 15 && initialLoad ? (
               <Button
                 className="order-3 flex h-8 items-center justify-center whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs sm:order-first"
                 onClick={() => setShowFiltersModal(true)}
@@ -625,6 +623,7 @@ const TradeHistoryTable = ({
           setFilters={setFilters}
           isOpen={showFiltersModal}
           onClose={() => setShowFiltersModal(false)}
+          showApiWarning={tradeHistory.length > 10000}
         />
       ) : null}
     </>
