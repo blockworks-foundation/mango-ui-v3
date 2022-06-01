@@ -18,6 +18,7 @@ const utc = require('dayjs/plugin/utc')
 dayjs.extend(utc)
 
 const leaderboardRangePresets = [
+  { label: '24h', value: '1' },
   { label: '7d', value: '7' },
   { label: '30d', value: '29' },
   { label: 'All', value: '9999' },
@@ -36,7 +37,6 @@ const LeaderboardTable = () => {
   const [leaderboardRange, setLeaderboardRange] = useState('29')
 
   const formatLeaderboardData = async (leaderboard) => {
-    console.log(leaderboard)
     const walletPks = leaderboard.map((u) => u.wallet_pk)
     const profileDetailsResponse = await fetch(
       `https://mango-transaction-log.herokuapp.com/v3/user-data/multiple-profile-details?wallet-pks=${walletPks.toString()}`
@@ -67,7 +67,6 @@ const LeaderboardTable = () => {
       )
       const parsedResponse = await response.json()
       const leaderboardData = await formatLeaderboardData(parsedResponse)
-      console.log(leaderboardData)
       setPnlLeaderboardData(leaderboardData)
       setLoading(false)
     } catch {
@@ -81,10 +80,11 @@ const LeaderboardTable = () => {
     try {
       const response = await fetch(
         `https://mango-transaction-log.herokuapp.com/v3/stats/perp-pnl-leaderboard?start-date=${dayjs()
+          .utc()
           .hour(0)
           .minute(0)
-          .utc()
           .subtract(parseInt(range), 'day')
+          .add(1, 'hour')
           .format('YYYY-MM-DDThh:00:00')}`
       )
       const parsedResponse = await response.json()
@@ -321,6 +321,8 @@ const LeaderboardTypeButton = ({
             ? 'All-time'
             : leaderboardRange === '29'
             ? 'Last 30 days'
+            : leaderboardRange === '1'
+            ? 'Last 24 hours'
             : `Last ${leaderboardRange} days`}
         </span>
       </div>
