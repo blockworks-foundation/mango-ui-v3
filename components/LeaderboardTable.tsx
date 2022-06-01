@@ -53,7 +53,7 @@ const LeaderboardTable = () => {
     return leaderboardData
   }
 
-  const fetchPnlLeaderboard = async (range = '29') => {
+  const fetchPnlLeaderboard = async (range) => {
     setLoading(true)
     try {
       const response = await fetch(
@@ -76,7 +76,7 @@ const LeaderboardTable = () => {
     }
   }
 
-  const fetchPerpPnlLeaderboard = async (range = '29') => {
+  const fetchPerpPnlLeaderboard = async (range) => {
     setLoading(true)
     try {
       const response = await fetch(
@@ -98,7 +98,7 @@ const LeaderboardTable = () => {
   }
 
   useEffect(() => {
-    fetchPnlLeaderboard()
+    fetchPnlLeaderboard(leaderboardRange)
   }, [])
 
   const handleChangeRange = (range) => {
@@ -137,6 +137,7 @@ const LeaderboardTable = () => {
           icon={<ChartPieIcon className="mr-3 hidden h-6 w-6 lg:block" />}
           fetchPerpPnlLeaderboard={fetchPerpPnlLeaderboard}
           fetchPnlLeaderboard={fetchPnlLeaderboard}
+          leaderboardRange={leaderboardRange}
         />
         <LeaderboardTypeButton
           leaderboardType={leaderboardType}
@@ -145,6 +146,7 @@ const LeaderboardTable = () => {
           icon={<TrendingUpIcon className="mr-3 hidden h-6 w-6 lg:block" />}
           fetchPerpPnlLeaderboard={fetchPerpPnlLeaderboard}
           fetchPnlLeaderboard={fetchPnlLeaderboard}
+          leaderboardRange={leaderboardRange}
         />
       </div>
       <div className="col-span-12 lg:col-span-8">
@@ -300,15 +302,16 @@ const LeaderboardTypeButton = ({
   label,
   fetchPnlLeaderboard,
   fetchPerpPnlLeaderboard,
+  leaderboardRange,
 }) => {
   const { t } = useTranslation('common')
 
   const onClick = (type) => {
     setLeaderboardType(type)
     if (type === 'total-pnl') {
-      fetchPnlLeaderboard()
+      fetchPnlLeaderboard(leaderboardRange)
     } else {
-      fetchPerpPnlLeaderboard()
+      fetchPerpPnlLeaderboard(leaderboardRange)
     }
   }
   return (
