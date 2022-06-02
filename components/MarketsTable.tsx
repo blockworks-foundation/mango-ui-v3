@@ -182,14 +182,15 @@ const MarketsTable = ({
             (asset) => asset.symbol === baseSymbol
           )
           const chartData = coingeckoData ? coingeckoData.prices : undefined
-          const chartColor =
-            change24h >= 0
+          const chartColor = chartData
+            ? chartData[chartData.length - 1][1] >= chartData[0][1]
               ? theme === 'Mango'
                 ? '#AFD803'
                 : '#5EBF4D'
               : theme === 'Mango'
               ? '#F84638'
               : '#CC2929'
+            : ''
           return (
             <TrBody key={name} className="hover:bg-th-bkg-3">
               <Td>
