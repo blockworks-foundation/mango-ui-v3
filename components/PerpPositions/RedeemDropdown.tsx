@@ -1,6 +1,6 @@
 import { ChevronDownIcon } from '@heroicons/react/solid'
 import React, { Fragment, useState } from 'react'
-import { settlePnl, settlePosPnl } from 'components/MarketPosition'
+import {settleAllPnl, settlePosPnl} from 'components/MarketPosition'
 import Button from 'components/Button'
 import { Transition } from '@headlessui/react'
 import { useTranslation } from 'next-i18next'
@@ -27,7 +27,6 @@ const MenuButton: React.FC<{
 
 export const RedeemDropdown: React.FC = () => {
   const { t } = useTranslation('common')
-  const { reloadMangoAccount } = useMangoStore((s) => s.actions)
   const [settling, setSettling] = useState(false)
   const { wallet } = useWallet()
   const [settlingPosPnl, setSettlingPosPnl] = useState(false)
@@ -46,22 +45,22 @@ export const RedeemDropdown: React.FC = () => {
     if (!wallet) return
     setOpen(false)
     setSettling(true)
-    for (const p of unsettledPositions) {
-      await settlePnl(p.perpMarket, p.perpAccount, t, undefined, wallet)
+    try {
+      await settleAllPnl(unsettledPositions.map((p) => p.perpMarket), t, undefined, wallet)
+    } finally {
+      setSettling(false)
     }
-
-    reloadMangoAccount()
-    setSettling(false)
   }
 
   const handleSettlePosPnl = async () => {
     if (!wallet) return
     setOpen(false)
     setSettlingPosPnl(true)
-    for (const p of unsettledPositivePositions) {
-      await settlePosPnl([p.perpMarket], p.perpAccount, t, undefined, wallet)
+    try {
+      await settlePosPnl(unsettledPositivePositions.map((p) => p.perpMarket), t, undefined, wallet)
+    } finally {
+      setSettlingPosPnl(false)
     }
-    setSettlingPosPnl(false)
   }
 
   const buttons = [
