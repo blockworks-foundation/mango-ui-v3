@@ -286,7 +286,7 @@ export default function AccountBorrows() {
                   )
                 ) : (
                   <div
-                    className={`w-full rounded-md bg-th-bkg-1 py-6 text-center text-th-fgd-3`}
+                    className={`w-full rounded-md bg-th-bkg-2 py-6 text-center text-th-fgd-3 md:bg-th-bkg-3`}
                   >
                     {t('no-borrows')}
                   </div>

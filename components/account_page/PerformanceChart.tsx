@@ -242,7 +242,7 @@ const PerformanceChart = ({
           )}
         </div>
         <div className="flex flex-col items-end">
-          <div className="w-36">
+          <div className="w-36 pl-3">
             <ButtonGroup
               activeValue={chartToShow}
               className="pb-2 pt-2 text-sm"

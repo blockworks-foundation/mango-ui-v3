@@ -12,6 +12,7 @@ import useLocalStorageState from '../../hooks/useLocalStorageState'
 import ButtonGroup from '../ButtonGroup'
 import PerformanceChart from './PerformanceChart'
 import PositionsTable from '../PerpPositionsTable'
+import LongShortChart from './LongShortChart'
 
 dayjs.extend(utc)
 
@@ -169,7 +170,7 @@ export default function AccountOverview() {
           </div>
         </div>
         <div className="h-80 w-full md:h-auto md:w-2/3 lg:w-3/4">
-          <div className="mb-4 ml-auto md:w-56">
+          <div className="mb-3 ml-auto md:w-56">
             <ButtonGroup
               activeValue={performanceRange}
               className="h-8"
@@ -186,37 +187,46 @@ export default function AccountOverview() {
           </div>
         </div>
       </div>
-      <div className="pb-8 pt-20 md:pt-0">
+      <div className="pt-24 pb-8 sm:pt-20 md:pt-0 md:pb-12">
+        <h2 className="mb-4">{t('assets-liabilities')}</h2>
+        <div className="grid grid-flow-col grid-cols-1 grid-rows-2 md:grid-cols-2 md:grid-rows-1 md:gap-4">
+          <div className="border-t border-th-bkg-4 p-3 sm:p-4 md:border-b">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="pb-0.5 text-th-fgd-3">{t('total-assets')}</div>
+                {mangoGroup && mangoCache ? (
+                  <div className="text-xl font-bold text-th-fgd-1 md:text-2xl">
+                    {formatUsdValue(
+                      +mangoAccount.getAssetsVal(mangoGroup, mangoCache)
+                    )}
+                  </div>
+                ) : null}
+              </div>
+              <LongShortChart type="long" />
+            </div>
+          </div>
+          <div className="border-b border-t border-th-bkg-4 p-3 sm:p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="pb-0.5 text-th-fgd-3">
+                  {t('total-liabilities')}
+                </div>
+                {mangoGroup && mangoCache ? (
+                  <div className="text-xl font-bold text-th-fgd-1 md:text-2xl">
+                    {formatUsdValue(
+                      +mangoAccount.getLiabsVal(mangoGroup, mangoCache)
+                    )}
+                  </div>
+                ) : null}
+              </div>
+              <LongShortChart type="short" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="pb-8">
         <h2 className="mb-4">{t('perp-positions')}</h2>
         <PositionsTable />
-      </div>
-      <h2 className="mb-4">{t('assets-liabilities')}</h2>
-
-      <div className="grid grid-flow-col grid-cols-1 grid-rows-2 pb-8 md:grid-cols-2 md:grid-rows-1 md:gap-4 md:pb-12">
-        <div className="border-t border-th-bkg-4 p-3 sm:p-4 md:border-b">
-          <div className="pb-0.5 text-th-fgd-3">{t('total-assets')}</div>
-          <div className="flex items-center">
-            {mangoGroup && mangoCache ? (
-              <div className="text-xl font-bold text-th-fgd-1 md:text-2xl">
-                {formatUsdValue(
-                  +mangoAccount.getAssetsVal(mangoGroup, mangoCache)
-                )}
-              </div>
-            ) : null}
-          </div>
-        </div>
-        <div className="border-b border-t border-th-bkg-4 p-3 sm:p-4">
-          <div className="pb-0.5 text-th-fgd-3">{t('total-liabilities')}</div>
-          <div className="flex items-center">
-            {mangoGroup && mangoCache ? (
-              <div className="text-xl font-bold text-th-fgd-1 md:text-2xl">
-                {formatUsdValue(
-                  +mangoAccount.getLiabsVal(mangoGroup, mangoCache)
-                )}
-              </div>
-            ) : null}
-          </div>
-        </div>
       </div>
       <div className="flex justify-between pb-4">
         <h2>{t('balances')}</h2>
