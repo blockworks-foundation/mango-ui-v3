@@ -12,7 +12,6 @@ import { LinkButton } from './Button'
 import { ArrowSmDownIcon } from '@heroicons/react/solid'
 import { useRouter } from 'next/router'
 import { AreaChart, Area, XAxis, YAxis } from 'recharts'
-import { useTheme } from 'next-themes'
 
 const MarketsTable = ({
   isPerpMarket,
@@ -28,7 +27,6 @@ const MarketsTable = ({
   const coingeckoPrices = useMangoStore((s) => s.coingeckoPrices.data)
   const loadingCoingeckoPrices = useMangoStore((s) => s.coingeckoPrices.loading)
   const router = useRouter()
-  const { theme } = useTheme()
 
   useEffect(() => {
     if (coingeckoPrices.length === 0) {
@@ -182,15 +180,7 @@ const MarketsTable = ({
             (asset) => asset.symbol === baseSymbol
           )
           const chartData = coingeckoData ? coingeckoData.prices : undefined
-          const chartColor = chartData
-            ? chartData[chartData.length - 1][1] >= chartData[0][1]
-              ? theme === 'Mango'
-                ? '#AFD803'
-                : '#5EBF4D'
-              : theme === 'Mango'
-              ? '#F84638'
-              : '#CC2929'
-            : ''
+
           return (
             <TrBody key={name} className="hover:bg-th-bkg-3">
               <Td>
@@ -221,7 +211,8 @@ const MarketsTable = ({
                   {!loadingCoingeckoPrices ? (
                     chartData !== undefined ? (
                       <PriceChart
-                        color={chartColor}
+                        name={name}
+                        change24h={change24h}
                         data={chartData}
                         height={40}
                         width={104}
@@ -303,14 +294,7 @@ const MarketsTable = ({
           (asset) => asset.symbol === baseSymbol
         )
         const chartData = coingeckoData ? coingeckoData.prices : undefined
-        const chartColor =
-          change24h >= 0
-            ? theme === 'Mango'
-              ? '#AFD803'
-              : '#5EBF4D'
-            : theme === 'Mango'
-            ? '#F84638'
-            : '#CC2929'
+
         return (
           <Link href={`/?name=${name}`} shallow={true} key={name}>
             <a
@@ -350,7 +334,8 @@ const MarketsTable = ({
                   {!loadingCoingeckoPrices ? (
                     chartData !== undefined ? (
                       <PriceChart
-                        color={chartColor}
+                        name={name}
+                        change24h={change24h}
                         data={chartData}
                         height={48}
                         width={128}
@@ -392,25 +377,30 @@ const MarketsTable = ({
   )
 }
 
-const PriceChart = ({ data, width, height, color }) => (
-  <AreaChart width={width} height={height} data={data}>
-    <defs>
-      <linearGradient id="gradientArea" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor={color} stopOpacity={0.6} />
-        <stop offset="100%" stopColor={color} stopOpacity={0} />
-      </linearGradient>
-    </defs>
-    <Area
-      isAnimationActive={false}
-      type="monotone"
-      dataKey="1"
-      stroke={color}
-      fill="url(#gradientArea)"
-    />
-    <XAxis dataKey="0" hide />
-    <YAxis domain={['dataMin', 'dataMax']} dataKey="1" hide />
-  </AreaChart>
-)
+const PriceChart = ({ data, width, height, change24h, name }) => {
+  const color = change24h >= 0 ? '#5EBF4D' : '#CC2929'
+  console.log(color, change24h)
+
+  return (
+    <AreaChart width={width} height={height} data={data}>
+      <defs>
+        <linearGradient id={`gradientArea-${name}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity={0.6} />
+          <stop offset="100%" stopColor={color} stopOpacity={0} />
+        </linearGradient>
+      </defs>
+      <Area
+        isAnimationActive={false}
+        type="monotone"
+        dataKey="1"
+        stroke={color}
+        fill={`url(#gradientArea-${name})`}
+      />
+      <XAxis dataKey="0" hide />
+      <YAxis domain={['dataMin', 'dataMax']} dataKey="1" hide />
+    </AreaChart>
+  )
+}
 
 export const SpotMarketsTable = () => {
   const marketsInfo = useMangoStore((s) => s.marketsInfo)
