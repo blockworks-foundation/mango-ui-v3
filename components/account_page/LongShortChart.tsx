@@ -89,7 +89,7 @@ const LongShortChart = ({ type }: { type: string }) => {
       if (!perpAccount.basePosition.gt(ZERO_BN)) {
         shortData.push({
           asset: marketConfig.name,
-          amount: basePosition,
+          amount: Math.abs(basePosition),
           symbol: marketConfig.baseSymbol,
           value: notionalSize,
         })

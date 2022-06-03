@@ -345,7 +345,7 @@ export const EthMonoIcon = ({ className }) => {
       viewBox="0 0 32 32"
       fill="currentColor"
     >
-      <g clipPath="url(#clip0)">
+      <g>
         <path
           d="M15.9995 0V11.8291L25.9976 16.2967L15.9995 0Z"
           fillOpacity="0.602"
