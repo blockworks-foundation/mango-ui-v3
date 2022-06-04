@@ -12,6 +12,7 @@ import { LinkButton } from './Button'
 import { ArrowSmDownIcon } from '@heroicons/react/solid'
 import { useRouter } from 'next/router'
 import { AreaChart, Area, XAxis, YAxis } from 'recharts'
+import { useTheme } from 'next-themes'
 
 const MarketsTable = ({
   isPerpMarket,
@@ -348,7 +349,7 @@ const MarketsTable = ({
                   )}
                 </div>
                 <div className="text-right">
-                  <p className="mb-0 mb-3 text-xl font-bold leading-none text-th-fgd-2">
+                  <p className="text-xl font-bold leading-none text-th-fgd-2">
                     {last ? (
                       formatUsdValue(last)
                     ) : (
@@ -377,9 +378,15 @@ const MarketsTable = ({
   )
 }
 
+const COLORS = {
+  GREEN: { Mango: '#AFD803', Dark: '5EBF4d', Light: '5EBF4d' },
+  RED: { Mango: '#F84638', Dark: '#CC2929', Light: '#CC2929' },
+}
+
 const PriceChart = ({ data, width, height, change24h, name }) => {
-  const color = change24h >= 0 ? '#5EBF4D' : '#CC2929'
-  console.log(color, change24h)
+  const { theme } = useTheme()
+
+  const color = change24h >= 0 ? COLORS.GREEN[theme] : COLORS.RED[theme]
 
   return (
     <AreaChart width={width} height={height} data={data}>
