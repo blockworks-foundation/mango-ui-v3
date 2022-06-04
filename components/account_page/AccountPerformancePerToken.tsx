@@ -44,6 +44,7 @@ const COLORS = {
   BTC: '#bc80bd',
   ETH: '#05C793',
   ADA: '#3F8EFC',
+  GMT: '#CBA74A',
 }
 
 const HEADERS = [
