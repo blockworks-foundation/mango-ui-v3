@@ -429,10 +429,7 @@ const TradeHistoryTable = ({
                             </Td>
                             <Td className="!py-2 ">{trade.size}</Td>
                             <Td className="!py-2 ">
-                              $
-                              {new Intl.NumberFormat('en-US').format(
-                                trade.price
-                              )}
+                              {formatUsdValue(trade.price, trade.symbol)}
                             </Td>
                             <Td className="!py-2 ">
                               {formatUsdValue(trade.value)}
