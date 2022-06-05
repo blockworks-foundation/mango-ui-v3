@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { useTranslation } from 'next-i18next'
@@ -20,7 +20,7 @@ import ShareModal from './ShareModal'
 import { TwitterIcon } from './icons'
 import { marketSelector } from '../stores/selectors'
 import { useWallet } from '@solana/wallet-adapter-react'
-import { RedeemDropdown } from 'components/PerpPositions'
+import RedeemButtons from './RedeemButtons'
 
 const PositionsTable: React.FC = () => {
   const { t } = useTranslation('common')
@@ -85,17 +85,35 @@ const PositionsTable: React.FC = () => {
     }
   }
 
+  const unsettledSum = useMemo(() => {
+    if (unsettledPositions.length > 1) {
+      return unsettledPositions.reduce((a, c) => a + c.unsettledPnl, 0)
+    }
+    return
+  }, [unsettledPositions])
+
   return (
     <div className="flex flex-col md:pb-2">
       {unsettledPositions.length > 0 ? (
         <div className="mb-6 rounded-lg border border-th-bkg-4 p-4 sm:p-6">
-          <div className="flex items-center justify-between pb-4">
+          <div className="flex items-start justify-between pb-4">
             <div className="flex items-center">
-              <ExclamationIcon className="mr-1.5 mt-0.5 h-5 w-5 flex-shrink-0 text-th-primary" />
-              <h3>{t('unsettled-positions')}</h3>
+              <ExclamationIcon className="mr-2 h-6 w-6 flex-shrink-0 text-th-primary" />
+              <h3>
+                {t('unsettled-positions')}{' '}
+                {unsettledSum ? (
+                  <div
+                    className={
+                      unsettledSum >= 0 ? 'text-th-green' : 'text-th-red'
+                    }
+                  >
+                    {formatUsdValue(unsettledSum)}
+                  </div>
+                ) : null}
+              </h3>
             </div>
 
-            <RedeemDropdown />
+            <RedeemButtons />
           </div>
           <div className="grid grid-flow-row grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
             {unsettledPositions.map((p, index) => {
