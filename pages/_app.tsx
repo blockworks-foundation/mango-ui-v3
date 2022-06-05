@@ -41,6 +41,8 @@ import {
   GlowWalletAdapter,
 } from '@solana/wallet-adapter-wallets'
 import { HuobiWalletAdapter } from '@solana/wallet-adapter-huobi'
+import initReactFastclick from 'react-fastclick'
+initReactFastclick()
 
 const SENTRY_URL = process.env.NEXT_PUBLIC_SENTRY_URL
 if (SENTRY_URL) {
