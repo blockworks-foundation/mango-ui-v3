@@ -6,19 +6,20 @@ import { useTranslation } from 'next-i18next'
 import { ExclamationIcon } from '@heroicons/react/outline'
 import { Connection } from '@solana/web3.js'
 
+const tpsAlertThreshold = 1000
 const tpsWarningThreshold = 1300
 
 const connection = new Connection('https://mango.genesysgo.net')
 
 const getRecentPerformance = async (setShow, setTps) => {
   try {
-    const samples = 5
+    const samples = 2
     const response = await connection.getRecentPerformanceSamples(samples)
     const totalSecs = sumBy(response, 'samplePeriodSecs')
     const totalTransactions = sumBy(response, 'numTransactions')
     const tps = totalTransactions / totalSecs
 
-    if (tps < 1500) {
+    if (tps < tpsWarningThreshold) {
       setShow(true)
       setTps(tps)
     } else {
@@ -30,7 +31,7 @@ const getRecentPerformance = async (setShow, setTps) => {
 }
 
 const GlobalNotification = () => {
-  const [show, setShow] = useState(true)
+  const [show, setShow] = useState(false)
   const [tps, setTps] = useState(0)
   const { t } = useTranslation('common')
 
@@ -40,7 +41,7 @@ const GlobalNotification = () => {
 
   useInterval(() => {
     getRecentPerformance(setShow, setTps)
-  }, 60 * SECONDS)
+  }, 45 * SECONDS)
 
   if (show) {
     return (
@@ -48,7 +49,7 @@ const GlobalNotification = () => {
         <div className="flex w-full items-center justify-center p-1">
           <ExclamationIcon
             className={`mr-1.5 mt-0.5 h-5 w-5 flex-shrink-0 ${
-              tps < tpsWarningThreshold ? 'text-th-red' : 'text-th-orange'
+              tps < tpsAlertThreshold ? 'text-th-red' : 'text-th-orange'
             }`}
           />
           {tps < 50 ? (
@@ -58,7 +59,7 @@ const GlobalNotification = () => {
           )}
           <div
             className={`ml-2 whitespace-nowrap rounded-full px-1.5 py-0.5 text-xs ${
-              tps < tpsWarningThreshold
+              tps < tpsAlertThreshold
                 ? 'bg-th-red text-white'
                 : 'bg-th-orange text-th-bkg-1'
             }`}
