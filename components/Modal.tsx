@@ -16,7 +16,7 @@ const Modal: any = React.forwardRef<any, any>((props, ref) => {
   return (
     <Portal>
       <div
-        className="fixed inset-0 z-50 overflow-y-auto sm:py-8"
+        className="fixed inset-0 z-40 overflow-y-auto sm:py-8"
         aria-labelledby="modal-title"
         role="dialog"
         aria-modal="true"
@@ -24,7 +24,7 @@ const Modal: any = React.forwardRef<any, any>((props, ref) => {
         <div className="flex min-h-screen items-center text-center sm:block sm:p-0">
           {isOpen ? (
             <div
-              className="fixed inset-0 bg-black bg-opacity-70 transition-opacity"
+              className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
               aria-hidden="true"
               onClick={onClose}
             ></div>
