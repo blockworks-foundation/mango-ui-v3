@@ -5,6 +5,7 @@ import { formatUsdValue, tokenPrecision } from 'utils'
 import * as MonoIcons from '../icons'
 import { QuestionMarkCircleIcon } from '@heroicons/react/outline'
 import { useBalances } from 'hooks/useBalances'
+import { useTranslation } from 'next-i18next'
 
 export const CHART_COLORS = {
   All: '#ff7c43',
@@ -27,6 +28,7 @@ export const CHART_COLORS = {
 }
 
 const LongShortChart = ({ type }: { type: string }) => {
+  const { t } = useTranslation('common')
   const openPositions = useMangoStore(
     (s) => s.selectedMangoAccount.openPerpPositions
   )
@@ -154,25 +156,31 @@ const LongShortChart = ({ type }: { type: string }) => {
   const data = type === 'long' ? getLongData() : getShortData()
 
   return (
-    <PieChart width={54} height={54}>
-      <Pie
-        cursor="pointer"
-        data={data}
-        dataKey="value"
-        cx="50%"
-        cy="50%"
-        outerRadius={27}
-      >
-        {data.map((entry, index) => (
-          <Cell
-            key={`cell-${index}`}
-            fill={CHART_COLORS[entry.symbol]}
-            stroke="rgba(0,0,0,0.1)"
-          />
-        ))}
-      </Pie>
-      <Tooltip content={<CustomToolTip />} position={{ x: -220, y: 0 }} />
-    </PieChart>
+    <div className="relative h-20 w-20">
+      <PieChart width={80} height={80}>
+        <Pie
+          cursor="pointer"
+          data={data}
+          dataKey="value"
+          cx="50%"
+          cy="50%"
+          outerRadius={40}
+          innerRadius={28}
+        >
+          {data.map((entry, index) => (
+            <Cell
+              key={`cell-${index}`}
+              fill={CHART_COLORS[entry.symbol]}
+              stroke="rgba(0,0,0,0.1)"
+            />
+          ))}
+        </Pie>
+        <Tooltip content={<CustomToolTip />} position={{ x: -220, y: 0 }} />
+      </PieChart>
+      <div className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 transform text-xs font-bold uppercase text-th-fgd-3">
+        {type === 'long' ? t('long') : t('short')}
+      </div>
+    </div>
   )
 }
 

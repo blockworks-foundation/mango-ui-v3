@@ -13,6 +13,8 @@ import ButtonGroup from '../ButtonGroup'
 import PerformanceChart from './PerformanceChart'
 import PositionsTable from '../PerpPositionsTable'
 import LongShortChart from './LongShortChart'
+import Tooltip from 'components/Tooltip'
+import { InformationCircleIcon } from '@heroicons/react/outline'
 
 dayjs.extend(utc)
 
@@ -188,12 +190,17 @@ export default function AccountOverview() {
         </div>
       </div>
       <div className="pt-24 pb-8 sm:pt-20 md:pt-0 md:pb-12">
-        <h2 className="mb-4">{t('assets-liabilities')}</h2>
+        <h2 className="mb-4">{t('portfolio-balance')}</h2>
         <div className="grid grid-flow-col grid-cols-1 grid-rows-2 md:grid-cols-2 md:grid-rows-1 md:gap-4">
           <div className="border-t border-th-bkg-4 p-3 sm:p-4 md:border-b">
             <div className="flex items-center justify-between">
               <div>
-                <div className="pb-0.5 text-th-fgd-3">{t('total-assets')}</div>
+                <Tooltip content={t('total-long-tooltip')}>
+                  <div className="flex items-center space-x-1.5 pb-0.5">
+                    <div className="text-th-fgd-3">{t('total-long')}</div>
+                    <InformationCircleIcon className="h-5 w-5 text-th-fgd-3" />
+                  </div>
+                </Tooltip>
                 {mangoGroup && mangoCache ? (
                   <div className="text-xl font-bold text-th-fgd-1 md:text-2xl">
                     {formatUsdValue(
@@ -208,9 +215,12 @@ export default function AccountOverview() {
           <div className="border-b border-t border-th-bkg-4 p-3 sm:p-4">
             <div className="flex items-center justify-between">
               <div>
-                <div className="pb-0.5 text-th-fgd-3">
-                  {t('total-liabilities')}
-                </div>
+                <Tooltip content={t('total-short-tooltip')}>
+                  <div className="flex items-center space-x-1.5 pb-0.5">
+                    <div className="text-th-fgd-3">{t('total-short')}</div>
+                    <InformationCircleIcon className="h-5 w-5 text-th-fgd-3" />
+                  </div>
+                </Tooltip>
                 {mangoGroup && mangoCache ? (
                   <div className="text-xl font-bold text-th-fgd-1 md:text-2xl">
                     {formatUsdValue(
