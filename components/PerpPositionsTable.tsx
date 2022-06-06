@@ -113,7 +113,7 @@ const PositionsTable: React.FC = () => {
               </h3>
             </div>
 
-            <RedeemButtons />
+            {unsettledPositions.length > 1 ? <RedeemButtons /> : null}
           </div>
           <div className="grid grid-flow-row grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
             {unsettledPositions.map((p, index) => {
