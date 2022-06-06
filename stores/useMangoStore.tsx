@@ -89,7 +89,7 @@ export const serumProgramId = new PublicKey(
 const mangoGroupPk = new PublicKey(defaultMangoGroupIds!.publicKey)
 
 export const SECONDS = 1000
-export const CLIENT_TX_TIMEOUT = 45000
+export const CLIENT_TX_TIMEOUT = 70000
 
 // Used to retry loading the MangoGroup and MangoAccount if an rpc node error occurs
 let mangoGroupRetryAttempt = 0
