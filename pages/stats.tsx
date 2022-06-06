@@ -64,6 +64,7 @@ export default function StatsPage() {
               onChange={handleChangeViewIndex}
               items={TABS}
               tabIndex={viewIndex}
+              width="w-full"
             />
           )}
           {!isMobile ? (
