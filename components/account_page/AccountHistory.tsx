@@ -21,6 +21,7 @@ import {
   Td,
   TableDateDisplay,
   Row,
+  ExpandableRow,
 } from '../TableElements'
 import { LinkButton } from '../Button'
 import { useSortableData } from '../../hooks/useSortableData'
@@ -176,6 +177,8 @@ const LiquidationHistoryTable = ({ history, view }) => {
       : []
   }, [history, view])
   const { items, requestSort, sortConfig } = useSortableData(filteredHistory)
+  const { width } = useViewport()
+  const isMobile = width ? width < breakpoints.md : false
 
   const exportHistoryToCSV = () => {
     const dataToExport = history
@@ -248,7 +251,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
         </Button>
       </div>
       {items.length ? (
-        <>
+        !isMobile ? (
           <Table>
             <thead>
               <TrHead>
@@ -275,7 +278,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
                     className="flex items-center font-normal no-underline"
                     onClick={() => requestSort('asset_amount')}
                   >
-                    <span className="font-normal">Asset Lost</span>
+                    <span className="font-normal">{t('asset-liquidated')}</span>
                     <ArrowSmDownIcon
                       className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                         sortConfig?.key === 'asset_amount'
@@ -290,27 +293,9 @@ const LiquidationHistoryTable = ({ history, view }) => {
                 <Th>
                   <LinkButton
                     className="flex items-center font-normal no-underline"
-                    onClick={() => requestSort('asset_price')}
-                  >
-                    <span className="font-normal">Price</span>
-                    <ArrowSmDownIcon
-                      className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
-                        sortConfig?.key === 'asset_price'
-                          ? sortConfig.direction === 'ascending'
-                            ? 'rotate-180 transform'
-                            : 'rotate-360 transform'
-                          : null
-                      }`}
-                    />
-                  </LinkButton>
-                </Th>
-
-                <Th>
-                  <LinkButton
-                    className="flex items-center font-normal no-underline"
                     onClick={() => requestSort('liab_amount')}
                   >
-                    <span className="font-normal">Asset Gained</span>
+                    <span className="font-normal">{t('asset-returned')}</span>
                     <ArrowSmDownIcon
                       className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
                         sortConfig?.key === 'liab_amount'
@@ -323,21 +308,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
                   </LinkButton>
                 </Th>
                 <Th>
-                  <LinkButton
-                    className="flex items-center font-normal no-underline"
-                    onClick={() => requestSort('liab_price')}
-                  >
-                    <span className="font-normal">Price</span>
-                    <ArrowSmDownIcon
-                      className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
-                        sortConfig?.key === 'liab_price'
-                          ? sortConfig.direction === 'ascending'
-                            ? 'rotate-180 transform'
-                            : 'rotate-360 transform'
-                          : null
-                      }`}
-                    />
-                  </LinkButton>
+                  <span className="font-normal">{t('liquidation-fee')}</span>
                 </Th>
                 <Th>
                   <span></span>
@@ -367,6 +338,10 @@ const LiquidationHistoryTable = ({ history, view }) => {
 
                 const lostDecimals = assetLost.symbol === 'SOL' ? 9 : 6
                 const gainedDecimals = assetGained.symbol === 'SOL' ? 9 : 6
+                const valueLost = Math.abs(assetLost.amount * assetLost.price)
+                const valueGained = assetGained.amount * assetGained.price
+                const liquidationFee = valueGained - valueLost
+
                 return (
                   <TrBody key={activity_details.signature}>
                     <Td>
@@ -374,22 +349,21 @@ const LiquidationHistoryTable = ({ history, view }) => {
                         date={activity_details.block_datetime}
                       />
                     </Td>
-
                     <Td>
-                      <span className="text-th-red">
+                      <span>
                         {Math.abs(assetLost.amount).toLocaleString(undefined, {
                           maximumFractionDigits: lostDecimals,
                         })}{' '}
                       </span>
-                      {assetLost.symbol}
+                      {`${assetLost.symbol} at ${formatUsdValue(
+                        assetLost.price
+                      )}`}
+                      <p className="mb-0 text-xs text-th-fgd-3">
+                        {formatUsdValue(valueLost)}
+                      </p>
                     </Td>
                     <Td>
-                      {assetLost.price.toLocaleString(undefined, {
-                        maximumFractionDigits: lostDecimals,
-                      })}
-                    </Td>
-                    <Td>
-                      <span className="text-th-green">
+                      <span>
                         {Math.abs(assetGained.amount).toLocaleString(
                           undefined,
                           {
@@ -397,12 +371,21 @@ const LiquidationHistoryTable = ({ history, view }) => {
                           }
                         )}{' '}
                       </span>
-                      {assetGained.symbol}
+                      {`${assetGained.symbol} at ${formatUsdValue(
+                        assetGained.price
+                      )}`}
+                      <p className="mb-0 text-xs text-th-fgd-3">
+                        {formatUsdValue(valueGained)}
+                      </p>
                     </Td>
                     <Td>
-                      {assetGained.price.toLocaleString(undefined, {
-                        maximumFractionDigits: gainedDecimals,
-                      })}
+                      <span
+                        className={
+                          liquidationFee >= 0 ? 'text-th-green' : 'text-th-red'
+                        }
+                      >
+                        {formatUsdValue(liquidationFee)}
+                      </span>
                     </Td>
                     <Td>
                       <a
@@ -420,7 +403,118 @@ const LiquidationHistoryTable = ({ history, view }) => {
               })}
             </tbody>
           </Table>
-        </>
+        ) : (
+          <div className="border-b border-th-bkg-4">
+            <MobileTableHeader
+              colOneHeader={t('date')}
+              colTwoHeader={t('liquidation-fee')}
+            />
+            {items.map(({ activity_details, activity_type }) => {
+              let perpMarket: PerpMarket | null = null
+              if (activity_type.includes('perp')) {
+                const symbol = activity_details.perp_market.split('-')[0]
+                const marketConfig = getMarketByBaseSymbolAndKind(
+                  groupConfig,
+                  symbol,
+                  'perp'
+                )
+                perpMarket = markets[
+                  marketConfig.publicKey.toString()
+                ] as PerpMarket
+              }
+
+              const [assetGained, assetLost] = parseActivityDetails(
+                activity_details,
+                activity_type,
+                perpMarket
+              )
+
+              const lostDecimals = assetLost.symbol === 'SOL' ? 9 : 6
+              const gainedDecimals = assetGained.symbol === 'SOL' ? 9 : 6
+              const valueLost = Math.abs(assetLost.amount * assetLost.price)
+              const valueGained = assetGained.amount * assetGained.price
+              const liquidationFee = valueGained - valueLost
+              return (
+                <ExpandableRow
+                  buttonTemplate={
+                    <div className="flex w-full items-center justify-between text-th-fgd-1">
+                      <div className="text-left">
+                        <TableDateDisplay
+                          date={activity_details.block_datetime}
+                        />
+                      </div>
+                      <div className="text-right text-th-fgd-1">
+                        <span
+                          className={
+                            liquidationFee >= 0
+                              ? 'text-th-green'
+                              : 'text-th-red'
+                          }
+                        >
+                          {formatUsdValue(liquidationFee)}
+                        </span>
+                      </div>
+                    </div>
+                  }
+                  key={`${activity_details.signature}`}
+                  panelTemplate={
+                    <div className="grid grid-flow-row grid-cols-2 gap-4 pb-4">
+                      <div className="text-left">
+                        <div className="pb-0.5 text-xs text-th-fgd-3">
+                          {t('asset-liquidated')}
+                        </div>
+                        <span>
+                          {Math.abs(assetLost.amount).toLocaleString(
+                            undefined,
+                            {
+                              maximumFractionDigits: lostDecimals,
+                            }
+                          )}{' '}
+                        </span>
+                        {`${assetLost.symbol} at ${formatUsdValue(
+                          assetLost.price
+                        )}`}
+                        <p className="mb-0 text-xs text-th-fgd-3">
+                          {formatUsdValue(valueLost)}
+                        </p>
+                      </div>
+                      <div className="text-left">
+                        <div className="pb-0.5 text-xs text-th-fgd-3">
+                          {t('asset-returned')}
+                        </div>
+                        <span>
+                          {Math.abs(assetGained.amount).toLocaleString(
+                            undefined,
+                            {
+                              maximumFractionDigits: gainedDecimals,
+                            }
+                          )}{' '}
+                        </span>
+                        {`${assetGained.symbol} at ${formatUsdValue(
+                          assetGained.price
+                        )}`}
+                        <p className="mb-0 text-xs text-th-fgd-3">
+                          {formatUsdValue(valueGained)}
+                        </p>
+                      </div>
+                      <div className="col-span-2">
+                        <a
+                          className="default-transition flex h-8 w-full items-center justify-center rounded-full bg-th-bkg-button pt-0 pb-0 pl-3 pr-2 text-xs font-bold text-th-fgd-2"
+                          href={`https://explorer.solana.com/tx/${activity_details.signature}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <span>View Transaction</span>
+                          <ExternalLinkIcon className={`ml-1.5 h-4 w-4`} />
+                        </a>
+                      </div>
+                    </div>
+                  }
+                />
+              )
+            })}
+          </div>
+        )
       ) : (
         <div className="w-full rounded-md bg-th-bkg-1 py-6 text-center text-th-fgd-3">
           {t('history-empty')}
