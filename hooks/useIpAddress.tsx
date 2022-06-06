@@ -40,6 +40,7 @@ const SPOT_ALLOWED = ['GB']
 export default function useIpAddress() {
   const [ipAllowed, setIpAllowed] = useState(false)
   const [spotAllowed, setSpotAllowed] = useState(false)
+  const [ipCountry, setIpCountry] = useState('')
 
   useEffect(() => {
     const checkIpLocation = async () => {
@@ -48,6 +49,8 @@ export default function useIpAddress() {
       )
       const parsedResponse = await response.json()
       const ipCountryCode = parsedResponse ? parsedResponse?.country : ''
+
+      setIpCountry(ipCountryCode)
 
       if (ipCountryCode) {
         setIpAllowed(!SANCTIONED_COUNTRY_CODES.includes(ipCountryCode))
@@ -59,8 +62,8 @@ export default function useIpAddress() {
   }, [])
 
   if (CLUSTER === 'mainnet') {
-    return { ipAllowed, spotAllowed }
+    return { ipAllowed, spotAllowed, ipCountry }
   } else {
-    return { ipAllowed: true, spotAllowed: true }
+    return { ipAllowed: true, spotAllowed: true, ipCountry }
   }
 }
