@@ -7,7 +7,7 @@ import {
   MenuIcon,
   XIcon,
 } from '@heroicons/react/solid'
-import { BtcMonoIcon, TradeIcon } from '../icons'
+import { BtcMonoIcon, TradeIcon, TrophyIcon } from '../icons'
 import { useTranslation } from 'next-i18next'
 import { IconButton } from '../Button'
 import {
@@ -140,6 +140,11 @@ const MoreMenuPanel = ({
           title={t('swap')}
           path="/swap"
           icon={<SwitchHorizontalIcon className="h-5 w-5" />}
+        />
+        <MoreMenuItem
+          title={t('leaderboard')}
+          path="/leaderboard"
+          icon={<TrophyIcon className="h-5 w-5" />}
         />
         <MoreMenuItem
           title={t('referrals')}
