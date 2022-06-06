@@ -1,7 +1,11 @@
 import React, { FunctionComponent, useEffect, useState } from 'react'
 import { RadioGroup } from '@headlessui/react'
-import { CheckCircleIcon } from '@heroicons/react/solid'
-import { HeartIcon, PlusCircleIcon, UsersIcon } from '@heroicons/react/outline'
+import {
+  CheckCircleIcon,
+  HeartIcon,
+  PlusCircleIcon,
+  UsersIcon,
+} from '@heroicons/react/outline'
 import useMangoStore from '../stores/useMangoStore'
 import { MangoAccount, MangoGroup } from '@blockworks-foundation/mango-client'
 import { abbreviateAddress, formatUsdValue } from '../utils'
@@ -80,11 +84,11 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
               <ElementTitle noMarginBottom>{t('mango-accounts')}</ElementTitle>
             </Modal.Header>
             <div className="flex items-center justify-between pb-3 text-th-fgd-1">
-              <div className="font-semibold">
+              <p className="mb-0">
                 {mangoAccounts.length > 1
                   ? t('select-account')
                   : t('your-account')}
-              </div>
+              </p>
               <Button
                 className="flex h-8 items-center justify-center pt-0 pb-0 pl-3 pr-3 text-xs"
                 onClick={() => handleShowNewAccountForm()}
@@ -112,18 +116,20 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
                     key={account.publicKey.toString()}
                     value={account}
                     className={({ checked }) =>
-                      `${
-                        checked
-                          ? 'bg-th-bkg-3 ring-1 ring-inset ring-th-green'
-                          : 'bg-th-bkg-1'
-                      }
-                      default-transition relative flex w-full cursor-pointer rounded-md px-3 py-3 hover:bg-th-bkg-3 focus:outline-none`
+                      `border ${
+                        checked ? 'border-th-primary' : 'border-th-fgd-4'
+                      } default-transition mb-2 flex cursor-pointer items-center rounded-md p-3 text-th-fgd-1 hover:border-th-primary`
                     }
                   >
                     {({ checked }) => (
                       <>
                         <div className="flex w-full items-center justify-between">
                           <div className="flex items-center">
+                            <CheckCircleIcon
+                              className={`mr-2 h-5 w-5 ${
+                                checked ? 'text-th-primary' : 'text-th-fgd-4'
+                              }`}
+                            />
                             <div className="text-sm">
                               <RadioGroup.Label className="flex cursor-pointer items-center text-th-fgd-1">
                                 <div>
@@ -155,11 +161,6 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
                               </RadioGroup.Label>
                             </div>
                           </div>
-                          {checked && (
-                            <div className="flex-shrink-0 text-th-green">
-                              <CheckCircleIcon className="h-5 w-5" />
-                            </div>
-                          )}
                         </div>
                       </>
                     )}
@@ -214,7 +215,7 @@ const AccountInfo = ({
         }`}
       >
         <HeartIcon className="mr-0.5 h-4 w-4" />
-        {health.toFixed(2)}%
+        {Number(health) > 100 ? '>100' : health.toFixed(2)}%
       </span>
     </div>
   )

@@ -58,7 +58,7 @@ export default function AdvancedTradeForm({
 }: AdvancedTradeFormProps) {
   const { t } = useTranslation('common')
   const set = useMangoStore((s) => s.set)
-  const { ipAllowed, spotAllowed } = useIpAddress()
+  const { ipAllowed, spotAllowed, ipCountry } = useIpAddress()
   const { wallet, connected } = useWallet()
   const actions = useMangoStore((s) => s.actions)
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
@@ -1086,7 +1086,11 @@ export default function AdvancedTradeForm({
                 <Tooltip content={t('country-not-allowed-tooltip')}>
                   <div className="flex">
                     <Button disabled className="flex-grow">
-                      <span>{t('country-not-allowed')}</span>
+                      <span>
+                        {t('country-not-allowed', {
+                          country: ipCountry ? `(${ipCountry})` : '(Unknown)',
+                        })}
+                      </span>
                     </Button>
                   </div>
                 </Tooltip>
