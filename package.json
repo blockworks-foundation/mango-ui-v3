@@ -17,7 +17,7 @@
     "analyze": "ANALYZE=true yarn build"
   },
   "dependencies": {
-    "@blockworks-foundation/mango-client": "^3.5.2",
+    "@blockworks-foundation/mango-client": "^3.5.3",
     "@headlessui/react": "^0.0.0-insiders.2dbc38c",
     "@heroicons/react": "^1.0.0",
     "@jup-ag/react-hook": "^1.0.0-beta.22",
@@ -62,7 +62,7 @@
   },
   "peerDependencies": {
     "@project-serum/serum": ">=0.13.55",
-    "@solana/web3.js": "^1.36.0",
+    "@solana/web3.js": "~1.36.0",
     "borsh": "^0.7.0"
   },
   "devDependencies": {
