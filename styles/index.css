@@ -94,7 +94,7 @@ p {
 }
 
 a {
-  @apply text-th-primary hover:text-th-primary-dark;
+  @apply text-th-primary hover:md:text-th-primary-dark;
 }
 
 li {
