@@ -81,10 +81,10 @@ export const settlePosPnl = async (
 }
 
 export async function settleAllPnl(
-    perpMarkets: PerpMarket[],
-    t,
-    mangoAccounts: MangoAccount[] | undefined,
-    wallet: Wallet
+  perpMarkets: PerpMarket[],
+  t,
+  mangoAccounts: MangoAccount[] | undefined,
+  wallet: Wallet
 ) {
   const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
   const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
@@ -98,18 +98,16 @@ export async function settleAllPnl(
 
   try {
     const txids = await mangoClient.settleAllPerpPnl(
-        mangoGroup,
-        mangoCache,
-        mangoAccount,
-        perpMarkets,
-        rootBankAccount,
-        wallet?.adapter,
-        mangoAccounts
+      mangoGroup,
+      mangoCache,
+      mangoAccount,
+      perpMarkets,
+      rootBankAccount,
+      wallet?.adapter,
+      mangoAccounts
     )
     actions.reloadMangoAccount()
-    const filteredTxids = txids?.filter(
-        (x) => x !== null
-    ) as string[]
+    const filteredTxids = txids?.filter((x) => x !== null) as string[]
     if (filteredTxids) {
       for (const txid of filteredTxids) {
         notify({
@@ -134,7 +132,6 @@ export async function settleAllPnl(
       type: 'error',
     })
   }
-
 }
 
 export const settlePnl = async (
