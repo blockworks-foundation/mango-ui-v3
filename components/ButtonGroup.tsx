@@ -37,7 +37,7 @@ const ButtonGroup: FunctionComponent<ButtonGroupProps> = ({
               ${
                 v === activeValue
                   ? `text-th-primary`
-                  : `text-th-fgd-2 hover:text-th-primary`
+                  : `text-th-fgd-2 hover:md:text-th-primary`
               }
             `}
             key={`${v}${i}`}

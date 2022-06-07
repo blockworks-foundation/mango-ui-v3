@@ -478,7 +478,7 @@ const JupiterForm: FunctionComponent = () => {
                     </div>
                   </aside>
                   <button
-                    className="absolute right-64 top-20 rounded-r-none bg-th-bkg-4 p-3 text-th-fgd-1 hover:text-th-primary"
+                    className="absolute right-64 top-20 rounded-r-none bg-th-bkg-4 p-3 text-th-fgd-1 hover:md:text-th-primary"
                     onClick={() => setShowWalletDraw(!showWalletDraw)}
                   >
                     <WalletIcon className="h-5 w-5" />
@@ -517,7 +517,7 @@ const JupiterForm: FunctionComponent = () => {
                 <div className="mt-2 grid grid-cols-2">
                   <div className="col-span-1">
                     <button
-                      className="-ml-2 p-2 hover:bg-th-bkg-3"
+                      className="-ml-2 p-2 hover:md:bg-th-bkg-3"
                       onClick={() => setShowInputTokenSelect(true)}
                     >
                       <div className="flex h-8 items-center">
@@ -561,7 +561,7 @@ const JupiterForm: FunctionComponent = () => {
 
                 <div className="my-4 flex justify-center">
                   <button onClick={handleSwitchMints}>
-                    <SwitchVerticalIcon className="default-transition h-8 w-8 rounded-full bg-th-bkg-4 p-1.5 text-th-fgd-1 hover:text-th-primary" />
+                    <SwitchVerticalIcon className="default-transition h-8 w-8 rounded-full bg-th-bkg-4 p-1.5 text-th-fgd-1 hover:md:text-th-primary" />
                   </button>
                 </div>
 
@@ -576,7 +576,7 @@ const JupiterForm: FunctionComponent = () => {
                 <div className="mt-2 grid grid-cols-2">
                   <div className="col-span-1">
                     <button
-                      className="-ml-2 flex h-12 items-center p-2 hover:bg-th-bkg-3"
+                      className="-ml-2 flex h-12 items-center p-2 hover:md:bg-th-bkg-3"
                       onClick={() => setShowOutputTokenSelect(true)}
                     >
                       {outputTokenInfo?.logoURI ? (

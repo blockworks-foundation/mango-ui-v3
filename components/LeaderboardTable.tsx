@@ -244,7 +244,7 @@ const LeaderboardTypeButton = ({
       className={`relative flex w-full items-center justify-center rounded-md p-4 text-center lg:h-20 lg:justify-start lg:text-left ${
         leaderboardType === label
           ? 'bg-th-bkg-4 text-th-fgd-1 after:absolute after:top-[100%] after:left-1/2 after:-translate-x-1/2 after:transform after:border-l-[12px] after:border-r-[12px] after:border-t-[12px] after:border-l-transparent after:border-t-th-bkg-4 after:border-r-transparent lg:after:left-[100%] lg:after:top-1/2  lg:after:-translate-x-0 lg:after:-translate-y-1/2 lg:after:border-r-0 lg:after:border-b-[12px] lg:after:border-t-transparent lg:after:border-b-transparent lg:after:border-l-th-bkg-4'
-          : 'bg-th-bkg-3 text-th-fgd-4 hover:bg-th-bkg-4'
+          : 'bg-th-bkg-3 text-th-fgd-4 hover:md:bg-th-bkg-4'
       }`}
       onClick={() => setLeaderboardType(label)}
     >

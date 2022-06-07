@@ -150,7 +150,7 @@ const TopBar = () => {
               {mangoAccount &&
               mangoAccount.owner.toBase58() === publicKey?.toBase58() ? (
                 <button
-                  className="rounded border border-th-bkg-4 py-1 px-2 text-xs hover:border-th-fgd-4 focus:outline-none"
+                  className="rounded border border-th-bkg-4 py-1 px-2 text-xs focus:outline-none hover:md:border-th-fgd-4"
                   onClick={() => setShowAccountsModal(true)}
                 >
                   <div className="text-xs font-normal text-th-primary">
@@ -166,7 +166,7 @@ const TopBar = () => {
                 </button>
               ) : connected && !mangoAccount ? (
                 <button
-                  className="rounded border border-th-bkg-4 py-1 px-2 text-xs hover:border-th-fgd-4 focus:outline-none"
+                  className="rounded border border-th-bkg-4 py-1 px-2 text-xs focus:outline-none hover:md:border-th-fgd-4"
                   onClick={() => setShowAccountsModal(true)}
                 >
                   <div className="text-xs font-normal text-th-primary">

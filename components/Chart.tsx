@@ -118,7 +118,7 @@ const Chart: FunctionComponent<ChartProps> = ({
         {!hideRangeFilters ? (
           <div className="flex h-5">
             <button
-              className={`default-transition mx-3 text-xs font-bold text-th-fgd-1 hover:text-th-primary focus:outline-none ${
+              className={`default-transition mx-3 text-xs font-bold text-th-fgd-1 focus:outline-none hover:md:text-th-primary ${
                 daysToShow === 1 && 'text-th-primary'
               }`}
               onClick={() => setDaysToShow(1)}
@@ -126,7 +126,7 @@ const Chart: FunctionComponent<ChartProps> = ({
               24H
             </button>
             <button
-              className={`default-transition mx-3 text-xs font-bold text-th-fgd-1 hover:text-th-primary focus:outline-none ${
+              className={`default-transition mx-3 text-xs font-bold text-th-fgd-1 focus:outline-none hover:md:text-th-primary ${
                 daysToShow === 7 && 'text-th-primary'
               }`}
               onClick={() => setDaysToShow(7)}
@@ -134,7 +134,7 @@ const Chart: FunctionComponent<ChartProps> = ({
               7D
             </button>
             <button
-              className={`default-transition ml-3 text-xs font-bold text-th-fgd-1 hover:text-th-primary focus:outline-none ${
+              className={`default-transition ml-3 text-xs font-bold text-th-fgd-1 focus:outline-none hover:md:text-th-primary ${
                 daysToShow === 30 && 'text-th-primary'
               }`}
               onClick={() => setDaysToShow(30)}
@@ -143,7 +143,7 @@ const Chart: FunctionComponent<ChartProps> = ({
             </button>
             {showAll ? (
               <button
-                className={`default-transition ml-3 text-xs font-bold text-th-fgd-1 hover:text-th-primary focus:outline-none ${
+                className={`default-transition ml-3 text-xs font-bold text-th-fgd-1 focus:outline-none hover:md:text-th-primary ${
                   daysToShow === 1000 && 'text-th-primary'
                 }`}
                 onClick={() => setDaysToShow(1000)}

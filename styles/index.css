@@ -107,7 +107,7 @@ tbody {
 
 button {
   transition: all 0.3s ease;
-  @apply rounded-md tracking-wider;
+  @apply rounded-md tracking-wider hover:md:brightness-[1.1] disabled:hover:md:brightness-100;
 }
 
 .transition-none {

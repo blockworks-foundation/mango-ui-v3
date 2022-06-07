@@ -21,8 +21,8 @@ export default function Pagination({
           disabled={page === 1}
           className={`bg-th-bkg-4 px-1 py-1 ${
             page !== 1
-              ? 'hover:cursor-pointer hover:text-th-primary'
-              : 'hover:cursor-not-allowed'
+              ? 'hover:md:cursor-pointer hover:md:text-th-primary'
+              : 'hover:md:cursor-not-allowed'
           } disabled:text-th-fgd-4`}
         >
           <ChevronDoubleLeftIcon className={`h-5 w-5`} />
@@ -32,8 +32,8 @@ export default function Pagination({
           disabled={page === 1}
           className={`ml-2 bg-th-bkg-4 px-1 py-1 ${
             page !== 1
-              ? 'hover:cursor-pointer hover:text-th-primary'
-              : 'hover:cursor-not-allowed'
+              ? 'hover:md:cursor-pointer hover:md:text-th-primary'
+              : 'hover:md:cursor-not-allowed'
           } disabled:text-th-fgd-4`}
         >
           <ChevronLeftIcon className={`h-5 w-5`} />
@@ -48,8 +48,8 @@ export default function Pagination({
           disabled={page === totalPages}
           className={`ml-2 bg-th-bkg-4 px-1 py-1 ${
             page !== totalPages
-              ? 'hover:cursor-pointer hover:text-th-primary'
-              : 'hover:cursor-not-allowed'
+              ? 'hover:md:cursor-pointer hover:md:text-th-primary'
+              : 'hover:md:cursor-not-allowed'
           } disabled:text-th-fgd-4`}
         >
           <ChevronRightIcon className={`h-5 w-5`} />
@@ -59,8 +59,8 @@ export default function Pagination({
           disabled={page === totalPages}
           className={`ml-2 bg-th-bkg-4 px-1 py-1 ${
             page !== totalPages
-              ? 'hover:cursor-pointer hover:text-th-primary'
-              : 'hover:cursor-not-allowed'
+              ? 'hover:md:cursor-pointer hover:md:text-th-primary'
+              : 'hover:md:cursor-not-allowed'
           } disabled:text-th-fgd-4`}
         >
           <ChevronDoubleRightIcon className={`h-5 w-5`} />
