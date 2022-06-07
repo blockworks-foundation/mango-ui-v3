@@ -11,6 +11,7 @@ import useMangoAccount from 'hooks/useMangoAccount'
 
 export const CHART_COLORS = {
   All: '#ff7c43',
+  spacer: 'rgba(255,255,255,0.1)',
   ADA: '#335CBE',
   AVAX: '#E84142',
   BNB: '#F3BA2F',
@@ -32,7 +33,6 @@ export const CHART_COLORS = {
 const LongShortChart = ({ type }: { type: string }) => {
   const { t } = useTranslation('common')
   const [chartData, setChartData] = useState<any>([])
-  const [hasOpenPositions, setHasOpenPositions] = useState(false)
   const { mangoAccount } = useMangoAccount()
   const openPositions = useMangoStore(
     (s) => s.selectedMangoAccount.openPerpPositions
@@ -141,6 +141,13 @@ const LongShortChart = ({ type }: { type: string }) => {
         })
       }
     }
+    const totalLongValue = longData.reduce((a, c) => a + c.value, 0)
+    const totalShortValue = shortData.reduce((a, c) => a + c.value, 0)
+    const dif = totalLongValue - totalShortValue
+    if (dif > 0) {
+      shortData.push({ symbol: 'spacer', value: dif })
+    }
+
     type === 'long' ? setChartData(longData) : setChartData(shortData)
   }
 
@@ -160,6 +167,7 @@ const LongShortChart = ({ type }: { type: string }) => {
     return chartData.length ? (
       <div className="space-y-1.5 rounded-md bg-th-bkg-2 p-3 pb-2 md:bg-th-bkg-1">
         {chartData
+          .filter((d) => d.symbol !== 'spacer')
           .sort((a, b) => b.value - a.value)
           .map((entry, index) => {
             const { amount, asset, symbol, value } = entry
@@ -198,18 +206,10 @@ const LongShortChart = ({ type }: { type: string }) => {
   }
 
   useEffect(() => {
-    if (mangoAccount) {
-      if (openPositions.length) {
-        setHasOpenPositions(true)
-      }
-    }
-  }, [mangoAccount, openPositions])
-
-  useEffect(() => {
-    if (mangoAccount) {
+    if (mangoAccount && openPositions) {
       type === 'long' ? getChartData('long') : getChartData('short')
     }
-  }, [mangoAccount, hasOpenPositions])
+  }, [mangoAccount, openPositions])
 
   return chartData.length ? (
     <div className="relative h-20 w-20">
@@ -223,7 +223,8 @@ const LongShortChart = ({ type }: { type: string }) => {
           outerRadius={40}
           innerRadius={28}
           minAngle={2}
-          paddingAngle={2}
+          startAngle={90}
+          endAngle={450}
         >
           {chartData
             .sort((a, b) => a.symbol.localeCompare(b.symbol))
