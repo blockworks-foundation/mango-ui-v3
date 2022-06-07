@@ -41,16 +41,8 @@ const LongShortChart = ({ type }: { type: string }) => {
     useMangoStore.getState().selectedMangoAccount.unsettledPerpPositions
   const balances = useBalances()
 
-  const positiveUnsettledPositionsValue = useMemo(() => {
-    return unsettledPositions
-      .filter((pos) => pos.unsettledPnl > 0)
-      .reduce((a, c) => a + c.unsettledPnl, 0)
-  }, [unsettledPositions])
-
-  const negativeUnsettledPositionsValue = useMemo(() => {
-    return unsettledPositions
-      .filter((pos) => pos.unsettledPnl < 0)
-      .reduce((a, c) => a + c.unsettledPnl, 0)
+  const netUnsettledPositionsValue = useMemo(() => {
+    return unsettledPositions.reduce((a, c) => a + c.unsettledPnl, 0)
   }, [unsettledPositions])
 
   const getChartData = (type) => {
@@ -62,61 +54,25 @@ const LongShortChart = ({ type }: { type: string }) => {
     for (const { net, symbol, value } of balances) {
       let amount = Number(net)
       let totValue = Number(value)
-      if (Number(net) > 0) {
-        if (symbol === 'USDC') {
-          amount =
-            amount +
-            positiveUnsettledPositionsValue +
-            negativeUnsettledPositionsValue
-          totValue =
-            totValue +
-            positiveUnsettledPositionsValue +
-            negativeUnsettledPositionsValue
-        }
-        if (totValue > 0) {
-          longData.push({
-            asset: symbol,
-            amount: amount,
-            symbol: symbol,
-            value: totValue,
-          })
-        }
-        if (totValue < 0) {
-          shortData.push({
-            asset: symbol,
-            amount: Math.abs(amount),
-            symbol: symbol,
-            value: Math.abs(totValue),
-          })
-        }
+      if (symbol === 'USDC') {
+        amount += netUnsettledPositionsValue
+        totValue += netUnsettledPositionsValue
       }
-      if (Number(net) < 0) {
-        if (symbol === 'USDC') {
-          amount =
-            amount +
-            positiveUnsettledPositionsValue +
-            negativeUnsettledPositionsValue
-          totValue =
-            totValue +
-            positiveUnsettledPositionsValue +
-            negativeUnsettledPositionsValue
-        }
-        if (totValue > 0) {
-          longData.push({
-            asset: symbol,
-            amount: amount,
-            symbol: symbol,
-            value: totValue,
-          })
-        }
-        if (totValue < 0) {
-          shortData.push({
-            asset: symbol,
-            amount: Math.abs(amount),
-            symbol: symbol,
-            value: Math.abs(totValue),
-          })
-        }
+      if (totValue > 0) {
+        longData.push({
+          asset: symbol,
+          amount: amount,
+          symbol: symbol,
+          value: totValue,
+        })
+      }
+      if (totValue < 0) {
+        shortData.push({
+          asset: symbol,
+          amount: Math.abs(amount),
+          symbol: symbol,
+          value: Math.abs(totValue),
+        })
       }
     }
     for (const {
