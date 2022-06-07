@@ -1087,9 +1087,15 @@ export default function AdvancedTradeForm({
                   <div className="flex">
                     <Button disabled className="flex-grow">
                       <span>
-                        {t('country-not-allowed', {
-                          country: ipCountry ? `(${ipCountry})` : '(Unknown)',
-                        })}
+                        {!isMobile
+                          ? t('country-not-allowed', {
+                              country: ipCountry
+                                ? `(${ipCountry})`
+                                : '(Unknown)',
+                            })
+                          : t('country-not-allowed', {
+                              country: '',
+                            })}
                       </span>
                     </Button>
                   </div>
