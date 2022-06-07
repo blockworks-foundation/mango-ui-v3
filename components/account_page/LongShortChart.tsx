@@ -6,6 +6,8 @@ import * as MonoIcons from '../icons'
 import { QuestionMarkCircleIcon } from '@heroicons/react/outline'
 import { useBalances } from 'hooks/useBalances'
 import { useTranslation } from 'next-i18next'
+import { useEffect, useMemo, useState } from 'react'
+import useMangoAccount from 'hooks/useMangoAccount'
 
 export const CHART_COLORS = {
   All: '#ff7c43',
@@ -29,24 +31,92 @@ export const CHART_COLORS = {
 
 const LongShortChart = ({ type }: { type: string }) => {
   const { t } = useTranslation('common')
+  const [chartData, setChartData] = useState<any>([])
+  const [hasOpenPositions, setHasOpenPositions] = useState(false)
+  const { mangoAccount } = useMangoAccount()
   const openPositions = useMangoStore(
     (s) => s.selectedMangoAccount.openPerpPositions
   )
+  const unsettledPositions =
+    useMangoStore.getState().selectedMangoAccount.unsettledPerpPositions
   const balances = useBalances()
 
-  const getLongData = () => {
+  const positiveUnsettledPositionsValue = useMemo(() => {
+    return unsettledPositions
+      .filter((pos) => pos.unsettledPnl > 0)
+      .reduce((a, c) => a + c.unsettledPnl, 0)
+  }, [unsettledPositions])
+
+  const negativeUnsettledPositionsValue = useMemo(() => {
+    return unsettledPositions
+      .filter((pos) => pos.unsettledPnl < 0)
+      .reduce((a, c) => a + c.unsettledPnl, 0)
+  }, [unsettledPositions])
+
+  const getChartData = (type) => {
     const longData: any = []
-    if (!balances) {
+    const shortData: any = []
+    if (!balances.length) {
       return []
     }
     for (const { net, symbol, value } of balances) {
+      let amount = Number(net)
+      let totValue = Number(value)
       if (Number(net) > 0) {
-        longData.push({
-          asset: symbol,
-          amount: Number(net),
-          symbol: symbol,
-          value: Number(value),
-        })
+        if (symbol === 'USDC') {
+          amount =
+            amount +
+            positiveUnsettledPositionsValue +
+            negativeUnsettledPositionsValue
+          totValue =
+            totValue +
+            positiveUnsettledPositionsValue +
+            negativeUnsettledPositionsValue
+        }
+        if (totValue > 0) {
+          longData.push({
+            asset: symbol,
+            amount: amount,
+            symbol: symbol,
+            value: totValue,
+          })
+        }
+        if (totValue < 0) {
+          shortData.push({
+            asset: symbol,
+            amount: Math.abs(amount),
+            symbol: symbol,
+            value: Math.abs(totValue),
+          })
+        }
+      }
+      if (Number(net) < 0) {
+        if (symbol === 'USDC') {
+          amount =
+            amount +
+            positiveUnsettledPositionsValue +
+            negativeUnsettledPositionsValue
+          totValue =
+            totValue +
+            positiveUnsettledPositionsValue +
+            negativeUnsettledPositionsValue
+        }
+        if (totValue > 0) {
+          longData.push({
+            asset: symbol,
+            amount: amount,
+            symbol: symbol,
+            value: totValue,
+          })
+        }
+        if (totValue < 0) {
+          shortData.push({
+            asset: symbol,
+            amount: Math.abs(amount),
+            symbol: symbol,
+            value: Math.abs(totValue),
+          })
+        }
       }
     }
     for (const {
@@ -62,33 +132,7 @@ const LongShortChart = ({ type }: { type: string }) => {
           symbol: marketConfig.baseSymbol,
           value: notionalSize,
         })
-      }
-    }
-    return longData
-  }
-
-  const getShortData = () => {
-    const shortData: any = []
-    if (!balances) {
-      return []
-    }
-    for (const { net, symbol, value } of balances) {
-      if (Number(net) < 0) {
-        shortData.push({
-          asset: symbol,
-          amount: Math.abs(Number(net)),
-          symbol: symbol,
-          value: Math.abs(Number(value)),
-        })
-      }
-    }
-    for (const {
-      marketConfig,
-      basePosition,
-      notionalSize,
-      perpAccount,
-    } of openPositions) {
-      if (!perpAccount.basePosition.gt(ZERO_BN)) {
+      } else {
         shortData.push({
           asset: marketConfig.name,
           amount: Math.abs(basePosition),
@@ -97,7 +141,7 @@ const LongShortChart = ({ type }: { type: string }) => {
         })
       }
     }
-    return shortData
+    type === 'long' ? setChartData(longData) : setChartData(shortData)
   }
 
   const CustomToolTip = () => {
@@ -113,9 +157,9 @@ const LongShortChart = ({ type }: { type: string }) => {
       )
     }
 
-    return data ? (
+    return chartData.length ? (
       <div className="space-y-1.5 rounded-md bg-th-bkg-2 p-3 pb-2 md:bg-th-bkg-1">
-        {data
+        {chartData
           .sort((a, b) => b.value - a.value)
           .map((entry, index) => {
             const { amount, asset, symbol, value } = entry
@@ -153,27 +197,43 @@ const LongShortChart = ({ type }: { type: string }) => {
     ) : null
   }
 
-  const data = type === 'long' ? getLongData() : getShortData()
+  useEffect(() => {
+    if (mangoAccount) {
+      if (openPositions.length) {
+        setHasOpenPositions(true)
+      }
+    }
+  }, [mangoAccount, openPositions])
 
-  return (
+  useEffect(() => {
+    if (mangoAccount) {
+      type === 'long' ? getChartData('long') : getChartData('short')
+    }
+  }, [mangoAccount, hasOpenPositions])
+
+  return chartData.length ? (
     <div className="relative h-20 w-20">
       <PieChart width={80} height={80}>
         <Pie
           cursor="pointer"
-          data={data}
+          data={chartData}
           dataKey="value"
           cx="50%"
           cy="50%"
           outerRadius={40}
           innerRadius={28}
+          minAngle={2}
+          paddingAngle={2}
         >
-          {data.map((entry, index) => (
-            <Cell
-              key={`cell-${index}`}
-              fill={CHART_COLORS[entry.symbol]}
-              stroke="rgba(0,0,0,0.1)"
-            />
-          ))}
+          {chartData
+            .sort((a, b) => a.symbol.localeCompare(b.symbol))
+            .map((entry, index) => (
+              <Cell
+                key={`cell-${index}`}
+                fill={CHART_COLORS[entry.symbol]}
+                stroke="rgba(0,0,0,0.1)"
+              />
+            ))}
         </Pie>
         <Tooltip content={<CustomToolTip />} position={{ x: -220, y: 0 }} />
       </PieChart>
@@ -181,7 +241,7 @@ const LongShortChart = ({ type }: { type: string }) => {
         {type === 'long' ? t('long') : t('short')}
       </div>
     </div>
-  )
+  ) : null
 }
 
 export default LongShortChart
