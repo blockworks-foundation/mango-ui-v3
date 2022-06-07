@@ -117,9 +117,13 @@ const AlphaModal = ({
         </>
       ) : (
         <div className="flex flex-col items-center pt-2">
-          <RadioGroup value={language} onChange={setLanguage}>
+          <RadioGroup
+            className="w-full"
+            value={language}
+            onChange={setLanguage}
+          >
             {LANGS.map((l) => (
-              <RadioGroup.Option className="" key={l.locale} value={l.locale}>
+              <RadioGroup.Option key={l.locale} value={l.locale}>
                 {({ checked }) => (
                   <div
                     className={`border ${
