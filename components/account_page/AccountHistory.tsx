@@ -8,6 +8,7 @@ import {
 } from '@heroicons/react/outline'
 import {
   getMarketByBaseSymbolAndKind,
+  getTokenBySymbol,
   PerpMarket,
 } from '@blockworks-foundation/mango-client'
 
@@ -109,23 +110,40 @@ const ViewContent = ({ view, history }) => {
 }
 
 const parseActivityDetails = (activity_details, activity_type, perpMarket) => {
+  const groupConfig = useMangoStore.getState().selectedMangoGroup.config
   let assetGained, assetLost
 
   const assetSymbol =
     activity_type === 'liquidate_perp_market'
-      ? 'USD (PERP)'
+      ? 'USDC'
       : activity_details.asset_symbol
+
+  const assetDecimals = activity_type.includes('perp')
+    ? getMarketByBaseSymbolAndKind(
+        groupConfig,
+        assetSymbol.split('-')[0],
+        'perp'
+      ).baseDecimals
+    : getTokenBySymbol(groupConfig, assetSymbol.split('-')[0]).decimals
 
   const liabSymbol =
     activity_type === 'liquidate_perp_market' ||
     activity_details.liab_type === 'Perp'
       ? activity_details.liab_symbol.includes('USDC')
-        ? 'USD (PERP)'
+        ? 'USDC'
         : `${activity_details.liab_symbol}-PERP`
       : activity_details.liab_symbol
 
+  const liabDecimals = activity_type.includes('perp')
+    ? getMarketByBaseSymbolAndKind(
+        groupConfig,
+        liabSymbol.split('-')[0],
+        'perp'
+      ).baseDecimals
+    : getTokenBySymbol(groupConfig, liabSymbol.split('-')[0]).decimals
+
   const liabAmount =
-    perpMarket && liabSymbol !== 'USD (PERP)'
+    perpMarket && liabSymbol !== 'USDC'
       ? perpMarket.baseLotsToNumber(activity_details.liab_amount)
       : activity_details.liab_amount
 
@@ -133,12 +151,14 @@ const parseActivityDetails = (activity_details, activity_type, perpMarket) => {
 
   const asset_amount = {
     amount: parseFloat(assetAmount),
+    decimals: assetDecimals,
     symbol: assetSymbol,
     price: parseFloat(activity_details.asset_price),
   }
 
   const liab_amount = {
     amount: parseFloat(liabAmount),
+    decimals: liabDecimals,
     symbol: liabSymbol,
     price: parseFloat(activity_details.liab_price),
   }
@@ -336,8 +356,6 @@ const LiquidationHistoryTable = ({ history, view }) => {
                   perpMarket
                 )
 
-                const lostDecimals = assetLost.symbol === 'SOL' ? 9 : 6
-                const gainedDecimals = assetGained.symbol === 'SOL' ? 9 : 6
                 const valueLost = Math.abs(assetLost.amount * assetLost.price)
                 const valueGained = assetGained.amount * assetGained.price
                 const liquidationFee = valueGained - valueLost
@@ -352,7 +370,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
                     <Td>
                       <span>
                         {Math.abs(assetLost.amount).toLocaleString(undefined, {
-                          maximumFractionDigits: lostDecimals,
+                          maximumFractionDigits: assetLost.decimals,
                         })}{' '}
                       </span>
                       {`${assetLost.symbol} at ${formatUsdValue(
@@ -367,7 +385,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
                         {Math.abs(assetGained.amount).toLocaleString(
                           undefined,
                           {
-                            maximumFractionDigits: gainedDecimals,
+                            maximumFractionDigits: assetGained.decimals,
                           }
                         )}{' '}
                       </span>
@@ -429,8 +447,6 @@ const LiquidationHistoryTable = ({ history, view }) => {
                 perpMarket
               )
 
-              const lostDecimals = assetLost.symbol === 'SOL' ? 9 : 6
-              const gainedDecimals = assetGained.symbol === 'SOL' ? 9 : 6
               const valueLost = Math.abs(assetLost.amount * assetLost.price)
               const valueGained = assetGained.amount * assetGained.price
               const liquidationFee = valueGained - valueLost
@@ -467,7 +483,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
                           {Math.abs(assetLost.amount).toLocaleString(
                             undefined,
                             {
-                              maximumFractionDigits: lostDecimals,
+                              maximumFractionDigits: assetLost.decimals,
                             }
                           )}{' '}
                         </span>
@@ -486,7 +502,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
                           {Math.abs(assetGained.amount).toLocaleString(
                             undefined,
                             {
-                              maximumFractionDigits: gainedDecimals,
+                              maximumFractionDigits: assetGained.decimals,
                             }
                           )}{' '}
                         </span>
