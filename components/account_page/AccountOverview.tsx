@@ -9,24 +9,15 @@ import { formatUsdValue } from '../../utils'
 import BalancesTable from '../BalancesTable'
 import Switch from '../Switch'
 import useLocalStorageState from '../../hooks/useLocalStorageState'
-import ButtonGroup from '../ButtonGroup'
 import PerformanceChart from './PerformanceChart'
 import PositionsTable from '../PerpPositionsTable'
 import LongShortChart from './LongShortChart'
 import Tooltip from 'components/Tooltip'
-import { InformationCircleIcon } from '@heroicons/react/outline'
+import { CalendarIcon, InformationCircleIcon } from '@heroicons/react/outline'
 
 dayjs.extend(utc)
 
 const SHOW_ZERO_BALANCE_KEY = 'showZeroAccountBalances-0.2'
-
-const performanceRangePresets = [
-  { label: '24h', value: 1 },
-  { label: '7d', value: 7 },
-  { label: '30d', value: 30 },
-  { label: '3m', value: 90 },
-]
-const performanceRangePresetLabels = performanceRangePresets.map((x) => x.label)
 
 export const fetchHourlyPerformanceStats = async (
   mangoAccountPk: string,
@@ -62,7 +53,6 @@ export default function AccountOverview() {
   )
 
   const [pnl, setPnl] = useState(0)
-  const [performanceRange, setPerformanceRange] = useState('30d')
   const [hourlyPerformanceStats, setHourlyPerformanceStats] = useState([])
 
   useEffect(() => {
@@ -71,10 +61,7 @@ export default function AccountOverview() {
       if (!pubKey) {
         return
       }
-      const stats = await fetchHourlyPerformanceStats(
-        pubKey,
-        performanceRangePresets[performanceRangePresets.length - 1].value
-      )
+      const stats = await fetchHourlyPerformanceStats(pubKey, 30)
 
       setPnl(stats?.length ? stats?.[0]?.['pnl'] : 0)
       setHourlyPerformanceStats(stats)
@@ -104,59 +91,57 @@ export default function AccountOverview() {
 
   return mangoAccount ? (
     <>
-      <div className="flex flex-col pb-8 md:flex-row md:space-x-6 md:pb-12">
-        <div className="w-full pb-8 md:w-1/3 md:pb-0 lg:w-1/4">
-          <h2 className="mb-4">{t('summary')}</h2>
-          <div className="border-y border-th-bkg-4 p-3 sm:p-4">
-            <div className="pb-0.5 text-xs text-th-fgd-3 sm:text-sm">
-              {t('account-value')}
-            </div>
-            <div className="text-xl font-bold text-th-fgd-1 sm:text-2xl">
-              {formatUsdValue(mangoAccountValue)}
+      <div className="grid grid-cols-12 md:gap-6">
+        <div className="col-span-12 border-y border-th-bkg-4 p-3 sm:p-4 md:col-span-3">
+          <div className="pb-0.5 text-xs text-th-fgd-3 sm:text-sm">
+            {t('account-value')}
+          </div>
+          <div className="text-xl font-bold text-th-fgd-1 sm:text-3xl">
+            {formatUsdValue(mangoAccountValue)}
+          </div>
+        </div>
+        <div className="col-span-12 border-b border-th-bkg-4 p-3 sm:p-4 md:col-span-3 md:border-t">
+          <div className="flex items-center justify-between">
+            <div className="flex w-full items-center justify-between pb-0.5 text-xs text-th-fgd-3 sm:text-sm">
+              {t('pnl')}{' '}
+              {hourlyPerformanceStats?.length ? (
+                <div className="flex items-center text-xs text-th-fgd-4">
+                  <CalendarIcon className="mr-1 h-4 w-4" />
+                  {dayjs(hourlyPerformanceStats[0]['time']).format(
+                    'MMM D, h:mma'
+                  )}
+                </div>
+              ) : null}
             </div>
           </div>
-          <div className="border-b border-th-bkg-4 p-3 sm:p-4">
-            <div className="flex items-center justify-between">
-              <div className="pb-0.5 text-xs text-th-fgd-3 sm:text-sm">
-                {t('pnl')}{' '}
-                {hourlyPerformanceStats?.length ? (
-                  <div className="text-xs text-th-fgd-4">
-                    {dayjs(hourlyPerformanceStats[0]['time']).format(
-                      'MMM D YYYY, h:mma'
-                    )}
-                  </div>
-                ) : null}
-              </div>
-            </div>
-            <div className="text-xl font-bold text-th-fgd-1 sm:text-2xl">
-              {formatUsdValue(pnl)}
-            </div>
+          <div className="text-xl font-bold text-th-fgd-1 sm:text-3xl">
+            {formatUsdValue(pnl)}
           </div>
-          <div className="border-b border-th-bkg-4 p-3 sm:p-4">
-            <div className="pb-0.5 text-xs text-th-fgd-3 sm:text-sm">
-              {t('leverage')}
-            </div>
-            {mangoGroup && mangoCache ? (
-              <div className="text-xl font-bold text-th-fgd-1 sm:text-2xl">
-                {mangoAccount.getLeverage(mangoGroup, mangoCache).toFixed(2)}x
-              </div>
-            ) : null}
+        </div>
+        <div className="col-span-12 border-b border-th-bkg-4 p-3 sm:p-4 md:col-span-3 md:border-t">
+          <div className="pb-0.5 text-xs text-th-fgd-3 sm:text-sm">
+            {t('leverage')}
           </div>
-          <div className="p-3 sm:p-4">
-            <div className="pb-0.5 text-xs text-th-fgd-3 sm:text-sm">
-              {t('health-ratio')}
+          {mangoGroup && mangoCache ? (
+            <div className="text-xl font-bold text-th-fgd-1 sm:text-3xl">
+              {mangoAccount.getLeverage(mangoGroup, mangoCache).toFixed(2)}x
             </div>
-            <div className={`text-xl font-bold text-th-fgd-1 sm:text-2xl`}>
-              {maintHealthRatio < 1000 ? maintHealthRatio.toFixed(2) : '>100'}%
-            </div>
-            {mangoAccount.beingLiquidated ? (
-              <div className="flex items-center pt-0.5 text-xs sm:pt-2 sm:text-sm">
-                <ExclamationIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-th-red sm:h-7 sm:w-7" />
-                <span className="text-th-red">{t('being-liquidated')}</span>
-              </div>
-            ) : null}
+          ) : null}
+        </div>
+        <div className="col-span-12 mb-8 border-th-bkg-4 pt-3 sm:pt-4 md:col-span-3 md:mb-0 md:border-t">
+          <div className="pb-0.5 text-xs text-th-fgd-3 sm:text-sm">
+            {t('health-ratio')}
           </div>
-          <div className="flex h-1 rounded bg-th-bkg-3">
+          <div className={`text-xl font-bold text-th-fgd-1 sm:text-3xl`}>
+            {maintHealthRatio < 100 ? maintHealthRatio.toFixed(2) : '>100'}%
+          </div>
+          {mangoAccount.beingLiquidated ? (
+            <div className="flex items-center pt-0.5 text-xs sm:pt-2 sm:text-sm">
+              <ExclamationIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-th-red sm:h-7 sm:w-7" />
+              <span className="text-th-red">{t('being-liquidated')}</span>
+            </div>
+          ) : null}
+          <div className="mt-3 flex h-1 rounded bg-th-bkg-3 sm:mt-4">
             <div
               style={{
                 width: `${maintHealthRatio}%`,
@@ -171,25 +156,22 @@ export default function AccountOverview() {
             ></div>
           </div>
         </div>
-        <div className="h-80 w-full md:h-auto md:w-2/3 lg:w-3/4">
-          <div className="mb-3 ml-auto md:w-56">
-            <ButtonGroup
-              activeValue={performanceRange}
-              className="h-8"
-              onChange={(p) => setPerformanceRange(p)}
-              values={performanceRangePresetLabels}
-            />
-          </div>
-          <div className="md:border-t md:border-th-bkg-4">
-            <PerformanceChart
-              hourlyPerformanceStats={hourlyPerformanceStats}
-              performanceRange={performanceRange}
-              accountValue={mangoAccountValue}
-            />
-          </div>
+        <div className="col-span-12 mb-4 h-[400px] rounded-md border border-th-bkg-4 p-4 md:col-span-6 md:mb-0 md:p-6">
+          <PerformanceChart
+            hourlyPerformanceStats={hourlyPerformanceStats}
+            accountValue={mangoAccountValue}
+            chartToShow="Value"
+          />
+        </div>
+        <div className="col-span-12 h-[400px] rounded-md border border-th-bkg-4 p-4 md:col-span-6 md:p-6">
+          <PerformanceChart
+            hourlyPerformanceStats={hourlyPerformanceStats}
+            accountValue={mangoAccountValue}
+            chartToShow="PnL"
+          />
         </div>
       </div>
-      <div className="pt-24 pb-8 sm:pt-20 md:pt-0 md:pb-12">
+      <div className="my-8">
         <h2 className="mb-4">{t('portfolio-balance')}</h2>
         <div className="grid grid-flow-col grid-cols-1 grid-rows-2 md:grid-cols-2 md:grid-rows-1 md:gap-4">
           <div className="border-t border-th-bkg-4 p-3 sm:p-4 md:border-b">
