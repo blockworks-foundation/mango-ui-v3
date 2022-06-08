@@ -30,20 +30,21 @@ export const CHART_COLORS = {
   USDT: '#50AF95',
 }
 
+const DUST_THRESHOLD = 0.05
+
 const LongShortChart = ({ type }: { type: string }) => {
   const { t } = useTranslation('common')
   const [chartData, setChartData] = useState<any>([])
   const { mangoAccount } = useMangoAccount()
-  const openPositions = useMangoStore(
-    (s) => s.selectedMangoAccount.openPerpPositions
-  )
-  const unsettledPositions =
-    useMangoStore.getState().selectedMangoAccount.unsettledPerpPositions
+
   const balances = useBalances()
+  const perpPositions = useMangoStore(
+    (s) => s.selectedMangoAccount.perpAccounts
+  )
 
   const netUnsettledPositionsValue = useMemo(() => {
-    return unsettledPositions.reduce((a, c) => a + c.unsettledPnl, 0)
-  }, [unsettledPositions])
+    return perpPositions.reduce((a, c) => a + c.unsettledPnl, 0)
+  }, [perpPositions])
 
   const getChartData = (type) => {
     const longData: any = []
@@ -58,7 +59,7 @@ const LongShortChart = ({ type }: { type: string }) => {
         amount += netUnsettledPositionsValue
         totValue += netUnsettledPositionsValue
       }
-      if (totValue > 0) {
+      if (totValue > DUST_THRESHOLD) {
         longData.push({
           asset: symbol,
           amount: amount,
@@ -66,7 +67,7 @@ const LongShortChart = ({ type }: { type: string }) => {
           value: totValue,
         })
       }
-      if (totValue < 0) {
+      if (-totValue > DUST_THRESHOLD) {
         shortData.push({
           asset: symbol,
           amount: Math.abs(amount),
@@ -80,7 +81,9 @@ const LongShortChart = ({ type }: { type: string }) => {
       basePosition,
       notionalSize,
       perpAccount,
-    } of openPositions) {
+    } of perpPositions) {
+      if (notionalSize < DUST_THRESHOLD) continue
+
       if (perpAccount.basePosition.gt(ZERO_BN)) {
         longData.push({
           asset: marketConfig.name,
@@ -162,10 +165,10 @@ const LongShortChart = ({ type }: { type: string }) => {
   }
 
   useEffect(() => {
-    if (mangoAccount && openPositions) {
+    if (mangoAccount && perpPositions) {
       type === 'long' ? getChartData('long') : getChartData('short')
     }
-  }, [mangoAccount, openPositions])
+  }, [mangoAccount, perpPositions])
 
   return chartData.length ? (
     <div className="relative h-20 w-20">
