@@ -1,12 +1,8 @@
 import { PieChart, Pie, Cell, Tooltip } from 'recharts'
-import useMangoStore, { PerpPosition } from 'stores/useMangoStore'
-import { ZERO_BN } from '@blockworks-foundation/mango-client'
 import { formatUsdValue, tokenPrecision } from 'utils'
 import * as MonoIcons from '../icons'
 import { QuestionMarkCircleIcon } from '@heroicons/react/outline'
 import { useTranslation } from 'next-i18next'
-import { useEffect, useMemo, useState } from 'react'
-import useMangoAccount from 'hooks/useMangoAccount'
 
 export const CHART_COLORS = {
   All: '#ff7c43',
@@ -29,84 +25,14 @@ export const CHART_COLORS = {
   USDT: '#50AF95',
 }
 
-const DUST_THRESHOLD = 0.05
-
-const LongShortChart = ({ type }: { type: string }) => {
+const LongShortChart = ({
+  type,
+  chartData,
+}: {
+  type: string
+  chartData: any[]
+}) => {
   const { t } = useTranslation('common')
-  const [chartData, setChartData] = useState<any>([])
-  const { mangoAccount } = useMangoAccount()
-
-  const { spotBalances, perpPositions } = useMangoStore(
-    (s) => s.selectedMangoAccount
-  )
-
-  const netUnsettledPositionsValue = useMemo(() => {
-    return perpPositions.reduce((a, c) => a + (c?.unsettledPnl ?? 0), 0)
-  }, [perpPositions])
-
-  const getChartData = (type) => {
-    const longData: any = []
-    const shortData: any = []
-    if (!spotBalances.length) {
-      return []
-    }
-    for (const { net, symbol, value } of spotBalances) {
-      let amount = Number(net)
-      let totValue = Number(value)
-      if (symbol === 'USDC') {
-        amount += netUnsettledPositionsValue
-        totValue += netUnsettledPositionsValue
-      }
-      if (totValue > DUST_THRESHOLD) {
-        longData.push({
-          asset: symbol,
-          amount: amount,
-          symbol: symbol,
-          value: totValue,
-        })
-      }
-      if (-totValue > DUST_THRESHOLD) {
-        shortData.push({
-          asset: symbol,
-          amount: Math.abs(amount),
-          symbol: symbol,
-          value: Math.abs(totValue),
-        })
-      }
-    }
-    for (const {
-      marketConfig,
-      basePosition,
-      notionalSize,
-      perpAccount,
-    } of perpPositions.filter((p) => p) as PerpPosition[]) {
-      if (notionalSize < DUST_THRESHOLD) continue
-
-      if (perpAccount.basePosition.gt(ZERO_BN)) {
-        longData.push({
-          asset: marketConfig.name,
-          amount: basePosition,
-          symbol: marketConfig.baseSymbol,
-          value: notionalSize,
-        })
-      } else {
-        shortData.push({
-          asset: marketConfig.name,
-          amount: Math.abs(basePosition),
-          symbol: marketConfig.baseSymbol,
-          value: notionalSize,
-        })
-      }
-    }
-    const totalLongValue = longData.reduce((a, c) => a + c.value, 0)
-    const totalShortValue = shortData.reduce((a, c) => a + c.value, 0)
-    const dif = totalLongValue - totalShortValue
-    if (dif > 0) {
-      shortData.push({ symbol: 'spacer', value: dif })
-    }
-
-    type === 'long' ? setChartData(longData) : setChartData(shortData)
-  }
 
   const CustomToolTip = () => {
     const renderIcon = (symbol) => {
@@ -161,12 +87,6 @@ const LongShortChart = ({ type }: { type: string }) => {
       </div>
     ) : null
   }
-
-  useEffect(() => {
-    if (mangoAccount && perpPositions) {
-      type === 'long' ? getChartData('long') : getChartData('short')
-    }
-  }, [mangoAccount, perpPositions])
 
   return chartData.length ? (
     <div className="relative h-20 w-20">

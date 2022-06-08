@@ -4,7 +4,7 @@ import utc from 'dayjs/plugin/utc'
 import { ExclamationIcon } from '@heroicons/react/solid'
 import { useTranslation } from 'next-i18next'
 
-import useMangoStore from '../../stores/useMangoStore'
+import useMangoStore, { PerpPosition } from '../../stores/useMangoStore'
 import { formatUsdValue } from '../../utils'
 import BalancesTable from '../BalancesTable'
 import Switch from '../Switch'
@@ -14,6 +14,7 @@ import PositionsTable from '../PerpPositionsTable'
 import LongShortChart from './LongShortChart'
 import Tooltip from 'components/Tooltip'
 import { CalendarIcon, InformationCircleIcon } from '@heroicons/react/outline'
+import { ZERO_BN } from '@blockworks-foundation/mango-client'
 
 dayjs.extend(utc)
 
@@ -45,6 +46,10 @@ export const fetchHourlyPerformanceStats = async (
 export default function AccountOverview() {
   const { t } = useTranslation('common')
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
+  const spotBalances = useMangoStore((s) => s.selectedMangoAccount.spotBalances)
+  const perpPositions = useMangoStore(
+    (s) => s.selectedMangoAccount.perpPositions
+  )
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const [showZeroBalances, setShowZeroBalances] = useLocalStorageState(
@@ -87,7 +92,79 @@ export default function AccountOverview() {
     return mangoAccount && mangoGroup && mangoCache
       ? +mangoAccount.computeValue(mangoGroup, mangoCache)
       : 0
-  }, [mangoAccount])
+  }, [mangoAccount, mangoGroup, mangoCache])
+
+  const { longData, shortData, longExposure, shortExposure } = useMemo(() => {
+    if (!spotBalances || !perpPositions) {
+      return {}
+    }
+
+    const DUST_THRESHOLD = 0.05
+    const netUnsettledPositionsValue = perpPositions.reduce(
+      (a, c) => a + (c?.unsettledPnl ?? 0),
+      0
+    )
+
+    const longData: any = []
+    const shortData: any = []
+
+    for (const { net, symbol, value } of spotBalances) {
+      let amount = Number(net)
+      let totValue = Number(value)
+      if (symbol === 'USDC') {
+        amount += netUnsettledPositionsValue
+        totValue += netUnsettledPositionsValue
+      }
+      if (totValue > DUST_THRESHOLD) {
+        longData.push({
+          asset: symbol,
+          amount: amount,
+          symbol: symbol,
+          value: totValue,
+        })
+      }
+      if (-totValue > DUST_THRESHOLD) {
+        shortData.push({
+          asset: symbol,
+          amount: Math.abs(amount),
+          symbol: symbol,
+          value: Math.abs(totValue),
+        })
+      }
+    }
+    for (const {
+      marketConfig,
+      basePosition,
+      notionalSize,
+      perpAccount,
+    } of perpPositions.filter((p) => !!p) as PerpPosition[]) {
+      if (notionalSize < DUST_THRESHOLD) continue
+
+      if (perpAccount.basePosition.gt(ZERO_BN)) {
+        longData.push({
+          asset: marketConfig.name,
+          amount: basePosition,
+          symbol: marketConfig.baseSymbol,
+          value: notionalSize,
+        })
+      } else {
+        shortData.push({
+          asset: marketConfig.name,
+          amount: Math.abs(basePosition),
+          symbol: marketConfig.baseSymbol,
+          value: notionalSize,
+        })
+      }
+    }
+    const longExposure = longData.reduce((a, c) => a + c.value, 0)
+    const shortExposure = shortData.reduce((a, c) => a + c.value, 0)
+    const dif = longExposure - shortExposure
+    if (dif > 0) {
+      shortData.push({ symbol: 'spacer', value: dif })
+    }
+
+    return { longData, shortData, longExposure, shortExposure }
+  }, [spotBalances, perpPositions])
 
   return mangoAccount ? (
     <>
@@ -185,13 +262,11 @@ export default function AccountOverview() {
                 </Tooltip>
                 {mangoGroup && mangoCache ? (
                   <div className="text-xl font-bold text-th-fgd-1 md:text-3xl">
-                    {formatUsdValue(
-                      +mangoAccount.getAssetsVal(mangoGroup, mangoCache)
-                    )}
+                    {formatUsdValue(+longExposure)}
                   </div>
                 ) : null}
               </div>
-              <LongShortChart type="long" />
+              <LongShortChart type="long" chartData={longData} />
             </div>
           </div>
           <div className="border-b border-t border-th-bkg-4 p-3 sm:p-4">
@@ -205,13 +280,11 @@ export default function AccountOverview() {
                 </Tooltip>
                 {mangoGroup && mangoCache ? (
                   <div className="text-xl font-bold text-th-fgd-1 md:text-3xl">
-                    {formatUsdValue(
-                      +mangoAccount.getLiabsVal(mangoGroup, mangoCache)
-                    )}
+                    {formatUsdValue(+shortExposure)}
                   </div>
                 ) : null}
               </div>
-              <LongShortChart type="short" />
+              <LongShortChart type="short" chartData={shortData} />
             </div>
           </div>
         </div>
