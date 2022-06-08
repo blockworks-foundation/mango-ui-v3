@@ -392,7 +392,7 @@ export default function Account() {
                           <Menu.Items className="absolute right-0 z-20 mt-1 w-full space-y-1.5 rounded-md bg-th-bkg-3 px-4 py-2.5 sm:w-48">
                             <Menu.Item>
                               <button
-                                className="flex w-full flex-row items-center rounded-none py-0.5 font-normal focus:outline-none hover:md:cursor-pointer hover:md:text-th-primary"
+                                className="flex w-full flex-row items-center rounded-none py-0.5 font-normal focus:outline-none md:hover:cursor-pointer md:hover:text-th-primary"
                                 onClick={() => setShowAlertsModal(true)}
                               >
                                 <div className="flex items-center">
@@ -404,7 +404,7 @@ export default function Account() {
                             {!isDelegatedAccount ? (
                               <Menu.Item>
                                 <button
-                                  className="flex w-full flex-row items-center rounded-none py-0.5 font-normal focus:outline-none hover:md:cursor-pointer hover:md:text-th-primary"
+                                  className="flex w-full flex-row items-center rounded-none py-0.5 font-normal focus:outline-none md:hover:cursor-pointer md:hover:text-th-primary"
                                   onClick={() => setShowDelegateModal(true)}
                                 >
                                   <div className="flex items-center">
@@ -416,7 +416,7 @@ export default function Account() {
                             ) : null}
                             <Menu.Item>
                               <button
-                                className="flex w-full flex-row items-center rounded-none py-0.5 font-normal focus:outline-none hover:md:cursor-pointer hover:md:text-th-primary"
+                                className="flex w-full flex-row items-center rounded-none py-0.5 font-normal focus:outline-none md:hover:cursor-pointer md:hover:text-th-primary"
                                 onClick={() => setShowAccountsModal(true)}
                               >
                                 <div className="flex items-center">
@@ -428,7 +428,7 @@ export default function Account() {
                             {!isDelegatedAccount ? (
                               <Menu.Item>
                                 <button
-                                  className="flex w-full flex-row items-center rounded-none py-0.5 font-normal focus:outline-none hover:md:cursor-pointer hover:md:text-th-primary"
+                                  className="flex w-full flex-row items-center rounded-none py-0.5 font-normal focus:outline-none md:hover:cursor-pointer md:hover:text-th-primary"
                                   onClick={() => setShowCloseAccountModal(true)}
                                 >
                                   <div className="flex items-center whitespace-nowrap">

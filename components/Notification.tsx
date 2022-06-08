@@ -183,7 +183,7 @@ const Notification = ({ notification }: { notification: Notification }) => {
           <div className={`absolute right-2 top-2 flex-shrink-0`}>
             <button
               onClick={hideNotification}
-              className={`text-th-fgd-4 focus:outline-none hover:md:text-th-primary`}
+              className={`text-th-fgd-4 focus:outline-none md:hover:text-th-primary`}
             >
               <span className={`sr-only`}>{t('close')}</span>
               <svg

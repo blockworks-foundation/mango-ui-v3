@@ -94,7 +94,7 @@ p {
 }
 
 a {
-  @apply text-th-primary hover:md:text-th-primary-dark;
+  @apply text-th-primary md:hover:text-th-primary-dark;
 }
 
 li {
@@ -107,7 +107,7 @@ tbody {
 
 button {
   transition: all 0.3s ease;
-  @apply rounded-md tracking-wider hover:md:brightness-[1.1] disabled:hover:md:brightness-100;
+  @apply rounded-md tracking-wider md:hover:brightness-[1.1] md:disabled:hover:brightness-100;
 }
 
 .transition-none {

@@ -106,7 +106,7 @@ const SettingsModal = ({ isOpen, onClose }) => {
       {!settingsView ? (
         <div className="border-b border-th-bkg-4">
           <button
-            className="default-transition flex w-full items-center justify-between rounded-none border-t border-th-bkg-4 py-3 font-normal text-th-fgd-1 focus:outline-none hover:md:text-th-primary"
+            className="default-transition flex w-full items-center justify-between rounded-none border-t border-th-bkg-4 py-3 font-normal text-th-fgd-1 focus:outline-none md:hover:text-th-primary"
             onClick={() => setSettingsView('Default Market')}
           >
             <span>{t('default-market')}</span>
@@ -116,7 +116,7 @@ const SettingsModal = ({ isOpen, onClose }) => {
             </div>
           </button>
           <button
-            className="default-transition flex w-full items-center justify-between rounded-none border-t border-th-bkg-4 py-3 font-normal text-th-fgd-1 focus:outline-none hover:md:text-th-primary"
+            className="default-transition flex w-full items-center justify-between rounded-none border-t border-th-bkg-4 py-3 font-normal text-th-fgd-1 focus:outline-none md:hover:text-th-primary"
             onClick={() => setSettingsView('Theme')}
           >
             <span>{t('theme')}</span>
@@ -126,7 +126,7 @@ const SettingsModal = ({ isOpen, onClose }) => {
             </div>
           </button>
           <button
-            className="default-transition flex w-full items-center justify-between rounded-none border-t border-th-bkg-4 py-3 font-normal text-th-fgd-1 focus:outline-none hover:md:text-th-primary"
+            className="default-transition flex w-full items-center justify-between rounded-none border-t border-th-bkg-4 py-3 font-normal text-th-fgd-1 focus:outline-none md:hover:text-th-primary"
             onClick={() => setSettingsView('Language')}
           >
             <span>{t('language')}</span>
@@ -138,7 +138,7 @@ const SettingsModal = ({ isOpen, onClose }) => {
             ) : null}
           </button>
           <button
-            className="default-transition flex w-full items-center justify-between rounded-none border-t border-th-bkg-4 py-3 font-normal text-th-fgd-1 focus:outline-none hover:md:text-th-primary"
+            className="default-transition flex w-full items-center justify-between rounded-none border-t border-th-bkg-4 py-3 font-normal text-th-fgd-1 focus:outline-none md:hover:text-th-primary"
             onClick={() => setSettingsView('RPC Endpoint')}
           >
             <span>{t('rpc-endpoint')}</span>

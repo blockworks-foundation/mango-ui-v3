@@ -55,7 +55,7 @@ const MarketNavItem: FunctionComponent<MarketNavItemProps> = ({
     <div className="text-th-fgd-3">
       <div className="flex items-center">
         <button
-          className={`flex w-full items-center justify-between px-2 py-2 font-normal hover:md:bg-th-bkg-4 hover:md:text-th-primary  ${
+          className={`flex w-full items-center justify-between px-2 py-2 font-normal md:hover:bg-th-bkg-4 md:hover:text-th-primary  ${
             asPath.includes(market.name) ||
             (asPath === '/' && initialMarket.name === market.name)
               ? 'text-th-primary'

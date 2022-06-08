@@ -45,7 +45,7 @@ class ItemRenderer extends PureComponent<ItemRendererProps> {
       <div style={this.props.style}>
         <button
           key={tokenInfo?.address}
-          className="flex w-full cursor-pointer items-center justify-between rounded-none py-4 px-6 font-normal focus:bg-th-bkg-3 focus:outline-none hover:md:bg-th-bkg-4"
+          className="flex w-full cursor-pointer items-center justify-between rounded-none py-4 px-6 font-normal focus:bg-th-bkg-3 focus:outline-none md:hover:bg-th-bkg-4"
           onClick={() => this.props.data.onSubmit(tokenInfo)}
         >
           <div className="flex items-center">

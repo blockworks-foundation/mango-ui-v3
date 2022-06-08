@@ -38,7 +38,7 @@ export const WalletSelect: React.FC<{ wallets: Wallet[] }> = ({ wallets }) => {
               {wallets?.map((wallet, index) => (
                 <Menu.Item key={index}>
                   <button
-                    className="flex w-full flex-row items-center justify-between rounded-none py-1.5 font-normal focus:outline-none hover:md:cursor-pointer hover:md:text-th-primary"
+                    className="flex w-full flex-row items-center justify-between rounded-none py-1.5 font-normal focus:outline-none md:hover:cursor-pointer md:hover:text-th-primary"
                     onClick={() => {
                       select(wallet.adapter.name)
                     }}

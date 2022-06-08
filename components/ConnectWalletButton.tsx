@@ -140,7 +140,7 @@ export const ConnectWalletButton: React.FC = () => {
                 <Menu.Items className="absolute right-0 z-20 mt-1 w-48 space-y-1.5 rounded-md bg-th-bkg-3 px-4 py-2.5">
                   <Menu.Item>
                     <button
-                      className="flex w-full flex-row items-center rounded-none py-0.5 font-normal hover:cursor-pointer focus:outline-none hover:md:text-th-primary"
+                      className="flex w-full flex-row items-center rounded-none py-0.5 font-normal hover:cursor-pointer focus:outline-none md:hover:text-th-primary"
                       onClick={() => setShowAccountsModal(true)}
                     >
                       <CurrencyDollarIcon className="h-4 w-4" />
@@ -149,7 +149,7 @@ export const ConnectWalletButton: React.FC = () => {
                   </Menu.Item>
                   <Menu.Item>
                     <button
-                      className="flex w-full flex-row items-center rounded-none py-0.5 font-normal hover:cursor-pointer focus:outline-none hover:md:text-th-primary"
+                      className="flex w-full flex-row items-center rounded-none py-0.5 font-normal hover:cursor-pointer focus:outline-none md:hover:text-th-primary"
                       onClick={() => setShowProfilePicModal(true)}
                     >
                       <UserCircleIcon className="h-4 w-4" />
@@ -162,7 +162,7 @@ export const ConnectWalletButton: React.FC = () => {
                   </Menu.Item>
                   <Menu.Item>
                     <button
-                      className="flex w-full flex-row items-center rounded-none py-0.5 font-normal hover:cursor-pointer focus:outline-none hover:md:text-th-primary"
+                      className="flex w-full flex-row items-center rounded-none py-0.5 font-normal hover:cursor-pointer focus:outline-none md:hover:text-th-primary"
                       onClick={handleDisconnect}
                     >
                       <LogoutIcon className="h-4 w-4" />

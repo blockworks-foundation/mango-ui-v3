@@ -450,7 +450,7 @@ const AccountPerformance = () => {
                   className={`default-transition m-1 flex items-center rounded-full border py-1 px-2 text-xs font-bold ${
                     selectedSymbols.includes(s)
                       ? ''
-                      : 'border-th-fgd-4 text-th-fgd-4 focus:border-th-fgd-3 focus:text-th-fgd-3 focus:outline-none hover:md:border-th-fgd-3 hover:md:text-th-fgd-3'
+                      : 'border-th-fgd-4 text-th-fgd-4 focus:border-th-fgd-3 focus:text-th-fgd-3 focus:outline-none md:hover:border-th-fgd-3 md:hover:text-th-fgd-3'
                   }`}
                   onClick={() => toggleOption(s)}
                   style={
