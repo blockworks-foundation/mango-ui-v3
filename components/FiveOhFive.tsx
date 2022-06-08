@@ -85,7 +85,7 @@ export const FiveOhFive = ({ error }) => {
             <div className="flex flex-col items-center">
               <div className="mt-10 flex flex-row">
                 <button
-                  className="mx-2 whitespace-nowrap rounded-full bg-th-bkg-button px-6 py-2 font-bold text-th-fgd-1 hover:brightness-[1.1] focus:outline-none disabled:cursor-not-allowed disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:hover:brightness-100"
+                  className="mx-2 whitespace-nowrap rounded-full bg-th-bkg-button px-6 py-2 font-bold text-th-fgd-1 focus:outline-none disabled:cursor-not-allowed disabled:bg-th-bkg-4 disabled:text-th-fgd-4"
                   onClick={() => location.reload()}
                 >
                   Refresh and try again

@@ -205,10 +205,10 @@ const MenuCategories: FunctionComponent<MenuCategoriesProps> = ({
             key={cat.name}
             onClick={() => onChange(cat.name)}
             onMouseEnter={() => onChange(cat.name)}
-            className={`default-transition relative flex h-14 w-full cursor-pointer flex-col justify-center whitespace-nowrap rounded-none px-4 font-bold hover:bg-th-bkg-3 ${
+            className={`default-transition relative flex h-14 w-full cursor-pointer flex-col justify-center whitespace-nowrap rounded-none px-4 font-bold md:hover:bg-th-bkg-3 ${
               activeCategory === cat.name
                 ? `bg-th-bkg-3 text-th-primary`
-                : `text-th-fgd-2 hover:text-th-primary`
+                : `text-th-fgd-2 md:hover:text-th-primary`
             }
           `}
           >
@@ -240,14 +240,14 @@ export const FavoriteMarketButton = ({ market }) => {
 
   return favoriteMarkets.find((mkt) => mkt === market.name) ? (
     <button
-      className="default-transition flex items-center justify-center text-th-primary hover:text-th-fgd-3"
+      className="default-transition flex items-center justify-center text-th-primary md:hover:text-th-fgd-3"
       onClick={() => removeFromFavorites(market.name)}
     >
       <FilledStarIcon className="h-5 w-5" />
     </button>
   ) : (
     <button
-      className="default-transition flex items-center justify-center text-th-fgd-4 hover:text-th-primary"
+      className="default-transition flex items-center justify-center text-th-fgd-4 md:hover:text-th-primary"
       onClick={() => addToFavorites(market.name)}
     >
       <StarIcon className="h-5 w-5" />

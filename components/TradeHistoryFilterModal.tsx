@@ -301,8 +301,8 @@ const FilterButton = ({ filters, filterKey, value, onClick }) => {
     <button
       className={`default-transitions rounded-full border border-th-fgd-3 px-3 py-1 text-xs text-th-fgd-1 ${
         filters[filterKey]?.includes(value) &&
-        'border-th-primary bg-th-primary text-th-bkg-1 hover:text-th-bkg-1'
-      } hover:border-th-primary hover:text-th-primary`}
+        'border-th-primary bg-th-primary text-th-bkg-1 md:hover:text-th-bkg-1'
+      } md:hover:border-th-primary md:hover:text-th-primary`}
       onClick={onClick}
     >
       {t(value.toLowerCase())}
