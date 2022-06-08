@@ -24,6 +24,9 @@ import {
   msrmMints,
   MangoAccountLayout,
   BlockhashTimes,
+  I80F48,
+  PerpAccount,
+  PerpMarketConfig,
 } from '@blockworks-foundation/mango-client'
 import { AccountInfo, Commitment, Connection, PublicKey } from '@solana/web3.js'
 import { EndpointInfo } from '../@types/types'
@@ -43,6 +46,7 @@ import { Wallet } from '@solana/wallet-adapter-react'
 import { coingeckoIds } from 'utils/tokens'
 import { getTokenAccountsByMint } from 'utils/tokens'
 import { getParsedNftAccountsByOwner } from 'utils/getParsedNftAccountsByOwner'
+import { PerpMarketInfo } from '@blockworks-foundation/mango-client'
 
 export const ENDPOINTS: EndpointInfo[] = [
   {
@@ -157,6 +161,35 @@ interface NFTWithMint {
   tokenAddress: string
 }
 
+export interface SpotBalance {
+  market: null
+  key: string
+  symbol: string
+  deposits: I80F48
+  borrows: I80F48
+  orders: number
+  unsettled: number
+  net: I80F48
+  value: I80F48
+  depositRate: I80F48
+  borrowRate: I80F48
+  decimals: number
+}
+
+export interface PerpPosition {
+  perpMarketInfo: PerpMarketInfo
+  marketConfig: PerpMarketConfig
+  perpMarket: PerpMarket
+  perpAccount: PerpAccount
+  basePosition: number
+  indexPrice: number
+  avgEntryPrice: number
+  breakEvenPrice: number
+  notionalSize: number
+  unrealizedPnl: number
+  unsettledPnl: number
+}
+
 export type MangoStore = {
   notificationIdCounter: number
   notifications: Array<Notification>
@@ -201,10 +234,11 @@ export type MangoStore = {
     lastSlot: number
     openOrders: any[]
     totalOpenOrders: number
-    perpAccounts: any[]
-    openPerpPositions: any[]
+    spotBalances: SpotBalance[]
+    perpPositions: (PerpPosition | undefined)[]
+    openPerpPositions: PerpPosition[]
+    unsettledPerpPositions: PerpPosition[]
     totalOpenPerpPositions: number
-    unsettledPerpPositions: any[]
   }
   tradeForm: {
     side: 'buy' | 'sell'
@@ -366,7 +400,8 @@ const useMangoStore = create<
         lastSlot: 0,
         openOrders: [],
         totalOpenOrders: 0,
-        perpAccounts: [],
+        spotBalances: [],
+        perpPositions: [],
         openPerpPositions: [],
         totalOpenPerpPositions: 0,
         unsettledPerpPositions: [],

@@ -41,6 +41,7 @@ import {
   GlowWalletAdapter,
 } from '@solana/wallet-adapter-wallets'
 import { HuobiWalletAdapter } from '@solana/wallet-adapter-huobi'
+import useSpotBalances from 'hooks/useSpotBalances'
 
 const SENTRY_URL = process.env.NEXT_PUBLIC_SENTRY_URL
 if (SENTRY_URL) {
@@ -57,6 +58,11 @@ const MangoStoreUpdater = () => {
 
 const OpenOrdersStoreUpdater = () => {
   useOpenOrders()
+  return null
+}
+
+const SpotBalancesStoreUpdater = () => {
+  useSpotBalances()
   return null
 }
 
@@ -193,6 +199,7 @@ function App({ Component, pageProps }) {
           <PageTitle />
           <MangoStoreUpdater />
           <OpenOrdersStoreUpdater />
+          <SpotBalancesStoreUpdater />
           <PerpPositionsStoreUpdater />
           <TradeHistoryStoreUpdater />
           <FetchReferrer />

@@ -1,10 +1,9 @@
 import { PieChart, Pie, Cell, Tooltip } from 'recharts'
-import useMangoStore from 'stores/useMangoStore'
+import useMangoStore, { PerpPosition } from 'stores/useMangoStore'
 import { ZERO_BN } from '@blockworks-foundation/mango-client'
 import { formatUsdValue, tokenPrecision } from 'utils'
 import * as MonoIcons from '../icons'
 import { QuestionMarkCircleIcon } from '@heroicons/react/outline'
-import { useBalances } from 'hooks/useBalances'
 import { useTranslation } from 'next-i18next'
 import { useEffect, useMemo, useState } from 'react'
 import useMangoAccount from 'hooks/useMangoAccount'
@@ -37,22 +36,21 @@ const LongShortChart = ({ type }: { type: string }) => {
   const [chartData, setChartData] = useState<any>([])
   const { mangoAccount } = useMangoAccount()
 
-  const balances = useBalances()
-  const perpPositions = useMangoStore(
-    (s) => s.selectedMangoAccount.perpAccounts
+  const { spotBalances, perpPositions } = useMangoStore(
+    (s) => s.selectedMangoAccount
   )
 
   const netUnsettledPositionsValue = useMemo(() => {
-    return perpPositions.reduce((a, c) => a + c.unsettledPnl, 0)
+    return perpPositions.reduce((a, c) => a + (c?.unsettledPnl ?? 0), 0)
   }, [perpPositions])
 
   const getChartData = (type) => {
     const longData: any = []
     const shortData: any = []
-    if (!balances.length) {
+    if (!spotBalances.length) {
       return []
     }
-    for (const { net, symbol, value } of balances) {
+    for (const { net, symbol, value } of spotBalances) {
       let amount = Number(net)
       let totValue = Number(value)
       if (symbol === 'USDC') {
@@ -81,7 +79,7 @@ const LongShortChart = ({ type }: { type: string }) => {
       basePosition,
       notionalSize,
       perpAccount,
-    } of perpPositions) {
+    } of perpPositions.filter((p) => p) as PerpPosition[]) {
       if (notionalSize < DUST_THRESHOLD) continue
 
       if (perpAccount.basePosition.gt(ZERO_BN)) {
