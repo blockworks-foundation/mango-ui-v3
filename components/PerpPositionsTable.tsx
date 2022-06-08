@@ -93,7 +93,7 @@ const PositionsTable: React.FC = () => {
   }, [unsettledPositions])
 
   return (
-    <div className="flex flex-col md:pb-2">
+    <div className="flex flex-col">
       {unsettledPositions.length > 0 ? (
         <div className="mb-6 rounded-lg border border-th-bkg-4 p-4 sm:p-6">
           <div className="flex items-start justify-between pb-4">
