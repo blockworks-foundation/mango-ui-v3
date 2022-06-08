@@ -29,10 +29,18 @@ const defaultData = [
   { account_equity: 0, pnl: 0, time: '2023-01-01T00:00:00.000Z' },
 ]
 
+const performanceRangePresets = [
+  { label: '24h', value: 1 },
+  { label: '7d', value: 7 },
+  { label: '30d', value: 30 },
+  { label: '3m', value: 90 },
+]
+const performanceRangePresetLabels = performanceRangePresets.map((x) => x.label)
+
 const PerformanceChart = ({
   hourlyPerformanceStats,
-  performanceRange,
   accountValue,
+  chartToShow,
 }) => {
   const { theme } = useTheme()
   const { t } = useTranslation('common')
@@ -40,7 +48,7 @@ const PerformanceChart = ({
 
   const [chartData, setChartData] = useState<any[]>([])
   const [mouseData, setMouseData] = useState<string | null>(null)
-  const [chartToShow, setChartToShow] = useState('Value')
+  const [performanceRange, setPerformanceRange] = useState('30d')
   const [showSpotPnl, setShowSpotPnl] = useState(true)
   const [showPerpPnl, setShowPerpPnl] = useState(true)
 
@@ -179,8 +187,8 @@ const PerformanceChart = ({
       : '#CC2929'
 
   return (
-    <div className="mt-4 h-64 w-full" ref={observe}>
-      <div className="flex justify-between pb-9">
+    <div className="h-64" ref={observe}>
+      <div className="flex flex-col pb-4 sm:flex-row sm:justify-between sm:pb-9">
         <div>
           <div className="flex items-center pb-0.5">
             <div className="text-sm text-th-fgd-3">
@@ -241,14 +249,13 @@ const PerformanceChart = ({
             </>
           )}
         </div>
-        <div className="flex flex-col items-end">
-          <div className="w-36">
+        <div className="flex flex-col sm:items-end">
+          <div className="mt-4 w-full sm:mt-0 sm:w-40">
             <ButtonGroup
-              activeValue={chartToShow}
-              className="pb-2 pt-2 text-sm"
-              onChange={(v) => setChartToShow(v)}
-              values={['Value', 'PnL']}
-              names={[t('value'), t('pnl')]}
+              activeValue={performanceRange}
+              className="h-8 font-bold"
+              onChange={(p) => setPerformanceRange(p)}
+              values={performanceRangePresetLabels}
             />
           </div>
 

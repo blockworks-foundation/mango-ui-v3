@@ -44,7 +44,7 @@ function SwipeableTabs({
     }
 
   return (
-    <div onMouseLeave={dragStop} className="thin-scroll relative mb-4">
+    <div onMouseLeave={dragStop} className="thin-scroll relative mb-6">
       <ScrollMenu
         LeftArrow={LeftArrow}
         RightArrow={RightArrow}

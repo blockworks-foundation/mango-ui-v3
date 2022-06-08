@@ -77,7 +77,7 @@ export async function getStaticProps({ locale }) {
 }
 
 const TABS = [
-  'Portfolio',
+  'Overview',
   'Orders',
   'History',
   'Interest',
@@ -465,6 +465,7 @@ export default function Account() {
                   onChange={handleChangeViewIndex}
                   items={TABS}
                   tabIndex={viewIndex}
+                  width="w-24 sm:w-32"
                 />
                 <Swipeable
                   index={viewIndex}
@@ -566,7 +567,7 @@ export default function Account() {
 
 const TabContent = ({ activeTab }) => {
   switch (activeTab) {
-    case 'Portfolio':
+    case 'Overview':
       return <AccountOverview />
     case 'Orders':
       return <AccountOrders />

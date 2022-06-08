@@ -1,5 +1,4 @@
 import { useCallback, useState } from 'react'
-import { useBalances } from '../hooks/useBalances'
 import useMangoStore from '../stores/useMangoStore'
 import Button, { LinkButton } from '../components/Button'
 import { notify } from '../utils/notifications'
@@ -30,10 +29,10 @@ const BalancesTable = ({
   const [showDepositModal, setShowDepositModal] = useState(false)
   const [showWithdrawModal, setShowWithdrawModal] = useState(false)
   const [actionSymbol, setActionSymbol] = useState('')
-  const balances = useBalances()
+  const spotBalances = useMangoStore((s) => s.selectedMangoAccount.spotBalances)
   const { items, requestSort, sortConfig } = useSortableData(
-    balances?.length > 0
-      ? balances
+    spotBalances?.length > 0
+      ? spotBalances
           .filter((bal) => {
             return (
               showZeroBalances ||
@@ -171,7 +170,7 @@ const BalancesTable = ({
     }
   }
 
-  const unsettledBalances = balances.filter(
+  const unsettledBalances = spotBalances.filter(
     (bal) => bal.unsettled && bal.unsettled > 0
   )
 
@@ -699,7 +698,7 @@ const BalancesTable = ({
             )
           ) : (
             <div
-              className={`w-full rounded-md bg-th-bkg-1 py-6 text-center text-th-fgd-3`}
+              className={`w-full rounded-md bg-th-bkg-2 py-6 text-center text-th-fgd-3 md:bg-th-bkg-3`}
             >
               {t('no-balances')}
             </div>

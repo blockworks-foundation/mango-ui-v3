@@ -16,6 +16,7 @@ import ButtonGroup from 'components/ButtonGroup'
 import * as MonoIcons from '../icons'
 import { QuestionMarkCircleIcon } from '@heroicons/react/outline'
 import { useTheme } from 'next-themes'
+import { CHART_COLORS } from './LongShortChart'
 
 const utc = require('dayjs/plugin/utc')
 dayjs.extend(utc)
@@ -26,25 +27,6 @@ export const handleDustTicks = (v) => {
       ? 0
       : v.toExponential()
     : numberCompactFormatter.format(v)
-}
-
-// Each line added to the graph will use one of these colors
-const COLORS = {
-  All: '#ff7c43',
-  USDC: '#ffa600',
-  SRM: '#8dd3c7',
-  SOL: '#A288E3',
-  RAY: '#4AB839',
-  MSOL: '#fb8072',
-  MNGO: '#80b1d3',
-  LUNA: '#fdb462',
-  AVAX: '#b3de69',
-  BNB: '#FF47A6',
-  FTT: '#A38560',
-  BTC: '#bc80bd',
-  ETH: '#05C793',
-  ADA: '#3F8EFC',
-  GMT: '#CBA74A',
 }
 
 const HEADERS = [
@@ -411,7 +393,7 @@ const AccountPerformance = () => {
                       key={`${v}${i}`}
                       type="monotone"
                       dataKey={`${v}`}
-                      stroke={`${COLORS[v]}`}
+                      stroke={`${CHART_COLORS[v]}`}
                       dot={false}
                     />
                   ))}
@@ -455,7 +437,7 @@ const AccountPerformance = () => {
                   onClick={() => toggleOption(s)}
                   style={
                     selectedSymbols.includes(s)
-                      ? { borderColor: COLORS[s], color: COLORS[s] }
+                      ? { borderColor: CHART_COLORS[s], color: CHART_COLORS[s] }
                       : {}
                   }
                   key={s}
