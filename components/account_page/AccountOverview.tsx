@@ -91,8 +91,8 @@ export default function AccountOverview() {
 
   return mangoAccount ? (
     <>
-      <div className="grid grid-cols-12 md:gap-6">
-        <div className="col-span-12 border-y border-th-bkg-4 p-3 sm:p-4 md:col-span-3">
+      <div className="grid grid-cols-12 md:gap-x-6">
+        <div className="col-span-12 border-y border-th-bkg-4 p-3 sm:p-4 md:col-span-6">
           <div className="pb-0.5 text-xs text-th-fgd-3 sm:text-sm">
             {t('account-value')}
           </div>
@@ -100,7 +100,7 @@ export default function AccountOverview() {
             {formatUsdValue(mangoAccountValue)}
           </div>
         </div>
-        <div className="col-span-12 border-b border-th-bkg-4 p-3 sm:p-4 md:col-span-3 md:border-t">
+        <div className="col-span-12 border-b border-th-bkg-4 p-3 sm:p-4 md:col-span-6 md:border-t">
           <div className="flex items-center justify-between">
             <div className="flex w-full items-center justify-between pb-0.5 text-xs text-th-fgd-3 sm:text-sm">
               {t('pnl')}{' '}
@@ -118,17 +118,7 @@ export default function AccountOverview() {
             {formatUsdValue(pnl)}
           </div>
         </div>
-        <div className="col-span-12 border-b border-th-bkg-4 p-3 sm:p-4 md:col-span-3 md:border-t">
-          <div className="pb-0.5 text-xs text-th-fgd-3 sm:text-sm">
-            {t('leverage')}
-          </div>
-          {mangoGroup && mangoCache ? (
-            <div className="text-xl font-bold text-th-fgd-1 sm:text-3xl">
-              {mangoAccount.getLeverage(mangoGroup, mangoCache).toFixed(2)}x
-            </div>
-          ) : null}
-        </div>
-        <div className="col-span-12 mb-8 border-th-bkg-4 pt-3 sm:pt-4 md:col-span-3 md:mb-0 md:border-t">
+        <div className="col-span-12 border-th-bkg-4 px-3 pt-3 sm:px-4 sm:pt-4 md:col-span-6">
           <div className="pb-0.5 text-xs text-th-fgd-3 sm:text-sm">
             {t('health-ratio')}
           </div>
@@ -141,7 +131,7 @@ export default function AccountOverview() {
               <span className="text-th-red">{t('being-liquidated')}</span>
             </div>
           ) : null}
-          <div className="mt-3 flex h-1 rounded bg-th-bkg-3 sm:mt-4">
+          <div className="-mx-3 mt-3 flex h-1 rounded bg-th-bkg-3 sm:-mx-4 sm:mt-4">
             <div
               style={{
                 width: `${maintHealthRatio}%`,
@@ -156,14 +146,24 @@ export default function AccountOverview() {
             ></div>
           </div>
         </div>
-        <div className="col-span-12 mb-4 h-[400px] rounded-md border border-th-bkg-4 p-4 md:col-span-6 md:mb-0 md:p-6">
+        <div className="col-span-12 border-b border-th-bkg-4 p-3 sm:p-4 md:col-span-6">
+          <div className="pb-0.5 text-xs text-th-fgd-3 sm:text-sm">
+            {t('leverage')}
+          </div>
+          {mangoGroup && mangoCache ? (
+            <div className="text-xl font-bold text-th-fgd-1 sm:text-3xl">
+              {mangoAccount.getLeverage(mangoGroup, mangoCache).toFixed(2)}x
+            </div>
+          ) : null}
+        </div>
+        <div className="relative col-span-12 mb-4 mt-8 h-[460px] rounded-md border border-th-bkg-4 p-4 sm:h-[400px] md:p-6 lg:col-span-6 lg:mb-0">
           <PerformanceChart
             hourlyPerformanceStats={hourlyPerformanceStats}
             accountValue={mangoAccountValue}
             chartToShow="Value"
           />
         </div>
-        <div className="col-span-12 h-[400px] rounded-md border border-th-bkg-4 p-4 md:col-span-6 md:p-6">
+        <div className="relative col-span-12 h-[460px] rounded-md border border-th-bkg-4 p-4 sm:h-[400px] md:p-6 lg:col-span-6 lg:mt-8">
           <PerformanceChart
             hourlyPerformanceStats={hourlyPerformanceStats}
             accountValue={mangoAccountValue}
@@ -173,7 +173,7 @@ export default function AccountOverview() {
       </div>
       <div className="my-8">
         <h2 className="mb-4">{t('portfolio-balance')}</h2>
-        <div className="grid grid-flow-col grid-cols-1 grid-rows-2 md:grid-cols-2 md:grid-rows-1 md:gap-4">
+        <div className="grid grid-flow-col grid-cols-1 grid-rows-2 md:grid-cols-2 md:grid-rows-1 md:gap-6">
           <div className="border-t border-th-bkg-4 p-3 sm:p-4 md:border-b">
             <div className="flex items-center justify-between">
               <div>
@@ -184,7 +184,7 @@ export default function AccountOverview() {
                   </div>
                 </Tooltip>
                 {mangoGroup && mangoCache ? (
-                  <div className="text-xl font-bold text-th-fgd-1 md:text-2xl">
+                  <div className="text-xl font-bold text-th-fgd-1 md:text-3xl">
                     {formatUsdValue(
                       +mangoAccount.getAssetsVal(mangoGroup, mangoCache)
                     )}
@@ -204,7 +204,7 @@ export default function AccountOverview() {
                   </div>
                 </Tooltip>
                 {mangoGroup && mangoCache ? (
-                  <div className="text-xl font-bold text-th-fgd-1 md:text-2xl">
+                  <div className="text-xl font-bold text-th-fgd-1 md:text-3xl">
                     {formatUsdValue(
                       +mangoAccount.getLiabsVal(mangoGroup, mangoCache)
                     )}

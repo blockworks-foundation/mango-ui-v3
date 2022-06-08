@@ -188,7 +188,7 @@ const PerformanceChart = ({
 
   return (
     <div className="h-64" ref={observe}>
-      <div className="flex flex-col pb-4 md:flex-row md:justify-between md:pb-9">
+      <div className="flex flex-col pb-4 sm:flex-row sm:justify-between sm:pb-9">
         <div>
           <div className="flex items-center pb-0.5">
             <div className="text-sm text-th-fgd-3">
@@ -249,8 +249,8 @@ const PerformanceChart = ({
             </>
           )}
         </div>
-        <div className="flex flex-col md:items-end">
-          <div className="mt-4 w-full md:mt-0 md:w-40">
+        <div className="flex flex-col sm:items-end">
+          <div className="mt-4 w-full sm:mt-0 sm:w-40">
             <ButtonGroup
               activeValue={performanceRange}
               className="h-8 font-bold"

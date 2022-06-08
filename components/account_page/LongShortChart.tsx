@@ -36,7 +36,6 @@ const LongShortChart = ({ type }: { type: string }) => {
   const { t } = useTranslation('common')
   const [chartData, setChartData] = useState<any>([])
   const { mangoAccount } = useMangoAccount()
-
   const balances = useBalances()
   const perpPositions = useMangoStore(
     (s) => s.selectedMangoAccount.perpAccounts
