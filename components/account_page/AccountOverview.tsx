@@ -92,7 +92,7 @@ export default function AccountOverview() {
   return mangoAccount ? (
     <>
       <div className="grid grid-cols-12 md:gap-x-6">
-        <div className="col-span-12 border-y border-th-bkg-4 p-3 sm:p-4 md:col-span-6">
+        <div className="col-span-12 border-y border-th-bkg-4 p-3 sm:p-4 md:col-span-6 xl:col-span-3">
           <div className="pb-0.5 text-xs text-th-fgd-3 sm:text-sm">
             {t('account-value')}
           </div>
@@ -100,7 +100,7 @@ export default function AccountOverview() {
             {formatUsdValue(mangoAccountValue)}
           </div>
         </div>
-        <div className="col-span-12 border-b border-th-bkg-4 p-3 sm:p-4 md:col-span-6 md:border-t">
+        <div className="col-span-12 border-b border-th-bkg-4 p-3 sm:p-4 md:col-span-6 md:border-t xl:col-span-3">
           <div className="flex items-center justify-between">
             <div className="flex w-full items-center justify-between pb-0.5 text-xs text-th-fgd-3 sm:text-sm">
               {t('pnl')}{' '}
@@ -118,7 +118,7 @@ export default function AccountOverview() {
             {formatUsdValue(pnl)}
           </div>
         </div>
-        <div className="col-span-12 border-th-bkg-4 px-3 pt-3 sm:px-4 sm:pt-4 md:col-span-6">
+        <div className="col-span-12 border-th-bkg-4 px-3 pt-3 sm:px-4 sm:pt-4 md:col-span-6 xl:col-span-3 xl:border-t">
           <div className="pb-0.5 text-xs text-th-fgd-3 sm:text-sm">
             {t('health-ratio')}
           </div>
@@ -146,7 +146,7 @@ export default function AccountOverview() {
             ></div>
           </div>
         </div>
-        <div className="col-span-12 border-b border-th-bkg-4 p-3 sm:p-4 md:col-span-6">
+        <div className="col-span-12 border-b border-th-bkg-4 p-3 sm:p-4 md:col-span-6 xl:col-span-3 xl:border-t">
           <div className="pb-0.5 text-xs text-th-fgd-3 sm:text-sm">
             {t('leverage')}
           </div>
