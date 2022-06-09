@@ -29,6 +29,7 @@ const HealthStatusCircle = ({ size }: { size: number }) => {
             ? 'CircularProgressbar-orange'
             : 'CircularProgressbar-red'
         }
+        counterClockwise
         value={maintHealthRatio}
         strokeWidth={12}
       />
