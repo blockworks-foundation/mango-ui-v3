@@ -15,6 +15,9 @@ import LongShortChart from './LongShortChart'
 import Tooltip from 'components/Tooltip'
 import { CalendarIcon, InformationCircleIcon } from '@heroicons/react/outline'
 import { ZERO_BN } from '@blockworks-foundation/mango-client'
+import HealthStatusCircle from 'components/HealthStatusCircle'
+import { useViewport } from '../../hooks/useViewport'
+import { breakpoints } from '../TradePageGrid'
 
 dayjs.extend(utc)
 
@@ -59,6 +62,8 @@ export default function AccountOverview() {
 
   const [pnl, setPnl] = useState(0)
   const [hourlyPerformanceStats, setHourlyPerformanceStats] = useState([])
+  const { width } = useViewport()
+  const isMobile = width ? width < breakpoints.sm : false
 
   useEffect(() => {
     const pubKey = mangoAccount?.publicKey?.toString()
@@ -79,12 +84,6 @@ export default function AccountOverview() {
   const maintHealthRatio = useMemo(() => {
     return mangoAccount && mangoGroup && mangoCache
       ? mangoAccount.getHealthRatio(mangoGroup, mangoCache, 'Maint')
-      : 100
-  }, [mangoAccount, mangoGroup, mangoCache])
-
-  const initHealthRatio = useMemo(() => {
-    return mangoAccount && mangoGroup && mangoCache
-      ? mangoAccount.getHealthRatio(mangoGroup, mangoCache, 'Init')
       : 100
   }, [mangoAccount, mangoGroup, mangoCache])
 
@@ -195,33 +194,22 @@ export default function AccountOverview() {
             {formatUsdValue(pnl)}
           </div>
         </div>
-        <div className="col-span-12 border-th-bkg-4 px-3 pt-3 sm:px-4 sm:pt-4 md:col-span-6 xl:col-span-3 xl:border-t">
-          <div className="pb-0.5 text-xs text-th-fgd-3 sm:text-sm">
-            {t('health-ratio')}
-          </div>
-          <div className={`text-xl font-bold text-th-fgd-1 sm:text-3xl`}>
-            {maintHealthRatio < 100 ? maintHealthRatio.toFixed(2) : '>100'}%
-          </div>
-          {mangoAccount.beingLiquidated ? (
-            <div className="flex items-center pt-0.5 text-xs sm:pt-2 sm:text-sm">
-              <ExclamationIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-th-red sm:h-7 sm:w-7" />
-              <span className="text-th-red">{t('being-liquidated')}</span>
+        <div className="col-span-12 flex items-center justify-between border-b border-th-bkg-4 p-3 sm:p-4 md:col-span-6 xl:col-span-3 xl:border-t">
+          <div>
+            <div className="pb-0.5 text-xs text-th-fgd-3 sm:text-sm">
+              {t('health-ratio')}
             </div>
-          ) : null}
-          <div className="-mx-3 mt-3 flex h-1 rounded bg-th-bkg-3 sm:-mx-4 sm:mt-4">
-            <div
-              style={{
-                width: `${maintHealthRatio}%`,
-              }}
-              className={`flex rounded ${
-                maintHealthRatio > 30
-                  ? 'bg-th-green'
-                  : initHealthRatio > 0
-                  ? 'bg-th-orange'
-                  : 'bg-th-red'
-              }`}
-            ></div>
+            <div className={`text-xl font-bold text-th-fgd-1 sm:text-3xl`}>
+              {maintHealthRatio < 100 ? maintHealthRatio.toFixed(2) : '>100'}%
+            </div>
+            {mangoAccount.beingLiquidated ? (
+              <div className="flex items-center pt-0.5 text-xs sm:pt-2 sm:text-sm">
+                <ExclamationIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-th-red sm:h-7 sm:w-7" />
+                <span className="text-th-red">{t('being-liquidated')}</span>
+              </div>
+            ) : null}
           </div>
+          <HealthStatusCircle size={isMobile ? 32 : 48} />
         </div>
         <div className="col-span-12 border-b border-th-bkg-4 p-3 sm:p-4 md:col-span-6 xl:col-span-3 xl:border-t">
           <div className="pb-0.5 text-xs text-th-fgd-3 sm:text-sm">
@@ -249,14 +237,14 @@ export default function AccountOverview() {
         </div>
       </div>
       <div className="my-8">
-        <h2 className="mb-4">{t('portfolio-balance')}</h2>
+        <h2 className="mb-4">{t('account-exposure')}</h2>
         <div className="grid grid-flow-col grid-cols-1 grid-rows-2 md:grid-cols-2 md:grid-rows-1 md:gap-6">
           <div className="border-t border-th-bkg-4 p-3 sm:p-4 md:border-b">
             <div className="flex items-center justify-between">
               <div>
                 <Tooltip content={t('total-long-tooltip')}>
                   <div className="flex items-center space-x-1.5 pb-0.5">
-                    <div className="text-th-fgd-3">{t('total-long')}</div>
+                    <div className="text-th-fgd-3">{t('long')}</div>
                     <InformationCircleIcon className="h-5 w-5 text-th-fgd-3" />
                   </div>
                 </Tooltip>
@@ -274,7 +262,7 @@ export default function AccountOverview() {
               <div>
                 <Tooltip content={t('total-short-tooltip')}>
                   <div className="flex items-center space-x-1.5 pb-0.5">
-                    <div className="text-th-fgd-3">{t('total-short')}</div>
+                    <div className="text-th-fgd-3">{t('short')}</div>
                     <InformationCircleIcon className="h-5 w-5 text-th-fgd-3" />
                   </div>
                 </Tooltip>
