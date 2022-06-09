@@ -1,3 +1,5 @@
+
+   
 {
     "about-to-withdraw": "您正在取款",
     "above": "高于",
@@ -9,6 +11,7 @@
     "account-details-tip-title": "帐户细节",
     "account-equity": "帐户余额",
     "account-equity-chart-title": "帐户余额",
+    "account-exposure": "Account Exposure",
     "account-health": "帐户健康",
     "account-health-tip-desc": "为了避免被清算，您必须将帐户健康度保持在0%以上。为了提高健康度，请减少借贷或存入资产。",
     "account-health-tip-title": "帐户健康",
@@ -430,10 +433,8 @@
     "total-funding": "资金费总数量",
     "total-funding-stats": "资金费收/付统计",
     "total-liabilities": "总债务价值",
-    "total-long": "Long Exposure",
     "total-long-tooltip": "Deposits, long futures positions and positive pnl unsettled positions",
     "total-pnl": "总盈亏",
-    "total-short": "Short Exposure",
     "total-short-tooltip": "Borrows, short futures positions and negative pnl unsettled positions",
     "total-srm": "在Mango裡的SRM总量",
     "totals": "总量",
