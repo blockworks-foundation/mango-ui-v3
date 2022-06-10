@@ -27,7 +27,7 @@ import Loading from './Loading'
 import CreateAlertModal from './CreateAlertModal'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useRouter } from 'next/router'
-import HealthStatusCircle from './HealthStatusCircle'
+import HealthHeart from './HealthHeart'
 
 const I80F48_100 = I80F48.fromString('100')
 
@@ -226,7 +226,7 @@ export default function AccountInfo() {
                 </div>
               </Tooltip>
               <div className="flex items-center space-x-2">
-                <HealthStatusCircle size={24} />
+                <HealthHeart size={24} health={Number(maintHealthRatio)} />
                 <div className="text-th-fgd-1">
                   {maintHealthRatio.gt(I80F48_100)
                     ? '>100'

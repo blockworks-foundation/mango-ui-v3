@@ -2,7 +2,6 @@ import { PieChart, Pie, Cell, Tooltip } from 'recharts'
 import { formatUsdValue, tokenPrecision } from 'utils'
 import * as MonoIcons from '../icons'
 import { QuestionMarkCircleIcon } from '@heroicons/react/outline'
-import { useTranslation } from 'next-i18next'
 
 export const CHART_COLORS = {
   All: '#ff7c43',
@@ -25,15 +24,7 @@ export const CHART_COLORS = {
   USDT: '#50AF95',
 }
 
-const LongShortChart = ({
-  type,
-  chartData,
-}: {
-  type: string
-  chartData: any[]
-}) => {
-  const { t } = useTranslation('common')
-
+const LongShortChart = ({ chartData }: { chartData: any[] }) => {
   const CustomToolTip = () => {
     const renderIcon = (symbol) => {
       const iconName = `${symbol.slice(0, 1)}${symbol
@@ -89,36 +80,35 @@ const LongShortChart = ({
   }
 
   return chartData.length ? (
-    <div className="relative h-20 w-20">
-      <PieChart width={80} height={80}>
-        <Pie
-          cursor="pointer"
-          data={chartData}
-          dataKey="value"
-          cx="50%"
-          cy="50%"
-          outerRadius={40}
-          innerRadius={28}
-          minAngle={2}
-          startAngle={90}
-          endAngle={450}
-        >
-          {chartData
-            .sort((a, b) => a.symbol.localeCompare(b.symbol))
-            .map((entry, index) => (
-              <Cell
-                key={`cell-${index}`}
-                fill={CHART_COLORS[entry.symbol]}
-                stroke="rgba(0,0,0,0.1)"
-              />
-            ))}
-        </Pie>
-        <Tooltip content={<CustomToolTip />} position={{ x: -220, y: 0 }} />
-      </PieChart>
-      <div className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 transform text-xs font-bold uppercase text-th-fgd-3">
-        {type === 'long' ? t('long') : t('short')}
-      </div>
-    </div>
+    <PieChart width={48} height={48}>
+      <Pie
+        cursor="pointer"
+        data={chartData}
+        dataKey="value"
+        cx="50%"
+        cy="50%"
+        outerRadius={24}
+        innerRadius={16}
+        minAngle={2}
+        startAngle={90}
+        endAngle={450}
+      >
+        {chartData
+          .sort((a, b) => a.symbol.localeCompare(b.symbol))
+          .map((entry, index) => (
+            <Cell
+              key={`cell-${index}`}
+              fill={CHART_COLORS[entry.symbol]}
+              stroke="rgba(0,0,0,0.1)"
+            />
+          ))}
+      </Pie>
+      <Tooltip
+        content={<CustomToolTip />}
+        position={{ x: 64, y: 0 }}
+        wrapperStyle={{ zIndex: 10 }}
+      />
+    </PieChart>
   ) : null
 }
 
