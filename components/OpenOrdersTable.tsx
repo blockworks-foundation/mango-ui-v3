@@ -38,7 +38,7 @@ const DesktopTable = ({
   const { wallet } = useWallet()
   const [modifiedOrderSize, setModifiedOrderSize] = useState('')
   const [modifiedOrderPrice, setModifiedOrderPrice] = useState('')
-  
+
   const showEditOrderForm = (index, order) => {
     setEditOrderIndex(index)
     setModifiedOrderSize(order.size)
