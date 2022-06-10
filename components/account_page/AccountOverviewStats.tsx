@@ -400,7 +400,7 @@ const AccountOverviewStats = ({ hourlyPerformanceStats, accountValue }) => {
           </div>
         </div>
       </div>
-      <div className="order-1 col-span-12 rounded-md border border-th-bkg-4 p-4 lg:order-2 lg:col-span-8 xl:p-6">
+      <div className="order-1 col-span-12 border-y border-th-bkg-4 p-4 lg:order-2 lg:col-span-8 xl:p-6">
         <div className="mb-6 flex justify-between space-x-2">
           <div className="mt-4 flex items-center space-x-3 sm:mt-0">
             <div className="w-full sm:w-24">
