@@ -265,6 +265,7 @@
     "no-address": "没有{{tokenSymbol}}钱包地址",
     "no-balances": "您没有余额",
     "no-borrows": "您没有借贷。",
+    "no-chart": "No chart available",
     "no-funding": "您未收/付过资金费",
     "no-history": "您没有交易纪录",
     "no-interest": "您未收/付过利息",

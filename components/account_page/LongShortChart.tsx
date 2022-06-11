@@ -38,7 +38,10 @@ const LongShortChart = ({ chartData }: { chartData: any[] }) => {
       )
     }
 
-    return chartData.length ? (
+    const hideTooltip =
+      chartData.length === 1 && chartData[0].symbol === 'spacer'
+
+    return chartData.length && !hideTooltip ? (
       <div className="space-y-1.5 rounded-md bg-th-bkg-2 p-3 pb-2 md:bg-th-bkg-1">
         {chartData
           .filter((d) => d.symbol !== 'spacer')

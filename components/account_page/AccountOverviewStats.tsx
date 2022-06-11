@@ -65,8 +65,13 @@ const AccountOverviewStats = ({ hourlyPerformanceStats, accountValue }) => {
   }, [mangoAccount, mangoGroup, mangoCache])
 
   const { longData, shortData, longExposure, shortExposure } = useMemo(() => {
+    const longData: any = []
+    const shortData: any = []
+
     if (!spotBalances || !perpPositions) {
-      return {}
+      longData.push({ symbol: 'spacer', value: 1 })
+      shortData.push({ symbol: 'spacer', value: 1 })
+      // return {}
     }
 
     const DUST_THRESHOLD = 0.05
@@ -74,9 +79,6 @@ const AccountOverviewStats = ({ hourlyPerformanceStats, accountValue }) => {
       (a, c) => a + (c?.unsettledPnl ?? 0),
       0
     )
-
-    const longData: any = []
-    const shortData: any = []
 
     for (const { net, symbol, value } of spotBalances) {
       let amount = Number(net)
@@ -128,6 +130,12 @@ const AccountOverviewStats = ({ hourlyPerformanceStats, accountValue }) => {
     }
     const longExposure = longData.reduce((a, c) => a + c.value, 0)
     const shortExposure = shortData.reduce((a, c) => a + c.value, 0)
+    if (shortExposure === 0) {
+      shortData.push({ symbol: 'spacer', value: 1 })
+    }
+    if (longExposure === 0) {
+      longData.push({ symbol: 'spacer', value: 1 })
+    }
     const dif = longExposure - shortExposure
     if (dif > 0) {
       shortData.push({ symbol: 'spacer', value: dif })
@@ -286,7 +294,7 @@ const AccountOverviewStats = ({ hourlyPerformanceStats, accountValue }) => {
           </div>
           {mouseData ? (
             <>
-              <div className="pb-1 text-4xl font-bold text-th-fgd-1">
+              <div className="pb-1 text-2xl font-bold text-th-fgd-1 sm:text-4xl">
                 {formatUsdValue(
                   mouseData[
                     chartToShow === 'PnL' ? pnlChartDataKey() : 'account_equity'
@@ -299,14 +307,16 @@ const AccountOverviewStats = ({ hourlyPerformanceStats, accountValue }) => {
             </>
           ) : chartData.length === 0 ? (
             <>
-              <div className="pb-1 font-bold text-th-fgd-1">--</div>
+              <div className="pb-1 text-3xl font-bold text-th-fgd-1 sm:text-4xl">
+                {chartToShow === 'PnL' ? '--' : formatUsdValue(accountValue)}
+              </div>
               <div className="text-xs font-normal text-th-fgd-4">
                 {dayjs().format('ddd MMM D YYYY, h:mma')}
               </div>
             </>
           ) : chartData.length > 0 ? (
             <>
-              <div className="pb-1 text-4xl font-bold text-th-fgd-1">
+              <div className="pb-1 text-3xl font-bold text-th-fgd-1 sm:text-4xl">
                 {chartToShow === 'PnL'
                   ? formatUsdValue(
                       chartData[chartData.length - 1][pnlChartDataKey()]
@@ -382,7 +392,7 @@ const AccountOverviewStats = ({ hourlyPerformanceStats, accountValue }) => {
               ) : null}
             </div>
           </div>
-          <div className="flex w-1/2 flex-col px-4 pl-4 sm:px-5 md:flex-row md:items-center md:space-x-3 lg:w-full lg:p-5 xl:w-1/2 xl:flex-col xl:items-start xl:space-x-0 xl:p-0 xl:pl-4">
+          <div className="flex w-1/2 flex-col pl-4 sm:px-5 md:flex-row md:items-center md:space-x-3 lg:w-full lg:p-5 xl:w-1/2 xl:flex-col xl:items-start xl:space-x-0 xl:p-0 xl:pl-4">
             <LongShortChart chartData={shortData} />
             <div className="mt-3 md:mt-0 xl:mt-3">
               <Tooltip content={t('total-short-tooltip')}>
@@ -401,9 +411,9 @@ const AccountOverviewStats = ({ hourlyPerformanceStats, accountValue }) => {
         </div>
       </div>
       <div className="order-1 col-span-12 border-y border-th-bkg-4 p-4 lg:order-2 lg:col-span-8 xl:p-6">
-        <div className="mb-6 flex justify-between space-x-2">
-          <div className="mt-4 flex items-center space-x-3 sm:mt-0">
-            <div className="w-full sm:w-24">
+        <div className="mb-4 flex justify-between space-x-2 sm:mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-3">
+            <div className="mb-3 w-28 sm:mb-0">
               <ButtonGroup
                 activeValue={chartToShow}
                 className="h-8"
@@ -411,7 +421,7 @@ const AccountOverviewStats = ({ hourlyPerformanceStats, accountValue }) => {
                 values={['Value', 'PnL']}
               />
             </div>
-            {chartToShow === 'PnL' ? (
+            {chartToShow === 'PnL' && chartData.length ? (
               <div className="flex space-x-3">
                 <Checkbox
                   checked={showSpotPnl}
@@ -430,7 +440,7 @@ const AccountOverviewStats = ({ hourlyPerformanceStats, accountValue }) => {
               </div>
             ) : null}
           </div>
-          <div className="mt-4 w-full sm:mt-0 sm:w-40">
+          <div className="w-40">
             <ButtonGroup
               activeValue={performanceRange}
               className="h-8"
@@ -440,7 +450,7 @@ const AccountOverviewStats = ({ hourlyPerformanceStats, accountValue }) => {
           </div>
         </div>
         {chartData.length > 0 ? (
-          <div className="h-72 lg:h-[410px] xl:h-[270px]" ref={observe}>
+          <div className="h-48 md:h-64 lg:h-[410px] xl:h-[270px]" ref={observe}>
             <AreaChart
               width={width}
               height={height}
@@ -555,7 +565,11 @@ const AccountOverviewStats = ({ hourlyPerformanceStats, accountValue }) => {
               />
             </AreaChart>
           </div>
-        ) : null}
+        ) : (
+          <div className="flex h-48 w-full items-center justify-center rounded-md bg-th-bkg-3 md:h-64 lg:h-[410px] xl:h-[270px]">
+            <p className="mb-0">{t('no-chart')}</p>
+          </div>
+        )}
       </div>
     </div>
   )

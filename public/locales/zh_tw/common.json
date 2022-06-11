@@ -263,6 +263,7 @@
   "no-address": "沒有{{tokenSymbol}}錢包地址",
   "no-balances": "您沒有餘額",
   "no-borrows": "您沒有借貸。",
+  "no-chart": "No chart available",
   "no-funding": "您未收/付過資金費",
   "no-history": "您沒有交易紀錄",
   "no-interest": "您未收/付過利息",
