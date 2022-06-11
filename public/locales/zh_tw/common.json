@@ -88,7 +88,7 @@
   "connect-wallet-tip-title": "連結錢包",
   "connected-to": "連結錢包",
   "copy-address": "複製地址",
-  "country-not-allowed": "您的國家（{{country}}）不允許",
+  "country-not-allowed": "您的國家{{country}}不允許",
   "country-not-allowed-tooltip": "您正在使用MangoDAO提供的開源介面。由於監管的不確定性因此處於謀些地區的人的行動會受到限制。",
   "create-account": "創建帳戶",
   "current-stats": "當前統計",
