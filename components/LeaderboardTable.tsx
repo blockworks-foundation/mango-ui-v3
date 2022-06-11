@@ -253,10 +253,10 @@ const LeaderboardTypeButton = ({
         <div className="font-bold sm:text-lg">{t(label)}</div>
         <span className="text-th-fgd-4">
           {range === '9999'
-            ? 'All-time'
+            ? t('all-time')
             : range === '29'
-            ? '30-day'
-            : `${range}-day`}
+            ? t('30-day')
+            : `${range}${t('range-day')}`}
         </span>
       </div>
     </button>

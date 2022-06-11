@@ -412,7 +412,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        <span>View Transaction</span>
+                        <span>{t('view-transaction')}</span>
                         <ExternalLinkIcon className={`ml-1.5 h-4 w-4`} />
                       </a>
                     </Td>
@@ -520,7 +520,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
                           target="_blank"
                           rel="noopener noreferrer"
                         >
-                          <span>View Transaction</span>
+                          <span>{t('view-transaction')}</span>
                           <ExternalLinkIcon className={`ml-1.5 h-4 w-4`} />
                         </a>
                       </div>
