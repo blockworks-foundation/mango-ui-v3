@@ -5,7 +5,8 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "next dev",
-    "devnet": "NEXT_PUBLIC_CLUSTER=devnet NEXT_PUBLIC_ENDPOINT=https://mango.devnet.rpcpool.com/ NEXT_PUBLIC_GROUP=devnet.2 next dev",
+    "devnet": "NEXT_PUBLIC_CLUSTER=devnet NEXT_PUBLIC_ENDPOINT=https://mango.devnet.rpcpool.com/ NEXT_PUBLIC_GROUP=devnet.4 next dev",
+    "testnet": "NEXT_PUBLIC_CLUSTER=testnet NEXT_PUBLIC_ENDPOINT=https://api.testnet.solana.com NEXT_PUBLIC_GROUP=testnet.0 next dev",
     "build": "next build",
     "start": "next start",
     "prepare": "husky install",
@@ -17,7 +18,7 @@
     "analyze": "ANALYZE=true yarn build"
   },
   "dependencies": {
-    "@blockworks-foundation/mango-client": "^3.5.5",
+    "@blockworks-foundation/mango-client": "^3.5.7",
     "@headlessui/react": "^0.0.0-insiders.2dbc38c",
     "@heroicons/react": "^1.0.0",
     "@jup-ag/react-hook": "^1.0.0-beta.22",
