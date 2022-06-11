@@ -23,6 +23,7 @@ import { PublicKey } from '@solana/web3.js'
 import FavoritesShortcutBar from '../components/FavoritesShortcutBar'
 import { useWallet } from '@solana/wallet-adapter-react'
 import AccountsModal from 'components/AccountsModal'
+import dayjs from 'dayjs'
 
 const DISMISS_CREATE_ACCOUNT_KEY = 'show-create-account'
 
@@ -57,10 +58,15 @@ const PerpMarket: React.FC = () => {
   const marketConfig = useMangoStore(marketConfigSelector)
   const actions = useMangoStore(actionsSelector)
   const router = useRouter()
+  const [savedLanguage] = useLocalStorageState('language', '')
   const { pubkey } = router.query
   const { width } = useViewport()
   const hideTips = width ? width < breakpoints.md : false
 
+  useEffect(() => {
+    dayjs.locale(savedLanguage == 'zh_tw' ? 'zh-tw' : savedLanguage)
+  })
+  
   useEffect(() => {
     if (connected && !mangoAccount && !dismissCreateAccount) {
       setShowCreateAccount(true)
