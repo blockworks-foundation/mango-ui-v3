@@ -326,7 +326,7 @@
     "profile-menu-tip-title": "个人资料菜单",
     "profit-price": "止盈价格",
     "quantity": "数量",
-    "range-day": "天",
+    "range-day": "{{range}}天",
     "rank": "排名",
     "rates": "存款/借贷利率",
     "read-more": "看更多资料",

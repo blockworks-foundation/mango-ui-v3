@@ -256,7 +256,9 @@ const LeaderboardTypeButton = ({
             ? t('all-time')
             : range === '29'
             ? t('30-day')
-            : `${range}${t('range-day')}`}
+            : t('range-day', {
+                range: range
+              })}
         </span>
       </div>
     </button>

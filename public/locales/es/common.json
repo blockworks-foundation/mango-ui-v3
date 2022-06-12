@@ -326,7 +326,7 @@
    "profile-menu-tip-title": "Menú de perfil",
    "profit-price": "Precio de beneficio",
    "quantity": "Cantidad",
-   "range-day": "-day",
+   "range-day": "{{range}}-day",
    "rank": "Rank",
    "rates": "Tasas de depósito / préstamo",
    "read-more": "Leer más",

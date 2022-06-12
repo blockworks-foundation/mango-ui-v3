@@ -326,7 +326,7 @@
    "profile-menu-tip-title": "Profile Menu",
    "profit-price": "Profit Price",
    "quantity": "Quantity",
-   "range-day": "-day",
+   "range-day": "{{range}}-day",
    "rank": "Rank",
    "rates": "Deposit/Borrow Rates",
    "read-more": "Read More",
