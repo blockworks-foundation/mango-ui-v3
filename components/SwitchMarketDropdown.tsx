@@ -61,7 +61,7 @@ const SwitchMarketDropdown = () => {
       {({ open }) => (
         <div className="relative flex flex-col">
           <Popover.Button
-            className={`border border-th-bkg-3 p-0.5 transition-none hover:border-th-bkg-4 focus:border-th-bkg-4 focus:outline-none ${
+            className={`border border-th-fgd-4 p-0.5 transition-none hover:border-th-bkg-4 focus:border-th-bkg-4 focus:outline-none ${
               open && 'border-th-fgd-4'
             }`}
             ref={buttonRef}

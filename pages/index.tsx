@@ -5,11 +5,9 @@ import {
   getMarketByBaseSymbolAndKind,
   getMarketIndexBySymbol,
 } from '@blockworks-foundation/mango-client'
-import TopBar from '../components/TopBar'
 import TradePageGrid from '../components/TradePageGrid'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import AlphaModal, { ALPHA_MODAL_KEY } from '../components/AlphaModal'
-import { PageBodyWrapper } from '../components/styles'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import IntroTips, { SHOW_TOUR_KEY } from '../components/IntroTips'
 import { useViewport } from '../hooks/useViewport'
@@ -20,7 +18,7 @@ import {
   marketConfigSelector,
 } from '../stores/selectors'
 import { PublicKey } from '@solana/web3.js'
-import FavoritesShortcutBar from '../components/FavoritesShortcutBar'
+// import FavoritesShortcutBar from '../components/FavoritesShortcutBar'
 import { useWallet } from '@solana/wallet-adapter-react'
 import AccountsModal from 'components/AccountsModal'
 
@@ -158,25 +156,20 @@ const PerpMarket: React.FC = () => {
 
   return (
     <>
-      <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
-        {showTour && !hideTips ? (
-          <IntroTips connected={connected} mangoAccount={mangoAccount} />
-        ) : null}
-        <TopBar />
-        <FavoritesShortcutBar />
-        <PageBodyWrapper className="p-1 sm:px-2 sm:py-1 md:px-2 md:py-1 xl:px-4">
-          <TradePageGrid />
-        </PageBodyWrapper>
-        {!alphaAccepted && (
-          <AlphaModal isOpen={!alphaAccepted} onClose={() => {}} />
-        )}
-        {showCreateAccount ? (
-          <AccountsModal
-            isOpen={showCreateAccount}
-            onClose={() => handleCloseCreateAccount()}
-          />
-        ) : null}
-      </div>
+      {showTour && !hideTips ? (
+        <IntroTips connected={connected} mangoAccount={mangoAccount} />
+      ) : null}
+      {/* <FavoritesShortcutBar /> */}
+      <TradePageGrid />
+      {!alphaAccepted && (
+        <AlphaModal isOpen={!alphaAccepted} onClose={() => {}} />
+      )}
+      {showCreateAccount ? (
+        <AccountsModal
+          isOpen={showCreateAccount}
+          onClose={() => handleCloseCreateAccount()}
+        />
+      ) : null}
     </>
   )
 }

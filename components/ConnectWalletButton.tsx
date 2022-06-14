@@ -181,7 +181,7 @@ export const ConnectWalletButton: React.FC = () => {
         </Menu>
       ) : (
         <div
-          className="flex h-14 justify-between divide-x divide-th-bkg-3"
+          className="flex h-14 divide-x divide-th-bkg-3"
           id="connect-wallet-tip"
         >
           <button
@@ -192,7 +192,7 @@ export const ConnectWalletButton: React.FC = () => {
             <div className="default-transition flex h-full flex-row items-center justify-center px-3">
               <WalletIcon className="mr-2 h-4 w-4 fill-current" />
               <div className="text-left">
-                <div className="mb-0.5 whitespace-nowrap font-bold">
+                <div className="mb-1 whitespace-nowrap font-bold leading-none">
                   {t('connect')}
                 </div>
                 {wallet?.adapter?.name && (

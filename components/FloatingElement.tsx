@@ -33,7 +33,7 @@ const FloatingElement: FunctionComponent<FloatingElementProps> = ({
 
   return (
     <div
-      className={`thin-scroll relative overflow-auto overflow-x-hidden rounded-lg bg-th-bkg-2 p-2.5 md:p-4 ${className}`}
+      className={`thin-scroll relative overflow-auto overflow-x-hidden rounded-md border border-[rgba(255,255,255,0.08)] bg-th-bkg-1 p-2.5 md:p-4 ${className}`}
     >
       {!connected && showConnect && !pubkey ? (
         <div className="absolute top-0 left-0 z-10 h-full w-full">
@@ -46,7 +46,7 @@ const FloatingElement: FunctionComponent<FloatingElementProps> = ({
               title={t('connect-wallet')}
             />
           </div>
-          <div className="absolute top-0 left-0 h-full w-full rounded-lg bg-th-bkg-2 opacity-50" />
+          <div className="absolute top-0 left-0 h-full w-full rounded-lg bg-th-bkg-1 opacity-50" />
         </div>
       ) : null}
       {!uiLocked ? (
