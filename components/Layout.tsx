@@ -6,21 +6,30 @@ import { ConnectWalletButton } from './ConnectWalletButton'
 import GlobalNotification from './GlobalNotification'
 import useMangoAccount from 'hooks/useMangoAccount'
 import { abbreviateAddress } from 'utils'
-import { useTranslation } from 'next-i18next'
-import { useWallet } from '@solana/wallet-adapter-react'
-import useMangoStore from 'stores/useMangoStore'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import AccountsModal from './AccountsModal'
+import { useRouter } from 'next/router'
+import FavoritesShortcutBar from './FavoritesShortcutBar'
+import { CogIcon, ExclamationCircleIcon } from '@heroicons/react/solid'
+import { IconButton } from './Button'
+import SettingsModal from './SettingsModal'
+import { useTranslation } from 'next-i18next'
 
 const Layout = ({ children }) => {
   const { t } = useTranslation('common')
-  const { connected, publicKey } = useWallet()
-  const mangoAccounts = useMangoStore((s) => s.mangoAccounts)
   const { mangoAccount } = useMangoAccount()
+  const [showSettingsModal, setShowSettingsModal] = useState(false)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
+  const [isCollapsed, setIsCollapsed] = useState(false)
   const { width } = useViewport()
-  const collapsed = width ? width < breakpoints.lg : false
   const isMobile = width ? width < breakpoints.sm : false
+  const router = useRouter()
+  const { pathname } = router
+
+  useEffect(() => {
+    const collapsed = width ? width < breakpoints.lg : false
+    setIsCollapsed(collapsed)
+  }, [])
 
   const handleCloseAccounts = useCallback(() => {
     setShowAccountsModal(false)
@@ -34,61 +43,46 @@ const Layout = ({ children }) => {
             <BottomBar />
           </div>
         ) : (
-          <div className={collapsed ? 'mr-[64px]' : 'mr-[220px]'}>
+          <div className={isCollapsed ? 'mr-[64px]' : 'mr-[220px]'}>
             <div className={`fixed z-20 h-screen`}>
-              <SideNav collapsed={collapsed} toggled handleToggleSidebar />
+              <SideNav collapsed={isCollapsed} setCollapsed={setIsCollapsed} />
             </div>
           </div>
         )}
         <div className="w-full">
           <GlobalNotification />
-          <div className="flex h-14 items-center justify-between border-b border-[rgba(255,255,255,0.08)] bg-th-bkg-1">
-            <div className="pl-4 text-th-fgd-3">
-              <span className="mb-0">GM</span>
-              <span className="font-bold leading-none text-th-fgd-1">
-                <span className="text-th-fgd-3">, </span>
-                {`${
-                  mangoAccount
-                    ? mangoAccount.name
+          <div className="flex h-14 items-center justify-between border-b border-[rgba(255,255,255,0.1)] bg-th-bkg-1 px-6">
+            {mangoAccount && mangoAccount.beingLiquidated ? (
+              <div className="flex items-center justify-center">
+                <ExclamationCircleIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-th-red" />
+                <span className="text-th-red">{t('being-liquidated')}</span>
+              </div>
+            ) : (
+              <div className="text-th-fgd-3">
+                <span className="mb-0 mr-2 text-lg">👋</span>
+                <span className="font-bold leading-none text-th-fgd-1">
+                  {`${
+                    mangoAccount
                       ? mangoAccount.name
-                      : abbreviateAddress(mangoAccount.publicKey)
-                    : ' '
-                } 👋`}
-              </span>
-            </div>
-            <div className="flex items-center space-x-3 pr-4">
-              {mangoAccount &&
-              mangoAccount.owner.toBase58() === publicKey?.toBase58() ? (
-                <button
-                  className="rounded border border-th-bkg-4 py-1 px-2 text-xs focus:outline-none md:hover:border-th-fgd-4"
-                  onClick={() => setShowAccountsModal(true)}
-                >
-                  <div className="text-xs font-normal text-th-primary">
-                    {mangoAccounts
-                      ? mangoAccounts.length === 1
-                        ? `1 ${t('account')}`
-                        : `${mangoAccounts.length} ${t('accounts')}`
-                      : t('account')}
-                  </div>
-                  {mangoAccount.name
-                    ? mangoAccount.name
-                    : abbreviateAddress(mangoAccount.publicKey)}
-                </button>
-              ) : connected && !mangoAccount ? (
-                <button
-                  className="rounded border border-th-bkg-4 py-1 px-2 text-xs focus:outline-none md:hover:border-th-fgd-4"
-                  onClick={() => setShowAccountsModal(true)}
-                >
-                  <div className="text-xs font-normal text-th-primary">
-                    {`0 ${t('accounts')}`}
-                  </div>
-                  {t('get-started')} 😎
-                </button>
-              ) : null}
+                        ? mangoAccount.name
+                        : abbreviateAddress(mangoAccount.publicKey)
+                      : ''
+                  }`}
+                </span>
+              </div>
+            )}
+            <div className="flex items-center space-x-4">
+              <IconButton
+                className="h-8 w-8"
+                onClick={() => setShowSettingsModal(true)}
+              >
+                <CogIcon className="h-5 w-5" />
+              </IconButton>
               <ConnectWalletButton />
             </div>
           </div>
-          {children}
+          {pathname === '/' ? <FavoritesShortcutBar /> : null}
+          <div className="px-3">{children}</div>
         </div>
       </div>
       {showAccountsModal && (
@@ -97,6 +91,12 @@ const Layout = ({ children }) => {
           isOpen={showAccountsModal}
         />
       )}
+      {showSettingsModal ? (
+        <SettingsModal
+          onClose={() => setShowSettingsModal(false)}
+          isOpen={showSettingsModal}
+        />
+      ) : null}
     </div>
   )
 }

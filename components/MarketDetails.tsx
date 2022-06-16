@@ -61,10 +61,10 @@ const MarketDetails = () => {
 
   return (
     <div
-      className={`relative flex flex-col md:px-3 md:pb-2 md:pt-3 lg:flex-row lg:items-center lg:justify-between`}
+      className={`relative flex flex-col md:px-3 md:pb-2 md:pt-3 xl:flex-row xl:items-center xl:justify-between`}
     >
-      <div className="flex flex-col lg:flex-row lg:items-center">
-        <div className="hidden md:block md:pb-4 md:pr-6 lg:pb-0">
+      <div className="flex flex-col xl:flex-row xl:items-center">
+        <div className="hidden md:block md:pb-4 md:pr-6 xl:pb-0">
           <div className="flex items-center">
             <SwitchMarketDropdown />
           </div>

@@ -9,169 +9,183 @@ import {
 } from 'react-pro-sidebar'
 import Link from 'next/link'
 import useLocalStorageState from 'hooks/useLocalStorageState'
-import SettingsModal, {
-  DEFAULT_MARKET_KEY,
-  initialMarket,
-} from './SettingsModal'
+import { DEFAULT_MARKET_KEY, initialMarket } from './SettingsModal'
 import { BtcMonoIcon, TradeIcon, TrophyIcon } from './icons'
 import {
   CashIcon,
   ChartBarIcon,
-  CogIcon,
+  ChevronRightIcon,
   CurrencyDollarIcon,
   DotsHorizontalIcon,
   SwitchHorizontalIcon,
+  CalculatorIcon,
+  LibraryIcon,
+  LightBulbIcon,
+  UserAddIcon,
+  ExternalLinkIcon,
 } from '@heroicons/react/solid'
 import { useState } from 'react'
-// import useMangoStore from 'stores/useMangoStore'
-// import MarketNavItem from './MarketNavItem'
 import { useRouter } from 'next/router'
+import AccountOverviewPopover from './AccountOverviewPopover'
+import { IconButton } from './Button'
+import useMangoAccount from 'hooks/useMangoAccount'
+import { useTranslation } from 'next-i18next'
 
-const SideNav = ({ collapsed, toggled, handleToggleSidebar }) => {
-  const [showSettingsModal, setShowSettingsModal] = useState(false)
+const SideNav = ({ collapsed, setCollapsed }) => {
+  const { t } = useTranslation('common')
+  const { mangoAccount } = useMangoAccount()
+  const [accountPopoverOpen, setAccountPopoverOpen] = useState(false)
   const [defaultMarket] = useLocalStorageState(
     DEFAULT_MARKET_KEY,
     initialMarket
   )
-  //   const marketsInfo = useMangoStore((s) => s.marketsInfo)
   const router = useRouter()
   const { pathname } = router
 
-  //   const perpMarketsInfo = useMemo(
-  //     () =>
-  //       marketsInfo
-  //         .filter((mkt) => mkt?.name.includes('PERP'))
-  //         .sort((a, b) => b.volumeUsd24h - a.volumeUsd24h),
-  //     [marketsInfo]
-  //   )
-
-  //   const spotMarketsInfo = useMemo(
-  //     () =>
-  //       marketsInfo
-  //         .filter((mkt) => mkt?.name.includes('USDC'))
-  //         .sort((a, b) => b.volumeUsd24h - a.volumeUsd24h),
-  //     [marketsInfo]
-  //   )
+  const handleToggleSidebar = () => {
+    setCollapsed(!collapsed)
+    setAccountPopoverOpen(false)
+    setTimeout(() => {
+      window.dispatchEvent(new Event('resize'))
+    }, 100)
+  }
 
   return (
-    <ProSidebar
-      collapsed={collapsed}
-      toggled={toggled}
-      onToggle={handleToggleSidebar}
-      width="220px"
-      collapsedWidth="64px"
-    >
-      <SidebarHeader>
-        <Link href={defaultMarket.path} shallow={true}>
-          <div
-            className={`flex w-full items-center ${
-              collapsed ? 'justify-center' : 'justify-start'
-            } h-14 border-b border-[rgba(255,255,255,0.08)] px-4`}
-          >
-            <div className={`flex flex-shrink-0 cursor-pointer items-center`}>
-              <img
-                className={`h-8 w-auto`}
-                src="/assets/icons/logo.svg"
-                alt="next"
-              />
-              {!collapsed ? (
-                <span className="ml-2 text-lg font-bold text-th-fgd-1">
-                  Mango
-                </span>
-              ) : null}
-            </div>
-          </div>
-        </Link>
-      </SidebarHeader>
-      <SidebarContent>
-        <Menu iconShape="circle">
-          <MenuItem
-            active={pathname === '/'}
-            icon={<TradeIcon className="h-5 w-5" />}
-          >
-            Trade
-          </MenuItem>
-          {/* <SubMenu title="Trade" icon={<TradeIcon className="h-5 w-5" />}>
-            <SubMenu title="Futures">
-              {perpMarketsInfo.map((mkt) => (
-                <MarketNavItem
-                  //   buttonRef={buttonRef}
-                  market={mkt}
-                  key={mkt.name}
-                />
-              ))}
-            </SubMenu>
-            <SubMenu title="Spot">
-              {spotMarketsInfo.map((mkt) => (
-                <MarketNavItem
-                  //   buttonRef={buttonRef}
-                  market={mkt}
-                  key={mkt.name}
-                />
-              ))}
-            </SubMenu>
-          </SubMenu> */}
-          <SubMenu
-            title="Account"
-            icon={<CurrencyDollarIcon className="h-5 w-5" />}
-          >
-            <MenuItem>Overview</MenuItem>
-            <MenuItem>Performance</MenuItem>
-            <MenuItem>Orders</MenuItem>
-            <MenuItem>History</MenuItem>
-          </SubMenu>
-          <MenuItem icon={<BtcMonoIcon className="h-4 w-4" />}>
-            Markets
-          </MenuItem>
-          <MenuItem icon={<CashIcon className="h-5 w-5" />}>Borrow</MenuItem>
-          <MenuItem icon={<SwitchHorizontalIcon className="h-5 w-5" />}>
-            Swap
-          </MenuItem>
-          <MenuItem icon={<ChartBarIcon className="h-5 w-5" />}>Stats</MenuItem>
-          <MenuItem icon={<TrophyIcon className="h-5 w-5" />}>
-            Leaderboard
-          </MenuItem>
-          <MenuItem
-            onClick={() => setShowSettingsModal(true)}
-            icon={<CogIcon className="h-5 w-5" />}
-          >
-            Settings
-          </MenuItem>
-          <SubMenu
-            title="More"
-            icon={<DotsHorizontalIcon className="h-5 w-5" />}
-          >
-            <MenuItem>Overview</MenuItem>
-            <MenuItem>Orders</MenuItem>
-            <MenuItem>History</MenuItem>
-          </SubMenu>
-        </Menu>
-      </SidebarContent>
-
-      <SidebarFooter>
-        <div
-          className={`flex w-full items-center ${
-            collapsed ? 'justify-center' : 'justify-start'
-          } py-4 pl-5 pr-4`}
-        >
-          <span className="relative mr-2.5 flex h-1.5 w-1.5">
-            <span
-              className={`absolute inline-flex h-full w-full animate-ping rounded-full bg-th-green opacity-75`}
-            ></span>
-            <span
-              className={`relative inline-flex h-1.5 w-1.5 rounded-full bg-th-green`}
-            ></span>
-          </span>
-          <span className="truncate text-xs text-th-fgd-4">Operational</span>
-        </div>
-      </SidebarFooter>
-      {showSettingsModal ? (
-        <SettingsModal
-          onClose={() => setShowSettingsModal(false)}
-          isOpen={showSettingsModal}
+    <>
+      <IconButton
+        className="absolute -right-4 top-1/2 z-50 h-10 w-4 -translate-y-1/2 transform rounded-none rounded-r"
+        onClick={handleToggleSidebar}
+      >
+        <ChevronRightIcon
+          className={`default-transition h-5 w-5 ${
+            !collapsed ? 'rotate-180' : 'rotate-360'
+          }`}
         />
-      ) : null}
-    </ProSidebar>
+      </IconButton>
+      <ProSidebar collapsed={collapsed} width="220px" collapsedWidth="64px">
+        <SidebarHeader>
+          <Link href={defaultMarket.path} shallow={true}>
+            <div
+              className={`flex w-full items-center ${
+                collapsed ? 'justify-center' : 'justify-start'
+              } h-14 border-b border-[rgba(255,255,255,0.1)] px-4`}
+            >
+              <div className={`flex flex-shrink-0 cursor-pointer items-center`}>
+                <img
+                  className={`h-8 w-auto`}
+                  src="/assets/icons/logo.svg"
+                  alt="next"
+                />
+                {!collapsed ? (
+                  <span className="ml-2 text-lg font-bold text-th-fgd-1">
+                    Mango
+                  </span>
+                ) : null}
+              </div>
+            </div>
+          </Link>
+        </SidebarHeader>
+        <SidebarContent className="relative">
+          <Menu iconShape="circle">
+            <MenuItem
+              active={pathname === '/'}
+              icon={<TradeIcon className="h-5 w-5" />}
+            >
+              <Link href={defaultMarket.path} shallow={true}>
+                {t('trade')}
+              </Link>
+            </MenuItem>
+            <MenuItem icon={<CurrencyDollarIcon className="h-5 w-5" />}>
+              <Link href={'/account'} shallow={true}>
+                {t('account')}
+              </Link>
+            </MenuItem>
+            <MenuItem icon={<BtcMonoIcon className="h-4 w-4" />}>
+              <Link href={'/markets'} shallow={true}>
+                {t('markets')}
+              </Link>
+            </MenuItem>
+            <MenuItem icon={<CashIcon className="h-5 w-5" />}>
+              <Link href={'/borrow'} shallow={true}>
+                {t('borrow')}
+              </Link>
+            </MenuItem>
+            <MenuItem icon={<SwitchHorizontalIcon className="h-5 w-5" />}>
+              <Link href={'/swap'} shallow={true}>
+                {t('swap')}
+              </Link>
+            </MenuItem>
+            <MenuItem icon={<ChartBarIcon className="h-5 w-5" />}>
+              <Link href={'/stats'} shallow={true}>
+                {t('stats')}
+              </Link>
+            </MenuItem>
+            <MenuItem icon={<TrophyIcon className="h-5 w-5" />}>
+              <Link href={'/leaderboard'} shallow={true}>
+                {t('leaderboard')}
+              </Link>
+            </MenuItem>
+            <SubMenu
+              title={t('more')}
+              icon={<DotsHorizontalIcon className="h-5 w-5" />}
+            >
+              <MenuItem icon={<UserAddIcon className="h-4 w-4" />}>
+                <Link href={'/referral'} shallow={true}>
+                  {t('referrals')}
+                </Link>
+              </MenuItem>
+              <MenuItem icon={<CalculatorIcon className="h-4 w-4" />}>
+                <Link href={'/risk-calculator'} shallow={true}>
+                  {t('calculator')}
+                </Link>
+              </MenuItem>
+              <MenuItem icon={<CurrencyDollarIcon className="h-4 w-4" />}>
+                <Link href={'/fees'} shallow={true}>
+                  {t('fees')}
+                </Link>
+              </MenuItem>
+              <MenuItem
+                icon={<LightBulbIcon className="h-4 w-4" />}
+                suffix={<ExternalLinkIcon className="h-4 w-4" />}
+              >
+                <a
+                  href={'https://docs.mango.markets'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {t('learn')}
+                </a>
+              </MenuItem>
+              <MenuItem
+                icon={<LibraryIcon className="h-4 w-4" />}
+                suffix={<ExternalLinkIcon className="h-4 w-4" />}
+              >
+                <a
+                  href={'https://dao.mango.markets'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {t('governance')}
+                </a>
+              </MenuItem>
+            </SubMenu>
+          </Menu>
+          {accountPopoverOpen ? (
+            <div className="absolute top-0 left-0 h-full w-full bg-th-bkg-1 opacity-80" />
+          ) : null}
+        </SidebarContent>
+
+        {mangoAccount ? (
+          <SidebarFooter>
+            <AccountOverviewPopover
+              collapsed={collapsed}
+              open={accountPopoverOpen}
+              setOpen={setAccountPopoverOpen}
+            />
+          </SidebarFooter>
+        ) : null}
+      </ProSidebar>
+    </>
   )
 }
 

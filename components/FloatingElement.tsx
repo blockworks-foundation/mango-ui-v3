@@ -33,7 +33,7 @@ const FloatingElement: FunctionComponent<FloatingElementProps> = ({
 
   return (
     <div
-      className={`thin-scroll relative overflow-auto overflow-x-hidden rounded-md border border-[rgba(255,255,255,0.08)] bg-th-bkg-1 p-2.5 md:p-4 ${className}`}
+      className={`thin-scroll relative overflow-auto overflow-x-hidden rounded-md border border-[rgba(255,255,255,0.1)] bg-th-bkg-1 p-2.5 md:p-4 ${className}`}
     >
       {!connected && showConnect && !pubkey ? (
         <div className="absolute top-0 left-0 z-10 h-full w-full">

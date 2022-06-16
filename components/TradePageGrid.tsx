@@ -11,8 +11,6 @@ const TVChartContainer = dynamic(
 import { useEffect, useState } from 'react'
 import FloatingElement from '../components/FloatingElement'
 import Orderbook from '../components/Orderbook'
-import AccountInfo from './AccountInfo'
-import UserMarketInfo from './UserMarketInfo'
 import TradeForm from './trade_form/TradeForm'
 import UserInfo from './UserInfo'
 import RecentMarketTrades from './RecentMarketTrades'
@@ -25,40 +23,32 @@ const ResponsiveGridLayout = WidthProvider(Responsive)
 
 export const defaultLayouts = {
   xl: [
-    { i: 'tvChart', x: 0, y: 0, w: 6, h: 27 },
-    { i: 'marketPosition', x: 9, y: 4, w: 3, h: 13 },
-    { i: 'accountInfo', x: 9, y: 3, w: 3, h: 14 },
-    { i: 'orderbook', x: 6, y: 0, w: 3, h: 17 },
-    { i: 'tradeForm', x: 9, y: 1, w: 3, h: 17 },
-    { i: 'marketTrades', x: 6, y: 1, w: 3, h: 10 },
-    { i: 'userInfo', x: 0, y: 2, w: 9, h: 19 },
+    { i: 'tvChart', x: 0, y: 0, w: 8, h: 19 },
+    { i: 'tradeForm', x: 8, y: 0, w: 2, h: 19 },
+    { i: 'orderbook', x: 10, y: 0, w: 2, h: 19 },
+    { i: 'marketTrades', x: 10, y: 1, w: 2, h: 19 },
+    { i: 'userInfo', x: 0, y: 1, w: 10, h: 19 },
   ],
   lg: [
-    { i: 'tvChart', x: 0, y: 0, w: 6, h: 27, minW: 2 },
-    { i: 'marketPosition', x: 9, y: 2, w: 3, h: 13, minW: 2 },
-    { i: 'accountInfo', x: 9, y: 1, w: 3, h: 14, minW: 2 },
-    { i: 'orderbook', x: 6, y: 2, w: 3, h: 17, minW: 2 },
-    { i: 'tradeForm', x: 9, y: 0, w: 3, h: 17, minW: 3 },
-    { i: 'marketTrades', x: 6, y: 2, w: 3, h: 10, minW: 2 },
-    { i: 'userInfo', x: 0, y: 3, w: 9, h: 19, minW: 6 },
+    { i: 'tvChart', x: 0, y: 0, w: 6, h: 19, minW: 2 },
+    { i: 'tradeForm', x: 6, y: 0, w: 3, h: 19, minW: 3 },
+    { i: 'orderbook', x: 9, y: 0, w: 3, h: 19, minW: 2 },
+    { i: 'marketTrades', x: 9, y: 1, w: 3, h: 19, minW: 2 },
+    { i: 'userInfo', x: 0, y: 1, w: 9, h: 19, minW: 6 },
   ],
   md: [
-    { i: 'tvChart', x: 0, y: 0, w: 8, h: 25, minW: 2 },
-    { i: 'marketPosition', x: 8, y: 1, w: 4, h: 11, minW: 2 },
-    { i: 'accountInfo', x: 8, y: 0, w: 4, h: 14, minW: 2 },
-    { i: 'orderbook', x: 0, y: 2, w: 4, h: 19, minW: 2 },
-    { i: 'tradeForm', x: 4, y: 2, w: 4, h: 19, minW: 3 },
-    { i: 'marketTrades', x: 8, y: 2, w: 4, h: 19, minW: 2 },
-    { i: 'userInfo', x: 0, y: 3, w: 12, h: 19, minW: 6 },
+    { i: 'tvChart', x: 0, y: 0, w: 6, h: 19, minW: 2 },
+    { i: 'tradeForm', x: 6, y: 0, w: 3, h: 19, minW: 2 },
+    { i: 'orderbook', x: 9, y: 0, w: 3, h: 19, minW: 2 },
+    { i: 'marketTrades', x: 9, y: 1, w: 3, h: 19, minW: 2 },
+    { i: 'userInfo', x: 0, y: 1, w: 9, h: 19, minW: 6 },
   ],
   sm: [
     { i: 'tvChart', x: 0, y: 0, w: 12, h: 20, minW: 6 },
-    { i: 'marketPosition', x: 0, y: 1, w: 6, h: 14, minW: 6 },
-    { i: 'accountInfo', x: 6, y: 1, w: 6, h: 14, minW: 6 },
-    { i: 'tradeForm', x: 0, y: 2, w: 12, h: 17, minW: 6 },
-    { i: 'orderbook', x: 0, y: 3, w: 6, h: 17, minW: 6 },
-    { i: 'marketTrades', x: 6, y: 3, w: 6, h: 17, minW: 6 },
-    { i: 'userInfo', x: 0, y: 4, w: 12, h: 19, minW: 6 },
+    { i: 'tradeForm', x: 0, y: 1, w: 12, h: 17, minW: 3 },
+    { i: 'orderbook', x: 0, y: 2, w: 6, h: 17, minW: 3 },
+    { i: 'marketTrades', x: 6, y: 2, w: 6, h: 17, minW: 3 },
+    { i: 'userInfo', x: 0, y: 3, w: 12, h: 19, minW: 6 },
   ],
 }
 
@@ -149,16 +139,16 @@ const TradePageGrid: React.FC = () => {
         <div key="tradeForm">
           <TradeForm />
         </div>
-        <div key="accountInfo">
+        {/* <div key="accountInfo">
           <FloatingElement className="h-full" showConnect>
             <AccountInfo />
           </FloatingElement>
-        </div>
-        <div key="marketPosition">
+        </div> */}
+        {/* <div key="marketPosition">
           <FloatingElement className="h-full" showConnect>
             <UserMarketInfo />
           </FloatingElement>
-        </div>
+        </div> */}
         <div key="marketTrades">
           <FloatingElement className="h-full">
             <RecentMarketTrades />

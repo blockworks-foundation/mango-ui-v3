@@ -534,7 +534,7 @@ body::-webkit-scrollbar-corner {
 }
 
 .pro-sidebar > .pro-sidebar-inner {
-  @apply border-r border-[rgba(255,255,255,0.08)] bg-th-bkg-1;
+  @apply border-r border-[rgba(255,255,255,0.1)] bg-th-bkg-1;
 }
 
 .pro-sidebar > .pro-sidebar-inner > .pro-sidebar-layout .pro-sidebar-header {
@@ -542,7 +542,7 @@ body::-webkit-scrollbar-corner {
 }
 
 .pro-sidebar > .pro-sidebar-inner > .pro-sidebar-layout .pro-sidebar-footer {
-  @apply border-t border-[rgba(255,255,255,0.08)];
+  @apply border-t border-[rgba(255,255,255,0.1)];
 }
 
 .pro-sidebar .pro-menu .pro-menu-item.active {
@@ -624,4 +624,17 @@ body::-webkit-scrollbar-corner {
   .pro-icon-wrapper
   .pro-icon {
   @apply animate-none;
+}
+
+.pro-sidebar.collapsed
+  .pro-menu
+  > ul
+  > .pro-menu-item.pro-sub-menu:hover
+  .pro-icon-wrapper
+  .pro-icon {
+  @apply animate-none;
+}
+
+.pro-sidebar .pro-menu a {
+  color: inherit;
 }
