@@ -1,3 +1,5 @@
+
+   
 {
     "about-to-withdraw": "您正在取款",
     "above": "高于",
@@ -213,6 +215,7 @@
     "liquidity": "流动性",
     "liquidity-mining": "流动性挖矿",
     "long": "做多",
+    "long-exposure": "Long Exposure",
     "low": "低",
     "maint-health": "维持健康度",
     "make-trade": "下订单",
@@ -262,6 +265,7 @@
     "no-address": "没有{{tokenSymbol}}钱包地址",
     "no-balances": "您没有余额",
     "no-borrows": "您没有借贷。",
+    "no-chart": "No chart available",
     "no-funding": "您未收/付过资金费",
     "no-history": "您没有交易纪录",
     "no-interest": "您未收/付过利息",
@@ -363,6 +367,7 @@
     "settle-error": "结清出错",
     "settle-success": "已结清好",
     "short": "做空",
+    "short-exposure": "Short Exposure",
     "show-all": "在导航栏中显示全部",
     "show-less": "显示较少",
     "show-more": "显示更多",
@@ -430,10 +435,8 @@
     "total-funding": "资金费总数量",
     "total-funding-stats": "资金费收/付统计",
     "total-liabilities": "总债务价值",
-    "total-long": "Long Exposure",
     "total-long-tooltip": "Deposits, long futures positions and positive pnl unsettled positions",
     "total-pnl": "总盈亏",
-    "total-short": "Short Exposure",
     "total-short-tooltip": "Borrows, short futures positions and negative pnl unsettled positions",
     "total-srm": "在Mango裡的SRM总量",
     "totals": "总量",
