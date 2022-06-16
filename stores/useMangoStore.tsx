@@ -317,7 +317,7 @@ const useMangoStore = create<
           txid: txid,
         })
       },
-      blockhashCommitment: 'finalized',
+      blockhashCommitment: 'confirmed',
     })
     return {
       marketsInfo: [],
