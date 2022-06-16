@@ -89,7 +89,7 @@ export const serumProgramId = new PublicKey(
 const mangoGroupPk = new PublicKey(defaultMangoGroupIds!.publicKey)
 
 export const SECONDS = 1000
-export const CLIENT_TX_TIMEOUT = 70000
+export const CLIENT_TX_TIMEOUT = 90000
 
 // Used to retry loading the MangoGroup and MangoAccount if an rpc node error occurs
 let mangoGroupRetryAttempt = 0
@@ -308,6 +308,7 @@ const useMangoStore = create<
     const connection = new Connection(rpcUrl, 'processed' as Commitment)
     const client = new MangoClient(connection, programId, {
       timeout: CLIENT_TX_TIMEOUT,
+      prioritizationFee: 2,
       postSendTxCallback: ({ txid }: { txid: string }) => {
         notify({
           title: 'Transaction sent',
