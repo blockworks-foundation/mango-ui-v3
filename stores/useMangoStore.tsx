@@ -63,9 +63,15 @@ export const ENDPOINTS: EndpointInfo[] = [
     websocket: 'https://api.devnet.solana.com',
     custom: false,
   },
+  {
+    name: 'testnet',
+    url: 'https://api.testnet.solana.com',
+    websocket: 'https://api.testnet.solana.com',
+    custom: false,
+  },
 ]
 
-type ClusterType = 'mainnet' | 'devnet'
+type ClusterType = 'mainnet' | 'devnet' | 'testnet'
 const DEFAULT_MANGO_GROUP_NAME = process.env.NEXT_PUBLIC_GROUP || 'mainnet.1'
 export const CLUSTER = DEFAULT_MANGO_GROUP_NAME.split('.')[0] as ClusterType
 const ENDPOINT = ENDPOINTS.find((e) => e.name === CLUSTER) as EndpointInfo
