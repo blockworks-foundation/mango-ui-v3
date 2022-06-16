@@ -31,7 +31,7 @@ export default function Swap() {
   useEffect(() => {
     dayjs.locale(savedLanguage == 'zh_tw' ? 'zh-tw' : savedLanguage)
   })
-  
+
   useEffect(() => {
     if (wallet && connected) {
       actions.fetchWalletTokens(wallet)

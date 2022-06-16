@@ -43,7 +43,7 @@ export default function StatsPage() {
   useEffect(() => {
     dayjs.locale(savedLanguage == 'zh_tw' ? 'zh-tw' : savedLanguage)
   })
-  
+
   const handleChangeViewIndex = (index) => {
     setViewIndex(index)
   }

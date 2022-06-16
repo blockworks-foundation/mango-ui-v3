@@ -105,7 +105,9 @@ const Chart: FunctionComponent<ChartProps> = ({
               <div className="h-4 text-xs font-normal text-th-fgd-4">
                 {titleValue
                   ? ''
-                  : dayjs(data[data.length - 1][xAxis]).format('ddd MMM D YYYY, h:mma')}
+                  : dayjs(data[data.length - 1][xAxis]).format(
+                      'ddd MMM D YYYY, h:mma'
+                    )}
               </div>
             </>
           ) : (

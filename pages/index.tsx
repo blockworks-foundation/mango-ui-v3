@@ -66,7 +66,7 @@ const PerpMarket: React.FC = () => {
   useEffect(() => {
     dayjs.locale(savedLanguage == 'zh_tw' ? 'zh-tw' : savedLanguage)
   })
-  
+
   useEffect(() => {
     if (connected && !mangoAccount && !dismissCreateAccount) {
       setShowCreateAccount(true)
