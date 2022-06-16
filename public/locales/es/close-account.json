@@ -11,6 +11,7 @@
   "error-deleting-account": "Error deleting account",
   "goodbye": "Until next time 👋",
   "recover-x-sol": "Recover {{amount}} SOL (rent for your account)",
+  "settle-balances": "Settle all balances",
   "transaction-confirmed": "Transaction Confirmed",
   "withdraw-assets-worth": "Withdraw assets worth {{value}}"
 }
