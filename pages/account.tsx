@@ -58,6 +58,8 @@ import { MangoAccountLookup } from 'components/account_page/MangoAccountLookup'
 import NftProfilePicModal from 'components/NftProfilePicModal'
 import ProfileImage from 'components/ProfileImage'
 import SwipeableTabs from 'components/mobile/SwipeableTabs'
+import useLocalStorageState from 'hooks/useLocalStorageState'
+import dayjs from 'dayjs'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -106,6 +108,7 @@ export default function Account() {
   const [viewIndex, setViewIndex] = useState(0)
   const [activeTab, setActiveTab] = useState(TABS[0])
   const [showProfilePicModal, setShowProfilePicModal] = useState(false)
+  const [savedLanguage] = useLocalStorageState('language', '')
   const loadingTransaction = useMangoStore(
     (s) => s.wallet.nfts.loadingTransaction
   )
@@ -146,6 +149,10 @@ export default function Account() {
       handleWalletConnect(wallet)
     }
   }, [wallet])
+
+  useEffect(() => {
+    dayjs.locale(savedLanguage == 'zh_tw' ? 'zh-tw' : savedLanguage)
+  })
 
   useEffect(() => {
     async function loadUnownedMangoAccount() {

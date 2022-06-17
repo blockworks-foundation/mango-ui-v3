@@ -9,6 +9,8 @@ import JupiterForm from '../components/JupiterForm'
 import { zeroKey } from '@blockworks-foundation/mango-client'
 import { useTranslation } from 'next-i18next'
 import { useWallet } from '@solana/wallet-adapter-react'
+import useLocalStorageState from 'hooks/useLocalStorageState'
+import dayjs from 'dayjs'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -24,6 +26,11 @@ export default function Swap() {
   const connection = useMangoStore(connectionSelector)
   const { connected, publicKey, wallet } = useWallet()
   const actions = useMangoStore(actionsSelector)
+  const [savedLanguage] = useLocalStorageState('language', '')
+
+  useEffect(() => {
+    dayjs.locale(savedLanguage == 'zh_tw' ? 'zh-tw' : savedLanguage)
+  })
 
   useEffect(() => {
     if (wallet && connected) {

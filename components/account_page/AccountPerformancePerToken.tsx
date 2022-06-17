@@ -443,7 +443,7 @@ const AccountPerformance = () => {
                   key={s}
                 >
                   {renderSymbolIcon(s)}
-                  {s}
+                  {s == 'All' ? t(`account-performance:all`) : s}
                 </button>
               ))}
             </div>
