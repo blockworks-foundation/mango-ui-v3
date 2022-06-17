@@ -8,7 +8,7 @@ export const Table = ({ children }) => (
 )
 
 export const TrHead = ({ children }) => (
-  <tr className="text-xs text-th-fgd-3">{children}</tr>
+  <tr className="text-xxs leading-tight text-th-fgd-2">{children}</tr>
 )
 
 export const Th = ({ children }) => (
@@ -47,7 +47,7 @@ export const ExpandableRow = ({
       {({ open }) => (
         <>
           <Disclosure.Button
-            className={`default-transition flex w-full items-center justify-between border-t border-th-bkg-4 p-4 font-normal text-th-fgd-1 hover:bg-th-bkg-4 focus:outline-none ${
+            className={`default-transition flex w-full items-center justify-between border-t border-th-bkg-4 p-4 text-left text-xs font-normal text-th-fgd-1 hover:bg-th-bkg-4 focus:outline-none ${
               rounded
                 ? open
                   ? 'rounded-b-none'
@@ -76,7 +76,7 @@ export const ExpandableRow = ({
             leaveTo="opacity-0"
           >
             <Disclosure.Panel>
-              <div className="px-4 pb-4 pt-2">{panelTemplate}</div>
+              <div className="px-4 pb-4 pt-2 text-xs">{panelTemplate}</div>
             </Disclosure.Panel>
           </Transition>
         </>

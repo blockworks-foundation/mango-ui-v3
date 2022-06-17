@@ -279,10 +279,10 @@ export default function Account() {
 
   return (
     <div className="pb-6">
-      <div className="mb-2 flex flex-col py-6 md:flex-row md:items-end md:justify-between md:pb-4">
+      <div className="mb-2 flex flex-col pt-6 pb-4 lg:flex-row lg:items-end lg:justify-between">
         {mangoAccount ? (
           <>
-            <div className="flex flex-col pb-3 sm:flex-row sm:items-center md:pb-0">
+            <div className="flex flex-col pb-3 sm:flex-row sm:items-center lg:pb-0">
               <button
                 disabled={!!pubkey}
                 className={`relative mb-2 mr-4 flex h-20 w-20 items-center justify-center rounded-full sm:mb-0 ${
@@ -298,9 +298,11 @@ export default function Account() {
                   placeholderHeightClass="h-12"
                   placeholderWidthClass="w-12"
                 />
-                <div className="default-transition absolute bottom-0 top-0 left-0 right-0 flex h-full w-full items-center justify-center rounded-full bg-[rgba(0,0,0,0.6)] opacity-0 hover:opacity-100">
-                  <PencilIcon className="h-5 w-5 text-th-fgd-1" />
-                </div>
+                {!pubkey ? (
+                  <div className="default-transition absolute bottom-0 top-0 left-0 right-0 flex h-full w-full items-center justify-center rounded-full bg-[rgba(0,0,0,0.6)] opacity-0 hover:opacity-100">
+                    <PencilIcon className="h-5 w-5 text-th-fgd-1" />
+                  </div>
+                ) : null}
               </button>
               <div>
                 <div className="mb-1 flex items-center">

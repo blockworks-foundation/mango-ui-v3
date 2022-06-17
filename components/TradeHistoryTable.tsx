@@ -598,11 +598,11 @@ const TradeHistoryTable = ({
                 </div>
               )
             ) : hasActiveFilter ? (
-              <div className="w-full rounded-md bg-th-bkg-2 py-6 text-center text-th-fgd-3 md:bg-th-bkg-3">
+              <div className="w-full rounded-md border border-th-bkg-4 py-6 text-center text-th-fgd-3">
                 {t('no-trades-found')}
               </div>
             ) : (
-              <div className="w-full rounded-md bg-th-bkg-2 py-6 text-center text-th-fgd-3 md:bg-th-bkg-3">
+              <div className="w-full rounded-md border border-th-bkg-4 py-6 text-center text-th-fgd-3">
                 {t('no-history')}
                 {asPath === '/account' ? (
                   <Link href={'/'} shallow={true}>

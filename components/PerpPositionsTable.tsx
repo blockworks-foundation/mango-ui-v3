@@ -21,6 +21,7 @@ import { TwitterIcon } from './icons'
 import { marketSelector } from '../stores/selectors'
 import { useWallet } from '@solana/wallet-adapter-react'
 import RedeemButtons from './RedeemButtons'
+import Tooltip from './Tooltip'
 
 const PositionsTable: React.FC = () => {
   const { t } = useTranslation('common')
@@ -171,6 +172,7 @@ const PositionsTable: React.FC = () => {
                     <Th>{t('average-entry')}</Th>
                     <Th>{t('break-even')}</Th>
                     <Th>{t('unrealized-pnl')}</Th>
+                    <Th>{t('unsettled-balance')}</Th>
                   </TrHead>
                 </thead>
                 <tbody>
@@ -186,6 +188,7 @@ const PositionsTable: React.FC = () => {
                         avgEntryPrice,
                         breakEvenPrice,
                         unrealizedPnl,
+                        unsettledPnl,
                       },
                       index
                     ) => {
@@ -262,6 +265,35 @@ const PositionsTable: React.FC = () => {
                             )}
                           </Td>
                           <Td>
+                            {unsettledPnl ? (
+                              settleSinglePos === index ? (
+                                <Loading />
+                              ) : (
+                                <Tooltip content={t('redeem-pnl')}>
+                                  <LinkButton
+                                    className={`font-bold ${
+                                      unsettledPnl >= 0
+                                        ? 'text-th-green'
+                                        : 'text-th-red'
+                                    }`}
+                                    onClick={() =>
+                                      handleSettlePnl(
+                                        perpMarket,
+                                        perpAccount,
+                                        index
+                                      )
+                                    }
+                                    disabled={unsettledPnl === 0}
+                                  >
+                                    {formatUsdValue(unsettledPnl)}
+                                  </LinkButton>
+                                </Tooltip>
+                              )
+                            ) : (
+                              '--'
+                            )}
+                          </Td>
+                          <Td>
                             <LinkButton
                               onClick={() =>
                                 handleShowShare(openPositions[index])
@@ -299,7 +331,10 @@ const PositionsTable: React.FC = () => {
                       notionalSize,
                       avgEntryPrice,
                       breakEvenPrice,
+                      perpAccount,
+                      perpMarket,
                       unrealizedPnl,
+                      unsettledPnl,
                     },
                     index
                   ) => {
@@ -373,6 +408,38 @@ const PositionsTable: React.FC = () => {
                                 ? formatUsdValue(breakEvenPrice)
                                 : '--'}
                             </div>
+                            <div className="col-span-1 text-left">
+                              <div className="pb-0.5 text-xs text-th-fgd-3">
+                                {t('unsettled-balance')}
+                              </div>
+                              {unsettledPnl ? (
+                                settleSinglePos === index ? (
+                                  <Loading />
+                                ) : (
+                                  <Tooltip content={t('redeem-pnl')}>
+                                    <LinkButton
+                                      className={`font-bold ${
+                                        unsettledPnl >= 0
+                                          ? 'text-th-green'
+                                          : 'text-th-red'
+                                      }`}
+                                      onClick={() =>
+                                        handleSettlePnl(
+                                          perpMarket,
+                                          perpAccount,
+                                          index
+                                        )
+                                      }
+                                      disabled={unsettledPnl === 0}
+                                    >
+                                      {formatUsdValue(unsettledPnl)}
+                                    </LinkButton>
+                                  </Tooltip>
+                                )
+                              ) : (
+                                '--'
+                              )}
+                            </div>
                           </div>
                         }
                       />
@@ -383,7 +450,7 @@ const PositionsTable: React.FC = () => {
             )
           ) : (
             <div
-              className={`w-full rounded-md bg-th-bkg-2 py-6 text-center text-th-fgd-3 md:bg-th-bkg-3`}
+              className={`w-full rounded-md border border-th-bkg-4 py-6 text-center text-th-fgd-3`}
             >
               {t('no-perp')}
             </div>

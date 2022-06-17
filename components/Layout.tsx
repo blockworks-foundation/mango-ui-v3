@@ -25,6 +25,7 @@ const Layout = ({ children }) => {
   const isMobile = width ? width < breakpoints.sm : false
   const router = useRouter()
   const { pathname } = router
+  const { pubkey } = router.query
 
   useEffect(() => {
     const collapsed = width ? width < breakpoints.lg : false
@@ -59,7 +60,9 @@ const Layout = ({ children }) => {
               </div>
             ) : (
               <div className="text-th-fgd-3">
-                <span className="mb-0 mr-2 text-lg">👋</span>
+                <span className="mb-0 mr-2 text-lg">
+                  {pubkey ? '🕵️' : '👋'}
+                </span>
                 <span className="font-bold leading-none text-th-fgd-1">
                   {`${
                     mangoAccount

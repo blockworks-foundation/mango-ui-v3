@@ -294,7 +294,7 @@ const AccountOverviewStats = ({ hourlyPerformanceStats, accountValue }) => {
           </div>
           {mouseData ? (
             <>
-              <div className="pb-1 text-2xl font-bold text-th-fgd-1 sm:text-4xl">
+              <div className="pb-1 text-2xl font-bold text-th-fgd-1 sm:text-3xl">
                 {formatUsdValue(
                   mouseData[
                     chartToShow === 'PnL' ? pnlChartDataKey() : 'account_equity'
@@ -307,7 +307,7 @@ const AccountOverviewStats = ({ hourlyPerformanceStats, accountValue }) => {
             </>
           ) : chartData.length === 0 ? (
             <>
-              <div className="pb-1 text-3xl font-bold text-th-fgd-1 sm:text-4xl">
+              <div className="pb-1 text-2xl font-bold text-th-fgd-1 sm:text-3xl">
                 {chartToShow === 'PnL' ? '--' : formatUsdValue(accountValue)}
               </div>
               <div className="text-xs font-normal text-th-fgd-4">
@@ -316,7 +316,7 @@ const AccountOverviewStats = ({ hourlyPerformanceStats, accountValue }) => {
             </>
           ) : chartData.length > 0 ? (
             <>
-              <div className="pb-1 text-3xl font-bold text-th-fgd-1 sm:text-4xl">
+              <div className="pb-1 text-2xl font-bold text-th-fgd-1 sm:text-3xl">
                 {chartToShow === 'PnL'
                   ? formatUsdValue(
                       chartData[chartData.length - 1][pnlChartDataKey()]
@@ -361,7 +361,7 @@ const AccountOverviewStats = ({ hourlyPerformanceStats, accountValue }) => {
                   <InformationCircleIcon className="h-5 w-5 flex-shrink-0 cursor-help text-th-fgd-3" />
                 </div>
               </Tooltip>
-              <div className={`text-2xl font-bold text-th-fgd-1`}>
+              <div className={`text-lg font-bold text-th-fgd-1`}>
                 {maintHealthRatio < 100 ? maintHealthRatio.toFixed(2) : '>100'}%
               </div>
             </div>
@@ -369,7 +369,7 @@ const AccountOverviewStats = ({ hourlyPerformanceStats, accountValue }) => {
           <div className="w-1/2 px-4 pl-4 sm:px-5 lg:w-full lg:p-5 xl:w-1/2 xl:p-0 xl:pl-4">
             <div className="pb-0.5 text-th-fgd-3">{t('leverage')}</div>
             {mangoGroup && mangoCache ? (
-              <div className={`text-2xl font-bold text-th-fgd-1`}>
+              <div className={`text-lg font-bold text-th-fgd-1`}>
                 {mangoAccount?.getLeverage(mangoGroup, mangoCache).toFixed(2)}x
               </div>
             ) : null}
@@ -381,12 +381,14 @@ const AccountOverviewStats = ({ hourlyPerformanceStats, accountValue }) => {
             <div className="mt-3 md:mt-0 xl:mt-3">
               <Tooltip content={t('total-long-tooltip')}>
                 <div className="flex items-center space-x-1.5 pb-0.5">
-                  <div className="text-th-fgd-3">{t('long-exposure')}</div>
+                  <div className="whitespace-nowrap text-th-fgd-3">
+                    {t('long-exposure')}
+                  </div>
                   <InformationCircleIcon className="h-5 w-5 flex-shrink-0 cursor-help text-th-fgd-3" />
                 </div>
               </Tooltip>
               {mangoGroup && mangoCache ? (
-                <div className="text-2xl font-bold text-th-fgd-1">
+                <div className="text-lg font-bold text-th-fgd-1">
                   {formatUsdValue(+longExposure)}
                 </div>
               ) : null}
@@ -397,12 +399,14 @@ const AccountOverviewStats = ({ hourlyPerformanceStats, accountValue }) => {
             <div className="mt-3 md:mt-0 xl:mt-3">
               <Tooltip content={t('total-short-tooltip')}>
                 <div className="flex items-center space-x-1.5 pb-0.5">
-                  <div className="text-th-fgd-3">{t('short-exposure')}</div>
+                  <div className="whitespace-nowrap text-th-fgd-3">
+                    {t('short-exposure')}
+                  </div>
                   <InformationCircleIcon className="h-5 w-5 flex-shrink-0 cursor-help text-th-fgd-3" />
                 </div>
               </Tooltip>
               {mangoGroup && mangoCache ? (
-                <div className="text-2xl font-bold text-th-fgd-1">
+                <div className="text-lg font-bold text-th-fgd-1">
                   {formatUsdValue(+shortExposure)}
                 </div>
               ) : null}
@@ -450,7 +454,7 @@ const AccountOverviewStats = ({ hourlyPerformanceStats, accountValue }) => {
           </div>
         </div>
         {chartData.length > 0 ? (
-          <div className="h-48 md:h-64 lg:h-[410px] xl:h-[270px]" ref={observe}>
+          <div className="h-48 md:h-64 lg:h-[398px] xl:h-[250px]" ref={observe}>
             <AreaChart
               width={width}
               height={height}

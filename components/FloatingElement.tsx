@@ -7,6 +7,8 @@ import { useTranslation } from 'next-i18next'
 import { handleWalletConnect } from 'components/ConnectWalletButton'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useRouter } from 'next/router'
+import { useViewport } from '../hooks/useViewport'
+import { breakpoints } from './TradePageGrid'
 
 interface FloatingElementProps {
   className?: string
@@ -24,6 +26,8 @@ const FloatingElement: FunctionComponent<FloatingElementProps> = ({
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const router = useRouter()
   const { pubkey } = router.query
+  const { width } = useViewport()
+  const isMobile = width ? width < breakpoints.sm : false
 
   const handleConnect = useCallback(() => {
     if (wallet) {
@@ -33,7 +37,9 @@ const FloatingElement: FunctionComponent<FloatingElementProps> = ({
 
   return (
     <div
-      className={`thin-scroll relative overflow-auto overflow-x-hidden rounded-md border border-th-bkg-4 bg-th-bkg-1 p-2.5 md:p-4 ${className}`}
+      className={`thin-scroll relative overflow-auto overflow-x-hidden rounded-md ${
+        !isMobile ? 'border border-th-bkg-4' : ''
+      } bg-th-bkg-1 p-2.5 md:p-4 ${className}`}
     >
       {!connected && showConnect && !pubkey ? (
         <div className="absolute top-0 left-0 z-10 h-full w-full">
