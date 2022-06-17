@@ -2,8 +2,6 @@ import { ChevronUpIcon, RefreshIcon } from '@heroicons/react/outline'
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
 import { Disclosure } from '@headlessui/react'
 import useMangoStore, { serumProgramId } from '../stores/useMangoStore'
-import PageBodyContainer from '../components/PageBodyContainer'
-import TopBar from '../components/TopBar'
 import Button, { LinkButton } from '../components/Button'
 import Input from '../components/Input'
 import { useState, useEffect } from 'react'
@@ -1286,882 +1284,862 @@ export default function RiskCalculator() {
 
   // Display all
   return (
-    <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
-      <TopBar />
-      <PageBodyContainer>
-        <div className="flex flex-col pt-8 pb-3 sm:pb-6 md:pt-10">
-          <h1 className={`mb-2`}>{t('calculator:risk-calculator')}</h1>
-          <p className="mb-0">{t('calculator:in-testing-warning')}</p>
-        </div>
-        {scenarioBars?.rowData?.length ? (
-          <div className="rounded-lg bg-th-bkg-2">
-            <div className="grid grid-cols-12">
-              <div className="col-span-12 p-4 md:col-span-8">
-                <div className="flex justify-between px-0 pb-2 lg:px-3 lg:pb-3">
-                  <h2 className="mb-4 lg:mb-0">
-                    {t('calculator:scenario-balances')}
-                  </h2>
-                  <div className="flex justify-between lg:justify-start">
+    <div>
+      <div className="flex flex-col pt-8 pb-3 sm:pb-6 md:pt-10">
+        <h1 className={`mb-2`}>{t('calculator:risk-calculator')}</h1>
+        <p className="mb-0">{t('calculator:in-testing-warning')}</p>
+      </div>
+      {scenarioBars?.rowData?.length ? (
+        <div>
+          <div className="grid grid-cols-12 pb-6">
+            <div className="col-span-12 rounded-l-lg border border-r-0 border-th-bkg-4 p-4 md:col-span-8">
+              <div className="flex justify-between px-0 pb-2 lg:px-3 lg:pb-3">
+                <h2 className="mb-4 lg:mb-0">
+                  {t('calculator:scenario-balances')}
+                </h2>
+                <div className="flex justify-between lg:justify-start">
+                  <Button
+                    className={`flex h-8 items-center justify-center rounded pt-0 pb-0 pl-3 pr-3 text-xs sm:ml-3`}
+                    onClick={() => {
+                      setSliderPercentage(defaultSliderVal)
+                      toggleOrdersAsBalance(false)
+                      createScenario(accountConnected ? 'account' : 'blank')
+                    }}
+                  >
+                    <div className="flex items-center hover:text-th-primary">
+                      <RefreshIcon className="mr-1.5 h-5 w-5" />
+                      {t('reset')}
+                    </div>
+                  </Button>
+                </div>
+              </div>
+              <div className="mb-3 flex h-8 items-center rounded border border-th-fgd-4 bg-th-bkg-1 px-3 lg:mx-3">
+                <div className="whitespace-nowrap pr-5 text-xs text-th-fgd-3">
+                  {t('calculator:edit-all-prices')}
+                </div>
+                <div className="w-full">
+                  <Slider
+                    onChange={(e) => {
+                      onChangeSlider(e)
+                    }}
+                    step={0.01}
+                    value={sliderPercentage}
+                    min={0}
+                    max={3.5}
+                    defaultValue={defaultSliderVal}
+                    trackStyle={{ backgroundColor: '#F2C94C' }}
+                    handleStyle={{
+                      borderColor: '#F2C94C',
+                      backgroundColor: '#f7f7f7',
+                    }}
+                    railStyle={{ backgroundColor: '#F2C94C' }}
+                  />
+                </div>
+                <div className="w-16 pl-4 text-xs text-th-fgd-1">
+                  {`${Number((sliderPercentage - 1) * 100).toFixed(0)}%`}
+                </div>
+                <div className="w-16 pl-4 text-xs text-th-fgd-1 hover:text-th-primary">
+                  <LinkButton
+                    onClick={() => setSliderPercentage(defaultSliderVal)}
+                  >
+                    {t('reset')}
+                  </LinkButton>
+                </div>
+              </div>
+              <div className="wrap flex justify-between px-0 pb-2 lg:px-3 lg:pb-3">
+                <div className="mb-3 flex h-8 items-center rounded px-3 lg:mx-3">
+                  <Switch
+                    checked={showZeroBalances}
+                    className="text-xs"
+                    onChange={() => setShowZeroBalances(!showZeroBalances)}
+                  >
+                    {t('show-zero')}
+                  </Switch>
+                </div>
+                <div className="mb-3 flex h-8 items-center rounded px-3 lg:mx-3">
+                  <Switch
+                    checked={ordersAsBalance}
+                    className="text-xs"
+                    onChange={() => toggleOrdersAsBalance(!ordersAsBalance)}
+                  >
+                    {t('calculator:simulate-orders-cancelled')}
+                  </Switch>
+                </div>
+                <div className="flex justify-between lg:justify-start">
+                  <Tooltip content={t('calculator:tooltip-anchor-slider')}>
                     <Button
                       className={`flex h-8 items-center justify-center rounded pt-0 pb-0 pl-3 pr-3 text-xs sm:ml-3`}
                       onClick={() => {
+                        anchorPricing()
                         setSliderPercentage(defaultSliderVal)
-                        toggleOrdersAsBalance(false)
-                        createScenario(accountConnected ? 'account' : 'blank')
                       }}
                     >
                       <div className="flex items-center hover:text-th-primary">
-                        <RefreshIcon className="mr-1.5 h-5 w-5" />
-                        {t('reset')}
+                        <AnchorIcon className="mr-1.5 h-5 w-5" />
+                        {t('calculator:anchor-slider')}
                       </div>
                     </Button>
-                  </div>
+                  </Tooltip>
                 </div>
-                <div className="mb-3 flex h-8 items-center rounded border border-th-fgd-4 bg-th-bkg-1 px-3 lg:mx-3">
-                  <div className="whitespace-nowrap pr-5 text-xs text-th-fgd-3">
-                    {t('calculator:edit-all-prices')}
-                  </div>
-                  <div className="w-full">
-                    <Slider
-                      onChange={(e) => {
-                        onChangeSlider(e)
-                      }}
-                      step={0.01}
-                      value={sliderPercentage}
-                      min={0}
-                      max={3.5}
-                      defaultValue={defaultSliderVal}
-                      trackStyle={{ backgroundColor: '#F2C94C' }}
-                      handleStyle={{
-                        borderColor: '#F2C94C',
-                        backgroundColor: '#f7f7f7',
-                      }}
-                      railStyle={{ backgroundColor: '#F2C94C' }}
-                    />
-                  </div>
-                  <div className="w-16 pl-4 text-xs text-th-fgd-1">
-                    {`${Number((sliderPercentage - 1) * 100).toFixed(0)}%`}
-                  </div>
-                  <div className="w-16 pl-4 text-xs text-th-fgd-1 hover:text-th-primary">
-                    <LinkButton
-                      onClick={() => setSliderPercentage(defaultSliderVal)}
-                    >
-                      {t('reset')}
-                    </LinkButton>
-                  </div>
-                </div>
-                <div className="wrap flex justify-between px-0 pb-2 lg:px-3 lg:pb-3">
-                  <div className="mb-3 flex h-8 items-center rounded px-3 lg:mx-3">
-                    <Switch
-                      checked={showZeroBalances}
-                      className="text-xs"
-                      onChange={() => setShowZeroBalances(!showZeroBalances)}
-                    >
-                      {t('show-zero')}
-                    </Switch>
-                  </div>
-                  <div className="mb-3 flex h-8 items-center rounded px-3 lg:mx-3">
-                    <Switch
-                      checked={ordersAsBalance}
-                      className="text-xs"
-                      onChange={() => toggleOrdersAsBalance(!ordersAsBalance)}
-                    >
-                      {t('calculator:simulate-orders-cancelled')}
-                    </Switch>
-                  </div>
-                  <div className="flex justify-between lg:justify-start">
-                    <Tooltip content={t('calculator:tooltip-anchor-slider')}>
-                      <Button
-                        className={`flex h-8 items-center justify-center rounded pt-0 pb-0 pl-3 pr-3 text-xs sm:ml-3`}
-                        onClick={() => {
-                          anchorPricing()
-                          setSliderPercentage(defaultSliderVal)
-                        }}
-                      >
-                        <div className="flex items-center hover:text-th-primary">
-                          <AnchorIcon className="mr-1.5 h-5 w-5" />
-                          {t('calculator:anchor-slider')}
-                        </div>
-                      </Button>
-                    </Tooltip>
-                  </div>
-                </div>
-                {/*Hidden panel that displays a short scenario summary on mobile instead of the detailed one*/}
-                <div className="sticky mb-3 w-full rounded border border-th-fgd-4 bg-th-bkg-1 md:hidden">
-                  <Disclosure>
-                    {({ open }) => (
-                      <>
-                        <Disclosure.Button className="default-transition flex w-full items-center justify-between bg-th-bkg-1 p-3 hover:bg-th-bkg-1 focus:outline-none">
-                          <p className="mb-0">
-                            {open
-                              ? t('calculator:scenario-details')
-                              : t('calculator:scenario-maint-health')}
-                          </p>
-                          {open ? null : (
-                            <div className="text-xs text-th-fgd-3">
-                              {scenarioDetails.get('maintHealth') * 100 >= 9999
-                                ? '>10000'
-                                : scenarioDetails.get('maintHealth') * 100 < 0
-                                ? '<0'
-                                : (
-                                    scenarioDetails.get('maintHealth') * 100
-                                  ).toFixed(2)}
-                              %
+              </div>
+              {/*Hidden panel that displays a short scenario summary on mobile instead of the detailed one*/}
+              <div className="sticky mb-3 w-full rounded border border-th-fgd-4 bg-th-bkg-1 md:hidden">
+                <Disclosure>
+                  {({ open }) => (
+                    <>
+                      <Disclosure.Button className="default-transition flex w-full items-center justify-between bg-th-bkg-1 p-3 hover:bg-th-bkg-1 focus:outline-none">
+                        <p className="mb-0">
+                          {open
+                            ? t('calculator:scenario-details')
+                            : t('calculator:scenario-maint-health')}
+                        </p>
+                        {open ? null : (
+                          <div className="text-xs text-th-fgd-3">
+                            {scenarioDetails.get('maintHealth') * 100 >= 9999
+                              ? '>10000'
+                              : scenarioDetails.get('maintHealth') * 100 < 0
+                              ? '<0'
+                              : (
+                                  scenarioDetails.get('maintHealth') * 100
+                                ).toFixed(2)}
+                            %
+                          </div>
+                        )}
+                        <ChevronUpIcon
+                          className={`default-transition h-4 w-4 text-th-fgd-1 ${
+                            open
+                              ? 'rotate-360 transform'
+                              : 'rotate-180 transform'
+                          }`}
+                        />
+                      </Disclosure.Button>
+                      <Disclosure.Panel className="p-3">
+                        <div className="text-xs text-th-fgd-1">
+                          <div className="flex items-center justify-between pb-3">
+                            <div className="text-th-fgd-3">
+                              {t('maint-health')}
                             </div>
-                          )}
-                          <ChevronUpIcon
-                            className={`default-transition h-4 w-4 text-th-fgd-1 ${
-                              open
-                                ? 'rotate-360 transform'
-                                : 'rotate-180 transform'
-                            }`}
-                          />
-                        </Disclosure.Button>
-                        <Disclosure.Panel className="p-3">
-                          <div className="text-xs text-th-fgd-1">
-                            <div className="flex items-center justify-between pb-3">
-                              <div className="text-th-fgd-3">
-                                {t('maint-health')}
-                              </div>
-                              {scenarioDetails.get('maintHealth') * 100 >= 9999
-                                ? '>10000'
-                                : scenarioDetails.get('maintHealth') * 100 < 0
-                                ? '<0'
-                                : (
-                                    scenarioDetails.get('maintHealth') * 100
-                                  ).toFixed(2)}
-                              %
+                            {scenarioDetails.get('maintHealth') * 100 >= 9999
+                              ? '>10000'
+                              : scenarioDetails.get('maintHealth') * 100 < 0
+                              ? '<0'
+                              : (
+                                  scenarioDetails.get('maintHealth') * 100
+                                ).toFixed(2)}
+                            %
+                          </div>
+                          <div className="flex items-center justify-between pb-3">
+                            <div className="text-th-fgd-3">
+                              {t('init-health')}
                             </div>
-                            <div className="flex items-center justify-between pb-3">
-                              <div className="text-th-fgd-3">
-                                {t('init-health')}
-                              </div>
-                              {scenarioDetails.get('initHealth') * 100 >= 9999
-                                ? '>10000'
-                                : scenarioDetails.get('initHealth') * 100 < 0
-                                ? '<0'
-                                : (
-                                    scenarioDetails.get('initHealth') * 100
-                                  ).toFixed(2)}
-                              %
+                            {scenarioDetails.get('initHealth') * 100 >= 9999
+                              ? '>10000'
+                              : scenarioDetails.get('initHealth') * 100 < 0
+                              ? '<0'
+                              : (
+                                  scenarioDetails.get('initHealth') * 100
+                                ).toFixed(2)}
+                            %
+                          </div>
+                          <div className="flex items-center justify-between pb-3">
+                            <div className="text-th-fgd-3">
+                              {t('calculator:new-positions-openable')}
                             </div>
-                            <div className="flex items-center justify-between pb-3">
-                              <div className="text-th-fgd-3">
-                                {t('calculator:new-positions-openable')}
-                              </div>
-                              <div
-                                className={`font-bold ${
-                                  scenarioDetails.get('initHealth') * 100 >= 0
-                                    ? 'text-th-green'
-                                    : 'text-th-red'
-                                }`}
-                              >
-                                {scenarioDetails.get('initHealth') * 100 >= 0
-                                  ? t('calculator:yes')
-                                  : t('calculator:no')}
-                              </div>
+                            <div
+                              className={`font-bold ${
+                                scenarioDetails.get('initHealth') * 100 >= 0
+                                  ? 'text-th-green'
+                                  : 'text-th-red'
+                              }`}
+                            >
+                              {scenarioDetails.get('initHealth') * 100 >= 0
+                                ? t('calculator:yes')
+                                : t('calculator:no')}
                             </div>
-                            <div className="flex items-center justify-between pb-3">
-                              <div className="text-th-fgd-3">{t('health')}</div>
-                              <div className="font-bold">
-                                {
-                                  <div
-                                    className={`font-bold ${
-                                      scenarioDetails.get('maintHealth') * 100 <
-                                      0
-                                        ? 'text-th-red'
-                                        : scenarioDetails.get('riskRanking') ===
-                                          riskRanks[3]
-                                        ? 'text-th-red'
-                                        : scenarioDetails.get('riskRanking') ===
-                                          riskRanks[2]
-                                        ? 'text-th-orange'
-                                        : scenarioDetails.get('riskRanking') ===
-                                          riskRanks[1]
-                                        ? 'text-th-primary'
-                                        : 'text-th-green'
-                                    }`}
-                                  >
-                                    {scenarioDetails.get('maintHealth') * 100 <
-                                    0
-                                      ? riskRanks[4]
-                                      : scenarioDetails.get('riskRanking')}
-                                  </div>
-                                }
-                              </div>
-                            </div>
-                            <div>
-                              <div className="flex items-center justify-between pb-3">
-                                <div className="text-th-fgd-3">
-                                  {t('account-value')}
+                          </div>
+                          <div className="flex items-center justify-between pb-3">
+                            <div className="text-th-fgd-3">{t('health')}</div>
+                            <div className="font-bold">
+                              {
+                                <div
+                                  className={`font-bold ${
+                                    scenarioDetails.get('maintHealth') * 100 < 0
+                                      ? 'text-th-red'
+                                      : scenarioDetails.get('riskRanking') ===
+                                        riskRanks[3]
+                                      ? 'text-th-red'
+                                      : scenarioDetails.get('riskRanking') ===
+                                        riskRanks[2]
+                                      ? 'text-th-orange'
+                                      : scenarioDetails.get('riskRanking') ===
+                                        riskRanks[1]
+                                      ? 'text-th-primary'
+                                      : 'text-th-green'
+                                  }`}
+                                >
+                                  {scenarioDetails.get('maintHealth') * 100 < 0
+                                    ? riskRanks[4]
+                                    : scenarioDetails.get('riskRanking')}
                                 </div>
-                                <div className="font-bold">
-                                  {formatUsdValue(
-                                    scenarioDetails.get('equity')
-                                  )}
-                                </div>
-                              </div>
+                              }
                             </div>
+                          </div>
+                          <div>
                             <div className="flex items-center justify-between pb-3">
                               <div className="text-th-fgd-3">
-                                {t('calculator:percent-move-liquidation')}
+                                {t('account-value')}
                               </div>
                               <div className="font-bold">
-                                {scenarioDetails.get(
-                                  'percentToLiquidationAbsolute'
-                                )}
-                                %
+                                {formatUsdValue(scenarioDetails.get('equity'))}
                               </div>
                             </div>
                           </div>
-                        </Disclosure.Panel>
-                      </>
-                    )}
-                  </Disclosure>
-                </div>
-                {/*Create scenario table for display*/}
-                <div className={`flex flex-col pb-2`}>
-                  <div className={`-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8`}>
-                    <div
-                      className={`inline-block min-w-full align-middle sm:px-6 lg:px-8`}
-                    >
-                      <Table className="min-w-full divide-y divide-th-bkg-2">
-                        <Thead>
-                          <Tr className="text-xs text-th-fgd-3">
-                            <Th
-                              scope="col"
-                              className={`px-1 py-1 text-left font-normal lg:px-3`}
-                            >
-                              {t('asset')}
-                            </Th>
-                            <Th
-                              scope="col"
-                              className={`px-1 py-1 text-left font-normal lg:px-3`}
-                            >
-                              <div className="flex justify-start md:justify-between">
-                                <div className="pr-2">{t('spot')}</div>
-                                <LinkButton
-                                  onClick={() => resetScenarioColumn('spotNet')}
-                                >
-                                  {t('reset')}
-                                </LinkButton>
-                              </div>
-                            </Th>
-                            <Th
-                              scope="col"
-                              className={`px-1 py-1 text-left font-normal lg:px-3`}
-                            >
-                              <div className="flex justify-start md:justify-between">
-                                <div className="pr-2">{t('perp')}</div>
-                                <LinkButton
-                                  onClick={() =>
-                                    resetScenarioColumn('perpBasePosition')
-                                  }
-                                >
-                                  {t('reset')}
-                                </LinkButton>
-                              </div>
-                            </Th>
-                            <Th
-                              scope="col"
-                              className={`px-1 py-1 text-left font-normal lg:px-3`}
-                            >
-                              <div className="flex justify-start md:justify-between">
-                                <div className="pr-2">
-                                  {t('calculator:perp-entry')}
-                                </div>
-                                <LinkButton
-                                  onClick={() =>
-                                    resetScenarioColumn('perpAvgEntryPrice')
-                                  }
-                                >
-                                  {t('reset')}
-                                </LinkButton>
-                              </div>
-                            </Th>
-                            <Th
-                              scope="col"
-                              className={`px-1 py-1 font-normal lg:px-3`}
-                            >
-                              <div className="flex justify-start md:justify-between">
-                                <div className="pr-2">{t('price')}</div>
-                                <LinkButton
-                                  onClick={() => resetScenarioColumn('price')}
-                                >
-                                  {t('reset')}
-                                </LinkButton>
-                              </div>
-                            </Th>
-                            <Th
-                              scope="col"
-                              className={`px-1 py-1 text-left font-normal lg:px-3`}
-                            >
-                              <div className="flex justify-start md:justify-between">
-                                <Tooltip
-                                  content={t('calculator:spot-val-perp-val')}
-                                >
-                                  <div className="pr-2">{t('value')}</div>
-                                </Tooltip>
-                              </div>
-                            </Th>
-                            <Th
-                              scope="col"
-                              className={`px-1 py-1 text-left font-normal lg:px-3`}
-                            >
-                              <div className="flex justify-start md:justify-between">
-                                <Tooltip
-                                  content={t('calculator:single-asset-liq')}
-                                >
-                                  <div className="pr-2">
-                                    {t('calculator:liq-price')}
-                                  </div>
-                                </Tooltip>
-                              </div>
-                            </Th>
-                          </Tr>
-                        </Thead>
-                        <Tbody>
-                          {/*Populate scenario table with data*/}
-                          {scenarioBars.rowData.map((asset, i) =>
-                            asset.symbolName === 'USDC' ||
-                            (asset.spotNet != 0 && asset.hasMarketSpot) ||
-                            (asset.perpBasePosition != 0 &&
-                              asset.hasMarketPerp) ||
-                            showZeroBalances ? (
-                              <Tr
-                                className={`${
-                                  i % 2 === 0
-                                    ? `bg-th-bkg-3 md:bg-th-bkg-2`
-                                    : `bg-th-bkg-2`
-                                }`}
-                                key={`${i}`}
+                          <div className="flex items-center justify-between pb-3">
+                            <div className="text-th-fgd-3">
+                              {t('calculator:percent-move-liquidation')}
+                            </div>
+                            <div className="font-bold">
+                              {scenarioDetails.get(
+                                'percentToLiquidationAbsolute'
+                              )}
+                              %
+                            </div>
+                          </div>
+                        </div>
+                      </Disclosure.Panel>
+                    </>
+                  )}
+                </Disclosure>
+              </div>
+              {/*Create scenario table for display*/}
+              <div className={`flex flex-col pb-2`}>
+                <div className={`-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8`}>
+                  <div
+                    className={`inline-block min-w-full align-middle sm:px-6 lg:px-8`}
+                  >
+                    <Table className="min-w-full divide-y divide-th-bkg-2">
+                      <Thead>
+                        <Tr className="text-xs text-th-fgd-3">
+                          <Th
+                            scope="col"
+                            className={`px-1 py-1 text-left font-normal lg:px-3`}
+                          >
+                            {t('asset')}
+                          </Th>
+                          <Th
+                            scope="col"
+                            className={`px-1 py-1 text-left font-normal lg:px-3`}
+                          >
+                            <div className="flex justify-start md:justify-between">
+                              <div className="pr-2">{t('spot')}</div>
+                              <LinkButton
+                                onClick={() => resetScenarioColumn('spotNet')}
                               >
-                                <Td
-                                  className={`w-24 whitespace-nowrap px-3 py-2 text-sm text-th-fgd-1`}
-                                >
-                                  <div className="flex items-center">
-                                    <img
-                                      alt=""
-                                      width="20"
-                                      height="20"
-                                      src={`/assets/icons/${asset.symbolName.toLowerCase()}.svg`}
-                                      className={`mr-2.5`}
-                                    />
-                                    <div>{asset.symbolName}</div>
-                                  </div>
-                                </Td>
-                                <Td
-                                  className={`px-1 py-2 text-sm text-th-fgd-1 lg:px-3`}
-                                >
-                                  <Input
-                                    id={'spotNet_' + i}
-                                    type="number"
-                                    onFocus={(e) =>
-                                      e.target.id === e.currentTarget.id
-                                        ? updateInterimValue(
-                                            asset.symbolName,
-                                            'spotNet',
-                                            'focus',
-                                            ('spotNet_' + i).toString(),
-                                            asset.spotNet !== 0
-                                              ? asset.spotNet
-                                              : ''
-                                          )
-                                        : null
-                                    }
-                                    onChange={(e) =>
-                                      updateInterimValue(
-                                        asset.symbolName,
-                                        'spotNet',
-                                        'change',
-                                        ('spotNet_' + i).toString(),
-                                        e.target.value
-                                      )
-                                    }
-                                    onBlur={(e) =>
-                                      updateInterimValue(
-                                        asset.symbolName,
-                                        'spotNet',
-                                        'blur',
-                                        ('spotNet_' + i).toString(),
-                                        e.target.value
-                                      )
-                                    }
-                                    placeholder={'0.0'}
-                                    value={
-                                      interimValue.has(
-                                        ('spotNet_' + i).toString()
-                                      )
-                                        ? interimValue.get(
-                                            ('spotNet_' + i).toString()
-                                          )
-                                        : asset.spotNet !== 0
-                                        ? asset.spotNet
-                                        : ''
-                                    }
-                                    disabled={
-                                      asset.hasMarketSpot ||
-                                      asset.symbolName === 'USDC'
-                                        ? false
-                                        : true
-                                    }
+                                {t('reset')}
+                              </LinkButton>
+                            </div>
+                          </Th>
+                          <Th
+                            scope="col"
+                            className={`px-1 py-1 text-left font-normal lg:px-3`}
+                          >
+                            <div className="flex justify-start md:justify-between">
+                              <div className="pr-2">{t('perp')}</div>
+                              <LinkButton
+                                onClick={() =>
+                                  resetScenarioColumn('perpBasePosition')
+                                }
+                              >
+                                {t('reset')}
+                              </LinkButton>
+                            </div>
+                          </Th>
+                          <Th
+                            scope="col"
+                            className={`px-1 py-1 text-left font-normal lg:px-3`}
+                          >
+                            <div className="flex justify-start md:justify-between">
+                              <div className="pr-2">
+                                {t('calculator:perp-entry')}
+                              </div>
+                              <LinkButton
+                                onClick={() =>
+                                  resetScenarioColumn('perpAvgEntryPrice')
+                                }
+                              >
+                                {t('reset')}
+                              </LinkButton>
+                            </div>
+                          </Th>
+                          <Th
+                            scope="col"
+                            className={`px-1 py-1 font-normal lg:px-3`}
+                          >
+                            <div className="flex justify-start md:justify-between">
+                              <div className="pr-2">{t('price')}</div>
+                              <LinkButton
+                                onClick={() => resetScenarioColumn('price')}
+                              >
+                                {t('reset')}
+                              </LinkButton>
+                            </div>
+                          </Th>
+                          <Th
+                            scope="col"
+                            className={`px-1 py-1 text-left font-normal lg:px-3`}
+                          >
+                            <div className="flex justify-start md:justify-between">
+                              <Tooltip
+                                content={t('calculator:spot-val-perp-val')}
+                              >
+                                <div className="pr-2">{t('value')}</div>
+                              </Tooltip>
+                            </div>
+                          </Th>
+                          <Th
+                            scope="col"
+                            className={`px-1 py-1 text-left font-normal lg:px-3`}
+                          >
+                            <div className="flex justify-start md:justify-between">
+                              <Tooltip
+                                content={t('calculator:single-asset-liq')}
+                              >
+                                <div className="pr-2">
+                                  {t('calculator:liq-price')}
+                                </div>
+                              </Tooltip>
+                            </div>
+                          </Th>
+                        </Tr>
+                      </Thead>
+                      <Tbody>
+                        {/*Populate scenario table with data*/}
+                        {scenarioBars.rowData.map((asset, i) =>
+                          asset.symbolName === 'USDC' ||
+                          (asset.spotNet != 0 && asset.hasMarketSpot) ||
+                          (asset.perpBasePosition != 0 &&
+                            asset.hasMarketPerp) ||
+                          showZeroBalances ? (
+                            <Tr
+                              className={`${
+                                i % 2 === 0
+                                  ? `bg-th-bkg-3 md:bg-th-bkg-2`
+                                  : `bg-th-bkg-2`
+                              }`}
+                              key={`${i}`}
+                            >
+                              <Td
+                                className={`w-24 whitespace-nowrap px-3 py-2 text-sm text-th-fgd-1`}
+                              >
+                                <div className="flex items-center">
+                                  <img
+                                    alt=""
+                                    width="20"
+                                    height="20"
+                                    src={`/assets/icons/${asset.symbolName.toLowerCase()}.svg`}
+                                    className={`mr-2.5`}
                                   />
-                                </Td>
-                                <Td
-                                  className={`px-1 py-2 text-sm text-th-fgd-1 lg:px-3`}
-                                >
-                                  <Input
-                                    id={'perpBasePosition_' + i}
-                                    type="number"
-                                    onFocus={(e) =>
-                                      e.target.id === e.currentTarget.id
-                                        ? updateInterimValue(
-                                            asset.symbolName,
-                                            'perpBasePosition',
-                                            'focus',
-                                            (
-                                              'perpBasePosition_' + i
-                                            ).toString(),
-                                            asset.spotNet !== 0
-                                              ? asset.spotNet
-                                              : ''
-                                          )
-                                        : null
-                                    }
-                                    onChange={(e) =>
-                                      updateInterimValue(
-                                        asset.symbolName,
-                                        'perpBasePosition',
-                                        'change',
-                                        ('perpBasePosition_' + i).toString(),
-                                        e.target.value
-                                      )
-                                    }
-                                    onBlur={(e) =>
-                                      updateInterimValue(
-                                        asset.symbolName,
-                                        'perpBasePosition',
-                                        'blur',
-                                        ('perpBasePosition_' + i).toString(),
-                                        e.target.value
-                                      )
-                                    }
-                                    placeholder={'0.0'}
-                                    value={
-                                      interimValue.has(
-                                        ('perpBasePosition_' + i).toString()
-                                      )
-                                        ? interimValue.get(
-                                            ('perpBasePosition_' + i).toString()
-                                          )
-                                        : asset.perpBasePosition !== 0
-                                        ? asset.perpBasePosition
-                                        : ''
-                                    }
-                                    disabled={
-                                      asset.hasMarketPerp ? false : true
-                                    }
-                                  />
-                                </Td>
-                                <Td
-                                  className={`px-1 py-2 text-sm text-th-fgd-1 lg:px-3`}
-                                >
-                                  <Input
-                                    id={'perpAvgEntryPrice_' + i}
-                                    type="number"
-                                    onFocus={(e) =>
-                                      e.target.id === e.currentTarget.id
-                                        ? updateInterimValue(
-                                            asset.symbolName,
-                                            'perpAvgEntryPrice',
-                                            'focus',
-                                            (
-                                              'perpAvgEntryPrice_' + i
-                                            ).toString(),
-                                            asset.perpAvgEntryPrice !== 0
-                                              ? asset.perpAvgEntryPrice
-                                              : ''
-                                          )
-                                        : null
-                                    }
-                                    onChange={(e) =>
-                                      updateInterimValue(
-                                        asset.symbolName,
-                                        'perpAvgEntryPrice',
-                                        'change',
-                                        ('perpAvgEntryPrice_' + i).toString(),
-                                        e.target.value
-                                      )
-                                    }
-                                    onBlur={(e) =>
-                                      updateInterimValue(
-                                        asset.symbolName,
-                                        'perpAvgEntryPrice',
-                                        'blur',
-                                        ('perpAvgEntryPrice_' + i).toString(),
-                                        e.target.value
-                                      )
-                                    }
-                                    placeholder={'0.0'}
-                                    value={
-                                      interimValue.has(
-                                        ('perpAvgEntryPrice_' + i).toString()
-                                      )
-                                        ? interimValue.get(
-                                            (
-                                              'perpAvgEntryPrice_' + i
-                                            ).toString()
-                                          )
-                                        : asset.perpAvgEntryPrice !== 0
-                                        ? asset.perpAvgEntryPrice
-                                        : ''
-                                    }
-                                    disabled={
-                                      asset.hasMarketPerp ? false : true
-                                    }
-                                  />
-                                </Td>
-                                <Td
-                                  className={`whitespace-nowrap px-1 py-2 text-sm text-th-fgd-1 lg:px-3`}
-                                >
-                                  <Input
-                                    id={'price_' + i}
-                                    type="number"
-                                    onFocus={(e) =>
-                                      e.target.id === e.currentTarget.id
-                                        ? updateInterimValue(
-                                            asset.symbolName,
-                                            'price',
-                                            'focus',
-                                            ('price_' + i).toString(),
-                                            asset.perpAvgEntryPrice !== 0
-                                              ? asset.perpAvgEntryPrice
-                                              : ''
-                                          )
-                                        : null
-                                    }
-                                    onChange={(e) => {
-                                      updateInterimValue(
-                                        asset.symbolName,
-                                        'price',
-                                        'change',
-                                        ('price_' + i).toString(),
-                                        e.target.value
-                                      )
-                                    }}
-                                    onBlur={(e) =>
-                                      updateInterimValue(
-                                        asset.symbolName,
-                                        'price',
-                                        'blur',
-                                        ('price_' + i).toString(),
-                                        e.target.value
-                                      )
-                                    }
-                                    placeholder={'0.0'}
-                                    value={
-                                      asset.priceDisabled
-                                        ? interimValue.has(
-                                            ('price_' + i).toString()
-                                          )
-                                          ? interimValue.get(
-                                              ('price_' + i).toString()
-                                            )
-                                          : asset.price !== 0
-                                          ? asset.price
-                                          : ''
-                                        : interimValue.has(
-                                            ('price_' + i).toString()
-                                          )
+                                  <div>{asset.symbolName}</div>
+                                </div>
+                              </Td>
+                              <Td
+                                className={`px-1 py-2 text-sm text-th-fgd-1 lg:px-3`}
+                              >
+                                <Input
+                                  id={'spotNet_' + i}
+                                  type="number"
+                                  onFocus={(e) =>
+                                    e.target.id === e.currentTarget.id
+                                      ? updateInterimValue(
+                                          asset.symbolName,
+                                          'spotNet',
+                                          'focus',
+                                          ('spotNet_' + i).toString(),
+                                          asset.spotNet !== 0
+                                            ? asset.spotNet
+                                            : ''
+                                        )
+                                      : null
+                                  }
+                                  onChange={(e) =>
+                                    updateInterimValue(
+                                      asset.symbolName,
+                                      'spotNet',
+                                      'change',
+                                      ('spotNet_' + i).toString(),
+                                      e.target.value
+                                    )
+                                  }
+                                  onBlur={(e) =>
+                                    updateInterimValue(
+                                      asset.symbolName,
+                                      'spotNet',
+                                      'blur',
+                                      ('spotNet_' + i).toString(),
+                                      e.target.value
+                                    )
+                                  }
+                                  placeholder={'0.0'}
+                                  value={
+                                    interimValue.has(
+                                      ('spotNet_' + i).toString()
+                                    )
+                                      ? interimValue.get(
+                                          ('spotNet_' + i).toString()
+                                        )
+                                      : asset.spotNet !== 0
+                                      ? asset.spotNet
+                                      : ''
+                                  }
+                                  disabled={
+                                    asset.hasMarketSpot ||
+                                    asset.symbolName === 'USDC'
+                                      ? false
+                                      : true
+                                  }
+                                />
+                              </Td>
+                              <Td
+                                className={`px-1 py-2 text-sm text-th-fgd-1 lg:px-3`}
+                              >
+                                <Input
+                                  id={'perpBasePosition_' + i}
+                                  type="number"
+                                  onFocus={(e) =>
+                                    e.target.id === e.currentTarget.id
+                                      ? updateInterimValue(
+                                          asset.symbolName,
+                                          'perpBasePosition',
+                                          'focus',
+                                          ('perpBasePosition_' + i).toString(),
+                                          asset.spotNet !== 0
+                                            ? asset.spotNet
+                                            : ''
+                                        )
+                                      : null
+                                  }
+                                  onChange={(e) =>
+                                    updateInterimValue(
+                                      asset.symbolName,
+                                      'perpBasePosition',
+                                      'change',
+                                      ('perpBasePosition_' + i).toString(),
+                                      e.target.value
+                                    )
+                                  }
+                                  onBlur={(e) =>
+                                    updateInterimValue(
+                                      asset.symbolName,
+                                      'perpBasePosition',
+                                      'blur',
+                                      ('perpBasePosition_' + i).toString(),
+                                      e.target.value
+                                    )
+                                  }
+                                  placeholder={'0.0'}
+                                  value={
+                                    interimValue.has(
+                                      ('perpBasePosition_' + i).toString()
+                                    )
+                                      ? interimValue.get(
+                                          ('perpBasePosition_' + i).toString()
+                                        )
+                                      : asset.perpBasePosition !== 0
+                                      ? asset.perpBasePosition
+                                      : ''
+                                  }
+                                  disabled={asset.hasMarketPerp ? false : true}
+                                />
+                              </Td>
+                              <Td
+                                className={`px-1 py-2 text-sm text-th-fgd-1 lg:px-3`}
+                              >
+                                <Input
+                                  id={'perpAvgEntryPrice_' + i}
+                                  type="number"
+                                  onFocus={(e) =>
+                                    e.target.id === e.currentTarget.id
+                                      ? updateInterimValue(
+                                          asset.symbolName,
+                                          'perpAvgEntryPrice',
+                                          'focus',
+                                          ('perpAvgEntryPrice_' + i).toString(),
+                                          asset.perpAvgEntryPrice !== 0
+                                            ? asset.perpAvgEntryPrice
+                                            : ''
+                                        )
+                                      : null
+                                  }
+                                  onChange={(e) =>
+                                    updateInterimValue(
+                                      asset.symbolName,
+                                      'perpAvgEntryPrice',
+                                      'change',
+                                      ('perpAvgEntryPrice_' + i).toString(),
+                                      e.target.value
+                                    )
+                                  }
+                                  onBlur={(e) =>
+                                    updateInterimValue(
+                                      asset.symbolName,
+                                      'perpAvgEntryPrice',
+                                      'blur',
+                                      ('perpAvgEntryPrice_' + i).toString(),
+                                      e.target.value
+                                    )
+                                  }
+                                  placeholder={'0.0'}
+                                  value={
+                                    interimValue.has(
+                                      ('perpAvgEntryPrice_' + i).toString()
+                                    )
+                                      ? interimValue.get(
+                                          ('perpAvgEntryPrice_' + i).toString()
+                                        )
+                                      : asset.perpAvgEntryPrice !== 0
+                                      ? asset.perpAvgEntryPrice
+                                      : ''
+                                  }
+                                  disabled={asset.hasMarketPerp ? false : true}
+                                />
+                              </Td>
+                              <Td
+                                className={`whitespace-nowrap px-1 py-2 text-sm text-th-fgd-1 lg:px-3`}
+                              >
+                                <Input
+                                  id={'price_' + i}
+                                  type="number"
+                                  onFocus={(e) =>
+                                    e.target.id === e.currentTarget.id
+                                      ? updateInterimValue(
+                                          asset.symbolName,
+                                          'price',
+                                          'focus',
+                                          ('price_' + i).toString(),
+                                          asset.perpAvgEntryPrice !== 0
+                                            ? asset.perpAvgEntryPrice
+                                            : ''
+                                        )
+                                      : null
+                                  }
+                                  onChange={(e) => {
+                                    updateInterimValue(
+                                      asset.symbolName,
+                                      'price',
+                                      'change',
+                                      ('price_' + i).toString(),
+                                      e.target.value
+                                    )
+                                  }}
+                                  onBlur={(e) =>
+                                    updateInterimValue(
+                                      asset.symbolName,
+                                      'price',
+                                      'blur',
+                                      ('price_' + i).toString(),
+                                      e.target.value
+                                    )
+                                  }
+                                  placeholder={'0.0'}
+                                  value={
+                                    asset.priceDisabled
+                                      ? interimValue.has(
+                                          ('price_' + i).toString()
+                                        )
                                         ? interimValue.get(
                                             ('price_' + i).toString()
                                           )
                                         : asset.price !== 0
-                                        ? asset.price * sliderPercentage
+                                        ? asset.price
                                         : ''
-                                    }
-                                    disabled={asset.priceDisabled}
-                                  />
-                                </Td>
-                                <Td
-                                  className={`whitespace-nowrap px-1 py-2 text-sm text-th-fgd-1 lg:px-3`}
-                                >
-                                  <Input
-                                    type="text"
-                                    value={usdFormatter(
-                                      Number(
-                                        asset.spotNet *
-                                          asset.price *
-                                          (asset.priceDisabled
-                                            ? 1
-                                            : sliderPercentage)
-                                      ) +
-                                        Number(
-                                          asset.perpPositionSide === 'long'
-                                            ? asset.perpPositionPnL +
-                                                asset.perpBasePosition *
-                                                  (asset.price *
-                                                    sliderPercentage -
-                                                    asset.perpAvgEntryPrice)
-                                            : asset.perpPositionPnL -
-                                                asset.perpBasePosition *
-                                                  (asset.perpAvgEntryPrice -
-                                                    asset.price *
-                                                      sliderPercentage)
+                                      : interimValue.has(
+                                          ('price_' + i).toString()
                                         )
-                                    )}
-                                    onChange={null}
-                                    disabled
-                                  />
-                                </Td>
-                                <Td
-                                  className={`whitespace-nowrap px-1 py-2 text-sm text-th-fgd-1 lg:px-3`}
-                                >
-                                  <Input
-                                    type="text"
-                                    value={usdFormatter(
-                                      liquidationPrices.get(asset.symbolName)
-                                    )}
-                                    onChange={null}
-                                    disabled
-                                  />
-                                </Td>
-                              </Tr>
-                            ) : null
-                          )}
-                        </Tbody>
-                      </Table>
-                    </div>
+                                      ? interimValue.get(
+                                          ('price_' + i).toString()
+                                        )
+                                      : asset.price !== 0
+                                      ? asset.price * sliderPercentage
+                                      : ''
+                                  }
+                                  disabled={asset.priceDisabled}
+                                />
+                              </Td>
+                              <Td
+                                className={`whitespace-nowrap px-1 py-2 text-sm text-th-fgd-1 lg:px-3`}
+                              >
+                                <Input
+                                  type="text"
+                                  value={usdFormatter(
+                                    Number(
+                                      asset.spotNet *
+                                        asset.price *
+                                        (asset.priceDisabled
+                                          ? 1
+                                          : sliderPercentage)
+                                    ) +
+                                      Number(
+                                        asset.perpPositionSide === 'long'
+                                          ? asset.perpPositionPnL +
+                                              asset.perpBasePosition *
+                                                (asset.price *
+                                                  sliderPercentage -
+                                                  asset.perpAvgEntryPrice)
+                                          : asset.perpPositionPnL -
+                                              asset.perpBasePosition *
+                                                (asset.perpAvgEntryPrice -
+                                                  asset.price *
+                                                    sliderPercentage)
+                                      )
+                                  )}
+                                  onChange={null}
+                                  disabled
+                                />
+                              </Td>
+                              <Td
+                                className={`whitespace-nowrap px-1 py-2 text-sm text-th-fgd-1 lg:px-3`}
+                              >
+                                <Input
+                                  type="text"
+                                  value={usdFormatter(
+                                    liquidationPrices.get(asset.symbolName)
+                                  )}
+                                  onChange={null}
+                                  disabled
+                                />
+                              </Td>
+                            </Tr>
+                          ) : null
+                        )}
+                      </Tbody>
+                    </Table>
                   </div>
                 </div>
               </div>
-              {/*Populate detailed scenario summary*/}
-              {scenarioBars?.rowData.length > 0 ? (
-                <div className="relative col-span-4 hidden rounded-r-lg bg-th-bkg-3 p-4 md:block">
-                  <h2 className="mb-4">{t('calculator:scenario-details')}</h2>
-                  {/* Joke Wrapper */}
-                  <div className="relative col-span-4">
-                    {scenarioDetails.get('liabilities') === 0 &&
-                    scenarioDetails.get('equity') === 0 ? (
-                      <div className="mb-6 flex flex-col items-center rounded border border-th-green-dark bg-th-green-dark p-3 text-center text-th-fgd-1">
-                        <div className="pb-0.5 text-th-fgd-1">
-                          {t('calculator:joke-get-party-started')}
-                        </div>
-                        <div className="text-xs text-th-fgd-1">
-                          {t('calculator:joke-mangoes-are-ripe')}
-                        </div>
+            </div>
+            {/*Populate detailed scenario summary*/}
+            {scenarioBars?.rowData.length > 0 ? (
+              <div className="relative col-span-4 hidden rounded-r-lg border border-th-bkg-3 bg-th-bkg-3 p-4 md:block">
+                <h2 className="mb-4">{t('calculator:scenario-details')}</h2>
+                {/* Joke Wrapper */}
+                <div className="relative col-span-4">
+                  {scenarioDetails.get('liabilities') === 0 &&
+                  scenarioDetails.get('equity') === 0 ? (
+                    <div className="mb-6 flex flex-col items-center rounded border border-th-green-dark bg-th-green-dark p-3 text-center text-th-fgd-1">
+                      <div className="pb-0.5 text-th-fgd-1">
+                        {t('calculator:joke-get-party-started')}
                       </div>
-                    ) : null}
-                    {scenarioDetails.get('liabilities') === 0 &&
-                    scenarioDetails.get('equity') > 0 ? (
-                      <div className="mb-6 flex flex-col items-center rounded border border-th-green p-3 text-center text-th-fgd-1">
-                        <div className="pb-0.5 text-th-fgd-1">
-                          {t('calculator:joke-zero-borrows-risk')}
-                        </div>
-                        <div className="text-xs text-th-fgd-3">
-                          {t('calculator:joke-live-a-little')}
-                        </div>
+                      <div className="text-xs text-th-fgd-1">
+                        {t('calculator:joke-mangoes-are-ripe')}
                       </div>
-                    ) : null}
-                    {scenarioDetails.get('riskRanking') === riskRanks[0] &&
-                    scenarioDetails.get('leverage') !== 0 ? (
-                      <div className="mb-6 flex flex-col items-center rounded border border-th-green p-3 text-center text-th-fgd-1">
-                        <div className="pb-0.5 text-th-fgd-1">
-                          {t('calculator:joke-looking-good')}
-                        </div>
-                        <div className="text-xs text-th-fgd-3">
-                          {t('calculator:joke-sun-shining')}
-                        </div>
-                      </div>
-                    ) : null}
-                    {scenarioDetails.get('riskRanking') === riskRanks[1] ? (
-                      <div className="mb-6 flex flex-col items-center rounded border border-th-orange p-3 text-center text-th-fgd-1">
-                        <div className="pb-0.5 text-th-fgd-1">
-                          {t('calculator:joke-liquidator-activity')}
-                        </div>
-                        <div className="text-xs text-th-fgd-3">
-                          {t('calculator:joke-rethink-positions')}
-                        </div>
-                      </div>
-                    ) : null}
-                    {scenarioDetails.get('riskRanking') === riskRanks[2] ? (
-                      <div className="mb-6 flex flex-col items-center rounded border border-th-red p-3 text-center text-th-fgd-1">
-                        <div className="pb-0.5 text-th-fgd-1">
-                          {t('calculator:joke-liquidators-closing')}
-                        </div>
-                        <div className="text-xs text-th-fgd-3">
-                          {t('calculator:joke-hit-em-with')}
-                        </div>
-                      </div>
-                    ) : null}
-                    {scenarioDetails.get('riskRanking') === riskRanks[3] ? (
-                      <div className="mb-6 flex flex-col items-center rounded border border-th-red p-3 text-center text-th-fgd-1">
-                        <div className="pb-0.5 text-th-fgd-1">
-                          {t('calculator:joke-liquidators-spotted-you')}
-                        </div>
-                        <div className="text-xs text-th-fgd-3">
-                          {t('calculator:joke-throw-some-money')}
-                        </div>
-                      </div>
-                    ) : null}
-                    {scenarioDetails.get('riskRanking') === riskRanks[4] ? (
-                      <div className="mb-6 flex flex-col items-center rounded border border-th-red bg-th-red p-3 text-center text-th-fgd-1">
-                        <div className="pb-0.5 text-th-fgd-1">
-                          {t('calculator:joke-liquidated')}
-                        </div>
-                        <div className="text-xs text-th-fgd-1">
-                          {t('calculator:joke-insert-coin')}
-                        </div>
-                      </div>
-                    ) : null}
-                  </div>
-                  <div className="flex items-center justify-between pb-3">
-                    <Tooltip content={t('calculator:tooltip-maint-health')}>
-                      <div className="text-th-fgd-3">
-                        {t('calculator:maintenance-health')}
-                      </div>
-                    </Tooltip>
-                    <div className="font-bold">
-                      {scenarioDetails.get('maintHealth') * 100 >= 9999
-                        ? '>10000'
-                        : scenarioDetails.get('maintHealth') * 100 < 0
-                        ? '<0'
-                        : (scenarioDetails.get('maintHealth') * 100).toFixed(2)}
-                      %
                     </div>
-                  </div>
-                  <div className="flex items-center justify-between pb-3">
-                    <Tooltip content={t('calculator:tooltip-init-health')}>
-                      <div className="text-th-fgd-3">
-                        {t('calculator:initial-health')}
+                  ) : null}
+                  {scenarioDetails.get('liabilities') === 0 &&
+                  scenarioDetails.get('equity') > 0 ? (
+                    <div className="mb-6 flex flex-col items-center rounded border border-th-green p-3 text-center text-th-fgd-1">
+                      <div className="pb-0.5 text-th-fgd-1">
+                        {t('calculator:joke-zero-borrows-risk')}
                       </div>
-                    </Tooltip>
-                    <div className="font-bold">
-                      {scenarioDetails.get('initHealth') * 100 >= 9999
-                        ? '>10000'
-                        : scenarioDetails.get('initHealth') * 100 < 0
-                        ? '<0'
-                        : (scenarioDetails.get('initHealth') * 100).toFixed(2)}
-                      %
+                      <div className="text-xs text-th-fgd-3">
+                        {t('calculator:joke-live-a-little')}
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-center justify-between pb-3">
+                  ) : null}
+                  {scenarioDetails.get('riskRanking') === riskRanks[0] &&
+                  scenarioDetails.get('leverage') !== 0 ? (
+                    <div className="mb-6 flex flex-col items-center rounded border border-th-green p-3 text-center text-th-fgd-1">
+                      <div className="pb-0.5 text-th-fgd-1">
+                        {t('calculator:joke-looking-good')}
+                      </div>
+                      <div className="text-xs text-th-fgd-3">
+                        {t('calculator:joke-sun-shining')}
+                      </div>
+                    </div>
+                  ) : null}
+                  {scenarioDetails.get('riskRanking') === riskRanks[1] ? (
+                    <div className="mb-6 flex flex-col items-center rounded border border-th-orange p-3 text-center text-th-fgd-1">
+                      <div className="pb-0.5 text-th-fgd-1">
+                        {t('calculator:joke-liquidator-activity')}
+                      </div>
+                      <div className="text-xs text-th-fgd-3">
+                        {t('calculator:joke-rethink-positions')}
+                      </div>
+                    </div>
+                  ) : null}
+                  {scenarioDetails.get('riskRanking') === riskRanks[2] ? (
+                    <div className="mb-6 flex flex-col items-center rounded border border-th-red p-3 text-center text-th-fgd-1">
+                      <div className="pb-0.5 text-th-fgd-1">
+                        {t('calculator:joke-liquidators-closing')}
+                      </div>
+                      <div className="text-xs text-th-fgd-3">
+                        {t('calculator:joke-hit-em-with')}
+                      </div>
+                    </div>
+                  ) : null}
+                  {scenarioDetails.get('riskRanking') === riskRanks[3] ? (
+                    <div className="mb-6 flex flex-col items-center rounded border border-th-red p-3 text-center text-th-fgd-1">
+                      <div className="pb-0.5 text-th-fgd-1">
+                        {t('calculator:joke-liquidators-spotted-you')}
+                      </div>
+                      <div className="text-xs text-th-fgd-3">
+                        {t('calculator:joke-throw-some-money')}
+                      </div>
+                    </div>
+                  ) : null}
+                  {scenarioDetails.get('riskRanking') === riskRanks[4] ? (
+                    <div className="mb-6 flex flex-col items-center rounded border border-th-red bg-th-red p-3 text-center text-th-fgd-1">
+                      <div className="pb-0.5 text-th-fgd-1">
+                        {t('calculator:joke-liquidated')}
+                      </div>
+                      <div className="text-xs text-th-fgd-1">
+                        {t('calculator:joke-insert-coin')}
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+                <div className="flex items-center justify-between pb-3">
+                  <Tooltip content={t('calculator:tooltip-maint-health')}>
                     <div className="text-th-fgd-3">
-                      {t('calculator:new-positions-openable')}
+                      {t('calculator:maintenance-health')}
                     </div>
-                    <div
-                      className={`font-bold ${
-                        scenarioDetails.get('initHealth') * 100 >= 0
-                          ? 'text-th-green'
-                          : 'text-th-red'
-                      }`}
-                    >
-                      {scenarioDetails.get('initHealth') * 100 >= 0
-                        ? t('calculator:yes')
-                        : t('calculator:no')}
-                    </div>
-                  </div>
-                  <div className="mb-6 flex items-center justify-between pb-3">
-                    <div className="text-th-fgd-3">{t('account-health')}</div>
-                    {
-                      <div
-                        className={`font-bold ${
-                          scenarioDetails.get('maintHealth') * 100 < 0
-                            ? 'text-th-red'
-                            : scenarioDetails.get('riskRanking') ===
-                              riskRanks[3]
-                            ? 'text-th-red'
-                            : scenarioDetails.get('riskRanking') ===
-                              riskRanks[2]
-                            ? 'text-th-orange'
-                            : scenarioDetails.get('riskRanking') ===
-                              riskRanks[1]
-                            ? 'text-th-primary'
-                            : 'text-th-green'
-                        }`}
-                      >
-                        {scenarioDetails.get('maintHealth') * 100 < 0
-                          ? riskRanks[4]
-                          : scenarioDetails.get('riskRanking')}
-                      </div>
-                    }
-                  </div>
-                  <div className="flex items-center justify-between pb-3">
-                    <div className="text-th-fgd-3">{t('account-value')}</div>
-                    <div className="font-bold">
-                      {formatUsdValue(scenarioDetails.get('equity'))}
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between pb-3">
-                    <div className="text-th-fgd-3">{t('assets')}</div>
-                    <div className="font-bold">
-                      {formatUsdValue(scenarioDetails.get('assets'))}
-                    </div>
-                  </div>
-                  <div className="mb-6 flex items-center justify-between pb-3">
-                    <div className="text-th-fgd-3">{t('liabilities')}</div>
-                    <div className="font-bold">
-                      {formatUsdValue(scenarioDetails.get('liabilities'))}
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between pb-3">
-                    <div className="text-th-fgd-3">
-                      {t('calculator:maint-weighted-assets')}
-                    </div>
-                    <div className="font-bold">
-                      {formatUsdValue(scenarioDetails.get('maintWeightAssets'))}
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between pb-3">
-                    <div className="text-th-fgd-3">
-                      {t('calculator:maint-weighted-liabilities')}
-                    </div>
-                    <div className="font-bold">
-                      {formatUsdValue(
-                        scenarioDetails.get('maintWeightLiabilities')
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between pb-3">
-                    <div className="text-th-fgd-3">
-                      {t('calculator:init-weighted-assets')}
-                    </div>
-                    <div className="font-bold">
-                      {formatUsdValue(scenarioDetails.get('initWeightAssets'))}
-                    </div>
-                  </div>
-                  <div className="mb-6 flex items-center justify-between pb-3">
-                    <div className="text-th-fgd-3">
-                      {t('calculator:init-weighted-assets')}
-                    </div>
-                    <div className="font-bold">
-                      {formatUsdValue(
-                        scenarioDetails.get('initWeightLiabilities')
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between pb-3">
-                    <div className="text-th-fgd-3">{t('leverage')}</div>
-                    <div className="font-bold">
-                      {scenarioDetails.get('leverage').toFixed(2)}x
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between pb-3">
-                    <div className="text-th-fgd-3">
-                      {t('calculator:percent-move-liquidation')}
-                    </div>
-                    <div className="font-bold">
-                      {scenarioDetails.get('percentToLiquidationAbsolute')}%
-                    </div>
+                  </Tooltip>
+                  <div className="font-bold">
+                    {scenarioDetails.get('maintHealth') * 100 >= 9999
+                      ? '>10000'
+                      : scenarioDetails.get('maintHealth') * 100 < 0
+                      ? '<0'
+                      : (scenarioDetails.get('maintHealth') * 100).toFixed(2)}
+                    %
                   </div>
                 </div>
-              ) : null}
-            </div>
+                <div className="flex items-center justify-between pb-3">
+                  <Tooltip content={t('calculator:tooltip-init-health')}>
+                    <div className="text-th-fgd-3">
+                      {t('calculator:initial-health')}
+                    </div>
+                  </Tooltip>
+                  <div className="font-bold">
+                    {scenarioDetails.get('initHealth') * 100 >= 9999
+                      ? '>10000'
+                      : scenarioDetails.get('initHealth') * 100 < 0
+                      ? '<0'
+                      : (scenarioDetails.get('initHealth') * 100).toFixed(2)}
+                    %
+                  </div>
+                </div>
+                <div className="flex items-center justify-between pb-3">
+                  <div className="text-th-fgd-3">
+                    {t('calculator:new-positions-openable')}
+                  </div>
+                  <div
+                    className={`font-bold ${
+                      scenarioDetails.get('initHealth') * 100 >= 0
+                        ? 'text-th-green'
+                        : 'text-th-red'
+                    }`}
+                  >
+                    {scenarioDetails.get('initHealth') * 100 >= 0
+                      ? t('calculator:yes')
+                      : t('calculator:no')}
+                  </div>
+                </div>
+                <div className="mb-6 flex items-center justify-between pb-3">
+                  <div className="text-th-fgd-3">{t('account-health')}</div>
+                  {
+                    <div
+                      className={`font-bold ${
+                        scenarioDetails.get('maintHealth') * 100 < 0
+                          ? 'text-th-red'
+                          : scenarioDetails.get('riskRanking') === riskRanks[3]
+                          ? 'text-th-red'
+                          : scenarioDetails.get('riskRanking') === riskRanks[2]
+                          ? 'text-th-orange'
+                          : scenarioDetails.get('riskRanking') === riskRanks[1]
+                          ? 'text-th-primary'
+                          : 'text-th-green'
+                      }`}
+                    >
+                      {scenarioDetails.get('maintHealth') * 100 < 0
+                        ? riskRanks[4]
+                        : scenarioDetails.get('riskRanking')}
+                    </div>
+                  }
+                </div>
+                <div className="flex items-center justify-between pb-3">
+                  <div className="text-th-fgd-3">{t('account-value')}</div>
+                  <div className="font-bold">
+                    {formatUsdValue(scenarioDetails.get('equity'))}
+                  </div>
+                </div>
+                <div className="flex items-center justify-between pb-3">
+                  <div className="text-th-fgd-3">{t('assets')}</div>
+                  <div className="font-bold">
+                    {formatUsdValue(scenarioDetails.get('assets'))}
+                  </div>
+                </div>
+                <div className="mb-6 flex items-center justify-between pb-3">
+                  <div className="text-th-fgd-3">{t('liabilities')}</div>
+                  <div className="font-bold">
+                    {formatUsdValue(scenarioDetails.get('liabilities'))}
+                  </div>
+                </div>
+                <div className="flex items-center justify-between pb-3">
+                  <div className="text-th-fgd-3">
+                    {t('calculator:maint-weighted-assets')}
+                  </div>
+                  <div className="font-bold">
+                    {formatUsdValue(scenarioDetails.get('maintWeightAssets'))}
+                  </div>
+                </div>
+                <div className="flex items-center justify-between pb-3">
+                  <div className="text-th-fgd-3">
+                    {t('calculator:maint-weighted-liabilities')}
+                  </div>
+                  <div className="font-bold">
+                    {formatUsdValue(
+                      scenarioDetails.get('maintWeightLiabilities')
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center justify-between pb-3">
+                  <div className="text-th-fgd-3">
+                    {t('calculator:init-weighted-assets')}
+                  </div>
+                  <div className="font-bold">
+                    {formatUsdValue(scenarioDetails.get('initWeightAssets'))}
+                  </div>
+                </div>
+                <div className="mb-6 flex items-center justify-between pb-3">
+                  <div className="text-th-fgd-3">
+                    {t('calculator:init-weighted-assets')}
+                  </div>
+                  <div className="font-bold">
+                    {formatUsdValue(
+                      scenarioDetails.get('initWeightLiabilities')
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center justify-between pb-3">
+                  <div className="text-th-fgd-3">{t('leverage')}</div>
+                  <div className="font-bold">
+                    {scenarioDetails.get('leverage').toFixed(2)}x
+                  </div>
+                </div>
+                <div className="flex items-center justify-between pb-3">
+                  <div className="text-th-fgd-3">
+                    {t('calculator:percent-move-liquidation')}
+                  </div>
+                  <div className="font-bold">
+                    {scenarioDetails.get('percentToLiquidationAbsolute')}%
+                  </div>
+                </div>
+              </div>
+            ) : null}
           </div>
-        ) : (
-          <div className="h-64 w-full animate-pulse rounded-lg bg-th-bkg-3" />
-        )}
-      </PageBodyContainer>
+        </div>
+      ) : (
+        <div className="h-64 w-full animate-pulse rounded-lg bg-th-bkg-3" />
+      )}
     </div>
   )
 }

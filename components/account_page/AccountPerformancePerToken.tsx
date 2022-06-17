@@ -393,7 +393,7 @@ const AccountPerformance = () => {
                       key={`${v}${i}`}
                       type="monotone"
                       dataKey={`${v}`}
-                      stroke={`${CHART_COLORS[v]}`}
+                      stroke={`${CHART_COLORS(theme)[v]}`}
                       dot={false}
                     />
                   ))}
@@ -437,7 +437,10 @@ const AccountPerformance = () => {
                   onClick={() => toggleOption(s)}
                   style={
                     selectedSymbols.includes(s)
-                      ? { borderColor: CHART_COLORS[s], color: CHART_COLORS[s] }
+                      ? {
+                          borderColor: CHART_COLORS(theme)[s],
+                          color: CHART_COLORS(theme)[s],
+                        }
                       : {}
                   }
                   key={s}

@@ -18,7 +18,6 @@ import {
   marketConfigSelector,
 } from '../stores/selectors'
 import { PublicKey } from '@solana/web3.js'
-// import FavoritesShortcutBar from '../components/FavoritesShortcutBar'
 import { useWallet } from '@solana/wallet-adapter-react'
 import AccountsModal from 'components/AccountsModal'
 
@@ -159,7 +158,6 @@ const PerpMarket: React.FC = () => {
       {showTour && !hideTips ? (
         <IntroTips connected={connected} mangoAccount={mangoAccount} />
       ) : null}
-      {/* <FavoritesShortcutBar /> */}
       <TradePageGrid />
       {!alphaAccepted && (
         <AlphaModal isOpen={!alphaAccepted} onClose={() => {}} />

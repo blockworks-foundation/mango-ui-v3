@@ -49,9 +49,9 @@ const Layout = ({ children }) => {
             </div>
           </div>
         )}
-        <div className="w-full">
+        <div className="w-full overflow-hidden">
           <GlobalNotification />
-          <div className="flex h-14 items-center justify-between border-b border-[rgba(255,255,255,0.1)] bg-th-bkg-1 px-6">
+          <div className="flex h-14 items-center justify-between border-b border-th-bkg-4 bg-th-bkg-1 px-6">
             {mangoAccount && mangoAccount.beingLiquidated ? (
               <div className="flex items-center justify-center">
                 <ExclamationCircleIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-th-red" />
@@ -82,7 +82,7 @@ const Layout = ({ children }) => {
             </div>
           </div>
           {pathname === '/' ? <FavoritesShortcutBar /> : null}
-          <div className="px-3">{children}</div>
+          <div className={pathname === '/' ? 'px-3' : 'px-6'}>{children}</div>
         </div>
       </div>
       {showAccountsModal && (

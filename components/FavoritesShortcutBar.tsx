@@ -31,7 +31,7 @@ const FavoritesShortcutBar = () => {
   return !isMobile ? (
     <Transition
       appear={true}
-      className="flex items-center space-x-4 border-b border-[rgba(255,255,255,0.1)] py-1 px-6"
+      className="flex items-center space-x-4 border-b border-th-bkg-4 py-1 px-6"
       show={favoriteMarkets.length > 0}
       enter="transition-all ease-in duration-200"
       enterFrom="opacity-0"

@@ -28,7 +28,7 @@ export const Td = ({
   children: ReactNode
   className?: string
 }) => (
-  <td className={`h-16 px-4 text-sm text-th-fgd-2 ${className}`}>{children}</td>
+  <td className={`h-14 px-4 text-xs text-th-fgd-2 ${className}`}>{children}</td>
 )
 
 type ExpandableRowProps = {
@@ -107,7 +107,9 @@ export const TableDateDisplay = ({
   showSeconds?: boolean
 }) => (
   <>
-    <p className="mb-0 text-th-fgd-2">{dayjs(date).format('DD MMM YYYY')}</p>
+    <p className="mb-0 text-xs text-th-fgd-2">
+      {dayjs(date).format('DD MMM YYYY')}
+    </p>
     <p className="mb-0 text-xs">
       {dayjs(date).format(showSeconds ? 'h:mm:ssa' : 'h:mma')}
     </p>

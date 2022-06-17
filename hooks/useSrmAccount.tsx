@@ -3,6 +3,7 @@ import useMangoStore from '../stores/useMangoStore'
 import {
   getMultipleAccounts,
   nativeToUi,
+  zeroKey,
 } from '@blockworks-foundation/mango-client'
 import {
   MSRM_DECIMALS,
@@ -66,7 +67,9 @@ const useSrmAccount = () => {
         )
 
         setSrmAccount(srmAccountInfo.accountInfo)
-        setMsrmAccount(msrmAccountInfo.accountInfo)
+        if (!msrmPk.equals(zeroKey)) {
+          setMsrmAccount(msrmAccountInfo.accountInfo)
+        }
       }
 
       fetchAccounts()

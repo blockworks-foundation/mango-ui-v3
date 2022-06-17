@@ -125,7 +125,7 @@ const AccountOverviewPopover = ({
                   className="absolute bottom-[72px] z-10 w-[220px] overflow-y-auto"
                   static
                 >
-                  <div className="relative h-full border-t border-[rgba(255,255,255,0.1)] bg-th-bkg-1 p-4">
+                  <div className="relative h-full border-t border-th-bkg-4 bg-th-bkg-1 p-4">
                     <div className="pb-2">
                       <p className="mb-0 text-xs leading-4">{t('value')}</p>
                       <p className="mb-0 font-bold text-th-fgd-1">

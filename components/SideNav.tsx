@@ -68,7 +68,7 @@ const SideNav = ({ collapsed, setCollapsed }) => {
             <div
               className={`flex w-full items-center ${
                 collapsed ? 'justify-center' : 'justify-start'
-              } h-14 border-b border-[rgba(255,255,255,0.1)] px-4`}
+              } h-14 border-b border-th-bkg-4 px-4`}
             >
               <div className={`flex flex-shrink-0 cursor-pointer items-center`}>
                 <img
@@ -95,32 +95,50 @@ const SideNav = ({ collapsed, setCollapsed }) => {
                 {t('trade')}
               </Link>
             </MenuItem>
-            <MenuItem icon={<CurrencyDollarIcon className="h-5 w-5" />}>
+            <MenuItem
+              active={pathname === '/account'}
+              icon={<CurrencyDollarIcon className="h-5 w-5" />}
+            >
               <Link href={'/account'} shallow={true}>
                 {t('account')}
               </Link>
             </MenuItem>
-            <MenuItem icon={<BtcMonoIcon className="h-4 w-4" />}>
+            <MenuItem
+              active={pathname === '/markets'}
+              icon={<BtcMonoIcon className="h-4 w-4" />}
+            >
               <Link href={'/markets'} shallow={true}>
                 {t('markets')}
               </Link>
             </MenuItem>
-            <MenuItem icon={<CashIcon className="h-5 w-5" />}>
+            <MenuItem
+              active={pathname === '/borrow'}
+              icon={<CashIcon className="h-5 w-5" />}
+            >
               <Link href={'/borrow'} shallow={true}>
                 {t('borrow')}
               </Link>
             </MenuItem>
-            <MenuItem icon={<SwitchHorizontalIcon className="h-5 w-5" />}>
+            <MenuItem
+              active={pathname === '/swap'}
+              icon={<SwitchHorizontalIcon className="h-5 w-5" />}
+            >
               <Link href={'/swap'} shallow={true}>
                 {t('swap')}
               </Link>
             </MenuItem>
-            <MenuItem icon={<ChartBarIcon className="h-5 w-5" />}>
+            <MenuItem
+              active={pathname === '/stats'}
+              icon={<ChartBarIcon className="h-5 w-5" />}
+            >
               <Link href={'/stats'} shallow={true}>
                 {t('stats')}
               </Link>
             </MenuItem>
-            <MenuItem icon={<TrophyIcon className="h-5 w-5" />}>
+            <MenuItem
+              active={pathname === '/leaderboard'}
+              icon={<TrophyIcon className="h-5 w-5" />}
+            >
               <Link href={'/leaderboard'} shallow={true}>
                 {t('leaderboard')}
               </Link>
@@ -129,17 +147,26 @@ const SideNav = ({ collapsed, setCollapsed }) => {
               title={t('more')}
               icon={<DotsHorizontalIcon className="h-5 w-5" />}
             >
-              <MenuItem icon={<UserAddIcon className="h-4 w-4" />}>
+              <MenuItem
+                active={pathname === '/referral'}
+                icon={<UserAddIcon className="h-4 w-4" />}
+              >
                 <Link href={'/referral'} shallow={true}>
                   {t('referrals')}
                 </Link>
               </MenuItem>
-              <MenuItem icon={<CalculatorIcon className="h-4 w-4" />}>
+              <MenuItem
+                active={pathname === '/risk-calculator'}
+                icon={<CalculatorIcon className="h-4 w-4" />}
+              >
                 <Link href={'/risk-calculator'} shallow={true}>
                   {t('calculator')}
                 </Link>
               </MenuItem>
-              <MenuItem icon={<CurrencyDollarIcon className="h-4 w-4" />}>
+              <MenuItem
+                active={pathname === '/fees'}
+                icon={<CurrencyDollarIcon className="h-4 w-4" />}
+              >
                 <Link href={'/fees'} shallow={true}>
                   {t('fees')}
                 </Link>

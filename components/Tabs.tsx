@@ -22,7 +22,7 @@ const Tabs: FunctionComponent<TabsProps> = ({
   const { t } = useTranslation('common')
 
   return (
-    <div className={`relative mb-8 border-b border-th-fgd-4`}>
+    <div className={`relative mb-6 border-b border-th-fgd-4`}>
       <div
         className={`default-transition absolute bottom-[-1px] left-0 h-0.5 bg-th-primary`}
         style={{
