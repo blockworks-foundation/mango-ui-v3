@@ -52,7 +52,7 @@ export const defaultLayouts = {
   ],
 }
 
-export const GRID_LAYOUT_KEY = 'mangoSavedLayouts-3.1.6'
+export const GRID_LAYOUT_KEY = 'mangoSavedLayouts-3.1.7'
 export const breakpoints = { xl: 1600, lg: 1280, md: 1024, sm: 768 }
 
 const getCurrentBreakpoint = () => {
