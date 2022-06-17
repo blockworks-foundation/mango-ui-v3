@@ -94,8 +94,8 @@ const LongShortChart = ({ chartData }: { chartData: any[] }) => {
         dataKey="value"
         cx="50%"
         cy="50%"
-        outerRadius={24}
-        innerRadius={16}
+        outerRadius={18}
+        innerRadius={12}
         minAngle={2}
         startAngle={90}
         endAngle={450}

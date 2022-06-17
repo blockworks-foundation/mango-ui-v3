@@ -450,7 +450,7 @@ const PositionsTable: React.FC = () => {
             )
           ) : (
             <div
-              className={`w-full rounded-md border border-th-bkg-4 py-6 text-center text-th-fgd-3`}
+              className={`w-full rounded-md border border-th-bkg-3 py-6 text-center text-th-fgd-3`}
             >
               {t('no-perp')}
             </div>

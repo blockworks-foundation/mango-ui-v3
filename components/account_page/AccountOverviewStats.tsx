@@ -281,16 +281,13 @@ const AccountOverviewStats = ({ hourlyPerformanceStats, accountValue }) => {
   return (
     <div className="grid grid-cols-12 lg:gap-6">
       <div className="order-2 col-span-12 lg:order-1 lg:col-span-4">
-        <div className="p-4 sm:p-5 lg:border-t lg:border-th-bkg-4">
+        <div className="p-4 sm:px-5 sm:pt-6 sm:pb-8">
           <div className="flex items-center pb-1.5">
             <div className="text-sm text-th-fgd-3">
               {chartToShow === 'Value'
                 ? t('account-value')
                 : renderPnlChartTitle()}{' '}
             </div>
-            <Tooltip content={t('delayed-info')}>
-              <InformationCircleIcon className="ml-1.5 h-5 w-5 flex-shrink-0 cursor-help text-th-fgd-3" />
-            </Tooltip>
           </div>
           {mouseData ? (
             <>
@@ -376,14 +373,12 @@ const AccountOverviewStats = ({ hourlyPerformanceStats, accountValue }) => {
           </div>
         </div>
         <div className="flex divide-x divide-th-bkg-4 border-b border-th-bkg-4 p-4 sm:p-5 lg:flex-col lg:divide-x-0 lg:divide-y lg:p-0 xl:flex-row xl:divide-y-0 xl:divide-x xl:p-5">
-          <div className="flex w-1/2 flex-col md:flex-row md:items-center md:space-x-3 lg:w-full lg:p-5 xl:w-1/2 xl:flex-col xl:items-start xl:space-x-0 xl:p-0">
+          <div className="flex w-1/2 flex-col md:flex-row md:items-center md:space-x-2 lg:w-full lg:p-5 xl:w-1/2 xl:p-0">
             <LongShortChart chartData={longData} />
-            <div className="mt-3 md:mt-0 xl:mt-3">
+            <div className="mt-3 md:mt-0">
               <Tooltip content={t('total-long-tooltip')}>
                 <div className="flex items-center space-x-1.5 pb-0.5">
-                  <div className="whitespace-nowrap text-th-fgd-3">
-                    {t('long-exposure')}
-                  </div>
+                  <div className="text-th-fgd-3">{t('long-exposure')}</div>
                   <InformationCircleIcon className="h-5 w-5 flex-shrink-0 cursor-help text-th-fgd-3" />
                 </div>
               </Tooltip>
@@ -394,14 +389,12 @@ const AccountOverviewStats = ({ hourlyPerformanceStats, accountValue }) => {
               ) : null}
             </div>
           </div>
-          <div className="flex w-1/2 flex-col pl-4 sm:px-5 md:flex-row md:items-center md:space-x-3 lg:w-full lg:p-5 xl:w-1/2 xl:flex-col xl:items-start xl:space-x-0 xl:p-0 xl:pl-4">
+          <div className="flex w-1/2 flex-col pl-4 sm:px-5 md:flex-row md:items-center md:space-x-2 lg:w-full lg:p-5 xl:w-1/2 xl:p-0 xl:pl-4">
             <LongShortChart chartData={shortData} />
-            <div className="mt-3 md:mt-0 xl:mt-3">
+            <div className="mt-3 md:mt-0">
               <Tooltip content={t('total-short-tooltip')}>
                 <div className="flex items-center space-x-1.5 pb-0.5">
-                  <div className="whitespace-nowrap text-th-fgd-3">
-                    {t('short-exposure')}
-                  </div>
+                  <div className="text-th-fgd-3">{t('short-exposure')}</div>
                   <InformationCircleIcon className="h-5 w-5 flex-shrink-0 cursor-help text-th-fgd-3" />
                 </div>
               </Tooltip>
@@ -414,7 +407,7 @@ const AccountOverviewStats = ({ hourlyPerformanceStats, accountValue }) => {
           </div>
         </div>
       </div>
-      <div className="order-1 col-span-12 border-y border-th-bkg-4 p-4 lg:order-2 lg:col-span-8 xl:p-6">
+      <div className="order-1 col-span-12 p-4 lg:order-2 lg:col-span-8 xl:p-6">
         <div className="mb-4 flex justify-between space-x-2 sm:mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-3">
             <div className="mb-3 w-28 sm:mb-0">
@@ -457,7 +450,7 @@ const AccountOverviewStats = ({ hourlyPerformanceStats, accountValue }) => {
           <div className="h-48 md:h-64 lg:h-[398px] xl:h-[250px]" ref={observe}>
             <AreaChart
               width={width}
-              height={height}
+              height={height + 12}
               data={chartData?.length ? chartData : defaultData}
               onMouseMove={handleMouseMove}
               onMouseLeave={handleMouseLeave}
