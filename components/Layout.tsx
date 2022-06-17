@@ -10,7 +10,11 @@ import { useCallback, useEffect, useState } from 'react'
 import AccountsModal from './AccountsModal'
 import { useRouter } from 'next/router'
 import FavoritesShortcutBar from './FavoritesShortcutBar'
-import { CogIcon, ExclamationCircleIcon } from '@heroicons/react/solid'
+import {
+  ArrowRightIcon,
+  CogIcon,
+  ExclamationCircleIcon,
+} from '@heroicons/react/solid'
 import { IconButton } from './Button'
 import SettingsModal from './SettingsModal'
 import { useTranslation } from 'next-i18next'
@@ -59,19 +63,24 @@ const Layout = ({ children }) => {
                 <span className="text-th-red">{t('being-liquidated')}</span>
               </div>
             ) : (
-              <div className="text-th-fgd-3">
+              <div className="flex items-center text-th-fgd-3">
                 <span className="mb-0 mr-2 text-lg">
                   {pubkey ? '🕵️' : '👋'}
                 </span>
-                <span className="font-bold leading-none text-th-fgd-1">
-                  {`${
-                    mangoAccount
-                      ? mangoAccount.name
+                {mangoAccount ? (
+                  <span className="font-bold text-th-fgd-1">
+                    {`${
+                      mangoAccount.name
                         ? mangoAccount.name
                         : abbreviateAddress(mangoAccount.publicKey)
-                      : ''
-                  }`}
-                </span>
+                    }`}
+                  </span>
+                ) : !isMobile ? (
+                  <span className="flex items-center text-th-fgd-3">
+                    Connect to get started
+                    <ArrowRightIcon className="sideways-bounce ml-2 h-5 w-5 text-th-fgd-1" />
+                  </span>
+                ) : null}
               </div>
             )}
             <div className="flex items-center space-x-4">
