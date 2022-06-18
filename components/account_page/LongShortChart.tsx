@@ -112,7 +112,7 @@ const LongShortChart = ({ chartData }: { chartData: any[] }) => {
       </Pie>
       <Tooltip
         content={<CustomToolTip />}
-        position={{ x: 64, y: 0 }}
+        position={{ x: -220, y: 0 }}
         wrapperStyle={{ zIndex: 10 }}
       />
     </PieChart>
