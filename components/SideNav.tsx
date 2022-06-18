@@ -137,7 +137,7 @@ const SideNav = ({ collapsed, setCollapsed }) => {
             </MenuItem>
             <MenuItem
               active={pathname === '/leaderboard'}
-              icon={<TrophyIcon className="h-5 w-5" />}
+              icon={<TrophyIcon className="h-[18px] w-[18px]" />}
             >
               <Link href={'/leaderboard'} shallow={true}>
                 {t('leaderboard')}
