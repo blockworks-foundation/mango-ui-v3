@@ -483,7 +483,7 @@ const JupiterForm: FunctionComponent = () => {
               </button>
             </div>
           ) : null}
-          <div className="rounded-lg border border-th-bkg-4 p-6">
+          <div className="rounded-lg border border-th-bkg-3 p-6">
             <div className="flex justify-between">
               <label
                 htmlFor="inputMint"
@@ -628,7 +628,7 @@ const JupiterForm: FunctionComponent = () => {
 
             {routes?.length && selectedRoute ? (
               <div className="mt-8 text-xs text-th-fgd-3">
-                <div className="relative mb-4 rounded-md border border-th-bkg-4 px-3 pb-4 pt-4">
+                <div className="relative mb-4 rounded-md border border-th-bkg-3 px-3 pb-4 pt-4">
                   {selectedRoute === routes[0] ? (
                     <div className="absolute -top-2 rounded-sm bg-th-primary px-1 text-xs font-bold text-th-bkg-1">
                       {t('swap:best-swap')}

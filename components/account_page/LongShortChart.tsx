@@ -87,14 +87,14 @@ const LongShortChart = ({ chartData }: { chartData: any[] }) => {
   }
 
   return chartData.length ? (
-    <PieChart width={48} height={48}>
+    <PieChart width={44} height={44}>
       <Pie
         cursor="pointer"
         data={chartData}
         dataKey="value"
         cx="50%"
         cy="50%"
-        outerRadius={18}
+        outerRadius={22}
         innerRadius={12}
         minAngle={2}
         startAngle={90}

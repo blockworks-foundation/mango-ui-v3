@@ -38,7 +38,7 @@ const FloatingElement: FunctionComponent<FloatingElementProps> = ({
   return (
     <div
       className={`thin-scroll relative overflow-auto overflow-x-hidden rounded-md ${
-        !isMobile ? 'border border-th-bkg-4' : ''
+        !isMobile ? 'border border-th-bkg-3' : ''
       } bg-th-bkg-1 p-2.5 md:p-4 ${className}`}
     >
       {!connected && showConnect && !pubkey ? (

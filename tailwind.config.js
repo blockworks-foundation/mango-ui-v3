@@ -111,6 +111,9 @@ module.exports = {
         'short-loss': "url('/share_images/bg-short-loss.png')",
         'short-profit': "url('/share_images/bg-short-profit.png')",
       },
+      screens: {
+        xl: '1600px',
+      },
     },
   },
   // variants: {

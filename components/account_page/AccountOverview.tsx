@@ -72,7 +72,7 @@ export default function AccountOverview() {
   return mangoAccount ? (
     <>
       <div className="grid grid-cols-12 md:gap-x-6">
-        <div className="relative col-span-12 h-[680px] lg:h-[520px] xl:h-[398px]">
+        <div className="relative col-span-12 h-[700px] md:h-[615px] lg:h-[430px] xl:h-[320px]">
           <AccountOverviewStats
             hourlyPerformanceStats={hourlyPerformanceStats}
             accountValue={mangoAccountValue}

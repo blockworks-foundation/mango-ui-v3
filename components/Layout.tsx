@@ -56,7 +56,7 @@ const Layout = ({ children }) => {
         )}
         <div className="w-full overflow-hidden">
           <GlobalNotification />
-          <div className="flex h-14 items-center justify-between border-b border-th-bkg-4 bg-th-bkg-1 px-6">
+          <div className="flex h-14 items-center justify-between border-b border-th-bkg-3 bg-th-bkg-1 px-6">
             {mangoAccount && mangoAccount.beingLiquidated ? (
               <div className="flex items-center justify-center">
                 <ExclamationCircleIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-th-red" />

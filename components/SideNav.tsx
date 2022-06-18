@@ -68,7 +68,7 @@ const SideNav = ({ collapsed, setCollapsed }) => {
             <div
               className={`flex w-full items-center ${
                 collapsed ? 'justify-center' : 'justify-start'
-              } h-14 border-b border-th-bkg-4 px-4`}
+              } h-14 border-b border-th-bkg-3 px-4`}
             >
               <div className={`flex flex-shrink-0 cursor-pointer items-center`}>
                 <img
