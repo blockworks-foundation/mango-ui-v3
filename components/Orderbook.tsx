@@ -603,7 +603,7 @@ const OrderbookSpread = ({ orderbookData }) => {
   }, [selectedMarket])
 
   return (
-    <div className="mb-0 mt-3 flex justify-between rounded-md bg-th-bkg-1 p-2 text-xs">
+    <div className="mb-0 mt-3 flex justify-between rounded-md bg-th-bkg-2 p-2 text-xs">
       <div className="hidden text-th-fgd-3 sm:block">{t('spread')}</div>
       <div className="text-th-fgd-1">
         {orderbookData?.spread.toFixed(decimals)}

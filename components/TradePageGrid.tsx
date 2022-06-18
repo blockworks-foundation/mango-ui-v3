@@ -46,13 +46,13 @@ export const defaultLayouts = {
   sm: [
     { i: 'tvChart', x: 0, y: 0, w: 12, h: 20, minW: 6 },
     { i: 'tradeForm', x: 0, y: 1, w: 12, h: 17, minW: 3 },
-    { i: 'orderbook', x: 0, y: 2, w: 6, h: 17, minW: 3 },
-    { i: 'marketTrades', x: 6, y: 2, w: 6, h: 17, minW: 3 },
+    { i: 'orderbook', x: 0, y: 2, w: 6, h: 18, minW: 3 },
+    { i: 'marketTrades', x: 6, y: 2, w: 6, h: 18, minW: 3 },
     { i: 'userInfo', x: 0, y: 3, w: 12, h: 19, minW: 6 },
   ],
 }
 
-export const GRID_LAYOUT_KEY = 'mangoSavedLayouts-3.1.7'
+export const GRID_LAYOUT_KEY = 'mangoSavedLayouts-3.1.8'
 export const breakpoints = { xl: 1600, lg: 1280, md: 1024, sm: 768 }
 
 const getCurrentBreakpoint = () => {
