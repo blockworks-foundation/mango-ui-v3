@@ -348,7 +348,7 @@ const AccountFunding = () => {
                   <div className="flex w-full flex-col space-x-0 sm:flex-row sm:space-x-4">
                     {chartData.find((d) => d.funding !== 0) ? (
                       <div
-                        className="relative mb-6 w-full rounded-md border border-th-bkg-4 p-4"
+                        className="relative mb-6 w-full rounded-md border border-th-bkg-3 p-4"
                         style={{ height: '330px' }}
                       >
                         <Chart

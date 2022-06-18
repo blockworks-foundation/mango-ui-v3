@@ -480,7 +480,7 @@ const AccountInterest = () => {
                   <div className="flex w-full flex-col space-x-0 sm:flex-row sm:space-x-4">
                     {chartData.find((d) => d.interest !== 0) ? (
                       <div
-                        className="relative mb-6 w-full rounded-md border border-th-bkg-4 p-4 sm:w-1/2"
+                        className="relative mb-6 w-full rounded-md border border-th-bkg-3 p-4 sm:w-1/2"
                         style={{ height: '330px' }}
                       >
                         <Chart
@@ -512,7 +512,7 @@ const AccountInterest = () => {
                     ) : null}
                     {chartData.find((d) => d.value !== 0) ? (
                       <div
-                        className="relative mb-6 w-full rounded-md border border-th-bkg-4 p-4 sm:w-1/2"
+                        className="relative mb-6 w-full rounded-md border border-th-bkg-3 p-4 sm:w-1/2"
                         style={{ height: '330px' }}
                       >
                         {token ? (

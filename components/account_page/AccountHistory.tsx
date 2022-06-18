@@ -422,7 +422,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
             </tbody>
           </Table>
         ) : (
-          <div className="border-b border-th-bkg-4">
+          <div className="border-b border-th-bkg-3">
             <MobileTableHeader
               colOneHeader={t('date')}
               colTwoHeader={t('liquidation-fee')}
@@ -532,7 +532,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
           </div>
         )
       ) : (
-        <div className="w-full rounded-md border border-th-bkg-4 py-6 text-center text-th-fgd-3">
+        <div className="w-full rounded-md border border-th-bkg-3 py-6 text-center text-th-fgd-3">
           {t('history-empty')}
         </div>
       )}
@@ -751,7 +751,7 @@ const HistoryTable = ({ history, view }) => {
             </tbody>
           </Table>
         ) : (
-          <div className="mb-4 border-b border-th-bkg-4">
+          <div className="mb-4 border-b border-th-bkg-3">
             <MobileTableHeader
               colOneHeader={t('date')}
               colTwoHeader={t('asset')}
@@ -795,7 +795,7 @@ const HistoryTable = ({ history, view }) => {
           </div>
         )
       ) : (
-        <div className="w-full rounded-md border border-th-bkg-4 py-6 text-center text-th-fgd-3">
+        <div className="w-full rounded-md border border-th-bkg-3 py-6 text-center text-th-fgd-3">
           {t('history-empty')}
         </div>
       )}

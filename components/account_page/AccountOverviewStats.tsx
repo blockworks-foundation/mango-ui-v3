@@ -335,7 +335,7 @@ const AccountOverviewStats = ({ hourlyPerformanceStats, accountValue }) => {
             </>
           )}
         </div>
-        <div className="flex flex-col divide-y divide-th-bkg-4 border-y border-th-bkg-4 md:flex-row md:divide-y-0 md:p-3 lg:flex-col lg:divide-y lg:p-0 xl:flex-row xl:divide-y-0 xl:p-5">
+        <div className="flex flex-col divide-y divide-th-bkg-3 border-y border-th-bkg-3 md:flex-row md:divide-y-0 md:p-3 lg:flex-col lg:divide-y lg:p-0 xl:flex-row xl:divide-y-0 xl:p-5">
           <div className="flex w-full items-center justify-between space-x-2 p-3 md:w-1/2 md:p-0 lg:w-full lg:p-3 xl:w-1/2 xl:p-0">
             <div>
               <Tooltip
@@ -372,7 +372,7 @@ const AccountOverviewStats = ({ hourlyPerformanceStats, accountValue }) => {
             ) : null}
           </div>
         </div>
-        <div className="flex flex-col divide-y divide-th-bkg-4 border-b border-th-bkg-4 md:flex-row md:divide-y-0 md:p-3 lg:flex-col lg:divide-y lg:p-0 xl:flex-row xl:divide-y-0 xl:p-5">
+        <div className="flex flex-col divide-y divide-th-bkg-3 border-b border-th-bkg-3 md:flex-row md:divide-y-0 md:p-3 lg:flex-col lg:divide-y lg:p-0 xl:flex-row xl:divide-y-0 xl:p-5">
           <div className="flex w-full items-center justify-between p-3 md:p-0 lg:p-3 xl:w-1/2 xl:p-0 ">
             <div>
               <Tooltip content={t('total-long-tooltip')}>

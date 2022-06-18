@@ -137,7 +137,7 @@ export const ConnectWalletButton: React.FC = () => {
                 leaveFrom="opacity-100"
                 leaveTo="opacity-0"
               >
-                <Menu.Items className="absolute right-0 z-20 mt-1 w-48 space-y-1.5 rounded-md bg-th-bkg-3 px-4 py-2.5">
+                <Menu.Items className="absolute right-0 z-20 mt-1 w-48 space-y-1.5 rounded-md bg-th-bkg-2 px-4 py-2.5">
                   <Menu.Item>
                     <button
                       className="flex w-full flex-row items-center rounded-none py-0.5 font-normal hover:cursor-pointer focus:outline-none md:hover:text-th-primary"

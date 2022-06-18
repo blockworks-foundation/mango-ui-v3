@@ -347,7 +347,7 @@ export default function StatsTotals({ latestStats, stats }) {
         </>
       ) : (
         <>
-          <div className="mb-8 border-b border-th-bkg-4">
+          <div className="mb-8 border-b border-th-bkg-3">
             <h2 className="mb-4">{t('current-stats')}</h2>
             {latestStats.map((stat) => (
               <ExpandableRow
@@ -416,7 +416,7 @@ export default function StatsTotals({ latestStats, stats }) {
               />
             ))}
           </div>
-          <div className="mb-8 border-b border-th-bkg-4">
+          <div className="mb-8 border-b border-th-bkg-3">
             <h2 className="mb-4">{t('average-deposit')}</h2>
             {stats.length > 1
               ? latestStats.map((stat) => (
@@ -453,7 +453,7 @@ export default function StatsTotals({ latestStats, stats }) {
                 ))
               : null}
           </div>
-          <div className="mb-4 border-b border-th-bkg-4">
+          <div className="mb-4 border-b border-th-bkg-3">
             <h2 className="mb-4">{t('average-borrow')}</h2>
             {stats.length > 1
               ? latestStats.map((stat) => (

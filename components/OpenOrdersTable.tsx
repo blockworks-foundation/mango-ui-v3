@@ -222,7 +222,7 @@ const MobileTable = ({
   }
 
   return (
-    <div className="border-b border-th-bkg-4">
+    <div className="border-b border-th-bkg-3">
       {openOrders.map(({ market, order }, index) => {
         const editThisOrder = editOrderIndex === index
         return (
@@ -515,7 +515,7 @@ const OpenOrdersTable = () => {
             )
           ) : (
             <div
-              className={`w-full rounded-md border border-th-bkg-4 py-6 text-center text-th-fgd-3`}
+              className={`w-full rounded-md border border-th-bkg-3 py-6 text-center text-th-fgd-3`}
             >
               {t('no-orders')}
               {asPath === '/account' ? (

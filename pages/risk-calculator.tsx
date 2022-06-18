@@ -1292,7 +1292,7 @@ export default function RiskCalculator() {
       {scenarioBars?.rowData?.length ? (
         <div>
           <div className="grid grid-cols-12 pb-6">
-            <div className="col-span-12 rounded-l-lg border border-r-0 border-th-bkg-4 p-4 md:col-span-8">
+            <div className="col-span-12 rounded-l-lg border border-r-0 border-th-bkg-3 p-4 md:col-span-8">
               <div className="flex justify-between px-0 pb-2 lg:px-3 lg:pb-3">
                 <h2 className="mb-4 lg:mb-0">
                   {t('calculator:scenario-balances')}

@@ -18,7 +18,7 @@ export const Th = ({ children }) => (
 )
 
 export const TrBody = ({ children, className = '' }) => (
-  <tr className={`border-b border-th-bkg-4 ${className}`}>{children}</tr>
+  <tr className={`border-b border-th-bkg-3 ${className}`}>{children}</tr>
 )
 
 export const Td = ({
@@ -47,7 +47,7 @@ export const ExpandableRow = ({
       {({ open }) => (
         <>
           <Disclosure.Button
-            className={`default-transition flex w-full items-center justify-between border-t border-th-bkg-4 p-4 text-left text-xs font-normal text-th-fgd-1 hover:bg-th-bkg-4 focus:outline-none ${
+            className={`default-transition flex w-full items-center justify-between border-t border-th-bkg-3 p-4 text-left text-xs font-normal text-th-fgd-1 hover:bg-th-bkg-4 focus:outline-none ${
               rounded
                 ? open
                   ? 'rounded-b-none'
@@ -92,7 +92,7 @@ type RowProps = {
 export const Row = ({ children }: RowProps) => {
   return (
     <div
-      className={`default-transition w-full rounded-none border-t border-th-bkg-4 p-4 font-normal text-th-fgd-1`}
+      className={`default-transition w-full rounded-none border-t border-th-bkg-3 p-4 font-normal text-th-fgd-1`}
     >
       {children}
     </div>

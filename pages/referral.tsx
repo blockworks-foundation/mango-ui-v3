@@ -243,8 +243,8 @@ export default function Referral() {
               {hasReferrals ? (
                 <div className="col-span-12">
                   <h2 className="mb-4">{t('referrals:your-referrals')}</h2>
-                  <div className="grid-row-flow grid grid-cols-2 border-b border-th-bkg-4 sm:gap-6 sm:border-b-0">
-                    <div className="col-span-2 border-t border-th-bkg-4 p-3 sm:col-span-1 sm:border-b sm:p-4">
+                  <div className="grid-row-flow grid grid-cols-2 border-b border-th-bkg-3 sm:gap-6 sm:border-b-0">
+                    <div className="col-span-2 border-t border-th-bkg-3 p-3 sm:col-span-1 sm:border-b sm:p-4">
                       <div className="pb-0.5 text-xs text-th-fgd-3 sm:text-sm">
                         {t('referrals:total-earnings')}
                       </div>
@@ -252,7 +252,7 @@ export default function Referral() {
                         {formatUsdValue(referralTotalAmount)}
                       </div>
                     </div>
-                    <div className="col-span-2 border-t border-th-bkg-4 p-3 sm:col-span-1 sm:border-b sm:p-4">
+                    <div className="col-span-2 border-t border-th-bkg-3 p-3 sm:col-span-1 sm:border-b sm:p-4">
                       <div className="pb-0.5 text-xs text-th-fgd-3 sm:text-sm">
                         {t('referrals:total-referrals')}
                       </div>
@@ -265,12 +265,12 @@ export default function Referral() {
               ) : null}
               <div className="col-span-12">
                 <div className="flex w-full flex-col space-y-4 xl:flex-row xl:space-x-6 xl:space-y-0">
-                  <div className="min-w-[25%] flex-1 rounded-md border border-th-bkg-4 p-6">
+                  <div className="min-w-[25%] flex-1 rounded-md border border-th-bkg-3 p-6">
                     <ProgramDetails />
                   </div>
                   <div className="flex w-full flex-col">
                     {hasRequiredMngo ? (
-                      <div className="flex-1 rounded-md border border-th-bkg-4 p-6">
+                      <div className="flex-1 rounded-md border border-th-bkg-3 p-6">
                         <h2 className="mb-4">{t('referrals:your-links')}</h2>
                         {!loading ? (
                           !hasCustomRefLinks ? (
@@ -386,7 +386,7 @@ export default function Referral() {
                         )}
                       </div>
                     ) : (
-                      <div className="flex flex-1 flex-col items-center justify-center rounded-md border border-th-bkg-4 px-4 py-8 text-center">
+                      <div className="flex flex-1 flex-col items-center justify-center rounded-md border border-th-bkg-3 px-4 py-8 text-center">
                         <MngoMonoIcon className="mb-2 h-6 w-6 text-th-fgd-2" />
                         <p className="mb-0">{t('referrals:10k-mngo')}</p>
 
@@ -399,7 +399,7 @@ export default function Referral() {
                     )}
                   </div>
                   {hasRequiredMngo ? (
-                    <div className="w-full min-w-[25%] rounded-md border border-th-bkg-4 p-6 xl:w-1/3">
+                    <div className="w-full min-w-[25%] rounded-md border border-th-bkg-3 p-6 xl:w-1/3">
                       <h2 className="mb-1">{t('referrals:custom-links')}</h2>
                       <p className="mb-4">
                         {t('referrals:custom-links-limit')}
@@ -484,7 +484,7 @@ export default function Referral() {
                       </tbody>
                     </Table>
                   ) : (
-                    <div className="mb-4 border-b border-th-bkg-4">
+                    <div className="mb-4 border-b border-th-bkg-3">
                       <MobileTableHeader
                         colOneHeader={t('date')}
                         colTwoHeader={t('referrals:fee-earned')}
@@ -532,10 +532,10 @@ export default function Referral() {
             </>
           ) : (
             <>
-              <div className="col-span-12 rounded-md border border-th-bkg-4 p-6 lg:col-span-4">
+              <div className="col-span-12 rounded-md border border-th-bkg-3 p-6 lg:col-span-4">
                 <ProgramDetails />
               </div>
-              <div className="col-span-12 flex items-center justify-center rounded-md border border-th-bkg-4 p-6 lg:col-span-8">
+              <div className="col-span-12 flex items-center justify-center rounded-md border border-th-bkg-3 p-6 lg:col-span-8">
                 <EmptyState
                   buttonText={t('create-account')}
                   icon={<CurrencyDollarIcon />}
@@ -548,10 +548,10 @@ export default function Referral() {
           )
         ) : (
           <>
-            <div className="col-span-12 rounded-md border border-th-bkg-4 p-6 lg:col-span-4">
+            <div className="col-span-12 rounded-md border border-th-bkg-3 p-6 lg:col-span-4">
               <ProgramDetails />
             </div>
-            <div className="col-span-12 flex items-center justify-center rounded-md border border-th-bkg-4 p-6 lg:col-span-8">
+            <div className="col-span-12 flex items-center justify-center rounded-md border border-th-bkg-3 p-6 lg:col-span-8">
               <EmptyState
                 buttonText={t('connect')}
                 disabled={!wallet || !mangoGroup}

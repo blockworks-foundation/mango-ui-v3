@@ -174,7 +174,7 @@ export default function AccountBorrows() {
                       </tbody>
                     </Table>
                   ) : (
-                    <div className="border-b border-th-bkg-4">
+                    <div className="border-b border-th-bkg-3">
                       <MobileTableHeader
                         colOneHeader={t('asset')}
                         colTwoHeader={t('balance')}
@@ -285,7 +285,7 @@ export default function AccountBorrows() {
                   )
                 ) : (
                   <div
-                    className={`w-full rounded-md border border-th-bkg-4 py-6 text-center text-th-fgd-3`}
+                    className={`w-full rounded-md border border-th-bkg-3 py-6 text-center text-th-fgd-3`}
                   >
                     {t('no-borrows')}
                   </div>
@@ -424,7 +424,7 @@ export default function AccountBorrows() {
                 </tbody>
               </Table>
             ) : (
-              <div className="border-b border-th-bkg-4">
+              <div className="border-b border-th-bkg-3">
                 <MobileTableHeader
                   colOneHeader={t('asset')}
                   colTwoHeader={`${t('deposit')}/${t('borrow-rate')}`}

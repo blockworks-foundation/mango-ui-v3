@@ -102,7 +102,7 @@ li {
 }
 
 tbody {
-  @apply border-t border-th-bkg-4;
+  @apply border-t border-th-bkg-3;
 }
 
 button {

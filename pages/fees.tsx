@@ -49,7 +49,7 @@ export default function Fees() {
         <h2 className="mb-4">{t('futures')}</h2>
 
         <div className="grid grid-cols-1 grid-rows-2 pb-8 md:grid-cols-2 md:grid-rows-1 md:gap-4">
-          <div className="border-t border-th-bkg-4 p-3 sm:p-4 md:border-b">
+          <div className="border-t border-th-bkg-3 p-3 sm:p-4 md:border-b">
             <div className="pb-0.5 text-th-fgd-3">{t('maker-fee')}</div>
             <div className="flex items-center">
               <div className="text-xl font-bold text-th-fgd-1 md:text-2xl">
@@ -57,7 +57,7 @@ export default function Fees() {
               </div>
             </div>
           </div>
-          <div className="border-b border-t border-th-bkg-4 p-3 sm:p-4">
+          <div className="border-b border-t border-th-bkg-3 p-3 sm:p-4">
             <div className="pb-0.5 text-th-fgd-3">{t('taker-fee')}</div>
             <div className="flex items-center">
               <div className="text-xl font-bold text-th-fgd-1 md:text-2xl">
@@ -93,7 +93,7 @@ export default function Fees() {
         <h2 className="mb-4">{t('serum-fees')}</h2>
 
         <div className="grid grid-cols-1 grid-rows-2 pb-8 md:grid-cols-3 md:grid-rows-1 md:gap-4">
-          <div className="border-t border-th-bkg-4 p-3 sm:p-4 md:border-b">
+          <div className="border-t border-th-bkg-3 p-3 sm:p-4 md:border-b">
             <div className="pb-0.5 text-th-fgd-3">{t('maker-fee')}</div>
             <div className="flex items-center">
               <div className="text-xl font-bold text-th-fgd-1 md:text-2xl">
@@ -101,7 +101,7 @@ export default function Fees() {
               </div>
             </div>
           </div>
-          <div className="border-t border-th-bkg-4 p-3 sm:p-4 md:border-b">
+          <div className="border-t border-th-bkg-3 p-3 sm:p-4 md:border-b">
             <div className="flex items-center pb-0.5 text-th-fgd-3">
               {t('taker-fee')}
               <Tooltip
@@ -128,7 +128,7 @@ export default function Fees() {
               </div>
             </div>
           </div>
-          <div className="border-b border-t border-th-bkg-4 p-3 sm:p-4">
+          <div className="border-b border-t border-th-bkg-3 p-3 sm:p-4">
             <div className="flex items-center justify-between pb-0.5 text-th-fgd-3">
               {totalMsrm > 0 ? 'MSRM' : 'SRM'} {t('deposits')}
               {connected && mangoAccount ? (
@@ -162,19 +162,19 @@ export default function Fees() {
         </div>
         <h2 className="mb-4">{t('other')}</h2>
         <div className="grid grid-cols-1 grid-rows-3 pb-6 md:grid-cols-3 md:grid-rows-1 md:gap-4">
-          <div className="border-t border-th-bkg-4 p-3 sm:p-4 md:border-b">
+          <div className="border-t border-th-bkg-3 p-3 sm:p-4 md:border-b">
             <div className="pb-0.5 text-th-fgd-3">{t('withdraw')}</div>
             <div className="text-xl font-bold text-th-fgd-1 md:text-2xl">
               0%
             </div>
           </div>
-          <div className="border-t border-th-bkg-4 p-3 sm:p-4 md:border-b">
+          <div className="border-t border-th-bkg-3 p-3 sm:p-4 md:border-b">
             <div className="pb-0.5 text-th-fgd-3">{t('borrow')}</div>
             <div className="text-xl font-bold text-th-fgd-1 md:text-2xl">
               0%
             </div>
           </div>
-          <div className="border-b border-t border-th-bkg-4 p-3 sm:p-4">
+          <div className="border-b border-t border-th-bkg-3 p-3 sm:p-4">
             <div className="pb-0.5 text-th-fgd-3">{t('lend')}</div>
             <div className="text-xl font-bold text-th-fgd-1 md:text-2xl">
               0%

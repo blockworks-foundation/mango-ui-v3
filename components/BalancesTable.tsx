@@ -213,7 +213,7 @@ const BalancesTable = ({
               const tokenConfig = getTokenBySymbol(mangoGroupConfig, bal.symbol)
               return (
                 <div
-                  className="col-span-1 flex items-center justify-between rounded-full bg-th-bkg-3 px-5 py-3"
+                  className="col-span-1 flex items-center justify-between rounded-full bg-th-bkg-2 px-5 py-3"
                   key={bal.symbol}
                 >
                   <div className="flex space-x-2">
@@ -558,7 +558,7 @@ const BalancesTable = ({
                 )}
               </Table>
             ) : (
-              <div className="border-b border-th-bkg-4">
+              <div className="border-b border-th-bkg-3">
                 <MobileTableHeader
                   colOneHeader={t('asset')}
                   colTwoHeader={t('net-balance')}
@@ -698,7 +698,7 @@ const BalancesTable = ({
             )
           ) : (
             <div
-              className={`w-full rounded-md border border-th-bkg-4 py-6 text-center text-th-fgd-3`}
+              className={`w-full rounded-md border border-th-bkg-3 py-6 text-center text-th-fgd-3`}
             >
               {t('no-balances')}
             </div>

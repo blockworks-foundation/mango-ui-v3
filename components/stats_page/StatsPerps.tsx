@@ -208,7 +208,7 @@ export default function StatsPerps({ perpStats }) {
       <div className="mb-4">
         <h2 className="mb-4">{t('liquidity-mining')}</h2>
         <div className="grid grid-cols-2 gap-x-3 md:grid-cols-3 lg:grid-cols-6">
-          <div className="col-span-1 border-y border-th-bkg-4 py-3">
+          <div className="col-span-1 border-y border-th-bkg-3 py-3">
             <p className="mb-0">{t('depth-rewarded')}</p>
             <div className="text-lg font-bold">
               {maxDepthUi.toLocaleString() + ' '}
@@ -219,7 +219,7 @@ export default function StatsPerps({ perpStats }) {
               ) : null}
             </div>
           </div>
-          <div className="col-span-1 border-y border-th-bkg-4 py-3">
+          <div className="col-span-1 border-y border-th-bkg-3 py-3">
             <p className="mb-0">{t('target-period-length')}</p>
             <div className="text-lg font-bold">
               {(
@@ -229,7 +229,7 @@ export default function StatsPerps({ perpStats }) {
               {t('minutes')}
             </div>
           </div>
-          <div className="col-span-1 border-b border-th-bkg-4 py-3 md:border-y">
+          <div className="col-span-1 border-b border-th-bkg-3 py-3 md:border-y">
             <p className="mb-0">{t('mngo-per-period')}</p>
             <div className="text-lg font-bold">
               {(
@@ -238,7 +238,7 @@ export default function StatsPerps({ perpStats }) {
               ).toFixed(2)}
             </div>
           </div>
-          <div className="col-span-1 border-b border-th-bkg-4 py-3 lg:border-y">
+          <div className="col-span-1 border-b border-th-bkg-3 py-3 lg:border-y">
             <p className="mb-0">{t('mngo-left-period')}</p>
             <div className="text-lg font-bold">
               {(
@@ -248,7 +248,7 @@ export default function StatsPerps({ perpStats }) {
             </div>
           </div>
 
-          <div className="col-span-1 border-b border-th-bkg-4 py-3 lg:border-y">
+          <div className="col-span-1 border-b border-th-bkg-3 py-3 lg:border-y">
             <p className="mb-0">{t('est-period-end')}</p>
             <div className="text-lg font-bold">
               {dayjs(est * 1000).format('DD MMM YYYY')}
@@ -257,7 +257,7 @@ export default function StatsPerps({ perpStats }) {
               {dayjs(est * 1000).format('h:mma')}
             </div>
           </div>
-          <div className="col-span-1 border-b border-th-bkg-4 py-3 lg:border-y">
+          <div className="col-span-1 border-b border-th-bkg-3 py-3 lg:border-y">
             <p className="mb-0">{t('period-progress')}</p>
             <div className="text-lg font-bold">
               {(progress * 100).toFixed(2)}%

@@ -331,7 +331,7 @@ const AccountPerformance = () => {
       {mangoAccount ? (
         <>
           <div
-            className="h-[540px] w-full rounded-lg rounded-b-none border border-th-bkg-4 p-6 pb-24 sm:pb-16"
+            className="h-[540px] w-full rounded-lg rounded-b-none border border-th-bkg-3 p-6 pb-24 sm:pb-16"
             ref={observe}
           >
             <div className="flex flex-col pb-4 sm:flex-row sm:items-center sm:justify-between">
@@ -412,7 +412,7 @@ const AccountPerformance = () => {
               />
             ) : null}
           </div>
-          <div className="-mt-[1px] rounded-b-lg border border-th-bkg-4 py-3 px-6">
+          <div className="-mt-[1px] rounded-b-lg border border-th-bkg-3 py-3 px-6">
             <div className="mb-2 flex items-center justify-between">
               <p className="mb-0 font-bold">{t('assets')}</p>
               <Checkbox
