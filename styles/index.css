@@ -581,6 +581,14 @@ body::-webkit-scrollbar-corner {
   @apply pl-2;
 }
 
+.pro-sidebar .pro-menu .pro-menu-item > .pro-inner-item:hover {
+  @apply text-th-primary;
+}
+
+.pro-sidebar .pro-menu a:hover {
+  @apply text-th-primary;
+}
+
 .pro-sidebar.collapsed
   .pro-menu
   > ul
@@ -636,6 +644,7 @@ body::-webkit-scrollbar-corner {
 }
 
 .pro-sidebar .pro-menu a {
+  @apply transition-all duration-200;
   color: inherit;
 }
 

@@ -85,7 +85,7 @@ const SideNav = ({ collapsed, setCollapsed }) => {
             </div>
           </Link>
         </SidebarHeader>
-        <SidebarContent className="relative">
+        <SidebarContent className={accountPopoverOpen ? 'opacity-60' : ''}>
           <Menu iconShape="circle">
             <MenuItem
               active={pathname === '/'}
@@ -197,9 +197,9 @@ const SideNav = ({ collapsed, setCollapsed }) => {
               </MenuItem>
             </SubMenu>
           </Menu>
-          {accountPopoverOpen ? (
+          {/* {accountPopoverOpen ? (
             <div className="absolute top-0 left-0 h-full w-full bg-th-bkg-1 opacity-80" />
-          ) : null}
+          ) : null} */}
         </SidebarContent>
 
         {mangoAccount ? (
