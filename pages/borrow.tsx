@@ -25,7 +25,7 @@ export default function Borrow() {
   }, [])
 
   return (
-    <div className="py-6">
+    <div className="pt-6">
       <div className="flex flex-col pb-4 sm:flex-row">
         <h1>{t('borrow')}</h1>
       </div>

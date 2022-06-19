@@ -183,7 +183,7 @@ const MarketsTable = ({
           const chartData = coingeckoData ? coingeckoData.prices : undefined
 
           return (
-            <TrBody key={name} className="hover:bg-th-bkg-3">
+            <TrBody key={name}>
               <Td>
                 <Link href={`/?name=${name}`} shallow={true}>
                   <a className="hover:cursor-pointer">

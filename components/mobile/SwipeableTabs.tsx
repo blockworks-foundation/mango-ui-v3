@@ -151,7 +151,7 @@ function Tab({
           : 'border-b border-th-bkg-3 text-th-fgd-3'
       }`}
     >
-      {t(title)}
+      {t(title.toLowerCase().replace(/\s/g, '-'))}
     </div>
   )
 }

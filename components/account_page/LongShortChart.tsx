@@ -42,10 +42,9 @@ const LongShortChart = ({ chartData }: { chartData: any[] }) => {
       )
     }
 
-    const hideTooltip =
-      chartData.length === 1 && chartData[0].symbol === 'spacer'
+    const showTooltip = chartData.find((d) => d.symbol !== 'spacer')
 
-    return chartData.length && !hideTooltip ? (
+    return chartData.length && showTooltip ? (
       <div className="space-y-1.5 rounded-md bg-th-bkg-2 p-3 pb-2">
         {chartData
           .filter((d) => d.symbol !== 'spacer')

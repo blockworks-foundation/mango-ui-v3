@@ -1285,7 +1285,7 @@ export default function RiskCalculator() {
   // Display all
   return (
     <div>
-      <div className="flex flex-col pt-8 pb-3 sm:pb-6 md:pt-10">
+      <div className="flex flex-col pt-6 pb-3 sm:pb-6">
         <h1 className={`mb-2`}>{t('calculator:risk-calculator')}</h1>
         <p className="mb-0">{t('calculator:in-testing-warning')}</p>
       </div>

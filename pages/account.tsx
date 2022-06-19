@@ -56,6 +56,8 @@ import { MangoAccountLookup } from 'components/account_page/MangoAccountLookup'
 import NftProfilePicModal from 'components/NftProfilePicModal'
 import ProfileImage from 'components/ProfileImage'
 import SwipeableTabs from 'components/mobile/SwipeableTabs'
+import useLocalStorageState from 'hooks/useLocalStorageState'
+import dayjs from 'dayjs'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -104,6 +106,7 @@ export default function Account() {
   const [viewIndex, setViewIndex] = useState(0)
   const [activeTab, setActiveTab] = useState(TABS[0])
   const [showProfilePicModal, setShowProfilePicModal] = useState(false)
+  const [savedLanguage] = useLocalStorageState('language', '')
   const loadingTransaction = useMangoStore(
     (s) => s.wallet.nfts.loadingTransaction
   )
@@ -144,6 +147,10 @@ export default function Account() {
       handleWalletConnect(wallet)
     }
   }, [wallet])
+
+  useEffect(() => {
+    dayjs.locale(savedLanguage == 'zh_tw' ? 'zh-tw' : savedLanguage)
+  })
 
   useEffect(() => {
     async function loadUnownedMangoAccount() {
@@ -278,8 +285,8 @@ export default function Account() {
   }
 
   return (
-    <div className="pb-6">
-      <div className="mb-2 flex flex-col pt-6 pb-4 lg:flex-row lg:items-end lg:justify-between">
+    <div>
+      <div className="flex flex-col pt-6 pb-4 lg:flex-row lg:items-end lg:justify-between">
         {mangoAccount ? (
           <>
             <div className="flex flex-col pb-3 sm:flex-row sm:items-center lg:pb-0">
@@ -449,16 +456,16 @@ export default function Account() {
       <div>
         {mangoAccount ? (
           !isMobile ? (
-            <>
+            <div className="mt-2">
               <Tabs
                 activeTab={activeTab}
                 onChange={handleTabChange}
                 tabs={TABS}
               />
               <TabContent activeTab={activeTab} />
-            </>
+            </div>
           ) : (
-            <>
+            <div className="mt-2">
               <SwipeableTabs
                 onChange={handleChangeViewIndex}
                 items={TABS}
@@ -488,7 +495,7 @@ export default function Account() {
                   <AccountPerformancePerToken />
                 </div>
               </Swipeable>
-            </>
+            </div>
           )
         ) : connected ? (
           isLoading ? (
@@ -505,21 +512,25 @@ export default function Account() {
             />
           )
         ) : (
-          <EmptyState
-            buttonText={t('connect')}
-            desc={t('connect-view')}
-            disabled={!wallet || !mangoGroup}
-            icon={<LinkIcon />}
-            onClickButton={handleConnect}
-            title={t('connect-wallet')}
-          />
+          <div className="rounded-lg border border-th-bkg-3 p-4 md:p-6">
+            <EmptyState
+              buttonText={t('connect')}
+              desc={t('connect-view')}
+              disabled={!wallet || !mangoGroup}
+              icon={<LinkIcon />}
+              onClickButton={handleConnect}
+              title={t('connect-wallet')}
+            />
+            {!connected && !pubkey ? (
+              <div className="flex flex-col items-center pt-2">
+                <p>OR</p>
+                <MangoAccountLookup />
+              </div>
+            ) : null}
+          </div>
         )}
       </div>
-      {!connected && (
-        <div className="mt-6 md:mt-3 md:rounded-lg md:bg-th-bkg-2 md:p-6">
-          <MangoAccountLookup />
-        </div>
-      )}
+
       {showAccountsModal ? (
         <AccountsModal
           onClose={handleCloseAccounts}

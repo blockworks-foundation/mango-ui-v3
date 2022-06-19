@@ -229,7 +229,7 @@ export default function Referral() {
     existingCustomRefLinks && existingCustomRefLinks.length > 0
 
   return (
-    <div className="pb-6">
+    <div>
       <div className="pb-4 pt-6">
         <h1 className={`mb-1`}>{t('referrals:sow-seed')}</h1>
         <div className="flex flex-col items-start sm:flex-row">

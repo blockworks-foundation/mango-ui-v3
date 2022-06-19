@@ -94,7 +94,9 @@ const Layout = ({ children }) => {
             </div>
           </div>
           {pathname === '/' ? <FavoritesShortcutBar /> : null}
-          <div className={pathname === '/' ? 'px-3' : 'px-6'}>{children}</div>
+          <div className={pathname === '/' ? 'px-3' : 'px-6 pb-6'}>
+            {children}
+          </div>
         </div>
       </div>
       {showAccountsModal && (

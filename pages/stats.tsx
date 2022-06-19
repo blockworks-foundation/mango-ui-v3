@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import StatsTotals from '../components/stats_page/StatsTotals'
 import StatsAssets from '../components/stats_page/StatsAssets'
 import StatsPerps from '../components/stats_page/StatsPerps'
@@ -10,6 +10,8 @@ import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from '../components/TradePageGrid'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'next-i18next'
+import useLocalStorageState from 'hooks/useLocalStorageState'
+import dayjs from 'dayjs'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -34,6 +36,11 @@ export default function StatsPage() {
   const [activeTab, setActiveTab] = useState(TABS[0])
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
+  const [savedLanguage] = useLocalStorageState('language', '')
+
+  useEffect(() => {
+    dayjs.locale(savedLanguage == 'zh_tw' ? 'zh-tw' : savedLanguage)
+  })
 
   const handleChangeViewIndex = (index) => {
     setViewIndex(index)
@@ -44,7 +51,7 @@ export default function StatsPage() {
   }
 
   return (
-    <div>
+    <div className="pb-6">
       <div className="flex flex-col pb-4 pt-6 sm:flex-row">
         <h1>{t('stats')}</h1>
       </div>
