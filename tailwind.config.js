@@ -112,7 +112,7 @@ module.exports = {
         'short-profit': "url('/share_images/bg-short-profit.png')",
       },
       screens: {
-        xl: '1536px',
+        xl: '1600px',
       },
     },
   },
