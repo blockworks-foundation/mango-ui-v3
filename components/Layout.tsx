@@ -15,23 +15,32 @@ import {
   CogIcon,
   ExclamationCircleIcon,
 } from '@heroicons/react/solid'
-import { IconButton } from './Button'
+import Button, { IconButton } from './Button'
 import SettingsModal from './SettingsModal'
 import { useTranslation } from 'next-i18next'
 import { useWallet } from '@solana/wallet-adapter-react'
+import DepositModal from './DepositModal'
+import WithdrawModal from './WithdrawModal'
 
 const Layout = ({ children }) => {
   const { t } = useTranslation('common')
-  const { connected } = useWallet()
-  const { mangoAccount } = useMangoAccount()
+  const { connected, publicKey } = useWallet()
+  const { mangoAccount, initialLoad } = useMangoAccount()
   const [showSettingsModal, setShowSettingsModal] = useState(false)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
+  const [showDepositModal, setShowDepositModal] = useState(false)
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(false)
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
   const router = useRouter()
   const { pathname } = router
   const { pubkey } = router.query
+
+  const canWithdraw =
+    mangoAccount?.owner && publicKey
+      ? mangoAccount?.owner?.equals(publicKey)
+      : false
 
   useEffect(() => {
     const collapsed = width ? width < breakpoints.lg : false
@@ -70,14 +79,16 @@ const Layout = ({ children }) => {
                   {pubkey ? '🕵️' : '👋'}
                 </span>
                 {connected || pubkey ? (
-                  mangoAccount ? (
-                    <span className="font-bold text-th-fgd-1">
-                      {`${
-                        mangoAccount.name
-                          ? mangoAccount.name
-                          : abbreviateAddress(mangoAccount.publicKey)
-                      }`}
-                    </span>
+                  !initialLoad ? (
+                    mangoAccount ? (
+                      <span className="font-bold text-th-fgd-1">
+                        {`${
+                          mangoAccount.name
+                            ? mangoAccount.name
+                            : abbreviateAddress(mangoAccount.publicKey)
+                        }`}
+                      </span>
+                    ) : null
                   ) : (
                     <div className="h-4 w-28 animate-pulse rounded bg-th-bkg-3" />
                   )
@@ -90,6 +101,22 @@ const Layout = ({ children }) => {
               </div>
             )}
             <div className="flex items-center space-x-4">
+              {mangoAccount && canWithdraw && !isMobile ? (
+                <div className="flex space-x-2">
+                  <Button
+                    className="h-8 w-24 pl-3 pr-3 text-xs"
+                    onClick={() => setShowDepositModal(true)}
+                  >
+                    {t('deposit')}
+                  </Button>
+                  <Button
+                    className="h-8 w-24 border border-th-fgd-4 bg-transparent pl-3 pr-3 text-xs"
+                    onClick={() => setShowWithdrawModal(true)}
+                  >
+                    {t('withdraw')}
+                  </Button>
+                </div>
+              ) : null}
               <IconButton
                 className="h-8 w-8"
                 onClick={() => setShowSettingsModal(true)}
@@ -117,6 +144,18 @@ const Layout = ({ children }) => {
           isOpen={showSettingsModal}
         />
       ) : null}
+      {showDepositModal && (
+        <DepositModal
+          isOpen={showDepositModal}
+          onClose={() => setShowDepositModal(false)}
+        />
+      )}
+      {showWithdrawModal && (
+        <WithdrawModal
+          isOpen={showWithdrawModal}
+          onClose={() => setShowWithdrawModal(false)}
+        />
+      )}
     </div>
   )
 }

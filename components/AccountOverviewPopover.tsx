@@ -1,5 +1,4 @@
-import { useState, useCallback, Fragment } from 'react'
-import { useWallet } from '@solana/wallet-adapter-react'
+import { Fragment } from 'react'
 import { useTranslation } from 'next-i18next'
 import useMangoStore from '../stores/useMangoStore'
 import useMangoAccount from '../hooks/useMangoAccount'
@@ -14,10 +13,7 @@ import HealthHeart from './HealthHeart'
 import { abbreviateAddress, formatUsdValue, usdFormatter } from 'utils'
 import { ChevronUpIcon } from '@heroicons/react/solid'
 import { DataLoader } from './MarketPosition'
-import Button from './Button'
 import { Menu, SubMenu } from 'react-pro-sidebar'
-import DepositModal from './DepositModal'
-import WithdrawModal from './WithdrawModal'
 
 const AccountOverviewPopover = ({
   collapsed,
@@ -29,26 +25,10 @@ const AccountOverviewPopover = ({
   setOpen: any
 }) => {
   const { t } = useTranslation('common')
-  const { publicKey } = useWallet()
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const { mangoAccount, initialLoad } = useMangoAccount()
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
-  const [showDepositModal, setShowDepositModal] = useState(false)
-  const [showWithdrawModal, setShowWithdrawModal] = useState(false)
-
-  const canWithdraw =
-    mangoAccount?.owner && publicKey
-      ? mangoAccount?.owner?.equals(publicKey)
-      : false
-
-  const handleCloseDeposit = useCallback(() => {
-    setShowDepositModal(false)
-  }, [])
-
-  const handleCloseWithdraw = useCallback(() => {
-    setShowWithdrawModal(false)
-  }, [])
 
   const I80F48_100 = I80F48.fromString('100')
 
@@ -204,21 +184,6 @@ const AccountOverviewPopover = ({
                           : 'N/A'}
                       </p>
                     </div>
-                    <div className="mt-3 flex space-x-2">
-                      <Button
-                        className="w-1/2 pl-3 pr-3 text-xs"
-                        onClick={() => setShowDepositModal(true)}
-                      >
-                        {t('deposit')}
-                      </Button>
-                      <Button
-                        className="w-1/2 pl-3 pr-3 text-xs"
-                        onClick={() => setShowWithdrawModal(true)}
-                        disabled={!mangoAccount || !canWithdraw}
-                      >
-                        {t('withdraw')}
-                      </Button>
-                    </div>
                   </div>
                 </Popover.Panel>
               </Transition>
@@ -313,36 +278,11 @@ const AccountOverviewPopover = ({
                       : 'N/A'}
                   </p>
                 </div>
-                <div className="mt-3 flex w-full space-x-2">
-                  <div
-                    className="w-1/2 whitespace-nowrap rounded-full bg-th-bkg-button py-2 pl-3 pr-3 text-center text-xs font-bold text-th-fgd-1"
-                    onClick={() => setShowDepositModal(true)}
-                    role="button"
-                  >
-                    {t('deposit')}
-                  </div>
-                  <div
-                    className="w-1/2 whitespace-nowrap rounded-full bg-th-bkg-button py-2 pl-3 pr-3 text-center text-xs font-bold text-th-fgd-1"
-                    onClick={() => setShowWithdrawModal(true)}
-                    role="button"
-                  >
-                    {t('withdraw')}
-                  </div>
-                </div>
               </div>
             </SubMenu>
           </Menu>
         )
       ) : null}
-      {showDepositModal && (
-        <DepositModal isOpen={showDepositModal} onClose={handleCloseDeposit} />
-      )}
-      {showWithdrawModal && (
-        <WithdrawModal
-          isOpen={showWithdrawModal}
-          onClose={handleCloseWithdraw}
-        />
-      )}
     </>
   )
 }

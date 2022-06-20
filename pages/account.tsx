@@ -28,7 +28,7 @@ import AccountInterest from 'components/account_page/AccountInterest'
 import AccountFunding from 'components/account_page/AccountFunding'
 import AccountPerformancePerToken from 'components/account_page/AccountPerformancePerToken'
 import AccountNameModal from 'components/AccountNameModal'
-import { IconButton, LinkButton } from 'components/Button'
+import Button, { IconButton, LinkButton } from 'components/Button'
 import EmptyState from 'components/EmptyState'
 import Loading from 'components/Loading'
 import Swipeable from 'components/mobile/Swipeable'
@@ -344,8 +344,8 @@ export default function Account() {
             </div>
             {!pubkey ? (
               <div className="flex items-center space-x-2">
-                <button
-                  className="flex h-8 w-full items-center justify-center rounded-full bg-th-primary px-3 py-0 text-xs font-bold text-th-bkg-1 focus:outline-none disabled:cursor-not-allowed disabled:bg-th-bkg-4 disabled:text-th-fgd-4"
+                <Button
+                  className="flex h-8 w-full items-center justify-center rounded-full px-3 py-0 text-xs"
                   disabled={mngoAccrued.eq(ZERO_BN)}
                   onClick={handleRedeemMngo}
                 >
@@ -362,11 +362,11 @@ export default function Account() {
                         })
                       : t('zero-mngo-rewards')}
                   </div>
-                </button>
+                </Button>
                 <Menu>
                   {({ open }) => (
                     <div className="relative sm:w-full">
-                      <Menu.Button className="flex h-8 items-center justify-center rounded-full bg-th-bkg-button pt-0 pb-0 pl-3 pr-2 text-xs font-bold hover:brightness-[1.1] hover:filter sm:w-full">
+                      <Menu.Button className="flex h-8 items-center justify-center rounded-full border border-th-fgd-4 bg-transparent pt-0 pb-0 pl-3 pr-2 text-xs font-bold text-th-fgd-2 hover:brightness-[1.1] hover:filter sm:w-full">
                         {t('more')}
                         <ChevronDownIcon
                           className={`default-transition h-5 w-5 ${
@@ -495,15 +495,17 @@ export default function Account() {
             <Loading />
           </div>
         ) : connected ? (
-          <EmptyState
-            buttonText={t('create-account')}
-            icon={<CurrencyDollarIcon />}
-            onClickButton={() => setShowAccountsModal(true)}
-            title={t('no-account-found')}
-            disabled={!wallet || !mangoGroup}
-          />
+          <div className="-mt-4 rounded-lg border border-th-bkg-3 p-4 md:p-6">
+            <EmptyState
+              buttonText={t('create-account')}
+              icon={<CurrencyDollarIcon />}
+              onClickButton={() => setShowAccountsModal(true)}
+              title={t('no-account-found')}
+              disabled={!wallet || !mangoGroup}
+            />
+          </div>
         ) : (
-          <div className="rounded-lg border border-th-bkg-3 p-4 md:p-6">
+          <div className="-mt-4 rounded-lg border border-th-bkg-3 p-4 md:p-6">
             <EmptyState
               buttonText={t('connect')}
               desc={t('connect-view')}

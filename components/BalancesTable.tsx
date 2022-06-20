@@ -512,7 +512,7 @@ const BalancesTable = ({
                           <Td>
                             <div className="flex justify-end">
                               <Button
-                                className="h-7 pt-0 pb-0 pl-3 pr-3 text-xs"
+                                className="h-8 pt-0 pb-0 pl-3 pr-3 text-xs"
                                 onClick={() =>
                                   handleOpenDepositModal(balance.symbol)
                                 }
@@ -522,7 +522,7 @@ const BalancesTable = ({
                                   : t('deposit')}
                               </Button>
                               <Button
-                                className="ml-4 h-7 pt-0 pb-0 pl-3 pr-3 text-xs"
+                                className="ml-2 h-8 border border-th-fgd-4 bg-transparent pt-0 pb-0 pl-3 pr-3 text-xs text-th-fgd-2"
                                 onClick={() =>
                                   handleOpenWithdrawModal(balance.symbol)
                                 }
@@ -651,7 +651,7 @@ const BalancesTable = ({
                           </div>
                           <div className="flex space-x-4">
                             <Button
-                              className="h-7 w-1/2 pt-0 pb-0 pl-3 pr-3 text-xs"
+                              className="h-8 w-1/2 pt-0 pb-0 pl-3 pr-3 text-xs"
                               onClick={() =>
                                 handleOpenDepositModal(balance.symbol)
                               }
@@ -661,7 +661,7 @@ const BalancesTable = ({
                                 : t('deposit')}
                             </Button>
                             <Button
-                              className="h-7 w-1/2 pt-0 pb-0 pl-3 pr-3 text-xs"
+                              className="h-8 w-1/2 border border-th-fgd-4 bg-transparent pt-0 pb-0 pl-3 pr-3 text-xs"
                               onClick={() =>
                                 handleOpenWithdrawModal(balance.symbol)
                               }
