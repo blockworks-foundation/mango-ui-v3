@@ -497,20 +497,18 @@ export default function Account() {
               </Swipeable>
             </div>
           )
+        ) : isLoading ? (
+          <div className="flex justify-center py-10">
+            <Loading />
+          </div>
         ) : connected ? (
-          isLoading ? (
-            <div className="flex justify-center py-10">
-              <Loading />
-            </div>
-          ) : (
-            <EmptyState
-              buttonText={t('create-account')}
-              icon={<CurrencyDollarIcon />}
-              onClickButton={() => setShowAccountsModal(true)}
-              title={t('no-account-found')}
-              disabled={!wallet || !mangoGroup}
-            />
-          )
+          <EmptyState
+            buttonText={t('create-account')}
+            icon={<CurrencyDollarIcon />}
+            onClickButton={() => setShowAccountsModal(true)}
+            title={t('no-account-found')}
+            disabled={!wallet || !mangoGroup}
+          />
         ) : (
           <div className="rounded-lg border border-th-bkg-3 p-4 md:p-6">
             <EmptyState

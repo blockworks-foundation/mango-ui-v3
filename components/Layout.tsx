@@ -18,9 +18,11 @@ import {
 import { IconButton } from './Button'
 import SettingsModal from './SettingsModal'
 import { useTranslation } from 'next-i18next'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 const Layout = ({ children }) => {
   const { t } = useTranslation('common')
+  const { connected } = useWallet()
   const { mangoAccount } = useMangoAccount()
   const [showSettingsModal, setShowSettingsModal] = useState(false)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
@@ -67,14 +69,18 @@ const Layout = ({ children }) => {
                 <span className="mb-0 mr-2 text-lg">
                   {pubkey ? '🕵️' : '👋'}
                 </span>
-                {mangoAccount ? (
-                  <span className="font-bold text-th-fgd-1">
-                    {`${
-                      mangoAccount.name
-                        ? mangoAccount.name
-                        : abbreviateAddress(mangoAccount.publicKey)
-                    }`}
-                  </span>
+                {connected || pubkey ? (
+                  mangoAccount ? (
+                    <span className="font-bold text-th-fgd-1">
+                      {`${
+                        mangoAccount.name
+                          ? mangoAccount.name
+                          : abbreviateAddress(mangoAccount.publicKey)
+                      }`}
+                    </span>
+                  ) : (
+                    <div className="h-4 w-28 animate-pulse rounded bg-th-bkg-3" />
+                  )
                 ) : !isMobile ? (
                   <span className="flex items-center text-th-fgd-3">
                     Connect to get started
