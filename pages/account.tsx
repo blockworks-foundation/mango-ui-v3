@@ -76,14 +76,7 @@ export async function getStaticProps({ locale }) {
   }
 }
 
-const TABS = [
-  'Overview',
-  'Orders',
-  'History',
-  'Interest',
-  'Funding',
-  'Performance',
-]
+const TABS = ['Overview', 'Orders', 'History', 'Performance']
 
 export default function Account() {
   const { t } = useTranslation(['common', 'close-account', 'delegate'])
@@ -470,7 +463,7 @@ export default function Account() {
                 onChange={handleChangeViewIndex}
                 items={TABS}
                 tabIndex={viewIndex}
-                width="w-24 sm:w-32"
+                width="w-40 sm:w-48"
               />
               <Swipeable
                 index={viewIndex}
@@ -579,10 +572,6 @@ const TabContent = ({ activeTab }) => {
       return <AccountOrders />
     case 'History':
       return <AccountHistory />
-    case 'Interest':
-      return <AccountInterest />
-    case 'Funding':
-      return <AccountFunding />
     case 'Performance':
       return <AccountPerformancePerToken />
     default:
