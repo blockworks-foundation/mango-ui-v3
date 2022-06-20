@@ -208,7 +208,7 @@ const BalancesTable = ({
               {submitting ? <Loading /> : t('settle-all')}
             </Button>
           </div>
-          <div className="grid grid-flow-row grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid grid-flow-row grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {unsettledBalances.map((bal) => {
               const tokenConfig = getTokenBySymbol(mangoGroupConfig, bal.symbol)
               return (
@@ -220,8 +220,8 @@ const BalancesTable = ({
                     <div className="flex items-center">
                       <img
                         alt=""
-                        width="24"
-                        height="24"
+                        width="20"
+                        height="20"
                         src={`/assets/icons/${bal.symbol.toLowerCase()}.svg`}
                         className={`mr-3`}
                       />

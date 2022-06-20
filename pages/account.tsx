@@ -490,7 +490,7 @@ export default function Account() {
               </Swipeable>
             </div>
           )
-        ) : isLoading ? (
+        ) : isLoading && (connected || pubkey) ? (
           <div className="flex justify-center py-10">
             <Loading />
           </div>

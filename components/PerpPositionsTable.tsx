@@ -116,7 +116,7 @@ const PositionsTable: React.FC = () => {
 
             {unsettledPositions.length > 1 ? <RedeemButtons /> : null}
           </div>
-          <div className="grid grid-flow-row grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid grid-flow-row grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {unsettledPositions.map((p, index) => {
               return (
                 <div
@@ -127,8 +127,8 @@ const PositionsTable: React.FC = () => {
                     <div className="flex items-center">
                       <img
                         alt=""
-                        width="24"
-                        height="24"
+                        width="20"
+                        height="20"
                         src={`/assets/icons/${p.marketConfig.baseSymbol.toLowerCase()}.svg`}
                         className={`mr-3`}
                       />
