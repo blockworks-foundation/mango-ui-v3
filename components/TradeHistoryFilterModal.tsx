@@ -89,8 +89,7 @@ const TradeHistoryFilterModal: FunctionComponent<
         return {
           ...prevSelected,
           size: {
-            condition: (size) =>
-              parseFloat(size) >= from && parseFloat(size) <= to,
+            condition: (size) => size >= from && size <= to,
             values: { from: from, to: to },
           },
         }
