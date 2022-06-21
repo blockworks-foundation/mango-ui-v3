@@ -24,7 +24,6 @@ import {
   UserAddIcon,
   ExternalLinkIcon,
 } from '@heroicons/react/solid'
-import { useState } from 'react'
 import { useRouter } from 'next/router'
 import AccountOverviewPopover from './AccountOverviewPopover'
 import { IconButton } from './Button'
@@ -34,7 +33,6 @@ import { useTranslation } from 'next-i18next'
 const SideNav = ({ collapsed, setCollapsed }) => {
   const { t } = useTranslation('common')
   const { mangoAccount } = useMangoAccount()
-  const [accountPopoverOpen, setAccountPopoverOpen] = useState(false)
   const [defaultMarket] = useLocalStorageState(
     DEFAULT_MARKET_KEY,
     initialMarket
@@ -44,7 +42,6 @@ const SideNav = ({ collapsed, setCollapsed }) => {
 
   const handleToggleSidebar = () => {
     setCollapsed(!collapsed)
-    setAccountPopoverOpen(false)
     setTimeout(() => {
       window.dispatchEvent(new Event('resize'))
     }, 100)
@@ -85,7 +82,7 @@ const SideNav = ({ collapsed, setCollapsed }) => {
             </div>
           </Link>
         </SidebarHeader>
-        <SidebarContent className={accountPopoverOpen ? 'opacity-60' : ''}>
+        <SidebarContent>
           <Menu iconShape="circle">
             <MenuItem
               active={pathname === '/'}
@@ -197,18 +194,11 @@ const SideNav = ({ collapsed, setCollapsed }) => {
               </MenuItem>
             </SubMenu>
           </Menu>
-          {/* {accountPopoverOpen ? (
-            <div className="absolute top-0 left-0 h-full w-full bg-th-bkg-1 opacity-80" />
-          ) : null} */}
         </SidebarContent>
 
         {mangoAccount ? (
           <SidebarFooter>
-            <AccountOverviewPopover
-              collapsed={collapsed}
-              open={accountPopoverOpen}
-              setOpen={setAccountPopoverOpen}
-            />
+            <AccountOverviewPopover collapsed={collapsed} />
           </SidebarFooter>
         ) : null}
       </ProSidebar>

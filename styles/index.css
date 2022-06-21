@@ -550,7 +550,7 @@ body::-webkit-scrollbar-corner {
 }
 
 .pro-sidebar .pro-menu > ul > .pro-sub-menu > .pro-inner-list-item {
-  @apply bg-th-bkg-2;
+  @apply bg-th-bkg-1;
 }
 
 .pro-sidebar .pro-menu > ul > .pro-sub-menu > .pro-inner-list-item > div > ul {
