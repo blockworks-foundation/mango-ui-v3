@@ -401,6 +401,7 @@
    "time": "Time",
    "timeframe-desc": "Last {{timeframe}}",
    "to": "To",
+   "to-account": "To Account",
    "token": "Token",
    "too-large": "Size Too Large",
    "tooltip-account-liquidated": "Account will be liquidated if Health Ratio reaches 0% and will continue until Init Health is above 0.",

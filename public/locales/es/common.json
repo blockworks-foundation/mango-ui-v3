@@ -401,6 +401,7 @@
    "time": "Tiempo",
    "timeframe-desc": "Last {{timeframe}}",
    "to": "To",
+   "to-account": "To Account",
    "token": "Simbólico",
    "too-large": "Tamaño demasiado grande",
    "tooltip-account-liquidated": "La cuenta se liquidará si la relación de salud alcanza el 0% y continuará hasta que la salud inicial sea superior a 0.",

@@ -14,6 +14,8 @@ import { sleep, trimDecimals } from '../utils'
 import { useTranslation } from 'next-i18next'
 import ButtonGroup from './ButtonGroup'
 import { useWallet } from '@solana/wallet-adapter-react'
+import MangoAccountSelect from './MangoAccountSelect'
+import { MangoAccount } from '@blockworks-foundation/mango-client'
 
 interface DepositModalProps {
   onClose: () => void
@@ -38,6 +40,9 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
   const actions = useMangoStore((s) => s.actions)
   const [selectedAccount, setSelectedAccount] = useState(walletTokens[0])
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
+  const mangoAccounts = useMangoStore((s) => s.mangoAccounts)
+  const [depositMangoAccount, setDepositMangoAccount] =
+    useState<MangoAccount | null>(mangoAccount)
 
   useEffect(() => {
     if (tokenSymbol) {
@@ -60,14 +65,13 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
   }
 
   const handleDeposit = () => {
-    const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
-    if (!wallet) return
+    if (!wallet || !depositMangoAccount) return
 
     setSubmitting(true)
     deposit({
       amount: parseFloat(inputAmount),
       fromTokenAcc: selectedAccount.account,
-      mangoAccount,
+      mangoAccount: depositMangoAccount,
       wallet,
     })
       .then((response) => {
@@ -188,6 +192,15 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
             })}
             title={t('not-enough-balance')}
             type="warning"
+          />
+        </div>
+      ) : null}
+      {mangoAccounts.length > 1 ? (
+        <div className="mb-4">
+          <Label>{t('to-account')}</Label>
+          <MangoAccountSelect
+            onChange={(v) => setDepositMangoAccount(v)}
+            value={depositMangoAccount}
           />
         </div>
       ) : null}

@@ -401,6 +401,7 @@
     "time": "时间",
     "timeframe-desc": "前{{timeframe}}",
     "to": "到",
+    "to-account": "To Account",
     "token": "币种",
     "too-large": "数量太大",
     "tooltip-account-liquidated": "若帐户健康度降到０％您的帐户会被清算直到初始健康度达到０以上了。",
