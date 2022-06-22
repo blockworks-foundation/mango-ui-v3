@@ -32,7 +32,7 @@ const getAverageStats = (
   symbol: string,
   type: string
 ): string => {
-  if (stats?.length) {
+  if (stats?.length > 0) {
     const priorDate = new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000)
     const selectedStatsData = stats.filter((s) => s.name === symbol)
     const timeFilteredStats = selectedStatsData.filter(
@@ -55,7 +55,11 @@ const getAverageStats = (
   return '-'
 }
 
-export default function StatsTotals({ latestStats, stats }) {
+export default function StatsTotals({
+  latestStats,
+  stats,
+  loadHistoricalStats,
+}) {
   const { t } = useTranslation('common')
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
@@ -64,7 +68,7 @@ export default function StatsTotals({ latestStats, stats }) {
   const [depositValues, borrowValues]: [Values[], Values[]] = useMemo(() => {
     const depositValues: Values[] = []
     const borrowValues: Values[] = []
-    for (let i = 0; i < stats.length; i++) {
+    for (let i = 0; i < stats?.length; i++) {
       const time = stats[i].hourly
       const name = stats[i].name
       const depositValue =
@@ -149,6 +153,7 @@ export default function StatsTotals({ latestStats, stats }) {
               '$' + x.toLocaleString(undefined, { maximumFractionDigits: 0 })
             }
             type="area"
+            loading={loadHistoricalStats}
           />
         </div>
         <div
@@ -165,6 +170,7 @@ export default function StatsTotals({ latestStats, stats }) {
               '$' + x.toLocaleString(undefined, { maximumFractionDigits: 0 })
             }
             type="area"
+            loading={loadHistoricalStats}
           />
         </div>
       </div>
@@ -250,9 +256,9 @@ export default function StatsTotals({ latestStats, stats }) {
               </>
             )}
           </div>
-          <div className="pb-8">
-            <h2 className="mb-4">{t('average-deposit')}</h2>
-            {stats.length > 1 ? (
+          {stats?.length > 0 ? (
+            <div className="pb-8">
+              <h2 className="mb-4">{t('average-deposit')}</h2>
               <Table>
                 <thead>
                   <TrHead>
@@ -290,60 +296,62 @@ export default function StatsTotals({ latestStats, stats }) {
                   ))}
                 </tbody>
               </Table>
-            ) : (
-              <>
-                <div className="h-8 w-full animate-pulse rounded bg-th-bkg-3" />
-                <div className="mt-1 h-8 w-full animate-pulse rounded bg-th-bkg-3" />
-                <div className="mt-1 h-8 w-full animate-pulse rounded bg-th-bkg-3" />
-              </>
-            )}
-          </div>
-          <h2 className="mb-4">{t('average-borrow')}</h2>
-          {stats.length > 1 ? (
-            <Table>
-              <thead>
-                <TrHead>
-                  <Th>{t('asset')}</Th>
-                  <Th>24h</Th>
-                  <Th>7d</Th>
-                  <Th>30d</Th>
-                </TrHead>
-              </thead>
-              <tbody>
-                {latestStats.map((stat) => (
-                  <TrBody key={stat.name}>
-                    <Td>
-                      <div className="flex items-center">
-                        <img
-                          alt=""
-                          width="20"
-                          height="20"
-                          src={`/assets/icons/${stat.name.toLowerCase()}.svg`}
-                          className={`mr-2.5`}
-                        />
-                        {stat.name}
-                      </div>
-                    </Td>
-                    <Td>
-                      {getAverageStats(stats, 1, stat.name, 'borrowIndex')}
-                    </Td>
-                    <Td>
-                      {getAverageStats(stats, 7, stat.name, 'borrowIndex')}
-                    </Td>
-                    <Td>
-                      {getAverageStats(stats, 30, stat.name, 'borrowIndex')}
-                    </Td>
-                  </TrBody>
-                ))}
-              </tbody>
-            </Table>
-          ) : (
+            </div>
+          ) : loadHistoricalStats ? (
             <>
               <div className="h-8 w-full animate-pulse rounded bg-th-bkg-3" />
               <div className="mt-1 h-8 w-full animate-pulse rounded bg-th-bkg-3" />
               <div className="mt-1 h-8 w-full animate-pulse rounded bg-th-bkg-3" />
             </>
-          )}
+          ) : null}
+          {stats?.length > 0 ? (
+            <>
+              <h2 className="mb-4">{t('average-borrow')}</h2>
+              <Table>
+                <thead>
+                  <TrHead>
+                    <Th>{t('asset')}</Th>
+                    <Th>24h</Th>
+                    <Th>7d</Th>
+                    <Th>30d</Th>
+                  </TrHead>
+                </thead>
+                <tbody>
+                  {latestStats.map((stat) => (
+                    <TrBody key={stat.name}>
+                      <Td>
+                        <div className="flex items-center">
+                          <img
+                            alt=""
+                            width="20"
+                            height="20"
+                            src={`/assets/icons/${stat.name.toLowerCase()}.svg`}
+                            className={`mr-2.5`}
+                          />
+                          {stat.name}
+                        </div>
+                      </Td>
+                      <Td>
+                        {getAverageStats(stats, 1, stat.name, 'borrowIndex')}
+                      </Td>
+                      <Td>
+                        {getAverageStats(stats, 7, stat.name, 'borrowIndex')}
+                      </Td>
+                      <Td>
+                        {getAverageStats(stats, 30, stat.name, 'borrowIndex')}
+                      </Td>
+                    </TrBody>
+                  ))}
+                </tbody>
+              </Table>
+            </>
+          ) : loadHistoricalStats ? (
+            <>
+              <div className="h-8 w-full animate-pulse rounded bg-th-bkg-3" />
+              <div className="mt-1 h-8 w-full animate-pulse rounded bg-th-bkg-3" />
+              <div className="mt-1 h-8 w-full animate-pulse rounded bg-th-bkg-3" />
+            </>
+          ) : null}
         </>
       ) : (
         <>
@@ -416,80 +424,92 @@ export default function StatsTotals({ latestStats, stats }) {
               />
             ))}
           </div>
-          <div className="mb-8 border-b border-th-bkg-3">
-            <h2 className="mb-4">{t('average-deposit')}</h2>
-            {stats.length > 1
-              ? latestStats.map((stat) => (
-                  <Row key={stat.name}>
-                    <div className="grid grid-cols-12 grid-rows-2 text-left sm:grid-rows-1 sm:text-right">
-                      <div className="text-fgd-1 col-span-12 sm:col-span-3">
-                        <div className="flex items-center">
-                          <img
-                            alt=""
-                            width="20"
-                            height="20"
-                            src={`/assets/icons/${stat.name
-                              .split(/-|\//)[0]
-                              .toLowerCase()}.svg`}
-                            className={`mr-2.5`}
-                          />
-                          {stat.name}
-                        </div>
-                      </div>
-                      <div className="col-span-4 sm:col-span-3">
-                        <div className="pb-0.5 text-xs text-th-fgd-3">24h</div>
-                        {getAverageStats(stats, 1, stat.name, 'depositIndex')}
-                      </div>
-                      <div className="col-span-4 sm:col-span-3">
-                        <div className="pb-0.5 text-xs text-th-fgd-3">7d</div>
-                        {getAverageStats(stats, 7, stat.name, 'depositIndex')}
-                      </div>
-                      <div className="col-span-4 sm:col-span-3">
-                        <div className="pb-0.5 text-xs text-th-fgd-3">30d</div>
-                        {getAverageStats(stats, 30, stat.name, 'depositIndex')}
+          {stats?.length > 0 ? (
+            <div className="mb-8 border-b border-th-bkg-4">
+              <h2 className="mb-4">{t('average-deposit')}</h2>
+              {latestStats.map((stat) => (
+                <Row key={stat.name}>
+                  <div className="grid grid-cols-12 grid-rows-2 text-left sm:grid-rows-1 sm:text-right">
+                    <div className="text-fgd-1 col-span-12 sm:col-span-3">
+                      <div className="flex items-center">
+                        <img
+                          alt=""
+                          width="20"
+                          height="20"
+                          src={`/assets/icons/${stat.name
+                            .split(/-|\//)[0]
+                            .toLowerCase()}.svg`}
+                          className={`mr-2.5`}
+                        />
+                        {stat.name}
                       </div>
                     </div>
-                  </Row>
-                ))
-              : null}
-          </div>
-          <div className="mb-4 border-b border-th-bkg-3">
-            <h2 className="mb-4">{t('average-borrow')}</h2>
-            {stats.length > 1
-              ? latestStats.map((stat) => (
-                  <Row key={stat.name}>
-                    <div className="grid grid-cols-12 grid-rows-2 gap-2 text-left sm:grid-rows-1 sm:text-right">
-                      <div className="text-fgd-1 col-span-12 flex items-center sm:col-span-3">
-                        <div className="flex items-center">
-                          <img
-                            alt=""
-                            width="20"
-                            height="20"
-                            src={`/assets/icons/${stat.name
-                              .split(/-|\//)[0]
-                              .toLowerCase()}.svg`}
-                            className={`mr-2.5`}
-                          />
-                          {stat.name}
-                        </div>
-                      </div>
-                      <div className="col-span-4 sm:col-span-3">
-                        <div className="pb-0.5 text-xs text-th-fgd-3">24h</div>
-                        {getAverageStats(stats, 1, stat.name, 'borrowIndex')}
-                      </div>
-                      <div className="col-span-4 sm:col-span-3">
-                        <div className="pb-0.5 text-xs text-th-fgd-3">7d</div>
-                        {getAverageStats(stats, 7, stat.name, 'borrowIndex')}
-                      </div>
-                      <div className="col-span-4 sm:col-span-3">
-                        <div className="pb-0.5 text-xs text-th-fgd-3">30d</div>
-                        {getAverageStats(stats, 30, stat.name, 'borrowIndex')}
+                    <div className="col-span-4 sm:col-span-3">
+                      <div className="pb-0.5 text-xs text-th-fgd-3">24h</div>
+                      {getAverageStats(stats, 1, stat.name, 'depositIndex')}
+                    </div>
+                    <div className="col-span-4 sm:col-span-3">
+                      <div className="pb-0.5 text-xs text-th-fgd-3">7d</div>
+                      {getAverageStats(stats, 7, stat.name, 'depositIndex')}
+                    </div>
+                    <div className="col-span-4 sm:col-span-3">
+                      <div className="pb-0.5 text-xs text-th-fgd-3">30d</div>
+                      {getAverageStats(stats, 30, stat.name, 'depositIndex')}
+                    </div>
+                  </div>
+                </Row>
+              ))}
+            </div>
+          ) : loadHistoricalStats ? (
+            <>
+              <div className="h-8 w-full animate-pulse rounded bg-th-bkg-3" />
+              <div className="mt-1 h-8 w-full animate-pulse rounded bg-th-bkg-3" />
+              <div className="mt-1 h-8 w-full animate-pulse rounded bg-th-bkg-3" />
+            </>
+          ) : null}
+          {stats?.length > 0 ? (
+            <div className="mb-4 border-b border-th-bkg-4">
+              <h2 className="mb-4">{t('average-borrow')}</h2>
+              {latestStats.map((stat) => (
+                <Row key={stat.name}>
+                  <div className="grid grid-cols-12 grid-rows-2 gap-2 text-left sm:grid-rows-1 sm:text-right">
+                    <div className="text-fgd-1 col-span-12 flex items-center sm:col-span-3">
+                      <div className="flex items-center">
+                        <img
+                          alt=""
+                          width="20"
+                          height="20"
+                          src={`/assets/icons/${stat.name
+                            .split(/-|\//)[0]
+                            .toLowerCase()}.svg`}
+                          className={`mr-2.5`}
+                        />
+                        {stat.name}
                       </div>
                     </div>
-                  </Row>
-                ))
-              : null}
-          </div>
+                    <div className="col-span-4 sm:col-span-3">
+                      <div className="pb-0.5 text-xs text-th-fgd-3">24h</div>
+                      {getAverageStats(stats, 1, stat.name, 'borrowIndex')}
+                    </div>
+                    <div className="col-span-4 sm:col-span-3">
+                      <div className="pb-0.5 text-xs text-th-fgd-3">7d</div>
+                      {getAverageStats(stats, 7, stat.name, 'borrowIndex')}
+                    </div>
+                    <div className="col-span-4 sm:col-span-3">
+                      <div className="pb-0.5 text-xs text-th-fgd-3">30d</div>
+                      {getAverageStats(stats, 30, stat.name, 'borrowIndex')}
+                    </div>
+                  </div>
+                </Row>
+              ))}
+            </div>
+          ) : loadHistoricalStats ? (
+            <>
+              <div className="h-8 w-full animate-pulse rounded bg-th-bkg-3" />
+              <div className="mt-1 h-8 w-full animate-pulse rounded bg-th-bkg-3" />
+              <div className="mt-1 h-8 w-full animate-pulse rounded bg-th-bkg-3" />
+            </>
+          ) : null}
         </>
       )}
     </>

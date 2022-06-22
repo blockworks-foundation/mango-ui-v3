@@ -36,7 +36,7 @@ function calculateFundingRate(
   return (fundingInQuoteDecimals / basePriceInBaseLots) * 100
 }
 
-export default function StatsPerps({ perpStats }) {
+export default function StatsPerps({ perpStats, loadPerpStats }) {
   const { t } = useTranslation('common')
   const [selectedAsset, setSelectedAsset] = useState<string>('BTC-PERP')
   const marketConfigs = useMangoStore(
@@ -61,7 +61,7 @@ export default function StatsPerps({ perpStats }) {
   }, [selectedMarketConfig, perpMarkets])
 
   const perpsData = useMemo(() => {
-    if (perpStats.length === 0 || !selectedMarket) return []
+    if (!perpStats.length || !selectedMarket) return []
 
     let selectedStatsData = perpStats.filter(
       (stat) => stat.name === selectedAsset
@@ -160,6 +160,7 @@ export default function StatsPerps({ perpStats }) {
             }
             type="area"
             yAxisWidth={70}
+            loading={loadPerpStats}
           />
         </div>
         <div
@@ -182,6 +183,7 @@ export default function StatsPerps({ perpStats }) {
                   selectedMarketConfig.baseSymbol
               }
               type="area"
+              loading={loadPerpStats}
             />
           ) : null}
         </div>
