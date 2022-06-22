@@ -26,14 +26,9 @@ export async function getStaticProps({ locale }) {
 
 export default function StatsPage() {
   const { t } = useTranslation('common')
-  const TABS = [
-    'Totals',
-    'Assets',
-    'Perps',
-    // 'Markets',
-    // 'Liquidations',
-  ]
-  const { latestStats, stats, perpStats } = useMangoStats()
+  const TABS = ['Totals', 'Assets', 'Perps']
+  const { latestStats, stats, perpStats, loadHistoricalStats, loadPerpStats } =
+    useMangoStats()
   const [viewIndex, setViewIndex] = useState(0)
   const [activeTab, setActiveTab] = useState(TABS[0])
   const { width } = useViewport()
@@ -80,12 +75,22 @@ export default function StatsPage() {
               latestStats={latestStats}
               perpStats={perpStats}
               stats={stats}
+              loadHistoricalStats={loadHistoricalStats}
+              loadPerpStats={loadPerpStats}
             />
           ) : (
             <Swipeable index={viewIndex} onChangeIndex={handleChangeViewIndex}>
-              <StatsTotals latestStats={latestStats} stats={stats} />
-              <StatsAssets latestStats={latestStats} stats={stats} />
-              <StatsPerps perpStats={perpStats} />
+              <StatsTotals
+                latestStats={latestStats}
+                stats={stats}
+                loadHistoricalStats={loadHistoricalStats}
+              />
+              <StatsAssets
+                latestStats={latestStats}
+                stats={stats}
+                loadHistoricalStats={loadHistoricalStats}
+              />
+              <StatsPerps perpStats={perpStats} loadPerpStats={loadPerpStats} />
             </Swipeable>
           )}
         </div>
@@ -94,15 +99,40 @@ export default function StatsPage() {
   )
 }
 
-const TabContent = ({ activeTab, latestStats, perpStats, stats }) => {
+const TabContent = ({
+  activeTab,
+  latestStats,
+  perpStats,
+  stats,
+  loadHistoricalStats,
+  loadPerpStats,
+}) => {
   switch (activeTab) {
     case 'Totals':
-      return <StatsTotals latestStats={latestStats} stats={stats} />
+      return (
+        <StatsTotals
+          latestStats={latestStats}
+          stats={stats}
+          loadHistoricalStats={loadHistoricalStats}
+        />
+      )
     case 'Assets':
-      return <StatsAssets latestStats={latestStats} stats={stats} />
+      return (
+        <StatsAssets
+          latestStats={latestStats}
+          stats={stats}
+          loadHistoricalStats={loadHistoricalStats}
+        />
+      )
     case 'Perps':
-      return <StatsPerps perpStats={perpStats} />
+      return <StatsPerps perpStats={perpStats} loadPerpStats={loadPerpStats} />
     default:
-      return <StatsTotals latestStats={latestStats} stats={stats} />
+      return (
+        <StatsTotals
+          latestStats={latestStats}
+          stats={stats}
+          loadHistoricalStats={loadHistoricalStats}
+        />
+      )
   }
 }

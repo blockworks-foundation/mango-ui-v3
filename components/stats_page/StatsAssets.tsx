@@ -1,13 +1,22 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import Chart from '../Chart'
 import Select from '../Select'
 import { useTranslation } from 'next-i18next'
 
-export default function StatsAssets({ latestStats, stats }) {
+export default function StatsAssets({
+  latestStats,
+  stats,
+  loadHistoricalStats,
+}) {
   const { t } = useTranslation('common')
   const [selectedAsset, setSelectedAsset] = useState<string>('BTC')
 
-  const selectedStatsData = stats.filter((stat) => stat.name === selectedAsset)
+  const selectedStatsData = useMemo(() => {
+    if (stats.length) {
+      return stats.filter((stat) => stat.name === selectedAsset)
+    }
+    return []
+  }, [stats, selectedAsset])
 
   return (
     <>
@@ -68,6 +77,7 @@ export default function StatsAssets({ latestStats, stats }) {
               x.toLocaleString(undefined, { maximumFractionDigits: 2 })
             }
             type="area"
+            loading={loadHistoricalStats}
           />
         </div>
         <div
@@ -84,6 +94,7 @@ export default function StatsAssets({ latestStats, stats }) {
               (x * 100).toLocaleString(undefined, { maximumFractionDigits: 4 })
             }
             type="bar"
+            loading={loadHistoricalStats}
           />
         </div>
         <div
@@ -99,6 +110,7 @@ export default function StatsAssets({ latestStats, stats }) {
               x.toLocaleString(undefined, { maximumFractionDigits: 2 })
             }
             type="area"
+            loading={loadHistoricalStats}
           />
         </div>
         <div
@@ -115,6 +127,7 @@ export default function StatsAssets({ latestStats, stats }) {
               (x * 100).toLocaleString(undefined, { maximumFractionDigits: 4 })
             }
             type="bar"
+            loading={loadHistoricalStats}
           />
         </div>
       </div>

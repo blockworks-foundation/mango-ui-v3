@@ -29,6 +29,8 @@ const useMangoStats = () => {
     },
   ])
   const [latestStats, setLatestStats] = useState<any[]>([])
+  const [loadHistoricalStats, setLoadHistoricalStats] = useState<boolean>(false)
+  const [loadPerpStats, setLoadPerpStats] = useState<boolean>(false)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoGroupName = useMangoStore((s) => s.selectedMangoGroup.name)
   const connection = useMangoStore((s) => s.connection.current)
@@ -36,22 +38,34 @@ const useMangoStats = () => {
 
   useEffect(() => {
     const fetchHistoricalStats = async () => {
-      const response = await fetch(
-        `https://mango-transaction-log.herokuapp.com/v3/stats/spot_stats_hourly?mango-group=${mangoGroupName}`
-      )
-      const stats = await response.json()
-      setStats(stats)
+      try {
+        setLoadHistoricalStats(true)
+        const response = await fetch(
+          `https://mango-transaction-log.herokuapp.com/v3/stats/spot_stats_hourly?mango-group=${mangoGroupName}`
+        )
+        const stats = await response.json()
+        setStats(stats)
+        setLoadHistoricalStats(false)
+      } catch {
+        setLoadHistoricalStats(false)
+      }
     }
     fetchHistoricalStats()
   }, [mangoGroupName])
 
   useEffect(() => {
     const fetchHistoricalPerpStats = async () => {
-      const response = await fetch(
-        `https://mango-transaction-log.herokuapp.com/v3/stats/perp_stats_hourly?mango-group=${mangoGroupName}`
-      )
-      const stats = await response.json()
-      setPerpStats(stats)
+      try {
+        setLoadPerpStats(true)
+        const response = await fetch(
+          `https://mango-transaction-log.herokuapp.com/v3/stats/perp_stats_hourly?mango-group=${mangoGroupName}`
+        )
+        const stats = await response.json()
+        setPerpStats(stats)
+        setLoadPerpStats(false)
+      } catch {
+        setLoadPerpStats(false)
+      }
     }
     fetchHistoricalPerpStats()
   }, [mangoGroupName])
@@ -101,7 +115,7 @@ const useMangoStats = () => {
     getLatestStats()
   }, [mangoGroup])
 
-  return { latestStats, stats, perpStats }
+  return { latestStats, stats, perpStats, loadHistoricalStats, loadPerpStats }
 }
 
 export default useMangoStats
