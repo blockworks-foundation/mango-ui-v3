@@ -183,6 +183,14 @@ const TVChartContainer = () => {
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         'paneProperties.background':
           theme === 'Dark' ? '#101012' : theme === 'Light' ? '#fff' : '#141026',
+        'paneProperties.vertGridProperties.color':
+          theme === 'Dark' ? '#101012' : theme === 'Light' ? '#fff' : '#141026',
+        'paneProperties.horzGridProperties.color':
+          theme === 'Dark'
+            ? '#1B1B1F'
+            : theme === 'Light'
+            ? '#f7f7f7'
+            : '#1D1832',
         ...chartStyleOverrides,
       },
     }
