@@ -152,6 +152,7 @@
   "filters-selected": "{{selectedFilters}}個項目",
   "first-deposit-desc": "創建Mango帳戶最少需要0.035 SOL。",
   "from": "從",
+  "from-account": "From Account",
   "funding": "資金費",
   "funding-chart-title": "資金費 – 前30天(圖表有點延遲)",
   "futures": "永續合約",

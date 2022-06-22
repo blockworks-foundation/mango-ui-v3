@@ -152,6 +152,7 @@
    "filters-selected": "{{selectedFilters}} selected",
    "first-deposit-desc": "Necesita 0.035 SOL para crear una cuenta de mango.",
    "from": "From",
+   "from-account": "From Account",
    "funding": "Fondos",
    "funding-chart-title": "Fondos (últimos 30 días)",
    "futures": "Futuros",

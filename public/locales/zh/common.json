@@ -152,6 +152,7 @@
     "filters-selected": "{{selectedFilters}}个项目",
     "first-deposit-desc": "创建Mango帐户最少需要0.035 SOL。",
     "from": "从",
+    "from-account": "From Account",
     "funding": "资金费",
     "funding-chart-title": "资金费 – 前30天(图表有点延迟)",
     "futures": "永续合约",
