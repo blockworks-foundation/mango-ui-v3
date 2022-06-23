@@ -75,13 +75,25 @@ const Layout = ({ children }) => {
               </div>
             ) : (
               <div className="flex items-center text-th-fgd-3">
-                <span className="mb-0 mr-2 text-lg">
-                  {pubkey ? '🕵️' : '👋'}
+                <span className="mb-0 mr-2 text-base">
+                  {pubkey
+                    ? '🔎'
+                    : connected
+                    ? initialLoad
+                      ? ''
+                      : mangoAccount
+                      ? '🟢'
+                      : '👋'
+                    : '🔗'}
                 </span>
                 {connected || pubkey ? (
                   !initialLoad ? (
                     mangoAccount ? (
-                      <span className="font-bold text-th-fgd-1">
+                      <span
+                        className="default-transition font-bold text-th-fgd-1 hover:text-th-fgd-3"
+                        role="button"
+                        onClick={() => setShowAccountsModal(true)}
+                      >
                         {`${
                           mangoAccount.name
                             ? mangoAccount.name
@@ -95,7 +107,7 @@ const Layout = ({ children }) => {
                       </span>
                     )
                   ) : (
-                    <div className="h-4 w-28 animate-pulse rounded bg-th-bkg-3" />
+                    <div className="h-4 w-32 animate-pulse rounded bg-th-bkg-3" />
                   )
                 ) : !isMobile ? (
                   <span className="flex items-center text-th-fgd-3">

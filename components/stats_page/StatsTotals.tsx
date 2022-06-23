@@ -32,7 +32,7 @@ const getAverageStats = (
   symbol: string,
   type: string
 ): string => {
-  if (stats?.length > 0) {
+  if (stats.length > 0) {
     const priorDate = new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000)
     const selectedStatsData = stats.filter((s) => s.name === symbol)
     const timeFilteredStats = selectedStatsData.filter(
