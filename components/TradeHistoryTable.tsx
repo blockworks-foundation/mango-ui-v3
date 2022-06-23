@@ -205,9 +205,7 @@ const TradeHistoryTable = ({
                 {t('reset-filters')}
               </LinkButton>
             ) : null}
-            {tradeHistory.length >= 15 &&
-            tradeHistory.length <= 10000 &&
-            initialLoad ? (
+            {tradeHistory.length >= 15 && initialLoad ? (
               <Button
                 className="order-3 flex h-8 items-center justify-center whitespace-nowrap pt-0 pb-0 pl-3 pr-3 text-xs sm:order-first"
                 onClick={() => setShowFiltersModal(true)}
@@ -431,10 +429,7 @@ const TradeHistoryTable = ({
                             </Td>
                             <Td className="!py-2 ">{trade.size}</Td>
                             <Td className="!py-2 ">
-                              $
-                              {new Intl.NumberFormat('en-US').format(
-                                trade.price
-                              )}
+                              {formatUsdValue(trade.price, trade.symbol)}
                             </Td>
                             <Td className="!py-2 ">
                               {formatUsdValue(trade.value)}
@@ -499,7 +494,7 @@ const TradeHistoryTable = ({
                 </>
               ) : (
                 <div className="mb-6">
-                  <div className="border-b border-th-bkg-4">
+                  <div className="border-b border-th-bkg-3">
                     {paginatedData.map((trade: any, index) => (
                       <ExpandableRow
                         buttonTemplate={
@@ -603,11 +598,11 @@ const TradeHistoryTable = ({
                 </div>
               )
             ) : hasActiveFilter ? (
-              <div className="w-full rounded-md bg-th-bkg-1 py-6 text-center text-th-fgd-3">
+              <div className="w-full rounded-md border border-th-bkg-3 py-6 text-center text-th-fgd-3">
                 {t('no-trades-found')}
               </div>
             ) : (
-              <div className="w-full rounded-md bg-th-bkg-1 py-6 text-center text-th-fgd-3">
+              <div className="w-full rounded-md border border-th-bkg-3 py-6 text-center text-th-fgd-3">
                 {t('no-history')}
                 {asPath === '/account' ? (
                   <Link href={'/'} shallow={true}>
@@ -625,6 +620,7 @@ const TradeHistoryTable = ({
           setFilters={setFilters}
           isOpen={showFiltersModal}
           onClose={() => setShowFiltersModal(false)}
+          showApiWarning={tradeHistory.length > 10000}
         />
       ) : null}
     </>

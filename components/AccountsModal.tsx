@@ -55,11 +55,11 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
               <ElementTitle noMarginBottom>{t('mango-accounts')}</ElementTitle>
             </Modal.Header>
             <div className="flex items-center justify-between pb-3 text-th-fgd-1">
-              <div className="font-semibold">
+              <p className="mb-0">
                 {mangoAccounts.length > 1
                   ? t('select-account')
                   : t('your-account')}
-              </div>
+              </p>
               <Button
                 className="flex h-8 items-center justify-center pt-0 pb-0 pl-3 pr-3 text-xs"
                 onClick={() => handleShowNewAccountForm()}

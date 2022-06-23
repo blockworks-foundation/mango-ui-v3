@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { useTranslation } from 'next-i18next'
@@ -20,7 +20,8 @@ import ShareModal from './ShareModal'
 import { TwitterIcon } from './icons'
 import { marketSelector } from '../stores/selectors'
 import { useWallet } from '@solana/wallet-adapter-react'
-import { RedeemDropdown } from 'components/PerpPositions'
+import RedeemButtons from './RedeemButtons'
+import Tooltip from './Tooltip'
 
 const PositionsTable: React.FC = () => {
   const { t } = useTranslation('common')
@@ -85,31 +86,49 @@ const PositionsTable: React.FC = () => {
     }
   }
 
+  const unsettledSum = useMemo(() => {
+    if (unsettledPositions.length > 1) {
+      return unsettledPositions.reduce((a, c) => a + c.unsettledPnl, 0)
+    }
+    return
+  }, [unsettledPositions])
+
   return (
-    <div className="flex flex-col md:pb-2">
+    <div className="flex flex-col">
       {unsettledPositions.length > 0 ? (
-        <div className="mb-6 rounded-lg border border-th-bkg-4 p-4 sm:p-6">
-          <div className="flex items-center justify-between pb-4">
+        <div className="mb-6 rounded-lg border border-th-bkg-3 p-4 sm:p-6">
+          <div className="flex items-start justify-between pb-4">
             <div className="flex items-center">
-              <ExclamationIcon className="mr-1.5 mt-0.5 h-5 w-5 flex-shrink-0 text-th-primary" />
-              <h3>{t('unsettled-positions')}</h3>
+              <ExclamationIcon className="mr-2 h-6 w-6 flex-shrink-0 text-th-primary" />
+              <h3>
+                {t('unsettled-positions')}{' '}
+                {unsettledSum ? (
+                  <div
+                    className={
+                      unsettledSum >= 0 ? 'text-th-green' : 'text-th-red'
+                    }
+                  >
+                    {formatUsdValue(unsettledSum)}
+                  </div>
+                ) : null}
+              </h3>
             </div>
 
-            <RedeemDropdown />
+            {unsettledPositions.length > 1 ? <RedeemButtons /> : null}
           </div>
-          <div className="grid grid-flow-row grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid grid-flow-row grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {unsettledPositions.map((p, index) => {
               return (
                 <div
-                  className="col-span-1 flex items-center justify-between rounded-full bg-th-bkg-3 px-5 py-3"
+                  className="col-span-1 flex items-center justify-between rounded-full bg-th-bkg-2 px-5 py-3"
                   key={p.marketConfig.baseSymbol}
                 >
                   <div className="flex space-x-2">
                     <div className="flex items-center">
                       <img
                         alt=""
-                        width="24"
-                        height="24"
+                        width="20"
+                        height="20"
                         src={`/assets/icons/${p.marketConfig.baseSymbol.toLowerCase()}.svg`}
                         className={`mr-3`}
                       />
@@ -153,6 +172,7 @@ const PositionsTable: React.FC = () => {
                     <Th>{t('average-entry')}</Th>
                     <Th>{t('break-even')}</Th>
                     <Th>{t('unrealized-pnl')}</Th>
+                    <Th>{t('unsettled-balance')}</Th>
                   </TrHead>
                 </thead>
                 <tbody>
@@ -168,6 +188,7 @@ const PositionsTable: React.FC = () => {
                         avgEntryPrice,
                         breakEvenPrice,
                         unrealizedPnl,
+                        unsettledPnl,
                       },
                       index
                     ) => {
@@ -244,6 +265,35 @@ const PositionsTable: React.FC = () => {
                             )}
                           </Td>
                           <Td>
+                            {unsettledPnl ? (
+                              settleSinglePos === index ? (
+                                <Loading />
+                              ) : (
+                                <Tooltip content={t('redeem-pnl')}>
+                                  <LinkButton
+                                    className={`font-bold ${
+                                      unsettledPnl >= 0
+                                        ? 'text-th-green'
+                                        : 'text-th-red'
+                                    }`}
+                                    onClick={() =>
+                                      handleSettlePnl(
+                                        perpMarket,
+                                        perpAccount,
+                                        index
+                                      )
+                                    }
+                                    disabled={unsettledPnl === 0}
+                                  >
+                                    {formatUsdValue(unsettledPnl)}
+                                  </LinkButton>
+                                </Tooltip>
+                              )
+                            ) : (
+                              '--'
+                            )}
+                          </Td>
+                          <Td>
                             <LinkButton
                               onClick={() =>
                                 handleShowShare(openPositions[index])
@@ -281,7 +331,10 @@ const PositionsTable: React.FC = () => {
                       notionalSize,
                       avgEntryPrice,
                       breakEvenPrice,
+                      perpAccount,
+                      perpMarket,
                       unrealizedPnl,
+                      unsettledPnl,
                     },
                     index
                   ) => {
@@ -355,6 +408,38 @@ const PositionsTable: React.FC = () => {
                                 ? formatUsdValue(breakEvenPrice)
                                 : '--'}
                             </div>
+                            <div className="col-span-1 text-left">
+                              <div className="pb-0.5 text-xs text-th-fgd-3">
+                                {t('unsettled-balance')}
+                              </div>
+                              {unsettledPnl ? (
+                                settleSinglePos === index ? (
+                                  <Loading />
+                                ) : (
+                                  <Tooltip content={t('redeem-pnl')}>
+                                    <LinkButton
+                                      className={`font-bold ${
+                                        unsettledPnl >= 0
+                                          ? 'text-th-green'
+                                          : 'text-th-red'
+                                      }`}
+                                      onClick={() =>
+                                        handleSettlePnl(
+                                          perpMarket,
+                                          perpAccount,
+                                          index
+                                        )
+                                      }
+                                      disabled={unsettledPnl === 0}
+                                    >
+                                      {formatUsdValue(unsettledPnl)}
+                                    </LinkButton>
+                                  </Tooltip>
+                                )
+                              ) : (
+                                '--'
+                              )}
+                            </div>
                           </div>
                         }
                       />
@@ -365,7 +450,7 @@ const PositionsTable: React.FC = () => {
             )
           ) : (
             <div
-              className={`w-full rounded-md bg-th-bkg-1 py-6 text-center text-th-fgd-3`}
+              className={`w-full rounded-md border border-th-bkg-3 py-6 text-center text-th-fgd-3`}
             >
               {t('no-perp')}
             </div>

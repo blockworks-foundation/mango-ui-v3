@@ -24,6 +24,7 @@ import { notify } from '../utils/notifications'
 import { useTranslation } from 'next-i18next'
 import { ExpandableRow } from './TableElements'
 import { useWallet } from '@solana/wallet-adapter-react'
+import MangoAccountSelect from './MangoAccountSelect'
 
 interface WithdrawModalProps {
   onClose: () => void
@@ -55,8 +56,11 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   const actions = useMangoStore((s) => s.actions)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
+  const mangoAccounts = useMangoStore((s) => s.mangoAccounts)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const mangoGroupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
+  const [withdrawMangoAccount, setWithdrawMangoAccount] =
+    useState<MangoAccount | null>(mangoAccount)
 
   const tokens = useMemo(() => mangoGroupConfig.tokens, [mangoGroupConfig])
   const token = useMemo(
@@ -67,28 +71,33 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
     mangoGroup && token ? mangoGroup.getTokenIndex(token.mintKey) : 0
 
   useEffect(() => {
-    if (!mangoGroup || !mangoAccount || !withdrawTokenSymbol || !mangoCache)
+    if (
+      !mangoGroup ||
+      !withdrawMangoAccount ||
+      !withdrawTokenSymbol ||
+      !mangoCache
+    )
       return
 
     const mintDecimals = mangoGroup.tokens[tokenIndex].decimals
-    const tokenDeposits = mangoAccount.getUiDeposit(
+    const tokenDeposits = withdrawMangoAccount.getUiDeposit(
       mangoCache.rootBankCache[tokenIndex],
       mangoGroup,
       tokenIndex
     )
-    const tokenBorrows = mangoAccount.getUiBorrow(
+    const tokenBorrows = withdrawMangoAccount.getUiBorrow(
       mangoCache.rootBankCache[tokenIndex],
       mangoGroup,
       tokenIndex
     )
 
     const maxWithoutBorrows = nativeI80F48ToUi(
-      mangoAccount
+      withdrawMangoAccount
         .getAvailableBalance(mangoGroup, mangoCache, tokenIndex)
         .floor(),
       mangoGroup.tokens[tokenIndex].decimals
     )
-    const maxWithBorrows = mangoAccount
+    const maxWithBorrows = withdrawMangoAccount
       .getMaxWithBorrowForToken(mangoGroup, mangoCache, tokenIndex)
       .add(maxWithoutBorrows)
       .mul(I80F48.fromString('0.995')) // handle rounding errors when borrowing
@@ -126,9 +135,9 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
     // clone MangoAccount and arrays to not modify selectedMangoAccount
     // FIXME: MangoAccount needs type updated to accept null for pubKey
     // @ts-ignore
-    const simulation = new MangoAccount(null, mangoAccount)
-    simulation.deposits = [...mangoAccount.deposits]
-    simulation.borrows = [...mangoAccount.borrows]
+    const simulation = new MangoAccount(null, withdrawMangoAccount)
+    simulation.deposits = [...withdrawMangoAccount.deposits]
+    simulation.borrows = [...withdrawMangoAccount.borrows]
 
     // update with simulated values
     simulation.deposits[tokenIndex] = newDeposit
@@ -157,7 +166,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
     includeBorrow,
     inputAmount,
     tokenIndex,
-    mangoAccount,
+    withdrawMangoAccount,
     mangoGroup,
     mangoCache,
   ])
@@ -173,10 +182,11 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
       token: mangoGroup.tokens[tokenIndex].mint,
       allowBorrow: includeBorrow,
       wallet,
+      mangoAccount: withdrawMangoAccount,
     })
       .then((txid: string) => {
         setSubmitting(false)
-        actions.reloadMangoAccount()
+        actions.fetchAllMangoAccounts(wallet)
         actions.fetchWalletTokens(wallet)
         notify({
           title: t('withdraw-success'),
@@ -204,8 +214,8 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   }
 
   const getDepositsForSelectedAsset = (): I80F48 => {
-    return mangoAccount && mangoCache && mangoGroup
-      ? mangoAccount.getUiDeposit(
+    return withdrawMangoAccount && mangoCache && mangoGroup
+      ? withdrawMangoAccount.getUiDeposit(
           mangoCache.rootBankCache[tokenIndex],
           mangoGroup,
           tokenIndex
@@ -288,7 +298,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
         const tokenIndex = mangoGroup.getTokenIndex(token.mintKey)
         return {
           symbol: token.symbol,
-          balance: mangoAccount
+          balance: withdrawMangoAccount
             ?.getUiDeposit(
               mangoCache.rootBankCache[tokenIndex],
               mangoGroup,
@@ -312,10 +322,19 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                 {title ? title : t('withdraw-funds')}
               </ElementTitle>
             </Modal.Header>
+            {mangoAccounts.length > 1 ? (
+              <div className="mb-4">
+                <Label>{t('from-account')}</Label>
+                <MangoAccountSelect
+                  onChange={(v) => setWithdrawMangoAccount(v)}
+                  value={withdrawMangoAccount}
+                />
+              </div>
+            ) : null}
             <Label>{t('asset')}</Label>
             <Select
               value={
-                withdrawTokenSymbol && mangoAccount ? (
+                withdrawTokenSymbol && withdrawMangoAccount ? (
                   <div className="flex w-full items-center justify-between">
                     <div className="flex items-center">
                       <img
@@ -327,7 +346,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                       />
                       {withdrawTokenSymbol}
                     </div>
-                    {mangoAccount
+                    {withdrawMangoAccount
                       ?.getUiDeposit(
                         mangoCache.rootBankCache[tokenIndex],
                         mangoGroup,

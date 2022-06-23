@@ -16,6 +16,7 @@ import ButtonGroup from 'components/ButtonGroup'
 import * as MonoIcons from '../icons'
 import { QuestionMarkCircleIcon } from '@heroicons/react/outline'
 import { useTheme } from 'next-themes'
+import { CHART_COLORS } from './LongShortChart'
 
 const utc = require('dayjs/plugin/utc')
 dayjs.extend(utc)
@@ -26,24 +27,6 @@ export const handleDustTicks = (v) => {
       ? 0
       : v.toExponential()
     : numberCompactFormatter.format(v)
-}
-
-// Each line added to the graph will use one of these colors
-const COLORS = {
-  All: '#ff7c43',
-  USDC: '#ffa600',
-  SRM: '#8dd3c7',
-  SOL: '#A288E3',
-  RAY: '#4AB839',
-  MSOL: '#fb8072',
-  MNGO: '#80b1d3',
-  LUNA: '#fdb462',
-  AVAX: '#b3de69',
-  BNB: '#FF47A6',
-  FTT: '#A38560',
-  BTC: '#bc80bd',
-  ETH: '#05C793',
-  ADA: '#3F8EFC',
 }
 
 const HEADERS = [
@@ -348,7 +331,7 @@ const AccountPerformance = () => {
       {mangoAccount ? (
         <>
           <div
-            className="h-[540px] w-full rounded-lg rounded-b-none border border-th-bkg-4 p-6 pb-24 sm:pb-16"
+            className="h-[540px] w-full rounded-lg rounded-b-none border border-th-bkg-3 p-6 pb-24 sm:pb-16"
             ref={observe}
           >
             <div className="flex flex-col pb-4 sm:flex-row sm:items-center sm:justify-between">
@@ -410,7 +393,7 @@ const AccountPerformance = () => {
                       key={`${v}${i}`}
                       type="monotone"
                       dataKey={`${v}`}
-                      stroke={`${COLORS[v]}`}
+                      stroke={`${CHART_COLORS(theme)[v]}`}
                       dot={false}
                     />
                   ))}
@@ -429,7 +412,7 @@ const AccountPerformance = () => {
               />
             ) : null}
           </div>
-          <div className="-mt-[1px] rounded-b-lg border border-th-bkg-4 py-3 px-6">
+          <div className="-mt-[1px] rounded-b-lg border border-th-bkg-3 py-3 px-6">
             <div className="mb-2 flex items-center justify-between">
               <p className="mb-0 font-bold">{t('assets')}</p>
               <Checkbox
@@ -449,18 +432,21 @@ const AccountPerformance = () => {
                   className={`default-transition m-1 flex items-center rounded-full border py-1 px-2 text-xs font-bold ${
                     selectedSymbols.includes(s)
                       ? ''
-                      : 'border-th-fgd-4 text-th-fgd-4 hover:border-th-fgd-3 hover:text-th-fgd-3 focus:border-th-fgd-3 focus:text-th-fgd-3 focus:outline-none'
+                      : 'border-th-fgd-4 text-th-fgd-4 focus:border-th-fgd-3 focus:text-th-fgd-3 focus:outline-none md:hover:border-th-fgd-3 md:hover:text-th-fgd-3'
                   }`}
                   onClick={() => toggleOption(s)}
                   style={
                     selectedSymbols.includes(s)
-                      ? { borderColor: COLORS[s], color: COLORS[s] }
+                      ? {
+                          borderColor: CHART_COLORS(theme)[s],
+                          color: CHART_COLORS(theme)[s],
+                        }
                       : {}
                   }
                   key={s}
                 >
                   {renderSymbolIcon(s)}
-                  {s}
+                  {s == 'All' ? t(`account-performance:all`) : s}
                 </button>
               ))}
             </div>

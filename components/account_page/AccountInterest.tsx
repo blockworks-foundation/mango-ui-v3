@@ -2,7 +2,6 @@ import { getTokenBySymbol } from '@blockworks-foundation/mango-client'
 import { useEffect, useMemo, useState } from 'react'
 import dayjs from 'dayjs'
 import useMangoStore from '../../stores/useMangoStore'
-import Select from '../Select'
 import {
   Table,
   TableDateDisplay,
@@ -29,6 +28,7 @@ dayjs.extend(utc)
 import { exportDataToCSV } from '../../utils/export'
 import { SaveIcon } from '@heroicons/react/outline'
 import Button from '../Button'
+import TabButtons from 'components/TabButtons'
 
 interface InterestStats {
   [key: string]: {
@@ -437,50 +437,22 @@ const AccountInterest = () => {
           <>
             {!isEmpty(hourlyInterestStats) && !loadHourlyStats ? (
               <>
-                <div className="flex w-full items-center justify-between pb-4 pt-8">
-                  <h2>{t('history')}</h2>
-                  <Select
-                    value={selectedAsset}
-                    onChange={(a) => setSelectedAsset(a)}
-                    className="w-24 md:hidden"
-                  >
-                    <div className="space-y-2">
-                      {Object.keys(hourlyInterestStats).map((token: string) => (
-                        <Select.Option
-                          key={token}
-                          value={token}
-                          className={`default-transition relative flex w-full cursor-pointer rounded-md bg-th-bkg-1 px-3 py-3 hover:bg-th-bkg-3 focus:outline-none`}
-                        >
-                          <div className="flex w-full items-center justify-between">
-                            {token}
-                          </div>
-                        </Select.Option>
-                      ))}
-                    </div>
-                  </Select>
-                  <div className="hidden pb-4 sm:pb-0 md:flex">
-                    {Object.keys(hourlyInterestStats).map((token: string) => (
-                      <div
-                        className={`default-transition ml-2 cursor-pointer rounded-md bg-th-bkg-3 px-2 py-1
-                          ${
-                            selectedAsset === token
-                              ? `text-th-primary ring-1 ring-inset ring-th-primary`
-                              : `text-th-fgd-1 opacity-50 hover:opacity-100`
-                          }
-                        `}
-                        onClick={() => setSelectedAsset(token)}
-                        key={token}
-                      >
-                        {token}
-                      </div>
-                    ))}
-                  </div>
+                <div className="pb-2 pt-8">
+                  <h2 className="mb-4">{t('history')}</h2>
+                  <TabButtons
+                    activeTab={selectedAsset}
+                    tabs={Object.keys(hourlyInterestStats).map(
+                      (token: string) => ({ label: token, key: token })
+                    )}
+                    onClick={setSelectedAsset}
+                    showSymbolIcon
+                  />
                 </div>
                 {selectedAsset && chartData.length > 0 ? (
                   <div className="flex w-full flex-col space-x-0 sm:flex-row sm:space-x-4">
                     {chartData.find((d) => d.interest !== 0) ? (
                       <div
-                        className="relative mb-6 w-full rounded-md border border-th-bkg-4 p-4 sm:w-1/2"
+                        className="relative mb-6 w-full rounded-md border border-th-bkg-3 p-4 sm:w-1/2"
                         style={{ height: '330px' }}
                       >
                         <Chart
@@ -512,7 +484,7 @@ const AccountInterest = () => {
                     ) : null}
                     {chartData.find((d) => d.value !== 0) ? (
                       <div
-                        className="relative mb-6 w-full rounded-md border border-th-bkg-4 p-4 sm:w-1/2"
+                        className="relative mb-6 w-full rounded-md border border-th-bkg-3 p-4 sm:w-1/2"
                         style={{ height: '330px' }}
                       >
                         {token ? (

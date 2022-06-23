@@ -11,7 +11,6 @@ import {
 } from '../TableElements'
 import isEmpty from 'lodash/isEmpty'
 import { useTranslation } from 'next-i18next'
-import Select from '../Select'
 import Pagination from '../Pagination'
 import usePagination from '../../hooks/usePagination'
 import { roundToDecimal } from '../../utils'
@@ -25,6 +24,7 @@ dayjs.extend(utc)
 import { exportDataToCSV } from '../../utils/export'
 import Button from '../Button'
 import { SaveIcon } from '@heroicons/react/outline'
+import TabButtons from 'components/TabButtons'
 
 const QUOTE_DECIMALS = 6
 
@@ -305,50 +305,23 @@ const AccountFunding = () => {
           <>
             {!isEmpty(hourlyFunding) && !loadHourlyStats ? (
               <>
-                <div className="flex w-full items-center justify-between pb-4 pt-6">
-                  <h2>{t('history')}</h2>
-                  <Select
-                    value={selectedAsset}
-                    onChange={(a) => setSelectedAsset(a)}
-                    className="w-24 sm:hidden"
-                  >
-                    <div className="space-y-2">
-                      {Object.keys(hourlyFunding).map((token: string) => (
-                        <Select.Option
-                          key={token}
-                          value={token}
-                          className={`default-transition relative flex w-full cursor-pointer rounded-md bg-th-bkg-1 px-3 py-3 hover:bg-th-bkg-3 focus:outline-none`}
-                        >
-                          <div className="flex w-full items-center justify-between">
-                            {token}
-                          </div>
-                        </Select.Option>
-                      ))}
-                    </div>
-                  </Select>
-                  <div className="hidden pb-4 sm:flex sm:pb-0">
-                    {Object.keys(hourlyFunding).map((token: string) => (
-                      <div
-                        className={`default-transition ml-2 cursor-pointer rounded-md bg-th-bkg-3 px-2 py-1
-                          ${
-                            selectedAsset === token
-                              ? `text-th-primary ring-1 ring-inset ring-th-primary`
-                              : `text-th-fgd-1 opacity-50 hover:opacity-100`
-                          }
-                        `}
-                        onClick={() => setSelectedAsset(token)}
-                        key={token}
-                      >
-                        {token}-PERP
-                      </div>
-                    ))}
-                  </div>
+                <div className="pb-2 pt-6">
+                  <h2 className="mb-4">{t('history')}</h2>
+                  <TabButtons
+                    activeTab={selectedAsset}
+                    tabs={Object.keys(hourlyFunding).map((token: string) => ({
+                      label: token,
+                      key: token,
+                    }))}
+                    onClick={setSelectedAsset}
+                    showSymbolIcon
+                  />
                 </div>
                 {selectedAsset && chartData.length > 0 ? (
                   <div className="flex w-full flex-col space-x-0 sm:flex-row sm:space-x-4">
                     {chartData.find((d) => d.funding !== 0) ? (
                       <div
-                        className="relative mb-6 w-full rounded-md border border-th-bkg-4 p-4"
+                        className="relative mb-6 w-full rounded-md border border-th-bkg-3 p-4"
                         style={{ height: '330px' }}
                       >
                         <Chart

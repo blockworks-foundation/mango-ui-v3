@@ -61,15 +61,15 @@ const MarketDetails = () => {
 
   return (
     <div
-      className={`relative flex flex-col md:px-3 md:pb-2 md:pt-3 lg:flex-row lg:items-center lg:justify-between`}
+      className={`relative flex flex-col md:px-3 md:pt-3 md:pb-2 lg:flex-row lg:items-end lg:justify-between`}
     >
-      <div className="flex flex-col lg:flex-row lg:items-center">
-        <div className="hidden md:block md:pb-4 md:pr-6 lg:pb-0">
+      <div className="flex flex-col lg:flex-row lg:flex-wrap">
+        <div className="hidden md:block md:pr-6 lg:pb-0">
           <div className="flex items-center">
             <SwitchMarketDropdown />
           </div>
         </div>
-        <div className="grid grid-flow-row grid-cols-1 gap-2 md:grid-cols-3 lg:grid-flow-col lg:grid-cols-none lg:grid-rows-1 lg:gap-6">
+        <div className="grid grid-flow-row grid-cols-1 gap-2 md:mt-2.5 md:grid-cols-3 md:pr-20 lg:grid-flow-col lg:grid-cols-none lg:grid-rows-1 lg:gap-6">
           <div className="flex items-center justify-between md:block">
             <div className="text-th-fgd-3 md:pb-0.5 md:text-[0.65rem]">
               {t('oracle-price')}

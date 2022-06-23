@@ -127,7 +127,7 @@ export const ConnectWalletButton: React.FC = () => {
                 leaveFrom="opacity-100"
                 leaveTo="opacity-0"
               >
-                <Menu.Items className="absolute right-0 z-20 mt-1 w-48 space-y-1.5 rounded-md bg-th-bkg-3 px-4 py-2.5">
+                <Menu.Items className="absolute right-0 z-20 mt-1 w-48 space-y-1.5 rounded-md bg-th-bkg-2 px-4 py-2.5">
                   <Menu.Item>
                     <button
                       className="flex w-full flex-row items-center rounded-none py-0.5 font-normal hover:cursor-pointer hover:text-th-primary focus:outline-none"
@@ -150,7 +150,7 @@ export const ConnectWalletButton: React.FC = () => {
                   </Menu.Item>
                   <Menu.Item>
                     <button
-                      className="flex w-full flex-row items-center rounded-none py-0.5 font-normal hover:cursor-pointer hover:text-th-primary focus:outline-none"
+                      className="flex w-full flex-row items-center rounded-none py-0.5 font-normal hover:cursor-pointer focus:outline-none md:hover:text-th-primary"
                       onClick={handleDisconnect}
                     >
                       <LogoutIcon className="h-4 w-4" />
@@ -169,18 +169,18 @@ export const ConnectWalletButton: React.FC = () => {
         </Menu>
       ) : (
         <div
-          className="flex h-14 justify-between divide-x divide-th-bkg-3"
+          className="flex h-14 divide-x divide-th-bkg-3"
           id="connect-wallet-tip"
         >
           <button
             onClick={handleConnect}
             disabled={!mangoGroup}
-            className="rounded-none bg-th-primary-dark text-th-bkg-1 hover:brightness-[1.1] focus:outline-none disabled:cursor-wait disabled:text-th-bkg-2"
+            className="rounded-none bg-th-primary-dark text-th-bkg-1 focus:outline-none disabled:cursor-wait disabled:text-th-bkg-2"
           >
             <div className="default-transition flex h-full flex-row items-center justify-center px-3">
               <WalletIcon className="mr-2 h-4 w-4 fill-current" />
               <div className="text-left">
-                <div className="mb-0.5 whitespace-nowrap font-bold">
+                <div className="mb-1 whitespace-nowrap font-bold leading-none">
                   {t('connect')}
                 </div>
                 {wallet?.adapter?.name && (

@@ -23,7 +23,6 @@ import ProfileImage from 'components/ProfileImage'
 import ProfileImageButton from 'components/ProfileImageButton'
 import SelectMangoAccount from 'components/SelectMangoAccount'
 import Tabs from 'components/Tabs'
-import TopBar from 'components/TopBar'
 import dayjs from 'dayjs'
 import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
@@ -292,7 +291,6 @@ export default function Profile() {
 
   return (
     <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
-      <TopBar />
       <PageBodyContainer>
         <div className="flex flex-col pt-4 pb-6 md:flex-row md:items-end md:justify-between md:pb-4 md:pt-10">
           {connected || pk ? (

@@ -1,11 +1,12 @@
 {
-  "account-pnl": "Account PnL",
-  "account-value": "Account Value",
-  "funding-cumulative": "Cumulative Funding",
-  "interest-cumulative": "Cumulative Interest",
-  "mngo-rewards": "MNGO Rewards",
-  "perp-pnl": "Perp PnL",
-  "perp-pnl-ex-rewards": "Perp PnL (ex. rewards)",
-  "select-an-asset": "Select one or more assets to view their performance.",
-  "vs-time": "vs. Time"
+  "all": "全部",
+  "account-pnl": "帐户盈亏",
+  "account-value": "帐户价值",
+  "funding-cumulative": "累计资金费用",
+  "interest-cumulative": "累计利息",
+  "mngo-rewards": "MNGO奖励",
+  "perp-pnl": "合约盈亏",
+  "perp-pnl-ex-rewards": "合约盈亏（排除奖励1）",
+  "select-an-asset": "选资产来看其表现。",
+  "vs-time": "与时间"
 }

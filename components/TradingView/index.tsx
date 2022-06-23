@@ -177,12 +177,20 @@ const TVChartContainer = () => {
       custom_css_url: '/tradingview-chart.css',
       loading_screen: {
         backgroundColor:
-          theme === 'Dark' ? '#1B1B1F' : theme === 'Light' ? '#fff' : '#1D1832',
+          theme === 'Dark' ? '#101012' : theme === 'Light' ? '#fff' : '#141026',
       },
       overrides: {
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         'paneProperties.background':
-          theme === 'Dark' ? '#1B1B1F' : theme === 'Light' ? '#fff' : '#1D1832',
+          theme === 'Dark' ? '#101012' : theme === 'Light' ? '#fff' : '#141026',
+        'paneProperties.vertGridProperties.color':
+          theme === 'Dark' ? '#101012' : theme === 'Light' ? '#fff' : '#141026',
+        'paneProperties.horzGridProperties.color':
+          theme === 'Dark'
+            ? '#1B1B1F'
+            : theme === 'Light'
+            ? '#f7f7f7'
+            : '#1D1832',
         ...chartStyleOverrides,
       },
     }

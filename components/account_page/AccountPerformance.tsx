@@ -125,7 +125,7 @@ const AccountPerformance = () => {
                 {chartData.length > 0 ? (
                   <div className="flex w-full flex-col space-x-0 sm:flex-row sm:space-x-4">
                     <div
-                      className="relative mb-6 w-full rounded-md border border-th-bkg-4 p-4 sm:w-1/2"
+                      className="relative mb-6 w-full rounded-md border border-th-bkg-3 p-4 sm:w-1/2"
                       style={{ height: '330px' }}
                     >
                       <Chart
@@ -141,7 +141,7 @@ const AccountPerformance = () => {
                       />
                     </div>
                     <div
-                      className="relative mb-6 w-full rounded-md border border-th-bkg-4 p-4 sm:w-1/2"
+                      className="relative mb-6 w-full rounded-md border border-th-bkg-3 p-4 sm:w-1/2"
                       style={{ height: '330px' }}
                     >
                       <Chart

@@ -5,7 +5,6 @@ import {
   I80F48,
 } from '@blockworks-foundation/mango-client'
 import useMangoStore from '../../stores/useMangoStore'
-import { useBalances } from '../../hooks/useBalances'
 import {
   formatUsdValue,
   i80f48ToPercent,
@@ -25,7 +24,6 @@ import { useWallet } from '@solana/wallet-adapter-react'
 
 export default function AccountBorrows() {
   const { t } = useTranslation('common')
-  const balances = useBalances()
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const mangoConfig = useMangoStore((s) => s.selectedMangoGroup.config)
@@ -34,6 +32,7 @@ export default function AccountBorrows() {
   const loadingMangoAccount = useMangoStore(
     (s) => s.selectedMangoAccount.initialLoad
   )
+  const spotBalances = useMangoStore((s) => s.selectedMangoAccount.spotBalances)
 
   const [borrowSymbol, setBorrowSymbol] = useState('')
   const [depositToSettle, setDepositToSettle] = useState<any | null>(null)
@@ -77,7 +76,7 @@ export default function AccountBorrows() {
           <div className="flex flex-col pb-8 pt-4">
             <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
               <div className="inline-block min-w-full align-middle sm:px-6 lg:px-8">
-                {balances.find((b) => b?.borrows?.gt(ZERO_I80F48)) ? (
+                {spotBalances.find((b) => b?.borrows?.gt(ZERO_I80F48)) ? (
                   !isMobile ? (
                     <Table>
                       <thead>
@@ -89,7 +88,7 @@ export default function AccountBorrows() {
                         </TrHead>
                       </thead>
                       <tbody>
-                        {balances
+                        {spotBalances
                           .filter((assets) => assets?.borrows?.gt(ZERO_I80F48))
                           .map((asset) => {
                             const token = getTokenBySymbol(
@@ -175,12 +174,12 @@ export default function AccountBorrows() {
                       </tbody>
                     </Table>
                   ) : (
-                    <div className="border-b border-th-bkg-4">
+                    <div className="border-b border-th-bkg-3">
                       <MobileTableHeader
                         colOneHeader={t('asset')}
                         colTwoHeader={t('balance')}
                       />
-                      {balances
+                      {spotBalances
                         .filter((assets) => assets?.borrows?.gt(ZERO_I80F48))
                         .map((asset, i) => {
                           const token = getTokenBySymbol(
@@ -286,7 +285,7 @@ export default function AccountBorrows() {
                   )
                 ) : (
                   <div
-                    className={`w-full rounded-md bg-th-bkg-1 py-6 text-center text-th-fgd-3`}
+                    className={`w-full rounded-md border border-th-bkg-3 py-6 text-center text-th-fgd-3`}
                   >
                     {t('no-borrows')}
                   </div>
@@ -425,7 +424,7 @@ export default function AccountBorrows() {
                 </tbody>
               </Table>
             ) : (
-              <div className="border-b border-th-bkg-4">
+              <div className="border-b border-th-bkg-3">
                 <MobileTableHeader
                   colOneHeader={t('asset')}
                   colTwoHeader={`${t('deposit')}/${t('borrow-rate')}`}

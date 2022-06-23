@@ -1,5 +1,3 @@
-import PageBodyContainer from '../components/PageBodyContainer'
-import TopBar from '../components/TopBar'
 import LeaderboardTable from '../components/LeaderboardTable'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'next-i18next'
@@ -18,17 +16,12 @@ export default function Leaderboard() {
 
   return (
     <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
-      <TopBar />
-      <PageBodyContainer>
-        <div className="flex flex-col py-4 sm:flex-row md:pb-4 md:pt-10">
-          <h1 className={`mb-4 text-2xl font-semibold text-th-fgd-1 sm:mb-0`}>
-            {t('leaderboard')}
-          </h1>
-        </div>
-        <div className="rounded-lg bg-th-bkg-2 p-6">
-          <LeaderboardTable />
-        </div>
-      </PageBodyContainer>
+      <div className="flex flex-col py-4 sm:flex-row md:pb-4 md:pt-10">
+        <h1 className={`mb-4 text-2xl font-semibold text-th-fgd-1 sm:mb-0`}>
+          {t('leaderboard')}
+        </h1>
+      </div>
+      <LeaderboardTable />
     </div>
   )
 }

@@ -1,5 +1,4 @@
 import { useCallback, useState } from 'react'
-import { useBalances } from '../hooks/useBalances'
 import useMangoStore from '../stores/useMangoStore'
 import Button, { LinkButton } from '../components/Button'
 import { notify } from '../utils/notifications'
@@ -30,10 +29,10 @@ const BalancesTable = ({
   const [showDepositModal, setShowDepositModal] = useState(false)
   const [showWithdrawModal, setShowWithdrawModal] = useState(false)
   const [actionSymbol, setActionSymbol] = useState('')
-  const balances = useBalances()
+  const spotBalances = useMangoStore((s) => s.selectedMangoAccount.spotBalances)
   const { items, requestSort, sortConfig } = useSortableData(
-    balances?.length > 0
-      ? balances
+    spotBalances?.length > 0
+      ? spotBalances
           .filter((bal) => {
             return (
               showZeroBalances ||
@@ -171,7 +170,7 @@ const BalancesTable = ({
     }
   }
 
-  const unsettledBalances = balances.filter(
+  const unsettledBalances = spotBalances.filter(
     (bal) => bal.unsettled && bal.unsettled > 0
   )
 
@@ -209,20 +208,20 @@ const BalancesTable = ({
               {submitting ? <Loading /> : t('settle-all')}
             </Button>
           </div>
-          <div className="grid grid-flow-row grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid grid-flow-row grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {unsettledBalances.map((bal) => {
               const tokenConfig = getTokenBySymbol(mangoGroupConfig, bal.symbol)
               return (
                 <div
-                  className="col-span-1 flex items-center justify-between rounded-full bg-th-bkg-3 px-5 py-3"
+                  className="col-span-1 flex items-center justify-between rounded-full bg-th-bkg-2 px-5 py-3"
                   key={bal.symbol}
                 >
                   <div className="flex space-x-2">
                     <div className="flex items-center">
                       <img
                         alt=""
-                        width="24"
-                        height="24"
+                        width="20"
+                        height="20"
                         src={`/assets/icons/${bal.symbol.toLowerCase()}.svg`}
                         className={`mr-3`}
                       />
@@ -513,7 +512,7 @@ const BalancesTable = ({
                           <Td>
                             <div className="flex justify-end">
                               <Button
-                                className="h-7 pt-0 pb-0 pl-3 pr-3 text-xs"
+                                className="h-8 pt-0 pb-0 pl-3 pr-3 text-xs"
                                 onClick={() =>
                                   handleOpenDepositModal(balance.symbol)
                                 }
@@ -523,7 +522,7 @@ const BalancesTable = ({
                                   : t('deposit')}
                               </Button>
                               <Button
-                                className="ml-4 h-7 pt-0 pb-0 pl-3 pr-3 text-xs"
+                                className="ml-2 h-8 border border-th-fgd-4 bg-transparent pt-0 pb-0 pl-3 pr-3 text-xs text-th-fgd-2"
                                 onClick={() =>
                                   handleOpenWithdrawModal(balance.symbol)
                                 }
@@ -559,7 +558,7 @@ const BalancesTable = ({
                 )}
               </Table>
             ) : (
-              <div className="border-b border-th-bkg-4">
+              <div className="border-b border-th-bkg-3">
                 <MobileTableHeader
                   colOneHeader={t('asset')}
                   colTwoHeader={t('net-balance')}
@@ -652,7 +651,7 @@ const BalancesTable = ({
                           </div>
                           <div className="flex space-x-4">
                             <Button
-                              className="h-7 w-1/2 pt-0 pb-0 pl-3 pr-3 text-xs"
+                              className="h-8 w-1/2 pt-0 pb-0 pl-3 pr-3 text-xs"
                               onClick={() =>
                                 handleOpenDepositModal(balance.symbol)
                               }
@@ -662,7 +661,7 @@ const BalancesTable = ({
                                 : t('deposit')}
                             </Button>
                             <Button
-                              className="h-7 w-1/2 pt-0 pb-0 pl-3 pr-3 text-xs"
+                              className="h-8 w-1/2 border border-th-fgd-4 bg-transparent pt-0 pb-0 pl-3 pr-3 text-xs"
                               onClick={() =>
                                 handleOpenWithdrawModal(balance.symbol)
                               }
@@ -699,7 +698,7 @@ const BalancesTable = ({
             )
           ) : (
             <div
-              className={`w-full rounded-md bg-th-bkg-1 py-6 text-center text-th-fgd-3`}
+              className={`w-full rounded-md border border-th-bkg-3 py-6 text-center text-th-fgd-3`}
             >
               {t('no-balances')}
             </div>

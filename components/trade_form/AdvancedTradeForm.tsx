@@ -58,7 +58,7 @@ export default function AdvancedTradeForm({
 }: AdvancedTradeFormProps) {
   const { t } = useTranslation('common')
   const set = useMangoStore((s) => s.set)
-  const { ipAllowed, spotAllowed } = useIpAddress()
+  const { ipAllowed, spotAllowed, ipCountry } = useIpAddress()
   const { wallet, connected } = useWallet()
   const actions = useMangoStore((s) => s.actions)
   const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
@@ -1061,7 +1061,7 @@ export default function AdvancedTradeForm({
               <button
                 disabled={disabledTradeButton}
                 onClick={onSubmit}
-                className={`flex-grow rounded-full px-6 py-2 font-bold text-white hover:brightness-[1.1] focus:outline-none disabled:cursor-not-allowed disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:hover:brightness-100 ${
+                className={`flex-grow rounded-full px-6 py-2 font-bold text-white focus:outline-none disabled:cursor-not-allowed disabled:bg-th-bkg-4 disabled:text-th-fgd-4 ${
                   side === 'buy' ? 'bg-th-green-dark' : 'bg-th-red'
                 }`}
               >
@@ -1086,7 +1086,17 @@ export default function AdvancedTradeForm({
                 <Tooltip content={t('country-not-allowed-tooltip')}>
                   <div className="flex">
                     <Button disabled className="flex-grow">
-                      <span>{t('country-not-allowed')}</span>
+                      <span>
+                        {!isMobile
+                          ? t('country-not-allowed', {
+                              country: ipCountry
+                                ? `(${ipCountry})`
+                                : '(Unknown)',
+                            })
+                          : t('country-not-allowed', {
+                              country: '',
+                            })}
+                      </span>
                     </Button>
                   </div>
                 </Tooltip>
