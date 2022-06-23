@@ -25,22 +25,22 @@ export const defaultLayouts = {
   xl: [
     { i: 'tvChart', x: 0, y: 0, w: 8, h: 19 },
     { i: 'tradeForm', x: 8, y: 0, w: 2, h: 19 },
-    { i: 'orderbook', x: 10, y: 0, w: 2, h: 19 },
-    { i: 'marketTrades', x: 10, y: 1, w: 2, h: 19 },
+    { i: 'orderbook', x: 10, y: 0, w: 2, h: 25 },
+    { i: 'marketTrades', x: 10, y: 1, w: 2, h: 13 },
     { i: 'userInfo', x: 0, y: 1, w: 10, h: 19 },
   ],
   lg: [
     { i: 'tvChart', x: 0, y: 0, w: 6, h: 19, minW: 2 },
     { i: 'tradeForm', x: 6, y: 0, w: 3, h: 19, minW: 3 },
-    { i: 'orderbook', x: 9, y: 0, w: 3, h: 19, minW: 2 },
-    { i: 'marketTrades', x: 9, y: 1, w: 3, h: 19, minW: 2 },
+    { i: 'orderbook', x: 9, y: 0, w: 3, h: 25, minW: 2 },
+    { i: 'marketTrades', x: 9, y: 0, w: 3, h: 13, minW: 2 },
     { i: 'userInfo', x: 0, y: 1, w: 9, h: 19, minW: 6 },
   ],
   md: [
     { i: 'tvChart', x: 0, y: 0, w: 6, h: 19, minW: 2 },
     { i: 'tradeForm', x: 6, y: 0, w: 3, h: 19, minW: 2 },
-    { i: 'orderbook', x: 9, y: 0, w: 3, h: 19, minW: 2 },
-    { i: 'marketTrades', x: 9, y: 1, w: 3, h: 19, minW: 2 },
+    { i: 'orderbook', x: 9, y: 0, w: 3, h: 25, minW: 2 },
+    { i: 'marketTrades', x: 9, y: 1, w: 3, h: 13, minW: 2 },
     { i: 'userInfo', x: 0, y: 1, w: 9, h: 19, minW: 6 },
   ],
   sm: [
@@ -93,7 +93,7 @@ const TradePageGrid: React.FC = () => {
       const orderbookLayout = layouts[bp].find((obj) => {
         return obj.i === 'orderbook'
       })
-      let depth = orderbookLayout.h * 0.891 - 5
+      let depth = orderbookLayout.h * 0.921 - 5
       const maxNum = max([1, depth])
       if (typeof maxNum === 'number') {
         depth = round(maxNum)
@@ -125,8 +125,6 @@ const TradePageGrid: React.FC = () => {
         }
         onLayoutChange={(layout, layouts) => onLayoutChange(layouts)}
         measureBeforeMount
-        // margin={[0, 0]}
-        // containerPadding={[10, 10]}
       >
         <div key="tvChart">
           <FloatingElement className="h-full pl-0 md:pl-0 md:pr-1 md:pb-1 md:pt-2.5">
@@ -139,16 +137,6 @@ const TradePageGrid: React.FC = () => {
         <div key="tradeForm">
           <TradeForm />
         </div>
-        {/* <div key="accountInfo">
-          <FloatingElement className="h-full" showConnect>
-            <AccountInfo />
-          </FloatingElement>
-        </div> */}
-        {/* <div key="marketPosition">
-          <FloatingElement className="h-full" showConnect>
-            <UserMarketInfo />
-          </FloatingElement>
-        </div> */}
         <div key="marketTrades">
           <FloatingElement className="h-full">
             <RecentMarketTrades />
