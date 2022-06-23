@@ -41,7 +41,7 @@ const Modal: any = React.forwardRef<any, any>((props, ref) => {
 
           {isOpen ? (
             <div
-              className={`inline-block min-h-screen bg-th-bkg-2 text-left
+              className={`inline-block min-h-screen border border-th-bkg-3 bg-th-bkg-1 text-left
               sm:min-h-full sm:rounded-lg ${
                 noPadding ? '' : 'px-8 pt-6 pb-6'
               } w-full transform align-middle shadow-lg transition-all sm:max-w-md ${className}`}

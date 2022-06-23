@@ -33,7 +33,7 @@ const Select = ({
             {open ? (
               <Listbox.Options
                 static
-                className={`thin-scroll absolute left-0 z-20 mt-1 max-h-60 w-full origin-top-left overflow-auto rounded-md bg-th-bkg-3 p-2 text-th-fgd-1 outline-none ${dropdownPanelClassName}`}
+                className={`thin-scroll absolute left-0 z-20 mt-1 max-h-60 w-full origin-top-left overflow-auto rounded-md bg-th-bkg-2 p-2 text-th-fgd-1 outline-none ${dropdownPanelClassName}`}
               >
                 {children}
               </Listbox.Options>
@@ -50,7 +50,7 @@ const Option = ({ value, children, className = '' }) => {
     <Listbox.Option className="mb-0" value={value}>
       {({ selected }) => (
         <div
-          className={`default-transition rounded p-2 text-th-fgd-1 hover:cursor-pointer hover:bg-th-bkg-4 hover:text-th-primary ${
+          className={`default-transition rounded p-2 text-th-fgd-1 hover:cursor-pointer hover:bg-th-bkg-3 hover:text-th-primary ${
             selected ? 'text-th-primary' : ''
           } ${className}`}
         >
