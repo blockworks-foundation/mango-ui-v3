@@ -27,8 +27,14 @@ export async function getStaticProps({ locale }) {
 export default function StatsPage() {
   const { t } = useTranslation('common')
   const TABS = ['Totals', 'Assets', 'Perps']
-  const { latestStats, stats, perpStats, loadHistoricalStats, loadPerpStats } =
-    useMangoStats()
+  const {
+    latestStats,
+    loadLatestStats,
+    stats,
+    perpStats,
+    loadHistoricalStats,
+    loadPerpStats,
+  } = useMangoStats()
   const [viewIndex, setViewIndex] = useState(0)
   const [activeTab, setActiveTab] = useState(TABS[0])
   const { width } = useViewport()
@@ -77,6 +83,7 @@ export default function StatsPage() {
               stats={stats}
               loadHistoricalStats={loadHistoricalStats}
               loadPerpStats={loadPerpStats}
+              loadLatestStats={loadLatestStats}
             />
           ) : (
             <Swipeable index={viewIndex} onChangeIndex={handleChangeViewIndex}>
@@ -84,6 +91,7 @@ export default function StatsPage() {
                 latestStats={latestStats}
                 stats={stats}
                 loadHistoricalStats={loadHistoricalStats}
+                loadLatestStats={loadLatestStats}
               />
               <StatsAssets
                 latestStats={latestStats}
@@ -106,6 +114,7 @@ const TabContent = ({
   stats,
   loadHistoricalStats,
   loadPerpStats,
+  loadLatestStats,
 }) => {
   switch (activeTab) {
     case 'Totals':
@@ -114,6 +123,7 @@ const TabContent = ({
           latestStats={latestStats}
           stats={stats}
           loadHistoricalStats={loadHistoricalStats}
+          loadLatestStats={loadLatestStats}
         />
       )
     case 'Assets':
@@ -132,6 +142,7 @@ const TabContent = ({
           latestStats={latestStats}
           stats={stats}
           loadHistoricalStats={loadHistoricalStats}
+          loadLatestStats={loadLatestStats}
         />
       )
   }
