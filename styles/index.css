@@ -648,31 +648,6 @@ body::-webkit-scrollbar-corner {
   color: inherit;
 }
 
-.pro-sidebar > .pro-sidebar-inner > .pro-sidebar-layout::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-.pro-sidebar
-  > .pro-sidebar-inner
-  > .pro-sidebar-layout::-webkit-scrollbar-thumb {
-  @apply rounded bg-th-bkg-3;
-  border: 2px solid transparent;
-  background-clip: padding-box;
-}
-
-.pro-sidebar
-  > .pro-sidebar-inner
-  > .pro-sidebar-layout::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.pro-sidebar
-  > .pro-sidebar-inner
-  > .pro-sidebar-layout::-webkit-scrollbar-thumb:window-inactive {
-  @apply bg-th-bkg-3;
-}
-
 @keyframes sideways-bounce {
   0%,
   100% {

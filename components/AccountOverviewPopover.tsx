@@ -45,6 +45,15 @@ const AccountOverviewPopover = ({ collapsed }: { collapsed: boolean }) => {
         )
       : undefined
 
+  const toggleAccountSummary = (open) => {
+    const id = document.getElementById('sidebar-content')
+    if (open) {
+      id?.style.setProperty('height', 'calc(100vh - 325px)', '')
+    } else {
+      id?.style.setProperty('height', 'calc(100vh - 125px)', '')
+    }
+  }
+
   return (
     <>
       {mangoAccount ? (
@@ -62,6 +71,7 @@ const AccountOverviewPopover = ({ collapsed }: { collapsed: boolean }) => {
               </div>
             }
             icon={<HealthHeart health={Number(maintHealthRatio)} size={32} />}
+            onOpenChange={(open) => toggleAccountSummary(open)}
           >
             <div className={`w-full pr-5 ${!collapsed ? 'pl-3 pb-2' : 'py-2'}`}>
               {collapsed ? (
