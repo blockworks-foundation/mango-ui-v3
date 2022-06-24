@@ -8,25 +8,15 @@ import {
   ChevronRightIcon,
   TrendingUpIcon,
 } from '@heroicons/react/outline'
-import { notify } from 'utils/notifications'
 import ProfileImage from './ProfileImage'
 import { useRouter } from 'next/router'
 import { PublicKey } from '@solana/web3.js'
-import ButtonGroup from './ButtonGroup'
+import { notify } from 'utils/notifications'
 
 const utc = require('dayjs/plugin/utc')
 dayjs.extend(utc)
 
-const leaderboardRangePresets = [
-  { label: '24h', value: '1' },
-  { label: '7d', value: '7' },
-  { label: '30d', value: '29' },
-  { label: 'All', value: '9999' },
-]
-const leaderboardRangePresetLabels = leaderboardRangePresets.map((x) => x.label)
-const leaderboardRangePresetValues = leaderboardRangePresets.map((x) => x.value)
-
-const LeaderboardTable = () => {
+const LeaderboardTable = ({ range = '29' }) => {
   const { t } = useTranslation('common')
   const [pnlLeaderboardData, setPnlLeaderboardData] = useState<any[]>([])
   const [perpPnlLeaderboardData, setPerpPnlLeaderboardData] = useState<any[]>(
@@ -34,7 +24,6 @@ const LeaderboardTable = () => {
   )
   const [leaderboardType, setLeaderboardType] = useState<string>('total-pnl')
   const [loading, setLoading] = useState(false)
-  const [leaderboardRange, setLeaderboardRange] = useState('29')
 
   const formatLeaderboardData = async (leaderboard) => {
     const walletPks = leaderboard.map((u) => u.wallet_pk)
@@ -98,17 +87,12 @@ const LeaderboardTable = () => {
   }
 
   useEffect(() => {
-    fetchPnlLeaderboard(leaderboardRange)
-  }, [])
-
-  const handleChangeRange = (range) => {
-    setLeaderboardRange(range)
     if (leaderboardType === 'total-pnl') {
       fetchPnlLeaderboard(range)
     } else {
       fetchPerpPnlLeaderboard(range)
     }
-  }
+  }, [range, leaderboardType])
 
   const leaderboardData = useMemo(
     () =>
@@ -120,36 +104,21 @@ const LeaderboardTable = () => {
 
   return (
     <div className="grid grid-cols-12 gap-6">
-      <div className="col-span-12 lg:col-span-4">
-        <div className="mb-3 w-full lg:mb-2">
-          <ButtonGroup
-            activeValue={leaderboardRange}
-            className="h-8"
-            onChange={(r) => handleChangeRange(r)}
-            values={leaderboardRangePresetValues}
-            names={leaderboardRangePresetLabels}
-          />
-        </div>
-        <div className="flex space-x-3 lg:flex-col lg:space-y-2 lg:space-x-0">
-          <LeaderboardTypeButton
-            leaderboardType={leaderboardType}
-            setLeaderboardType={setLeaderboardType}
-            label="total-pnl"
-            icon={<ChartPieIcon className="mr-3 hidden h-6 w-6 lg:block" />}
-            fetchPerpPnlLeaderboard={fetchPerpPnlLeaderboard}
-            fetchPnlLeaderboard={fetchPnlLeaderboard}
-            leaderboardRange={leaderboardRange}
-          />
-          <LeaderboardTypeButton
-            leaderboardType={leaderboardType}
-            setLeaderboardType={setLeaderboardType}
-            label="futures-only"
-            icon={<TrendingUpIcon className="mr-3 hidden h-6 w-6 lg:block" />}
-            fetchPerpPnlLeaderboard={fetchPerpPnlLeaderboard}
-            fetchPnlLeaderboard={fetchPnlLeaderboard}
-            leaderboardRange={leaderboardRange}
-          />
-        </div>
+      <div className="col-span-12 flex space-x-3 lg:col-span-4 lg:flex-col lg:space-y-2 lg:space-x-0">
+        <LeaderboardTypeButton
+          leaderboardType={leaderboardType}
+          setLeaderboardType={setLeaderboardType}
+          range={range}
+          label="total-pnl"
+          icon={<ChartPieIcon className="mr-3 hidden h-6 w-6 lg:block" />}
+        />
+        <LeaderboardTypeButton
+          leaderboardType={leaderboardType}
+          setLeaderboardType={setLeaderboardType}
+          range={range}
+          label="futures-only"
+          icon={<TrendingUpIcon className="mr-3 hidden h-6 w-6 lg:block" />}
+        />
       </div>
       <div className="col-span-12 lg:col-span-8">
         {!loading ? (
@@ -234,7 +203,7 @@ const AccountCard = ({ rank, acc, rawPnl, profile, pnl, walletPk }) => {
     <div className="relative" key={acc}>
       {profile ? (
         <button
-          className="absolute left-[118px] bottom-4 flex items-center space-x-2 rounded-full bg-th-bkg-button px-2 py-1 hover:brightness-[1.1] hover:filter"
+          className="absolute left-[118px] bottom-4 flex items-center space-x-2 rounded-full border border-th-fgd-4 px-2 py-1 hover:border-th-fgd-2 hover:filter"
           onClick={() =>
             router.push(`/profile?pk=${walletPk}`, undefined, { shallow: true })
           }
@@ -245,7 +214,7 @@ const AccountCard = ({ rank, acc, rawPnl, profile, pnl, walletPk }) => {
         </button>
       ) : null}
       <a
-        className="default-transition block flex h-[112px] w-full rounded-md bg-th-bkg-3 p-4 hover:bg-th-bkg-4 sm:h-[84px] sm:justify-between sm:pb-4"
+        className="default-transition block flex h-[112px] w-full rounded-md border border-th-bkg-3 p-4 hover:border-th-fgd-4 sm:h-[84px] sm:justify-between sm:pb-4"
         href={`https://trade.mango.markets/account?pubkey=${acc}`}
         target="_blank"
         rel="noopener noreferrer"
@@ -265,7 +234,7 @@ const AccountCard = ({ rank, acc, rawPnl, profile, pnl, walletPk }) => {
           />
         </div>
         <div className="ml-3 flex flex-col sm:flex-grow sm:flex-row sm:justify-between">
-          <p className="mb-0 text-th-fgd-2">
+          <p className="mb-0 font-bold text-th-fgd-2">
             {abbreviateAddress(new PublicKey(acc))}
           </p>
 
@@ -278,7 +247,7 @@ const AccountCard = ({ rank, acc, rawPnl, profile, pnl, walletPk }) => {
           </span>
         </div>
         <div className="my-auto ml-auto">
-          <ChevronRightIcon className="ml-2 mt-0.5 h-5 w-5 text-th-fgd-3" />
+          <ChevronRightIcon className="ml-2 mt-0.5 h-5 w-5 text-th-fgd-4" />
         </div>
       </a>
     </div>
@@ -288,42 +257,31 @@ const AccountCard = ({ rank, acc, rawPnl, profile, pnl, walletPk }) => {
 const LeaderboardTypeButton = ({
   leaderboardType,
   setLeaderboardType,
+  range,
   icon,
   label,
-  fetchPnlLeaderboard,
-  fetchPerpPnlLeaderboard,
-  leaderboardRange,
 }) => {
   const { t } = useTranslation('common')
-
-  const onClick = (type) => {
-    setLeaderboardType(type)
-    if (type === 'total-pnl') {
-      fetchPnlLeaderboard(leaderboardRange)
-    } else {
-      fetchPerpPnlLeaderboard(leaderboardRange)
-    }
-  }
   return (
     <button
-      className={`relative flex w-full items-center justify-center rounded-md p-4 text-center lg:justify-start lg:text-left ${
+      className={`relative flex w-full items-center justify-center rounded-md p-4 text-center lg:h-[84px] lg:justify-start lg:text-left ${
         leaderboardType === label
           ? 'bg-th-bkg-3 text-th-fgd-1 after:absolute after:top-[100%] after:left-1/2 after:-translate-x-1/2 after:transform after:border-l-[12px] after:border-r-[12px] after:border-t-[12px] after:border-l-transparent after:border-t-th-bkg-3 after:border-r-transparent lg:after:left-[100%] lg:after:top-1/2  lg:after:-translate-x-0 lg:after:-translate-y-1/2 lg:after:border-r-0 lg:after:border-b-[12px] lg:after:border-t-transparent lg:after:border-b-transparent lg:after:border-l-th-bkg-3'
           : 'bg-th-bkg-2 text-th-fgd-3 md:hover:bg-th-bkg-3'
       }`}
-      onClick={() => onClick(label)}
+      onClick={() => setLeaderboardType(label)}
     >
       {icon}
       <div>
         <div className="font-bold sm:text-lg">{t(label)}</div>
         <span className="text-sm text-th-fgd-4">
-          {leaderboardRange === '9999'
+          {range === '9999'
             ? 'All-time'
-            : leaderboardRange === '29'
+            : range === '29'
             ? 'Last 30 days'
-            : leaderboardRange === '1'
+            : range === '1'
             ? 'Last 24 hours'
-            : `Last ${leaderboardRange} days`}
+            : `Last ${range} days`}
         </span>
       </div>
     </button>
