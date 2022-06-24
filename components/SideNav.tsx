@@ -29,9 +29,11 @@ import AccountOverviewPopover from './AccountOverviewPopover'
 import { IconButton } from './Button'
 import useMangoAccount from 'hooks/useMangoAccount'
 import { useTranslation } from 'next-i18next'
+import { useState } from 'react'
 
 const SideNav = ({ collapsed, setCollapsed }) => {
   const { t } = useTranslation('common')
+  const [summaryOpen, setSummaryOpen] = useState(false)
   const { mangoAccount } = useMangoAccount()
   const [defaultMarket] = useLocalStorageState(
     DEFAULT_MARKET_KEY,
@@ -41,6 +43,9 @@ const SideNav = ({ collapsed, setCollapsed }) => {
   const { pathname } = router
 
   const handleToggleSidebar = () => {
+    const id = document.getElementById('sidebar-content')
+    id?.style.setProperty('height', 'calc(100vh - 125px)', '')
+    setSummaryOpen(false)
     setCollapsed(!collapsed)
     setTimeout(() => {
       window.dispatchEvent(new Event('resize'))
@@ -60,8 +65,12 @@ const SideNav = ({ collapsed, setCollapsed }) => {
         />
       </IconButton>
       <ProSidebar collapsed={collapsed} width="220px" collapsedWidth="64px">
-        <div className="thin-scroll flex flex-col-reverse overflow-y-auto">
-          <div className="">
+        <div
+          className={`flex flex-col-reverse overflow-y-auto ${
+            summaryOpen ? 'thin-scroll' : ''
+          }`}
+        >
+          <div>
             <SidebarHeader>
               <Link href={defaultMarket.path} shallow={true}>
                 <div
@@ -86,10 +95,7 @@ const SideNav = ({ collapsed, setCollapsed }) => {
                 </div>
               </Link>
             </SidebarHeader>
-            <SidebarContent
-              id="sidebar-content"
-              style={{ height: 'calc(100vh - 125px)' }}
-            >
+            <SidebarContent id="sidebar-content">
               <Menu iconShape="circle">
                 <MenuItem
                   active={pathname === '/'}
@@ -205,7 +211,11 @@ const SideNav = ({ collapsed, setCollapsed }) => {
 
             {mangoAccount ? (
               <SidebarFooter>
-                <AccountOverviewPopover collapsed={collapsed} />
+                <AccountOverviewPopover
+                  collapsed={collapsed}
+                  isOpen={summaryOpen}
+                  setIsOpen={setSummaryOpen}
+                />
               </SidebarFooter>
             ) : null}
           </div>
