@@ -6,7 +6,13 @@ import { useTranslation } from 'next-i18next'
 import useMangoStore, { LAST_ACCOUNT_KEY } from 'stores/useMangoStore'
 import MangoAccountCard from './MangoAccountCard'
 
-const SelectMangoAccount = ({ onClose }: { onClose?: () => void }) => {
+const SelectMangoAccount = ({
+  onClose,
+  className,
+}: {
+  onClose?: () => void
+  className?: string
+}) => {
   const { t } = useTranslation('common')
   const selectedMangoAccount = useMangoStore(
     (s) => s.selectedMangoAccount.current
@@ -40,7 +46,7 @@ const SelectMangoAccount = ({ onClose }: { onClose?: () => void }) => {
       <RadioGroup.Label className="sr-only">
         {t('select-account')}
       </RadioGroup.Label>
-      <div className="space-y-2">
+      <div className={`${className} space-y-2`}>
         {mangoAccounts.map((account) => (
           <RadioGroup.Option
             key={account.publicKey.toString()}
@@ -48,10 +54,10 @@ const SelectMangoAccount = ({ onClose }: { onClose?: () => void }) => {
             className={({ checked }) =>
               `${
                 checked
-                  ? 'bg-th-bkg-3 ring-1 ring-inset ring-th-green'
-                  : 'ring-1 ring-inset ring-th-fgd-4'
+                  ? 'ring-1 ring-inset ring-th-green'
+                  : 'ring-1 ring-inset ring-th-fgd-4 hover:ring-th-fgd-2'
               }
-                      default-transition relative flex w-full cursor-pointer rounded-md px-3 py-3 hover:bg-th-bkg-3 focus:outline-none`
+                      default-transition relative flex w-full cursor-pointer rounded-md px-3 py-3 focus:outline-none`
             }
           >
             {({ checked }) => (

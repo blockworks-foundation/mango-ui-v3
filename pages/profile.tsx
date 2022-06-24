@@ -18,7 +18,6 @@ import MangoAccountCard, {
 } from 'components/MangoAccountCard'
 import Modal from 'components/Modal'
 import Input from 'components/Input'
-import PageBodyContainer from 'components/PageBodyContainer'
 import ProfileImage from 'components/ProfileImage'
 import ProfileImageButton from 'components/ProfileImageButton'
 import SelectMangoAccount from 'components/SelectMangoAccount'
@@ -280,302 +279,295 @@ export default function Profile() {
       const value = c.computeValue(mangoGroup, mangoCache)
       return a + Number(value)
     }, 0)
-  }, [walletMangoAccounts.length])
+  }, [walletMangoAccounts])
 
   const totalPnl = useMemo(() => {
     return walletMangoAccountsStats.reduce((a, c) => {
       const value = c.stats.length > 0 ? c.stats[0].pnl : 0
       return a + value
     }, 0)
-  }, [walletMangoAccountsStats.length])
+  }, [walletMangoAccountsStats])
 
   return (
-    <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
-      <PageBodyContainer>
-        <div className="flex flex-col pt-4 pb-6 md:flex-row md:items-end md:justify-between md:pb-4 md:pt-10">
-          {connected || pk ? (
-            <div className="flex w-full items-end justify-between">
-              <div className="flex items-start justify-between rounded-lg">
-                <div className="flex flex-col sm:flex-row sm:items-center">
-                  <ProfileImageButton
-                    imageSize="80"
-                    placeholderSize="40"
-                    disabled={
-                      !connected ||
-                      profileData?.wallet_pk !== publicKey?.toString()
-                    }
-                    publicKey={profileData?.wallet_pk || pk}
-                  />
-                  <div>
-                    {!loadProfileDetails ? (
-                      <>
-                        <div className="mb-1.5 flex items-center space-x-3">
-                          <h1 className="capitalize">
-                            {profileData?.profile_name}
-                          </h1>
-                          <div className="w-max rounded-full px-2 py-1 text-xs text-th-fgd-4 ring-1 ring-inset ring-th-fgd-4">
-                            {t(
-                              `profile:${profileData?.trader_category.toLowerCase()}`
-                            )}
-                          </div>
+    <div className="pt-6">
+      <div className="flex flex-col pb-6 md:flex-row md:items-end md:justify-between md:pb-4">
+        {connected || pk ? (
+          <div className="flex w-full items-start justify-between md:items-end">
+            <div className="flex items-start justify-between rounded-lg">
+              <div className="flex flex-col sm:flex-row sm:items-center">
+                <ProfileImageButton
+                  imageSize="80"
+                  placeholderSize="40"
+                  disabled={
+                    !connected ||
+                    profileData?.wallet_pk !== publicKey?.toString()
+                  }
+                  publicKey={profileData?.wallet_pk || pk}
+                />
+                <div>
+                  {!loadProfileDetails ? (
+                    <>
+                      <div className="mb-1.5 flex items-center space-x-3">
+                        <h1 className="capitalize">
+                          {profileData?.profile_name}
+                        </h1>
+                        <div className="w-max rounded-full px-2 py-1 text-xs text-th-fgd-4 ring-1 ring-inset ring-th-fgd-4">
+                          {t(
+                            `profile:${profileData?.trader_category.toLowerCase()}`
+                          )}
                         </div>
-                      </>
-                    ) : (
-                      <div className="mb-1.5 flex space-x-3">
-                        <div className="h-7 w-40 animate-pulse rounded bg-th-bkg-3" />
-                        <div className="h-7 w-12 animate-pulse rounded bg-th-bkg-3" />
                       </div>
-                    )}
-                    <div className="flex space-x-4">
-                      {!loadFollowing ? (
-                        <p className="mb-0 font-bold text-th-fgd-1">
-                          {following.length}{' '}
-                          <span className="font-normal text-th-fgd-4">
-                            {t('following')}
-                          </span>
-                        </p>
-                      ) : (
-                        <div className="h-5 w-20 animate-pulse rounded bg-th-bkg-3" />
-                      )}
-                      {!loadFollowers ? (
-                        <p className="mb-0 font-bold text-th-fgd-1">
-                          {followers.length}{' '}
-                          <span className="font-normal text-th-fgd-4">
-                            {t('followers')}
-                          </span>
-                        </p>
-                      ) : (
-                        <div className="h-5 w-20 animate-pulse rounded bg-th-bkg-3" />
-                      )}
+                    </>
+                  ) : (
+                    <div className="mb-1.5 flex space-x-3">
+                      <div className="h-7 w-40 animate-pulse rounded bg-th-bkg-3" />
+                      <div className="h-7 w-12 animate-pulse rounded bg-th-bkg-3" />
                     </div>
+                  )}
+                  <div className="flex space-x-4">
+                    {!loadFollowing ? (
+                      <p className="mb-0 font-bold text-th-fgd-1">
+                        {following.length}{' '}
+                        <span className="font-normal text-th-fgd-4">
+                          {t('following')}
+                        </span>
+                      </p>
+                    ) : (
+                      <div className="h-5 w-20 animate-pulse rounded bg-th-bkg-3" />
+                    )}
+                    {!loadFollowers ? (
+                      <p className="mb-0 font-bold text-th-fgd-1">
+                        {followers.length}{' '}
+                        <span className="font-normal text-th-fgd-4">
+                          {t('followers')}
+                        </span>
+                      </p>
+                    ) : (
+                      <div className="h-5 w-20 animate-pulse rounded bg-th-bkg-3" />
+                    )}
                   </div>
                 </div>
-              </div>
-              <div className="flex items-center space-x-3">
-                {canEdit ? (
-                  <Button
-                    className="flex items-center pl-4 pr-4"
-                    onClick={() => setShowEditProfile(true)}
-                  >
-                    <PencilIcon className="mr-2 h-5 w-5" />
-                    {t('profile:edit-profile')}
-                  </Button>
-                ) : null}
-                {!canEdit && publicKey ? (
-                  <Button
-                    className="flex items-center pl-4 pr-4"
-                    onClick={() => router.push('/profile')}
-                  >
-                    <UserCircleIcon className="mr-2 h-5 w-5" />
-                    {t('profile:your-profile')}
-                  </Button>
-                ) : null}
               </div>
             </div>
-          ) : null}
-        </div>
-        <div className="md:rounded-lg md:bg-th-bkg-2 md:p-6">
-          {connected || pk ? (
-            <div className="grid grid-cols-12 gap-6">
-              <div className="col-span-12 lg:col-span-8">
-                <h3 className="mb-4">{t('portfolio')}</h3>
-                <div className="mb-8 grid grid-flow-col grid-cols-1 grid-rows-2 md:grid-cols-2 md:grid-rows-1 md:gap-4">
-                  <div className="border-t border-th-bkg-4 p-3 sm:p-4 md:border-b">
-                    <div className="pb-0.5 text-th-fgd-3">
-                      {t('profile:total-value')}
-                    </div>
-                    <div className="text-xl font-bold text-th-fgd-1 md:text-2xl">
-                      {formatUsdValue(totalValue)}
-                    </div>
-                  </div>
-                  <div className="border-t border-th-bkg-4 p-3 sm:p-4 md:border-b">
-                    <div className="pb-0.5 text-th-fgd-3">
-                      {t('profile:total-pnl')}
-                    </div>
-                    <div className="text-xl font-bold text-th-fgd-1 md:text-2xl">
-                      {formatUsdValue(totalPnl)}
-                    </div>
-                  </div>
+            <div className="flex items-center space-x-3">
+              {canEdit ? (
+                <Button
+                  className="flex h-8 w-full items-center justify-center rounded-full px-3 py-0 text-xs"
+                  onClick={() => setShowEditProfile(true)}
+                >
+                  <PencilIcon className="mr-2 h-5 w-5" />
+                  {t('profile:edit-profile')}
+                </Button>
+              ) : null}
+              {!canEdit && publicKey ? (
+                <Button
+                  className="flex h-8 w-full items-center justify-center rounded-full px-3 py-0 text-xs"
+                  onClick={() => router.push('/profile')}
+                >
+                  <UserCircleIcon className="mr-2 h-5 w-5" />
+                  {t('profile:your-profile')}
+                </Button>
+              ) : null}
+            </div>
+          </div>
+        ) : null}
+      </div>
+      {connected || pk ? (
+        <div className="grid grid-cols-12 gap-6">
+          <div className="col-span-12 lg:col-span-8">
+            <div className="mb-8 grid grid-flow-col grid-cols-1 grid-rows-2 md:grid-cols-2 md:grid-rows-1 md:gap-4">
+              <div className="border-t border-th-bkg-3 p-3 sm:p-4 md:border-b">
+                <div className="pb-0.5 text-th-fgd-3">
+                  {t('profile:total-value')}
                 </div>
-                {isMobile ? (
-                  <div className="pb-8">
-                    <Accounts
-                      accounts={walletMangoAccounts}
-                      accountsStats={walletMangoAccountsStats}
-                      canEdit={canEdit}
-                      fetchFollowers={fetchFollowers}
-                    />
-                  </div>
-                ) : null}
-                <Tabs
-                  activeTab={activeTab}
-                  onChange={handleTabChange}
-                  tabs={TABS}
+                <div className="text-2xl font-bold text-th-fgd-1 md:text-3xl">
+                  {formatUsdValue(totalValue)}
+                </div>
+              </div>
+              <div className="border-y border-th-bkg-3 p-3 sm:p-4">
+                <div className="pb-0.5 text-th-fgd-3">
+                  {t('profile:total-pnl')}
+                </div>
+                <div className="text-2xl font-bold text-th-fgd-1 md:text-3xl">
+                  {formatUsdValue(totalPnl)}
+                </div>
+              </div>
+            </div>
+            {isMobile ? (
+              <div className="pb-8">
+                <Accounts
+                  accounts={walletMangoAccounts}
+                  accountsStats={walletMangoAccountsStats}
+                  canEdit={canEdit}
+                  fetchFollowers={fetchFollowers}
                 />
-                <div className="space-y-2">
-                  {activeTab === 'following' ? (
-                    loadFollowing ? (
-                      <div className="space-y-2">
-                        <div className="h-24 animate-pulse rounded-md bg-th-bkg-3" />
-                        <div className="h-24 animate-pulse rounded-md bg-th-bkg-3" />
-                        <div className="h-24 animate-pulse rounded-md bg-th-bkg-3" />
-                      </div>
-                    ) : following.length > 0 ? (
-                      following.map((user) => {
-                        const accountEquity = user.mango_account.computeValue(
-                          mangoGroup,
-                          mangoCache
-                        )
-                        const pnl: number =
-                          user.stats.length > 0 ? user.stats[0].pnl : 0
-                        return (
-                          <div
-                            className="relative"
-                            key={user.mango_account.publicKey.toString()}
-                          >
-                            <button
-                              className="absolute bottom-4 left-20 flex items-center space-x-2 rounded-full bg-th-bkg-button px-2 py-1 hover:brightness-[1.1] hover:filter"
-                              onClick={() =>
-                                router.push(
-                                  `/profile?pk=${user.wallet_pk}`,
-                                  undefined,
-                                  { shallow: true }
-                                )
-                              }
-                            >
-                              <p className="mb-0 text-xs capitalize text-th-fgd-3">
-                                {user.profile_name}
-                              </p>
-                            </button>
-                            <a
-                              className="default-transition block flex h-[104px] w-full rounded-md bg-th-bkg-3 p-4 hover:bg-th-bkg-4 sm:h-[84px] sm:justify-between sm:pb-4"
-                              href={`https://trade.mango.markets/account?pubkey=${user.mango_account.publicKey.toString()}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              <div className="my-auto">
-                                <ProfileImage
-                                  imageSize="56"
-                                  placeholderSize="32"
-                                  publicKey={user.wallet_pk}
-                                />
-                              </div>
-                              <div className="ml-3 flex flex-col sm:flex-grow sm:flex-row sm:justify-between">
-                                <p className="mb-0 font-bold text-th-fgd-1">
-                                  {user.mango_account.name
-                                    ? user.mango_account.name
-                                    : abbreviateAddress(
-                                        user.mango_account.publicKey
-                                      )}
-                                </p>
-                                <div className="flex items-center">
-                                  <p className="mb-0">
-                                    {formatUsdValue(accountEquity.toNumber())}
-                                  </p>
-                                  <span className="pl-2 pr-1 text-th-fgd-4">
-                                    |
-                                  </span>
-                                  <span
-                                    className={`flex items-center ${
-                                      pnl < 0 ? 'text-th-red' : 'text-th-green'
-                                    }`}
-                                  >
-                                    {pnl < 0 ? (
-                                      <ArrowSmDownIcon className="mr-0.5 h-5 w-5" />
-                                    ) : (
-                                      <ArrowSmUpIcon className="mr-0.5 h-5 w-5" />
-                                    )}
-                                    {numberCurrencyCompacter.format(pnl)}
-                                  </span>
-                                </div>
-                              </div>
-                              <div className="my-auto ml-auto">
-                                <ChevronRightIcon className="ml-2 mt-0.5 h-5 w-5 text-th-fgd-3" />
-                              </div>
-                            </a>
-                          </div>
-                        )
-                      })
-                    ) : (
-                      <div className="rounded-lg bg-th-bkg-3 p-4">
-                        <EmptyState
-                          desc={t('profile:no-following-desc')}
-                          icon={<UserGroupIcon />}
-                          title={t('profile:no-following')}
-                        />
-                      </div>
+              </div>
+            ) : null}
+            <Tabs
+              activeTab={activeTab}
+              onChange={handleTabChange}
+              tabs={TABS}
+            />
+            <div className="space-y-2">
+              {activeTab === 'following' ? (
+                loadFollowing ? (
+                  <div className="space-y-2">
+                    <div className="h-24 animate-pulse rounded-md bg-th-bkg-3" />
+                    <div className="h-24 animate-pulse rounded-md bg-th-bkg-3" />
+                    <div className="h-24 animate-pulse rounded-md bg-th-bkg-3" />
+                  </div>
+                ) : following.length > 0 ? (
+                  following.map((user) => {
+                    const accountEquity = user.mango_account.computeValue(
+                      mangoGroup,
+                      mangoCache
                     )
-                  ) : null}
-                  {activeTab === 'followers' ? (
-                    loadFollowers ? (
-                      <div className="space-y-2">
-                        <div className="h-24 animate-pulse rounded-md bg-th-bkg-3" />
-                        <div className="h-24 animate-pulse rounded-md bg-th-bkg-3" />
-                        <div className="h-24 animate-pulse rounded-md bg-th-bkg-3" />
-                      </div>
-                    ) : followers.length > 0 ? (
-                      followers.map((user) => {
-                        return (
-                          <button
-                            className="default-transition block flex w-full items-center justify-between rounded-md bg-th-bkg-3 p-4 hover:bg-th-bkg-4"
-                            onClick={() =>
-                              router.push(
-                                `/profile?pk=${user.wallet_pk}`,
-                                undefined,
-                                { shallow: true }
-                              )
-                            }
-                            key={user.wallet_pk}
-                          >
+                    const pnl: number =
+                      user.stats.length > 0 ? user.stats[0].pnl : 0
+                    return (
+                      <div
+                        className="relative"
+                        key={user.mango_account.publicKey.toString()}
+                      >
+                        <button
+                          className="default-transition absolute bottom-4 left-20 flex items-center space-x-2 rounded-full border border-th-fgd-4 px-2 py-1 hover:border-th-fgd-2"
+                          onClick={() =>
+                            router.push(
+                              `/profile?pk=${user.wallet_pk}`,
+                              undefined,
+                              { shallow: true }
+                            )
+                          }
+                        >
+                          <p className="mb-0 text-xs capitalize text-th-fgd-3">
+                            {user.profile_name}
+                          </p>
+                        </button>
+                        <a
+                          className="default-transition block flex h-[104px] w-full rounded-md border border-th-bkg-3 p-4 hover:border-th-fgd-4 sm:h-[84px] sm:justify-between sm:pb-4"
+                          href={`https://trade.mango.markets/account?pubkey=${user.mango_account.publicKey.toString()}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <div className="my-auto">
                             <ProfileImage
                               imageSize="56"
                               placeholderSize="32"
                               publicKey={user.wallet_pk}
                             />
-                            <p className="mb-0 ml-3 font-bold capitalize text-th-fgd-1">
-                              {user.profile_name}
+                          </div>
+                          <div className="ml-3 flex flex-col sm:flex-grow sm:flex-row sm:justify-between">
+                            <p className="mb-0 font-bold text-th-fgd-1">
+                              {user.mango_account.name
+                                ? user.mango_account.name
+                                : abbreviateAddress(
+                                    user.mango_account.publicKey
+                                  )}
                             </p>
-                            <div className="my-auto ml-auto">
-                              <ChevronRightIcon className="ml-2 mt-0.5 h-5 w-5 text-th-fgd-3" />
+                            <div className="flex items-center">
+                              <p className="mb-0">
+                                {formatUsdValue(accountEquity.toNumber())}
+                              </p>
+                              <span className="pl-2 pr-1 text-th-fgd-4">|</span>
+                              <span
+                                className={`flex items-center ${
+                                  pnl < 0 ? 'text-th-red' : 'text-th-green'
+                                }`}
+                              >
+                                {pnl < 0 ? (
+                                  <ArrowSmDownIcon className="mr-0.5 h-5 w-5" />
+                                ) : (
+                                  <ArrowSmUpIcon className="mr-0.5 h-5 w-5" />
+                                )}
+                                {numberCurrencyCompacter.format(pnl)}
+                              </span>
                             </div>
-                          </button>
-                        )
-                      })
-                    ) : (
-                      <div className="rounded-lg bg-th-bkg-3 p-4">
-                        <EmptyState
-                          desc={t('profile:no-followers-desc')}
-                          icon={<UserGroupIcon />}
-                          title={t('profile:no-followers')}
-                        />
+                          </div>
+                          <div className="my-auto ml-auto">
+                            <ChevronRightIcon className="ml-2 mt-0.5 h-5 w-5 text-th-fgd-4" />
+                          </div>
+                        </a>
                       </div>
                     )
-                  ) : null}
-                </div>
-              </div>
-              {!isMobile ? (
-                <div className="col-span-4">
-                  <Accounts
-                    accounts={walletMangoAccounts}
-                    accountsStats={walletMangoAccountsStats}
-                    canEdit={canEdit}
-                    fetchFollowers={fetchFollowers}
-                  />
-                </div>
+                  })
+                ) : (
+                  <div className="rounded-lg border border-th-bkg-3 p-4">
+                    <EmptyState
+                      desc={t('profile:no-following-desc')}
+                      icon={<UserGroupIcon />}
+                      title={t('profile:no-following')}
+                    />
+                  </div>
+                )
+              ) : null}
+              {activeTab === 'followers' ? (
+                loadFollowers ? (
+                  <div className="space-y-2">
+                    <div className="h-24 animate-pulse rounded-md bg-th-bkg-3" />
+                    <div className="h-24 animate-pulse rounded-md bg-th-bkg-3" />
+                    <div className="h-24 animate-pulse rounded-md bg-th-bkg-3" />
+                  </div>
+                ) : followers.length > 0 ? (
+                  followers.map((user) => {
+                    return (
+                      <button
+                        className="default-transition block flex w-full items-center justify-between rounded-md border border-th-bkg-3 p-4 hover:border-th-fgd-4"
+                        onClick={() =>
+                          router.push(
+                            `/profile?pk=${user.wallet_pk}`,
+                            undefined,
+                            { shallow: true }
+                          )
+                        }
+                        key={user.wallet_pk}
+                      >
+                        <ProfileImage
+                          imageSize="56"
+                          placeholderSize="32"
+                          publicKey={user.wallet_pk}
+                        />
+                        <p className="mb-0 ml-3 font-bold capitalize text-th-fgd-1">
+                          {user.profile_name}
+                        </p>
+                        <div className="my-auto ml-auto">
+                          <ChevronRightIcon className="ml-2 mt-0.5 h-5 w-5 text-th-fgd-4" />
+                        </div>
+                      </button>
+                    )
+                  })
+                ) : (
+                  <div className="rounded-lg border border-th-bkg-3 p-4">
+                    <EmptyState
+                      desc={t('profile:no-followers-desc')}
+                      icon={<UserGroupIcon />}
+                      title={t('profile:no-followers')}
+                    />
+                  </div>
+                )
               ) : null}
             </div>
-          ) : (
-            <EmptyState
-              buttonText={t('connect')}
-              desc={t('profile:connect-view-profile')}
-              disabled={!wallet || !mangoGroup}
-              icon={<LinkIcon />}
-              onClickButton={handleConnect}
-              title={t('connect-wallet')}
-            />
-          )}
+          </div>
+          {!isMobile ? (
+            <div className="col-span-4">
+              <Accounts
+                accounts={walletMangoAccounts}
+                accountsStats={walletMangoAccountsStats}
+                canEdit={canEdit}
+                fetchFollowers={fetchFollowers}
+              />
+            </div>
+          ) : null}
         </div>
-      </PageBodyContainer>
+      ) : (
+        <EmptyState
+          buttonText={t('connect')}
+          desc={t('profile:connect-view-profile')}
+          disabled={!wallet || !mangoGroup}
+          icon={<LinkIcon />}
+          onClickButton={handleConnect}
+          title={t('connect-wallet')}
+        />
+      )}
       {showEditProfile ? (
         <EditProfileModal
           isOpen={showEditProfile}
@@ -808,7 +800,7 @@ const Accounts = ({
   }
 
   return (
-    <div className="rounded-lg border border-th-bkg-4 p-6">
+    <div className="rounded-lg border border-th-bkg-3 p-6">
       <div className="mb-4 flex items-center justify-between">
         <h3 className="mb-0">{t('accounts')}</h3>
         {/* <LinkButton>Follow All</LinkButton> */}
@@ -832,7 +824,7 @@ const Accounts = ({
 
             return (
               <div
-                className="flex flex-col rounded-md bg-th-bkg-3 p-4 md:flex-row md:items-center md:justify-between lg:flex-col lg:items-start xl:flex-row xl:items-center xl:justify-between"
+                className="flex flex-col rounded-md border border-th-bkg-4 p-4 md:flex-row md:items-center md:justify-between lg:flex-col lg:items-start xl:flex-row xl:items-center xl:justify-between"
                 key={acc.publicKey.toString()}
               >
                 <MangoAccountCard mangoAccount={acc} pnl={pnl} />

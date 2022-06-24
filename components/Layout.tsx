@@ -137,7 +137,7 @@ const Layout = ({ children }) => {
                   )}
                   {canWithdraw ? (
                     <Button
-                      className="flex h-8 items-center justify-center border border-th-fgd-4 bg-transparent pl-3 pr-3 text-xs"
+                      className="flex h-8 w-24 items-center justify-center border border-th-fgd-4 bg-transparent pl-3 pr-3 text-xs"
                       onClick={() => setShowWithdrawModal(true)}
                     >
                       {t('withdraw')}
