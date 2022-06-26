@@ -11,8 +11,17 @@ import HealthHeart from './HealthHeart'
 import { abbreviateAddress, formatUsdValue, usdFormatter } from 'utils'
 import { DataLoader } from './MarketPosition'
 import { Menu, SubMenu } from 'react-pro-sidebar'
+import { useEffect } from 'react'
 
-const AccountOverviewPopover = ({ collapsed }: { collapsed: boolean }) => {
+const AccountOverviewPopover = ({
+  collapsed,
+  isOpen,
+  setIsOpen,
+}: {
+  collapsed: boolean
+  isOpen: boolean
+  setIsOpen: (x) => void
+}) => {
   const { t } = useTranslation('common')
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
@@ -45,14 +54,14 @@ const AccountOverviewPopover = ({ collapsed }: { collapsed: boolean }) => {
         )
       : undefined
 
-  const toggleAccountSummary = (open) => {
+  useEffect(() => {
     const id = document.getElementById('sidebar-content')
-    if (open) {
+    if (isOpen) {
       id?.style.setProperty('height', 'calc(100vh - 325px)', '')
     } else {
       id?.style.setProperty('height', 'calc(100vh - 125px)', '')
     }
-  }
+  }, [isOpen])
 
   return (
     <>
@@ -71,7 +80,8 @@ const AccountOverviewPopover = ({ collapsed }: { collapsed: boolean }) => {
               </div>
             }
             icon={<HealthHeart health={Number(maintHealthRatio)} size={32} />}
-            onOpenChange={(open) => toggleAccountSummary(open)}
+            open={isOpen}
+            onClick={() => setIsOpen(!isOpen)}
           >
             <div className={`w-full pr-5 ${!collapsed ? 'pl-3 pb-2' : 'py-2'}`}>
               {collapsed ? (
