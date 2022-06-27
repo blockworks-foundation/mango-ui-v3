@@ -126,7 +126,7 @@ export const ConnectWalletButton: React.FC = () => {
               <Menu.Button
                 className={`flex h-14 ${
                   !isMobile ? 'w-48 border-x border-th-bkg-3 px-3' : ''
-                } items-center rounded-none rounded-full hover:opacity-60 focus:outline-none ${
+                } items-center rounded-none rounded-full hover:bg-th-bkg-2 focus:outline-none ${
                   loadingTransaction ? 'animate-pulse bg-th-bkg-4' : ''
                 }`}
               >

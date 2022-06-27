@@ -324,7 +324,7 @@ export default function Profile() {
                     !connected ||
                     profileData?.wallet_pk !== publicKey?.toString()
                   }
-                  publicKey={profileData?.wallet_pk || pk}
+                  publicKey={pk ? pk.toString() : undefined}
                 />
                 <div>
                   {!loadProfileDetails ? (
@@ -581,7 +581,7 @@ export default function Profile() {
           ) : null}
         </div>
       ) : (
-        <div className="rounded-lg border border-th-bkg-3 p-4 md:p-6">
+        <div className="-mt-4 rounded-lg border border-th-bkg-3 p-4 md:p-6">
           <EmptyState
             buttonText={t('connect')}
             desc={t('profile:connect-view-profile')}
