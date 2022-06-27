@@ -20,8 +20,6 @@ import {
 import { ChevronDownIcon } from '@heroicons/react/solid'
 import { nativeToUi, ZERO_BN } from '@blockworks-foundation/mango-client'
 import useMangoStore, { serumProgramId, MNGO_INDEX } from 'stores/useMangoStore'
-import PageBodyContainer from 'components/PageBodyContainer'
-import TopBar from 'components/TopBar'
 import AccountOrders from 'components/account_page/AccountOrders'
 import AccountHistory from 'components/account_page/AccountHistory'
 import AccountsModal from 'components/AccountsModal'
@@ -30,7 +28,7 @@ import AccountInterest from 'components/account_page/AccountInterest'
 import AccountFunding from 'components/account_page/AccountFunding'
 import AccountPerformancePerToken from 'components/account_page/AccountPerformancePerToken'
 import AccountNameModal from 'components/AccountNameModal'
-import { IconButton, LinkButton } from 'components/Button'
+import Button, { IconButton, LinkButton } from 'components/Button'
 import EmptyState from 'components/EmptyState'
 import Loading from 'components/Loading'
 import Swipeable from 'components/mobile/Swipeable'
@@ -78,14 +76,7 @@ export async function getStaticProps({ locale }) {
   }
 }
 
-const TABS = [
-  'Overview',
-  'Orders',
-  'History',
-  'Interest',
-  'Funding',
-  'Performance',
-]
+const TABS = ['Overview', 'Orders', 'History', 'Performance']
 
 export default function Account() {
   const { t } = useTranslation(['common', 'close-account', 'delegate'])
@@ -287,233 +278,234 @@ export default function Account() {
   }
 
   return (
-    <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
-      <TopBar />
-      <PageBodyContainer>
-        <div className="flex flex-col pt-4 pb-6 md:flex-row md:items-end md:justify-between md:pb-4 md:pt-10">
-          {mangoAccount ? (
-            <>
-              <div className="flex flex-col pb-3 sm:flex-row sm:items-center md:pb-0">
-                <button
-                  disabled={!!pubkey}
-                  className={`relative mb-2 mr-4 flex h-20 w-20 items-center justify-center rounded-full sm:mb-0 ${
-                    loadingTransaction
-                      ? 'animate-pulse bg-th-bkg-4'
-                      : 'bg-th-bkg-button'
-                  }`}
-                  onClick={() => setShowProfilePicModal(true)}
-                >
-                  <ProfileImage
-                    thumbHeightClass="h-20"
-                    thumbWidthClass="w-20"
-                    placeholderHeightClass="h-12"
-                    placeholderWidthClass="w-12"
-                  />
+    <div>
+      <div className="flex flex-col pt-6 pb-4 lg:flex-row lg:items-end lg:justify-between">
+        {mangoAccount ? (
+          <>
+            <div className="flex flex-col pb-3 sm:flex-row sm:items-center lg:pb-0">
+              <button
+                disabled={!!pubkey}
+                className={`relative mb-2 mr-4 flex h-20 w-20 items-center justify-center rounded-full sm:mb-0 ${
+                  loadingTransaction
+                    ? 'animate-pulse bg-th-bkg-4'
+                    : 'bg-th-bkg-button'
+                }`}
+                onClick={() => setShowProfilePicModal(true)}
+              >
+                <ProfileImage
+                  thumbHeightClass="h-20"
+                  thumbWidthClass="w-20"
+                  placeholderHeightClass="h-12"
+                  placeholderWidthClass="w-12"
+                />
+                {!pubkey ? (
                   <div className="default-transition absolute bottom-0 top-0 left-0 right-0 flex h-full w-full items-center justify-center rounded-full bg-[rgba(0,0,0,0.6)] opacity-0 hover:opacity-100">
                     <PencilIcon className="h-5 w-5 text-th-fgd-1" />
                   </div>
-                </button>
-                <div>
-                  <div className="mb-1 flex items-center">
-                    <h1 className={`mr-3`}>
-                      {mangoAccount?.name || t('account')}
-                    </h1>
-                    {!pubkey ? (
-                      <IconButton
-                        className="h-7 w-7"
-                        onClick={() => setShowNameModal(true)}
-                      >
-                        <PencilIcon className="h-3.5 w-3.5" />
-                      </IconButton>
-                    ) : null}
-                  </div>
-                  <div className="flex h-4 items-center">
-                    <LinkButton
-                      className="flex items-center text-th-fgd-4 no-underline"
-                      onClick={() =>
-                        handleCopyAddress(mangoAccount.publicKey.toString())
-                      }
+                ) : null}
+              </button>
+              <div>
+                <div className="mb-1 flex items-center">
+                  <h1 className={`mr-3`}>
+                    {mangoAccount?.name || t('account')}
+                  </h1>
+                  {!pubkey ? (
+                    <IconButton
+                      className="h-7 w-7"
+                      onClick={() => setShowNameModal(true)}
                     >
-                      <span className="text-xxs font-normal sm:text-xs">
-                        {mangoAccount.publicKey.toBase58()}
-                      </span>
-                      <DuplicateIcon className="ml-1.5 h-4 w-4" />
-                    </LinkButton>
-                    {isCopied ? (
-                      <span className="ml-2 rounded bg-th-bkg-3 px-1.5 py-0.5 text-xs">
-                        Copied
-                      </span>
-                    ) : null}
-                  </div>
-                  <div className="flex items-center text-xxs text-th-fgd-4">
-                    <ExclamationCircleIcon className="mr-1.5 h-4 w-4" />
-                    {t('account-address-warning')}
-                  </div>
+                      <PencilIcon className="h-3.5 w-3.5" />
+                    </IconButton>
+                  ) : null}
                 </div>
-              </div>
-              {!pubkey ? (
-                <div className="flex items-center space-x-2">
-                  <button
-                    className="flex h-8 w-full items-center justify-center rounded-full bg-th-primary px-3 py-0 text-xs font-bold text-th-bkg-1 focus:outline-none disabled:cursor-not-allowed disabled:bg-th-bkg-4 disabled:text-th-fgd-4"
-                    disabled={mngoAccrued.eq(ZERO_BN)}
-                    onClick={handleRedeemMngo}
+                <div className="flex h-4 items-center">
+                  <LinkButton
+                    className="flex items-center text-th-fgd-4 no-underline"
+                    onClick={() =>
+                      handleCopyAddress(mangoAccount.publicKey.toString())
+                    }
                   >
-                    <div className="flex items-center whitespace-nowrap">
-                      <GiftIcon className="mr-1.5 h-4 w-4 flex-shrink-0" />
-                      {!mngoAccrued.eq(ZERO_BN) && mangoGroup
-                        ? t('claim-x-mngo', {
-                            amount: nativeToUi(
-                              mngoAccrued.toNumber(),
-                              mangoGroup.tokens[MNGO_INDEX].decimals
-                            ).toLocaleString(undefined, {
-                              minimumSignificantDigits: 1,
-                            }),
-                          })
-                        : t('zero-mngo-rewards')}
-                    </div>
-                  </button>
-                  <Menu>
-                    {({ open }) => (
-                      <div className="relative sm:w-full">
-                        <Menu.Button className="flex h-8 items-center justify-center rounded-full bg-th-bkg-button pt-0 pb-0 pl-3 pr-2 text-xs font-bold hover:brightness-[1.1] hover:filter sm:w-full">
-                          {t('more')}
-                          <ChevronDownIcon
-                            className={`default-transition h-5 w-5 ${
-                              open
-                                ? 'rotate-180 transform'
-                                : 'rotate-360 transform'
-                            }`}
-                          />
-                        </Menu.Button>
-                        <Transition
-                          appear={true}
-                          show={open}
-                          as={Fragment}
-                          enter="transition-all ease-in duration-200"
-                          enterFrom="opacity-0 transform scale-75"
-                          enterTo="opacity-100 transform scale-100"
-                          leave="transition ease-out duration-200"
-                          leaveFrom="opacity-100"
-                          leaveTo="opacity-0"
-                        >
-                          <Menu.Items className="absolute right-0 z-20 mt-1 w-full space-y-1.5 rounded-md bg-th-bkg-3 px-4 py-2.5 sm:w-48">
-                            <Menu.Item>
-                              <button
-                                className="flex w-full flex-row items-center rounded-none py-0.5 font-normal focus:outline-none md:hover:cursor-pointer md:hover:text-th-primary"
-                                onClick={() => setShowAlertsModal(true)}
-                              >
-                                <div className="flex items-center">
-                                  <BellIcon className="mr-1.5 h-4 w-4" />
-                                  {t('alerts')}
-                                </div>
-                              </button>
-                            </Menu.Item>
-                            {!isDelegatedAccount ? (
-                              <Menu.Item>
-                                <button
-                                  className="flex w-full flex-row items-center rounded-none py-0.5 font-normal focus:outline-none md:hover:cursor-pointer md:hover:text-th-primary"
-                                  onClick={() => setShowDelegateModal(true)}
-                                >
-                                  <div className="flex items-center">
-                                    <UsersIcon className="mr-1.5 h-4 w-4" />
-                                    {t('delegate:set-delegate')}
-                                  </div>
-                                </button>
-                              </Menu.Item>
-                            ) : null}
-                            <Menu.Item>
-                              <button
-                                className="flex w-full flex-row items-center rounded-none py-0.5 font-normal focus:outline-none md:hover:cursor-pointer md:hover:text-th-primary"
-                                onClick={() => setShowAccountsModal(true)}
-                              >
-                                <div className="flex items-center">
-                                  <SwitchHorizontalIcon className="mr-1.5 h-4 w-4" />
-                                  {t('change-account')}
-                                </div>
-                              </button>
-                            </Menu.Item>
-                            {!isDelegatedAccount ? (
-                              <Menu.Item>
-                                <button
-                                  className="flex w-full flex-row items-center rounded-none py-0.5 font-normal focus:outline-none md:hover:cursor-pointer md:hover:text-th-primary"
-                                  onClick={() => setShowCloseAccountModal(true)}
-                                >
-                                  <div className="flex items-center whitespace-nowrap">
-                                    <TrashIcon className="mr-1.5 h-4 w-4 flex-shrink-0" />
-                                    {t('close-account:close-account')}
-                                  </div>
-                                </button>
-                              </Menu.Item>
-                            ) : null}
-                          </Menu.Items>
-                        </Transition>
-                      </div>
-                    )}
-                  </Menu>
+                    <span className="text-xxs font-normal sm:text-xs">
+                      {mangoAccount.publicKey.toBase58()}
+                    </span>
+                    <DuplicateIcon className="ml-1.5 h-4 w-4" />
+                  </LinkButton>
+                  {isCopied ? (
+                    <span className="ml-2 rounded bg-th-bkg-3 px-1.5 py-0.5 text-xs">
+                      Copied
+                    </span>
+                  ) : null}
                 </div>
-              ) : null}
-            </>
-          ) : null}
-        </div>
-        <div className="md:rounded-lg md:bg-th-bkg-2 md:p-6">
-          {mangoAccount ? (
-            !isMobile ? (
-              <>
-                <Tabs
-                  activeTab={activeTab}
-                  onChange={handleTabChange}
-                  tabs={TABS}
-                />
-                <TabContent activeTab={activeTab} />
-              </>
-            ) : (
-              <>
-                <SwipeableTabs
-                  onChange={handleChangeViewIndex}
-                  items={TABS}
-                  tabIndex={viewIndex}
-                  width="w-24 sm:w-32"
-                />
-                <Swipeable
-                  index={viewIndex}
-                  onChangeIndex={handleChangeViewIndex}
-                >
-                  <div>
-                    <AccountOverview />
-                  </div>
-                  <div>
-                    <AccountOrders />
-                  </div>
-                  <div>
-                    <AccountHistory />
-                  </div>
-                  <div>
-                    <AccountInterest />
-                  </div>
-                  <div>
-                    <AccountFunding />
-                  </div>
-                  <div>
-                    <AccountPerformancePerToken />
-                  </div>
-                </Swipeable>
-              </>
-            )
-          ) : connected ? (
-            isLoading ? (
-              <div className="flex justify-center py-10">
-                <Loading />
+                <div className="flex items-center text-xxs text-th-fgd-4">
+                  <ExclamationCircleIcon className="mr-1.5 h-4 w-4" />
+                  {t('account-address-warning')}
+                </div>
               </div>
-            ) : (
-              <EmptyState
-                buttonText={t('create-account')}
-                icon={<CurrencyDollarIcon />}
-                onClickButton={() => setShowAccountsModal(true)}
-                title={t('no-account-found')}
-                disabled={!wallet || !mangoGroup}
+            </div>
+            {!pubkey ? (
+              <div className="flex items-center space-x-2">
+                <Button
+                  className="flex h-8 w-full items-center justify-center rounded-full px-3 py-0 text-xs"
+                  disabled={mngoAccrued.eq(ZERO_BN)}
+                  onClick={handleRedeemMngo}
+                >
+                  <div className="flex items-center whitespace-nowrap">
+                    <GiftIcon className="mr-1.5 h-4 w-4 flex-shrink-0" />
+                    {!mngoAccrued.eq(ZERO_BN) && mangoGroup
+                      ? t('claim-x-mngo', {
+                          amount: nativeToUi(
+                            mngoAccrued.toNumber(),
+                            mangoGroup.tokens[MNGO_INDEX].decimals
+                          ).toLocaleString(undefined, {
+                            minimumSignificantDigits: 1,
+                          }),
+                        })
+                      : t('zero-mngo-rewards')}
+                  </div>
+                </Button>
+                <Menu>
+                  {({ open }) => (
+                    <div className="relative sm:w-full">
+                      <Menu.Button className="flex h-8 items-center justify-center rounded-full border border-th-fgd-4 bg-transparent pt-0 pb-0 pl-3 pr-2 text-xs font-bold text-th-fgd-2 hover:brightness-[1.1] hover:filter sm:w-full">
+                        {t('more')}
+                        <ChevronDownIcon
+                          className={`default-transition h-5 w-5 ${
+                            open
+                              ? 'rotate-180 transform'
+                              : 'rotate-360 transform'
+                          }`}
+                        />
+                      </Menu.Button>
+                      <Transition
+                        appear={true}
+                        show={open}
+                        as={Fragment}
+                        enter="transition-all ease-in duration-200"
+                        enterFrom="opacity-0 transform scale-75"
+                        enterTo="opacity-100 transform scale-100"
+                        leave="transition ease-out duration-200"
+                        leaveFrom="opacity-100"
+                        leaveTo="opacity-0"
+                      >
+                        <Menu.Items className="absolute right-0 z-20 mt-1 w-full space-y-1.5 rounded-md bg-th-bkg-3 px-4 py-2.5 sm:w-48">
+                          <Menu.Item>
+                            <button
+                              className="flex w-full flex-row items-center rounded-none py-0.5 font-normal focus:outline-none md:hover:cursor-pointer md:hover:text-th-primary"
+                              onClick={() => setShowAlertsModal(true)}
+                            >
+                              <div className="flex items-center">
+                                <BellIcon className="mr-1.5 h-4 w-4" />
+                                {t('alerts')}
+                              </div>
+                            </button>
+                          </Menu.Item>
+                          {!isDelegatedAccount ? (
+                            <Menu.Item>
+                              <button
+                                className="flex w-full flex-row items-center rounded-none py-0.5 font-normal focus:outline-none md:hover:cursor-pointer md:hover:text-th-primary"
+                                onClick={() => setShowDelegateModal(true)}
+                              >
+                                <div className="flex items-center">
+                                  <UsersIcon className="mr-1.5 h-4 w-4" />
+                                  {t('delegate:set-delegate')}
+                                </div>
+                              </button>
+                            </Menu.Item>
+                          ) : null}
+                          <Menu.Item>
+                            <button
+                              className="flex w-full flex-row items-center rounded-none py-0.5 font-normal focus:outline-none md:hover:cursor-pointer md:hover:text-th-primary"
+                              onClick={() => setShowAccountsModal(true)}
+                            >
+                              <div className="flex items-center">
+                                <SwitchHorizontalIcon className="mr-1.5 h-4 w-4" />
+                                {t('change-account')}
+                              </div>
+                            </button>
+                          </Menu.Item>
+                          {!isDelegatedAccount ? (
+                            <Menu.Item>
+                              <button
+                                className="flex w-full flex-row items-center rounded-none py-0.5 font-normal focus:outline-none md:hover:cursor-pointer md:hover:text-th-primary"
+                                onClick={() => setShowCloseAccountModal(true)}
+                              >
+                                <div className="flex items-center whitespace-nowrap">
+                                  <TrashIcon className="mr-1.5 h-4 w-4 flex-shrink-0" />
+                                  {t('close-account:close-account')}
+                                </div>
+                              </button>
+                            </Menu.Item>
+                          ) : null}
+                        </Menu.Items>
+                      </Transition>
+                    </div>
+                  )}
+                </Menu>
+              </div>
+            ) : null}
+          </>
+        ) : null}
+      </div>
+      <div>
+        {mangoAccount ? (
+          !isMobile ? (
+            <div className="mt-2">
+              <Tabs
+                activeTab={activeTab}
+                onChange={handleTabChange}
+                tabs={TABS}
               />
-            )
+              <TabContent activeTab={activeTab} />
+            </div>
           ) : (
+            <div className="mt-2">
+              <SwipeableTabs
+                onChange={handleChangeViewIndex}
+                items={TABS}
+                tabIndex={viewIndex}
+                width="w-40 sm:w-48"
+              />
+              <Swipeable
+                index={viewIndex}
+                onChangeIndex={handleChangeViewIndex}
+              >
+                <div>
+                  <AccountOverview />
+                </div>
+                <div>
+                  <AccountOrders />
+                </div>
+                <div>
+                  <AccountHistory />
+                </div>
+                <div>
+                  <AccountInterest />
+                </div>
+                <div>
+                  <AccountFunding />
+                </div>
+                <div>
+                  <AccountPerformancePerToken />
+                </div>
+              </Swipeable>
+            </div>
+          )
+        ) : isLoading && (connected || pubkey) ? (
+          <div className="flex justify-center py-10">
+            <Loading />
+          </div>
+        ) : connected ? (
+          <div className="-mt-4 rounded-lg border border-th-bkg-3 p-4 md:p-6">
+            <EmptyState
+              buttonText={t('create-account')}
+              icon={<CurrencyDollarIcon />}
+              onClickButton={() => setShowAccountsModal(true)}
+              title={t('no-account-found')}
+              disabled={!wallet || !mangoGroup}
+            />
+          </div>
+        ) : (
+          <div className="-mt-4 rounded-lg border border-th-bkg-3 p-4 md:p-6">
             <EmptyState
               buttonText={t('connect')}
               desc={t('connect-view')}
@@ -522,14 +514,16 @@ export default function Account() {
               onClickButton={handleConnect}
               title={t('connect-wallet')}
             />
-          )}
-        </div>
-        {!connected && (
-          <div className="mt-6 md:mt-3 md:rounded-lg md:bg-th-bkg-2 md:p-6">
-            <MangoAccountLookup />
+            {!connected && !pubkey ? (
+              <div className="flex flex-col items-center pt-2">
+                <p>OR</p>
+                <MangoAccountLookup />
+              </div>
+            ) : null}
           </div>
         )}
-      </PageBodyContainer>
+      </div>
+
       {showAccountsModal ? (
         <AccountsModal
           onClose={handleCloseAccounts}
@@ -580,10 +574,6 @@ const TabContent = ({ activeTab }) => {
       return <AccountOrders />
     case 'History':
       return <AccountHistory />
-    case 'Interest':
-      return <AccountInterest />
-    case 'Funding':
-      return <AccountFunding />
     case 'Performance':
       return <AccountPerformancePerToken />
     default:

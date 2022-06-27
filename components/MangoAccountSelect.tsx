@@ -48,7 +48,14 @@ const MangoAccountSelect = ({
       disabled={disabled}
       value={
         <div className="text-left">
-          {abbreviateAddress(selectedMangoAccount?.publicKey)}
+          <p className="mb-0 font-bold text-th-fgd-2">
+            {selectedMangoAccount?.name
+              ? selectedMangoAccount.name
+              : t('account')}
+          </p>
+          <p className="mb-0 text-xs">
+            {abbreviateAddress(selectedMangoAccount?.publicKey)}
+          </p>
         </div>
       }
       onChange={handleSelectMangoAccount}
@@ -58,7 +65,18 @@ const MangoAccountSelect = ({
       {mangoAccounts.length ? (
         mangoAccounts.map((ma, index) => (
           <Select.Option key={index} value={ma.publicKey.toString()}>
-            {abbreviateAddress(ma.publicKey)}
+            <div className="text-left">
+              <span
+                className={`mb-0 font-bold ${
+                  value?.publicKey.toString() === ma.publicKey.toString()
+                    ? 'text-th-primary'
+                    : ''
+                }`}
+              >
+                {ma?.name ? ma.name : t('account')}
+              </span>
+              <p className="mb-0 text-xs">{abbreviateAddress(ma?.publicKey)}</p>
+            </div>
           </Select.Option>
         ))
       ) : (

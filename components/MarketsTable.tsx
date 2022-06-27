@@ -183,7 +183,7 @@ const MarketsTable = ({
           const chartData = coingeckoData ? coingeckoData.prices : undefined
 
           return (
-            <TrBody key={name} className="hover:bg-th-bkg-3">
+            <TrBody key={name}>
               <Td>
                 <Link href={`/?name=${name}`} shallow={true}>
                   <a className="hover:cursor-pointer">
@@ -379,7 +379,7 @@ const MarketsTable = ({
 }
 
 const COLORS = {
-  GREEN: { Mango: '#AFD803', Dark: '5EBF4d', Light: '5EBF4d' },
+  GREEN: { Mango: '#AFD803', Dark: '#5EBF4d', Light: '#5EBF4d' },
   RED: { Mango: '#F84638', Dark: '#CC2929', Light: '#CC2929' },
 }
 

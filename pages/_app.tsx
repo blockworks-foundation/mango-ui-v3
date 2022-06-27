@@ -3,6 +3,7 @@ import { ThemeProvider } from 'next-themes'
 import '../node_modules/react-grid-layout/css/styles.css'
 import '../node_modules/react-resizable/css/styles.css'
 import 'intro.js/introjs.css'
+import 'react-pro-sidebar/dist/css/styles.css'
 import '../styles/index.css'
 import 'react-nice-dates/build/style.css'
 import '../styles/datepicker.css'
@@ -13,10 +14,8 @@ import useOraclePrice from '../hooks/useOraclePrice'
 import { getDecimalCount } from '../utils'
 import { useRouter } from 'next/router'
 import { ViewportProvider } from '../hooks/useViewport'
-import BottomBar from '../components/mobile/BottomBar'
 import { appWithTranslation } from 'next-i18next'
 import ErrorBoundary from '../components/ErrorBoundary'
-import GlobalNotification from '../components/GlobalNotification'
 import { useOpenOrders } from '../hooks/useOpenOrders'
 import usePerpPositions from '../hooks/usePerpPositions'
 import { useEffect, useMemo } from 'react'
@@ -42,6 +41,7 @@ import {
 } from '@solana/wallet-adapter-wallets'
 import { HuobiWalletAdapter } from '@solana/wallet-adapter-huobi'
 import useSpotBalances from 'hooks/useSpotBalances'
+import Layout from 'components/Layout'
 
 const SENTRY_URL = process.env.NEXT_PUBLIC_SENTRY_URL
 if (SENTRY_URL) {
@@ -209,12 +209,10 @@ function App({ Component, pageProps }) {
             <ViewportProvider>
               <div className="min-h-screen bg-th-bkg-1">
                 <ErrorBoundary>
-                  <GlobalNotification />
-                  <Component {...pageProps} />
+                  <Layout>
+                    <Component {...pageProps} />
+                  </Layout>
                 </ErrorBoundary>
-              </div>
-              <div className="fixed bottom-0 left-0 z-20 w-full md:hidden">
-                <BottomBar />
               </div>
 
               <Notifications />

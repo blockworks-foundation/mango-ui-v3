@@ -4,7 +4,7 @@
   "license": "MIT",
   "version": "1.0.0",
   "scripts": {
-    "dev": "next dev",
+    "dev": "NODE_OPTIONS=\"--max_old_space_size=4096\" next dev",
     "devnet": "NEXT_PUBLIC_CLUSTER=devnet NEXT_PUBLIC_ENDPOINT=https://mango.devnet.rpcpool.com/ NEXT_PUBLIC_GROUP=devnet.4 next dev",
     "testnet": "NEXT_PUBLIC_CLUSTER=testnet NEXT_PUBLIC_ENDPOINT=https://api.testnet.solana.com NEXT_PUBLIC_GROUP=testnet.0 next dev",
     "build": "next build",
@@ -53,6 +53,7 @@
     "react-horizontal-scrolling-menu": "^2.8.2",
     "react-nice-dates": "^3.1.0",
     "react-portal": "^4.2.1",
+    "react-pro-sidebar": "^0.7.1",
     "react-qr-code": "^2.0.3",
     "react-super-responsive-table": "^5.2.0",
     "react-swipeable-views": "^0.14.0",

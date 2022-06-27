@@ -148,7 +148,7 @@ function Tab({
       } items-center justify-center font-bold focus:text-th-primary focus:outline-none ${
         selected
           ? 'border-b-2 border-th-primary text-th-primary'
-          : 'border-b border-th-fgd-4 text-th-fgd-3'
+          : 'border-b border-th-bkg-4 text-th-fgd-3'
       }`}
     >
       {t(title.toLowerCase().replace(/\s/g, '-'))}

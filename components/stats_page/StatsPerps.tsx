@@ -5,9 +5,9 @@ import Chart from '../Chart'
 import BN from 'bn.js'
 import { perpContractPrecision } from '../../utils'
 import { useTranslation } from 'next-i18next'
-import Select from '../Select'
 import { marketsSelector } from '../../stores/selectors'
 import dayjs from 'dayjs'
+import TabButtons from 'components/TabButtons'
 
 function calculateFundingRate(
   oldestLongFunding,
@@ -119,35 +119,16 @@ export default function StatsPerps({ perpStats, loadPerpStats }) {
   return (
     <>
       <div className="mb-4 flex flex-row-reverse items-center justify-between md:flex-col md:items-stretch">
-        <Select
-          value={selectedAsset}
-          onChange={(a) => setSelectedAsset(a)}
-          className="ml-4 w-36 flex-shrink-0 md:hidden"
-        >
-          {marketConfigs?.map((market) => (
-            <Select.Option key={market.name} value={market.name}>
-              {market.name}
-            </Select.Option>
-          ))}
-        </Select>
-        <div className="mb-4 hidden rounded-md bg-th-bkg-3 px-3 py-2 md:mb-6 md:flex md:px-4">
-          {marketConfigs?.map((market, index) => (
-            <div
-              className={`py-1 text-xs font-bold md:px-2 md:text-sm ${
-                index > 0 ? 'ml-4 md:ml-2' : null
-              } default-transition cursor-pointer rounded-md
-                          ${
-                            selectedAsset === market.name
-                              ? `text-th-primary`
-                              : `text-th-fgd-3 hover:text-th-fgd-1`
-                          }
-                        `}
-              onClick={() => setSelectedAsset(market.name)}
-              key={market.name as string}
-            >
-              {market.baseSymbol}
-            </div>
-          ))}
+        <div className="mb-2">
+          <TabButtons
+            activeTab={selectedAsset}
+            tabs={marketConfigs?.map((m) => ({
+              label: m.baseSymbol,
+              key: m.name,
+            }))}
+            onClick={setSelectedAsset}
+            showSymbolIcon
+          />
         </div>
         <div className="flex items-center text-xl text-th-fgd-1">
           <img
@@ -210,7 +191,7 @@ export default function StatsPerps({ perpStats, loadPerpStats }) {
       <div className="mb-4">
         <h2 className="mb-4">{t('liquidity-mining')}</h2>
         <div className="grid grid-cols-2 gap-x-3 md:grid-cols-3 lg:grid-cols-6">
-          <div className="col-span-1 border-y border-th-bkg-4 py-3">
+          <div className="col-span-1 border-y border-th-bkg-3 py-3">
             <p className="mb-0">{t('depth-rewarded')}</p>
             <div className="text-lg font-bold">
               {maxDepthUi.toLocaleString() + ' '}
@@ -221,7 +202,7 @@ export default function StatsPerps({ perpStats, loadPerpStats }) {
               ) : null}
             </div>
           </div>
-          <div className="col-span-1 border-y border-th-bkg-4 py-3">
+          <div className="col-span-1 border-y border-th-bkg-3 py-3">
             <p className="mb-0">{t('target-period-length')}</p>
             <div className="text-lg font-bold">
               {(
@@ -231,7 +212,7 @@ export default function StatsPerps({ perpStats, loadPerpStats }) {
               {t('minutes')}
             </div>
           </div>
-          <div className="col-span-1 border-b border-th-bkg-4 py-3 md:border-y">
+          <div className="col-span-1 border-b border-th-bkg-3 py-3 md:border-y">
             <p className="mb-0">{t('mngo-per-period')}</p>
             <div className="text-lg font-bold">
               {(
@@ -240,7 +221,7 @@ export default function StatsPerps({ perpStats, loadPerpStats }) {
               ).toFixed(2)}
             </div>
           </div>
-          <div className="col-span-1 border-b border-th-bkg-4 py-3 lg:border-y">
+          <div className="col-span-1 border-b border-th-bkg-3 py-3 lg:border-y">
             <p className="mb-0">{t('mngo-left-period')}</p>
             <div className="text-lg font-bold">
               {(
@@ -250,7 +231,7 @@ export default function StatsPerps({ perpStats, loadPerpStats }) {
             </div>
           </div>
 
-          <div className="col-span-1 border-b border-th-bkg-4 py-3 lg:border-y">
+          <div className="col-span-1 border-b border-th-bkg-3 py-3 lg:border-y">
             <p className="mb-0">{t('est-period-end')}</p>
             <div className="text-lg font-bold">
               {dayjs(est * 1000).format('DD MMM YYYY')}
@@ -259,7 +240,7 @@ export default function StatsPerps({ perpStats, loadPerpStats }) {
               {dayjs(est * 1000).format('h:mma')}
             </div>
           </div>
-          <div className="col-span-1 border-b border-th-bkg-4 py-3 lg:border-y">
+          <div className="col-span-1 border-b border-th-bkg-3 py-3 lg:border-y">
             <p className="mb-0">{t('period-progress')}</p>
             <div className="text-lg font-bold">
               {(progress * 100).toFixed(2)}%

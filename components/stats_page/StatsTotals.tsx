@@ -355,7 +355,7 @@ export default function StatsTotals({
         </>
       ) : (
         <>
-          <div className="mb-8 border-b border-th-bkg-4">
+          <div className="mb-8 border-b border-th-bkg-3">
             <h2 className="mb-4">{t('current-stats')}</h2>
             {latestStats.length ? (
               latestStats.map((stat) => (

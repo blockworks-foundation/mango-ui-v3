@@ -34,16 +34,20 @@ import Button from '../Button'
 import { useViewport } from '../../hooks/useViewport'
 import { breakpoints } from '.././TradePageGrid'
 import MobileTableHeader from 'components/mobile/MobileTableHeader'
+import AccountInterest from './AccountInterest'
+import AccountFunding from './AccountFunding'
+import TabButtons from 'components/TabButtons'
 
 const historyViews = [
   { label: 'Trades', key: 'Trades' },
   { label: 'Deposits', key: 'Deposit' },
   { label: 'Withdrawals', key: 'Withdraw' },
+  { label: 'Interest', key: 'Interest' },
+  { label: 'Funding', key: 'Funding' },
   { label: 'Liquidations', key: 'Liquidation' },
 ]
 
 export default function AccountHistory() {
-  const { t } = useTranslation('common')
   const [view, setView] = useState('Trades')
   const [history, setHistory] = useState(null)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
@@ -70,24 +74,8 @@ export default function AccountHistory() {
 
   return (
     <>
-      <div className="mb-4 flex rounded-md bg-th-bkg-3 px-3 py-2 md:mb-6 md:px-4">
-        {historyViews.map(({ label, key }, index) => (
-          <div
-            className={`py-1 text-xs font-bold md:px-2 md:text-sm ${
-              index > 0 ? 'ml-4 md:ml-2' : null
-            } default-transition cursor-pointer rounded-md
-                          ${
-                            view === key
-                              ? `text-th-primary`
-                              : `text-th-fgd-3 hover:text-th-fgd-1`
-                          }
-                        `}
-            onClick={() => setView(key)}
-            key={key as string}
-          >
-            {t(label.toLowerCase())}
-          </div>
-        ))}
+      <div className="mb-2">
+        <TabButtons activeTab={view} tabs={historyViews} onClick={setView} />
       </div>
       <ViewContent view={view} history={history} />
     </>
@@ -102,6 +90,10 @@ const ViewContent = ({ view, history }) => {
       return <HistoryTable history={history} view={view} />
     case 'Withdraw':
       return <HistoryTable history={history} view={view} />
+    case 'Interest':
+      return <AccountInterest />
+    case 'Funding':
+      return <AccountFunding />
     case 'Liquidation':
       return <LiquidationHistoryTable history={history} view={view} />
     default:
@@ -422,7 +414,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
             </tbody>
           </Table>
         ) : (
-          <div className="border-b border-th-bkg-4">
+          <div className="border-b border-th-bkg-3">
             <MobileTableHeader
               colOneHeader={t('date')}
               colTwoHeader={t('liquidation-fee')}
@@ -532,7 +524,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
           </div>
         )
       ) : (
-        <div className="w-full rounded-md bg-th-bkg-2 py-6 text-center text-th-fgd-3 md:bg-th-bkg-3">
+        <div className="w-full rounded-md border border-th-bkg-3 py-6 text-center text-th-fgd-3">
           {t('history-empty')}
         </div>
       )}
@@ -751,7 +743,7 @@ const HistoryTable = ({ history, view }) => {
             </tbody>
           </Table>
         ) : (
-          <div className="mb-4 border-b border-th-bkg-4">
+          <div className="mb-4 border-b border-th-bkg-3">
             <MobileTableHeader
               colOneHeader={t('date')}
               colTwoHeader={t('asset')}
@@ -795,7 +787,7 @@ const HistoryTable = ({ history, view }) => {
           </div>
         )
       ) : (
-        <div className="w-full rounded-md bg-th-bkg-2 py-6 text-center text-th-fgd-3 md:bg-th-bkg-3">
+        <div className="w-full rounded-md border border-th-bkg-3 py-6 text-center text-th-fgd-3">
           {t('history-empty')}
         </div>
       )}

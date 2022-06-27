@@ -1,6 +1,4 @@
 import { useEffect, useState } from 'react'
-import TopBar from '../components/TopBar'
-import PageBodyContainer from '../components/PageBodyContainer'
 import StatsTotals from '../components/stats_page/StatsTotals'
 import StatsAssets from '../components/stats_page/StatsAssets'
 import StatsPerps from '../components/stats_page/StatsPerps'
@@ -54,55 +52,46 @@ export default function StatsPage() {
   }
 
   return (
-    <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
-      <TopBar />
-      <PageBodyContainer>
-        <div className="flex flex-col py-4 sm:flex-row md:pb-4 md:pt-10">
-          <h1>{t('stats')}</h1>
-        </div>
-        <div className="md:rounded-lg md:bg-th-bkg-2 md:p-6">
-          {!isMobile ? (
-            <Tabs
-              activeTab={activeTab}
-              onChange={handleTabChange}
-              tabs={TABS}
-            />
-          ) : (
-            <SwipeableTabs
-              onChange={handleChangeViewIndex}
-              items={TABS}
-              tabIndex={viewIndex}
-              width="w-full"
-            />
-          )}
-          {!isMobile ? (
-            <TabContent
-              activeTab={activeTab}
-              latestStats={latestStats}
-              perpStats={perpStats}
-              stats={stats}
-              loadHistoricalStats={loadHistoricalStats}
-              loadPerpStats={loadPerpStats}
-              loadLatestStats={loadLatestStats}
-            />
-          ) : (
-            <Swipeable index={viewIndex} onChangeIndex={handleChangeViewIndex}>
-              <StatsTotals
-                latestStats={latestStats}
-                stats={stats}
-                loadHistoricalStats={loadHistoricalStats}
-                loadLatestStats={loadLatestStats}
-              />
-              <StatsAssets
-                latestStats={latestStats}
-                stats={stats}
-                loadHistoricalStats={loadHistoricalStats}
-              />
-              <StatsPerps perpStats={perpStats} loadPerpStats={loadPerpStats} />
-            </Swipeable>
-          )}
-        </div>
-      </PageBodyContainer>
+    <div className="pt-6">
+      <div className="pb-4">
+        <h1>{t('stats')}</h1>
+      </div>
+      {!isMobile ? (
+        <Tabs activeTab={activeTab} onChange={handleTabChange} tabs={TABS} />
+      ) : (
+        <SwipeableTabs
+          onChange={handleChangeViewIndex}
+          items={TABS}
+          tabIndex={viewIndex}
+          width="w-full"
+        />
+      )}
+      {!isMobile ? (
+        <TabContent
+          activeTab={activeTab}
+          latestStats={latestStats}
+          perpStats={perpStats}
+          stats={stats}
+          loadHistoricalStats={loadHistoricalStats}
+          loadPerpStats={loadPerpStats}
+          loadLatestStats={loadLatestStats}
+        />
+      ) : (
+        <Swipeable index={viewIndex} onChangeIndex={handleChangeViewIndex}>
+          <StatsTotals
+            latestStats={latestStats}
+            stats={stats}
+            loadHistoricalStats={loadHistoricalStats}
+            loadLatestStats={loadLatestStats}
+          />
+          <StatsAssets
+            latestStats={latestStats}
+            stats={stats}
+            loadHistoricalStats={loadHistoricalStats}
+          />
+          <StatsPerps perpStats={perpStats} loadPerpStats={loadPerpStats} />
+        </Swipeable>
+      )}
     </div>
   )
 }
