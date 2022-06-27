@@ -29,6 +29,7 @@ const useMangoStats = () => {
     },
   ])
   const [latestStats, setLatestStats] = useState<any[]>([])
+  const [loadLatestStats, setLoadLatestStats] = useState<boolean>(false)
   const [loadHistoricalStats, setLoadHistoricalStats] = useState<boolean>(false)
   const [loadPerpStats, setLoadPerpStats] = useState<boolean>(false)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
@@ -38,8 +39,8 @@ const useMangoStats = () => {
 
   useEffect(() => {
     const fetchHistoricalStats = async () => {
+      setLoadHistoricalStats(true)
       try {
-        setLoadHistoricalStats(true)
         const response = await fetch(
           `https://mango-transaction-log.herokuapp.com/v3/stats/spot_stats_hourly?mango-group=${mangoGroupName}`
         )
@@ -55,8 +56,8 @@ const useMangoStats = () => {
 
   useEffect(() => {
     const fetchHistoricalPerpStats = async () => {
+      setLoadPerpStats(true)
       try {
-        setLoadPerpStats(true)
         const response = await fetch(
           `https://mango-transaction-log.herokuapp.com/v3/stats/perp_stats_hourly?mango-group=${mangoGroupName}`
         )
@@ -73,6 +74,7 @@ const useMangoStats = () => {
   useEffect(() => {
     const getLatestStats = async () => {
       if (mangoGroup) {
+        setLoadLatestStats(true)
         const rootBanks = await mangoGroup.loadRootBanks(connection)
         if (!config) return
         const latestStats = config.tokens.map((token) => {
@@ -109,13 +111,21 @@ const useMangoStats = () => {
           }
         })
         setLatestStats(latestStats)
+        setLoadLatestStats(false)
       }
     }
 
     getLatestStats()
   }, [mangoGroup])
 
-  return { latestStats, stats, perpStats, loadHistoricalStats, loadPerpStats }
+  return {
+    latestStats,
+    loadLatestStats,
+    stats,
+    perpStats,
+    loadHistoricalStats,
+    loadPerpStats,
+  }
 }
 
 export default useMangoStats
