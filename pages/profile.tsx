@@ -147,7 +147,7 @@ export default function Profile() {
         setWalletMangoAccounts(mangoAccounts)
       }
     }
-  }, [pk, mangoGroup])
+  }, [pk, mangoAccounts, mangoGroup])
 
   useEffect(() => {
     const getAccountsStats = async () => {
@@ -513,7 +513,7 @@ export default function Profile() {
                     )
                   })
                 ) : (
-                  <div className="rounded-lg border border-th-bkg-3 p-4">
+                  <div className="rounded-lg border border-th-bkg-3 p-4 md:p-6">
                     <EmptyState
                       desc={t('profile:no-following-desc')}
                       icon={<UserGroupIcon />}
@@ -558,7 +558,7 @@ export default function Profile() {
                     )
                   })
                 ) : (
-                  <div className="rounded-lg border border-th-bkg-3 p-4">
+                  <div className="rounded-lg border border-th-bkg-3 p-4 md:p-6">
                     <EmptyState
                       desc={t('profile:no-followers-desc')}
                       icon={<UserGroupIcon />}
@@ -581,14 +581,16 @@ export default function Profile() {
           ) : null}
         </div>
       ) : (
-        <EmptyState
-          buttonText={t('connect')}
-          desc={t('profile:connect-view-profile')}
-          disabled={!wallet || !mangoGroup}
-          icon={<LinkIcon />}
-          onClickButton={handleConnect}
-          title={t('connect-wallet')}
-        />
+        <div className="rounded-lg border border-th-bkg-3 p-4 md:p-6">
+          <EmptyState
+            buttonText={t('connect')}
+            desc={t('profile:connect-view-profile')}
+            disabled={!wallet || !mangoGroup}
+            icon={<LinkIcon />}
+            onClickButton={handleConnect}
+            title={t('connect-wallet')}
+          />
+        </div>
       )}
       {showEditProfile ? (
         <EditProfileModal
