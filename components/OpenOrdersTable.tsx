@@ -166,7 +166,7 @@ const DesktopTable = ({
                       </Button>
                       {openOrders.filter(
                         (o) => o.market.config.name === market.config.name
-                      ).length > 1 && market.account instanceof PerpMarket ? (
+                      ).length > 1 ? (
                         <Button
                           onClick={() => handleCancelAllOrders(market.account)}
                           className="-my-1 h-7 pt-0 pb-0 pl-3 pr-3 text-xs text-th-red"
@@ -304,7 +304,7 @@ const MobileTable = ({
                 </IconButton>
                 {openOrders.filter(
                   (o) => o.market.config.name === market.config.name
-                ).length > 1 && market.account instanceof PerpMarket ? (
+                ).length > 1 ? (
                   <IconButton
                     onClick={() => handleCancelAllOrders(market.account)}
                   >
@@ -375,7 +375,7 @@ const OpenOrdersTable = () => {
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.md : false
 
-  const handleCancelAllOrders = async (market: PerpMarket) => {
+  const handleCancelAllOrders = async (market: PerpMarket | Market) => {
     const selectedMangoGroup =
       useMangoStore.getState().selectedMangoGroup.current
     const selectedMangoAccount =
@@ -383,6 +383,7 @@ const OpenOrdersTable = () => {
     const mangoClient = useMangoStore.getState().connection.client
     try {
       if (!selectedMangoGroup || !selectedMangoAccount || !wallet) return
+
       if (market instanceof PerpMarket) {
         const txids = await mangoClient.cancelAllPerpOrders(
           selectedMangoGroup,
@@ -405,6 +406,28 @@ const OpenOrdersTable = () => {
           })
         }
         actions.reloadOrders()
+      }
+      else if (market instanceof Market) {
+        const txid = await mangoClient.cancelAllSpotOrders(
+          selectedMangoGroup,
+          selectedMangoAccount,
+          market, 
+          wallet.adapter, 
+          20
+        )
+        if(txid) {
+          notify({
+            title: t('cancel-all-success'),
+            description: '',
+            txid,
+          })
+        }
+        else {
+          notify({
+            title: t('cancel-all-error'),
+            description: t('transaction-failed'),
+          })
+        }
       }
     } catch (e) {
       notify({
