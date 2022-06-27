@@ -44,7 +44,7 @@ const ProfileImage = ({
     />
   ) : (
     <div
-      className={`flex items-center justify-center rounded-full ${
+      className={`flex flex-shrink-0 items-center justify-center rounded-full ${
         loadingTransaction ? 'animate-pulse bg-th-bkg-4' : 'bg-th-bkg-4'
       }`}
       style={{ width: `${imageSize}px`, height: `${imageSize}px` }}

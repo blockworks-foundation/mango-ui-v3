@@ -26,7 +26,6 @@ import {
 } from '@heroicons/react/solid'
 import { useRouter } from 'next/router'
 import AccountOverviewPopover from './AccountOverviewPopover'
-import { IconButton } from './Button'
 import useMangoAccount from 'hooks/useMangoAccount'
 import { useTranslation } from 'next-i18next'
 import { useState } from 'react'
@@ -54,16 +53,16 @@ const SideNav = ({ collapsed, setCollapsed }) => {
 
   return (
     <>
-      <IconButton
-        className="absolute -right-4 top-1/2 z-50 h-10 w-4 -translate-y-1/2 transform rounded-none rounded-r"
+      <button
+        className="default-transition absolute -right-4 top-1/2 z-50 h-10 w-4 -translate-y-1/2 transform rounded-none rounded-r bg-th-bkg-3 hover:bg-th-bkg-4 focus:outline-none"
         onClick={handleToggleSidebar}
       >
         <ChevronRightIcon
-          className={`default-transition h-5 w-5 ${
+          className={`default-transition h-4 w-4 ${
             !collapsed ? 'rotate-180' : 'rotate-360'
           }`}
         />
-      </IconButton>
+      </button>
       <ProSidebar collapsed={collapsed} width="220px" collapsedWidth="64px">
         <div
           className={`flex flex-col-reverse overflow-y-auto ${

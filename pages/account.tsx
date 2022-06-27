@@ -282,11 +282,11 @@ export default function Account() {
     }
   }
 
-  const fetchProfileDetails = async () => {
+  const fetchProfileDetails = async (walletPk: string) => {
     setLoadProfileDetails(true)
     try {
       const response = await fetch(
-        `https://mango-transaction-log.herokuapp.com/v3/user-data/profile-details?wallet-pk=${mangoAccount?.owner.toString()}`
+        `https://mango-transaction-log.herokuapp.com/v3/user-data/profile-details?wallet-pk=${walletPk}`
       )
       const data = await response.json()
       setProfileData(data)
@@ -299,10 +299,10 @@ export default function Account() {
   }
 
   useEffect(() => {
-    if (mangoAccount) {
-      fetchProfileDetails()
+    if (mangoAccount && pubkey) {
+      fetchProfileDetails(mangoAccount.owner.toString())
     }
-  }, [mangoAccount])
+  }, [mangoAccount, pubkey])
 
   return (
     <div className="pt-6">
@@ -332,21 +332,17 @@ export default function Account() {
                     </span>
                   ) : null}
                 </div>
-                <div className="mb-2 flex items-center text-xxs text-th-fgd-4">
+                <div className="flex items-center text-xxs text-th-fgd-4">
                   <ExclamationCircleIcon className="mr-1.5 h-4 w-4" />
                   {t('account-address-warning')}
                 </div>
-                {!loadProfileDetails && mangoAccount ? (
-                  profileData ? (
+                {pubkey && mangoAccount ? (
+                  profileData && !loadProfileDetails ? (
                     <Link
-                      href={
-                        pubkey
-                          ? `/profile?pk=${mangoAccount.owner.toString()}`
-                          : '/profile'
-                      }
+                      href={`/profile?pk=${mangoAccount.owner.toString()}`}
                       shallow={true}
                     >
-                      <a className="default-transition flex items-center space-x-2 text-th-fgd-3 hover:text-th-fgd-2">
+                      <a className="default-transition mt-2 flex items-center space-x-2 text-th-fgd-3 hover:text-th-fgd-2">
                         <ProfileImage
                           imageSize="24"
                           placeholderSize="12"
@@ -357,10 +353,10 @@ export default function Account() {
                         </span>
                       </a>
                     </Link>
-                  ) : null
-                ) : (
-                  <div className="h-7 w-40 animate-pulse rounded bg-th-bkg-3" />
-                )}
+                  ) : (
+                    <div className="mt-2 h-7 w-40 animate-pulse rounded bg-th-bkg-3" />
+                  )
+                ) : null}
               </div>
             </div>
             {!pubkey ? (

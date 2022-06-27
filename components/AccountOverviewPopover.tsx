@@ -72,7 +72,7 @@ const AccountOverviewPopover = ({
             title={
               <div className="py-2">
                 <p className="mb-0 whitespace-nowrap text-xs text-th-fgd-3">
-                  {t('account-summary')}
+                  {mangoAccount.name ? mangoAccount.name : t('account-summary')}
                 </p>
                 <p className="mb-0 font-bold text-th-fgd-1">
                   {abbreviateAddress(mangoAccount.publicKey)}

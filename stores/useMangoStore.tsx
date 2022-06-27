@@ -170,6 +170,12 @@ interface NFTWithMint {
   tokenAddress: string
 }
 
+interface ProfileDetails {
+  profile_name: string
+  trader_category: string
+  wallet_pk: string
+}
+
 export interface SpotBalance {
   market: null
   key: string
@@ -287,7 +293,8 @@ export type MangoStore = {
   profile: {
     loadProfileFollowing: boolean
     loadFollowers: boolean
-    details: any[]
+    loadDetails: boolean
+    details: ProfileDetails
     following: any[]
   }
   set: (x: (x: MangoStore) => void) => void
@@ -315,6 +322,7 @@ export type MangoStore = {
     loadAlerts: (pk: PublicKey) => void
     fetchMarketsInfo: () => void
     fetchCoingeckoPrices: () => void
+    fetchProfileDetails: (pk: string) => void
     fetchProfileFollowing: (pk: string) => void
     followAccount: (
       mangoAccountPk: string,
@@ -476,7 +484,8 @@ const useMangoStore = create<
       profile: {
         loadProfileFollowing: false,
         loadFollowers: false,
-        details: [],
+        loadDetails: false,
+        details: { profile_name: '', trader_category: '', wallet_pk: '' },
         following: [],
       },
       set: (fn) => set(produce(fn)),
@@ -1223,6 +1232,28 @@ const useMangoStore = create<
             console.log('ERORR: Unable to load Coingecko prices')
             set((state) => {
               state.coingeckoPrices.loading = false
+            })
+          }
+        },
+        async fetchProfileDetails(walletPk: string) {
+          const set = get().set
+          set((state) => {
+            state.profile.loadDetails = true
+          })
+          try {
+            const response = await fetch(
+              `https://mango-transaction-log.herokuapp.com/v3/user-data/profile-details?wallet-pk=${walletPk}`
+            )
+            const data = await response.json()
+            set((state) => {
+              state.profile.details = data
+              state.profile.loadDetails = false
+            })
+          } catch (e) {
+            // notify({ type: 'error', title: t('profile:profile-fetch-fail') })
+            console.log(e)
+            set((state) => {
+              state.profile.loadDetails = false
             })
           }
         },

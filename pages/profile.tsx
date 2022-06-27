@@ -40,6 +40,7 @@ import { sign } from 'tweetnacl'
 import bs58 from 'bs58'
 import Loading from 'components/Loading'
 import InlineNotification from 'components/InlineNotification'
+import { startCase } from 'lodash'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -71,11 +72,14 @@ export default function Profile() {
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoClient = useMangoStore((s) => s.connection.client)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
+  const mangoAccounts = useMangoStore((s) => s.mangoAccounts)
   const { publicKey, connected, wallet } = useWallet()
   const router = useRouter()
   const { pk } = router.query
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.md : false
+  const ownedProfile = useMangoStore((s) => s.profile.details)
+  const loadOwnedProfile = useMangoStore((s) => s.profile.loadDetails)
 
   const handleConnect = useCallback(() => {
     if (wallet) {
@@ -89,27 +93,33 @@ export default function Profile() {
     setActiveTab('following')
   }, [pk, publicKey])
 
-  const fetchProfileDetails = async () => {
-    setLoadProfileDetails(true)
-    try {
-      const response = await fetch(
-        `https://mango-transaction-log.herokuapp.com/v3/user-data/profile-details?wallet-pk=${profilePk}`
-      )
-      const data = await response.json()
-      setProfileData(data)
-      setLoadProfileDetails(false)
-    } catch (e) {
-      notify({ type: 'error', title: t('profile:profile-fetch-fail') })
-      console.log(e)
-      setLoadProfileDetails(false)
-    }
-  }
-
   useEffect(() => {
-    if (profilePk) {
-      fetchProfileDetails()
+    const fetchProfileDetails = async () => {
+      setLoadProfileDetails(true)
+      try {
+        const response = await fetch(
+          `https://mango-transaction-log.herokuapp.com/v3/user-data/profile-details?wallet-pk=${pk}`
+        )
+        const data = await response.json()
+        setProfileData(data)
+        setLoadProfileDetails(false)
+      } catch (e) {
+        notify({ type: 'error', title: t('profile:profile-fetch-fail') })
+        console.log(e)
+        setLoadProfileDetails(false)
+      }
     }
-  }, [profilePk])
+    if (pk) {
+      fetchProfileDetails()
+    } else {
+      if (loadOwnedProfile) {
+        setLoadProfileDetails(true)
+      } else {
+        setProfileData(ownedProfile)
+        setLoadProfileDetails(false)
+      }
+    }
+  }, [pk, loadOwnedProfile])
 
   useEffect(() => {
     if (mangoGroup && profilePk && !initialFollowingLoad) {
@@ -124,25 +134,37 @@ export default function Profile() {
   }, [profilePk])
 
   useEffect(() => {
-    if (profilePk && mangoGroup) {
-      const getProfileAccounts = async () => {
-        const accounts = await fetchAllMangoAccounts(new PublicKey(profilePk))
+    if (mangoGroup) {
+      const getProfileAccounts = async (unownedPk: string) => {
+        const accounts = await fetchAllMangoAccounts(new PublicKey(unownedPk))
         if (accounts) {
           setWalletMangoAccounts(accounts)
-          const accountsStats: any[] = []
-          for (const acc of accounts) {
-            const stats = await fetchAccountStats(acc.publicKey.toString())
-            accountsStats.push({
-              mangoAccount: acc.publicKey.toString(),
-              stats,
-            })
-          }
-          setWalletMangoAccountsStats(accountsStats)
         }
       }
-      getProfileAccounts()
+      if (pk) {
+        getProfileAccounts(pk.toString())
+      } else {
+        setWalletMangoAccounts(mangoAccounts)
+      }
     }
-  }, [profilePk, mangoGroup])
+  }, [pk, mangoGroup])
+
+  useEffect(() => {
+    const getAccountsStats = async () => {
+      const accountsStats: any[] = []
+      for (const acc of walletMangoAccounts) {
+        const stats = await fetchAccountStats(acc.publicKey.toString())
+        accountsStats.push({
+          mangoAccount: acc.publicKey.toString(),
+          stats,
+        })
+      }
+      setWalletMangoAccountsStats(accountsStats)
+    }
+    if (walletMangoAccounts.length) {
+      getAccountsStats()
+    }
+  }, [walletMangoAccounts])
 
   const fetchFollowers = async () => {
     if (!publicKey && !pk) return
@@ -573,7 +595,6 @@ export default function Profile() {
           isOpen={showEditProfile}
           onClose={() => setShowEditProfile(false)}
           profile={profileData}
-          fetchProfileDetails={fetchProfileDetails}
         />
       ) : null}
     </div>
@@ -594,16 +615,16 @@ const EditProfileModal = ({
   isOpen,
   onClose,
   profile,
-  fetchProfileDetails,
 }: {
   isOpen: boolean
   onClose: () => void
   profile?: any
-  fetchProfileDetails: () => void
 }) => {
   const { t } = useTranslation(['common', 'profile'])
   const { publicKey, signMessage } = useWallet()
-  const [profileName, setProfileName] = useState(profile?.profile_name || '')
+  const [profileName, setProfileName] = useState(
+    startCase(profile?.profile_name) || ''
+  )
   const [traderCategory, setTraderCategory] = useState(
     profile?.trader_category || TRADER_CATEGORIES[0]
   )
@@ -611,6 +632,7 @@ const EditProfileModal = ({
   const [loadUniquenessCheck, setLoadUniquenessCheck] = useState(false)
   const [loadUpdateProfile, setLoadUpdateProfile] = useState(false)
   const [updateError, setUpdateError] = useState('')
+  const actions = useMangoStore((s) => s.actions)
 
   const validateProfileName = async (name) => {
     const re = /^([a-zA-Z0-9]+\s)*[a-zA-Z0-9]+$/
@@ -689,7 +711,7 @@ const EditProfileModal = ({
         )
         if (response.status === 200) {
           setLoadUpdateProfile(false)
-          await fetchProfileDetails()
+          await actions.fetchProfileDetails(publicKey.toString())
           onClose()
           notify({
             type: 'success',
