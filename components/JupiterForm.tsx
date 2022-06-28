@@ -191,24 +191,19 @@ const JupiterForm: FunctionComponent = () => {
     }
   }, [inputTokenInfo, formValue.amount])
 
-  const { routeMap, allTokenMints, routes, loading, exchange, error, refresh } =
-    useJupiter({
-      ...formValue,
-      amount: amountInDecimal ? amountInDecimal : 0,
-      slippage,
-    })
+  const { routeMap, routes, loading, exchange, error, refresh } = useJupiter({
+    ...formValue,
+    amount: amountInDecimal ? amountInDecimal : 0,
+    slippage,
+  })
 
   useEffect(() => {
     // Fetch token list from Jupiter API
+
     fetch(TOKEN_LIST_URL['mainnet-beta'])
       .then((response) => response.json())
-      .then((result) => {
-        const tokens = allTokenMints.map((mint) =>
-          result.find((item) => item?.address === mint)
-        )
-        setTokens(tokens)
-      })
-  }, [allTokenMints])
+      .then((result) => setTokens(result))
+  }, [])
 
   useEffect(() => {
     if (routes) {
