@@ -264,6 +264,7 @@ export type MangoStore = {
   wallet: {
     tokens: WalletToken[] | any[]
     pfp: ProfilePicture | undefined
+    loadPfp: boolean
     nfts: {
       data: NFTWithMint[] | []
       initialLoad: boolean
@@ -424,6 +425,7 @@ const useMangoStore = create<
       wallet: {
         tokens: [],
         pfp: undefined,
+        loadPfp: true,
         nfts: {
           data: [],
           initialLoad: false,
@@ -509,9 +511,13 @@ const useMangoStore = create<
 
             set((state) => {
               state.wallet.pfp = result
+              state.wallet.loadPfp = false
             })
           } catch (e) {
             console.log('Could not get profile picture', e)
+            set((state) => {
+              state.wallet.loadPfp = false
+            })
           }
         },
         async fetchNftAccounts(connection: Connection, walletPk: PublicKey) {

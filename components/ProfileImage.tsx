@@ -8,9 +8,11 @@ const ProfileImage = ({
   placeholderWidthClass,
 }) => {
   const pfp = useMangoStore((s) => s.wallet.pfp)
+  const loadPfp = useMangoStore((s) => s.wallet.loadPfp)
   const loadingTransaction = useMangoStore(
     (s) => s.wallet.nfts.loadingTransaction
   )
+
   return pfp?.isAvailable ? (
     <img
       alt=""
@@ -18,6 +20,10 @@ const ProfileImage = ({
       className={`default-transition rounded-full hover:opacity-60 ${thumbHeightClass} ${thumbWidthClass} ${
         loadingTransaction ? 'opacity-40' : ''
       }`}
+    />
+  ) : loadPfp ? (
+    <div
+      className={`animate-pulse rounded-full bg-th-bkg-3 ${thumbHeightClass} ${thumbWidthClass}`}
     />
   ) : (
     <ProfileIcon
