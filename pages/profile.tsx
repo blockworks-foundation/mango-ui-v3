@@ -41,6 +41,7 @@ import bs58 from 'bs58'
 import Loading from 'components/Loading'
 import InlineNotification from 'components/InlineNotification'
 import { startCase } from 'lodash'
+import useMangoAccount from 'hooks/useMangoAccount'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -57,9 +58,12 @@ export default function Profile() {
   const { t } = useTranslation(['common', 'profile'])
   const [profileData, setProfileData] = useState<any>(null)
   const [walletMangoAccounts, setWalletMangoAccounts] = useState<any[]>([])
+  const [loadMangoAccounts, setLoadMangoAccounts] = useState(false)
+  const { initialLoad } = useMangoAccount()
   const [walletMangoAccountsStats, setWalletMangoAccountsStats] = useState<
     any[]
   >([])
+  const [loadMangoAccountsStats, setLoadMangoAccountsStats] = useState(false)
   const [following, setFollowing] = useState<any[]>([])
   const [followers, setFollowers] = useState<any[]>([])
   const [activeTab, setActiveTab] = useState('following')
@@ -136,10 +140,12 @@ export default function Profile() {
   useEffect(() => {
     if (mangoGroup) {
       const getProfileAccounts = async (unownedPk: string) => {
+        setLoadMangoAccounts(true)
         const accounts = await fetchAllMangoAccounts(new PublicKey(unownedPk))
         if (accounts) {
           setWalletMangoAccounts(accounts)
         }
+        setLoadMangoAccounts(false)
       }
       if (pk) {
         getProfileAccounts(pk.toString())
@@ -151,6 +157,7 @@ export default function Profile() {
 
   useEffect(() => {
     const getAccountsStats = async () => {
+      setLoadMangoAccountsStats(true)
       const accountsStats: any[] = []
       for (const acc of walletMangoAccounts) {
         const stats = await fetchAccountStats(acc.publicKey.toString())
@@ -160,6 +167,7 @@ export default function Profile() {
         })
       }
       setWalletMangoAccountsStats(accountsStats)
+      setLoadMangoAccountsStats(false)
     }
     if (walletMangoAccounts.length) {
       getAccountsStats()
@@ -310,6 +318,10 @@ export default function Profile() {
     }, 0)
   }, [walletMangoAccountsStats])
 
+  const accountsLoaded = !loadMangoAccounts && !initialLoad
+  const accountsStatsLoaded =
+    !loadMangoAccounts && !initialLoad && !loadMangoAccountsStats
+
   return (
     <div className="pt-6">
       <div className="flex flex-col pb-6 md:flex-row md:items-end md:justify-between md:pb-4">
@@ -399,20 +411,32 @@ export default function Profile() {
           <div className="col-span-12 lg:col-span-8">
             <div className="mb-8 grid grid-flow-col grid-cols-1 grid-rows-2 md:grid-cols-2 md:grid-rows-1 md:gap-4">
               <div className="border-t border-th-bkg-3 p-3 sm:p-4 md:border-b">
-                <div className="pb-0.5 text-th-fgd-3">
-                  {t('profile:total-value')}
-                </div>
-                <div className="text-2xl font-bold text-th-fgd-1 md:text-3xl">
-                  {formatUsdValue(totalValue)}
-                </div>
+                {accountsLoaded ? (
+                  <>
+                    <div className="pb-0.5 text-th-fgd-3">
+                      {t('profile:total-value')}
+                    </div>
+                    <div className="text-2xl font-bold text-th-fgd-1 md:text-3xl">
+                      {formatUsdValue(totalValue)}
+                    </div>
+                  </>
+                ) : (
+                  <div className="h-14 w-40 animate-pulse rounded-md bg-th-bkg-3" />
+                )}
               </div>
               <div className="border-y border-th-bkg-3 p-3 sm:p-4">
-                <div className="pb-0.5 text-th-fgd-3">
-                  {t('profile:total-pnl')}
-                </div>
-                <div className="text-2xl font-bold text-th-fgd-1 md:text-3xl">
-                  {formatUsdValue(totalPnl)}
-                </div>
+                {accountsStatsLoaded ? (
+                  <>
+                    <div className="pb-0.5 text-th-fgd-3">
+                      {t('profile:total-pnl')}
+                    </div>
+                    <div className="text-2xl font-bold text-th-fgd-1 md:text-3xl">
+                      {formatUsdValue(totalPnl)}
+                    </div>
+                  </>
+                ) : (
+                  <div className="h-14 w-40 animate-pulse rounded-md bg-th-bkg-3" />
+                )}
               </div>
             </div>
             {isMobile ? (
@@ -422,6 +446,7 @@ export default function Profile() {
                   accountsStats={walletMangoAccountsStats}
                   canEdit={canEdit}
                   fetchFollowers={fetchFollowers}
+                  loaded={accountsLoaded}
                 />
               </div>
             ) : null}
@@ -467,7 +492,7 @@ export default function Profile() {
                         </button>
                         <a
                           className="default-transition block flex h-[104px] w-full rounded-md border border-th-bkg-3 p-4 hover:border-th-fgd-4 sm:h-[84px] sm:justify-between sm:pb-4"
-                          href={`https://trade.mango.markets/account?pubkey=${user.mango_account.publicKey.toString()}`}
+                          href={`/account?pubkey=${user.mango_account.publicKey.toString()}`}
                           target="_blank"
                           rel="noopener noreferrer"
                         >
@@ -576,6 +601,7 @@ export default function Profile() {
                 accountsStats={walletMangoAccountsStats}
                 canEdit={canEdit}
                 fetchFollowers={fetchFollowers}
+                loaded={accountsLoaded}
               />
             </div>
           ) : null}
@@ -794,11 +820,13 @@ const Accounts = ({
   accountsStats,
   canEdit,
   fetchFollowers,
+  loaded,
 }: {
   accounts: any[]
   accountsStats: any[]
   canEdit: boolean
   fetchFollowers: () => void
+  loaded: boolean
 }) => {
   const { t } = useTranslation(['common', 'profile'])
   const { publicKey, signMessage } = useWallet()
@@ -827,55 +855,74 @@ const Accounts = ({
     <div className="rounded-lg border border-th-bkg-3 p-6">
       <div className="mb-4 flex items-center justify-between">
         <h3 className="mb-0">{t('accounts')}</h3>
-        {/* <LinkButton>Follow All</LinkButton> */}
       </div>
       {canEdit ? (
-        <SelectMangoAccount />
+        loaded ? (
+          accounts.length ? (
+            <SelectMangoAccount />
+          ) : (
+            <p className="mb-0">{t('no-account-found')}</p>
+          )
+        ) : (
+          <div className="space-y-2">
+            <div className="h-16 w-full animate-pulse rounded-md bg-th-bkg-3" />
+            <div className="h-16 w-full animate-pulse rounded-md bg-th-bkg-3" />
+          </div>
+        )
+      ) : loaded ? (
+        accounts.length ? (
+          <div className="space-y-2">
+            {accounts.map((acc) => {
+              const statsAccount = accountsStats.find(
+                (a) => a.mangoAccount === acc.publicKey.toString()
+              )
+              const pnl: number =
+                statsAccount && statsAccount.stats.length > 0
+                  ? statsAccount.stats[0].pnl
+                  : 0
+
+              const isFollowed = following.find(
+                (a) => a.mango_account === acc.publicKey.toString()
+              )
+
+              return (
+                <div
+                  className="flex flex-col rounded-md border border-th-bkg-4 p-4 md:flex-row md:items-center md:justify-between lg:flex-col lg:items-start xl:flex-row xl:items-center xl:justify-between"
+                  key={acc.publicKey.toString()}
+                >
+                  <MangoAccountCard mangoAccount={acc} pnl={pnl} />
+                  {isFollowed ? (
+                    <Button
+                      className={`mt-4 w-24 bg-transparent pl-4 pr-4 text-xs ring-1 ring-inset ring-th-fgd-3 before:content-[attr(data-before)] hover:ring-th-red before:hover:block before:hover:text-th-red before:hover:content-[attr(data-before-hover)] md:mt-0 lg:mt-4 xl:mt-0 xl:mt-0`}
+                      disabled={!publicKey}
+                      onClick={() =>
+                        handleToggleFollow(isFollowed, acc.publicKey.toString())
+                      }
+                      data-before={t('profile:following')}
+                      data-before-hover={t('profile:unfollow')}
+                    />
+                  ) : (
+                    <Button
+                      className="mt-4 w-24 pl-4 pr-4 text-xs md:mt-0 lg:mt-4 xl:mt-0 xl:mt-0"
+                      disabled={!publicKey}
+                      onClick={() =>
+                        handleToggleFollow(isFollowed, acc.publicKey.toString())
+                      }
+                    >
+                      {t('profile:follow')}
+                    </Button>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        ) : (
+          <p className="mb-0">{t('no-account-found')}</p>
+        )
       ) : (
         <div className="space-y-2">
-          {accounts.map((acc) => {
-            const statsAccount = accountsStats.find(
-              (a) => a.mangoAccount === acc.publicKey.toString()
-            )
-            const pnl: number =
-              statsAccount && statsAccount.stats.length > 0
-                ? statsAccount.stats[0].pnl
-                : 0
-
-            const isFollowed = following.find(
-              (a) => a.mango_account === acc.publicKey.toString()
-            )
-
-            return (
-              <div
-                className="flex flex-col rounded-md border border-th-bkg-4 p-4 md:flex-row md:items-center md:justify-between lg:flex-col lg:items-start xl:flex-row xl:items-center xl:justify-between"
-                key={acc.publicKey.toString()}
-              >
-                <MangoAccountCard mangoAccount={acc} pnl={pnl} />
-                {isFollowed ? (
-                  <Button
-                    className={`mt-4 w-24 bg-transparent pl-4 pr-4 text-xs ring-1 ring-inset ring-th-fgd-3 before:content-[attr(data-before)] hover:ring-th-red before:hover:block before:hover:text-th-red before:hover:content-[attr(data-before-hover)] md:mt-0 lg:mt-4 xl:mt-0 xl:mt-0`}
-                    disabled={!publicKey}
-                    onClick={() =>
-                      handleToggleFollow(isFollowed, acc.publicKey.toString())
-                    }
-                    data-before={t('profile:following')}
-                    data-before-hover={t('profile:unfollow')}
-                  />
-                ) : (
-                  <Button
-                    className="mt-4 w-24 pl-4 pr-4 text-xs md:mt-0 lg:mt-4 xl:mt-0 xl:mt-0"
-                    disabled={!publicKey}
-                    onClick={() =>
-                      handleToggleFollow(isFollowed, acc.publicKey.toString())
-                    }
-                  >
-                    {t('profile:follow')}
-                  </Button>
-                )}
-              </div>
-            )
-          })}
+          <div className="h-32 w-full animate-pulse rounded-md bg-th-bkg-3" />
+          <div className="h-32 w-full animate-pulse rounded-md bg-th-bkg-3" />
         </div>
       )}
     </div>

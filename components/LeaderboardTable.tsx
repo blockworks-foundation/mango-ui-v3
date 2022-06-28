@@ -215,7 +215,7 @@ const AccountCard = ({ rank, acc, rawPnl, profile, pnl, walletPk }) => {
       ) : null}
       <a
         className="default-transition block flex h-[112px] w-full rounded-md border border-th-bkg-3 p-4 hover:border-th-fgd-4 sm:h-[84px] sm:justify-between sm:pb-4"
-        href={`https://trade.mango.markets/account?pubkey=${acc}`}
+        href={`/account?pubkey=${acc}`}
         target="_blank"
         rel="noopener noreferrer"
       >
