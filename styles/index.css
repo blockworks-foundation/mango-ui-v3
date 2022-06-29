@@ -542,7 +542,7 @@ body::-webkit-scrollbar-corner {
 }
 
 .pro-sidebar > .pro-sidebar-inner > .pro-sidebar-layout .pro-sidebar-footer {
-  @apply border-t border-th-bkg-3;
+  @apply border-t border-th-bkg-3 bg-th-bkg-1;
 }
 
 .pro-sidebar .pro-menu .pro-menu-item.active {
@@ -615,6 +615,8 @@ body::-webkit-scrollbar-corner {
 
 .pro-sidebar .pro-menu .pro-menu-item > .pro-inner-item {
   padding-left: 14px;
+  padding-top: 6px;
+  padding-bottom: 6px;
 }
 
 .pro-sidebar

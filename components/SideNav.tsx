@@ -29,11 +29,9 @@ import AccountOverviewPopover from './AccountOverviewPopover'
 import { IconButton } from './Button'
 import useMangoAccount from 'hooks/useMangoAccount'
 import { useTranslation } from 'next-i18next'
-import { useState } from 'react'
 
 const SideNav = ({ collapsed, setCollapsed }) => {
   const { t } = useTranslation('common')
-  const [summaryOpen, setSummaryOpen] = useState(false)
   const { mangoAccount } = useMangoAccount()
   const [defaultMarket] = useLocalStorageState(
     DEFAULT_MARKET_KEY,
@@ -43,9 +41,6 @@ const SideNav = ({ collapsed, setCollapsed }) => {
   const { pathname } = router
 
   const handleToggleSidebar = () => {
-    const id = document.getElementById('sidebar-content')
-    id?.style.setProperty('height', 'calc(100vh - 125px)', '')
-    setSummaryOpen(false)
     setCollapsed(!collapsed)
     setTimeout(() => {
       window.dispatchEvent(new Event('resize'))
@@ -65,161 +60,147 @@ const SideNav = ({ collapsed, setCollapsed }) => {
         />
       </IconButton>
       <ProSidebar collapsed={collapsed} width="220px" collapsedWidth="64px">
-        <div
-          className={`flex flex-col-reverse overflow-y-auto ${
-            summaryOpen ? 'thin-scroll' : ''
-          }`}
-        >
-          <div>
-            <SidebarHeader>
-              <Link href={defaultMarket.path} shallow={true}>
-                <div
-                  className={`flex w-full items-center ${
-                    collapsed ? 'justify-center' : 'justify-start'
-                  } h-14 border-b border-th-bkg-3 px-4`}
-                >
-                  <div
-                    className={`flex flex-shrink-0 cursor-pointer items-center`}
-                  >
-                    <img
-                      className={`h-8 w-auto`}
-                      src="/assets/icons/logo.svg"
-                      alt="next"
-                    />
-                    {!collapsed ? (
-                      <span className="ml-2 text-lg font-bold text-th-fgd-1">
-                        Mango
-                      </span>
-                    ) : null}
-                  </div>
-                </div>
-              </Link>
-            </SidebarHeader>
-            <SidebarContent id="sidebar-content">
-              <Menu iconShape="circle">
-                <MenuItem
-                  active={pathname === '/'}
-                  icon={<TradeIcon className="h-5 w-5" />}
-                >
-                  <Link href={defaultMarket.path} shallow={true}>
-                    {t('trade')}
-                  </Link>
-                </MenuItem>
-                <MenuItem
-                  active={pathname === '/account'}
-                  icon={<CurrencyDollarIcon className="h-5 w-5" />}
-                >
-                  <Link href={'/account'} shallow={true}>
-                    {t('account')}
-                  </Link>
-                </MenuItem>
-                <MenuItem
-                  active={pathname === '/markets'}
-                  icon={<BtcMonoIcon className="h-4 w-4" />}
-                >
-                  <Link href={'/markets'} shallow={true}>
-                    {t('markets')}
-                  </Link>
-                </MenuItem>
-                <MenuItem
-                  active={pathname === '/borrow'}
-                  icon={<CashIcon className="h-5 w-5" />}
-                >
-                  <Link href={'/borrow'} shallow={true}>
-                    {t('borrow')}
-                  </Link>
-                </MenuItem>
-                <MenuItem
-                  active={pathname === '/swap'}
-                  icon={<SwitchHorizontalIcon className="h-5 w-5" />}
-                >
-                  <Link href={'/swap'} shallow={true}>
-                    {t('swap')}
-                  </Link>
-                </MenuItem>
-                <MenuItem
-                  active={pathname === '/stats'}
-                  icon={<ChartBarIcon className="h-5 w-5" />}
-                >
-                  <Link href={'/stats'} shallow={true}>
-                    {t('stats')}
-                  </Link>
-                </MenuItem>
-                <MenuItem
-                  active={pathname === '/leaderboard'}
-                  icon={<TrophyIcon className="h-[18px] w-[18px]" />}
-                >
-                  <Link href={'/leaderboard'} shallow={true}>
-                    {t('leaderboard')}
-                  </Link>
-                </MenuItem>
-                <SubMenu
-                  title={t('more')}
-                  icon={<DotsHorizontalIcon className="h-5 w-5" />}
-                >
-                  <MenuItem
-                    active={pathname === '/referral'}
-                    icon={<UserAddIcon className="h-4 w-4" />}
-                  >
-                    <Link href={'/referral'} shallow={true}>
-                      {t('referrals')}
-                    </Link>
-                  </MenuItem>
-                  <MenuItem
-                    active={pathname === '/risk-calculator'}
-                    icon={<CalculatorIcon className="h-4 w-4" />}
-                  >
-                    <Link href={'/risk-calculator'} shallow={true}>
-                      {t('calculator')}
-                    </Link>
-                  </MenuItem>
-                  <MenuItem
-                    active={pathname === '/fees'}
-                    icon={<CurrencyDollarIcon className="h-4 w-4" />}
-                  >
-                    <Link href={'/fees'} shallow={true}>
-                      {t('fees')}
-                    </Link>
-                  </MenuItem>
-                  <MenuItem
-                    icon={<LightBulbIcon className="h-4 w-4" />}
-                    suffix={<ExternalLinkIcon className="h-4 w-4" />}
-                  >
-                    <a
-                      href={'https://docs.mango.markets'}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {t('learn')}
-                    </a>
-                  </MenuItem>
-                  <MenuItem
-                    icon={<LibraryIcon className="h-4 w-4" />}
-                    suffix={<ExternalLinkIcon className="h-4 w-4" />}
-                  >
-                    <a
-                      href={'https://dao.mango.markets'}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {t('governance')}
-                    </a>
-                  </MenuItem>
-                </SubMenu>
-              </Menu>
-            </SidebarContent>
-
-            {mangoAccount ? (
-              <SidebarFooter>
-                <AccountOverviewPopover
-                  collapsed={collapsed}
-                  isOpen={summaryOpen}
-                  setIsOpen={setSummaryOpen}
+        <SidebarHeader>
+          <Link href={defaultMarket.path} shallow={true}>
+            <div
+              className={`flex w-full items-center ${
+                collapsed ? 'justify-center' : 'justify-start'
+              } h-14 border-b border-th-bkg-3 px-4`}
+            >
+              <div className={`flex flex-shrink-0 cursor-pointer items-center`}>
+                <img
+                  className={`h-8 w-auto`}
+                  src="/assets/icons/logo.svg"
+                  alt="next"
                 />
-              </SidebarFooter>
-            ) : null}
-          </div>
-        </div>
+                {!collapsed ? (
+                  <span className="ml-2 text-lg font-bold text-th-fgd-1">
+                    Mango
+                  </span>
+                ) : null}
+              </div>
+            </div>
+          </Link>
+        </SidebarHeader>
+        <SidebarContent id="sidebar-content">
+          <Menu iconShape="circle">
+            <MenuItem
+              active={pathname === '/'}
+              icon={<TradeIcon className="h-5 w-5" />}
+            >
+              <Link href={defaultMarket.path} shallow={true}>
+                {t('trade')}
+              </Link>
+            </MenuItem>
+            <MenuItem
+              active={pathname === '/account'}
+              icon={<CurrencyDollarIcon className="h-5 w-5" />}
+            >
+              <Link href={'/account'} shallow={true}>
+                {t('account')}
+              </Link>
+            </MenuItem>
+            <MenuItem
+              active={pathname === '/markets'}
+              icon={<BtcMonoIcon className="h-4 w-4" />}
+            >
+              <Link href={'/markets'} shallow={true}>
+                {t('markets')}
+              </Link>
+            </MenuItem>
+            <MenuItem
+              active={pathname === '/borrow'}
+              icon={<CashIcon className="h-5 w-5" />}
+            >
+              <Link href={'/borrow'} shallow={true}>
+                {t('borrow')}
+              </Link>
+            </MenuItem>
+            <MenuItem
+              active={pathname === '/swap'}
+              icon={<SwitchHorizontalIcon className="h-5 w-5" />}
+            >
+              <Link href={'/swap'} shallow={true}>
+                {t('swap')}
+              </Link>
+            </MenuItem>
+            <MenuItem
+              active={pathname === '/stats'}
+              icon={<ChartBarIcon className="h-5 w-5" />}
+            >
+              <Link href={'/stats'} shallow={true}>
+                {t('stats')}
+              </Link>
+            </MenuItem>
+            <MenuItem
+              active={pathname === '/leaderboard'}
+              icon={<TrophyIcon className="h-[18px] w-[18px]" />}
+            >
+              <Link href={'/leaderboard'} shallow={true}>
+                {t('leaderboard')}
+              </Link>
+            </MenuItem>
+            <SubMenu
+              title={t('more')}
+              icon={<DotsHorizontalIcon className="h-5 w-5" />}
+            >
+              <MenuItem
+                active={pathname === '/referral'}
+                icon={<UserAddIcon className="h-4 w-4" />}
+              >
+                <Link href={'/referral'} shallow={true}>
+                  {t('referrals')}
+                </Link>
+              </MenuItem>
+              <MenuItem
+                active={pathname === '/risk-calculator'}
+                icon={<CalculatorIcon className="h-4 w-4" />}
+              >
+                <Link href={'/risk-calculator'} shallow={true}>
+                  {t('calculator')}
+                </Link>
+              </MenuItem>
+              <MenuItem
+                active={pathname === '/fees'}
+                icon={<CurrencyDollarIcon className="h-4 w-4" />}
+              >
+                <Link href={'/fees'} shallow={true}>
+                  {t('fees')}
+                </Link>
+              </MenuItem>
+              <MenuItem
+                icon={<LightBulbIcon className="h-4 w-4" />}
+                suffix={<ExternalLinkIcon className="h-4 w-4" />}
+              >
+                <a
+                  href={'https://docs.mango.markets'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {t('learn')}
+                </a>
+              </MenuItem>
+              <MenuItem
+                icon={<LibraryIcon className="h-4 w-4" />}
+                suffix={<ExternalLinkIcon className="h-4 w-4" />}
+              >
+                <a
+                  href={'https://dao.mango.markets'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {t('governance')}
+                </a>
+              </MenuItem>
+            </SubMenu>
+          </Menu>
+        </SidebarContent>
+
+        {mangoAccount ? (
+          <SidebarFooter>
+            <AccountOverviewPopover collapsed={collapsed} />
+          </SidebarFooter>
+        ) : null}
       </ProSidebar>
     </>
   )
