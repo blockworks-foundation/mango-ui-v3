@@ -41,13 +41,17 @@ const getAverageStats = (
     const oldestStat = timeFilteredStats[0]
     const latestStat = timeFilteredStats[timeFilteredStats.length - 1]
     const avg =
-      Math.pow(latestStat[type] / oldestStat[type], 365 / daysAgo) * 100 - 100
+      latestStat[type] && oldestStat[type]
+        ? Math.pow(latestStat[type] / oldestStat[type], 365 / daysAgo) * 100 -
+          100
+        : null
 
     priorDate.setHours(priorDate.getHours() + 1)
 
     if (new Date(oldestStat.hourly).getDate() > priorDate.getDate()) {
       return '-'
-    } else {
+    }
+    if (avg) {
       return `${avg.toFixed(4)}%`
     }
   }
