@@ -75,13 +75,35 @@ const SwapTokenSelect = ({
   sortedTokenMints,
   onClose,
   onTokenSelect,
+  walletTokens,
 }: {
   isOpen: boolean
   sortedTokenMints: Token[]
   onClose?: (x?) => void
   onTokenSelect?: (x?) => void
+  walletTokens?: Array<any>
 }) => {
   const [search, setSearch] = useState('')
+
+  const popularTokenSymbols = ['USDC', 'SOL', 'USDT', 'MNGO', 'BTC', 'ETH']
+
+  const popularTokens = useMemo(() => {
+    return walletTokens?.length
+      ? sortedTokenMints.filter((token) => {
+          const walletMints = walletTokens.map((tok) =>
+            tok.account.mint.toString()
+          )
+          return !token?.name || !token?.symbol
+            ? false
+            : popularTokenSymbols.includes(token.symbol) &&
+                walletMints.includes(token.address)
+        })
+      : sortedTokenMints.filter((token) => {
+          return !token?.name || !token?.symbol
+            ? false
+            : popularTokenSymbols.includes(token.symbol)
+        })
+  }, [walletTokens])
 
   useEffect(() => {
     function onEscape(e) {
@@ -95,9 +117,20 @@ const SwapTokenSelect = ({
 
   const tokenInfos = useMemo(() => {
     if (sortedTokenMints?.length) {
-      return sortedTokenMints.filter((token) => {
+      const filteredTokens = sortedTokenMints.filter((token) => {
         return !token?.name || !token?.symbol ? false : true
       })
+      if (walletTokens?.length) {
+        const walletMints = walletTokens.map((tok) =>
+          tok.account.mint.toString()
+        )
+        return filteredTokens.sort(
+          (a, b) =>
+            walletMints.indexOf(b.address) - walletMints.indexOf(a.address)
+        )
+      } else {
+        return filteredTokens
+      }
     } else {
       return []
     }
@@ -116,13 +149,33 @@ const SwapTokenSelect = ({
           <SearchIcon className="h-8 w-8" />
           <input
             type="text"
-            className="ml-4 flex-1 bg-th-bkg-2 focus:outline-none"
+            className="ml-4 flex-1 bg-th-bkg-1 focus:outline-none"
             placeholder="Search by token or paste address"
             autoFocus
             value={search}
             onChange={handleUpdateSearch}
           />
         </div>
+        {popularTokens.length && onTokenSelect ? (
+          <div className="flex flex-wrap px-4">
+            {popularTokens.map((token) => (
+              <button
+                className="mx-1 mb-2 flex items-center rounded-md border border-th-fgd-4 bg-th-bkg-1 py-1 px-3 hover:border-th-fgd-3 focus:border-th-fgd-2"
+                onClick={() => onTokenSelect(token)}
+                key={token.address}
+              >
+                <img
+                  alt=""
+                  width="16"
+                  height="16"
+                  src={`/assets/icons/${token.symbol.toLowerCase()}.svg`}
+                  className={`mr-1.5`}
+                />
+                <span className="text-th-fgd-1">{token.symbol}</span>
+              </button>
+            ))}
+          </div>
+        ) : null}
         <FixedSizeList
           width="100%"
           height={403}
