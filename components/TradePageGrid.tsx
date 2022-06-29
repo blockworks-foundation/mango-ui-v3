@@ -22,38 +22,45 @@ import MarketDetails from './MarketDetails'
 const ResponsiveGridLayout = WidthProvider(Responsive)
 
 export const defaultLayouts = {
-  xl: [
+  xxl: [
     { i: 'tvChart', x: 0, y: 0, w: 8, h: 19 },
     { i: 'tradeForm', x: 8, y: 0, w: 2, h: 19 },
     { i: 'orderbook', x: 10, y: 0, w: 2, h: 25 },
     { i: 'marketTrades', x: 10, y: 1, w: 2, h: 13 },
     { i: 'userInfo', x: 0, y: 1, w: 10, h: 19 },
   ],
-  lg: [
+  xl: [
     { i: 'tvChart', x: 0, y: 0, w: 6, h: 19, minW: 2 },
     { i: 'tradeForm', x: 6, y: 0, w: 3, h: 19, minW: 3 },
     { i: 'orderbook', x: 9, y: 0, w: 3, h: 25, minW: 2 },
     { i: 'marketTrades', x: 9, y: 0, w: 3, h: 13, minW: 2 },
     { i: 'userInfo', x: 0, y: 1, w: 9, h: 19, minW: 6 },
   ],
-  md: [
+  lg: [
     { i: 'tvChart', x: 0, y: 0, w: 6, h: 19, minW: 2 },
     { i: 'tradeForm', x: 6, y: 0, w: 3, h: 19, minW: 2 },
     { i: 'orderbook', x: 9, y: 0, w: 3, h: 25, minW: 2 },
     { i: 'marketTrades', x: 9, y: 1, w: 3, h: 13, minW: 2 },
     { i: 'userInfo', x: 0, y: 1, w: 9, h: 19, minW: 6 },
   ],
+  md: [
+    { i: 'tvChart', x: 0, y: 0, w: 12, h: 16, minW: 2 },
+    { i: 'tradeForm', x: 0, y: 1, w: 4, h: 19, minW: 3 },
+    { i: 'orderbook', x: 4, y: 1, w: 4, h: 19, minW: 2 },
+    { i: 'marketTrades', x: 8, y: 1, w: 4, h: 19, minW: 2 },
+    { i: 'userInfo', x: 0, y: 2, w: 12, h: 19, minW: 6 },
+  ],
   sm: [
     { i: 'tvChart', x: 0, y: 0, w: 12, h: 20, minW: 6 },
-    { i: 'tradeForm', x: 0, y: 1, w: 12, h: 17, minW: 3 },
-    { i: 'orderbook', x: 0, y: 2, w: 6, h: 18, minW: 3 },
-    { i: 'marketTrades', x: 6, y: 2, w: 6, h: 18, minW: 3 },
+    { i: 'tradeForm', x: 0, y: 1, w: 12, h: 17, minW: 6 },
+    { i: 'orderbook', x: 0, y: 2, w: 6, h: 19, minW: 3 },
+    { i: 'marketTrades', x: 6, y: 2, w: 6, h: 19, minW: 3 },
     { i: 'userInfo', x: 0, y: 3, w: 12, h: 19, minW: 6 },
   ],
 }
 
-export const GRID_LAYOUT_KEY = 'mangoSavedLayouts-3.1.8'
-export const breakpoints = { xl: 1600, lg: 1280, md: 1024, sm: 768 }
+export const GRID_LAYOUT_KEY = 'mangoSavedLayouts-3.1.9'
+export const breakpoints = { xxl: 1600, xl: 1440, lg: 1170, md: 960, sm: 768 }
 
 const getCurrentBreakpoint = () => {
   return Responsive.utils.getBreakpointFromWidth(
