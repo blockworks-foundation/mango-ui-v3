@@ -11,17 +11,8 @@ import HealthHeart from './HealthHeart'
 import { abbreviateAddress, formatUsdValue, usdFormatter } from 'utils'
 import { DataLoader } from './MarketPosition'
 import { Menu, SubMenu } from 'react-pro-sidebar'
-import { useEffect } from 'react'
 
-const AccountOverviewPopover = ({
-  collapsed,
-  isOpen,
-  setIsOpen,
-}: {
-  collapsed: boolean
-  isOpen: boolean
-  setIsOpen: (x) => void
-}) => {
+const AccountOverviewPopover = ({ collapsed }: { collapsed: boolean }) => {
   const { t } = useTranslation('common')
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
@@ -45,24 +36,6 @@ const AccountOverviewPopover = ({
       ? mangoAccount.computeValue(mangoGroup, mangoCache)
       : ZERO_I80F48
 
-  const liquidationPrice =
-    mangoGroup && mangoAccount && marketConfig && mangoGroup && mangoCache
-      ? mangoAccount.getLiquidationPrice(
-          mangoGroup,
-          mangoCache,
-          marketConfig.marketIndex
-        )
-      : undefined
-
-  useEffect(() => {
-    const id = document.getElementById('sidebar-content')
-    if (isOpen) {
-      id?.style.setProperty('height', 'calc(100vh - 325px)', '')
-    } else {
-      id?.style.setProperty('height', 'calc(100vh - 125px)', '')
-    }
-  }, [isOpen])
-
   return (
     <>
       {mangoAccount ? (
@@ -80,8 +53,6 @@ const AccountOverviewPopover = ({
               </div>
             }
             icon={<HealthHeart health={Number(maintHealthRatio)} size={32} />}
-            open={isOpen}
-            onClick={() => setIsOpen(!isOpen)}
           >
             <div className={`w-full pr-5 ${!collapsed ? 'pl-3 pb-2' : 'py-2'}`}>
               {collapsed ? (
@@ -158,16 +129,6 @@ const AccountOverviewPopover = ({
                         ).toFixed()
                       )
                     : '0.00'}
-                </p>
-              </div>
-              <div>
-                <p className="mb-0 text-xs leading-4">
-                  {marketConfig.name} {t('estimated-liq-price')}
-                </p>
-                <p className="mb-0 font-bold text-th-fgd-1">
-                  {liquidationPrice && liquidationPrice.gt(ZERO_I80F48)
-                    ? usdFormatter(liquidationPrice)
-                    : 'N/A'}
                 </p>
               </div>
             </div>

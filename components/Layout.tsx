@@ -84,7 +84,9 @@ const Layout = ({ children }) => {
                       : mangoAccount
                       ? '🟢'
                       : '👋'
-                    : '🔗'}
+                    : !isMobile
+                    ? '🔗'
+                    : ''}
                 </span>
                 {connected || pubkey ? (
                   !initialLoad ? (
