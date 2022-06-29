@@ -1138,6 +1138,7 @@ const JupiterForm: FunctionComponent = () => {
                   inputMint: new PublicKey(token?.address),
                 }))
               }}
+              walletTokens={walletTokens}
             />
           ) : null}
           {showOutputTokenSelect ? (
@@ -1184,6 +1185,7 @@ const JupiterForm: FunctionComponent = () => {
                   inputMint: new PublicKey(token?.address),
                 }))
               }}
+              walletTokens={walletTokens}
             />
           ) : null}
           {showOutputTokenSelect ? (
