@@ -56,36 +56,39 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
 
   const handleNewAccountDeposit = () => {
     if (!wallet) return
-    setSubmitting(true)
-    deposit({
-      amount: parseFloat(inputAmount),
-      fromTokenAcc: selectedAccount.account,
-      accountName: name,
-      wallet,
-    })
-      .then(async (response) => {
-        await sleep(1000)
-        actions.fetchWalletTokens(wallet)
-        actions.fetchAllMangoAccounts(wallet)
-        if (response && response.length > 0) {
-          onAccountCreation(response[0])
-          notify({
-            title: 'Mango Account Created',
-            txid: response[1],
-          })
-        }
-        setSubmitting(false)
+    validateAmountInput(inputAmount)
+    if (inputAmount) {
+      setSubmitting(true)
+      deposit({
+        amount: parseFloat(inputAmount),
+        fromTokenAcc: selectedAccount.account,
+        accountName: name,
+        wallet,
       })
-      .catch((e) => {
-        setSubmitting(false)
-        console.error(e)
-        notify({
-          title: t('init-error'),
-          description: e.message,
-          type: 'error',
+        .then(async (response) => {
+          await sleep(1000)
+          actions.fetchWalletTokens(wallet)
+          actions.fetchAllMangoAccounts(wallet)
+          if (response && response.length > 0) {
+            onAccountCreation(response[0])
+            notify({
+              title: 'Mango Account Created',
+              txid: response[1],
+            })
+          }
+          setSubmitting(false)
         })
-        onAccountCreation()
-      })
+        .catch((e) => {
+          setSubmitting(false)
+          console.error(e)
+          notify({
+            title: t('init-error'),
+            description: e.message,
+            type: 'error',
+          })
+          onAccountCreation()
+        })
+    }
   }
 
   const validateAmountInput = (amount) => {
@@ -139,14 +142,16 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
     <>
       <Modal.Header>
         <ElementTitle noMarginBottom>{t('create-account')}</ElementTitle>
-        <p className="mt-1 text-center">{t('insufficient-sol')}</p>
+        <div className="my-2">
+          <InlineNotification type="info" desc={t('insufficient-sol')} />
+        </div>
       </Modal.Header>
       <div className="mb-4 border-b border-th-bkg-4 pb-6">
         <Label className="flex items-center">
           {t('account-name')}{' '}
           <span className="ml-1 text-th-fgd-3">{t('optional')}</span>
           <Tooltip content={t('tooltip-name-onchain')}>
-            <InformationCircleIcon className="ml-2 h-5 w-5 text-th-primary" />
+            <InformationCircleIcon className="ml-2 h-5 w-5 text-th-fgd-3" />
           </Tooltip>
         </Label>
         <Input
@@ -164,7 +169,7 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
           </div>
         ) : null}
       </div>
-      <h3 className="mb-2 text-center">{t('initial-deposit')}</h3>
+      <h3 className="mb-1 text-center">{t('initial-deposit')}</h3>
       <AccountSelect
         accounts={walletTokens}
         selectedAccount={selectedAccount}
@@ -182,7 +187,7 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
         suffix={symbol}
       />
       {invalidAmountMessage ? (
-        <div className="flex items-center pt-1.5 text-th-red">
+        <div className="flex items-center py-1.5 text-th-red">
           <ExclamationCircleIcon className="mr-1.5 h-4 w-4" />
           {invalidAmountMessage}
         </div>
@@ -209,9 +214,6 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
             {t('lets-go')}
           </div>
         </Button>
-      </div>
-      <div className="pt-3">
-        <InlineNotification desc={t('interest-info')} type="info" />
       </div>
     </>
   )

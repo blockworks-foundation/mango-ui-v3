@@ -38,6 +38,7 @@ export const coingeckoIds = [
   { id: 'cardano', symbol: 'ADA' },
   { id: 'msol', symbol: 'MSOL' },
   { id: 'tether', symbol: 'USDT' },
+  { id: 'stepn', symbol: 'GMT' },
 ]
 
 export async function getTokenAccountsByMint(

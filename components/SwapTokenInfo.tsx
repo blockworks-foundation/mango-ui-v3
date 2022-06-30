@@ -295,7 +295,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
               </AreaChart>
               <div className="flex justify-end">
                 <button
-                  className={`default-transition px-3 py-2 text-xs font-bold text-th-fgd-1 hover:text-th-primary focus:outline-none ${
+                  className={`default-transition px-3 py-2 text-xs font-bold text-th-fgd-1 focus:outline-none md:hover:text-th-primary ${
                     daysToShow === 1 && 'text-th-primary'
                   }`}
                   onClick={() => setDaysToShow(1)}
@@ -303,7 +303,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                   24H
                 </button>
                 <button
-                  className={`default-transition px-3 py-2 text-xs font-bold text-th-fgd-1 hover:text-th-primary focus:outline-none ${
+                  className={`default-transition px-3 py-2 text-xs font-bold text-th-fgd-1 focus:outline-none md:hover:text-th-primary ${
                     daysToShow === 7 && 'text-th-primary'
                   }`}
                   onClick={() => setDaysToShow(7)}
@@ -311,7 +311,7 @@ const SwapTokenInfo: FunctionComponent<SwapTokenInfoProps> = ({
                   7D
                 </button>
                 <button
-                  className={`default-transition px-3 py-2 text-xs font-bold text-th-fgd-1 hover:text-th-primary focus:outline-none ${
+                  className={`default-transition px-3 py-2 text-xs font-bold text-th-fgd-1 focus:outline-none md:hover:text-th-primary ${
                     daysToShow === 30 && 'text-th-primary'
                   }`}
                   onClick={() => setDaysToShow(30)}

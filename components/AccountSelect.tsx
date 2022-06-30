@@ -114,25 +114,26 @@ const AccountSelect = ({
               </Listbox.Button>
             </div>
             <Listbox.Options
-              className={`thin-scroll absolute right-0 top-14 z-20 max-h-60 w-full overflow-auto rounded-md bg-th-bkg-3 p-1`}
+              className={`thin-scroll absolute right-0 top-14 z-20 max-h-60 w-full overflow-auto rounded-md bg-th-bkg-2 p-1`}
             >
               {accounts.map((account) => {
                 const symbolForAccount = account.config.symbol
 
                 return (
                   <Listbox.Option
+                    className="mb-0"
                     disabled={account.uiBalance === 0}
                     key={account?.account.publicKey.toBase58()}
                     value={account?.account.publicKey.toBase58()}
                   >
                     {({ disabled, selected }) => (
                       <div
-                        className={`default-transition px-2 py-1 text-th-fgd-1 ${
+                        className={`default-transition rounded p-2 text-th-fgd-1 ${
                           selected && `text-th-primary`
                         } ${
                           disabled
                             ? 'text-th-fgd-1 opacity-50 hover:cursor-not-allowed hover:text-th-fgd-1'
-                            : 'hover:cursor-pointer hover:text-th-primary'
+                            : 'hover:cursor-pointer hover:bg-th-bkg-3 hover:text-th-primary'
                         }`}
                       >
                         <div className={`flex items-center`}>

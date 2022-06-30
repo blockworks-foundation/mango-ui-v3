@@ -18,7 +18,7 @@ const OrderSideTabs: FunctionComponent<OrderSideTabsProps> = ({
   const { t } = useTranslation('common')
   const market = useMangoStore((s) => s.selectedMarket.current)
   return (
-    <div className={`relative mb-3 md:-mt-2.5 md:border-b md:border-th-fgd-4`}>
+    <div className={`relative mb-3 md:-mt-2.5 md:border-b md:border-th-bkg-3`}>
       <div
         className={`absolute hidden md:block ${
           side === 'buy'
@@ -30,11 +30,11 @@ const OrderSideTabs: FunctionComponent<OrderSideTabsProps> = ({
         <button
           onClick={() => onChange('buy')}
           className={`default-transition relative flex w-1/2 cursor-pointer 
-            items-center justify-center whitespace-nowrap py-1 text-sm font-semibold hover:opacity-100 md:text-base
+            items-center justify-center whitespace-nowrap py-1 text-sm font-semibold md:text-base md:hover:opacity-100
             ${
               side === 'buy'
                 ? `border border-th-green text-th-green md:border-0`
-                : `border border-th-fgd-4 text-th-fgd-4 hover:border-th-green hover:text-th-green md:border-0`
+                : `border border-th-fgd-4 text-th-fgd-4 md:border-0 md:hover:border-th-green md:hover:text-th-green`
             }
           `}
         >
@@ -43,11 +43,11 @@ const OrderSideTabs: FunctionComponent<OrderSideTabsProps> = ({
         <button
           onClick={() => onChange('sell')}
           className={`default-transition relative flex w-1/2 cursor-pointer 
-            items-center justify-center whitespace-nowrap py-1 text-sm font-semibold hover:opacity-100 md:text-base
+            items-center justify-center whitespace-nowrap py-1 text-sm font-semibold md:text-base md:hover:opacity-100
             ${
               side === 'sell'
                 ? `border border-th-red text-th-red md:border-0`
-                : `border border-th-fgd-4 text-th-fgd-4 hover:border-th-red hover:text-th-red md:border-0`
+                : `border border-th-fgd-4 text-th-fgd-4 md:border-0 md:hover:border-th-red md:hover:text-th-red`
             }
           `}
         >

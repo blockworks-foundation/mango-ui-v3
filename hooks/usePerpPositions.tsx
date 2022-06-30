@@ -1,4 +1,4 @@
-import useMangoStore from '../stores/useMangoStore'
+import useMangoStore, { PerpPosition } from '../stores/useMangoStore'
 import BN from 'bn.js'
 import {
   MangoAccount,
@@ -24,7 +24,7 @@ export const collectPerpPosition = (
   marketConfig: PerpMarketConfig,
   perpMarket: PerpMarket,
   tradeHistory: any
-) => {
+): PerpPosition | undefined => {
   if (
     !mangoAccount ||
     !mangoGroup ||
@@ -32,7 +32,7 @@ export const collectPerpPosition = (
     !perpMarket ||
     !tradeHistory
   )
-    return {}
+    return
 
   const perpMarketInfo = mangoGroup.perpMarkets[marketConfig.marketIndex]
   const perpAccount = mangoAccount.perpAccounts[marketConfig.marketIndex]
@@ -104,7 +104,7 @@ const usePerpPositions = () => {
       mangoCache &&
       Object.keys(allMarkets).length
     ) {
-      const perpAccounts = mangoAccount
+      const perpPositions = mangoAccount
         ? groupConfig.perpMarkets.map((m) =>
             collectPerpPosition(
               mangoAccount,
@@ -117,13 +117,14 @@ const usePerpPositions = () => {
           )
         : []
 
-      const openPerpPositions = perpAccounts.filter(
-        ({ perpAccount }) =>
-          perpAccount?.basePosition && !perpAccount.basePosition.eq(new BN(0))
-      )
+      const openPerpPositions = perpPositions.filter(
+        (p) =>
+          p?.perpAccount?.basePosition &&
+          !p.perpAccount.basePosition.eq(new BN(0))
+      ) as PerpPosition[]
 
       setMangoStore((state) => {
-        state.selectedMangoAccount.perpAccounts = perpAccounts
+        state.selectedMangoAccount.perpPositions = perpPositions
         state.selectedMangoAccount.openPerpPositions = openPerpPositions
         if (
           openPerpPositions.length !==
@@ -132,10 +133,12 @@ const usePerpPositions = () => {
           state.selectedMangoAccount.totalOpenPerpPositions =
             openPerpPositions.length
         }
-        state.selectedMangoAccount.unsettledPerpPositions = perpAccounts.filter(
-          ({ perpAccount, unsettledPnl }) =>
-            perpAccount?.basePosition?.eq(new BN(0)) && unsettledPnl != 0
-        )
+        state.selectedMangoAccount.unsettledPerpPositions =
+          perpPositions.filter(
+            (p) =>
+              p?.perpAccount?.basePosition?.eq(new BN(0)) &&
+              p?.unsettledPnl != 0
+          ) as PerpPosition[]
       })
     }
   }, [mangoAccount, mangoCache, tradeHistory])

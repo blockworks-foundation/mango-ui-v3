@@ -168,6 +168,7 @@ export const tokenPrecision = {
   AVAX: 2,
   USDC: 2,
   USDT: 2,
+  GMT: 2,
 }
 
 // Precision for 1 perp contract. -log10(baseLotSize) + baseDecimals
@@ -183,6 +184,7 @@ export const perpContractPrecision = {
   BNB: 3,
   AVAX: 2,
   LUNA: 2,
+  GMT: 0,
 }
 
 const tokenPricePrecision = {
@@ -200,6 +202,7 @@ const tokenPricePrecision = {
   AVAX: 2,
   USDC: 2,
   USDT: 2,
+  GMT: 4,
 }
 
 export const getSymbolForTokenMintAddress = (address: string): string => {

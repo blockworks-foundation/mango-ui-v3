@@ -45,7 +45,7 @@ const InlineNotification: FunctionComponent<InlineNotificationProps> = ({
       <div
         className={`${
           title && desc && 'pt-1'
-        } text-xs font-normal text-th-fgd-3`}
+        } text-left text-xs font-normal text-th-fgd-3`}
       >
         {desc}
       </div>

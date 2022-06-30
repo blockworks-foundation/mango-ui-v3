@@ -1,33 +1,27 @@
-import {
-  Fragment,
-  FunctionComponent,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react'
+import { FunctionComponent, useEffect, useMemo, useState } from 'react'
 import { RefreshIcon } from '@heroicons/react/outline'
-import { ChevronDownIcon } from '@heroicons/react/solid'
 import Input, { Label } from './Input'
 import Button, { LinkButton } from './Button'
 import Modal from './Modal'
 import { ElementTitle } from './styles'
 import { useTranslation } from 'next-i18next'
-import { Popover, Transition } from '@headlessui/react'
-import Checkbox from './Checkbox'
 import dayjs from 'dayjs'
 import DateRangePicker from './DateRangePicker'
 import useMangoStore from 'stores/useMangoStore'
+import MultiSelectDropdown from './MultiSelectDropdown'
+import InlineNotification from './InlineNotification'
 
 interface TradeHistoryFilterModalProps {
   filters: any
   setFilters: any
   isOpen: boolean
   onClose: () => void
+  showApiWarning: boolean
 }
 
 const TradeHistoryFilterModal: FunctionComponent<
   TradeHistoryFilterModalProps
-> = ({ filters, setFilters, isOpen, onClose }) => {
+> = ({ filters, setFilters, isOpen, onClose, showApiWarning }) => {
   const { t } = useTranslation('common')
   const [newFilters, setNewFilters] = useState({ ...filters })
   const [dateFrom, setDateFrom] = useState<Date | null>(null)
@@ -95,8 +89,7 @@ const TradeHistoryFilterModal: FunctionComponent<
         return {
           ...prevSelected,
           size: {
-            condition: (size) =>
-              parseFloat(size) >= from && parseFloat(size) <= to,
+            condition: (size) => size >= from && size <= to,
             values: { from: from, to: to },
           },
         }
@@ -181,6 +174,14 @@ const TradeHistoryFilterModal: FunctionComponent<
           </LinkButton>
         </div>
       </Modal.Header>
+      {showApiWarning ? (
+        <div className="mt-1 mb-3">
+          <InlineNotification
+            type="warning"
+            desc={t('trade-history-api-warning')}
+          />
+        </div>
+      ) : null}
       <div className="pb-4">
         <p className="font-bold text-th-fgd-1">{t('date')}</p>
         <div className="flex items-center space-x-2">
@@ -299,70 +300,12 @@ const FilterButton = ({ filters, filterKey, value, onClick }) => {
     <button
       className={`default-transitions rounded-full border border-th-fgd-3 px-3 py-1 text-xs text-th-fgd-1 ${
         filters[filterKey]?.includes(value) &&
-        'border-th-primary bg-th-primary text-th-bkg-1 hover:text-th-bkg-1'
-      } hover:border-th-primary hover:text-th-primary`}
+        'border-th-primary bg-th-primary text-th-bkg-1 md:hover:text-th-bkg-1'
+      } md:hover:border-th-primary md:hover:text-th-primary`}
       onClick={onClick}
     >
       {t(value.toLowerCase())}
     </button>
-  )
-}
-
-const MultiSelectDropdown = ({ options, selected, toggleOption }) => {
-  const { t } = useTranslation('common')
-  return (
-    <Popover className="relative">
-      {({ open }) => (
-        <div className="flex flex-col">
-          <Popover.Button
-            className={`default-transition rounded-md border bg-th-bkg-1 p-3 text-th-fgd-1 hover:border-th-fgd-4 ${
-              open ? 'border-th-fgd-4' : 'border-th-bkg-4'
-            }`}
-          >
-            <div className={`flex items-center justify-between`}>
-              <span>
-                {t('filters-selected', { selectedFilters: selected.length })}
-              </span>
-              <ChevronDownIcon
-                className={`default-transition ml-0.5 h-5 w-5 ${
-                  open ? 'rotate-180 transform' : 'rotate-360 transform'
-                }`}
-                aria-hidden="true"
-              />
-            </div>
-          </Popover.Button>
-          <Transition
-            appear={true}
-            show={open}
-            as={Fragment}
-            enter="transition-all ease-in duration-200"
-            enterFrom="opacity-0 transform scale-75"
-            enterTo="opacity-100 transform scale-100"
-            leave="transition ease-out duration-200"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-          >
-            <Popover.Panel className="absolute top-12 z-10 h-72 w-full overflow-y-auto">
-              <div className="relative space-y-2.5 rounded-md bg-th-bkg-3 p-3">
-                {options.map((option) => {
-                  const isSelected = selected.includes(option.name)
-                  return (
-                    <Checkbox
-                      checked={isSelected}
-                      className="mr-2"
-                      key={option.name}
-                      onChange={() => toggleOption({ id: option.name })}
-                    >
-                      {option.name}
-                    </Checkbox>
-                  )
-                })}
-              </div>
-            </Popover.Panel>
-          </Transition>
-        </div>
-      )}
-    </Popover>
   )
 }
 

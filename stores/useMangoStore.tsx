@@ -24,6 +24,9 @@ import {
   msrmMints,
   MangoAccountLayout,
   BlockhashTimes,
+  I80F48,
+  PerpAccount,
+  PerpMarketConfig,
 } from '@blockworks-foundation/mango-client'
 import { AccountInfo, Commitment, Connection, PublicKey } from '@solana/web3.js'
 import { EndpointInfo } from '../@types/types'
@@ -43,6 +46,7 @@ import { Wallet } from '@solana/wallet-adapter-react'
 import { coingeckoIds } from 'utils/tokens'
 import { getTokenAccountsByMint } from 'utils/tokens'
 import { getParsedNftAccountsByOwner } from 'utils/getParsedNftAccountsByOwner'
+import { PerpMarketInfo } from '@blockworks-foundation/mango-client'
 
 export const ENDPOINTS: EndpointInfo[] = [
   {
@@ -59,9 +63,15 @@ export const ENDPOINTS: EndpointInfo[] = [
     websocket: 'https://api.devnet.solana.com',
     custom: false,
   },
+  {
+    name: 'testnet',
+    url: 'https://api.testnet.solana.com',
+    websocket: 'https://api.testnet.solana.com',
+    custom: false,
+  },
 ]
 
-type ClusterType = 'mainnet' | 'devnet'
+type ClusterType = 'mainnet' | 'devnet' | 'testnet'
 const DEFAULT_MANGO_GROUP_NAME = process.env.NEXT_PUBLIC_GROUP || 'mainnet.1'
 export const CLUSTER = DEFAULT_MANGO_GROUP_NAME.split('.')[0] as ClusterType
 const ENDPOINT = ENDPOINTS.find((e) => e.name === CLUSTER) as EndpointInfo
@@ -89,7 +99,7 @@ export const serumProgramId = new PublicKey(
 const mangoGroupPk = new PublicKey(defaultMangoGroupIds!.publicKey)
 
 export const SECONDS = 1000
-export const CLIENT_TX_TIMEOUT = 45000
+export const CLIENT_TX_TIMEOUT = 70000
 
 // Used to retry loading the MangoGroup and MangoAccount if an rpc node error occurs
 let mangoGroupRetryAttempt = 0
@@ -157,6 +167,35 @@ interface NFTWithMint {
   tokenAddress: string
 }
 
+export interface SpotBalance {
+  market: null
+  key: string
+  symbol: string
+  deposits: I80F48
+  borrows: I80F48
+  orders: number
+  unsettled: number
+  net: I80F48
+  value: I80F48
+  depositRate: I80F48
+  borrowRate: I80F48
+  decimals: number
+}
+
+export interface PerpPosition {
+  perpMarketInfo: PerpMarketInfo
+  marketConfig: PerpMarketConfig
+  perpMarket: PerpMarket
+  perpAccount: PerpAccount
+  basePosition: number
+  indexPrice: number
+  avgEntryPrice: number
+  breakEvenPrice: number
+  notionalSize: number
+  unrealizedPnl: number
+  unsettledPnl: number
+}
+
 export type MangoStore = {
   notificationIdCounter: number
   notifications: Array<Notification>
@@ -201,10 +240,11 @@ export type MangoStore = {
     lastSlot: number
     openOrders: any[]
     totalOpenOrders: number
-    perpAccounts: any[]
-    openPerpPositions: any[]
+    spotBalances: SpotBalance[]
+    perpPositions: (PerpPosition | undefined)[]
+    openPerpPositions: PerpPosition[]
+    unsettledPerpPositions: PerpPosition[]
     totalOpenPerpPositions: number
-    unsettledPerpPositions: any[]
   }
   tradeForm: {
     side: 'buy' | 'sell'
@@ -224,6 +264,7 @@ export type MangoStore = {
   wallet: {
     tokens: WalletToken[] | any[]
     pfp: ProfilePicture | undefined
+    loadPfp: boolean
     nfts: {
       data: NFTWithMint[] | []
       initialLoad: boolean
@@ -279,7 +320,7 @@ export type MangoStore = {
   tradingView: {
     orderLines: Map<string, IOrderLineAdapter>
   }
-  coingeckoPrices: any[]
+  coingeckoPrices: { data: any[]; loading: boolean }
 }
 
 const useMangoStore = create<
@@ -366,7 +407,8 @@ const useMangoStore = create<
         lastSlot: 0,
         openOrders: [],
         totalOpenOrders: 0,
-        perpAccounts: [],
+        spotBalances: [],
+        perpPositions: [],
         openPerpPositions: [],
         totalOpenPerpPositions: 0,
         unsettledPerpPositions: [],
@@ -383,6 +425,7 @@ const useMangoStore = create<
       wallet: {
         tokens: [],
         pfp: undefined,
+        loadPfp: true,
         nfts: {
           data: [],
           initialLoad: false,
@@ -411,7 +454,7 @@ const useMangoStore = create<
       tradingView: {
         orderLines: new Map(),
       },
-      coingeckoPrices: [],
+      coingeckoPrices: { data: [], loading: false },
       set: (fn) => set(produce(fn)),
       actions: {
         async fetchWalletTokens(wallet: Wallet) {
@@ -468,9 +511,13 @@ const useMangoStore = create<
 
             set((state) => {
               state.wallet.pfp = result
+              state.wallet.loadPfp = false
             })
           } catch (e) {
             console.log('Could not get profile picture', e)
+            set((state) => {
+              state.wallet.loadPfp = false
+            })
           }
         },
         async fetchNftAccounts(connection: Connection, walletPk: PublicKey) {
@@ -1131,12 +1178,15 @@ const useMangoStore = create<
         },
         async fetchCoingeckoPrices() {
           const set = get().set
+          set((state) => {
+            state.coingeckoPrices.loading = true
+          })
           try {
             const promises: any = []
             for (const asset of coingeckoIds) {
               promises.push(
                 fetch(
-                  `https://api.coingecko.com/api/v3/coins/${asset.id}/market_chart?vs_currency=usd&days=2`
+                  `https://api.coingecko.com/api/v3/coins/${asset.id}/market_chart?vs_currency=usd&days=1`
                 ).then((res) => res.json())
               )
             }
@@ -1146,10 +1196,14 @@ const useMangoStore = create<
               data[i].symbol = coingeckoIds[i].symbol
             }
             set((state) => {
-              state.coingeckoPrices = data
+              state.coingeckoPrices.data = data
+              state.coingeckoPrices.loading = false
             })
           } catch (e) {
             console.log('ERORR: Unable to load Coingecko prices')
+            set((state) => {
+              state.coingeckoPrices.loading = false
+            })
           }
         },
       },

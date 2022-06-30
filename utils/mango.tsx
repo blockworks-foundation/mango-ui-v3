@@ -68,18 +68,19 @@ export async function withdraw({
   token,
   allowBorrow,
   wallet,
+  mangoAccount,
 }: {
   amount: number
   token: PublicKey
   allowBorrow: boolean
   wallet: Wallet
+  mangoAccount: MangoAccount | null
 }) {
-  const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
   const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
   const tokenIndex = mangoGroup?.getTokenIndex(token)
   const mangoClient = useMangoStore.getState().connection.client
 
-  if (tokenIndex === undefined) return
+  if (tokenIndex === undefined || !mangoAccount) return
 
   const publicKey =
     mangoGroup?.rootBankAccounts?.[tokenIndex]?.nodeBankAccounts[0].publicKey

@@ -1,0 +1,12 @@
+{
+  "all": "全部",
+  "account-pnl": "帐户盈亏",
+  "account-value": "帐户价值",
+  "funding-cumulative": "累计资金费用",
+  "interest-cumulative": "累计利息",
+  "mngo-rewards": "MNGO奖励",
+  "perp-pnl": "合约盈亏",
+  "perp-pnl-ex-rewards": "合约盈亏（排除奖励1）",
+  "select-an-asset": "选资产来看其表现。",
+  "vs-time": "与时间"
+}

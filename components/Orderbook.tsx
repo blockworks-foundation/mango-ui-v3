@@ -282,7 +282,7 @@ export default function Orderbook({ depth = 8 }) {
                       onClick={() => {
                         setDisplayCumulativeSize(!displayCumulativeSize)
                       }}
-                      className="flex h-7 w-7 items-center justify-center rounded-full bg-th-bkg-4 hover:text-th-primary focus:outline-none"
+                      className="flex h-7 w-7 items-center justify-center rounded-full bg-th-bkg-4 focus:outline-none md:hover:text-th-primary"
                     >
                       {displayCumulativeSize ? (
                         <StepSizeIcon className="h-4 w-4" />
@@ -300,7 +300,7 @@ export default function Orderbook({ depth = 8 }) {
                   >
                     <button
                       onClick={handleLayoutChange}
-                      className="flex h-7 w-7 items-center justify-center rounded-full bg-th-bkg-4 hover:text-th-primary focus:outline-none"
+                      className="flex h-7 w-7 items-center justify-center rounded-full bg-th-bkg-4 focus:outline-none md:hover:text-th-primary"
                     >
                       <SwitchHorizontalIcon className="h-4 w-4" />
                     </button>
@@ -410,7 +410,7 @@ export default function Orderbook({ depth = 8 }) {
                       onClick={() => {
                         setDisplayCumulativeSize(!displayCumulativeSize)
                       }}
-                      className="flex h-8 w-8 items-center justify-center rounded-full bg-th-bkg-3 hover:text-th-primary focus:outline-none"
+                      className="flex h-8 w-8 items-center justify-center rounded-full bg-th-bkg-3 focus:outline-none md:hover:text-th-primary"
                     >
                       {displayCumulativeSize ? (
                         <StepSizeIcon className="h-5 w-5" />
@@ -428,7 +428,7 @@ export default function Orderbook({ depth = 8 }) {
                   >
                     <button
                       onClick={handleLayoutChange}
-                      className="flex h-8 w-8 items-center justify-center rounded-full bg-th-bkg-3 hover:text-th-primary focus:outline-none"
+                      className="flex h-8 w-8 items-center justify-center rounded-full bg-th-bkg-3 focus:outline-none md:hover:text-th-primary"
                     >
                       <SwitchHorizontalIcon className="h-5 w-5" />
                     </button>
@@ -479,7 +479,7 @@ export default function Orderbook({ depth = 8 }) {
                   />
                 )
               )}
-              <div className="my-2 flex justify-between rounded-md bg-th-bkg-1 p-2 text-xs">
+              <div className="my-2 flex justify-between rounded-md bg-th-bkg-2 p-2 text-xs">
                 <div className="text-th-fgd-3">{t('spread')}</div>
                 <div className="text-th-fgd-1">
                   {orderbookData?.spread.toFixed(2)}
@@ -527,7 +527,7 @@ export default function Orderbook({ depth = 8 }) {
             onClick={() => {
               setDisplayCumulativeSize(!displayCumulativeSize)
             }}
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-th-bkg-3 hover:text-th-primary focus:outline-none"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-th-bkg-3 focus:outline-none md:hover:text-th-primary"
           >
             {displayCumulativeSize ? (
               <StepSizeIcon className="h-5 w-5" />
@@ -603,7 +603,7 @@ const OrderbookSpread = ({ orderbookData }) => {
   }, [selectedMarket])
 
   return (
-    <div className="mb-0 mt-3 flex justify-between rounded-md bg-th-bkg-1 p-2 text-xs">
+    <div className="my-2 flex justify-between rounded-md bg-th-bkg-2 p-2 text-xs">
       <div className="hidden text-th-fgd-3 sm:block">{t('spread')}</div>
       <div className="text-th-fgd-1">
         {orderbookData?.spread.toFixed(decimals)}
