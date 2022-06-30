@@ -9,6 +9,7 @@ import {
   YAxis,
   Tooltip as ChartTooltip,
 } from 'recharts'
+import { ScaleIcon } from '@heroicons/react/solid'
 import { InformationCircleIcon } from '@heroicons/react/outline'
 import useDimensions from 'react-cool-dimensions'
 import { useTranslation } from 'next-i18next'
@@ -336,7 +337,8 @@ const AccountOverviewStats = ({ hourlyPerformanceStats, accountValue }) => {
           )}
         </div>
         <div className="flex flex-col divide-y divide-th-bkg-3 border-y border-th-bkg-3 md:flex-row md:divide-y-0 md:p-3 lg:flex-col lg:divide-y lg:p-0 xl:flex-row xl:divide-y-0 xl:p-5">
-          <div className="flex w-full items-center justify-between space-x-2 p-3 md:w-1/2 md:p-0 lg:w-full lg:p-3 xl:w-1/2 xl:p-0">
+          <div className="flex w-full items-center space-x-3 p-3 md:w-1/2 md:p-0 lg:w-full lg:p-3 xl:w-1/2 xl:p-0">
+            <HealthHeart size={40} health={Number(maintHealthRatio)} />
             <div>
               <Tooltip
                 content={
@@ -354,31 +356,35 @@ const AccountOverviewStats = ({ hourlyPerformanceStats, accountValue }) => {
               >
                 <div className="flex items-center space-x-1.5 pb-0.5">
                   <div className="text-th-fgd-3">{t('health')}</div>
-                  <InformationCircleIcon className="h-5 w-5 flex-shrink-0 cursor-help text-th-fgd-3" />
+                  <InformationCircleIcon className="h-5 w-5 flex-shrink-0 cursor-help text-th-fgd-4" />
                 </div>
               </Tooltip>
               <div className={`text-lg font-bold text-th-fgd-1`}>
                 {maintHealthRatio < 100 ? maintHealthRatio.toFixed(2) : '>100'}%
               </div>
             </div>
-            <HealthHeart size={40} health={Number(maintHealthRatio)} />
           </div>
-          <div className="w-full p-3 md:w-1/2 md:p-0 md:px-4 md:pl-4 lg:w-full lg:p-3 xl:w-1/2 xl:p-0 xl:pl-4">
-            <div className="pb-0.5 text-th-fgd-3">{t('leverage')}</div>
-            {mangoGroup && mangoCache ? (
-              <div className={`text-lg font-bold text-th-fgd-1`}>
-                {mangoAccount?.getLeverage(mangoGroup, mangoCache).toFixed(2)}x
-              </div>
-            ) : null}
+          <div className="flex w-full items-center space-x-3 p-3 md:w-1/2 md:p-0 md:pl-4 lg:w-full lg:p-3 xl:w-1/2 xl:p-0">
+            <ScaleIcon className="h-10 w-10 text-th-fgd-4" />
+            <div>
+              <div className="pb-0.5 text-th-fgd-3">{t('leverage')}</div>
+              {mangoGroup && mangoCache ? (
+                <div className={`text-lg font-bold text-th-fgd-1`}>
+                  {mangoAccount?.getLeverage(mangoGroup, mangoCache).toFixed(2)}
+                  x
+                </div>
+              ) : null}
+            </div>
           </div>
         </div>
         <div className="flex flex-col divide-y divide-th-bkg-3 border-b border-th-bkg-3 md:flex-row md:divide-y-0 md:p-3 lg:flex-col lg:divide-y lg:p-0 xl:flex-row xl:divide-y-0 xl:p-5">
-          <div className="flex w-full items-center justify-between p-3 md:p-0 lg:p-3 xl:w-1/2 xl:p-0 ">
+          <div className="flex w-full items-center space-x-3 p-3 md:w-1/2 md:p-0 lg:w-full lg:p-3 xl:w-1/2 xl:p-0">
+            <LongShortChart chartData={longData} />
             <div>
               <Tooltip content={t('total-long-tooltip')}>
                 <div className="flex items-center space-x-1.5 pb-0.5">
                   <div className="text-th-fgd-3">{t('long-exposure')}</div>
-                  <InformationCircleIcon className="h-5 w-5 flex-shrink-0 cursor-help text-th-fgd-3" />
+                  <InformationCircleIcon className="h-5 w-5 flex-shrink-0 cursor-help text-th-fgd-4" />
                 </div>
               </Tooltip>
               {mangoGroup && mangoCache ? (
@@ -387,14 +393,16 @@ const AccountOverviewStats = ({ hourlyPerformanceStats, accountValue }) => {
                 </div>
               ) : null}
             </div>
-            <LongShortChart chartData={longData} />
           </div>
-          <div className="flex w-full items-center justify-between p-3 md:p-0 md:pl-4 lg:p-3 xl:w-1/2 xl:p-0 xl:pl-4">
+          <div className="flex w-full items-center space-x-3 p-3 md:w-1/2 md:p-0 md:pl-4 lg:w-full lg:p-3 xl:w-1/2 xl:p-0">
+            <LongShortChart chartData={shortData} />
             <div>
               <Tooltip content={t('total-short-tooltip')}>
                 <div className="flex items-center space-x-1.5 pb-0.5">
-                  <div className="text-th-fgd-3">{t('short-exposure')}</div>
-                  <InformationCircleIcon className="h-5 w-5 flex-shrink-0 cursor-help text-th-fgd-3" />
+                  <div className="whitespace-nowrap text-th-fgd-3">
+                    {t('short-exposure')}
+                  </div>
+                  <InformationCircleIcon className="h-5 w-5 flex-shrink-0 cursor-help text-th-fgd-4" />
                 </div>
               </Tooltip>
               {mangoGroup && mangoCache ? (
@@ -403,7 +411,6 @@ const AccountOverviewStats = ({ hourlyPerformanceStats, accountValue }) => {
                 </div>
               ) : null}
             </div>
-            <LongShortChart chartData={shortData} />
           </div>
         </div>
       </div>

@@ -86,15 +86,15 @@ const LongShortChart = ({ chartData }: { chartData: any[] }) => {
   }
 
   return chartData.length ? (
-    <PieChart width={44} height={44}>
+    <PieChart width={40} height={40}>
       <Pie
         cursor="pointer"
         data={chartData}
         dataKey="value"
         cx="50%"
         cy="50%"
-        outerRadius={22}
-        innerRadius={12}
+        outerRadius={20}
+        innerRadius={10}
         minAngle={2}
         startAngle={90}
         endAngle={450}
@@ -111,7 +111,7 @@ const LongShortChart = ({ chartData }: { chartData: any[] }) => {
       </Pie>
       <Tooltip
         content={<CustomToolTip />}
-        position={{ x: -220, y: 0 }}
+        position={{ x: 48, y: 0 }}
         wrapperStyle={{ zIndex: 10 }}
       />
     </PieChart>
