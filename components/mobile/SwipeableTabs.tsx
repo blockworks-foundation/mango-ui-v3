@@ -1,4 +1,4 @@
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/outline'
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/solid'
 import useDrag from 'hooks/useDrag'
 import { useTranslation } from 'next-i18next'
 import React, { useContext, useEffect, useState } from 'react'

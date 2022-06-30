@@ -1,7 +1,6 @@
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import { FAVORITE_MARKETS_KEY } from './TradeNavMenu'
-import { StarIcon } from '@heroicons/react/solid'
-import { QuestionMarkCircleIcon } from '@heroicons/react/outline'
+import { StarIcon, QuestionMarkCircleIcon } from '@heroicons/react/solid'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import Link from 'next/link'

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { CogIcon } from '@heroicons/react/outline'
+import { CogIcon } from '@heroicons/react/solid'
 import SettingsModal from './SettingsModal'
 
 const Settings = () => {

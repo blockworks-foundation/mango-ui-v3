@@ -1,6 +1,6 @@
 import React from 'react'
 import { Portal } from 'react-portal'
-import { XIcon } from '@heroicons/react/outline'
+import { XIcon } from '@heroicons/react/solid'
 
 const Modal: any = React.forwardRef<any, any>((props, ref) => {
   const {

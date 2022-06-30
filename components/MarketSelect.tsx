@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { MenuIcon, PlusCircleIcon } from '@heroicons/react/outline'
+import { MenuIcon, PlusCircleIcon } from '@heroicons/react/solid'
 import MarketMenuItem from './MarketMenuItem'
 import { LinkButton } from './Button'
 import MarketsModal from './MarketsModal'

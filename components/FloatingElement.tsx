@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useCallback } from 'react'
-import { LinkIcon } from '@heroicons/react/outline'
+import { LinkIcon } from '@heroicons/react/solid'
 import useMangoStore from '../stores/useMangoStore'
 import { MoveIcon } from './icons'
 import EmptyState from './EmptyState'

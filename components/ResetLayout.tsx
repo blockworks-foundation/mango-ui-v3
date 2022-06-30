@@ -1,4 +1,4 @@
-import { TemplateIcon } from '@heroicons/react/outline'
+import { TemplateIcon } from '@heroicons/react/solid'
 import { defaultLayouts, GRID_LAYOUT_KEY } from './TradePageGrid'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import Tooltip from './Tooltip'

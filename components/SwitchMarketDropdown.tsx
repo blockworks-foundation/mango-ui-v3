@@ -1,7 +1,6 @@
 import { Fragment, useCallback, useMemo, useRef, useState } from 'react'
 import { Popover, Transition } from '@headlessui/react'
-import { SearchIcon } from '@heroicons/react/outline'
-import { ChevronDownIcon } from '@heroicons/react/solid'
+import { ChevronDownIcon, SearchIcon } from '@heroicons/react/solid'
 import Input from './Input'
 import { useTranslation } from 'next-i18next'
 import MarketNavItem from './MarketNavItem'

@@ -7,7 +7,7 @@ import {
   ChartPieIcon,
   ExternalLinkIcon,
   TrendingUpIcon,
-} from '@heroicons/react/outline'
+} from '@heroicons/react/solid'
 import { getProfilePicture } from '@solflare-wallet/pfp'
 import useMangoStore from '../stores/useMangoStore'
 import { connectionSelector } from '../stores/selectors'

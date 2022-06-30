@@ -13,13 +13,14 @@ import { connectionSelector } from '../stores/selectors'
 import sortBy from 'lodash/sortBy'
 import sum from 'lodash/sum'
 import {
+  ChevronDownIcon,
+  SwitchHorizontalIcon,
   CogIcon,
   ExclamationCircleIcon,
   ExternalLinkIcon,
   InformationCircleIcon,
   SwitchVerticalIcon,
-} from '@heroicons/react/outline'
-import { ChevronDownIcon, SwitchHorizontalIcon } from '@heroicons/react/solid'
+} from '@heroicons/react/solid'
 import { abbreviateAddress } from '../utils'
 import SwapTokenSelect from './SwapTokenSelect'
 import { notify } from '../utils/notifications'
@@ -827,7 +828,7 @@ const JupiterForm: FunctionComponent = () => {
                           }
                           placement={'left'}
                         >
-                          <InformationCircleIcon className="ml-1.5 h-3.5 w-3.5 cursor-help text-th-primary" />
+                          <InformationCircleIcon className="ml-1.5 h-4 w-4 cursor-help text-th-fgd-4" />
                         </Tooltip>
                       </div>
                     </div>
@@ -894,7 +895,7 @@ const JupiterForm: FunctionComponent = () => {
                               }
                               placement={'left'}
                             >
-                              <InformationCircleIcon className="ml-1.5 h-3.5 w-3.5 cursor-help text-th-primary" />
+                              <InformationCircleIcon className="ml-1.5 h-4 w-4 cursor-help text-th-fgd-4" />
                             </Tooltip>
                           </div>
                           <div>

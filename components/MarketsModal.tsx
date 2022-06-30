@@ -1,7 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
-import { EyeIcon, EyeOffIcon } from '@heroicons/react/outline'
-import { ChevronRightIcon } from '@heroicons/react/solid'
+import { ChevronRightIcon, EyeIcon, EyeOffIcon } from '@heroicons/react/solid'
 import Modal from './Modal'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import useMangoStore from '../stores/useMangoStore'

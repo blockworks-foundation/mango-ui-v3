@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { CheckCircleIcon } from '@heroicons/react/outline'
+import { CheckCircleIcon } from '@heroicons/react/solid'
 import Modal from './Modal'
 import Button from './Button'
 import useLocalStorageState from '../hooks/useLocalStorageState'

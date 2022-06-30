@@ -10,10 +10,7 @@ import {
   PerpOrderType,
   ZERO_I80F48,
 } from '@blockworks-foundation/mango-client'
-import {
-  ExclamationIcon,
-  InformationCircleIcon,
-} from '@heroicons/react/outline'
+import { ExclamationIcon, InformationCircleIcon } from '@heroicons/react/solid'
 import { notify } from '../../utils/notifications'
 import { calculateTradePrice, getDecimalCount } from '../../utils'
 import { floorToDecimal } from '../../utils/index'
@@ -1167,7 +1164,7 @@ export default function AdvancedTradeForm({
                         {t('max-slippage')}
                         <Tooltip content={t('tooltip-slippage')}>
                           <div className="outline-none focus:outline-none">
-                            <InformationCircleIcon className="ml-1.5 h-4 w-4 text-th-fgd-3" />
+                            <InformationCircleIcon className="ml-1.5 h-4 w-4 text-th-fgd-4" />
                           </div>
                         </Tooltip>
                       </div>

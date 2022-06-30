@@ -1,4 +1,4 @@
-import { LockClosedIcon, LockOpenIcon } from '@heroicons/react/outline'
+import { LockClosedIcon, LockOpenIcon } from '@heroicons/react/solid'
 import { Transition } from '@headlessui/react'
 import useMangoStore from '../stores/useMangoStore'
 import ResetLayout from './ResetLayout'

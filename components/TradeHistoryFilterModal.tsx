@@ -1,5 +1,5 @@
 import { FunctionComponent, useEffect, useMemo, useState } from 'react'
-import { RefreshIcon } from '@heroicons/react/outline'
+import { RefreshIcon } from '@heroicons/react/solid'
 import Input, { Label } from './Input'
 import Button, { LinkButton } from './Button'
 import Modal from './Modal'
