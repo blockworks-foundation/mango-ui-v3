@@ -7,6 +7,7 @@ import React, {
 } from 'react'
 import {
   BellIcon,
+  ChevronDownIcon,
   CurrencyDollarIcon,
   DuplicateIcon,
   ExclamationCircleIcon,
@@ -16,8 +17,7 @@ import {
   SwitchHorizontalIcon,
   TrashIcon,
   UsersIcon,
-} from '@heroicons/react/outline'
-import { ChevronDownIcon } from '@heroicons/react/solid'
+} from '@heroicons/react/solid'
 import { nativeToUi, ZERO_BN } from '@blockworks-foundation/mango-client'
 import useMangoStore, { serumProgramId, MNGO_INDEX } from 'stores/useMangoStore'
 import AccountOrders from 'components/account_page/AccountOrders'

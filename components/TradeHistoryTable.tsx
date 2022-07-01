@@ -28,7 +28,7 @@ import {
   InformationCircleIcon,
   RefreshIcon,
   SaveIcon,
-} from '@heroicons/react/outline'
+} from '@heroicons/react/solid'
 import { fetchHourlyPerformanceStats } from './account_page/AccountOverview'
 import useMangoStore from '../stores/useMangoStore'
 import Loading from './Loading'
@@ -190,7 +190,7 @@ const TradeHistoryTable = ({
                   </div>
                 }
               >
-                <InformationCircleIcon className="ml-1.5 h-5 w-5 cursor-pointer text-th-fgd-3" />
+                <InformationCircleIcon className="ml-1.5 h-5 w-5 cursor-pointer text-th-fgd-4" />
               </Tooltip>
             ) : null}
           </div>
@@ -245,7 +245,7 @@ const TradeHistoryTable = ({
                   <SaveIcon className={`mr-1.5 h-4 w-4`} />
                   {t('export-trades-csv')}
                   <Tooltip content={t('trade-export-disclaimer')}>
-                    <InformationCircleIcon className="ml-1.5 h-5 w-5 cursor-help text-th-fgd-3" />
+                    <InformationCircleIcon className="ml-1.5 h-5 w-5 cursor-help text-th-fgd-4" />
                   </Tooltip>
                 </a>
               </div>

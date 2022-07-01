@@ -3,7 +3,7 @@ import sumBy from 'lodash/sumBy'
 import useInterval from '../hooks/useInterval'
 import { CLUSTER, SECONDS } from '../stores/useMangoStore'
 import { useTranslation } from 'next-i18next'
-import { ExclamationIcon } from '@heroicons/react/outline'
+import { ExclamationIcon } from '@heroicons/react/solid'
 import { Connection } from '@solana/web3.js'
 
 const tpsAlertThreshold = 1000

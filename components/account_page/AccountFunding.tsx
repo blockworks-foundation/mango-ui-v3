@@ -23,7 +23,7 @@ const utc = require('dayjs/plugin/utc')
 dayjs.extend(utc)
 import { exportDataToCSV } from '../../utils/export'
 import Button from '../Button'
-import { SaveIcon } from '@heroicons/react/outline'
+import { SaveIcon } from '@heroicons/react/solid'
 import TabButtons from 'components/TabButtons'
 
 const QUOTE_DECIMALS = 6

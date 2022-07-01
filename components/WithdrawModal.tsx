@@ -11,7 +11,7 @@ import Tooltip from './Tooltip'
 import {
   ExclamationCircleIcon,
   InformationCircleIcon,
-} from '@heroicons/react/outline'
+} from '@heroicons/react/solid'
 import Select from './Select'
 import { withdraw } from '../utils/mango'
 import {
@@ -384,7 +384,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                   <span>{t('borrow-funds')}</span>
                   <Tooltip content={t('tooltip-interest-charged')}>
                     <InformationCircleIcon
-                      className={`ml-2 h-5 w-5 cursor-help text-th-primary`}
+                      className={`ml-2 h-5 w-5 cursor-help text-th-fgd-4`}
                     />
                   </Tooltip>
                 </div>
@@ -508,7 +508,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                       {t('health-check')}
                       <Tooltip content={t('tooltip-after-withdrawal')}>
                         <InformationCircleIcon
-                          className={`ml-2 h-5 w-5 cursor-help text-th-primary`}
+                          className={`ml-2 h-5 w-5 cursor-help text-th-fgd-4`}
                         />
                       </Tooltip>
                     </div>

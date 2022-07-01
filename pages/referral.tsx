@@ -25,7 +25,7 @@ import {
   CurrencyDollarIcon,
   DuplicateIcon,
   LinkIcon,
-} from '@heroicons/react/outline'
+} from '@heroicons/react/solid'
 import { MngoMonoIcon } from '../components/icons'
 import Link from 'next/link'
 import {

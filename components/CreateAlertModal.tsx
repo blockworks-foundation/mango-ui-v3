@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useEffect, useState } from 'react'
-import { PlusCircleIcon, TrashIcon } from '@heroicons/react/outline'
+import { PlusCircleIcon, TrashIcon } from '@heroicons/react/solid'
 import Modal from './Modal'
 import Input, { Label } from './Input'
 import { ElementTitle } from './styles'

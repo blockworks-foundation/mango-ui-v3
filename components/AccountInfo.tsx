@@ -7,8 +7,11 @@ import {
   ZERO_I80F48,
 } from '@blockworks-foundation/mango-client'
 import { useCallback, useState } from 'react'
-import { ExclamationIcon, ExternalLinkIcon } from '@heroicons/react/solid'
-import { BellIcon } from '@heroicons/react/outline'
+import {
+  BellIcon,
+  ExclamationIcon,
+  ExternalLinkIcon,
+} from '@heroicons/react/solid'
 import useMangoStore, { MNGO_INDEX } from '../stores/useMangoStore'
 import { abbreviateAddress, formatUsdValue, usdFormatter } from '../utils'
 import { notify } from '../utils/notifications'

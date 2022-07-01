@@ -1,7 +1,7 @@
 import { PieChart, Pie, Cell, Tooltip } from 'recharts'
 import { formatUsdValue, tokenPrecision } from 'utils'
 import * as MonoIcons from '../icons'
-import { QuestionMarkCircleIcon } from '@heroicons/react/outline'
+import { QuestionMarkCircleIcon } from '@heroicons/react/solid'
 import { useTheme } from 'next-themes'
 
 export const CHART_COLORS = (theme) => {

@@ -1,4 +1,4 @@
-import { ChevronUpIcon, RefreshIcon } from '@heroicons/react/outline'
+import { ChevronUpIcon, RefreshIcon } from '@heroicons/react/solid'
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
 import { Disclosure } from '@headlessui/react'
 import useMangoStore, { serumProgramId } from '../stores/useMangoStore'

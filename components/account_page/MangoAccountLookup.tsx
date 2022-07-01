@@ -3,7 +3,7 @@ import Button from 'components/Button'
 import Input from 'components/Input'
 import { useRouter } from 'next/router'
 import React, { useState } from 'react'
-import { ExclamationCircleIcon } from '@heroicons/react/outline'
+import { ExclamationCircleIcon } from '@heroicons/react/solid'
 import { useTranslation } from 'next-i18next'
 
 export const MangoAccountLookup = () => {

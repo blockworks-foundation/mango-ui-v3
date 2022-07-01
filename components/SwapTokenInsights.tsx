@@ -6,7 +6,7 @@ import ButtonGroup from './ButtonGroup'
 import { numberCompacter, numberFormatter } from './SwapTokenInfo'
 import Button, { IconButton } from './Button'
 import Input from './Input'
-import { SearchIcon, XIcon } from '@heroicons/react/outline'
+import { SearchIcon, XIcon } from '@heroicons/react/solid'
 import { useTranslation } from 'next-i18next'
 import { ExpandableRow } from './TableElements'
 

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { PencilIcon, TrashIcon, XIcon } from '@heroicons/react/outline'
+import { PencilIcon, TrashIcon, XIcon } from '@heroicons/react/solid'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import Button, { IconButton } from './Button'

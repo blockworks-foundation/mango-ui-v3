@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useEffect, useState } from 'react'
-import { ExclamationCircleIcon } from '@heroicons/react/outline'
+import { ExclamationCircleIcon } from '@heroicons/react/solid'
 import Modal from './Modal'
 import Input, { Label } from './Input'
 import AccountSelect from './AccountSelect'

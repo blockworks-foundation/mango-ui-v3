@@ -4,7 +4,7 @@ import {
   ExclamationCircleIcon,
   XIcon,
   InformationCircleIcon,
-} from '@heroicons/react/outline'
+} from '@heroicons/react/solid'
 import Input, { Label } from './Input'
 import Tooltip from './Tooltip'
 import Button, { IconButton } from './Button'
@@ -119,7 +119,7 @@ const DelegateModal: FunctionComponent<DelegateModalProps> = ({
                 </div>
               }
             >
-              <InformationCircleIcon className="ml-2 h-5 w-5 text-th-primary" />
+              <InformationCircleIcon className="ml-2 h-5 w-5 text-th-fgd-4" />
             </Tooltip>
           </ElementTitle>
         </div>

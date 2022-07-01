@@ -1,5 +1,5 @@
 import { memo, useMemo, useState, PureComponent, useEffect } from 'react'
-import { SearchIcon } from '@heroicons/react/outline'
+import { SearchIcon } from '@heroicons/react/solid'
 import Modal from './Modal'
 import { FixedSizeList } from 'react-window'
 import { Token } from '../@types/types'

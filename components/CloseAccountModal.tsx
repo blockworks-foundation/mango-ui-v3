@@ -6,10 +6,7 @@ import {
   useState,
 } from 'react'
 import useMangoStore, { MNGO_INDEX } from '../stores/useMangoStore'
-import {
-  CheckCircleIcon,
-  ExclamationCircleIcon,
-} from '@heroicons/react/outline'
+import { CheckCircleIcon, ExclamationCircleIcon } from '@heroicons/react/solid'
 import Button from './Button'
 import Modal from './Modal'
 import { ElementTitle } from './styles'

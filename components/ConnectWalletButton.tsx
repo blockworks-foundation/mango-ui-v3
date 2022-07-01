@@ -12,7 +12,7 @@ import {
   CurrencyDollarIcon,
   LogoutIcon,
   UserCircleIcon,
-} from '@heroicons/react/outline'
+} from '@heroicons/react/solid'
 import { notify } from 'utils/notifications'
 import { abbreviateAddress } from 'utils'
 import useMangoStore from 'stores/useMangoStore'

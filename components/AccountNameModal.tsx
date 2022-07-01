@@ -3,7 +3,7 @@ import useMangoStore from '../stores/useMangoStore'
 import {
   ExclamationCircleIcon,
   InformationCircleIcon,
-} from '@heroicons/react/outline'
+} from '@heroicons/react/solid'
 import Input, { Label } from './Input'
 import Button from './Button'
 import Modal from './Modal'
@@ -83,7 +83,7 @@ const AccountNameModal: FunctionComponent<AccountNameModalProps> = ({
         <p className="flex items-center justify-center">
           {t('edit-nickname')}
           <Tooltip content={t('tooltip-name-onchain')}>
-            <InformationCircleIcon className="ml-2 h-5 w-5 text-th-primary" />
+            <InformationCircleIcon className="ml-2 h-5 w-5 text-th-fgd-4" />
           </Tooltip>
         </p>
       </Modal.Header>

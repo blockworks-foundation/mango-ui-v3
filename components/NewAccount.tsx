@@ -2,7 +2,7 @@ import React, { FunctionComponent, useState } from 'react'
 import {
   ExclamationCircleIcon,
   InformationCircleIcon,
-} from '@heroicons/react/outline'
+} from '@heroicons/react/solid'
 import Input, { Label } from './Input'
 import AccountSelect from './AccountSelect'
 import { ElementTitle } from './styles'
@@ -151,7 +151,7 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
           {t('account-name')}{' '}
           <span className="ml-1 text-th-fgd-3">{t('optional')}</span>
           <Tooltip content={t('tooltip-name-onchain')}>
-            <InformationCircleIcon className="ml-2 h-5 w-5 text-th-fgd-3" />
+            <InformationCircleIcon className="ml-2 h-5 w-5 text-th-fgd-4" />
           </Tooltip>
         </Label>
         <Input

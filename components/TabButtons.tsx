@@ -1,5 +1,5 @@
 import * as MonoIcons from './icons'
-import { QuestionMarkCircleIcon } from '@heroicons/react/outline'
+import { QuestionMarkCircleIcon } from '@heroicons/react/solid'
 import { useTranslation } from 'next-i18next'
 
 const TabButtons = ({
