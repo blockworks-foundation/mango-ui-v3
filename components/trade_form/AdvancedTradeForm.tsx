@@ -15,7 +15,11 @@ import {
   InformationCircleIcon,
 } from '@heroicons/react/outline'
 import { notify } from '../../utils/notifications'
-import { calculateTradePrice, getDecimalCount } from '../../utils'
+import {
+  calculateTradePrice,
+  getDecimalCount,
+  tokenPrecision,
+} from '../../utils'
 import { floorToDecimal } from '../../utils/index'
 import useMangoStore, { Orderbook } from '../../stores/useMangoStore'
 import Button, { LinkButton } from '../Button'
@@ -40,6 +44,7 @@ import useLocalStorageState, {
 import InlineNotification from '../InlineNotification'
 import { DEFAULT_SPOT_MARGIN_KEY } from '../SettingsModal'
 import { useWallet } from '@solana/wallet-adapter-react'
+import usePrevious from 'hooks/usePrevious'
 
 const MAX_SLIPPAGE_KEY = 'maxSlippage'
 
@@ -115,6 +120,7 @@ export default function AdvancedTradeForm({
   const [postOnly, setPostOnly] = useState(false)
   const [ioc, setIoc] = useState(false)
   const [isLuna, setIsLuna] = useState(false)
+  const [updateBaseSize, setUpdateBaseSize] = useState(false)
 
   const orderBookRef = useRef(useMangoStore.getState().selectedMarket.orderBook)
   const orderbook = orderBookRef.current
@@ -335,6 +341,43 @@ export default function AdvancedTradeForm({
       ),
     []
   )
+  const previousMarkPrice: number = usePrevious(markPrice)
+
+  useEffect(() => {
+    if (tradeType === 'Limit' && price) {
+      if (updateBaseSize) {
+        if (quoteSize) {
+          setBaseSize(
+            (Number(quoteSize) / price).toFixed(
+              tokenPrecision[marketConfig.baseSymbol]
+            )
+          )
+        }
+      } else {
+        if (baseSize) {
+          setQuoteSize((Number(baseSize) * price).toFixed(2))
+        }
+      }
+    }
+  }, [tradeType, price])
+
+  useEffect(() => {
+    if (markPrice !== previousMarkPrice && tradeType === 'Market') {
+      if (updateBaseSize) {
+        if (quoteSize) {
+          setBaseSize(
+            (Number(quoteSize) / markPrice).toFixed(
+              tokenPrecision[marketConfig.baseSymbol]
+            )
+          )
+        }
+      } else {
+        if (baseSize) {
+          setQuoteSize((Number(baseSize) * markPrice).toFixed(2))
+        }
+      }
+    }
+  }, [markPrice, previousMarkPrice, tradeType, updateBaseSize])
 
   let minOrderSize = '0'
   if (market instanceof Market && market.minOrderSize) {
@@ -385,6 +428,9 @@ export default function AdvancedTradeForm({
     const rawQuoteSize = baseSize * usePrice
     setQuoteSize(rawQuoteSize.toFixed(6))
     setPositionSizePercent('')
+    if (updateBaseSize) {
+      setUpdateBaseSize(false)
+    }
   }
 
   const onSetQuoteSize = (quoteSize: number | '') => {
@@ -403,6 +449,9 @@ export default function AdvancedTradeForm({
     const baseSize = quoteSize && floorToDecimal(rawBaseSize, sizeDecimalCount)
     setBaseSize(baseSize)
     setPositionSizePercent('')
+    if (!updateBaseSize) {
+      setUpdateBaseSize(true)
+    }
   }
 
   const onTradeTypeChange = (tradeType) => {
