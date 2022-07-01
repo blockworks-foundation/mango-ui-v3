@@ -60,21 +60,6 @@ export async function getStaticProps({ locale }) {
   }
 }
 
-const ProgramDetails = () => {
-  const { t } = useTranslation('referrals')
-  return (
-    <>
-      <h2 className="mb-4">{t('referrals:program-details')}</h2>
-      <ul className="list-disc pl-3">
-        <li>{t('referrals:program-details-1')}</li>
-        <li>{t('referrals:program-details-2')}</li>
-        <li>{t('referrals:program-details-3')}</li>
-        <li>{t('referrals:program-details-4')}</li>
-      </ul>
-    </>
-  )
-}
-
 export default function Referral() {
   const { t } = useTranslation(['common', 'referrals'])
   const mangoGroup = useMangoStore(mangoGroupSelector)
@@ -230,13 +215,15 @@ export default function Referral() {
 
   return (
     <div>
-      <div className="pb-4 pt-6">
-        <h1 className={`mb-1`}>{t('referrals:sow-seed')}</h1>
-        <div className="flex flex-col items-start sm:flex-row">
-          <p className="mb-0 mr-2">{t('referrals:earn-16')}</p>
-        </div>
+      <div className="py-6">
+        <h1 className={`mb-2`}>{t('referrals:sow-seed')}</h1>
+        <ul className="list-disc pl-3">
+          <li className="mb-1">{t('referrals:earn-16')}</li>
+          <li className="mb-1">{t('referrals:program-details-1')}</li>
+          <li>{t('referrals:program-details-4')}</li>
+        </ul>
       </div>
-      <div className="grid grid-flow-row grid-cols-12 gap-x-6 gap-y-8">
+      <div className="grid grid-flow-row grid-cols-12 gap-6">
         {connected ? (
           mangoAccount ? (
             <>
@@ -264,10 +251,7 @@ export default function Referral() {
                 </div>
               ) : null}
               <div className="col-span-12">
-                <div className="flex w-full flex-col space-y-4 xl:flex-row xl:space-x-6 xl:space-y-0">
-                  <div className="min-w-[25%] flex-1 rounded-md border border-th-bkg-3 p-6">
-                    <ProgramDetails />
-                  </div>
+                <div className="flex w-full flex-col space-y-6 lg:flex-row lg:space-y-0 lg:space-x-6">
                   <div className="flex w-full flex-col">
                     {hasRequiredMngo ? (
                       <div className="flex-1 rounded-md border border-th-bkg-3 p-6">
@@ -286,7 +270,7 @@ export default function Referral() {
                                   <Td>
                                     <div className="flex items-center">
                                       {!isMobile ? (
-                                        <LinkIcon className="mr-1.5 h-4 w-4" />
+                                        <LinkIcon className="mr-1.5 h-4 w-4 flex-shrink-0" />
                                       ) : null}
                                       <p className="mb-0 max-w-md text-th-fgd-1">
                                         {isMobile
@@ -339,7 +323,7 @@ export default function Referral() {
                                       <Td>
                                         <div className="flex items-center">
                                           {!isMobile ? (
-                                            <LinkIcon className="mr-1.5 h-4 w-4" />
+                                            <LinkIcon className="mr-1.5 h-4 w-4 flex-shrink-0" />
                                           ) : null}
                                           <p className="mb-0 text-th-fgd-1">
                                             {isMobile
@@ -399,7 +383,7 @@ export default function Referral() {
                     )}
                   </div>
                   {hasRequiredMngo ? (
-                    <div className="w-full min-w-[25%] rounded-md border border-th-bkg-3 p-6 xl:w-1/3">
+                    <div className="w-full min-w-[33%] rounded-md border border-th-bkg-3 p-6 lg:w-1/3">
                       <h2 className="mb-1">{t('referrals:custom-links')}</h2>
                       <p className="mb-4">
                         {t('referrals:custom-links-limit')}
@@ -427,12 +411,9 @@ export default function Referral() {
                       <Button
                         onClick={submitRefLink}
                         disabled={existingCustomRefLinks.length === 5}
-                        className="w-full"
+                        className="flex w-full items-center justify-center"
                       >
-                        <div className="flex items-center">
-                          <LinkIcon className="mr-1.5 h-4 w-4" />
-                          {t('referrals:generate-link')}
-                        </div>
+                        {t('referrals:generate-link')}
                       </Button>
                     </div>
                   ) : null}
@@ -531,36 +512,26 @@ export default function Referral() {
               ) : null}
             </>
           ) : (
-            <>
-              <div className="col-span-12 rounded-md border border-th-bkg-3 p-6 lg:col-span-4">
-                <ProgramDetails />
-              </div>
-              <div className="col-span-12 flex items-center justify-center rounded-md border border-th-bkg-3 p-6 lg:col-span-8">
-                <EmptyState
-                  buttonText={t('create-account')}
-                  icon={<CurrencyDollarIcon />}
-                  onClickButton={() => setShowAccountsModal(true)}
-                  title={t('no-account-found')}
-                  disabled={!wallet || !mangoGroup}
-                />
-              </div>
-            </>
-          )
-        ) : (
-          <>
-            <div className="col-span-12 rounded-md border border-th-bkg-3 p-6 lg:col-span-4">
-              <ProgramDetails />
-            </div>
-            <div className="col-span-12 flex items-center justify-center rounded-md border border-th-bkg-3 p-6 lg:col-span-8">
+            <div className="col-span-12 flex items-center justify-center rounded-md border border-th-bkg-3 p-6">
               <EmptyState
-                buttonText={t('connect')}
+                buttonText={t('create-account')}
+                icon={<CurrencyDollarIcon />}
+                onClickButton={() => setShowAccountsModal(true)}
+                title={t('no-account-found')}
                 disabled={!wallet || !mangoGroup}
-                icon={<LinkIcon />}
-                onClickButton={handleConnect}
-                title={t('connect-wallet')}
               />
             </div>
-          </>
+          )
+        ) : (
+          <div className="col-span-12 flex items-center justify-center rounded-md border border-th-bkg-3 p-6">
+            <EmptyState
+              buttonText={t('connect')}
+              disabled={!wallet || !mangoGroup}
+              icon={<LinkIcon />}
+              onClickButton={handleConnect}
+              title={t('connect-wallet')}
+            />
+          </div>
         )}
       </div>
       {showAccountsModal ? (
