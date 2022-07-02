@@ -406,23 +406,21 @@ const OpenOrdersTable = () => {
           })
         }
         actions.reloadOrders()
-      }
-      else if (market instanceof Market) {
+      } else if (market instanceof Market) {
         const txid = await mangoClient.cancelAllSpotOrders(
           selectedMangoGroup,
           selectedMangoAccount,
-          market, 
-          wallet.adapter, 
+          market,
+          wallet.adapter,
           20
         )
-        if(txid) {
+        if (txid) {
           notify({
             title: t('cancel-all-success'),
             description: '',
             txid,
           })
-        }
-        else {
+        } else {
           notify({
             title: t('cancel-all-error'),
             description: t('transaction-failed'),
