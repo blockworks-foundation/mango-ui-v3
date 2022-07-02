@@ -41,14 +41,14 @@ const getAverageStats = (
     const oldestStat = timeFilteredStats[0]
     const latestStat = timeFilteredStats[timeFilteredStats.length - 1]
     let avg
-    if (type in latestStat && type in oldestStat) {
+    if (latestStat && oldestStat && type in latestStat && type in oldestStat) {
       avg =
         Math.pow(latestStat[type] / oldestStat[type], 365 / daysAgo) * 100 - 100
     }
 
     priorDate.setHours(priorDate.getHours() + 1)
 
-    if (new Date(oldestStat.hourly).getDate() > priorDate.getDate()) {
+    if (new Date(oldestStat?.hourly).getDate() > priorDate.getDate()) {
       return '-'
     }
     if (avg) {
