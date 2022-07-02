@@ -48,7 +48,7 @@ const getAverageStats = (
 
     priorDate.setHours(priorDate.getHours() + 1)
 
-    if (new Date(oldestStat.hourly).getDate() > priorDate.getDate()) {
+    if (new Date(oldestStat?.hourly).getDate() > priorDate.getDate()) {
       return '-'
     }
     if (avg) {
