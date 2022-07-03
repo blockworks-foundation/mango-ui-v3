@@ -12,6 +12,7 @@ import { useRouter } from 'next/router'
 import FavoritesShortcutBar from './FavoritesShortcutBar'
 import {
   ArrowRightIcon,
+  ChevronRightIcon,
   CogIcon,
   ExclamationCircleIcon,
 } from '@heroicons/react/solid'
@@ -51,6 +52,13 @@ const Layout = ({ children }) => {
     setShowAccountsModal(false)
   }, [])
 
+  const handleToggleSidebar = () => {
+    setIsCollapsed(!isCollapsed)
+    setTimeout(() => {
+      window.dispatchEvent(new Event('resize'))
+    }, 100)
+  }
+
   return (
     <div className={`flex-grow bg-th-bkg-1 text-th-fgd-1 transition-all`}>
       <div className="flex">
@@ -61,7 +69,21 @@ const Layout = ({ children }) => {
         ) : (
           <div className={isCollapsed ? 'mr-[64px]' : 'mr-[220px]'}>
             <div className={`fixed z-20 h-screen`}>
-              <SideNav collapsed={isCollapsed} setCollapsed={setIsCollapsed} />
+              <IconButton
+                className="absolute -right-4 top-1/2 z-20 h-10 w-4 -translate-y-1/2 transform rounded-none rounded-r"
+                onClick={handleToggleSidebar}
+              >
+                <ChevronRightIcon
+                  className={`default-transition h-5 w-5 ${
+                    !isCollapsed ? 'rotate-180' : 'rotate-360'
+                  }`}
+                />
+              </IconButton>
+              <div
+                className={`h-full ${!isCollapsed ? 'overflow-y-auto' : ''}`}
+              >
+                <SideNav collapsed={isCollapsed} />
+              </div>
             </div>
           </div>
         )}
