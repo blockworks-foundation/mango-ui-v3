@@ -165,14 +165,11 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
       .getHealthRatio(mangoGroup, mangoCache, 'Init')
       .toNumber()
 
-    const rawMaintHealthRatio = simulation
+    const maintHealthRatio = simulation
       .getHealthRatio(mangoGroup, mangoCache, 'Maint')
       .toNumber()
 
     const leverage = simulation.getLeverage(mangoGroup, mangoCache).toNumber()
-
-    const maintHealthRatio =
-      rawMaintHealthRatio > 100 ? 100 : rawMaintHealthRatio
 
     setSimulation({
       equity,
@@ -452,7 +449,10 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                       simulation.maintHealthRatio
                     )}`}
                   >
-                    {simulation.maintHealthRatio.toFixed(2)}%
+                    {simulation.maintHealthRatio > 100
+                      ? '>100'
+                      : simulation.maintHealthRatio.toFixed(2)}
+                    %
                   </p>
                 </div>
                 <div className="flex justify-between">
