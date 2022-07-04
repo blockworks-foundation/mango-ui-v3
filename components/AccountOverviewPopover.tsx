@@ -10,7 +10,13 @@ import {
 import { abbreviateAddress, formatUsdValue, usdFormatter } from 'utils'
 import { DataLoader } from './MarketPosition'
 
-const AccountOverviewPopover = ({ collapsed }: { collapsed: boolean }) => {
+const AccountOverviewPopover = ({
+  collapsed,
+  health,
+}: {
+  collapsed: boolean
+  health: I80F48
+}) => {
   const { t } = useTranslation('common')
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
@@ -18,11 +24,6 @@ const AccountOverviewPopover = ({ collapsed }: { collapsed: boolean }) => {
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
 
   const I80F48_100 = I80F48.fromString('100')
-
-  const maintHealthRatio =
-    mangoAccount && mangoGroup && mangoCache
-      ? mangoAccount.getHealthRatio(mangoGroup, mangoCache, 'Maint')
-      : I80F48_100
 
   const initHealth =
     mangoAccount && mangoGroup && mangoCache
@@ -55,10 +56,7 @@ const AccountOverviewPopover = ({ collapsed }: { collapsed: boolean }) => {
           <div className="pb-2">
             <p className="mb-0 text-xs leading-4">{t('health')}</p>
             <p className="mb-0 font-bold text-th-fgd-1">
-              {maintHealthRatio.gt(I80F48_100)
-                ? '>100'
-                : maintHealthRatio.toFixed(2)}
-              %
+              {health.gt(I80F48_100) ? '>100' : health.toFixed(2)}%
             </p>
           </div>
           <div className="pb-2">
