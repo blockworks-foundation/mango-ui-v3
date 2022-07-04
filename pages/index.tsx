@@ -30,6 +30,7 @@ export async function getStaticProps({ locale }) {
     props: {
       ...(await serverSideTranslations(locale, [
         'common',
+        'delegate',
         'tv-chart',
         'alerts',
         'share-modal',
