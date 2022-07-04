@@ -1,5 +1,5 @@
 import { FunctionComponent, useEffect, useMemo, useState } from 'react'
-import { ExternalLinkIcon, EyeOffIcon } from '@heroicons/react/outline'
+import { ExternalLinkIcon, EyeOffIcon } from '@heroicons/react/solid'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts'

@@ -12,7 +12,7 @@ import Chart from '../Chart'
 const utc = require('dayjs/plugin/utc')
 dayjs.extend(utc)
 import { exportDataToCSV } from '../../utils/export'
-import { SaveIcon } from '@heroicons/react/outline'
+import { SaveIcon } from '@heroicons/react/solid'
 import Button from '../Button'
 
 export const handleDustTicks = (v) =>

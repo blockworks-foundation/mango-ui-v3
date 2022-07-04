@@ -21,6 +21,7 @@ import { PublicKey } from '@solana/web3.js'
 import { useWallet } from '@solana/wallet-adapter-react'
 import AccountsModal from 'components/AccountsModal'
 import dayjs from 'dayjs'
+import { tokenPrecision } from 'utils'
 
 const DISMISS_CREATE_ACCOUNT_KEY = 'show-create-account'
 
@@ -138,14 +139,19 @@ const PerpMarket: React.FC = () => {
       setMangoStore((state) => {
         state.selectedMarket.kind = marketType
         if (newMarket.name !== marketConfig.name) {
-          // state.selectedMarket.current = null
           state.selectedMarket.config = newMarket
-          state.tradeForm.price =
-            state.tradeForm.tradeType === 'Limit' && mangoCache
-              ? parseFloat(
-                  mangoGroup.getPrice(marketIndex, mangoCache).toFixed(2)
-                )
-              : ''
+          state.tradeForm.price = mangoCache
+            ? parseFloat(
+                mangoGroup.getPrice(marketIndex, mangoCache).toFixed(2)
+              )
+            : ''
+          if (state.tradeForm.quoteSize) {
+            state.tradeForm.baseSize = Number(
+              (
+                state.tradeForm.quoteSize / Number(state.tradeForm.price)
+              ).toFixed(tokenPrecision[newMarket.baseSymbol])
+            )
+          }
         }
       })
     } else if (name && marketConfig) {

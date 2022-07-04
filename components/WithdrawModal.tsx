@@ -11,7 +11,7 @@ import Tooltip from './Tooltip'
 import {
   ExclamationCircleIcon,
   InformationCircleIcon,
-} from '@heroicons/react/outline'
+} from '@heroicons/react/solid'
 import Select from './Select'
 import { withdraw } from '../utils/mango'
 import {

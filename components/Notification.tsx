@@ -4,7 +4,7 @@ import {
   ExternalLinkIcon,
   InformationCircleIcon,
   XCircleIcon,
-} from '@heroicons/react/outline'
+} from '@heroicons/react/solid'
 import useMangoStore, {
   CLIENT_TX_TIMEOUT,
   CLUSTER,

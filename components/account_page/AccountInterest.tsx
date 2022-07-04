@@ -26,7 +26,7 @@ import useLocalStorageState from '../../hooks/useLocalStorageState'
 const utc = require('dayjs/plugin/utc')
 dayjs.extend(utc)
 import { exportDataToCSV } from '../../utils/export'
-import { SaveIcon } from '@heroicons/react/outline'
+import { SaveIcon } from '@heroicons/react/solid'
 import Button from '../Button'
 import TabButtons from 'components/TabButtons'
 

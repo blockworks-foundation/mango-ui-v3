@@ -5,7 +5,7 @@ import {
   HeartIcon,
   PlusCircleIcon,
   UsersIcon,
-} from '@heroicons/react/outline'
+} from '@heroicons/react/solid'
 import useMangoStore from '../stores/useMangoStore'
 import { MangoAccount, MangoGroup } from '@blockworks-foundation/mango-client'
 import { abbreviateAddress, formatUsdValue } from '../utils'

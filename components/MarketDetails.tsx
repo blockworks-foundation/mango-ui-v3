@@ -15,7 +15,7 @@ import { useTranslation } from 'next-i18next'
 import SwitchMarketDropdown from './SwitchMarketDropdown'
 import Tooltip from './Tooltip'
 import { useWallet } from '@solana/wallet-adapter-react'
-import { InformationCircleIcon } from '@heroicons/react/outline'
+import { InformationCircleIcon } from '@heroicons/react/solid'
 
 const OraclePrice = () => {
   const oraclePrice = useOraclePrice()
@@ -111,7 +111,7 @@ const MarketDetails = () => {
                         content={t('tooltip-funding')}
                         placement={'bottom'}
                       >
-                        <InformationCircleIcon className="ml-1.5 h-4 w-4 text-th-fgd-3 hover:cursor-help" />
+                        <InformationCircleIcon className="ml-1.5 h-4 w-4 text-th-fgd-4 hover:cursor-help" />
                       </Tooltip>
                     </div>
                     <div className="text-th-fgd-1 md:text-xs">
@@ -138,7 +138,7 @@ const MarketDetails = () => {
                         )} ${baseSymbol}`}
                         placement={'bottom'}
                       >
-                        <InformationCircleIcon className="ml-1.5 h-4 w-4 text-th-fgd-3 hover:cursor-help" />
+                        <InformationCircleIcon className="ml-1.5 h-4 w-4 text-th-fgd-4 hover:cursor-help" />
                       </Tooltip>
                     </div>
                   </div>

@@ -18,7 +18,7 @@ import {
   LightBulbIcon,
   SwitchHorizontalIcon,
   UserAddIcon,
-} from '@heroicons/react/outline'
+} from '@heroicons/react/solid'
 
 const StyledBarItemLabel = ({ children, ...props }) => (
   <div style={{ fontSize: '0.6rem', lineHeight: 1 }} {...props}>

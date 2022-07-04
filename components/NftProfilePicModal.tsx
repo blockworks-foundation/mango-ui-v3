@@ -3,7 +3,7 @@ import { PublicKey } from '@solana/web3.js'
 import { notify } from 'utils/notifications'
 import useMangoStore from '../stores/useMangoStore'
 import { useWallet } from '@solana/wallet-adapter-react'
-import { PhotographIcon } from '@heroicons/react/outline'
+import { PhotographIcon } from '@heroicons/react/solid'
 import Modal from './Modal'
 import { ElementTitle } from './styles'
 import {

@@ -5,7 +5,7 @@ import {
   ExternalLinkIcon,
   InformationCircleIcon,
   SaveIcon,
-} from '@heroicons/react/outline'
+} from '@heroicons/react/solid'
 import {
   getMarketByBaseSymbolAndKind,
   getTokenBySymbol,
@@ -249,7 +249,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
               </div>
             }
           >
-            <InformationCircleIcon className="ml-1.5 h-5 w-5 cursor-pointer text-th-fgd-3" />
+            <InformationCircleIcon className="ml-1.5 h-5 w-5 cursor-help text-th-fgd-4" />
           </Tooltip>
         </div>
         <Button
@@ -607,7 +607,7 @@ const HistoryTable = ({ history, view }) => {
               </div>
             }
           >
-            <InformationCircleIcon className="ml-1.5 h-5 w-5 cursor-pointer text-th-fgd-3" />
+            <InformationCircleIcon className="ml-1.5 h-5 w-5 cursor-help text-th-fgd-4" />
           </Tooltip>
         </div>
         <Button

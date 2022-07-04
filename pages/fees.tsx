@@ -7,7 +7,7 @@ import {
 } from '@project-serum/serum/lib/token-instructions'
 import { percentFormat } from '../utils/index'
 import Tooltip from '../components/Tooltip'
-import { InformationCircleIcon } from '@heroicons/react/outline'
+import { InformationCircleIcon } from '@heroicons/react/solid'
 import DepositMsrmModal from '../components/DepositMsrmModal'
 import WithdrawMsrmModal from '../components/WithdrawMsrmModal'
 import { useState } from 'react'
@@ -78,7 +78,7 @@ export default function Fees() {
               <Tooltip content={t('if-referred-tooltip')}>
                 <div>
                   <InformationCircleIcon
-                    className={`ml-1.5 h-5 w-5 cursor-help text-th-fgd-3`}
+                    className={`ml-1.5 h-5 w-5 cursor-help text-th-fgd-4`}
                   />
                 </div>
               </Tooltip>
@@ -111,7 +111,7 @@ export default function Fees() {
               >
                 <div>
                   <InformationCircleIcon
-                    className={`ml-1.5 h-5 w-5 cursor-help text-th-fgd-3`}
+                    className={`ml-1.5 h-5 w-5 cursor-help text-th-fgd-4`}
                   />
                 </div>
               </Tooltip>

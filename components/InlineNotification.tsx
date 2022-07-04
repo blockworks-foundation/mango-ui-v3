@@ -4,7 +4,7 @@ import {
   ExclamationCircleIcon,
   ExclamationIcon,
   InformationCircleIcon,
-} from '@heroicons/react/outline'
+} from '@heroicons/react/solid'
 
 interface InlineNotificationProps {
   desc?: string | (() => string)
@@ -38,7 +38,7 @@ const InlineNotification: FunctionComponent<InlineNotificationProps> = ({
       <ExclamationIcon className="mr-2 h-5 w-5 flex-shrink-0 text-th-orange" />
     ) : null}
     {type === 'info' ? (
-      <InformationCircleIcon className="mr-2 h-5 w-5 flex-shrink-0 text-th-fgd-3" />
+      <InformationCircleIcon className="mr-2 h-5 w-5 flex-shrink-0 text-th-fgd-4" />
     ) : null}
     <div>
       <div className="text-th-fgd-3">{title}</div>

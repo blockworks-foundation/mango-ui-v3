@@ -9,8 +9,7 @@ import {
   YAxis,
   Tooltip as ChartTooltip,
 } from 'recharts'
-import { ScaleIcon } from '@heroicons/react/solid'
-import { InformationCircleIcon } from '@heroicons/react/outline'
+import { InformationCircleIcon, ScaleIcon } from '@heroicons/react/solid'
 import useDimensions from 'react-cool-dimensions'
 import { useTranslation } from 'next-i18next'
 import { ZERO_BN } from '@blockworks-foundation/mango-client'
