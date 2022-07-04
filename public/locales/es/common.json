@@ -425,6 +425,7 @@
    "tooltip-post": "Se garantiza que las órdenes de envío solo serán el pedido del fabricante o, de lo contrario, se cancelará.",
    "tooltip-post-and-slide": "Post and slide is a limit order that if crosses the book will set your price one tick more/less than the opposite side of the book.",
    "tooltip-projected-health": "Projected Health",
+   "tooltip-projected-leverage": "Projected Leverage",
    "tooltip-reduce": "Reducir solamente ordenes solo reducirá su posición general.",
    "tooltip-reset-layout": "Restablecer diseño",
    "tooltip-serum-rebate": "El 20% de las tarifas netas de Serum van al host de la GUI. Mango le reembolsa esta tarifa. La tarifa del receptor antes del reembolso de la GUI es {{taker_percent}}",

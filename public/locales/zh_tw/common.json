@@ -425,6 +425,7 @@
   "tooltip-post": "Post交易若不掛單就會被取消。",
   "tooltip-post-and-slide": "Post and slide會將你限價單的價格設置為掛單簿另一面多／少一分。",
   "tooltip-projected-health": "Projected Health",
+  "tooltip-projected-leverage": "Projected Leverage",
   "tooltip-reduce": "Reduce交易只能減少您的持倉。",
   "tooltip-reset-layout": "重置頁面佈局",
   "tooltip-serum-rebate": "Serum的20%費率是交給介面提供者。Mango將此費率退還給您。退還前的吃單費率是{{taker_percent}}",

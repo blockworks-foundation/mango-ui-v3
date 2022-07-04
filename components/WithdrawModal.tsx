@@ -22,7 +22,6 @@ import {
 } from '@blockworks-foundation/mango-client'
 import { notify } from '../utils/notifications'
 import { useTranslation } from 'next-i18next'
-import { ExpandableRow } from './TableElements'
 import { useWallet } from '@solana/wallet-adapter-react'
 import MangoAccountSelect from './MangoAccountSelect'
 import InlineNotification from './InlineNotification'
@@ -170,14 +169,17 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
       .getHealthRatio(mangoGroup, mangoCache, 'Maint')
       .toNumber()
 
+    const leverage = simulation.getLeverage(mangoGroup, mangoCache).toNumber()
+
     const maintHealthRatio =
       rawMaintHealthRatio > 100 ? 100 : rawMaintHealthRatio
 
     setSimulation({
-      initHealthRatio,
-      maintHealthRatio,
-      liabsVal,
       equity,
+      initHealthRatio,
+      leverage,
+      liabsVal,
+      maintHealthRatio,
     })
   }, [
     includeBorrow,
@@ -440,22 +442,31 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                 onChange={(e) => onChangeAmountInput(e.target.value)}
                 suffix={withdrawTokenSymbol}
               />
-              {simulation ? (
-                <Tooltip
-                  placement="right"
-                  content={t('tooltip-projected-health')}
-                  className="py-1"
-                >
-                  <span
-                    className={`${getAccountStatusColor(
+            </div>
+            {simulation ? (
+              <div className="mt-4 space-y-2 bg-th-bkg-2 p-4">
+                <div className="flex justify-between">
+                  <p className="mb-0">{t('tooltip-projected-health')}</p>
+                  <p
+                    className={`mb-0 font-bold text-th-fgd-1 ${getAccountStatusColor(
                       simulation.maintHealthRatio
-                    )} ml-1 flex h-10 items-center justify-center rounded bg-th-bkg-1 px-2 ring-1 ring-inset`}
+                    )}`}
                   >
                     {simulation.maintHealthRatio.toFixed(2)}%
-                  </span>
-                </Tooltip>
-              ) : null}
-            </div>
+                  </p>
+                </div>
+                <div className="flex justify-between">
+                  <p className="mb-0">{t('tooltip-projected-leverage')}</p>
+                  <p
+                    className={`mb-0 font-bold text-th-fgd-1 ${getAccountStatusColor(
+                      simulation.maintHealthRatio
+                    )}`}
+                  >
+                    {simulation.leverage.toFixed(2)}x
+                  </p>
+                </div>
+              </div>
+            ) : null}
             {invalidAmountMessage ? (
               <div className="flex items-center pt-1.5 text-th-red">
                 <ExclamationCircleIcon className="mr-1.5 h-4 w-4" />
@@ -510,79 +521,6 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                 )} ${withdrawTokenSymbol}`}</div>
               ) : null}
             </div>
-            <div className="border-b border-th-bkg-4 pt-4">
-              <ExpandableRow
-                buttonTemplate={
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <span className="relative mr-2.5 flex h-2 w-2">
-                        <span
-                          className={`absolute inline-flex h-full w-full animate-ping rounded-full ${getAccountStatusColor(
-                            simulation.maintHealthRatio,
-                            false,
-                            true
-                          )} opacity-75`}
-                        ></span>
-                        <span
-                          className={`relative inline-flex h-2 w-2 rounded-full ${getAccountStatusColor(
-                            simulation.maintHealthRatio,
-                            false,
-                            true
-                          )}`}
-                        ></span>
-                      </span>
-                      {t('health-check')}
-                      <Tooltip content={t('tooltip-after-withdrawal')}>
-                        <InformationCircleIcon
-                          className={`ml-2 h-5 w-5 cursor-help text-th-fgd-4`}
-                        />
-                      </Tooltip>
-                    </div>
-                  </div>
-                }
-                panelTemplate={
-                  simulation ? (
-                    <div>
-                      <div className="flex justify-between pb-2">
-                        <p className="mb-0">{t('account-value')}</p>
-                        <div className="text-th-fgd-1">
-                          $
-                          {simulation.equity.toLocaleString(undefined, {
-                            maximumFractionDigits: 2,
-                          })}
-                        </div>
-                      </div>
-                      <div className="flex justify-between pb-2">
-                        <p className="mb-0">{t('account-risk')}</p>
-                        <div className="text-th-fgd-1">
-                          {getAccountStatusColor(
-                            simulation.maintHealthRatio,
-                            true
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex justify-between pb-2">
-                        <p className="mb-0">{t('health')}</p>
-                        <div className="text-th-fgd-1">
-                          {simulation.maintHealthRatio.toFixed(2)}%
-                        </div>
-                      </div>
-
-                      <div className="flex justify-between">
-                        <p className="mb-0">{t('borrow-value')}</p>
-                        <div className="text-th-fgd-1">
-                          $
-                          {simulation.liabsVal.toLocaleString(undefined, {
-                            maximumFractionDigits: 2,
-                          })}
-                        </div>
-                      </div>
-                    </div>
-                  ) : null
-                }
-              />
-            </div>
-
             <div className={`mt-6 flex flex-col items-center`}>
               <Button
                 onClick={handleWithdraw}
