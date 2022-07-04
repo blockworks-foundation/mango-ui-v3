@@ -37,7 +37,7 @@ const SideNav = ({ collapsed }) => {
 
   return (
     <div
-      className={`default-transition flex flex-col justify-between ${
+      className={`flex flex-col justify-between transition-all duration-500 ease-in-out ${
         collapsed ? 'w-[64px]' : 'w-[220px]'
       } min-h-screen border-r border-th-bkg-3 bg-th-bkg-1`}
     >
@@ -56,10 +56,10 @@ const SideNav = ({ collapsed }) => {
                 appear={true}
                 show={!collapsed}
                 as={Fragment}
-                enter="transition-all ease-in duration-200"
+                enter="transition-all ease-in duration-300"
                 enterFrom="opacity-50"
                 enterTo="opacity-100"
-                leave="transition ease-out duration-200"
+                leave="transition ease-out duration-300"
                 leaveFrom="opacity-100"
                 leaveTo="opacity-0"
               >
@@ -169,12 +169,12 @@ const SideNav = ({ collapsed }) => {
         </div>
       </div>
       {mangoAccount ? (
-        <div className="flex min-h-[64px] w-full items-center border-t border-th-bkg-3 px-4 py-3">
+        <div className="flex min-h-[64px] w-full items-center border-t border-th-bkg-3 ">
           <ExpandableMenuItem
             collapsed={collapsed}
             icon={<HealthHeart health={50} size={32} />}
             title={
-              <div className="text-left">
+              <div className="py-3 text-left">
                 <p className="mb-0 whitespace-nowrap text-xs text-th-fgd-3">
                   {t('account-summary')}
                 </p>
@@ -233,10 +233,10 @@ const MenuItem = ({
           appear={true}
           show={!collapsed}
           as={Fragment}
-          enter="transition-all ease-in duration-200"
+          enter="transition-all ease-in duration-300"
           enterFrom="opacity-50"
           enterTo="opacity-100"
-          leave="transition ease-out duration-200"
+          leave="transition ease-out duration-300"
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
@@ -307,7 +307,7 @@ const ExpandableMenuItem = ({
       <div
         onMouseEnter={() => onHoverMenu(showMenu, 'onMouseEnter')}
         onMouseLeave={() => onHoverMenu(showMenu, 'onMouseLeave')}
-        className="relative z-30 h-8 w-8"
+        className="relative z-30"
       >
         <Popover.Button className="hover:text-th-primary">
           <div
@@ -315,6 +315,10 @@ const ExpandableMenuItem = ({
               hideIconBg
                 ? ''
                 : 'flex h-8 w-8 items-center justify-center rounded-full bg-th-bkg-3'
+            } ${
+              alignBottom
+                ? 'default-transition flex h-16 w-16 items-center justify-center hover:bg-th-bkg-2'
+                : ''
             }`}
           >
             {icon}
@@ -324,16 +328,18 @@ const ExpandableMenuItem = ({
           appear={true}
           show={showMenu}
           as={Fragment}
-          enter="transition-all ease-in duration-200"
+          enter="transition-all ease-in duration-300"
           enterFrom="opacity-0 transform scale-90"
           enterTo="opacity-100 transform scale-100"
-          leave="transition ease-out duration-200"
+          leave="transition ease-out duration-300"
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
           <Popover.Panel
-            className={`absolute left-10 w-56 space-y-2 rounded-md bg-th-bkg-2 p-4 ${
-              alignBottom ? '-bottom-4' : 'top-1/2 -translate-y-1/2 transform'
+            className={`absolute  w-56 space-y-2 rounded-md bg-th-bkg-2 p-4 ${
+              alignBottom
+                ? 'bottom-0 left-14'
+                : 'left-10 top-1/2 -translate-y-1/2 transform'
             }`}
           >
             {children}
@@ -346,9 +352,13 @@ const ExpandableMenuItem = ({
       <div
         onClick={() => setShowMenu(!showMenu)}
         role="button"
-        className="w-full"
+        className={`w-full `}
       >
-        <Disclosure.Button className="flex w-full items-center justify-between hover:text-th-primary">
+        <Disclosure.Button
+          className={`flex w-full items-center justify-between rounded-none hover:text-th-primary ${
+            alignBottom ? 'h-[64px] px-4 hover:bg-th-bkg-2' : ''
+          }`}
+        >
           <div className="flex items-center">
             <div
               className={
@@ -363,10 +373,10 @@ const ExpandableMenuItem = ({
               appear={true}
               show={!collapsed}
               as={Fragment}
-              enter="transition-all ease-in duration-200"
+              enter="transition-all ease-in duration-300"
               enterFrom="opacity-50"
               enterTo="opacity-100"
-              leave="transition ease-out duration-200"
+              leave="transition ease-out duration-300"
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
@@ -383,15 +393,15 @@ const ExpandableMenuItem = ({
           appear={true}
           show={showMenu}
           as={Fragment}
-          enter="transition-all ease-in duration-200"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="transition ease-out"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
+          enter="transition-all ease-in duration-500"
+          enterFrom="opacity-100 max-h-0"
+          enterTo="opacity-100 max-h-64"
+          leave="transition-all ease-out duration-500"
+          leaveFrom="opacity-100 max-h-64"
+          leaveTo="opacity-0 max-h-0"
         >
-          <Disclosure.Panel className="pt-4">
-            <div className="space-y-2">{children}</div>
+          <Disclosure.Panel className="overflow-hidden">
+            <div className="space-y-2 p-2">{children}</div>
           </Disclosure.Panel>
         </Transition>
       </div>
