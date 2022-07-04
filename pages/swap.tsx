@@ -13,7 +13,12 @@ import dayjs from 'dayjs'
 export async function getStaticProps({ locale }) {
   return {
     props: {
-      ...(await serverSideTranslations(locale, ['common', 'swap', 'profile'])),
+      ...(await serverSideTranslations(locale, [
+        'common',
+        'delegate',
+        'swap',
+        'profile',
+      ])),
       // Will be passed to the page component as props
     },
   }

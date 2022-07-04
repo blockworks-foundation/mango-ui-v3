@@ -15,6 +15,7 @@ import {
   ChevronRightIcon,
   CogIcon,
   ExclamationCircleIcon,
+  UsersIcon,
 } from '@heroicons/react/solid'
 import Button, { IconButton } from './Button'
 import SettingsModal from './SettingsModal'
@@ -22,9 +23,10 @@ import { useTranslation } from 'next-i18next'
 import { useWallet } from '@solana/wallet-adapter-react'
 import DepositModal from './DepositModal'
 import WithdrawModal from './WithdrawModal'
+import Tooltip from './Tooltip'
 
 const Layout = ({ children }) => {
-  const { t } = useTranslation('common')
+  const { t } = useTranslation(['common', 'delegate'])
   const { connected, publicKey } = useWallet()
   const { mangoAccount, initialLoad } = useMangoAccount()
   const [showSettingsModal, setShowSettingsModal] = useState(false)
@@ -113,8 +115,8 @@ const Layout = ({ children }) => {
                 {connected || pubkey ? (
                   !initialLoad ? (
                     mangoAccount ? (
-                      <span
-                        className="default-transition font-bold text-th-fgd-1 hover:text-th-fgd-3"
+                      <div
+                        className="default-transition flex items-center font-bold text-th-fgd-1 hover:text-th-fgd-3"
                         role="button"
                         onClick={() => setShowAccountsModal(true)}
                       >
@@ -123,7 +125,14 @@ const Layout = ({ children }) => {
                             ? mangoAccount.name
                             : abbreviateAddress(mangoAccount.publicKey)
                         }`}
-                      </span>
+                        {publicKey && !mangoAccount.owner.equals(publicKey) ? (
+                          <Tooltip content={t('delegate:delegated-account')}>
+                            <UsersIcon className="ml-2 h-5 w-5 text-th-fgd-3" />
+                          </Tooltip>
+                        ) : (
+                          ''
+                        )}
+                      </div>
                     ) : (
                       <span className="flex items-center text-th-fgd-3">
                         {t('create-account-helper')}
