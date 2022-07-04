@@ -654,7 +654,7 @@ const EditProfileModal = ({
     startCase(profile?.profile_name) || ''
   )
   const [traderCategory, setTraderCategory] = useState(
-    profile?.trader_category || TRADER_CATEGORIES[0]
+    profile?.trader_category || TRADER_CATEGORIES[5]
   )
   const [inputErrors, setInputErrors] = useState({})
   const [loadUniquenessCheck, setLoadUniquenessCheck] = useState(false)
