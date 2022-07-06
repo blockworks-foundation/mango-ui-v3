@@ -15,19 +15,16 @@ import {
   ExternalLinkIcon,
   ChevronDownIcon,
   ReceiptTaxIcon,
+  ChatIcon,
 } from '@heroicons/react/solid'
 import { useRouter } from 'next/router'
-import AccountOverviewPopover from './AccountOverviewPopover'
-import useMangoAccount from 'hooks/useMangoAccount'
 import { useTranslation } from 'next-i18next'
 import { Fragment, ReactNode, useEffect, useState } from 'react'
 import { Disclosure, Popover, Transition } from '@headlessui/react'
-import HealthHeart from './HealthHeart'
-import { abbreviateAddress } from 'utils'
+import Chat from './chat/Chat'
 
 const SideNav = ({ collapsed }) => {
   const { t } = useTranslation('common')
-  const { mangoAccount } = useMangoAccount()
   const [defaultMarket] = useLocalStorageState(
     DEFAULT_MARKET_KEY,
     initialMarket
@@ -38,13 +35,13 @@ const SideNav = ({ collapsed }) => {
   return (
     <div
       className={`flex flex-col justify-between transition-all duration-500 ease-in-out ${
-        collapsed ? 'w-[64px]' : 'w-[220px]'
+        collapsed ? 'w-14' : 'w-[220px] lg:w-[250px] xl:w-[280px]'
       } min-h-screen border-r border-th-bkg-3 bg-th-bkg-1`}
     >
       <div className="mb-4">
         <Link href={defaultMarket.path} shallow={true}>
           <div
-            className={`flex h-14 w-full items-center justify-start border-b border-th-bkg-3 px-4`}
+            className={`flex h-14 w-full items-center justify-start border-b border-th-bkg-3 px-3`}
           >
             <div className={`flex flex-shrink-0 cursor-pointer items-center`}>
               <img
@@ -70,7 +67,7 @@ const SideNav = ({ collapsed }) => {
             </div>
           </div>
         </Link>
-        <div className={`flex flex-col items-start space-y-3.5 px-4 pt-4`}>
+        <div className={`flex flex-col items-start space-y-3.5 px-3 pt-4`}>
           <MenuItem
             active={pathname === '/'}
             collapsed={collapsed}
@@ -113,18 +110,19 @@ const SideNav = ({ collapsed }) => {
             title={t('stats')}
             pagePath="/stats"
           />
-          <MenuItem
-            active={pathname === '/leaderboard'}
-            collapsed={collapsed}
-            icon={<TrophyIcon className="h-[18px] w-[18px]" />}
-            title={t('leaderboard')}
-            pagePath="/leaderboard"
-          />
           <ExpandableMenuItem
             collapsed={collapsed}
             icon={<DotsHorizontalIcon className="h-5 w-5" />}
             title={t('more')}
           >
+            <MenuItem
+              active={pathname === '/leaderboard'}
+              collapsed={false}
+              icon={<TrophyIcon className="h-[14px] w-[14px]" />}
+              title={t('leaderboard')}
+              pagePath="/leaderboard"
+              hideIconBg
+            />
             <MenuItem
               active={pathname === '/referral'}
               collapsed={false}
@@ -168,28 +166,17 @@ const SideNav = ({ collapsed }) => {
           </ExpandableMenuItem>
         </div>
       </div>
-      {mangoAccount ? (
-        <div className="flex min-h-[64px] w-full items-center border-t border-th-bkg-3 ">
-          <ExpandableMenuItem
-            collapsed={collapsed}
-            icon={<HealthHeart health={50} size={32} />}
-            title={
-              <div className="py-3 text-left">
-                <p className="mb-0 whitespace-nowrap text-xs text-th-fgd-3">
-                  {t('account-summary')}
-                </p>
-                <p className="mb-0 font-bold text-th-fgd-1">
-                  {abbreviateAddress(mangoAccount.publicKey)}
-                </p>
-              </div>
-            }
-            hideIconBg
-            alignBottom
-          >
-            <AccountOverviewPopover collapsed={collapsed} />
-          </ExpandableMenuItem>
-        </div>
-      ) : null}
+      <div className="border-t border-th-bkg-3">
+        <ExpandableMenuItem
+          collapsed={collapsed}
+          icon={<ChatIcon className="h-6 w-6" />}
+          title="Trollbox"
+          alignBottom
+          hideIconBg
+        >
+          <Chat />
+        </ExpandableMenuItem>
+      </div>
     </div>
   )
 }
@@ -216,7 +203,7 @@ const MenuItem = ({
   return !isExternal ? (
     <Link href={pagePath} shallow={true}>
       <a
-        className={`default-transition flex items-center hover:brightness-[1.1] ${
+        className={`default-transition flex w-full items-center hover:brightness-[1.1] ${
           active ? 'text-th-primary' : 'text-th-fgd-1'
         }`}
       >
@@ -302,12 +289,21 @@ const ExpandableMenuItem = ({
     }
   }, [collapsed])
 
+  const toggleMenu = () => {
+    setShowMenu(!showMenu)
+  }
+
   return collapsed ? (
     <Popover>
       <div
-        onMouseEnter={() => onHoverMenu(showMenu, 'onMouseEnter')}
-        onMouseLeave={() => onHoverMenu(showMenu, 'onMouseLeave')}
+        onMouseEnter={
+          !alignBottom ? () => onHoverMenu(showMenu, 'onMouseEnter') : undefined
+        }
+        onMouseLeave={
+          !alignBottom ? () => onHoverMenu(showMenu, 'onMouseLeave') : undefined
+        }
         className="relative z-30"
+        onClick={() => toggleMenu()}
       >
         <Popover.Button className="hover:text-th-primary">
           <div
@@ -317,47 +313,47 @@ const ExpandableMenuItem = ({
                 : 'flex h-8 w-8 items-center justify-center rounded-full bg-th-bkg-3'
             } ${
               alignBottom
-                ? 'default-transition flex h-16 w-16 items-center justify-center hover:bg-th-bkg-2'
+                ? 'default-transition flex h-14 w-14 items-center justify-center hover:bg-th-bkg-2'
                 : ''
             }`}
           >
             {icon}
           </div>
         </Popover.Button>
-        <Transition
-          appear={true}
-          show={showMenu}
-          as={Fragment}
-          enter="transition-all ease-in duration-300"
-          enterFrom="opacity-0 transform scale-90"
-          enterTo="opacity-100 transform scale-100"
-          leave="transition ease-out duration-300"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-        >
-          <Popover.Panel
-            className={`absolute  w-56 space-y-2 rounded-md bg-th-bkg-2 p-4 ${
-              alignBottom
-                ? 'bottom-0 left-14'
-                : 'left-10 top-1/2 -translate-y-1/2 transform'
-            }`}
-          >
-            {children}
-          </Popover.Panel>
-        </Transition>
       </div>
+      <Transition
+        appear={true}
+        show={showMenu}
+        as={Fragment}
+        enter="transition-all ease-in duration-300"
+        enterFrom="opacity-0 transform scale-90"
+        enterTo="opacity-100 transform scale-100"
+        leave="transition ease-out duration-300"
+        leaveFrom="opacity-100"
+        leaveTo="opacity-0"
+      >
+        <Popover.Panel
+          className={`absolute space-y-2 rounded-md rounded-l-none border border-th-bkg-3 bg-th-bkg-1 p-4 ${
+            alignBottom
+              ? 'bottom-0 left-[55px] w-72 rounded-b-none p-0'
+              : 'left-[43px] top-1/2 w-56 -translate-y-1/2 transform'
+          }`}
+        >
+          {children}
+        </Popover.Panel>
+      </Transition>
     </Popover>
   ) : (
     <Disclosure>
       <div
         onClick={() => setShowMenu(!showMenu)}
         role="button"
-        className={`w-full `}
+        className={`default-transition w-full ${
+          alignBottom ? 'h-14 px-3 hover:bg-th-bkg-2' : ''
+        }`}
       >
         <Disclosure.Button
-          className={`flex w-full items-center justify-between rounded-none hover:text-th-primary ${
-            alignBottom ? 'h-[64px] px-4 hover:bg-th-bkg-2' : ''
-          }`}
+          className={`flex h-full w-full items-center justify-between rounded-none hover:text-th-primary`}
         >
           <div className="flex items-center">
             <div
@@ -389,22 +385,24 @@ const ExpandableMenuItem = ({
             } default-transition h-5 w-5 flex-shrink-0`}
           />
         </Disclosure.Button>
-        <Transition
-          appear={true}
-          show={showMenu}
-          as={Fragment}
-          enter="transition-all ease-in duration-500"
-          enterFrom="opacity-100 max-h-0"
-          enterTo="opacity-100 max-h-64"
-          leave="transition-all ease-out duration-500"
-          leaveFrom="opacity-100 max-h-64"
-          leaveTo="opacity-0 max-h-0"
-        >
-          <Disclosure.Panel className="overflow-hidden">
-            <div className="space-y-2 p-2">{children}</div>
-          </Disclosure.Panel>
-        </Transition>
       </div>
+      <Transition
+        appear={true}
+        show={showMenu}
+        as={Fragment}
+        enter="transition-all ease-in duration-500"
+        enterFrom="opacity-100 max-h-0"
+        enterTo="opacity-100 max-h-64"
+        leave="transition-all ease-out duration-500"
+        leaveFrom="opacity-100 max-h-64"
+        leaveTo="opacity-0 max-h-0"
+      >
+        <Disclosure.Panel className="w-full overflow-hidden">
+          <div className={`space-y-2 ${!alignBottom ? 'p-2' : ''}`}>
+            {children}
+          </div>
+        </Disclosure.Panel>
+      </Transition>
     </Disclosure>
   )
 }

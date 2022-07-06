@@ -292,12 +292,7 @@ export default function Account() {
                 }`}
                 onClick={() => setShowProfilePicModal(true)}
               >
-                <ProfileImage
-                  thumbHeightClass="h-20"
-                  thumbWidthClass="w-20"
-                  placeholderHeightClass="h-12"
-                  placeholderWidthClass="w-12"
-                />
+                <ProfileImage imageSize="80" placeholderSize="56" />
                 {!pubkey ? (
                   <div className="default-transition absolute bottom-0 top-0 left-0 right-0 flex h-full w-full items-center justify-center rounded-full bg-[rgba(0,0,0,0.6)] opacity-0 hover:opacity-100">
                     <PencilIcon className="h-5 w-5 text-th-fgd-1" />

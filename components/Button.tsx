@@ -5,6 +5,7 @@ interface ButtonProps {
   disabled?: boolean
   className?: string
   primary?: boolean
+  type?: 'button' | 'submit' | 'reset' | undefined
 }
 
 const Button: FunctionComponent<ButtonProps> = ({
@@ -12,6 +13,7 @@ const Button: FunctionComponent<ButtonProps> = ({
   onClick,
   disabled = false,
   className,
+  type,
   ...props
 }) => {
   return (
@@ -19,6 +21,7 @@ const Button: FunctionComponent<ButtonProps> = ({
       onClick={onClick}
       disabled={disabled}
       className={`whitespace-nowrap rounded-full bg-th-bkg-button px-6 py-2 font-bold text-th-fgd-1 focus:outline-none disabled:cursor-not-allowed disabled:bg-th-bkg-4 disabled:text-th-fgd-4 md:hover:brightness-[1.1] md:disabled:hover:brightness-100 ${className}`}
+      type={type || 'button'}
       {...props}
     >
       {children}
@@ -34,6 +37,7 @@ export const LinkButton: FunctionComponent<ButtonProps> = ({
   disabled = false,
   className,
   primary,
+  type,
   ...props
 }) => {
   return (
@@ -43,6 +47,7 @@ export const LinkButton: FunctionComponent<ButtonProps> = ({
       className={`border-0 font-bold ${
         primary ? 'text-th-primary' : 'text-th-fgd-2'
       } underline focus:outline-none disabled:cursor-not-allowed disabled:underline disabled:opacity-60 md:hover:no-underline md:hover:opacity-60 ${className}`}
+      type={type || 'button'}
       {...props}
     >
       {children}
@@ -55,6 +60,7 @@ export const IconButton: FunctionComponent<ButtonProps> = ({
   onClick,
   disabled = false,
   className,
+  type,
   ...props
 }) => {
   return (
@@ -63,6 +69,7 @@ export const IconButton: FunctionComponent<ButtonProps> = ({
       disabled={disabled}
       className={`${className} flex h-7 w-7 items-center justify-center rounded-full bg-th-bkg-4 text-th-fgd-1 focus:outline-none disabled:cursor-not-allowed disabled:bg-th-bkg-4 
       disabled:text-th-fgd-4 md:hover:text-th-primary md:disabled:hover:text-th-fgd-4`}
+      type={type || 'button'}
       {...props}
     >
       {children}

@@ -6,16 +6,16 @@ import { ConnectWalletButton } from './ConnectWalletButton'
 import GlobalNotification from './GlobalNotification'
 import useMangoAccount from 'hooks/useMangoAccount'
 import { abbreviateAddress } from 'utils'
-import { useCallback, useEffect, useState } from 'react'
+import { Fragment, useCallback, useEffect, useState } from 'react'
 import AccountsModal from './AccountsModal'
 import { useRouter } from 'next/router'
 import FavoritesShortcutBar from './FavoritesShortcutBar'
 import {
   ArrowRightIcon,
+  ChevronDownIcon,
   ChevronRightIcon,
   CogIcon,
   ExclamationCircleIcon,
-  UsersIcon,
 } from '@heroicons/react/solid'
 import Button, { IconButton } from './Button'
 import SettingsModal from './SettingsModal'
@@ -23,7 +23,9 @@ import { useTranslation } from 'next-i18next'
 import { useWallet } from '@solana/wallet-adapter-react'
 import DepositModal from './DepositModal'
 import WithdrawModal from './WithdrawModal'
-import Tooltip from './Tooltip'
+import { Disclosure, Transition } from '@headlessui/react'
+import HealthHeart from './HealthHeart'
+import AccountOverviewPopover from './AccountOverviewPopover'
 
 const Layout = ({ children }) => {
   const { t } = useTranslation(['common', 'delegate'])
@@ -69,7 +71,11 @@ const Layout = ({ children }) => {
             <BottomBar />
           </div>
         ) : (
-          <div className={isCollapsed ? 'mr-[64px]' : 'mr-[220px]'}>
+          <div
+            className={
+              isCollapsed ? 'mr-14' : 'mr-[220px] lg:mr-[250px] xl:mr-[280px]'
+            }
+          >
             <div className={`fixed z-20 h-screen`}>
               <IconButton
                 className="absolute -right-4 top-1/2 z-20 h-10 w-4 -translate-y-1/2 transform rounded-none rounded-r"
@@ -100,39 +106,62 @@ const Layout = ({ children }) => {
             ) : (
               <div className="flex items-center text-th-fgd-3">
                 <span className="mb-0 mr-2 text-base">
-                  {pubkey
-                    ? '🔎'
-                    : connected
-                    ? initialLoad
-                      ? ''
-                      : mangoAccount
-                      ? '🟢'
-                      : '👋'
-                    : !isMobile
-                    ? '🔗'
-                    : ''}
+                  {pubkey ? (
+                    '🔎'
+                  ) : connected ? (
+                    initialLoad ? (
+                      ''
+                    ) : mangoAccount ? (
+                      <HealthHeart size={24} health={24} />
+                    ) : (
+                      '👋'
+                    )
+                  ) : !isMobile ? (
+                    '🔗'
+                  ) : (
+                    ''
+                  )}
                 </span>
                 {connected || pubkey ? (
                   !initialLoad ? (
                     mangoAccount ? (
-                      <div
-                        className="default-transition flex items-center font-bold text-th-fgd-1 hover:text-th-fgd-3"
-                        role="button"
-                        onClick={() => setShowAccountsModal(true)}
-                      >
-                        {`${
-                          mangoAccount.name
-                            ? mangoAccount.name
-                            : abbreviateAddress(mangoAccount.publicKey)
-                        }`}
-                        {publicKey && !mangoAccount.owner.equals(publicKey) ? (
-                          <Tooltip content={t('delegate:delegated-account')}>
-                            <UsersIcon className="ml-2 h-5 w-5 text-th-fgd-3" />
-                          </Tooltip>
-                        ) : (
-                          ''
+                      <Disclosure>
+                        {({ open }) => (
+                          <>
+                            <Disclosure.Button className="flex w-full items-center justify-between rounded-none text-th-fgd-1 hover:text-th-primary">
+                              <div className="flex items-center">
+                                <span className="mr-0.5 font-bold">
+                                  {mangoAccount.name
+                                    ? mangoAccount.name
+                                    : abbreviateAddress(mangoAccount.publicKey)}
+                                </span>
+                              </div>
+                              <ChevronDownIcon
+                                className={`${
+                                  open
+                                    ? 'rotate-180 transform'
+                                    : 'rotate-360 transform'
+                                } default-transition mt-0.5 h-6 w-6 flex-shrink-0`}
+                              />
+                            </Disclosure.Button>
+                            <Transition
+                              appear={true}
+                              show={open}
+                              as={Fragment}
+                              enter="transition-all ease-in duration-200"
+                              enterFrom="opacity-0 transform scale-75"
+                              enterTo="opacity-100 transform scale-100"
+                              leave="transition ease-out duration-200"
+                              leaveFrom="opacity-100"
+                              leaveTo="opacity-0"
+                            >
+                              <Disclosure.Panel className="absolute top-12 z-10 w-56 rounded-md bg-th-bkg-2 p-4">
+                                <AccountOverviewPopover collapsed={false} />
+                              </Disclosure.Panel>
+                            </Transition>
+                          </>
                         )}
-                      </div>
+                      </Disclosure>
                     ) : (
                       <span className="flex items-center text-th-fgd-3">
                         {t('create-account-helper')}
