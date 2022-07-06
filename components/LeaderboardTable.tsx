@@ -1,13 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
 import dayjs from 'dayjs'
 import { usdFormatter } from '../utils'
-import { MedalIcon, ProfileIcon } from './icons'
+import { BtcMonoIcon, MedalIcon, ProfileIcon } from './icons'
 import { useTranslation } from 'next-i18next'
 import {
   ChartPieIcon,
   ExternalLinkIcon,
   TrendingUpIcon,
-  ChartBarIcon,
 } from '@heroicons/react/solid'
 import { getProfilePicture } from '@solflare-wallet/pfp'
 import useMangoStore from '../stores/useMangoStore'
@@ -139,7 +138,7 @@ const LeaderboardTable = ({ range = '29' }) => {
           setLeaderboardType={setLeaderboardType}
           range={range}
           label="spot-only"
-          icon={<ChartBarIcon className="mr-3 hidden h-6 w-6 lg:block" />}
+          icon={<BtcMonoIcon className="mr-3 hidden h-6 w-6 lg:block" />}
         />
       </div>
       <div className="col-span-12 lg:col-span-8">
