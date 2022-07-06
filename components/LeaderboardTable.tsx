@@ -7,7 +7,7 @@ import {
   ChartPieIcon,
   ExternalLinkIcon,
   TrendingUpIcon,
-  ChartBarIcon
+  ChartBarIcon,
 } from '@heroicons/react/solid'
 import { getProfilePicture } from '@solflare-wallet/pfp'
 import useMangoStore from '../stores/useMangoStore'
@@ -18,8 +18,12 @@ dayjs.extend(utc)
 
 const LeaderboardTable = ({ range = '29' }) => {
   const [pnlLeaderboardData, setPnlLeaderboardData] = useState<any[]>([])
-  const [perpPnlLeaderboardData, setPerpPnlLeaderboardData] = useState<any[]>([])
-  const [spotPnlLeaderboardData, setSpotPnlLeaderboardData] = useState<any[]>([])
+  const [perpPnlLeaderboardData, setPerpPnlLeaderboardData] = useState<any[]>(
+    []
+  )
+  const [spotPnlLeaderboardData, setSpotPnlLeaderboardData] = useState<any[]>(
+    []
+  )
   const [leaderboardType, setLeaderboardType] = useState<string>('total-pnl')
   const [loading, setLoading] = useState(false)
   const connection = useMangoStore(connectionSelector)
@@ -94,16 +98,23 @@ const LeaderboardTable = ({ range = '29' }) => {
   }, [range, leaderboardType])
 
   useEffect(() => {
-    fetchPerpPnlLeaderboard();
-    fetchSpotPnlLeaderboard();
+    fetchPerpPnlLeaderboard()
+    fetchSpotPnlLeaderboard()
   }, [])
 
   const leaderboardData = useMemo(
     () =>
       leaderboardType === 'total-pnl'
         ? pnlLeaderboardData
-        : (leaderboardType === 'futures-only' ? perpPnlLeaderboardData : spotPnlLeaderboardData),
-    [leaderboardType, pnlLeaderboardData, perpPnlLeaderboardData, spotPnlLeaderboardData]
+        : leaderboardType === 'futures-only'
+        ? perpPnlLeaderboardData
+        : spotPnlLeaderboardData,
+    [
+      leaderboardType,
+      pnlLeaderboardData,
+      perpPnlLeaderboardData,
+      spotPnlLeaderboardData,
+    ]
   )
 
   return (
@@ -140,16 +151,22 @@ const LeaderboardTable = ({ range = '29' }) => {
                 acc={acc.mango_account}
                 key={acc.mango_account}
                 rawPnl={
-                  leaderboardType === 'total-pnl' ? acc.pnl : (leaderboardType === 'futures-only' ? acc.perp_pnl : acc.spot_pnl)
+                  leaderboardType === 'total-pnl'
+                    ? acc.pnl
+                    : leaderboardType === 'futures-only'
+                    ? acc.perp_pnl
+                    : acc.spot_pnl
                 }
                 pnl={
                   leaderboardType === 'total-pnl'
                     ? acc.pnl.toLocaleString('en-US', {
-                      style: 'currency',
-                      currency: 'USD',
-                      maximumFractionDigits: 0,
-                    })
-                    : (leaderboardType === 'futures-only' ? usdFormatter(acc.perp_pnl) : usdFormatter(acc.spot_pnl))
+                        style: 'currency',
+                        currency: 'USD',
+                        maximumFractionDigits: 0,
+                      })
+                    : leaderboardType === 'futures-only'
+                    ? usdFormatter(acc.perp_pnl)
+                    : usdFormatter(acc.spot_pnl)
                 }
                 pfp={acc.pfp}
               />
@@ -190,19 +207,19 @@ const AccountCard = ({ rank, acc, pnl, pfp, rawPnl }) => {
   const medalColors =
     rank === 1
       ? {
-        darkest: '#E4AF11',
-        dark: '#F2C94C',
-        light: '#FFCF40',
-        lightest: '#FDE877',
-      }
+          darkest: '#E4AF11',
+          dark: '#F2C94C',
+          light: '#FFCF40',
+          lightest: '#FDE877',
+        }
       : rank === 2
-        ? {
+      ? {
           darkest: '#B8B8B8',
           dark: '#C0C0C0',
           light: '#C7C7C7',
           lightest: '#D8D6D6',
         }
-        : {
+      : {
           darkest: '#CD7F32',
           dark: '#E5994E',
           light: '#DBA36B',
@@ -243,8 +260,9 @@ const AccountCard = ({ rank, acc, pnl, pfp, rawPnl }) => {
         <div>
           <div className="flex items-center">
             <span
-              className={`text-base font-bold text-th-fgd-2 sm:text-lg ${rawPnl > 0 ? 'text-th-green' : 'text-th-red'
-                }`}
+              className={`text-base font-bold text-th-fgd-2 sm:text-lg ${
+                rawPnl > 0 ? 'text-th-green' : 'text-th-red'
+              }`}
             >
               {pnl}
             </span>
@@ -266,10 +284,11 @@ const LeaderboardTypeButton = ({
   const { t } = useTranslation('common')
   return (
     <button
-      className={`relative flex w-full items-center justify-center rounded-md p-4 text-center lg:h-20 lg:justify-start lg:text-left ${leaderboardType === label
-        ? 'bg-th-bkg-3 text-th-fgd-1 after:absolute after:top-[100%] after:left-1/2 after:-translate-x-1/2 after:transform after:border-l-[12px] after:border-r-[12px] after:border-t-[12px] after:border-l-transparent after:border-t-th-bkg-3 after:border-r-transparent lg:after:left-[100%] lg:after:top-1/2  lg:after:-translate-x-0 lg:after:-translate-y-1/2 lg:after:border-r-0 lg:after:border-b-[12px] lg:after:border-t-transparent lg:after:border-b-transparent lg:after:border-l-th-bkg-3'
-        : 'bg-th-bkg-2 text-th-fgd-3 md:hover:bg-th-bkg-3'
-        }`}
+      className={`relative flex w-full items-center justify-center rounded-md p-4 text-center lg:h-20 lg:justify-start lg:text-left ${
+        leaderboardType === label
+          ? 'bg-th-bkg-3 text-th-fgd-1 after:absolute after:top-[100%] after:left-1/2 after:-translate-x-1/2 after:transform after:border-l-[12px] after:border-r-[12px] after:border-t-[12px] after:border-l-transparent after:border-t-th-bkg-3 after:border-r-transparent lg:after:left-[100%] lg:after:top-1/2  lg:after:-translate-x-0 lg:after:-translate-y-1/2 lg:after:border-r-0 lg:after:border-b-[12px] lg:after:border-t-transparent lg:after:border-b-transparent lg:after:border-l-th-bkg-3'
+          : 'bg-th-bkg-2 text-th-fgd-3 md:hover:bg-th-bkg-3'
+      }`}
       onClick={() => setLeaderboardType(label)}
     >
       {icon}
@@ -279,8 +298,8 @@ const LeaderboardTypeButton = ({
           {range === '9999'
             ? t('all-time')
             : range === '29'
-              ? t('30-day')
-              : t('range-day', {
+            ? t('30-day')
+            : t('range-day', {
                 range: range,
               })}
         </span>
