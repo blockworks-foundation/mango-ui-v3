@@ -392,6 +392,7 @@
    "spanish": "Español",
    "spot": "Al contado",
    "spot-desc": "Margen al contado cotizado en USDC",
+   "spot-only": "Spot Only",
    "spread": "Propago",
    "stats": "Estadísticas",
    "stop-limit": "Límite de parada",

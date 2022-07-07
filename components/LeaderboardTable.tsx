@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import dayjs from 'dayjs'
 import { abbreviateAddress, usdFormatter } from '../utils'
-import { MedalIcon } from './icons'
+import { BtcMonoIcon, MedalIcon } from './icons'
 import { useTranslation } from 'next-i18next'
 import {
   ChartPieIcon,
@@ -20,6 +20,9 @@ const LeaderboardTable = ({ range = '29' }) => {
   const { t } = useTranslation('common')
   const [pnlLeaderboardData, setPnlLeaderboardData] = useState<any[]>([])
   const [perpPnlLeaderboardData, setPerpPnlLeaderboardData] = useState<any[]>(
+    []
+  )
+  const [spotPnlLeaderboardData, setSpotPnlLeaderboardData] = useState<any[]>(
     []
   )
   const [leaderboardType, setLeaderboardType] = useState<string>('total-pnl')
@@ -42,7 +45,7 @@ const LeaderboardTable = ({ range = '29' }) => {
     return leaderboardData
   }
 
-  const fetchPnlLeaderboard = async (range) => {
+  const fetchPnlLeaderboard = async () => {
     setLoading(true)
     try {
       const response = await fetch(
@@ -64,7 +67,7 @@ const LeaderboardTable = ({ range = '29' }) => {
     }
   }
 
-  const fetchPerpPnlLeaderboard = async (range) => {
+  const fetchPerpPnlLeaderboard = async () => {
     setLoading(true)
     try {
       const response = await fetch(
@@ -86,20 +89,51 @@ const LeaderboardTable = ({ range = '29' }) => {
     }
   }
 
+  const fetchSpotPnlLeaderboard = async () => {
+    setLoading(true)
+    const response = await fetch(
+      `https://mango-transaction-log.herokuapp.com/v3/stats/spot-pnl-leaderboard?start-date=${dayjs()
+        .hour(0)
+        .minute(0)
+        .utc()
+        .subtract(parseInt(range), 'day')
+        .format('YYYY-MM-DDThh:00:00')}`
+    )
+    const parsedResponse = await response.json()
+    const leaderboardData = await formatLeaderboardData(parsedResponse)
+    setSpotPnlLeaderboardData(leaderboardData)
+
+    setLoading(false)
+  }
+
   useEffect(() => {
     if (leaderboardType === 'total-pnl') {
-      fetchPnlLeaderboard(range)
+      fetchPnlLeaderboard()
+    } else if (leaderboardType === 'futures-only') {
+      fetchPerpPnlLeaderboard()
     } else {
-      fetchPerpPnlLeaderboard(range)
+      fetchSpotPnlLeaderboard()
     }
   }, [range, leaderboardType])
+
+  useEffect(() => {
+    fetchPerpPnlLeaderboard()
+    fetchSpotPnlLeaderboard()
+  }, [])
 
   const leaderboardData = useMemo(
     () =>
       leaderboardType === 'total-pnl'
         ? pnlLeaderboardData
-        : perpPnlLeaderboardData,
-    [leaderboardType, pnlLeaderboardData, perpPnlLeaderboardData]
+        : leaderboardType === 'futures-only'
+        ? perpPnlLeaderboardData
+        : spotPnlLeaderboardData,
+    [
+      leaderboardType,
+      pnlLeaderboardData,
+      perpPnlLeaderboardData,
+      spotPnlLeaderboardData,
+    ]
   )
 
   return (
@@ -119,6 +153,13 @@ const LeaderboardTable = ({ range = '29' }) => {
           label="futures-only"
           icon={<TrendingUpIcon className="mr-3 hidden h-6 w-6 lg:block" />}
         />
+        <LeaderboardTypeButton
+          leaderboardType={leaderboardType}
+          setLeaderboardType={setLeaderboardType}
+          range={range}
+          label="spot-only"
+          icon={<BtcMonoIcon className="mr-3 hidden h-6 w-6 lg:block" />}
+        />
       </div>
       <div className="col-span-12 lg:col-span-8">
         {!loading ? (
@@ -129,7 +170,11 @@ const LeaderboardTable = ({ range = '29' }) => {
                 acc={acc.mango_account}
                 key={acc.mango_account}
                 rawPnl={
-                  leaderboardType === 'total-pnl' ? acc.pnl : acc.perp_pnl
+                  leaderboardType === 'total-pnl'
+                    ? acc.pnl
+                    : leaderboardType === 'futures-only'
+                    ? acc.perp_pnl
+                    : acc.spot_pnl
                 }
                 pnl={
                   leaderboardType === 'total-pnl'
@@ -138,7 +183,9 @@ const LeaderboardTable = ({ range = '29' }) => {
                         currency: 'USD',
                         maximumFractionDigits: 0,
                       })
-                    : usdFormatter(acc.perp_pnl)
+                    : leaderboardType === 'futures-only'
+                    ? usdFormatter(acc.perp_pnl)
+                    : usdFormatter(acc.spot_pnl)
                 }
                 walletPk={acc.wallet_pk}
                 profile={acc.profile}
