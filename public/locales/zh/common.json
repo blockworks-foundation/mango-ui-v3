@@ -158,6 +158,8 @@
     "filter-trade-history": "过滤交易历史",
     "filters-selected": "{{selectedFilters}}个项目",
     "first-deposit-desc": "创建Mango帐户最少需要0.035 SOL。",
+    "followers": "Followers",
+    "following": "Following",
     "from": "从",
     "from-account": "From Account",
     "funding": "资金费",

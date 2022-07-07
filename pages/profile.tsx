@@ -318,9 +318,12 @@ export default function Profile() {
     }, 0)
   }, [walletMangoAccountsStats])
 
-  const accountsLoaded = !loadMangoAccounts && !initialLoad
-  const accountsStatsLoaded =
-    !loadMangoAccounts && !initialLoad && !loadMangoAccountsStats
+  const accountsLoaded = publicKey
+    ? !loadMangoAccounts && !initialLoad
+    : !loadMangoAccounts
+  const accountsStatsLoaded = publicKey
+    ? !loadMangoAccounts && !initialLoad && !loadMangoAccountsStats
+    : !loadMangoAccounts && !loadMangoAccountsStats
 
   return (
     <div className="pt-6">
@@ -491,7 +494,7 @@ export default function Profile() {
                           </p>
                         </button>
                         <a
-                          className="default-transition block flex h-[104px] w-full rounded-md border border-th-bkg-3 p-4 hover:border-th-fgd-4 sm:h-[84px] sm:justify-between sm:pb-4"
+                          className="default-transition block flex h-[104px] w-full rounded-md border border-th-bkg-4 p-4 hover:border-th-fgd-4 sm:h-[84px] sm:justify-between sm:pb-4"
                           href={`/account?pubkey=${user.mango_account.publicKey.toString()}`}
                           target="_blank"
                           rel="noopener noreferrer"
@@ -558,7 +561,7 @@ export default function Profile() {
                   followers.map((user) => {
                     return (
                       <button
-                        className="default-transition block flex w-full items-center justify-between rounded-md border border-th-bkg-3 p-4 hover:border-th-fgd-4"
+                        className="default-transition block flex w-full items-center justify-between rounded-md border border-th-bkg-4 p-4 hover:border-th-fgd-4"
                         onClick={() =>
                           router.push(
                             `/profile?pk=${user.wallet_pk}`,

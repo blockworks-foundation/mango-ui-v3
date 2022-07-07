@@ -214,7 +214,7 @@ const AccountCard = ({ rank, acc, rawPnl, profile, pnl, walletPk }) => {
         </button>
       ) : null}
       <a
-        className="default-transition block flex h-[112px] w-full rounded-md border border-th-bkg-3 p-4 hover:border-th-fgd-4 sm:h-[84px] sm:justify-between sm:pb-4"
+        className="default-transition block flex h-[112px] w-full rounded-md border border-th-bkg-4 p-4 hover:border-th-fgd-4 sm:h-[84px] sm:justify-between sm:pb-4"
         href={`/account?pubkey=${acc}`}
         target="_blank"
         rel="noopener noreferrer"
@@ -223,7 +223,7 @@ const AccountCard = ({ rank, acc, rawPnl, profile, pnl, walletPk }) => {
         <div className="relative my-auto">
           {rank < 4 ? (
             <MedalIcon
-              className="absolute -top-1 -left-1 h-5 w-auto drop-shadow-lg"
+              className="absolute -top-1 -left-1 z-10 h-5 w-auto drop-shadow-lg"
               colors={medalColors}
             />
           ) : null}

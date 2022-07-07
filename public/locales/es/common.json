@@ -158,6 +158,8 @@
    "filter-trade-history": "Filter Trade History",
    "filters-selected": "{{selectedFilters}} selected",
    "first-deposit-desc": "Necesita 0.035 SOL para crear una cuenta de mango.",
+   "followers": "Followers",
+   "following": "Following",
    "from": "From",
    "from-account": "From Account",
    "funding": "Fondos",
