@@ -390,6 +390,7 @@
    "spanish": "Español",
    "spot": "Spot",
    "spot-desc": "Spot margin quoted in USDC",
+   "spot-only": "Spot Only",
    "spread": "Spread",
    "stats": "Stats",
    "stop-limit": "Stop Limit",
