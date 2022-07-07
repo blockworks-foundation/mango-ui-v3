@@ -15,20 +15,34 @@ const ChatForm = ({
   const [messageText, setMessageText] = useState('')
   const { publicKey } = useWallet()
 
-  const onSubmitMessage = (e) => {
+  const validateMessageText = async (text) => {
+    try {
+      const response = await fetch(
+        `https://www.purgomalum.com/service/json?text=${text}&fill_char=*`
+      )
+      const profanityCheck = await response.json()
+
+      if (response.status === 200) {
+        return profanityCheck.result
+      }
+    } catch {
+      return
+    }
+  }
+
+  const onSubmitMessage = async (e) => {
+    e.preventDefault()
+    const filteredMessageText = await validateMessageText(messageText)
+
     const message = {
-      text: messageText,
+      text: filteredMessageText ? filteredMessageText : messageText,
       timestamp: new Date().getTime(),
       user: 'Profile Name',
       walletPk: publicKey?.toString(),
     }
-
-    if (publicKey) {
-      const newMessages = [...messages, message]
-      setLatestMessages(newMessages)
-      setMessageText('')
-      e.preventDefault()
-    }
+    const newMessages = [...messages, message]
+    setLatestMessages(newMessages)
+    setMessageText('')
   }
 
   const callbackRef = useCallback((inputElement) => {

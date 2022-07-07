@@ -113,6 +113,7 @@ const SideNav = ({ collapsed }) => {
           <ExpandableMenuItem
             collapsed={collapsed}
             icon={<DotsHorizontalIcon className="h-5 w-5" />}
+            pathname={pathname}
             title={t('more')}
           >
             <MenuItem
@@ -202,34 +203,36 @@ const MenuItem = ({
 }) => {
   return !isExternal ? (
     <Link href={pagePath} shallow={true}>
-      <a
-        className={`default-transition flex w-full items-center hover:brightness-[1.1] ${
-          active ? 'text-th-primary' : 'text-th-fgd-1'
-        }`}
-      >
-        <div
-          className={
-            hideIconBg
-              ? ''
-              : 'flex h-8 w-8 items-center justify-center rounded-full bg-th-bkg-3'
-          }
+      <div className="cursor-pointer">
+        <a
+          className={`default-transition flex w-full items-center hover:brightness-[1.1] ${
+            active ? 'text-th-primary' : 'text-th-fgd-1'
+          }`}
         >
-          {icon}
-        </div>
-        <Transition
-          appear={true}
-          show={!collapsed}
-          as={Fragment}
-          enter="transition-all ease-in duration-300"
-          enterFrom="opacity-50"
-          enterTo="opacity-100"
-          leave="transition ease-out duration-300"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-        >
-          <span className="ml-2">{title}</span>
-        </Transition>
-      </a>
+          <div
+            className={
+              hideIconBg
+                ? ''
+                : 'flex h-8 w-8 items-center justify-center rounded-full bg-th-bkg-3'
+            }
+          >
+            {icon}
+          </div>
+          <Transition
+            appear={true}
+            show={!collapsed}
+            as={Fragment}
+            enter="transition-all ease-in duration-300"
+            enterFrom="opacity-50"
+            enterTo="opacity-100"
+            leave="transition ease-out duration-300"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <span className="ml-2">{title}</span>
+          </Transition>
+        </a>
+      </div>
     </Link>
   ) : (
     <a
@@ -258,19 +261,21 @@ const MenuItem = ({
 }
 
 const ExpandableMenuItem = ({
+  alignBottom,
   children,
   collapsed,
-  icon,
-  title,
   hideIconBg,
-  alignBottom,
+  icon,
+  pathname,
+  title,
 }: {
+  alignBottom?: boolean
   children: ReactNode
   collapsed: boolean
-  icon: ReactNode
-  title: string | ReactNode
   hideIconBg?: boolean
-  alignBottom?: boolean
+  icon: ReactNode
+  pathname?: string
+  title: string | ReactNode
 }) => {
   const [showMenu, setShowMenu] = useState(false)
 
@@ -279,7 +284,7 @@ const ExpandableMenuItem = ({
       (!open && action === 'onMouseEnter') ||
       (open && action === 'onMouseLeave')
     ) {
-      setShowMenu(!showMenu)
+      setShowMenu(!open)
     }
   }
 
@@ -287,7 +292,7 @@ const ExpandableMenuItem = ({
     if (collapsed) {
       setShowMenu(false)
     }
-  }, [collapsed])
+  }, [collapsed, pathname])
 
   const toggleMenu = () => {
     setShowMenu(!showMenu)
@@ -320,28 +325,28 @@ const ExpandableMenuItem = ({
             {icon}
           </div>
         </Popover.Button>
-      </div>
-      <Transition
-        appear={true}
-        show={showMenu}
-        as={Fragment}
-        enter="transition-all ease-in duration-300"
-        enterFrom="opacity-0 transform scale-90"
-        enterTo="opacity-100 transform scale-100"
-        leave="transition ease-out duration-300"
-        leaveFrom="opacity-100"
-        leaveTo="opacity-0"
-      >
-        <Popover.Panel
-          className={`absolute space-y-2 rounded-md rounded-l-none border border-th-bkg-3 bg-th-bkg-1 p-4 ${
-            alignBottom
-              ? 'bottom-0 left-[55px] w-72 rounded-b-none p-0'
-              : 'left-[43px] top-1/2 w-56 -translate-y-1/2 transform'
-          }`}
+        <Transition
+          appear={true}
+          show={showMenu}
+          as={Fragment}
+          enter="transition-all ease-in duration-300"
+          enterFrom="opacity-0 transform scale-90"
+          enterTo="opacity-100 transform scale-100"
+          leave="transition ease-out duration-300"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
         >
-          {children}
-        </Popover.Panel>
-      </Transition>
+          <Popover.Panel
+            className={`absolute z-20 space-y-2 rounded-md rounded-l-none border border-th-bkg-3 bg-th-bkg-1 p-4 ${
+              alignBottom
+                ? 'bottom-0 left-[55px] w-72 rounded-b-none p-0'
+                : 'top-1/2 left-[43px] w-56 -translate-y-1/2 transform'
+            }`}
+          >
+            {children}
+          </Popover.Panel>
+        </Transition>
+      </div>
     </Popover>
   ) : (
     <Disclosure>
@@ -398,7 +403,7 @@ const ExpandableMenuItem = ({
         leaveTo="opacity-0 max-h-0"
       >
         <Disclosure.Panel className="w-full overflow-hidden">
-          <div className={`space-y-2 ${!alignBottom ? 'p-2' : ''}`}>
+          <div className={`space-y-2 ${!alignBottom ? 'p-2 pt-0' : ''}`}>
             {children}
           </div>
         </Disclosure.Panel>

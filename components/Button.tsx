@@ -46,7 +46,7 @@ export const LinkButton: FunctionComponent<ButtonProps> = ({
       disabled={disabled}
       className={`border-0 font-bold ${
         primary ? 'text-th-primary' : 'text-th-fgd-2'
-      } underline focus:outline-none disabled:cursor-not-allowed disabled:underline disabled:opacity-60 md:hover:no-underline md:hover:opacity-60 ${className}`}
+      } underline focus:outline-none disabled:cursor-not-allowed disabled:underline disabled:opacity-60 md:hover:no-underline  ${className}`}
       type={type || 'button'}
       {...props}
     >
