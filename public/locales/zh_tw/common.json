@@ -390,6 +390,7 @@
   "spanish": "Español",
   "spot": "現貨",
   "spot-desc": "現貨市場以USDC報價",
+  "spot-only": "Spot Only",
   "spread": "點差",
   "stats": "統計",
   "stop-limit": "限價止損",
