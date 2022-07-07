@@ -29,7 +29,7 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  const { t } = useTranslation('common')
+  const { t } = useTranslation(['common', 'delegate'])
   const { publicKey } = useWallet()
   const [showNewAccountForm, setShowNewAccountForm] = useState(false)
   const [newAccPublicKey, setNewAccPublicKey] = useState(null)

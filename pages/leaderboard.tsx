@@ -7,7 +7,11 @@ import ButtonGroup from 'components/ButtonGroup'
 export async function getStaticProps({ locale }) {
   return {
     props: {
-      ...(await serverSideTranslations(locale, ['common', 'profile'])),
+      ...(await serverSideTranslations(locale, [
+        'common',
+        'delegate',
+        'profile',
+      ])),
       // Will be passed to the page component as props
     },
   }

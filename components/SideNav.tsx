@@ -24,16 +24,27 @@ import { Fragment, ReactNode, useEffect, useState } from 'react'
 import { Disclosure, Popover, Transition } from '@headlessui/react'
 import HealthHeart from './HealthHeart'
 import { abbreviateAddress } from 'utils'
+import { I80F48 } from '@blockworks-foundation/mango-client'
+import useMangoStore from 'stores/useMangoStore'
 
 const SideNav = ({ collapsed }) => {
   const { t } = useTranslation('common')
   const { mangoAccount } = useMangoAccount()
+  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const [defaultMarket] = useLocalStorageState(
     DEFAULT_MARKET_KEY,
     initialMarket
   )
   const router = useRouter()
   const { pathname } = router
+
+  const I80F48_100 = I80F48.fromString('100')
+
+  const maintHealthRatio =
+    mangoAccount && mangoGroup && mangoCache
+      ? mangoAccount.getHealthRatio(mangoGroup, mangoCache, 'Maint')
+      : I80F48_100
 
   return (
     <div
@@ -172,7 +183,7 @@ const SideNav = ({ collapsed }) => {
         <div className="flex min-h-[64px] w-full items-center border-t border-th-bkg-3 ">
           <ExpandableMenuItem
             collapsed={collapsed}
-            icon={<HealthHeart health={50} size={32} />}
+            icon={<HealthHeart health={Number(maintHealthRatio)} size={32} />}
             title={
               <div className="py-3 text-left">
                 <p className="mb-0 whitespace-nowrap text-xs text-th-fgd-3">
@@ -186,7 +197,10 @@ const SideNav = ({ collapsed }) => {
             hideIconBg
             alignBottom
           >
-            <AccountOverviewPopover collapsed={collapsed} />
+            <AccountOverviewPopover
+              collapsed={collapsed}
+              health={maintHealthRatio}
+            />
           </ExpandableMenuItem>
         </div>
       ) : null}
