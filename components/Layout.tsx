@@ -155,7 +155,7 @@ const Layout = ({ children }) => {
                 <div className="flex space-x-2">
                   {mangoAccount ? (
                     <Button
-                      className="flex h-8 w-24 items-center justify-center pl-3 pr-3 text-xs"
+                      className="flex h-8 w-[86px] items-center justify-center pl-3 pr-3 text-xs"
                       onClick={() => setShowDepositModal(true)}
                     >
                       {t('deposit')}
@@ -170,8 +170,9 @@ const Layout = ({ children }) => {
                   )}
                   {canWithdraw ? (
                     <Button
-                      className="flex h-8 w-24 items-center justify-center border border-th-fgd-4 bg-transparent pl-3 pr-3 text-xs"
+                      className="flex h-8 w-[86px] items-center justify-center pl-3 pr-3 text-xs"
                       onClick={() => setShowWithdrawModal(true)}
+                      primary={false}
                     >
                       {t('withdraw')}
                     </Button>
