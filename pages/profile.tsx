@@ -79,7 +79,7 @@ export default function Profile() {
   const mangoAccounts = useMangoStore((s) => s.mangoAccounts)
   const { publicKey, connected, wallet } = useWallet()
   const router = useRouter()
-  const { pk } = router.query
+  const { name } = router.query
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.md : false
   const ownedProfile = useMangoStore((s) => s.profile.details)
@@ -92,17 +92,21 @@ export default function Profile() {
   }, [wallet])
 
   useEffect(() => {
-    setProfilePk(pk ? pk : publicKey ? publicKey.toString() : '')
+    if (profileData) {
+      setProfilePk(profileData.wallet_pk)
+    }
     setInitialFollowingLoad(false)
     setActiveTab('following')
-  }, [pk, publicKey])
+  }, [profileData])
 
   useEffect(() => {
     const fetchProfileDetails = async () => {
       setLoadProfileDetails(true)
       try {
         const response = await fetch(
-          `https://mango-transaction-log.herokuapp.com/v3/user-data/profile-details?wallet-pk=${pk}`
+          `https://mango-transaction-log.herokuapp.com/v3/user-data/profile-details?profile-name=${name
+            ?.toString()
+            .replace(/-/g, ' ')}`
         )
         const data = await response.json()
         setProfileData(data)
@@ -113,7 +117,7 @@ export default function Profile() {
         setLoadProfileDetails(false)
       }
     }
-    if (pk) {
+    if (name) {
       fetchProfileDetails()
     } else {
       if (loadOwnedProfile) {
@@ -123,7 +127,7 @@ export default function Profile() {
         setLoadProfileDetails(false)
       }
     }
-  }, [pk, loadOwnedProfile])
+  }, [name, loadOwnedProfile])
 
   useEffect(() => {
     if (mangoGroup && profilePk && !initialFollowingLoad) {
@@ -147,13 +151,13 @@ export default function Profile() {
         }
         setLoadMangoAccounts(false)
       }
-      if (pk) {
-        getProfileAccounts(pk.toString())
+      if (profilePk) {
+        getProfileAccounts(profilePk.toString())
       } else {
         setWalletMangoAccounts(mangoAccounts)
       }
     }
-  }, [pk, mangoAccounts, mangoGroup])
+  }, [profilePk, mangoAccounts, mangoGroup])
 
   useEffect(() => {
     const getAccountsStats = async () => {
@@ -175,12 +179,16 @@ export default function Profile() {
   }, [walletMangoAccounts])
 
   const fetchFollowers = async () => {
-    if (!publicKey && !pk) return
-    const profilePk = pk ? pk : publicKey ? publicKey?.toString() : null
+    if (!publicKey && !profilePk) return
+    const pubkey = profilePk
+      ? profilePk
+      : publicKey
+      ? publicKey?.toString()
+      : null
     setLoadFollowers(true)
     try {
       const followerRes = await fetch(
-        `https://mango-transaction-log.herokuapp.com/v3/user-data/followers?wallet-pk=${profilePk}`
+        `https://mango-transaction-log.herokuapp.com/v3/user-data/followers?wallet-pk=${pubkey}`
       )
       const parsedResponse = await followerRes.json()
       if (parsedResponse.length > 0) {
@@ -296,10 +304,7 @@ export default function Profile() {
 
   const canEdit = useMemo(() => {
     if (publicKey) {
-      return (
-        publicKey.toString() === profileData?.wallet_pk ||
-        publicKey.toString() === pk
-      )
+      return publicKey.toString() === profileData?.wallet_pk
     }
     return false
   }, [publicKey, profileData])
@@ -325,10 +330,17 @@ export default function Profile() {
     ? !loadMangoAccounts && !initialLoad && !loadMangoAccountsStats
     : !loadMangoAccounts && !loadMangoAccountsStats
 
-  return (
+  return name && !profileData ? (
+    <div className="mt-6 rounded-lg border border-th-bkg-3 p-6">
+      <EmptyState
+        icon={<div className="mb-4 text-2xl">🙃</div>}
+        title={t('profile:no-profile-exists')}
+      />
+    </div>
+  ) : (
     <div className="pt-6">
       <div className="flex flex-col pb-6 md:flex-row md:items-end md:justify-between md:pb-4">
-        {connected || pk ? (
+        {connected || name ? (
           <div className="flex w-full items-start justify-between md:items-end">
             <div className="flex items-start justify-between rounded-lg">
               <div className="flex flex-col sm:flex-row sm:items-center">
@@ -339,7 +351,7 @@ export default function Profile() {
                     !connected ||
                     profileData?.wallet_pk !== publicKey?.toString()
                   }
-                  publicKey={pk ? pk.toString() : undefined}
+                  publicKey={profilePk ? profilePk.toString() : undefined}
                 />
                 <div>
                   {!loadProfileDetails ? (
@@ -409,7 +421,7 @@ export default function Profile() {
           </div>
         ) : null}
       </div>
-      {connected || pk ? (
+      {connected || name ? (
         <div className="grid grid-cols-12 gap-6">
           <div className="col-span-12 lg:col-span-8">
             <div className="mb-8 grid grid-flow-col grid-cols-1 grid-rows-2 md:grid-cols-2 md:grid-rows-1 md:gap-4">
@@ -483,7 +495,10 @@ export default function Profile() {
                           className="default-transition absolute bottom-4 left-20 flex items-center space-x-2 rounded-full border border-th-fgd-4 px-2 py-1 hover:border-th-fgd-2"
                           onClick={() =>
                             router.push(
-                              `/profile?pk=${user.wallet_pk}`,
+                              `/profile?name=${user.profile_name.replace(
+                                /\s/g,
+                                '-'
+                              )}`,
                               undefined,
                               { shallow: true }
                             )
@@ -564,7 +579,10 @@ export default function Profile() {
                         className="default-transition block flex w-full items-center justify-between rounded-md border border-th-bkg-4 p-4 hover:border-th-fgd-4"
                         onClick={() =>
                           router.push(
-                            `/profile?pk=${user.wallet_pk}`,
+                            `/profile?name=${user.profile_name.replace(
+                              /\s/g,
+                              '-'
+                            )}`,
                             undefined,
                             { shallow: true }
                           )

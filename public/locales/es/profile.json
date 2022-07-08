@@ -18,6 +18,7 @@
     "no-following-desc": "The lone sheep is in danger of the wolf",
     "no-nfts": "😞 No NFTs found...",
     "profile": "Profile",
+    "no-profile-exists": "This profile doesn't exist...",
     "profile-fetch-fail": "Failed to fetch profile details",
     "profile-name": "Profile Name",
     "profile-pic-failure": "Failed to set profile pic",

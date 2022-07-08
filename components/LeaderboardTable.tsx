@@ -252,7 +252,13 @@ const AccountCard = ({ rank, acc, rawPnl, profile, pnl, walletPk }) => {
         <button
           className="absolute left-[118px] bottom-4 flex items-center space-x-2 rounded-full border border-th-fgd-4 px-2 py-1 hover:border-th-fgd-2 hover:filter"
           onClick={() =>
-            router.push(`/profile?pk=${walletPk}`, undefined, { shallow: true })
+            router.push(
+              `/profile?name=${profile?.profile_name.replace(/\s/g, '-')}`,
+              undefined,
+              {
+                shallow: true,
+              }
+            )
           }
         >
           <p className="mb-0 text-xs capitalize text-th-fgd-3">

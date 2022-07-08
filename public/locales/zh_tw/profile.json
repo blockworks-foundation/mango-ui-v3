@@ -17,6 +17,7 @@
     "no-following": "No Accounts Followed",
     "no-following-desc": "The lone sheep is in danger of the wolf",
     "no-nfts": "😞 未找到NFT...",
+    "no-profile-exists": "This profile doesn't exist...",
     "profile": "Profile",
     "profile-fetch-fail": "Failed to fetch profile details",
     "profile-name": "Profile Name",
