@@ -71,16 +71,16 @@ const Layout = ({ children }) => {
         ) : (
           <div className={isCollapsed ? 'mr-[64px]' : 'mr-[220px]'}>
             <div className={`fixed z-20 h-screen`}>
-              <IconButton
-                className="absolute -right-4 top-1/2 z-20 h-10 w-4 -translate-y-1/2 transform rounded-none rounded-r"
+              <button
+                className="absolute -right-4 top-1/2 z-20 h-10 w-4 -translate-y-1/2 transform rounded-none rounded-r bg-th-bkg-4 focus:outline-none"
                 onClick={handleToggleSidebar}
               >
                 <ChevronRightIcon
-                  className={`default-transition h-5 w-5 ${
+                  className={`default-transition h-full w-full ${
                     !isCollapsed ? 'rotate-180' : 'rotate-360'
                   }`}
                 />
-              </IconButton>
+              </button>
               <div
                 className={`h-full ${!isCollapsed ? 'overflow-y-auto' : ''}`}
               >
