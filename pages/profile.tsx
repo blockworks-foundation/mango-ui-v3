@@ -32,8 +32,6 @@ import { abbreviateAddress, formatUsdValue } from 'utils'
 import { notify } from 'utils/notifications'
 import { Label } from 'components'
 import Select from 'components/Select'
-import { useViewport } from '../hooks/useViewport'
-import { breakpoints } from '../components/TradePageGrid'
 import EmptyState from 'components/EmptyState'
 import { handleWalletConnect } from 'components/ConnectWalletButton'
 import { sign } from 'tweetnacl'
@@ -80,8 +78,6 @@ export default function Profile() {
   const { publicKey, connected, wallet } = useWallet()
   const router = useRouter()
   const { name } = router.query
-  const { width } = useViewport()
-  const isMobile = width ? width < breakpoints.md : false
   const ownedProfile = useMangoStore((s) => s.profile.details)
   const loadOwnedProfile = useMangoStore((s) => s.profile.loadDetails)
 
@@ -330,7 +326,7 @@ export default function Profile() {
     ? !loadMangoAccounts && !initialLoad && !loadMangoAccountsStats
     : !loadMangoAccounts && !loadMangoAccountsStats
 
-  return name && !profileData ? (
+  return name && !profileData && !loadProfileDetails ? (
     <div className="mt-6 rounded-lg border border-th-bkg-3 p-6">
       <EmptyState
         icon={<div className="mb-4 text-2xl">🙃</div>}
@@ -454,17 +450,15 @@ export default function Profile() {
                 )}
               </div>
             </div>
-            {isMobile ? (
-              <div className="pb-8">
-                <Accounts
-                  accounts={walletMangoAccounts}
-                  accountsStats={walletMangoAccountsStats}
-                  canEdit={canEdit}
-                  fetchFollowers={fetchFollowers}
-                  loaded={accountsLoaded}
-                />
-              </div>
-            ) : null}
+            <div className="pb-8 lg:hidden">
+              <Accounts
+                accounts={walletMangoAccounts}
+                accountsStats={walletMangoAccountsStats}
+                canEdit={canEdit}
+                fetchFollowers={fetchFollowers}
+                loaded={accountsLoaded}
+              />
+            </div>
             <Tabs
               activeTab={activeTab}
               onChange={handleTabChange}
@@ -615,17 +609,15 @@ export default function Profile() {
               ) : null}
             </div>
           </div>
-          {!isMobile ? (
-            <div className="col-span-4">
-              <Accounts
-                accounts={walletMangoAccounts}
-                accountsStats={walletMangoAccountsStats}
-                canEdit={canEdit}
-                fetchFollowers={fetchFollowers}
-                loaded={accountsLoaded}
-              />
-            </div>
-          ) : null}
+          <div className="col-span-4 hidden lg:block">
+            <Accounts
+              accounts={walletMangoAccounts}
+              accountsStats={walletMangoAccountsStats}
+              canEdit={canEdit}
+              fetchFollowers={fetchFollowers}
+              loaded={accountsLoaded}
+            />
+          </div>
         </div>
       ) : (
         <div className="-mt-4 rounded-lg border border-th-bkg-3 p-4 md:p-6">
