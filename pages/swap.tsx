@@ -9,6 +9,10 @@ import { useTranslation } from 'next-i18next'
 import { useWallet } from '@solana/wallet-adapter-react'
 import useLocalStorageState from 'hooks/useLocalStorageState'
 import dayjs from 'dayjs'
+import {
+  InformationCircleIcon,
+  LightningBoltIcon,
+} from '@heroicons/react/solid'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -53,15 +57,21 @@ export default function Swap() {
       userPublicKey={connected ? userPublicKey : undefined}
     >
       <div className="mb-1 flex flex-col items-start pt-6 pb-4 md:flex-row md:items-end md:justify-between">
-        <h1 className={`mb-1.5 md:mb-0`}>{t('swap')}</h1>
-        <div className="flex flex-col md:items-end">
-          <p className="mb-0 text-xs">{t('swap:swap-between-hundreds')}</p>
+        <div className="pb-1 md:pb-0">
+          <h1 className={`mb-1`}>{t('swap')}</h1>
+          <div className="flex items-center">
+            <InformationCircleIcon className="mr-1 h-4 w-4 text-th-fgd-4" />
+            <p className="mb-0 text-xs text-th-fgd-4">{t('swap:swap-desc')}</p>
+          </div>
+        </div>
+        <div className="flex flex-col md:items-end md:pl-4">
           <a
-            className="mb-0 text-xs text-th-fgd-2"
+            className="mb-0 flex items-center whitespace-nowrap text-xs text-th-fgd-2"
             href="https://jup.ag/swap/USDC-MNGO"
             target="_blank"
             rel="noopener noreferrer"
           >
+            <LightningBoltIcon className="mr-1 h-4 w-4 text-th-fgd-4" />
             Powered by Jupiter
           </a>
         </div>
