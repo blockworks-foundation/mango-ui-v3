@@ -38,7 +38,7 @@ const AccountOverviewPopover = ({
   return (
     <>
       {mangoAccount ? (
-        <div className="w-full">
+        <div className={`w-full ${!collapsed ? 'px-2' : ''}`}>
           {collapsed ? (
             <div className="pb-2">
               <p className="mb-0 text-xs text-th-fgd-3">{t('account')}</p>
