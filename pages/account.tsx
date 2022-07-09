@@ -337,7 +337,10 @@ export default function Account() {
                 {pubkey && mangoAccount ? (
                   profileData && !loadProfileDetails ? (
                     <Link
-                      href={`/profile?pk=${mangoAccount.owner.toString()}`}
+                      href={`/profile?name=${profileData?.profile_name.replace(
+                        /\s/g,
+                        '-'
+                      )}`}
                       shallow={true}
                     >
                       <a className="default-transition mt-2 flex items-center space-x-2 text-th-fgd-3 hover:text-th-fgd-2">
