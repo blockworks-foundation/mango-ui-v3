@@ -41,6 +41,7 @@
   "slippage": "Slippage",
   "slippage-settings": "Slippage Settings",
   "swap-between-hundreds": "Swap between 100s of tokens at the best rates.",
+  "swap-desc": "Swap interacts with your connected wallet (not your Mango Account).",
   "swap-details": "Swap Details",
   "swap-fee": "Swap Fee",
   "swap-in-wallet": "Swaps interact directly with your connected wallet, not your Mango Account.",

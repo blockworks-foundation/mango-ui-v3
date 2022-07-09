@@ -1,8 +1,8 @@
-import { useState } from 'react'
 import LeaderboardTable from '../components/LeaderboardTable'
-import ButtonGroup from 'components/ButtonGroup'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'next-i18next'
+import { useState } from 'react'
+import ButtonGroup from 'components/ButtonGroup'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -26,8 +26,8 @@ const leaderboardRangePresetLabels = leaderboardRangePresets.map((x) => x.label)
 const leaderboardRangePresetValues = leaderboardRangePresets.map((x) => x.value)
 
 export default function Leaderboard() {
-  const [leaderboardRange, setLeaderboardRange] = useState('29')
   const { t } = useTranslation('common')
+  const [leaderboardRange, setLeaderboardRange] = useState('29')
 
   return (
     <div>

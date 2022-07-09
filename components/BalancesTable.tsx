@@ -510,9 +510,9 @@ const BalancesTable = ({
                         </Td>
                         {showDepositWithdraw ? (
                           <Td>
-                            <div className="flex justify-end">
+                            <div className="flex justify-end space-x-2">
                               <Button
-                                className="h-8 pt-0 pb-0 pl-3 pr-3 text-xs"
+                                className="h-8 w-[86px] pt-0 pb-0 pl-3 pr-3 text-xs"
                                 onClick={() =>
                                   handleOpenDepositModal(balance.symbol)
                                 }
@@ -522,11 +522,12 @@ const BalancesTable = ({
                                   : t('deposit')}
                               </Button>
                               <Button
-                                className="ml-2 h-8 border border-th-fgd-4 bg-transparent pt-0 pb-0 pl-3 pr-3 text-xs text-th-fgd-2"
+                                className="h-8 w-[86px] pt-0 pb-0 pl-3 pr-3 text-xs"
                                 onClick={() =>
                                   handleOpenWithdrawModal(balance.symbol)
                                 }
                                 disabled={!canWithdraw}
+                                primary={false}
                               >
                                 {t('withdraw')}
                               </Button>

@@ -165,6 +165,10 @@ const AccountPerformance = () => {
     // Normalise chart to start from 0 (except for account value)
     if (parseInt(performanceRange) !== 90 && chartToShow !== 'account-value') {
       const startValues = Object.assign({}, stats[0])
+      // Initialize symbol not present at the start to 0
+      uniqueSymbols
+        .filter((e) => !(e in startValues))
+        .map((f) => (startValues[f] = 0))
       for (let i = 0; i < stats.length; i++) {
         for (const key in stats[i]) {
           if (key !== 'time') {

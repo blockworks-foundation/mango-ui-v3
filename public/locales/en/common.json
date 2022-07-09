@@ -158,6 +158,8 @@
    "filter-trade-history": "Filter Trade History",
    "filters-selected": "{{selectedFilters}} selected",
    "first-deposit-desc": "There is a one-time cost of 0.035 SOL when you make your first deposit. This covers the rent on the Solana Blockchain for your account.",
+   "followers": "Followers",
+   "following": "Following",
    "from": "From",
    "from-account": "From Account",
    "funding": "Funding",
