@@ -57,7 +57,7 @@ export const ConnectWalletButton: React.FC = () => {
   const profileDetails = useMangoStore((s) => s.profile.details)
   const loadProfileDetails = useMangoStore((s) => s.profile.loadDetails)
   const { width } = useViewport()
-  const isMobile = width ? width < breakpoints.sm : false
+  const isMobile = width ? width < breakpoints.md : false
 
   useEffect(() => {
     if (publicKey) {
