@@ -65,11 +65,7 @@ html .tv-spinner {
 /* header buttons */
 
 html .group-wWM3zP_M {
-  background-color: var(--bkg-dark);
-  border-radius: 50%;
-  margin-left: 8px;
-  transform: scale(0.75);
-  width: 38px;
+  background-color: transparent;
 }
 
 .group-wWM3zP_M:first-child {
@@ -125,6 +121,7 @@ html .item-2xPVYue0.isActive-2j-GhQs_:hover {
 
 .wrapper-3ePvQMAQ {
   background: var(--black);
+  border-radius: 8px;
 }
 
 .close-3NTwKnT_ {
@@ -167,14 +164,6 @@ html .container-1e-eHKCj:not(.disabled-3lywlGlv):hover .highlighted-3Ob1jr_R {
 
 html .button-263WXsg- .icon-1Y-3MM9F {
   transform: scale(0.8);
-}
-
-html .button-263WXsg- .bg-1kRv1Pf2 {
-  border-radius: 50%;
-}
-
-html .button-263WXsg- .bg-1kRv1Pf2:hover {
-  background-color: var(--bkg-dark);
 }
 
 html .container-3_8ayT2Q:hover .arrow-WcYWFXUn {
@@ -229,6 +218,14 @@ html .tv-grouped-floating-toolbar__widget-wrapper:hover {
   background-color: var(--bkg-light);
 }
 
+/* modal */
+
+html .tv-dialog {
+  background-color: var(--black);
+  border: 1px solid var(--bkg-light);
+  border-radius: 8px;
+}
+
 /* modal tabs */
 
 html .tab-1Yr0rq0J.active-37sipdzm {
@@ -245,6 +242,19 @@ html .tab-1l4dFt6c.withHover-1_-qVdZP:hover {
 }
 
 /* modal primary button */
+
+html .tv-button--primary, html .tv-button--primary_ghost {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  color: var(--black);
+}
+
+html .tv-button--primary:hover, html .tv-button--primary_ghost:hover {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  color: var(--black);
+  filter: brightness(110%);
+}
 
 html .appearance-default-dMjF_2Hu.intent-primary-1-IOYcbg,
 html .appearance-default-dMjF_2Hu.intent-primary-1-IOYcbg:link,
@@ -343,6 +353,10 @@ html
   box-shadow: none !important;
 }
 
+.tv-control-input:focus {
+  border-color: var(--primary)!important;
+}
+
 /* dropdown */
 
 html .container-AqxbM340.intent-primary-npIFDxc3 {
@@ -389,6 +403,48 @@ html .item-stVdeCwG.interactive-3E0jwVyG:active {
   background-color: var(--bkg-dark);
 }
 
+/* Load layout */
+
+html .itemRow-3JQtg1cT.active-2Ne8Zyok {
+  background-color: var(--primary);
+}
+
+.favorite-2V8VHwKe.active-3pQAvYvT, html .favorite-2V8VHwKe.active-3pQAvYvT {
+  color: var(--black);
+}
+
+html .itemRow-3JQtg1cT .itemInfo-3NQvH05Z .title-utNMTX_N.active-2Ne8Zyok {
+  color: var(--black);
+}
+
+html .itemRow-3JQtg1cT .itemInfo-3NQvH05Z .details-1rOd8IMz.active-2Ne8Zyok {
+  color: var(--black);
+}
+
+.button-1scLo53s.active-2T0ofIIp, html .button-1scLo53s.active-2T0ofIIp {
+  color: var(--black);
+}
+
+html .button-1scLo53s.active-2T0ofIIp:hover {
+  background-color: rgba(0,0,0,0.1);
+}
+
+/* Confirm delete */
+
+/* Buttons */
+
+html .tv-button--success, html .tv-button--success_ghost {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  color: var(--black);
+}
+
+html .tv-button--success:hover, html .tv-button--success_ghost:hover {
+  background-color: var(--primary);
+  color: var(--black);
+  filter: brightness(110%);
+}
+
 /* dark theme */
 
 html.theme-dark .chart-page {
@@ -406,11 +462,7 @@ html.theme-dark .tv-spinner {
 /* header buttons */
 
 html.theme-dark .group-wWM3zP_M {
-  background-color: var(--bkg-light);
-  border-radius: 50%;
-  margin-left: 8px;
-  transform: scale(0.75);
-  width: 38px;
+  background-color: transparent;
 }
 
 /* Spacer between header buttons */
@@ -460,14 +512,6 @@ html.theme-dark .item-2xPVYue0.isActive-2j-GhQs_:hover {
 
 /* indicators panel */
 
-.wrapper-3ePvQMAQ {
-  background: var(--black);
-}
-
-.close-3NTwKnT_ {
-  color: var(--text);
-}
-
 html.theme-dark .close-3NTwKnT_:hover {
   background: transparent;
   color: var(--primary);
@@ -508,14 +552,6 @@ html.theme-dark
 
 html.theme-dark .button-263WXsg- .icon-1Y-3MM9F  {
   transform: scale(0.8);
-}
-
-html.theme-dark .button-263WXsg- .bg-1kRv1Pf2 {
-  border-radius: 50%;
-}
-
-html.theme-dark .button-263WXsg- .bg-1kRv1Pf2:hover {
-  background-color: var(--bkg-light);
 }
 
 html.theme-dark .container-3_8ayT2Q:hover .arrow-WcYWFXUn {
@@ -570,6 +606,14 @@ html.theme-dark .tv-grouped-floating-toolbar__widget-wrapper:hover {
   background-color: var(--bkg-light);
 }
 
+/* modal */
+
+html.theme-dark .tv-dialog {
+  background-color: var(--black);
+  border: 1px solid var(--bkg-light);
+  border-radius: 8px;
+}
+
 /* modal tabs */
 
 html.theme-dark .tab-1Yr0rq0J.active-37sipdzm {
@@ -586,6 +630,19 @@ html.theme-dark .tab-1l4dFt6c.withHover-1_-qVdZP:hover {
 }
 
 /* modal primary button */
+
+html.theme-dark .tv-button--primary, html.theme-dark .tv-button--primary_ghost {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  color: var(--black);
+}
+
+html.theme-dark .tv-button--primary:hover, html.theme-dark .tv-button--primary_ghost:hover {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  color: var(--black);
+  filter: brightness(110%);
+}
 
 html.theme-dark .appearance-default-dMjF_2Hu.intent-primary-1-IOYcbg,
 html.theme-dark .appearance-default-dMjF_2Hu.intent-primary-1-IOYcbg:link,
@@ -670,6 +727,12 @@ html.theme-dark
 
 /* input */
 
+html.theme-dark .tv-control-input {
+  background-color: var(--black);
+  border-color: var(--white);
+  color: var(--white);
+}
+
 html.theme-dark .inputWithErrorWrapper-3VldItns.focused-3rk113Ah {
   border-color: var(--primary);
 }
@@ -724,6 +787,48 @@ html.theme-dark .item-stVdeCwG.interactive-3E0jwVyG.hovered-2HCCgw6c,
 html.theme-dark .item-stVdeCwG.interactive-3E0jwVyG:active {
   background-color: transparent;
   color: var(--primary);
+}
+
+/* Load layout */
+
+html.theme-dark .itemRow-3JQtg1cT.active-2Ne8Zyok {
+  background-color: var(--primary);
+}
+
+.favorite-2V8VHwKe.active-3pQAvYvT, html.theme-dark .favorite-2V8VHwKe.active-3pQAvYvT {
+  color: var(--black);
+}
+
+html.theme-dark .itemRow-3JQtg1cT .itemInfo-3NQvH05Z .title-utNMTX_N.active-2Ne8Zyok {
+  color: var(--black);
+}
+
+html.theme-dark .itemRow-3JQtg1cT .itemInfo-3NQvH05Z .details-1rOd8IMz.active-2Ne8Zyok {
+  color: var(--black);
+}
+
+.button-1scLo53s.active-2T0ofIIp, html.theme-dark .button-1scLo53s.active-2T0ofIIp {
+  color: var(--black);
+}
+
+html.theme-dark .button-1scLo53s.active-2T0ofIIp:hover {
+  background-color: rgba(0,0,0,0.1);
+}
+
+/* Confirm delete */
+
+/* Buttons */
+
+html.theme-dark .tv-button--success, html.theme-dark .tv-button--success_ghost {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  color: var(--black);
+}
+
+html.theme-dark .tv-button--success:hover, html.theme-dark .tv-button--success_ghost:hover {
+  background-color: var(--primary);
+  color: var(--black);
+  filter: brightness(110%);
 }
 
 @media screen and (max-width: 640px) {
