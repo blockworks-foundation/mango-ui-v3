@@ -24,6 +24,7 @@ import {
   msrmMints,
   MangoAccountLayout,
   BlockhashTimes,
+  MarketMode,
 } from '@blockworks-foundation/mango-client'
 import { AccountInfo, Commitment, Connection, PublicKey } from '@solana/web3.js'
 import { EndpointInfo } from '../@types/types'
@@ -1114,13 +1115,37 @@ const useMangoStore = create<
         },
         async fetchMarketsInfo() {
           const set = get().set
+          const groupConfig = get().selectedMangoGroup.config
+          const mangoGroup = get().selectedMangoGroup.current
+
           try {
             const data = await fetch(
               `https://mango-all-markets-api.herokuapp.com/markets/`
             )
 
             if (data?.status === 200) {
-              const parsedMarketsInfo = await data.json()
+              const parsedMarketsInfo = (await data.json()).filter((market) => {
+                const marketKind = market.name.includes('PERP')
+                  ? 'perp'
+                  : 'spot'
+
+                const marketConfig = getMarketByBaseSymbolAndKind(
+                  groupConfig,
+                  market.baseSymbol,
+                  marketKind
+                )
+                if (!marketConfig || !marketConfig.publicKey) return false
+
+                const marketMode: MarketMode =
+                  mangoGroup?.tokens[marketConfig.marketIndex][
+                    marketKind + 'MarketMode'
+                  ]
+                const isInactive =
+                  marketMode == MarketMode.ForceCloseOnly ||
+                  marketMode == MarketMode.Inactive
+
+                return !isInactive
+              })
 
               set((state) => {
                 state.marketsInfo = parsedMarketsInfo
