@@ -349,3 +349,17 @@ export const isValidSolanaAddress = (address: string) => {
     return false
   }
 }
+
+export const delistedMarkets = [
+  { key: 'BCJrpvsB2BJtqiDgKVC4N6gyX1y24Jz96C6wMraYmXss', name: 'LUNA-PERP', decimals: 6 },
+  { key: 'HBTu8hNaoT3VyiSSzJYa8jwt9sDGKtJviSwFa11iXdmE', name: 'LUNA/USDC', decimals: 6 },
+  { key: '6fc7v3PmjZG9Lk2XTot6BywGyYLkBQuzuFKd4FpCsPxk', name: 'COPE/USDC', decimals: 6 },
+];
+
+export const getDelistedMarketKey = (name: string) => {
+  return (delistedMarkets.find(x => x.name == name)?.key ?? '');
+}
+
+export const getDelistedMarketName = (key: string) => {
+  return (delistedMarkets.find(x => x.key == key)?.name ?? '');
+}
