@@ -15,6 +15,7 @@ import {
   actionsSelector,
   connectionSelector,
   mangoAccountSelector,
+  mangoGroupSelector,
   marketConfigSelector,
   marketSelector,
   marketsSelector,
@@ -72,13 +73,18 @@ const useHydrateStore = () => {
   const selectedMarket = useMangoStore(marketSelector)
   const connection = useMangoStore(connectionSelector)
   const mangoAccount = useMangoStore(mangoAccountSelector)
+  const mangoGroup = useMangoStore(mangoGroupSelector)
   const { wallet } = useWallet()
 
   // Fetches mango group as soon as page loads
   useEffect(() => {
     actions.fetchMangoGroup()
-    actions.fetchMarketsInfo()
   }, [actions])
+
+  // Fetch markets info once mango group is loaded
+  useEffect(() => {
+    actions.fetchMarketsInfo()
+  }, [mangoGroup])
 
   useInterval(() => {
     actions.fetchMangoGroupCache()
