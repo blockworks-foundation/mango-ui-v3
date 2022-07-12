@@ -1015,10 +1015,10 @@
     "@babel/helper-validator-identifier" "^7.16.7"
     to-fast-properties "^2.0.0"
 
-"@blockworks-foundation/mango-client@^3.6.6":
-  version "3.6.7"
-  resolved "https://registry.yarnpkg.com/@blockworks-foundation/mango-client/-/mango-client-3.6.7.tgz#ecc59bfc41af20cb0699f588e5477634b40cbbd7"
-  integrity sha512-AKPFzkDArQ4w1eO9xYQPwXoxuzpKNKWyryDmtNLm3YSgzpNQbKAfD6VH9Hxw3m3Kcq5YzYH9pIHSae+qFgOTvw==
+"@blockworks-foundation/mango-client@^3.6.8":
+  version "3.6.8"
+  resolved "https://registry.yarnpkg.com/@blockworks-foundation/mango-client/-/mango-client-3.6.8.tgz#8662cae35d5ef392ddf9d2c28184e7fef4b4e3e6"
+  integrity sha512-SEPdw9Jgw+AxF82XGUK+Am5JRfDVPeMfzcsz1GWQ9dMVTFCrrdk4fjn0h4NPSAwJ2jNXJnjRt188MwUp4+/CMg==
   dependencies:
     "@project-serum/anchor" "^0.21.0"
     "@project-serum/serum" "0.13.55"
