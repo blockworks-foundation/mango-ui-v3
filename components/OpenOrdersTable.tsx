@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { PencilIcon, TrashIcon, XIcon } from '@heroicons/react/solid'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -581,8 +581,12 @@ const OpenOrdersTable = () => {
     }
   }
 
+  const sortedOpenOrders = useMemo(() => {
+    return [...openOrders].sort((a, b) => b.price - a.price)
+  }, [openOrders])
+
   const tableProps = {
-    openOrders,
+    openOrders: sortedOpenOrders,
     cancelledOrderId: cancelId,
     editOrderIndex,
     handleCancelOrder,
