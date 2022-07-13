@@ -1147,8 +1147,26 @@ const useMangoStore = create<
                 return !isInactive
               })
 
+              const allMarkets = [
+                ...groupConfig.perpMarkets,
+                ...groupConfig.spotMarkets,
+              ]
+              const apiMarketSymbols = parsedMarketsInfo.map(
+                (m) => m.baseSymbol
+              )
+
+              const allMarketsInfo = [...parsedMarketsInfo]
+              for (const market of allMarkets) {
+                if (!apiMarketSymbols.includes(market.baseSymbol)) {
+                  allMarketsInfo.push({
+                    baseSymbol: market.baseSymbol,
+                    name: market.name,
+                  })
+                }
+              }
+
               set((state) => {
-                state.marketsInfo = parsedMarketsInfo
+                state.marketsInfo = allMarketsInfo
               })
             }
           } catch (e) {

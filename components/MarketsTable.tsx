@@ -219,7 +219,7 @@ const MarketsTable = ({
                         width={104}
                       />
                     ) : (
-                      t('unavailable')
+                      <span className="text-th-fgd-4">{t('unavailable')}</span>
                     )
                   ) : (
                     <div className="h-10 w-[104px] animate-pulse rounded bg-th-bkg-3" />
@@ -379,7 +379,7 @@ const MarketsTable = ({
 }
 
 const COLORS = {
-  GREEN: { Mango: '#AFD803', Dark: '5EBF4d', Light: '5EBF4d' },
+  GREEN: { Mango: '#AFD803', Dark: '#5EBF4d', Light: '#5EBF4d' },
   RED: { Mango: '#F84638', Dark: '#CC2929', Light: '#CC2929' },
 }
 
