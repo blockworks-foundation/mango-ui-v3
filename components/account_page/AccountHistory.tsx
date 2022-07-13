@@ -24,7 +24,7 @@ import {
 } from '../TableElements'
 import { LinkButton } from '../Button'
 import { useSortableData } from '../../hooks/useSortableData'
-import { formatUsdValue } from '../../utils'
+import { formatUsdValue, getDelistedMarketKey } from '../../utils'
 import Tooltip from '../Tooltip'
 import { exportDataToCSV } from '../../utils/export'
 import { notify } from '../../utils/notifications'
@@ -349,14 +349,20 @@ const LiquidationHistoryTable = ({ history, view }) => {
                 let perpMarket: PerpMarket | null = null
                 if (activity_type.includes('perp')) {
                   const symbol = activity_details.perp_market.split('-')[0]
+                  
                   const marketConfig = getMarketByBaseSymbolAndKind(
                     groupConfig,
                     symbol,
                     'perp'
                   )
-                  perpMarket = markets[
-                    marketConfig.publicKey.toString()
-                  ] as PerpMarket
+
+                  if (marketConfig && marketConfig.publicKey) {
+                    perpMarket = markets[
+                      marketConfig.publicKey.toString()
+                    ] as PerpMarket
+                  } else {
+                    perpMarket = markets[getDelistedMarketKey(symbol)] as PerpMarket
+                  }
                 }
 
                 const [assetGained, assetLost] = parseActivityDetails(
