@@ -309,7 +309,7 @@ export default function RiskCalculator() {
               Math.pow(10, spotMarketConfig.baseDecimals)
             : 0
       }
-      if (!symbol) return
+      if (!symbol) continue
       // Retrieve perp positions if present
       const perpPosition = mangoAccount?.perpAccounts[i] || null
       const basePosition =
