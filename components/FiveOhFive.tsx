@@ -35,14 +35,14 @@ export const FiveOhFive = ({ error }) => {
   const Icon = showDetails ? ChevronDownIcon : ChevronRightIcon
 
   return (
-    <div className="bg-bg-texture flex min-h-screen flex-col bg-cover bg-bottom bg-no-repeat">
-      <div className="h-2 w-screen bg-gradient-to-r from-mango-theme-green via-mango-theme-yellow-dark to-mango-theme-red-dark"></div>
-      <main className="my-[-2] mx-auto w-full max-w-7xl flex-grow px-4 sm:px-6 lg:px-8">
+    <div className="flex h-screen flex-col bg-th-bkg-1">
+      <div className="absolute top-0 h-2 w-full bg-gradient-to-r from-mango-theme-green via-mango-theme-yellow-dark to-mango-theme-red-dark"></div>
+      <main className="mx-auto w-full max-w-7xl flex-grow px-4 sm:px-6 lg:px-8">
         <div className="flex-shrink-0 pt-16">
           <img
             className="mx-auto h-12 w-auto"
-            src="/assets/logotext.svg"
-            alt="Workflow"
+            src="/assets/icons/mngo.svg"
+            alt="Logo"
           />
         </div>
         <div className="mx-auto max-w-xl py-16 sm:py-24">
@@ -50,10 +50,10 @@ export const FiveOhFive = ({ error }) => {
             <p className="text-sm font-semibold uppercase tracking-wide">
               <GradientText>500 error</GradientText>
             </p>
-            <h1 className="mt-2 text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
+            <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-white sm:text-5xl">
               Something went wrong
             </h1>
-            <p className="mt-2 text-lg text-gray-500">
+            <p className="mt-2 text-base text-th-fgd-3">
               The page you are looking for could not be loaded.
             </p>
           </div>
@@ -109,7 +109,7 @@ export const FiveOhFive = ({ error }) => {
         </div>
       </main>
       <footer className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="border-t border-gray-200 py-10 text-center md:flex md:justify-between">
+        <div className="border-t border-th-bkg-4 py-10 text-center md:flex md:justify-between">
           <div className="mt-6 flex justify-center space-x-8 md:mt-0">
             {social.map((item, itemIdx) => (
               <a
@@ -124,7 +124,7 @@ export const FiveOhFive = ({ error }) => {
           </div>
         </div>
       </footer>
-      <div className="h-2 w-screen bg-gradient-to-r from-mango-theme-green via-mango-theme-yellow-dark to-mango-theme-red-dark"></div>
+      <div className="absolute bottom-0 h-2 w-full bg-gradient-to-r from-mango-theme-green via-mango-theme-yellow-dark to-mango-theme-red-dark"></div>
     </div>
   )
 }
