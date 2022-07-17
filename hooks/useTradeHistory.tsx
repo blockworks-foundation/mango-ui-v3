@@ -9,7 +9,7 @@ import {
   marketConfigSelector,
 } from '../stores/selectors'
 import useMangoStore from '../stores/useMangoStore'
-import { getDelistedMarketName, perpContractPrecision } from '../utils'
+import { perpContractPrecision } from '../utils'
 
 const byTimestamp = (a, b) => {
   return (
@@ -27,8 +27,6 @@ function getMarketName(event) {
     const marketInfo = getMarketByPublicKey(mangoGroupConfig, event.address)
     if (marketInfo) {
       marketName = marketInfo.name
-    } else {
-      marketName = getDelistedMarketName(event.address)
     }
   }
   return event.marketName || marketName

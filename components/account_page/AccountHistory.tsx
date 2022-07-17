@@ -26,7 +26,7 @@ import {
 } from '../TableElements'
 import { LinkButton } from '../Button'
 import { useSortableData } from '../../hooks/useSortableData'
-import { formatUsdValue, getDelistedMarketKey } from '../../utils'
+import { formatUsdValue } from '../../utils'
 import Tooltip from '../Tooltip'
 import { exportDataToCSV } from '../../utils/export'
 import { notify } from '../../utils/notifications'
@@ -344,7 +344,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
                       marketConfig.publicKey.toString()
                     ] as PerpMarket
                   } else {
-                    perpMarket = markets[getDelistedMarketKey(symbol)] as PerpMarket
+                    perpMarket = markets[marketConfig.publicKey.toBase58()] as PerpMarket
                   }
                 }
 
