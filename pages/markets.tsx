@@ -1,6 +1,4 @@
 import { useState } from 'react'
-import PageBodyContainer from '../components/PageBodyContainer'
-import TopBar from '../components/TopBar'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'next-i18next'
 import { PerpMarketsTable, SpotMarketsTable } from '../components/MarketsTable'
@@ -15,7 +13,11 @@ const TABS = ['futures', 'spot']
 export async function getStaticProps({ locale }) {
   return {
     props: {
-      ...(await serverSideTranslations(locale, ['common', 'profile'])),
+      ...(await serverSideTranslations(locale, [
+        'common',
+        'delegate',
+        'profile',
+      ])),
       // Will be passed to the page component as props
     },
   }
@@ -37,47 +39,44 @@ export default function Markets() {
   }
 
   return (
-    <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
-      <TopBar />
-      <PageBodyContainer>
-        <div className="flex flex-col py-4 sm:flex-row md:pb-4 md:pt-10">
-          <h1>{t('markets')}</h1>
-        </div>
-        <div className="md:rounded-lg md:bg-th-bkg-2 md:p-6">
-          <div className="mb-0 sm:mb-6">
-            {!isMobile ? (
-              <Tabs
-                activeTab={activeTab}
-                onChange={handleTabChange}
-                tabs={TABS}
-              />
-            ) : (
-              <SwipeableTabs
-                onChange={handleChangeViewIndex}
-                items={TABS}
-                tabIndex={viewIndex}
-                width="w-full"
-              />
-            )}
-          </div>
+    <div className="pt-6">
+      <div className="flex flex-col pb-4 sm:flex-row">
+        <h1>{t('markets')}</h1>
+      </div>
+      <div>
+        <div className="mb-0 sm:mb-6">
           {!isMobile ? (
-            activeTab === 'futures' ? (
-              <PerpMarketsTable />
-            ) : (
-              <SpotMarketsTable />
-            )
+            <Tabs
+              activeTab={activeTab}
+              onChange={handleTabChange}
+              tabs={TABS}
+            />
           ) : (
-            <Swipeable index={viewIndex} onChangeIndex={handleChangeViewIndex}>
-              <div className="px-1">
-                <PerpMarketsTable />
-              </div>
-              <div className="px-1">
-                <SpotMarketsTable />
-              </div>
-            </Swipeable>
+            <SwipeableTabs
+              onChange={handleChangeViewIndex}
+              items={TABS}
+              tabIndex={viewIndex}
+              width="w-full"
+            />
           )}
         </div>
-      </PageBodyContainer>
+        {!isMobile ? (
+          activeTab === 'futures' ? (
+            <PerpMarketsTable />
+          ) : (
+            <SpotMarketsTable />
+          )
+        ) : (
+          <Swipeable index={viewIndex} onChangeIndex={handleChangeViewIndex}>
+            <div className="px-1">
+              <PerpMarketsTable />
+            </div>
+            <div className="px-1">
+              <SpotMarketsTable />
+            </div>
+          </Swipeable>
+        )}
+      </div>
     </div>
   )
 }

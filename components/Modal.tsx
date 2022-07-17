@@ -1,6 +1,6 @@
 import React from 'react'
 import { Portal } from 'react-portal'
-import { XIcon } from '@heroicons/react/outline'
+import { XIcon } from '@heroicons/react/solid'
 
 const Modal: any = React.forwardRef<any, any>((props, ref) => {
   const {
@@ -16,7 +16,7 @@ const Modal: any = React.forwardRef<any, any>((props, ref) => {
   return (
     <Portal>
       <div
-        className="fixed inset-0 z-40 overflow-y-auto sm:py-8"
+        className="fixed inset-0 z-40 overflow-y-auto"
         aria-labelledby="modal-title"
         role="dialog"
         aria-modal="true"
@@ -41,7 +41,7 @@ const Modal: any = React.forwardRef<any, any>((props, ref) => {
 
           {isOpen ? (
             <div
-              className={`inline-block min-h-screen bg-th-bkg-2 text-left
+              className={`inline-block min-h-screen border border-th-bkg-3 bg-th-bkg-1 text-left
               sm:min-h-full sm:rounded-lg ${
                 noPadding ? '' : 'px-8 pt-6 pb-6'
               } w-full transform align-middle shadow-lg transition-all sm:max-w-md ${className}`}
@@ -51,7 +51,7 @@ const Modal: any = React.forwardRef<any, any>((props, ref) => {
                 <div className="">
                   <button
                     onClick={onClose}
-                    className={`absolute right-4 top-4 text-th-fgd-1 hover:text-th-primary focus:outline-none md:right-2 md:top-2`}
+                    className={`absolute right-4 top-4 text-th-fgd-1 focus:outline-none md:right-2 md:top-2 md:hover:text-th-primary`}
                   >
                     <XIcon className={`h-5 w-5`} />
                   </button>

@@ -6,7 +6,7 @@ import ButtonGroup from './ButtonGroup'
 import { numberCompacter, numberFormatter } from './SwapTokenInfo'
 import Button, { IconButton } from './Button'
 import Input from './Input'
-import { SearchIcon, XIcon } from '@heroicons/react/outline'
+import { SearchIcon, XIcon } from '@heroicons/react/solid'
 import { useTranslation } from 'next-i18next'
 import { ExpandableRow } from './TableElements'
 
@@ -36,8 +36,9 @@ const SwapTokenInsights = ({ formState, jupiterTokens, setOutputToken }) => {
       `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${ids.toString()}&order=market_cap_desc&sparkline=false&price_change_percentage=24h,7d,30d`
     )
     const data = await response.json()
+    const filterMicroVolume = data.filter((token) => token.total_volume > 10000)
     setLoading(false)
-    setTokenInsights(data)
+    setTokenInsights(filterMicroVolume)
   }
 
   useEffect(() => {

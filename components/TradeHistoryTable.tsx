@@ -28,7 +28,7 @@ import {
   InformationCircleIcon,
   RefreshIcon,
   SaveIcon,
-} from '@heroicons/react/outline'
+} from '@heroicons/react/solid'
 import { fetchHourlyPerformanceStats } from './account_page/AccountOverview'
 import useMangoStore from '../stores/useMangoStore'
 import Loading from './Loading'
@@ -190,7 +190,7 @@ const TradeHistoryTable = ({
                   </div>
                 }
               >
-                <InformationCircleIcon className="ml-1.5 h-5 w-5 cursor-pointer text-th-fgd-3" />
+                <InformationCircleIcon className="ml-1.5 h-5 w-5 cursor-pointer text-th-fgd-4" />
               </Tooltip>
             ) : null}
           </div>
@@ -245,7 +245,7 @@ const TradeHistoryTable = ({
                   <SaveIcon className={`mr-1.5 h-4 w-4`} />
                   {t('export-trades-csv')}
                   <Tooltip content={t('trade-export-disclaimer')}>
-                    <InformationCircleIcon className="ml-1.5 h-5 w-5 cursor-help text-th-fgd-3" />
+                    <InformationCircleIcon className="ml-1.5 h-5 w-5 cursor-help text-th-fgd-4" />
                   </Tooltip>
                 </a>
               </div>
@@ -494,7 +494,7 @@ const TradeHistoryTable = ({
                 </>
               ) : (
                 <div className="mb-6">
-                  <div className="border-b border-th-bkg-4">
+                  <div className="border-b border-th-bkg-3">
                     {paginatedData.map((trade: any, index) => (
                       <ExpandableRow
                         buttonTemplate={
@@ -598,11 +598,11 @@ const TradeHistoryTable = ({
                 </div>
               )
             ) : hasActiveFilter ? (
-              <div className="w-full rounded-md bg-th-bkg-1 py-6 text-center text-th-fgd-3">
+              <div className="w-full rounded-md border border-th-bkg-3 py-6 text-center text-th-fgd-3">
                 {t('no-trades-found')}
               </div>
             ) : (
-              <div className="w-full rounded-md bg-th-bkg-1 py-6 text-center text-th-fgd-3">
+              <div className="w-full rounded-md border border-th-bkg-3 py-6 text-center text-th-fgd-3">
                 {t('no-history')}
                 {asPath === '/account' ? (
                   <Link href={'/'} shallow={true}>

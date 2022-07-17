@@ -1,7 +1,6 @@
 import { Fragment, useCallback, useMemo, useRef, useState } from 'react'
 import { Popover, Transition } from '@headlessui/react'
-import { SearchIcon } from '@heroicons/react/outline'
-import { ChevronDownIcon } from '@heroicons/react/solid'
+import { ChevronDownIcon, SearchIcon } from '@heroicons/react/solid'
 import Input from './Input'
 import { useTranslation } from 'next-i18next'
 import MarketNavItem from './MarketNavItem'
@@ -61,7 +60,7 @@ const SwitchMarketDropdown = () => {
       {({ open }) => (
         <div className="relative flex flex-col">
           <Popover.Button
-            className={`border border-th-bkg-3 p-0.5 transition-none hover:border-th-bkg-4 focus:border-th-bkg-4 focus:outline-none ${
+            className={`default-transition border border-th-fgd-4 p-0.5 transition-none hover:border-th-fgd-3 focus:border-th-fgd-4 focus:outline-none ${
               open && 'border-th-fgd-4'
             }`}
             ref={buttonRef}
@@ -103,7 +102,7 @@ const SwitchMarketDropdown = () => {
             leaveTo="opacity-0"
           >
             <Popover.Panel
-              className="thin-scroll absolute left-0 top-14 z-10 max-h-[50vh] w-72 transform overflow-y-auto rounded-b-md rounded-tl-md bg-th-bkg-3 p-4 sm:max-h-[75vh]"
+              className="thin-scroll absolute left-0 top-14 z-10 max-h-[50vh] w-72 transform overflow-y-auto rounded-b-md rounded-tl-md bg-th-bkg-2 p-4 sm:max-h-[75vh]"
               tabIndex={-1}
             >
               <div className="hidden pb-2.5 sm:block">

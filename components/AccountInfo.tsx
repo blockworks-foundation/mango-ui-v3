@@ -8,11 +8,10 @@ import {
 } from '@blockworks-foundation/mango-client'
 import { useCallback, useState } from 'react'
 import {
+  BellIcon,
   ExclamationIcon,
   ExternalLinkIcon,
-  HeartIcon,
 } from '@heroicons/react/solid'
-import { BellIcon } from '@heroicons/react/outline'
 import useMangoStore, { MNGO_INDEX } from '../stores/useMangoStore'
 import { abbreviateAddress, formatUsdValue, usdFormatter } from '../utils'
 import { notify } from '../utils/notifications'
@@ -31,6 +30,7 @@ import Loading from './Loading'
 import CreateAlertModal from './CreateAlertModal'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useRouter } from 'next/router'
+import HealthHeart from './HealthHeart'
 
 const I80F48_100 = I80F48.fromString('100')
 
@@ -131,11 +131,6 @@ export default function AccountInfo() {
       ? mangoAccount.getHealthRatio(mangoGroup, mangoCache, 'Maint')
       : I80F48_100
 
-  const initHealthRatio =
-    mangoAccount && mangoGroup && mangoCache
-      ? mangoAccount.getHealthRatio(mangoGroup, mangoCache, 'Init')
-      : I80F48_100
-
   const maintHealth =
     mangoAccount && mangoGroup && mangoCache
       ? mangoAccount.getHealth(mangoGroup, mangoCache, 'Maint')
@@ -193,7 +188,7 @@ export default function AccountInfo() {
         ) : null}
         <div>
           {mangoAccount ? (
-            <div className="-mt-2 flex justify-center text-xs">
+            <div className="-mt-2 mb-2 flex justify-center text-xs">
               <a
                 className="flex items-center text-th-fgd-4 hover:text-th-primary"
                 href={`https://explorer.solana.com/address/${mangoAccount?.publicKey}`}
@@ -208,10 +203,39 @@ export default function AccountInfo() {
           <div>
             <div className="flex justify-between pb-2">
               <div className="font-normal leading-4 text-th-fgd-3">
-                {t('equity')}
+                {t('value')}
               </div>
               <div className="text-th-fgd-1">
                 {initialLoad ? <DataLoader /> : formatUsdValue(+equity)}
+              </div>
+            </div>
+            <div className="flex justify-between pb-2">
+              <Tooltip
+                content={
+                  <div>
+                    {t('tooltip-account-liquidated')}{' '}
+                    <a
+                      href="https://docs.mango.markets/mango/health-overview"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {t('learn-more')}
+                    </a>
+                  </div>
+                }
+              >
+                <div className="default-transition cursor-help border-b border-dashed border-th-fgd-3 border-opacity-20 font-normal leading-4 text-th-fgd-3 hover:border-th-bkg-2">
+                  {t('health')}
+                </div>
+              </Tooltip>
+              <div className="flex items-center space-x-2">
+                <HealthHeart size={24} health={Number(maintHealthRatio)} />
+                <div className="text-th-fgd-1">
+                  {maintHealthRatio.gt(I80F48_100)
+                    ? '>100'
+                    : maintHealthRatio.toFixed(2)}
+                  %
+                </div>
               </div>
             </div>
             <div className="flex justify-between pb-2">
@@ -324,54 +348,6 @@ export default function AccountInfo() {
                   </LinkButton>
                 )}
               </div>
-            </div>
-          </div>
-          <div className="my-2 flex items-center rounded border border-th-bkg-4 p-2.5 sm:my-1">
-            <div className="flex items-center pr-2">
-              <HeartIcon
-                className="mr-1.5 h-5 w-5 text-th-primary"
-                aria-hidden="true"
-              />
-              <span>
-                <Tooltip
-                  content={
-                    <div>
-                      {t('tooltip-account-liquidated')}{' '}
-                      <a
-                        href="https://docs.mango.markets/mango/health-overview"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {t('learn-more')}
-                      </a>
-                    </div>
-                  }
-                >
-                  <div className="default-transition cursor-help border-b border-dashed border-th-fgd-3 border-opacity-20 font-normal leading-4 text-th-fgd-3 hover:border-th-bkg-2">
-                    {t('health')}
-                  </div>
-                </Tooltip>
-              </span>
-            </div>
-            <div className="flex h-1.5 flex-grow rounded bg-th-bkg-4">
-              <div
-                style={{
-                  width: `${maintHealthRatio}%`,
-                }}
-                className={`flex rounded ${
-                  maintHealthRatio.toNumber() > 30
-                    ? 'bg-th-green'
-                    : initHealthRatio.toNumber() > 0
-                    ? 'bg-th-orange'
-                    : 'bg-th-red'
-                }`}
-              ></div>
-            </div>
-            <div className="pl-2 text-right">
-              {maintHealthRatio.gt(I80F48_100)
-                ? '>100'
-                : maintHealthRatio.toFixed(2)}
-              %
             </div>
           </div>
           {mangoAccount && mangoAccount.beingLiquidated ? (

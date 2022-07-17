@@ -205,7 +205,9 @@ export default function MarketPosition() {
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const setMangoStore = useMangoStore((s) => s.set)
   const price = useMangoStore((s) => s.tradeForm.price)
-  const perpAccounts = useMangoStore((s) => s.selectedMangoAccount.perpAccounts)
+  const perpPositions = useMangoStore(
+    (s) => s.selectedMangoAccount.perpPositions
+  )
   const baseSymbol = marketConfig.baseSymbol
   const marketName = marketConfig.name
   const router = useRouter()
@@ -262,10 +264,10 @@ export default function MarketPosition() {
     breakEvenPrice = 0,
     notionalSize = 0,
     unsettledPnl = 0,
-  } = perpAccounts.length
-    ? perpAccounts.find((pa) =>
-        pa.perpMarket.publicKey.equals(selectedMarket.publicKey)
-      )
+  } = perpPositions.length
+    ? perpPositions.find((p) =>
+        p?.perpMarket.publicKey.equals(selectedMarket.publicKey)
+      ) ?? {}
     : {}
 
   function SettlePnlTooltip() {

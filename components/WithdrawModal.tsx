@@ -11,7 +11,7 @@ import Tooltip from './Tooltip'
 import {
   ExclamationCircleIcon,
   InformationCircleIcon,
-} from '@heroicons/react/outline'
+} from '@heroicons/react/solid'
 import Select from './Select'
 import { withdraw } from '../utils/mango'
 import {
@@ -23,8 +23,9 @@ import {
 } from '@blockworks-foundation/mango-client'
 import { notify } from '../utils/notifications'
 import { useTranslation } from 'next-i18next'
-import { ExpandableRow } from './TableElements'
 import { useWallet } from '@solana/wallet-adapter-react'
+import MangoAccountSelect from './MangoAccountSelect'
+import InlineNotification from './InlineNotification'
 
 interface WithdrawModalProps {
   onClose: () => void
@@ -56,8 +57,11 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   const actions = useMangoStore((s) => s.actions)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
+  const mangoAccounts = useMangoStore((s) => s.mangoAccounts)
   const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const mangoGroupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
+  const [withdrawMangoAccount, setWithdrawMangoAccount] =
+    useState<MangoAccount | null>(mangoAccount)
 
   const tokens = useMemo(() => mangoGroupConfig.tokens, [mangoGroupConfig])
   const token = useMemo(
@@ -74,29 +78,43 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
     marketMode == MarketMode.CloseOnly ||
     marketMode == MarketMode.ForceCloseOnly
 
+  const initHealthRatio = useMemo(() => {
+    if (mangoAccount && mangoGroup && mangoCache) {
+      return mangoAccount
+        .getHealthRatio(mangoGroup, mangoCache, 'Init')
+        .toNumber()
+    }
+    return -1
+  }, [mangoAccount])
+
   useEffect(() => {
-    if (!mangoGroup || !mangoAccount || !withdrawTokenSymbol || !mangoCache)
+    if (
+      !mangoGroup ||
+      !withdrawMangoAccount ||
+      !withdrawTokenSymbol ||
+      !mangoCache
+    )
       return
 
     const mintDecimals = mangoGroup.tokens[tokenIndex].decimals
-    const tokenDeposits = mangoAccount.getUiDeposit(
+    const tokenDeposits = withdrawMangoAccount.getUiDeposit(
       mangoCache.rootBankCache[tokenIndex],
       mangoGroup,
       tokenIndex
     )
-    const tokenBorrows = mangoAccount.getUiBorrow(
+    const tokenBorrows = withdrawMangoAccount.getUiBorrow(
       mangoCache.rootBankCache[tokenIndex],
       mangoGroup,
       tokenIndex
     )
 
     const maxWithoutBorrows = nativeI80F48ToUi(
-      mangoAccount
+      withdrawMangoAccount
         .getAvailableBalance(mangoGroup, mangoCache, tokenIndex)
         .floor(),
       mangoGroup.tokens[tokenIndex].decimals
     )
-    const maxWithBorrows = mangoAccount
+    const maxWithBorrows = withdrawMangoAccount
       .getMaxWithBorrowForToken(mangoGroup, mangoCache, tokenIndex)
       .add(maxWithoutBorrows)
       .mul(I80F48.fromString('0.995')) // handle rounding errors when borrowing
@@ -114,7 +132,8 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
 
     if (maxWithdraw.gt(I80F48.fromNumber(0)) && token) {
       setMaxAmount(
-        floorToDecimal(parseFloat(maxWithdraw.toFixed()), token.decimals)
+        floorToDecimal(parseFloat(maxWithdraw.toFixed()), token.decimals) -
+          1 / Math.pow(10, token.decimals)
       )
     } else {
       setMaxAmount(0)
@@ -134,9 +153,9 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
     // clone MangoAccount and arrays to not modify selectedMangoAccount
     // FIXME: MangoAccount needs type updated to accept null for pubKey
     // @ts-ignore
-    const simulation = new MangoAccount(null, mangoAccount)
-    simulation.deposits = [...mangoAccount.deposits]
-    simulation.borrows = [...mangoAccount.borrows]
+    const simulation = new MangoAccount(null, withdrawMangoAccount)
+    simulation.deposits = [...withdrawMangoAccount.deposits]
+    simulation.borrows = [...withdrawMangoAccount.borrows]
 
     // update with simulated values
     simulation.deposits[tokenIndex] = newDeposit
@@ -149,23 +168,29 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
     const liabsVal = simulation
       .getLiabsVal(mangoGroup, mangoCache, 'Init')
       .toNumber()
-    const leverage = simulation.getLeverage(mangoGroup, mangoCache).toNumber()
     const equity = simulation.computeValue(mangoGroup, mangoCache).toNumber()
     const initHealthRatio = simulation
       .getHealthRatio(mangoGroup, mangoCache, 'Init')
       .toNumber()
 
+    const maintHealthRatio = simulation
+      .getHealthRatio(mangoGroup, mangoCache, 'Maint')
+      .toNumber()
+
+    const leverage = simulation.getLeverage(mangoGroup, mangoCache).toNumber()
+
     setSimulation({
-      initHealthRatio,
-      liabsVal,
-      leverage,
       equity,
+      initHealthRatio,
+      leverage,
+      liabsVal,
+      maintHealthRatio,
     })
   }, [
     includeBorrow,
     inputAmount,
     tokenIndex,
-    mangoAccount,
+    withdrawMangoAccount,
     mangoGroup,
     mangoCache,
   ])
@@ -181,10 +206,11 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
       token: mangoGroup.tokens[tokenIndex].mint,
       allowBorrow: includeBorrow,
       wallet,
+      mangoAccount: withdrawMangoAccount,
     })
       .then((txid: string) => {
         setSubmitting(false)
-        actions.reloadMangoAccount()
+        actions.fetchAllMangoAccounts(wallet)
         actions.fetchWalletTokens(wallet)
         notify({
           title: t('withdraw-success'),
@@ -212,8 +238,8 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   }
 
   const getDepositsForSelectedAsset = (): I80F48 => {
-    return mangoAccount && mangoCache && mangoGroup
-      ? mangoAccount.getUiDeposit(
+    return withdrawMangoAccount && mangoCache && mangoGroup
+      ? withdrawMangoAccount.getUiDeposit(
           mangoCache.rootBankCache[tokenIndex],
           mangoGroup,
           tokenIndex
@@ -228,11 +254,11 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   }
 
   const getAccountStatusColor = (
-    initHealthRatio: number,
+    health: number,
     isRisk?: boolean,
     isStatus?: boolean
   ) => {
-    if (initHealthRatio < 1) {
+    if (health < 15) {
       return isRisk ? (
         <div className="text-th-red">{t('high')}</div>
       ) : isStatus ? (
@@ -240,7 +266,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
       ) : (
         'ring-th-red text-th-red'
       )
-    } else if (initHealthRatio > 1 && initHealthRatio < 10) {
+    } else if (health >= 15 && health < 50) {
       return isRisk ? (
         <div className="text-th-orange">{t('moderate')}</div>
       ) : isStatus ? (
@@ -296,7 +322,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
         const tokenIndex = mangoGroup.getTokenIndex(token.mintKey)
         return {
           symbol: token.symbol,
-          balance: mangoAccount
+          balance: withdrawMangoAccount
             ?.getUiDeposit(
               mangoCache.rootBankCache[tokenIndex],
               mangoGroup,
@@ -320,10 +346,24 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                 {title ? title : t('withdraw-funds')}
               </ElementTitle>
             </Modal.Header>
+            {initHealthRatio < 0 ? (
+              <div className="pb-2">
+                <InlineNotification type="error" desc={t('no-new-positions')} />
+              </div>
+            ) : null}
+            {mangoAccounts.length > 1 ? (
+              <div className="mb-4">
+                <Label>{t('from-account')}</Label>
+                <MangoAccountSelect
+                  onChange={(v) => setWithdrawMangoAccount(v)}
+                  value={withdrawMangoAccount}
+                />
+              </div>
+            ) : null}
             <Label>{t('asset')}</Label>
             <Select
               value={
-                withdrawTokenSymbol && mangoAccount ? (
+                withdrawTokenSymbol && withdrawMangoAccount ? (
                   <div className="flex w-full items-center justify-between">
                     <div className="flex items-center">
                       <img
@@ -335,7 +375,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                       />
                       {withdrawTokenSymbol}
                     </div>
-                    {mangoAccount
+                    {withdrawMangoAccount
                       ?.getUiDeposit(
                         mangoCache.rootBankCache[tokenIndex],
                         mangoGroup,
@@ -373,7 +413,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                   <span>{t('borrow-funds')}</span>
                   <Tooltip content={t('tooltip-interest-charged')}>
                     <InformationCircleIcon
-                      className={`ml-2 h-5 w-5 cursor-help text-th-primary`}
+                      className={`ml-2 h-5 w-5 cursor-help text-th-fgd-4`}
                     />
                   </Tooltip>
                 </div>
@@ -407,22 +447,34 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                 onChange={(e) => onChangeAmountInput(e.target.value)}
                 suffix={withdrawTokenSymbol}
               />
-              {simulation ? (
-                <Tooltip
-                  placement="right"
-                  content={t('tooltip-projected-leverage')}
-                  className="py-1"
-                >
-                  <span
-                    className={`${getAccountStatusColor(
-                      simulation.initHealthRatio
-                    )} ml-1 flex h-10 items-center justify-center rounded bg-th-bkg-1 px-2 ring-1 ring-inset`}
+            </div>
+            {simulation ? (
+              <div className="mt-4 space-y-2 bg-th-bkg-2 p-4">
+                <div className="flex justify-between">
+                  <p className="mb-0">{t('tooltip-projected-health')}</p>
+                  <p
+                    className={`mb-0 font-bold text-th-fgd-1 ${getAccountStatusColor(
+                      simulation.maintHealthRatio
+                    )}`}
+                  >
+                    {simulation.maintHealthRatio > 100
+                      ? '>100'
+                      : simulation.maintHealthRatio.toFixed(2)}
+                    %
+                  </p>
+                </div>
+                <div className="flex justify-between">
+                  <p className="mb-0">{t('tooltip-projected-leverage')}</p>
+                  <p
+                    className={`mb-0 font-bold text-th-fgd-1 ${getAccountStatusColor(
+                      simulation.maintHealthRatio
+                    )}`}
                   >
                     {simulation.leverage.toFixed(2)}x
-                  </span>
-                </Tooltip>
-              ) : null}
-            </div>
+                  </p>
+                </div>
+              </div>
+            ) : null}
             {invalidAmountMessage ? (
               <div className="flex items-center pt-1.5 text-th-red">
                 <ExclamationCircleIcon className="mr-1.5 h-4 w-4" />
@@ -432,7 +484,12 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
             <div className={`flex justify-center pt-6`}>
               <Button
                 onClick={() => setShowSimulation(true)}
-                disabled={Number(inputAmount) <= 0}
+                disabled={
+                  !inputAmount ||
+                  Number(inputAmount) <= 0 ||
+                  !!invalidAmountMessage ||
+                  initHealthRatio < 0
+                }
                 className="w-full"
               >
                 {t('next')}
@@ -448,18 +505,17 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
               </ElementTitle>
             </Modal.Header>
             {simulation.initHealthRatio < 0 ? (
-              <div className="mb-4 rounded border border-th-red p-2">
-                <div className="flex items-center text-th-red">
-                  <ExclamationCircleIcon className="mr-1.5 h-4 w-4 flex-shrink-0" />
-                  {t('prices-changed')}
-                </div>
+              <div className="pb-2">
+                <InlineNotification type="error" desc={t('prices-changed')} />
               </div>
             ) : null}
             <div className="rounded-lg bg-th-bkg-1 p-4 text-center text-th-fgd-1">
               <div className="pb-1 text-th-fgd-3">{t('about-to-withdraw')}</div>
               <div className="flex items-center justify-center">
                 <div className="relative text-xl font-semibold">
-                  {inputAmount}
+                  {Number(inputAmount).toLocaleString(undefined, {
+                    maximumFractionDigits: token?.decimals,
+                  })}
                   <span className="absolute bottom-0.5 ml-1.5 text-xs font-normal text-th-fgd-4">
                     {withdrawTokenSymbol}
                   </span>
@@ -473,79 +529,6 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                 )} ${withdrawTokenSymbol}`}</div>
               ) : null}
             </div>
-            <div className="border-b border-th-bkg-4 pt-4">
-              <ExpandableRow
-                buttonTemplate={
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <span className="relative mr-2.5 flex h-2 w-2">
-                        <span
-                          className={`absolute inline-flex h-full w-full animate-ping rounded-full ${getAccountStatusColor(
-                            simulation.initHealthRatio,
-                            false,
-                            true
-                          )} opacity-75`}
-                        ></span>
-                        <span
-                          className={`relative inline-flex h-2 w-2 rounded-full ${getAccountStatusColor(
-                            simulation.initHealthRatio,
-                            false,
-                            true
-                          )}`}
-                        ></span>
-                      </span>
-                      {t('health-check')}
-                      <Tooltip content={t('tooltip-after-withdrawal')}>
-                        <InformationCircleIcon
-                          className={`ml-2 h-5 w-5 cursor-help text-th-primary`}
-                        />
-                      </Tooltip>
-                    </div>
-                  </div>
-                }
-                panelTemplate={
-                  simulation ? (
-                    <div>
-                      <div className="flex justify-between pb-2">
-                        <p className="mb-0">{t('account-value')}</p>
-                        <div className="text-th-fgd-1">
-                          $
-                          {simulation.equity.toLocaleString(undefined, {
-                            maximumFractionDigits: 2,
-                          })}
-                        </div>
-                      </div>
-                      <div className="flex justify-between pb-2">
-                        <p className="mb-0">{t('account-risk')}</p>
-                        <div className="text-th-fgd-1">
-                          {getAccountStatusColor(
-                            simulation.initHealthRatio,
-                            true
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex justify-between pb-2">
-                        <p className="mb-0">{t('leverage')}</p>
-                        <div className="text-th-fgd-1">
-                          {simulation.leverage.toFixed(2)}x
-                        </div>
-                      </div>
-
-                      <div className="flex justify-between">
-                        <p className="mb-0">{t('borrow-value')}</p>
-                        <div className="text-th-fgd-1">
-                          $
-                          {simulation.liabsVal.toLocaleString(undefined, {
-                            maximumFractionDigits: 2,
-                          })}
-                        </div>
-                      </div>
-                    </div>
-                  ) : null
-                }
-              />
-            </div>
-
             <div className={`mt-6 flex flex-col items-center`}>
               <Button
                 onClick={handleWithdraw}

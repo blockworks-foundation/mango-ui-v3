@@ -1,4 +1,4 @@
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/outline'
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/solid'
 import useDrag from 'hooks/useDrag'
 import { useTranslation } from 'next-i18next'
 import React, { useContext, useEffect, useState } from 'react'
@@ -44,7 +44,7 @@ function SwipeableTabs({
     }
 
   return (
-    <div onMouseLeave={dragStop} className="thin-scroll relative mb-4">
+    <div onMouseLeave={dragStop} className="thin-scroll relative mb-6">
       <ScrollMenu
         LeftArrow={LeftArrow}
         RightArrow={RightArrow}
@@ -148,10 +148,10 @@ function Tab({
       } items-center justify-center font-bold focus:text-th-primary focus:outline-none ${
         selected
           ? 'border-b-2 border-th-primary text-th-primary'
-          : 'border-b border-th-fgd-4 text-th-fgd-3'
+          : 'border-b border-th-bkg-4 text-th-fgd-3'
       }`}
     >
-      {t(title)}
+      {t(title.toLowerCase().replace(/\s/g, '-'))}
     </div>
   )
 }

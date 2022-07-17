@@ -8,7 +8,7 @@ export const Table = ({ children }) => (
 )
 
 export const TrHead = ({ children }) => (
-  <tr className="text-xs text-th-fgd-3">{children}</tr>
+  <tr className="text-xxs leading-tight text-th-fgd-2">{children}</tr>
 )
 
 export const Th = ({ children }) => (
@@ -18,7 +18,7 @@ export const Th = ({ children }) => (
 )
 
 export const TrBody = ({ children, className = '' }) => (
-  <tr className={`border-b border-th-bkg-4 ${className}`}>{children}</tr>
+  <tr className={`border-b border-th-bkg-3 ${className}`}>{children}</tr>
 )
 
 export const Td = ({
@@ -28,7 +28,7 @@ export const Td = ({
   children: ReactNode
   className?: string
 }) => (
-  <td className={`h-16 px-4 text-sm text-th-fgd-2 ${className}`}>{children}</td>
+  <td className={`h-14 px-4 text-xs text-th-fgd-2 ${className}`}>{children}</td>
 )
 
 type ExpandableRowProps = {
@@ -47,7 +47,7 @@ export const ExpandableRow = ({
       {({ open }) => (
         <>
           <Disclosure.Button
-            className={`default-transition flex w-full items-center justify-between border-t border-th-bkg-4 p-4 font-normal text-th-fgd-1 hover:bg-th-bkg-4 focus:outline-none ${
+            className={`default-transition flex w-full items-center justify-between border-t border-th-bkg-3 p-4 text-left text-xs font-normal text-th-fgd-1 hover:bg-th-bkg-4 focus:outline-none ${
               rounded
                 ? open
                   ? 'rounded-b-none'
@@ -76,7 +76,7 @@ export const ExpandableRow = ({
             leaveTo="opacity-0"
           >
             <Disclosure.Panel>
-              <div className="px-4 pb-4 pt-2">{panelTemplate}</div>
+              <div className="px-4 pb-4 pt-2 text-xs">{panelTemplate}</div>
             </Disclosure.Panel>
           </Transition>
         </>
@@ -92,7 +92,7 @@ type RowProps = {
 export const Row = ({ children }: RowProps) => {
   return (
     <div
-      className={`default-transition w-full rounded-none border-t border-th-bkg-4 p-4 font-normal text-th-fgd-1`}
+      className={`default-transition w-full rounded-none border-t border-th-bkg-3 p-4 font-normal text-th-fgd-1`}
     >
       {children}
     </div>
@@ -107,7 +107,9 @@ export const TableDateDisplay = ({
   showSeconds?: boolean
 }) => (
   <>
-    <p className="mb-0 text-th-fgd-2">{dayjs(date).format('DD MMM YYYY')}</p>
+    <p className="mb-0 text-xs text-th-fgd-2">
+      {dayjs(date).format('DD MMM YYYY')}
+    </p>
     <p className="mb-0 text-xs">
       {dayjs(date).format(showSeconds ? 'h:mm:ssa' : 'h:mma')}
     </p>

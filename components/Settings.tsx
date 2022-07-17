@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { CogIcon } from '@heroicons/react/outline'
+import { CogIcon } from '@heroicons/react/solid'
 import SettingsModal from './SettingsModal'
 
 const Settings = () => {
@@ -12,7 +12,7 @@ const Settings = () => {
   return mounted ? (
     <>
       <button
-        className="default-transition flex h-8 w-8 items-center justify-center rounded-full bg-th-bkg-4 text-th-fgd-1 hover:text-th-primary focus:outline-none"
+        className="default-transition flex h-8 w-8 items-center justify-center rounded-full bg-th-bkg-4 text-th-fgd-1 focus:outline-none md:hover:text-th-primary"
         onClick={() => setShowSettingsModal(true)}
       >
         <CogIcon className="h-5 w-5" />

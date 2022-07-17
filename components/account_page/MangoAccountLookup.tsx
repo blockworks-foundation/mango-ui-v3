@@ -3,7 +3,7 @@ import Button from 'components/Button'
 import Input from 'components/Input'
 import { useRouter } from 'next/router'
 import React, { useState } from 'react'
-import { ExclamationCircleIcon } from '@heroicons/react/outline'
+import { ExclamationCircleIcon } from '@heroicons/react/solid'
 import { useTranslation } from 'next-i18next'
 
 export const MangoAccountLookup = () => {
@@ -34,14 +34,13 @@ export const MangoAccountLookup = () => {
   }
 
   return (
-    <div className="flex flex-col items-center rounded-lg px-4 text-th-fgd-1">
+    <div className="flex w-full flex-col items-center text-th-fgd-1">
       <h2 className="mb-1 text-base">{t('mango-account-lookup-title')}</h2>
       <p className="mb-2 text-center">{t('mango-account-lookup-desc')}</p>
-      <div className="w-[350px] p-1 md:w-[400px]">
+      <div className="w-full max-w-[360px] pt-2">
         <Input
           type="text"
           error={isInvalid}
-          placeholder="Address"
           value={value}
           onChange={(e) => setValue(e.target.value)}
         />
@@ -52,7 +51,7 @@ export const MangoAccountLookup = () => {
           {t('invalid-address')}
         </div>
       )}
-      <div className="pt-3 pb-2">
+      <div className="pt-4">
         <Button onClick={onClickSearch}>{t('view')}</Button>
       </div>
     </div>

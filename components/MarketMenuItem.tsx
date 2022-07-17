@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useRouter } from 'next/router'
-import { QuestionMarkCircleIcon } from '@heroicons/react/outline'
+import { QuestionMarkCircleIcon } from '@heroicons/react/solid'
 import Link from 'next/link'
 import * as MonoIcons from './icons'
 import { initialMarket } from './SettingsModal'

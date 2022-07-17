@@ -8,7 +8,7 @@
   "earnings-history": "Earnings History",
   "enter-referral-id": "Enter a referral ID",
   "fee-earned": "Fee Earned",
-  "generate-link": "Generate Custom Link",
+  "generate-link": "Generate Link",
   "link": "Link",
   "link-created": "Custom referral link created",
   "link-not-created": "Unable to create referral link",
@@ -22,7 +22,7 @@
   "sow-seed": "Sow the Mango Seed",
   "too-long-error": "Referral IDs must be less then 33 characters",
   "total-earnings": "Total Earnings",
-  "total-referrals": "Total referrals",
+  "total-referrals": "Total Referrals",
   "your-links": "Your Links",
   "your-referrals": "Your Referrals"
 }

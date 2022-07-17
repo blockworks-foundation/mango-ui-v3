@@ -3,7 +3,7 @@ import { PublicKey } from '@solana/web3.js'
 import { notify } from 'utils/notifications'
 import useMangoStore from '../stores/useMangoStore'
 import { useWallet } from '@solana/wallet-adapter-react'
-import { PhotographIcon } from '@heroicons/react/outline'
+import { PhotographIcon } from '@heroicons/react/solid'
 import Modal from './Modal'
 import { ElementTitle } from './styles'
 import {
@@ -211,7 +211,7 @@ const NftProfilePicModal = ({ isOpen, onClose }) => {
             {nfts.map((n) => {
               return (
                 <button
-                  className={`default-transitions col-span-1 flex items-center justify-center rounded-md border bg-th-bkg-3 py-3 hover:bg-th-bkg-4 sm:py-4 ${
+                  className={`default-transitions col-span-1 flex items-center justify-center rounded-md border bg-th-bkg-3 py-3 sm:py-4 md:hover:bg-th-bkg-4 ${
                     selectedProfile?.tokenAddress.toString() === n.tokenAddress
                       ? 'border-th-primary'
                       : 'border-th-bkg-3'

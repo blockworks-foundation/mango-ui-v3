@@ -1,60 +1,94 @@
-import { useEffect, useMemo, useState } from 'react'
+import { ReactNode, useEffect, useMemo, useState } from 'react'
 import dayjs from 'dayjs'
-import { usdFormatter } from '../utils'
-import { MedalIcon, ProfileIcon } from './icons'
+import { MedalIcon } from './icons'
 import { useTranslation } from 'next-i18next'
-import {
-  ChartPieIcon,
-  ExternalLinkIcon,
-  TrendingUpIcon,
-} from '@heroicons/react/outline'
-import { getProfilePicture } from '@solflare-wallet/pfp'
-import useMangoStore from '../stores/useMangoStore'
-import { connectionSelector } from '../stores/selectors'
+import { abbreviateAddress, usdFormatter } from '../utils'
+import { ChevronRightIcon } from '@heroicons/react/solid'
+import ProfileImage from './ProfileImage'
+import { useRouter } from 'next/router'
+import { PublicKey } from '@solana/web3.js'
+import { notify } from 'utils/notifications'
 
 const utc = require('dayjs/plugin/utc')
 dayjs.extend(utc)
 
 const LeaderboardTable = ({ range = '29' }) => {
+  const { t } = useTranslation('common')
   const [pnlLeaderboardData, setPnlLeaderboardData] = useState<any[]>([])
   const [perpPnlLeaderboardData, setPerpPnlLeaderboardData] = useState<any[]>(
     []
   )
+  const [spotPnlLeaderboardData, setSpotPnlLeaderboardData] = useState<any[]>(
+    []
+  )
   const [leaderboardType, setLeaderboardType] = useState<string>('total-pnl')
   const [loading, setLoading] = useState(false)
-  const connection = useMangoStore(connectionSelector)
+
+  const formatLeaderboardData = async (leaderboard) => {
+    const walletPks = leaderboard.map((u) => u.wallet_pk)
+    const profileDetailsResponse = await fetch(
+      `https://mango-transaction-log.herokuapp.com/v3/user-data/multiple-profile-details?wallet-pks=${walletPks.toString()}`
+    )
+    const parsedProfileDetailsResponse = await profileDetailsResponse.json()
+    const leaderboardData = [] as any[]
+    for (const item of leaderboard) {
+      const profileDetails = parsedProfileDetailsResponse[item.wallet_pk]
+      leaderboardData.push({
+        ...item,
+        profile: profileDetails ? profileDetails : null,
+      })
+    }
+    return leaderboardData
+  }
 
   const fetchPnlLeaderboard = async () => {
     setLoading(true)
-    const response = await fetch(
-      `https://mango-transaction-log.herokuapp.com/v3/stats/pnl-leaderboard?start-date=${dayjs()
-        .utc()
-        .hour(0)
-        .minute(0)
-        .subtract(parseInt(range), 'day')
-        .add(1, 'hour')
-        .format('YYYY-MM-DDThh:00:00')}`
-    )
-    const parsedResponse = await response.json()
-    const leaderboardData = [] as any[]
-    for (const item of parsedResponse) {
-      const { isAvailable, url } = await getProfilePicture(
-        connection,
-        item.wallet_pk
+    try {
+      const response = await fetch(
+        `https://mango-transaction-log.herokuapp.com/v3/stats/pnl-leaderboard?start-date=${dayjs()
+          .utc()
+          .hour(0)
+          .minute(0)
+          .subtract(parseInt(range), 'day')
+          .add(1, 'hour')
+          .format('YYYY-MM-DDThh:00:00')}`
       )
-      leaderboardData.push({
-        ...item,
-        pfp: { isAvailable: isAvailable, url: url },
-      })
+      const parsedResponse = await response.json()
+      const leaderboardData = await formatLeaderboardData(parsedResponse)
+      setPnlLeaderboardData(leaderboardData)
+      setLoading(false)
+    } catch {
+      notify({ type: 'error', title: t('fetch-leaderboard-fail') })
+      setLoading(false)
     }
-    setPnlLeaderboardData(leaderboardData)
-    setLoading(false)
   }
 
   const fetchPerpPnlLeaderboard = async () => {
     setLoading(true)
+    try {
+      const response = await fetch(
+        `https://mango-transaction-log.herokuapp.com/v3/stats/perp-pnl-leaderboard?start-date=${dayjs()
+          .utc()
+          .hour(0)
+          .minute(0)
+          .subtract(parseInt(range), 'day')
+          .add(1, 'hour')
+          .format('YYYY-MM-DDThh:00:00')}`
+      )
+      const parsedResponse = await response.json()
+      const leaderboardData = await formatLeaderboardData(parsedResponse)
+      setPerpPnlLeaderboardData(leaderboardData)
+      setLoading(false)
+    } catch {
+      notify({ type: 'error', title: t('fetch-leaderboard-fail') })
+      setLoading(false)
+    }
+  }
+
+  const fetchSpotPnlLeaderboard = async () => {
+    setLoading(true)
     const response = await fetch(
-      `https://mango-transaction-log.herokuapp.com/v3/stats/perp-pnl-leaderboard?start-date=${dayjs()
+      `https://mango-transaction-log.herokuapp.com/v3/stats/spot-pnl-leaderboard?start-date=${dayjs()
         .hour(0)
         .minute(0)
         .utc()
@@ -62,7 +96,8 @@ const LeaderboardTable = ({ range = '29' }) => {
         .format('YYYY-MM-DDThh:00:00')}`
     )
     const parsedResponse = await response.json()
-    setPerpPnlLeaderboardData(parsedResponse)
+    const leaderboardData = await formatLeaderboardData(parsedResponse)
+    setSpotPnlLeaderboardData(leaderboardData)
 
     setLoading(false)
   }
@@ -70,21 +105,31 @@ const LeaderboardTable = ({ range = '29' }) => {
   useEffect(() => {
     if (leaderboardType === 'total-pnl') {
       fetchPnlLeaderboard()
-    } else {
+    } else if (leaderboardType === 'futures-only') {
       fetchPerpPnlLeaderboard()
+    } else {
+      fetchSpotPnlLeaderboard()
     }
   }, [range, leaderboardType])
 
   useEffect(() => {
     fetchPerpPnlLeaderboard()
+    fetchSpotPnlLeaderboard()
   }, [])
 
   const leaderboardData = useMemo(
     () =>
       leaderboardType === 'total-pnl'
         ? pnlLeaderboardData
-        : perpPnlLeaderboardData,
-    [leaderboardType, pnlLeaderboardData, perpPnlLeaderboardData]
+        : leaderboardType === 'futures-only'
+        ? perpPnlLeaderboardData
+        : spotPnlLeaderboardData,
+    [
+      leaderboardType,
+      pnlLeaderboardData,
+      perpPnlLeaderboardData,
+      spotPnlLeaderboardData,
+    ]
   )
 
   return (
@@ -95,14 +140,18 @@ const LeaderboardTable = ({ range = '29' }) => {
           setLeaderboardType={setLeaderboardType}
           range={range}
           label="total-pnl"
-          icon={<ChartPieIcon className="mr-3 hidden h-6 w-6 lg:block" />}
         />
         <LeaderboardTypeButton
           leaderboardType={leaderboardType}
           setLeaderboardType={setLeaderboardType}
           range={range}
           label="futures-only"
-          icon={<TrendingUpIcon className="mr-3 hidden h-6 w-6 lg:block" />}
+        />
+        <LeaderboardTypeButton
+          leaderboardType={leaderboardType}
+          setLeaderboardType={setLeaderboardType}
+          range={range}
+          label="spot-only"
         />
       </div>
       <div className="col-span-12 lg:col-span-8">
@@ -114,7 +163,11 @@ const LeaderboardTable = ({ range = '29' }) => {
                 acc={acc.mango_account}
                 key={acc.mango_account}
                 rawPnl={
-                  leaderboardType === 'total-pnl' ? acc.pnl : acc.perp_pnl
+                  leaderboardType === 'total-pnl'
+                    ? acc.pnl
+                    : leaderboardType === 'futures-only'
+                    ? acc.perp_pnl
+                    : acc.spot_pnl
                 }
                 pnl={
                   leaderboardType === 'total-pnl'
@@ -123,34 +176,37 @@ const LeaderboardTable = ({ range = '29' }) => {
                         currency: 'USD',
                         maximumFractionDigits: 0,
                       })
-                    : usdFormatter(acc.perp_pnl)
+                    : leaderboardType === 'futures-only'
+                    ? usdFormatter(acc.perp_pnl)
+                    : usdFormatter(acc.spot_pnl)
                 }
-                pfp={acc.pfp}
+                walletPk={acc.wallet_pk}
+                profile={acc.profile}
               />
             ))}
           </div>
         ) : (
           <div className="space-y-2">
-            <div className="h-20 w-full animate-pulse rounded-md bg-th-bkg-3" />
-            <div className="h-20 w-full animate-pulse rounded-md bg-th-bkg-3" />
-            <div className="h-20 w-full animate-pulse rounded-md bg-th-bkg-3" />
-            <div className="h-20 w-full animate-pulse rounded-md bg-th-bkg-3" />
-            <div className="h-20 w-full animate-pulse rounded-md bg-th-bkg-3" />
-            <div className="h-20 w-full animate-pulse rounded-md bg-th-bkg-3" />
-            <div className="h-20 w-full animate-pulse rounded-md bg-th-bkg-3" />
-            <div className="h-20 w-full animate-pulse rounded-md bg-th-bkg-3" />
-            <div className="h-20 w-full animate-pulse rounded-md bg-th-bkg-3" />
-            <div className="h-20 w-full animate-pulse rounded-md bg-th-bkg-3" />
-            <div className="h-20 w-full animate-pulse rounded-md bg-th-bkg-3" />
-            <div className="h-20 w-full animate-pulse rounded-md bg-th-bkg-3" />
-            <div className="h-20 w-full animate-pulse rounded-md bg-th-bkg-3" />
-            <div className="h-20 w-full animate-pulse rounded-md bg-th-bkg-3" />
-            <div className="h-20 w-full animate-pulse rounded-md bg-th-bkg-3" />
-            <div className="h-20 w-full animate-pulse rounded-md bg-th-bkg-3" />
-            <div className="h-20 w-full animate-pulse rounded-md bg-th-bkg-3" />
-            <div className="h-20 w-full animate-pulse rounded-md bg-th-bkg-3" />
-            <div className="h-20 w-full animate-pulse rounded-md bg-th-bkg-3" />
-            <div className="h-20 w-full animate-pulse rounded-md bg-th-bkg-3" />
+            <div className="h-[84px] w-full animate-pulse rounded-md bg-th-bkg-3" />
+            <div className="h-[84px] w-full animate-pulse rounded-md bg-th-bkg-3" />
+            <div className="h-[84px] w-full animate-pulse rounded-md bg-th-bkg-3" />
+            <div className="h-[84px] w-full animate-pulse rounded-md bg-th-bkg-3" />
+            <div className="h-[84px] w-full animate-pulse rounded-md bg-th-bkg-3" />
+            <div className="h-[84px] w-full animate-pulse rounded-md bg-th-bkg-3" />
+            <div className="h-[84px] w-full animate-pulse rounded-md bg-th-bkg-3" />
+            <div className="h-[84px] w-full animate-pulse rounded-md bg-th-bkg-3" />
+            <div className="h-[84px] w-full animate-pulse rounded-md bg-th-bkg-3" />
+            <div className="h-[84px] w-full animate-pulse rounded-md bg-th-bkg-3" />
+            <div className="h-[84px] w-full animate-pulse rounded-md bg-th-bkg-3" />
+            <div className="h-[84px] w-full animate-pulse rounded-md bg-th-bkg-3" />
+            <div className="h-[84px] w-full animate-pulse rounded-md bg-th-bkg-3" />
+            <div className="h-[84px] w-full animate-pulse rounded-md bg-th-bkg-3" />
+            <div className="h-[84px] w-full animate-pulse rounded-md bg-th-bkg-3" />
+            <div className="h-[84px] w-full animate-pulse rounded-md bg-th-bkg-3" />
+            <div className="h-[84px] w-full animate-pulse rounded-md bg-th-bkg-3" />
+            <div className="h-[84px] w-full animate-pulse rounded-md bg-th-bkg-3" />
+            <div className="h-[84px] w-full animate-pulse rounded-md bg-th-bkg-3" />
+            <div className="h-[84px] w-full animate-pulse rounded-md bg-th-bkg-3" />
           </div>
         )}
       </div>
@@ -160,7 +216,8 @@ const LeaderboardTable = ({ range = '29' }) => {
 
 export default LeaderboardTable
 
-const AccountCard = ({ rank, acc, pnl, pfp, rawPnl }) => {
+const AccountCard = ({ rank, acc, rawPnl, profile, pnl, walletPk }) => {
+  const router = useRouter()
   const medalColors =
     rank === 1
       ? {
@@ -183,51 +240,63 @@ const AccountCard = ({ rank, acc, pnl, pfp, rawPnl }) => {
           lightest: '#EFBF8D',
         }
   return (
-    <a
-      href={`https://trade.mango.markets/account?pubkey=${acc}`}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="default-transition flex items-center rounded-lg p-4 ring-1 ring-inset ring-th-bkg-4 hover:bg-th-bkg-3"
-    >
-      <p className="mb-0 mr-4 font-bold">{rank}</p>
-      <div className="relative mr-3 flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-th-bkg-4">
-        {rank < 4 ? (
-          <MedalIcon
-            className="absolute -top-2 -left-2 h-5 w-auto drop-shadow-lg"
-            colors={medalColors}
+    <div className="relative" key={acc}>
+      {profile ? (
+        <button
+          className="absolute left-[118px] bottom-4 flex items-center space-x-2 rounded-full border border-th-fgd-4 px-2 py-1 hover:border-th-fgd-2 hover:filter"
+          onClick={() =>
+            router.push(
+              `/profile?name=${profile?.profile_name.replace(/\s/g, '-')}`,
+              undefined,
+              {
+                shallow: true,
+              }
+            )
+          }
+        >
+          <p className="mb-0 text-xs capitalize text-th-fgd-3">
+            {profile?.profile_name}
+          </p>
+        </button>
+      ) : null}
+      <a
+        className="default-transition block flex h-[112px] w-full rounded-md border border-th-bkg-4 p-4 hover:border-th-fgd-4 sm:h-[84px] sm:justify-between sm:pb-4"
+        href={`/account?pubkey=${acc}`}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <p className="my-auto mr-4 flex w-5 justify-center font-bold">{rank}</p>
+        <div className="relative my-auto">
+          {rank < 4 ? (
+            <MedalIcon
+              className="absolute -top-1 -left-1 z-10 h-5 w-auto drop-shadow-lg"
+              colors={medalColors}
+            />
+          ) : null}
+          <ProfileImage
+            imageSize="56"
+            placeholderSize="32"
+            publicKey={walletPk}
           />
-        ) : null}
-        {pfp?.isAvailable ? (
-          <img
-            alt=""
-            src={pfp.url}
-            className={`default-transition h-12 w-12 rounded-full hover:opacity-60
-      `}
-          />
-        ) : (
-          <ProfileIcon className={`h-7 w-7 text-th-fgd-3`} />
-        )}
-      </div>
-      <div className="flex w-full flex-col sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="mb-0 text-th-fgd-2">{`${acc.slice(0, 5)}...${acc.slice(
-            -5
-          )}`}</p>
         </div>
-        <div>
-          <div className="flex items-center">
-            <span
-              className={`text-base font-bold text-th-fgd-2 sm:text-lg ${
-                rawPnl > 0 ? 'text-th-green' : 'text-th-red'
-              }`}
-            >
-              {pnl}
-            </span>
-          </div>
+        <div className="ml-3 flex flex-col sm:flex-grow sm:flex-row sm:justify-between">
+          <p className="mb-0 font-bold text-th-fgd-2">
+            {abbreviateAddress(new PublicKey(acc))}
+          </p>
+
+          <span
+            className={`flex items-center text-lg font-bold ${
+              rawPnl > 0 ? 'text-th-green' : 'text-th-red'
+            }`}
+          >
+            {pnl}
+          </span>
         </div>
-      </div>
-      <ExternalLinkIcon className="ml-3 h-4 w-4 flex-shrink-0 text-th-fgd-3" />
-    </a>
+        <div className="my-auto ml-auto">
+          <ChevronRightIcon className="ml-2 mt-0.5 h-5 w-5 text-th-fgd-4" />
+        </div>
+      </a>
+    </div>
   )
 }
 
@@ -237,26 +306,34 @@ const LeaderboardTypeButton = ({
   range,
   icon,
   label,
+}: {
+  leaderboardType: string
+  setLeaderboardType: (x) => void
+  range: string
+  icon?: ReactNode
+  label: string
 }) => {
   const { t } = useTranslation('common')
   return (
     <button
-      className={`relative flex w-full items-center justify-center rounded-md p-4 text-center lg:h-20 lg:justify-start lg:text-left ${
+      className={`relative flex w-full items-center justify-center rounded-md p-4 text-center lg:h-20 lg:justify-start lg:px-6 lg:text-left ${
         leaderboardType === label
-          ? 'bg-th-bkg-4 text-th-fgd-1 after:absolute after:top-[100%] after:left-1/2 after:-translate-x-1/2 after:transform after:border-l-[12px] after:border-r-[12px] after:border-t-[12px] after:border-l-transparent after:border-t-th-bkg-4 after:border-r-transparent lg:after:left-[100%] lg:after:top-1/2  lg:after:-translate-x-0 lg:after:-translate-y-1/2 lg:after:border-r-0 lg:after:border-b-[12px] lg:after:border-t-transparent lg:after:border-b-transparent lg:after:border-l-th-bkg-4'
-          : 'bg-th-bkg-3 text-th-fgd-4 hover:bg-th-bkg-4'
+          ? 'bg-th-bkg-3 text-th-fgd-1 after:absolute after:top-[100%] after:left-1/2 after:-translate-x-1/2 after:transform after:border-l-[12px] after:border-r-[12px] after:border-t-[12px] after:border-l-transparent after:border-t-th-bkg-3 after:border-r-transparent lg:after:left-[100%] lg:after:top-1/2  lg:after:-translate-x-0 lg:after:-translate-y-1/2 lg:after:border-r-0 lg:after:border-b-[12px] lg:after:border-t-transparent lg:after:border-b-transparent lg:after:border-l-th-bkg-3'
+          : 'bg-th-bkg-2 text-th-fgd-3 md:hover:bg-th-bkg-3'
       }`}
       onClick={() => setLeaderboardType(label)}
     >
       {icon}
       <div>
         <div className="font-bold sm:text-lg">{t(label)}</div>
-        <span className="text-th-fgd-4">
+        <span className="text-sm text-th-fgd-4">
           {range === '9999'
             ? 'All-time'
             : range === '29'
-            ? '30-day'
-            : `${range}-day`}
+            ? 'Last 30 days'
+            : range === '1'
+            ? 'Last 24 hours'
+            : `Last ${range} days`}
         </span>
       </div>
     </button>

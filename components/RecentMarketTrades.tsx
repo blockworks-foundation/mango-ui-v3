@@ -93,7 +93,7 @@ export default function RecentMarketTrades() {
       )}
     </>
   ) : (
-    <div className="my-3 border-b border-th-bkg-4">
+    <div className="my-3 border-b border-th-bkg-3">
       <ExpandableRow
         buttonTemplate={
           <div className="flex w-full justify-between text-left">

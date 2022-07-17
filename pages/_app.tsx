@@ -13,10 +13,8 @@ import useOraclePrice from '../hooks/useOraclePrice'
 import { getDecimalCount } from '../utils'
 import { useRouter } from 'next/router'
 import { ViewportProvider } from '../hooks/useViewport'
-import BottomBar from '../components/mobile/BottomBar'
 import { appWithTranslation } from 'next-i18next'
 import ErrorBoundary from '../components/ErrorBoundary'
-import GlobalNotification from '../components/GlobalNotification'
 import { useOpenOrders } from '../hooks/useOpenOrders'
 import usePerpPositions from '../hooks/usePerpPositions'
 import { useEffect, useMemo } from 'react'
@@ -41,6 +39,8 @@ import {
   GlowWalletAdapter,
 } from '@solana/wallet-adapter-wallets'
 import { HuobiWalletAdapter } from '@solana/wallet-adapter-huobi'
+import useSpotBalances from 'hooks/useSpotBalances'
+import Layout from 'components/Layout'
 
 const SENTRY_URL = process.env.NEXT_PUBLIC_SENTRY_URL
 if (SENTRY_URL) {
@@ -57,6 +57,11 @@ const MangoStoreUpdater = () => {
 
 const OpenOrdersStoreUpdater = () => {
   useOpenOrders()
+  return null
+}
+
+const SpotBalancesStoreUpdater = () => {
+  useSpotBalances()
   return null
 }
 
@@ -188,33 +193,31 @@ function App({ Component, pageProps }) {
         <meta name="google" content="notranslate" />
         <link rel="manifest" href="/manifest.json"></link>
       </Head>
-      <ErrorBoundary>
-        <WalletProvider wallets={wallets}>
-          <PageTitle />
-          <MangoStoreUpdater />
-          <OpenOrdersStoreUpdater />
-          <PerpPositionsStoreUpdater />
-          <TradeHistoryStoreUpdater />
-          <FetchReferrer />
-
-          <ThemeProvider defaultTheme="Mango">
+      <ThemeProvider defaultTheme="Mango">
+        <ErrorBoundary>
+          <WalletProvider wallets={wallets}>
+            <PageTitle />
+            <MangoStoreUpdater />
+            <OpenOrdersStoreUpdater />
+            <SpotBalancesStoreUpdater />
+            <PerpPositionsStoreUpdater />
+            <TradeHistoryStoreUpdater />
+            <FetchReferrer />
             <WalletListener />
             <ViewportProvider>
               <div className="min-h-screen bg-th-bkg-1">
                 <ErrorBoundary>
-                  <GlobalNotification />
-                  <Component {...pageProps} />
+                  <Layout>
+                    <Component {...pageProps} />
+                  </Layout>
                 </ErrorBoundary>
-              </div>
-              <div className="fixed bottom-0 left-0 z-20 w-full md:hidden">
-                <BottomBar />
               </div>
 
               <Notifications />
             </ViewportProvider>
-          </ThemeProvider>
-        </WalletProvider>
-      </ErrorBoundary>
+          </WalletProvider>
+        </ErrorBoundary>
+      </ThemeProvider>
     </>
   )
 }

@@ -5,7 +5,7 @@ import {
   HeartIcon,
   PlusCircleIcon,
   UsersIcon,
-} from '@heroicons/react/outline'
+} from '@heroicons/react/solid'
 import useMangoStore from '../stores/useMangoStore'
 import { MangoAccount, MangoGroup } from '@blockworks-foundation/mango-client'
 import { abbreviateAddress, formatUsdValue } from '../utils'
@@ -29,7 +29,7 @@ const AccountsModal: FunctionComponent<AccountsModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  const { t } = useTranslation('common')
+  const { t } = useTranslation(['common', 'delegate'])
   const { publicKey } = useWallet()
   const [showNewAccountForm, setShowNewAccountForm] = useState(false)
   const [newAccPublicKey, setNewAccPublicKey] = useState(null)

@@ -7,7 +7,7 @@ import {
   MenuIcon,
   XIcon,
 } from '@heroicons/react/solid'
-import { BtcMonoIcon, TradeIcon } from '../icons'
+import { BtcMonoIcon, TradeIcon, TrophyIcon } from '../icons'
 import { useTranslation } from 'next-i18next'
 import { IconButton } from '../Button'
 import {
@@ -18,7 +18,7 @@ import {
   LightBulbIcon,
   SwitchHorizontalIcon,
   UserAddIcon,
-} from '@heroicons/react/outline'
+} from '@heroicons/react/solid'
 
 const StyledBarItemLabel = ({ children, ...props }) => (
   <div style={{ fontSize: '0.6rem', lineHeight: 1 }} {...props}>
@@ -39,14 +39,14 @@ const BottomBar = () => {
             pathname: '/markets',
           }}
         >
-          <div
+          <a
             className={`${
               asPath === '/markets' ? 'text-th-primary' : 'text-th-fgd-3'
-            } default-transition col-span-1 flex cursor-pointer flex-col items-center hover:text-th-primary`}
+            } default-transition col-span-1 flex cursor-pointer flex-col items-center`}
           >
             <BtcMonoIcon className="mb-1 h-4 w-4" />
             <StyledBarItemLabel>{t('markets')}</StyledBarItemLabel>
-          </div>
+          </a>
         </Link>
         <Link
           href={{
@@ -55,46 +55,46 @@ const BottomBar = () => {
           }}
           shallow={true}
         >
-          <div
+          <a
             className={`${
               asPath === '/' || asPath.startsWith('/?name')
                 ? 'text-th-primary'
                 : 'text-th-fgd-3'
-            } default-transition col-span-1 flex cursor-pointer flex-col items-center hover:text-th-primary`}
+            } default-transition col-span-1 flex cursor-pointer flex-col items-center`}
           >
             <TradeIcon className="mb-1 h-4 w-4" />
             <StyledBarItemLabel>{t('trade')}</StyledBarItemLabel>
-          </div>
+          </a>
         </Link>
         <Link href="/account" shallow={true}>
-          <div
+          <a
             className={`${
               asPath === '/account' ? 'text-th-primary' : 'text-th-fgd-3'
-            } default-transition col-span-1 flex cursor-pointer flex-col items-center hover:text-th-primary`}
+            } default-transition col-span-1 flex cursor-pointer flex-col items-center`}
           >
             <CurrencyDollarIcon className="mb-1 h-4 w-4" />
             <StyledBarItemLabel>{t('account')}</StyledBarItemLabel>
-          </div>
+          </a>
         </Link>
         <Link href="/stats" shallow={true}>
-          <div
+          <a
             className={`${
               asPath === '/stats' ? 'text-th-primary' : 'text-th-fgd-3'
-            } default-transition col-span-1 flex cursor-pointer flex-col items-center hover:text-th-primary`}
+            } default-transition col-span-1 flex cursor-pointer flex-col items-center`}
           >
             <ChartBarIcon className="mb-1 h-4 w-4" />
             <StyledBarItemLabel>{t('stats')}</StyledBarItemLabel>
-          </div>
+          </a>
         </Link>
-        <div
+        <a
           className={`${
             showPanel ? 'text-th-primary' : 'text-th-fgd-3'
-          } default-transition col-span-1 flex cursor-pointer flex-col items-center hover:text-th-primary`}
+          } default-transition col-span-1 flex cursor-pointer flex-col items-center`}
           onClick={() => setShowPanel(!showPanel)}
         >
           <MenuIcon className="mb-1 h-4 w-4" />
           <StyledBarItemLabel>{t('more')}</StyledBarItemLabel>
-        </div>
+        </a>
       </div>
       <MoreMenuPanel showPanel={showPanel} setShowPanel={setShowPanel} />
     </>
@@ -140,6 +140,11 @@ const MoreMenuPanel = ({
           title={t('swap')}
           path="/swap"
           icon={<SwitchHorizontalIcon className="h-5 w-5" />}
+        />
+        <MoreMenuItem
+          title={t('leaderboard')}
+          path="/leaderboard"
+          icon={<TrophyIcon className="h-5 w-5" />}
         />
         <MoreMenuItem
           title={t('referrals')}

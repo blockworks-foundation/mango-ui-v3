@@ -1,19 +1,28 @@
 import { JupiterProvider } from '@jup-ag/react-hook'
 import { useEffect } from 'react'
 import useMangoStore from '../stores/useMangoStore'
-import PageBodyContainer from '../components/PageBodyContainer'
-import TopBar from '../components/TopBar'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { actionsSelector, connectionSelector } from '../stores/selectors'
 import JupiterForm from '../components/JupiterForm'
 import { zeroKey } from '@blockworks-foundation/mango-client'
 import { useTranslation } from 'next-i18next'
 import { useWallet } from '@solana/wallet-adapter-react'
+import useLocalStorageState from 'hooks/useLocalStorageState'
+import dayjs from 'dayjs'
+import {
+  InformationCircleIcon,
+  LightningBoltIcon,
+} from '@heroicons/react/solid'
 
 export async function getStaticProps({ locale }) {
   return {
     props: {
-      ...(await serverSideTranslations(locale, ['common', 'swap', 'profile'])),
+      ...(await serverSideTranslations(locale, [
+        'common',
+        'delegate',
+        'swap',
+        'profile',
+      ])),
       // Will be passed to the page component as props
     },
   }
@@ -24,6 +33,11 @@ export default function Swap() {
   const connection = useMangoStore(connectionSelector)
   const { connected, publicKey, wallet } = useWallet()
   const actions = useMangoStore(actionsSelector)
+  const [savedLanguage] = useLocalStorageState('language', '')
+
+  useEffect(() => {
+    dayjs.locale(savedLanguage == 'zh_tw' ? 'zh-tw' : savedLanguage)
+  })
 
   useEffect(() => {
     if (wallet && connected) {
@@ -42,32 +56,27 @@ export default function Swap() {
       cluster="mainnet-beta"
       userPublicKey={connected ? userPublicKey : undefined}
     >
-      <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
-        <TopBar />
-        <PageBodyContainer>
-          <div className="grid grid-cols-12">
-            <div className="col-span-12 pt-8 pb-3 sm:pb-4 md:pt-10 xl:col-span-10 xl:col-start-2">
-              <div className="mb-1 flex flex-col items-start md:flex-row md:items-end md:justify-between">
-                <h1 className={`mb-1.5 md:mb-0`}>{t('swap')}</h1>
-                <div className="flex flex-col md:items-end">
-                  <p className="mb-0 text-xs">
-                    {t('swap:swap-between-hundreds')}
-                  </p>
-                  <a
-                    className="mb-0 text-xs text-th-fgd-2"
-                    href="https://jup.ag/swap/USDC-MNGO"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Powered by Jupiter
-                  </a>
-                </div>
-              </div>
-            </div>
+      <div className="mb-1 flex flex-col items-start pt-6 pb-4 md:flex-row md:items-end md:justify-between">
+        <div className="pb-1 md:pb-0">
+          <h1 className={`mb-1`}>{t('swap')}</h1>
+          <div className="flex items-center">
+            <InformationCircleIcon className="mr-1 h-4 w-4 text-th-fgd-4" />
+            <p className="mb-0 text-xs text-th-fgd-4">{t('swap:swap-desc')}</p>
           </div>
-          <JupiterForm />
-        </PageBodyContainer>
+        </div>
+        <div className="flex flex-col md:items-end md:pl-4">
+          <a
+            className="mb-0 flex items-center whitespace-nowrap text-xs text-th-fgd-2"
+            href="https://jup.ag/swap/USDC-MNGO"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <LightningBoltIcon className="mr-1 h-4 w-4 text-th-fgd-4" />
+            Powered by Jupiter
+          </a>
+        </div>
       </div>
+      <JupiterForm />
     </JupiterProvider>
   )
 }

@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { PencilIcon, TrashIcon, XIcon } from '@heroicons/react/outline'
+import { useMemo, useState } from 'react'
+import { PencilIcon, TrashIcon, XIcon } from '@heroicons/react/solid'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import Button, { IconButton } from './Button'
@@ -27,6 +27,7 @@ const DesktopTable = ({
   cancelledOrderId,
   editOrderIndex,
   handleCancelOrder,
+  handleCancelAllOrders,
   handleModifyOrder,
   modifiedOrderId,
   openOrders,
@@ -61,6 +62,7 @@ const DesktopTable = ({
       return <span>{market.name}</span>
     }
   }
+
   return (
     <Table>
       <thead>
@@ -162,6 +164,16 @@ const DesktopTable = ({
                           <span>{t('cancel')}</span>
                         )}
                       </Button>
+                      {openOrders.filter(
+                        (o) => o.market.config.name === market.config.name
+                      ).length > 1 ? (
+                        <Button
+                          onClick={() => handleCancelAllOrders(market.account)}
+                          className="-my-1 h-7 pt-0 pb-0 pl-3 pr-3 text-xs text-th-red"
+                        >
+                          {t('cancel-all') + ' ' + market.config.name}
+                        </Button>
+                      ) : null}
                     </>
                   ) : (
                     <>
@@ -205,6 +217,7 @@ const MobileTable = ({
   cancelledOrderId,
   editOrderIndex,
   handleCancelOrder,
+  handleCancelAllOrders,
   handleModifyOrder,
   modifiedOrderId,
   openOrders,
@@ -222,7 +235,7 @@ const MobileTable = ({
   }
 
   return (
-    <div className="border-b border-th-bkg-4">
+    <div className="border-b border-th-bkg-3">
       {openOrders.map(({ market, order }, index) => {
         const editThisOrder = editOrderIndex === index
         return (
@@ -289,6 +302,15 @@ const MobileTable = ({
                     <TrashIcon className="h-5 w-5" />
                   )}
                 </IconButton>
+                {openOrders.filter(
+                  (o) => o.market.config.name === market.config.name
+                ).length > 1 ? (
+                  <IconButton
+                    onClick={() => handleCancelAllOrders(market.account)}
+                  >
+                    <TrashIcon className="h-5 w-5 text-th-red" />
+                  </IconButton>
+                ) : null}
               </div>
             </div>
             {editThisOrder ? (
@@ -352,6 +374,72 @@ const OpenOrdersTable = () => {
   const actions = useMangoStore((s) => s.actions)
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.md : false
+
+  const handleCancelAllOrders = async (market: PerpMarket | Market) => {
+    const selectedMangoGroup =
+      useMangoStore.getState().selectedMangoGroup.current
+    const selectedMangoAccount =
+      useMangoStore.getState().selectedMangoAccount.current
+    const mangoClient = useMangoStore.getState().connection.client
+    try {
+      if (!selectedMangoGroup || !selectedMangoAccount || !wallet) return
+
+      if (market instanceof PerpMarket) {
+        const txids = await mangoClient.cancelAllPerpOrders(
+          selectedMangoGroup,
+          [market],
+          selectedMangoAccount,
+          wallet.adapter
+        )
+        if (txids) {
+          for (const txid of txids) {
+            notify({
+              title: t('cancel-all-success'),
+              description: '',
+              txid,
+            })
+          }
+        } else {
+          notify({
+            title: t('cancel-all-error'),
+            description: t('transaction-failed'),
+          })
+        }
+        actions.reloadOrders()
+      } else if (market instanceof Market) {
+        const txid = await mangoClient.cancelAllSpotOrders(
+          selectedMangoGroup,
+          selectedMangoAccount,
+          market,
+          wallet.adapter,
+          20
+        )
+        if (txid) {
+          notify({
+            title: t('cancel-all-success'),
+            description: '',
+            txid,
+          })
+        } else {
+          notify({
+            title: t('cancel-all-error'),
+            description: t('transaction-failed'),
+          })
+        }
+      }
+    } catch (e) {
+      notify({
+        title: t('cancel-all-error'),
+        description: e.message,
+        txid: e.txid,
+        type: 'error',
+      })
+      console.log('error', `${e}`)
+    } finally {
+      actions.reloadMangoAccount()
+      actions.updateOpenOrders()
+    }
+  }
 
   const handleCancelOrder = async (
     order: Order | PerpOrder | PerpTriggerOrder,
@@ -493,11 +581,16 @@ const OpenOrdersTable = () => {
     }
   }
 
+  const sortedOpenOrders = useMemo(() => {
+    return [...openOrders].sort((a, b) => b.price - a.price)
+  }, [openOrders])
+
   const tableProps = {
-    openOrders,
+    openOrders: sortedOpenOrders,
     cancelledOrderId: cancelId,
     editOrderIndex,
     handleCancelOrder,
+    handleCancelAllOrders,
     handleModifyOrder,
     modifiedOrderId: modifyId,
     setEditOrderIndex,
@@ -515,7 +608,7 @@ const OpenOrdersTable = () => {
             )
           ) : (
             <div
-              className={`w-full rounded-md bg-th-bkg-1 py-6 text-center text-th-fgd-3`}
+              className={`w-full rounded-md border border-th-bkg-3 py-6 text-center text-th-fgd-3`}
             >
               {t('no-orders')}
               {asPath === '/account' ? (

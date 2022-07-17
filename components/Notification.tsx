@@ -4,7 +4,7 @@ import {
   ExternalLinkIcon,
   InformationCircleIcon,
   XCircleIcon,
-} from '@heroicons/react/outline'
+} from '@heroicons/react/solid'
 import useMangoStore, {
   CLIENT_TX_TIMEOUT,
   CLUSTER,
@@ -183,7 +183,7 @@ const Notification = ({ notification }: { notification: Notification }) => {
           <div className={`absolute right-2 top-2 flex-shrink-0`}>
             <button
               onClick={hideNotification}
-              className={`text-th-fgd-4 hover:text-th-primary focus:outline-none`}
+              className={`text-th-fgd-4 focus:outline-none md:hover:text-th-primary`}
             >
               <span className={`sr-only`}>{t('close')}</span>
               <svg

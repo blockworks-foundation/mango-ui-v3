@@ -22,8 +22,7 @@ const reverseSide = (side) => (side === 'buy' ? 'sell' : 'buy')
 
 function getMarketName(event) {
   const mangoGroupConfig = useMangoStore.getState().selectedMangoGroup.config
-
-  let marketName
+  let marketName = ''
   if (!event.marketName && event.address) {
     const marketInfo = getMarketByPublicKey(mangoGroupConfig, event.address)
     if (marketInfo) {

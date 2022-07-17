@@ -11,12 +11,13 @@ import {
   PerpOrderType,
   ZERO_I80F48,
 } from '@blockworks-foundation/mango-client'
-import {
-  ExclamationIcon,
-  InformationCircleIcon,
-} from '@heroicons/react/outline'
+import { ExclamationIcon, InformationCircleIcon } from '@heroicons/react/solid'
 import { notify } from '../../utils/notifications'
-import { calculateTradePrice, getDecimalCount } from '../../utils'
+import {
+  calculateTradePrice,
+  getDecimalCount,
+  tokenPrecision,
+} from '../../utils'
 import { floorToDecimal } from '../../utils/index'
 import useMangoStore, { Orderbook } from '../../stores/useMangoStore'
 import Button, { LinkButton } from '../Button'
@@ -41,6 +42,7 @@ import useLocalStorageState, {
 import InlineNotification from '../InlineNotification'
 import { DEFAULT_SPOT_MARGIN_KEY } from '../SettingsModal'
 import { useWallet } from '@solana/wallet-adapter-react'
+import usePrevious from 'hooks/usePrevious'
 
 const MAX_SLIPPAGE_KEY = 'maxSlippage'
 
@@ -116,6 +118,7 @@ export default function AdvancedTradeForm({
   const [postOnly, setPostOnly] = useState(false)
   const [ioc, setIoc] = useState(false)
   const [isCloseOnly, setIsCloseOnly] = useState(false)
+  const [updateBaseSize, setUpdateBaseSize] = useState(false)
 
   const orderBookRef = useRef(useMangoStore.getState().selectedMarket.orderBook)
   const orderbook = orderBookRef.current
@@ -342,6 +345,43 @@ export default function AdvancedTradeForm({
       ),
     []
   )
+  const previousMarkPrice: number = usePrevious(markPrice)
+
+  useEffect(() => {
+    if (tradeType === 'Limit' && price) {
+      if (updateBaseSize) {
+        if (quoteSize) {
+          setBaseSize(
+            (Number(quoteSize) / price).toFixed(
+              tokenPrecision[marketConfig.baseSymbol]
+            )
+          )
+        }
+      } else {
+        if (baseSize) {
+          setQuoteSize((Number(baseSize) * price).toFixed(2))
+        }
+      }
+    }
+  }, [tradeType, price])
+
+  useEffect(() => {
+    if (markPrice !== previousMarkPrice && tradeType === 'Market') {
+      if (updateBaseSize) {
+        if (quoteSize) {
+          setBaseSize(
+            (Number(quoteSize) / markPrice).toFixed(
+              tokenPrecision[marketConfig.baseSymbol]
+            )
+          )
+        }
+      } else {
+        if (baseSize) {
+          setQuoteSize((Number(baseSize) * markPrice).toFixed(2))
+        }
+      }
+    }
+  }, [markPrice, previousMarkPrice, tradeType, updateBaseSize])
 
   let minOrderSize = '0'
   if (market instanceof Market && market.minOrderSize) {
@@ -392,6 +432,9 @@ export default function AdvancedTradeForm({
     const rawQuoteSize = baseSize * usePrice
     setQuoteSize(rawQuoteSize.toFixed(6))
     setPositionSizePercent('')
+    if (updateBaseSize) {
+      setUpdateBaseSize(false)
+    }
   }
 
   const onSetQuoteSize = (quoteSize: number | '') => {
@@ -410,6 +453,9 @@ export default function AdvancedTradeForm({
     const baseSize = quoteSize && floorToDecimal(rawBaseSize, sizeDecimalCount)
     setBaseSize(baseSize)
     setPositionSizePercent('')
+    if (!updateBaseSize) {
+      setUpdateBaseSize(true)
+    }
   }
 
   const onTradeTypeChange = (tradeType) => {
@@ -1068,7 +1114,7 @@ export default function AdvancedTradeForm({
               <button
                 disabled={disabledTradeButton}
                 onClick={onSubmit}
-                className={`flex-grow rounded-full px-6 py-2 font-bold text-white hover:brightness-[1.1] focus:outline-none disabled:cursor-not-allowed disabled:bg-th-bkg-4 disabled:text-th-fgd-4 disabled:hover:brightness-100 ${
+                className={`flex-grow rounded-full px-6 py-2 font-bold text-white focus:outline-none disabled:cursor-not-allowed disabled:bg-th-bkg-4 disabled:text-th-fgd-4 ${
                   side === 'buy' ? 'bg-th-green-dark' : 'bg-th-red'
                 }`}
               >
@@ -1174,7 +1220,7 @@ export default function AdvancedTradeForm({
                         {t('max-slippage')}
                         <Tooltip content={t('tooltip-slippage')}>
                           <div className="outline-none focus:outline-none">
-                            <InformationCircleIcon className="ml-1.5 h-4 w-4 text-th-fgd-3" />
+                            <InformationCircleIcon className="ml-1.5 h-4 w-4 text-th-fgd-4" />
                           </div>
                         </Tooltip>
                       </div>

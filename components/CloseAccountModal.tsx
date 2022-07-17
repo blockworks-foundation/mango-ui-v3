@@ -6,10 +6,7 @@ import {
   useState,
 } from 'react'
 import useMangoStore, { MNGO_INDEX } from '../stores/useMangoStore'
-import {
-  CheckCircleIcon,
-  ExclamationCircleIcon,
-} from '@heroicons/react/outline'
+import { CheckCircleIcon, ExclamationCircleIcon } from '@heroicons/react/solid'
 import Button from './Button'
 import Modal from './Modal'
 import { ElementTitle } from './styles'
@@ -54,6 +51,11 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
   const openOrders = useMangoStore((s) => s.selectedMangoAccount.openOrders)
   const setMangoStore = useMangoStore((s) => s.set)
   const activeAlerts = useMangoStore((s) => s.alerts.activeAlerts)
+  const spotBalances = useMangoStore((s) => s.selectedMangoAccount.spotBalances)
+
+  const unsettledBalances = spotBalances.filter(
+    (bal) => bal.unsettled && bal.unsettled > 0
+  )
 
   const fetchTotalAccountSOL = useCallback(async () => {
     if (!mangoAccount) {
@@ -162,7 +164,10 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
   }
 
   const isDisabled =
-    (openOrders && openOrders.length > 0) || hasBorrows || hasOpenPositions
+    (openOrders && openOrders.length > 0) ||
+    hasBorrows ||
+    hasOpenPositions ||
+    !!unsettledBalances.length
 
   return (
     <Modal onClose={onClose} isOpen={isOpen && mangoAccount !== undefined}>
@@ -238,6 +243,12 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
               <div className="flex items-center text-th-fgd-2">
                 <ExclamationCircleIcon className="mr-1.5 h-4 w-4 text-th-red" />
                 {t('close-account:close-open-orders')}
+              </div>
+            ) : null}
+            {unsettledBalances.length ? (
+              <div className="flex items-center text-th-fgd-2">
+                <ExclamationCircleIcon className="mr-1.5 h-4 w-4 text-th-red" />
+                {t('close-account:settle-balances')}
               </div>
             ) : null}
           </div>

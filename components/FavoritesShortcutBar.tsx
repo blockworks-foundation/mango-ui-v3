@@ -1,7 +1,6 @@
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import { FAVORITE_MARKETS_KEY } from './TradeNavMenu'
-import { StarIcon } from '@heroicons/react/solid'
-import { QuestionMarkCircleIcon } from '@heroicons/react/outline'
+import { StarIcon, QuestionMarkCircleIcon } from '@heroicons/react/solid'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import Link from 'next/link'
@@ -31,7 +30,7 @@ const FavoritesShortcutBar = () => {
   return !isMobile ? (
     <Transition
       appear={true}
-      className="flex items-center space-x-4 bg-th-bkg-3 px-4 py-2 xl:px-6"
+      className="flex items-center space-x-4 border-b border-th-bkg-3 py-1 px-6"
       show={favoriteMarkets.length > 0}
       enter="transition-all ease-in duration-200"
       enterFrom="opacity-0"

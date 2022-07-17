@@ -1,6 +1,4 @@
 import { useEffect, useMemo, useState, useCallback } from 'react'
-import PageBodyContainer from '../components/PageBodyContainer'
-import TopBar from '../components/TopBar'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import useMangoStore from '../stores/useMangoStore'
 import {
@@ -27,7 +25,7 @@ import {
   CurrencyDollarIcon,
   DuplicateIcon,
   LinkIcon,
-} from '@heroicons/react/outline'
+} from '@heroicons/react/solid'
 import { MngoMonoIcon } from '../components/icons'
 import Link from 'next/link'
 import {
@@ -54,27 +52,13 @@ export async function getStaticProps({ locale }) {
     props: {
       ...(await serverSideTranslations(locale, [
         'common',
+        'delegate',
         'referrals',
         'profile',
       ])),
       // Will be passed to the page component as props
     },
   }
-}
-
-const ProgramDetails = () => {
-  const { t } = useTranslation('referrals')
-  return (
-    <>
-      <h2 className="mb-4">{t('referrals:program-details')}</h2>
-      <ul className="list-disc pl-3">
-        <li>{t('referrals:program-details-1')}</li>
-        <li>{t('referrals:program-details-2')}</li>
-        <li>{t('referrals:program-details-3')}</li>
-        <li>{t('referrals:program-details-4')}</li>
-      </ul>
-    </>
-  )
 }
 
 export default function Referral() {
@@ -231,342 +215,326 @@ export default function Referral() {
     existingCustomRefLinks && existingCustomRefLinks.length > 0
 
   return (
-    <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
-      <TopBar />
-      <PageBodyContainer>
-        <div className="py-4 md:pb-4 md:pt-10">
-          <h1 className={`mb-1`}>{t('referrals:sow-seed')}</h1>
-          <div className="flex flex-col items-start sm:flex-row">
-            <p className="mb-0 mr-2">{t('referrals:earn-16')}</p>
-          </div>
-        </div>
-        <div className="grid grid-flow-row grid-cols-12 gap-x-6 gap-y-8 md:rounded-lg md:bg-th-bkg-2 md:p-6">
-          {connected ? (
-            mangoAccount ? (
-              <>
-                {hasReferrals ? (
-                  <div className="col-span-12">
-                    <h2 className="mb-4">{t('referrals:your-referrals')}</h2>
-                    <div className="grid-row-flow grid grid-cols-2 border-b border-th-bkg-4 sm:gap-6 sm:border-b-0">
-                      <div className="col-span-2 border-t border-th-bkg-4 p-3 sm:col-span-1 sm:border-b sm:p-4">
-                        <div className="pb-0.5 text-xs text-th-fgd-3 sm:text-sm">
-                          {t('referrals:total-earnings')}
-                        </div>
-                        <div className="text-xl font-bold text-th-fgd-1 sm:text-2xl">
-                          {formatUsdValue(referralTotalAmount)}
-                        </div>
-                      </div>
-                      <div className="col-span-2 border-t border-th-bkg-4 p-3 sm:col-span-1 sm:border-b sm:p-4">
-                        <div className="pb-0.5 text-xs text-th-fgd-3 sm:text-sm">
-                          {t('referrals:total-referrals')}
-                        </div>
-                        <div className="text-xl font-bold text-th-fgd-1 sm:text-2xl">
-                          {uniqueReferrals}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ) : null}
+    <div>
+      <div className="py-6">
+        <h1 className={`mb-2`}>{t('referrals:sow-seed')}</h1>
+        <ul className="list-disc pl-3">
+          <li className="mb-1">{t('referrals:earn-16')}</li>
+          <li className="mb-1">{t('referrals:program-details-1')}</li>
+          <li>{t('referrals:program-details-4')}</li>
+        </ul>
+      </div>
+      <div className="grid grid-flow-row grid-cols-12 gap-6">
+        {connected ? (
+          mangoAccount ? (
+            <>
+              {hasReferrals ? (
                 <div className="col-span-12">
-                  <div className="flex w-full flex-col space-y-4 xl:flex-row xl:space-x-6 xl:space-y-0">
-                    <div className="min-w-[25%] flex-1 rounded-md bg-th-bkg-3 p-6">
-                      <ProgramDetails />
-                    </div>
-                    <div className="flex w-full flex-col">
-                      {hasRequiredMngo ? (
-                        <div className="flex-1 rounded-md bg-th-bkg-3 p-6">
-                          <h2 className="mb-4">{t('referrals:your-links')}</h2>
-                          {!loading ? (
-                            !hasCustomRefLinks ? (
-                              <Table>
-                                <thead>
-                                  <TrHead>
-                                    <Th>{t('referrlals:link')}</Th>
-                                    <Th>{t('referrlals:copy-link')}</Th>
-                                  </TrHead>
-                                </thead>
-                                <tbody>
-                                  <TrBody>
-                                    <Td>
-                                      <div className="flex items-center">
-                                        {!isMobile ? (
-                                          <LinkIcon className="mr-1.5 h-4 w-4" />
-                                        ) : null}
-                                        <p className="mb-0 max-w-md text-th-fgd-1">
-                                          {isMobile
-                                            ? abbreviateAddress(
-                                                mangoAccount.publicKey
-                                              )
-                                            : `https://trade.mango.markets?ref=${mangoAccount.publicKey.toString()}`}
-                                        </p>
-                                      </div>
-                                    </Td>
-                                    <Td className="flex items-center justify-end">
-                                      <IconButton
-                                        className={`flex-shrink-0 ${
-                                          hasCopied === 1 && 'bg-th-green'
-                                        }`}
-                                        disabled={typeof hasCopied === 'number'}
-                                        onClick={() =>
-                                          handleCopyLink(
-                                            `https://trade.mango.markets?ref=${mangoAccount.publicKey.toString()}`,
-                                            1
-                                          )
-                                        }
-                                      >
-                                        {hasCopied === 1 ? (
-                                          <CheckIcon className="h-5 w-5" />
-                                        ) : (
-                                          <DuplicateIcon className="h-4 w-4" />
-                                        )}
-                                      </IconButton>
-                                    </Td>
-                                  </TrBody>
-                                </tbody>
-                              </Table>
-                            ) : (
-                              <Table>
-                                <thead>
-                                  <TrHead>
-                                    <Th>{t('referrals:link')}</Th>
-                                    <Th>
-                                      <div className="flex justify-end">
-                                        {t('referrals:copy-link')}
-                                      </div>
-                                    </Th>
-                                  </TrHead>
-                                </thead>
-                                <tbody>
-                                  {existingCustomRefLinks.map(
-                                    (customRefs, index) => (
-                                      <TrBody key={customRefs.referrerId}>
-                                        <Td>
-                                          <div className="flex items-center">
-                                            {!isMobile ? (
-                                              <LinkIcon className="mr-1.5 h-4 w-4" />
-                                            ) : null}
-                                            <p className="mb-0 text-th-fgd-1">
-                                              {isMobile
-                                                ? customRefs.referrerId
-                                                : `https://trade.mango.markets?ref=${customRefs.referrerId}`}
-                                            </p>
-                                          </div>
-                                        </Td>
-                                        <Td className="flex items-center justify-end">
-                                          <IconButton
-                                            className={`flex-shrink-0 ${
-                                              hasCopied === index + 1 &&
-                                              'bg-th-green'
-                                            }`}
-                                            disabled={
-                                              typeof hasCopied === 'number'
-                                            }
-                                            onClick={() =>
-                                              handleCopyLink(
-                                                `https://trade.mango.markets?ref=${customRefs.referrerId}`,
-                                                index + 1
-                                              )
-                                            }
-                                          >
-                                            {hasCopied === index + 1 ? (
-                                              <CheckIcon className="h-5 w-5" />
-                                            ) : (
-                                              <DuplicateIcon className="h-4 w-4" />
-                                            )}
-                                          </IconButton>
-                                        </Td>
-                                      </TrBody>
-                                    )
-                                  )}
-                                </tbody>
-                              </Table>
-                            )
-                          ) : (
-                            <div className="space-y-2">
-                              <div className="h-16 animate-pulse bg-th-bkg-4" />
-                              <div className="h-16 animate-pulse bg-th-bkg-4" />
-                              <div className="h-16 animate-pulse bg-th-bkg-4" />
-                            </div>
-                          )}
-                        </div>
-                      ) : (
-                        <div className="flex flex-1 flex-col items-center justify-center rounded-md bg-th-bkg-3 px-4 py-8 text-center">
-                          <MngoMonoIcon className="mb-2 h-6 w-6 text-th-fgd-2" />
-                          <p className="mb-0">{t('referrals:10k-mngo')}</p>
-
-                          <Link href={'/?name=MNGO/USDC'} shallow={true}>
-                            <a className="mt-4 rounded-full bg-th-bkg-button px-6 py-2 font-bold text-th-fgd-1 hover:text-th-fgd-1 hover:brightness-[1.15] focus:outline-none">
-                              {t('referrals:buy-mngo')}
-                            </a>
-                          </Link>
-                        </div>
-                      )}
-                    </div>
-                    {hasRequiredMngo ? (
-                      <div className="w-full min-w-[25%] rounded-md bg-th-bkg-3 p-6 xl:w-1/3">
-                        <h2 className="mb-1">{t('referrals:custom-links')}</h2>
-                        <p className="mb-4">
-                          {t('referrals:custom-links-limit')}
-                        </p>
-                        <div className="pb-6">
-                          <Label>{t('referrals:referral-id')}</Label>
-                          <Input
-                            error={inputError}
-                            type="text"
-                            placeholder="ElonMusk"
-                            onBlur={validateRefIdInput}
-                            onChange={(e) => onChangeRefIdInput(e.target.value)}
-                            value={customRefLinkInput}
-                            disabled={existingCustomRefLinks.length === 5}
-                          />
-                          {inputError ? (
-                            <div className="pt-2">
-                              <InlineNotification
-                                type="error"
-                                desc={inputError}
-                              />
-                            </div>
-                          ) : null}
-                        </div>
-                        <Button
-                          onClick={submitRefLink}
-                          disabled={existingCustomRefLinks.length === 5}
-                        >
-                          <div className="flex items-center">
-                            <LinkIcon className="mr-1.5 h-4 w-4" />
-                            {t('referrals:generate-link')}
-                          </div>
-                        </Button>
+                  <h2 className="mb-4">{t('referrals:your-referrals')}</h2>
+                  <div className="grid-row-flow grid grid-cols-2 border-b border-th-bkg-3 sm:gap-6 sm:border-b-0">
+                    <div className="col-span-2 border-t border-th-bkg-3 p-3 sm:col-span-1 sm:border-b sm:p-4">
+                      <div className="pb-0.5 text-xs text-th-fgd-3 sm:text-sm">
+                        {t('referrals:total-earnings')}
                       </div>
-                    ) : null}
+                      <div className="text-xl font-bold text-th-fgd-1 sm:text-2xl">
+                        {formatUsdValue(referralTotalAmount)}
+                      </div>
+                    </div>
+                    <div className="col-span-2 border-t border-th-bkg-3 p-3 sm:col-span-1 sm:border-b sm:p-4">
+                      <div className="pb-0.5 text-xs text-th-fgd-3 sm:text-sm">
+                        {t('referrals:total-referrals')}
+                      </div>
+                      <div className="text-xl font-bold text-th-fgd-1 sm:text-2xl">
+                        {uniqueReferrals}
+                      </div>
+                    </div>
                   </div>
                 </div>
+              ) : null}
+              <div className="col-span-12">
+                <div className="flex w-full flex-col space-y-6 lg:flex-row lg:space-y-0 lg:space-x-6">
+                  <div className="flex w-full flex-col">
+                    {hasRequiredMngo ? (
+                      <div className="flex-1 rounded-md border border-th-bkg-3 p-6">
+                        <h2 className="mb-4">{t('referrals:your-links')}</h2>
+                        {!loading ? (
+                          !hasCustomRefLinks ? (
+                            <Table>
+                              <thead>
+                                <TrHead>
+                                  <Th>{t('referrlals:link')}</Th>
+                                  <Th>{t('referrlals:copy-link')}</Th>
+                                </TrHead>
+                              </thead>
+                              <tbody>
+                                <TrBody>
+                                  <Td>
+                                    <div className="flex items-center">
+                                      {!isMobile ? (
+                                        <LinkIcon className="mr-1.5 h-4 w-4 flex-shrink-0" />
+                                      ) : null}
+                                      <p className="mb-0 max-w-md text-th-fgd-1">
+                                        {isMobile
+                                          ? abbreviateAddress(
+                                              mangoAccount.publicKey
+                                            )
+                                          : `https://trade.mango.markets?ref=${mangoAccount.publicKey.toString()}`}
+                                      </p>
+                                    </div>
+                                  </Td>
+                                  <Td className="flex items-center justify-end">
+                                    <IconButton
+                                      className={`flex-shrink-0 ${
+                                        hasCopied === 1 && 'bg-th-green'
+                                      }`}
+                                      disabled={typeof hasCopied === 'number'}
+                                      onClick={() =>
+                                        handleCopyLink(
+                                          `https://trade.mango.markets?ref=${mangoAccount.publicKey.toString()}`,
+                                          1
+                                        )
+                                      }
+                                    >
+                                      {hasCopied === 1 ? (
+                                        <CheckIcon className="h-5 w-5" />
+                                      ) : (
+                                        <DuplicateIcon className="h-4 w-4" />
+                                      )}
+                                    </IconButton>
+                                  </Td>
+                                </TrBody>
+                              </tbody>
+                            </Table>
+                          ) : (
+                            <Table>
+                              <thead>
+                                <TrHead>
+                                  <Th>{t('referrals:link')}</Th>
+                                  <Th>
+                                    <div className="flex justify-end">
+                                      {t('referrals:copy-link')}
+                                    </div>
+                                  </Th>
+                                </TrHead>
+                              </thead>
+                              <tbody>
+                                {existingCustomRefLinks.map(
+                                  (customRefs, index) => (
+                                    <TrBody key={customRefs.referrerId}>
+                                      <Td>
+                                        <div className="flex items-center">
+                                          {!isMobile ? (
+                                            <LinkIcon className="mr-1.5 h-4 w-4 flex-shrink-0" />
+                                          ) : null}
+                                          <p className="mb-0 text-th-fgd-1">
+                                            {isMobile
+                                              ? customRefs.referrerId
+                                              : `https://trade.mango.markets?ref=${customRefs.referrerId}`}
+                                          </p>
+                                        </div>
+                                      </Td>
+                                      <Td className="flex items-center justify-end">
+                                        <IconButton
+                                          className={`flex-shrink-0 ${
+                                            hasCopied === index + 1 &&
+                                            'bg-th-green'
+                                          }`}
+                                          disabled={
+                                            typeof hasCopied === 'number'
+                                          }
+                                          onClick={() =>
+                                            handleCopyLink(
+                                              `https://trade.mango.markets?ref=${customRefs.referrerId}`,
+                                              index + 1
+                                            )
+                                          }
+                                        >
+                                          {hasCopied === index + 1 ? (
+                                            <CheckIcon className="h-5 w-5" />
+                                          ) : (
+                                            <DuplicateIcon className="h-4 w-4" />
+                                          )}
+                                        </IconButton>
+                                      </Td>
+                                    </TrBody>
+                                  )
+                                )}
+                              </tbody>
+                            </Table>
+                          )
+                        ) : (
+                          <div className="space-y-2">
+                            <div className="h-16 animate-pulse bg-th-bkg-4" />
+                            <div className="h-16 animate-pulse bg-th-bkg-4" />
+                            <div className="h-16 animate-pulse bg-th-bkg-4" />
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="flex flex-1 flex-col items-center justify-center rounded-md border border-th-bkg-3 px-4 py-8 text-center">
+                        <MngoMonoIcon className="mb-2 h-6 w-6 text-th-fgd-2" />
+                        <p className="mb-0">{t('referrals:10k-mngo')}</p>
 
-                {referralHistory.length > 0 ? (
-                  <div className="col-span-12">
-                    <h2 className="mb-4">{t('referrals:earnings-history')}</h2>
-                    {!isMobile ? (
-                      <Table>
-                        <thead>
-                          <TrHead>
-                            <Th>{t('date')}</Th>
-                            <Th>{t('referrals:referee')}</Th>
-                            <Th>
-                              <div className="flex justify-end">
-                                {t('referrals:fee-earned')}
+                        <Link href={'/?name=MNGO/USDC'} shallow={true}>
+                          <a className="mt-4 rounded-full bg-th-bkg-button px-6 py-2 font-bold text-th-fgd-1 hover:text-th-fgd-1 hover:brightness-[1.15] focus:outline-none">
+                            {t('referrals:buy-mngo')}
+                          </a>
+                        </Link>
+                      </div>
+                    )}
+                  </div>
+                  {hasRequiredMngo ? (
+                    <div className="w-full min-w-[33%] rounded-md border border-th-bkg-3 p-6 lg:w-1/3">
+                      <h2 className="mb-1">{t('referrals:custom-links')}</h2>
+                      <p className="mb-4">
+                        {t('referrals:custom-links-limit')}
+                      </p>
+                      <div className="pb-6">
+                        <Label>{t('referrals:referral-id')}</Label>
+                        <Input
+                          error={inputError}
+                          type="text"
+                          placeholder="ElonMusk"
+                          onBlur={validateRefIdInput}
+                          onChange={(e) => onChangeRefIdInput(e.target.value)}
+                          value={customRefLinkInput}
+                          disabled={existingCustomRefLinks.length === 5}
+                        />
+                        {inputError ? (
+                          <div className="pt-2">
+                            <InlineNotification
+                              type="error"
+                              desc={inputError}
+                            />
+                          </div>
+                        ) : null}
+                      </div>
+                      <Button
+                        onClick={submitRefLink}
+                        disabled={existingCustomRefLinks.length === 5}
+                        className="flex w-full items-center justify-center"
+                      >
+                        {t('referrals:generate-link')}
+                      </Button>
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+
+              {referralHistory.length > 0 ? (
+                <div className="col-span-12">
+                  <h2 className="mb-4">{t('referrals:earnings-history')}</h2>
+                  {!isMobile ? (
+                    <Table>
+                      <thead>
+                        <TrHead>
+                          <Th>{t('date')}</Th>
+                          <Th>{t('referrals:referee')}</Th>
+                          <Th>
+                            <div className="flex justify-end">
+                              {t('referrals:fee-earned')}
+                            </div>
+                          </Th>
+                        </TrHead>
+                      </thead>
+                      <tbody>
+                        {referralHistory.map((ref) => {
+                          const pk = ref.referree_mango_account
+                          const acct = pk.slice(0, 5) + '…' + pk.slice(-5)
+
+                          return (
+                            <TrBody key={ref.signature}>
+                              <Td>
+                                <TableDateDisplay date={ref.block_datetime} />
+                              </Td>
+                              <Td>
+                                <Link
+                                  href={`/account?pubkey=${ref.referree_mango_account}`}
+                                  shallow={true}
+                                >
+                                  <a className="text-th-fgd-2 underline hover:text-th-fgd-3 hover:no-underline">
+                                    {acct}
+                                  </a>
+                                </Link>
+                              </Td>
+                              <Td className="flex items-center justify-end">
+                                {usdFormatter(ref.referral_fee_accrual, 4)}
+                              </Td>
+                            </TrBody>
+                          )
+                        })}
+                      </tbody>
+                    </Table>
+                  ) : (
+                    <div className="mb-4 border-b border-th-bkg-3">
+                      <MobileTableHeader
+                        colOneHeader={t('date')}
+                        colTwoHeader={t('referrals:fee-earned')}
+                      />
+                      {referralHistory.map((ref, index) => (
+                        <ExpandableRow
+                          buttonTemplate={
+                            <div className="flex w-full items-center justify-between text-th-fgd-1">
+                              <div>
+                                <TableDateDisplay date={ref.block_datetime} />
                               </div>
-                            </Th>
-                          </TrHead>
-                        </thead>
-                        <tbody>
-                          {referralHistory.map((ref) => {
-                            const pk = ref.referree_mango_account
-                            const acct = pk.slice(0, 5) + '…' + pk.slice(-5)
-
-                            return (
-                              <TrBody key={ref.signature}>
-                                <Td>
-                                  <TableDateDisplay date={ref.block_datetime} />
-                                </Td>
-                                <Td>
+                              <div className="text-right">
+                                {usdFormatter(ref.referral_fee_accrual, 4)}
+                              </div>
+                            </div>
+                          }
+                          key={`${ref.referral_fee_accrual + index}`}
+                          panelTemplate={
+                            <>
+                              <div className="grid grid-flow-row grid-cols-2 gap-4">
+                                <div className="text-left">
+                                  <div className="pb-0.5 text-xs text-th-fgd-3">
+                                    {t('referrals:referee')}
+                                  </div>
                                   <Link
                                     href={`/account?pubkey=${ref.referree_mango_account}`}
                                     shallow={true}
                                   >
                                     <a className="text-th-fgd-2 underline hover:text-th-fgd-3 hover:no-underline">
-                                      {acct}
+                                      {abbreviateAddress(
+                                        mangoAccount.publicKey
+                                      )}
                                     </a>
                                   </Link>
-                                </Td>
-                                <Td className="flex items-center justify-end">
-                                  {usdFormatter(ref.referral_fee_accrual, 4)}
-                                </Td>
-                              </TrBody>
-                            )
-                          })}
-                        </tbody>
-                      </Table>
-                    ) : (
-                      <div className="mb-4 border-b border-th-bkg-4">
-                        <MobileTableHeader
-                          colOneHeader={t('date')}
-                          colTwoHeader={t('referrals:fee-earned')}
-                        />
-                        {referralHistory.map((ref, index) => (
-                          <ExpandableRow
-                            buttonTemplate={
-                              <div className="flex w-full items-center justify-between text-th-fgd-1">
-                                <div>
-                                  <TableDateDisplay date={ref.block_datetime} />
-                                </div>
-                                <div className="text-right">
-                                  {usdFormatter(ref.referral_fee_accrual, 4)}
                                 </div>
                               </div>
-                            }
-                            key={`${ref.referral_fee_accrual + index}`}
-                            panelTemplate={
-                              <>
-                                <div className="grid grid-flow-row grid-cols-2 gap-4">
-                                  <div className="text-left">
-                                    <div className="pb-0.5 text-xs text-th-fgd-3">
-                                      {t('referrals:referee')}
-                                    </div>
-                                    <Link
-                                      href={`/account?pubkey=${ref.referree_mango_account}`}
-                                      shallow={true}
-                                    >
-                                      <a className="text-th-fgd-2 underline hover:text-th-fgd-3 hover:no-underline">
-                                        {abbreviateAddress(
-                                          mangoAccount.publicKey
-                                        )}
-                                      </a>
-                                    </Link>
-                                  </div>
-                                </div>
-                              </>
-                            }
-                          />
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ) : null}
-              </>
-            ) : (
-              <>
-                <div className="col-span-12 rounded-md bg-th-bkg-3 p-6 lg:col-span-4">
-                  <ProgramDetails />
+                            </>
+                          }
+                        />
+                      ))}
+                    </div>
+                  )}
                 </div>
-                <div className="col-span-12 flex items-center justify-center rounded-md bg-th-bkg-3 p-6 lg:col-span-8">
-                  <EmptyState
-                    buttonText={t('create-account')}
-                    icon={<CurrencyDollarIcon />}
-                    onClickButton={() => setShowAccountsModal(true)}
-                    title={t('no-account-found')}
-                    disabled={!wallet || !mangoGroup}
-                  />
-                </div>
-              </>
-            )
-          ) : (
-            <>
-              <div className="col-span-12 rounded-md bg-th-bkg-3 p-6 lg:col-span-4">
-                <ProgramDetails />
-              </div>
-              <div className="col-span-12 flex items-center justify-center rounded-md bg-th-bkg-3 p-6 lg:col-span-8">
-                <EmptyState
-                  buttonText={t('connect')}
-                  disabled={!wallet || !mangoGroup}
-                  icon={<LinkIcon />}
-                  onClickButton={handleConnect}
-                  title={t('connect-wallet')}
-                />
-              </div>
+              ) : null}
             </>
-          )}
-        </div>
-      </PageBodyContainer>
+          ) : (
+            <div className="col-span-12 flex items-center justify-center rounded-md border border-th-bkg-3 p-6">
+              <EmptyState
+                buttonText={t('create-account')}
+                icon={<CurrencyDollarIcon />}
+                onClickButton={() => setShowAccountsModal(true)}
+                title={t('no-account-found')}
+                disabled={!wallet || !mangoGroup}
+              />
+            </div>
+          )
+        ) : (
+          <div className="col-span-12 flex items-center justify-center rounded-md border border-th-bkg-3 p-6">
+            <EmptyState
+              buttonText={t('connect')}
+              disabled={!wallet || !mangoGroup}
+              icon={<LinkIcon />}
+              onClickButton={handleConnect}
+              title={t('connect-wallet')}
+            />
+          </div>
+        )}
+      </div>
       {showAccountsModal ? (
         <AccountsModal
           onClose={() => setShowAccountsModal(false)}

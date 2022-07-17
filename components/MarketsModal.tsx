@@ -1,7 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
-import { EyeIcon, EyeOffIcon } from '@heroicons/react/outline'
-import { ChevronRightIcon } from '@heroicons/react/solid'
+import { ChevronRightIcon, EyeIcon, EyeOffIcon } from '@heroicons/react/solid'
 import Modal from './Modal'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import useMangoStore from '../stores/useMangoStore'
@@ -83,20 +82,6 @@ const MarketsModal = ({
               )}
             </div>
           </div>
-          {/* <div className="bg-[rgba(255,255,255,0.1)] flex items-center justify-between px-2.5 py-0.5 text-th-fgd-3">
-            <StyledColumnHeader>Markets</StyledColumnHeader>
-            <div className="flex justify-between">
-              <StyledColumnHeader className="pr-5 text-right w-20">
-                Price
-              </StyledColumnHeader>
-              <StyledColumnHeader className="text-right w-20">
-                24h Change
-              </StyledColumnHeader>
-              <StyledColumnHeader className="text-right w-20">
-                24h Vol
-              </StyledColumnHeader>
-            </div>
-          </div> */}
           <div className="divide-y divide-th-bkg-4">
             {mkt.markets.map((m) => (
               <div

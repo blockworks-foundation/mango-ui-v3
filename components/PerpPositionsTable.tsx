@@ -2,14 +2,19 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { useTranslation } from 'next-i18next'
-import { ExclamationIcon } from '@heroicons/react/outline'
-
+import { ExclamationIcon } from '@heroicons/react/solid'
+import { ZERO_I80F48 } from '@blockworks-foundation/mango-client'
 import useMangoStore from '../stores/useMangoStore'
 import { LinkButton } from '../components/Button'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { ExpandableRow, Table, Td, Th, TrBody, TrHead } from './TableElements'
-import { formatUsdValue, getPrecisionDigits, roundPerpSize } from '../utils'
+import {
+  formatUsdValue,
+  getPrecisionDigits,
+  roundPerpSize,
+  usdFormatter,
+} from '../utils'
 import Loading from './Loading'
 import MarketCloseModal from './MarketCloseModal'
 import PerpSideBadge from './PerpSideBadge'
@@ -21,6 +26,8 @@ import { TwitterIcon } from './icons'
 import { marketSelector } from '../stores/selectors'
 import { useWallet } from '@solana/wallet-adapter-react'
 import RedeemButtons from './RedeemButtons'
+import Tooltip from './Tooltip'
+import useMangoAccount from 'hooks/useMangoAccount'
 
 const PositionsTable: React.FC = () => {
   const { t } = useTranslation('common')
@@ -38,6 +45,9 @@ const PositionsTable: React.FC = () => {
   )
   const unsettledPositions =
     useMangoStore.getState().selectedMangoAccount.unsettledPerpPositions
+  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
+  const { mangoAccount } = useMangoAccount()
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.md : false
   const { asPath } = useRouter()
@@ -93,9 +103,9 @@ const PositionsTable: React.FC = () => {
   }, [unsettledPositions])
 
   return (
-    <div className="flex flex-col md:pb-2">
+    <div className="flex flex-col">
       {unsettledPositions.length > 0 ? (
-        <div className="mb-6 rounded-lg border border-th-bkg-4 p-4 sm:p-6">
+        <div className="mb-6 rounded-lg border border-th-bkg-3 p-4 sm:p-6">
           <div className="flex items-start justify-between pb-4">
             <div className="flex items-center">
               <ExclamationIcon className="mr-2 h-6 w-6 flex-shrink-0 text-th-primary" />
@@ -115,19 +125,19 @@ const PositionsTable: React.FC = () => {
 
             {unsettledPositions.length > 1 ? <RedeemButtons /> : null}
           </div>
-          <div className="grid grid-flow-row grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid grid-flow-row grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {unsettledPositions.map((p, index) => {
               return (
                 <div
-                  className="col-span-1 flex items-center justify-between rounded-full bg-th-bkg-3 px-5 py-3"
+                  className="col-span-1 flex items-center justify-between rounded-full bg-th-bkg-2 px-5 py-3"
                   key={p.marketConfig.baseSymbol}
                 >
                   <div className="flex space-x-2">
                     <div className="flex items-center">
                       <img
                         alt=""
-                        width="24"
-                        height="24"
+                        width="20"
+                        height="20"
                         src={`/assets/icons/${p.marketConfig.baseSymbol.toLowerCase()}.svg`}
                         className={`mr-3`}
                       />
@@ -170,7 +180,9 @@ const PositionsTable: React.FC = () => {
                     <Th>{t('notional-size')}</Th>
                     <Th>{t('average-entry')}</Th>
                     <Th>{t('break-even')}</Th>
+                    <Th>{t('estimated-liq-price')}</Th>
                     <Th>{t('unrealized-pnl')}</Th>
+                    <Th>{t('unsettled-balance')}</Th>
                   </TrHead>
                 </thead>
                 <tbody>
@@ -186,6 +198,7 @@ const PositionsTable: React.FC = () => {
                         avgEntryPrice,
                         breakEvenPrice,
                         unrealizedPnl,
+                        unsettledPnl,
                       },
                       index
                     ) => {
@@ -193,6 +206,18 @@ const PositionsTable: React.FC = () => {
                         basePosition,
                         marketConfig.baseSymbol
                       )
+                      const liquidationPrice =
+                        mangoGroup &&
+                        mangoAccount &&
+                        marketConfig &&
+                        mangoGroup &&
+                        mangoCache
+                          ? mangoAccount.getLiquidationPrice(
+                              mangoGroup,
+                              mangoCache,
+                              marketConfig.marketIndex
+                            )
+                          : undefined
                       return (
                         <TrBody key={`${marketConfig.marketIndex}`}>
                           <Td>
@@ -255,8 +280,43 @@ const PositionsTable: React.FC = () => {
                               : '--'}
                           </Td>
                           <Td>
-                            {breakEvenPrice ? (
+                            {liquidationPrice &&
+                            liquidationPrice.gt(ZERO_I80F48)
+                              ? usdFormatter(liquidationPrice)
+                              : 'N/A'}
+                          </Td>
+                          <Td>
+                            {unrealizedPnl ? (
                               <PnlText pnl={unrealizedPnl} />
+                            ) : (
+                              '--'
+                            )}
+                          </Td>
+                          <Td>
+                            {unsettledPnl ? (
+                              settleSinglePos === index ? (
+                                <Loading />
+                              ) : (
+                                <Tooltip content={t('redeem-pnl')}>
+                                  <LinkButton
+                                    className={
+                                      unsettledPnl >= 0
+                                        ? 'text-th-green'
+                                        : 'text-th-red'
+                                    }
+                                    onClick={() =>
+                                      handleSettlePnl(
+                                        perpMarket,
+                                        perpAccount,
+                                        index
+                                      )
+                                    }
+                                    disabled={unsettledPnl === 0}
+                                  >
+                                    {formatUsdValue(unsettledPnl)}
+                                  </LinkButton>
+                                </Tooltip>
+                              )
                             ) : (
                               '--'
                             )}
@@ -299,7 +359,10 @@ const PositionsTable: React.FC = () => {
                       notionalSize,
                       avgEntryPrice,
                       breakEvenPrice,
+                      perpAccount,
+                      perpMarket,
                       unrealizedPnl,
+                      unsettledPnl,
                     },
                     index
                   ) => {
@@ -307,6 +370,18 @@ const PositionsTable: React.FC = () => {
                       basePosition,
                       marketConfig.baseSymbol
                     )
+                    const liquidationPrice =
+                      mangoGroup &&
+                      mangoAccount &&
+                      marketConfig &&
+                      mangoGroup &&
+                      mangoCache
+                        ? mangoAccount.getLiquidationPrice(
+                            mangoGroup,
+                            mangoCache,
+                            marketConfig.marketIndex
+                          )
+                        : undefined
                     return (
                       <ExpandableRow
                         buttonTemplate={
@@ -373,6 +448,47 @@ const PositionsTable: React.FC = () => {
                                 ? formatUsdValue(breakEvenPrice)
                                 : '--'}
                             </div>
+                            <div className="col-span-1 text-left">
+                              <div className="pb-0.5 text-xs text-th-fgd-3">
+                                {t('unsettled-balance')}
+                              </div>
+                              {unsettledPnl ? (
+                                settleSinglePos === index ? (
+                                  <Loading />
+                                ) : (
+                                  <Tooltip content={t('redeem-pnl')}>
+                                    <LinkButton
+                                      className={`font-bold ${
+                                        unsettledPnl >= 0
+                                          ? 'text-th-green'
+                                          : 'text-th-red'
+                                      }`}
+                                      onClick={() =>
+                                        handleSettlePnl(
+                                          perpMarket,
+                                          perpAccount,
+                                          index
+                                        )
+                                      }
+                                      disabled={unsettledPnl === 0}
+                                    >
+                                      {formatUsdValue(unsettledPnl)}
+                                    </LinkButton>
+                                  </Tooltip>
+                                )
+                              ) : (
+                                '--'
+                              )}
+                            </div>
+                            <div className="col-span-1 text-left">
+                              <div className="pb-0.5 text-xs text-th-fgd-3">
+                                {t('estimated-liq-price')}
+                              </div>
+                              {liquidationPrice &&
+                              liquidationPrice.gt(ZERO_I80F48)
+                                ? usdFormatter(liquidationPrice)
+                                : 'N/A'}
+                            </div>
                           </div>
                         }
                       />
@@ -383,7 +499,7 @@ const PositionsTable: React.FC = () => {
             )
           ) : (
             <div
-              className={`w-full rounded-md bg-th-bkg-1 py-6 text-center text-th-fgd-3`}
+              className={`w-full rounded-md border border-th-bkg-3 py-6 text-center text-th-fgd-3`}
             >
               {t('no-perp')}
             </div>

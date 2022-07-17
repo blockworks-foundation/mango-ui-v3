@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import sumBy from 'lodash/sumBy'
 import useInterval from '../hooks/useInterval'
-import { SECONDS } from '../stores/useMangoStore'
+import { CLUSTER, SECONDS } from '../stores/useMangoStore'
 import { useTranslation } from 'next-i18next'
-import { ExclamationIcon } from '@heroicons/react/outline'
+import { ExclamationIcon } from '@heroicons/react/solid'
 import { Connection } from '@solana/web3.js'
 
 const tpsAlertThreshold = 1000
@@ -43,7 +43,7 @@ const GlobalNotification = () => {
     getRecentPerformance(setShow, setTps)
   }, 45 * SECONDS)
 
-  if (show) {
+  if (show && CLUSTER == 'mainnet') {
     return (
       <div className="flex items-center bg-th-bkg-4 text-th-fgd-2">
         <div className="flex w-full items-center justify-center p-1">

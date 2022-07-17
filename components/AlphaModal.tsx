@@ -1,13 +1,13 @@
 import React, { useState } from 'react'
-import { CheckCircleIcon } from '@heroicons/react/outline'
+import { CheckCircleIcon } from '@heroicons/react/solid'
 import Modal from './Modal'
 import Button from './Button'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import { useTranslation } from 'next-i18next'
 import Checkbox from './Checkbox'
-import { SHOW_TOUR_KEY } from './IntroTips'
-import { useViewport } from '../hooks/useViewport'
-import { breakpoints } from './TradePageGrid'
+// import { SHOW_TOUR_KEY } from './IntroTips'
+// import { useViewport } from '../hooks/useViewport'
+// import { breakpoints } from './TradePageGrid'
 import { useRouter } from 'next/router'
 import { LANGS } from './SettingsModal'
 import { RadioGroup } from '@headlessui/react'
@@ -24,13 +24,13 @@ const AlphaModal = ({
   const { t } = useTranslation('common')
   const [acceptRisks, setAcceptRisks] = useState(false)
   const [, setAlphaAccepted] = useLocalStorageState(ALPHA_MODAL_KEY, false)
-  const [, setShowTips] = useLocalStorageState(SHOW_TOUR_KEY, false)
+  // const [, setShowTips] = useLocalStorageState(SHOW_TOUR_KEY, false)
   const [savedLanguage, setSavedLanguage] = useLocalStorageState('language', '')
   const [language, setLanguage] = useState('en')
   const router = useRouter()
   const { pathname, asPath, query } = router
-  const { width } = useViewport()
-  const hideTips = width ? width < breakpoints.md : false
+  // const { width } = useViewport()
+  // const hideTips = width ? width < breakpoints.md : false
 
   const handleLanguageSelect = () => {
     setSavedLanguage(language)
@@ -41,10 +41,10 @@ const AlphaModal = ({
     setAlphaAccepted(true)
   }
 
-  const handleTakeTour = () => {
-    setAlphaAccepted(true)
-    setShowTips(true)
-  }
+  // const handleTakeTour = () => {
+  //   setAlphaAccepted(true)
+  //   setShowTips(true)
+  // }
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} hideClose>
@@ -104,7 +104,7 @@ const AlphaModal = ({
             >
               {t('get-started')}
             </Button>
-            {!hideTips ? (
+            {/* {!hideTips ? (
               <Button
                 className="w-40"
                 disabled={!acceptRisks}
@@ -112,14 +112,18 @@ const AlphaModal = ({
               >
                 {t('show-tips')}
               </Button>
-            ) : null}
+            ) : null} */}
           </div>
         </>
       ) : (
-        <div className="pt-2">
-          <RadioGroup value={language} onChange={setLanguage}>
+        <div className="flex flex-col items-center pt-2">
+          <RadioGroup
+            className="w-full"
+            value={language}
+            onChange={setLanguage}
+          >
             {LANGS.map((l) => (
-              <RadioGroup.Option className="" key={l.locale} value={l.locale}>
+              <RadioGroup.Option key={l.locale} value={l.locale}>
                 {({ checked }) => (
                   <div
                     className={`border ${
@@ -137,9 +141,9 @@ const AlphaModal = ({
               </RadioGroup.Option>
             ))}
           </RadioGroup>
-          <div className="flex justify-center pt-4">
-            <Button onClick={() => handleLanguageSelect()}>Save</Button>
-          </div>
+          <Button className="mt-4" onClick={() => handleLanguageSelect()}>
+            Save
+          </Button>
         </div>
       )}
     </Modal>

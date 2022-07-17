@@ -2,7 +2,7 @@ import React, { FunctionComponent, useState } from 'react'
 import {
   ExclamationCircleIcon,
   InformationCircleIcon,
-} from '@heroicons/react/outline'
+} from '@heroicons/react/solid'
 import Input, { Label } from './Input'
 import AccountSelect from './AccountSelect'
 import { ElementTitle } from './styles'
@@ -56,36 +56,39 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
 
   const handleNewAccountDeposit = () => {
     if (!wallet) return
-    setSubmitting(true)
-    deposit({
-      amount: parseFloat(inputAmount),
-      fromTokenAcc: selectedAccount.account,
-      accountName: name,
-      wallet,
-    })
-      .then(async (response) => {
-        await sleep(1000)
-        actions.fetchWalletTokens(wallet)
-        actions.fetchAllMangoAccounts(wallet)
-        if (response && response.length > 0) {
-          onAccountCreation(response[0])
-          notify({
-            title: 'Mango Account Created',
-            txid: response[1],
-          })
-        }
-        setSubmitting(false)
+    validateAmountInput(inputAmount)
+    if (inputAmount) {
+      setSubmitting(true)
+      deposit({
+        amount: parseFloat(inputAmount),
+        fromTokenAcc: selectedAccount.account,
+        accountName: name,
+        wallet,
       })
-      .catch((e) => {
-        setSubmitting(false)
-        console.error(e)
-        notify({
-          title: t('init-error'),
-          description: e.message,
-          type: 'error',
+        .then(async (response) => {
+          await sleep(1000)
+          actions.fetchWalletTokens(wallet)
+          actions.fetchAllMangoAccounts(wallet)
+          if (response && response.length > 0) {
+            onAccountCreation(response[0])
+            notify({
+              title: 'Mango Account Created',
+              txid: response[1],
+            })
+          }
+          setSubmitting(false)
         })
-        onAccountCreation()
-      })
+        .catch((e) => {
+          setSubmitting(false)
+          console.error(e)
+          notify({
+            title: t('init-error'),
+            description: e.message,
+            type: 'error',
+          })
+          onAccountCreation()
+        })
+    }
   }
 
   const validateAmountInput = (amount) => {
@@ -148,7 +151,7 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
           {t('account-name')}{' '}
           <span className="ml-1 text-th-fgd-3">{t('optional')}</span>
           <Tooltip content={t('tooltip-name-onchain')}>
-            <InformationCircleIcon className="ml-2 h-5 w-5 text-th-fgd-3" />
+            <InformationCircleIcon className="ml-2 h-5 w-5 text-th-fgd-4" />
           </Tooltip>
         </Label>
         <Input
@@ -184,7 +187,7 @@ const NewAccount: FunctionComponent<NewAccountProps> = ({
         suffix={symbol}
       />
       {invalidAmountMessage ? (
-        <div className="flex items-center pt-1.5 text-th-red">
+        <div className="flex items-center py-1.5 text-th-red">
           <ExclamationCircleIcon className="mr-1.5 h-4 w-4" />
           {invalidAmountMessage}
         </div>
