@@ -88,11 +88,7 @@ const AccountInterest = () => {
 
   const token = useMemo(() => {
     if (selectedAsset) {
-      try {
-        return getTokenBySymbol(groupConfig, selectedAsset)
-      } catch {
-        return { decimals: 6 }
-      }
+      return getTokenBySymbol(groupConfig, selectedAsset)
     }
   }, [selectedAsset])
 
@@ -171,13 +167,8 @@ const AccountInterest = () => {
       } else {
         const stats = Object.entries(parsedResponse)
         const filterMicroBalances = stats.filter(([symbol, stats]) => {
-          let decimals = 6
-          try {
-            decimals = getTokenBySymbol(groupConfig, symbol).decimals
-          } catch {
-            /* Use default value */
-          }
-          
+          const decimals = getTokenBySymbol(groupConfig, symbol).decimals
+
           const smallestValue = Math.pow(10, (decimals + 1) * -1)
           return (
             stats.total_borrow_interest > smallestValue ||
@@ -209,12 +200,7 @@ const AccountInterest = () => {
       const stats = {}
       for (const asset of assets) {
         const x: any = Object.entries(parsedResponse[asset])
-        let decimals = 6
-        try {
-          decimals = getTokenBySymbol(groupConfig, asset).decimals
-        } catch {
-          /* Use default value */
-        }
+        const decimals = getTokenBySymbol(groupConfig, asset).decimals
 
         stats[asset] = x
           .map(([key, value, price]) => {
@@ -344,12 +330,10 @@ const AccountInterest = () => {
                   </TrBody>
                 ) : (
                   interestStats.map(([symbol, stats]) => {
-                    let decimals = 6
-                    try {
-                      decimals = getTokenBySymbol(groupConfig, symbol).decimals
-                    } catch {
-                      /* Use default value */
-                    }
+                    const decimals = getTokenBySymbol(
+                      groupConfig,
+                      symbol
+                    ).decimals
 
                     return (
                       <TrBody key={symbol}>
@@ -398,12 +382,7 @@ const AccountInterest = () => {
                 colTwoHeader={t('net')}
               />
               {interestStats.map(([symbol, stats], index) => {
-                let decimals = 6
-                try {
-                  decimals = getTokenBySymbol(groupConfig, symbol).decimals
-                } catch {
-                  /* Use default value */
-                }
+                const decimals = getTokenBySymbol(groupConfig, symbol).decimals
 
                 return (
                   <ExpandableRow
