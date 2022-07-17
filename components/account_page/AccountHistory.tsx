@@ -332,7 +332,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
                 let perpMarket: PerpMarket | null = null
                 if (activity_type.includes('perp')) {
                   const symbol = activity_details.perp_market.split('-')[0]
-                  
+
                   const marketConfig = getMarketByBaseSymbolAndKind(
                     groupConfig,
                     symbol,
@@ -344,7 +344,9 @@ const LiquidationHistoryTable = ({ history, view }) => {
                       marketConfig.publicKey.toString()
                     ] as PerpMarket
                   } else {
-                    perpMarket = markets[marketConfig.publicKey.toBase58()] as PerpMarket
+                    perpMarket = markets[
+                      marketConfig.publicKey.toBase58()
+                    ] as PerpMarket
                   }
                 }
 

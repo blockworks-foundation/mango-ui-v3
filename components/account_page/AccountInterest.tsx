@@ -168,7 +168,7 @@ const AccountInterest = () => {
         const stats = Object.entries(parsedResponse)
         const filterMicroBalances = stats.filter(([symbol, stats]) => {
           const decimals = getTokenBySymbol(groupConfig, symbol).decimals
-          
+
           const smallestValue = Math.pow(10, (decimals + 1) * -1)
           return (
             stats.total_borrow_interest > smallestValue ||
@@ -330,7 +330,10 @@ const AccountInterest = () => {
                   </TrBody>
                 ) : (
                   interestStats.map(([symbol, stats]) => {
-                    const decimals = getTokenBySymbol(groupConfig, symbol).decimals
+                    const decimals = getTokenBySymbol(
+                      groupConfig,
+                      symbol
+                    ).decimals
 
                     return (
                       <TrBody key={symbol}>

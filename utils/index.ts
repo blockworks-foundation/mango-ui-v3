@@ -349,4 +349,3 @@ export const isValidSolanaAddress = (address: string) => {
     return false
   }
 }
-
