@@ -143,7 +143,7 @@ const DesktopTable = ({
                   )} $${order.triggerPrice.toFixed(2)}`}
               </Td>
               <Td className="w-[14.286%]">
-                <div className={`flex justify-end space-x-3`}>
+                <div className={`flex justify-end space-x-2`}>
                   {editOrderIndex !== index ? (
                     <>
                       {!order.perpTrigger ? (
@@ -157,6 +157,7 @@ const DesktopTable = ({
                       <Button
                         onClick={() => handleCancelOrder(order, market.account)}
                         className="-my-1 h-7 pt-0 pb-0 pl-3 pr-3 text-xs"
+                        primary={false}
                       >
                         {cancelledOrderId + '' === order.orderId + '' ? (
                           <Loading />
@@ -170,6 +171,7 @@ const DesktopTable = ({
                         <Button
                           onClick={() => handleCancelAllOrders(market.account)}
                           className="-my-1 h-7 pt-0 pb-0 pl-3 pr-3 text-xs text-th-red"
+                          primary={false}
                         >
                           {t('cancel-all') + ' ' + market.config.name}
                         </Button>
