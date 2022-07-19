@@ -55,8 +55,7 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
     setSubmitting(true)
 
     try {
-      const perpAccount =
-        mangoAccount.perpAccounts[position.marketConfig.marketIndex]
+      const perpAccount = mangoAccount.perpAccounts[marketConfig.marketIndex]
       const side = perpAccount.basePosition.gt(ZERO_BN) ? 'sell' : 'buy'
       // send a large size to ensure we are reducing the entire position
       const size =
