@@ -335,9 +335,7 @@ const MobileTable = ({
                   />
                 </div>
                 <Button
-                  className={`${
-                    index % 2 === 0 ? 'bg-th-bkg-4' : 'bg-th-bkg-3'
-                  } mt-4 h-8 pt-0 pb-0 pl-3 pr-3 text-xs`}
+                  className={`mt-4 h-8 pt-0 pb-0 pl-3 pr-3 text-xs`}
                   onClick={() =>
                     handleModifyOrder(
                       order,

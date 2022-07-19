@@ -5,7 +5,6 @@ import {
   createRef,
   useState,
 } from 'react'
-// import { getWeights, MarketConfig } from '@blockworks-foundation/mango-client'
 import { MarketConfig } from '@blockworks-foundation/mango-client'
 
 import useMangoStore from '../stores/useMangoStore'
