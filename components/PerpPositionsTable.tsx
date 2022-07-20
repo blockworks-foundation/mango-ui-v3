@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { useTranslation } from 'next-i18next'
-import { ExclamationIcon } from '@heroicons/react/solid'
+import { ExclamationIcon, InformationCircleIcon } from '@heroicons/react/solid'
 import { ZERO_I80F48 } from '@blockworks-foundation/mango-client'
 import useMangoStore from '../stores/useMangoStore'
 import { LinkButton } from '../components/Button'
@@ -180,7 +180,14 @@ const PositionsTable: React.FC = () => {
                     <Th>{t('notional-size')}</Th>
                     <Th>{t('average-entry')}</Th>
                     <Th>{t('break-even')}</Th>
-                    <Th>{t('estimated-liq-price')}</Th>
+                    <Th>
+                      <Tooltip content={t('tooltip-estimated-liq-price')}>
+                        <span className="flex items-center">
+                          {t('estimated-liq-price')}
+                          <InformationCircleIcon className="ml-1 h-4 w-4 flex-shrink-0 text-th-fgd-4" />
+                        </span>
+                      </Tooltip>
+                    </Th>
                     <Th>{t('unrealized-pnl')}</Th>
                     <Th>{t('unsettled-balance')}</Th>
                   </TrHead>
@@ -482,7 +489,14 @@ const PositionsTable: React.FC = () => {
                             </div>
                             <div className="col-span-1 text-left">
                               <div className="pb-0.5 text-xs text-th-fgd-3">
-                                {t('estimated-liq-price')}
+                                <Tooltip
+                                  content={t('tooltip-estimated-liq-price')}
+                                >
+                                  <span className="flex items-center">
+                                    {t('estimated-liq-price')}
+                                    <InformationCircleIcon className="ml-1 h-4 w-4 flex-shrink-0 text-th-fgd-4" />
+                                  </span>
+                                </Tooltip>
                               </div>
                               {liquidationPrice &&
                               liquidationPrice.gt(ZERO_I80F48)

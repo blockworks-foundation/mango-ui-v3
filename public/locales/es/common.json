@@ -424,6 +424,7 @@
    "tooltip-display-step": "Tamaño del paso de visualización",
    "tooltip-earn-mngo": "Gana MNGO por creación de mercado en los mercados perpetuos.",
    "tooltip-enable-margin": "Habilite el margen al contado para esta operación",
+   "tooltip-estimated-liq-price": "Estimated liquidation price assumes the value of your collateral remains the same. It's not an accurate representation of where your account would be liquidated",
    "tooltip-funding": "Funding is paid continuously. The 1hr rate displayed is a rolling average of the past 60 mins.",
    "tooltip-gui-rebate": "La tarifa del receptor es {{taker_rate)}} antes de que se reembolse el 20% de la tarifa de hospedaje de GUI.",
    "tooltip-interest-charged": "Los intereses se cargan sobre el saldo prestado y están sujetos a cambios.",

@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from 'react'
 import useMangoStore from '../stores/useMangoStore'
 import Button from '../components/Button'
 import { notify } from '../utils/notifications'
-import { ExclamationIcon } from '@heroicons/react/solid'
+import { ExclamationIcon, InformationCircleIcon } from '@heroicons/react/solid'
 import { Market } from '@project-serum/serum'
 import {
   getMarketIndexBySymbol,
@@ -27,6 +27,7 @@ import { TransactionSignature } from '@solana/web3.js'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useWallet } from '@solana/wallet-adapter-react'
+import Tooltip from './Tooltip'
 
 const BalancesTable = ({
   showZeroBalances = false,
@@ -271,7 +272,14 @@ const BalancesTable = ({
                     <Th>{t('unsettled')}</Th>
                     <Th>{t('net-balance')}</Th>
                     <Th>{t('value')}</Th>
-                    <Th>{t('estimated-liq-price')}</Th>
+                    <Th>
+                      <Tooltip content={t('tooltip-estimated-liq-price')}>
+                        <span className="flex items-center">
+                          {t('estimated-liq-price')}
+                          <InformationCircleIcon className="ml-1 h-4 w-4 flex-shrink-0 text-th-fgd-4" />
+                        </span>
+                      </Tooltip>
+                    </Th>
                     <Th>
                       {t('deposit')}
                       <span className="mx-1 text-th-fgd-4">|</span>
@@ -550,7 +558,14 @@ const BalancesTable = ({
                             </div>
                             <div className="text-left">
                               <div className="pb-0.5 text-xs text-th-fgd-3">
-                                {t('estimated-liq-price')}
+                                <Tooltip
+                                  content={t('tooltip-estimated-liq-price')}
+                                >
+                                  <span className="flex items-center">
+                                    {t('estimated-liq-price')}
+                                    <InformationCircleIcon className="ml-1 h-4 w-4 flex-shrink-0 text-th-fgd-4" />
+                                  </span>
+                                </Tooltip>
                               </div>
                               {liquidationPrice &&
                               liquidationPrice.gt(ZERO_I80F48)
