@@ -1,16 +1,24 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import useMangoStore from '../stores/useMangoStore'
-import Button, { LinkButton } from '../components/Button'
+import Button from '../components/Button'
 import { notify } from '../utils/notifications'
-import { ArrowSmDownIcon, ExclamationIcon } from '@heroicons/react/solid'
+import { ExclamationIcon } from '@heroicons/react/solid'
 import { Market } from '@project-serum/serum'
-import { getTokenBySymbol } from '@blockworks-foundation/mango-client'
+import {
+  getMarketIndexBySymbol,
+  getTokenBySymbol,
+  ZERO_I80F48,
+} from '@blockworks-foundation/mango-client'
 import Loading from './Loading'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
-import { floorToDecimal, formatUsdValue, getPrecisionDigits } from '../utils'
+import {
+  floorToDecimal,
+  formatUsdValue,
+  getPrecisionDigits,
+  usdFormatter,
+} from '../utils'
 import { ExpandableRow, Table, Td, Th, TrBody, TrHead } from './TableElements'
-import { useSortableData } from '../hooks/useSortableData'
 import DepositModal from './DepositModal'
 import WithdrawModal from './WithdrawModal'
 import MobileTableHeader from './mobile/MobileTableHeader'
@@ -30,8 +38,9 @@ const BalancesTable = ({
   const [showWithdrawModal, setShowWithdrawModal] = useState(false)
   const [actionSymbol, setActionSymbol] = useState('')
   const spotBalances = useMangoStore((s) => s.selectedMangoAccount.spotBalances)
-  const { items, requestSort, sortConfig } = useSortableData(
-    spotBalances?.length > 0
+
+  const balances = useMemo(() => {
+    return spotBalances?.length > 0
       ? spotBalances
           .filter((bal) => {
             return (
@@ -48,10 +57,12 @@ const BalancesTable = ({
             return bV - aV
           })
       : []
-  )
+  }, [spotBalances])
+
   const actions = useMangoStore((s) => s.actions)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoGroupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
+  const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const setMangoStore = useMangoStore((s) => s.set)
@@ -248,168 +259,28 @@ const BalancesTable = ({
       ) : null}
       <div className={`md:overflow-x-auto`}>
         <div className={`inline-block min-w-full align-middle`}>
-          {items.length > 0 ? (
+          {balances.length > 0 ? (
             !isMobile ? (
               <Table>
                 <thead>
                   <TrHead>
+                    <Th>{t('asset')}</Th>
+                    <Th>{t('deposits')}</Th>
+                    <Th>{t('borrows')}</Th>
+                    <Th>{t('in-orders')}</Th>
+                    <Th>{t('unsettled')}</Th>
+                    <Th>{t('net-balance')}</Th>
+                    <Th>{t('value')}</Th>
+                    <Th>{t('estimated-liq-price')}</Th>
                     <Th>
-                      <LinkButton
-                        className="flex items-center text-left no-underline"
-                        onClick={() => requestSort('symbol')}
-                      >
-                        <span className="font-normal">{t('asset')}</span>
-                        <ArrowSmDownIcon
-                          className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
-                            sortConfig?.key === 'symbol'
-                              ? sortConfig.direction === 'ascending'
-                                ? 'rotate-180 transform'
-                                : 'rotate-360 transform'
-                              : null
-                          }`}
-                        />
-                      </LinkButton>
-                    </Th>
-                    <Th>
-                      <LinkButton
-                        className="flex items-center text-left no-underline"
-                        onClick={() => requestSort('deposits')}
-                      >
-                        <span className="font-normal">{t('deposits')}</span>
-                        <ArrowSmDownIcon
-                          className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
-                            sortConfig?.key === 'deposits'
-                              ? sortConfig.direction === 'ascending'
-                                ? 'rotate-180 transform'
-                                : 'rotate-360 transform'
-                              : null
-                          }`}
-                        />
-                      </LinkButton>
-                    </Th>
-                    <Th>
-                      <LinkButton
-                        className="flex items-center text-left no-underline"
-                        onClick={() => requestSort('borrows')}
-                      >
-                        <span className="font-normal">{t('borrows')}</span>
-                        <ArrowSmDownIcon
-                          className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
-                            sortConfig?.key === 'borrows'
-                              ? sortConfig.direction === 'ascending'
-                                ? 'rotate-180 transform'
-                                : 'rotate-360 transform'
-                              : null
-                          }`}
-                        />
-                      </LinkButton>
-                    </Th>
-                    <Th>
-                      <LinkButton
-                        className="flex items-center text-left no-underline"
-                        onClick={() => requestSort('orders')}
-                      >
-                        <span className="font-normal">{t('in-orders')}</span>
-                        <ArrowSmDownIcon
-                          className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
-                            sortConfig?.key === 'orders'
-                              ? sortConfig.direction === 'ascending'
-                                ? 'rotate-180 transform'
-                                : 'rotate-360 transform'
-                              : null
-                          }`}
-                        />
-                      </LinkButton>
-                    </Th>
-                    <Th>
-                      <LinkButton
-                        className="flex items-center text-left no-underline"
-                        onClick={() => requestSort('unsettled')}
-                      >
-                        <span className="font-normal">{t('unsettled')}</span>
-                        <ArrowSmDownIcon
-                          className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
-                            sortConfig?.key === 'unsettled'
-                              ? sortConfig.direction === 'ascending'
-                                ? 'rotate-180 transform'
-                                : 'rotate-360 transform'
-                              : null
-                          }`}
-                        />
-                      </LinkButton>
-                    </Th>
-                    <Th>
-                      <LinkButton
-                        className="flex items-center text-left no-underline"
-                        onClick={() => requestSort('net')}
-                      >
-                        <span className="font-normal">{t('net-balance')}</span>
-                        <ArrowSmDownIcon
-                          className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
-                            sortConfig?.key === 'net'
-                              ? sortConfig.direction === 'ascending'
-                                ? 'rotate-180 transform'
-                                : 'rotate-360 transform'
-                              : null
-                          }`}
-                        />
-                      </LinkButton>
-                    </Th>
-                    <Th>
-                      <LinkButton
-                        className="flex items-center text-left no-underline"
-                        onClick={() => requestSort('value')}
-                      >
-                        <span className="font-normal">{t('value')}</span>
-                        <ArrowSmDownIcon
-                          className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
-                            sortConfig?.key === 'value'
-                              ? sortConfig.direction === 'ascending'
-                                ? 'rotate-180 transform'
-                                : 'rotate-360 transform'
-                              : null
-                          }`}
-                        />
-                      </LinkButton>
-                    </Th>
-                    <Th>
-                      <LinkButton
-                        className="flex items-center text-left no-underline"
-                        onClick={() => requestSort('depositRate')}
-                      >
-                        <span className="font-normal">{t('deposit-rate')}</span>
-                        <ArrowSmDownIcon
-                          className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
-                            sortConfig?.key === 'depositRate'
-                              ? sortConfig.direction === 'ascending'
-                                ? 'rotate-180 transform'
-                                : 'rotate-360 transform'
-                              : null
-                          }`}
-                        />
-                      </LinkButton>
-                    </Th>
-                    <Th>
-                      <LinkButton
-                        className="flex items-center text-left no-underline"
-                        onClick={() => requestSort('borrowRate')}
-                      >
-                        <span className="font-normal">{t('borrow-rate')}</span>
-                        <ArrowSmDownIcon
-                          className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
-                            sortConfig?.key === 'borrowRate'
-                              ? sortConfig.direction === 'ascending'
-                                ? 'rotate-180 transform'
-                                : 'rotate-360 transform'
-                              : null
-                          }`}
-                        />
-                      </LinkButton>
+                      {t('deposit')}
+                      <span className="mx-1 text-th-fgd-4">|</span>
+                      {t('borrow')} (APR)
                     </Th>
                   </TrHead>
                 </thead>
                 <tbody>
-                  {items.map((balance, index) => {
+                  {balances.map((balance, index) => {
                     if (
                       !balance ||
                       typeof balance.decimals !== 'number' ||
@@ -422,6 +293,25 @@ const BalancesTable = ({
                     ) {
                       return null
                     }
+
+                    const marketIndex = getMarketIndexBySymbol(
+                      mangoGroupConfig,
+                      balance.symbol
+                    )
+
+                    const liquidationPrice =
+                      mangoGroup &&
+                      mangoAccount &&
+                      marketIndex &&
+                      mangoGroup &&
+                      mangoCache
+                        ? mangoAccount.getLiquidationPrice(
+                            mangoGroup,
+                            mangoCache,
+                            marketIndex
+                          )
+                        : undefined
+
                     return (
                       <TrBody key={`${balance.symbol}${index}`}>
                         <Td>
@@ -499,11 +389,15 @@ const BalancesTable = ({
                         </Td>
                         <Td>{formatUsdValue(balance.value.toNumber())}</Td>
                         <Td>
+                          {liquidationPrice && liquidationPrice.gt(ZERO_I80F48)
+                            ? usdFormatter(liquidationPrice)
+                            : '–'}
+                        </Td>
+                        <Td>
                           <span className="text-th-green">
                             {balance.depositRate.toFixed(2)}%
                           </span>
-                        </Td>
-                        <Td>
+                          <span className="mx-1 text-th-fgd-4">|</span>
                           <span className="text-th-red">
                             {balance.borrowRate.toFixed(2)}%
                           </span>
@@ -564,7 +458,7 @@ const BalancesTable = ({
                   colOneHeader={t('asset')}
                   colTwoHeader={t('net-balance')}
                 />
-                {items.map((balance, index) => {
+                {balances.map((balance, index) => {
                   if (
                     !balance ||
                     typeof balance.decimals !== 'number' ||
@@ -579,6 +473,23 @@ const BalancesTable = ({
                   ) {
                     return null
                   }
+                  const marketIndex = getMarketIndexBySymbol(
+                    mangoGroupConfig,
+                    balance.symbol
+                  )
+
+                  const liquidationPrice =
+                    mangoGroup &&
+                    mangoAccount &&
+                    marketIndex &&
+                    mangoGroup &&
+                    mangoCache
+                      ? mangoAccount.getLiquidationPrice(
+                          mangoGroup,
+                          mangoCache,
+                          marketIndex
+                        )
+                      : undefined
                   return (
                     <ExpandableRow
                       buttonTemplate={
@@ -637,15 +548,26 @@ const BalancesTable = ({
                               </div>
                               {formatUsdValue(balance.value.toNumber())}
                             </div>
+                            <div className="text-left">
+                              <div className="pb-0.5 text-xs text-th-fgd-3">
+                                {t('estimated-liq-price')}
+                              </div>
+                              {liquidationPrice &&
+                              liquidationPrice.gt(ZERO_I80F48)
+                                ? usdFormatter(liquidationPrice)
+                                : '–'}
+                            </div>
                             <div className="text-left text-th-fgd-4">
                               <div className="pb-0.5 text-xs text-th-fgd-3">
-                                {t('rates')}
+                                <span>{t('deposit')}</span>
+                                <span className="mx-1 text-th-fgd-4">|</span>
+                                <span>{`${t('borrow')} (APR)`}</span>
                               </div>
-                              <span className="mr-1 text-th-green">
+                              <span className="text-th-green">
                                 {balance.depositRate.toFixed(2)}%
                               </span>
-                              /
-                              <span className="ml-1 text-th-red">
+                              <span className="mx-1 text-th-fgd-4">|</span>
+                              <span className="text-th-red">
                                 {balance.borrowRate.toFixed(2)}%
                               </span>
                             </div>
@@ -666,6 +588,7 @@ const BalancesTable = ({
                               onClick={() =>
                                 handleOpenWithdrawModal(balance.symbol)
                               }
+                              primary={false}
                             >
                               {t('withdraw')}
                             </Button>
