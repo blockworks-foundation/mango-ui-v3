@@ -18,7 +18,7 @@
     "analyze": "ANALYZE=true yarn build"
   },
   "dependencies": {
-    "@blockworks-foundation/mango-client": "^3.6.9",
+    "@blockworks-foundation/mango-client": "^3.6.10",
     "@headlessui/react": "^0.0.0-insiders.2dbc38c",
     "@heroicons/react": "^1.0.0",
     "@jup-ag/react-hook": "^1.0.0-beta.22",
