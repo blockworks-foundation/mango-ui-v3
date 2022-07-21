@@ -55,7 +55,7 @@ export default function AccountOverview() {
       if (!pubKey) {
         return
       }
-      const stats = await fetchHourlyPerformanceStats(pubKey, 30)
+      const stats = await fetchHourlyPerformanceStats(pubKey, 90)
       setHourlyPerformanceStats(stats)
     }
     if (pubKey) {
