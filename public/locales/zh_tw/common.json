@@ -424,6 +424,7 @@
   "tooltip-display-step": "顯示梯計",
   "tooltip-earn-mngo": "以做永續合約市商而獲得MNGO獎勵。",
   "tooltip-enable-margin": "為此交易啟用保證金",
+  "tooltip-estimated-liq-price": "Estimated liquidation price assumes the value of your collateral remains the same. It's not an accurate representation of where your account would be liquidated",
   "tooltip-funding": "資金費是連續支付的。一小時費率以前60分鐘滾動平均來算。",
   "tooltip-gui-rebate": "吃單費率是{{taker_rate}}再減20%介面費率折扣.",
   "tooltip-interest-charged": "利率以借貸餘額計算而可波動。",
