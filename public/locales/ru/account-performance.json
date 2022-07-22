@@ -1,12 +1,12 @@
 {
-  "all": "All",
-  "account-pnl": "Account PnL",
-  "account-value": "Account Value",
-  "funding-cumulative": "Cumulative Funding",
-  "interest-cumulative": "Cumulative Interest",
-  "mngo-rewards": "MNGO Rewards",
-  "perp-pnl": "Perp PnL",
-  "perp-pnl-ex-rewards": "Perp PnL (ex. rewards)",
-  "select-an-asset": "Select one or more assets to view their performance.",
-  "vs-time": "vs. Time"
+  "all": "Все",
+  "account-pnl": "PnL аккаунта",
+  "account-value": "Все средства",
+  "funding-cumulative": "Накопленный Funding",
+  "interest-cumulative": "Накопленный Interest",
+  "mngo-rewards": "MNGO вознаграждения",
+  "perp-pnl": "PnL на фьючерсах",
+  "perp-pnl-ex-rewards": "PnL на фьючерсах (исключая вознаграждения)",
+  "select-an-asset": "Выберите один или несколько активов, чтобы просмотреть их performance.",
+  "vs-time": "относительно времени"
 }
