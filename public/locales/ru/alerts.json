@@ -1,13 +1,13 @@
 {
-  "active-alerts": "Active Alerts",
-  "alert-health": "Alert when health is below",
-  "alert-health-required": "Alert health is required",
-  "alert-info": "Email when health <= {{health}}%",
-  "alerts-disclaimer": "Do not rely solely on alerts to protect your account. We can't guarantee they will be delivered.",
-  "alerts-max": "You've reached the maximum number of active alerts.",
-  "create-alert": "Create Alert",
-  "email-address-required": "An email address is required",
-  "new-alert": "New Alert",
-  "no-alerts": "No Active Alerts",
-  "no-alerts-desc": "Create an alert to be notified when your account health is low."
+  "active-alerts": "Активные оповещения",
+  "alert-health": "Оповещение, когда маржа аккаунта ниже",
+  "alert-health-required": "Оповещение, когда недостаточно маржи на аккаунте",
+  "alert-info": "Email когда маржа аккаунта <= {{health}}%",
+  "alerts-disclaimer": "Не полагайтесь исключительно на оповещения для защиты своей учетной записи. Мы не можем гарантировать, что они будут доставлены.",
+  "alerts-max": "Вы достигли максимального количества активных оповещений.",
+  "create-alert": "Создать оповещение",
+  "email-address-required": "Требуется адрес электронной почты",
+  "new-alert": "Новое оповещение",
+  "no-alerts": "Нет активных оповещений",
+  "no-alerts-desc": "Создайте оповещение, чтобы получать уведомления о низком уровне маржи аккаунта."
 }

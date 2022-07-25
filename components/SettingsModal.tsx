@@ -17,6 +17,7 @@ import dayjs from 'dayjs'
 
 require('dayjs/locale/en')
 require('dayjs/locale/es')
+require('dayjs/locale/ru')
 require('dayjs/locale/zh')
 require('dayjs/locale/zh-tw')
 
@@ -35,6 +36,7 @@ const THEMES = ['Light', 'Dark', 'Mango']
 export const LANGS = [
   { locale: 'en', name: 'english', description: 'english' },
   { locale: 'es', name: 'spanish', description: 'spanish' },
+  { locale: 'ru', name: 'russian', description: 'russian' },
   {
     locale: 'zh_tw',
     name: 'chinese-traditional',
