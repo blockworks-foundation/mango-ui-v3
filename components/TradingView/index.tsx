@@ -65,7 +65,7 @@ const TVChartContainer = () => {
     containerId: 'tv_chart_container',
     datafeedUrl: CHART_DATA_FEED,
     libraryPath: '/charting_library/',
-    chartsStorageUrl: 'https://saveload.tradingview.com',
+    chartsStorageUrl: 'https://trading-view-backend.herokuapp.com',
     chartsStorageApiVersion: '1.1',
     clientId: 'mango.markets',
     userId: '',
