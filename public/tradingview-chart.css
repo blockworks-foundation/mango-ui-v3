@@ -50,6 +50,10 @@
 
 /* light theme */
 
+html .chart-page .chart-container-border {
+  background-color: transparent;
+}
+
 html .chart-page {
   font-family: 'Lato', sans-serif;
 }
@@ -447,6 +451,10 @@ html .tv-button--success:hover, html .tv-button--success_ghost:hover {
 
 /* dark theme */
 
+html.theme-dark .chart-page .chart-container-border {
+  background-color: transparent;
+}
+
 html.theme-dark .chart-page {
   font-family: 'Lato', sans-serif;
 }
@@ -829,6 +837,34 @@ html.theme-dark .tv-button--success:hover, html.theme-dark .tv-button--success_g
   background-color: var(--primary);
   color: var(--black);
   filter: brightness(110%);
+}
+
+/* Chart Legend */
+
+.control-bar__btn--dark {
+  background-color: var(--black);
+  color: var(--text);
+  box-shadow: 0px 2px 4px 2px rgba(0,0,0,0.2);
+}
+
+.chart-widget--themed-dark .item-3eXPhOmy.last-3Xus0HXW .text-1pYqyE6B, .chart-widget--themed-dark .noWrap-ODIQgNap .valuesAdditionalWrapper-3BfAIuML, .chart-widget--themed-dark .title-bcHj6pEn, .chart-widget--themed-dark .valueTitle-1myNPdtH, .chart-widget--themed-dark .valueValue-3kA0oJs5 {
+  color: var(--text);
+}
+
+.chart-widget--themed-dark .selected-2qw9PFUJ .buttons-1-XhYDHM, .chart-widget--themed-dark .selected-2qw9PFUJ .titleWrapper-1Zs2rjQ6, .chart-widget--themed-dark .withAction-1y86Ymm9 .buttons-1-XhYDHM, .chart-widget--themed-dark .withAction-1y86Ymm9 .titleWrapper-1Zs2rjQ6 {
+  background-color: var(--black);
+}
+
+.chart-widget--themed-dark .buttonIcon-2lrp9MHZ {
+  color: var(--primary);
+}
+
+.chart-widget--themed-dark .toggler-_SUZ7r_5 .counter-1hG1zy7A, .chart-widget--themed-dark .toggler-_SUZ7r_5 .iconArrow-3q7vxxnz, .chart-widget--themed-dark .toggler-_SUZ7r_5 .objectTree-2tLil0dm {
+  color: var(--text);
+}
+
+.chart-widget--themed-dark .toggler-_SUZ7r_5:hover .counter-1hG1zy7A, .chart-widget--themed-dark .toggler-_SUZ7r_5:hover .iconArrow-3q7vxxnz, .chart-widget--themed-dark .toggler-_SUZ7r_5:hover .objectTree-2tLil0dm {
+  color: var(--primary);
 }
 
 @media screen and (max-width: 640px) {

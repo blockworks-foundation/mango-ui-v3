@@ -106,12 +106,10 @@ const TVChartContainer = () => {
   }, [selectedMarketConfig.name, chartReady])
 
   let chartStyleOverrides = {
-    'paneProperties.background':
-      theme === 'Dark' ? '#101012' : theme === 'Light' ? '#fff' : '#141026',
-    'paneProperties.vertGridProperties.color':
-      theme === 'Dark' ? '#101012' : theme === 'Light' ? '#fff' : '#141026',
-    'paneProperties.horzGridProperties.color':
-      theme === 'Dark' ? '#1B1B1F' : theme === 'Light' ? '#f7f7f7' : '#1D1832',
+    'paneProperties.background': 'rgba(0,0,0,0)',
+    'paneProperties.legendProperties.showBackground': false,
+    'paneProperties.vertGridProperties.color': 'rgba(0,0,0,0)',
+    'paneProperties.horzGridProperties.color': 'rgba(0,0,0,0)',
   }
   const mainSeriesProperties = [
     'candleStyle',
@@ -141,35 +139,6 @@ const TVChartContainer = () => {
         theme === 'Mango' ? '#E54033' : '#CC2929',
     }
   })
-
-  // needs improvement... When you load a saved chart that was saved with a different theme it keeps the those theme colors but the theme of the chart will be the app theme. This updates the chart if it doesn't match the app theme
-
-  useEffect(() => {
-    if (tvWidgetRef.current) {
-      tvWidgetRef.current
-        .chart()
-        .onDataLoaded()
-        .subscribe(null, () => {
-          tvWidgetRef.current?.save((saveObject) => {
-            const chartBg =
-              // @ts-ignore
-              saveObject.charts[0].chartProperties.paneProperties.background
-            if (
-              (theme === 'Light' && chartBg !== '#fff') ||
-              (theme !== 'Light' && chartBg === '#fff')
-            ) {
-              const updateTheme = async () => {
-                await tvWidgetRef.current?.changeTheme(
-                  theme === 'Light' ? 'Light' : 'Dark'
-                )
-                tvWidgetRef.current?.applyOverrides(chartStyleOverrides)
-              }
-              updateTheme()
-            }
-          })
-        })
-    }
-  }, [tvWidgetRef.current])
 
   useEffect(() => {
     const widgetOptions: ChartingLibraryWidgetOptions = {
