@@ -280,6 +280,7 @@ export type MangoStore = {
       initialLoad: boolean
       loading: boolean
       accounts: any[]
+      loadAccounts: boolean
       loadingTransaction: boolean
     }
   }
@@ -460,6 +461,7 @@ const useMangoStore = create<
           data: [],
           initialLoad: false,
           loading: false,
+          loadAccounts: true,
           accounts: [],
           loadingTransaction: false,
         },
@@ -569,6 +571,7 @@ const useMangoStore = create<
               .filter((data) => data.primarySaleHappened)
             set((state) => {
               state.wallet.nfts.accounts = data
+              state.wallet.nfts.loadAccounts = false
             })
           } catch (error) {
             console.log(error)

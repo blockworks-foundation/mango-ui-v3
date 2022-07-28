@@ -39,6 +39,7 @@ const NftProfilePicModal = ({ isOpen, onClose }) => {
   const pfp = useMangoStore((s) => s.wallet.pfp)
   const nfts = useMangoStore((s) => s.wallet.nfts.data)
   const nftAccounts = useMangoStore((s) => s.wallet.nfts.accounts)
+  const loadNftAccounts = useMangoStore((s) => s.wallet.nfts.loadAccounts)
   const initialLoad = useMangoStore((s) => s.wallet.nfts.initialLoad)
   const nftsLoading = useMangoStore((s) => s.wallet.nfts.loading)
   const [selectedProfile, setSelectedProfile] = useState<SelectedNft | null>(
@@ -251,6 +252,15 @@ const NftProfilePicModal = ({ isOpen, onClose }) => {
               {t('show-more')}
             </LinkButton>
           ) : null}
+        </div>
+      ) : loadNftAccounts ? (
+        <div className="mb-4 grid w-full grid-flow-row grid-cols-3 gap-4">
+          {[...Array(9)].map((i) => (
+            <div
+              className="col-span-1 h-[90px] animate-pulse rounded-md bg-th-bkg-3 sm:h-28"
+              key={i}
+            />
+          ))}
         </div>
       ) : (
         <p className="text-center">{t('profile:no-nfts')}</p>
