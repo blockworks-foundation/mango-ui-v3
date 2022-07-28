@@ -5,7 +5,7 @@ import { useTranslation } from 'next-i18next'
 import { ExclamationIcon } from '@heroicons/react/solid'
 import { ZERO_I80F48 } from '@blockworks-foundation/mango-client'
 import useMangoStore from '../stores/useMangoStore'
-import { LinkButton } from '../components/Button'
+import Button, { LinkButton } from '../components/Button'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { ExpandableRow, Table, Td, Th, TrBody, TrHead } from './TableElements'
@@ -33,6 +33,7 @@ const PositionsTable: React.FC = () => {
   const { t } = useTranslation('common')
   const [showShareModal, setShowShareModal] = useState(false)
   const [showMarketCloseModal, setShowMarketCloseModal] = useState(false)
+  const [positionToClose, setPositionToClose] = useState<any>(null)
   const [positionToShare, setPositionToShare] = useState<any>(null)
   const [settleSinglePos, setSettleSinglePos] = useState(null)
 
@@ -61,8 +62,20 @@ const PositionsTable: React.FC = () => {
     }
   }, [openPositions])
 
+  useEffect(() => {
+    if (positionToClose) {
+      const updatedPosition = openPositions.find(
+        (p) => p.marketConfig === positionToClose.marketConfig
+      )
+      if (updatedPosition) {
+        setPositionToClose(updatedPosition)
+      }
+    }
+  }, [openPositions])
+
   const handleCloseWarning = useCallback(() => {
     setShowMarketCloseModal(false)
+    setPositionToClose(null)
   }, [])
 
   const handleSizeClick = (size, indexPrice) => {
@@ -85,6 +98,11 @@ const PositionsTable: React.FC = () => {
   const handleShowShare = (position) => {
     setPositionToShare(position)
     setShowShareModal(true)
+  }
+
+  const handleShowMarketCloseModal = (position) => {
+    setPositionToClose(position)
+    setShowMarketCloseModal(true)
   }
 
   const handleSettlePnl = async (perpMarket, perpAccount, index) => {
@@ -177,7 +195,6 @@ const PositionsTable: React.FC = () => {
                     <Th>{t('market')}</Th>
                     <Th>{t('side')}</Th>
                     <Th>{t('position-size')}</Th>
-                    <Th>{t('notional-size')}</Th>
                     <Th>{t('average-entry')}</Th>
                     <Th>{t('break-even')}</Th>
                     <Th>{t('estimated-liq-price')}</Th>
@@ -260,15 +277,18 @@ const PositionsTable: React.FC = () => {
                                   handleSizeClick(basePosition, indexPrice)
                                 }
                               >
-                                {`${basePositionUi} ${marketConfig.baseSymbol}`}
+                                {`${basePositionUi} (${formatUsdValue(
+                                  Math.abs(notionalSize)
+                                )})`}
                               </span>
                             ) : (
                               <span>
-                                {`${basePositionUi} ${marketConfig.baseSymbol}`}
+                                {`${basePositionUi} (${formatUsdValue(
+                                  Math.abs(notionalSize)
+                                )})`}
                               </span>
                             )}
                           </Td>
-                          <Td>{formatUsdValue(Math.abs(notionalSize))}</Td>
                           <Td>
                             {avgEntryPrice
                               ? formatUsdValue(avgEntryPrice)
@@ -322,23 +342,28 @@ const PositionsTable: React.FC = () => {
                             )}
                           </Td>
                           <Td>
-                            <LinkButton
-                              onClick={() =>
-                                handleShowShare(openPositions[index])
-                              }
-                              disabled={!avgEntryPrice ? true : false}
-                            >
-                              <TwitterIcon className="h-4 w-4" />
-                            </LinkButton>
+                            <div className="flex items-center space-x-3">
+                              <Button
+                                className="h-8 pt-0 pb-0 pl-3 pr-3 text-xs"
+                                primary={false}
+                                onClick={() =>
+                                  handleShowMarketCloseModal(
+                                    openPositions[index]
+                                  )
+                                }
+                              >
+                                {t('market-close')}
+                              </Button>
+                              <LinkButton
+                                onClick={() =>
+                                  handleShowShare(openPositions[index])
+                                }
+                                disabled={!avgEntryPrice ? true : false}
+                              >
+                                <TwitterIcon className="h-4 w-4" />
+                              </LinkButton>
+                            </div>
                           </Td>
-                          {showMarketCloseModal ? (
-                            <MarketCloseModal
-                              isOpen={showMarketCloseModal}
-                              onClose={handleCloseWarning}
-                              market={perpMarket}
-                              marketIndex={marketConfig.marketIndex}
-                            />
-                          ) : null}
                         </TrBody>
                       )
                     }
@@ -489,6 +514,19 @@ const PositionsTable: React.FC = () => {
                                 ? usdFormatter(liquidationPrice)
                                 : 'N/A'}
                             </div>
+                            <div className="col-span-2">
+                              <Button
+                                className="w-full"
+                                primary={false}
+                                onClick={() =>
+                                  handleShowMarketCloseModal(
+                                    openPositions[index]
+                                  )
+                                }
+                              >
+                                {t('market-close')}
+                              </Button>
+                            </div>
                           </div>
                         }
                       />
@@ -511,6 +549,13 @@ const PositionsTable: React.FC = () => {
           isOpen={showShareModal}
           onClose={handleCloseShare}
           position={positionToShare!}
+        />
+      ) : null}
+      {showMarketCloseModal ? (
+        <MarketCloseModal
+          isOpen={showMarketCloseModal}
+          onClose={handleCloseWarning}
+          position={positionToClose!}
         />
       ) : null}
     </div>

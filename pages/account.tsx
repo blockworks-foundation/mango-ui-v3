@@ -23,8 +23,6 @@ import AccountOrders from 'components/account_page/AccountOrders'
 import AccountHistory from 'components/account_page/AccountHistory'
 import AccountsModal from 'components/AccountsModal'
 import AccountOverview from 'components/account_page/AccountOverview'
-import AccountInterest from 'components/account_page/AccountInterest'
-import AccountFunding from 'components/account_page/AccountFunding'
 import AccountPerformancePerToken from 'components/account_page/AccountPerformancePerToken'
 import AccountNameModal from 'components/AccountNameModal'
 import Button, { LinkButton } from 'components/Button'
@@ -309,7 +307,7 @@ export default function Account() {
       <div className="flex flex-col pb-4 lg:flex-row lg:items-end lg:justify-between">
         {mangoAccount ? (
           <>
-            <div className="flex flex-col pb-3 sm:flex-row sm:items-center md:pb-0">
+            <div className="flex flex-col pb-3 sm:flex-row sm:items-center lg:pb-0">
               <div>
                 <div className="flex h-8 items-center">
                   <Tooltip content="Copy account address">
@@ -339,7 +337,10 @@ export default function Account() {
                 {pubkey && mangoAccount ? (
                   profileData && !loadProfileDetails ? (
                     <Link
-                      href={`/profile?pk=${mangoAccount.owner.toString()}`}
+                      href={`/profile?name=${profileData?.profile_name.replace(
+                        /\s/g,
+                        '-'
+                      )}`}
                       shallow={true}
                     >
                       <a className="default-transition mt-2 flex items-center space-x-2 text-th-fgd-3 hover:text-th-fgd-2">
@@ -494,12 +495,6 @@ export default function Account() {
                 </div>
                 <div>
                   <AccountHistory />
-                </div>
-                <div>
-                  <AccountInterest />
-                </div>
-                <div>
-                  <AccountFunding />
                 </div>
                 <div>
                   <AccountPerformancePerToken />

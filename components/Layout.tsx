@@ -189,7 +189,7 @@ const Layout = ({ children }) => {
             </div>
           </div>
           {pathname === '/' ? <FavoritesShortcutBar /> : null}
-          <div className={pathname === '/' ? 'px-3' : 'px-6 pb-6'}>
+          <div className={pathname === '/' ? 'px-3' : 'px-6 pb-16 md:pb-6'}>
             {children}
           </div>
         </div>

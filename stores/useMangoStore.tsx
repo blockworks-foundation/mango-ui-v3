@@ -24,6 +24,7 @@ import {
   msrmMints,
   MangoAccountLayout,
   BlockhashTimes,
+  MarketMode,
   I80F48,
   PerpAccount,
   PerpMarketConfig,
@@ -100,7 +101,7 @@ export const serumProgramId = new PublicKey(
 const mangoGroupPk = new PublicKey(defaultMangoGroupIds!.publicKey)
 
 export const SECONDS = 1000
-export const CLIENT_TX_TIMEOUT = 70000
+export const CLIENT_TX_TIMEOUT = 90000
 
 export const LAST_ACCOUNT_KEY = 'lastAccountViewed-3.0'
 
@@ -377,6 +378,7 @@ const useMangoStore = create<
     const connection = new Connection(rpcUrl, 'processed' as Commitment)
     const client = new MangoClient(connection, programId, {
       timeout: CLIENT_TX_TIMEOUT,
+      prioritizationFee: 2,
       postSendTxCallback: ({ txid }: { txid: string }) => {
         notify({
           title: 'Transaction sent',
@@ -385,7 +387,7 @@ const useMangoStore = create<
           txid: txid,
         })
       },
-      blockhashCommitment: 'finalized',
+      blockhashCommitment: 'confirmed',
     })
     return {
       marketsInfo: [],
@@ -1195,13 +1197,37 @@ const useMangoStore = create<
         },
         async fetchMarketsInfo() {
           const set = get().set
+          const groupConfig = get().selectedMangoGroup.config
+          const mangoGroup = get().selectedMangoGroup.current
+
           try {
             const data = await fetch(
               `https://mango-all-markets-api.herokuapp.com/markets/`
             )
 
             if (data?.status === 200) {
-              const parsedMarketsInfo = await data.json()
+              const parsedMarketsInfo = (await data.json()).filter((market) => {
+                const marketKind = market.name.includes('PERP')
+                  ? 'perp'
+                  : 'spot'
+
+                const marketConfig = getMarketByBaseSymbolAndKind(
+                  groupConfig,
+                  market.baseSymbol,
+                  marketKind
+                )
+                if (!marketConfig || !marketConfig.publicKey) return false
+
+                const marketMode: MarketMode =
+                  mangoGroup?.tokens[marketConfig.marketIndex][
+                    marketKind + 'MarketMode'
+                  ]
+                const isInactive =
+                  marketMode == MarketMode.ForceCloseOnly ||
+                  marketMode == MarketMode.Inactive
+
+                return !isInactive
+              })
 
               set((state) => {
                 state.marketsInfo = parsedMarketsInfo

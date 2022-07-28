@@ -1,13 +1,9 @@
-import { useEffect, useMemo, useState } from 'react'
+import { ReactNode, useEffect, useMemo, useState } from 'react'
 import dayjs from 'dayjs'
-import { abbreviateAddress, usdFormatter } from '../utils'
-import { BtcMonoIcon, MedalIcon } from './icons'
+import { MedalIcon } from './icons'
 import { useTranslation } from 'next-i18next'
-import {
-  ChartPieIcon,
-  ChevronRightIcon,
-  TrendingUpIcon,
-} from '@heroicons/react/outline'
+import { abbreviateAddress, usdFormatter } from '../utils'
+import { ChevronRightIcon } from '@heroicons/react/solid'
 import ProfileImage from './ProfileImage'
 import { useRouter } from 'next/router'
 import { PublicKey } from '@solana/web3.js'
@@ -144,21 +140,18 @@ const LeaderboardTable = ({ range = '29' }) => {
           setLeaderboardType={setLeaderboardType}
           range={range}
           label="total-pnl"
-          icon={<ChartPieIcon className="mr-3 hidden h-6 w-6 lg:block" />}
         />
         <LeaderboardTypeButton
           leaderboardType={leaderboardType}
           setLeaderboardType={setLeaderboardType}
           range={range}
           label="futures-only"
-          icon={<TrendingUpIcon className="mr-3 hidden h-6 w-6 lg:block" />}
         />
         <LeaderboardTypeButton
           leaderboardType={leaderboardType}
           setLeaderboardType={setLeaderboardType}
           range={range}
           label="spot-only"
-          icon={<BtcMonoIcon className="mr-3 hidden h-6 w-6 lg:block" />}
         />
       </div>
       <div className="col-span-12 lg:col-span-8">
@@ -313,11 +306,17 @@ const LeaderboardTypeButton = ({
   range,
   icon,
   label,
+}: {
+  leaderboardType: string
+  setLeaderboardType: (x) => void
+  range: string
+  icon?: ReactNode
+  label: string
 }) => {
   const { t } = useTranslation('common')
   return (
     <button
-      className={`relative flex w-full items-center justify-center rounded-md p-4 text-center lg:h-[84px] lg:justify-start lg:text-left ${
+      className={`relative flex w-full items-center justify-center rounded-md p-4 text-center lg:h-20 lg:justify-start lg:px-6 lg:text-left ${
         leaderboardType === label
           ? 'bg-th-bkg-3 text-th-fgd-1 after:absolute after:top-[100%] after:left-1/2 after:-translate-x-1/2 after:transform after:border-l-[12px] after:border-r-[12px] after:border-t-[12px] after:border-l-transparent after:border-t-th-bkg-3 after:border-r-transparent lg:after:left-[100%] lg:after:top-1/2  lg:after:-translate-x-0 lg:after:-translate-y-1/2 lg:after:border-r-0 lg:after:border-b-[12px] lg:after:border-t-transparent lg:after:border-b-transparent lg:after:border-l-th-bkg-3'
           : 'bg-th-bkg-2 text-th-fgd-3 md:hover:bg-th-bkg-3'

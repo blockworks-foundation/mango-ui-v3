@@ -344,7 +344,7 @@ const AccountOverviewStats = ({ hourlyPerformanceStats, accountValue }) => {
                   <div>
                     {t('tooltip-account-liquidated')}{' '}
                     <a
-                      href="https://docs.mango.markets/mango/health-overview"
+                      href="https://docs.mango.markets/mango-markets/health-overview"
                       target="_blank"
                       rel="noopener noreferrer"
                     >

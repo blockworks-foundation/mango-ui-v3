@@ -5,6 +5,7 @@ import {
   getMarketIndexBySymbol,
   getTokenBySymbol,
   I80F48,
+  MarketMode,
   nativeI80F48ToUi,
   PerpMarket,
   PerpOrderType,
@@ -116,7 +117,7 @@ export default function AdvancedTradeForm({
   const [postOnlySlide, setPostOnlySlide] = useState(false)
   const [postOnly, setPostOnly] = useState(false)
   const [ioc, setIoc] = useState(false)
-  const [isLuna, setIsLuna] = useState(false)
+  const [isCloseOnly, setIsCloseOnly] = useState(false)
   const [updateBaseSize, setUpdateBaseSize] = useState(false)
 
   const orderBookRef = useRef(useMangoStore.getState().selectedMarket.orderBook)
@@ -168,11 +169,17 @@ export default function AdvancedTradeForm({
   }, [tradeType, set])
 
   useEffect(() => {
-    if (marketConfig.baseSymbol == 'LUNA') {
-      setIsLuna(true)
+    const marketMode: MarketMode =
+      mangoGroup?.tokens[marketIndex][marketConfig.kind + 'MarketMode']
+    if (
+      marketMode == MarketMode.CloseOnly ||
+      marketMode == MarketMode.ForceCloseOnly ||
+      marketMode == MarketMode.SwappingSpotMarket
+    ) {
+      setIsCloseOnly(true)
       setReduceOnly(true)
     } else {
-      setIsLuna(false)
+      setIsCloseOnly(false)
       setReduceOnly(false)
     }
   }, [marketConfig])
@@ -837,12 +844,12 @@ export default function AdvancedTradeForm({
         <span className="ml-2 rounded border border-th-primary px-1 py-0.5 text-xs text-th-primary">
           {initLeverage}x
         </span>
-        {isLuna ? (
+        {isCloseOnly ? (
           <Tooltip
             content={
               <div className="text-center">
-                LUNA is currently in reduce only mode. No new positions may be
-                entered.
+                {marketConfig.name} is currently in reduce only mode. No new
+                positions may be entered.
               </div>
             }
           >
@@ -1040,7 +1047,7 @@ export default function AdvancedTradeForm({
                 && showReduceOnly(perpAccount?.basePosition.toNumber())
              */}
             <div className="flex">
-              {marketConfig.kind === 'perp' || isLuna ? (
+              {marketConfig.kind === 'perp' || isCloseOnly ? (
                 <div className="mr-4 mt-3">
                   <Tooltip
                     className="hidden md:block"
@@ -1051,7 +1058,7 @@ export default function AdvancedTradeForm({
                     <Checkbox
                       checked={reduceOnly}
                       onChange={(e) => reduceOnChange(e.target.checked)}
-                      disabled={isTriggerOrder || isLuna}
+                      disabled={isTriggerOrder || isCloseOnly}
                     >
                       Reduce Only
                     </Checkbox>

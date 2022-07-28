@@ -41,7 +41,7 @@
   "slippage": "滑點",
   "slippage-settings": "滑點設定",
   "swap-between-hundreds": "以最好價格來換幾百個幣種。",
-  "swap-desc": "Swap interacts with your connected wallet (not your Mango Account).",
+  "swap-desc": "換幣跟您的錢包互動而不跟Mango帳戶互動。",
   "swap-details": "換幣細節",
   "swap-fee": "換幣費用",
   "swap-in-wallet": "換幣會在您被連結的錢包中進行而不在您的Mango帳戶中。",

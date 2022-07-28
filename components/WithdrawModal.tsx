@@ -19,6 +19,7 @@ import {
   I80F48,
   MangoAccount,
   nativeI80F48ToUi,
+  MarketMode,
 } from '@blockworks-foundation/mango-client'
 import { notify } from '../utils/notifications'
 import { useTranslation } from 'next-i18next'
@@ -69,6 +70,13 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
   )
   const tokenIndex =
     mangoGroup && token ? mangoGroup.getTokenIndex(token.mintKey) : 0
+  const marketMode =
+    mangoGroup && token
+      ? mangoGroup.tokens[tokenIndex].spotMarketMode
+      : MarketMode.Default
+  const isCloseOnly =
+    marketMode == MarketMode.CloseOnly ||
+    marketMode == MarketMode.ForceCloseOnly
 
   const initHealthRatio = useMemo(() => {
     if (mangoAccount && mangoGroup && mangoCache) {
@@ -111,7 +119,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
       .add(maxWithoutBorrows)
       .mul(I80F48.fromString('0.995')) // handle rounding errors when borrowing
 
-    if (withdrawTokenSymbol == 'LUNA') {
+    if (isCloseOnly) {
       setIncludeBorrow(false)
     }
     // get max withdraw amount
@@ -399,7 +407,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                 </Select.Option>
               ))}
             </Select>
-            {withdrawTokenSymbol != 'LUNA' ? (
+            {!isCloseOnly ? (
               <div className="jusitfy-between mt-4 flex items-center rounded-md bg-th-bkg-3 p-2 text-th-fgd-1">
                 <div className="text-fgd-1 flex items-center pr-4">
                   <span>{t('borrow-funds')}</span>
@@ -422,7 +430,7 @@ const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                 className="mb-1.5"
                 onClick={() => setInputAmount(maxAmount.toString())}
               >
-                {includeBorrow && withdrawTokenSymbol != 'LUNA'
+                {includeBorrow && !isCloseOnly
                   ? t('max-with-borrow')
                   : t('max')}
               </LinkButton>

@@ -168,6 +168,7 @@ const AccountInterest = () => {
         const stats = Object.entries(parsedResponse)
         const filterMicroBalances = stats.filter(([symbol, stats]) => {
           const decimals = getTokenBySymbol(groupConfig, symbol).decimals
+
           const smallestValue = Math.pow(10, (decimals + 1) * -1)
           return (
             stats.total_borrow_interest > smallestValue ||
@@ -199,17 +200,14 @@ const AccountInterest = () => {
       const stats = {}
       for (const asset of assets) {
         const x: any = Object.entries(parsedResponse[asset])
-        const token = getTokenBySymbol(groupConfig, asset)
+        const decimals = getTokenBySymbol(groupConfig, asset).decimals
 
         stats[asset] = x
           .map(([key, value, price]) => {
-            const borrows = roundToDecimal(
-              value.borrow_interest,
-              token.decimals + 1
-            )
+            const borrows = roundToDecimal(value.borrow_interest, decimals + 1)
             const deposits = roundToDecimal(
               value.deposit_interest,
-              token.decimals + 1
+              decimals + 1
             )
             if (borrows > 0 || deposits > 0) {
               return { ...value, time: key, ...price }
@@ -336,6 +334,7 @@ const AccountInterest = () => {
                       groupConfig,
                       symbol
                     ).decimals
+
                     return (
                       <TrBody key={symbol}>
                         <Td>
@@ -384,6 +383,7 @@ const AccountInterest = () => {
               />
               {interestStats.map(([symbol, stats], index) => {
                 const decimals = getTokenBySymbol(groupConfig, symbol).decimals
+
                 return (
                   <ExpandableRow
                     buttonTemplate={
