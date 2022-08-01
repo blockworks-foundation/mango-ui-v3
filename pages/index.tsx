@@ -180,12 +180,12 @@ const PerpMarket: React.FC = () => {
       {!alphaAccepted && (
         <AlphaModal isOpen={!alphaAccepted} onClose={() => {}} />
       )}
-      {!seenSerumCompInfo && (
+      {!seenSerumCompInfo && alphaAccepted ? (
         <SerumCompModal
-          isOpen={!seenSerumCompInfo}
+          isOpen={!seenSerumCompInfo && alphaAccepted}
           onClose={() => setSeenSerumCompInfo(true)}
         />
-      )}
+      ) : null}
       {showCreateAccount ? (
         <AccountsModal
           isOpen={showCreateAccount}

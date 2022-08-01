@@ -351,7 +351,7 @@ export default function SerumComp() {
               icon={<LinkIcon />}
               onClickButton={handleConnect}
               title={t('connect-wallet')}
-              desc="Connect your wallet to see where you rank"
+              desc="Connect your wallet to see your competition status"
             />
           </div>
         )}
