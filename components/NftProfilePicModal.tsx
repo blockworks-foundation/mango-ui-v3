@@ -38,28 +38,19 @@ const NftProfilePicModal = ({ isOpen, onClose }) => {
   const { publicKey, wallet } = useWallet()
   const pfp = useMangoStore((s) => s.wallet.pfp)
   const nfts = useMangoStore((s) => s.wallet.nfts.data)
-  const nftAccounts = useMangoStore((s) => s.wallet.nfts.accounts)
-  const initialLoad = useMangoStore((s) => s.wallet.nfts.initialLoad)
   const nftsLoading = useMangoStore((s) => s.wallet.nfts.loading)
   const [selectedProfile, setSelectedProfile] = useState<SelectedNft | null>(
     null
   )
   const actions = useMangoStore((s) => s.actions)
   const mangoClient = useMangoStore.getState().connection.client
-  const [offset, setOffset] = useState(0)
   const setMangoStore = useMangoStore((s) => s.set)
 
   useEffect(() => {
     if (publicKey) {
-      actions.fetchNftAccounts(connection, publicKey)
-    }
-  }, [publicKey])
-
-  useEffect(() => {
-    if (!initialLoad && publicKey && nftAccounts.length > 0) {
       actions.fetchNfts(connection, publicKey)
     }
-  }, [publicKey, initialLoad, nftAccounts])
+  }, [publicKey])
 
   useEffect(() => {
     if (pfp?.isAvailable && pfp.mintAccount && pfp.tokenAccount) {
@@ -174,12 +165,6 @@ const NftProfilePicModal = ({ isOpen, onClose }) => {
     }
   }
 
-  const handleLoadMore = async () => {
-    const offsetNfts = offset + 9
-    await actions.fetchNfts(connection, publicKey, offsetNfts)
-    setOffset(offsetNfts)
-  }
-
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <Modal.Header>
@@ -205,52 +190,41 @@ const NftProfilePicModal = ({ isOpen, onClose }) => {
           </div>
         </div>
       </Modal.Header>
-      {nftAccounts.length > 0 ? (
+      {nfts.length > 0 ? (
         <div className="flex flex-col items-center">
           <div className="mb-4 grid w-full grid-flow-row grid-cols-3 gap-4">
-            {nfts.map((n) => {
-              return (
-                <button
-                  className={`default-transitions col-span-1 flex items-center justify-center rounded-md border bg-th-bkg-3 py-3 sm:py-4 md:hover:bg-th-bkg-4 ${
-                    selectedProfile?.tokenAddress.toString() === n.tokenAddress
-                      ? 'border-th-primary'
-                      : 'border-th-bkg-3'
-                  }`}
-                  key={n.tokenAddress}
-                  onClick={() =>
-                    setSelectedProfile({
-                      mint: new PublicKey(n.mint),
-                      tokenAddress: new PublicKey(n.tokenAddress),
-                    })
-                  }
-                >
-                  <ImgWithLoader
-                    className="h-16 w-16 flex-shrink-0 rounded-full sm:h-20 sm:w-20"
-                    src={n.val.image}
-                  />
-                </button>
-              )
-            })}
-            {nftsLoading
-              ? [
-                  ...Array(
-                    nftAccounts.length - nfts.length > 9
-                      ? 9
-                      : nftAccounts.length - nfts.length
-                  ),
-                ].map((i) => (
-                  <div
-                    className="col-span-1 h-[90px] animate-pulse rounded-md bg-th-bkg-3 sm:h-28"
-                    key={i}
-                  />
-                ))
-              : null}
+            {nfts.map((n) => (
+              <button
+                className={`default-transitions col-span-1 flex items-center justify-center rounded-md border bg-th-bkg-3 py-3 sm:py-4 md:hover:bg-th-bkg-4 ${
+                  selectedProfile?.tokenAddress.toString() ===
+                  n.tokenAccount.publicKey.toString()
+                    ? 'border-th-primary'
+                    : 'border-th-bkg-3'
+                }`}
+                key={n.address}
+                onClick={() =>
+                  setSelectedProfile({
+                    mint: n.tokenAccount.account.mint,
+                    tokenAddress: n.tokenAccount.publicKey,
+                  })
+                }
+              >
+                <ImgWithLoader
+                  className="h-16 w-16 flex-shrink-0 rounded-full sm:h-20 sm:w-20"
+                  src={n.image}
+                />
+              </button>
+            ))}
           </div>
-          {nftAccounts.length !== nfts.length ? (
-            <LinkButton onClick={() => handleLoadMore()}>
-              {t('show-more')}
-            </LinkButton>
-          ) : null}
+        </div>
+      ) : nftsLoading ? (
+        <div className="mb-4 grid w-full grid-flow-row grid-cols-3 gap-4">
+          {[...Array(9)].map((i) => (
+            <div
+              className="col-span-1 h-[90px] animate-pulse rounded-md bg-th-bkg-3 sm:h-28"
+              key={i}
+            />
+          ))}
         </div>
       ) : (
         <p className="text-center">{t('profile:no-nfts')}</p>
