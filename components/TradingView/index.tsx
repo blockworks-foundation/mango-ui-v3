@@ -48,15 +48,14 @@ const TVChartContainer = () => {
   const [showOrderLines, toggleShowOrderLines] = useState(
     showOrderLinesLocalStorage
   )
-
   const setMangoStore = useMangoStore.getState().set
   const selectedMarketConfig = useMangoStore((s) => s.selectedMarket.config)
   const openOrders = useMangoStore((s) => s.selectedMangoAccount.openOrders)
   const actions = useMangoStore((s) => s.actions)
-
   const isMobile = width ? width < breakpoints.sm : false
   const mangoClient = useMangoStore.getState().connection.client
   const selectedMarketName = selectedMarketConfig.name
+  const { publicKey } = useWallet()
 
   // @ts-ignore
   const defaultProps: ChartContainerProps = {
@@ -66,6 +65,10 @@ const TVChartContainer = () => {
     containerId: 'tv_chart_container',
     datafeedUrl: CHART_DATA_FEED,
     libraryPath: '/charting_library/',
+    chartsStorageUrl: 'https://trading-view-backend.herokuapp.com',
+    chartsStorageApiVersion: '1.1',
+    clientId: 'mango.markets',
+    userId: '',
     fullscreen: false,
     autosize: true,
     studiesOverrides: {
@@ -102,36 +105,42 @@ const TVChartContainer = () => {
     }
   }, [selectedMarketConfig.name, chartReady])
 
+  let chartStyleOverrides = {
+    'paneProperties.background': 'rgba(0,0,0,0)',
+    'paneProperties.legendProperties.showBackground': false,
+    'paneProperties.vertGridProperties.color': 'rgba(0,0,0,0)',
+    'paneProperties.horzGridProperties.color': 'rgba(0,0,0,0)',
+  }
+  const mainSeriesProperties = [
+    'candleStyle',
+    'hollowCandleStyle',
+    'haStyle',
+    'barStyle',
+  ]
+  mainSeriesProperties.forEach((prop) => {
+    chartStyleOverrides = {
+      ...chartStyleOverrides,
+      [`mainSeriesProperties.${prop}.barColorsOnPrevClose`]: true,
+      [`mainSeriesProperties.${prop}.drawWick`]: true,
+      [`mainSeriesProperties.${prop}.drawBorder`]: true,
+      [`mainSeriesProperties.${prop}.upColor`]:
+        theme === 'Mango' ? '#AFD803' : '#5EBF4D',
+      [`mainSeriesProperties.${prop}.downColor`]:
+        theme === 'Mango' ? '#E54033' : '#CC2929',
+      [`mainSeriesProperties.${prop}.borderColor`]:
+        theme === 'Mango' ? '#AFD803' : '#5EBF4D',
+      [`mainSeriesProperties.${prop}.borderUpColor`]:
+        theme === 'Mango' ? '#AFD803' : '#5EBF4D',
+      [`mainSeriesProperties.${prop}.borderDownColor`]:
+        theme === 'Mango' ? '#E54033' : '#CC2929',
+      [`mainSeriesProperties.${prop}.wickUpColor`]:
+        theme === 'Mango' ? '#AFD803' : '#5EBF4D',
+      [`mainSeriesProperties.${prop}.wickDownColor`]:
+        theme === 'Mango' ? '#E54033' : '#CC2929',
+    }
+  })
+
   useEffect(() => {
-    const mainSeriesProperties = [
-      'candleStyle',
-      'hollowCandleStyle',
-      'haStyle',
-      'barStyle',
-    ]
-    let chartStyleOverrides = {}
-    mainSeriesProperties.forEach((prop) => {
-      chartStyleOverrides = {
-        ...chartStyleOverrides,
-        [`mainSeriesProperties.${prop}.barColorsOnPrevClose`]: true,
-        [`mainSeriesProperties.${prop}.drawWick`]: true,
-        [`mainSeriesProperties.${prop}.drawBorder`]: true,
-        [`mainSeriesProperties.${prop}.upColor`]:
-          theme === 'Mango' ? '#AFD803' : '#5EBF4D',
-        [`mainSeriesProperties.${prop}.downColor`]:
-          theme === 'Mango' ? '#E54033' : '#CC2929',
-        [`mainSeriesProperties.${prop}.borderColor`]:
-          theme === 'Mango' ? '#AFD803' : '#5EBF4D',
-        [`mainSeriesProperties.${prop}.borderUpColor`]:
-          theme === 'Mango' ? '#AFD803' : '#5EBF4D',
-        [`mainSeriesProperties.${prop}.borderDownColor`]:
-          theme === 'Mango' ? '#E54033' : '#CC2929',
-        [`mainSeriesProperties.${prop}.wickUpColor`]:
-          theme === 'Mango' ? '#AFD803' : '#5EBF4D',
-        [`mainSeriesProperties.${prop}.wickDownColor`]:
-          theme === 'Mango' ? '#E54033' : '#CC2929',
-      }
-    })
     const widgetOptions: ChartingLibraryWidgetOptions = {
       // debug: true,
       symbol: selectedMarketConfig.name,
@@ -146,7 +155,7 @@ const TVChartContainer = () => {
         defaultProps.containerId as ChartingLibraryWidgetOptions['container_id'],
       library_path: defaultProps.libraryPath as string,
       locale: 'en',
-      enabled_features: ['hide_left_toolbar_by_default'],
+      enabled_features: ['hide_left_toolbar_by_default', 'study_templates'],
       disabled_features: [
         'use_localstorage_for_settings',
         'timeframes_toolbar',
@@ -161,15 +170,17 @@ const TVChartContainer = () => {
         'header_screenshot',
         // 'header_widget_dom_node',
         // 'header_widget',
-        'header_saveload',
+        !publicKey ? 'header_saveload' : '',
         'header_undo_redo',
         'header_interval_dialog_button',
         'show_interval_dialog_on_key_press',
         'header_symbol_search',
       ],
-      load_last_chart: true,
+      // load_last_chart: true,
+      charts_storage_url: defaultProps.chartsStorageUrl,
+      charts_storage_api_version: defaultProps.chartsStorageApiVersion,
       client_id: defaultProps.clientId,
-      user_id: defaultProps.userId,
+      user_id: publicKey ? publicKey.toString() : defaultProps.userId,
       fullscreen: defaultProps.fullscreen,
       autosize: defaultProps.autosize,
       studies_overrides: defaultProps.studiesOverrides,
@@ -181,16 +192,7 @@ const TVChartContainer = () => {
       },
       overrides: {
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        'paneProperties.background':
-          theme === 'Dark' ? '#101012' : theme === 'Light' ? '#fff' : '#141026',
-        'paneProperties.vertGridProperties.color':
-          theme === 'Dark' ? '#101012' : theme === 'Light' ? '#fff' : '#141026',
-        'paneProperties.horzGridProperties.color':
-          theme === 'Dark'
-            ? '#1B1B1F'
-            : theme === 'Light'
-            ? '#f7f7f7'
-            : '#1D1832',
+
         ...chartStyleOverrides,
       },
     }
@@ -220,7 +222,7 @@ const TVChartContainer = () => {
       button.addEventListener('click', toggleOrderLines)
     })
     //eslint-disable-next-line
-  }, [theme, isMobile])
+  }, [theme, isMobile, publicKey])
 
   function toggleOrderLines() {
     toggleShowOrderLines((prevState) => !prevState)
