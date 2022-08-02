@@ -71,7 +71,7 @@ export default function SerumComp() {
     .minute(0)
     .subtract((new Date().getUTCDay() + 6) % 7, 'day')
 
-  const endDay = dayjs().add(startDay.get('day') + 6, 'day')
+  const endDay = startDay.add(startDay.get('day') + 6, 'day')
 
   const fetchVolumeData = async () => {
     setLoading(true)
@@ -220,9 +220,9 @@ export default function SerumComp() {
             following Mon 00:00 UTC
           </li>
           <li className="mb-1 text-base">
-            At the end of the week the traders in the top 1% of total volume for
-            both maker (limit orders) and taker (market orders) will win a share
-            of 40k SRM
+            At the end of the week the traders who contribute at least 1% of
+            total volume for both maker (limit orders) and taker (market orders)
+            will win a proportianate share of 40k SRM
           </li>
           <li className="text-base">
             Also, the top 10 traders by PnL will win a share of 10k SRM

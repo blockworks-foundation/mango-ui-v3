@@ -49,7 +49,8 @@ const SerumCompModal = ({
         <div className="flex items-center text-th-fgd-1">
           <CheckCircleIcon className="mr-1.5 h-6 w-6 flex-shrink-0 text-th-green" />
           <p className="mb-0 text-th-fgd-1">
-            40k SRM for the top 1% in spot volume for taker and maker
+            40k SRM distributed proportionally to everyone who contributes at
+            least 1% of total spot volume for both maker and taker
           </p>
         </div>
         <div className="flex items-center text-th-fgd-1">
