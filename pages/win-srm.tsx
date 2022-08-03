@@ -52,16 +52,8 @@ export default function SerumComp() {
   const [makerData, setMakerData] = useState<any>([])
   const [takerData, setTakerData] = useState<any>([])
   const [pnlData, setPnlData] = useState<any>([])
-  const [
-    ,
-    // accountPnlData
-    setAccountPnlData,
-  ] = useState<any>([])
-  const [
-    ,
-    // loading
-    setLoading,
-  ] = useState(false)
+  const [accountPnlData, setAccountPnlData] = useState<any>([])
+  const [accountPnl, setAccountPnl] = useState(0)
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
 
@@ -74,7 +66,6 @@ export default function SerumComp() {
   const endDay = startDay.add(startDay.get('day') + 6, 'day')
 
   const fetchVolumeData = async () => {
-    setLoading(true)
     try {
       const response = await fetch(
         'https://mango-transaction-log.herokuapp.com/v3/stats/serum-volume-leaderboard'
@@ -82,38 +73,50 @@ export default function SerumComp() {
       const parsedResponse = await response.json()
       setMakerData(parsedResponse[0].mango_accounts)
       setTakerData(parsedResponse[1].mango_accounts)
-      setLoading(false)
     } catch {
       notify({ type: 'error', title: 'Failed to fetch competition data' })
-      setLoading(false)
     }
   }
 
   const fetchSpotPnlData = async () => {
-    setLoading(true)
-    const response = await fetch(
-      `https://mango-transaction-log.herokuapp.com/v3/stats/spot-pnl-leaderboard?start-date=${startDay.format(
-        'YYYY-MM-DDThh:00:00'
-      )}`
-    )
-    const parsedResponse = await response.json()
-    setPnlData(parsedResponse)
-
-    setLoading(false)
+    try {
+      const response = await fetch(
+        `https://mango-transaction-log.herokuapp.com/v3/stats/spot-pnl-leaderboard?start-date=2022-08-01T00:00:00`
+      )
+      const parsedResponse = await response.json()
+      setPnlData(parsedResponse)
+    } catch {
+      notify({ type: 'error', title: 'Failed to fetch competition data' })
+    }
   }
 
   const fetchAccountPnlData = async (mangoAccountPk: string) => {
-    const response = await fetch(
-      `https://mango-transaction-log.herokuapp.com/v3/stats/account-performance-detailed?mango-account=${mangoAccountPk}&start-date=${startDay.format(
-        'YYYY-MM-DD'
-      )}`
-    )
-    const parsedResponse = await response.json()
-    const entries: any = Object.entries(parsedResponse).sort((a, b) =>
-      b[0].localeCompare(a[0])
-    )
-    setAccountPnlData(entries)
+    try {
+      const response = await fetch(
+        `https://mango-transaction-log.herokuapp.com/v3/stats/account-performance-detailed?mango-account=${mangoAccountPk}&start-date=${startDay.format(
+          'YYYY-MM-DD'
+        )}`
+      )
+      const parsedResponse = await response.json()
+      const entries: any = Object.entries(parsedResponse).sort((a, b) =>
+        b[0].localeCompare(a[0])
+      )
+      setAccountPnlData(entries)
+    } catch {
+      notify({ type: 'error', title: 'Failed to fetch account PnL' })
+    }
   }
+
+  useEffect(() => {
+    if (accountPnlData.length) {
+      const currentPnl =
+        accountPnlData[0][1].pnl - accountPnlData[0][1].perp_pnl
+      const startPnl =
+        accountPnlData[accountPnlData.length - 1][1].pnl -
+        accountPnlData[accountPnlData.length - 1][1].perp_pnl
+      setAccountPnl(currentPnl - startPnl)
+    }
+  }, [accountPnlData])
 
   useEffect(() => {
     if (mangoAccount) {
@@ -312,7 +315,9 @@ export default function SerumComp() {
               </div>
               <div className="col-span-3 border-y border-th-bkg-3 p-4 md:col-span-1">
                 <p className="mb-1">PnL</p>
-                <span className="text-2xl font-bold lg:text-4xl">$1,000</span>
+                <span className="text-2xl font-bold lg:text-4xl">
+                  {formatUsdValue(accountPnl)}
+                </span>
                 <div
                   className={`mt-3 w-max rounded-full border ${
                     accountPnlQualifies ? 'border-th-green' : 'border-th-red'
