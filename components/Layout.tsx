@@ -46,7 +46,7 @@ const Layout = ({ children }) => {
       : false
 
   useEffect(() => {
-    const collapsed = width ? width < breakpoints.lg : false
+    const collapsed = width ? width <= breakpoints.xl : false
     setIsCollapsed(collapsed)
   }, [])
 
