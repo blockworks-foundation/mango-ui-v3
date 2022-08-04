@@ -347,7 +347,7 @@ export default function Profile() {
                     !connected ||
                     profileData?.wallet_pk !== publicKey?.toString()
                   }
-                  publicKey={profilePk ? profilePk.toString() : undefined}
+                  imageUrl={profileData?.profile_image_url}
                 />
                 <div>
                   {!loadProfileDetails ? (
@@ -512,7 +512,11 @@ export default function Profile() {
                             <ProfileImage
                               imageSize="56"
                               placeholderSize="32"
-                              publicKey={user.wallet_pk}
+                              imageUrl={user.profile_image_url}
+                              isOwnerProfile={
+                                user.profile_image_url ===
+                                ownedProfile.profile_image_url
+                              }
                             />
                           </div>
                           <div className="ml-3 flex flex-col sm:flex-grow sm:flex-row sm:justify-between">
@@ -586,7 +590,11 @@ export default function Profile() {
                         <ProfileImage
                           imageSize="56"
                           placeholderSize="32"
-                          publicKey={user.wallet_pk}
+                          imageUrl={user.profile_image_url}
+                          isOwnerProfile={
+                            user.profile_image_url ===
+                            ownedProfile.profile_image_url
+                          }
                         />
                         <p className="mb-0 ml-3 font-bold capitalize text-th-fgd-1">
                           {user.profile_name}

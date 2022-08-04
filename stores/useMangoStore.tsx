@@ -39,12 +39,10 @@ import {
   NODE_URL_KEY,
 } from '../components/SettingsModal'
 import { MSRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
-import { getProfilePicture, ProfilePicture } from '@solflare-wallet/pfp'
 import { decodeBook } from '../hooks/useHydrateStore'
 import { IOrderLineAdapter } from '../public/charting_library/charting_library'
 import { Wallet } from '@solana/wallet-adapter-react'
 import { coingeckoIds, fetchNftsFromHolaplexIndexer } from 'utils/tokens'
-import { getTokenAccountsByMint } from 'utils/tokens'
 import { sign } from 'tweetnacl'
 import bs58 from 'bs58'
 import { PerpMarketInfo } from '@blockworks-foundation/mango-client'
@@ -171,6 +169,7 @@ interface NFTWithMint {
 }
 
 interface ProfileDetails {
+  profile_image_url?: string
   profile_name: string
   trader_category: string
   wallet_pk: string
@@ -272,13 +271,9 @@ export type MangoStore = {
   }
   wallet: {
     tokens: WalletToken[] | any[]
-    pfp: ProfilePicture | undefined
-    loadPfp: boolean
     nfts: {
       data: NFTWithMint[] | []
-      initialLoad: boolean
       loading: boolean
-      loadingTransaction: boolean
     }
   }
   settings: {
@@ -300,12 +295,7 @@ export type MangoStore = {
   set: (x: (x: MangoStore) => void) => void
   actions: {
     fetchWalletTokens: (wallet: Wallet) => void
-    fetchProfilePicture: (wallet: Wallet) => void
-    fetchNfts: (
-      connection: Connection,
-      walletPk: PublicKey | null,
-      offset?: number
-    ) => void
+    fetchNfts: (walletPk: PublicKey | null) => void
     fetchAllMangoAccounts: (wallet: Wallet) => Promise<void>
     fetchMangoGroup: () => Promise<void>
     fetchTradeHistory: () => void
@@ -451,13 +441,9 @@ const useMangoStore = create<
       },
       wallet: {
         tokens: [],
-        pfp: undefined,
-        loadPfp: true,
         nfts: {
           data: [],
-          initialLoad: false,
           loading: false,
-          loadingTransaction: false,
         },
       },
       settings: {
@@ -532,41 +518,13 @@ const useMangoStore = create<
             })
           }
         },
-        async fetchProfilePicture(wallet: Wallet) {
-          const set = get().set
-          const walletPk = wallet?.adapter?.publicKey
-          const connection = get().connection.current
-
-          if (!walletPk) return
-
-          try {
-            const result = await getProfilePicture(connection, walletPk)
-
-            set((state) => {
-              state.wallet.pfp = result
-              state.wallet.loadPfp = false
-            })
-          } catch (e) {
-            console.log('Could not get profile picture', e)
-            set((state) => {
-              state.wallet.loadPfp = false
-            })
-          }
-        },
-        async fetchNfts(connection: Connection, ownerPk: PublicKey) {
+        async fetchNfts(ownerPk: PublicKey) {
           const set = get().set
           set((state) => {
             state.wallet.nfts.loading = true
           })
           try {
             const data = await fetchNftsFromHolaplexIndexer(ownerPk)
-            for (const nft of data.nfts) {
-              const tokenAccount = await getTokenAccountsByMint(
-                connection,
-                nft.mintAddress
-              )
-              nft.tokenAccount = tokenAccount[0] || null
-            }
             set((state) => {
               state.wallet.nfts.data = data.nfts
               state.wallet.nfts.loading = false
