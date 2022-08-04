@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { useTranslation } from 'next-i18next'
-import { ExclamationIcon } from '@heroicons/react/solid'
+import { ExclamationIcon, PencilIcon } from '@heroicons/react/solid'
 import { ZERO_I80F48 } from '@blockworks-foundation/mango-client'
 import useMangoStore from '../stores/useMangoStore'
 import Button, { LinkButton } from '../components/Button'
@@ -28,6 +28,22 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import RedeemButtons from './RedeemButtons'
 import Tooltip from './Tooltip'
 import useMangoAccount from 'hooks/useMangoAccount'
+import useLocalStorageState from 'hooks/useLocalStorageState'
+import EditTableColumnsModal from './EditTableColumnsModal'
+
+const TABLE_COLUMNS = {
+  market: true,
+  side: true,
+  'position-size': true,
+  'notional-size': true,
+  'average-entry': true,
+  'break-even': true,
+  'estimated-liq-price': true,
+  'unrealized-pnl': true,
+  'unsettled-balance': true,
+}
+
+const PERP_TABLE_COLUMNS_KEY = 'perpPositionTableColumns'
 
 const PositionsTable: React.FC = () => {
   const { t } = useTranslation('common')
@@ -36,7 +52,6 @@ const PositionsTable: React.FC = () => {
   const [positionToClose, setPositionToClose] = useState<any>(null)
   const [positionToShare, setPositionToShare] = useState<any>(null)
   const [settleSinglePos, setSettleSinglePos] = useState(null)
-
   const market = useMangoStore(marketSelector)
   const { wallet } = useWallet()
   const price = useMangoStore((s) => s.tradeForm.price)
@@ -52,6 +67,11 @@ const PositionsTable: React.FC = () => {
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.md : false
   const { asPath } = useRouter()
+  const [tableColumnsToShow] = useLocalStorageState(
+    PERP_TABLE_COLUMNS_KEY,
+    TABLE_COLUMNS
+  )
+  const [showEditTableColumns, setShowEditTableColumns] = useState(false)
 
   useEffect(() => {
     if (positionToShare) {
@@ -192,14 +212,16 @@ const PositionsTable: React.FC = () => {
               <Table>
                 <thead>
                   <TrHead>
-                    <Th>{t('market')}</Th>
-                    <Th>{t('side')}</Th>
-                    <Th>{t('position-size')}</Th>
-                    <Th>{t('average-entry')}</Th>
-                    <Th>{t('break-even')}</Th>
-                    <Th>{t('estimated-liq-price')}</Th>
-                    <Th>{t('unrealized-pnl')}</Th>
-                    <Th>{t('unsettled-balance')}</Th>
+                    {Object.entries(tableColumnsToShow).map((entry) =>
+                      entry[1] ? <Th key={entry[0]}>{t(entry[0])}</Th> : null
+                    )}
+                    <LinkButton
+                      className="flex w-full items-start justify-end"
+                      onClick={() => setShowEditTableColumns(true)}
+                    >
+                      <PencilIcon className="mr-1 h-3.5 w-3.5 flex-shrink-0" />
+                      {t('edit-columns')}
+                    </LinkButton>
                   </TrHead>
                 </thead>
                 <tbody>
@@ -237,110 +259,123 @@ const PositionsTable: React.FC = () => {
                           : undefined
                       return (
                         <TrBody key={`${marketConfig.marketIndex}`}>
-                          <Td>
-                            <div className="flex items-center">
-                              <img
-                                alt=""
-                                width="20"
-                                height="20"
-                                src={`/assets/icons/${marketConfig.baseSymbol.toLowerCase()}.svg`}
-                                className={`mr-2.5`}
-                              />
-                              {decodeURIComponent(asPath).includes(
-                                marketConfig.name
-                              ) ? (
-                                <span>{marketConfig.name}</span>
-                              ) : (
-                                <Link
-                                  href={{
-                                    pathname: '/',
-                                    query: { name: marketConfig.name },
-                                  }}
-                                  shallow={true}
-                                >
-                                  <a className="text-th-fgd-1 underline hover:text-th-fgd-1 hover:no-underline">
-                                    {marketConfig.name}
-                                  </a>
-                                </Link>
-                              )}
-                            </div>
-                          </Td>
-                          <Td>
-                            <PerpSideBadge perpAccount={perpAccount} />
-                          </Td>
-                          <Td>
-                            {basePosition &&
-                            asPath.includes(marketConfig.baseSymbol) ? (
-                              <span
-                                className="cursor-pointer underline hover:no-underline"
-                                onClick={() =>
-                                  handleSizeClick(basePosition, indexPrice)
-                                }
-                              >
-                                {`${basePositionUi} (${formatUsdValue(
-                                  Math.abs(notionalSize)
-                                )})`}
-                              </span>
-                            ) : (
-                              <span>
-                                {`${basePositionUi} (${formatUsdValue(
-                                  Math.abs(notionalSize)
-                                )})`}
-                              </span>
-                            )}
-                          </Td>
-                          <Td>
-                            {avgEntryPrice
-                              ? formatUsdValue(avgEntryPrice)
-                              : '--'}
-                          </Td>
-                          <Td>
-                            {breakEvenPrice
-                              ? formatUsdValue(breakEvenPrice)
-                              : '--'}
-                          </Td>
-                          <Td>
-                            {liquidationPrice &&
-                            liquidationPrice.gt(ZERO_I80F48)
-                              ? usdFormatter(liquidationPrice)
-                              : 'N/A'}
-                          </Td>
-                          <Td>
-                            {unrealizedPnl ? (
-                              <PnlText pnl={unrealizedPnl} />
-                            ) : (
-                              '--'
-                            )}
-                          </Td>
-                          <Td>
-                            {unsettledPnl ? (
-                              settleSinglePos === index ? (
-                                <Loading />
-                              ) : (
-                                <Tooltip content={t('redeem-pnl')}>
-                                  <LinkButton
-                                    className={
-                                      unsettledPnl >= 0
-                                        ? 'text-th-green'
-                                        : 'text-th-red'
-                                    }
-                                    onClick={() =>
-                                      handleSettlePnl(
-                                        perpMarket,
-                                        perpAccount,
-                                        index
-                                      )
-                                    }
-                                    disabled={unsettledPnl === 0}
+                          {tableColumnsToShow['market'] ? (
+                            <Td>
+                              <div className="flex items-center">
+                                <img
+                                  alt=""
+                                  width="20"
+                                  height="20"
+                                  src={`/assets/icons/${marketConfig.baseSymbol.toLowerCase()}.svg`}
+                                  className={`mr-2.5`}
+                                />
+                                {decodeURIComponent(asPath).includes(
+                                  marketConfig.name
+                                ) ? (
+                                  <span>{marketConfig.name}</span>
+                                ) : (
+                                  <Link
+                                    href={{
+                                      pathname: '/',
+                                      query: { name: marketConfig.name },
+                                    }}
+                                    shallow={true}
                                   >
-                                    {formatUsdValue(unsettledPnl)}
-                                  </LinkButton>
-                                </Tooltip>
-                              )
-                            ) : (
-                              '--'
-                            )}
-                          </Td>
+                                    <a className="text-th-fgd-1 underline hover:text-th-fgd-1 hover:no-underline">
+                                      {marketConfig.name}
+                                    </a>
+                                  </Link>
+                                )}
+                              </div>
+                            </Td>
+                          ) : null}
+                          {tableColumnsToShow['side'] ? (
+                            <Td>
+                              <PerpSideBadge perpAccount={perpAccount} />
+                            </Td>
+                          ) : null}
+                          {tableColumnsToShow['position-size'] ? (
+                            <Td>
+                              {basePosition &&
+                              asPath.includes(marketConfig.baseSymbol) ? (
+                                <span
+                                  className="cursor-pointer underline hover:no-underline"
+                                  onClick={() =>
+                                    handleSizeClick(basePosition, indexPrice)
+                                  }
+                                >
+                                  {basePositionUi}
+                                </span>
+                              ) : (
+                                <span>{basePositionUi}</span>
+                              )}
+                            </Td>
+                          ) : null}
+                          {tableColumnsToShow['notional-size'] ? (
+                            <Td>{formatUsdValue(Math.abs(notionalSize))}</Td>
+                          ) : null}
+                          {tableColumnsToShow['average-entry'] ? (
+                            <Td>
+                              {avgEntryPrice
+                                ? formatUsdValue(avgEntryPrice)
+                                : '--'}
+                            </Td>
+                          ) : null}
+                          {tableColumnsToShow['break-even'] ? (
+                            <Td>
+                              {breakEvenPrice
+                                ? formatUsdValue(breakEvenPrice)
+                                : '--'}
+                            </Td>
+                          ) : null}
+                          {tableColumnsToShow['estimated-liq-price'] ? (
+                            <Td>
+                              {liquidationPrice &&
+                              liquidationPrice.gt(ZERO_I80F48)
+                                ? usdFormatter(liquidationPrice)
+                                : 'N/A'}
+                            </Td>
+                          ) : null}
+                          {tableColumnsToShow['unrealized-pnl'] ? (
+                            <Td>
+                              {unrealizedPnl ? (
+                                <PnlText pnl={unrealizedPnl} />
+                              ) : (
+                                '--'
+                              )}
+                            </Td>
+                          ) : null}
+                          {tableColumnsToShow['unsettled-balance'] ? (
+                            <Td>
+                              {unsettledPnl ? (
+                                settleSinglePos === index ? (
+                                  <Loading />
+                                ) : (
+                                  <Tooltip content={t('redeem-pnl')}>
+                                    <LinkButton
+                                      className={
+                                        unsettledPnl >= 0
+                                          ? 'text-th-green'
+                                          : 'text-th-red'
+                                      }
+                                      onClick={() =>
+                                        handleSettlePnl(
+                                          perpMarket,
+                                          perpAccount,
+                                          index
+                                        )
+                                      }
+                                      disabled={unsettledPnl === 0}
+                                    >
+                                      {formatUsdValue(unsettledPnl)}
+                                    </LinkButton>
+                                  </Tooltip>
+                                )
+                              ) : (
+                                '--'
+                              )}
+                            </Td>
+                          ) : null}
                           <Td>
                             <div className="flex items-center space-x-3">
                               <Button
@@ -352,7 +387,7 @@ const PositionsTable: React.FC = () => {
                                   )
                                 }
                               >
-                                {t('market-close')}
+                                {t('close')}
                               </Button>
                               <LinkButton
                                 onClick={() =>
@@ -556,6 +591,14 @@ const PositionsTable: React.FC = () => {
           isOpen={showMarketCloseModal}
           onClose={handleCloseWarning}
           position={positionToClose!}
+        />
+      ) : null}
+      {showEditTableColumns ? (
+        <EditTableColumnsModal
+          isOpen={showEditTableColumns}
+          onClose={() => setShowEditTableColumns(false)}
+          columns={tableColumnsToShow}
+          storageKey={PERP_TABLE_COLUMNS_KEY}
         />
       ) : null}
     </div>
