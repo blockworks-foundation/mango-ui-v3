@@ -728,7 +728,9 @@ const EditProfileModal = ({
   const saveProfile = async () => {
     setUpdateError('')
     const name = profileName.toLowerCase()
-    await validateProfileName(name)
+    if (profile?.profile_name !== name) {
+      await validateProfileName(name)
+    }
     if (!Object.keys(inputErrors).length) {
       setLoadUpdateProfile(true)
       try {
@@ -739,6 +741,7 @@ const EditProfileModal = ({
         const messageString = JSON.stringify({
           profile_name: name,
           trader_category: traderCategory,
+          profile_image_url: profile?.profile_image_url,
         })
         const message = new TextEncoder().encode(messageString)
         const signature = await signMessage(message)
