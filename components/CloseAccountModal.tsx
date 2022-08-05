@@ -130,7 +130,7 @@ const CloseAccountModal: FunctionComponent<CloseAccountModalProps> = ({
         MNGO_INDEX,
         wallet.adapter
       )
-      mangoClient.prioritizationFee = oldPrioritizationFee;
+      mangoClient.prioritizationFee = oldPrioritizationFee
 
       await actions.fetchAllMangoAccounts(wallet)
       const mangoAccounts = useMangoStore.getState().mangoAccounts
