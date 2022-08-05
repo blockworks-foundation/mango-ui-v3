@@ -71,8 +71,8 @@ export default function SerumComp() {
         'https://mango-transaction-log.herokuapp.com/v3/stats/serum-volume-leaderboard'
       )
       const parsedResponse = await response.json()
-      setMakerData(parsedResponse[0].mango_accounts)
-      setTakerData(parsedResponse[1].mango_accounts)
+      setMakerData(parsedResponse.volumes[0].mango_accounts)
+      setTakerData(parsedResponse.volumes[1].mango_accounts)
     } catch {
       notify({ type: 'error', title: 'Failed to fetch competition data' })
     }
@@ -81,10 +81,10 @@ export default function SerumComp() {
   const fetchSpotPnlData = async () => {
     try {
       const response = await fetch(
-        `https://mango-transaction-log.herokuapp.com/v3/stats/spot-pnl-leaderboard?start-date=2022-08-01T00:00:00`
+        `https://mango-transaction-log.herokuapp.com/v3/stats/serum-pnl-leaderboard`
       )
       const parsedResponse = await response.json()
-      setPnlData(parsedResponse)
+      setPnlData(parsedResponse.participants)
     } catch {
       notify({ type: 'error', title: 'Failed to fetch competition data' })
     }
