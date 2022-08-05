@@ -35,7 +35,7 @@ const AlphaModal = ({
 
   const handleLanguageSelect = () => {
     setSavedLanguage(language)
-    document.cookie = `NEXT_LOCALE=${savedLanguage}; max-age=31536000; path=/`
+    document.cookie = `NEXT_LOCALE=${language}; max-age=31536000; path=/`
     router.push({ pathname, query }, asPath, { locale: language })
     dayjs.locale(savedLanguage == 'zh_tw' ? 'zh-tw' : savedLanguage)
   }
