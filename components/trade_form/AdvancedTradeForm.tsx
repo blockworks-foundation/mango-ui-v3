@@ -233,11 +233,22 @@ export default function AdvancedTradeForm({
         ).toNumber(),
         token.decimals
       )
+      
+      const depositBalance = mangoAccount
+        .getUiDeposit(
+          mangoCache.rootBankCache[tokenIndex],
+          mangoGroup,
+          tokenIndex
+        )
+        .toNumber()
 
       spotMax =
         side === 'buy'
           ? availableBalance / priceOrDefault.toNumber()
-          : availableBalance
+          : spotMargin
+            ? availableBalance
+            : depositBalance
+        }
     }
 
     const {
