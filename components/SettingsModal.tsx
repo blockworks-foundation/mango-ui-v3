@@ -328,6 +328,7 @@ const LanguageSettings = () => {
   const { t } = useTranslation('common')
 
   const handleLangChange = () => {
+    document.cookie = `NEXT_LOCALE=${savedLanguage}; max-age=31536000; path=/`
     router.push({ pathname, query }, asPath, { locale: savedLanguage })
     dayjs.locale(savedLanguage == 'zh_tw' ? 'zh-tw' : savedLanguage)
   }
