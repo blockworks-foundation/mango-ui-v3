@@ -22,6 +22,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import AccountsModal from 'components/AccountsModal'
 import dayjs from 'dayjs'
 import { tokenPrecision } from 'utils'
+import SerumCompModal, { SEEN_SERUM_COMP_KEY } from 'components/SerumCompModal'
 
 const DISMISS_CREATE_ACCOUNT_KEY = 'show-create-account'
 
@@ -43,6 +44,10 @@ export async function getStaticProps({ locale }) {
 
 const PerpMarket: React.FC = () => {
   const [alphaAccepted] = useLocalStorageState(ALPHA_MODAL_KEY, false)
+  const [seenSerumCompInfo, setSeenSerumCompInfo] = useLocalStorageState(
+    SEEN_SERUM_COMP_KEY,
+    false
+  )
   const [showTour] = useLocalStorageState(SHOW_TOUR_KEY, false)
   const [dismissCreateAccount, setDismissCreateAccount] = useLocalStorageState(
     DISMISS_CREATE_ACCOUNT_KEY,
@@ -175,6 +180,12 @@ const PerpMarket: React.FC = () => {
       {!alphaAccepted && (
         <AlphaModal isOpen={!alphaAccepted} onClose={() => {}} />
       )}
+      {!seenSerumCompInfo && alphaAccepted ? (
+        <SerumCompModal
+          isOpen={!seenSerumCompInfo && alphaAccepted}
+          onClose={() => setSeenSerumCompInfo(true)}
+        />
+      ) : null}
       {showCreateAccount ? (
         <AccountsModal
           isOpen={showCreateAccount}
