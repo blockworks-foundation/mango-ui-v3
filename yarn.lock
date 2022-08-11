@@ -1015,13 +1015,13 @@
     "@babel/helper-validator-identifier" "^7.16.7"
     to-fast-properties "^2.0.0"
 
-"@blockworks-foundation/mango-client@^3.6.8":
-  version "3.6.8"
-  resolved "https://registry.yarnpkg.com/@blockworks-foundation/mango-client/-/mango-client-3.6.8.tgz#8662cae35d5ef392ddf9d2c28184e7fef4b4e3e6"
-  integrity sha512-SEPdw9Jgw+AxF82XGUK+Am5JRfDVPeMfzcsz1GWQ9dMVTFCrrdk4fjn0h4NPSAwJ2jNXJnjRt188MwUp4+/CMg==
+"@blockworks-foundation/mango-client@^3.6.12":
+  version "3.6.12"
+  resolved "https://registry.yarnpkg.com/@blockworks-foundation/mango-client/-/mango-client-3.6.12.tgz#e704a956ca3f0675bea1f21e3b9212faca80b0c2"
+  integrity sha512-nonz4LDAA56p7ja/Np58z3ZiJX6AM6rW8r8PeV6enAQa+1cpz8RLeSg1kNDOydE153esySsx2lt82U2+nDiggg==
   dependencies:
     "@project-serum/anchor" "^0.21.0"
-    "@project-serum/serum" "0.13.55"
+    "@project-serum/serum" "^0.13.65"
     "@project-serum/sol-wallet-adapter" "^0.2.0"
     "@solana/spl-token" "^0.1.6"
     "@solana/web3.js" "^1.43.5"
@@ -1538,10 +1538,10 @@
     bn.js "^5.1.2"
     buffer-layout "^1.2.0"
 
-"@project-serum/serum@0.13.55":
-  version "0.13.55"
-  resolved "https://registry.yarnpkg.com/@project-serum/serum/-/serum-0.13.55.tgz#2ac44fe7b07651274eb57ac54ea9325789df5dd7"
-  integrity sha512-SPQ4NsuNbBJO3mLGnTYbjt47WCXoNIcW2C9xv0gNXyG62dxgONsAEEgErKv1gT34hWCMPsXFSpatnX6ppriq7w==
+"@project-serum/serum@^0.13.61":
+  version "0.13.61"
+  resolved "https://registry.yarnpkg.com/@project-serum/serum/-/serum-0.13.61.tgz#1f0e6dfa7786a71e4317593911e9915d8b2a06e6"
+  integrity sha512-aebaRGQ0/K7a5kJ9UXO59BAQFJILVu5jbGobU8GD2CTSy6SPceprB6/pgZmZLQIabhXWUHaZRF/wXIClgWataA==
   dependencies:
     "@project-serum/anchor" "^0.11.1"
     "@solana/spl-token" "^0.1.6"
@@ -1549,10 +1549,10 @@
     bn.js "^5.1.2"
     buffer-layout "^1.2.0"
 
-"@project-serum/serum@^0.13.61":
-  version "0.13.61"
-  resolved "https://registry.yarnpkg.com/@project-serum/serum/-/serum-0.13.61.tgz#1f0e6dfa7786a71e4317593911e9915d8b2a06e6"
-  integrity sha512-aebaRGQ0/K7a5kJ9UXO59BAQFJILVu5jbGobU8GD2CTSy6SPceprB6/pgZmZLQIabhXWUHaZRF/wXIClgWataA==
+"@project-serum/serum@^0.13.65":
+  version "0.13.65"
+  resolved "https://registry.yarnpkg.com/@project-serum/serum/-/serum-0.13.65.tgz#6d3cf07912f13985765237f053cca716fe84b0b0"
+  integrity sha512-BHRqsTqPSfFB5p+MgI2pjvMBAQtO8ibTK2fYY96boIFkCI3TTwXDt2gUmspeChKO2pqHr5aKevmexzAcXxrSRA==
   dependencies:
     "@project-serum/anchor" "^0.11.1"
     "@solana/spl-token" "^0.1.6"
