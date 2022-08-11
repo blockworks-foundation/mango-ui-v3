@@ -30,7 +30,6 @@ import { BrowserTracing } from '@sentry/tracing'
 
 import { WalletProvider, WalletListener } from 'components/WalletAdapter'
 import {
-  CoinbaseWalletAdapter,
   ExodusWalletAdapter,
   PhantomWalletAdapter,
   SolflareWalletAdapter,
@@ -147,7 +146,6 @@ const PageTitle = () => {
 function App({ Component, pageProps }) {
   const wallets = useMemo(
     () => [
-      new CoinbaseWalletAdapter(),
       new PhantomWalletAdapter(),
       new SolflareWalletAdapter(),
       new ExodusWalletAdapter(),
