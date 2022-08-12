@@ -1,4 +1,5 @@
 import { PencilIcon } from '@heroicons/react/outline'
+import { useWallet } from '@solana/wallet-adapter-react'
 import { useCallback, useState } from 'react'
 import useMangoStore from 'stores/useMangoStore'
 import NftProfilePicModal from './NftProfilePicModal'
@@ -19,6 +20,7 @@ const ProfileImageButton = ({
   const loadingTransaction = useMangoStore(
     (s) => s.wallet.nfts.loadingTransaction
   )
+  const { wallet } = useWallet()
 
   const handleCloseProfilePicModal = useCallback(() => {
     setShowProfilePicModal(false)
@@ -37,7 +39,11 @@ const ProfileImageButton = ({
         <ProfileImage
           imageSize={imageSize}
           placeholderSize={placeholderSize}
-          publicKey={publicKey || ''}
+          publicKey={
+            (publicKey !== wallet?.adapter.publicKey?.toString() &&
+              publicKey) ||
+            ''
+          }
         />
         {!disabled ? (
           <div className="default-transition absolute bottom-0 top-0 left-0 right-0 flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-[rgba(0,0,0,0.6)] opacity-0 hover:opacity-100">

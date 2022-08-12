@@ -19,7 +19,7 @@
     "postinstall": "tar -xzC public -f vendor/charting_library.tgz;tar -xzC public -f vendor/datafeeds.tgz"
   },
   "dependencies": {
-    "@blockworks-foundation/mango-client": "^3.6.9",
+    "@blockworks-foundation/mango-client": "^3.6.11",
     "@headlessui/react": "^0.0.0-insiders.2dbc38c",
     "@heroicons/react": "^1.0.0",
     "@jup-ag/react-hook": "^1.0.0-beta.22",

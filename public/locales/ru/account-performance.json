@@ -1,0 +1,12 @@
+{
+  "all": "Все",
+  "account-pnl": "PnL аккаунта",
+  "account-value": "Все средства",
+  "funding-cumulative": "Накопленный Funding",
+  "interest-cumulative": "Накопленный Interest",
+  "mngo-rewards": "MNGO вознаграждения",
+  "perp-pnl": "PnL на фьючерсах",
+  "perp-pnl-ex-rewards": "PnL на фьючерсах (исключая вознаграждения)",
+  "select-an-asset": "Выберите один или несколько активов, чтобы просмотреть их performance.",
+  "vs-time": "относительно времени"
+}

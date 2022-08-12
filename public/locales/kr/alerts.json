@@ -1,0 +1,13 @@
+{
+  "active-alerts": "Active Alerts",
+  "alert-health": "Alert when health is below",
+  "alert-health-required": "Alert health is required",
+  "alert-info": "Email when health <= {{health}}%",
+  "alerts-disclaimer": "Do not rely solely on alerts to protect your account. We can't guarantee they will be delivered.",
+  "alerts-max": "You've reached the maximum number of active alerts.",
+  "create-alert": "Create Alert",
+  "email-address-required": "An email address is required",
+  "new-alert": "New Alert",
+  "no-alerts": "No Active Alerts",
+  "no-alerts-desc": "Create an alert to be notified when your account health is low."
+}

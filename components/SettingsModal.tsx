@@ -17,6 +17,7 @@ import dayjs from 'dayjs'
 
 require('dayjs/locale/en')
 require('dayjs/locale/es')
+require('dayjs/locale/ru')
 require('dayjs/locale/zh')
 require('dayjs/locale/zh-tw')
 
@@ -35,6 +36,7 @@ const THEMES = ['Light', 'Dark', 'Mango']
 export const LANGS = [
   { locale: 'en', name: 'english', description: 'english' },
   { locale: 'es', name: 'spanish', description: 'spanish' },
+  { locale: 'ru', name: 'russian', description: 'russian' },
   {
     locale: 'zh_tw',
     name: 'chinese-traditional',
@@ -326,6 +328,7 @@ const LanguageSettings = () => {
   const { t } = useTranslation('common')
 
   const handleLangChange = () => {
+    document.cookie = `NEXT_LOCALE=${savedLanguage}; max-age=31536000; path=/`
     router.push({ pathname, query }, asPath, { locale: savedLanguage })
     dayjs.locale(savedLanguage == 'zh_tw' ? 'zh-tw' : savedLanguage)
   }
