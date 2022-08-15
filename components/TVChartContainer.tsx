@@ -5,7 +5,7 @@ import {
   ChartingLibraryWidgetOptions,
   IChartingLibraryWidget,
   ResolutionString,
-} from '../public/charting_library/charting_library'
+} from '../public/charting_library'
 import { CHART_DATA_FEED } from '../utils/chartDataConnector'
 import useMangoStore from '../stores/useMangoStore'
 import { useViewport } from '../hooks/useViewport'
@@ -647,7 +647,9 @@ const TVChartContainer = () => {
     }
   }, [chartReady, openOrders, showOrderLines])
 
-  return <div id={defaultProps.containerId} className="tradingview-chart" />
+  return (
+    <div id={defaultProps.container as string} className="tradingview-chart" />
+  )
 }
 
 export default TVChartContainer
