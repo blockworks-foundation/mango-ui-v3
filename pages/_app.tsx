@@ -41,6 +41,7 @@ import {
 import { HuobiWalletAdapter } from '@solana/wallet-adapter-huobi'
 import useSpotBalances from 'hooks/useSpotBalances'
 import Layout from 'components/Layout'
+import Script from "next/script";
 
 const SENTRY_URL = process.env.NEXT_PUBLIC_SENTRY_URL
 if (SENTRY_URL) {
@@ -193,6 +194,16 @@ function App({ Component, pageProps }) {
         <meta name="google" content="notranslate" />
         <link rel="manifest" href="/manifest.json"></link>
       </Head>
+      <Script strategy="lazyOnload" src="https://www.googletagmanager.com/gtag/js?id=G-DH0283BKHZ"></Script>
+      <Script strategy="lazyOnload">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+
+          gtag('config', 'G-DH0283BKHZ');
+        `}
+      </Script>
       <ThemeProvider defaultTheme="Mango">
         <ErrorBoundary>
           <WalletProvider wallets={wallets}>
