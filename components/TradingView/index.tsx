@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useMemo } from 'react'
 import { useTheme } from 'next-themes'
 import {
   widget,
@@ -41,7 +41,7 @@ const TVChartContainer = () => {
   const { t } = useTranslation(['common', 'tv-chart'])
   const { theme } = useTheme()
   const { width } = useViewport()
-  const { wallet } = useWallet()
+  const { wallet, publicKey } = useWallet()
   const [chartReady, setChartReady] = useState(false)
   const [showOrderLinesLocalStorage, toggleShowOrderLinesLocalStorage] =
     useLocalStorageState(SHOW_ORDER_LINES_KEY, true)
@@ -55,28 +55,30 @@ const TVChartContainer = () => {
   const isMobile = width ? width < breakpoints.sm : false
   const mangoClient = useMangoStore.getState().connection.client
   const selectedMarketName = selectedMarketConfig.name
-  const { publicKey } = useWallet()
 
   // @ts-ignore
-  const defaultProps: ChartContainerProps = {
-    symbol: selectedMarketConfig.name,
-    interval: '60' as ResolutionString,
-    theme: 'Dark',
-    containerId: 'tv_chart_container',
-    datafeedUrl: CHART_DATA_FEED,
-    libraryPath: '/charting_library/',
-    chartsStorageUrl: 'https://trading-view-backend.herokuapp.com',
-    chartsStorageApiVersion: '1.1',
-    clientId: 'mango.markets',
-    userId: '',
-    fullscreen: false,
-    autosize: true,
-    studiesOverrides: {
-      'volume.volume.color.0': theme === 'Mango' ? '#E54033' : '#CC2929',
-      'volume.volume.color.1': theme === 'Mango' ? '#AFD803' : '#5EBF4D',
-      'volume.precision': 4,
-    },
-  }
+  const defaultProps: ChartContainerProps = useMemo(
+    () => ({
+      symbol: selectedMarketConfig.name,
+      interval: '60' as ResolutionString,
+      theme: 'Dark',
+      containerId: 'tv_chart_container',
+      datafeedUrl: CHART_DATA_FEED,
+      libraryPath: '/charting_library/',
+      chartsStorageUrl: 'https://trading-view-backend.herokuapp.com',
+      chartsStorageApiVersion: '1.1',
+      clientId: 'mango.markets',
+      userId: '',
+      fullscreen: false,
+      autosize: true,
+      studiesOverrides: {
+        'volume.volume.color.0': theme === 'Mango' ? '#E54033' : '#CC2929',
+        'volume.volume.color.1': theme === 'Mango' ? '#AFD803' : '#5EBF4D',
+        'volume.precision': 4,
+      },
+    }),
+    [selectedMarketConfig.name, theme]
+  )
 
   const tvWidgetRef = useRef<IChartingLibraryWidget | null>(null)
 
