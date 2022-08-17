@@ -113,6 +113,7 @@ const TVChartContainer = () => {
     'paneProperties.vertGridProperties.color': 'rgba(0,0,0,0)',
     'paneProperties.horzGridProperties.color': 'rgba(0,0,0,0)',
     'paneProperties.legendProperties.showStudyTitles': false,
+    'scalesProperties.showStudyLastValue': false,
   }
 
   const mainSeriesProperties = [
