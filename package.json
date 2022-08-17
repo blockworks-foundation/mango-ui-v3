@@ -15,7 +15,8 @@
     "lint": "eslint . --ext ts --ext tsx --ext js --quiet",
     "lint-staged": "lint-staged --config lint-staged.js",
     "lint-all": "yarn lint && yarn type-check",
-    "analyze": "ANALYZE=true yarn build"
+    "analyze": "ANALYZE=true yarn build",
+    "postinstall": "tar -xzC public -f vendor/charting_library.tgz;tar -xzC public -f vendor/datafeeds.tgz"
   },
   "dependencies": {
     "@blockworks-foundation/mango-client": "^3.6.12",
