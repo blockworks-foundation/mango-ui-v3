@@ -108,10 +108,13 @@ const TVChartContainer = () => {
 
   let chartStyleOverrides = {
     'paneProperties.background': 'rgba(0,0,0,0)',
+    'paneProperties.backgroundType': 'solid',
     'paneProperties.legendProperties.showBackground': false,
     'paneProperties.vertGridProperties.color': 'rgba(0,0,0,0)',
     'paneProperties.horzGridProperties.color': 'rgba(0,0,0,0)',
+    'paneProperties.legendProperties.showStudyTitles': false,
   }
+
   const mainSeriesProperties = [
     'candleStyle',
     'hollowCandleStyle',
@@ -160,7 +163,6 @@ const TVChartContainer = () => {
       disabled_features: [
         'use_localstorage_for_settings',
         'timeframes_toolbar',
-        // 'volume_force_overlay',
         isMobile ? 'left_toolbar' : '',
         'show_logo_on_all_charts',
         'caption_buttons_text_if_possible',
