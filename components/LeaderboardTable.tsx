@@ -180,7 +180,6 @@ const LeaderboardTable = ({ range = '29' }) => {
                     ? usdFormatter(acc.perp_pnl)
                     : usdFormatter(acc.spot_pnl)
                 }
-                walletPk={acc.wallet_pk}
                 profile={acc.profile}
               />
             ))}
@@ -216,7 +215,7 @@ const LeaderboardTable = ({ range = '29' }) => {
 
 export default LeaderboardTable
 
-const AccountCard = ({ rank, acc, rawPnl, profile, pnl, walletPk }) => {
+const AccountCard = ({ rank, acc, rawPnl, profile, pnl }) => {
   const router = useRouter()
   const medalColors =
     rank === 1
@@ -276,7 +275,7 @@ const AccountCard = ({ rank, acc, rawPnl, profile, pnl, walletPk }) => {
           <ProfileImage
             imageSize="56"
             placeholderSize="32"
-            publicKey={walletPk}
+            imageUrl={profile?.profile_image_url}
           />
         </div>
         <div className="ml-3 flex flex-col sm:flex-grow sm:flex-row sm:justify-between">

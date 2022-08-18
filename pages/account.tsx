@@ -347,7 +347,7 @@ export default function Account() {
                         <ProfileImage
                           imageSize="24"
                           placeholderSize="12"
-                          publicKey={mangoAccount.owner.toString()}
+                          imageUrl={profileData?.profile_image_url}
                         />
                         <span className="mb-0 capitalize">
                           {profileData?.profile_name}

@@ -47,9 +47,6 @@ export const ConnectWalletButton: React.FC = () => {
   const { connected, publicKey, wallet, wallets, select } = useWallet()
   const { t } = useTranslation(['common', 'profile'])
   const router = useRouter()
-  const loadingTransaction = useMangoStore(
-    (s) => s.wallet.nfts.loadingTransaction
-  )
   const set = useMangoStore((s) => s.set)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
@@ -126,11 +123,13 @@ export const ConnectWalletButton: React.FC = () => {
               <Menu.Button
                 className={`flex h-14 ${
                   !isMobile ? 'w-48 border-x border-th-bkg-3 px-3' : ''
-                } items-center rounded-none rounded-full hover:bg-th-bkg-2 focus:outline-none ${
-                  loadingTransaction ? 'animate-pulse bg-th-bkg-4' : ''
-                }`}
+                } items-center rounded-none rounded-full hover:bg-th-bkg-2 focus:outline-none`}
               >
-                <ProfileImage imageSize="40" placeholderSize="24" />
+                <ProfileImage
+                  imageSize="40"
+                  placeholderSize="24"
+                  isOwnerProfile
+                />
                 {!loadProfileDetails && !isMobile ? (
                   <div className="ml-2 w-32 text-left">
                     <p className="mb-0.5 truncate text-xs font-bold capitalize text-th-fgd-1">

@@ -1,24 +1,15 @@
 import { useState, useEffect } from 'react'
-import { PublicKey } from '@solana/web3.js'
 import { notify } from 'utils/notifications'
 import useMangoStore from '../stores/useMangoStore'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { PhotographIcon } from '@heroicons/react/solid'
 import Modal from './Modal'
 import { ElementTitle } from './styles'
-import {
-  createRemoveProfilePictureTransaction,
-  createSetProfilePictureTransaction,
-} from '@solflare-wallet/pfp'
 import Button from './Button'
 import { useTranslation } from 'next-i18next'
-import { connectionSelector } from '../stores/selectors'
 import { LinkButton } from 'components'
-
-interface SelectedNft {
-  mint: PublicKey
-  tokenAddress: PublicKey
-}
+import { sign } from 'tweetnacl'
+import bs58 from 'bs58'
 
 const ImgWithLoader = (props) => {
   const [isLoading, setIsLoading] = useState(true)
@@ -34,133 +25,115 @@ const ImgWithLoader = (props) => {
 
 const NftProfilePicModal = ({ isOpen, onClose }) => {
   const { t } = useTranslation(['common', 'profile'])
-  const connection = useMangoStore(connectionSelector)
-  const { publicKey, wallet } = useWallet()
-  const pfp = useMangoStore((s) => s.wallet.pfp)
+  const { publicKey, signMessage } = useWallet()
   const nfts = useMangoStore((s) => s.wallet.nfts.data)
   const nftsLoading = useMangoStore((s) => s.wallet.nfts.loading)
-  const [selectedProfile, setSelectedProfile] = useState<SelectedNft | null>(
-    null
-  )
+  const [selectedProfile, setSelectedProfile] = useState<string>('')
   const actions = useMangoStore((s) => s.actions)
-  const mangoClient = useMangoStore.getState().connection.client
-  const setMangoStore = useMangoStore((s) => s.set)
+  const profile = useMangoStore((s) => s.profile.details)
 
   useEffect(() => {
     if (publicKey) {
-      actions.fetchNfts(connection, publicKey)
+      actions.fetchNfts(publicKey)
     }
   }, [publicKey])
 
   useEffect(() => {
-    if (pfp?.isAvailable && pfp.mintAccount && pfp.tokenAccount) {
-      setSelectedProfile({
-        mint: pfp.mintAccount,
-        tokenAddress: pfp.tokenAccount,
-      })
+    if (profile.profile_image_url) {
+      setSelectedProfile(profile.profile_image_url)
     }
-  }, [pfp])
+  }, [profile])
 
-  const handleSaveProfilePic = async () => {
-    if (!publicKey || !selectedProfile || !wallet) {
-      return
-    }
-
+  const saveProfileImage = async () => {
+    const name = profile.profile_name.toLowerCase()
+    const traderCategory = profile.trader_category
     try {
-      setMangoStore((state) => {
-        state.wallet.nfts.loadingTransaction = true
+      if (!publicKey) throw new Error('Wallet not connected!')
+      if (!signMessage)
+        throw new Error('Wallet does not support message signing!')
+
+      const messageString = JSON.stringify({
+        profile_name: name,
+        trader_category: traderCategory,
+        profile_image_url: selectedProfile,
       })
-      onClose()
-      const transaction = await createSetProfilePictureTransaction(
-        publicKey,
-        selectedProfile.mint,
-        selectedProfile.tokenAddress
+      const message = new TextEncoder().encode(messageString)
+      const signature = await signMessage(message)
+      if (!sign.detached.verify(message, signature, publicKey.toBytes()))
+        throw new Error('Invalid signature!')
+
+      const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          wallet_pk: publicKey.toString(),
+          message: messageString,
+          signature: bs58.encode(signature),
+        }),
+      }
+      const response = await fetch(
+        'https://mango-transaction-log.herokuapp.com/v3/user-data/profile-details',
+        requestOptions
       )
-      if (transaction) {
-        const txid = await mangoClient.sendTransaction(
-          transaction,
-          wallet.adapter,
-          []
-        )
-        if (txid) {
-          notify({
-            title: t('profile:profile-pic-success'),
-            description: '',
-            txid,
-          })
-        } else {
-          notify({
-            title: t('profile:profile-pic-failure'),
-            description: t('transaction-failed'),
-          })
-        }
-      } else {
+      if (response.status === 200) {
+        await actions.fetchProfileDetails(publicKey.toString())
+        onClose()
         notify({
-          title: t('profile:profile-pic-failure'),
-          description: t('transaction-failed'),
+          type: 'success',
+          title: t('profile:profile-pic-success'),
         })
       }
-    } catch (e) {
+    } catch {
       notify({
-        title: t('profile:profile-pic-failure'),
-        description: e.message,
-        txid: e.txid,
-        type: 'error',
-      })
-    } finally {
-      actions.fetchProfilePicture(wallet)
-      setMangoStore((state) => {
-        state.wallet.nfts.loadingTransaction = false
+        type: 'success',
+        title: t('profile:profile:profile-pic-failure'),
       })
     }
   }
 
-  const handleRemoveProfilePic = async () => {
-    if (!publicKey || !wallet) {
-      return
-    }
-
+  const removeProfileImage = async () => {
+    const name = profile.profile_name.toLowerCase()
+    const traderCategory = profile.trader_category
     try {
-      setMangoStore((state) => {
-        state.wallet.nfts.loadingTransaction = true
+      if (!publicKey) throw new Error('Wallet not connected!')
+      if (!signMessage)
+        throw new Error('Wallet does not support message signing!')
+
+      const messageString = JSON.stringify({
+        profile_name: name,
+        trader_category: traderCategory,
+        profile_image_url: '',
       })
-      onClose()
-      const transaction = await createRemoveProfilePictureTransaction(publicKey)
-      if (transaction) {
-        const txid = await mangoClient.sendTransaction(
-          transaction,
-          wallet.adapter,
-          []
-        )
-        if (txid) {
-          notify({
-            title: t('profile:profile-pic-remove-success'),
-            description: '',
-            txid,
-          })
-        } else {
-          notify({
-            title: t('profile:profile-pic-remove-failure'),
-            description: t('transaction-failed'),
-          })
-        }
-      } else {
+      const message = new TextEncoder().encode(messageString)
+      const signature = await signMessage(message)
+      if (!sign.detached.verify(message, signature, publicKey.toBytes()))
+        throw new Error('Invalid signature!')
+
+      const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          wallet_pk: publicKey.toString(),
+          message: messageString,
+          signature: bs58.encode(signature),
+        }),
+      }
+      const response = await fetch(
+        'https://mango-transaction-log.herokuapp.com/v3/user-data/profile-details',
+        requestOptions
+      )
+      if (response.status === 200) {
+        await actions.fetchProfileDetails(publicKey.toString())
+        onClose()
         notify({
-          title: t('profile:profile-pic-remove-failure'),
-          description: t('transaction-failed'),
+          type: 'success',
+          title: t('profile:profile-pic-remove-success'),
         })
       }
-    } catch (e) {
+    } catch {
       notify({
+        type: 'success',
         title: t('profile:profile-pic-remove-failure'),
-        description: e.message,
-        txid: e.txid,
-        type: 'error',
-      })
-    } finally {
-      actions.fetchProfilePicture(wallet)
-      setMangoStore((state) => {
-        state.wallet.nfts.loadingTransaction = false
       })
     }
   }
@@ -173,17 +146,11 @@ const NftProfilePicModal = ({ isOpen, onClose }) => {
             {t('profile:choose-profile')}
           </ElementTitle>
           <div className="mt-3 flex items-center space-x-4 sm:mt-0">
-            <Button
-              disabled={!selectedProfile}
-              onClick={() => handleSaveProfilePic()}
-            >
+            <Button disabled={!selectedProfile} onClick={saveProfileImage}>
               {t('save')}
             </Button>
-            {pfp?.isAvailable ? (
-              <LinkButton
-                className="text-xs"
-                onClick={() => handleRemoveProfilePic()}
-              >
+            {profile.profile_image_url ? (
+              <LinkButton className="text-xs" onClick={removeProfileImage}>
                 {t('profile:remove')}
               </LinkButton>
             ) : null}
@@ -196,18 +163,12 @@ const NftProfilePicModal = ({ isOpen, onClose }) => {
             {nfts.map((n) => (
               <button
                 className={`default-transitions col-span-1 flex items-center justify-center rounded-md border bg-th-bkg-3 py-3 sm:py-4 md:hover:bg-th-bkg-4 ${
-                  selectedProfile?.tokenAddress.toString() ===
-                  n.tokenAccount.publicKey.toString()
+                  selectedProfile === n.image
                     ? 'border-th-primary'
                     : 'border-th-bkg-3'
                 }`}
-                key={n.address}
-                onClick={() =>
-                  setSelectedProfile({
-                    mint: n.tokenAccount.account.mint,
-                    tokenAddress: n.tokenAccount.publicKey,
-                  })
-                }
+                key={n.image}
+                onClick={() => setSelectedProfile(n.image)}
               >
                 <ImgWithLoader
                   className="h-16 w-16 flex-shrink-0 rounded-full sm:h-20 sm:w-20"
