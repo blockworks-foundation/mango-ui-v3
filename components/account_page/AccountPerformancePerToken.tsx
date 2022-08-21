@@ -218,7 +218,7 @@ const AccountPerformance = () => {
             .format('YYYY-MM-DD')}`
         ),
         fetch(
-          `https://mango-transaction-log.herokuapp.com/v3/stats/volumes-by-mango-account?mango-account=8awShoVUjrekM55ibsRp73M1okLc2HgAVJgacUmm9eip&start-date=${dayjs()
+          `https://mango-transaction-log.herokuapp.com/v3/stats/volumes-by-mango-account?mango-account=${mangoAccountPk}&start-date=${dayjs()
             .subtract(parseInt(performanceRange), 'day')
             .format('YYYY-MM-DD')}`
         ),
