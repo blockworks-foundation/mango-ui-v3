@@ -426,7 +426,7 @@
    "tooltip-display-cumulative": "Display Cumulative Size",
    "tooltip-display-step": "Display Step Size",
    "tooltip-earn-mngo": "Earn MNGO by market making on Perp markets.",
-   "tooltip-enable-margin": "Enable spot margin for this trade",
+   "tooltip-enable-margin": "Enable spot margin for this trade","tooltip-estimated-liq-price": "Estimated liquidation price assumes the value of your collateral remains the same. It's not an accurate representation of where your account would be liquidated",
    "tooltip-funding": "Funding is paid continuously. The 1hr rate displayed is a rolling average of the past 60 mins.",
    "tooltip-gui-rebate": "Taker fee is {{taker_rate)}} before the 20% GUI hoster fee is rebated.",
    "tooltip-interest-charged": "Interest is charged on your borrowed balance and is subject to change.",

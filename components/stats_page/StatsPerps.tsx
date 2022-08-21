@@ -1,4 +1,4 @@
-import { PerpMarket } from '@blockworks-foundation/mango-client'
+import { PerpMarket, ZERO_BN } from '@blockworks-foundation/mango-client'
 import { useState, useMemo } from 'react'
 import useMangoStore from '../../stores/useMangoStore'
 import Chart from '../Chart'
@@ -188,66 +188,68 @@ export default function StatsPerps({ perpStats, loadPerpStats }) {
           ) : null}
         </div>
       </div>
-      <div className="mb-4">
-        <h2 className="mb-4">{t('liquidity-mining')}</h2>
-        <div className="grid grid-cols-2 gap-x-3 md:grid-cols-3 lg:grid-cols-6">
-          <div className="col-span-1 border-y border-th-bkg-3 py-3">
-            <p className="mb-0">{t('depth-rewarded')}</p>
-            <div className="text-lg font-bold">
-              {maxDepthUi.toLocaleString() + ' '}
-              {selectedMarketConfig?.baseSymbol ? (
-                <span className="text-xs font-normal text-th-fgd-3">
-                  {selectedMarketConfig.baseSymbol}
-                </span>
-              ) : null}
+      {lmi.mngoPerPeriod.gt(ZERO_BN) ? (
+        <div className="mb-4">
+          <h2 className="mb-4">{t('liquidity-mining')}</h2>
+          <div className="grid grid-cols-2 gap-x-3 md:grid-cols-3 lg:grid-cols-6">
+            <div className="col-span-1 border-y border-th-bkg-3 py-3">
+              <p className="mb-0">{t('depth-rewarded')}</p>
+              <div className="text-lg font-bold">
+                {maxDepthUi.toLocaleString() + ' '}
+                {selectedMarketConfig?.baseSymbol ? (
+                  <span className="text-xs font-normal text-th-fgd-3">
+                    {selectedMarketConfig.baseSymbol}
+                  </span>
+                ) : null}
+              </div>
             </div>
-          </div>
-          <div className="col-span-1 border-y border-th-bkg-3 py-3">
-            <p className="mb-0">{t('target-period-length')}</p>
-            <div className="text-lg font-bold">
-              {(
-                selectedMarket.liquidityMiningInfo.targetPeriodLength.toNumber() /
-                60
-              ).toFixed()}{' '}
-              {t('minutes')}
+            <div className="col-span-1 border-y border-th-bkg-3 py-3">
+              <p className="mb-0">{t('target-period-length')}</p>
+              <div className="text-lg font-bold">
+                {(
+                  selectedMarket.liquidityMiningInfo.targetPeriodLength.toNumber() /
+                  60
+                ).toFixed()}{' '}
+                {t('minutes')}
+              </div>
             </div>
-          </div>
-          <div className="col-span-1 border-b border-th-bkg-3 py-3 md:border-y">
-            <p className="mb-0">{t('mngo-per-period')}</p>
-            <div className="text-lg font-bold">
-              {(
-                selectedMarket.liquidityMiningInfo.mngoPerPeriod.toNumber() /
-                Math.pow(10, 6)
-              ).toFixed(2)}
+            <div className="col-span-1 border-b border-th-bkg-3 py-3 md:border-y">
+              <p className="mb-0">{t('mngo-per-period')}</p>
+              <div className="text-lg font-bold">
+                {(
+                  selectedMarket.liquidityMiningInfo.mngoPerPeriod.toNumber() /
+                  Math.pow(10, 6)
+                ).toFixed(2)}
+              </div>
             </div>
-          </div>
-          <div className="col-span-1 border-b border-th-bkg-3 py-3 lg:border-y">
-            <p className="mb-0">{t('mngo-left-period')}</p>
-            <div className="text-lg font-bold">
-              {(
-                selectedMarket.liquidityMiningInfo.mngoLeft.toNumber() /
-                Math.pow(10, 6)
-              ).toFixed(2)}
+            <div className="col-span-1 border-b border-th-bkg-3 py-3 lg:border-y">
+              <p className="mb-0">{t('mngo-left-period')}</p>
+              <div className="text-lg font-bold">
+                {(
+                  selectedMarket.liquidityMiningInfo.mngoLeft.toNumber() /
+                  Math.pow(10, 6)
+                ).toFixed(2)}
+              </div>
             </div>
-          </div>
 
-          <div className="col-span-1 border-b border-th-bkg-3 py-3 lg:border-y">
-            <p className="mb-0">{t('est-period-end')}</p>
-            <div className="text-lg font-bold">
-              {dayjs(est * 1000).format('DD MMM YYYY')}
+            <div className="col-span-1 border-b border-th-bkg-3 py-3 lg:border-y">
+              <p className="mb-0">{t('est-period-end')}</p>
+              <div className="text-lg font-bold">
+                {dayjs(est * 1000).format('DD MMM YYYY')}
+              </div>
+              <div className="text-xs text-th-fgd-3">
+                {dayjs(est * 1000).format('h:mma')}
+              </div>
             </div>
-            <div className="text-xs text-th-fgd-3">
-              {dayjs(est * 1000).format('h:mma')}
-            </div>
-          </div>
-          <div className="col-span-1 border-b border-th-bkg-3 py-3 lg:border-y">
-            <p className="mb-0">{t('period-progress')}</p>
-            <div className="text-lg font-bold">
-              {(progress * 100).toFixed(2)}%
+            <div className="col-span-1 border-b border-th-bkg-3 py-3 lg:border-y">
+              <p className="mb-0">{t('period-progress')}</p>
+              <div className="text-lg font-bold">
+                {(progress * 100).toFixed(2)}%
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      ) : null}
     </>
   )
 }

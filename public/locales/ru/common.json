@@ -426,7 +426,7 @@
    "tooltip-display-cumulative": "Отображение совокупного размера",
    "tooltip-display-step": "Отображение размера шага",
    "tooltip-earn-mngo": "Заработать MNGO путем маркет-мейкинга на рынках фьючерсов.",
-   "tooltip-enable-margin": "Включить спотовую маржу для этой сделки",
+   "tooltip-enable-margin": "Включить спотовую маржу для этой сделки","tooltip-estimated-liq-price": "Estimated liquidation price assumes the value of your collateral remains the same. It's not an accurate representation of where your account would be liquidated",
    "tooltip-funding": "Финансирование выплачивается непрерывно. Отображаемая ставка за 1 час представляет собой скользящее среднее значение за последние 60 минут.",
    "tooltip-gui-rebate": "Taker fee is {{taker_rate)}} before the 20% GUI hoster fee is rebated.",
    "tooltip-interest-charged": "Проценты начисляются на ваш заемный баланс и могут быть изменены.",

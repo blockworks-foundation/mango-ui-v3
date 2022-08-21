@@ -2,7 +2,11 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { useTranslation } from 'next-i18next'
-import { ExclamationIcon, PencilIcon } from '@heroicons/react/solid'
+import {
+  ExclamationIcon,
+  InformationCircleIcon,
+  PencilIcon,
+} from '@heroicons/react/solid'
 import { ZERO_I80F48 } from '@blockworks-foundation/mango-client'
 import useMangoStore from '../stores/useMangoStore'
 import Button, { LinkButton } from '../components/Button'
@@ -213,7 +217,20 @@ const PositionsTable: React.FC = () => {
                 <thead>
                   <TrHead>
                     {Object.entries(tableColumnsToShow).map((entry) =>
-                      entry[1] ? <Th key={entry[0]}>{t(entry[0])}</Th> : null
+                      entry[1] ? (
+                        <Th key={entry[0]}>
+                          {entry[0] === 'estimated-liq-price' ? (
+                            <Tooltip content={t('tooltip-estimated-liq-price')}>
+                              <span className="flex items-center">
+                                {t('estimated-liq-price')}
+                                <InformationCircleIcon className="ml-1 h-4 w-4 flex-shrink-0 cursor-help text-th-fgd-4" />
+                              </span>
+                            </Tooltip>
+                          ) : (
+                            t(entry[0])
+                          )}
+                        </Th>
+                      ) : null
                     )}
                     <LinkButton
                       className="flex w-full items-start justify-end"

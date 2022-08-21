@@ -4,10 +4,9 @@ import round from 'lodash/round'
 import max from 'lodash/max'
 import MobileTradePage from './mobile/MobileTradePage'
 
-const TVChartContainer = dynamic(
-  () => import('../components/TradingView/index'),
-  { ssr: false }
-)
+const TVChartContainer = dynamic(() => import('./TVChartContainer'), {
+  ssr: false,
+})
 import { useEffect, useState } from 'react'
 import FloatingElement from '../components/FloatingElement'
 import Orderbook from '../components/Orderbook'

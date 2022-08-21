@@ -38,9 +38,8 @@ yarn-error.log*
 .sentryclirc
 
 .idea
-<<<<<<< HEAD
-/tsconfig.tsbuildinfo
-=======
-
 tsconfig.tsbuildinfo
->>>>>>> c79e0869b5270152994a9047574fe8ef3d419320
+
+# TradingView
+public/charting_library
+public/datafeeds
