@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
 import dayjs from 'dayjs'
-import isEmpty from 'lodash/isEmpty'
 import { useTranslation } from 'next-i18next'
 import { LineChart, XAxis, YAxis, Line, Tooltip } from 'recharts'
 import useMangoStore from '../../stores/useMangoStore'
@@ -189,12 +188,7 @@ const AccountPerformance = () => {
     }
 
     // Normalise chart to start from 0 (except for account value)
-    if (
-      parseInt(performanceRange) !== 90 &&
-      chartToShow !== 'account-value' &&
-      chartToShow !== 'maker-volume' &&
-      chartToShow !== 'taker-volume'
-    ) {
+    if (parseInt(performanceRange) !== 90 && chartToShow !== 'account-value') {
       const startValues = Object.assign({}, stats[0])
       // Initialize symbol not present at the start to 0
       uniqueSymbols
@@ -208,19 +202,6 @@ const AccountPerformance = () => {
         }
       }
     }
-
-    // if (chartToShow === 'maker-volume' || chartToShow === 'taker-volume') {
-    //   for (let i = 0; i < stats.length; i++) {
-    //     if (i > 0) {
-    //       const previousKeys = Object.keys(stats[i - 1])
-    //       for (const key in stats[i]) {
-    //         if (!previousKeys.includes(key)) {
-    //           stats[i][key] = stats[i - 1][key]
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
 
     setChartData(stats)
     setChartToShow(chartToShow)
@@ -237,9 +218,9 @@ const AccountPerformance = () => {
             .format('YYYY-MM-DD')}`
         ),
         fetch(
-          `https://mango-transaction-log.herokuapp.com/v3/stats/volumes-by-mango-account?mango-account=4rm5QCgFPm4d37MCawNypngV4qPWv4D5tw57KE2qUcLE&start-date=${dayjs()
+          `https://mango-transaction-log.herokuapp.com/v3/stats/volumes-by-mango-account?mango-account=8awShoVUjrekM55ibsRp73M1okLc2HgAVJgacUmm9eip&start-date=${dayjs()
             .subtract(parseInt(performanceRange), 'day')
-            .format('YYYY-MM-DD')}&end-date=${dayjs().format('YYYY-MM-DD')}`
+            .format('YYYY-MM-DD')}`
         ),
       ]
 
@@ -295,7 +276,7 @@ const AccountPerformance = () => {
 
   useEffect(() => {
     calculateChartData(chartToShow)
-  }, [hourlyPerformanceStats])
+  }, [hourlyPerformanceStats, volumeData])
 
   useEffect(() => {
     if (
@@ -363,8 +344,13 @@ const AccountPerformance = () => {
   })
 
   const renderSymbolIcon = (s) => {
-    if (s !== 'All') {
+    if (s === 'All') return
+    if (chartToShow !== 'maker-volume' && chartToShow !== 'taker-volume') {
       const iconName = `${s.slice(0, 1)}${s.slice(1, 4).toLowerCase()}MonoIcon`
+      const SymbolIcon = MonoIcons[iconName] || QuestionMarkCircleIcon
+      return <SymbolIcon className="mr-1.5 h-3.5 w-auto" />
+    } else {
+      const iconName = `${s.slice(0, 1)}${s.slice(1, -5).toLowerCase()}MonoIcon`
       const SymbolIcon = MonoIcons[iconName] || QuestionMarkCircleIcon
       return <SymbolIcon className="mr-1.5 h-3.5 w-auto" />
     }
@@ -433,7 +419,7 @@ const AccountPerformance = () => {
                 />
               </div>
             </div>
-            {!isEmpty(hourlyPerformanceStats) && !loading ? (
+            {!loading ? (
               chartData.length > 0 && selectedSymbols.length > 0 ? (
                 <LineChart
                   width={width}
@@ -493,7 +479,11 @@ const AccountPerformance = () => {
                     {t('account-performance:select-an-asset')}
                   </p>
                 </div>
-              ) : null
+              ) : (
+                <div className="flex h-full w-full items-center justify-center p-4">
+                  <p className="mb-0">{t('account-performance:no-data')}</p>
+                </div>
+              )
             ) : loading ? (
               <div
                 style={{ height: height - 16 }}

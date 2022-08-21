@@ -4,9 +4,12 @@
   "account-value": "帳戶價值",
   "funding-cumulative": "累計資金費用",
   "interest-cumulative": "累計利息",
+  "maker-volume": "Maker Volume",
   "mngo-rewards": "MNGO獎勵",
+  "no-data": "No data found...",
   "perp-pnl": "合約盈虧",
   "perp-pnl-ex-rewards": "合約盈虧（排除獎勵1）",
   "select-an-asset": "選資產來看其表現。",
+  "taker-volume": "Taker Volume",
   "vs-time": "與時間"
 }
