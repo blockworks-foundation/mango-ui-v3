@@ -84,6 +84,6 @@ export default function useFees(): {
     makerFee: makerFee,
     takerFee: takerFee + refSurcharge - discount,
     takerFeeBeforeDiscount: takerFee + refSurcharge,
-    takerFeeWithMaxDiscount: takerFee - discount,
+    takerFeeWithMaxDiscount: takerFee,
   }
 }
