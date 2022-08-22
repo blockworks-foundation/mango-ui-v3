@@ -4,9 +4,12 @@
   "account-value": "Account Value",
   "funding-cumulative": "Cumulative Funding",
   "interest-cumulative": "Cumulative Interest",
+  "maker-volume": "Maker Volume",
   "mngo-rewards": "MNGO Rewards",
+  "no-data": "No data found...",
   "perp-pnl": "Perp PnL",
   "perp-pnl-ex-rewards": "Perp PnL (ex. rewards)",
   "select-an-asset": "Select one or more assets to view their performance.",
+  "taker-volume": "Taker Volume",
   "vs-time": "vs. Time"
 }
