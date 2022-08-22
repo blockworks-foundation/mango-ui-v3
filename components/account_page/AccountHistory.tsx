@@ -11,7 +11,6 @@ import {
   getTokenBySymbol,
   PerpMarket,
 } from '@blockworks-foundation/mango-client'
-
 import TradeHistoryTable from '../TradeHistoryTable'
 import useMangoStore from '../../stores/useMangoStore'
 import {
@@ -37,6 +36,7 @@ import MobileTableHeader from 'components/mobile/MobileTableHeader'
 import AccountInterest from './AccountInterest'
 import AccountFunding from './AccountFunding'
 import TabButtons from 'components/TabButtons'
+import AccountVolume from './AccountVolume'
 
 const historyViews = [
   { label: 'Trades', key: 'Trades' },
@@ -45,11 +45,14 @@ const historyViews = [
   { label: 'Interest', key: 'Interest' },
   { label: 'Funding', key: 'Funding' },
   { label: 'Liquidations', key: 'Liquidation' },
+  { label: 'Volume', key: 'Volume' },
 ]
 
 export default function AccountHistory() {
   const [view, setView] = useState('Trades')
   const [history, setHistory] = useState(null)
+  const [volumeTotals, setVolumeTotals] = useState([])
+  const [loading, setLoading] = useState(false)
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
 
   const mangoAccountPk = useMemo(() => {
@@ -60,11 +63,43 @@ export default function AccountHistory() {
 
   useEffect(() => {
     const fetchAccountActivity = async () => {
-      const response = await fetch(
-        `https://mango-transaction-log.herokuapp.com/v3/stats/activity-feed?mango-account=${mangoAccountPk}`
-      )
-      const parsedResponse = await response.json()
-      setHistory(parsedResponse)
+      setLoading(true)
+      try {
+        const promises = [
+          fetch(
+            `https://mango-transaction-log.herokuapp.com/v3/stats/activity-feed?mango-account=${mangoAccountPk}`
+          ),
+          fetch(
+            `https://mango-transaction-log.herokuapp.com/v3/stats/mango-account-lifetime-volumes?mango-account=${mangoAccountPk}`
+          ),
+        ]
+
+        const data = await Promise.all(promises)
+        const historyData = await data[0].json()
+        const volumeTotalsData = await data[1].json()
+
+        let volumeEntries: any = Object.entries(volumeTotalsData.volumes)
+        volumeEntries = volumeEntries
+          .map(
+            ([key, value]) => ({ [key]: value })
+            // Object.entries(value),
+          )
+          .filter((v) => {
+            const assetVolumes: any = Object.values(v)[0]
+            return assetVolumes.maker > 0 || assetVolumes.taker > 0
+          })
+
+        setHistory(historyData)
+        setVolumeTotals(volumeEntries)
+        setLoading(false)
+      } catch {
+        setLoading(false)
+        notify({
+          title: 'Failed to fetch history data',
+          description: '',
+          type: 'error',
+        })
+      }
     }
 
     if (mangoAccountPk) {
@@ -77,12 +112,17 @@ export default function AccountHistory() {
       <div className="mb-2">
         <TabButtons activeTab={view} tabs={historyViews} onClick={setView} />
       </div>
-      <ViewContent view={view} history={history} />
+      <ViewContent
+        view={view}
+        history={history}
+        loading={loading}
+        volumeTotals={volumeTotals}
+      />
     </>
   )
 }
 
-const ViewContent = ({ view, history }) => {
+const ViewContent = ({ view, history, loading, volumeTotals }) => {
   switch (view) {
     case 'Trades':
       return <TradeHistoryTable showActions />
@@ -96,6 +136,8 @@ const ViewContent = ({ view, history }) => {
       return <AccountFunding />
     case 'Liquidation':
       return <LiquidationHistoryTable history={history} view={view} />
+    case 'Volume':
+      return <AccountVolume data={volumeTotals} loading={loading} />
     default:
       return <TradeHistoryTable showActions />
   }
