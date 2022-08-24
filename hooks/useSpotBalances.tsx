@@ -8,21 +8,20 @@ import useMangoStore, { SpotBalance } from '../stores/useMangoStore'
 import { i80f48ToPercent } from '../utils/index'
 import sumBy from 'lodash/sumBy'
 import { I80F48 } from '@blockworks-foundation/mango-client'
-import useMangoAccount from './useMangoAccount'
-import { useEffect } from 'react'
+import shallow from 'zustand/shallow'
 
-const useSpotBalances = () => {
-  const { mangoAccount } = useMangoAccount()
-  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
-  const mangoGroupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
-  const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
-  const setMangoStore = useMangoStore((s) => s.set)
-
-  useEffect(() => {
+useMangoStore.subscribe(
+  (state) => state.selectedMangoAccount.lastUpdatedAt,
+  () => {
+    const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
+    const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
+    const mangoCache = useMangoStore.getState().selectedMangoGroup.cache
+    const mangoGroupConfig = useMangoStore.getState().selectedMangoGroup.config
+    const setMangoStore = useMangoStore.getState().set
     if (!mangoAccount || !mangoGroup || !mangoCache) {
       return
     }
-
+    console.time('updating spot bal start')
     const balances: SpotBalance[][] = []
 
     for (const {
@@ -182,7 +181,14 @@ const useSpotBalances = () => {
         },
       ])
     })
-  }, [mangoGroup, mangoCache, mangoAccount])
+    console.timeEnd('updating spot bal start')
+  },
+  { equalityFn: shallow }
+)
+
+// TODO remove hook and just use the above zustand state subscribe for updating balances
+const useSpotBalances = () => {
+  return null
 }
 
 export default useSpotBalances
