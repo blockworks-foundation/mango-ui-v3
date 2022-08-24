@@ -119,6 +119,7 @@
    "deposit-before": "You need more {{tokenSymbol}} in your wallet to fully repay your borrow",
    "deposit-failed": "Deposit failed",
    "deposit-funds": "Deposit Funds",
+   "deposit-investin-delegate" : "Please use Investin's UI to deposit",
    "deposit-help": "Add {{tokenSymbol}} to your wallet and fund it with {{tokenSymbol}} to deposit.",
    "deposit-history": "Deposit History",
    "deposit-interest": "Deposit Interest",

@@ -5,6 +5,9 @@ import { AccountInfo } from '@solana/spl-token'
 export const TOKEN_PROGRAM_ID = new PublicKey(
   'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
 )
+export const INVESTIN_PROGRAM_ID = new PublicKey(
+  'HDFNSB26prLvBB2vvAoUoDEbQYbUxdUJztRcjozNakfz'
+)
 
 export type ProgramAccount<T> = {
   publicKey: PublicKey

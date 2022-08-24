@@ -119,6 +119,7 @@
   "deposit-before": "歸還全借貸前您得先多存入{{tokenSymbol}}",
   "deposit-failed": "存款失敗",
   "deposit-funds": "存款",
+  "deposit-investin-delegate" : "請使用 Investin 的 UI 進行存款",
   "deposit-help": "存入前請給錢包創建{{tokenSymbol}}地址以及存入{{tokenSymbol}}。",
   "deposit-history": "存款歷史",
   "deposit-interest": "存款利息",
