@@ -1105,7 +1105,7 @@ const useMangoStore = create<
 
           try {
             const data = await fetch(
-              `https://mango-all-markets-api.herokuapp.com/markets/`
+              `https://all-market-stats-api.onrender.com/markets/`
             )
 
             if (data?.status === 200) {
