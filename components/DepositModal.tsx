@@ -45,19 +45,19 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
   const mangoAccounts = useMangoStore((s) => s.mangoAccounts)
   const [depositMangoAccount, setDepositMangoAccount] =
     useState<MangoAccount | null>(mangoAccount)
-  const connection = useMangoStore(connectionSelector);
+  const connection = useMangoStore(connectionSelector)
   const [isInvestinDelegate, setIsInvestinDelegate] = useState(false)
-  
+
   useEffect(() => {
     const checkForInvestinDelegate = async () => {
-        if(mangoAccount && mangoAccount.owner){
-          const ai = await connection.getAccountInfo(mangoAccount.owner)
-          if(ai?.owner.toBase58() === INVESTIN_PROGRAM_ID.toBase58()){
-            setIsInvestinDelegate(true);
-          }
+      if (mangoAccount && mangoAccount.owner) {
+        const ai = await connection.getAccountInfo(mangoAccount.owner)
+        if (ai?.owner.toBase58() === INVESTIN_PROGRAM_ID.toBase58()) {
+          setIsInvestinDelegate(true)
         }
+      }
     }
-    checkForInvestinDelegate();
+    checkForInvestinDelegate()
   }, [mangoAccount])
 
   useEffect(() => {
