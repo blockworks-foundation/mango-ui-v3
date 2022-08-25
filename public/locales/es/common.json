@@ -119,6 +119,7 @@
    "deposit-before": "Necesita más {{tokenSymbol}} en su billetera para pagar completamente su préstamo",
    "deposit-failed": "El depósito falló",
    "deposit-funds": "Fondos de depósito",
+   "deposit-investin-delegate" : "Utilice la interfaz de usuario de Investin para depositar",
    "deposit-help": "Agregar {{tokenSymbol}} a su billetera y deposítelo con {{tokenSymbol}} para depositar.",
    "deposit-history": "Historial de depósitos",
    "deposit-interest": "Interés de depósito",

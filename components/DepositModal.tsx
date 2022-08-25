@@ -16,6 +16,8 @@ import ButtonGroup from './ButtonGroup'
 import { useWallet } from '@solana/wallet-adapter-react'
 import MangoAccountSelect from './MangoAccountSelect'
 import { MangoAccount } from '@blockworks-foundation/mango-client'
+import { connectionSelector } from 'stores/selectors'
+import { INVESTIN_PROGRAM_ID } from 'utils/tokens'
 
 interface DepositModalProps {
   onClose: () => void
@@ -43,6 +45,20 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
   const mangoAccounts = useMangoStore((s) => s.mangoAccounts)
   const [depositMangoAccount, setDepositMangoAccount] =
     useState<MangoAccount | null>(mangoAccount)
+  const connection = useMangoStore(connectionSelector)
+  const [isInvestinDelegate, setIsInvestinDelegate] = useState(false)
+
+  useEffect(() => {
+    const checkForInvestinDelegate = async () => {
+      if (mangoAccount && mangoAccount.owner) {
+        const ai = await connection.getAccountInfo(mangoAccount.owner)
+        if (ai?.owner.toBase58() === INVESTIN_PROGRAM_ID.toBase58()) {
+          setIsInvestinDelegate(true)
+        }
+      }
+    }
+    checkForInvestinDelegate()
+  }, [mangoAccount])
 
   useEffect(() => {
     if (tokenSymbol) {
@@ -204,6 +220,15 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
           />
         </div>
       ) : null}
+
+      {isInvestinDelegate ? (
+        <div className="mb-4">
+          <InlineNotification
+            title={t('deposit-investin-delegate')}
+            type="error"
+          />
+        </div>
+      ) : null}
       <AccountSelect
         accounts={walletTokens}
         selectedAccount={selectedAccount}
@@ -249,7 +274,7 @@ const DepositModal: FunctionComponent<DepositModalProps> = ({
         <Button
           onClick={handleDeposit}
           className="w-full"
-          disabled={submitting || inputDisabled}
+          disabled={submitting || inputDisabled || isInvestinDelegate}
         >
           <div className={`flex items-center justify-center`}>
             {submitting ? <Loading className="-ml-1 mr-3" /> : null}
