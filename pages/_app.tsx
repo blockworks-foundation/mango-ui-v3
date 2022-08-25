@@ -8,7 +8,7 @@ import 'react-nice-dates/build/style.css'
 import '../styles/datepicker.css'
 import useHydrateStore from '../hooks/useHydrateStore'
 import Notifications from '../components/Notification'
-import useMangoStore from '../stores/useMangoStore'
+import useMangoStore, { CLUSTER } from '../stores/useMangoStore'
 import useOraclePrice from '../hooks/useOraclePrice'
 import { getDecimalCount } from '../utils'
 import { useRouter } from 'next/router'
@@ -39,7 +39,9 @@ import {
   SlopeWalletAdapter,
   BitpieWalletAdapter,
   GlowWalletAdapter,
+  WalletConnectWalletAdapter,
 } from '@solana/wallet-adapter-wallets'
+import { WalletAdapterNetwork } from '@solana/wallet-adapter-base'
 import { HuobiWalletAdapter } from '@solana/wallet-adapter-huobi'
 import useSpotBalances from 'hooks/useSpotBalances'
 import Layout from 'components/Layout'
@@ -159,6 +161,22 @@ function App({ Component, pageProps }) {
       new SlopeWalletAdapter(),
       new BitpieWalletAdapter(),
       new HuobiWalletAdapter(),
+      new WalletConnectWalletAdapter({
+        network: 
+          CLUSTER === 'mainnet' ? 
+          WalletAdapterNetwork.Mainnet : 
+          WalletAdapterNetwork.Devnet,
+        options: {
+          // TODO: register Mango Markets to https://cloud.walletconnect.com/ and obtain projectId
+          // projectId: 'e899c82be21d4acca2c8aec45e893598',
+          metadata: {
+            name: 'Mango Markets',
+            description: 'Mango Markets',
+            url: 'https://trade.mango.markets/',
+            icons: ['https://trade.mango.markets/assets/icons/logo.svg']
+          }
+        }
+      }),
     ],
     []
   )
