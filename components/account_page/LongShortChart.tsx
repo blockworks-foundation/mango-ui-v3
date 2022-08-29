@@ -18,7 +18,7 @@ export const CHART_COLORS = (theme) => {
     GMT: '#CBA74A',
     LUNA: '#FFD83D',
     MNGO: '#FBB31F',
-    MSOL: '#8562CF',
+    MSOL: '#FF1F80',
     RAY: '#4CA2DA',
     SOL: '#916CE0',
     SRM: '#58D4E3',
