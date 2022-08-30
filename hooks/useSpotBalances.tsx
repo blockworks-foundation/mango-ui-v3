@@ -11,7 +11,10 @@ import { I80F48 } from '@blockworks-foundation/mango-client'
 import shallow from 'zustand/shallow'
 
 useMangoStore.subscribe(
-  (state) => state.selectedMangoAccount.lastUpdatedAt,
+  (state) => [
+    state.selectedMangoAccount.current,
+    state.selectedMangoAccount.lastUpdatedAt,
+  ],
   () => {
     const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
