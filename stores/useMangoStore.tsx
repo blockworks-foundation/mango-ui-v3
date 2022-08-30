@@ -40,7 +40,7 @@ import {
 } from '../components/SettingsModal'
 import { MSRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
 import { decodeBook } from '../hooks/useHydrateStore'
-import { EntityId, IOrderLineAdapter } from '../public/charting_library/charting_library'
+import { IExecutionLineAdapter, IOrderLineAdapter } from '../public/charting_library/charting_library'
 import { Wallet } from '@solana/wallet-adapter-react'
 import { coingeckoIds, fetchNftsFromHolaplexIndexer } from 'utils/tokens'
 import { sign } from 'tweetnacl'
@@ -335,7 +335,7 @@ export type MangoStore = {
   marketsInfo: any[]
   tradingView: {
     orderLines: Map<string, IOrderLineAdapter>
-    tradeArrows: Map<string, EntityId>
+    tradeArrows: Map<string, IExecutionLineAdapter>
   }
   coingeckoPrices: { data: any[]; loading: boolean }
 }
