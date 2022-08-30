@@ -49,16 +49,16 @@ const SerumCompModal = ({
         <div className="flex items-center text-th-fgd-1">
           <CheckCircleIcon className="mr-1.5 h-6 w-6 flex-shrink-0 text-th-green" />
           <p className="mb-0 text-th-fgd-1">
-            40k SRM distributed proportionally to everyone who contributes at
+            50k SRM distributed proportionally to everyone who contributes at
             least 1% of total spot volume for both maker and taker
           </p>
         </div>
-        <div className="flex items-center text-th-fgd-1">
+        {/* <div className="flex items-center text-th-fgd-1">
           <CheckCircleIcon className="mr-1.5 h-6 w-6 flex-shrink-0 text-th-green" />
           <p className="mb-0 text-th-fgd-1">
             10k SRM for the top 10 traders by spot PnL
           </p>
-        </div>
+        </div> */}
       </div>
       <Button className="mt-6 w-full" onClick={() => handleFindOutMore()}>
         Find Out More

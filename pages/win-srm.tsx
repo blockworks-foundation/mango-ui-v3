@@ -40,7 +40,7 @@ export async function getStaticProps({ locale }) {
   }
 }
 
-const TABS = ['maker', 'taker', 'pnl']
+const TABS = ['maker', 'taker']
 
 export default function SerumComp() {
   const { t } = useTranslation(['common', 'referrals'])
@@ -52,8 +52,8 @@ export default function SerumComp() {
   const [makerData, setMakerData] = useState<any>([])
   const [takerData, setTakerData] = useState<any>([])
   const [pnlData, setPnlData] = useState<any>([])
-  const [accountPnlData, setAccountPnlData] = useState<any>([])
-  const [accountPnl, setAccountPnl] = useState(0)
+  // const [accountPnlData, setAccountPnlData] = useState<any>([])
+  // const [accountPnl, setAccountPnl] = useState(0)
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
 
@@ -90,39 +90,39 @@ export default function SerumComp() {
     }
   }
 
-  const fetchAccountPnlData = async (mangoAccountPk: string) => {
-    try {
-      const response = await fetch(
-        `https://mango-transaction-log.herokuapp.com/v3/stats/account-performance-detailed?mango-account=${mangoAccountPk}&start-date=${startDay.format(
-          'YYYY-MM-DD'
-        )}`
-      )
-      const parsedResponse = await response.json()
-      const entries: any = Object.entries(parsedResponse).sort((a, b) =>
-        b[0].localeCompare(a[0])
-      )
-      setAccountPnlData(entries)
-    } catch {
-      notify({ type: 'error', title: 'Failed to fetch account PnL' })
-    }
-  }
+  // const fetchAccountPnlData = async (mangoAccountPk: string) => {
+  //   try {
+  //     const response = await fetch(
+  //       `https://mango-transaction-log.herokuapp.com/v3/stats/account-performance-detailed?mango-account=${mangoAccountPk}&start-date=${startDay.format(
+  //         'YYYY-MM-DD'
+  //       )}`
+  //     )
+  //     const parsedResponse = await response.json()
+  //     const entries: any = Object.entries(parsedResponse).sort((a, b) =>
+  //       b[0].localeCompare(a[0])
+  //     )
+  //     setAccountPnlData(entries)
+  //   } catch {
+  //     notify({ type: 'error', title: 'Failed to fetch account PnL' })
+  //   }
+  // }
 
-  useEffect(() => {
-    if (accountPnlData.length) {
-      const currentPnl =
-        accountPnlData[0][1].pnl - accountPnlData[0][1].perp_pnl
-      const startPnl =
-        accountPnlData[accountPnlData.length - 1][1].pnl -
-        accountPnlData[accountPnlData.length - 1][1].perp_pnl
-      setAccountPnl(currentPnl - startPnl)
-    }
-  }, [accountPnlData])
+  // useEffect(() => {
+  //   if (accountPnlData.length) {
+  //     const currentPnl =
+  //       accountPnlData[0][1].pnl - accountPnlData[0][1].perp_pnl
+  //     const startPnl =
+  //       accountPnlData[accountPnlData.length - 1][1].pnl -
+  //       accountPnlData[accountPnlData.length - 1][1].perp_pnl
+  //     setAccountPnl(currentPnl - startPnl)
+  //   }
+  // }, [accountPnlData])
 
-  useEffect(() => {
-    if (mangoAccount) {
-      fetchAccountPnlData(mangoAccount.publicKey.toString())
-    }
-  }, [mangoAccount])
+  // useEffect(() => {
+  //   if (mangoAccount) {
+  //     fetchAccountPnlData(mangoAccount.publicKey.toString())
+  //   }
+  // }, [mangoAccount])
 
   useEffect(() => {
     fetchVolumeData()
@@ -182,15 +182,15 @@ export default function SerumComp() {
     return null
   }, [mangoAccount, takerData])
 
-  const accountPnlQualifies = useMemo(() => {
-    if (mangoAccount && pnlData.length) {
-      const found = pnlData
-        .slice(0, 10)
-        .find((acc) => acc.mango_account === mangoAccount.publicKey.toString())
-      return found
-    }
-    return null
-  }, [mangoAccount, pnlData])
+  // const accountPnlQualifies = useMemo(() => {
+  //   if (mangoAccount && pnlData.length) {
+  //     const found = pnlData
+  //       .slice(0, 10)
+  //       .find((acc) => acc.mango_account === mangoAccount.publicKey.toString())
+  //     return found
+  //   }
+  //   return null
+  // }, [mangoAccount, pnlData])
 
   return (
     <div className="grid grid-cols-12">
@@ -225,18 +225,18 @@ export default function SerumComp() {
           <li className="mb-1 text-base">
             At the end of the week the traders who contribute at least 1% of
             total volume for both maker (limit orders) and taker (market orders)
-            will win a proportianate share of 40k SRM
+            will win a proportianate share of 50k SRM
           </li>
-          <li className="text-base">
+          {/* <li className="text-base">
             Also, the top 10 traders by PnL will win a share of 10k SRM
-          </li>
+          </li> */}
         </ul>
       </div>
       <div className="col-span-12 lg:col-span-10 lg:col-start-2">
         {connected ? (
           mangoAccount ? (
-            <div className="grid grid-cols-3 md:gap-4">
-              <div className="col-span-3">
+            <div className="grid grid-cols-2 md:gap-4">
+              <div className="col-span-2">
                 <h2 className="mb-4 md:mb-0">
                   Your Account{' '}
                   <span className="text-sm font-normal text-th-fgd-3">
@@ -245,7 +245,7 @@ export default function SerumComp() {
                   </span>
                 </h2>
               </div>
-              <div className="col-span-3 border-t border-th-bkg-3 p-4 md:col-span-1 md:border-b">
+              <div className="col-span-2 border-t border-th-bkg-3 p-4 md:col-span-1 md:border-b">
                 <p className="mb-1">Maker Volume</p>
                 <span className="text-2xl font-bold lg:text-4xl">
                   {formatUsdValue(accountMakerVolume?.mango_account_volume)}
@@ -279,7 +279,7 @@ export default function SerumComp() {
                   </div>
                 </div>
               </div>
-              <div className="col-span-3 border-t border-th-bkg-3 p-4 md:col-span-1 md:border-b">
+              <div className="col-span-2 border-t border-th-bkg-3 p-4 md:col-span-1 md:border-b">
                 <p className="mb-1">Taker Volume</p>
                 <span className="text-2xl font-bold lg:text-4xl">
                   {formatUsdValue(accountTakerVolume?.mango_account_volume)}
@@ -313,7 +313,7 @@ export default function SerumComp() {
                   </div>
                 </div>
               </div>
-              <div className="col-span-3 border-y border-th-bkg-3 p-4 md:col-span-1">
+              {/* <div className="col-span-3 border-y border-th-bkg-3 p-4 md:col-span-1">
                 <p className="mb-1">PnL</p>
                 <span className="text-2xl font-bold lg:text-4xl">
                   {formatUsdValue(accountPnl)}
@@ -335,7 +335,7 @@ export default function SerumComp() {
                     </span>
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
           ) : (
             <div className="col-span-12 flex items-center justify-center rounded-md border border-th-bkg-3 p-6">
