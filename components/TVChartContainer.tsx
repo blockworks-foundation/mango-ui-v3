@@ -54,6 +54,8 @@ const TVChartContainer = () => {
   const isMobile = width ? width < breakpoints.sm : false
   const mangoClient = useMangoStore.getState().connection.client
   const selectedMarketName = selectedMarketConfig.name
+  const tradeHistoryAndLiquidations = useMangoStore((s) => s.tradeHistory.parsed)
+  const tradeHistory = tradeHistoryAndLiquidations.filter((t) => !('liqor' in t))
 
   // @ts-ignore
   const defaultProps: ChartContainerProps = useMemo(
@@ -581,6 +583,27 @@ const TVChartContainer = () => {
     }
   }
 
+  const drawTradeArrows = () => {
+    const tradeArrows = useMangoStore.getState().tradingView.tradeArrows
+    const newTradeArrows = new Map()
+    if (tradeHistory?.length && chartReady && tvWidgetRef?.current) {
+      console.log(`selectedMarketName: ${selectedMarketName}`)
+      // console.log(`tradeHistory 1-20: ${JSON.stringify(tradeHistory.slice(0,20))}`)
+      tradeHistory
+        .filter(trade => {
+          return trade.marketName === selectedMarketName && tradeArrows.get(`${trade.seqNum}${trade.marketName}`) === undefined
+        })
+        .forEach(trade => {
+          const arrowID = tvWidgetRef.current?.chart().createShape({time: trade.loadTimestamp, price: trade.price}, {shape: trade.side === "buy" ? "arrow_up" : "arrow_down"})
+          console.log(`Drawing ${trade.side} arrow at time: ${trade.loadTimestamp}, Price: ${trade.price}`)
+          newTradeArrows.set(`${trade.seqNum}${trade.marketName}`, arrowID)
+      })
+    }
+    setMangoStore((state) => {
+      state.tradingView.tradeArrows = newTradeArrows
+    })
+  }
+
   const drawLinesForMarket = (openOrders) => {
     const newOrderLines = new Map()
     if (openOrders?.length) {
@@ -617,6 +640,7 @@ const TVChartContainer = () => {
     }
   }, [showOrderLines])
 
+  
   // updated order lines if a user's open orders change
   useEffect(() => {
     let subscription
@@ -659,6 +683,24 @@ const TVChartContainer = () => {
     }
     return subscription
   }, [chartReady, showOrderLines, selectedMarketName])
+
+  // update trade orders if transaction history changes
+  useEffect(() => {
+    if (chartReady && tvWidgetRef?.current) {
+      const tradeArrows = useMangoStore.getState().tradingView.tradeArrows
+      const tradesInMarket = tradeHistory
+        .filter(trade => {
+          return trade.marketName === selectedMarketName
+        }).length
+      tvWidgetRef.current.onChartReady(() => {
+        if (tradeArrows.size !== tradesInMarket) {
+          drawTradeArrows()
+        }
+      })
+      // tvWidgetRef.current?.chart().createShape({time: 1661844174, price: 32.00}, {shape: "arrow_up"})
+      // tvWidgetRef.current?.chart().createShape({time: 1661844174, price: 30.00}, {shape: "arrow_up"})
+    }
+  }, [chartReady, tradeHistory])
 
   return (
     <div id={defaultProps.container as string} className="tradingview-chart" />
