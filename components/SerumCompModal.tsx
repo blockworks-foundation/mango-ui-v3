@@ -43,13 +43,13 @@ const SerumCompModal = ({
       </Modal.Header>
       <h1 className="relative m-auto mb-2 w-max">Win a Share in 400k SRM</h1>
       <p className="text-center">
-        50k SRM are up for grabs every week until 12 Sep
+        40k SRM are up for grabs every week until 12 Sep
       </p>
       <div className="mt-4 space-y-2 border-t border-th-bkg-4 pt-4">
         <div className="flex items-center text-th-fgd-1">
           <CheckCircleIcon className="mr-1.5 h-6 w-6 flex-shrink-0 text-th-green" />
           <p className="mb-0 text-th-fgd-1">
-            50k SRM distributed proportionally to everyone who contributes at
+            40k SRM distributed proportionally to everyone who contributes at
             least 1% of total spot volume for both maker and taker
           </p>
         </div>

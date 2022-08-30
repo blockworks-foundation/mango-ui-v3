@@ -213,7 +213,7 @@ export default function SerumComp() {
             Win a Share in 400k SRM
           </h1>
           <p className="mb-4 text-lg text-th-fgd-2">
-            50k SRM are up for grabs every week until 12 Sep
+            40k SRM are up for grabs every week until 12 Sep
           </p>
         </div>
         <h2 className="mb-2">How it Works</h2>
@@ -225,7 +225,7 @@ export default function SerumComp() {
           <li className="mb-1 text-base">
             At the end of the week the traders who contribute at least 1% of
             total volume for both maker (limit orders) and taker (market orders)
-            will win a proportianate share of 50k SRM
+            will win a proportianate share of 40k SRM
           </li>
           {/* <li className="text-base">
             Also, the top 10 traders by PnL will win a share of 10k SRM
