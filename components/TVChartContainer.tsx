@@ -641,7 +641,6 @@ const TVChartContainer = () => {
     }
   }, [showOrderLines])
 
-  
   // updated order lines if a user's open orders change
   useEffect(() => {
     let subscription
