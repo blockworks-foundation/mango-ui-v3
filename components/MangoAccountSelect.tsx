@@ -1,9 +1,10 @@
 import { MangoAccount } from '@blockworks-foundation/mango-client'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import useMangoStore from '../stores/useMangoStore'
 import Select from './Select'
 import { abbreviateAddress } from '../utils'
 import { useTranslation } from 'next-i18next'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 type MangoAccountSelectProps = {
   className?: string
@@ -18,10 +19,16 @@ const MangoAccountSelect = ({
   disabled = false,
   className = '',
 }: MangoAccountSelectProps) => {
+  const { publicKey } = useWallet()
   const { t } = useTranslation('common')
   const mangoAccounts = useMangoStore((s) => s.mangoAccounts)
+  const mangoAccountsWithoutDelegates = useMemo(() => {
+    return mangoAccounts.filter((ma) => {
+      return publicKey && ma?.owner?.equals(publicKey) ? true : false
+    })
+  }, [mangoAccounts, publicKey])
   const [selectedMangoAccount, setSelectedMangoAccount] = useState(
-    value || mangoAccounts[0]
+    value || mangoAccountsWithoutDelegates[0]
   )
 
   useEffect(() => {
@@ -63,7 +70,7 @@ const MangoAccountSelect = ({
       className={className}
     >
       {mangoAccounts.length ? (
-        mangoAccounts.map((ma, index) => (
+        mangoAccountsWithoutDelegates.map((ma, index) => (
           <Select.Option key={index} value={ma.publicKey.toString()}>
             <div className="text-left">
               <span

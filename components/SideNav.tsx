@@ -15,6 +15,7 @@ import {
   ExternalLinkIcon,
   ChevronDownIcon,
   ReceiptTaxIcon,
+  GiftIcon,
 } from '@heroicons/react/solid'
 import { useRouter } from 'next/router'
 import AccountOverviewPopover from './AccountOverviewPopover'
@@ -27,24 +28,16 @@ import { abbreviateAddress } from 'utils'
 import { I80F48 } from '@blockworks-foundation/mango-client'
 import useMangoStore from 'stores/useMangoStore'
 
+const I80F48_100 = I80F48.fromString('100')
+
 const SideNav = ({ collapsed }) => {
   const { t } = useTranslation('common')
-  const { mangoAccount } = useMangoAccount()
-  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
-  const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const [defaultMarket] = useLocalStorageState(
     DEFAULT_MARKET_KEY,
     initialMarket
   )
   const router = useRouter()
   const { pathname } = router
-
-  const I80F48_100 = I80F48.fromString('100')
-
-  const maintHealthRatio =
-    mangoAccount && mangoGroup && mangoCache
-      ? mangoAccount.getHealthRatio(mangoGroup, mangoCache, 'Maint')
-      : I80F48_100
 
   return (
     <div
@@ -161,6 +154,14 @@ const SideNav = ({ collapsed }) => {
               hideIconBg
             />
             <MenuItem
+              active={pathname === '/win-srm'}
+              collapsed={false}
+              icon={<GiftIcon className="h-4 w-4" />}
+              title="Spot Trading Comp"
+              pagePath="/win-srm"
+              hideIconBg
+            />
+            <MenuItem
               collapsed={false}
               icon={<LightBulbIcon className="h-4 w-4" />}
               title={t('learn')}
@@ -179,31 +180,7 @@ const SideNav = ({ collapsed }) => {
           </ExpandableMenuItem>
         </div>
       </div>
-      {mangoAccount ? (
-        <div className="flex min-h-[64px] w-full items-center border-t border-th-bkg-3 ">
-          <ExpandableMenuItem
-            collapsed={collapsed}
-            icon={<HealthHeart health={Number(maintHealthRatio)} size={32} />}
-            title={
-              <div className="py-3 text-left">
-                <p className="mb-0 whitespace-nowrap text-xs text-th-fgd-3">
-                  {t('account-summary')}
-                </p>
-                <p className="mb-0 font-bold text-th-fgd-1">
-                  {abbreviateAddress(mangoAccount.publicKey)}
-                </p>
-              </div>
-            }
-            hideIconBg
-            alignBottom
-          >
-            <AccountOverviewPopover
-              collapsed={collapsed}
-              health={maintHealthRatio}
-            />
-          </ExpandableMenuItem>
-        </div>
-      ) : null}
+      <AccountSummaryPanel collapsed={collapsed} />
     </div>
   )
 }
@@ -281,6 +258,45 @@ const MenuItem = ({
       </div>
       <ExternalLinkIcon className="h-4 w-4" />
     </a>
+  )
+}
+
+const AccountSummaryPanel = ({ collapsed }) => {
+  const { t } = useTranslation('common')
+  const { mangoAccount } = useMangoAccount()
+  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
+  const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
+  if (!mangoAccount) return null
+
+  const maintHealthRatio =
+    mangoAccount && mangoGroup && mangoCache
+      ? mangoAccount.getHealthRatio(mangoGroup, mangoCache, 'Maint')
+      : I80F48_100
+
+  return (
+    <div className="flex min-h-[64px] w-full items-center border-t border-th-bkg-3 ">
+      <ExpandableMenuItem
+        collapsed={collapsed}
+        icon={<HealthHeart health={Number(maintHealthRatio)} size={32} />}
+        title={
+          <div className="py-3 text-left">
+            <p className="mb-0 whitespace-nowrap text-xs text-th-fgd-3">
+              {t('account-summary')}
+            </p>
+            <p className="mb-0 font-bold text-th-fgd-1">
+              {abbreviateAddress(mangoAccount.publicKey)}
+            </p>
+          </div>
+        }
+        hideIconBg
+        alignBottom
+      >
+        <AccountOverviewPopover
+          collapsed={collapsed}
+          health={maintHealthRatio}
+        />
+      </ExpandableMenuItem>
+    </div>
   )
 }
 

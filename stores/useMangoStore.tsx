@@ -39,13 +39,10 @@ import {
   NODE_URL_KEY,
 } from '../components/SettingsModal'
 import { MSRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
-import { getProfilePicture, ProfilePicture } from '@solflare-wallet/pfp'
 import { decodeBook } from '../hooks/useHydrateStore'
 import { IOrderLineAdapter } from '../public/charting_library/charting_library'
 import { Wallet } from '@solana/wallet-adapter-react'
-import { coingeckoIds } from 'utils/tokens'
-import { getTokenAccountsByMint } from 'utils/tokens'
-import { getParsedNftAccountsByOwner } from 'utils/getParsedNftAccountsByOwner'
+import { coingeckoIds, fetchNftsFromHolaplexIndexer } from 'utils/tokens'
 import { sign } from 'tweetnacl'
 import bs58 from 'bs58'
 import { PerpMarketInfo } from '@blockworks-foundation/mango-client'
@@ -172,6 +169,7 @@ interface NFTWithMint {
 }
 
 interface ProfileDetails {
+  profile_image_url?: string
   profile_name: string
   trader_category: string
   wallet_pk: string
@@ -273,14 +271,9 @@ export type MangoStore = {
   }
   wallet: {
     tokens: WalletToken[] | any[]
-    pfp: ProfilePicture | undefined
-    loadPfp: boolean
     nfts: {
       data: NFTWithMint[] | []
-      initialLoad: boolean
       loading: boolean
-      accounts: any[]
-      loadingTransaction: boolean
     }
   }
   settings: {
@@ -302,13 +295,7 @@ export type MangoStore = {
   set: (x: (x: MangoStore) => void) => void
   actions: {
     fetchWalletTokens: (wallet: Wallet) => void
-    fetchProfilePicture: (wallet: Wallet) => void
-    fetchNfts: (
-      connection: Connection,
-      walletPk: PublicKey | null,
-      offset?: number
-    ) => void
-    fetchNftAccounts: (connection: Connection, walletPk: PublicKey) => void
+    fetchNfts: (walletPk: PublicKey | null) => void
     fetchAllMangoAccounts: (wallet: Wallet) => Promise<void>
     fetchMangoGroup: () => Promise<void>
     fetchTradeHistory: () => void
@@ -454,14 +441,9 @@ const useMangoStore = create<
       },
       wallet: {
         tokens: [],
-        pfp: undefined,
-        loadPfp: true,
         nfts: {
           data: [],
-          initialLoad: false,
           loading: false,
-          accounts: [],
-          loadingTransaction: false,
         },
       },
       settings: {
@@ -536,103 +518,24 @@ const useMangoStore = create<
             })
           }
         },
-        async fetchProfilePicture(wallet: Wallet) {
-          const set = get().set
-          const walletPk = wallet?.adapter?.publicKey
-          const connection = get().connection.current
-
-          if (!walletPk) return
-
-          try {
-            const result = await getProfilePicture(connection, walletPk)
-
-            set((state) => {
-              state.wallet.pfp = result
-              state.wallet.loadPfp = false
-            })
-          } catch (e) {
-            console.log('Could not get profile picture', e)
-            set((state) => {
-              state.wallet.loadPfp = false
-            })
-          }
-        },
-        async fetchNftAccounts(connection: Connection, walletPk: PublicKey) {
-          const set = get().set
-          try {
-            const nfts = await getParsedNftAccountsByOwner({
-              publicAddress: walletPk.toBase58(),
-              connection: connection,
-            })
-            const data = Object.keys(nfts)
-              .map((key) => nfts[key])
-              .filter((data) => data.primarySaleHappened)
-            set((state) => {
-              state.wallet.nfts.accounts = data
-            })
-          } catch (error) {
-            console.log(error)
-          }
-        },
-        async fetchNfts(
-          connection: Connection,
-          walletPk: PublicKey,
-          offset = 0
-        ) {
+        async fetchNfts(ownerPk: PublicKey) {
           const set = get().set
           set((state) => {
             state.wallet.nfts.loading = true
           })
           try {
-            const nftAccounts = get().wallet.nfts.accounts
-            const loadedNfts = get().wallet.nfts.data
-            const arr: NFTWithMint[] = []
-            if (loadedNfts.length < nftAccounts.length) {
-              for (let i = offset; i < offset + 9; i++) {
-                try {
-                  const [nftAccountsResp, tokenAcctsByMint] = await Promise.all(
-                    [
-                      fetch(nftAccounts[i].data.uri),
-                      getTokenAccountsByMint(connection, nftAccounts[i].mint),
-                    ]
-                  )
-                  const val = await nftAccountsResp.json()
-                  arr.push({
-                    val,
-                    mint: nftAccounts[i].mint,
-                    tokenAddress: tokenAcctsByMint
-                      .find(
-                        (x) =>
-                          x.account.owner.toBase58() === walletPk.toBase58()
-                      )!
-                      .publicKey.toBase58(),
-                  })
-                } catch (e) {
-                  console.log(e)
-                }
-              }
-            }
-            if (loadedNfts.length === 0) {
-              set((state) => {
-                state.wallet.nfts.data = arr
-                state.wallet.nfts.initialLoad = true
-                state.wallet.nfts.loading = false
-              })
-            } else {
-              set((state) => {
-                state.wallet.nfts.data = [...loadedNfts, ...arr]
-                state.wallet.nfts.loading = false
-              })
-            }
-          } catch (error) {
-            notify({
-              title: 'Unable to fetch nfts',
-              description: '',
-            })
+            const data = await fetchNftsFromHolaplexIndexer(ownerPk)
             set((state) => {
+              state.wallet.nfts.data = data.nfts
               state.wallet.nfts.loading = false
             })
+          } catch (error) {
+            notify({
+              type: 'error',
+              title: 'Unable to fetch nfts',
+            })
           }
+          return []
         },
         async fetchAllMangoAccounts(wallet) {
           const set = get().set
@@ -1202,7 +1105,7 @@ const useMangoStore = create<
 
           try {
             const data = await fetch(
-              `https://mango-all-markets-api.herokuapp.com/markets/`
+              `https://all-market-stats-api.onrender.com/markets/`
             )
 
             if (data?.status === 200) {

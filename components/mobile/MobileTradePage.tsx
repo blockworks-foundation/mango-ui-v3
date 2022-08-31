@@ -19,10 +19,9 @@ import { useTranslation } from 'next-i18next'
 import { useWallet } from '@solana/wallet-adapter-react'
 import SwitchMarketDropdown from 'components/SwitchMarketDropdown'
 
-const TVChartContainer = dynamic(
-  () => import('../../components/TradingView/index'),
-  { ssr: false }
-)
+const TVChartContainer = dynamic(() => import('../TVChartContainer'), {
+  ssr: false,
+})
 
 const MobileTradePage = () => {
   const { t } = useTranslation('common')

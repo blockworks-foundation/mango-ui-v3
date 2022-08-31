@@ -1,6 +1,10 @@
 import { FunctionComponent, useState } from 'react'
 import useMangoStore from '../stores/useMangoStore'
-import { PerpMarket, ZERO_BN } from '@blockworks-foundation/mango-client'
+import {
+  MarketConfig,
+  PerpMarket,
+  ZERO_BN,
+} from '@blockworks-foundation/mango-client'
 import Button, { LinkButton } from './Button'
 import { notify } from '../utils/notifications'
 import Loading from './Loading'
@@ -12,26 +16,26 @@ import { useWallet } from '@solana/wallet-adapter-react'
 interface MarketCloseModalProps {
   onClose: () => void
   isOpen: boolean
-  market: PerpMarket
-  marketIndex: number
+  position: {
+    marketConfig: MarketConfig
+    perpMarket: PerpMarket
+  }
 }
 
 const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
   onClose,
   isOpen,
-  market,
-  marketIndex,
+  position,
 }) => {
   const { t } = useTranslation('common')
   const [submitting, setSubmitting] = useState(false)
   const { wallet } = useWallet()
   const actions = useMangoStore((s) => s.actions)
-  const config = useMangoStore.getState().selectedMarket.config
+  const { marketConfig, perpMarket } = position
 
   async function handleMarketClose() {
     const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
-    const marketConfig = useMangoStore.getState().selectedMarket.config
     const mangoClient = useMangoStore.getState().connection.client
     const askInfo =
       useMangoStore.getState().accountInfos[marketConfig.asksKey.toString()]
@@ -51,11 +55,11 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
     setSubmitting(true)
 
     try {
-      const perpAccount = mangoAccount.perpAccounts[marketIndex]
+      const perpAccount = mangoAccount.perpAccounts[marketConfig.marketIndex]
       const side = perpAccount.basePosition.gt(ZERO_BN) ? 'sell' : 'buy'
       // send a large size to ensure we are reducing the entire position
       const size =
-        Math.abs(market.baseLotsToNumber(perpAccount.basePosition)) * 2
+        Math.abs(perpMarket.baseLotsToNumber(perpAccount.basePosition)) * 2
 
       // hard coded for now; market orders are very dangerous and fault prone
       const maxSlippage: number | undefined = 0.025
@@ -63,7 +67,7 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
       const txid = await mangoClient.placePerpOrder2(
         mangoGroup,
         mangoAccount,
-        market,
+        perpMarket,
         wallet?.adapter,
         side,
         referencePrice * (1 + (side === 'buy' ? 1 : -1) * maxSlippage),
@@ -93,9 +97,9 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
 
   return (
     <Modal onClose={onClose} isOpen={isOpen}>
-      <div className="pb-2 text-lg text-th-fgd-1">
-        {t('close-confirm', { config_name: config.name })}
-      </div>
+      <h2 className="mb-2">
+        {t('close-confirm', { config_name: marketConfig.name })}
+      </h2>
       <div className="pb-6 text-th-fgd-3">{t('price-expect')}</div>
       <div className="flex items-center">
         <Button onClick={handleMarketClose}>

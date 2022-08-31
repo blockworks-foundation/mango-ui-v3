@@ -69,6 +69,7 @@ const RedeemButtons: React.FC = () => {
       <Button
         className="flex h-7 items-center justify-center pt-0 pb-0 pl-3 pr-3 text-xs"
         onClick={handleSettleAll}
+        primary={false}
       >
         {settling ? <Loading /> : t('redeem-all')}
       </Button>

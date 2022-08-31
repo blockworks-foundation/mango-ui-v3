@@ -15,10 +15,11 @@
     "lint": "eslint . --ext ts --ext tsx --ext js --quiet",
     "lint-staged": "lint-staged --config lint-staged.js",
     "lint-all": "yarn lint && yarn type-check",
-    "analyze": "ANALYZE=true yarn build"
+    "analyze": "ANALYZE=true yarn build",
+    "postinstall": "tar -xzC public -f vendor/charting_library.tgz;tar -xzC public -f vendor/datafeeds.tgz"
   },
   "dependencies": {
-    "@blockworks-foundation/mango-client": "^3.6.9",
+    "@blockworks-foundation/mango-client": "^3.6.12",
     "@headlessui/react": "^0.0.0-insiders.2dbc38c",
     "@heroicons/react": "^1.0.0",
     "@jup-ag/react-hook": "^1.0.0-beta.22",
@@ -27,8 +28,7 @@
     "@solana/wallet-adapter-base": "^0.9.5",
     "@solana/wallet-adapter-huobi": "^0.1.0",
     "@solana/wallet-adapter-react": "^0.15.4",
-    "@solana/wallet-adapter-wallets": "^0.16.1",
-    "@solflare-wallet/pfp": "^0.0.6",
+    "@solana/wallet-adapter-wallets": "^0.18.2",
     "@tippyjs/react": "^4.2.5",
     "big.js": "^6.1.1",
     "bignumber.js": "^9.0.2",

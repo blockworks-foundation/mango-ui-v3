@@ -1,0 +1,13 @@
+{
+  "advanced-order": "Расширенный тип ордера",
+  "advanced-order-details": "Расширенные типы ордеров в окне графика могут быть только отменены. If new conditions are required, Если требуются новые условия, пожалуйста, отмените этот ордер и используйте Расширенную торговую форму.",
+  "cancel-order": "Отменить ваш ордер?",
+  "cancel-order-details": "Хотите ли вы отменить свой ордер для {{orderSize}} {{baseSymbol}} {{orderSide}} по ${{orderPrice}}?",
+  "modify-order": "Изменить ваш ордер?",
+  "modify-order-details": "Хотите ли вы изменить свой ордер для {{orderSize}} {{baseSymbol}} {{orderSide}} по ${{currentOrderPrice}} в {{orderSize}} {{baseSymbol}} LIMIT {{orderSide}} по ${{updatedOrderPrice}}?",
+  "order-details": " ({{orderType}} {{orderSide}}) если цена {{triggerCondition}} {{triggerPrice}}",
+  "outside-range": "Цена ордера вне диапазона",
+  "slippage-accept": "Пожалуйста, используйте форму ввода сделки, если вы хотите принять потенциальное проскальзывание.",
+  "slippage-warning": "Цена вашего ордера ({{updatedOrderPrice}}) превышает 5% {{aboveBelow}} от текущей рыночной цены ({{selectedMarketPrice}}) что указывает на то, что вы можете понести значительное проскальзывание.",
+  "toggle-order-line": "Переключить видимость строки ордера"
+}

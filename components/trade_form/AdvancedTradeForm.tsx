@@ -205,7 +205,7 @@ export default function AdvancedTradeForm({
 
   const { max, deposits, borrows, spotMax, reduceMax } = useMemo(() => {
     const defaultValues = {
-      max: ZERO_I80F48,
+      max: 0,
       deposits: ZERO_I80F48,
       borrows: ZERO_I80F48,
       spotMax: 0,
@@ -218,7 +218,7 @@ export default function AdvancedTradeForm({
       ? I80F48.fromNumber(price)
       : mangoGroup.getPrice(marketIndex, mangoCache)
 
-    let spotMax
+    let spotMax = 0
     if (marketConfig.kind === 'spot') {
       const token =
         side === 'buy'
@@ -234,10 +234,20 @@ export default function AdvancedTradeForm({
         token.decimals
       )
 
+      const depositBalance = mangoAccount
+        .getUiDeposit(
+          mangoCache.rootBankCache[tokenIndex],
+          mangoGroup,
+          tokenIndex
+        )
+        .toNumber()
+
       spotMax =
         side === 'buy'
           ? availableBalance / priceOrDefault.toNumber()
-          : availableBalance
+          : spotMargin
+          ? availableBalance
+          : depositBalance
     }
 
     const {
@@ -253,12 +263,10 @@ export default function AdvancedTradeForm({
       priceOrDefault
     )
 
-    let reduceMax
+    let reduceMax = 0
     if (market && market instanceof PerpMarket) {
       reduceMax =
         Math.abs(market?.baseLotsToNumber(perpAccount?.basePosition)) || 0
-    } else {
-      reduceMax = 0
     }
 
     if (maxQuote.toNumber() <= 0) return defaultValues

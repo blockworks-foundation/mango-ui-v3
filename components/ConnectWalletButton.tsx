@@ -26,13 +26,14 @@ import { useRouter } from 'next/router'
 import { PublicKey } from '@solana/web3.js'
 import { breakpoints } from '../components/TradePageGrid'
 import { useViewport } from 'hooks/useViewport'
+import Loading from './Loading'
 
 export const handleWalletConnect = (wallet: Wallet) => {
   if (!wallet) {
     return
   }
 
-  wallet?.adapter?.connect().catch((e) => {
+  return wallet?.adapter?.connect().catch((e) => {
     if (e.name.includes('WalletLoadError')) {
       notify({
         title: `${wallet.adapter.name} Error`,
@@ -47,12 +48,10 @@ export const ConnectWalletButton: React.FC = () => {
   const { connected, publicKey, wallet, wallets, select } = useWallet()
   const { t } = useTranslation(['common', 'profile'])
   const router = useRouter()
-  const loadingTransaction = useMangoStore(
-    (s) => s.wallet.nfts.loadingTransaction
-  )
   const set = useMangoStore((s) => s.set)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const [showAccountsModal, setShowAccountsModal] = useState(false)
+  const [connecting, setConnecting] = useState(false)
   const actions = useMangoStore((s) => s.actions)
   const profileDetails = useMangoStore((s) => s.profile.details)
   const loadProfileDetails = useMangoStore((s) => s.profile.loadDetails)
@@ -85,7 +84,8 @@ export const ConnectWalletButton: React.FC = () => {
 
   const handleConnect = useCallback(() => {
     if (wallet) {
-      handleWalletConnect(wallet)
+      setConnecting(true)
+      handleWalletConnect(wallet)?.then(() => setConnecting(false))
     }
   }, [wallet])
 
@@ -126,11 +126,13 @@ export const ConnectWalletButton: React.FC = () => {
               <Menu.Button
                 className={`flex h-14 ${
                   !isMobile ? 'w-48 border-x border-th-bkg-3 px-3' : ''
-                } items-center rounded-none rounded-full hover:bg-th-bkg-2 focus:outline-none ${
-                  loadingTransaction ? 'animate-pulse bg-th-bkg-4' : ''
-                }`}
+                } items-center rounded-none rounded-full hover:bg-th-bkg-2 focus:outline-none`}
               >
-                <ProfileImage imageSize="40" placeholderSize="24" />
+                <ProfileImage
+                  imageSize="40"
+                  placeholderSize="24"
+                  isOwnerProfile
+                />
                 {!loadProfileDetails && !isMobile ? (
                   <div className="ml-2 w-32 text-left">
                     <p className="mb-0.5 truncate text-xs font-bold capitalize text-th-fgd-1">
@@ -210,8 +212,8 @@ export const ConnectWalletButton: React.FC = () => {
             <div className="default-transition flex h-full flex-row items-center justify-center px-3">
               <WalletIcon className="mr-2 h-4 w-4 fill-current" />
               <div className="text-left">
-                <div className="mb-1 whitespace-nowrap font-bold leading-none">
-                  {t('connect')}
+                <div className="mb-1 flex justify-center whitespace-nowrap font-bold leading-none">
+                  {connecting ? <Loading className="h-4 w-4" /> : t('connect')}
                 </div>
                 {wallet?.adapter?.name && (
                   <div className="text-xxs font-normal leading-3 tracking-wider text-th-bkg-2">

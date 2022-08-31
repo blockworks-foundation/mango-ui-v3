@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { useRouter } from 'next/router'
 import useMangoStore, { serumProgramId } from '../stores/useMangoStore'
 import {
@@ -9,21 +9,12 @@ import TradePageGrid from '../components/TradePageGrid'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import AlphaModal, { ALPHA_MODAL_KEY } from '../components/AlphaModal'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
-import IntroTips, { SHOW_TOUR_KEY } from '../components/IntroTips'
-import { useViewport } from '../hooks/useViewport'
-import { breakpoints } from '../components/TradePageGrid'
-import {
-  actionsSelector,
-  mangoAccountSelector,
-  marketConfigSelector,
-} from '../stores/selectors'
+import { actionsSelector, marketConfigSelector } from '../stores/selectors'
 import { PublicKey } from '@solana/web3.js'
-import { useWallet } from '@solana/wallet-adapter-react'
-import AccountsModal from 'components/AccountsModal'
 import dayjs from 'dayjs'
 import { tokenPrecision } from 'utils'
-
-const DISMISS_CREATE_ACCOUNT_KEY = 'show-create-account'
+import SerumCompModal, { SEEN_SERUM_COMP_KEY } from 'components/SerumCompModal'
+import AccountIntro from 'components/AccountIntro'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -43,44 +34,27 @@ export async function getStaticProps({ locale }) {
 
 const PerpMarket: React.FC = () => {
   const [alphaAccepted] = useLocalStorageState(ALPHA_MODAL_KEY, false)
-  const [showTour] = useLocalStorageState(SHOW_TOUR_KEY, false)
-  const [dismissCreateAccount, setDismissCreateAccount] = useLocalStorageState(
-    DISMISS_CREATE_ACCOUNT_KEY,
+  const [seenSerumCompInfo, setSeenSerumCompInfo] = useLocalStorageState(
+    SEEN_SERUM_COMP_KEY,
     false
   )
-  const [showCreateAccount, setShowCreateAccount] = useState(false)
-  const { connected } = useWallet()
-  const groupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
+
   const setMangoStore = useMangoStore((s) => s.set)
-  const mangoAccount = useMangoStore(mangoAccountSelector)
-  const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const marketConfig = useMangoStore(marketConfigSelector)
   const actions = useMangoStore(actionsSelector)
   const router = useRouter()
   const [savedLanguage] = useLocalStorageState('language', '')
   const { pubkey } = router.query
-  const { width } = useViewport()
-  const hideTips = width ? width < breakpoints.md : false
 
   useEffect(() => {
     dayjs.locale(savedLanguage == 'zh_tw' ? 'zh-tw' : savedLanguage)
   })
 
   useEffect(() => {
-    if (connected && !mangoAccount && !dismissCreateAccount) {
-      setShowCreateAccount(true)
-    }
-  }, [connected, mangoAccount])
-
-  const handleCloseCreateAccount = useCallback(() => {
-    setShowCreateAccount(false)
-    setDismissCreateAccount(true)
-  }, [])
-
-  useEffect(() => {
     async function loadUnownedMangoAccount() {
       if (!pubkey) return
       try {
+        const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
         const unownedMangoAccountPubkey = new PublicKey(pubkey)
         const mangoClient = useMangoStore.getState().connection.client
         if (mangoGroup) {
@@ -105,11 +79,12 @@ const PerpMarket: React.FC = () => {
     if (pubkey) {
       loadUnownedMangoAccount()
     }
-  }, [pubkey, mangoGroup])
+  }, [pubkey])
 
   useEffect(() => {
     const name = decodeURIComponent(router.asPath).split('name=')[1]
     const mangoGroup = useMangoStore.getState().selectedMangoGroup.current
+    const groupConfig = useMangoStore.getState().selectedMangoGroup.config
 
     let marketQueryParam, marketBaseSymbol, marketType, newMarket, marketIndex
     if (name && groupConfig) {
@@ -168,19 +143,18 @@ const PerpMarket: React.FC = () => {
 
   return (
     <>
-      {showTour && !hideTips ? (
-        <IntroTips connected={connected} mangoAccount={mangoAccount} />
-      ) : null}
       <TradePageGrid />
       {!alphaAccepted && (
         <AlphaModal isOpen={!alphaAccepted} onClose={() => {}} />
       )}
-      {showCreateAccount ? (
-        <AccountsModal
-          isOpen={showCreateAccount}
-          onClose={() => handleCloseCreateAccount()}
+      {!seenSerumCompInfo && alphaAccepted ? (
+        <SerumCompModal
+          isOpen={!seenSerumCompInfo && alphaAccepted}
+          onClose={() => setSeenSerumCompInfo(true)}
         />
       ) : null}
+
+      <AccountIntro />
     </>
   )
 }

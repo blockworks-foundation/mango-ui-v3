@@ -4,7 +4,6 @@ import { useViewport } from 'hooks/useViewport'
 import BottomBar from './mobile/BottomBar'
 import { ConnectWalletButton } from './ConnectWalletButton'
 import GlobalNotification from './GlobalNotification'
-import useMangoAccount from 'hooks/useMangoAccount'
 import { abbreviateAddress } from 'utils'
 import { useCallback, useEffect, useState } from 'react'
 import AccountsModal from './AccountsModal'
@@ -24,34 +23,18 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import DepositModal from './DepositModal'
 import WithdrawModal from './WithdrawModal'
 import Tooltip from './Tooltip'
+import useMangoStore from 'stores/useMangoStore'
 
 const Layout = ({ children }) => {
-  const { t } = useTranslation(['common', 'delegate'])
-  const { connected, publicKey } = useWallet()
-  const { mangoAccount, initialLoad } = useMangoAccount()
-  const [showSettingsModal, setShowSettingsModal] = useState(false)
-  const [showAccountsModal, setShowAccountsModal] = useState(false)
-  const [showDepositModal, setShowDepositModal] = useState(false)
-  const [showWithdrawModal, setShowWithdrawModal] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(false)
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
   const router = useRouter()
   const { pathname } = router
-  const { pubkey } = router.query
-
-  const canWithdraw =
-    mangoAccount?.owner && publicKey
-      ? mangoAccount?.owner?.equals(publicKey)
-      : false
 
   useEffect(() => {
-    const collapsed = width ? width < breakpoints.lg : false
+    const collapsed = width ? width <= breakpoints.xl : false
     setIsCollapsed(collapsed)
-  }, [])
-
-  const handleCloseAccounts = useCallback(() => {
-    setShowAccountsModal(false)
   }, [])
 
   const handleToggleSidebar = () => {
@@ -91,134 +74,164 @@ const Layout = ({ children }) => {
         )}
         <div className="w-full overflow-hidden">
           <GlobalNotification />
-          <div className="flex h-14 items-center justify-between border-b border-th-bkg-3 bg-th-bkg-1 px-6">
-            {mangoAccount && mangoAccount.beingLiquidated ? (
-              <div className="flex items-center justify-center">
-                <ExclamationCircleIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-th-red" />
-                <span className="text-th-red">{t('being-liquidated')}</span>
-              </div>
-            ) : (
-              <div className="flex items-center text-th-fgd-3">
-                <span className="mb-0 mr-2 text-base">
-                  {pubkey
-                    ? '🔎'
-                    : connected
-                    ? initialLoad
-                      ? ''
-                      : mangoAccount
-                      ? '🟢'
-                      : '👋'
-                    : !isMobile
-                    ? '🔗'
-                    : ''}
-                </span>
-                {connected || pubkey ? (
-                  !initialLoad ? (
-                    mangoAccount ? (
-                      <div
-                        className="default-transition flex items-center font-bold text-th-fgd-1 hover:text-th-fgd-3"
-                        role="button"
-                        onClick={() => setShowAccountsModal(true)}
-                      >
-                        {`${
-                          mangoAccount.name
-                            ? mangoAccount.name
-                            : abbreviateAddress(mangoAccount.publicKey)
-                        }`}
-                        {publicKey && !mangoAccount.owner.equals(publicKey) ? (
-                          <Tooltip content={t('delegate:delegated-account')}>
-                            <UsersIcon className="ml-2 h-5 w-5 text-th-fgd-3" />
-                          </Tooltip>
-                        ) : (
-                          ''
-                        )}
-                      </div>
-                    ) : (
-                      <span className="flex items-center text-th-fgd-3">
-                        {t('create-account-helper')}
-                        <ArrowRightIcon className="sideways-bounce ml-2 h-5 w-5 text-th-fgd-1" />
-                      </span>
-                    )
-                  ) : (
-                    <div className="h-4 w-32 animate-pulse rounded bg-th-bkg-3" />
-                  )
-                ) : !isMobile ? (
-                  <span className="flex items-center text-th-fgd-3">
-                    {t('connect-helper')}
-                    <ArrowRightIcon className="sideways-bounce ml-2 h-5 w-5 text-th-fgd-1" />
-                  </span>
-                ) : null}
-              </div>
-            )}
-            <div className="flex items-center space-x-4">
-              {!isMobile && connected && !initialLoad ? (
-                <div className="flex space-x-2">
-                  {mangoAccount ? (
-                    <Button
-                      className="flex h-8 w-[86px] items-center justify-center pl-3 pr-3 text-xs"
-                      onClick={() => setShowDepositModal(true)}
-                    >
-                      {t('deposit')}
-                    </Button>
-                  ) : (
-                    <Button
-                      className="flex h-8 w-32 items-center justify-center pl-3 pr-3 text-xs"
-                      onClick={() => setShowAccountsModal(true)}
-                    >
-                      {t('create-account')}
-                    </Button>
-                  )}
-                  {canWithdraw ? (
-                    <Button
-                      className="flex h-8 w-[86px] items-center justify-center pl-3 pr-3 text-xs"
-                      onClick={() => setShowWithdrawModal(true)}
-                      primary={false}
-                    >
-                      {t('withdraw')}
-                    </Button>
-                  ) : null}
-                </div>
-              ) : null}
-              <IconButton
-                className="h-8 w-8"
-                onClick={() => setShowSettingsModal(true)}
-              >
-                <CogIcon className="h-5 w-5" />
-              </IconButton>
-              <ConnectWalletButton />
-            </div>
-          </div>
+          <TopBar />
           {pathname === '/' ? <FavoritesShortcutBar /> : null}
           <div className={pathname === '/' ? 'px-3' : 'px-6 pb-16 md:pb-6'}>
             {children}
           </div>
         </div>
       </div>
-      {showAccountsModal && (
+    </div>
+  )
+}
+
+const TopBar = () => {
+  const { t } = useTranslation(['common', 'delegate'])
+  const { connected, publicKey } = useWallet()
+  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
+  const initialLoad = useMangoStore((s) => s.selectedMangoAccount.initialLoad)
+  const router = useRouter()
+  const [showAccountsModal, setShowAccountsModal] = useState(false)
+  const [showSettingsModal, setShowSettingsModal] = useState(false)
+  const [showDepositModal, setShowDepositModal] = useState(false)
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false)
+  const { pubkey } = router.query
+  const { width } = useViewport()
+  const isMobile = width ? width < breakpoints.sm : false
+
+  const handleCloseAccounts = useCallback(() => {
+    setShowAccountsModal(false)
+  }, [])
+
+  const canWithdraw =
+    mangoAccount?.owner && publicKey
+      ? mangoAccount?.owner?.equals(publicKey)
+      : false
+
+  return (
+    <>
+      <div className="flex h-14 items-center justify-between border-b border-th-bkg-3 bg-th-bkg-1 px-6">
+        {mangoAccount && mangoAccount.beingLiquidated ? (
+          <div className="flex items-center justify-center">
+            <ExclamationCircleIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-th-red" />
+            <span className="text-th-red">{t('being-liquidated')}</span>
+          </div>
+        ) : (
+          <div className="flex items-center text-th-fgd-3">
+            <span className="mb-0 mr-2 text-base">
+              {pubkey
+                ? '🔎'
+                : connected
+                ? initialLoad
+                  ? ''
+                  : mangoAccount
+                  ? '🟢'
+                  : '👋'
+                : !isMobile
+                ? '🔗'
+                : ''}
+            </span>
+            {connected || pubkey ? (
+              !initialLoad ? (
+                mangoAccount ? (
+                  <div
+                    className="default-transition flex items-center font-bold text-th-fgd-1 hover:text-th-fgd-3"
+                    role="button"
+                    onClick={() => setShowAccountsModal(true)}
+                  >
+                    {`${
+                      mangoAccount.name
+                        ? mangoAccount.name
+                        : abbreviateAddress(mangoAccount.publicKey)
+                    }`}
+                    {publicKey && !mangoAccount.owner.equals(publicKey) ? (
+                      <Tooltip content={t('delegate:delegated-account')}>
+                        <UsersIcon className="ml-2 h-5 w-5 text-th-fgd-3" />
+                      </Tooltip>
+                    ) : (
+                      ''
+                    )}
+                  </div>
+                ) : (
+                  <span className="flex items-center text-th-fgd-3">
+                    {t('create-account-helper')}
+                    <ArrowRightIcon className="sideways-bounce ml-2 h-5 w-5 text-th-fgd-1" />
+                  </span>
+                )
+              ) : (
+                <div className="h-4 w-32 animate-pulse rounded bg-th-bkg-3" />
+              )
+            ) : !isMobile ? (
+              <span className="flex items-center text-th-fgd-3">
+                {t('connect-helper')}
+                <ArrowRightIcon className="sideways-bounce ml-2 h-5 w-5 text-th-fgd-1" />
+              </span>
+            ) : null}
+          </div>
+        )}
+        <div className="flex items-center space-x-4">
+          {!isMobile && connected && !initialLoad ? (
+            <div className="flex space-x-2">
+              {mangoAccount ? (
+                <Button
+                  className="flex h-8 w-[86px] items-center justify-center pl-3 pr-3 text-xs"
+                  onClick={() => setShowDepositModal(true)}
+                >
+                  {t('deposit')}
+                </Button>
+              ) : (
+                <Button
+                  className="flex h-8 w-32 items-center justify-center pl-3 pr-3 text-xs"
+                  onClick={() => setShowAccountsModal(true)}
+                >
+                  {t('create-account')}
+                </Button>
+              )}
+              {canWithdraw ? (
+                <Button
+                  className="flex h-8 w-[86px] items-center justify-center pl-3 pr-3 text-xs"
+                  onClick={() => setShowWithdrawModal(true)}
+                  primary={false}
+                >
+                  {t('withdraw')}
+                </Button>
+              ) : null}
+            </div>
+          ) : null}
+          <IconButton
+            className="h-8 w-8"
+            onClick={() => setShowSettingsModal(true)}
+          >
+            <CogIcon className="h-5 w-5" />
+          </IconButton>
+          <ConnectWalletButton />
+        </div>
+      </div>
+      {showAccountsModal ? (
         <AccountsModal
           onClose={handleCloseAccounts}
           isOpen={showAccountsModal}
         />
-      )}
+      ) : null}
       {showSettingsModal ? (
         <SettingsModal
           onClose={() => setShowSettingsModal(false)}
           isOpen={showSettingsModal}
         />
       ) : null}
-      {showDepositModal && (
+      {showDepositModal ? (
         <DepositModal
           isOpen={showDepositModal}
           onClose={() => setShowDepositModal(false)}
         />
-      )}
-      {showWithdrawModal && (
+      ) : null}
+      {showWithdrawModal ? (
         <WithdrawModal
           isOpen={showWithdrawModal}
           onClose={() => setShowWithdrawModal(false)}
         />
-      )}
-    </div>
+      ) : null}
+    </>
   )
 }
 

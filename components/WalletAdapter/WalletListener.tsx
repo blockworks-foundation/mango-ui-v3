@@ -24,7 +24,6 @@ export const WalletListener: React.FC = () => {
       })
 
       await actions.fetchAllMangoAccounts(wallet)
-      actions.fetchProfilePicture(wallet)
 
       actions.fetchWalletTokens(wallet)
       actions.reloadOrders()

@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
 import dayjs from 'dayjs'
-import isEmpty from 'lodash/isEmpty'
 import { useTranslation } from 'next-i18next'
 import { LineChart, XAxis, YAxis, Line, Tooltip } from 'recharts'
 import useMangoStore from '../../stores/useMangoStore'
@@ -52,6 +51,8 @@ const DATA_CATEGORIES = [
   'account-value',
   'account-pnl',
   'perp-pnl',
+  'maker-volume',
+  'taker-volume',
   // 'interest-cumulative',
   'funding-cumulative',
   'mngo-rewards',
@@ -79,6 +80,8 @@ const AccountPerformance = () => {
   const [chartToShow, setChartToShow] = useState('account-value')
   const [selectAll, setSelectAll] = useState(false)
   const [performanceRange, setPerformanceRange] = useState('30')
+  const [volumeData, setVolumeData] = useState<any>([])
+  const [volumeSymbols, setVolumeSymbols] = useState<string[]>([])
   const { observe, width, height } = useDimensions()
   const { theme } = useTheme()
 
@@ -146,21 +149,43 @@ const AccountPerformance = () => {
       'mngo-rewards': (values) => {
         return values['mngo_rewards_value']
       },
+      'maker-volume': (values) => {
+        return values['maker_cumulative']
+      },
+      'taker-volume': (values) => {
+        return values['taker_cumulative']
+      },
     }
 
     const metric: (values: []) => void = metrics[chartToShow]
 
-    const stats = hourlyPerformanceStats.map(([time, tokenObjects]) => {
-      return {
-        time: time,
-        ...Object.fromEntries(
-          tokenObjects.map(([token, values]) => [token, metric(values)])
-        ),
-        All: tokenObjects
-          .map(([_, values]) => metric(values))
-          .reduce((a, b) => a + b, 0),
-      }
-    })
+    let stats
+
+    if (chartToShow !== 'maker-volume' && chartToShow !== 'taker-volume') {
+      stats = hourlyPerformanceStats.map(([time, tokenObjects]) => {
+        return {
+          time: time,
+          ...Object.fromEntries(
+            tokenObjects.map(([token, values]) => [token, metric(values)])
+          ),
+          All: tokenObjects
+            .map(([_, values]) => metric(values))
+            .reduce((a, b) => a + b, 0),
+        }
+      })
+    } else {
+      stats = volumeData.map(([time, tokenObjects]) => {
+        return {
+          time: time,
+          ...Object.fromEntries(
+            tokenObjects.map(([token, values]) => [token, metric(values)])
+          ),
+          All: tokenObjects
+            .map(([_, values]) => metric(values))
+            .reduce((a, b) => a + b, 0),
+        }
+      })
+    }
 
     // Normalise chart to start from 0 (except for account value)
     if (parseInt(performanceRange) !== 90 && chartToShow !== 'account-value') {
@@ -183,43 +208,75 @@ const AccountPerformance = () => {
   }
 
   useEffect(() => {
-    const fetchHourlyPerformanceStats = async () => {
+    const fetchStats = async () => {
       setLoading(true)
 
-      const response = await fetch(
-        `https://mango-transaction-log.herokuapp.com/v3/stats/account-performance-per-token?mango-account=${mangoAccountPk}&start-date=${dayjs()
-          .subtract(parseInt(performanceRange), 'day')
-          .format('YYYY-MM-DD')}`
-      )
-      const parsedResponse = await response.json()
-      let entries: any = Object.entries(parsedResponse)
-      entries = entries
+      const promises = [
+        fetch(
+          `https://mango-transaction-log.herokuapp.com/v3/stats/account-performance-per-token?mango-account=${mangoAccountPk}&start-date=${dayjs()
+            .subtract(parseInt(performanceRange), 'day')
+            .format('YYYY-MM-DD')}`
+        ),
+        fetch(
+          `https://mango-transaction-log.herokuapp.com/v3/stats/volumes-by-mango-account?mango-account=${mangoAccountPk}&start-date=${dayjs()
+            .subtract(parseInt(performanceRange), 'day')
+            .format('YYYY-MM-DD')}`
+        ),
+      ]
+
+      const data = await Promise.all(promises)
+      const performanceData = await data[0].json()
+      const volumeData = await data[1].json()
+
+      let performanceEntries: any = Object.entries(performanceData)
+      performanceEntries = performanceEntries
         .map(([key, value]) => [key, Object.entries(value)])
         .reverse()
+
+      let volumeEntries: any = Object.entries(volumeData)
+      volumeEntries = volumeEntries.map(([key, value]) => [
+        key,
+        Object.entries(value),
+      ])
 
       const uniqueSymbols = [
         ...new Set(
           ([] as string[]).concat(
             ['All'],
-            ...entries.map(([_, tokens]) => tokens.map(([token, _]) => token))
+            ...performanceEntries.map(([_, tokens]) =>
+              tokens.map(([token, _]) => token)
+            )
+          )
+        ),
+      ]
+
+      const uniqueVolumeSymbols = [
+        ...new Set(
+          ([] as string[]).concat(
+            ['All'],
+            ...volumeEntries.map(([_, tokens]) =>
+              tokens.map(([token, _]) => token)
+            )
           )
         ),
       ]
 
       setUniqueSymbols(uniqueSymbols)
       setFilteredSymbols(uniqueSymbols)
+      setVolumeSymbols(uniqueVolumeSymbols)
 
-      setHourlyPerformanceStats(entries)
+      setHourlyPerformanceStats(performanceEntries)
+      setVolumeData(volumeEntries)
 
       setLoading(false)
     }
 
-    fetchHourlyPerformanceStats()
+    fetchStats()
   }, [mangoAccountPk, performanceRange])
 
   useEffect(() => {
     calculateChartData(chartToShow)
-  }, [hourlyPerformanceStats])
+  }, [hourlyPerformanceStats, volumeData])
 
   useEffect(() => {
     if (
@@ -287,12 +344,24 @@ const AccountPerformance = () => {
   })
 
   const renderSymbolIcon = (s) => {
-    if (s !== 'All') {
+    if (s === 'All') return
+    if (chartToShow !== 'maker-volume' && chartToShow !== 'taker-volume') {
       const iconName = `${s.slice(0, 1)}${s.slice(1, 4).toLowerCase()}MonoIcon`
+      const SymbolIcon = MonoIcons[iconName] || QuestionMarkCircleIcon
+      return <SymbolIcon className="mr-1.5 h-3.5 w-auto" />
+    } else {
+      const iconName = `${s.slice(0, 1)}${s.slice(1, -5).toLowerCase()}MonoIcon`
       const SymbolIcon = MonoIcons[iconName] || QuestionMarkCircleIcon
       return <SymbolIcon className="mr-1.5 h-3.5 w-auto" />
     }
   }
+
+  const symbols = useMemo(() => {
+    if (chartToShow !== 'maker-volume' && chartToShow !== 'taker-volume') {
+      return filteredSymbols
+    }
+    return volumeSymbols
+  }, [chartToShow])
 
   return (
     <>
@@ -350,7 +419,7 @@ const AccountPerformance = () => {
                 />
               </div>
             </div>
-            {!isEmpty(hourlyPerformanceStats) && !loading ? (
+            {!loading ? (
               chartData.length > 0 && selectedSymbols.length > 0 ? (
                 <LineChart
                   width={width}
@@ -390,15 +459,19 @@ const AccountPerformance = () => {
                     tickFormatter={(v) => numberCompacter.format(v)}
                   />
                   <Tooltip content={renderTooltip} cursor={false} />
-                  {selectedSymbols.map((v, i) => (
-                    <Line
-                      key={`${v}${i}`}
-                      type="monotone"
-                      dataKey={`${v}`}
-                      stroke={`${CHART_COLORS(theme)[v]}`}
-                      dot={false}
-                    />
-                  ))}
+                  {selectedSymbols.map((v, i) => {
+                    const symbol =
+                      v.includes('/') || v.includes('-') ? v.slice(0, -5) : v
+                    return (
+                      <Line
+                        key={`${v}${i}`}
+                        type="monotone"
+                        dataKey={`${v}`}
+                        stroke={`${CHART_COLORS(theme)[symbol]}`}
+                        dot={false}
+                      />
+                    )
+                  })}
                 </LineChart>
               ) : selectedSymbols.length === 0 ? (
                 <div className="flex h-full w-full items-center justify-center p-4">
@@ -406,7 +479,11 @@ const AccountPerformance = () => {
                     {t('account-performance:select-an-asset')}
                   </p>
                 </div>
-              ) : null
+              ) : (
+                <div className="flex h-full w-full items-center justify-center p-4">
+                  <p className="mb-0">{t('account-performance:no-data')}</p>
+                </div>
+              )
             ) : loading ? (
               <div
                 style={{ height: height - 16 }}
@@ -429,28 +506,32 @@ const AccountPerformance = () => {
               </Checkbox>
             </div>
             <div className="-ml-1 flex flex-wrap">
-              {filteredSymbols.map((s) => (
-                <button
-                  className={`default-transition m-1 flex items-center rounded-full border py-1 px-2 text-xs font-bold ${
-                    selectedSymbols.includes(s)
-                      ? ''
-                      : 'border-th-fgd-4 text-th-fgd-4 focus:border-th-fgd-3 focus:text-th-fgd-3 focus:outline-none md:hover:border-th-fgd-3 md:hover:text-th-fgd-3'
-                  }`}
-                  onClick={() => toggleOption(s)}
-                  style={
-                    selectedSymbols.includes(s)
-                      ? {
-                          borderColor: CHART_COLORS(theme)[s],
-                          color: CHART_COLORS(theme)[s],
-                        }
-                      : {}
-                  }
-                  key={s}
-                >
-                  {renderSymbolIcon(s)}
-                  {s == 'All' ? t(`account-performance:all`) : s}
-                </button>
-              ))}
+              {symbols.map((s) => {
+                const symbol =
+                  s.includes('/') || s.includes('-') ? s.slice(0, -5) : s
+                return (
+                  <button
+                    className={`default-transition m-1 flex items-center rounded-full border py-1 px-2 text-xs font-bold ${
+                      selectedSymbols.includes(s)
+                        ? ''
+                        : 'border-th-fgd-4 text-th-fgd-4 focus:border-th-fgd-3 focus:text-th-fgd-3 focus:outline-none md:hover:border-th-fgd-3 md:hover:text-th-fgd-3'
+                    }`}
+                    onClick={() => toggleOption(s)}
+                    style={
+                      selectedSymbols.includes(s)
+                        ? {
+                            borderColor: CHART_COLORS(theme)[symbol],
+                            color: CHART_COLORS(theme)[symbol],
+                          }
+                        : {}
+                    }
+                    key={s}
+                  >
+                    {renderSymbolIcon(s)}
+                    {s == 'All' ? t(`account-performance:all`) : s}
+                  </button>
+                )
+              })}
             </div>
           </div>
         </>
