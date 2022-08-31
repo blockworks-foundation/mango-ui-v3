@@ -559,7 +559,14 @@ const PositionsTable: React.FC = () => {
                             </div>
                             <div className="col-span-1 text-left">
                               <div className="pb-0.5 text-xs text-th-fgd-3">
-                                {t('estimated-liq-price')}
+                                <Tooltip
+                                  content={t('tooltip-estimated-liq-price')}
+                                >
+                                  <span className="flex items-center">
+                                    {t('estimated-liq-price')}
+                                    <InformationCircleIcon className="ml-1 h-4 w-4 flex-shrink-0 text-th-fgd-4" />
+                                  </span>
+                                </Tooltip>
                               </div>
                               {liquidationPrice &&
                               liquidationPrice.gt(ZERO_I80F48)
