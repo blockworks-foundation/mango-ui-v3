@@ -37,6 +37,8 @@ export interface ChartContainerProps {
 }
 
 const SHOW_ORDER_LINES_KEY = 'showOrderLines-0.1'
+const SHOW_TRADE_EXECUTIONS_KEY = 'showTradeExecutions-0.1'
+const TRADE_EXECUTION_LIMIT = 100
 
 const TVChartContainer = () => {
   const { t } = useTranslation(['common', 'tv-chart'])
@@ -49,12 +51,18 @@ const TVChartContainer = () => {
   const [showOrderLines, toggleShowOrderLines] = useState(
     showOrderLinesLocalStorage
   )
+  const [showTradeExecutionsLocalStorage, toggleShowTradeExecutionsLocalStorage] =
+    useLocalStorageState(SHOW_TRADE_EXECUTIONS_KEY, true)
+  const [showTradeExecutions, toggleShowTradeExecutions] = useState(
+    showTradeExecutionsLocalStorage
+  )
   const setMangoStore = useMangoStore.getState().set
   const selectedMarketConfig = useMangoStore((s) => s.selectedMarket.config)
   const actions = useMangoStore((s) => s.actions)
   const isMobile = width ? width < breakpoints.sm : false
   const mangoClient = useMangoStore.getState().connection.client
   const selectedMarketName = selectedMarketConfig.name
+  const tradeExecutions = useMangoStore((s) => s.tradingView.tradeExecutions)
   const tradeHistoryAndLiquidations = useMangoStore((s) => s.tradeHistory.parsed)
   const tradeHistory = tradeHistoryAndLiquidations.filter((t) => !('liqor' in t))
 
@@ -91,6 +99,12 @@ const TVChartContainer = () => {
   }, [showOrderLines])
 
   useEffect(() => {
+    if (showTradeExecutions !== showTradeExecutionsLocalStorage) {
+      toggleShowTradeExecutionsLocalStorage(showTradeExecutions)
+    }
+  }, [showTradeExecutions])
+
+  useEffect(() => {
     if (
       chartReady &&
       tvWidgetRef.current &&
@@ -105,6 +119,9 @@ const TVChartContainer = () => {
               useMangoStore.getState().selectedMangoAccount.openOrders
             deleteLines()
             drawLinesForMarket(openOrders)
+          }
+          if (showTradeExecutions) {
+            drawTradeExecutions()
           }
         }
       )
@@ -209,6 +226,7 @@ const TVChartContainer = () => {
     const tvWidget = new widget(widgetOptions)
     tvWidgetRef.current = tvWidget
 
+    // Create Show Order Lines button
     tvWidgetRef.current.onChartReady(function () {
       const button = tvWidgetRef?.current?.createButton()
       if (!button) {
@@ -230,8 +248,49 @@ const TVChartContainer = () => {
       button.setAttribute('title', t('tv-chart:toggle-order-line'))
       button.addEventListener('click', toggleOrderLines)
     })
+
+    // Create Show Trade Executions button
+    tvWidgetRef.current.onChartReady(function () {
+      const button = tvWidgetRef?.current?.createButton()
+      if (!button) {
+        return
+      }
+      setChartReady(true)
+      button.textContent = 'TE'
+      if (showTradeExecutionsLocalStorage) {
+        button.style.color =
+          theme === 'Dark' || theme === 'Mango'
+            ? 'rgb(242, 201, 76)'
+            : 'rgb(255, 156, 36)'
+      } else {
+        button.style.color =
+          theme === 'Dark' || theme === 'Mango'
+            ? 'rgb(138, 138, 138)'
+            : 'rgb(138, 138, 138)'
+      }
+      button.setAttribute('title', t('tv-chart:toggle-trade-executions'))
+      button.addEventListener('click', toggleTradeExecutions)
+    })
     //eslint-disable-next-line
   }, [theme, isMobile, publicKey])
+
+  function toggleTradeExecutions() {
+    toggleShowTradeExecutions((prevState) => !prevState)
+    if (
+      this.style.color === 'rgb(255, 156, 36)' ||
+      this.style.color === 'rgb(242, 201, 76)'
+    ) {
+      this.style.color =
+        theme === 'Dark' || theme === 'Mango'
+          ? 'rgb(138, 138, 138)'
+          : 'rgb(138, 138, 138)'
+    } else {
+      this.style.color =
+        theme === 'Dark' || theme === 'Mango'
+          ? 'rgb(242, 201, 76)'
+          : 'rgb(255, 156, 36)'
+    }
+  }
 
   function toggleOrderLines() {
     toggleShowOrderLines((prevState) => !prevState)
@@ -685,13 +744,13 @@ const TVChartContainer = () => {
   }, [chartReady, showOrderLines, selectedMarketName])
 
   const drawTradeExecutions = () => {
-    const tradeArrows = useMangoStore.getState().tradingView.tradeArrows
-    const newTradeArrows = new Map()
+    const newTradeExecutions = new Map()
     if (tradeHistory?.length && chartReady && tvWidgetRef?.current) {
       tradeHistory 
         .filter(trade => { //get trades in the current market that dont have an arrow drawn already
-          return trade.marketName === selectedMarketName && tradeArrows.get(`${trade.seqNum}${trade.marketName}`) === undefined
+          return trade.marketName === selectedMarketName && tradeExecutions.get(`${trade.seqNum}${trade.marketName}`) === undefined
         })
+        .slice(0, TRADE_EXECUTION_LIMIT)
         .forEach(trade => {
           const arrowID = tvWidgetRef.current?.chart()
             .createExecutionShape()
@@ -699,24 +758,40 @@ const TVChartContainer = () => {
             .setDirection(trade.side)
             .setArrowHeight(6)
             .setArrowColor(trade.side === 'buy' ? theme === 'Mango' ? '#AFD803' : '#5EBF4D' : theme === 'Mango' ? '#E54033' : '#CC2929')
-          newTradeArrows.set(`${trade.seqNum}${trade.marketName}`, arrowID)
+          newTradeExecutions.set(`${trade.seqNum}${trade.marketName}`, arrowID)
       })
     }
     setMangoStore((state) => {
-      state.tradingView.tradeArrows = newTradeArrows
+      state.tradingView.tradeExecutions = newTradeExecutions
+    })
+  }
+
+  const deleteTradeExecutions = () => {
+    if(previousTradeExecutions && chartReady && tvWidgetRef?.current) {
+      console.log(`previous trade executions: ${JSON.stringify(previousTradeExecutions.values())}`)
+      for (const tradeExecution of previousTradeExecutions.values()) {
+        tradeExecution.remove()
+      }
+    }
+    if (tradeHistory?.length && chartReady && tvWidgetRef?.current) {
+      for (const tradeExecution of tradeExecutions.values()) {
+        tradeExecution.remove()
+      }
+    }
+    setMangoStore(state => {
+      state.tradingView.tradeExecutions = new Map()
     })
   }
 
   // update trade orders if transaction history changes
   useEffect(() => {
     if (chartReady && tvWidgetRef?.current) {
-      const tradeArrows = useMangoStore.getState().tradingView.tradeArrows
       const tradesInMarket = tradeHistory
         .filter(trade => {
           return trade.marketName === selectedMarketName
         }).length
       tvWidgetRef.current.onChartReady(() => {
-        if (tradeArrows.size !== tradesInMarket) {
+        if (tradeExecutions.size !== tradesInMarket && showTradeExecutions) {
           drawTradeExecutions()
         }
       })

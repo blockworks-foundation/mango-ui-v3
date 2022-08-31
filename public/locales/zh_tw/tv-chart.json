@@ -9,5 +9,6 @@
   "outside-range": "訂單價格在範圍之外",
   "slippage-accept": "若您接受潛在的下滑請使用交易表格進行。",
   "slippage-warning": "您的訂單價格({{updatedOrderPrice}})多餘5%{{aboveBelow}}市場價格({{selectedMarketPrice}})表是您也許遭受可觀的下滑。",
-  "toggle-order-line": "切換訂單線可見性"
+  "toggle-order-line": "切換訂單線可見性",
+  "toggle-trade-executions": "切換成交可見性"
 }

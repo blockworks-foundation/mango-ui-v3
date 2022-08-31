@@ -335,7 +335,7 @@ export type MangoStore = {
   marketsInfo: any[]
   tradingView: {
     orderLines: Map<string, IOrderLineAdapter>
-    tradeArrows: Map<string, IExecutionLineAdapter>
+    tradeExecutions: Map<string, IExecutionLineAdapter>
   }
   coingeckoPrices: { data: any[]; loading: boolean }
 }
@@ -466,7 +466,7 @@ const useMangoStore = create<
       },
       tradingView: {
         orderLines: new Map(),
-        tradeArrows: new Map(),
+        tradeExecutions: new Map(),
       },
       coingeckoPrices: { data: [], loading: false },
       profile: {
