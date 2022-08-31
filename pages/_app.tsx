@@ -162,10 +162,10 @@ function App({ Component, pageProps }) {
       new BitpieWalletAdapter(),
       new HuobiWalletAdapter(),
       new WalletConnectWalletAdapter({
-        network: 
-          CLUSTER === 'mainnet' ? 
-          WalletAdapterNetwork.Mainnet : 
-          WalletAdapterNetwork.Devnet,
+        network:
+          CLUSTER === 'mainnet'
+            ? WalletAdapterNetwork.Mainnet
+            : WalletAdapterNetwork.Devnet,
         options: {
           // TODO: register Mango Markets to https://cloud.walletconnect.com/ and obtain projectId
           // projectId: 'e899c82be21d4acca2c8aec45e893598',
@@ -173,9 +173,9 @@ function App({ Component, pageProps }) {
             name: 'Mango Markets',
             description: 'Mango Markets',
             url: 'https://trade.mango.markets/',
-            icons: ['https://trade.mango.markets/assets/icons/logo.svg']
-          }
-        }
+            icons: ['https://trade.mango.markets/assets/icons/logo.svg'],
+          },
+        },
       }),
     ],
     []
