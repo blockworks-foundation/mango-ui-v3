@@ -783,7 +783,14 @@ const TVChartContainer = () => {
     })
   }
 
-  // update trade orders if transaction history changes
+  // delete trade executions if showTradeExecutions button is toggled
+  useEffect(() => {
+    if (!showTradeExecutions) {
+      deleteTradeExecutions()
+    }
+  }, [showTradeExecutions, mangoAccount])
+
+  // update trade executions if transaction history changes
   useEffect(() => {
     if (chartReady && tvWidgetRef?.current) {
       const tradesInMarket = tradeHistory
