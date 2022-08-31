@@ -21,7 +21,7 @@ jobs:
       - name: Set up node
         uses: actions/setup-node@v1
         with:
-          node-version: '14.x'
+          node-version: 16
 
       - run: yarn install --frozen-lockfile --network-concurrency 1
 
