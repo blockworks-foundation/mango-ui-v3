@@ -20,6 +20,7 @@ import useLocalStorageState from '../hooks/useLocalStorageState'
 import { useWallet, Wallet } from '@solana/wallet-adapter-react'
 import dayjs from 'dayjs'
 import useInterval from 'hooks/useInterval'
+import usePrevious from 'hooks/usePrevious'
 
 export interface ChartContainerProps {
   container: ChartingLibraryWidgetOptions['container']
@@ -65,8 +66,10 @@ const TVChartContainer = () => {
   const selectedMarketName = selectedMarketConfig.name
   const tradeExecutions = useMangoStore((s) => s.tradingView.tradeExecutions)
   const tradeHistoryAndLiquidations = useMangoStore((s) => s.tradeHistory.parsed)
-  const tradeHistory = tradeHistoryAndLiquidations.filter((t) => !('liqor' in t) && t.marketName === selectedMarketName && tradeExecutions.get(`${t.seqNum}${t.marketName}`) === undefined)
+  const tradeHistory = tradeHistoryAndLiquidations.filter((t) => !('liqor' in t))
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
+  const [mangoAccountTradeHistory, setMangoAccountTradeHistory] = useState(tradeHistory)
+  const prevMangoAccountTradeHistory = usePrevious(mangoAccountTradeHistory)
 
   // @ts-ignore
   const defaultProps: ChartContainerProps = useMemo(
@@ -123,8 +126,9 @@ const TVChartContainer = () => {
             drawLinesForMarket(openOrders)
           }
           if (showTradeExecutions) {
-            deleteTradeExecutions()
-            drawTradeExecutions()
+            // deleteTradeExecutions()
+            // drawTradeExecutions(mangoAccountTradeHistory)
+            refreshTradeExecutions()
           }
         }
       )
@@ -746,39 +750,80 @@ const TVChartContainer = () => {
     return subscription
   }, [chartReady, showOrderLines, selectedMarketName])
 
-  const drawTradeExecutions = () => {
+  const drawTradeExecutions = (tradeHistory) => {
+    setMangoStore((s) => {s.tradingView.tradeExecutions = new Map()})
+    console.log('trade executions should be wiped')
+    console.dir(tradeExecutions)
     const newTradeExecutions = new Map()
     if (tradeHistory?.length && chartReady && tvWidgetRef?.current) {
+      // const chartTime = tvWidgetRef.current.chart().getVisibleRange().from
       tradeHistory 
-        // .filter(trade => { //get trades in the current market that dont have an arrow drawn already
-        //   return trade.marketName === selectedMarketName && tradeExecutions.get(`${trade.seqNum}${trade.marketName}`) === undefined
-        // })
+        .filter(trade => { //get trades in the current market that dont have an arrow drawn already
+          return trade.marketName === selectedMarketName 
+          // && tradeExecutions.get(`${trade.seqNum}${trade.marketName}`) === undefined
+        })
         .slice(0, TRADE_EXECUTION_LIMIT)
         .forEach(trade => {
-          const arrowID = tvWidgetRef.current?.chart()
-            .createExecutionShape()
-            .setTime(dayjs(trade.loadTimestamp).unix())
-            .setDirection(trade.side)
-            .setArrowHeight(6)
-            .setArrowColor(trade.side === 'buy' ? theme === 'Mango' ? '#AFD803' : '#5EBF4D' : theme === 'Mango' ? '#E54033' : '#CC2929')
-          newTradeExecutions.set(`${trade.seqNum}${trade.marketName}`, arrowID)
+          // if (chartTime && chartTime > trade.loadTimestamp) {
+            const arrowID = tvWidgetRef.current?.chart()
+              .createExecutionShape()
+              .setTime(dayjs(trade.loadTimestamp).unix())
+              .setDirection(trade.side)
+              .setArrowHeight(6)
+              .setArrowColor(trade.side === 'buy' ? theme === 'Mango' ? '#AFD803' : '#5EBF4D' : theme === 'Mango' ? '#E54033' : '#CC2929')
+              .setTooltip(`${trade.seqNum}${trade.marketName}`)
+            if (arrowID) {
+              console.log(`drawing execution ${arrowID.getTooltip()}`)
+              newTradeExecutions.set(`${trade.seqNum}${trade.marketName}`, arrowID)
+            } else {
+              console.log(`Could not create execution shape for trade ${trade.seqNum}${trade.marketName}`)
+            }
+          // }
       })
     }
+    // console.log('trade executions')
+    // console.dir(tradeExecutions.entries())
+    // console.log(`new trade executions`)
+    // console.log(Array.from(newTradeExecutions.keys()))
+    // const updatedTradeExecutions = new Map(tradeExecutions)
+    // newTradeExecutions.forEach((value, key) => {
+    //   if (updatedTradeExecutions.get(key)) { //prevent multiple instances of same trade being drawn
+    //     console.log(`removing execution ${updatedTradeExecutions.get(key)!.getTooltip()}`)
+    //     updatedTradeExecutions.get(key)!.remove()
+    //     updatedTradeExecutions.delete(key)
+    //   }
+    //   updatedTradeExecutions.set(key, value)
+    // })
+    // console.log(`updated trade executions`)
+    // console.log(Array.from(updatedTradeExecutions.keys()))
     setMangoStore((state) => {
       state.tradingView.tradeExecutions = newTradeExecutions
     })
+    console.log('new trade executions:')
+    console.dir(newTradeExecutions)
+    console.log('trade executions:')
+    console.dir(tradeExecutions) // these two should be equal, but they aren't. seems like new values from setMangoStore cant be used immediately
   }
 
-  const deleteTradeExecutions = () => {
-    const tradeExecutions = useMangoStore.getState().tradingView.tradeExecutions
-    if (tradeExecutions.size > 0) {
-      tradeExecutions?.forEach((value, key) => {
-        tradeExecutions.get(key)?.remove()
-      })
-      setMangoStore((state) => {
-        state.tradingView.tradeExecutions = new Map()
-      })
-    }
+  // const deleteTradeExecutions = () => {
+  //   // const tradeExecutions = useMangoStore.getState().tradingView.tradeExecutions
+  //   if (tradeExecutions.size > 0) {
+  //     // tradeExecutions?.forEach((value, key) => {
+  //     console.log(`tradeExecutions size: ${tradeExecutions.size}`)
+
+  //       for (const tradeExecutionAdapter of tradeExecutions.values()) {
+  //         try {
+  //           console.log(`removing execution ${tradeExecutionAdapter.getTooltip()}`)
+  //           tradeExecutionAdapter.remove()
+  //         } catch (error) {
+  //           console.log(`could not delete tradeExecution: ${error}`)
+  //         }  
+  //     }
+  //     // )
+  //     setMangoStore((state) => {
+  //       state.tradingView.tradeExecutions = new Map()
+  //     })
+  //   }
 
     // if (tradeHistory?.length && chartReady && tvWidgetRef?.current) {
     //   for (const tradeExecution of tradeExecutions.values()) {
@@ -788,22 +833,25 @@ const TVChartContainer = () => {
     // setMangoStore(state => {
     //   state.tradingView.tradeExecutions = new Map()
     // })
-  }
+  // }
 
   // delete trade executions if showTradeExecutions button is toggled
-  useEffect(() => {
-    if (!showTradeExecutions) {
-      deleteTradeExecutions()
-    }
-  }, [showTradeExecutions])
+  // useEffect(() => {
+  //   !showTradeExecutions ? console.log('useeffect showTradeExecutions deleting trade executions') : console.log('useeffect showTradeExecutions drawing trade executions');
+  //   !showTradeExecutions ? deleteTradeExecutions() : drawTradeExecutions()
+  // }, [showTradeExecutions])
+
 
   // update trade executions if transaction history changes
-  useEffect(() => {
-    if (chartReady && tvWidgetRef?.current && showTradeExecutions) {
-      sleep(2500).then(() => {
-        deleteTradeExecutions()
-        drawTradeExecutions()
-      })
+  // useEffect(() => {
+  //   if (chartReady && tvWidgetRef?.current && showTradeExecutions) {
+  //     sleep(2500).then(() => {
+  //       console.log('useeffect mangoAccount deleting trade executions')
+  //       deleteTradeExecutions()
+  //       tvWidgetRef.current?.chart().executeActionById("chartReset")
+  //       console.log('useeffect mangoAccount drawing trade executions')
+  //       drawTradeExecutions()
+  //     })
 
       // const tradesInMarket = tradeHistory
       //   .filter(trade => {
@@ -815,25 +863,65 @@ const TVChartContainer = () => {
       //     drawTradeExecutions()
       //   }
       // })
-    }
-  }, [mangoAccount])
+    // }
+  // }, [mangoAccount])
+
+  useEffect(() => { // TODO this doesn't account for making trades without changing mango account, cant depend on tradeHistory because it changes many times per second for some reason
+    console.log('changing mango account trade history')
+    setMangoAccountTradeHistory(tradeHistory)
+  }, [mangoAccount?.publicKey])
 
   useEffect(() => {
-    // Just here to track how often trade history updates
-    console.log(mangoAccount?.publicKey + " tradeHistory updated")
-  }, [tradeHistory])
-
-  useInterval(() => {
-    if (chartReady && tvWidgetRef?.current && showTradeExecutions && tradeHistory) {
-      sleep(2500).then(() => {
-        console.log("useInterval Update - tradeHistory.length: " + tradeHistory.length)
-        if (tradeHistory) {
-          deleteTradeExecutions()
-          drawTradeExecutions()
-        }
-      })
+    if (mangoAccountTradeHistory !== prevMangoAccountTradeHistory) {
+      console.log('mango account trade history does not match previous')
+      console.dir(prevMangoAccountTradeHistory)
+      console.dir(mangoAccountTradeHistory)
+      refreshTradeExecutions()
     }
-  }, 10000)
+  }, [mangoAccountTradeHistory])
+
+  useEffect(() => {
+    console.log('trade execution toggle')
+    refreshTradeExecutions()
+  }, [showTradeExecutions])
+
+  const refreshTradeExecutions = () => {
+    if (chartReady && tvWidgetRef?.current) {
+        console.log('removing trade executions')
+        for (const val of tradeExecutions.values()) {
+          val.remove()
+        }
+        setMangoStore((s) => {s.tradingView.tradeExecutions = new Map()})
+        console.log('trade executions should be wiped...') //but they're not
+        console.dir(tradeExecutions)
+        if (showTradeExecutions) {
+          console.log('redrawing trade executions')
+          drawTradeExecutions(mangoAccountTradeHistory)
+        }
+    }
+  }
+  // useEffect(() => {
+  //   // Just here to track how often trade history updates
+  //   console.log(mangoAccount?.publicKey + " tradeHistory updated")
+  // }, [tradeHistory])
+
+  // useEffect(() => {
+  //   //monitor changes to tradeExecutions
+  //   console.log(`useEffect change in tradeExecutions size: ${tradeExecutions.size}`)
+  //   console.log(Array.from(tradeExecutions.keys()))
+  // }, [tradeExecutions.size])
+
+  // useInterval(() => {
+  //   if (chartReady && tvWidgetRef?.current && showTradeExecutions && tradeHistory) {
+  //     sleep(2500).then(() => {
+  //       console.log("useInterval Update - tradeHistory.length: " + tradeHistory.length)
+  //       if (tradeHistory) {
+  //         // deleteTradeExecutions()
+  //         drawTradeExecutions()
+  //       }
+  //     })
+  //   }
+  // }, 10000)
   
 
   return (
