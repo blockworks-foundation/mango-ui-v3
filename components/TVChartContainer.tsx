@@ -19,7 +19,6 @@ import { useTranslation } from 'next-i18next'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import { useWallet, Wallet } from '@solana/wallet-adapter-react'
 import dayjs from 'dayjs'
-import useInterval from 'hooks/useInterval'
 import usePrevious from 'hooks/usePrevious'
 
 export interface ChartContainerProps {
