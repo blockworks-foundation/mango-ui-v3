@@ -246,6 +246,7 @@ export type MangoStore = {
     initialLoad: boolean
     lastUpdatedAt: string
     lastSlot: number
+    loading: boolean
     openOrders: any[]
     totalOpenOrders: number
     spotBalances: SpotBalance[]
@@ -422,6 +423,7 @@ const useMangoStore = create<
         initialLoad: true,
         lastUpdatedAt: '0',
         lastSlot: 0,
+        loading: false,
         openOrders: [],
         totalOpenOrders: 0,
         spotBalances: [],
@@ -802,9 +804,17 @@ const useMangoStore = create<
 
           if (!mangoAccount) return
 
+          set((state) => {
+            state.selectedMangoAccount.loading = true
+          })
+
           const [reloadedMangoAccount, lastSlot] =
             await mangoAccount.reloadFromSlot(connection, mangoClient.lastSlot)
           const lastSeenSlot = get().selectedMangoAccount.lastSlot
+
+          set((state) => {
+            state.selectedMangoAccount.loading = false
+          })
 
           if (lastSlot > lastSeenSlot) {
             set((state) => {

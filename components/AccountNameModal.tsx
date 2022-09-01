@@ -43,7 +43,7 @@ const AccountNameModal: FunctionComponent<AccountNameModalProps> = ({
         name
       )
       actions.fetchAllMangoAccounts(wallet)
-      actions.reloadMangoAccount()
+      await actions.reloadMangoAccount()
       onClose?.()
       notify({
         title: t('name-updated'),
