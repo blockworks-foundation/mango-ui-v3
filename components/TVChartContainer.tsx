@@ -7,7 +7,7 @@ import {
   ResolutionString,
 } from '../public/charting_library'
 import { CHART_DATA_FEED } from '../utils/chartDataConnector'
-import useMangoStore from '../stores/useMangoStore'
+import useMangoStore, { serumProgramId } from '../stores/useMangoStore'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { Order, Market } from '@project-serum/serum/lib/market'
@@ -19,6 +19,14 @@ import { useTranslation } from 'next-i18next'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import { useWallet, Wallet } from '@solana/wallet-adapter-react'
 import dayjs from 'dayjs'
+import {
+  actionsSelector,
+  mangoAccountSelector,
+  mangoGroupSelector,
+} from 'stores/selectors'
+import Loading from 'components/Loading'
+import { useRouter } from 'next/router'
+import { PublicKey } from '@solana/web3.js'
 
 export interface ChartContainerProps {
   container: ChartingLibraryWidgetOptions['container']
@@ -44,7 +52,11 @@ const TVChartContainer = () => {
   const { t } = useTranslation(['common', 'tv-chart'])
   const { theme } = useTheme()
   const { width } = useViewport()
+
+  const router = useRouter()
   const { wallet, publicKey, connected } = useWallet()
+  const isLoading = useMangoStore((s) => s.selectedMangoAccount.initialLoad)
+
   const [chartReady, setChartReady] = useState(false)
   const [showOrderLinesLocalStorage, toggleShowOrderLinesLocalStorage] =
     useLocalStorageState(SHOW_ORDER_LINES_KEY, true)
@@ -56,7 +68,12 @@ const TVChartContainer = () => {
   const [showTradeExecutions, toggleShowTradeExecutions] = useState(
     showTradeExecutionsLocalStorage
   )
+
   const setMangoStore = useMangoStore.getState().set
+  // const mangoAccount = useMangoStore(mangoAccountSelector)
+  const mangoGroup = useMangoStore(mangoGroupSelector)
+  
+
   const selectedMarketConfig = useMangoStore((s) => s.selectedMarket.config)
   const actions = useMangoStore((s) => s.actions)
   const isMobile = width ? width < breakpoints.sm : false
@@ -65,8 +82,84 @@ const TVChartContainer = () => {
   const tradeExecutions = useMangoStore((s) => s.tradingView.tradeExecutions)
   const tradeHistoryAndLiquidations = useMangoStore((s) => s.tradeHistory.parsed)
   const tradeHistory = tradeHistoryAndLiquidations.filter((t) => !('liqor' in t))
-  const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const [mangoAccountTradeHistory, setMangoAccountTradeHistory] = useState(tradeHistory)
+  
+  const connecting = wallet?.adapter?.connecting
+  const { pubkey } = router.query
+  const [resetOnLeave, setResetOnLeave] = useState(false)
+
+  useEffect(() => {
+    async function loadUnownedMangoAccount() {
+      try {
+        if (!pubkey) {
+          return
+        }
+        console.log(new PublicKey(pubkey).toString())
+        const unownedMangoAccountPubkey = new PublicKey(pubkey)
+        const mangoClient = useMangoStore.getState().connection.client
+        if (mangoGroup) {
+          const unOwnedMangoAccount = await mangoClient.getMangoAccount(
+            unownedMangoAccountPubkey,
+            serumProgramId
+          )
+          setMangoStore((state) => {
+            state.selectedMangoAccount.current = unOwnedMangoAccount
+            state.selectedMangoAccount.initialLoad = false
+          })
+
+          actions.fetchTradeHistory()
+          if (showTradeExecutions) {
+            removeTradeExecutions(tradeExecutions)
+            cacheTradeHistory()
+            setMangoStore((s) => {s.tradingView.tradeExecutions = drawTradeExecutions(tradeHistory)})
+            setMangoAccountTradeHistory(tradeHistory)
+          }
+          cycleShowTradeExecutions()
+          // if (mangoAccountTradeHistory.length !== tradeHistory.length) {
+          //   cacheTradeHistory()
+          // }
+          setResetOnLeave(true)
+        }
+      } catch (error) {
+        console.log('error', error)
+        router.push(`/?name=${selectedMarketName}`)
+      }
+    }
+
+    if (pubkey) {
+      setMangoStore((state) => {
+        state.selectedMangoAccount.initialLoad = true
+      })
+      loadUnownedMangoAccount()
+    }
+  }, [pubkey, mangoGroup])
+
+  useEffect(() => {
+    const handleRouteChange = () => {
+      if (resetOnLeave) {
+        setMangoStore((state) => {
+          state.selectedMangoAccount.current = null
+        })
+      }
+    }
+    router.events.on('routeChangeStart', handleRouteChange)
+    return () => {
+      router.events.off('routeChangeStart', handleRouteChange)
+    }
+  }, [resetOnLeave])
+
+  useEffect(() => {
+    if (connecting) {
+      router.push('/')
+    }
+  }, [connecting, router])
+
+  function cycleShowTradeExecutions () {
+    toggleShowTradeExecutions((prevState) => !prevState)
+    sleep(1000).then(() => {
+      toggleShowTradeExecutions((prevState) => !prevState)
+    })
+  }
 
 
   // @ts-ignore
@@ -649,27 +742,6 @@ const TVChartContainer = () => {
     }
   }
 
-  const drawTradeArrows = () => {
-    const tradeArrows = useMangoStore.getState().tradingView.tradeArrows
-    const newTradeArrows = new Map()
-    if (tradeHistory?.length && chartReady && tvWidgetRef?.current) {
-      console.log(`selectedMarketName: ${selectedMarketName}`)
-      // console.log(`tradeHistory 1-20: ${JSON.stringify(tradeHistory.slice(0,20))}`)
-      tradeHistory
-        .filter(trade => {
-          return trade.marketName === selectedMarketName && tradeArrows.get(`${trade.seqNum}${trade.marketName}`) === undefined
-        })
-        .forEach(trade => {
-          const arrowID = tvWidgetRef.current?.chart().createShape({time: trade.loadTimestamp, price: trade.price}, {shape: trade.side === "buy" ? "arrow_up" : "arrow_down"})
-          console.log(`Drawing ${trade.side} arrow at time: ${trade.loadTimestamp}, Price: ${trade.price}`)
-          newTradeArrows.set(`${trade.seqNum}${trade.marketName}`, arrowID)
-      })
-    }
-    setMangoStore((state) => {
-      state.tradingView.tradeArrows = newTradeArrows
-    })
-  }
-
   const drawLinesForMarket = (openOrders) => {
     const newOrderLines = new Map()
     if (openOrders?.length) {
@@ -788,28 +860,29 @@ const TVChartContainer = () => {
   }
 
 
-useEffect(() => {
-  cacheTradeHistory()
-  if (showTradeExecutions && connected) {
-    setMangoStore((s) => {s.tradingView.tradeExecutions = drawTradeExecutions(mangoAccountTradeHistory)})
-  } else {
-    setMangoStore((s) => {s.tradingView.tradeExecutions = removeTradeExecutions(tradeExecutions)})
-  } 
-}, [connected, showTradeExecutions])
-
-
-useEffect(() => { //TODO pubkey doesn't update when viewing unowned mango account
-  if (mangoAccountTradeHistory.length !== tradeHistory.length) {
+  useEffect(() => {
     cacheTradeHistory()
-  }
-}, [mangoAccount?.publicKey, tradeHistory])
+    if (showTradeExecutions && connected) {
+      setMangoStore((s) => {s.tradingView.tradeExecutions = drawTradeExecutions(mangoAccountTradeHistory)})
+    } else {
+      setMangoStore((s) => {s.tradingView.tradeExecutions = removeTradeExecutions(tradeExecutions)})
+    } 
+  }, [connected, showTradeExecutions])
 
-useEffect(() => {
-  removeTradeExecutions(tradeExecutions)
-  if (showTradeExecutions) {
-    setMangoStore((s) => {s.tradingView.tradeExecutions = drawTradeExecutions(mangoAccountTradeHistory)})
-  }
-}, [mangoAccountTradeHistory, selectedMarketName])
+
+  // useEffect(() => { //TODO pubkey doesn't update when viewing unowned mango account
+  //   if (mangoAccountTradeHistory.length !== tradeHistory.length) {
+  //     cacheTradeHistory()
+  //   }
+  //   console.log(mangoAccount?.publicKey)
+  // }, [mangoAccount?.publicKey, tradeHistory])
+
+  useEffect(() => {
+    removeTradeExecutions(tradeExecutions)
+    if (showTradeExecutions) {
+      setMangoStore((s) => {s.tradingView.tradeExecutions = drawTradeExecutions(mangoAccountTradeHistory)})
+    }
+  }, [mangoAccountTradeHistory, selectedMarketName])
 
   return (
     <div id={defaultProps.container as string} className="tradingview-chart" />
