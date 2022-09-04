@@ -19,7 +19,6 @@ import { useTranslation } from 'next-i18next'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import { useWallet, Wallet } from '@solana/wallet-adapter-react'
 import dayjs from 'dayjs'
-import usePrevious from 'hooks/usePrevious'
 
 export interface ChartContainerProps {
   container: ChartingLibraryWidgetOptions['container']
@@ -45,7 +44,7 @@ const TVChartContainer = () => {
   const { t } = useTranslation(['common', 'tv-chart'])
   const { theme } = useTheme()
   const { width } = useViewport()
-  const { wallet, publicKey } = useWallet()
+  const { wallet, publicKey, connected } = useWallet()
   const [chartReady, setChartReady] = useState(false)
   const [showOrderLinesLocalStorage, toggleShowOrderLinesLocalStorage] =
     useLocalStorageState(SHOW_ORDER_LINES_KEY, true)
@@ -68,7 +67,7 @@ const TVChartContainer = () => {
   const tradeHistory = tradeHistoryAndLiquidations.filter((t) => !('liqor' in t))
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const [mangoAccountTradeHistory, setMangoAccountTradeHistory] = useState(tradeHistory)
-  const prevMangoAccountTradeHistory = usePrevious(mangoAccountTradeHistory)
+
 
   // @ts-ignore
   const defaultProps: ChartContainerProps = useMemo(
@@ -125,9 +124,10 @@ const TVChartContainer = () => {
             drawLinesForMarket(openOrders)
           }
           if (showTradeExecutions) {
-            // deleteTradeExecutions()
-            // drawTradeExecutions(mangoAccountTradeHistory)
-            refreshTradeExecutions()
+            removeTradeExecutions(tradeExecutions)
+            cacheTradeHistory()
+            setMangoStore((s) => {s.tradingView.tradeExecutions = drawTradeExecutions(tradeHistory)})
+            setMangoAccountTradeHistory(tradeHistory)
           }
         }
       )
@@ -749,179 +749,67 @@ const TVChartContainer = () => {
     return subscription
   }, [chartReady, showOrderLines, selectedMarketName])
 
-  const drawTradeExecutions = (tradeHistory) => {
-    setMangoStore((s) => {s.tradingView.tradeExecutions = new Map()})
-    console.log('trade executions should be wiped')
-    console.dir(tradeExecutions)
+  const drawTradeExecutions = (trades) => {
     const newTradeExecutions = new Map()
-    if (tradeHistory?.length && chartReady && tvWidgetRef?.current) {
-      // const chartTime = tvWidgetRef.current.chart().getVisibleRange().from
-      tradeHistory 
+    if (trades?.length && chartReady && tvWidgetRef?.current) {
+      trades 
         .filter(trade => { //get trades in the current market that dont have an arrow drawn already
           return trade.marketName === selectedMarketName 
-          // && tradeExecutions.get(`${trade.seqNum}${trade.marketName}`) === undefined
         })
         .slice(0, TRADE_EXECUTION_LIMIT)
         .forEach(trade => {
-          // if (chartTime && chartTime > trade.loadTimestamp) {
             const arrowID = tvWidgetRef.current?.chart()
               .createExecutionShape()
               .setTime(dayjs(trade.loadTimestamp).unix())
               .setDirection(trade.side)
               .setArrowHeight(6)
               .setArrowColor(trade.side === 'buy' ? theme === 'Mango' ? '#AFD803' : '#5EBF4D' : theme === 'Mango' ? '#E54033' : '#CC2929')
-              .setTooltip(`${trade.seqNum}${trade.marketName}`)
             if (arrowID) {
-              console.log(`drawing execution ${arrowID.getTooltip()}`)
               newTradeExecutions.set(`${trade.seqNum}${trade.marketName}`, arrowID)
             } else {
               console.log(`Could not create execution shape for trade ${trade.seqNum}${trade.marketName}`)
             }
-          // }
       })
     }
-    // console.log('trade executions')
-    // console.dir(tradeExecutions.entries())
-    // console.log(`new trade executions`)
-    // console.log(Array.from(newTradeExecutions.keys()))
-    // const updatedTradeExecutions = new Map(tradeExecutions)
-    // newTradeExecutions.forEach((value, key) => {
-    //   if (updatedTradeExecutions.get(key)) { //prevent multiple instances of same trade being drawn
-    //     console.log(`removing execution ${updatedTradeExecutions.get(key)!.getTooltip()}`)
-    //     updatedTradeExecutions.get(key)!.remove()
-    //     updatedTradeExecutions.delete(key)
-    //   }
-    //   updatedTradeExecutions.set(key, value)
-    // })
-    // console.log(`updated trade executions`)
-    // console.log(Array.from(updatedTradeExecutions.keys()))
-    setMangoStore((state) => {
-      state.tradingView.tradeExecutions = newTradeExecutions
-    })
-    console.log('new trade executions:')
-    console.dir(newTradeExecutions)
-    console.log('trade executions:')
-    console.dir(tradeExecutions) // these two should be equal, but they aren't. seems like new values from setMangoStore cant be used immediately
+    return newTradeExecutions
   }
 
-  // const deleteTradeExecutions = () => {
-  //   // const tradeExecutions = useMangoStore.getState().tradingView.tradeExecutions
-  //   if (tradeExecutions.size > 0) {
-  //     // tradeExecutions?.forEach((value, key) => {
-  //     console.log(`tradeExecutions size: ${tradeExecutions.size}`)
-
-  //       for (const tradeExecutionAdapter of tradeExecutions.values()) {
-  //         try {
-  //           console.log(`removing execution ${tradeExecutionAdapter.getTooltip()}`)
-  //           tradeExecutionAdapter.remove()
-  //         } catch (error) {
-  //           console.log(`could not delete tradeExecution: ${error}`)
-  //         }  
-  //     }
-  //     // )
-  //     setMangoStore((state) => {
-  //       state.tradingView.tradeExecutions = new Map()
-  //     })
-  //   }
-
-    // if (tradeHistory?.length && chartReady && tvWidgetRef?.current) {
-    //   for (const tradeExecution of tradeExecutions.values()) {
-    //     tradeExecution.remove()
-    //   }
-    // }
-    // setMangoStore(state => {
-    //   state.tradingView.tradeExecutions = new Map()
-    // })
-  // }
-
-  // delete trade executions if showTradeExecutions button is toggled
-  // useEffect(() => {
-  //   !showTradeExecutions ? console.log('useeffect showTradeExecutions deleting trade executions') : console.log('useeffect showTradeExecutions drawing trade executions');
-  //   !showTradeExecutions ? deleteTradeExecutions() : drawTradeExecutions()
-  // }, [showTradeExecutions])
-
-
-  // update trade executions if transaction history changes
-  // useEffect(() => {
-  //   if (chartReady && tvWidgetRef?.current && showTradeExecutions) {
-  //     sleep(2500).then(() => {
-  //       console.log('useeffect mangoAccount deleting trade executions')
-  //       deleteTradeExecutions()
-  //       tvWidgetRef.current?.chart().executeActionById("chartReset")
-  //       console.log('useeffect mangoAccount drawing trade executions')
-  //       drawTradeExecutions()
-  //     })
-
-      // const tradesInMarket = tradeHistory
-      //   .filter(trade => {
-      //     return trade.marketName === selectedMarketName
-      //   }).length
-      // tvWidgetRef.current.onChartReady(() => {
-      //   if (tradeExecutions.size !== tradesInMarket && showTradeExecutions) {
-      //     deleteTradeExecutions()
-      //     drawTradeExecutions()
-      //   }
-      // })
-    // }
-  // }, [mangoAccount])
-
-  useEffect(() => { // TODO this doesn't account for making trades without changing mango account, cant depend on tradeHistory because it changes many times per second for some reason
-    console.log('changing mango account trade history')
-    setMangoAccountTradeHistory(tradeHistory)
-  }, [mangoAccount?.publicKey])
-
-  useEffect(() => {
-    if (mangoAccountTradeHistory !== prevMangoAccountTradeHistory) {
-      console.log('mango account trade history does not match previous')
-      console.dir(prevMangoAccountTradeHistory)
-      console.dir(mangoAccountTradeHistory)
-      refreshTradeExecutions()
-    }
-  }, [mangoAccountTradeHistory])
-
-  useEffect(() => {
-    console.log('trade execution toggle')
-    refreshTradeExecutions()
-  }, [showTradeExecutions])
-
-  const refreshTradeExecutions = () => {
+  const removeTradeExecutions = (tradeExecutions) => {
     if (chartReady && tvWidgetRef?.current) {
-        console.log('removing trade executions')
         for (const val of tradeExecutions.values()) {
           val.remove()
         }
-        setMangoStore((s) => {s.tradingView.tradeExecutions = new Map()})
-        console.log('trade executions should be wiped...') //but they're not
-        console.dir(tradeExecutions)
-        if (showTradeExecutions) {
-          console.log('redrawing trade executions')
-          drawTradeExecutions(mangoAccountTradeHistory)
-        }
     }
+    return new Map()
   }
-  // useEffect(() => {
-  //   // Just here to track how often trade history updates
-  //   console.log(mangoAccount?.publicKey + " tradeHistory updated")
-  // }, [tradeHistory])
 
-  // useEffect(() => {
-  //   //monitor changes to tradeExecutions
-  //   console.log(`useEffect change in tradeExecutions size: ${tradeExecutions.size}`)
-  //   console.log(Array.from(tradeExecutions.keys()))
-  // }, [tradeExecutions.size])
+  const cacheTradeHistory = () => {
+    setMangoAccountTradeHistory(tradeHistory)
+  }
 
-  // useInterval(() => {
-  //   if (chartReady && tvWidgetRef?.current && showTradeExecutions && tradeHistory) {
-  //     sleep(2500).then(() => {
-  //       console.log("useInterval Update - tradeHistory.length: " + tradeHistory.length)
-  //       if (tradeHistory) {
-  //         // deleteTradeExecutions()
-  //         drawTradeExecutions()
-  //       }
-  //     })
-  //   }
-  // }, 10000)
-  
+
+useEffect(() => {
+  cacheTradeHistory()
+  if (showTradeExecutions && connected) {
+    setMangoStore((s) => {s.tradingView.tradeExecutions = drawTradeExecutions(mangoAccountTradeHistory)})
+  } else {
+    setMangoStore((s) => {s.tradingView.tradeExecutions = removeTradeExecutions(tradeExecutions)})
+  } 
+}, [connected, showTradeExecutions])
+
+
+useEffect(() => { //TODO pubkey doesn't update when viewing unowned mango account
+  if (mangoAccountTradeHistory.length !== tradeHistory.length) {
+    cacheTradeHistory()
+  }
+}, [mangoAccount?.publicKey, tradeHistory])
+
+useEffect(() => {
+  removeTradeExecutions(tradeExecutions)
+  if (showTradeExecutions) {
+    setMangoStore((s) => {s.tradingView.tradeExecutions = drawTradeExecutions(mangoAccountTradeHistory)})
+  }
+}, [mangoAccountTradeHistory, selectedMarketName])
 
   return (
     <div id={defaultProps.container as string} className="tradingview-chart" />
