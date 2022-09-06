@@ -1,5 +1,4 @@
 import useMangoStore, { PerpPosition } from '../stores/useMangoStore'
-import BN from 'bn.js'
 import {
   MangoAccount,
   MangoCache,
@@ -36,7 +35,9 @@ export const collectPerpPosition = (
 
   const perpMarketInfo = mangoGroup.perpMarkets[marketConfig.marketIndex]
   const perpAccount = mangoAccount.perpAccounts[marketConfig.marketIndex]
-  const basePosition = perpMarket?.baseLotsToNumber(perpAccount.basePosition)
+  const basePosition =
+    perpMarket?.baseLotsToNumber(perpAccount.basePosition) +
+    perpMarket.baseLotsToNumber(perpAccount.takerBase)
   const indexPrice = mangoGroup
     .getPrice(marketConfig.marketIndex, mangoCache)
     .toNumber()
@@ -119,9 +120,7 @@ const usePerpPositions = () => {
         : []
 
       const openPerpPositions = perpPositions.filter(
-        (p) =>
-          p?.perpAccount?.basePosition &&
-          !p.perpAccount.basePosition.eq(new BN(0))
+        (p) => p?.basePosition && !(p.basePosition === 0)
       ) as PerpPosition[]
 
       setMangoStore((state) => {
@@ -136,9 +135,7 @@ const usePerpPositions = () => {
         }
         state.selectedMangoAccount.unsettledPerpPositions =
           perpPositions.filter(
-            (p) =>
-              p?.perpAccount?.basePosition?.eq(new BN(0)) &&
-              p?.unsettledPnl != 0
+            (p) => p?.basePosition === 0 && p?.unsettledPnl != 0
           ) as PerpPosition[]
       })
     }
