@@ -12,7 +12,7 @@ export default function StatsAssets({
   const [selectedAsset, setSelectedAsset] = useState<string>('BTC')
 
   const selectedStatsData = useMemo(() => {
-    if (stats.length) {
+    if (stats?.length) {
       return stats.filter((stat) => stat.name === selectedAsset)
     }
     return []
