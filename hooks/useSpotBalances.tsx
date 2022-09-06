@@ -24,7 +24,6 @@ useMangoStore.subscribe(
     if (!mangoAccount || !mangoGroup || !mangoCache) {
       return
     }
-    console.time('updating spot bal start')
     const balances: SpotBalance[][] = []
 
     for (const {
@@ -184,7 +183,6 @@ useMangoStore.subscribe(
         },
       ])
     })
-    console.timeEnd('updating spot bal start')
   },
   { equalityFn: shallow }
 )

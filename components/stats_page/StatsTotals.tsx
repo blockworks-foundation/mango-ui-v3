@@ -262,7 +262,7 @@ export default function StatsTotals({
           </div>
           <div className="pb-8">
             <h2 className="mb-4">{t('average-deposit')}</h2>
-            {stats.length && latestStats.length ? (
+            {stats?.length && latestStats?.length ? (
               <Table>
                 <thead>
                   <TrHead>
@@ -310,7 +310,7 @@ export default function StatsTotals({
           </div>
           <>
             <h2 className="mb-4">{t('average-borrow')}</h2>
-            {stats.length && latestStats.length ? (
+            {stats?.length && latestStats?.length ? (
               <Table>
                 <thead>
                   <TrHead>
