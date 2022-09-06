@@ -308,7 +308,7 @@ const PositionsTable: React.FC = () => {
                           ) : null}
                           {tableColumnsToShow['side'] ? (
                             <Td>
-                              <PerpSideBadge perpAccount={perpAccount} />
+                              <PerpSideBadge basePosition={basePosition} />
                             </Td>
                           ) : null}
                           {tableColumnsToShow['position-size'] ? (
@@ -335,14 +335,14 @@ const PositionsTable: React.FC = () => {
                             <Td>
                               {avgEntryPrice
                                 ? formatUsdValue(avgEntryPrice)
-                                : '--'}
+                                : '-'}
                             </Td>
                           ) : null}
                           {tableColumnsToShow['break-even'] ? (
                             <Td>
                               {breakEvenPrice
                                 ? formatUsdValue(breakEvenPrice)
-                                : '--'}
+                                : '-'}
                             </Td>
                           ) : null}
                           {tableColumnsToShow['estimated-liq-price'] ? (
@@ -358,7 +358,7 @@ const PositionsTable: React.FC = () => {
                               {unrealizedPnl ? (
                                 <PnlText pnl={unrealizedPnl} />
                               ) : (
-                                '--'
+                                '-'
                               )}
                             </Td>
                           ) : null}

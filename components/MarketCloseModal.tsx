@@ -80,7 +80,7 @@ const MarketCloseModal: FunctionComponent<MarketCloseModalProps> = ({
         }
       )
       await sleep(500)
-      actions.reloadMangoAccount()
+      await actions.reloadMangoAccount()
       notify({ title: t('transaction-sent'), txid })
     } catch (e) {
       notify({
