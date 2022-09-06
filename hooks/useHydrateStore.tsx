@@ -6,6 +6,7 @@ import { Market, Orderbook as SpotOrderBook } from '@project-serum/serum'
 import {
   BookSide,
   BookSideLayout,
+  MangoAccount,
   MangoAccountLayout,
   PerpMarket,
   ReferrerMemory,
@@ -142,17 +143,23 @@ const useHydrateStore = () => {
         const mangoAccountLastUpdated = new Date(
           useMangoStore.getState().selectedMangoAccount.lastUpdatedAt
         )
+        const mangoAccount =
+          useMangoStore.getState().selectedMangoAccount.current
+        if (!mangoAccount) return
         const newUpdatedAt = new Date()
         const timeDiff =
           mangoAccountLastUpdated.getTime() - newUpdatedAt.getTime()
 
         // only updated mango account if it's been more than 1 second since last update
-        if (Math.abs(timeDiff / 1000) >= 1 && context.slot > lastSeenSlot) {
+        if (Math.abs(timeDiff) >= 500 && context.slot > lastSeenSlot) {
           const decodedMangoAccount = MangoAccountLayout.decode(info?.data)
-          const newMangoAccount = Object.assign(
-            mangoAccount,
+          const newMangoAccount = new MangoAccount(
+            mangoAccount.publicKey,
             decodedMangoAccount
           )
+          newMangoAccount.spotOpenOrdersAccounts =
+            mangoAccount.spotOpenOrdersAccounts
+          newMangoAccount.advancedOrders = mangoAccount.advancedOrders
 
           setMangoStore((state) => {
             state.selectedMangoAccount.lastSlot = context.slot
