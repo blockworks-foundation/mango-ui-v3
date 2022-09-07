@@ -48,9 +48,9 @@ export default function useFees(): {
       mangoGroup.perpMarkets[marketIndex].makerFee.toFixed()
     )
     // @ts-ignore
-    refSurcharge = mangoGroup.refSurchargeCentibps / CENTIBPS_PER_UNIT
+    refSurcharge = mangoGroup.refSurchargeCentibpsTier1 / CENTIBPS_PER_UNIT
     // @ts-ignore
-    const refShare = mangoGroup.refShareCentibps / CENTIBPS_PER_UNIT
+    const refShare = mangoGroup.refShareCentibpsTier1 / CENTIBPS_PER_UNIT
 
     const mngoConfig = getSpotMarketByBaseSymbol(groupConfig, 'MNGO')
     const mngoRequired = mngoConfig
