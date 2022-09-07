@@ -2,12 +2,15 @@ import { useCallback, useMemo, useState } from 'react'
 import useMangoStore from '../stores/useMangoStore'
 import Button from '../components/Button'
 import { notify } from '../utils/notifications'
-import { ExclamationIcon, InformationCircleIcon } from '@heroicons/react/solid'
+import {
+  ExclamationIcon,
+  // InformationCircleIcon
+} from '@heroicons/react/solid'
 import { Market } from '@project-serum/serum'
 import {
-  getMarketIndexBySymbol,
+  // getMarketIndexBySymbol,
   getTokenBySymbol,
-  ZERO_I80F48,
+  // ZERO_I80F48,
 } from '@blockworks-foundation/mango-client'
 import Loading from './Loading'
 import { useViewport } from '../hooks/useViewport'
@@ -16,7 +19,7 @@ import {
   floorToDecimal,
   formatUsdValue,
   getPrecisionDigits,
-  usdFormatter,
+  // usdFormatter,
 } from '../utils'
 import { ExpandableRow, Table, Td, Th, TrBody, TrHead } from './TableElements'
 import DepositModal from './DepositModal'
@@ -27,7 +30,7 @@ import { TransactionSignature } from '@solana/web3.js'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useWallet } from '@solana/wallet-adapter-react'
-import Tooltip from './Tooltip'
+// import Tooltip from './Tooltip'
 
 const BalancesTable = ({
   showZeroBalances = false,
@@ -63,7 +66,7 @@ const BalancesTable = ({
   const actions = useMangoStore((s) => s.actions)
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
   const mangoGroupConfig = useMangoStore((s) => s.selectedMangoGroup.config)
-  const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
+  // const mangoCache = useMangoStore((s) => s.selectedMangoGroup.cache)
   const selectedMarket = useMangoStore((s) => s.selectedMarket.current)
   const marketConfig = useMangoStore((s) => s.selectedMarket.config)
   const setMangoStore = useMangoStore((s) => s.set)
@@ -265,21 +268,21 @@ const BalancesTable = ({
               <Table>
                 <thead>
                   <TrHead>
-                    <Th>{t('asset')}</Th>
+                    <Th>{''}</Th>
                     <Th>{t('deposits')}</Th>
                     <Th>{t('borrows')}</Th>
                     <Th>{t('in-orders')}</Th>
                     <Th>{t('unsettled')}</Th>
                     <Th>{t('net-balance')}</Th>
                     <Th>{t('value')}</Th>
-                    <Th>
+                    {/* <Th>
                       <Tooltip content={t('tooltip-estimated-liq-price')}>
                         <span className="flex items-center">
                           {t('estimated-liq-price')}
                           <InformationCircleIcon className="ml-1 h-4 w-4 flex-shrink-0 text-th-fgd-4" />
                         </span>
                       </Tooltip>
-                    </Th>
+                    </Th> */}
                     <Th>
                       {t('deposit')}
                       <span className="mx-1 text-th-fgd-4">|</span>
@@ -302,23 +305,23 @@ const BalancesTable = ({
                       return null
                     }
 
-                    const marketIndex = getMarketIndexBySymbol(
-                      mangoGroupConfig,
-                      balance.symbol
-                    )
+                    // const marketIndex = getMarketIndexBySymbol(
+                    //   mangoGroupConfig,
+                    //   balance.symbol
+                    // )
 
-                    const liquidationPrice =
-                      mangoGroup &&
-                      mangoAccount &&
-                      marketIndex &&
-                      mangoGroup &&
-                      mangoCache
-                        ? mangoAccount.getLiquidationPrice(
-                            mangoGroup,
-                            mangoCache,
-                            marketIndex
-                          )
-                        : undefined
+                    // const liquidationPrice =
+                    //   mangoGroup &&
+                    //   mangoAccount &&
+                    //   marketIndex &&
+                    //   mangoGroup &&
+                    //   mangoCache
+                    //     ? mangoAccount.getLiquidationPrice(
+                    //         mangoGroup,
+                    //         mangoCache,
+                    //         marketIndex
+                    //       )
+                    //     : undefined
 
                     return (
                       <TrBody key={`${balance.symbol}${index}`}>
@@ -396,11 +399,11 @@ const BalancesTable = ({
                           )}
                         </Td>
                         <Td>{formatUsdValue(balance.value.toNumber())}</Td>
-                        <Td>
+                        {/* <Td>
                           {liquidationPrice && liquidationPrice.gt(ZERO_I80F48)
                             ? usdFormatter(liquidationPrice)
                             : '–'}
-                        </Td>
+                        </Td> */}
                         <Td>
                           <span className="text-th-green">
                             {balance.depositRate.toFixed(2)}%
@@ -481,23 +484,23 @@ const BalancesTable = ({
                   ) {
                     return null
                   }
-                  const marketIndex = getMarketIndexBySymbol(
-                    mangoGroupConfig,
-                    balance.symbol
-                  )
+                  // const marketIndex = getMarketIndexBySymbol(
+                  //   mangoGroupConfig,
+                  //   balance.symbol
+                  // )
 
-                  const liquidationPrice =
-                    mangoGroup &&
-                    mangoAccount &&
-                    marketIndex &&
-                    mangoGroup &&
-                    mangoCache
-                      ? mangoAccount.getLiquidationPrice(
-                          mangoGroup,
-                          mangoCache,
-                          marketIndex
-                        )
-                      : undefined
+                  // const liquidationPrice =
+                  //   mangoGroup &&
+                  //   mangoAccount &&
+                  //   marketIndex &&
+                  //   mangoGroup &&
+                  //   mangoCache
+                  //     ? mangoAccount.getLiquidationPrice(
+                  //         mangoGroup,
+                  //         mangoCache,
+                  //         marketIndex
+                  //       )
+                  //     : undefined
                   return (
                     <ExpandableRow
                       buttonTemplate={
@@ -556,7 +559,7 @@ const BalancesTable = ({
                               </div>
                               {formatUsdValue(balance.value.toNumber())}
                             </div>
-                            <div className="text-left">
+                            {/* <div className="text-left">
                               <div className="pb-0.5 text-xs text-th-fgd-3">
                                 <Tooltip
                                   content={t('tooltip-estimated-liq-price')}
@@ -571,7 +574,7 @@ const BalancesTable = ({
                               liquidationPrice.gt(ZERO_I80F48)
                                 ? usdFormatter(liquidationPrice)
                                 : '–'}
-                            </div>
+                            </div> */}
                             <div className="text-left text-th-fgd-4">
                               <div className="pb-0.5 text-xs text-th-fgd-3">
                                 <span>{t('deposit')}</span>
