@@ -50,7 +50,6 @@ const TVChartContainer = () => {
   )
   const setMangoStore = useMangoStore.getState().set
   const selectedMarketConfig = useMangoStore((s) => s.selectedMarket.config)
-  const openOrders = useMangoStore((s) => s.selectedMangoAccount.openOrders)
   const actions = useMangoStore((s) => s.actions)
   const isMobile = width ? width < breakpoints.sm : false
   const mangoClient = useMangoStore.getState().connection.client
@@ -99,8 +98,10 @@ const TVChartContainer = () => {
         tvWidgetRef.current.activeChart().resolution(),
         () => {
           if (showOrderLines) {
+            const openOrders =
+              useMangoStore.getState().selectedMangoAccount.openOrders
             deleteLines()
-            drawLinesForMarket()
+            drawLinesForMarket(openOrders)
           }
         }
       )
@@ -580,7 +581,7 @@ const TVChartContainer = () => {
     }
   }
 
-  const drawLinesForMarket = () => {
+  const drawLinesForMarket = (openOrders) => {
     const newOrderLines = new Map()
     if (openOrders?.length) {
       for (const { order, market } of openOrders) {
@@ -618,38 +619,46 @@ const TVChartContainer = () => {
 
   // updated order lines if a user's open orders change
   useEffect(() => {
+    let subscription
     if (chartReady && tvWidgetRef?.current) {
-      const orderLines = useMangoStore.getState().tradingView.orderLines
-      tvWidgetRef.current.onChartReady(() => {
-        let matchingOrderLines = 0
-        let openOrdersForMarket = 0
+      subscription = useMangoStore.subscribe(
+        (state) => state.selectedMangoAccount.openOrders,
+        (openOrders) => {
+          const orderLines = useMangoStore.getState().tradingView.orderLines
+          tvWidgetRef.current?.onChartReady(() => {
+            let matchingOrderLines = 0
+            let openOrdersForMarket = 0
 
-        for (const [key] of orderLines) {
-          openOrders?.forEach(({ order }) => {
-            if (order.orderId == key) {
-              matchingOrderLines += 1
+            for (const [key] of orderLines) {
+              openOrders?.forEach(({ order }) => {
+                if (order.orderId == key) {
+                  matchingOrderLines += 1
+                }
+              })
             }
+
+            openOrders?.forEach(({ market }) => {
+              if (market.config.name == selectedMarketName) {
+                openOrdersForMarket += 1
+              }
+            })
+
+            tvWidgetRef.current?.activeChart().dataReady(() => {
+              if (
+                (showOrderLines &&
+                  matchingOrderLines !== openOrdersForMarket) ||
+                orderLines?.size != matchingOrderLines
+              ) {
+                deleteLines()
+                drawLinesForMarket(openOrders)
+              }
+            })
           })
         }
-
-        openOrders?.forEach(({ market }) => {
-          if (market.config.name == selectedMarketName) {
-            openOrdersForMarket += 1
-          }
-        })
-
-        tvWidgetRef.current?.activeChart().dataReady(() => {
-          if (
-            (showOrderLines && matchingOrderLines !== openOrdersForMarket) ||
-            orderLines?.size != matchingOrderLines
-          ) {
-            deleteLines()
-            drawLinesForMarket()
-          }
-        })
-      })
+      )
     }
-  }, [chartReady, openOrders, showOrderLines])
+    return subscription
+  }, [chartReady, showOrderLines, selectedMarketName])
 
   return (
     <div id={defaultProps.container as string} className="tradingview-chart" />
