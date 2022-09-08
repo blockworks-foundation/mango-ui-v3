@@ -36,7 +36,6 @@ import {
   mangoGroupConfigSelector,
   marketConfigSelector,
   marketSelector,
-  orderbookSelector,
   setStoreSelector,
 } from '../stores/selectors'
 import { Market } from '@project-serum/serum'
@@ -128,7 +127,6 @@ export default function Orderbook({ depth = 8 }) {
   const { t } = useTranslation('common')
   const groupConfig = useMangoStore(mangoGroupConfigSelector)
   const marketConfig = useMangoStore(marketConfigSelector)
-  const orderbook = useMangoStore(orderbookSelector)
   const market = useMangoStore(marketSelector)
   const markPrice = useMarkPrice()
 
@@ -155,17 +153,13 @@ export default function Orderbook({ depth = 8 }) {
   }, [market])
 
   useInterval(() => {
+    const orderbook = useMangoStore.getState().selectedMarket.orderBook
     if (
-      nextOrderbookData?.current?.bids &&
-      (!currentOrderbookData.current ||
-        !isEqualLodash(
-          currentOrderbookData.current.bids,
-          nextOrderbookData.current.bids
-        ) ||
-        !isEqualLodash(
-          currentOrderbookData.current.asks,
-          nextOrderbookData.current.asks
-        ) ||
+      nextOrderbookData?.current &&
+      (!isEqualLodash(
+        currentOrderbookData.current,
+        nextOrderbookData.current
+      ) ||
         previousDepth !== depth ||
         previousGrouping !== grouping)
     ) {
@@ -241,14 +235,19 @@ export default function Orderbook({ depth = 8 }) {
         setOrderbookData(null)
       }
     }
-  }, 500)
+  }, 400)
 
-  useEffect(() => {
-    nextOrderbookData.current = {
-      bids: orderbook?.bids,
-      asks: orderbook?.asks,
-    }
-  }, [orderbook])
+  useEffect(
+    () =>
+      useMangoStore.subscribe(
+        (state) =>
+          (nextOrderbookData.current = {
+            bids: state.selectedMarket.orderBook?.bids,
+            asks: state.selectedMarket.orderBook?.asks,
+          })
+      ),
+    []
+  )
 
   const handleLayoutChange = () => {
     setDefaultLayout(!defaultLayout)
