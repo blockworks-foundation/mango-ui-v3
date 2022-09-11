@@ -165,7 +165,8 @@ export default function Account() {
             state.selectedMangoAccount.current = unOwnedMangoAccount
             state.selectedMangoAccount.initialLoad = false
           })
-          actions.fetchTradeHistory()
+          await actions.fetchTradeHistory()
+          await fetchProfileDetails(unOwnedMangoAccount.owner.toString())
           setResetOnLeave(true)
         }
       } catch (error) {
@@ -295,12 +296,6 @@ export default function Account() {
       setLoadProfileDetails(false)
     }
   }
-
-  useEffect(() => {
-    if (mangoAccount && pubkey) {
-      fetchProfileDetails(mangoAccount.owner.toString())
-    }
-  }, [mangoAccount, pubkey])
 
   return (
     <div className="pt-6">
