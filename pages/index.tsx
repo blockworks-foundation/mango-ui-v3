@@ -13,7 +13,6 @@ import { actionsSelector, marketConfigSelector } from '../stores/selectors'
 import { PublicKey } from '@solana/web3.js'
 import dayjs from 'dayjs'
 import { tokenPrecision } from 'utils'
-import SerumCompModal, { SEEN_SERUM_COMP_KEY } from 'components/SerumCompModal'
 import AccountIntro from 'components/AccountIntro'
 
 export async function getStaticProps({ locale }) {
@@ -34,11 +33,6 @@ export async function getStaticProps({ locale }) {
 
 const PerpMarket: React.FC = () => {
   const [alphaAccepted] = useLocalStorageState(ALPHA_MODAL_KEY, false)
-  const [seenSerumCompInfo, setSeenSerumCompInfo] = useLocalStorageState(
-    SEEN_SERUM_COMP_KEY,
-    false
-  )
-
   const setMangoStore = useMangoStore((s) => s.set)
   const marketConfig = useMangoStore(marketConfigSelector)
   const actions = useMangoStore(actionsSelector)
@@ -147,12 +141,6 @@ const PerpMarket: React.FC = () => {
       {!alphaAccepted && (
         <AlphaModal isOpen={!alphaAccepted} onClose={() => {}} />
       )}
-      {!seenSerumCompInfo && alphaAccepted ? (
-        <SerumCompModal
-          isOpen={!seenSerumCompInfo && alphaAccepted}
-          onClose={() => setSeenSerumCompInfo(true)}
-        />
-      ) : null}
 
       <AccountIntro />
     </>
