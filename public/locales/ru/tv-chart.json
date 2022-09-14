@@ -9,5 +9,6 @@
   "outside-range": "Цена ордера вне диапазона",
   "slippage-accept": "Пожалуйста, используйте форму ввода сделки, если вы хотите принять потенциальное проскальзывание.",
   "slippage-warning": "Цена вашего ордера ({{updatedOrderPrice}}) превышает 5% {{aboveBelow}} от текущей рыночной цены ({{selectedMarketPrice}}) что указывает на то, что вы можете понести значительное проскальзывание.",
-  "toggle-order-line": "Переключить видимость строки ордера"
+  "toggle-order-line": "Переключить видимость строки ордера",
+  "toggle-trade-executions": "Toggle trade execution visibility"
 }
