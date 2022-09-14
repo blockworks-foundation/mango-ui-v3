@@ -90,6 +90,7 @@ const TopBar = () => {
   const { connected, publicKey } = useWallet()
   const mangoAccount = useMangoStore((s) => s.selectedMangoAccount.current)
   const initialLoad = useMangoStore((s) => s.selectedMangoAccount.initialLoad)
+  const loading = useMangoStore((s) => s.selectedMangoAccount.loading)
   const router = useRouter()
   const [showAccountsModal, setShowAccountsModal] = useState(false)
   const [showSettingsModal, setShowSettingsModal] = useState(false)
@@ -132,7 +133,7 @@ const TopBar = () => {
                 : ''}
             </span>
             {connected || pubkey ? (
-              !initialLoad ? (
+              !initialLoad && !loading ? (
                 mangoAccount ? (
                   <div
                     className="default-transition flex items-center font-bold text-th-fgd-1 hover:text-th-fgd-3"
