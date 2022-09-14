@@ -7,7 +7,7 @@ import {
   ResolutionString,
 } from '../public/charting_library'
 import { CHART_DATA_FEED } from '../utils/chartDataConnector'
-import useMangoStore, { serumProgramId } from '../stores/useMangoStore'
+import useMangoStore from '../stores/useMangoStore'
 import { useViewport } from '../hooks/useViewport'
 import { breakpoints } from './TradePageGrid'
 import { Order, Market } from '@project-serum/serum/lib/market'
@@ -19,12 +19,6 @@ import { useTranslation } from 'next-i18next'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import { useWallet, Wallet } from '@solana/wallet-adapter-react'
 import dayjs from 'dayjs'
-import {
-  actionsSelector,
-  mangoGroupSelector,
-} from 'stores/selectors'
-import { useRouter } from 'next/router'
-import { PublicKey } from '@solana/web3.js'
 
 export interface ChartContainerProps {
   container: ChartingLibraryWidgetOptions['container']
@@ -49,10 +43,7 @@ const TVChartContainer = () => {
   const { t } = useTranslation(['common', 'tv-chart'])
   const { theme } = useTheme()
   const { width } = useViewport()
-
-  const router = useRouter()
   const { wallet, publicKey, connected } = useWallet()
-
   const [chartReady, setChartReady] = useState(false)
   const [showOrderLinesLocalStorage, toggleShowOrderLinesLocalStorage] =
     useLocalStorageState(SHOW_ORDER_LINES_KEY, true)
@@ -64,7 +55,6 @@ const TVChartContainer = () => {
   )
 
   const setMangoStore = useMangoStore.getState().set
-  const mangoGroup = useMangoStore(mangoGroupSelector)
   const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
   const selectedMarketConfig = useMangoStore((s) => s.selectedMarket.config)
   const actions = useMangoStore((s) => s.actions)
@@ -75,77 +65,6 @@ const TVChartContainer = () => {
   const tradeHistoryAndLiquidations = useMangoStore((s) => s.tradeHistory.parsed)
   const tradeHistory = tradeHistoryAndLiquidations.filter((t) => !('liqor' in t))
   const [cachedTradeHistory, setCachedTradeHistory] = useState(tradeHistory)
-  
-  const connecting = wallet?.adapter?.connecting
-  const { pubkey } = router.query
-  const [resetOnLeave, setResetOnLeave] = useState(false)
-
-  useEffect(() => {
-    async function loadUnownedMangoAccount() {
-      try {
-        if (!pubkey) {
-          return
-        }
-        console.log(new PublicKey(pubkey).toString())
-        const unownedMangoAccountPubkey = new PublicKey(pubkey)
-        const mangoClient = useMangoStore.getState().connection.client
-        if (mangoGroup) {
-          const unOwnedMangoAccount = await mangoClient.getMangoAccount(
-            unownedMangoAccountPubkey,
-            serumProgramId
-          )
-          setMangoStore((state) => {
-            state.selectedMangoAccount.current = unOwnedMangoAccount
-            state.selectedMangoAccount.initialLoad = false
-          })
-
-          actions.fetchTradeHistory()
-          if (showTradeExecutions && tvWidgetRef && tvWidgetRef.current && chartReady) {
-            setCachedTradeHistory(tradeHistory)
-          }
-          cycleShowTradeExecutions()
-          setResetOnLeave(true)
-        }
-      } catch (error) {
-        console.log('error', error)
-        router.push(`/?name=${selectedMarketName}`)
-      }
-    }
-
-    if (pubkey) {
-      setMangoStore((state) => {
-        state.selectedMangoAccount.initialLoad = true
-      })
-      loadUnownedMangoAccount()
-    }
-  }, [pubkey, mangoGroup])
-
-  useEffect(() => {
-    const handleRouteChange = () => {
-      if (resetOnLeave) {
-        setMangoStore((state) => {
-          state.selectedMangoAccount.current = null
-        })
-      }
-    }
-    router.events.on('routeChangeStart', handleRouteChange)
-    return () => {
-      router.events.off('routeChangeStart', handleRouteChange)
-    }
-  }, [resetOnLeave])
-
-  useEffect(() => {
-    if (connecting) {
-      router.push('/')
-    }
-  }, [connecting, router])
-
-  function cycleShowTradeExecutions () {
-    toggleShowTradeExecutions((prevState) => !prevState)
-    sleep(1000).then(() => {
-      toggleShowTradeExecutions((prevState) => !prevState)
-    })
-  }
 
   // @ts-ignore
   const defaultProps: ChartContainerProps = useMemo(
@@ -196,7 +115,6 @@ const TVChartContainer = () => {
             drawLinesForMarket(openOrders)
           }
           if (showTradeExecutions) {
-            console.log('useeffect marketconfig.name, chartready')
             setCachedTradeHistory(tradeHistory)
           }
         }
@@ -350,6 +268,13 @@ const TVChartContainer = () => {
     }
     button.setAttribute('title', t('tv-chart:toggle-trade-executions'))
     button.addEventListener('click', toggleTradeExecutions)
+  }
+
+  function cycleShowTradeExecutions () {
+    toggleShowTradeExecutions((prevState) => !prevState)
+    sleep(1000).then(() => {
+      toggleShowTradeExecutions((prevState) => !prevState)
+    })
   }
 
   function toggleTradeExecutions() {
@@ -826,7 +751,7 @@ const TVChartContainer = () => {
                 console.log(`Could not create execution shape for trade ${trade.seqNum}${trade.marketName}`)
               }
             } catch (error) {
-              // console.log(`could not draw arrow: ${error}`)
+              console.log(`could not draw arrow: ${error}`)
             }
       })
     return newTradeExecutions
@@ -853,7 +778,7 @@ const TVChartContainer = () => {
 
 
   useEffect(() => { 
-    if (!pubkey && cachedTradeHistory.length !== tradeHistory.length) {
+    if (cachedTradeHistory.length !== tradeHistory.length) {
       setCachedTradeHistory(tradeHistory)
     }
   }, [mangoAccount?.publicKey, tradeHistory])
