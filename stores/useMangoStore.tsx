@@ -43,7 +43,6 @@ import { decodeBook } from '../hooks/useHydrateStore'
 import { IOrderLineAdapter } from '../public/charting_library/charting_library'
 import { Wallet } from '@solana/wallet-adapter-react'
 import { coingeckoIds, fetchNftsFromHolaplexIndexer } from 'utils/tokens'
-import { sign } from 'tweetnacl'
 import bs58 from 'bs58'
 import { PerpMarketInfo } from '@blockworks-foundation/mango-client'
 
@@ -105,6 +104,22 @@ export const LAST_ACCOUNT_KEY = 'lastAccountViewed-3.0'
 // Used to retry loading the MangoGroup and MangoAccount if an rpc node error occurs
 let mangoGroupRetryAttempt = 0
 let mangoAccountRetryAttempt = 0
+
+const initMangoClient = (connection: Connection): MangoClient => {
+  return new MangoClient(connection, programId, {
+    timeout: CLIENT_TX_TIMEOUT,
+    prioritizationFee: 10000,
+    postSendTxCallback: ({ txid }: { txid: string }) => {
+      notify({
+        title: 'Transaction sent',
+        description: 'Waiting for confirmation',
+        type: 'confirm',
+        txid: txid,
+      })
+    },
+    blockhashCommitment: 'confirmed',
+  })
+}
 
 // an object with keys of Solana account addresses that we are
 // subscribing to with connection.onAccountChange() in the
@@ -364,19 +379,7 @@ const useMangoStore = create<
     }
 
     const connection = new Connection(rpcUrl, 'processed' as Commitment)
-    const client = new MangoClient(connection, programId, {
-      timeout: CLIENT_TX_TIMEOUT,
-      prioritizationFee: 2,
-      postSendTxCallback: ({ txid }: { txid: string }) => {
-        notify({
-          title: 'Transaction sent',
-          description: 'Waiting for confirmation',
-          type: 'confirm',
-          txid: txid,
-        })
-      },
-      blockhashCommitment: 'confirmed',
-    })
+    const client = initMangoClient(connection)
     return {
       marketsInfo: [],
       notificationIdCounter: 0,
@@ -945,7 +948,7 @@ const useMangoStore = create<
 
           const newConnection = new Connection(endpointUrl, 'processed')
 
-          const newClient = new MangoClient(newConnection, programId)
+          const newClient = initMangoClient(newConnection)
 
           set((state) => {
             state.connection.endpoint = endpointUrl
@@ -1252,8 +1255,6 @@ const useMangoStore = create<
             })
             const message = new TextEncoder().encode(messageString)
             const signature = await signMessage(message)
-            if (!sign.detached.verify(message, signature, publicKey.toBytes()))
-              throw new Error('Invalid signature!')
 
             const requestOptions = {
               method: 'POST',
@@ -1293,8 +1294,6 @@ const useMangoStore = create<
             })
             const message = new TextEncoder().encode(messageString)
             const signature = await signMessage(message)
-            if (!sign.detached.verify(message, signature, publicKey.toBytes()))
-              throw new Error('Invalid signature!')
 
             const requestOptions = {
               method: 'DELETE',

@@ -34,7 +34,6 @@ import { Label } from 'components'
 import Select from 'components/Select'
 import EmptyState from 'components/EmptyState'
 import { handleWalletConnect } from 'components/ConnectWalletButton'
-import { sign } from 'tweetnacl'
 import bs58 from 'bs58'
 import Loading from 'components/Loading'
 import InlineNotification from 'components/InlineNotification'
@@ -745,8 +744,6 @@ const EditProfileModal = ({
         })
         const message = new TextEncoder().encode(messageString)
         const signature = await signMessage(message)
-        if (!sign.detached.verify(message, signature, publicKey.toBytes()))
-          throw new Error('Invalid signature!')
 
         const requestOptions = {
           method: 'POST',
