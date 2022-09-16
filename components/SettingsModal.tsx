@@ -27,7 +27,10 @@ const RPC_URLS = [
     value:
       'https://solana-api.syndica.io/access-token/4ywEBJNxuwPLXXU9UlMK67fAMZBt1GLdwuXyXSYnoYPn5aXajT8my0R5klXhYRkk/rpc',
   },
-  { label: 'Triton (RPC Pool)', value: 'https://mango.rpcpool.com' },
+  {
+    label: 'Triton (RPC Pool)',
+    value: 'https://mango-mango-d092.mainnet.rpcpool.com/',
+  },
   { label: 'Genesys Go', value: 'https://mango.genesysgo.net' },
   {
     label: 'Project Serum',
@@ -52,7 +55,7 @@ export const LANGS = [
 
 const CUSTOM_RPC = RPC_URLS.find((n) => n.label === 'Custom')
 
-export const RPC_URL_KEY = 'rpc-url-key-0.10'
+export const RPC_URL_KEY = 'rpc-url-key-0.11'
 export const DEFAULT_MARKET_KEY = 'defaultMarket-0.3'
 export const ORDERBOOK_FLASH_KEY = 'showOrderbookFlash'
 export const DEFAULT_SPOT_MARGIN_KEY = 'defaultSpotMargin'
@@ -68,7 +71,7 @@ const SettingsModal = ({ isOpen, onClose }) => {
   const [settingsView, setSettingsView] = useState('')
   const { theme } = useTheme()
   const [savedLanguage] = useLocalStorageState('language', '')
-  const [rpcEndpointUrl] = useLocalStorageState(RPC_URL_KEY, RPC_URLS[0].value)
+  const [rpcEndpointUrl] = useLocalStorageState(RPC_URL_KEY, ENDPOINTS[0].url)
 
   const [defaultMarket] = useLocalStorageState(
     DEFAULT_MARKET_KEY,
