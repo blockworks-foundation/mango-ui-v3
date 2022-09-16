@@ -108,7 +108,7 @@ let mangoAccountRetryAttempt = 0
 const initMangoClient = (connection: Connection): MangoClient => {
   return new MangoClient(connection, programId, {
     timeout: CLIENT_TX_TIMEOUT,
-    prioritizationFee: 10000,
+    prioritizationFee: 5000,
     postSendTxCallback: ({ txid }: { txid: string }) => {
       notify({
         title: 'Transaction sent',
