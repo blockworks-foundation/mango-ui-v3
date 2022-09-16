@@ -36,7 +36,7 @@ import { Notification, notify } from '../utils/notifications'
 import {
   DEFAULT_MARKET_KEY,
   initialMarket,
-  NODE_URL_KEY,
+  RPC_URL_KEY,
 } from '../components/SettingsModal'
 import { MSRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
 import { decodeBook } from '../hooks/useHydrateStore'
@@ -364,7 +364,7 @@ const useMangoStore = create<
   subscribeWithSelector((set, get) => {
     let rpcUrl = ENDPOINT?.url
     if (typeof window !== 'undefined' && CLUSTER === 'mainnet') {
-      const urlFromLocalStorage = localStorage.getItem(NODE_URL_KEY)
+      const urlFromLocalStorage = localStorage.getItem(RPC_URL_KEY)
       rpcUrl = urlFromLocalStorage
         ? JSON.parse(urlFromLocalStorage)
         : ENDPOINT?.url
