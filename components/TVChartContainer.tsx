@@ -733,8 +733,6 @@ const TVChartContainer = () => {
         .slice(0, TRADE_EXECUTION_LIMIT)
         .forEach(trade => {
             try {
-              const oldArrow = tradeExecutions.get(`${trade.seqNum}${trade.marketName}`)
-              oldArrow ? oldArrow.remove() : null;
               const arrowID = tvWidgetRef.current!.chart()
                 .createExecutionShape()
                 .setTime(dayjs(trade.loadTimestamp).unix())
@@ -760,7 +758,11 @@ const TVChartContainer = () => {
   const removeTradeExecutions = (tradeExecutions) => {
     if (chartReady && tvWidgetRef?.current) {
         for (const val of tradeExecutions.values()) {
-          val.remove()
+          try {
+            val.remove()
+          } catch (error) {
+            console.log(`arrow ${val.seqNum}${val.marketName} could not be removed`)
+          }
         }
     }
     setMangoStore((s) => {s.tradingView.tradeExecutions = new Map()})
