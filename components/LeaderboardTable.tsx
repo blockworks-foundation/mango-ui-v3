@@ -22,8 +22,10 @@ const formatLeaderboardData = async (leaderboard) => {
   const leaderboardData = [] as any[]
   for (const item of leaderboard) {
     const profileDetails = parsedProfileDetailsResponse[item.wallet_pk]
-    item.profile = profileDetails ? profileDetails : null
-    leaderboardData.push(item)
+    leaderboardData.push({
+      ...item,
+      profile: profileDetails ? profileDetails : null,
+    })
   }
 
   return leaderboardData
