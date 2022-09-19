@@ -50,9 +50,7 @@ const TVChartContainer = () => {
   const [showOrderLines, toggleShowOrderLines] = useState(
     showOrderLinesLocalStorage
   )
-  const [showTradeExecutions, toggleShowTradeExecutions] = useState(
-    false
-  )
+  const [showTradeExecutions, toggleShowTradeExecutions] = useState(false)
 
   const setMangoStore = useMangoStore.getState().set
   const mangoAccount = useMangoStore.getState().selectedMangoAccount.current
@@ -62,8 +60,12 @@ const TVChartContainer = () => {
   const mangoClient = useMangoStore.getState().connection.client
   const selectedMarketName = selectedMarketConfig.name
   const tradeExecutions = useMangoStore((s) => s.tradingView.tradeExecutions)
-  const tradeHistoryAndLiquidations = useMangoStore((s) => s.tradeHistory.parsed)
-  const tradeHistory = tradeHistoryAndLiquidations.filter((t) => !('liqor' in t))
+  const tradeHistoryAndLiquidations = useMangoStore(
+    (s) => s.tradeHistory.parsed
+  )
+  const tradeHistory = tradeHistoryAndLiquidations.filter(
+    (t) => !('liqor' in t)
+  )
   const [cachedTradeHistory, setCachedTradeHistory] = useState(tradeHistory)
 
   // @ts-ignore
@@ -176,7 +178,10 @@ const TVChartContainer = () => {
         defaultProps.container as ChartingLibraryWidgetOptions['container'],
       library_path: defaultProps.libraryPath as string,
       locale: 'en',
-      enabled_features: ['hide_left_toolbar_by_default', 'study_templates'],
+      enabled_features: [
+        'hide_left_toolbar_by_default',
+        publicKey ? 'study_templates' : '',
+      ],
       disabled_features: [
         'use_localstorage_for_settings',
         'timeframes_toolbar',
@@ -222,8 +227,8 @@ const TVChartContainer = () => {
 
     // Create order lines and trade executions buttons
     tvWidgetRef.current.onChartReady(function () {
-      createOLButton();
-      createTEButton();
+      createOLButton()
+      createTEButton()
       setChartReady(true)
     })
     //eslint-disable-next-line
@@ -270,7 +275,7 @@ const TVChartContainer = () => {
     button.addEventListener('click', toggleTradeExecutions)
   }
 
-  function cycleShowTradeExecutions () {
+  function cycleShowTradeExecutions() {
     toggleShowTradeExecutions((prevState) => !prevState)
     sleep(1000).then(() => {
       toggleShowTradeExecutions((prevState) => !prevState)
@@ -726,60 +731,77 @@ const TVChartContainer = () => {
 
   const drawTradeExecutions = (trades) => {
     const newTradeExecutions = new Map()
-      trades 
-        .filter(trade => {
-          return trade.marketName === selectedMarketName 
-        })
-        .slice(0, TRADE_EXECUTION_LIMIT)
-        .forEach(trade => {
+    trades
+      .filter((trade) => {
+        return trade.marketName === selectedMarketName
+      })
+      .slice(0, TRADE_EXECUTION_LIMIT)
+      .forEach((trade) => {
+        try {
+          const arrowID = tvWidgetRef
+            .current!.chart()
+            .createExecutionShape()
+            .setTime(dayjs(trade.loadTimestamp).unix())
+            .setDirection(trade.side)
+            .setArrowHeight(6)
+            .setArrowColor(
+              trade.side === 'buy'
+                ? theme === 'Mango'
+                  ? '#AFD803'
+                  : '#5EBF4D'
+                : theme === 'Mango'
+                ? '#E54033'
+                : '#CC2929'
+            )
+          if (arrowID) {
             try {
-              const arrowID = tvWidgetRef.current!.chart()
-                .createExecutionShape()
-                .setTime(dayjs(trade.loadTimestamp).unix())
-                .setDirection(trade.side)
-                .setArrowHeight(6)
-                .setArrowColor(trade.side === 'buy' ? theme === 'Mango' ? '#AFD803' : '#5EBF4D' : theme === 'Mango' ? '#E54033' : '#CC2929')
-              if (arrowID) {
-                try {
-                  newTradeExecutions.set(`${trade.seqNum}${trade.marketName}`, arrowID)
-                } catch (error) {
-                  console.log('couldnt set newTradeExecution')                  
-                }
-              } else {
-                console.log(`Could not create execution shape for trade ${trade.seqNum}${trade.marketName}`)
-              }
+              newTradeExecutions.set(
+                `${trade.seqNum}${trade.marketName}`,
+                arrowID
+              )
             } catch (error) {
-              console.log(`could not draw arrow: ${error}`)
+              console.log('couldnt set newTradeExecution')
             }
+          } else {
+            console.log(
+              `Could not create execution shape for trade ${trade.seqNum}${trade.marketName}`
+            )
+          }
+        } catch (error) {
+          console.log(`could not draw arrow: ${error}`)
+        }
       })
     return newTradeExecutions
   }
 
   const removeTradeExecutions = (tradeExecutions) => {
     if (chartReady && tvWidgetRef?.current) {
-        for (const val of tradeExecutions.values()) {
-          try {
-            val.remove()
-          } catch (error) {
-            console.log(`arrow ${val.seqNum}${val.marketName} could not be removed`)
-          }
+      for (const val of tradeExecutions.values()) {
+        try {
+          val.remove()
+        } catch (error) {
+          console.log(
+            `arrow ${val.seqNum}${val.marketName} could not be removed`
+          )
         }
+      }
     }
-    setMangoStore((s) => {s.tradingView.tradeExecutions = new Map()})
+    setMangoStore((s) => {
+      s.tradingView.tradeExecutions = new Map()
+    })
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     showTradeExecutions ? cycleShowTradeExecutions() : null
   }, [selectedMarketName, mangoAccount?.publicKey])
 
   useEffect(() => {
     if (tvWidgetRef && tvWidgetRef.current && chartReady) {
       setCachedTradeHistory(tradeHistory)
-    } 
+    }
   }, [connected, showTradeExecutions])
 
-
-  useEffect(() => { 
+  useEffect(() => {
     if (cachedTradeHistory.length !== tradeHistory.length) {
       setCachedTradeHistory(tradeHistory)
     }
@@ -787,8 +809,15 @@ const TVChartContainer = () => {
 
   useEffect(() => {
     removeTradeExecutions(tradeExecutions)
-    if (showTradeExecutions && tvWidgetRef && tvWidgetRef.current && chartReady) {
-      setMangoStore((s) => {s.tradingView.tradeExecutions = drawTradeExecutions(cachedTradeHistory)})
+    if (
+      showTradeExecutions &&
+      tvWidgetRef &&
+      tvWidgetRef.current &&
+      chartReady
+    ) {
+      setMangoStore((s) => {
+        s.tradingView.tradeExecutions = drawTradeExecutions(cachedTradeHistory)
+      })
     }
   }, [cachedTradeHistory, selectedMarketName])
 
