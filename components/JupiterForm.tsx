@@ -376,7 +376,7 @@ const JupiterForm: FunctionComponent = () => {
               }`}
             >
               <aside
-                className={`ml-16 w-64 rounded-l-md bg-th-bkg-3 pb-4 pt-6`}
+                className={`ml-16 w-64 rounded-l-md bg-th-bkg-2 pb-4 pt-6`}
               >
                 <div className="thin-scroll max-h-[480px] overflow-auto">
                   <div className="flex items-center justify-between px-4 pb-2">
@@ -472,7 +472,7 @@ const JupiterForm: FunctionComponent = () => {
                 </div>
               </aside>
               <button
-                className="absolute right-64 top-20 rounded-r-none bg-th-bkg-4 p-3 text-th-fgd-1 md:hover:text-th-primary"
+                className="absolute right-64 top-1/2 -translate-y-1/2 transform rounded-r-none bg-th-bkg-4 p-3 text-th-fgd-1 md:hover:text-th-primary"
                 onClick={() => setShowWalletDraw(!showWalletDraw)}
               >
                 <WalletIcon className="h-5 w-5" />

@@ -11,7 +11,7 @@
   "error-deleting-account": "删除帐户出错",
   "goodbye": "再见 👋",
   "recover-x-sol": "收回{{amount}}SOL（帐户租金）",
-  "settle-balances": "Settle all balances",
+  "settle-balances": "结清所有余额",
   "transaction-confirmed": "交易成功",
   "withdraw-assets-worth": "将总价值{{value}}提出到您的钱包"
 }

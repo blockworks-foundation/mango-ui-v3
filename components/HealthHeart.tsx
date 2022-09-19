@@ -10,7 +10,7 @@ const HealthHeart = ({ health, size }: { health: number; size: number }) => {
       className={
         health > 15 && health < 50
           ? 'text-th-orange'
-          : health > 50
+          : health >= 50
           ? 'text-th-green'
           : 'text-th-red'
       }
@@ -29,13 +29,17 @@ const HealthHeart = ({ health, size }: { health: number; size: number }) => {
           type="scale"
           keyTimes="0;0.5;1"
           values="1;1.1;1"
-          dur={health > 15 && health < 50 ? '1s' : health > 50 ? '2s' : '0.33s'}
+          dur={
+            health > 15 && health < 50 ? '1s' : health >= 50 ? '2s' : '0.33s'
+          }
           repeatCount="indefinite"
         />
         <animate
           attributeName="opacity"
           values="0.8;1;0.8"
-          dur={health > 15 && health < 50 ? '1s' : health > 50 ? '2s' : '0.33s'}
+          dur={
+            health > 15 && health < 50 ? '1s' : health >= 50 ? '2s' : '0.33s'
+          }
           repeatCount="indefinite"
         />
       </g>

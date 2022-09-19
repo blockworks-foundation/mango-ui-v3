@@ -11,6 +11,7 @@ import Checkbox from './Checkbox'
 import { useRouter } from 'next/router'
 import { LANGS } from './SettingsModal'
 import { RadioGroup } from '@headlessui/react'
+import dayjs from 'dayjs'
 
 export const ALPHA_MODAL_KEY = 'mangoAlphaAccepted-3.06'
 
@@ -34,7 +35,9 @@ const AlphaModal = ({
 
   const handleLanguageSelect = () => {
     setSavedLanguage(language)
+    document.cookie = `NEXT_LOCALE=${language}; max-age=31536000; path=/`
     router.push({ pathname, query }, asPath, { locale: language })
+    dayjs.locale(savedLanguage == 'zh_tw' ? 'zh-tw' : savedLanguage)
   }
 
   const handleGetStarted = () => {

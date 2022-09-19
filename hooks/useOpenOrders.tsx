@@ -9,6 +9,7 @@ import {
   MangoAccount,
   I80F48,
 } from '@blockworks-foundation/mango-client'
+import isEqualLodash from 'lodash/isEqual'
 import { Market, Orderbook } from '@project-serum/serum'
 import { Order } from '@project-serum/serum/lib/market'
 import { PerpTriggerOrder } from '../@types/types'
@@ -164,7 +165,13 @@ export function useOpenOrders() {
   }, [markets, accountInfos, mangoAccount])
 
   useEffect(() => {
-    if (mangoGroup && mangoAccount) {
+    const oldOpenOrders =
+      useMangoStore.getState().selectedMangoAccount.openOrders
+    if (
+      mangoGroup &&
+      mangoAccount &&
+      !isEqualLodash(oldOpenOrders, openOrders)
+    ) {
       setMangoStore((state) => {
         state.selectedMangoAccount.openOrders = openOrders
         state.selectedMangoAccount.totalOpenOrders = openOrders.length

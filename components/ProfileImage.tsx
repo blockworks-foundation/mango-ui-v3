@@ -2,33 +2,39 @@ import useMangoStore from 'stores/useMangoStore'
 import { ProfileIcon } from './icons'
 
 const ProfileImage = ({
-  thumbHeightClass,
-  thumbWidthClass,
-  placeholderHeightClass,
-  placeholderWidthClass,
+  imageSize,
+  placeholderSize,
+  imageUrl,
+  isOwnerProfile,
+}: {
+  imageSize: string
+  placeholderSize: string
+  imageUrl?: string
+  isOwnerProfile?: boolean
 }) => {
-  const pfp = useMangoStore((s) => s.wallet.pfp)
-  const loadPfp = useMangoStore((s) => s.wallet.loadPfp)
-  const loadingTransaction = useMangoStore(
-    (s) => s.wallet.nfts.loadingTransaction
-  )
+  const profile = useMangoStore((s) => s.profile.details)
 
-  return pfp?.isAvailable ? (
+  return imageUrl || (isOwnerProfile && profile.profile_image_url) ? (
     <img
       alt=""
-      src={pfp.url}
-      className={`default-transition rounded-full hover:opacity-60 ${thumbHeightClass} ${thumbWidthClass} ${
-        loadingTransaction ? 'opacity-40' : ''
-      }`}
-    />
-  ) : loadPfp ? (
-    <div
-      className={`animate-pulse rounded-full bg-th-bkg-3 ${thumbHeightClass} ${thumbWidthClass}`}
+      src={imageUrl ? imageUrl : profile.profile_image_url}
+      className={`default-transition rounded-full`}
+      style={{ width: `${imageSize}px`, height: `${imageSize}px` }}
     />
   ) : (
-    <ProfileIcon
-      className={`text-th-fgd-3 ${placeholderHeightClass} ${placeholderWidthClass}`}
-    />
+    <div
+      className={`flex flex-shrink-0 items-center justify-center rounded-full bg-th-bkg-4`}
+      style={{ width: `${imageSize}px`, height: `${imageSize}px` }}
+    >
+      <div
+        style={{
+          width: `${placeholderSize}px`,
+          height: `${placeholderSize}px`,
+        }}
+      >
+        <ProfileIcon className={`h-full w-full text-th-fgd-3`} />
+      </div>
+    </div>
   )
 }
 

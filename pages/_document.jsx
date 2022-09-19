@@ -11,7 +11,7 @@ class MyDocument extends Document {
           />
           <script src="/datafeeds/udf/dist/bundle.js" />
         </Head>
-        <body>
+        <body className="bg-th-bkg-1">
           <Main />
           <NextScript />
         </body>

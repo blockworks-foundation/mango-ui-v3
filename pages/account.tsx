@@ -24,11 +24,9 @@ import AccountOrders from 'components/account_page/AccountOrders'
 import AccountHistory from 'components/account_page/AccountHistory'
 import AccountsModal from 'components/AccountsModal'
 import AccountOverview from 'components/account_page/AccountOverview'
-import AccountInterest from 'components/account_page/AccountInterest'
-import AccountFunding from 'components/account_page/AccountFunding'
 import AccountPerformancePerToken from 'components/account_page/AccountPerformancePerToken'
 import AccountNameModal from 'components/AccountNameModal'
-import Button, { IconButton, LinkButton } from 'components/Button'
+import Button, { LinkButton } from 'components/Button'
 import EmptyState from 'components/EmptyState'
 import Loading from 'components/Loading'
 import Swipeable from 'components/mobile/Swipeable'
@@ -47,17 +45,23 @@ import {
   mangoGroupSelector,
 } from 'stores/selectors'
 import CreateAlertModal from 'components/CreateAlertModal'
-import { copyToClipboard } from 'utils'
+import {
+  abbreviateAddress,
+  // abbreviateAddress,
+  copyToClipboard,
+} from 'utils'
 import DelegateModal from 'components/DelegateModal'
 import { Menu, Transition } from '@headlessui/react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { handleWalletConnect } from 'components/ConnectWalletButton'
 import { MangoAccountLookup } from 'components/account_page/MangoAccountLookup'
 import NftProfilePicModal from 'components/NftProfilePicModal'
-import ProfileImage from 'components/ProfileImage'
 import SwipeableTabs from 'components/mobile/SwipeableTabs'
 import useLocalStorageState from 'hooks/useLocalStorageState'
 import dayjs from 'dayjs'
+import Link from 'next/link'
+import ProfileImage from 'components/ProfileImage'
+import Tooltip from 'components/Tooltip'
 
 export async function getStaticProps({ locale }) {
   return {
@@ -100,9 +104,9 @@ export default function Account() {
   const [activeTab, setActiveTab] = useState(TABS[0])
   const [showProfilePicModal, setShowProfilePicModal] = useState(false)
   const [savedLanguage] = useLocalStorageState('language', '')
-  const loadingTransaction = useMangoStore(
-    (s) => s.wallet.nfts.loadingTransaction
-  )
+
+  const [profileData, setProfileData] = useState<any>(null)
+  const [loadProfileDetails, setLoadProfileDetails] = useState(false)
 
   const connecting = wallet?.adapter?.connecting
   const isMobile = width ? width < breakpoints.sm : false
@@ -162,7 +166,8 @@ export default function Account() {
             state.selectedMangoAccount.current = unOwnedMangoAccount
             state.selectedMangoAccount.initialLoad = false
           })
-          actions.fetchTradeHistory()
+          await actions.fetchTradeHistory()
+          await fetchProfileDetails(unOwnedMangoAccount.owner.toString())
           setResetOnLeave(true)
         }
       } catch (error) {
@@ -277,59 +282,44 @@ export default function Account() {
     }
   }
 
+  const fetchProfileDetails = async (walletPk: string) => {
+    setLoadProfileDetails(true)
+    try {
+      const response = await fetch(
+        `https://mango-transaction-log.herokuapp.com/v3/user-data/profile-details?wallet-pk=${walletPk}`
+      )
+      const data = await response.json()
+      setProfileData(data)
+      setLoadProfileDetails(false)
+    } catch (e) {
+      notify({ type: 'error', title: t('profile:profile-fetch-fail') })
+      console.log(e)
+      setLoadProfileDetails(false)
+    }
+  }
+
   return (
-    <div>
-      <div className="flex flex-col pt-6 pb-4 lg:flex-row lg:items-end lg:justify-between">
+    <div className="pt-6">
+      <div className="flex flex-col pb-4 lg:flex-row lg:items-end lg:justify-between">
         {mangoAccount ? (
           <>
             <div className="flex flex-col pb-3 sm:flex-row sm:items-center lg:pb-0">
-              <button
-                disabled={!!pubkey}
-                className={`relative mb-2 mr-4 flex h-20 w-20 items-center justify-center rounded-full sm:mb-0 ${
-                  loadingTransaction
-                    ? 'animate-pulse bg-th-bkg-4'
-                    : 'bg-th-bkg-button'
-                }`}
-                onClick={() => setShowProfilePicModal(true)}
-              >
-                <ProfileImage
-                  thumbHeightClass="h-20"
-                  thumbWidthClass="w-20"
-                  placeholderHeightClass="h-12"
-                  placeholderWidthClass="w-12"
-                />
-                {!pubkey ? (
-                  <div className="default-transition absolute bottom-0 top-0 left-0 right-0 flex h-full w-full items-center justify-center rounded-full bg-[rgba(0,0,0,0.6)] opacity-0 hover:opacity-100">
-                    <PencilIcon className="h-5 w-5 text-th-fgd-1" />
-                  </div>
-                ) : null}
-              </button>
               <div>
-                <div className="mb-1 flex items-center">
-                  <h1 className={`mr-3`}>
-                    {mangoAccount?.name || t('account')}
-                  </h1>
-                  {!pubkey ? (
-                    <IconButton
-                      className="h-7 w-7"
-                      onClick={() => setShowNameModal(true)}
+                <div className="flex h-8 items-center">
+                  <Tooltip content="Copy account address">
+                    <LinkButton
+                      className="flex items-center text-th-fgd-4 no-underline"
+                      onClick={() =>
+                        handleCopyAddress(mangoAccount.publicKey.toString())
+                      }
                     >
-                      <PencilIcon className="h-3.5 w-3.5" />
-                    </IconButton>
-                  ) : null}
-                </div>
-                <div className="flex h-4 items-center">
-                  <LinkButton
-                    className="flex items-center text-th-fgd-4 no-underline"
-                    onClick={() =>
-                      handleCopyAddress(mangoAccount.publicKey.toString())
-                    }
-                  >
-                    <span className="text-xxs font-normal sm:text-xs">
-                      {mangoAccount.publicKey.toBase58()}
-                    </span>
-                    <DuplicateIcon className="ml-1.5 h-4 w-4" />
-                  </LinkButton>
+                      <h1>
+                        {mangoAccount?.name ||
+                          abbreviateAddress(mangoAccount.publicKey)}
+                      </h1>
+                      <DuplicateIcon className="ml-1.5 h-5 w-5" />
+                    </LinkButton>
+                  </Tooltip>
                   {isCopied ? (
                     <span className="ml-2 rounded bg-th-bkg-3 px-1.5 py-0.5 text-xs">
                       Copied
@@ -340,6 +330,30 @@ export default function Account() {
                   <ExclamationCircleIcon className="mr-1.5 h-4 w-4" />
                   {t('account-address-warning')}
                 </div>
+                {pubkey && mangoAccount ? (
+                  profileData && !loadProfileDetails ? (
+                    <Link
+                      href={`/profile?name=${profileData?.profile_name.replace(
+                        /\s/g,
+                        '-'
+                      )}`}
+                      shallow={true}
+                    >
+                      <a className="default-transition mt-2 flex items-center space-x-2 text-th-fgd-3 hover:text-th-fgd-2">
+                        <ProfileImage
+                          imageSize="24"
+                          placeholderSize="12"
+                          imageUrl={profileData?.profile_image_url}
+                        />
+                        <span className="mb-0 capitalize">
+                          {profileData?.profile_name}
+                        </span>
+                      </a>
+                    </Link>
+                  ) : (
+                    <div className="mt-2 h-7 w-40 animate-pulse rounded bg-th-bkg-3" />
+                  )
+                ) : null}
               </div>
             </div>
             {!pubkey ? (
@@ -415,6 +429,17 @@ export default function Account() {
                           <Menu.Item>
                             <button
                               className="flex w-full flex-row items-center rounded-none py-0.5 font-normal focus:outline-none md:hover:cursor-pointer md:hover:text-th-primary"
+                              onClick={() => setShowNameModal(true)}
+                            >
+                              <div className="flex items-center">
+                                <PencilIcon className="mr-1.5 h-4 w-4" />
+                                {t('edit-account-name')}
+                              </div>
+                            </button>
+                          </Menu.Item>
+                          <Menu.Item>
+                            <button
+                              className="flex w-full flex-row items-center rounded-none py-0.5 font-normal focus:outline-none md:hover:cursor-pointer md:hover:text-th-primary"
                               onClick={() => setShowAccountsModal(true)}
                             >
                               <div className="flex items-center">
@@ -477,12 +502,6 @@ export default function Account() {
                 </div>
                 <div>
                   <AccountHistory />
-                </div>
-                <div>
-                  <AccountInterest />
-                </div>
-                <div>
-                  <AccountFunding />
                 </div>
                 <div>
                   <AccountPerformancePerToken />

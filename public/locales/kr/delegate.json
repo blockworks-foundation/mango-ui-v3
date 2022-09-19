@@ -1,0 +1,9 @@
+{
+    "set-delegate": "Set Delegate",
+    "delegate-your-account": "Delegate Your Account",
+    "delegated-account": "Delegated Account",
+    "info": "Grant control to another Solana account to use Mango on your behalf.",
+    "public-key": "Delegate Public Key",
+    "delegate-updated": "Delegate Updated",
+    "set-error": "Could not set Delegate"
+}

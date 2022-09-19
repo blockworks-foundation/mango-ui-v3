@@ -1,8 +1,12 @@
 import { TokenAccountLayout } from '@blockworks-foundation/mango-client'
 import { PublicKey, Connection } from '@solana/web3.js'
+import { AccountInfo } from '@solana/spl-token'
 
 export const TOKEN_PROGRAM_ID = new PublicKey(
   'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+)
+export const INVESTIN_PROGRAM_ID = new PublicKey(
+  'HDFNSB26prLvBB2vvAoUoDEbQYbUxdUJztRcjozNakfz'
 )
 
 export type ProgramAccount<T> = {
@@ -65,3 +69,49 @@ export async function getTokenAccountsByMint(
     return { publicKey, account }
   })
 }
+
+export const fetchNftsFromHolaplexIndexer = async (owner: PublicKey) => {
+  const result = await fetch('https://graph.holaplex.com/v1', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      query: `
+        query nfts($owners: [PublicKey!]) {
+            nfts(
+              owners: $owners,
+               limit: 10000, offset: 0) {
+              name
+              mintAddress
+              address
+              image
+              updateAuthorityAddress
+              collection {
+                creators {
+                  verified
+                  address
+                }
+                mintAddress
+              }
+
+            }
+
+        }
+      `,
+      variables: {
+        owners: [owner.toBase58()],
+      },
+    }),
+  })
+
+  const body = await result.json()
+  return body.data
+}
+
+export type TokenProgramAccount<T> = {
+  publicKey: PublicKey
+  account: T
+}
+
+export type TokenAccount = AccountInfo

@@ -1,5 +1,4 @@
 import useMangoStore, { PerpPosition } from '../stores/useMangoStore'
-import BN from 'bn.js'
 import {
   MangoAccount,
   MangoCache,
@@ -36,8 +35,16 @@ export const collectPerpPosition = (
 
   const perpMarketInfo = mangoGroup.perpMarkets[marketConfig.marketIndex]
   const perpAccount = mangoAccount.perpAccounts[marketConfig.marketIndex]
+  const basePosition =
+    perpMarket?.baseLotsToNumber(perpAccount.basePosition) +
+    perpMarket.baseLotsToNumber(perpAccount.takerBase)
+  const indexPrice = mangoGroup
+    .getPrice(marketConfig.marketIndex, mangoCache)
+    .toNumber()
+  const notionalSize = Math.abs(basePosition * indexPrice)
 
-  let avgEntryPrice = 0,
+  let unrealizedPnl,
+    avgEntryPrice = 0,
     breakEvenPrice = 0
   const perpTradeHistory = tradeHistory.filter(
     (t) => t.marketName === marketConfig.name
@@ -54,16 +61,11 @@ export const collectPerpPosition = (
     breakEvenPrice = perpAccount
       .getBreakEvenPrice(mangoAccount, perpMarket, perpTradeHistory)
       .toNumber()
+    unrealizedPnl = basePosition * (indexPrice - breakEvenPrice)
   } catch (e) {
     console.error(marketConfig.name, e)
   }
 
-  const basePosition = perpMarket?.baseLotsToNumber(perpAccount.basePosition)
-  const indexPrice = mangoGroup
-    .getPrice(marketConfig.marketIndex, mangoCache)
-    .toNumber()
-  const notionalSize = Math.abs(basePosition * indexPrice)
-  const unrealizedPnl = basePosition * (indexPrice - breakEvenPrice)
   const unsettledPnl = +nativeI80F48ToUi(
     perpAccount.getPnl(
       perpMarketInfo,
@@ -118,9 +120,7 @@ const usePerpPositions = () => {
         : []
 
       const openPerpPositions = perpPositions.filter(
-        (p) =>
-          p?.perpAccount?.basePosition &&
-          !p.perpAccount.basePosition.eq(new BN(0))
+        (p) => p?.basePosition && !(p.basePosition === 0)
       ) as PerpPosition[]
 
       setMangoStore((state) => {
@@ -135,9 +135,7 @@ const usePerpPositions = () => {
         }
         state.selectedMangoAccount.unsettledPerpPositions =
           perpPositions.filter(
-            (p) =>
-              p?.perpAccount?.basePosition?.eq(new BN(0)) &&
-              p?.unsettledPnl != 0
+            (p) => p?.basePosition === 0 && p?.unsettledPnl != 0
           ) as PerpPosition[]
       })
     }

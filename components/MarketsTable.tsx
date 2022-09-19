@@ -38,98 +38,22 @@ const MarketsTable = ({
   const { items, requestSort, sortConfig } = useSortableData(markets)
 
   return !isMobile ? (
-    <Table>
-      <thead>
-        <TrHead>
-          <Th>
-            <LinkButton
-              className="flex items-center font-normal no-underline"
-              onClick={() => requestSort('name')}
-            >
-              <span className="text-left font-normal text-th-fgd-3">
-                {t('market')}
-              </span>
-              <ArrowSmDownIcon
-                className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
-                  sortConfig?.key === 'name'
-                    ? sortConfig.direction === 'ascending'
-                      ? 'rotate-180 transform'
-                      : 'rotate-360 transform'
-                    : null
-                }`}
-              />
-            </LinkButton>
-          </Th>
-          <Th>
-            <LinkButton
-              className="flex items-center font-normal no-underline"
-              onClick={() => requestSort('last')}
-            >
-              <span className="text-left font-normal text-th-fgd-3">
-                {t('price')}
-              </span>
-              <ArrowSmDownIcon
-                className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
-                  sortConfig?.key === 'last'
-                    ? sortConfig.direction === 'ascending'
-                      ? 'rotate-180 transform'
-                      : 'rotate-360 transform'
-                    : null
-                }`}
-              />
-            </LinkButton>
-          </Th>
-          <Th>
-            <LinkButton
-              className="flex items-center font-normal no-underline"
-              onClick={() => requestSort('change24h')}
-            >
-              <span className="text-left font-normal text-th-fgd-3">
-                {t('rolling-change')}
-              </span>
-              <ArrowSmDownIcon
-                className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
-                  sortConfig?.key === 'change24h'
-                    ? sortConfig.direction === 'ascending'
-                      ? 'rotate-180 transform'
-                      : 'rotate-360 transform'
-                    : null
-                }`}
-              />
-            </LinkButton>
-          </Th>
-          <Th>
-            <LinkButton
-              className="flex items-center font-normal no-underline"
-              onClick={() => requestSort('volumeUsd24h')}
-            >
-              <span className="text-left font-normal text-th-fgd-3">
-                {t('daily-volume')}
-              </span>
-              <ArrowSmDownIcon
-                className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
-                  sortConfig?.key === 'volumeUsd24h'
-                    ? sortConfig.direction === 'ascending'
-                      ? 'rotate-180 transform'
-                      : 'rotate-360 transform'
-                    : null
-                }`}
-              />
-            </LinkButton>
-          </Th>
-          {isPerpMarket ? (
-            <>
+    <div className={`md:overflow-x-auto`}>
+      <div className={`inline-block min-w-full align-middle`}>
+        <Table>
+          <thead>
+            <TrHead>
               <Th>
                 <LinkButton
                   className="flex items-center font-normal no-underline"
-                  onClick={() => requestSort('funding1h')}
+                  onClick={() => requestSort('name')}
                 >
                   <span className="text-left font-normal text-th-fgd-3">
-                    {t('average-funding')}
+                    {t('market')}
                   </span>
                   <ArrowSmDownIcon
                     className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
-                      sortConfig?.key === 'funding1h'
+                      sortConfig?.key === 'name'
                         ? sortConfig.direction === 'ascending'
                           ? 'rotate-180 transform'
                           : 'rotate-360 transform'
@@ -140,15 +64,15 @@ const MarketsTable = ({
               </Th>
               <Th>
                 <LinkButton
-                  className="flex items-center no-underline"
-                  onClick={() => requestSort('openInterestUsd')}
+                  className="flex items-center font-normal no-underline"
+                  onClick={() => requestSort('last')}
                 >
                   <span className="text-left font-normal text-th-fgd-3">
-                    {t('open-interest')}
+                    {t('price')}
                   </span>
                   <ArrowSmDownIcon
                     className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
-                      sortConfig?.key === 'openInterestUsd'
+                      sortConfig?.key === 'last'
                         ? sortConfig.direction === 'ascending'
                           ? 'rotate-180 transform'
                           : 'rotate-360 transform'
@@ -157,135 +81,227 @@ const MarketsTable = ({
                   />
                 </LinkButton>
               </Th>
-            </>
-          ) : null}
-          <Th>
-            <span className="flex justify-end">{t('favorite')}</span>
-          </Th>
-        </TrHead>
-      </thead>
-      <tbody>
-        {items.map((market) => {
-          const {
-            baseSymbol,
-            change24h,
-            funding1h,
-            last,
-            name,
-            openInterest,
-            openInterestUsd,
-            volumeUsd24h,
-          } = market
-          const fundingApr = funding1h ? (funding1h * 24 * 365).toFixed(2) : '-'
-          const coingeckoData = coingeckoPrices.find(
-            (asset) => asset.symbol === baseSymbol
-          )
-          const chartData = coingeckoData ? coingeckoData.prices : undefined
-
-          return (
-            <TrBody key={name}>
-              <Td>
-                <Link href={`/?name=${name}`} shallow={true}>
-                  <a className="hover:cursor-pointer">
-                    <div className="flex h-full items-center text-th-fgd-2 hover:text-th-primary">
-                      <img
-                        alt=""
-                        width="20"
-                        height="20"
-                        src={`/assets/icons/${baseSymbol.toLowerCase()}.svg`}
-                        className={`mr-2.5`}
-                      />
-                      <span className="default-transition">{name}</span>
-                    </div>
-                  </a>
-                </Link>
-              </Td>
-              <Td className="flex items-center">
-                <div className="w-20">
-                  {last ? (
-                    formatUsdValue(last)
-                  ) : (
-                    <span className="text-th-fgd-4">{t('unavailable')}</span>
-                  )}
-                </div>
-                <div className="pl-6">
-                  {!loadingCoingeckoPrices ? (
-                    chartData !== undefined ? (
-                      <PriceChart
-                        name={name}
-                        change24h={change24h}
-                        data={chartData}
-                        height={40}
-                        width={104}
-                      />
-                    ) : (
-                      t('unavailable')
-                    )
-                  ) : (
-                    <div className="h-10 w-[104px] animate-pulse rounded bg-th-bkg-3" />
-                  )}
-                </div>
-              </Td>
-              <Td>
-                <span
-                  className={change24h >= 0 ? 'text-th-green' : 'text-th-red'}
+              <Th>
+                <LinkButton
+                  className="flex items-center font-normal no-underline"
+                  onClick={() => requestSort('change24h')}
                 >
-                  {change24h || change24h === 0 ? (
-                    `${(change24h * 100).toFixed(2)}%`
-                  ) : (
-                    <span className="text-th-fgd-4">{t('unavailable')}</span>
-                  )}
-                </span>
-              </Td>
-              <Td>
-                {volumeUsd24h ? (
-                  usdFormatter(volumeUsd24h, 0)
-                ) : (
-                  <span className="text-th-fgd-4">{t('unavailable')}</span>
-                )}
-              </Td>
+                  <span className="text-left font-normal text-th-fgd-3">
+                    {t('rolling-change')}
+                  </span>
+                  <ArrowSmDownIcon
+                    className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
+                      sortConfig?.key === 'change24h'
+                        ? sortConfig.direction === 'ascending'
+                          ? 'rotate-180 transform'
+                          : 'rotate-360 transform'
+                        : null
+                    }`}
+                  />
+                </LinkButton>
+              </Th>
+              <Th>
+                <LinkButton
+                  className="flex items-center font-normal no-underline"
+                  onClick={() => requestSort('volumeUsd24h')}
+                >
+                  <span className="text-left font-normal text-th-fgd-3">
+                    {t('daily-volume')}
+                  </span>
+                  <ArrowSmDownIcon
+                    className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
+                      sortConfig?.key === 'volumeUsd24h'
+                        ? sortConfig.direction === 'ascending'
+                          ? 'rotate-180 transform'
+                          : 'rotate-360 transform'
+                        : null
+                    }`}
+                  />
+                </LinkButton>
+              </Th>
               {isPerpMarket ? (
                 <>
-                  <Td>
-                    {funding1h ? (
-                      <>
-                        <span>{`${funding1h.toFixed(4)}%`}</span>{' '}
-                        <span className="text-xs text-th-fgd-3">{`(${fundingApr}% APR)`}</span>
-                      </>
-                    ) : (
-                      <span className="text-th-fgd-4">{t('unavailable')}</span>
-                    )}
-                  </Td>
-                  <Td>
-                    {openInterestUsd ? (
-                      <>
-                        <span>{usdFormatter(openInterestUsd, 0)}</span>{' '}
-                        {openInterest ? (
-                          <div className="text-xs text-th-fgd-4">
-                            {openInterest.toLocaleString(undefined, {
-                              maximumFractionDigits:
-                                perpContractPrecision[baseSymbol],
-                            })}{' '}
-                            {baseSymbol}
-                          </div>
-                        ) : null}
-                      </>
-                    ) : (
-                      <span className="text-th-fgd-4">{t('unavailable')}</span>
-                    )}
-                  </Td>
+                  <Th>
+                    <LinkButton
+                      className="flex items-center font-normal no-underline"
+                      onClick={() => requestSort('funding1h')}
+                    >
+                      <span className="text-left font-normal text-th-fgd-3">
+                        {t('average-funding')}
+                      </span>
+                      <ArrowSmDownIcon
+                        className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
+                          sortConfig?.key === 'funding1h'
+                            ? sortConfig.direction === 'ascending'
+                              ? 'rotate-180 transform'
+                              : 'rotate-360 transform'
+                            : null
+                        }`}
+                      />
+                    </LinkButton>
+                  </Th>
+                  <Th>
+                    <LinkButton
+                      className="flex items-center no-underline"
+                      onClick={() => requestSort('openInterestUsd')}
+                    >
+                      <span className="text-left font-normal text-th-fgd-3">
+                        {t('open-interest')}
+                      </span>
+                      <ArrowSmDownIcon
+                        className={`default-transition ml-1 h-4 w-4 flex-shrink-0 ${
+                          sortConfig?.key === 'openInterestUsd'
+                            ? sortConfig.direction === 'ascending'
+                              ? 'rotate-180 transform'
+                              : 'rotate-360 transform'
+                            : null
+                        }`}
+                      />
+                    </LinkButton>
+                  </Th>
                 </>
               ) : null}
-              <Td>
-                <div className="flex justify-end">
-                  <FavoriteMarketButton market={market} />
-                </div>
-              </Td>
-            </TrBody>
-          )
-        })}
-      </tbody>
-    </Table>
+              <Th>
+                <span className="flex justify-end">{t('favorite')}</span>
+              </Th>
+            </TrHead>
+          </thead>
+          <tbody>
+            {items.map((market) => {
+              const {
+                baseSymbol,
+                change24h,
+                funding1h,
+                last,
+                name,
+                openInterest,
+                openInterestUsd,
+                volumeUsd24h,
+              } = market
+              const fundingApr = funding1h
+                ? (funding1h * 24 * 365).toFixed(2)
+                : '-'
+              const coingeckoData = coingeckoPrices.find(
+                (asset) => asset.symbol === baseSymbol
+              )
+              const chartData = coingeckoData ? coingeckoData.prices : undefined
+
+              return (
+                <TrBody key={name}>
+                  <Td>
+                    <Link href={`/?name=${name}`} shallow={true}>
+                      <a className="hover:cursor-pointer">
+                        <div className="flex h-full items-center text-th-fgd-2 hover:text-th-primary">
+                          <img
+                            alt=""
+                            width="20"
+                            height="20"
+                            src={`/assets/icons/${baseSymbol.toLowerCase()}.svg`}
+                            className={`mr-2.5`}
+                          />
+                          <span className="default-transition">{name}</span>
+                        </div>
+                      </a>
+                    </Link>
+                  </Td>
+                  <Td className="flex items-center">
+                    <div className="w-20">
+                      {last ? (
+                        formatUsdValue(last)
+                      ) : (
+                        <span className="text-th-fgd-4">
+                          {t('unavailable')}
+                        </span>
+                      )}
+                    </div>
+                    <div className="pl-6">
+                      {!loadingCoingeckoPrices ? (
+                        chartData !== undefined ? (
+                          <PriceChart
+                            name={name}
+                            change24h={change24h}
+                            data={chartData}
+                            height={40}
+                            width={104}
+                          />
+                        ) : (
+                          t('unavailable')
+                        )
+                      ) : (
+                        <div className="h-10 w-[104px] animate-pulse rounded bg-th-bkg-3" />
+                      )}
+                    </div>
+                  </Td>
+                  <Td>
+                    <span
+                      className={
+                        change24h >= 0 ? 'text-th-green' : 'text-th-red'
+                      }
+                    >
+                      {change24h || change24h === 0 ? (
+                        `${(change24h * 100).toFixed(2)}%`
+                      ) : (
+                        <span className="text-th-fgd-4">
+                          {t('unavailable')}
+                        </span>
+                      )}
+                    </span>
+                  </Td>
+                  <Td>
+                    {volumeUsd24h ? (
+                      usdFormatter(volumeUsd24h, 0)
+                    ) : (
+                      <span className="text-th-fgd-4">{t('unavailable')}</span>
+                    )}
+                  </Td>
+                  {isPerpMarket ? (
+                    <>
+                      <Td>
+                        {funding1h ? (
+                          <>
+                            <span>{`${funding1h.toFixed(4)}%`}</span>{' '}
+                            <span className="text-xs text-th-fgd-3">{`(${fundingApr}% APR)`}</span>
+                          </>
+                        ) : (
+                          <span className="text-th-fgd-4">
+                            {t('unavailable')}
+                          </span>
+                        )}
+                      </Td>
+                      <Td>
+                        {openInterestUsd ? (
+                          <>
+                            <span>{usdFormatter(openInterestUsd, 0)}</span>{' '}
+                            {openInterest ? (
+                              <div className="text-xs text-th-fgd-4">
+                                {openInterest.toLocaleString(undefined, {
+                                  maximumFractionDigits:
+                                    perpContractPrecision[baseSymbol],
+                                })}{' '}
+                                {baseSymbol}
+                              </div>
+                            ) : null}
+                          </>
+                        ) : (
+                          <span className="text-th-fgd-4">
+                            {t('unavailable')}
+                          </span>
+                        )}
+                      </Td>
+                    </>
+                  ) : null}
+                  <Td>
+                    <div className="flex justify-end">
+                      <FavoriteMarketButton market={market} />
+                    </div>
+                  </Td>
+                </TrBody>
+              )
+            })}
+          </tbody>
+        </Table>
+      </div>
+    </div>
   ) : (
     <>
       {items.map((market) => {
@@ -299,7 +315,7 @@ const MarketsTable = ({
         return (
           <Link href={`/?name=${name}`} shallow={true} key={name}>
             <a
-              className="mb-2 block w-full rounded-lg bg-th-bkg-3 p-4 pb-2.5"
+              className="default-transition mb-2 block w-full rounded-lg border border-th-bkg-3 p-4 pb-2.5 hover:bg-th-bkg-2"
               onClick={() =>
                 router.push(`/?name=${name}`, undefined, {
                   shallow: true,

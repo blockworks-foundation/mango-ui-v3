@@ -24,6 +24,7 @@ import {
   msrmMints,
   MangoAccountLayout,
   BlockhashTimes,
+  MarketMode,
   I80F48,
   PerpAccount,
   PerpMarketConfig,
@@ -32,20 +33,17 @@ import { AccountInfo, Commitment, Connection, PublicKey } from '@solana/web3.js'
 import { EndpointInfo } from '../@types/types'
 import { isDefined, zipDict } from '../utils'
 import { Notification, notify } from '../utils/notifications'
-import { LAST_ACCOUNT_KEY } from '../components/AccountsModal'
 import {
   DEFAULT_MARKET_KEY,
   initialMarket,
-  NODE_URL_KEY,
+  RPC_URL_KEY,
 } from '../components/SettingsModal'
 import { MSRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
-import { getProfilePicture, ProfilePicture } from '@solflare-wallet/pfp'
 import { decodeBook } from '../hooks/useHydrateStore'
-import { IOrderLineAdapter } from '../public/charting_library/charting_library'
+import { IExecutionLineAdapter, IOrderLineAdapter } from '../public/charting_library/charting_library'
 import { Wallet } from '@solana/wallet-adapter-react'
-import { coingeckoIds } from 'utils/tokens'
-import { getTokenAccountsByMint } from 'utils/tokens'
-import { getParsedNftAccountsByOwner } from 'utils/getParsedNftAccountsByOwner'
+import { coingeckoIds, fetchNftsFromHolaplexIndexer } from 'utils/tokens'
+import bs58 from 'bs58'
 import { PerpMarketInfo } from '@blockworks-foundation/mango-client'
 
 export const ENDPOINTS: EndpointInfo[] = [
@@ -99,11 +97,29 @@ export const serumProgramId = new PublicKey(
 const mangoGroupPk = new PublicKey(defaultMangoGroupIds!.publicKey)
 
 export const SECONDS = 1000
-export const CLIENT_TX_TIMEOUT = 70000
+export const CLIENT_TX_TIMEOUT = 90000
+
+export const LAST_ACCOUNT_KEY = 'lastAccountViewed-3.0'
 
 // Used to retry loading the MangoGroup and MangoAccount if an rpc node error occurs
 let mangoGroupRetryAttempt = 0
 let mangoAccountRetryAttempt = 0
+
+const initMangoClient = (connection: Connection): MangoClient => {
+  return new MangoClient(connection, programId, {
+    timeout: CLIENT_TX_TIMEOUT,
+    prioritizationFee: 5000,
+    postSendTxCallback: ({ txid }: { txid: string }) => {
+      notify({
+        title: 'Transaction sent',
+        description: 'Waiting for confirmation',
+        type: 'confirm',
+        txid: txid,
+      })
+    },
+    blockhashCommitment: 'confirmed',
+  })
+}
 
 // an object with keys of Solana account addresses that we are
 // subscribing to with connection.onAccountChange() in the
@@ -165,6 +181,13 @@ interface NFTWithMint {
   val: NFTData
   mint: string
   tokenAddress: string
+}
+
+interface ProfileDetails {
+  profile_image_url?: string
+  profile_name: string
+  trader_category: string
+  wallet_pk: string
 }
 
 export interface SpotBalance {
@@ -238,6 +261,7 @@ export type MangoStore = {
     initialLoad: boolean
     lastUpdatedAt: string
     lastSlot: number
+    loading: boolean
     openOrders: any[]
     totalOpenOrders: number
     spotBalances: SpotBalance[]
@@ -263,14 +287,9 @@ export type MangoStore = {
   }
   wallet: {
     tokens: WalletToken[] | any[]
-    pfp: ProfilePicture | undefined
-    loadPfp: boolean
     nfts: {
       data: NFTWithMint[] | []
-      initialLoad: boolean
       loading: boolean
-      accounts: any[]
-      loadingTransaction: boolean
     }
   }
   settings: {
@@ -282,23 +301,24 @@ export type MangoStore = {
     perp: any[]
     parsed: any[]
   }
+  profile: {
+    loadProfileFollowing: boolean
+    loadFollowers: boolean
+    loadDetails: boolean
+    details: ProfileDetails
+    following: any[]
+  }
   set: (x: (x: MangoStore) => void) => void
   actions: {
     fetchWalletTokens: (wallet: Wallet) => void
-    fetchProfilePicture: (wallet: Wallet) => void
-    fetchNfts: (
-      connection: Connection,
-      walletPk: PublicKey | null,
-      offset?: number
-    ) => void
-    fetchNftAccounts: (connection: Connection, walletPk: PublicKey) => void
+    fetchNfts: (walletPk: PublicKey | null) => void
     fetchAllMangoAccounts: (wallet: Wallet) => Promise<void>
     fetchMangoGroup: () => Promise<void>
     fetchTradeHistory: () => void
-    reloadMangoAccount: () => void
+    reloadMangoAccount: () => Promise<void>
     reloadOrders: () => void
     updateOpenOrders: () => void
-    loadMarketFills: () => void
+    loadMarketFills: () => Promise<void | null>
     loadReferralData: () => void
     fetchMangoGroupCache: () => void
     updateConnection: (url: string) => void
@@ -307,6 +327,18 @@ export type MangoStore = {
     loadAlerts: (pk: PublicKey) => void
     fetchMarketsInfo: () => void
     fetchCoingeckoPrices: () => void
+    fetchProfileDetails: (pk: string) => void
+    fetchProfileFollowing: (pk: string) => void
+    followAccount: (
+      mangoAccountPk: string,
+      publicKey: PublicKey,
+      signMessage: any
+    ) => void
+    unfollowAccount: (
+      mangoAccountPk: string,
+      publicKey: PublicKey,
+      signMessage: any
+    ) => void
   }
   alerts: {
     activeAlerts: Array<Alert>
@@ -319,6 +351,7 @@ export type MangoStore = {
   marketsInfo: any[]
   tradingView: {
     orderLines: Map<string, IOrderLineAdapter>
+    tradeExecutions: Map<string, IExecutionLineAdapter>
   }
   coingeckoPrices: { data: any[]; loading: boolean }
 }
@@ -332,7 +365,7 @@ const useMangoStore = create<
   subscribeWithSelector((set, get) => {
     let rpcUrl = ENDPOINT?.url
     if (typeof window !== 'undefined' && CLUSTER === 'mainnet') {
-      const urlFromLocalStorage = localStorage.getItem(NODE_URL_KEY)
+      const urlFromLocalStorage = localStorage.getItem(RPC_URL_KEY)
       rpcUrl = urlFromLocalStorage
         ? JSON.parse(urlFromLocalStorage)
         : ENDPOINT?.url
@@ -347,18 +380,7 @@ const useMangoStore = create<
     }
 
     const connection = new Connection(rpcUrl, 'processed' as Commitment)
-    const client = new MangoClient(connection, programId, {
-      timeout: CLIENT_TX_TIMEOUT,
-      postSendTxCallback: ({ txid }: { txid: string }) => {
-        notify({
-          title: 'Transaction sent',
-          description: 'Waiting for confirmation',
-          type: 'confirm',
-          txid: txid,
-        })
-      },
-      blockhashCommitment: 'finalized',
-    })
+    const client = initMangoClient(connection)
     return {
       marketsInfo: [],
       notificationIdCounter: 0,
@@ -405,6 +427,7 @@ const useMangoStore = create<
         initialLoad: true,
         lastUpdatedAt: '0',
         lastSlot: 0,
+        loading: false,
         openOrders: [],
         totalOpenOrders: 0,
         spotBalances: [],
@@ -424,14 +447,9 @@ const useMangoStore = create<
       },
       wallet: {
         tokens: [],
-        pfp: undefined,
-        loadPfp: true,
         nfts: {
           data: [],
-          initialLoad: false,
           loading: false,
-          accounts: [],
-          loadingTransaction: false,
         },
       },
       settings: {
@@ -453,8 +471,16 @@ const useMangoStore = create<
       },
       tradingView: {
         orderLines: new Map(),
+        tradeExecutions: new Map(),
       },
       coingeckoPrices: { data: [], loading: false },
+      profile: {
+        loadProfileFollowing: false,
+        loadFollowers: false,
+        loadDetails: false,
+        details: { profile_name: '', trader_category: '', wallet_pk: '' },
+        following: [],
+      },
       set: (fn) => set(produce(fn)),
       actions: {
         async fetchWalletTokens(wallet: Wallet) {
@@ -499,103 +525,24 @@ const useMangoStore = create<
             })
           }
         },
-        async fetchProfilePicture(wallet: Wallet) {
-          const set = get().set
-          const walletPk = wallet?.adapter?.publicKey
-          const connection = get().connection.current
-
-          if (!walletPk) return
-
-          try {
-            const result = await getProfilePicture(connection, walletPk)
-
-            set((state) => {
-              state.wallet.pfp = result
-              state.wallet.loadPfp = false
-            })
-          } catch (e) {
-            console.log('Could not get profile picture', e)
-            set((state) => {
-              state.wallet.loadPfp = false
-            })
-          }
-        },
-        async fetchNftAccounts(connection: Connection, walletPk: PublicKey) {
-          const set = get().set
-          try {
-            const nfts = await getParsedNftAccountsByOwner({
-              publicAddress: walletPk.toBase58(),
-              connection: connection,
-            })
-            const data = Object.keys(nfts)
-              .map((key) => nfts[key])
-              .filter((data) => data.primarySaleHappened)
-            set((state) => {
-              state.wallet.nfts.accounts = data
-            })
-          } catch (error) {
-            console.log(error)
-          }
-        },
-        async fetchNfts(
-          connection: Connection,
-          walletPk: PublicKey,
-          offset = 0
-        ) {
+        async fetchNfts(ownerPk: PublicKey) {
           const set = get().set
           set((state) => {
             state.wallet.nfts.loading = true
           })
           try {
-            const nftAccounts = get().wallet.nfts.accounts
-            const loadedNfts = get().wallet.nfts.data
-            const arr: NFTWithMint[] = []
-            if (loadedNfts.length < nftAccounts.length) {
-              for (let i = offset; i < offset + 9; i++) {
-                try {
-                  const [nftAccountsResp, tokenAcctsByMint] = await Promise.all(
-                    [
-                      fetch(nftAccounts[i].data.uri),
-                      getTokenAccountsByMint(connection, nftAccounts[i].mint),
-                    ]
-                  )
-                  const val = await nftAccountsResp.json()
-                  arr.push({
-                    val,
-                    mint: nftAccounts[i].mint,
-                    tokenAddress: tokenAcctsByMint
-                      .find(
-                        (x) =>
-                          x.account.owner.toBase58() === walletPk.toBase58()
-                      )!
-                      .publicKey.toBase58(),
-                  })
-                } catch (e) {
-                  console.log(e)
-                }
-              }
-            }
-            if (loadedNfts.length === 0) {
-              set((state) => {
-                state.wallet.nfts.data = arr
-                state.wallet.nfts.initialLoad = true
-                state.wallet.nfts.loading = false
-              })
-            } else {
-              set((state) => {
-                state.wallet.nfts.data = [...loadedNfts, ...arr]
-                state.wallet.nfts.loading = false
-              })
-            }
-          } catch (error) {
-            notify({
-              title: 'Unable to fetch nfts',
-              description: '',
-            })
+            const data = await fetchNftsFromHolaplexIndexer(ownerPk)
             set((state) => {
+              state.wallet.nfts.data = data.nfts
               state.wallet.nfts.loading = false
             })
+          } catch (error) {
+            notify({
+              type: 'error',
+              title: 'Unable to fetch nfts',
+            })
           }
+          return []
         },
         async fetchAllMangoAccounts(wallet) {
           const set = get().set
@@ -862,9 +809,17 @@ const useMangoStore = create<
 
           if (!mangoAccount) return
 
+          set((state) => {
+            state.selectedMangoAccount.loading = true
+          })
+
           const [reloadedMangoAccount, lastSlot] =
             await mangoAccount.reloadFromSlot(connection, mangoClient.lastSlot)
           const lastSeenSlot = get().selectedMangoAccount.lastSlot
+
+          set((state) => {
+            state.selectedMangoAccount.loading = false
+          })
 
           if (lastSlot > lastSeenSlot) {
             set((state) => {
@@ -995,7 +950,7 @@ const useMangoStore = create<
 
           const newConnection = new Connection(endpointUrl, 'processed')
 
-          const newClient = new MangoClient(newConnection, programId)
+          const newClient = initMangoClient(newConnection)
 
           set((state) => {
             state.connection.endpoint = endpointUrl
@@ -1160,13 +1115,37 @@ const useMangoStore = create<
         },
         async fetchMarketsInfo() {
           const set = get().set
+          const groupConfig = get().selectedMangoGroup.config
+          const mangoGroup = get().selectedMangoGroup.current
+
           try {
             const data = await fetch(
-              `https://mango-all-markets-api.herokuapp.com/markets/`
+              `https://all-market-stats-api.onrender.com/markets/`
             )
 
             if (data?.status === 200) {
-              const parsedMarketsInfo = await data.json()
+              const parsedMarketsInfo = (await data.json()).filter((market) => {
+                const marketKind = market.name.includes('PERP')
+                  ? 'perp'
+                  : 'spot'
+
+                const marketConfig = getMarketByBaseSymbolAndKind(
+                  groupConfig,
+                  market.baseSymbol,
+                  marketKind
+                )
+                if (!marketConfig || !marketConfig.publicKey) return false
+
+                const marketMode: MarketMode =
+                  mangoGroup?.tokens[marketConfig.marketIndex][
+                    marketKind + 'MarketMode'
+                  ]
+                const isInactive =
+                  marketMode == MarketMode.ForceCloseOnly ||
+                  marketMode == MarketMode.Inactive
+
+                return !isInactive
+              })
 
               set((state) => {
                 state.marketsInfo = parsedMarketsInfo
@@ -1204,6 +1183,139 @@ const useMangoStore = create<
             set((state) => {
               state.coingeckoPrices.loading = false
             })
+          }
+        },
+        async fetchProfileDetails(walletPk: string) {
+          const set = get().set
+          set((state) => {
+            state.profile.loadDetails = true
+          })
+          try {
+            const response = await fetch(
+              `https://mango-transaction-log.herokuapp.com/v3/user-data/profile-details?wallet-pk=${walletPk}`
+            )
+            const data = await response.json()
+            set((state) => {
+              state.profile.details = data
+              state.profile.loadDetails = false
+            })
+          } catch (e) {
+            // notify({ type: 'error', title: t('profile:profile-fetch-fail') })
+            console.log(e)
+            set((state) => {
+              state.profile.loadDetails = false
+            })
+          }
+        },
+        async fetchProfileFollowing(pk: string) {
+          const set = get().set
+          if (!pk) return
+          set((state) => {
+            state.profile.loadProfileFollowing = true
+          })
+          try {
+            const followingRes = await fetch(
+              `https://mango-transaction-log.herokuapp.com/v3/user-data/following?wallet-pk=${pk}`
+            )
+            const parsedResponse = await followingRes.json()
+            if (Array.isArray(parsedResponse)) {
+              set((state) => {
+                state.profile.following = parsedResponse
+              })
+            } else {
+              set((state) => {
+                state.profile.following = []
+              })
+            }
+            set((state) => {
+              state.profile.loadProfileFollowing = false
+            })
+          } catch {
+            notify({
+              type: 'error',
+              title: 'Unable to load following',
+            })
+            set((state) => {
+              state.profile.loadProfileFollowing = false
+            })
+          }
+        },
+        async followAccount(
+          mangoAccountPk: string,
+          publicKey: PublicKey,
+          signMessage: (x) => Uint8Array
+        ) {
+          const actions = get().actions
+          try {
+            if (!publicKey) throw new Error('Wallet not connected!')
+            if (!signMessage)
+              throw new Error('Wallet does not support message signing!')
+
+            const messageString = JSON.stringify({
+              mango_account: mangoAccountPk,
+              action: 'insert',
+            })
+            const message = new TextEncoder().encode(messageString)
+            const signature = await signMessage(message)
+
+            const requestOptions = {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                wallet_pk: publicKey.toString(),
+                message: messageString,
+                signature: bs58.encode(signature),
+              }),
+            }
+            const response = await fetch(
+              'https://mango-transaction-log.herokuapp.com/v3/user-data/following',
+              requestOptions
+            )
+            if (response.status === 200) {
+              await actions.fetchProfileFollowing(publicKey.toString())
+              notify({ type: 'success', title: 'Account followed' })
+            }
+          } catch (error: any) {
+            notify({ type: 'error', title: 'Failed to follow account' })
+          }
+        },
+        async unfollowAccount(
+          mangoAccountPk: string,
+          publicKey: PublicKey,
+          signMessage: (x) => Uint8Array
+        ) {
+          const actions = get().actions
+          try {
+            if (!publicKey) throw new Error('Wallet not connected!')
+            if (!signMessage)
+              throw new Error('Wallet does not support message signing!')
+
+            const messageString = JSON.stringify({
+              mango_account: mangoAccountPk,
+              action: 'delete',
+            })
+            const message = new TextEncoder().encode(messageString)
+            const signature = await signMessage(message)
+
+            const requestOptions = {
+              method: 'DELETE',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                wallet_pk: publicKey.toString(),
+                message: messageString,
+                signature: bs58.encode(signature),
+              }),
+            }
+            const response = await fetch(
+              'https://mango-transaction-log.herokuapp.com/v3/user-data/following',
+              requestOptions
+            )
+            if (response.status === 200) {
+              await actions.fetchProfileFollowing(publicKey.toString())
+              notify({ type: 'success', title: 'Account unfollowed' })
+            }
+          } catch (error: any) {
+            notify({ type: 'error', title: 'Failed to unfollow account' })
           }
         },
       },

@@ -38,9 +38,7 @@ const Switch: FunctionComponent<SwitchProps> = ({
           bg-white shadow ring-0 transition duration-200 ease-in-out`}
         ></span>
       </button>
-      <span className="ml-2">
-        <span className="">{children}</span>
-      </span>
+      <span className={children ? 'ml-2' : ''}>{children}</span>
     </div>
   )
 }

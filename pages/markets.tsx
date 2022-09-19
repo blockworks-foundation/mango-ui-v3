@@ -13,7 +13,11 @@ const TABS = ['futures', 'spot']
 export async function getStaticProps({ locale }) {
   return {
     props: {
-      ...(await serverSideTranslations(locale, ['common', 'profile'])),
+      ...(await serverSideTranslations(locale, [
+        'common',
+        'delegate',
+        'profile',
+      ])),
       // Will be passed to the page component as props
     },
   }
@@ -35,7 +39,7 @@ export default function Markets() {
   }
 
   return (
-    <div className="py-6">
+    <div className="pt-6">
       <div className="flex flex-col pb-4 sm:flex-row">
         <h1>{t('markets')}</h1>
       </div>

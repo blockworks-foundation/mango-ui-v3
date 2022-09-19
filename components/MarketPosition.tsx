@@ -301,7 +301,7 @@ export default function MarketPosition() {
           {initialLoad ? (
             <DataLoader />
           ) : (
-            <PerpSideBadge perpAccount={perpAccount}></PerpSideBadge>
+            <PerpSideBadge basePosition={basePosition}></PerpSideBadge>
           )}
         </div>
         <div className="flex justify-between pb-2">
@@ -390,6 +390,7 @@ export default function MarketPosition() {
           <Button
             onClick={() => setShowMarketCloseModal(true)}
             className="mt-2.5 w-full"
+            primary={false}
           >
             <span>{t('market-close')}</span>
           </Button>
@@ -399,8 +400,7 @@ export default function MarketPosition() {
         <MarketCloseModal
           isOpen={showMarketCloseModal}
           onClose={handleCloseWarning}
-          market={selectedMarket}
-          marketIndex={marketIndex}
+          position={{ marketConfig: marketConfig, perpMarket: selectedMarket }}
         />
       ) : null}
     </>
