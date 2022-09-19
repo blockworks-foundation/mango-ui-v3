@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useMemo, useState } from 'react'
+import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import dayjs from 'dayjs'
 import { MedalIcon } from './icons'
 import { useTranslation } from 'next-i18next'
@@ -12,6 +12,23 @@ import { notify } from 'utils/notifications'
 const utc = require('dayjs/plugin/utc')
 dayjs.extend(utc)
 
+const formatLeaderboardData = async (leaderboard) => {
+  const walletPks = leaderboard.map((u) => u.wallet_pk)
+  const profileDetailsResponse = await fetch(
+    `https://mango-transaction-log.herokuapp.com/v3/user-data/multiple-profile-details?wallet-pks=${walletPks.toString()}`
+  )
+  const parsedProfileDetailsResponse = await profileDetailsResponse.json()
+
+  const leaderboardData = [] as any[]
+  for (const item of leaderboard) {
+    const profileDetails = parsedProfileDetailsResponse[item.wallet_pk]
+    item.profile = profileDetails ? profileDetails : null
+    leaderboardData.push(item)
+  }
+
+  return leaderboardData
+}
+
 const LeaderboardTable = ({ range = '29' }) => {
   const { t } = useTranslation('common')
   const [pnlLeaderboardData, setPnlLeaderboardData] = useState<any[]>([])
@@ -23,23 +40,6 @@ const LeaderboardTable = ({ range = '29' }) => {
   )
   const [leaderboardType, setLeaderboardType] = useState<string>('total-pnl')
   const [loading, setLoading] = useState(false)
-
-  const formatLeaderboardData = async (leaderboard) => {
-    const walletPks = leaderboard.map((u) => u.wallet_pk)
-    const profileDetailsResponse = await fetch(
-      `https://mango-transaction-log.herokuapp.com/v3/user-data/multiple-profile-details?wallet-pks=${walletPks.toString()}`
-    )
-    const parsedProfileDetailsResponse = await profileDetailsResponse.json()
-    const leaderboardData = [] as any[]
-    for (const item of leaderboard) {
-      const profileDetails = parsedProfileDetailsResponse[item.wallet_pk]
-      leaderboardData.push({
-        ...item,
-        profile: profileDetails ? profileDetails : null,
-      })
-    }
-    return leaderboardData
-  }
 
   const fetchPnlLeaderboard = async () => {
     setLoading(true)
@@ -63,7 +63,7 @@ const LeaderboardTable = ({ range = '29' }) => {
     }
   }
 
-  const fetchPerpPnlLeaderboard = async () => {
+  const fetchPerpPnlLeaderboard = useCallback(async () => {
     setLoading(true)
     try {
       const response = await fetch(
@@ -83,9 +83,9 @@ const LeaderboardTable = ({ range = '29' }) => {
       notify({ type: 'error', title: t('fetch-leaderboard-fail') })
       setLoading(false)
     }
-  }
+  }, [range, t])
 
-  const fetchSpotPnlLeaderboard = async () => {
+  const fetchSpotPnlLeaderboard = useCallback(async () => {
     setLoading(true)
     const response = await fetch(
       `https://mango-transaction-log.herokuapp.com/v3/stats/spot-pnl-leaderboard?start-date=${dayjs()
@@ -100,7 +100,7 @@ const LeaderboardTable = ({ range = '29' }) => {
     setSpotPnlLeaderboardData(leaderboardData)
 
     setLoading(false)
-  }
+  }, [range])
 
   useEffect(() => {
     if (leaderboardType === 'total-pnl') {
@@ -239,7 +239,7 @@ const AccountCard = ({ rank, acc, rawPnl, profile, pnl }) => {
           lightest: '#EFBF8D',
         }
   return (
-    <div className="relative" key={acc}>
+    <div className="relative">
       {profile ? (
         <button
           className="absolute left-[118px] bottom-4 flex items-center space-x-2 rounded-full border border-th-fgd-4 px-2 py-1 hover:border-th-fgd-2 hover:filter"
