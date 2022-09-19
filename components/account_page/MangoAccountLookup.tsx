@@ -40,7 +40,7 @@ export const MangoAccountLookup = () => {
       <div className="w-full max-w-[360px] pt-2">
         <Input
           type="text"
-          error={isInvalid}
+          error={isInvalid ? 'is invalid' : ''}
           value={value}
           onChange={(e) => setValue(e.target.value)}
         />
