@@ -36,14 +36,13 @@ import { Notification, notify } from '../utils/notifications'
 import {
   DEFAULT_MARKET_KEY,
   initialMarket,
-  NODE_URL_KEY,
+  RPC_URL_KEY,
 } from '../components/SettingsModal'
 import { MSRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
 import { decodeBook } from '../hooks/useHydrateStore'
-import { IOrderLineAdapter } from '../public/charting_library/charting_library'
+import { IExecutionLineAdapter, IOrderLineAdapter } from '../public/charting_library/charting_library'
 import { Wallet } from '@solana/wallet-adapter-react'
 import { coingeckoIds, fetchNftsFromHolaplexIndexer } from 'utils/tokens'
-import { sign } from 'tweetnacl'
 import bs58 from 'bs58'
 import { PerpMarketInfo } from '@blockworks-foundation/mango-client'
 
@@ -105,6 +104,22 @@ export const LAST_ACCOUNT_KEY = 'lastAccountViewed-3.0'
 // Used to retry loading the MangoGroup and MangoAccount if an rpc node error occurs
 let mangoGroupRetryAttempt = 0
 let mangoAccountRetryAttempt = 0
+
+const initMangoClient = (connection: Connection): MangoClient => {
+  return new MangoClient(connection, programId, {
+    timeout: CLIENT_TX_TIMEOUT,
+    prioritizationFee: 5000,
+    postSendTxCallback: ({ txid }: { txid: string }) => {
+      notify({
+        title: 'Transaction sent',
+        description: 'Waiting for confirmation',
+        type: 'confirm',
+        txid: txid,
+      })
+    },
+    blockhashCommitment: 'confirmed',
+  })
+}
 
 // an object with keys of Solana account addresses that we are
 // subscribing to with connection.onAccountChange() in the
@@ -246,6 +261,7 @@ export type MangoStore = {
     initialLoad: boolean
     lastUpdatedAt: string
     lastSlot: number
+    loading: boolean
     openOrders: any[]
     totalOpenOrders: number
     spotBalances: SpotBalance[]
@@ -335,6 +351,7 @@ export type MangoStore = {
   marketsInfo: any[]
   tradingView: {
     orderLines: Map<string, IOrderLineAdapter>
+    tradeExecutions: Map<string, IExecutionLineAdapter>
   }
   coingeckoPrices: { data: any[]; loading: boolean }
 }
@@ -348,7 +365,7 @@ const useMangoStore = create<
   subscribeWithSelector((set, get) => {
     let rpcUrl = ENDPOINT?.url
     if (typeof window !== 'undefined' && CLUSTER === 'mainnet') {
-      const urlFromLocalStorage = localStorage.getItem(NODE_URL_KEY)
+      const urlFromLocalStorage = localStorage.getItem(RPC_URL_KEY)
       rpcUrl = urlFromLocalStorage
         ? JSON.parse(urlFromLocalStorage)
         : ENDPOINT?.url
@@ -363,19 +380,7 @@ const useMangoStore = create<
     }
 
     const connection = new Connection(rpcUrl, 'processed' as Commitment)
-    const client = new MangoClient(connection, programId, {
-      timeout: CLIENT_TX_TIMEOUT,
-      prioritizationFee: 2,
-      postSendTxCallback: ({ txid }: { txid: string }) => {
-        notify({
-          title: 'Transaction sent',
-          description: 'Waiting for confirmation',
-          type: 'confirm',
-          txid: txid,
-        })
-      },
-      blockhashCommitment: 'confirmed',
-    })
+    const client = initMangoClient(connection)
     return {
       marketsInfo: [],
       notificationIdCounter: 0,
@@ -422,6 +427,7 @@ const useMangoStore = create<
         initialLoad: true,
         lastUpdatedAt: '0',
         lastSlot: 0,
+        loading: false,
         openOrders: [],
         totalOpenOrders: 0,
         spotBalances: [],
@@ -465,6 +471,7 @@ const useMangoStore = create<
       },
       tradingView: {
         orderLines: new Map(),
+        tradeExecutions: new Map(),
       },
       coingeckoPrices: { data: [], loading: false },
       profile: {
@@ -802,9 +809,17 @@ const useMangoStore = create<
 
           if (!mangoAccount) return
 
+          set((state) => {
+            state.selectedMangoAccount.loading = true
+          })
+
           const [reloadedMangoAccount, lastSlot] =
             await mangoAccount.reloadFromSlot(connection, mangoClient.lastSlot)
           const lastSeenSlot = get().selectedMangoAccount.lastSlot
+
+          set((state) => {
+            state.selectedMangoAccount.loading = false
+          })
 
           if (lastSlot > lastSeenSlot) {
             set((state) => {
@@ -935,7 +950,7 @@ const useMangoStore = create<
 
           const newConnection = new Connection(endpointUrl, 'processed')
 
-          const newClient = new MangoClient(newConnection, programId)
+          const newClient = initMangoClient(newConnection)
 
           set((state) => {
             state.connection.endpoint = endpointUrl
@@ -1242,8 +1257,6 @@ const useMangoStore = create<
             })
             const message = new TextEncoder().encode(messageString)
             const signature = await signMessage(message)
-            if (!sign.detached.verify(message, signature, publicKey.toBytes()))
-              throw new Error('Invalid signature!')
 
             const requestOptions = {
               method: 'POST',
@@ -1283,8 +1296,6 @@ const useMangoStore = create<
             })
             const message = new TextEncoder().encode(messageString)
             const signature = await signMessage(message)
-            if (!sign.detached.verify(message, signature, publicKey.toBytes()))
-              throw new Error('Invalid signature!')
 
             const requestOptions = {
               method: 'DELETE',

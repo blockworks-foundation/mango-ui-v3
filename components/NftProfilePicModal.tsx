@@ -8,7 +8,6 @@ import { ElementTitle } from './styles'
 import Button from './Button'
 import { useTranslation } from 'next-i18next'
 import { LinkButton } from 'components'
-import { sign } from 'tweetnacl'
 import bs58 from 'bs58'
 
 const ImgWithLoader = (props) => {
@@ -59,8 +58,6 @@ const NftProfilePicModal = ({ isOpen, onClose }) => {
       })
       const message = new TextEncoder().encode(messageString)
       const signature = await signMessage(message)
-      if (!sign.detached.verify(message, signature, publicKey.toBytes()))
-        throw new Error('Invalid signature!')
 
       const requestOptions = {
         method: 'POST',
@@ -106,8 +103,6 @@ const NftProfilePicModal = ({ isOpen, onClose }) => {
       })
       const message = new TextEncoder().encode(messageString)
       const signature = await signMessage(message)
-      if (!sign.detached.verify(message, signature, publicKey.toBytes()))
-        throw new Error('Invalid signature!')
 
       const requestOptions = {
         method: 'POST',

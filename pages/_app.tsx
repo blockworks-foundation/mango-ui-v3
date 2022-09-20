@@ -167,8 +167,7 @@ function App({ Component, pageProps }) {
             ? WalletAdapterNetwork.Mainnet
             : WalletAdapterNetwork.Devnet,
         options: {
-          // TODO: register Mango Markets to https://cloud.walletconnect.com/ and obtain projectId
-          // projectId: 'e899c82be21d4acca2c8aec45e893598',
+          projectId: 'f3d38b197d7039c03c345f82ed68ef9b',
           metadata: {
             name: 'Mango Markets',
             description: 'Mango Markets',

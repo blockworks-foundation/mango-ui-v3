@@ -15,7 +15,6 @@ import {
   ExternalLinkIcon,
   ChevronDownIcon,
   ReceiptTaxIcon,
-  GiftIcon,
 } from '@heroicons/react/solid'
 import { useRouter } from 'next/router'
 import AccountOverviewPopover from './AccountOverviewPopover'
@@ -151,14 +150,6 @@ const SideNav = ({ collapsed }) => {
               icon={<ReceiptTaxIcon className="h-4 w-4" />}
               title={t('fees')}
               pagePath="/fees"
-              hideIconBg
-            />
-            <MenuItem
-              active={pathname === '/win-srm'}
-              collapsed={false}
-              icon={<GiftIcon className="h-4 w-4" />}
-              title="Spot Trading Comp"
-              pagePath="/win-srm"
               hideIconBg
             />
             <MenuItem

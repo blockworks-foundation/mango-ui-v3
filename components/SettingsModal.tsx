@@ -4,7 +4,7 @@ import Modal from './Modal'
 import { ElementTitle } from './styles'
 import Button, { LinkButton } from './Button'
 import Input, { Label } from './Input'
-import useMangoStore from '../stores/useMangoStore'
+import useMangoStore, { ENDPOINTS } from '../stores/useMangoStore'
 import useLocalStorageState from '../hooks/useLocalStorageState'
 import Select from './Select'
 import { useTranslation } from 'next-i18next'
@@ -21,8 +21,16 @@ require('dayjs/locale/ru')
 require('dayjs/locale/zh')
 require('dayjs/locale/zh-tw')
 
-const NODE_URLS = [
-  { label: 'Triton (RPC Pool)', value: 'https://mango.rpcpool.com' },
+const RPC_URLS = [
+  {
+    label: 'Syndica',
+    value:
+      'https://solana-api.syndica.io/access-token/4ywEBJNxuwPLXXU9UlMK67fAMZBt1GLdwuXyXSYnoYPn5aXajT8my0R5klXhYRkk/rpc',
+  },
+  {
+    label: 'Triton (RPC Pool)',
+    value: 'https://mango-mango-d092.mainnet.rpcpool.com/',
+  },
   { label: 'Genesys Go', value: 'https://mango.genesysgo.net' },
   {
     label: 'Project Serum',
@@ -45,9 +53,9 @@ export const LANGS = [
   { locale: 'zh', name: 'chinese', description: 'simplified chinese' },
 ]
 
-const CUSTOM_NODE = NODE_URLS.find((n) => n.label === 'Custom')
+const CUSTOM_RPC = RPC_URLS.find((n) => n.label === 'Custom')
 
-export const NODE_URL_KEY = 'node-url-key-0.8'
+export const RPC_URL_KEY = 'rpc-url-key-0.11'
 export const DEFAULT_MARKET_KEY = 'defaultMarket-0.3'
 export const ORDERBOOK_FLASH_KEY = 'showOrderbookFlash'
 export const DEFAULT_SPOT_MARGIN_KEY = 'defaultSpotMargin'
@@ -63,10 +71,7 @@ const SettingsModal = ({ isOpen, onClose }) => {
   const [settingsView, setSettingsView] = useState('')
   const { theme } = useTheme()
   const [savedLanguage] = useLocalStorageState('language', '')
-  const [rpcEndpointUrl] = useLocalStorageState(
-    NODE_URL_KEY,
-    NODE_URLS[0].value
-  )
+  const [rpcEndpointUrl] = useLocalStorageState(RPC_URL_KEY, ENDPOINTS[0].url)
 
   const [defaultMarket] = useLocalStorageState(
     DEFAULT_MARKET_KEY,
@@ -83,7 +88,7 @@ const SettingsModal = ({ isOpen, onClose }) => {
   )
 
   const rpcEndpoint =
-    NODE_URLS.find((node) => node.value === rpcEndpointUrl) || CUSTOM_NODE
+    RPC_URLS.find((node) => node.value === rpcEndpointUrl) || CUSTOM_RPC
 
   const savedLanguageName = useMemo(() => {
     const matchingLang = LANGS.find((l) => l.locale === savedLanguage)
@@ -253,11 +258,11 @@ const RpcEndpointSettings = ({ setSettingsView }) => {
   const { t } = useTranslation('common')
   const actions = useMangoStore((s) => s.actions)
   const [rpcEndpointUrl, setRpcEndpointUrl] = useLocalStorageState(
-    NODE_URL_KEY,
-    NODE_URLS[0].value
+    RPC_URL_KEY,
+    ENDPOINTS[0].url
   )
   const rpcEndpoint =
-    NODE_URLS.find((node) => node.value === rpcEndpointUrl) || CUSTOM_NODE
+    RPC_URLS.find((node) => node.value === rpcEndpointUrl) || CUSTOM_RPC
 
   const handleSetEndpointUrl = (endpointUrl) => {
     setRpcEndpointUrl(endpointUrl)
@@ -276,7 +281,7 @@ const RpcEndpointSettings = ({ setSettingsView }) => {
         onChange={(url) => handleSelectEndpointUrl(url)}
         className="w-full"
       >
-        {NODE_URLS.map((node) => (
+        {RPC_URLS.map((node) => (
           <Select.Option key={node.value} value={node.value}>
             <span>{node.label}</span>
           </Select.Option>
