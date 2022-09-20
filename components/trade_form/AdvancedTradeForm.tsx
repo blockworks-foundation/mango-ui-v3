@@ -43,6 +43,7 @@ import InlineNotification from '../InlineNotification'
 import { DEFAULT_SPOT_MARGIN_KEY } from '../SettingsModal'
 import { useWallet } from '@solana/wallet-adapter-react'
 import usePrevious from 'hooks/usePrevious'
+import Loading from 'components/Loading'
 
 const MAX_SLIPPAGE_KEY = 'maxSlippage'
 
@@ -78,6 +79,7 @@ export default function AdvancedTradeForm({
   const [spotMargin, setSpotMargin] = useState(defaultSpotMargin)
   const [positionSizePercent, setPositionSizePercent] = useState('')
   const [insufficientSol, setInsufficientSol] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
   const { takerFee } = useFees()
   const { totalMsrm } = useSrmAccount()
 
@@ -660,6 +662,7 @@ export default function AdvancedTradeForm({
     const referrerPk = useMangoStore.getState().referrerPk
 
     if (!wallet || !mangoGroup || !mangoAccount || !market) return
+    setSubmitting(true)
 
     try {
       const orderPrice = calculateTradePrice(
@@ -790,6 +793,7 @@ export default function AdvancedTradeForm({
     } finally {
       actions.reloadMangoAccount()
       actions.loadMarketFills()
+      setSubmitting(false)
     }
   }
 
@@ -1122,25 +1126,27 @@ export default function AdvancedTradeForm({
               <button
                 disabled={disabledTradeButton}
                 onClick={onSubmit}
-                className={`flex-grow rounded-full px-6 py-2 font-bold text-white focus:outline-none disabled:cursor-not-allowed disabled:bg-th-bkg-4 disabled:text-th-fgd-4 ${
+                className={`flex flex-grow justify-center rounded-full px-6 py-2 font-bold text-white focus:outline-none disabled:cursor-not-allowed disabled:bg-th-bkg-4 disabled:text-th-fgd-4 ${
                   side === 'buy' ? 'bg-th-green-dark' : 'bg-th-red'
                 }`}
               >
-                {sizeTooLarge
-                  ? t('too-large')
-                  : side === 'buy'
-                  ? `${
-                      baseSize > 0 ? `${t('buy')} ` + baseSize : `${t('buy')} `
-                    } ${
-                      isPerpMarket ? marketConfig.name : marketConfig.baseSymbol
-                    }`
-                  : `${
-                      baseSize > 0
-                        ? `${t('sell')} ` + baseSize
-                        : `${t('sell')} `
-                    } ${
-                      isPerpMarket ? marketConfig.name : marketConfig.baseSymbol
-                    }`}
+                {sizeTooLarge ? (
+                  t('too-large')
+                ) : submitting ? (
+                  <Loading />
+                ) : side === 'buy' ? (
+                  `${
+                    baseSize > 0 ? `${t('buy')} ` + baseSize : `${t('buy')} `
+                  } ${
+                    isPerpMarket ? marketConfig.name : marketConfig.baseSymbol
+                  }`
+                ) : (
+                  `${
+                    baseSize > 0 ? `${t('sell')} ` + baseSize : `${t('sell')} `
+                  } ${
+                    isPerpMarket ? marketConfig.name : marketConfig.baseSymbol
+                  }`
+                )}
               </button>
             ) : (
               <div className="flex-grow">
