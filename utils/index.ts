@@ -17,6 +17,12 @@ export const percentFormat = new Intl.NumberFormat(undefined, {
   maximumFractionDigits: 3,
 })
 
+export const percentFormat4D = new Intl.NumberFormat(undefined, {
+  style: 'percent',
+  minimumFractionDigits: 1,
+  maximumFractionDigits: 4,
+})
+
 export function floorToDecimal(
   value: number,
   decimals: number | undefined | null
