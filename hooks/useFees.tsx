@@ -53,7 +53,7 @@ export default function useFees(): {
     // @ts-ignore
     refSurchargeTier1 = mangoGroup.refSurchargeCentibpsTier1 / CENTIBPS_PER_UNIT
     // @ts-ignore
-    refSurchargeTier2 = 100 / CENTIBPS_PER_UNIT
+    refSurchargeTier2 = mangoGroup.refSurchargeCentibpsTier2 / CENTIBPS_PER_UNIT
     // @ts-ignore
     const refShare = mangoGroup.refShareCentibpsTier1 / CENTIBPS_PER_UNIT
 
@@ -100,7 +100,7 @@ export default function useFees(): {
     makerFee: makerFee,
     takerFee: takerFee + refSurchargeTier2 - discount,
     takerFeeBeforeDiscount: takerFee + refSurchargeTier2,
-    takerFeeWithTier1Discount: takerFee + refSurchargeTier1 / CENTIBPS_PER_UNIT,
+    takerFeeWithTier1Discount: takerFee + refSurchargeTier1,
     takerFeeWithTier2Discount: takerFee,
   }
 }
