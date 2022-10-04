@@ -33,8 +33,12 @@ export async function getStaticProps({ locale }) {
 export default function Fees() {
   const { t } = useTranslation('common')
   const { totalSrm, totalMsrm, rates } = useSrmAccount()
-  const { takerFeeBeforeDiscount, takerFeeWithTier1Discount, takerFeeWithTier2Discount, makerFee } =
-    useFees()
+  const {
+    takerFeeBeforeDiscount,
+    takerFeeWithTier1Discount,
+    takerFeeWithTier2Discount,
+    makerFee,
+  } = useFees()
   const { connected } = useWallet()
   const [showDeposit, setShowDeposit] = useState(false)
   const [showWithdraw, setShowWithdraw] = useState(false)

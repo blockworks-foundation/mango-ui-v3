@@ -62,11 +62,11 @@ export default function useFees(): {
       ? mangoGroup.refMngoRequired.toNumber() /
         Math.pow(10, mngoConfig.baseDecimals)
       : null
-    // @ts-ignore
-    const refMngoTier2Factor = mangoGroup.refMngoTier2Factor == 0 ? 1 : mangoGroup.refMngoTier2Factor
+    const refMngoTier2Factor =
+      // @ts-ignore
+      mangoGroup.refMngoTier2Factor == 0 ? 1 : mangoGroup.refMngoTier2Factor
     const mngoRequiredTier2 = mngoConfig
-      
-      ? mangoGroup.refMngoRequired.toNumber() * refMngoTier2Factor /
+      ? (mangoGroup.refMngoRequired.toNumber() * refMngoTier2Factor) /
         Math.pow(10, mngoConfig.baseDecimals)
       : null
 
@@ -81,8 +81,14 @@ export default function useFees(): {
 
       const hasReferrer = useMangoStore.getState().referrerPk
 
-      if (typeof mngoRequiredTier1 === 'number' && mngoBalance >= mngoRequiredTier1) {
-        if(typeof mngoRequiredTier2 === 'number' && mngoBalance >= mngoRequiredTier2) {
+      if (
+        typeof mngoRequiredTier1 === 'number' &&
+        mngoBalance >= mngoRequiredTier1
+      ) {
+        if (
+          typeof mngoRequiredTier2 === 'number' &&
+          mngoBalance >= mngoRequiredTier2
+        ) {
           discount = refSurchargeTier2
         } else {
           discount = refSurchargeTier1
