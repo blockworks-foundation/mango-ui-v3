@@ -40,7 +40,10 @@ import {
 } from '../components/SettingsModal'
 import { MSRM_DECIMALS } from '@project-serum/serum/lib/token-instructions'
 import { decodeBook } from '../hooks/useHydrateStore'
-import { IExecutionLineAdapter, IOrderLineAdapter } from '../public/charting_library/charting_library'
+import {
+  IExecutionLineAdapter,
+  IOrderLineAdapter,
+} from '../public/charting_library/charting_library'
 import { Wallet } from '@solana/wallet-adapter-react'
 import { coingeckoIds, fetchNftsFromHolaplexIndexer } from 'utils/tokens'
 import bs58 from 'bs58'
