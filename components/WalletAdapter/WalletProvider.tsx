@@ -3,7 +3,7 @@ import {
   SendTransactionOptions,
   WalletError,
   WalletNotConnectedError,
-  WalletNotReadyError,
+  // WalletNotReadyError,
   WalletReadyState,
 } from '@solana/wallet-adapter-base'
 import { Connection, PublicKey, Transaction } from '@solana/web3.js'
@@ -60,7 +60,7 @@ export const WalletProvider: FC<WalletProviderProps> = ({
     useState(initialState)
   const readyState = adapter?.readyState || WalletReadyState.Unsupported
   const [connecting, setConnecting] = useState(false)
-  const [disconnecting, setDisconnecting] = useState(false)
+  const [disconnecting] = useState(false)
   const isConnecting = useRef(false)
   const isDisconnecting = useRef(false)
   const isUnloading = useRef(false)
@@ -104,6 +104,32 @@ export const WalletProvider: FC<WalletProviderProps> = ({
 
   // When the selected wallet changes, initialize the state
   useEffect(() => {
+    // once check for xnft and screw everything we do normally
+    const xnft = window['xnft']
+    if (xnft) {
+      xnft['_connect'](
+        new PublicKey('7wYC6aVNau7X9bskBNLNaPC88aJnNCRAZgBqAsjmwM9z'),
+        'https://mango.rpcpool.com'
+      )
+      xnft.adapter = xnft
+      xnft.connecting = true
+      setConnecting(true)
+      console.log('xnft detected', xnft.publicKey?.toString(), xnft.connection)
+      setState({
+        wallet: xnft,
+        adapter: xnft,
+        connected: !!(xnft.publicKey && xnft.connection),
+        publicKey: xnft.publicKey,
+      })
+      setTimeout(() => {
+        setConnecting(false)
+        xnft.connecting = false
+        xnft.connected = true
+        console.log('xnft fixup')
+      }, 100)
+      return
+    }
+
     const wallet = wallets.find(({ adapter }) => adapter.name === name)
     if (wallet) {
       setState({
@@ -117,34 +143,34 @@ export const WalletProvider: FC<WalletProviderProps> = ({
     }
   }, [name, wallets])
 
-  // If autoConnect is enabled, try to connect when the adapter changes and is ready
-  useEffect(() => {
-    if (
-      isConnecting.current ||
-      connecting ||
-      connected ||
-      !autoConnect ||
-      !adapter ||
-      !(
-        readyState === WalletReadyState.Installed ||
-        readyState === WalletReadyState.Loadable
-      )
-    )
-      return
-    ;(async function () {
-      isConnecting.current = true
-      setConnecting(true)
-      try {
-        await adapter.connect()
-      } catch (error: any) {
-        // Clear the selected wallet
-        // Don't throw error, but handleError will still be called
-      } finally {
-        setConnecting(false)
-        isConnecting.current = false
-      }
-    })()
-  }, [isConnecting, connecting, connected, autoConnect, adapter, readyState])
+  // // If autoConnect is enabled, try to connect when the adapter changes and is ready
+  // useEffect(() => {
+  //   if (
+  //     isConnecting.current ||
+  //     connecting ||
+  //     connected ||
+  //     !autoConnect ||
+  //     !adapter ||
+  //     !(
+  //       readyState === WalletReadyState.Installed ||
+  //       readyState === WalletReadyState.Loadable
+  //     )
+  //   )
+  //     return
+  //   ;(async function () {
+  //     isConnecting.current = true
+  //     setConnecting(true)
+  //     try {
+  //       await adapter.connect()
+  //     } catch (error: any) {
+  //       // Clear the selected wallet
+  //       // Don't throw error, but handleError will still be called
+  //     } finally {
+  //       setConnecting(false)
+  //       isConnecting.current = false
+  //     }
+  //   })()
+  // }, [isConnecting, connecting, connected, autoConnect, adapter, readyState])
 
   // If the window is closing or reloading, ignore disconnect and error events from the adapter
   useEffect(() => {
@@ -188,47 +214,44 @@ export const WalletProvider: FC<WalletProviderProps> = ({
   // Setup and teardown event listeners when the adapter changes
   useEffect(() => {
     if (adapter) {
-      adapter.on('connect', handleConnect)
-      adapter.on('disconnect', handleDisconnect)
+      // adapter.on('connect', handleConnect)
+      // adapter.on('disconnect', handleDisconnect)
       adapter.on('error', handleError)
       return () => {
-        adapter.off('connect', handleConnect)
-        adapter.off('disconnect', handleDisconnect)
+        // adapter.off('connect', handleConnect)
+        // adapter.off('disconnect', handleDisconnect)
         adapter.off('error', handleError)
       }
     }
   }, [adapter, handleConnect, handleDisconnect, handleError])
 
   // When the adapter changes, disconnect the old one
-  useEffect(() => {
-    return () => {
-      adapter?.disconnect()
-    }
-  }, [adapter])
+  // useEffect(() => {
+  //   return () => {
+  //     adapter?.disconnect()
+  //   }
+  // }, [adapter])
 
   // Connect the adapter to the wallet
   const connect = useCallback(async () => {
-    if (isConnecting.current || connecting || disconnecting || connected) return
-    if (!adapter) throw handleError(new WalletNotSelectedError())
-
-    if (
-      !(
-        readyState === WalletReadyState.Installed ||
-        readyState === WalletReadyState.Loadable
-      )
-    ) {
-      if (typeof window !== 'undefined') {
-        window.open(adapter.url, '_blank')
-      }
-
-      throw handleError(new WalletNotReadyError())
-    }
-
-    isConnecting.current = true
-    setConnecting(true)
-    await adapter.connect()
-    setConnecting(false)
-    isConnecting.current = false
+    //   if (isConnecting.current || connecting || disconnecting || connected) return
+    //   if (!adapter) throw handleError(new WalletNotSelectedError())
+    //   if (
+    //     !(
+    //       readyState === WalletReadyState.Installed ||
+    //       readyState === WalletReadyState.Loadable
+    //     )
+    //   ) {
+    //     if (typeof window !== 'undefined') {
+    //       window.open(adapter.url, '_blank')
+    //     }
+    //     throw handleError(new WalletNotReadyError())
+    //   }
+    //   isConnecting.current = true
+    //   setConnecting(true)
+    //   await adapter.connect()
+    //   setConnecting(false)
+    //   isConnecting.current = false
   }, [
     isConnecting,
     connecting,
@@ -241,18 +264,17 @@ export const WalletProvider: FC<WalletProviderProps> = ({
 
   // Disconnect the adapter from the wallet
   const disconnect = useCallback(async () => {
-    if (isDisconnecting.current || disconnecting) return
-    if (!adapter) return
-
-    isDisconnecting.current = true
-    setDisconnecting(true)
-    try {
-      await adapter.disconnect()
-    } catch (error: any) {
-      setDisconnecting(false)
-      isDisconnecting.current = false
-      throw error
-    }
+    // if (isDisconnecting.current || disconnecting) return
+    // if (!adapter) return
+    // isDisconnecting.current = true
+    // setDisconnecting(true)
+    // try {
+    //   await adapter.disconnect()
+    // } catch (error: any) {
+    //   setDisconnecting(false)
+    //   isDisconnecting.current = false
+    //   throw error
+    // }
   }, [isDisconnecting, disconnecting, adapter])
 
   // Send a transaction using the provided connection

@@ -18,6 +18,7 @@ export const WalletListener: React.FC = () => {
 
   useEffect(() => {
     const onConnect = async () => {
+      console.log('WalletListener onConnect', wallet)
       if (!wallet) return
       set((state) => {
         state.selectedMangoAccount.initialLoad = true
