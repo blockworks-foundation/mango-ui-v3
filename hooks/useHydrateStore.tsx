@@ -99,7 +99,7 @@ const useHydrateStore = () => {
   useEffect(() => {
     const ws = new WebSocket('ws://localhost:8080')
 
-    const trail: { [market: string]: any } = {}
+    const trees: { [market: string]: any } = {}
 
     const books: { [market: string]: Orderbook } = {}
 
@@ -114,7 +114,7 @@ const useHydrateStore = () => {
         switch (side) {
           case 'bids':
             set(
-              trail,
+              trees,
               [market, side],
               new RBTree<{ price: number; size: number }>(
                 (nodeA, nodeB) => nodeB.price - nodeA.price
@@ -122,13 +122,13 @@ const useHydrateStore = () => {
             )
 
             for (const [price, size] of orders) {
-              trail[market][side].insert({ price, size })
+              trees[market][side].insert({ price, size })
             }
 
             break
           case 'asks':
             set(
-              trail,
+              trees,
               [market, side],
               new RBTree<{ price: number; size: number }>(
                 (nodeA, nodeB) => nodeA.price - nodeB.price
@@ -136,7 +136,7 @@ const useHydrateStore = () => {
             )
 
             for (const [price, size] of orders) {
-              trail[market][side].insert({ price, size })
+              trees[market][side].insert({ price, size })
             }
 
             break
@@ -145,9 +145,9 @@ const useHydrateStore = () => {
         }
       }
 
-      if (type == 'l2update') {
-        const tree = get(trail, [market, side])
+      const tree = get(trees, [market, side])
 
+      if (type == 'l2update') {
         for (const [price, size] of orders) {
           const node = tree.find({ price, size })
 
@@ -159,32 +159,36 @@ const useHydrateStore = () => {
             tree.insert({ price, size })
           }
         }
-
-        const iterator = tree.iterator()
-
-        const materialized: any[] = []
-
-        let order = iterator.next()
-
-        while (order !== null) {
-          materialized.push([order.price, order.size])
-
-          order = iterator.next()
-        }
-
-        set(books, [market], {
-          ...get(books, [market], { bids: [], asks: [] }),
-          [side]: materialized,
-        })
       }
 
+      const iterator = tree.iterator()
+
+      const materialized: any[] = []
+
+      let order = iterator.next()
+
+      while (order !== null) {
+        materialized.push([order.price, order.size])
+
+        order = iterator.next()
+      }
+
+      set(books, [market], {
+        ...get(books, [market], { bids: [], asks: [] }),
+        [side]: materialized,
+      })
+
+      const book = get(books, [marketConfig.name], {
+        bids: [],
+        asks: [],
+      })
+
       setMangoStore((state) => {
-        state.selectedMarket.orderBook = get(books, [marketConfig.name], {
-          bids: [],
-          asks: [],
-        })
+        state.selectedMarket.orderBook = book
       })
     }
+
+    return () => ws.close()
   }, [marketConfig, markets, setMangoStore])
 
   // watch selected Mango Account for changes
