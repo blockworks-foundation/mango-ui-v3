@@ -30,8 +30,10 @@
     "@solana/wallet-adapter-react": "^0.15.4",
     "@solana/wallet-adapter-wallets": "^0.18.2",
     "@tippyjs/react": "^4.2.5",
+    "@types/ws": "^8.5.3",
     "big.js": "^6.1.1",
     "bignumber.js": "^9.0.2",
+    "bintrees": "^1.0.2",
     "bn.js": "^5.1.0",
     "bs58": "^4.0.1",
     "date-fns": "^2.28.0",
@@ -42,6 +44,7 @@
     "intro.js": "^4.2.2",
     "intro.js-react": "^0.5.0",
     "lodash": "^4.17.21",
+    "net": "^1.0.2",
     "next": "~12.2.0",
     "next-i18next": "^10.4.0",
     "next-themes": "^0.1.1",
@@ -59,6 +62,8 @@
     "react-virtualized-auto-sizer": "^1.0.6",
     "react-window": "^1.8.6",
     "recharts": "^2.1.9",
+    "tls": "^0.0.1",
+    "ws": "^8.9.0",
     "zustand": "^3.7.0"
   },
   "peerDependencies": {

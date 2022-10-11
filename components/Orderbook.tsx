@@ -154,6 +154,7 @@ export default function Orderbook({ depth = 8 }) {
 
   useInterval(() => {
     const orderbook = useMangoStore.getState().selectedMarket.orderBook
+
     if (
       nextOrderbookData?.current &&
       (!isEqualLodash(

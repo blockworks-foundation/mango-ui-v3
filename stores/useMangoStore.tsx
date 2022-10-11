@@ -235,6 +235,7 @@ export type MangoStore = {
     slot: number
     blockhashTimes: BlockhashTimes[]
   }
+  orderBooks: { [market: string]: Orderbook }
   selectedMarket: {
     config: MarketConfig
     current: Market | PerpMarket | null
@@ -398,6 +399,7 @@ const useMangoStore = create<
         slot: 0,
         blockhashTimes: [],
       },
+      orderBooks: {},
       selectedMangoGroup: {
         config: DEFAULT_MANGO_GROUP_CONFIG,
         name: DEFAULT_MANGO_GROUP_NAME,
