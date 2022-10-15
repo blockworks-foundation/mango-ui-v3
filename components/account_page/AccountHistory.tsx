@@ -491,7 +491,7 @@ const LiquidationHistoryTable = ({ history, view }) => {
 
               const valueLost = Math.abs(assetLost.amount * assetLost.price)
               const valueGained = assetGained.amount * assetGained.price
-              const liquidationFee = valueGained - valueLost
+              const liquidationFee = valueGained + valueLost
               return (
                 <ExpandableRow
                   buttonTemplate={
