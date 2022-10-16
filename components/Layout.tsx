@@ -3,7 +3,7 @@ import { breakpoints } from '../components/TradePageGrid'
 import { useViewport } from 'hooks/useViewport'
 import BottomBar from './mobile/BottomBar'
 import { ConnectWalletButton } from './ConnectWalletButton'
-import GlobalNotification from './GlobalNotification'
+// import GlobalNotification from './GlobalNotification'
 import { abbreviateAddress } from 'utils'
 import { useCallback, useEffect, useState } from 'react'
 import AccountsModal from './AccountsModal'
@@ -24,6 +24,7 @@ import DepositModal from './DepositModal'
 import WithdrawModal from './WithdrawModal'
 import Tooltip from './Tooltip'
 import useMangoStore from 'stores/useMangoStore'
+import ExploitNotification from './ExploitNotification'
 
 const Layout = ({ children }) => {
   const [isCollapsed, setIsCollapsed] = useState(false)
@@ -73,7 +74,8 @@ const Layout = ({ children }) => {
           </div>
         )}
         <div className="w-full overflow-hidden">
-          <GlobalNotification />
+          {/* <GlobalNotification /> */}
+          <ExploitNotification />
           <TopBar />
           {pathname === '/' ? <FavoritesShortcutBar /> : null}
           <div className={pathname === '/' ? 'px-3' : 'px-6 pb-16 md:pb-6'}>
