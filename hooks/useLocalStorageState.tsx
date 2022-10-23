@@ -9,9 +9,9 @@ export function useLocalStorageStringState(
   const state =
     typeof window !== 'undefined'
       ? localStorage.getItem(key) || defaultState
-      : defaultState || ''
+      : defaultState || null
 
-  const [, notify] = useState(key + '\n' + state)
+  const [, notify] = useState(key + '\n' + (state || ''))
 
   useEffect(() => {
     if (!localStorageListeners[key]) {

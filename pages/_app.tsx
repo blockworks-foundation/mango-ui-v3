@@ -15,9 +15,10 @@ import { useRouter } from 'next/router'
 import { ViewportProvider } from '../hooks/useViewport'
 import { appWithTranslation } from 'next-i18next'
 import ErrorBoundary from '../components/ErrorBoundary'
+import EnhancedWalletProvider from '../components/EnhancedWalletProvider'
 import { useOpenOrders } from '../hooks/useOpenOrders'
 import usePerpPositions from '../hooks/usePerpPositions'
-import { useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { PublicKey } from '@solana/web3.js'
 import { connectionSelector, mangoGroupSelector } from '../stores/selectors'
 import {
@@ -27,25 +28,30 @@ import {
 import useTradeHistory from '../hooks/useTradeHistory'
 import * as Sentry from '@sentry/react'
 import { BrowserTracing } from '@sentry/tracing'
-
-import { WalletProvider, WalletListener } from 'components/WalletAdapter'
+import { useWalletListener } from 'hooks/useWalletListener'
+import { WalletProvider } from '@solana/wallet-adapter-react'
 import {
-  BackpackWalletAdapter,
+  BitpieWalletAdapter,
   CoinbaseWalletAdapter,
   ExodusWalletAdapter,
+  GlowWalletAdapter,
+  HuobiWalletAdapter,
   PhantomWalletAdapter,
+  SlopeWalletAdapter,
   SolflareWalletAdapter,
   SolletWalletAdapter,
-  SlopeWalletAdapter,
-  BitpieWalletAdapter,
-  GlowWalletAdapter,
   WalletConnectWalletAdapter,
 } from '@solana/wallet-adapter-wallets'
-import { WalletAdapterNetwork } from '@solana/wallet-adapter-base'
-import { HuobiWalletAdapter } from '@solana/wallet-adapter-huobi'
+import {
+  Adapter,
+  WalletAdapterNetwork,
+  WalletError,
+  WalletNotReadyError,
+} from '@solana/wallet-adapter-base'
 import useSpotBalances from 'hooks/useSpotBalances'
 import Layout from 'components/Layout'
 import Script from 'next/script'
+import { notify } from '../utils/notifications'
 
 const SENTRY_URL = process.env.NEXT_PUBLIC_SENTRY_URL
 if (SENTRY_URL) {
@@ -77,6 +83,11 @@ const PerpPositionsStoreUpdater = () => {
 
 const TradeHistoryStoreUpdater = () => {
   useTradeHistory()
+  return null
+}
+
+const WalletListenerUpdater = () => {
+  useWalletListener()
   return null
 }
 
@@ -149,23 +160,26 @@ const PageTitle = () => {
 }
 
 function App({ Component, pageProps }) {
+  const network = useMemo(
+    () =>
+      CLUSTER === 'mainnet'
+        ? WalletAdapterNetwork.Mainnet
+        : WalletAdapterNetwork.Devnet,
+    []
+  )
   const wallets = useMemo(
     () => [
-      new BackpackWalletAdapter(),
       new CoinbaseWalletAdapter(),
       new PhantomWalletAdapter(),
-      new SolflareWalletAdapter(),
+      new SolflareWalletAdapter({ network }),
       new ExodusWalletAdapter(),
-      new SolletWalletAdapter(),
-      new GlowWalletAdapter(),
+      new SolletWalletAdapter({ network }),
+      new GlowWalletAdapter({ network }),
       new SlopeWalletAdapter(),
       new BitpieWalletAdapter(),
       new HuobiWalletAdapter(),
       new WalletConnectWalletAdapter({
-        network:
-          CLUSTER === 'mainnet'
-            ? WalletAdapterNetwork.Mainnet
-            : WalletAdapterNetwork.Devnet,
+        network,
         options: {
           projectId: 'f3d38b197d7039c03c345f82ed68ef9b',
           metadata: {
@@ -177,8 +191,22 @@ function App({ Component, pageProps }) {
         },
       }),
     ],
-    []
+    [network]
   )
+
+  const onError = useCallback((error: WalletError, adapter?: Adapter) => {
+    console.error(error, adapter)
+    if (error instanceof WalletNotReadyError && adapter) {
+      notify({
+        title: `${adapter.name} Error`,
+        type: 'error',
+        description: `Please install ${adapter.name} and then reload this page.`,
+      })
+      if (typeof window !== 'undefined') {
+        window.open(adapter.url, '_blank')
+      }
+    }
+  }, [])
 
   return (
     <>
@@ -230,26 +258,28 @@ function App({ Component, pageProps }) {
       </Script>
       <ThemeProvider defaultTheme="Mango">
         <ErrorBoundary>
-          <WalletProvider wallets={wallets}>
-            <PageTitle />
-            <MangoStoreUpdater />
-            <OpenOrdersStoreUpdater />
-            <SpotBalancesStoreUpdater />
-            <PerpPositionsStoreUpdater />
-            <TradeHistoryStoreUpdater />
-            <FetchReferrer />
-            <WalletListener />
-            <ViewportProvider>
-              <div className="min-h-screen bg-th-bkg-1">
-                <ErrorBoundary>
-                  <Layout>
-                    <Component {...pageProps} />
-                  </Layout>
-                </ErrorBoundary>
-              </div>
+          <WalletProvider wallets={wallets} onError={onError} autoConnect>
+            <EnhancedWalletProvider>
+              <PageTitle />
+              <MangoStoreUpdater />
+              <OpenOrdersStoreUpdater />
+              <SpotBalancesStoreUpdater />
+              <PerpPositionsStoreUpdater />
+              <TradeHistoryStoreUpdater />
+              <WalletListenerUpdater />
+              <FetchReferrer />
+              <ViewportProvider>
+                <div className="min-h-screen bg-th-bkg-1">
+                  <ErrorBoundary>
+                    <Layout>
+                      <Component {...pageProps} />
+                    </Layout>
+                  </ErrorBoundary>
+                </div>
 
-              <Notifications />
-            </ViewportProvider>
+                <Notifications />
+              </ViewportProvider>
+            </EnhancedWalletProvider>
           </WalletProvider>
         </ErrorBoundary>
       </ThemeProvider>

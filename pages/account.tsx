@@ -53,7 +53,7 @@ import {
 import DelegateModal from 'components/DelegateModal'
 import { Menu, Transition } from '@headlessui/react'
 import { useWallet } from '@solana/wallet-adapter-react'
-import { handleWalletConnect } from 'components/ConnectWalletButton'
+import { useEnhancedWallet } from 'components/EnhancedWalletProvider'
 import { MangoAccountLookup } from 'components/account_page/MangoAccountLookup'
 import NftProfilePicModal from 'components/NftProfilePicModal'
 import SwipeableTabs from 'components/mobile/SwipeableTabs'
@@ -139,11 +139,12 @@ export default function Account() {
     setShowProfilePicModal(false)
   }, [])
 
-  const handleConnect = useCallback(() => {
+  const { handleConnect } = useEnhancedWallet()
+  const handleWalletConnect = useCallback(() => {
     if (wallet) {
-      handleWalletConnect(wallet)
+      handleConnect()
     }
-  }, [wallet])
+  }, [wallet, handleConnect])
 
   useEffect(() => {
     dayjs.locale(savedLanguage == 'zh_tw' ? 'zh-tw' : savedLanguage)
@@ -530,7 +531,7 @@ export default function Account() {
               desc={t('connect-view')}
               disabled={!wallet || !mangoGroup}
               icon={<LinkIcon />}
-              onClickButton={handleConnect}
+              onClickButton={handleWalletConnect}
               title={t('connect-wallet')}
             />
             {!connected && !pubkey ? (
