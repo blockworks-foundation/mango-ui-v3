@@ -14,6 +14,8 @@ const ProfileImage = ({
 }) => {
   const profile = useMangoStore((s) => s.profile.details)
 
+  if (!profile) return null
+
   return imageUrl || (isOwnerProfile && profile.profile_image_url) ? (
     <img
       alt=""
