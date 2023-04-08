@@ -149,6 +149,7 @@ const AccountOverviewStats = ({ hourlyPerformanceStats, accountValue }) => {
       if (performanceRange === '3m') {
         setChartData(hourlyPerformanceStats.slice().reverse())
       }
+      if (!chartData?.length) return
       if (performanceRange === '30d') {
         const start = new Date(
           // @ts-ignore
@@ -157,7 +158,8 @@ const AccountOverviewStats = ({ hourlyPerformanceStats, accountValue }) => {
         const chartData = cloneDeep(hourlyPerformanceStats).filter(
           (d) => new Date(d.time).getTime() > start
         )
-        const pnlStart = chartData[chartData.length - 1].pnl
+
+        const pnlStart = chartData[chartData.length - 1]?.pnl
         const perpPnlStart = chartData[chartData.length - 1].perp_pnl
         for (let i = 0; i < chartData.length; i++) {
           if (i === chartData.length - 1) {

@@ -333,7 +333,7 @@ export default function Account() {
                 {pubkey && mangoAccount ? (
                   profileData && !loadProfileDetails ? (
                     <Link
-                      href={`/profile?name=${profileData?.profile_name.replace(
+                      href={`/profile?name=${profileData?.profile_name?.replace(
                         /\s/g,
                         '-'
                       )}`}
