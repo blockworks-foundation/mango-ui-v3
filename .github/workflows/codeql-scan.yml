@@ -7,7 +7,7 @@ on:
   push:
     branches: [main]
   pull_request:
-    branches: [main]
+    branches: [main, production]
 
 # Option to configure as a scheduled action to monitor for drift in code
 #  schedule:

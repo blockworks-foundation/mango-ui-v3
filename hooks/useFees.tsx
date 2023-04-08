@@ -12,7 +12,8 @@ export default function useFees(): {
   makerFee: number
   takerFee: number
   takerFeeBeforeDiscount: number
-  takerFeeWithMaxDiscount: number
+  takerFeeWithTier1Discount: number
+  takerFeeWithTier2Discount: number
 } {
   const { rates } = useSrmAccount()
   const mangoGroup = useMangoStore((s) => s.selectedMangoGroup.current)
@@ -33,12 +34,14 @@ export default function useFees(): {
       makerFee: 0,
       takerFee: 0,
       takerFeeBeforeDiscount: 0,
-      takerFeeWithMaxDiscount: 0,
+      takerFeeWithTier1Discount: 0,
+      takerFeeWithTier2Discount: 0,
     }
 
   let takerFee: number, makerFee: number
   let discount = 0
-  let refSurcharge = 0
+  let refSurchargeTier1 = 0
+  let refSurchargeTier2 = 0
 
   if (market instanceof PerpMarket) {
     takerFee = parseFloat(
@@ -48,13 +51,22 @@ export default function useFees(): {
       mangoGroup.perpMarkets[marketIndex].makerFee.toFixed()
     )
     // @ts-ignore
-    refSurcharge = mangoGroup.refSurchargeCentibpsTier1 / CENTIBPS_PER_UNIT
+    refSurchargeTier1 = mangoGroup.refSurchargeCentibpsTier1 / CENTIBPS_PER_UNIT
+    // @ts-ignore
+    refSurchargeTier2 = mangoGroup.refSurchargeCentibpsTier2 / CENTIBPS_PER_UNIT
     // @ts-ignore
     const refShare = mangoGroup.refShareCentibpsTier1 / CENTIBPS_PER_UNIT
 
     const mngoConfig = getSpotMarketByBaseSymbol(groupConfig, 'MNGO')
-    const mngoRequired = mngoConfig
+    const mngoRequiredTier1 = mngoConfig
       ? mangoGroup.refMngoRequired.toNumber() /
+        Math.pow(10, mngoConfig.baseDecimals)
+      : null
+    const refMngoTier2Factor =
+      // @ts-ignore
+      mangoGroup.refMngoTier2Factor == 0 ? 1 : mangoGroup.refMngoTier2Factor
+    const mngoRequiredTier2 = mngoConfig
+      ? (mangoGroup.refMngoRequired.toNumber() * refMngoTier2Factor) /
         Math.pow(10, mngoConfig.baseDecimals)
       : null
 
@@ -69,10 +81,20 @@ export default function useFees(): {
 
       const hasReferrer = useMangoStore.getState().referrerPk
 
-      if (typeof mngoRequired === 'number' && mngoBalance >= mngoRequired) {
-        discount = refSurcharge
+      if (
+        typeof mngoRequiredTier1 === 'number' &&
+        mngoBalance >= mngoRequiredTier1
+      ) {
+        if (
+          typeof mngoRequiredTier2 === 'number' &&
+          mngoBalance >= mngoRequiredTier2
+        ) {
+          discount = refSurchargeTier2
+        } else {
+          discount = refSurchargeTier1
+        }
       } else {
-        discount = hasReferrer ? refSurcharge - refShare : 0
+        discount = hasReferrer ? refSurchargeTier2 - refShare : 0
       }
     }
   } else {
@@ -82,8 +104,9 @@ export default function useFees(): {
 
   return {
     makerFee: makerFee,
-    takerFee: takerFee + refSurcharge - discount,
-    takerFeeBeforeDiscount: takerFee + refSurcharge,
-    takerFeeWithMaxDiscount: takerFee,
+    takerFee: takerFee + refSurchargeTier2 - discount,
+    takerFeeBeforeDiscount: takerFee + refSurchargeTier2,
+    takerFeeWithTier1Discount: takerFee + refSurchargeTier1,
+    takerFeeWithTier2Discount: takerFee,
   }
 }

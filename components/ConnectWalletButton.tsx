@@ -136,12 +136,12 @@ export const ConnectWalletButton: React.FC = () => {
                 {!loadProfileDetails && !isMobile ? (
                   <div className="ml-2 w-32 text-left">
                     <p className="mb-0.5 truncate text-xs font-bold capitalize text-th-fgd-1">
-                      {profileDetails.profile_name}
+                      {profileDetails?.profile_name}
                     </p>
                     <p className="mb-0 text-xs text-th-fgd-4">
-                      {profileDetails.wallet_pk
+                      {profileDetails?.wallet_pk
                         ? abbreviateAddress(
-                            new PublicKey(profileDetails.wallet_pk)
+                            new PublicKey(profileDetails?.wallet_pk)
                           )
                         : ''}
                     </p>

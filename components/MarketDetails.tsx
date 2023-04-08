@@ -115,7 +115,7 @@ const MarketDetails = () => {
                       </Tooltip>
                     </div>
                     <div className="text-th-fgd-1 md:text-xs">
-                      {`${market?.funding1h.toFixed(4)}% (${(
+                      {`${market?.funding1h?.toFixed(4)}% (${(
                         market?.funding1h *
                         24 *
                         365
@@ -129,7 +129,7 @@ const MarketDetails = () => {
                     <div className="flex items-center text-th-fgd-1 md:text-xs">
                       {usdFormatter(market?.openInterestUsd, 0)}
                       <Tooltip
-                        content={`${market?.openInterest.toLocaleString(
+                        content={`${market?.openInterest?.toLocaleString(
                           undefined,
                           {
                             maximumFractionDigits:

@@ -5,7 +5,7 @@ import {
   MSRM_DECIMALS,
   SRM_DECIMALS,
 } from '@project-serum/serum/lib/token-instructions'
-import { percentFormat } from '../utils/index'
+import { percentFormat4D } from '../utils/index'
 import Tooltip from '../components/Tooltip'
 import { InformationCircleIcon } from '@heroicons/react/solid'
 import DepositMsrmModal from '../components/DepositMsrmModal'
@@ -33,8 +33,12 @@ export async function getStaticProps({ locale }) {
 export default function Fees() {
   const { t } = useTranslation('common')
   const { totalSrm, totalMsrm, rates } = useSrmAccount()
-  const { takerFeeBeforeDiscount, takerFeeWithMaxDiscount, makerFee } =
-    useFees()
+  const {
+    takerFeeBeforeDiscount,
+    takerFeeWithTier1Discount,
+    takerFeeWithTier2Discount,
+    makerFee,
+  } = useFees()
   const { connected } = useWallet()
   const [showDeposit, setShowDeposit] = useState(false)
   const [showWithdraw, setShowWithdraw] = useState(false)
@@ -57,7 +61,7 @@ export default function Fees() {
             <div className="pb-0.5 text-th-fgd-3">{t('maker-fee')}</div>
             <div className="flex items-center">
               <div className="text-xl font-bold text-th-fgd-1 md:text-2xl">
-                {percentFormat.format(makerFee)}
+                {percentFormat4D.format(makerFee)}
               </div>
             </div>
           </div>
@@ -65,16 +69,16 @@ export default function Fees() {
             <div className="pb-0.5 text-th-fgd-3">{t('taker-fee')}</div>
             <div className="flex items-center">
               <div className="text-xl font-bold text-th-fgd-1 md:text-2xl">
-                {percentFormat.format(takerFeeBeforeDiscount)}
+                {percentFormat4D.format(takerFeeBeforeDiscount)}
               </div>
             </div>
             <div className="flex items-center">
               <p className="mb-0">
                 {t('if-referred', {
-                  fee: percentFormat.format(
+                  fee: percentFormat4D.format(
                     takerFeeBeforeDiscount < 0
-                      ? takerFeeBeforeDiscount + takerFeeBeforeDiscount * 0.04
-                      : takerFeeBeforeDiscount - takerFeeBeforeDiscount * 0.04
+                      ? takerFeeBeforeDiscount + takerFeeBeforeDiscount * 0.03
+                      : takerFeeBeforeDiscount - takerFeeBeforeDiscount * 0.03
                   ),
                 })}
               </p>
@@ -89,7 +93,12 @@ export default function Fees() {
             </div>
             <div className="flex items-center">
               <p className="mb-0">
-                {percentFormat.format(takerFeeWithMaxDiscount)} if 10k MNGO
+                {percentFormat4D.format(takerFeeWithTier1Discount)} if 10k MNGO
+              </p>
+            </div>
+            <div className="flex items-center">
+              <p className="mb-0">
+                {percentFormat4D.format(takerFeeWithTier2Discount)} if 250k MNGO
               </p>
             </div>
           </div>
@@ -101,7 +110,7 @@ export default function Fees() {
             <div className="pb-0.5 text-th-fgd-3">{t('maker-fee')}</div>
             <div className="flex items-center">
               <div className="text-xl font-bold text-th-fgd-1 md:text-2xl">
-                {rates ? percentFormat.format(rates.maker) : null}
+                {rates ? percentFormat4D.format(rates.maker) : null}
               </div>
             </div>
           </div>
@@ -110,7 +119,7 @@ export default function Fees() {
               {t('taker-fee')}
               <Tooltip
                 content={t('tooltip-serum-rebate', {
-                  taker_percent: percentFormat.format(rates.taker),
+                  taker_percent: percentFormat4D.format(rates.taker),
                 })}
               >
                 <div>
