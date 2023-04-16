@@ -1,7 +1,14 @@
 import { useEffect } from 'react'
+import { RBTree } from 'bintrees'
 import { AccountInfo, PublicKey } from '@solana/web3.js'
-import useMangoStore, { programId, SECONDS } from '../stores/useMangoStore'
+import useMangoStore, {
+  Orderbook,
+  programId,
+  SECONDS,
+} from '../stores/useMangoStore'
 import useInterval from './useInterval'
+import set from 'lodash/set'
+import get from 'lodash/get'
 import { Market, Orderbook as SpotOrderBook } from '@project-serum/serum'
 import {
   BookSide,
@@ -21,28 +28,6 @@ import {
   marketsSelector,
 } from '../stores/selectors'
 import { useWallet } from '@solana/wallet-adapter-react'
-
-function decodeBookL2(market, accInfo: AccountInfo<Buffer>): number[][] {
-  if (market && accInfo?.data) {
-    const depth = 40
-    if (market instanceof Market) {
-      const book = SpotOrderBook.decode(market, accInfo.data)
-      return book.getL2(depth).map(([price, size]) => [price, size])
-    } else if (market instanceof PerpMarket) {
-      // FIXME: Review the null being passed here
-      const book = new BookSide(
-        // @ts-ignore
-        null,
-        market,
-        BookSideLayout.decode(accInfo.data),
-        undefined,
-        100000
-      )
-      return book.getL2Ui(depth)
-    }
-  }
-  return []
-}
 
 export function decodeBook(
   market,
@@ -112,21 +97,98 @@ const useHydrateStore = () => {
   }, 120 * SECONDS)
 
   useEffect(() => {
-    if (!marketConfig || !markets) return
+    const ws = new WebSocket('ws://localhost:8080')
 
-    const market = markets[marketConfig.publicKey.toString()]
-    if (!market) return
-    setMangoStore((state) => {
-      state.selectedMarket.current = market
-      state.selectedMarket.orderBook.bids = decodeBookL2(
-        market,
-        state.accountInfos[marketConfig.bidsKey.toString()]
-      )
-      state.selectedMarket.orderBook.asks = decodeBookL2(
-        market,
-        state.accountInfos[marketConfig.asksKey.toString()]
-      )
-    })
+    const trees: { [market: string]: any } = {}
+
+    const books: { [market: string]: Orderbook } = {}
+
+    ws.onmessage = (event) => {
+      const { data } = event
+
+      const instruction = JSON.parse(data)
+
+      const { market, type, side, orders } = instruction
+
+      if (type == 'l2snapshot') {
+        switch (side) {
+          case 'bids':
+            set(
+              trees,
+              [market, side],
+              new RBTree<{ price: number; size: number }>(
+                (nodeA, nodeB) => nodeB.price - nodeA.price
+              )
+            )
+
+            for (const [price, size] of orders) {
+              trees[market][side].insert({ price, size })
+            }
+
+            break
+          case 'asks':
+            set(
+              trees,
+              [market, side],
+              new RBTree<{ price: number; size: number }>(
+                (nodeA, nodeB) => nodeA.price - nodeB.price
+              )
+            )
+
+            for (const [price, size] of orders) {
+              trees[market][side].insert({ price, size })
+            }
+
+            break
+          default:
+            console.error('Invalid side received')
+        }
+      }
+
+      const tree = get(trees, [market, side])
+
+      if (type == 'l2update') {
+        for (const [price, size] of orders) {
+          const node = tree.find({ price, size })
+
+          if (size == 0) {
+            if (node) tree.remove({ price, size })
+          } else if (node) {
+            node.size = size
+          } else {
+            tree.insert({ price, size })
+          }
+        }
+      }
+
+      const iterator = tree.iterator()
+
+      const materialized: any[] = []
+
+      let order = iterator.next()
+
+      while (order !== null) {
+        materialized.push([order.price, order.size])
+
+        order = iterator.next()
+      }
+
+      set(books, [market], {
+        ...get(books, [market], { bids: [], asks: [] }),
+        [side]: materialized,
+      })
+
+      const book = get(books, [marketConfig.name], {
+        bids: [],
+        asks: [],
+      })
+
+      setMangoStore((state) => {
+        state.selectedMarket.orderBook = book
+      })
+    }
+
+    return () => ws.close()
   }, [marketConfig, markets, setMangoStore])
 
   // watch selected Mango Account for changes
@@ -206,66 +268,6 @@ const useHydrateStore = () => {
       fetchReferrer()
     }
   }, [mangoAccount])
-
-  // hydrate orderbook with all markets in mango group
-  useEffect(() => {
-    let previousBidInfo: AccountInfo<Buffer> | null = null
-    let previousAskInfo: AccountInfo<Buffer> | null = null
-    if (!marketConfig || !selectedMarket) return
-    console.log('in orderbook WS useEffect')
-
-    const bidSubscriptionId = connection.onAccountChange(
-      marketConfig.bidsKey,
-      (info, context) => {
-        const lastSlot = useMangoStore.getState().connection.slot
-        if (
-          (!previousBidInfo ||
-            !previousBidInfo.data.equals(info.data) ||
-            previousBidInfo.lamports !== info.lamports) &&
-          context.slot > lastSlot
-        ) {
-          previousBidInfo = info
-
-          info['parsed'] = decodeBook(selectedMarket, info)
-          setMangoStore((state) => {
-            state.accountInfos[marketConfig.bidsKey.toString()] = info
-            state.selectedMarket.orderBook.bids = decodeBookL2(
-              selectedMarket,
-              info
-            )
-          })
-        }
-      }
-    )
-    const askSubscriptionId = connection.onAccountChange(
-      marketConfig.asksKey,
-      (info, context) => {
-        const lastSlot = useMangoStore.getState().connection.slot
-        if (
-          (!previousAskInfo ||
-            !previousAskInfo.data.equals(info.data) ||
-            previousAskInfo.lamports !== info.lamports) &&
-          context.slot > lastSlot
-        ) {
-          previousAskInfo = info
-
-          info['parsed'] = decodeBook(selectedMarket, info)
-          setMangoStore((state) => {
-            state.accountInfos[marketConfig.asksKey.toString()] = info
-            state.selectedMarket.orderBook.asks = decodeBookL2(
-              selectedMarket,
-              info
-            )
-          })
-        }
-      }
-    )
-
-    return () => {
-      connection.removeAccountChangeListener(bidSubscriptionId)
-      connection.removeAccountChangeListener(askSubscriptionId)
-    }
-  }, [marketConfig, selectedMarket, connection, setMangoStore])
 
   // fetch filled trades for selected market
   useInterval(() => {
