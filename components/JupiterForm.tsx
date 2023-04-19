@@ -45,7 +45,7 @@ import { useTranslation } from 'next-i18next'
 import Tabs from './Tabs'
 import SwapTokenInsights from './SwapTokenInsights'
 import { useWallet } from '@solana/wallet-adapter-react'
-import { handleWalletConnect } from 'components/ConnectWalletButton'
+import { useEnhancedWallet } from './EnhancedWalletProvider'
 
 const TABS = ['Market Data', 'Performance Insights']
 
@@ -241,11 +241,12 @@ const JupiterForm: FunctionComponent = () => {
     }
   }, [routeMap, tokens, formValue.inputMint])
 
-  const handleConnect = useCallback(() => {
+  const { handleConnect } = useEnhancedWallet()
+  const handleWalletConnect = useCallback(() => {
     if (wallet) {
-      handleWalletConnect(wallet)
+      handleConnect()
     }
-  }, [wallet])
+  }, [wallet, handleConnect])
 
   const inputWalletBalance = () => {
     if (walletTokens.length) {
@@ -959,7 +960,7 @@ const JupiterForm: FunctionComponent = () => {
               disabled={swapDisabled}
               onClick={async () => {
                 if (!connected && zeroKey !== publicKey) {
-                  handleConnect()
+                  handleWalletConnect()
                 } else if (
                   !loading &&
                   selectedRoute &&
