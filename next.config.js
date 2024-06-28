@@ -5,18 +5,8 @@ const moduleExports = {
   async redirects() {
     return [
       {
-        source: '/market',
-        destination: '/',
-        permanent: true,
-      },
-      {
-        source: '/spot/:name',
-        destination: '/',
-        permanent: true,
-      },
-      {
-        source: '/perp/:name',
-        destination: '/',
+        source: '/:path*',
+        destination: 'https://mango.markets',
         permanent: true,
       },
     ]
