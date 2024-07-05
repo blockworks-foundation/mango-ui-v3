@@ -33,7 +33,7 @@ import { notify } from 'utils/notifications'
 import { Label } from 'components'
 import Select from 'components/Select'
 import EmptyState from 'components/EmptyState'
-import { handleWalletConnect } from 'components/ConnectWalletButton'
+import { useEnhancedWallet } from 'components/EnhancedWalletProvider'
 import bs58 from 'bs58'
 import Loading from 'components/Loading'
 import InlineNotification from 'components/InlineNotification'
@@ -80,11 +80,12 @@ export default function Profile() {
   const ownedProfile = useMangoStore((s) => s.profile.details)
   const loadOwnedProfile = useMangoStore((s) => s.profile.loadDetails)
 
-  const handleConnect = useCallback(() => {
+  const { handleConnect } = useEnhancedWallet()
+  const handleWalletConnect = useCallback(() => {
     if (wallet) {
-      handleWalletConnect(wallet)
+      handleConnect()
     }
-  }, [wallet])
+  }, [wallet, handleConnect])
 
   useEffect(() => {
     if (profileData) {
@@ -633,7 +634,7 @@ export default function Profile() {
             desc={t('profile:connect-view-profile')}
             disabled={!wallet || !mangoGroup}
             icon={<LinkIcon />}
-            onClickButton={handleConnect}
+            onClickButton={handleWalletConnect}
             title={t('connect-wallet')}
           />
         </div>

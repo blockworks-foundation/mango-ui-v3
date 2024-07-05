@@ -4,7 +4,7 @@ import useMangoStore from '../stores/useMangoStore'
 import { MoveIcon } from './icons'
 import EmptyState from './EmptyState'
 import { useTranslation } from 'next-i18next'
-import { handleWalletConnect } from 'components/ConnectWalletButton'
+import { useEnhancedWallet } from './EnhancedWalletProvider'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useRouter } from 'next/router'
 import { useViewport } from '../hooks/useViewport'
@@ -29,11 +29,12 @@ const FloatingElement: FunctionComponent<FloatingElementProps> = ({
   const { width } = useViewport()
   const isMobile = width ? width < breakpoints.sm : false
 
-  const handleConnect = useCallback(() => {
+  const { handleConnect } = useEnhancedWallet()
+  const handleWalletConnect = useCallback(() => {
     if (wallet) {
-      handleWalletConnect(wallet)
+      handleConnect()
     }
-  }, [wallet])
+  }, [wallet, handleConnect])
 
   return (
     <div
@@ -48,7 +49,7 @@ const FloatingElement: FunctionComponent<FloatingElementProps> = ({
               disabled={!wallet || !mangoGroup}
               buttonText={t('connect')}
               icon={<LinkIcon />}
-              onClickButton={handleConnect}
+              onClickButton={handleWalletConnect}
               title={t('connect-wallet')}
             />
           </div>
